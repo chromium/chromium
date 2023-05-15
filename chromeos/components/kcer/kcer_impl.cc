@@ -242,7 +242,15 @@ base::flat_set<Token> KcerImpl::GetAvailableTokens() {
 }
 
 void KcerImpl::GetTokenInfo(Token token, GetTokenInfoCallback callback) {
-  // TODO(244408716): Implement.
+  const base::WeakPtr<KcerToken>& kcer_token = GetToken(token);
+  if (!kcer_token.MaybeValid()) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kTokenIsNotAvailable));
+  }
+  token_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&KcerToken::GetTokenInfo, kcer_token,
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 void KcerImpl::GetKeyInfo(PrivateKeyHandle key, GetKeyInfoCallback callback) {

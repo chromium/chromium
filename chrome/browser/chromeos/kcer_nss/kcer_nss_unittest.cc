@@ -359,6 +359,9 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   base::test::TestFuture<base::expected<bool, Error>> does_key_exist_waiter;
   kcer->DoesPrivateKeyExist(PrivateKeyHandle(PublicKeySpki()),
                             does_key_exist_waiter.GetCallback());
+  base::test::TestFuture<base::expected<TokenInfo, Error>>
+      get_token_info_waiter;
+  kcer->GetTokenInfo(Token::kUser, get_token_info_waiter.GetCallback());
   base::test::TestFuture<base::expected<KeyInfo, Error>> get_key_info_waiter;
   kcer->GetKeyInfo(PrivateKeyHandle(PublicKeySpki()),
                    get_key_info_waiter.GetCallback());
@@ -407,6 +410,9 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   ASSERT_FALSE(does_key_exist_waiter.Get().has_value());
   EXPECT_EQ(does_key_exist_waiter.Get().error(),
             Error::kTokenInitializationFailed);
+  ASSERT_FALSE(get_token_info_waiter.Get().has_value());
+  EXPECT_EQ(get_token_info_waiter.Get().error(),
+            Error::kTokenInitializationFailed);
   ASSERT_FALSE(get_key_info_waiter.Get().has_value());
   EXPECT_EQ(get_key_info_waiter.Get().error(),
             Error::kTokenInitializationFailed);
@@ -422,6 +428,29 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   ASSERT_FALSE(generate_rsa_waiter_2.Get().has_value());
   EXPECT_EQ(generate_rsa_waiter_2.Get().error(),
             Error::kTokenInitializationFailed);
+}
+
+// Test that Kcer::GetTokenInfo() method returns meaningful values.
+TEST_F(KcerNssTest, GetTokenInfo) {
+  TokenHolder user_token(Token::kUser);
+  user_token.Initialize();
+
+  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
+      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
+
+  base::test::TestFuture<base::expected<TokenInfo, Error>>
+      get_token_info_waiter;
+  kcer->GetTokenInfo(Token::kUser, get_token_info_waiter.GetCallback());
+  ASSERT_TRUE(get_token_info_waiter.Get().has_value());
+  const TokenInfo& token_info = get_token_info_waiter.Get().value();
+
+  // These values don't have to be exactly like this, they are what a software
+  // NSS slot returns in tests. Still useful to test that they are not
+  // completely off.
+  EXPECT_THAT(token_info.pkcs11_id, testing::Lt(1000u));
+  EXPECT_THAT(token_info.token_name,
+              testing::StartsWith("NSS Application Slot"));
+  EXPECT_EQ(token_info.module_name, "NSS Internal PKCS #11 Module");
 }
 
 // Test RSA specific fields from GetKeyInfo's result.

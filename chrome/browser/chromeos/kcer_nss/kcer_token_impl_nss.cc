@@ -402,6 +402,15 @@ GetCertProvisioningIdOnWorkerThread(
                      cert_prov_attribute->data + cert_prov_attribute->len);
 }
 
+void GetTokenInfoOnWorkerThread(crypto::ScopedPK11Slot slot,
+                                Kcer::GetTokenInfoCallback callback) {
+  TokenInfo token_info;
+  token_info.pkcs11_id = PK11_GetSlotID(slot.get());
+  token_info.token_name = PK11_GetSlotName(slot.get());
+  token_info.module_name = PK11_GetModule(slot.get())->commonName;
+  return std::move(callback).Run(std::move(token_info));
+}
+
 void GetKeyInfoOnWorkerThread(
     KeyPermissionsAttributeId key_permissions_attribute_id,
     CertProvisioningIdAttributeId cert_prov_attribute_id,
@@ -798,7 +807,25 @@ void KcerTokenImplNss::SignRsaPkcs1Raw(PrivateKeyHandle key,
 
 void KcerTokenImplNss::GetTokenInfo(Kcer::GetTokenInfoCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  // TODO(244408716): Implement.
+
+  if (UNLIKELY(state_ == State::kInitializationFailed)) {
+    return HandleInitializationFailed(std::move(callback));
+  }
+  if (is_blocked_) {
+    return task_queue_.push(base::BindOnce(&KcerTokenImplNss::GetTokenInfo,
+                                           weak_factory_.GetWeakPtr(),
+                                           std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = std::move(callback).Then(BlockQueueGetUnblocker());
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&GetTokenInfoOnWorkerThread,
+                     crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
+                     std::move(unblocking_callback)));
 }
 
 void KcerTokenImplNss::GetKeyInfo(PrivateKeyHandle key,
