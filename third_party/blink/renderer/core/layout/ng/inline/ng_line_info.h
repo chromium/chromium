@@ -158,10 +158,14 @@ class CORE_EXPORT NGLineInfo {
     width_ = width;
   }
 
-  // Start text offset of this line.
+  // Start offset of this line.
   const NGInlineItemTextIndex& Start() const { return start_; }
   unsigned StartOffset() const { return start_.text_offset; }
   void SetStart(const NGInlineItemTextIndex& index) { start_ = index; }
+  // End offset of this line. This is the same as the start offset of the next
+  // line, or the end of block if this is the last line.
+  NGInlineItemTextIndex End() const;
+  unsigned EndTextOffset() const;
   // End text offset of this line, excluding out-of-flow objects such as
   // floating or positioned.
   unsigned InflowEndOffset() const;

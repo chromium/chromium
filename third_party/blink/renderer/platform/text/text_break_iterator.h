@@ -216,6 +216,7 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
   // Set the start offset. Text before this offset is disregarded. Properly
   // setting the start offset improves the performance significantly, because
   // ICU break iterator computes all the text from the beginning.
+  unsigned StartOffset() const { return start_offset_; }
   void SetStartOffset(unsigned offset) {
     CHECK_LE(offset, string_.length());
     start_offset_ = offset;

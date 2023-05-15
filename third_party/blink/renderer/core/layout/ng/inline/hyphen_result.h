@@ -16,6 +16,9 @@ class ComputedStyle;
 
 class CORE_EXPORT HyphenResult {
  public:
+  HyphenResult() = default;
+  explicit HyphenResult(const ComputedStyle& style) { Shape(style); }
+
   explicit operator bool() const { return !text_.IsNull(); }
 
   const String& Text() const { return text_; }

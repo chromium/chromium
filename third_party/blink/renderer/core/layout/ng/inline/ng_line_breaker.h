@@ -23,6 +23,7 @@ class Hyphenation;
 class NGColumnSpannerPath;
 class NGInlineBreakToken;
 class NGInlineItem;
+class NGLineBreakCandidateContext;
 class NGLineInfo;
 class ResolvedTextLayoutAttributesIterator;
 
@@ -87,6 +88,12 @@ class CORE_EXPORT NGLineBreaker {
   WhitespaceState TrailingWhitespaceForTesting() const {
     return trailing_whitespace_;
   }
+
+  // Find break candidates in the `item_result` and append to `context`. See
+  // `NGLineBreakCandidate` and `NGLineBreakCandidateContext` for more details.
+  void AppendCandidates(const NGInlineItemResult& item_result,
+                        const NGLineInfo& line_info,
+                        NGLineBreakCandidateContext& context);
 
  private:
   const String& Text() const { return text_content_; }

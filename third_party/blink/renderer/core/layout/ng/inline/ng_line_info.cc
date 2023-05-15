@@ -6,6 +6,7 @@
 
 #include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 
@@ -134,6 +135,15 @@ bool NGLineInfo::ComputeNeedsAccurateEndPosition() const {
       break;
   }
   return false;
+}
+
+NGInlineItemTextIndex NGLineInfo::End() const {
+  return BreakToken() ? BreakToken()->Start() : ItemsData().End();
+}
+
+unsigned NGLineInfo::EndTextOffset() const {
+  return BreakToken() ? BreakToken()->StartTextOffset()
+                      : ItemsData().text_content.length();
 }
 
 unsigned NGLineInfo::InflowEndOffset() const {
