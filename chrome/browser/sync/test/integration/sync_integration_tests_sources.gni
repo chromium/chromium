@@ -35,6 +35,7 @@ if (!is_android) {
     "../browser/sync/test/integration/single_client_passwords_sync_test.cc",
     "../browser/sync/test/integration/single_client_polling_sync_test.cc",
     "../browser/sync/test/integration/single_client_preferences_sync_test.cc",
+    "../browser/sync/test/integration/single_client_saved_tab_groups_sync_test.cc",
     "../browser/sync/test/integration/single_client_search_engines_sync_test.cc",
     "../browser/sync/test/integration/single_client_secondary_account_sync_test.cc",
     "../browser/sync/test/integration/single_client_send_tab_to_self_sync_test.cc",

@@ -283,6 +283,7 @@ include_rules = [
   "+components/safe_browsing/core/browser",
   "+components/safe_browsing/core/common",
   "+components/safe_search_api",
+  "+components/saved_tab_groups",
   "+components/schema_org",
   "+components/shared_highlighting/core/common",
   "+components/search",
