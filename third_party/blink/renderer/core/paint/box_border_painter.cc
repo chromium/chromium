@@ -870,15 +870,20 @@ struct BoxBorderPainter::ComplexBorderInfo {
  private:
   void BuildOpacityGroups(const BoxBorderPainter& border_painter,
                           const Vector<BoxSide, 4>& sorted_sides) {
-    unsigned current_alpha = 0;
+    float current_alpha = 0.0f;
     for (BoxSide side : sorted_sides) {
       const BorderEdge& edge = border_painter.Edge(side);
-      const unsigned edge_alpha = edge.GetColor().AlphaAsInteger();
+      const float edge_alpha = edge.GetColor().Alpha();
 
-      DCHECK_GT(edge_alpha, 0u);
+      DCHECK_GT(edge_alpha, 0.0f);
       DCHECK_GE(edge_alpha, current_alpha);
+      // TODO(crbug.com/1434423): This float comparison looks very brittle. We
+      // need to deduce the original intention of the code here. Also, this path
+      // is clearly un-tested and caused some serious regressions when touched.
+      // See crbug.com/1445288
       if (edge_alpha != current_alpha) {
-        opacity_groups.push_back(OpacityGroup(edge_alpha));
+        opacity_groups.push_back(
+            OpacityGroup(edge.GetColor().AlphaAsInteger()));
         current_alpha = edge_alpha;
       }
 
@@ -1077,7 +1082,7 @@ void BoxBorderPainter::ComputeBorderProperties() {
       continue;
     }
 
-    DCHECK_GT(edge.GetColor().AlphaAsInteger(), 0);
+    DCHECK(!edge.GetColor().IsFullyTransparent());
 
     visible_edge_count_++;
     visible_edge_set_ |= EdgeFlagForSide(static_cast<BoxSide>(i));
