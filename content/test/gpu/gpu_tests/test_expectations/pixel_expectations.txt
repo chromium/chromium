@@ -409,6 +409,9 @@ crbug.com/1392806 [ chromeos lacros-chrome chromeos-board-jacuzzi ] Pixel_Video_
 crbug.com/1444804 [ android-pixel-4 android-r angle-disabled no-passthrough ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 crbug.com/1444804 [ android-pixel-4 android-r angle-disabled no-passthrough ] Pixel_Video_VP9 [ Failure ]
 
+# Samsung flaky incorrect colors
+crbug.com/1445552 [ android android-sm-a135m ] Pixel_OffscreenCanvasWebGLDefault [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

@@ -592,6 +592,7 @@ crbug.com/1372155 [ android android-sm-a135m ] conformance/offscreencanvas/conte
 crbug.com/1372155 [ android android-sm-a135m no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1372155 [ android android-sm-a135m ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
 crbug.com/1372149 [ android android-sm-a235m no-passthrough ] conformance/rendering/blending.html [ Failure ]
+crbug.com/1445548 [ android android-sm-a235m no-passthrough ] conformance/extensions/oes-vertex-array-object-bufferData.html [ Failure ]
 
 
 ############
