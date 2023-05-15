@@ -82622,6 +82622,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="13" label="Volume labels presented in the 'blkid' tool"/>
   <int value="14" label="Extensible Authentication Protocol (EAP) properties"/>
   <int value="15" label="Credit card number"/>
+  <int value="16" label="International Bank Account Number"/>
 </enum>
 
 <enum name="PinAutosubmitBackfillEvent">

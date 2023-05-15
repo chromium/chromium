@@ -37,6 +37,11 @@ COMPONENT_EXPORT(REDACTION_TOOL)
 BASE_FEATURE(kEnableCreditCardRedaction,
              "EnableCreditCardRedaction",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+COMPONENT_EXPORT(REDACTION_TOOL)
+BASE_FEATURE(kEnableIbanRedaction,
+             "EnableIbanRedaction",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace {
@@ -543,14 +548,11 @@ void RecordCreditCardRedactionHistogram(CreditCardDetection step) {
   UMA_HISTOGRAM_ENUMERATION("Feedback.RedactionTool.CreditCardMatch", step);
 }
 
-bool IsCreditCardRedactionEnabled() {
+bool IsFeatureEnabled(const base::Feature& feature) {
   return base::FeatureList::GetInstance()
-             ? base::FeatureList::IsEnabled(
-                   features::kEnableCreditCardRedaction)
-             : features::kEnableCreditCardRedaction.default_state ==
-                   base::FEATURE_ENABLED_BY_DEFAULT;
+             ? base::FeatureList::IsEnabled(feature)
+             : feature.default_state == base::FEATURE_ENABLED_BY_DEFAULT;
 }
-
 }  // namespace
 
 RedactionTool::RedactionTool(const char* const* first_party_extension_ids)
@@ -573,7 +575,7 @@ std::map<PIIType, std::set<std::string>> RedactionTool::Detect(
 
   std::map<PIIType, std::set<std::string>> detected;
 
-  if (IsCreditCardRedactionEnabled()) {
+  if (IsFeatureEnabled(features::kEnableCreditCardRedaction)) {
     RedactCreditCardNumbers(input, &detected);
   }
   RedactMACAddresses(input, &detected);
@@ -584,6 +586,9 @@ std::map<PIIType, std::set<std::string>> RedactionTool::Detect(
   // Do hashes last since they may appear in URLs and they also prevent us from
   // properly recognizing the Android storage paths.
   RedactHashes(input, &detected);
+  if (IsFeatureEnabled(features::kEnableIbanRedaction)) {
+    RedactIbans(input, &detected);
+  }
   return detected;
 }
 
@@ -605,7 +610,7 @@ std::string RedactionTool::RedactAndKeepSelected(
   // well and the length could also match a MAC address. Since the credit card
   // check does additional validation against issuer length and Luhns checksum
   // the number of false positives should be lower when ordered like this.
-  if (IsCreditCardRedactionEnabled() &&
+  if (IsFeatureEnabled(features::kEnableCreditCardRedaction) &&
       pii_types_to_keep.find(PIIType::kCreditCard) == pii_types_to_keep.end()) {
     redacted = RedactCreditCardNumbers(std::move(redacted), nullptr);
   }
@@ -628,6 +633,10 @@ std::string RedactionTool::RedactAndKeepSelected(
     // if |pii_types_to_keep| contains PIIType::kURL or
     // PIIType::kAndroidAppStoragePath and not PIIType::kStableIdentifier.
     redacted = RedactHashes(std::move(redacted), nullptr);
+  }
+  if (IsFeatureEnabled(features::kEnableIbanRedaction) &&
+      pii_types_to_keep.find(PIIType::kIBAN) == pii_types_to_keep.end()) {
+    redacted = RedactIbans(std::move(redacted), nullptr);
   }
   return redacted;
 }
@@ -910,6 +919,107 @@ std::string RedactionTool::RedactCreditCardNumbers(
       sequence.AppendToString(&result);
     }
     post_sequence.AppendToString(&result);
+  }
+
+  text.AppendToString(&result);
+
+  return result;
+}
+
+std::string RedactionTool::RedactIbans(
+    const std::string& input,
+    std::map<PIIType, std::set<std::string>>* detected) {
+  std::string result;
+  result.reserve(input.size());
+
+  RE2* iban_re = GetRegExp(
+      "((?:A[DELAOTZ]|B[AEFGHIJR]|C[HIMRVYZ]|D[EKOZ]|E[ES]|F[IOR]|G[BEILRT]|"
+      "H[RU]|I[ELRST]|JO|K[WZ]|L[BITUV]|M[CDEGKLRTUZ]|N[LO]|P[KLST]|QA|R[OS]|"
+      "S[AEIKMN]|T[NR]|UA|VG|XK)(?:\\d{2})[ -]?(?:[ "
+      "\\-A-Z0-9]){11,30})");
+
+  re2::StringPiece text(input);
+  re2::StringPiece skipped;
+  re2::StringPiece iban;
+  while (FindAndConsumeAndGetSkipped(&text, *iban_re, &skipped, &iban)) {
+    skipped.AppendToString(&result);
+    // Validation sequence as per [1].
+    //
+    // [1]
+    // https://en.wikipedia.org/wiki/International_Bank_Account_Number#Validating_the_IBAN
+
+    // Remove the separating characters.
+    std::string stripped;
+    base::RemoveChars(iban.as_string(), " -", &stripped);
+
+    if (const auto previous_iban = ibans_.find(stripped);
+        previous_iban != ibans_.end()) {
+      result += previous_iban->second;
+      continue;
+    }
+
+    // Since the logic later relies on the size of this string not changing use
+    // a lambda to initialize the constant.
+    const std::string numbers_only = [](base::StringPiece stripped) {
+      // Move the first 2 chars+digits to the back of the string.
+      constexpr size_t prefix_offset = 4;
+      std::string rearranged = std::string(stripped.substr(prefix_offset));
+      rearranged.append(stripped.substr(0, prefix_offset));
+
+      // Replace letters with two digits, where A = 10, B = 11, ..., Z = 35.
+      std::string tmp;
+      for (const char c : rearranged) {
+        if (base::IsAsciiDigit(c)) {
+          tmp.push_back(c);
+        } else {
+          const char based_char = c - 'A';
+          constexpr size_t iban_char_conversion_offset = 10;
+          tmp.append(base::NumberToString(static_cast<int>(based_char) +
+                                          iban_char_conversion_offset));
+        }
+      }
+      return tmp;
+    }(stripped);
+
+    // Calculate the remainder using chunks.
+    constexpr size_t chunk_size = 9;
+
+    std::string chunk;
+    chunk.reserve(chunk_size);
+
+    unsigned remainder = 0;
+
+    for (size_t remaining = numbers_only.size(); remaining > 0;) {
+      const size_t pos = numbers_only.size() - remaining;
+      const size_t next_chunk_size =
+          std::min(chunk_size - chunk.size(), remaining);
+
+      chunk.append(numbers_only.substr(pos, next_chunk_size));
+
+      const unsigned long chunk_number =
+          std::strtoul(chunk.c_str(), nullptr, 10);
+
+      remainder = chunk_number % 97;
+      chunk = base::NumberToString(remainder);
+
+      remaining -= next_chunk_size;
+    }
+
+    if (remainder != 1) {
+      iban.AppendToString(&result);
+      continue;
+    }
+
+    const auto& [it, success] = ibans_.emplace(
+        stripped, base::StrCat({"(IBAN: ",
+                                base::NumberToString(ibans_.size() + 1), ")"}));
+    result += it->second;
+
+    if (detected != nullptr) {
+      (*detected)[PIIType::kIBAN].insert(it->first);
+    }
+
+    RecordPIIRedactedHistogram(PIIType::kIBAN);
   }
 
   text.AppendToString(&result);

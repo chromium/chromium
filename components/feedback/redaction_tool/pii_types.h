@@ -70,7 +70,9 @@ enum class PIIType {
   kEAP = 14,
   // Credit card numbers.
   kCreditCard = 15,
-  kMaxValue = kCreditCard,
+  // International Bank Account Numbers.
+  kIBAN = 16,
+  kMaxValue = kIBAN,
 };
 
 }  // namespace redaction

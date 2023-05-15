@@ -26,6 +26,9 @@ namespace redaction {
 namespace features {
 COMPONENT_EXPORT(REDACTION_TOOL)
 BASE_DECLARE_FEATURE(kEnableCreditCardRedaction);
+
+COMPONENT_EXPORT(REDACTION_TOOL)
+BASE_DECLARE_FEATURE(kEnableIbanRedaction);
 }  // namespace features
 
 struct CustomPatternWithAlias {
@@ -114,6 +117,11 @@ class RedactionTool {
   std::string RedactCreditCardNumbers(
       const std::string& input,
       std::map<PIIType, std::set<std::string>>* detected);
+  // Redacts IBANs from |input| and returns the redacted string. Adds the
+  // redacted IBANs to |detected| under the |PIIType::kIBAN| if |detected| is
+  // not a nullptr.
+  std::string RedactIbans(const std::string& input,
+                          std::map<PIIType, std::set<std::string>>* detected);
 
   // Redacts PII sensitive data that matches |pattern| from |input| and returns
   // the redacted string. Keeps the PII data that belongs to PII type in
@@ -148,14 +156,14 @@ class RedactionTool {
 
   // Map of MAC addresses discovered in redacted strings to redacted
   // representations. 11:22:33:44:55:66 gets redacted to
-  // [MAC OUI=11:22:33 IFACE=1], where the first three bytes (OUI) represent the
+  // (MAC OUI=11:22:33 IFACE=1), where the first three bytes (OUI) represent the
   // manufacturer. The IFACE value is incremented for each newly discovered MAC
   // address.
   std::map<std::string, std::string> mac_addresses_;
 
   // Map of hashes discovered in redacted strings to redacted representations.
   // Hexadecimal strings of length 32, 40 and 64 are considered to be hashes.
-  // 11223344556677889900aabbccddeeff gets redacted to <HASH:1122 1> where the
+  // 11223344556677889900aabbccddeeff gets redacted to (HASH:1122 1) where the
   // first 2 bytes of the hash are retained as-is and the value after that is
   // incremented for each newly discovered hash.
   std::map<std::string, std::string> hashes_;
@@ -163,6 +171,10 @@ class RedactionTool {
   // Map of number only representation of a (probably) valid credit card to
   // the redacted representation.
   std::map<std::string, std::string> credit_cards_;
+
+  // Map of IBANs discovered in strings to their redacted representations. The
+  // key is stored without any separators.
+  std::map<std::string, std::string> ibans_;
 
   // Like MAC addresses, identifiers in custom patterns are redacted.
   // custom_patterns_with_context_["alias"] contains a map of original
