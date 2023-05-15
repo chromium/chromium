@@ -49,7 +49,7 @@ namespace {
 constexpr SkYUVColorSpace kJpegYUVColorSpace =
     SkYUVColorSpace::kJPEG_SkYUVColorSpace;
 
-void MarkTextureAsReleased(SkImage::ReleaseContext context) {
+void MarkTextureAsReleased(SkImages::ReleaseContext context) {
   auto* released = static_cast<bool*>(context);
   DCHECK(!*released);
   *released = true;

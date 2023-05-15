@@ -36,7 +36,7 @@ struct Context {
   const std::vector<sk_sp<SkImage>> sk_planes_;
 };
 
-void ReleaseContext(SkImage::ReleaseContext context) {
+void ReleaseContext(SkImages::ReleaseContext context) {
   auto* texture_context = static_cast<Context*>(context);
   delete texture_context;
 }

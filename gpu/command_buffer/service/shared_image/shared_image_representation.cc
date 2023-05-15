@@ -365,8 +365,8 @@ SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::
 sk_sp<SkImage>
 SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::CreateSkImage(
     SharedContextState* context_state,
-    SkImage::TextureReleaseProc texture_release_proc,
-    SkImage::ReleaseContext release_context) {
+    SkImages::TextureReleaseProc texture_release_proc,
+    SkImages::ReleaseContext release_context) {
   auto format = representation()->format();
   auto surface_origin = representation()->surface_origin();
   auto sk_color_space =
@@ -591,8 +591,8 @@ SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::
 sk_sp<SkImage>
 SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::CreateSkImage(
     SharedContextState* context_state,
-    SkImage::TextureReleaseProc texture_release_proc,
-    SkImage::ReleaseContext release_context) {
+    SkImages::TextureReleaseProc texture_release_proc,
+    SkImages::ReleaseContext release_context) {
   auto format = representation()->format();
   auto sk_color_space =
       representation()->color_space().GetAsFullRangeRGB().ToSkColorSpace();

@@ -321,7 +321,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedBitmap::Bitmap() {
   AddRef();
   sk_sp<SkImage> sk_image = SkImages::RasterFromPixmap(
       pixmap,
-      [](const void*, SkImage::ReleaseContext resource_to_unref) {
+      [](const void*, SkImages::ReleaseContext resource_to_unref) {
         static_cast<CanvasResourceSharedBitmap*>(resource_to_unref)->Release();
       },
       this);
