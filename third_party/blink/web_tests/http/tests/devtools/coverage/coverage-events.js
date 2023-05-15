@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {CoverageTestRunner} from 'coverage_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests the if events are getting emitted when coverage changes.\n`);
-  await TestRunner.loadLegacyModule('panels/coverage'); await TestRunner.loadTestModule('coverage_test_runner');
+  await TestRunner.loadLegacyModule('panels/coverage');
 
 
   TestRunner.addResult('Should have coverage information even when not covered yet');
