@@ -310,6 +310,15 @@
       <message desc="Label for expert mode option: Multi-stream video recording." name="IDS_EXPERT_MULTISTREAM_RECORDING">
         Multistream video recording
       </message>
+      <message desc="Label for multi-stream recording option: Scale frames by Chrome." name="IDS_EXPERT_MULTISTREAM_RECORDING_CHROME">
+        Scale frames by Chrome
+      </message>
+      <message desc="Label for multi-stream recording option: Disabled." name="IDS_EXPERT_MULTISTREAM_RECORDING_DISABLED">
+        Disabled
+      </message>
+      <message desc="Label for multi-stream recording option: Scale frames by Camera HAL." name="IDS_EXPERT_MULTISTREAM_RECORDING_HAL">
+        Scale frames by Camera HAL
+      </message>
       <message desc="Label for expert mode option: enable video FPS picker for builtin camera." name="IDS_EXPERT_ENABLE_FPS_PICKER_FOR_BUILTIN">
         Enable video FPS picker
       </message>

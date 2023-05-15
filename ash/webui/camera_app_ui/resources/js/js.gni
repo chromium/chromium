@@ -26,6 +26,7 @@ compile_js_files = [
   "device/preview.ts",
   "device/stream_constraints.ts",
   "device/stream_manager.ts",
+  "device/stream_manager_chrome.ts",
   "device/type.ts",
   "dom.ts",
   "error.ts",

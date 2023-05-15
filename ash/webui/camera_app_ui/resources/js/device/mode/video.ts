@@ -45,6 +45,7 @@ import {getFpsRangeFromConstraints} from '../../util.js';
 import {WaitableEvent} from '../../waitable_event.js';
 import {StreamConstraints} from '../stream_constraints.js';
 import {StreamManager} from '../stream_manager.js';
+import {StreamManagerChrome} from '../stream_manager_chrome.js';
 
 import {ModeBase, ModeFactory} from './mode_base.js';
 import {PhotoResult} from './photo.js';
@@ -302,7 +303,13 @@ export class Video extends ModeBase {
   override async clear(): Promise<void> {
     await this.stopCapture();
     if (this.captureStream !== null) {
-      await StreamManager.getInstance().closeCaptureStream(this.captureStream);
+      if (expert.isEnabled(expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING)) {
+        await StreamManager.getInstance().closeCaptureStream(
+            this.captureStream);
+      } else if (expert.isEnabled(
+                     expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING_CHROME)) {
+        StreamManagerChrome.getInstance().stopCaptureStream();
+      }
       this.captureStream = null;
     }
   }
@@ -573,9 +580,16 @@ export class Video extends ModeBase {
       throw new CanceledError('Recording sound is canceled');
     }
 
-    if (this.captureConstraints !== null && this.captureStream === null) {
-      this.captureStream = await StreamManager.getInstance().openCaptureStream(
-          this.captureConstraints);
+    if (this.captureStream === null) {
+      if (expert.isEnabled(
+              expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING_CHROME)) {
+        this.captureStream =
+            StreamManagerChrome.getInstance().getCaptureStream();
+      } else if (this.captureConstraints !== null) {
+        this.captureStream =
+            await StreamManager.getInstance().openCaptureStream(
+                this.captureConstraints);
+      }
     }
     if (this.recordingImageCapture === null) {
       this.recordingImageCapture = new CrosImageCapture(this.getVideoTrack());

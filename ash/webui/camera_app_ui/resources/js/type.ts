@@ -476,6 +476,7 @@ export enum LocalStorageKey {
   ENABLE_FPS_PICKER = 'enableFPSPicker',
   ENABLE_FULL_SIZED_VIDEO_SNAPSHOT = 'enableFullSizedVideoSnapshot',
   ENABLE_MULTISTREAM_RECORDING = 'enableMultistreamRecording',
+  ENABLE_MULTISTREAM_RECORDING_CHROME = 'enableMultistreamRecordingChrome',
   ENABLE_PTZ_FOR_BUILTIN = 'enablePTZForBuiltin',
   EXPERT_MODE = 'expert',
   GA_USER_ID = 'google-analytics.analytics.user-id',

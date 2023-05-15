@@ -52,6 +52,10 @@ export enum I18nString {
   EXPERT_ENABLE_PTZ_FOR_BUILTIN = 'expert_enable_ptz_for_builtin',
   EXPERT_MODE_BUTTON = 'expert_mode_button',
   EXPERT_MULTISTREAM_RECORDING = 'expert_multistream_recording',
+  EXPERT_MULTISTREAM_RECORDING_CHROME = 'expert_multistream_recording_chrome',
+  EXPERT_MULTISTREAM_RECORDING_DISABLED =
+      'expert_multistream_recording_disabled',
+  EXPERT_MULTISTREAM_RECORDING_HAL = 'expert_multistream_recording_hal',
   EXPERT_PREVIEW_METADATA = 'expert_preview_metadata',
   EXPERT_PRINT_PERFORMANCE_LOGS = 'expert_print_performance_logs',
   EXPERT_SAVE_METADATA = 'expert_save_metadata',

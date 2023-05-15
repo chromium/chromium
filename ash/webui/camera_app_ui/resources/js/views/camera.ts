@@ -321,6 +321,9 @@ export class Camera extends View implements CameraViewUI {
         expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING,
         () => this.cameraManager.reconfigure());
     expert.addObserver(
+        expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING_CHROME,
+        () => this.cameraManager.reconfigure());
+    expert.addObserver(
         expert.ExpertOption.ENABLE_PTZ_FOR_BUILTIN,
         () => this.cameraManager.reconfigure());
 

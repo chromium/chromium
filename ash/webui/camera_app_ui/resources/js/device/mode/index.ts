@@ -17,6 +17,7 @@ import {
 } from '../../type.js';
 import {getFpsRangeFromConstraints} from '../../util.js';
 import {StreamConstraints} from '../stream_constraints.js';
+import {StreamManagerChrome} from '../stream_manager_chrome.js';
 
 import {
   ModeBase,
@@ -164,6 +165,19 @@ export class Modes {
               expert.isEnabled(
                   expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING),
           );
+          if (expert.isEnabled(
+                  expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING_CHROME)) {
+            const captureResolution =
+                assertExists(this.getCaptureParams().captureResolution);
+            await StreamManagerChrome.getInstance().prepare({
+              ...constraints,
+              video: {
+                ...constraints.video,
+                width: captureResolution.width,
+                height: captureResolution.height,
+              },
+            });
+          }
 
           if (await deviceOperator.isBlobVideoSnapshotEnabled(deviceId)) {
             await deviceOperator.setStillCaptureResolution(

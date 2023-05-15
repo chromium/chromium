@@ -427,13 +427,29 @@
                  data-key="customVideoParameters">
           <span i18n-text="expert_custom_video_parameters"></span>
         </label>
-        <label class="menu-item inkdrop require-chromeos-vcd">
-          <input class="icon" id="expert-enable-multistream-recording"
-                 type="checkbox" tabindex="0"
-                 data-state="enable-multistream-recording"
-                 data-key="enableMultistreamRecording">
-          <span i18n-text="expert_multistream_recording"></span>
-        </label>
+        <div id="multistream-group" role="radiogroup">
+          <label class="menu-item inkdrop require-chromeos-vcd"
+                 i18n-text="expert_multistream_recording"></label>
+          <label class="menu-item inkdrop require-chromeos-vcd">
+            <input class="icon" type="radio" tabindex="0" name="multistream"
+                   checked>
+            <span i18n-text="expert_multistream_recording_disabled"></span>
+          </label>
+          <label class="menu-item inkdrop require-chromeos-vcd">
+            <input class="icon" id="expert-enable-multistream-recording"
+                   type="radio" tabindex="0" name="multistream"
+                   data-state="enable-multistream-recording"
+                   data-key="enableMultistreamRecording">
+            <span i18n-text="expert_multistream_recording_hal"></span>
+          </label>
+          <label class="menu-item inkdrop require-chromeos-vcd">
+            <input class="icon" id="expert-enable-multistream-recording-chrome"
+                   type="radio" tabindex="0" name="multistream"
+                   data-state="enable-multistream-recording-chrome"
+                   data-key="enableMultistreamRecordingChrome">
+            <span i18n-text="expert_multistream_recording_chrome"></span>
+          </label>
+        </div>
         <label class="menu-item inkdrop">
           <input id="expert-enable-full-sized-video-snapshot" class="icon"
                  type="checkbox" tabindex="0"

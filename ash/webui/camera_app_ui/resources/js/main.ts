@@ -147,14 +147,17 @@ export class App {
           element.click();
         }
       });
-      const localStorageKey = element.dataset['key'] === undefined ?
-          null :
-          util.assertEnumVariant(LocalStorageKey, element.dataset['key']);
+      function getKey(element: HTMLInputElement) {
+        return element.dataset['key'] === undefined ?
+            null :
+            util.assertEnumVariant(LocalStorageKey, element.dataset['key']);
+      }
       const stateKey = element.dataset['state'] === undefined ?
           null :
           state.assertState(element.dataset['state']);
 
       function save(element: HTMLInputElement) {
+        const localStorageKey = getKey(element);
         if (localStorageKey !== null) {
           localStorage.set(localStorageKey, element.checked);
         }
@@ -185,6 +188,7 @@ export class App {
           }
         });
       }
+      const localStorageKey = getKey(element);
       if (localStorageKey !== null) {
         const value = localStorage.getBool(localStorageKey, element.checked);
         util.toggleChecked(element, value);
