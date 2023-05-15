@@ -56,8 +56,6 @@ class AutofillWebDataServiceWaiter : public WebDataServiceConsumer {
   AutofillWebDataServiceWaiter& operator=(const AutofillWebDataServiceWaiter&) =
       delete;
 
-  ~AutofillWebDataServiceWaiter() {}
-
   WebDataServiceBase::Handle WaitForHandle() {
     run_loop_.Run();
     return handle_;
