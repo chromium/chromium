@@ -58,9 +58,6 @@ Vector<Interface> IsolatedCopy(const Vector<Interface>& src) {
   return result;
 }
 
-static const char kCacheControlHeader[] = "cache-control";
-static const char kPragmaHeader[] = "pragma";
-
 }  // namespace
 
 ResourceResponse::ResourceResponse()
@@ -210,22 +207,18 @@ const AtomicString& ResourceResponse::HttpHeaderField(
 }
 
 void ResourceResponse::UpdateHeaderParsedState(const AtomicString& name) {
-  static const char kAgeHeader[] = "age";
-  static const char kDateHeader[] = "date";
-  static const char kExpiresHeader[] = "expires";
-  static const char kLastModifiedHeader[] = "last-modified";
-
-  if (EqualIgnoringASCIICase(name, kAgeHeader))
+  if (EqualIgnoringASCIICase(name, http_names::kLowerAge)) {
     have_parsed_age_header_ = false;
-  else if (EqualIgnoringASCIICase(name, kCacheControlHeader) ||
-           EqualIgnoringASCIICase(name, kPragmaHeader))
+  } else if (EqualIgnoringASCIICase(name, http_names::kLowerCacheControl) ||
+             EqualIgnoringASCIICase(name, http_names::kLowerPragma)) {
     cache_control_header_ = CacheControlHeader();
-  else if (EqualIgnoringASCIICase(name, kDateHeader))
+  } else if (EqualIgnoringASCIICase(name, http_names::kLowerDate)) {
     have_parsed_date_header_ = false;
-  else if (EqualIgnoringASCIICase(name, kExpiresHeader))
+  } else if (EqualIgnoringASCIICase(name, http_names::kLowerExpires)) {
     have_parsed_expires_header_ = false;
-  else if (EqualIgnoringASCIICase(name, kLastModifiedHeader))
+  } else if (EqualIgnoringASCIICase(name, http_names::kLowerLastModified)) {
     have_parsed_last_modified_header_ = false;
+  }
 }
 
 void ResourceResponse::SetSSLInfo(const net::SSLInfo& ssl_info) {
@@ -289,8 +282,8 @@ const HTTPHeaderMap& ResourceResponse::HttpHeaderFields() const {
 bool ResourceResponse::CacheControlContainsNoCache() const {
   if (!cache_control_header_.parsed) {
     cache_control_header_ = ParseCacheControlDirectives(
-        http_header_fields_.Get(kCacheControlHeader),
-        http_header_fields_.Get(kPragmaHeader));
+        http_header_fields_.Get(http_names::kLowerCacheControl),
+        http_header_fields_.Get(http_names::kLowerPragma));
   }
   return cache_control_header_.contains_no_cache;
 }
@@ -298,8 +291,8 @@ bool ResourceResponse::CacheControlContainsNoCache() const {
 bool ResourceResponse::CacheControlContainsNoStore() const {
   if (!cache_control_header_.parsed) {
     cache_control_header_ = ParseCacheControlDirectives(
-        http_header_fields_.Get(kCacheControlHeader),
-        http_header_fields_.Get(kPragmaHeader));
+        http_header_fields_.Get(http_names::kLowerCacheControl),
+        http_header_fields_.Get(http_names::kLowerPragma));
   }
   return cache_control_header_.contains_no_store;
 }
@@ -307,24 +300,22 @@ bool ResourceResponse::CacheControlContainsNoStore() const {
 bool ResourceResponse::CacheControlContainsMustRevalidate() const {
   if (!cache_control_header_.parsed) {
     cache_control_header_ = ParseCacheControlDirectives(
-        http_header_fields_.Get(kCacheControlHeader),
-        http_header_fields_.Get(kPragmaHeader));
+        http_header_fields_.Get(http_names::kLowerCacheControl),
+        http_header_fields_.Get(http_names::kLowerPragma));
   }
   return cache_control_header_.contains_must_revalidate;
 }
 
 bool ResourceResponse::HasCacheValidatorFields() const {
-  static const char kLastModifiedHeader[] = "last-modified";
-  static const char kETagHeader[] = "etag";
-  return !http_header_fields_.Get(kLastModifiedHeader).empty() ||
-         !http_header_fields_.Get(kETagHeader).empty();
+  return !http_header_fields_.Get(http_names::kLowerLastModified).empty() ||
+         !http_header_fields_.Get(http_names::kLowerETag).empty();
 }
 
 absl::optional<base::TimeDelta> ResourceResponse::CacheControlMaxAge() const {
   if (!cache_control_header_.parsed) {
     cache_control_header_ = ParseCacheControlDirectives(
-        http_header_fields_.Get(kCacheControlHeader),
-        http_header_fields_.Get(kPragmaHeader));
+        http_header_fields_.Get(http_names::kLowerCacheControl),
+        http_header_fields_.Get(http_names::kLowerPragma));
   }
   return cache_control_header_.max_age;
 }
@@ -332,8 +323,8 @@ absl::optional<base::TimeDelta> ResourceResponse::CacheControlMaxAge() const {
 base::TimeDelta ResourceResponse::CacheControlStaleWhileRevalidate() const {
   if (!cache_control_header_.parsed) {
     cache_control_header_ = ParseCacheControlDirectives(
-        http_header_fields_.Get(kCacheControlHeader),
-        http_header_fields_.Get(kPragmaHeader));
+        http_header_fields_.Get(http_names::kLowerCacheControl),
+        http_header_fields_.Get(http_names::kLowerPragma));
   }
   if (!cache_control_header_.stale_while_revalidate ||
       cache_control_header_.stale_while_revalidate.value() <
@@ -361,8 +352,7 @@ static absl::optional<base::Time> ParseDateValueInHeader(
 
 absl::optional<base::Time> ResourceResponse::Date() const {
   if (!have_parsed_date_header_) {
-    static const char kHeaderName[] = "date";
-    date_ = ParseDateValueInHeader(http_header_fields_, kHeaderName);
+    date_ = ParseDateValueInHeader(http_header_fields_, http_names::kLowerDate);
     have_parsed_date_header_ = true;
   }
   return date_;
@@ -370,8 +360,8 @@ absl::optional<base::Time> ResourceResponse::Date() const {
 
 absl::optional<base::TimeDelta> ResourceResponse::Age() const {
   if (!have_parsed_age_header_) {
-    static const char kHeaderName[] = "age";
-    const AtomicString& header_value = http_header_fields_.Get(kHeaderName);
+    const AtomicString& header_value =
+        http_header_fields_.Get(http_names::kLowerAge);
     bool ok;
     double seconds = header_value.ToDouble(&ok);
     if (!ok) {
@@ -386,8 +376,8 @@ absl::optional<base::TimeDelta> ResourceResponse::Age() const {
 
 absl::optional<base::Time> ResourceResponse::Expires() const {
   if (!have_parsed_expires_header_) {
-    static const char kHeaderName[] = "expires";
-    expires_ = ParseDateValueInHeader(http_header_fields_, kHeaderName);
+    expires_ =
+        ParseDateValueInHeader(http_header_fields_, http_names::kLowerExpires);
     have_parsed_expires_header_ = true;
   }
   return expires_;
@@ -395,8 +385,8 @@ absl::optional<base::Time> ResourceResponse::Expires() const {
 
 absl::optional<base::Time> ResourceResponse::LastModified() const {
   if (!have_parsed_last_modified_header_) {
-    static const char kHeaderName[] = "last-modified";
-    last_modified_ = ParseDateValueInHeader(http_header_fields_, kHeaderName);
+    last_modified_ = ParseDateValueInHeader(http_header_fields_,
+                                            http_names::kLowerLastModified);
     have_parsed_last_modified_header_ = true;
   }
   return last_modified_;
@@ -483,8 +473,8 @@ void ResourceResponse::SetDecodedBodyLength(int64_t value) {
 
 network::mojom::CrossOriginEmbedderPolicyValue
 ResourceResponse::GetCrossOriginEmbedderPolicy() const {
-  static constexpr char kHeaderName[] = "cross-origin-embedder-policy";
-  const std::string value = HttpHeaderField(kHeaderName).Utf8();
+  const std::string value =
+      HttpHeaderField(http_names::kLowerCrossOriginEmbedderPolicy).Utf8();
   using Item = net::structured_headers::Item;
   const auto item = net::structured_headers::ParseItem(value);
   if (!item || item->item.Type() != Item::kTokenType) {

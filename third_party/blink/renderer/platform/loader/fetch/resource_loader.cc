@@ -830,7 +830,7 @@ bool ResourceLoader::WillFollowRedirect(
       passed_redirect_response.PrivateNetworkAccessPreflightResult());
 
   if (resource_->GetResourceRequest().HttpHeaderFields().Contains(
-          net::HttpRequestHeaders::kAuthorization) &&
+          http_names::kAuthorization) &&
       !SecurityOrigin::AreSameOrigin(resource_->LastResourceRequest().Url(),
                                      new_url)) {
     fetcher_->GetUseCounter().CountUse(
@@ -1153,8 +1153,7 @@ void ResourceLoader::DidReceiveResponseInternal(
   // Range header: https://fetch.spec.whatwg.org/#main-fetch
   if (response.GetType() == network::mojom::FetchResponseType::kOpaque &&
       response.HttpStatusCode() == 206 && response.HasRangeRequested() &&
-      !initial_request.HttpHeaderFields().Contains(
-          net::HttpRequestHeaders::kRange)) {
+      !initial_request.HttpHeaderFields().Contains(http_names::kRange)) {
     HandleError(ResourceError::CancelledDueToAccessCheckError(
         response.CurrentRequestUrl(), ResourceRequestBlockedReason::kOther));
     return;

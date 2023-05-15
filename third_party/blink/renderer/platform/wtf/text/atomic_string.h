@@ -40,6 +40,13 @@
 #include "base/apple/bridging.h"
 #endif
 
+// TODO(crbug.com/1444094): AtomicString constructors should be explicit.
+#if BLINK_PLATFORM_IMPLEMENTATION
+#define MAYBE_EXPLICIT explicit
+#else
+#define MAYBE_EXPLICIT
+#endif
+
 namespace WTF {
 
 // An AtomicString instance represents a string, and multiple AtomicString
@@ -54,7 +61,7 @@ class WTF_EXPORT AtomicString {
   static void Init();
 
   AtomicString() = default;
-  AtomicString(const LChar* chars)
+  MAYBE_EXPLICIT AtomicString(const LChar* chars)
       : AtomicString(chars,
                      chars ? strlen(reinterpret_cast<const char*>(chars)) : 0) {
   }
@@ -65,14 +72,15 @@ class WTF_EXPORT AtomicString {
   AtomicString(const LChar* chars, size_t length);
 #endif  // defined(ARCH_CPU_64_BITS)
 
-  AtomicString(const char* chars)
+  MAYBE_EXPLICIT AtomicString(const char* chars)
       : AtomicString(reinterpret_cast<const LChar*>(chars)) {}
   AtomicString(const LChar* chars, unsigned length);
   AtomicString(
       const UChar* chars,
       unsigned length,
       AtomicStringUCharEncoding encoding = AtomicStringUCharEncoding::kUnknown);
-  AtomicString(const UChar* chars);
+  MAYBE_EXPLICIT AtomicString(const UChar* chars);
+#undef MAYBE_EXPLICIT
 
   // Constructing an AtomicString from a String / StringImpl can be expensive if
   // the StringImpl is not already atomic.

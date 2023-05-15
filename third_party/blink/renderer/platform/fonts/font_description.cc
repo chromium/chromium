@@ -289,7 +289,7 @@ FontCacheKey FontDescription::CacheKey(
 #if BUILDFLAG(IS_ANDROID)
   if (const LayoutLocale* locale = Locale()) {
     if (FontCache::GetLocaleSpecificFamilyName(creation_params.Family()))
-      cache_key.SetLocale(locale->LocaleForSkFontMgr());
+      cache_key.SetLocale(AtomicString(locale->LocaleForSkFontMgr()));
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   return cache_key;

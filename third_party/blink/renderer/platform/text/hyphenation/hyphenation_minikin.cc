@@ -274,8 +274,8 @@ AtomicString HyphenationMinikin::MapLocale(const AtomicString& locale) {
     const auto& it = locale_fallback.find(mapped_locale);
     if (it != locale_fallback.end()) {
       if (it->value->locale_for_exact_match && locale == mapped_locale)
-        return it->value->locale_for_exact_match;
-      return it->value->locale;
+        return AtomicString(it->value->locale_for_exact_match);
+      return AtomicString(it->value->locale);
     }
     const wtf_size_t last_hyphen = mapped_locale.ReverseFind('-');
     if (last_hyphen == kNotFound || !last_hyphen)

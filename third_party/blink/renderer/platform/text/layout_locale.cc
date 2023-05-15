@@ -225,7 +225,7 @@ const LayoutLocale& LayoutLocale::GetDefault() {
   if (UNLIKELY(!data.default_locale)) {
     AtomicString language = DefaultLanguage();
     data.default_locale =
-        LayoutLocale::Get(!language.empty() ? language : "en");
+        LayoutLocale::Get(!language.empty() ? language : AtomicString("en"));
   }
   return *data.default_locale;
 }

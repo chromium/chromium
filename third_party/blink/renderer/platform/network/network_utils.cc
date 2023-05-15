@@ -76,7 +76,7 @@ std::tuple<int, ResourceResponse, scoped_refptr<SharedBuffer>> ParseDataURL(
   auto buffer = SharedBuffer::Create(data_string.data(), data_string.size());
   ResourceResponse response;
   response.SetHttpStatusCode(200);
-  response.SetHttpStatusText("OK");
+  response.SetHttpStatusText(AtomicString("OK"));
   response.SetCurrentRequestUrl(url);
   response.SetMimeType(WebString::FromUTF8(utf8_mime_type));
   response.SetExpectedContentLength(buffer->size());

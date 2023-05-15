@@ -95,7 +95,7 @@ const LayoutLocale* FallbackLocaleForCharacter(
     const FontFallbackPriority& fallback_priority,
     const UChar32 codepoint) {
   if (fallback_priority == FontFallbackPriority::kEmojiEmoji)
-    return LayoutLocale::Get(kColorEmojiLocale);
+    return LayoutLocale::Get(AtomicString(kColorEmojiLocale));
 
   UErrorCode error_code = U_ZERO_ERROR;
   const UScriptCode char_script = uscript_getScript(codepoint, &error_code);
@@ -107,7 +107,8 @@ const LayoutLocale* FallbackLocaleForCharacter(
     // ambiguous locale for Han fallback requests.
     const LayoutLocale* han_locale =
         LayoutLocale::LocaleForHan(font_description.Locale());
-    return han_locale ? han_locale : LayoutLocale::Get(kChineseSimplified);
+    return han_locale ? han_locale
+                      : LayoutLocale::Get(AtomicString(kChineseSimplified));
   }
 
   return font_description.Locale() ? font_description.Locale()
@@ -186,7 +187,8 @@ FontCache::GetFallbackFamilyNameFromHardcodedChoices(
       &script, fallback_priority, font_manager_.get());
 
   if (legacy_fallback_family) {
-    FontFaceCreationParams create_by_family(legacy_fallback_family);
+    FontFaceCreationParams create_by_family =
+        FontFaceCreationParams(AtomicString(legacy_fallback_family));
     FontPlatformData* data =
         GetFontPlatformData(font_description, create_by_family);
     if (data && data->FontContainsCharacter(codepoint)) {
@@ -236,8 +238,8 @@ FontCache::GetFallbackFamilyNameFromHardcodedChoices(
   // critical enough for non-Latin scripts (especially Han) to
   // warrant an additional (real coverage) check with fontCotainsCharacter.
   for (int i = 0; i < num_fonts; ++i) {
-    legacy_fallback_family = pan_uni_fonts[i];
-    FontFaceCreationParams create_by_family(legacy_fallback_family);
+    FontFaceCreationParams create_by_family =
+        FontFaceCreationParams(AtomicString(pan_uni_fonts[i]));
     FontPlatformData* data =
         GetFontPlatformData(font_description, create_by_family);
     if (data && data->FontContainsCharacter(codepoint))

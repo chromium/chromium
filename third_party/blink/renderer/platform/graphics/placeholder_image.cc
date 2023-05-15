@@ -86,14 +86,17 @@ void DrawCenteredIcon(cc::PaintCanvas* canvas,
 
 FontDescription CreatePlaceholderFontDescription(float scale_factor) {
   FontDescription description;
-  description.FirstFamily().SetFamily("Roboto", FontFamily::Type::kFamilyName);
+  description.FirstFamily().SetFamily(font_family_names::kRoboto,
+                                      FontFamily::Type::kFamilyName);
 
   scoped_refptr<SharedFontFamily> helvetica_neue = SharedFontFamily::Create();
-  helvetica_neue->SetFamily("Helvetica Neue", FontFamily::Type::kFamilyName);
+  helvetica_neue->SetFamily(font_family_names::kHelveticaNeue,
+                            FontFamily::Type::kFamilyName);
   scoped_refptr<SharedFontFamily> helvetica = SharedFontFamily::Create();
-  helvetica->SetFamily("Helvetica", FontFamily::Type::kFamilyName);
+  helvetica->SetFamily(font_family_names::kHelvetica,
+                       FontFamily::Type::kFamilyName);
   scoped_refptr<SharedFontFamily> arial = SharedFontFamily::Create();
-  arial->SetFamily("Arial", FontFamily::Type::kFamilyName);
+  arial->SetFamily(font_family_names::kArial, FontFamily::Type::kFamilyName);
 
   helvetica->AppendFamily(std::move(arial));
   helvetica_neue->AppendFamily(std::move(helvetica));
