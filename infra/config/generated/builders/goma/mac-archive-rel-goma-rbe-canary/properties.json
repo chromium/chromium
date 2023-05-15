@@ -17,7 +17,6 @@
                 "apply_configs": [
                   "clobber",
                   "mb",
-                  "goma_use_local",
                   "goma_canary"
                 ],
                 "build_config": "Release",

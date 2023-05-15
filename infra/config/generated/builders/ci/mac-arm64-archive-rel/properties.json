@@ -23,8 +23,7 @@
               "legacy_chromium_config": {
                 "apply_configs": [
                   "clobber",
-                  "mb",
-                  "goma_use_local"
+                  "mb"
                 ],
                 "build_config": "Release",
                 "config": "chromium",
