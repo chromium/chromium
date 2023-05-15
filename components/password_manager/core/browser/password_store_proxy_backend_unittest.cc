@@ -363,6 +363,26 @@ TEST_F(PasswordStoreProxyBackendTest, UseMainBackendToRemoveLoginAsync) {
 }
 
 TEST_F(PasswordStoreProxyBackendTest,
+       UseBuiltInBackendWhenUnenrolledRemoveLoginAsync) {
+  prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+                      true);
+  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
+  PasswordForm form = CreateTestForm();
+  PasswordStoreChangeList change_list;
+  change_list.push_back(PasswordStoreChange(Type::REMOVE, form));
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordChanges>(Optional(change_list))));
+  // Removals are not mirrored on the android backend.
+  EXPECT_CALL(built_in_backend(), RemoveLoginAsync(Eq(form), _))
+      .WillOnce(WithArg<1>(
+          Invoke([&change_list](PasswordChangesOrErrorReply reply) -> void {
+            std::move(reply).Run(change_list);
+          })));
+  EXPECT_CALL(android_backend(), RemoveLoginAsync(Eq(form), _)).Times(0);
+  proxy_backend().RemoveLoginAsync(form, mock_reply.Get());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
        UseMainBackendToRemoveLoginsByURLAndTimeAsync) {
   base::Time kStart = base::Time::FromTimeT(111111);
   base::Time kEnd = base::Time::FromTimeT(22222222);
@@ -386,6 +406,32 @@ TEST_F(PasswordStoreProxyBackendTest,
 }
 
 TEST_F(PasswordStoreProxyBackendTest,
+       UseBuiltInBackendToRemoveLoginsByURLAndTimeAsyncWhenUnenrolled) {
+  prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+                      true);
+  base::Time kStart = base::Time::FromTimeT(111111);
+  base::Time kEnd = base::Time::FromTimeT(22222222);
+  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
+  PasswordStoreChangeList change_list;
+  change_list.push_back(PasswordStoreChange(Type::REMOVE, CreateTestForm()));
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordChanges>(Optional(change_list))));
+  // Removals are not mirrored on the android backend.
+  EXPECT_CALL(built_in_backend(),
+              RemoveLoginsByURLAndTimeAsync(_, Eq(kStart), Eq(kEnd), _, _))
+      .WillOnce(WithArg<4>(
+          Invoke([&change_list](PasswordChangesOrErrorReply reply) -> void {
+            std::move(reply).Run(change_list);
+          })));
+  EXPECT_CALL(android_backend(),
+              RemoveLoginsByURLAndTimeAsync(_, Eq(kStart), Eq(kEnd), _, _))
+      .Times(0);
+  proxy_backend().RemoveLoginsByURLAndTimeAsync(
+      base::BindRepeating(&FilterNoUrl), kStart, kEnd, base::NullCallback(),
+      mock_reply.Get());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
        UseMainBackendToRemoveLoginsCreatedBetweenAsync) {
   base::Time kStart = base::Time::FromTimeT(111111);
   base::Time kEnd = base::Time::FromTimeT(22222222);
@@ -403,6 +449,31 @@ TEST_F(PasswordStoreProxyBackendTest,
           Invoke([&change_list](PasswordChangesOrErrorReply reply) -> void {
             std::move(reply).Run(change_list);
           })));
+  proxy_backend().RemoveLoginsCreatedBetweenAsync(kStart, kEnd,
+                                                  mock_reply.Get());
+}
+
+TEST_F(PasswordStoreProxyBackendTest,
+       UseBuiltInBackendToRemoveLoginsCreatedBetweenAsyncWhenUnenrolled) {
+  prefs()->SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+                      true);
+  base::Time kStart = base::Time::FromTimeT(111111);
+  base::Time kEnd = base::Time::FromTimeT(22222222);
+  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
+  PasswordStoreChangeList change_list;
+  change_list.push_back(PasswordStoreChange(Type::REMOVE, CreateTestForm()));
+  EXPECT_CALL(mock_reply,
+              Run(VariantWith<PasswordChanges>(Optional(change_list))));
+  // Removals are not mirrored on the android backend.
+  EXPECT_CALL(built_in_backend(),
+              RemoveLoginsCreatedBetweenAsync(Eq(kStart), Eq(kEnd), _))
+      .WillOnce(WithArg<2>(
+          Invoke([&change_list](PasswordChangesOrErrorReply reply) -> void {
+            std::move(reply).Run(change_list);
+          })));
+  EXPECT_CALL(android_backend(),
+              RemoveLoginsCreatedBetweenAsync(Eq(kStart), Eq(kEnd), _))
+      .Times(0);
   proxy_backend().RemoveLoginsCreatedBetweenAsync(kStart, kEnd,
                                                   mock_reply.Get());
 }

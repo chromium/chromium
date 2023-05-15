@@ -35,11 +35,6 @@ namespace {
 
 using sync_util::IsPasswordSyncEnabled;
 
-bool ShouldExecuteDeletionsOnShadowBackend(PrefService* prefs,
-                                           bool is_syncing) {
-  return is_syncing;
-}
-
 bool ShouldErrorResultInFallback(PasswordStoreBackendError error) {
   switch (error.recovery_type) {
     case PasswordStoreBackendErrorRecoveryType::kUnrecoverable:
@@ -223,8 +218,7 @@ void PasswordStoreProxyBackend::RemoveLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
   main_backend()->RemoveLoginAsync(form, std::move(callback));
-  if (ShouldExecuteDeletionsOnShadowBackend(
-          prefs_, IsPasswordSyncEnabled(sync_service_))) {
+  if (UsesAndroidBackendAsMainBackend()) {
     shadow_backend()->RemoveLoginAsync(form, base::DoNothing());
   }
 }
@@ -242,8 +236,7 @@ void PasswordStoreProxyBackend::RemoveLoginsByURLAndTimeAsync(
   main_backend()->RemoveLoginsByURLAndTimeAsync(
       url_filter, delete_begin, delete_end, base::NullCallback(),
       std::move(callback));
-  if (ShouldExecuteDeletionsOnShadowBackend(
-          prefs_, IsPasswordSyncEnabled(sync_service_))) {
+  if (UsesAndroidBackendAsMainBackend()) {
     shadow_backend()->RemoveLoginsByURLAndTimeAsync(
         url_filter, std::move(delete_begin), std::move(delete_end),
         base::NullCallback(), base::DoNothing());
@@ -256,8 +249,7 @@ void PasswordStoreProxyBackend::RemoveLoginsCreatedBetweenAsync(
     PasswordChangesOrErrorReply callback) {
   main_backend()->RemoveLoginsCreatedBetweenAsync(delete_begin, delete_end,
                                                   std::move(callback));
-  if (ShouldExecuteDeletionsOnShadowBackend(
-          prefs_, IsPasswordSyncEnabled(sync_service_))) {
+  if (UsesAndroidBackendAsMainBackend()) {
     shadow_backend()->RemoveLoginsCreatedBetweenAsync(
         std::move(delete_begin), std::move(delete_end), base::DoNothing());
   }
