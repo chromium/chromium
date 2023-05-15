@@ -113,6 +113,7 @@ export class EmojiPicker extends PolymerElement {
   private nextGifPos: {[key: string]: string};
   private status: Status|null;
   private previousGifValidation: Date;
+  private fetchAndProcessDataPromise: Promise<void>|null;
 
   constructor() {
     super();
@@ -194,7 +195,7 @@ export class EmojiPicker extends PolymerElement {
                 item => ({'category': item.name, 'urls': dataUrls[item.name]}));
 
     // Fetch and process all the data.
-    this.fetchAndProcessData(categoryDataUrls);
+    this.fetchAndProcessDataPromise = this.fetchAndProcessData(categoryDataUrls);
 
     this.updateStyles({
       '--emoji-group-button-size': constants.EMOJI_GROUP_SIZE_PX,
@@ -213,6 +214,12 @@ export class EmojiPicker extends PolymerElement {
       '--tab-button-margin': constants.TAB_BUTTON_MARGIN_PX,
       '--text-group-button-padding': constants.TEXT_GROUP_BUTTON_PADDING_PX,
     });
+  }
+
+  private async ensureFetchAndProcessDataFinished(): Promise<void> {
+    if (this.fetchAndProcessDataPromise !== null) {
+      await this.fetchAndProcessDataPromise;
+    }
   }
 
   /**
@@ -638,8 +645,10 @@ export class EmojiPicker extends PolymerElement {
   }
 
   private async selectGroup(newGroup: string) {
+    await this.ensureFetchAndProcessDataFinished();
+
     if (this.category === CategoryEnum.GIF) {
-      this.setGifGroupElements(newGroup);
+      await this.setGifGroupElements(newGroup);
     }
 
     // focus and scroll to selected group's first emoji.
@@ -1260,7 +1269,9 @@ export class EmojiPicker extends PolymerElement {
     });
   }
 
-  private onCategoryButtonClick(newCategory: CategoryEnum) {
+  private async onCategoryButtonClick(newCategory: CategoryEnum) {
+    await this.ensureFetchAndProcessDataFinished();
+
     this.set('category', newCategory);
     this.set('pagination', 1);
 

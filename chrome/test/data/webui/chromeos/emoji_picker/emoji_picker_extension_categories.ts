@@ -58,7 +58,7 @@ export function categoryTestSuite(category: string) {
 
     test(
         category + ' category button should be active after clicking at it.',
-        () => {
+        async () => {
           const allCategoryButtons =
               Array
                   .from(findInEmojiPicker('emoji-search')!.shadowRoot!
@@ -69,6 +69,9 @@ export function categoryTestSuite(category: string) {
           const categoryButton = allCategoryButtons[categoryIndex];
           categoryButton!.click();
           flush();
+          await waitForCondition(
+              () => isCategoryButtonActive(categoryButton),
+              'wait for category button active');
           assertTrue(isCategoryButtonActive(categoryButton));
           allCategoryButtons.forEach((categoryButtonItem, index) => {
             if (index !== categoryIndex) {

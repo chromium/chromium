@@ -168,6 +168,14 @@ export function initialiseEmojiPickerForTest(
   const findInEmojiPicker = (...path: string[]) =>
       deepQuerySelector(emojiPicker, path);
 
+  const waitUntilFindInEmojiPicker = async(...path: string[]):
+      Promise<HTMLElement> => {
+        await waitForCondition(
+            () => findInEmojiPicker(...path) !== null,
+            'element should not be null');
+        return findInEmojiPicker(...path)!;
+      };
+
   const findEmojiFirstButton = (...path: string[]) => {
     const emojiElement = findInEmojiPicker(...path);
     return (emojiElement as EmojiGroupComponent | null)?.firstEmojiButton();
@@ -203,6 +211,7 @@ export function initialiseEmojiPickerForTest(
   return {
     emojiPicker,
     findInEmojiPicker,
+    waitUntilFindInEmojiPicker,
     findEmojiFirstButton,
     readyPromise,
     scrollDown,
