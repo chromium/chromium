@@ -10,7 +10,6 @@
 
 #include "base/functional/function_ref.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -19,7 +18,6 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/event_trigger_data.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
@@ -60,7 +58,10 @@ TEST(TriggerRegistrationTest, Parse) {
       {
           "empty",
           R"json({})json",
-          TriggerRegistration(),
+          TriggerRegistrationWith([](TriggerRegistration& r) {
+            r.source_registration_time_config =
+                mojom::SourceRegistrationTimeConfig::kExclude;
+          }),
       },
       {
           "filters_valid",
@@ -230,84 +231,6 @@ TEST(TriggerRegistrationTest, Parse) {
           base::unexpected(
               TriggerRegistrationError::kAggregatableDedupKeyWrongType),
       },
-  };
-
-  static constexpr char kTriggerRegistrationErrorMetric[] =
-      "Conversions.TriggerRegistrationError5";
-
-  for (const auto& test_case : kTestCases) {
-    base::HistogramTester histograms;
-
-    auto trigger = TriggerRegistration::Parse(test_case.json);
-    EXPECT_EQ(trigger, test_case.expected) << test_case.description;
-
-    if (trigger.has_value()) {
-      histograms.ExpectTotalCount(kTriggerRegistrationErrorMetric, 0);
-    } else {
-      histograms.ExpectUniqueSample(kTriggerRegistrationErrorMetric,
-                                    trigger.error(), 1);
-    }
-  }
-}
-
-TEST(TriggerRegistrationTest, ToJson) {
-  const struct {
-    TriggerRegistration input;
-    const char* expected_json;
-  } kTestCases[] = {
-      {
-          TriggerRegistration(),
-          R"json({
-            "aggregation_coordinator_identifier": "aws-cloud",
-            "debug_reporting": false
-          })json",
-      },
-      {
-          TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.aggregatable_dedup_keys = {
-                AggregatableDedupKey(/*dedup_key=*/1, FilterPair())};
-            r.aggregatable_trigger_data = {AggregatableTriggerData()};
-            r.aggregatable_values = *AggregatableValues::Create({{"a", 2}});
-            r.debug_key = 3;
-            r.debug_reporting = true;
-            r.event_triggers = {EventTriggerData()};
-            r.filters.positive = FiltersDisjunction({{{"b", {}}}});
-            r.filters.negative = FiltersDisjunction({{{"c", {}}}});
-          }),
-          R"json({
-            "aggregation_coordinator_identifier": "aws-cloud",
-            "aggregatable_deduplication_keys": [{"deduplication_key":"1"}],
-            "aggregatable_trigger_data": [{"key_piece":"0x0"}],
-            "aggregatable_values": {"a": 2},
-            "debug_key": "3",
-            "debug_reporting": true,
-            "event_trigger_data": [{"priority":"0","trigger_data":"0"}],
-            "filters": [{"b": []}],
-            "not_filters": [{"c": []}]
-          })json",
-      },
-  };
-
-  for (const auto& test_case : kTestCases) {
-    EXPECT_THAT(test_case.input.ToJson(),
-                base::test::IsJson(test_case.expected_json));
-  }
-}
-
-TEST(TriggerRegistrationTest, ParseAggregatableSourceRegistrationTime) {
-  const struct {
-    const char* description;
-    const char* json;
-    base::expected<TriggerRegistration, TriggerRegistrationError> expected;
-  } kTestCases[] = {
-      {
-          "empty",
-          R"json({})json",
-          TriggerRegistrationWith([](TriggerRegistration& r) {
-            r.source_registration_time_config =
-                mojom::SourceRegistrationTimeConfig::kExclude;
-          }),
-      },
       {
           "aggregatable_source_registration_time_include",
           R"json({"aggregatable_source_registration_time":"include"})json",
@@ -341,9 +264,6 @@ TEST(TriggerRegistrationTest, ParseAggregatableSourceRegistrationTime) {
   static constexpr char kTriggerRegistrationErrorMetric[] =
       "Conversions.TriggerRegistrationError5";
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      kAttributionReportingNullAggregatableReports);
-
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
 
@@ -359,7 +279,7 @@ TEST(TriggerRegistrationTest, ParseAggregatableSourceRegistrationTime) {
   }
 }
 
-TEST(TriggerRegistrationTest, SerializeAggregatableSourceRegistrationTime) {
+TEST(TriggerRegistrationTest, ToJson) {
   const struct {
     TriggerRegistration input;
     const char* expected_json;
@@ -374,19 +294,32 @@ TEST(TriggerRegistrationTest, SerializeAggregatableSourceRegistrationTime) {
       },
       {
           TriggerRegistrationWith([](TriggerRegistration& r) {
+            r.aggregatable_dedup_keys = {
+                AggregatableDedupKey(/*dedup_key=*/1, FilterPair())};
+            r.aggregatable_trigger_data = {AggregatableTriggerData()};
+            r.aggregatable_values = *AggregatableValues::Create({{"a", 2}});
+            r.debug_key = 3;
+            r.debug_reporting = true;
+            r.event_triggers = {EventTriggerData()};
+            r.filters.positive = FiltersDisjunction({{{"b", {}}}});
+            r.filters.negative = FiltersDisjunction({{{"c", {}}}});
             r.source_registration_time_config =
                 mojom::SourceRegistrationTimeConfig::kExclude;
           }),
           R"json({
             "aggregatable_source_registration_time": "exclude",
             "aggregation_coordinator_identifier": "aws-cloud",
-            "debug_reporting": false,
+            "aggregatable_deduplication_keys": [{"deduplication_key":"1"}],
+            "aggregatable_trigger_data": [{"key_piece":"0x0"}],
+            "aggregatable_values": {"a": 2},
+            "debug_key": "3",
+            "debug_reporting": true,
+            "event_trigger_data": [{"priority":"0","trigger_data":"0"}],
+            "filters": [{"b": []}],
+            "not_filters": [{"c": []}]
           })json",
       },
   };
-
-  base::test::ScopedFeatureList scoped_feature_list(
-      kAttributionReportingNullAggregatableReports);
 
   for (const auto& test_case : kTestCases) {
     EXPECT_THAT(test_case.input.ToJson(),

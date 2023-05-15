@@ -710,7 +710,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBasicTriggerBrowserTest,
           attribution_reporting::AggregatableValues(),
           ::aggregation_service::mojom::AggregationCoordinator::kDefault,
           attribution_reporting::mojom::SourceRegistrationTimeConfig::
-              kInclude))));
+              kExclude))));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,

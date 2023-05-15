@@ -98,8 +98,8 @@ struct CONTENT_EXPORT AttributionConfig {
 
     // Default constants for the report delivery time to be used when declaring
     // field trial params.
-    static constexpr base::TimeDelta kDefaultMinDelay = base::Minutes(10);
-    static constexpr base::TimeDelta kDefaultDelaySpan = base::Minutes(50);
+    static constexpr base::TimeDelta kDefaultMinDelay = base::TimeDelta();
+    static constexpr base::TimeDelta kDefaultDelaySpan = base::Minutes(10);
 
     // Controls the report delivery time.
     base::TimeDelta min_delay = kDefaultMinDelay;
