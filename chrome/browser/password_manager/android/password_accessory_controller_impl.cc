@@ -265,18 +265,18 @@ void PasswordAccessoryControllerImpl::CreateForWebContents(
 void PasswordAccessoryControllerImpl::CreateForWebContentsForTesting(
     content::WebContents* web_contents,
     password_manager::CredentialCache* credential_cache,
-    base::WeakPtr<ManualFillingController> mf_controller,
+    base::WeakPtr<ManualFillingController> manual_filling_controller,
     password_manager::PasswordManagerClient* password_client,
     PasswordDriverSupplierForFocusedFrame driver_supplier) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
   DCHECK(!FromWebContents(web_contents)) << "Controller already attached!";
-  DCHECK(mf_controller);
+  DCHECK(manual_filling_controller);
   DCHECK(password_client);
 
   web_contents->SetUserData(
       UserDataKey(),
       base::WrapUnique(new PasswordAccessoryControllerImpl(
-          web_contents, credential_cache, std::move(mf_controller),
+          web_contents, credential_cache, std::move(manual_filling_controller),
           password_client, std::move(driver_supplier))));
 }
 
@@ -401,7 +401,7 @@ void PasswordAccessoryControllerImpl::UpdateCredManReentryUi() {
   }
   if (WebAuthnCredManDelegate* delegate =
           WebAuthnCredManDelegate::GetRequestDelegate(&GetWebContents())) {
-    mf_controller_->OnAccessoryActionAvailabilityChanged(
+    manual_filling_controller_->OnAccessoryActionAvailabilityChanged(
         ShouldShowAction(delegate->HasResults()),
         autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY);
   }
@@ -418,13 +418,13 @@ PasswordAccessoryControllerImpl::LastFocusedFieldInfo::LastFocusedFieldInfo(
 PasswordAccessoryControllerImpl::PasswordAccessoryControllerImpl(
     content::WebContents* web_contents,
     password_manager::CredentialCache* credential_cache,
-    base::WeakPtr<ManualFillingController> mf_controller,
+    base::WeakPtr<ManualFillingController> manual_filling_controller,
     password_manager::PasswordManagerClient* password_client,
     PasswordDriverSupplierForFocusedFrame driver_supplier)
     : content::WebContentsUserData<PasswordAccessoryControllerImpl>(
           *web_contents),
       credential_cache_(credential_cache),
-      mf_controller_(std::move(mf_controller)),
+      manual_filling_controller_(std::move(manual_filling_controller)),
       password_client_(password_client),
       driver_supplier_(std::move(driver_supplier)) {}
 
@@ -481,10 +481,12 @@ bool PasswordAccessoryControllerImpl::ShouldShowRecoveryToggle(
 
 base::WeakPtr<ManualFillingController>
 PasswordAccessoryControllerImpl::GetManualFillingController() {
-  if (!mf_controller_)
-    mf_controller_ = ManualFillingController::GetOrCreate(&GetWebContents());
-  DCHECK(mf_controller_);
-  return mf_controller_;
+  if (!manual_filling_controller_) {
+    manual_filling_controller_ =
+        ManualFillingController::GetOrCreate(&GetWebContents());
+  }
+  DCHECK(manual_filling_controller_);
+  return manual_filling_controller_;
 }
 
 url::Origin PasswordAccessoryControllerImpl::GetFocusedFrameOrigin() const {
