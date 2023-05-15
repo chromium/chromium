@@ -22,6 +22,7 @@
 #include "printing/backend/cups_ipp_constants.h"
 #include "printing/backend/cups_ipp_helper.h"
 #include "printing/backend/cups_printer.h"
+#include "printing/backend/print_backend_utils.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/client_info_helpers.h"
 #include "printing/metafile.h"
@@ -96,48 +97,53 @@ void EncodeClientInfo(const std::vector<mojom::IppClientInfo>& client_infos,
                     raw_option_values.size(), raw_option_values.data());
 }
 
+// Construct the IPP media-col attribute specifying media size, margins, source,
+// etc., and add it to 'options'.
+void EncodeMediaCol(ipp_t* options,
+                    const gfx::Size& size_um,
+                    const gfx::Rect& printable_area_um,
+                    const std::string& source) {
+  // The size and printable area in microns were calculated from the size and
+  // margins in PWG units, so we can losslessly convert them back.
+  DCHECK_EQ(size_um.width() % kMicronsPerPwgUnit, 0);
+  DCHECK_EQ(size_um.height() % kMicronsPerPwgUnit, 0);
+  int width = size_um.width() / kMicronsPerPwgUnit;
+  int height = size_um.height() / kMicronsPerPwgUnit;
+  int bottom_margin = 0, left_margin = 0, right_margin = 0, top_margin = 0;
+  PwgMarginsFromSizeAndPrintableArea(size_um, printable_area_um, &bottom_margin,
+                                     &left_margin, &right_margin, &top_margin);
+
+  ScopedIppPtr media_col = WrapIpp(ippNew());
+  ScopedIppPtr media_size = WrapIpp(ippNew());
+  ippAddInteger(media_size.get(), IPP_TAG_ZERO, IPP_TAG_INTEGER, kIppXDimension,
+                width);
+  ippAddInteger(media_size.get(), IPP_TAG_ZERO, IPP_TAG_INTEGER, kIppYDimension,
+                height);
+  ippAddCollection(media_col.get(), IPP_TAG_ZERO, kIppMediaSize,
+                   media_size.get());
+  ippAddInteger(media_col.get(), IPP_TAG_ZERO, IPP_TAG_INTEGER,
+                kIppMediaBottomMargin, bottom_margin);
+  ippAddInteger(media_col.get(), IPP_TAG_ZERO, IPP_TAG_INTEGER,
+                kIppMediaLeftMargin, left_margin);
+  ippAddInteger(media_col.get(), IPP_TAG_ZERO, IPP_TAG_INTEGER,
+                kIppMediaRightMargin, right_margin);
+  ippAddInteger(media_col.get(), IPP_TAG_ZERO, IPP_TAG_INTEGER,
+                kIppMediaTopMargin, top_margin);
+  if (!source.empty()) {
+    ippAddString(media_col.get(), IPP_TAG_ZERO, IPP_TAG_KEYWORD,
+                 kIppMediaSource, nullptr, source.c_str());
+  }
+
+  ippAddCollection(options, IPP_TAG_JOB, kIppMediaCol, media_col.get());
+}
+
 std::string GetCollateString(bool collate) {
   return collate ? kCollated : kUncollated;
 }
 
-// Given an integral `value` expressed in PWG units (1/100 mm), returns
-// the same value expressed in device units.
-int PwgUnitsToDeviceUnits(int value, float micrometers_per_device_unit) {
-  return ConvertUnitFloat(value, micrometers_per_device_unit, 10);
-}
-
-// Given a `media_size`, the specification of the media's `margins`, and
-// the number of micrometers per device unit, returns the rectangle
-// bounding the apparent printable area of said media.
-gfx::Rect RepresentPrintableArea(const gfx::Size& media_size,
-                                 const CupsPrinter::CupsMediaMargins& margins,
-                                 float micrometers_per_device_unit) {
-  // These values express inward encroachment by margins, away from the
-  // edges of the `media_size`.
-  int left_bound =
-      PwgUnitsToDeviceUnits(margins.left, micrometers_per_device_unit);
-  int bottom_bound =
-      PwgUnitsToDeviceUnits(margins.bottom, micrometers_per_device_unit);
-  int right_bound =
-      PwgUnitsToDeviceUnits(margins.right, micrometers_per_device_unit);
-  int top_bound =
-      PwgUnitsToDeviceUnits(margins.top, micrometers_per_device_unit);
-
-  // These values express the bounding box of the printable area on the
-  // page.
-  int printable_width = media_size.width() - (left_bound + right_bound);
-  int printable_height = media_size.height() - (top_bound + bottom_bound);
-
-  if (printable_width > 0 && printable_height > 0) {
-    return {left_bound, bottom_bound, printable_width, printable_height};
-  }
-
-  return {0, 0, media_size.width(), media_size.height()};
-}
-
 void SetPrintableArea(PrintSettings* settings,
                       const PrintSettings::RequestedMedia& media,
-                      const CupsPrinter::CupsMediaMargins& margins) {
+                      const gfx::Rect& printable_area_um) {
   if (!media.size_microns.IsEmpty()) {
     float device_microns_per_device_unit =
         static_cast<float>(kMicronsPerInch) / settings->device_units_per_inch();
@@ -145,8 +151,11 @@ void SetPrintableArea(PrintSettings* settings,
         gfx::Size(media.size_microns.width() / device_microns_per_device_unit,
                   media.size_microns.height() / device_microns_per_device_unit);
 
-    gfx::Rect paper_rect = RepresentPrintableArea(
-        paper_size, margins, device_microns_per_device_unit);
+    gfx::Rect paper_rect =
+        gfx::Rect(printable_area_um.x() / device_microns_per_device_unit,
+                  printable_area_um.y() / device_microns_per_device_unit,
+                  printable_area_um.width() / device_microns_per_device_unit,
+                  printable_area_um.height() / device_microns_per_device_unit);
     settings->SetPrinterPrintableArea(paper_size, paper_rect,
                                       /*landscape_needs_flip=*/true);
   }
@@ -154,7 +163,8 @@ void SetPrintableArea(PrintSettings* settings,
 
 }  // namespace
 
-ScopedIppPtr SettingsToIPPOptions(const PrintSettings& settings) {
+ScopedIppPtr SettingsToIPPOptions(const PrintSettings& settings,
+                                  const gfx::Rect& printable_area_um) {
   ScopedIppPtr scoped_options = WrapIpp(ippNew());
   ipp_t* options = scoped_options.get();
 
@@ -179,9 +189,6 @@ ScopedIppPtr SettingsToIPPOptions(const PrintSettings& settings) {
   // color
   ippAddString(options, IPP_TAG_JOB, IPP_TAG_KEYWORD, kIppColor, nullptr,
                GetIppColorModelForModel(settings.color()).c_str());
-  // paper size
-  ippAddString(options, IPP_TAG_JOB, IPP_TAG_KEYWORD, kIppMedia, nullptr,
-               settings.requested_media().vendor_id.c_str());
   // copies
   ippAddInteger(options, IPP_TAG_JOB, IPP_TAG_INTEGER, kIppCopies,
                 settings.copies());
@@ -203,11 +210,17 @@ ScopedIppPtr SettingsToIPPOptions(const PrintSettings& settings) {
   }
 
   std::map<std::string, std::vector<int>> multival;
+  std::string media_source;
   for (const auto& setting : settings.advanced_settings()) {
     const std::string& key = setting.first;
     const std::string& value = setting.second.GetString();
-    if (value.empty())
+    if (value.empty()) {
       continue;
+    }
+    if (key == kIppMediaSource) {
+      media_source = value;
+      continue;
+    }
 
     // Check for multivalue enum ("attribute/value").
     size_t pos = key.find('/');
@@ -226,6 +239,11 @@ ScopedIppPtr SettingsToIPPOptions(const PrintSettings& settings) {
       multival[option_name].push_back(enum_value);
     }
   }
+
+  // Construct the IPP media-col attribute specifying media size, margins,
+  // source, etc.
+  EncodeMediaCol(options, settings.requested_media().size_microns,
+                 printable_area_um, media_source);
 
   // Add multivalue enum options.
   for (const auto& it : multival) {
@@ -325,10 +343,7 @@ mojom::ResultCode PrintingContextChromeos::UseDefaultSettings() {
   media.vendor_id = paper.vendor_id;
   media.size_microns = paper.size_um;
   settings_->set_requested_media(media);
-
-  CupsPrinter::CupsMediaMargins margins =
-      printer_->GetMediaMarginsByName(paper.vendor_id);
-  SetPrintableArea(settings_.get(), media, margins);
+  SetPrintableArea(settings_.get(), media, paper.printable_area_um);
 
   return mojom::ResultCode::kSuccess;
 }
@@ -387,10 +402,10 @@ mojom::ResultCode PrintingContextChromeos::UpdatePrinterSettings(
     settings_->set_requested_media(media);
   }
 
-  CupsPrinter::CupsMediaMargins margins =
-      printer_->GetMediaMarginsByName(media.vendor_id);
-  SetPrintableArea(settings_.get(), media, margins);
-  ipp_options_ = SettingsToIPPOptions(*settings_);
+  gfx::Rect printable_area_um =
+      GetPrintableAreaForSize(*printer_, media.size_microns);
+  SetPrintableArea(settings_.get(), media, printable_area_um);
+  ipp_options_ = SettingsToIPPOptions(*settings_, printable_area_um);
   send_user_info_ = settings_->send_user_info();
   if (send_user_info_) {
     DCHECK(printer_);

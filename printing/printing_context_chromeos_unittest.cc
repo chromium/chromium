@@ -35,6 +35,9 @@ constexpr char kUsername[] = "test user";
 constexpr char kDocumentName[] = "document name";
 constexpr char16_t kDocumentName16[] = u"document name";
 
+constexpr gfx::Size kDefaultPaperSize = {215900, 279400};
+constexpr char kDefaultPaperName[] = "some_vendor_id";
+
 class MockCupsConnection : public CupsConnection {
  public:
   MOCK_METHOD1(GetDests, bool(std::vector<std::unique_ptr<CupsPrinter>>&));
@@ -76,6 +79,7 @@ class PrintingContextTest : public testing::Test,
     settings->set_duplex_mode(mojom::DuplexMode::kLongEdge);
     settings->set_username(kUsername);
     printing_context_->UpdatePrintSettingsFromPOD(std::move(settings));
+    settings_.set_requested_media({kDefaultPaperSize, kDefaultPaperName});
   }
 
   ipp_attribute_t* GetAttribute(ipp_t* attributes,
@@ -97,20 +101,20 @@ class PrintingContextTest : public testing::Test,
 
   void TestStringOptionValue(const char* attr_name,
                              const char* expected_value) const {
-    auto attributes = SettingsToIPPOptions(settings_);
+    auto attributes = SettingsToIPPOptions(settings_, printable_area_);
     auto* attr = GetAttribute(attributes.get(), attr_name);
     EXPECT_STREQ(expected_value, ippGetString(attr, 0, nullptr));
   }
 
   void TestIntegerOptionValue(const char* attr_name, int expected_value) const {
-    auto attributes = SettingsToIPPOptions(settings_);
+    auto attributes = SettingsToIPPOptions(settings_, printable_area_);
     auto* attr = GetAttribute(attributes.get(), attr_name);
     EXPECT_EQ(expected_value, ippGetInteger(attr, 0));
   }
 
   void TestOctetStringOptionValue(const char* attr_name,
                                   base::span<const char> expected_value) const {
-    auto attributes = SettingsToIPPOptions(settings_);
+    auto attributes = SettingsToIPPOptions(settings_, printable_area_);
     auto* attr = GetAttribute(attributes.get(), attr_name);
     int length;
     void* value = ippGetOctetString(attr, 0, &length);
@@ -122,7 +126,7 @@ class PrintingContextTest : public testing::Test,
   void TestResolutionOptionValue(const char* attr_name,
                                  int expected_x_res,
                                  int expected_y_res) const {
-    auto attributes = SettingsToIPPOptions(settings_);
+    auto attributes = SettingsToIPPOptions(settings_, printable_area_);
     auto* attr = GetAttribute(attributes.get(), attr_name);
     ipp_res_t unit;
     int y_res;
@@ -132,18 +136,47 @@ class PrintingContextTest : public testing::Test,
     EXPECT_EQ(expected_y_res, y_res);
   }
 
+  void TestMediaColValue(const gfx::Size& expected_size,
+                         int expected_bottom_margin,
+                         int expected_left_margin,
+                         int expected_right_margin,
+                         int expected_top_margin) {
+    auto attributes = SettingsToIPPOptions(settings_, printable_area_);
+    ipp_t* media_col =
+        ippGetCollection(GetAttribute(attributes.get(), kIppMediaCol), 0);
+    ipp_t* media_size =
+        ippGetCollection(GetAttribute(media_col, kIppMediaSize), 0);
+
+    int width = ippGetInteger(GetAttribute(media_size, kIppXDimension), 0);
+    int height = ippGetInteger(GetAttribute(media_size, kIppYDimension), 0);
+    EXPECT_EQ(expected_size.width(), width);
+    EXPECT_EQ(expected_size.height(), height);
+
+    int bottom =
+        ippGetInteger(GetAttribute(media_col, kIppMediaBottomMargin), 0);
+    int left = ippGetInteger(GetAttribute(media_col, kIppMediaLeftMargin), 0);
+    int right = ippGetInteger(GetAttribute(media_col, kIppMediaRightMargin), 0);
+    int top = ippGetInteger(GetAttribute(media_col, kIppMediaTopMargin), 0);
+
+    EXPECT_EQ(expected_bottom_margin, bottom);
+    EXPECT_EQ(expected_left_margin, left);
+    EXPECT_EQ(expected_right_margin, right);
+    EXPECT_EQ(expected_top_margin, top);
+  }
+
   bool HasAttribute(const char* attr_name) const {
-    auto attributes = SettingsToIPPOptions(settings_);
+    auto attributes = SettingsToIPPOptions(settings_, printable_area_);
     return !!ippFindAttribute(attributes.get(), attr_name, IPP_TAG_ZERO);
   }
 
   int GetAttrValueCount(const char* attr_name) const {
-    auto attributes = SettingsToIPPOptions(settings_);
+    auto attributes = SettingsToIPPOptions(settings_, printable_area_);
     auto* attr = GetAttribute(attributes.get(), attr_name);
     return ippGetCount(attr);
   }
 
   TestPrintSettings settings_;
+  gfx::Rect printable_area_;
 
   // PrintingContext::Delegate methods.
   gfx::NativeView GetParentView() override { return nullptr; }
@@ -169,11 +202,12 @@ TEST_F(PrintingContextTest, SettingsToIPPOptions_Duplex) {
   TestStringOptionValue(kIppDuplex, "two-sided-short-edge");
 }
 
-TEST_F(PrintingContextTest, SettingsToIPPOptions_Media) {
-  TestStringOptionValue(kIppMedia, "");
+TEST_F(PrintingContextTest, SettingsToIPPOptions_MediaCol) {
   settings_.set_requested_media(
       {gfx::Size(297000, 420000), "iso_a3_297x420mm"});
-  TestStringOptionValue(kIppMedia, "iso_a3_297x420mm");
+  printable_area_ =
+      gfx::Rect(2000, 1000, 297000 - (2000 + 3000), 420000 - (1000 + 4000));
+  TestMediaColValue(gfx::Size(29700, 42000), 100, 200, 300, 400);
 }
 
 TEST_F(PrintingContextTest, SettingsToIPPOptions_Copies) {
@@ -285,7 +319,7 @@ TEST_F(PrintingContextTest, SettingsToIPPOptionsClientInfo) {
       "a.1-B_");
   settings_.set_client_infos({client_info});
 
-  auto attributes = SettingsToIPPOptions(settings_);
+  auto attributes = SettingsToIPPOptions(settings_, printable_area_);
   auto* attr = ippFindAttribute(attributes.get(), kIppClientInfo,
                                 IPP_TAG_BEGIN_COLLECTION);
   auto* client_info_collection = ippGetCollection(attr, 0);

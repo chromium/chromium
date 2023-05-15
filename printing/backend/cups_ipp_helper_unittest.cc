@@ -35,13 +35,6 @@ class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
   MockCupsPrinterWithMarginsAndAttributes() = default;
   ~MockCupsPrinterWithMarginsAndAttributes() override = default;
 
-  // CupsPrinter:
-  CupsMediaMargins GetMediaMarginsByName(
-      const std::string& media_id) const override {
-    const auto margins = margins_.find(media_id);
-    return margins != margins_.end() ? margins->second : CupsMediaMargins();
-  }
-
   // CupsOptionProvider:
   ipp_attribute_t* GetSupportedOptionValues(
       const char* option_name) const override {
@@ -78,15 +71,15 @@ class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
   }
 
   // CupsOptionProvider:
+  ipp_attribute_t* GetMediaColDatabase() const override {
+    return media_col_database_;
+  }
+
+  // CupsOptionProvider:
   bool CheckOptionSupported(const char* name,
                             const char* value) const override {
     NOTREACHED();
     return false;
-  }
-
-  void SetMediaMarginsByName(base::StringPiece media_id,
-                             const CupsMediaMargins& margins) {
-    margins_[media_id] = margins;
   }
 
   void SetSupportedOptions(base::StringPiece name, ipp_attribute_t* attribute) {
@@ -97,10 +90,14 @@ class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
     default_attributes_[name] = attribute;
   }
 
+  void SetMediaColDatabase(ipp_attribute_t* attribute) {
+    media_col_database_ = attribute;
+  }
+
  private:
   std::map<base::StringPiece, ipp_attribute_t*> supported_attributes_;
   std::map<base::StringPiece, ipp_attribute_t*> default_attributes_;
-  std::map<base::StringPiece, CupsMediaMargins> margins_;
+  ipp_attribute_t* media_col_database_;
 };
 
 class PrintBackendCupsIppHelperTest : public ::testing::Test {
@@ -145,12 +142,83 @@ ipp_attribute_t* MakeStringCollection(ipp_t* ipp,
                        strings.size(), nullptr, strings.data());
 }
 
+struct media_info {
+  int width;
+  int height;
+  int bottom_margin;
+  int left_margin;
+  int right_margin;
+  int top_margin;
+  std::map<const char*, const char*> keyword_attrs;
+  bool is_range;
+  int width_max;
+  int height_max;
+};
+
+ScopedIppPtr MakeMediaCol(const media_info& info) {
+  ScopedIppPtr media_col = WrapIpp(ippNew());
+  ScopedIppPtr media_size = WrapIpp(ippNew());
+
+  if (info.is_range) {
+    ippAddRange(media_size.get(), IPP_TAG_ZERO, "x-dimension", info.width,
+                info.width_max);
+    ippAddRange(media_size.get(), IPP_TAG_ZERO, "y-dimension", info.height,
+                info.height_max);
+  } else {
+    ippAddInteger(media_size.get(), IPP_TAG_ZERO, IPP_TAG_INTEGER,
+                  "x-dimension", info.width);
+    ippAddInteger(media_size.get(), IPP_TAG_ZERO, IPP_TAG_INTEGER,
+                  "y-dimension", info.height);
+  }
+
+  ippAddCollection(media_col.get(), IPP_TAG_ZERO, "media-size",
+                   media_size.get());
+
+  ippAddInteger(media_col.get(), IPP_TAG_ZERO, IPP_TAG_INTEGER,
+                "media-bottom-margin", info.bottom_margin);
+  ippAddInteger(media_col.get(), IPP_TAG_ZERO, IPP_TAG_INTEGER,
+                "media-left-margin", info.left_margin);
+  ippAddInteger(media_col.get(), IPP_TAG_ZERO, IPP_TAG_INTEGER,
+                "media-right-margin", info.right_margin);
+  ippAddInteger(media_col.get(), IPP_TAG_ZERO, IPP_TAG_INTEGER,
+                "media-top-margin", info.top_margin);
+
+  for (auto& it : info.keyword_attrs) {
+    ippAddString(media_col.get(), IPP_TAG_ZERO, IPP_TAG_KEYWORD, it.first,
+                 nullptr, it.second);
+  }
+
+  return media_col;
+}
+
+ipp_attribute_t* MakeMediaColDefault(ipp_t* ipp, const media_info& info) {
+  ScopedIppPtr media_col = MakeMediaCol(info);
+  return ippAddCollection(ipp, IPP_TAG_ZERO, "TEST_DATA", media_col.get());
+}
+
+ipp_attribute_t* MakeMediaColDatabase(ipp_t* ipp,
+                                      const std::vector<media_info>& media) {
+  std::vector<ScopedIppPtr> collections;
+  std::vector<const ipp_t*> raw_collections;
+
+  for (auto info : media) {
+    ScopedIppPtr entry = MakeMediaCol(info);
+    raw_collections.emplace_back(entry.get());
+    collections.emplace_back(std::move(entry));
+  }
+
+  return ippAddCollections(ipp, IPP_TAG_PRINTER, "TEST_DATA",
+                           raw_collections.size(), raw_collections.data());
+}
+
 TEST_F(PrintBackendCupsIppHelperTest, DefaultPaper) {
-  const CupsPrinter::CupsMediaMargins kMargins = {10, 10, 10, 10};
-  EXPECT_EQ(ParsePaper("", kMargins), DefaultPaper(*printer_));
-  printer_->SetOptionDefault("media", MakeString(ipp_, "iso_a4_210x297mm"));
-  printer_->SetMediaMarginsByName("iso_a4_210x297mm", kMargins);
-  EXPECT_EQ(ParsePaper("iso_a4_210x297mm", kMargins), DefaultPaper(*printer_));
+  EXPECT_EQ(PrinterSemanticCapsAndDefaults::Paper(), DefaultPaper(*printer_));
+  printer_->SetOptionDefault(
+      "media-col",
+      MakeMediaColDefault(ipp_, {21000, 29700, 10, 10, 10, 10, {}}));
+  PrinterSemanticCapsAndDefaults::Paper default_paper = DefaultPaper(*printer_);
+  EXPECT_EQ(default_paper.size_um.width(), 210000);
+  EXPECT_EQ(default_paper.size_um.height(), 297000);
 }
 
 TEST_F(PrintBackendCupsIppHelperTest, CopiesCapable) {
@@ -224,42 +292,47 @@ TEST_F(PrintBackendCupsIppHelperTest, DuplexNotSupported) {
 }
 
 TEST_F(PrintBackendCupsIppHelperTest, A4PaperSupported) {
-  printer_->SetSupportedOptions(
-      "media", MakeStringCollection(ipp_, {"iso_a4_210x297mm"}));
+  printer_->SetMediaColDatabase(
+      MakeMediaColDatabase(ipp_, {{21000, 29700, 10, 10, 10, 10, {}}}));
 
   PrinterSemanticCapsAndDefaults caps;
   CapsAndDefaultsFromPrinter(*printer_, &caps);
 
   PrinterSemanticCapsAndDefaults::Paper paper = caps.papers[0];
-  // media display name localization is handled more fully in
-  // AssemblePrinterSettings().
-  EXPECT_EQ("iso a4", paper.display_name);
-  EXPECT_EQ("iso_a4_210x297mm", paper.vendor_id);
   EXPECT_EQ(210000, paper.size_um.width());
   EXPECT_EQ(297000, paper.size_um.height());
 }
 
 TEST_F(PrintBackendCupsIppHelperTest, LegalPaperDefault) {
-  printer_->SetOptionDefault("media", MakeString(ipp_, "na_legal_8.5x14in"));
+  // na_legal_8.5x14in
+  printer_->SetOptionDefault(
+      "media-col",
+      MakeMediaColDefault(ipp_, {21590, 35560, 10, 10, 10, 10, {}}));
 
   PrinterSemanticCapsAndDefaults caps;
   CapsAndDefaultsFromPrinter(*printer_, &caps);
-  // media display name localization is handled more fully in
-  // AssemblePrinterSettings().
-  EXPECT_EQ("na legal", caps.default_paper.display_name);
-  EXPECT_EQ("na_legal_8.5x14in", caps.default_paper.vendor_id);
   EXPECT_EQ(215900, caps.default_paper.size_um.width());
   EXPECT_EQ(355600, caps.default_paper.size_um.height());
 }
 
-// Tests that CapsAndDefaultsFromPrinter() does not propagate papers
-// with badly formatted vendor IDs - such papers will not transform into
-// meaningful ParsedPaper instances and are sometimes inimical to
-// ARC++.
-TEST_F(PrintBackendCupsIppHelperTest, OmitPapersWithoutVendorIds) {
-  printer_->SetSupportedOptions(
-      "media", MakeStringCollection(ipp_, {"jis_b5_182x257mm", "invalidsize",
-                                           "", "iso_b5_176x250mm"}));
+// Tests that CapsAndDefaultsFromPrinter() does not propagate papers with
+// invalid sizes or margins to the Chromium print backend.
+TEST_F(PrintBackendCupsIppHelperTest, OmitPapersWithInvalidSizes) {
+  printer_->SetMediaColDatabase(
+      MakeMediaColDatabase(ipp_, {
+                                     {18200, 25700, 100, 100, 100, 100, {}},
+                                     {0, 29700, 100, 100, 100, 100, {}},
+                                     {-1, 29700, 100, 100, 100, 100, {}},
+                                     {21000, 0, 100, 100, 100, 100, {}},
+                                     {21000, -1, 100, 100, 100, 100, {}},
+                                     {21000, 29700, -1, 100, 100, 100, {}},
+                                     {21000, 29700, 100, -1, 100, 100, {}},
+                                     {21000, 29700, 100, 100, -1, 100, {}},
+                                     {21000, 29700, 100, 100, 100, -1, {}},
+                                     {21000, 29700, 100, 10500, 10500, 100, {}},
+                                     {21000, 29700, 14850, 100, 100, 14850, {}},
+                                     {17600, 25000, 100, 100, 100, 100, {}},
+                                 }));
 
   PrinterSemanticCapsAndDefaults caps;
   CapsAndDefaultsFromPrinter(*printer_, &caps);
@@ -269,54 +342,179 @@ TEST_F(PrintBackendCupsIppHelperTest, OmitPapersWithoutVendorIds) {
   // preceding call to CapsAndDefaultsFromPrinter() will have dropped
   // these invalid sizes.
   ASSERT_EQ(2U, caps.papers.size());
-
-  // While not directly pertinent to this test, we expect a certain
-  // format for the other supported papers.
-  EXPECT_THAT(
-      caps.papers,
-      testing::UnorderedElementsAre(
-          testing::Field(&PrinterSemanticCapsAndDefaults::Paper::display_name,
-                         "jis b5"),
-          testing::Field(&PrinterSemanticCapsAndDefaults::Paper::display_name,
-                         "iso b5")));
+  for (const auto& paper : caps.papers) {
+    EXPECT_NE(21000, paper.size_um.width());
+    EXPECT_NE(29700, paper.size_um.height());
+  }
 }
 
-// Tests that CapsAndDefaultsFromPrinter() does not propagate the
-// special IPP values that CUPS happens to expose to the Chromium print
-// backend.
-TEST_F(PrintBackendCupsIppHelperTest, OmitPapersWithSpecialVendorIds) {
-  // Maintainer's note: there's no reason why a printer would deliver
-  // two discrete sizes for custom_min* and custom_max*; in practice,
-  // we always see the fully qualified custom_m(in|ax)_<DIMENSIONS>
-  // delivered to the Chromium print backend.
-  printer_->SetSupportedOptions(
-      "media",
-      MakeStringCollection(
-          ipp_, {"na_number-11_4.5x10.375in", "custom_max", "custom_min_0x0in",
-                 "na_govt-letter_8x10in", "custom_min",
-                 "custom_max_1000x1000in", "iso_b0_1000x1414mm"}));
+// Tests that CapsAndDefaultsFromPrinter() does not propagate custom size ranges
+// from the media-col-database to the Chromium print backend.
+TEST_F(PrintBackendCupsIppHelperTest, OmitPapersWithSizeRanges) {
+  printer_->SetMediaColDatabase(MakeMediaColDatabase(
+      ipp_, {
+                {11430, 26352, 100, 100, 100, 100, {}},
+                {0, 0, 100, 100, 100, 100, {}, true, 2540000, 2540000},
+                {20320, 25400, 100, 100, 100, 100, {}},
+                {100000, 141400, 100, 100, 100, 100, {}},
+            }));
 
   PrinterSemanticCapsAndDefaults caps;
   CapsAndDefaultsFromPrinter(*printer_, &caps);
 
-  // The printer reports that it supports seven media sizes, four of
-  // which are not meant for users' eyes (``custom_min*'' and
-  // ``custom_max*''). The preceding call to
-  // CapsAndDefaultsFromPrinter() will have dropped these sizes,
-  // refusing to propagate them out of the backend.
+  // The printer reports that it supports four media sizes, one of which is not
+  // meant for users' eyes (the size range). The preceding call to
+  // CapsAndDefaultsFromPrinter() will have dropped these sizes, refusing to
+  // propagate them out of the backend.
   ASSERT_EQ(3U, caps.papers.size());
+}
 
-  // While not directly pertinent to this test, we expect a certain
-  // format for the other supported papers.
-  EXPECT_THAT(
-      caps.papers,
-      testing::UnorderedElementsAre(
-          testing::Field(&PrinterSemanticCapsAndDefaults::Paper::display_name,
-                         "na number-11"),
-          testing::Field(&PrinterSemanticCapsAndDefaults::Paper::display_name,
-                         "na govt-letter"),
-          testing::Field(&PrinterSemanticCapsAndDefaults::Paper::display_name,
-                         "iso b0")));
+// Tests that when the media-col-database contains both bordered and borderless
+// versions of a size, CapsAndDefaultsFromPrinter() takes the bordered version
+// and drops the borderless version.
+TEST_F(PrintBackendCupsIppHelperTest, PreferBorderedSizes) {
+  PrinterSemanticCapsAndDefaults caps;
+
+  printer_->SetMediaColDatabase(
+      MakeMediaColDatabase(ipp_, {
+                                     {21000, 29700, 100, 100, 100, 100, {}},
+                                     {21000, 29700, 0, 0, 0, 0, {}},
+                                 }));
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+  ASSERT_EQ(1U, caps.papers.size());
+  EXPECT_NE(gfx::Rect(0, 0, 210000, 297000), caps.papers[0].printable_area_um);
+
+  printer_->SetMediaColDatabase(
+      MakeMediaColDatabase(ipp_, {
+                                     {21000, 29700, 0, 0, 0, 0, {}},
+                                     {21000, 29700, 100, 100, 100, 100, {}},
+                                 }));
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+  ASSERT_EQ(1U, caps.papers.size());
+  EXPECT_NE(gfx::Rect(0, 0, 210000, 297000), caps.papers[0].printable_area_um);
+
+  // If the only available version of a size is borderless, go ahead and use it.
+  // Not sure if any actual printers do this, but it's allowed by the IPP spec.
+  printer_->SetMediaColDatabase(
+      MakeMediaColDatabase(ipp_, {
+                                     {21000, 29700, 0, 0, 0, 0, {}},
+                                 }));
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+  ASSERT_EQ(1U, caps.papers.size());
+  EXPECT_EQ(gfx::Rect(0, 0, 210000, 297000), caps.papers[0].printable_area_um);
+}
+
+// At the time of this writing, there are no media-source or media-type
+// attributes in the media-col-database that cupsd gives us. However, according
+// to the IPP spec, each paper size *should* have a separate variant for each
+// supported combination of size and type. So make sure behavior doesn't change
+// and we don't create duplicate paper sizes when/if CUPS improves in the
+// future.
+TEST_F(PrintBackendCupsIppHelperTest, NoDuplicateSizes) {
+  printer_->SetMediaColDatabase(MakeMediaColDatabase(
+      ipp_,
+      {
+          {21000,
+           29700,
+           300,
+           300,
+           300,
+           300,
+           {{"media-type", "stationery"}, {"media-source", "main"}}},
+          {21000,
+           29700,
+           300,
+           300,
+           300,
+           300,
+           {{"media-type", "stationery"}, {"media-source", "main"}}},
+          {21000,
+           29700,
+           500,
+           500,
+           500,
+           500,
+           {{"media-type", "stationery"}, {"media-source", "main"}}},
+          {21000,
+           29700,
+           300,
+           300,
+           300,
+           300,
+           {{"media-type", "photographic"}, {"media-source", "main"}}},
+          {21000,
+           29700,
+           0,
+           0,
+           0,
+           0,
+           {{"media-type", "photographic"}, {"media-source", "main"}}},
+          {21000,
+           29700,
+           300,
+           300,
+           300,
+           300,
+           {{"media-type", "photographic-high-gloss"},
+            {"media-source", "main"}}},
+          {21000,
+           29700,
+           0,
+           0,
+           0,
+           0,
+           {{"media-type", "photographic-high-gloss"},
+            {"media-source", "main"}}},
+          {21000,
+           29700,
+           300,
+           300,
+           300,
+           300,
+           {{"media-type", "photographic-glossy"}, {"media-source", "main"}}},
+          {21000,
+           29700,
+           0,
+           0,
+           0,
+           0,
+           {{"media-type", "photographic-glossy"}, {"media-source", "main"}}},
+          {21000,
+           29700,
+           300,
+           300,
+           300,
+           300,
+           {{"media-type", "photographic-semi-gloss"},
+            {"media-source", "main"}}},
+          {21000,
+           29700,
+           0,
+           0,
+           0,
+           0,
+           {{"media-type", "photographic-semi-gloss"},
+            {"media-source", "main"}}},
+          {21000,
+           29700,
+           300,
+           300,
+           300,
+           300,
+           {{"media-type", "photographic-matte"}, {"media-source", "main"}}},
+          {21000,
+           29700,
+           0,
+           0,
+           0,
+           0,
+           {{"media-type", "photographic-matte"}, {"media-source", "main"}}},
+      }));
+
+  PrinterSemanticCapsAndDefaults caps;
+  CapsAndDefaultsFromPrinter(*printer_, &caps);
+
+  ASSERT_EQ(1U, caps.papers.size());
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

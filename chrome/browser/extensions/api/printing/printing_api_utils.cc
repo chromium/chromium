@@ -238,8 +238,7 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
   }
   cloud_devices::printer::Media media_value = media.value();
   printing::PrintSettings::RequestedMedia requested_media;
-  if (media_value.size_um.width() <= 0 || media_value.size_um.height() <= 0 ||
-      media_value.vendor_id.empty()) {
+  if (media_value.size_um.width() <= 0 || media_value.size_um.height() <= 0) {
     LOG(ERROR) << "Loaded invalid media from print ticket.";
     return nullptr;
   }
@@ -306,8 +305,7 @@ bool CheckSettingsAndCapabilitiesCompatibility(
       capabilities.papers,
       [&requested_media](
           const printing::PrinterSemanticCapsAndDefaults::Paper& paper) {
-        return paper.size_um == requested_media.size_microns &&
-               paper.vendor_id == requested_media.vendor_id;
+        return paper.size_um == requested_media.size_microns;
       });
 }
 
