@@ -157,6 +157,8 @@ class MediaNotificationService
   std::string GetActiveControllableSessionForWebContents(
       content::WebContents* web_contents) const;
 
+  const raw_ptr<Profile> profile_;
+
   std::unique_ptr<global_media_controls::MediaItemManager> item_manager_;
 
   std::unique_ptr<global_media_controls::MediaSessionItemProducer>

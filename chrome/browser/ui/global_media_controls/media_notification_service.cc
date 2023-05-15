@@ -110,7 +110,7 @@ crosapi::mojom::MediaUI* GetMediaUI() {
 
 MediaNotificationService::MediaNotificationService(Profile* profile,
                                                    bool show_from_all_profiles)
-    : receiver_(this) {
+    : profile_(profile), receiver_(this) {
   item_manager_ = global_media_controls::MediaItemManager::Create();
 
   absl::optional<base::UnguessableToken> source_id;
@@ -299,9 +299,10 @@ void MediaNotificationService::SetDialogDelegateForWebContents(
   } else if (HasActiveControllableSessionForWebContents(contents)) {
     item_id = GetActiveControllableSessionForWebContents(contents);
   } else {
-    auto presentation_item =
-        supplemental_device_picker_producer_->GetNotificationItem();
-    item_id = presentation_item->id();
+    const SupplementalDevicePickerItem& supplemental_item =
+        supplemental_device_picker_producer_->GetOrCreateNotificationItem(
+            content::MediaSession::GetSourceId(profile_));
+    item_id = supplemental_item.id();
     DCHECK(presentation_request_notification_producer_->GetWebContents() ==
            contents);
   }

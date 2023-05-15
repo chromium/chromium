@@ -130,9 +130,12 @@ void SupplementalDevicePickerProducer::HideMediaUI() {
   item_manager_->HideDialog();
 }
 
-base::WeakPtr<SupplementalDevicePickerItem>
-SupplementalDevicePickerProducer::GetNotificationItem() {
-  return item_ ? item_->GetWeakPtr() : nullptr;
+const SupplementalDevicePickerItem&
+SupplementalDevicePickerProducer::GetOrCreateNotificationItem(
+    const base::UnguessableToken& source_id) {
+  CreateItem(source_id);
+  CHECK(item_);
+  return *item_;
 }
 
 mojo::PendingRemote<global_media_controls::mojom::DevicePickerProvider>

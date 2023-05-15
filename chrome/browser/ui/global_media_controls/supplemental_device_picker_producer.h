@@ -75,8 +75,11 @@ class SupplementalDevicePickerProducer final
           observer) override;
   void HideMediaUI() override;
 
-  // Returns the item managed by `this`. May be null.
-  base::WeakPtr<SupplementalDevicePickerItem> GetNotificationItem();
+  // Returns the item managed by `this`. Creates one if it doesn't already
+  // exist. `source_id` is the per-Profile MediaSession source ID used for
+  // distinguishing callers.
+  const SupplementalDevicePickerItem& GetOrCreateNotificationItem(
+      const base::UnguessableToken& source_id);
 
   // Returns a remote bound to `this`.
   mojo::PendingRemote<global_media_controls::mojom::DevicePickerProvider>
