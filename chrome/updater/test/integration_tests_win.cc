@@ -1913,4 +1913,8 @@ void RunOfflineInstall(UpdaterScope scope,
   EXPECT_TRUE(DeleteRegKey(root, app_client_state_key));
 }
 
+base::CommandLine MakeElevated(base::CommandLine command_line) {
+  return command_line;
+}
+
 }  // namespace updater::test
