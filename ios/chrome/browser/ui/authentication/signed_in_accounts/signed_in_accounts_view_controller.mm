@@ -174,70 +174,75 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   _infoLabel.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_infoLabel];
 
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-  // iOS 15.
-  if (base::ios::IsRunningOnIOS15OrLater() &&
-      IsUIButtonConfigurationEnabled()) {
-    if (@available(iOS 15, *)) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets =
-          NSDirectionalEdgeInsetsMake(8, 16, 8, 16);
-      _primaryButton = [UIButton buttonWithConfiguration:buttonConfiguration
-                                           primaryAction:nil];
-    }
+  _primaryButton = [[UIButton alloc] init];
+  NSString* primaryButtonString =
+      l10n_util::GetNSString(IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_OK_BUTTON);
+  _primaryButton.accessibilityLabel = primaryButtonString;
+
+  if (IsUIButtonConfigurationEnabled()) {
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets =
+        NSDirectionalEdgeInsetsMake(8, 16, 8, 16);
+    UIFont* font = [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
+    NSDictionary* attributes = @{NSFontAttributeName : font};
+    NSAttributedString* attributedTitle = [[NSAttributedString alloc]
+        initWithString:primaryButtonString.uppercaseString
+            attributes:attributes];
+    buttonConfiguration.attributedTitle = attributedTitle;
+    buttonConfiguration.baseForegroundColor =
+        [UIColor colorNamed:kSolidButtonTextColor];
+    _primaryButton.configuration = buttonConfiguration;
   } else {
-    _primaryButton = [[UIButton alloc] init];
     UIEdgeInsets contentEdgeInsets = UIEdgeInsetsMake(8, 16, 8, 16);
     SetContentEdgeInsets(_primaryButton, contentEdgeInsets);
+    [_primaryButton setTitle:primaryButtonString.uppercaseString
+                    forState:UIControlStateNormal];
+    [_primaryButton setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
+                         forState:UIControlStateNormal];
+    _primaryButton.titleLabel.font =
+        [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
   }
 
   [_primaryButton addTarget:self
                      action:@selector(onPrimaryButtonPressed:)
            forControlEvents:UIControlEventTouchUpInside];
-  NSString* primaryButtonString =
-      l10n_util::GetNSString(IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_OK_BUTTON);
-  [_primaryButton setTitle:primaryButtonString.uppercaseString
-                  forState:UIControlStateNormal];
-  _primaryButton.accessibilityLabel = primaryButtonString;
   _primaryButton.backgroundColor = [UIColor colorNamed:kBlueColor];
-  [_primaryButton setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
-                       forState:UIControlStateNormal];
-  _primaryButton.titleLabel.font =
-      [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
   _primaryButton.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_primaryButton];
 
-  // TODO(crbug.com/1418068): Simplify after minimum version required is >=
-  // iOS 15.
-  if (base::ios::IsRunningOnIOS15OrLater() &&
-      IsUIButtonConfigurationEnabled()) {
-    if (@available(iOS 15, *)) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets =
-          NSDirectionalEdgeInsetsMake(8, 16, 8, 16);
-      _secondaryButton = [UIButton buttonWithConfiguration:buttonConfiguration
-                                             primaryAction:nil];
-    }
+  _secondaryButton = [[UIButton alloc] init];
+  NSString* secondaryButtonString =
+      l10n_util::GetNSString(IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_SETTINGS_BUTTON);
+  _secondaryButton.accessibilityLabel = secondaryButtonString;
+
+  if (IsUIButtonConfigurationEnabled()) {
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets =
+        NSDirectionalEdgeInsetsMake(8, 16, 8, 16);
+    UIFont* font = [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
+    NSDictionary* attributes = @{NSFontAttributeName : font};
+    NSAttributedString* attributedTitle = [[NSAttributedString alloc]
+        initWithString:secondaryButtonString.uppercaseString
+            attributes:attributes];
+    buttonConfiguration.attributedTitle = attributedTitle;
+    buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
+    _secondaryButton.configuration = buttonConfiguration;
   } else {
-    _secondaryButton = [[UIButton alloc] init];
     UIEdgeInsets contentEdgeInsets = UIEdgeInsetsMake(8, 16, 8, 16);
     SetContentEdgeInsets(_secondaryButton, contentEdgeInsets);
+    [_secondaryButton setTitle:secondaryButtonString.uppercaseString
+                      forState:UIControlStateNormal];
+    [_secondaryButton setTitleColor:[UIColor colorNamed:kBlueColor]
+                           forState:UIControlStateNormal];
+    _secondaryButton.titleLabel.font =
+        [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
   }
 
   [_secondaryButton addTarget:self
                        action:@selector(onSecondaryButtonPressed:)
              forControlEvents:UIControlEventTouchUpInside];
-  NSString* secondaryButtonString =
-      l10n_util::GetNSString(IDS_IOS_SIGNED_IN_ACCOUNTS_VIEW_SETTINGS_BUTTON);
-  [_secondaryButton setTitle:secondaryButtonString.uppercaseString
-                    forState:UIControlStateNormal];
-  _secondaryButton.accessibilityLabel = secondaryButtonString;
-  [_secondaryButton setTitleColor:[UIColor colorNamed:kBlueColor]
-                         forState:UIControlStateNormal];
-  _secondaryButton.titleLabel.font =
-      [UIFont systemFontOfSize:14 weight:UIFontWeightSemibold];
   _secondaryButton.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_secondaryButton];
 
