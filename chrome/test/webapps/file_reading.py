@@ -156,9 +156,10 @@ def human_friendly_name_to_canonical_action_name(
         human_friendly_action_name += "_" + action_base_name_to_default_args[
             human_friendly_action_name]
     elif '(' in human_friendly_action_name:
-        # Handle arguments being specified.
+        # Handle arguments being specified. Also strip trailing _, which appears
+        # if the action is "action_name()" without arguments.
         human_friendly_action_name = human_friendly_action_name.replace(
-            "(", "_").replace(", ", "_").rstrip(")")
+            "(", "_").replace(", ", "_").rstrip(")_")
     return human_friendly_action_name
 
 
@@ -407,7 +408,7 @@ def read_actions_file(
     unused_supported_actions = set(
         supported_platform_actions.keys()).difference(action_base_names)
     if unused_supported_actions:
-        raise ValueError(f"Actions specified as suppored that are not in "
+        raise ValueError(f"Actions specified as supported that are not in "
                          f"the actions list: {unused_supported_actions}.")
 
     # Resolve the output actions

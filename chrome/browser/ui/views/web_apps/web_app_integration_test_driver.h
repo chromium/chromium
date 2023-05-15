@@ -376,9 +376,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckWindowDisplayMinimal();
   void CheckWindowDisplayTabbed();
   void CheckWindowDisplayStandalone();
-  void CheckNotHasSubApp(Site subapp);
-  void CheckHasSubApp(Site subapp);
-  void CheckNoSubApps();
+  void CheckNotHasSubApp(Site parent_app, Site sub_app);
+  void CheckHasSubApp(Site parent_app, Site sub_app);
+  void CheckNoSubApps(Site parent_app);
   void CheckAppLoadedInTab(Site site);
 
  protected:

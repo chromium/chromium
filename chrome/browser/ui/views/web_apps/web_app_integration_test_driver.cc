@@ -471,7 +471,7 @@ class PageLoadWaiter final : public content::WebContentsObserver {
   base::RunLoop run_loop_;
 };
 
-Browser* GetBrowserForAppId(const Profile* profile, const AppId& app_id) {
+Browser* GetAppBrowserForAppId(const Profile* profile, const AppId& app_id) {
   const BrowserList* browser_list = BrowserList::GetInstance();
   for (auto it = browser_list->begin_browsers_ordered_by_activation();
        it != browser_list->end_browsers_ordered_by_activation(); ++it) {
@@ -487,7 +487,22 @@ Browser* GetBrowserForAppId(const Profile* profile, const AppId& app_id) {
 }
 
 bool AreAppBrowsersOpen(const Profile* profile, const AppId& app_id) {
-  return GetBrowserForAppId(profile, app_id) != nullptr;
+  return GetAppBrowserForAppId(profile, app_id) != nullptr;
+}
+
+content::WebContents* GetAnyWebContentsForAppId(const AppId& app_id) {
+  auto* browser_list = BrowserList::GetInstance();
+  for (Browser* browser : *browser_list) {
+    for (int i = 0; i < browser->tab_strip_model()->GetTabCount(); i++) {
+      content::WebContents* web_contents =
+          browser->tab_strip_model()->GetWebContentsAt(i);
+      const AppId* web_contents_id = WebAppTabHelper::GetAppId(web_contents);
+      if (web_contents_id && *web_contents_id == app_id) {
+        return web_contents;
+      }
+    }
+  }
+  return nullptr;
 }
 
 class UninstallCompleteWaiter final : public BrowserListObserver,
@@ -952,13 +967,13 @@ void WebAppIntegrationTestDriver::AwaitManifestUpdate(Site site) {
     // Only close windows if immediate updating is not enabled.
     if (!base::FeatureList::IsEnabled(
             features::kWebAppManifestImmediateUpdating)) {
-      Browser* browser = GetBrowserForAppId(profile(), app_id);
+      Browser* browser = GetAppBrowserForAppId(profile(), app_id);
       while (browser != nullptr) {
         if (browser == app_browser_) {
           app_browser_ = nullptr;
         }
         delegate_->CloseBrowserSynchronously(browser);
-        browser = GetBrowserForAppId(profile(), app_id);
+        browser = GetAppBrowserForAppId(profile(), app_id);
       }
     }
     waiting_for_update_run_loop_->Run();
@@ -1510,7 +1525,7 @@ void WebAppIntegrationTestDriver::LaunchFromChromeApps(Site site) {
 
   // The app_browser_ is needed only for apps that open in a new window, and is
   // nullptr for apps that launch in a tab.
-  app_browser_ = GetBrowserForAppId(profile(), app_id);
+  app_browser_ = GetAppBrowserForAppId(profile(), app_id);
   active_app_id_ = app_id;
 #endif
   AfterStateChangeAction();
@@ -1597,7 +1612,7 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
     // If there already is an open app browser for this app the launch is not
     // expected to open a new one, so only wait for a new browser to be added
     // if there wasn't an open one already.
-    app_browser_ = GetBrowserForAppId(profile(), app_id);
+    app_browser_ = GetAppBrowserForAppId(profile(), app_id);
     bool had_open_browsers = false;
     for (auto* profile : GetAllProfiles()) {
       auto* provider = GetProviderForProfile(profile);
@@ -3361,14 +3376,18 @@ void WebAppIntegrationTestDriver::CheckWindowDisplayStandalone() {
   AfterStateCheckAction();
 }
 
-void WebAppIntegrationTestDriver::CheckHasSubApp(Site subapp) {
+void WebAppIntegrationTestDriver::CheckHasSubApp(Site parent_app,
+                                                 Site sub_app) {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  content::WebContents* web_contents =
-      app_browser()->tab_strip_model()->GetActiveWebContents();
 
-  auto subapp_url = GetSiteConfiguration(subapp).relative_url;
+  content::WebContents* web_contents =
+      GetAnyWebContentsForAppId(GetAppIdBySiteMode(parent_app));
+  ASSERT_TRUE(web_contents)
+      << "No open tab or window for the parent app was found.";
+
+  auto sub_app_url = GetSiteConfiguration(sub_app).relative_url;
 
   const base::Value& list_result =
       content::EvalJs(web_contents, "navigator.subApps.list()").value;
@@ -3376,37 +3395,44 @@ void WebAppIntegrationTestDriver::CheckHasSubApp(Site subapp) {
   const base::Value::Dict& list_result_dict = list_result.GetDict();
 
   // Check that list() contained the subapp_url key.
-  EXPECT_NE(nullptr, list_result_dict.FindDict(subapp_url));
+  EXPECT_NE(nullptr, list_result_dict.FindDict(sub_app_url));
 
   AfterStateCheckAction();
 }
 
-void WebAppIntegrationTestDriver::CheckNotHasSubApp(Site subapp) {
+void WebAppIntegrationTestDriver::CheckNotHasSubApp(Site parent_app,
+                                                    Site sub_app) {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  content::WebContents* web_contents =
-      app_browser()->tab_strip_model()->GetActiveWebContents();
 
-  auto subapp_url = GetSiteConfiguration(subapp).relative_url;
+  content::WebContents* web_contents =
+      GetAnyWebContentsForAppId(GetAppIdBySiteMode(parent_app));
+  ASSERT_TRUE(web_contents)
+      << "No open tab or window for the parent app was found.";
+
+  auto sub_app_url = GetSiteConfiguration(sub_app).relative_url;
 
   const base::Value& list_result =
       content::EvalJs(web_contents, "navigator.subApps.list()").value;
 
   const base::Value::Dict& list_result_dict = list_result.GetDict();
 
-  // Check that list() did not contain the subapp_url key.
-  EXPECT_EQ(nullptr, list_result_dict.FindDict(subapp_url));
+  // Check that list() did not contain the sub_app_url key.
+  EXPECT_EQ(nullptr, list_result_dict.FindDict(sub_app_url));
 
   AfterStateCheckAction();
 }
 
-void WebAppIntegrationTestDriver::CheckNoSubApps() {
+void WebAppIntegrationTestDriver::CheckNoSubApps(Site parent_app) {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
+
   content::WebContents* web_contents =
-      app_browser()->tab_strip_model()->GetActiveWebContents();
+      GetAnyWebContentsForAppId(GetAppIdBySiteMode(parent_app));
+  ASSERT_TRUE(web_contents)
+      << "No open tab or window for the parent app was found.";
 
   const base::Value& result =
       content::EvalJs(web_contents, "navigator.subApps.list()").value;
@@ -3786,6 +3812,10 @@ void WebAppIntegrationTestDriver::InstallPolicyAppInternal(
     base::Value default_launch_container,
     const bool create_shortcut,
     const bool install_as_shortcut) {
+  // Many CUJs rely on operating on an opened window / tab after installation,
+  // and this state is true for all installations except for policy install. To
+  // help keep CUJs combined for all installs, do a navigation here.
+  MaybeNavigateTabbedBrowserInScope(site);
   GURL url = GetUrlForSite(site);
   WebAppTestInstallWithOsHooksObserver observer(profile());
   observer.BeginListening();

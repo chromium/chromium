@@ -91,3 +91,8 @@ check_browser_navigation_is_app_settings,              🌕, 🌕,  🌕,   🌑
 await_manifest_update,                                 🌕, 🌕,  🌕,   🌕,
 enable_file_handling,                                  🌕, 🌕,  🌕,   🌑,
 disable_file_handling,                                 🌕, 🌕,  🌕,   🌑,
+install_sub_app,                                       🌑, 🌑,  🌑,   🌕,
+remove_sub_app,                                        🌑, 🌑,  🌑,   🌕,
+check_has_sub_app,                                     🌑, 🌑,  🌑,   🌕,
+check_not_has_sub_app,                                 🌑, 🌑,  🌑,   🌕,
+check_no_sub_apps,                                     🌑, 🌑,  🌑,   🌕,
