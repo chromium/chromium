@@ -4121,6 +4121,7 @@ if (!is_android) {
         "../browser/ash/policy/networking/network_policy_application_browsertest.cc",
         "../browser/ash/policy/networking/policy_certs_browsertest.cc",
         "../browser/ash/policy/remote_commands/curtain_mode_chromeos_browsertest.cc",
+        "../browser/ash/policy/remote_commands/device_command_reboot_job_browsertest.cc",
         "../browser/ash/policy/reporting/metrics_reporting/apps/app_events_observer_browsertest.cc",
         "../browser/ash/policy/reporting/metrics_reporting/apps/app_usage_telemetry_sampler_browsertest.cc",
         "../browser/ash/policy/reporting/metrics_reporting/audio/audio_events_observer_browsertest.cc",
