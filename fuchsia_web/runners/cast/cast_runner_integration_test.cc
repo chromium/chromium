@@ -595,9 +595,9 @@ TEST_F(CastRunnerIntegrationTest, RemoteDebugging) {
       GetDevToolsListFromPort(CastRunner::kRemoteDebuggingPort);
   EXPECT_EQ(devtools_list.size(), 1u);
 
-  base::Value* devtools_url = devtools_list[0].FindPath("url");
-  ASSERT_TRUE(devtools_url->is_string());
-  EXPECT_EQ(devtools_url->GetString(), app_url.spec());
+  const auto* devtools_url = devtools_list[0].GetDict().FindString("url");
+  ASSERT_TRUE(devtools_url);
+  EXPECT_EQ(*devtools_url, app_url.spec());
 }
 
 TEST_F(CastRunnerIntegrationTest, IsolatedContext) {
@@ -1044,9 +1044,11 @@ TEST_F(CastRunnerIntegrationTest, FrameHostDebugging) {
   base::Value::List devtools_list =
       GetDevToolsListFromPort(remote_debugging_port);
   EXPECT_EQ(devtools_list.size(), 1u);
-  base::Value* devtools_url = devtools_list[0].FindPath("url");
-  ASSERT_TRUE(devtools_url->is_string());
-  EXPECT_EQ(devtools_url->GetString(), url);
+  {
+    const auto* devtools_url = devtools_list[0].GetDict().FindString("url");
+    ASSERT_TRUE(devtools_url);
+    EXPECT_EQ(*devtools_url, url);
+  }
 
   // Create a new `FrameHost` client, and immediately close it. The DevTools
   // port should remain open regardless.
@@ -1063,9 +1065,11 @@ TEST_F(CastRunnerIntegrationTest, FrameHostDebugging) {
 
   devtools_list = GetDevToolsListFromPort(remote_debugging_port);
   EXPECT_EQ(devtools_list.size(), 1u);
-  devtools_url = devtools_list[0].FindPath("url");
-  ASSERT_TRUE(devtools_url->is_string());
-  EXPECT_EQ(devtools_url->GetString(), url2);
+  {
+    const auto* devtools_url = devtools_list[0].GetDict().FindString("url");
+    ASSERT_TRUE(devtools_url);
+    EXPECT_EQ(*devtools_url, url2);
+  }
 }
 
 #if defined(ARCH_CPU_ARM_FAMILY)
