@@ -1,14 +1,15 @@
 // Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "chrome/test/chromedriver/log_replay/devtools_log_reader.h"
 
-#include <cctype>
 #include <iostream>
 #include <string>
 
 #include "base/logging.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_util.h"
 
 namespace {
 // Parses the word (id=X) and just returns the id number
@@ -29,7 +30,7 @@ void putback(std::istringstream& stream, const std::string& str) {
 // Parses the word (session_id=X) and just returns the session_id string
 bool GetSessionId(std::istringstream& header_stream, std::string* session_id) {
   std::string spaces;
-  while (std::isspace(header_stream.peek())) {
+  while (base::IsAsciiWhitespace(header_stream.peek())) {
     char ch;
     header_stream.get(ch);
     spaces.push_back(ch);

@@ -419,6 +419,19 @@ template <typename Char>
 inline bool IsAsciiPrintable(Char c) {
   return c >= ' ' && c <= '~';
 }
+template <typename Char>
+inline bool IsAsciiControl(Char c) {
+  if constexpr (std::is_signed_v<Char>) {
+    if (c < 0) {
+      return false;
+    }
+  }
+  return c <= 0x1f || c == 0x7f;
+}
+template <typename Char>
+inline bool IsAsciiPunctuation(Char c) {
+  return c > 0x20 && c < 0x7f && !IsAsciiAlphaNumeric(c);
+}
 
 template <typename Char>
 inline bool IsHexDigit(Char c) {

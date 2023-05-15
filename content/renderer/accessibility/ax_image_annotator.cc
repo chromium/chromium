@@ -4,7 +4,6 @@
 
 #include "content/renderer/accessibility/ax_image_annotator.h"
 
-#include <ctype.h>
 #include <utility>
 #include <vector>
 
@@ -15,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/public/common/content_client.h"
@@ -519,10 +519,11 @@ void AXImageAnnotator::OnImageAnnotated(
     int last_meaningful_char = annotation->text.length() - 1;
     while (last_meaningful_char >= 0) {
       bool is_whitespace_or_punct =
-          isspace(annotation->text[last_meaningful_char]) ||
-          ispunct(annotation->text[last_meaningful_char]);
-      if (!is_whitespace_or_punct)
+          base::IsAsciiWhitespace(annotation->text[last_meaningful_char]) ||
+          base::IsAsciiPunctuation(annotation->text[last_meaningful_char]);
+      if (!is_whitespace_or_punct) {
         break;
+      }
       last_meaningful_char--;
     }
 
