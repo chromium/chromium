@@ -1243,6 +1243,10 @@ const char kFastPairEnabled[] = "ash.fast_pair.enabled";
 // pair entry point.
 const char kUserPairedWithFastPair[] = "ash.user.paired_with_fast_pair";
 
+// A list pref that contains predefined automation configured by policy
+// administrators.
+const char kAppLaunchAutomation[] = "ash.app_launch_automation";
+
 // A boolean pref that controls whether the user is allowed to use the Desk
 // Templates feature - including creating Desks templates and using predefined
 // Desks templates.

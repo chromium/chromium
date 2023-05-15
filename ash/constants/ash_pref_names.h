@@ -569,6 +569,7 @@ extern const char kFastPairEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kUserPairedWithFastPair[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAppLaunchAutomation[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDeskTemplatesEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPreconfiguredDeskTemplates[];
 
