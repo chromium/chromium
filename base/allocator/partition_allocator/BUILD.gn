@@ -414,6 +414,9 @@ buildflag_header("partition_alloc_buildflags") {
   # enablement is already gated on BRP enablement.
   _enable_gwp_asan_support = put_ref_count_in_previous_slot
 
+  # Pools are a logical concept when address space is 32-bit.
+  _glue_core_pools = glue_core_pools && has_64_bit_pointers
+
   # TODO(crbug.com/1151236): Need to refactor the following buildflags.
   # The buildflags (except RECORD_ALLOC_INFO) are used by both chrome and
   # partition alloc. For partition alloc,
@@ -444,7 +447,7 @@ buildflag_header("partition_alloc_buildflags") {
 
     "RECORD_ALLOC_INFO=$_record_alloc_info",
     "USE_FREESLOT_BITMAP=$use_freeslot_bitmap",
-    "GLUE_CORE_POOLS=$glue_core_pools",
+    "GLUE_CORE_POOLS=$_glue_core_pools",
     "ENABLE_POINTER_COMPRESSION=$enable_pointer_compression_support",
     "ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=$enable_shadow_metadata",
 

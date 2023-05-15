@@ -150,7 +150,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return (address & brp_pool_base_mask) == setup_.brp_pool_base_address_;
   }
 
-#if PA_CONFIG(GLUE_CORE_POOLS)
+#if BUILDFLAG(GLUE_CORE_POOLS)
   // Checks whether the address belongs to either regular or BRP pool.
   // Returns false for nullptr.
   PA_ALWAYS_INLINE static bool IsInCorePools(uintptr_t address) {
@@ -176,7 +176,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return RegularPoolSize() * 2;
   }
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-#endif  // PA_CONFIG(GLUE_CORE_POOLS)
+#endif  // BUILDFLAG(GLUE_CORE_POOLS)
 
   PA_ALWAYS_INLINE static uintptr_t OffsetInBRPPool(uintptr_t address) {
     PA_DCHECK(IsInBRPPool(address));
@@ -328,7 +328,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
           regular_pool_base_mask_(0),
           brp_pool_base_mask_(0),
-#if PA_CONFIG(GLUE_CORE_POOLS)
+#if BUILDFLAG(GLUE_CORE_POOLS)
           core_pools_base_mask_(0),
 #endif
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
@@ -347,7 +347,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
         uintptr_t regular_pool_base_mask_;
         uintptr_t brp_pool_base_mask_;
-#if PA_CONFIG(GLUE_CORE_POOLS)
+#if BUILDFLAG(GLUE_CORE_POOLS)
         uintptr_t core_pools_base_mask_;
 #endif
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
@@ -446,13 +446,13 @@ PA_ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(uintptr_t address) {
   return internal::PartitionAddressSpace::IsInBRPPool(address);
 }
 
-#if PA_CONFIG(GLUE_CORE_POOLS)
+#if BUILDFLAG(GLUE_CORE_POOLS)
 // Checks whether the address belongs to either regular or BRP pool.
 // Returns false for nullptr.
 PA_ALWAYS_INLINE bool IsManagedByPartitionAllocCorePools(uintptr_t address) {
   return internal::PartitionAddressSpace::IsInCorePools(address);
 }
-#endif  // PA_CONFIG(GLUE_CORE_POOLS)
+#endif  // BUILDFLAG(GLUE_CORE_POOLS)
 
 // Returns false for nullptr.
 PA_ALWAYS_INLINE bool IsManagedByPartitionAllocConfigurablePool(
