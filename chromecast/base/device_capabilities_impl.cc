@@ -277,10 +277,9 @@ void DeviceCapabilitiesImpl::SetCapability(const std::string& path,
   SetPublicValidatedValue(path, std::move(proposed_value));
 }
 
-void DeviceCapabilitiesImpl::MergeDictionary(const base::Value& dict_value) {
-  DCHECK(dict_value.is_dict());
-  for (const auto kv : dict_value.GetDict()) {
-    SetCapability(kv.first, kv.second.Clone());
+void DeviceCapabilitiesImpl::MergeDictionary(const base::Value::Dict& dict) {
+  for (const auto [key, value] : dict) {
+    SetCapability(key, value.Clone());
   }
 }
 

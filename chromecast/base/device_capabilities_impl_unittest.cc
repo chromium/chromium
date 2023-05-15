@@ -583,11 +583,11 @@ TEST_F(DeviceCapabilitiesImplTest, SetCapabilityDictionaryInvalid) {
   EXPECT_EQ(value.GetInt(), 99);
 }
 
-// Test  MergeDictionary.
+// Test MergeDictionary.
 TEST_F(DeviceCapabilitiesImplTest, MergeDictionary) {
-  auto deserialized_value = base::JSONReader::Read(kSampleDictionaryCapability);
+  absl::optional<base::Value::Dict> deserialized_value =
+      base::JSONReader::ReadDict(kSampleDictionaryCapability);
   ASSERT_TRUE(deserialized_value);
-  ASSERT_TRUE(deserialized_value->is_dict());
 
   capabilities()->MergeDictionary(*deserialized_value);
   base::RunLoop().RunUntilIdle();
@@ -603,8 +603,8 @@ TEST_F(DeviceCapabilitiesImplTest, MergeDictionary) {
 
   // Now just update one of the fields. Make sure the updated value is changed
   // in DeviceCapabilities and the other field remains untouched.
-  deserialized_value->GetDict().Set("dummy_field_int", 100);
-  ASSERT_TRUE(deserialized_value->RemoveKey("dummy_field_bool"));
+  deserialized_value->Set("dummy_field_int", 100);
+  ASSERT_TRUE(deserialized_value->Remove("dummy_field_bool"));
 
   capabilities()->MergeDictionary(*deserialized_value);
   base::RunLoop().RunUntilIdle();
