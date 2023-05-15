@@ -192,7 +192,7 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfCustomPassphraseInUse) {
             GetUploadToGoogleState(&service, syncer::DEVICE_INFO));
 }
 
-TEST(SyncServiceUtilsTest, UploadToGoogleDisabledForSecondaryAccount) {
+TEST(SyncServiceUtilsTest, UploadToGoogleDisabledInTransportMode) {
   TestSyncService service;
   service.SetDisableReasons(SyncService::DisableReasonSet());
   service.GetUserSettings()->SetSelectedTypes(
@@ -213,6 +213,27 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledForSecondaryAccount) {
   // Upload should NOT be active now. Even though the data type is active, we're
   // running in standalone transport mode, so we don't have consent for
   // uploading.
+  EXPECT_EQ(UploadState::NOT_ACTIVE,
+            GetUploadToGoogleState(&service, syncer::BOOKMARKS));
+}
+
+TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfInitialSetupIncomplete) {
+  TestSyncService service;
+  service.SetDisableReasons(SyncService::DisableReasonSet());
+  service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/true,
+      /*types=*/UserSelectableTypeSet::All());
+  service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  service.SetNonEmptyLastCycleSnapshot();
+
+  // Sanity check: Everything's looking good, so upload is considered active.
+  ASSERT_EQ(UploadState::ACTIVE,
+            GetUploadToGoogleState(&service, syncer::BOOKMARKS));
+
+  // Clear the first-setup-complete bit.
+  service.GetUserSettings()->ClearFirstSetupComplete();
+
+  // This should make the upload state NOT active.
   EXPECT_EQ(UploadState::NOT_ACTIVE,
             GetUploadToGoogleState(&service, syncer::BOOKMARKS));
 }

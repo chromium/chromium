@@ -19,7 +19,7 @@ UploadState GetUploadToGoogleState(const SyncService* sync_service,
   // "everything" (i.e. the default setting). If a data type is missing there,
   // it must be because the user explicitly disabled it.
   if (!sync_service || sync_service->IsLocalSyncEnabled() ||
-      !sync_service->CanSyncFeatureStart() ||
+      !sync_service->IsSyncFeatureEnabled() ||
       !sync_service->GetPreferredDataTypes().Has(type)) {
     return UploadState::NOT_ACTIVE;
   }
