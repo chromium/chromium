@@ -44,10 +44,20 @@ export class ProgressCenterPanel {
     this.dismissErrorItemCallback = null;
 
     /**
-     * Timeout for hiding file operations in progress.
-     * @type {number}
+     * Defer showing in progress operation to avoid displaying quick
+     * operations, e.g. the notification panel only shows if the task is
+     * processing longer than this time.
+     * @private {number}
      */
     this.PENDING_TIME_MS_ = 2000;
+
+    /**
+     * Timeout for removing the notification panel, e.g. the notification
+     * panel will be removed after this time.
+     * @private {number}
+     */
+    this.TIMEOUT_TO_REMOVE_MS_ = 4000;
+
     if (window.IN_TEST) {
       this.PENDING_TIME_MS_ = 0;
     }
@@ -480,7 +490,7 @@ export class ProgressCenterPanel {
             setTimeout(() => {
               this.feedbackHost_.removePanelItem(donePanelItem);
               delete this.items_[donePanelItem.id];
-            }, 4000);
+            }, this.TIMEOUT_TO_REMOVE_MS_);
           }
           // Drop through to remove the progress panel.
         case ProgressItemState.CANCELED:
