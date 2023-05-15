@@ -459,8 +459,8 @@ TEST_F(StatusTest, TypedStatusWithNoDefaultAndNoOk) {
   EXPECT_TRUE(ok.has_value());
   // One cannot call ok.code() without an okay type.
 
-  base::Value actual = MediaSerialize(bar);
-  EXPECT_EQ(*actual.FindIntPath("code"), static_cast<int>(bar.code()));
+  base::Value::Dict actual = MediaSerialize(bar).TakeDict();
+  EXPECT_EQ(*actual.FindInt("code"), static_cast<int>(bar.code()));
 }
 
 TEST_F(StatusTest, TypedStatusWithNoDefaultHasOk) {
@@ -487,8 +487,8 @@ TEST_F(StatusTest, TypedStatusWithNoDefaultHasOk) {
   EXPECT_TRUE(ok.has_value());
   EXPECT_EQ(ok.code(), NDStatus::Codes::kOk);
 
-  base::Value actual = MediaSerialize(bar);
-  EXPECT_EQ(*actual.FindIntPath("code"), static_cast<int>(bar.code()));
+  base::Value::Dict actual = MediaSerialize(bar).TakeDict();
+  EXPECT_EQ(*actual.FindInt("code"), static_cast<int>(bar.code()));
 }
 
 TEST_F(StatusTest, Okayness) {

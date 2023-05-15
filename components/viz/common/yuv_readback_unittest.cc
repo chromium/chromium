@@ -98,11 +98,11 @@ class YUVReadbackTest : public testing::Test {
         << json_data;
 
     CHECK(parsed_json->is_list());
-    for (const base::Value& dict : parsed_json->GetList()) {
-      CHECK(dict.is_dict());
-      const std::string* name = dict.FindStringPath("name");
+    for (const base::Value& entry : parsed_json->GetList()) {
+      const auto& dict = entry.GetDict();
+      const std::string* name = dict.FindString("name");
       CHECK(name);
-      const std::string* trace_type = dict.FindStringPath("ph");
+      const std::string* trace_type = dict.FindString("ph");
       CHECK(trace_type);
       // Count all except END traces, as they come in BEGIN/END pairs.
       if (*trace_type != "E" && *trace_type != "e")

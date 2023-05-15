@@ -61,20 +61,21 @@ const std::string* GetAttributeValue(const base::Value::Dict& dict,
       return nullptr;
     }
     for (const auto& attribute_child : *attribute_children) {
-      const std::string* tag = attribute_child.FindStringPath("tag");
+      const auto& attribute_child_dict = attribute_child.GetDict();
+      const std::string* tag = attribute_child_dict.FindString("tag");
       if (!tag || *tag != "AttributeValue") {
         continue;
       }
 
-      const base::Value* attribute_value_children =
-          attribute_child.FindListPath(kChildrenKey);
+      const base::Value::List* attribute_value_children =
+          attribute_child_dict.FindList(kChildrenKey);
       if (!attribute_value_children) {
         continue;
       }
-      for (const auto& attribute_value_item :
-           attribute_value_children->GetList()) {
-        if (attribute_value_item.is_dict()) {
-          return attribute_value_item.FindStringPath("text");
+      for (const auto& attribute_value_item : *attribute_value_children) {
+        auto* attribute_value_dict = attribute_value_item.GetIfDict();
+        if (attribute_value_dict) {
+          return attribute_value_dict->FindString("text");
         }
       }
     }
