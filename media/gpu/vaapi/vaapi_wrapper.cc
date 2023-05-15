@@ -1867,8 +1867,7 @@ bool VaapiWrapper::GetJpegDecodeSuitableImageFourCC(unsigned int rt_format,
       // 4:4:4), this driver should only support the first two. Since we check
       // for supported internal formats at the beginning of this function, we
       // shouldn't get here.
-      NOTREACHED();
-      return false;
+      NOTREACHED_NORETURN();
     }
   } else if (GetImplementationType() == VAImplementation::kIntelI965) {
     // Workaround deduced from observations in samus and nocturne: we found that
@@ -2015,8 +2014,7 @@ VAEntrypoint VaapiWrapper::GetDefaultVaEntryPoint(CodecMode mode,
     case VaapiWrapper::kVideoProcess:
       return VAEntrypointVideoProc;
     case VaapiWrapper::kCodecModeMax:
-      NOTREACHED();
-      return VAEntrypointVLD;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -2508,11 +2506,8 @@ VaapiWrapper::ExportVASurfaceAsNativePixmapDmaBufUnwrapped(
   //
   // TODO(crbug.com/974438): support multiple buffer objects so that this can
   // work in AMD.
-  if (descriptor.num_objects != 1u) {
-    DVLOG(1) << "Only surface descriptors with one bo are supported";
-    NOTREACHED();
-    return nullptr;
-  }
+  CHECK_EQ(descriptor.num_objects, 1u)
+      << "Only surface descriptors with one bo are supported";
   base::ScopedFD bo_fd(descriptor.objects[0].fd);
   const uint64_t bo_modifier = descriptor.objects[0].drm_format_modifier;
 

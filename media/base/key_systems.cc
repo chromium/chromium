@@ -165,8 +165,7 @@ class ClearKeyKeySystemInfo : public KeySystemInfo {
       case EncryptionScheme::kUnencrypted:
         break;
     }
-    NOTREACHED();
-    return EmeConfig::UnsupportedRule();
+    NOTREACHED_NORETURN();
   }
 
   SupportedCodecs GetSupportedCodecs() const final {
@@ -585,10 +584,7 @@ bool KeySystemsImpl::IsSupportedInitDataType(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   const auto* key_system_info = GetKeySystemInfo(key_system);
-  if (!key_system_info) {
-    NOTREACHED();
-    return false;
-  }
+  CHECK(key_system_info);
 
   return key_system_info->IsSupportedInitDataType(init_data_type);
 }
@@ -599,10 +595,7 @@ EmeConfig::Rule KeySystemsImpl::GetEncryptionSchemeConfigRule(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   const auto* key_system_info = GetKeySystemInfo(key_system);
-  if (!key_system_info) {
-    NOTREACHED();
-    return EmeConfig::UnsupportedRule();
-  }
+  CHECK(key_system_info);
 
   return key_system_info->GetEncryptionSchemeConfigRule(encryption_scheme);
 }
@@ -789,10 +782,7 @@ EmeConfig::Rule KeySystemsImpl::GetRobustnessConfigRule(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   const auto* key_system_info = GetKeySystemInfo(key_system);
-  if (!key_system_info) {
-    NOTREACHED();
-    return EmeConfig::UnsupportedRule();
-  }
+  CHECK(key_system_info);
 
   return key_system_info->GetRobustnessConfigRule(
       key_system, media_type, requested_robustness, hw_secure_requirement);
@@ -803,10 +793,7 @@ EmeConfig::Rule KeySystemsImpl::GetPersistentLicenseSessionSupport(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   const auto* key_system_info = GetKeySystemInfo(key_system);
-  if (!key_system_info) {
-    NOTREACHED();
-    return EmeConfig::UnsupportedRule();
-  }
+  CHECK(key_system_info);
 
   return key_system_info->GetPersistentLicenseSessionSupport();
 }
@@ -816,10 +803,7 @@ EmeFeatureSupport KeySystemsImpl::GetPersistentStateSupport(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   const auto* key_system_info = GetKeySystemInfo(key_system);
-  if (!key_system_info) {
-    NOTREACHED();
-    return EmeFeatureSupport::INVALID;
-  }
+  CHECK(key_system_info);
 
   return key_system_info->GetPersistentStateSupport();
 }
@@ -829,10 +813,7 @@ EmeFeatureSupport KeySystemsImpl::GetDistinctiveIdentifierSupport(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   const auto* key_system_info = GetKeySystemInfo(key_system);
-  if (!key_system_info) {
-    NOTREACHED();
-    return EmeFeatureSupport::INVALID;
-  }
+  CHECK(key_system_info);
 
   return key_system_info->GetDistinctiveIdentifierSupport();
 }

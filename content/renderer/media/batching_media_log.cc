@@ -204,10 +204,11 @@ std::string BatchingMediaLog::MediaEventToMessageString(
       }
       return "";
     }
-    default:
-      NOTREACHED();
-      return "";
+    case media::MediaLogRecord::Type::kMediaPropertyChange:
+    case media::MediaLogRecord::Type::kMediaEventTriggered:
+      NOTREACHED_NORETURN();
   }
+  NOTREACHED_NORETURN();
 }
 
 void BatchingMediaLog::SendQueuedMediaEvents() {

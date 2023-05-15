@@ -178,14 +178,12 @@ BrowserGpuVideoAcceleratorFactories::VideoFrameOutputFormat(
 
 gpu::SharedImageInterface*
 BrowserGpuVideoAcceleratorFactories::SharedImageInterface() {
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 gpu::GpuMemoryBufferManager*
 BrowserGpuVideoAcceleratorFactories::GpuMemoryBufferManager() {
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 base::UnsafeSharedMemoryRegion

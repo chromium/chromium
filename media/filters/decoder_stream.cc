@@ -90,8 +90,7 @@ const char* GetStatusString(const DecoderStatus& status) {
       return "decode_error";
   }
 
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 template <DemuxerStream::Type StreamType>

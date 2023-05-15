@@ -68,8 +68,7 @@ constexpr base::StringPiece GetAttributeName(XDefineTagAttribute attribute) {
       return "VALUE";
   }
 
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 // Attributes expected in `EXT-X-MEDIA` tag contents.
@@ -121,8 +120,7 @@ constexpr base::StringPiece GetAttributeName(XMediaTagAttribute attribute) {
       return "URI";
   }
 
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 // Attributes expected in `EXT-X-STREAM-INF` tag contents.
@@ -162,8 +160,7 @@ constexpr base::StringPiece GetAttributeName(XStreamInfTagAttribute attribute) {
       return "SCORE";
   }
 
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 // Attributes expected in `EXT-X-MAP` tag contents.
@@ -182,8 +179,7 @@ constexpr base::StringPiece GetAttributeName(XMapTagAttribute attribute) {
       return "URI";
   }
 
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 // Attributes expected in `EXT-X-PART` tag contents.
@@ -225,8 +221,7 @@ constexpr base::StringPiece GetAttributeName(XPartInfTagAttribute attribute) {
       return "PART-TARGET";
   }
 
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 // Attributes expected in `EXT-X-SERVER-CONTROL` tag contents.
@@ -255,8 +250,7 @@ constexpr base::StringPiece GetAttributeName(
       return "PART-HOLD-BACK";
   }
 
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 template <typename T, size_t kLast>

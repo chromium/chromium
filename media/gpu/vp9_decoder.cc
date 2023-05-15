@@ -81,8 +81,7 @@ bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
     case VP9PROFILE_PROFILE3:
       return bit_depth == 10u || bit_depth == 12u;
     default:
-      NOTREACHED();
-      return false;
+      NOTREACHED_NORETURN();
   }
 }
 

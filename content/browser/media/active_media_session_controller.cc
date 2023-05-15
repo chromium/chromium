@@ -205,8 +205,7 @@ void ActiveMediaSessionController::PerformAction(MediaSessionAction action) {
     case MediaSessionAction::kSetMute:
     case MediaSessionAction::kPreviousSlide:
     case MediaSessionAction::kNextSlide:
-      NOTREACHED();
-      return;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -227,8 +226,7 @@ MediaSessionAction ActiveMediaSessionController::KeyCodeToMediaSessionAction(
     case ui::KeyboardCode::VKEY_MEDIA_PREV_TRACK:
       return MediaSessionAction::kPreviousTrack;
     default:
-      NOTREACHED();
-      return MediaSessionAction::kPlay;
+      NOTREACHED_NORETURN();
   }
 }
 

@@ -80,8 +80,7 @@ std::string StatusToString(const SourceBufferStreamStatus& status) {
     case SourceBufferStreamStatus::kEndOfStream:
       return "kEndOfStream";
   }
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 // Helper method for logging, converts a range into a readable string.
@@ -150,8 +149,7 @@ SourceBufferRange::GapPolicy TypeToGapPolicy(SourceBufferStreamType type) {
       return SourceBufferRange::ALLOW_GAPS;
   }
 
-  NOTREACHED();
-  return SourceBufferRange::NO_GAPS_ALLOWED;
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace
@@ -1992,8 +1990,7 @@ std::string SourceBufferStream::GetStreamTypeName() const {
     case SourceBufferStreamType::kText:
       return "TEXT";
   }
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 SourceBufferStreamType SourceBufferStream::GetType() const {

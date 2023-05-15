@@ -99,11 +99,7 @@ AudioSender::~AudioSender() {
 void AudioSender::InsertAudio(std::unique_ptr<AudioBus> audio_bus,
                               const base::TimeTicks& recorded_time) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
-
-  if (!audio_encoder_) {
-    NOTREACHED();
-    return;
-  }
+  CHECK(audio_encoder_);
 
   number_of_frames_inserted_++;
   const base::TimeDelta next_frame_duration =

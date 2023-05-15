@@ -94,9 +94,7 @@ void FakeDemuxerStream::Read(uint32_t /*count*/, ReadCB read_cb) {
 }
 
 AudioDecoderConfig FakeDemuxerStream::audio_decoder_config() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  NOTREACHED();
-  return AudioDecoderConfig();
+  NOTREACHED_NORETURN();
 }
 
 VideoDecoderConfig FakeDemuxerStream::video_decoder_config() {

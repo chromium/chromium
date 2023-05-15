@@ -181,8 +181,7 @@ class PictureBufferManagerImpl : public PictureBufferManager {
         picture_data.gpu_memory_buffer_video_frame =
             std::move(gpu_memory_buffer_video_frame);
 #else
-        NOTREACHED();
-        return {};
+        NOTREACHED_NORETURN();
 #endif  // BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
       }
 

@@ -548,11 +548,8 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   const gfx::Size& natural_size() const { return natural_size_; }
 
   int stride(size_t plane) const {
-    if (UNLIKELY(!IsValidPlane(format(), plane) ||
-                 plane >= layout_.num_planes())) {
-      NOTREACHED();
-      return 0;
-    }
+    CHECK(IsValidPlane(format(), plane));
+    CHECK_LT(plane, layout_.num_planes());
     return layout_.planes()[plane].stride;
   }
 

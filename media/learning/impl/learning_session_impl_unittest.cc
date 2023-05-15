@@ -71,10 +71,7 @@ class LearningSessionImplTest : public testing::Test {
       updated_id_ = id;
     }
 
-    const LearningTask& GetLearningTask() override {
-      NOTREACHED();
-      return LearningTask::Empty();
-    }
+    const LearningTask& GetLearningTask() override { NOTREACHED_NORETURN(); }
 
     void PredictDistribution(const FeatureVector& features,
                              PredictionCB callback) override {

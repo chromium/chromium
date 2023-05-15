@@ -620,8 +620,7 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
                                    void* in_buffer,
                                    UInt32* out_size) {
     // This class only does writing.
-    NOTREACHED();
-    return kAudioFileNotOpenError;
+    NOTREACHED_NORETURN();
   }
 
   // The AudioFile write callback function. Appends the data to the encoder's
@@ -647,8 +646,7 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
   // The AudioFile getsize callback function.
   static SInt64 FileGetSizeCallback(void* in_encoder) {
     // This class only does writing.
-    NOTREACHED();
-    return 0;
+    NOTREACHED_NORETURN();
   }
 
   // The AudioFile setsize callback function.
@@ -788,19 +786,13 @@ OperationalStatus AudioEncoder::InitializationResult() const {
 
 int AudioEncoder::GetSamplesPerFrame() const {
   DCHECK_CALLED_ON_VALID_THREAD(insert_thread_checker_);
-  if (InitializationResult() != STATUS_INITIALIZED) {
-    NOTREACHED();
-    return std::numeric_limits<int>::max();
-  }
+  CHECK_EQ(InitializationResult(), STATUS_INITIALIZED);
   return impl_->samples_per_frame();
 }
 
 base::TimeDelta AudioEncoder::GetFrameDuration() const {
   DCHECK_CALLED_ON_VALID_THREAD(insert_thread_checker_);
-  if (InitializationResult() != STATUS_INITIALIZED) {
-    NOTREACHED();
-    return base::TimeDelta();
-  }
+  CHECK_EQ(InitializationResult(), STATUS_INITIALIZED);
   return impl_->frame_duration();
 }
 
@@ -816,10 +808,7 @@ void AudioEncoder::InsertAudio(std::unique_ptr<AudioBus> audio_bus,
                                const base::TimeTicks recorded_time) {
   DCHECK_CALLED_ON_VALID_THREAD(insert_thread_checker_);
   DCHECK(audio_bus.get());
-  if (InitializationResult() != STATUS_INITIALIZED) {
-    NOTREACHED();
-    return;
-  }
+  CHECK_EQ(InitializationResult(), STATUS_INITIALIZED);
   cast_environment_->PostTask(
       CastEnvironment::AUDIO, FROM_HERE,
       base::BindOnce(&AudioEncoder::ImplBase::EncodeAudio, impl_,

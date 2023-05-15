@@ -68,8 +68,7 @@ bool MediaHistoryTableBase::GetProto(sql::Statement& s,
 }
 
 bool MediaHistoryTableBase::DeleteURL(const GURL& url) {
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace media_history

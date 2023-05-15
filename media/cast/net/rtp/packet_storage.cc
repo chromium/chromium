@@ -21,10 +21,7 @@ size_t PacketStorage::GetNumberOfStoredFrames() const {
 
 void PacketStorage::StoreFrame(FrameId frame_id,
                                const SendPacketVector& packets) {
-  if (packets.empty()) {
-    NOTREACHED();
-    return;
-  }
+  CHECK(!packets.empty());
 
   if (frames_.empty()) {
     first_frame_id_in_list_ = frame_id;

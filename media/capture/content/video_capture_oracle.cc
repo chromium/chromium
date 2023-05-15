@@ -422,8 +422,7 @@ const char* VideoCaptureOracle::EventAsString(Event event) {
     case kNumEvents:
       break;
   }
-  NOTREACHED();
-  return "unknown";
+  NOTREACHED_NORETURN();
 }
 
 base::TimeTicks VideoCaptureOracle::GetFrameTimestamp(int frame_number) const {

@@ -477,19 +477,11 @@ void VideoCaptureController::ReturnBuffer(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   ControllerClient* client = FindClient(id, event_handler, controller_clients_);
+  CHECK(client);
 
-  // If this buffer is not held by this client, or this client doesn't exist
-  // in controller, do nothing.
-  if (!client) {
-    NOTREACHED();
-    return;
-  }
   auto buffers_in_use_entry_iter =
       base::ranges::find(client->buffers_in_use, buffer_id);
-  if (buffers_in_use_entry_iter == std::end(client->buffers_in_use)) {
-    NOTREACHED();
-    return;
-  }
+  CHECK(buffers_in_use_entry_iter != std::end(client->buffers_in_use));
   client->buffers_in_use.erase(buffers_in_use_entry_iter);
 
   OnClientFinishedConsumingBuffer(client, buffer_id, feedback);

@@ -195,8 +195,7 @@ StreamParser::ParseStatus MP4StreamParser::Parse(
     switch (state_) {
       case kWaitingForInit:
       case kError:
-        NOTREACHED();
-        return ParseStatus::kFailed;
+        NOTREACHED_NORETURN();
 
       case kParsingBoxes: {
         ParseResult pr = ParseBox();

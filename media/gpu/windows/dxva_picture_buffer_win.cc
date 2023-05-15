@@ -55,8 +55,7 @@ std::unique_ptr<DXVAPictureBuffer> DXVAPictureBuffer::Create(
       return picture_buffer;
     }
   }
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 DXVAPictureBuffer::~DXVAPictureBuffer() {}
@@ -70,8 +69,7 @@ bool DXVAPictureBuffer::CopyOutputSampleDataToPictureBuffer(
     IDirect3DSurface9* dest_surface,
     ID3D11Texture2D* dx11_texture,
     int input_buffer_id) {
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 void DXVAPictureBuffer::set_bound() {
@@ -85,8 +83,7 @@ gl::GLFence* DXVAPictureBuffer::reuse_fence() {
 
 bool DXVAPictureBuffer::CopySurfaceComplete(IDirect3DSurface9* src_surface,
                                             IDirect3DSurface9* dest_surface) {
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 DXVAPictureBuffer::DXVAPictureBuffer(const PictureBuffer& buffer)
@@ -95,8 +92,7 @@ DXVAPictureBuffer::DXVAPictureBuffer(const PictureBuffer& buffer)
 bool DXVAPictureBuffer::BindSampleToTexture(
     DXVAVideoDecodeAccelerator* decoder,
     Microsoft::WRL::ComPtr<IMFSample> sample) {
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 bool PbufferPictureBuffer::Initialize(const DXVAVideoDecodeAccelerator& decoder,

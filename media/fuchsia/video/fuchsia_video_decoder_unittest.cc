@@ -380,23 +380,11 @@ class FakeClientNativePixmap : public gfx::ClientNativePixmap {
   ~FakeClientNativePixmap() override = default;
 
   // gfx::ClientNativePixmap implementation.
-  bool Map() override {
-    NOTREACHED();
-    return false;
-  }
+  bool Map() override { NOTREACHED_NORETURN(); }
   void Unmap() override { NOTREACHED(); }
-  size_t GetNumberOfPlanes() const override {
-    NOTREACHED();
-    return 0;
-  }
-  void* GetMemoryAddress(size_t plane) const override {
-    NOTREACHED();
-    return nullptr;
-  }
-  int GetStride(size_t plane) const override {
-    NOTREACHED();
-    return 0;
-  }
+  size_t GetNumberOfPlanes() const override { NOTREACHED_NORETURN(); }
+  void* GetMemoryAddress(size_t plane) const override { NOTREACHED_NORETURN(); }
+  int GetStride(size_t plane) const override { NOTREACHED_NORETURN(); }
   gfx::NativePixmapHandle CloneHandleForIPC() const override {
     return gfx::CloneHandleForIPC(handle_);
   }

@@ -22,8 +22,7 @@ media::mojom::AacOutputFormat EnumTraits<media::mojom::AacOutputFormat,
     case media::AudioEncoder::AacOutputFormat::AAC:
       return media::mojom::AacOutputFormat::kAAC;
   }
-  NOTREACHED();
-  return media::mojom::AacOutputFormat::kAAC;
+  NOTREACHED_NORETURN();
 }
 
 // static
@@ -39,8 +38,7 @@ bool EnumTraits<media::mojom::AacOutputFormat,
       *output = media::AudioEncoder::AacOutputFormat::AAC;
       return true;
   }
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 // static

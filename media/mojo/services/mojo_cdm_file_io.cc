@@ -120,7 +120,7 @@ void MojoCdmFileIO::OnFileOpened(
       return;
   }
 
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void MojoCdmFileIO::Read() {

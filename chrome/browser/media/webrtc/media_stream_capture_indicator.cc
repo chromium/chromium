@@ -127,8 +127,7 @@ ObserverMethod GetObserverMethodToCall(const blink::MediaStreamDevice& device) {
 
     case blink::mojom::MediaStreamType::NO_SERVICE:
     case blink::mojom::MediaStreamType::NUM_MEDIA_TYPES:
-      NOTREACHED();
-      return nullptr;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -380,8 +379,7 @@ int& MediaStreamCaptureIndicator::WebContentsDeviceUsage::GetStreamCount(
 
     case blink::mojom::MediaStreamType::NO_SERVICE:
     case blink::mojom::MediaStreamType::NUM_MEDIA_TYPES:
-      NOTREACHED();
-      return video_stream_count_;
+      NOTREACHED_NORETURN();
   }
 }
 

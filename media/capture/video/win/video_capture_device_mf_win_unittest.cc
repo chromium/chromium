@@ -192,8 +192,7 @@ class MockAMCameraControl final : public MockInterface<IAMCameraControl> {
         *flags = CameraControl_Flags_Auto;
         return S_OK;
       default:
-        NOTREACHED();
-        return E_NOTIMPL;
+        NOTREACHED_NORETURN();
     }
   }
   IFACEMETHODIMP GetRange(long property,
@@ -217,8 +216,7 @@ class MockAMCameraControl final : public MockInterface<IAMCameraControl> {
         *caps_flags = CameraControl_Flags_Auto | CameraControl_Flags_Manual;
         return S_OK;
       default:
-        NOTREACHED();
-        return E_NOTIMPL;
+        NOTREACHED_NORETURN();
     }
   }
   IFACEMETHODIMP Set(long property, long value, long flags) override {
@@ -247,8 +245,7 @@ class MockAMVideoProcAmp final : public MockInterface<IAMVideoProcAmp> {
         *flags = VideoProcAmp_Flags_Auto;
         return S_OK;
       default:
-        NOTREACHED();
-        return E_NOTIMPL;
+        NOTREACHED_NORETURN();
     }
   }
   IFACEMETHODIMP GetRange(long property,
@@ -275,8 +272,7 @@ class MockAMVideoProcAmp final : public MockInterface<IAMVideoProcAmp> {
         *caps_flags = VideoProcAmp_Flags_Auto | VideoProcAmp_Flags_Manual;
         return S_OK;
       default:
-        NOTREACHED();
-        return E_NOTIMPL;
+        NOTREACHED_NORETURN();
     }
   }
   IFACEMETHODIMP Set(long property, long value, long flags) override {

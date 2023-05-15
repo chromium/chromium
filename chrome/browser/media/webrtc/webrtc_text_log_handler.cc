@@ -401,8 +401,7 @@ void WebRtcTextLogHandler::FireGenericDoneCallback(
       case LoggingState::STOPPED:
         return "stopped";
     }
-    NOTREACHED();
-    return "";
+    NOTREACHED_NORETURN();
   };
 
   std::string error_message_with_state =

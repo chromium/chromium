@@ -251,8 +251,7 @@ base::StringPiece ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
       return base::StringPiece();
   };
 
-  NOTREACHED();
-  return base::StringPiece();
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace media

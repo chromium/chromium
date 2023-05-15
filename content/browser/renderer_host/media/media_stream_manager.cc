@@ -3834,11 +3834,9 @@ MediaStreamProvider* MediaStreamManager::GetDeviceManager(
     MediaStreamType stream_type) const {
   if (blink::IsVideoInputMediaType(stream_type)) {
     return video_capture_manager();
-  } else if (blink::IsAudioInputMediaType(stream_type)) {
-    return audio_input_device_manager();
   }
-  NOTREACHED();
-  return nullptr;
+  CHECK(blink::IsAudioInputMediaType(stream_type));
+  return audio_input_device_manager();
 }
 
 void MediaStreamManager::OnMediaStreamUIWindowId(

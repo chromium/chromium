@@ -335,8 +335,7 @@ std::unique_ptr<FrameDeliverer> FrameDelivererFactory::CreateFrameDeliverer(
       return std::make_unique<GpuMemoryBufferFrameDeliverer>(
           std::move(frame_painter), gmb_support_.get());
   }
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 PacmanFramePainter::PacmanFramePainter(Format pixel_format,

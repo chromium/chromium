@@ -15,6 +15,7 @@
 #include "base/bits.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
@@ -599,13 +600,12 @@ int FakeV4L2Impl::ioctl(int fd, int request, void* argp) {
     case VIDIOC_DV_TIMINGS_CAP:
     case VIDIOC_ENUM_FREQ_BANDS:
       // Unsupported |request| code.
-      NOTREACHED() << "Unsupported request code " << request;
+      LOG(ERROR) << "Unsupported request code " << request;
       return kErrorReturnValue;
   }
 
   // Invalid |request|.
-  NOTREACHED();
-  return kErrorReturnValue;
+  NOTREACHED_NORETURN();
 }
 
 // We ignore |start| in this implementation

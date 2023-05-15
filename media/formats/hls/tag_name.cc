@@ -110,8 +110,7 @@ TagKind GetTagKind(TagName name) {
     return TagKind::kMediaPlaylistTag;
   }
 
-  NOTREACHED();
-  return TagKind::kMaxValue;
+  NOTREACHED_NORETURN();
 }
 
 absl::optional<TagName> ParseTagName(base::StringPiece name) {
@@ -131,8 +130,7 @@ base::StringPiece TagNameToString(TagName name) {
     }
   }
 
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace media::hls

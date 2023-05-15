@@ -28,8 +28,7 @@ const char* CastLoggingToString(CastLoggingEvent event) {
     ENUM_TO_STRING(PACKET_RTX_REJECTED);
     ENUM_TO_STRING(PACKET_RECEIVED);
   }
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 
 FrameEvent::FrameEvent()

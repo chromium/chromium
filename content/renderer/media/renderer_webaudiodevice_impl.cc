@@ -55,10 +55,9 @@ blink::WebAudioDeviceSourceType GetLatencyHintSourceType(
     case WebAudioLatencyHint::kCategoryExact:
       return blink::WebAudioDeviceSourceType::kWebAudioExact;
     case WebAudioLatencyHint::kLastValue:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
-  NOTREACHED();
-  return blink::WebAudioDeviceSourceType::kWebAudioInteractive;
+  NOTREACHED_NORETURN();
 }
 
 int GetOutputBufferSize(const blink::WebAudioLatencyHint& latency_hint,

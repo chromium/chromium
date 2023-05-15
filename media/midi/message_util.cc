@@ -44,10 +44,8 @@ size_t GetMessageLength(uint8_t status_byte) {
     case 0xfe:
     case 0xff:
       return 1;
-    default:
-      NOTREACHED();
-      return 0;
   }
+  NOTREACHED_NORETURN();
 }
 
 bool IsDataByte(uint8_t data) {

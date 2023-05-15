@@ -26,8 +26,7 @@ GLImageIOSurface* GLImageIOSurface::Create(const gfx::Size& size) {
     default:
       break;
   }
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 GLImageIOSurface::GLImageIOSurface(const gfx::Size& size) : size_(size) {}

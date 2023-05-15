@@ -761,13 +761,11 @@ void OOPVideoDecoder::ReleaseVideoFrame(
 }
 
 void OOPVideoDecoder::ApplyResolutionChange() {
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 bool OOPVideoDecoder::NeedsBitstreamConversion() const {
-  NOTIMPLEMENTED();
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 bool OOPVideoDecoder::CanReadWithoutStalling() const {
@@ -790,9 +788,7 @@ bool OOPVideoDecoder::CanReadWithoutStalling() const {
 }
 
 int OOPVideoDecoder::GetMaxDecodeRequests() const {
-  NOTIMPLEMENTED();
-  NOTREACHED();
-  return 4;
+  NOTREACHED_NORETURN();
 }
 
 VideoDecoderType OOPVideoDecoder::GetDecoderType() const {
@@ -803,9 +799,7 @@ VideoDecoderType OOPVideoDecoder::GetDecoderType() const {
 }
 
 bool OOPVideoDecoder::IsPlatformDecoder() const {
-  NOTIMPLEMENTED();
-  NOTREACHED();
-  return true;
+  NOTREACHED_NORETURN();
 }
 
 bool OOPVideoDecoder::NeedsTranscryption() {

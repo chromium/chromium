@@ -1288,8 +1288,7 @@ bool StructTraits<media::stable::mojom::VideoDecoderConfigDataView,
       return false;
   }
 
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 // static

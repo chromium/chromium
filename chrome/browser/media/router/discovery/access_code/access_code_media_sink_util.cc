@@ -256,10 +256,8 @@ AccessCodeCastAddSinkResult AddSinkResultMetricsHelper(
       return AccessCodeCastAddSinkResult::kProfileSyncError;
     case AddSinkResultCode::INTERNAL_MEDIA_ROUTER_ERROR:
       return AccessCodeCastAddSinkResult::kInternalMediaRouterError;
-    default:
-      NOTREACHED();
-      return AccessCodeCastAddSinkResult::kUnknownError;
   }
+  NOTREACHED_NORETURN();
 }
 
 absl::optional<net::IPEndPoint> GetIPEndPointFromValueDict(

@@ -123,10 +123,8 @@ MediaPlayerBridge::~MediaPlayerBridge() {
 
 void MediaPlayerBridge::Initialize() {
   cookies_.clear();
-  if (url_.SchemeIsBlob() || url_.SchemeIsFileSystem()) {
-    NOTREACHED();
-    return;
-  }
+  CHECK(!url_.SchemeIsBlob());
+  CHECK(!url_.SchemeIsFileSystem());
 
   if (allow_credentials_ && !url_.SchemeIsFile()) {
     media::MediaResourceGetter* resource_getter =
@@ -188,11 +186,8 @@ void MediaPlayerBridge::SetPlaybackRate(double playback_rate) {
 
 void MediaPlayerBridge::Prepare() {
   DCHECK(j_media_player_bridge_.is_null());
-
-  if (url_.SchemeIsBlob() || url_.SchemeIsFileSystem()) {
-    NOTREACHED();
-    return;
-  }
+  CHECK(!url_.SchemeIsBlob());
+  CHECK(!url_.SchemeIsFileSystem());
 
   CreateJavaMediaPlayerBridge();
 

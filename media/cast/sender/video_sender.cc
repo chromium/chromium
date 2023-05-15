@@ -182,11 +182,7 @@ void VideoSender::InsertRawVideoFrame(
     scoped_refptr<media::VideoFrame> video_frame,
     const base::TimeTicks& reference_time) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
-
-  if (!video_encoder_) {
-    NOTREACHED();
-    return;
-  }
+  CHECK(video_encoder_);
 
   const RtpTimeTicks rtp_timestamp =
       ToRtpTimeTicks(video_frame->timestamp(), kVideoFrequency);

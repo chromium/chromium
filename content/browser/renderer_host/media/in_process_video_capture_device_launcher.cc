@@ -256,13 +256,10 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
 
   switch (stream_type) {
     case blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE: {
-      if (!video_capture_system_) {
-        // Clients who create an instance of |this| without providing a
-        // VideoCaptureSystem instance are expected to know that
-        // MEDIA_DEVICE_VIDEO_CAPTURE is not supported in this case.
-        NOTREACHED();
-        return;
-      }
+      // Clients who create an instance of |this| without providing a
+      // VideoCaptureSystem instance are expected to know that
+      // MEDIA_DEVICE_VIDEO_CAPTURE is not supported in this case.
+      CHECK(video_capture_system_);
       start_capture_closure = base::BindOnce(
           &InProcessVideoCaptureDeviceLauncher::
               DoStartDeviceCaptureOnDeviceThread,
@@ -447,8 +444,7 @@ void InProcessVideoCaptureDeviceLauncher::OnDeviceStarted(
         std::move(done_cb).Run();
         return;
       case State::READY_TO_LAUNCH:
-        NOTREACHED();
-        return;
+        NOTREACHED_NORETURN();
     }
   }
 
@@ -466,8 +462,7 @@ void InProcessVideoCaptureDeviceLauncher::OnDeviceStarted(
       std::move(done_cb).Run();
       return;
     case State::READY_TO_LAUNCH:
-      NOTREACHED();
-      return;
+      NOTREACHED_NORETURN();
   }
 }
 

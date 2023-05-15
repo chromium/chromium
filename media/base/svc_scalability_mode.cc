@@ -79,7 +79,6 @@ const char* GetScalabilityModeName(SVCScalabilityMode scalability_mode) {
     case SVCScalabilityMode::kL3T3KeyShift:
       return "L3T3_KEY_SHIFT";
   }
-  NOTREACHED();
-  return "";
+  NOTREACHED_NORETURN();
 }
 }  // namespace media

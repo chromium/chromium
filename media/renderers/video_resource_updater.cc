@@ -326,8 +326,7 @@ viz::SharedImageFormat GetRGBSharedImageFormat(VideoPixelFormat format) {
     case PIXEL_FORMAT_ARGB:
       return viz::SinglePlaneFormat::kBGRA_8888;
     default:
-      NOTREACHED();
-      return viz::SinglePlaneFormat::kRGBA_8888;
+      NOTREACHED_NORETURN();
   }
 #endif
 }

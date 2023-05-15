@@ -64,8 +64,7 @@ size_t NumPlanes(DXGI_FORMAT dxgi_format) {
     case DXGI_FORMAT_R16G16B16A16_FLOAT:
       return 1;
     default:
-      NOTREACHED();
-      return 0;
+      NOTREACHED_NORETURN();
   }
 }
 

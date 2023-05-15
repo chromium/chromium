@@ -94,10 +94,8 @@ blink::InspectorPlayerMessage::Level LevelFromString(const std::string& level) {
     return blink::InspectorPlayerMessage::Level::kWarning;
   if (level == "info")
     return blink::InspectorPlayerMessage::Level::kInfo;
-  if (level == "debug")
-    return blink::InspectorPlayerMessage::Level::kDebug;
-  NOTREACHED();
-  return blink::InspectorPlayerMessage::Level::kError;
+  CHECK_EQ(level, "debug");
+  return blink::InspectorPlayerMessage::Level::kDebug;
 }
 
 }  // namespace

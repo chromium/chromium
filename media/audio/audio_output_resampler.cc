@@ -168,8 +168,7 @@ OpenStreamResult GetSubsequentStreamCreationResultBucket(
       return success ? OpenStreamResult::kFallbackToFakeSuccess
                      : OpenStreamResult::kFallbackToFakeFail;
     default:
-      NOTREACHED();
-      return OpenStreamResult::kFail;
+      NOTREACHED_NORETURN();
   }
 }
 

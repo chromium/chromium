@@ -213,8 +213,7 @@ VideoChromaSampling H265SPS::GetChromaSampling() const {
     case 3:
       return VideoChromaSampling::k444;
     default:
-      NOTREACHED();
-      return VideoChromaSampling::kUnknown;
+      NOTREACHED_NORETURN();
   }
 }
 
