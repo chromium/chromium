@@ -81,7 +81,10 @@ void AnnotationsTextManagerImpl::PageLoaded(
     web::PageLoadCompletionStatus load_completion_status) {
   DCHECK_EQ(web_state_, web_state);
   if (load_completion_status == web::PageLoadCompletionStatus::SUCCESS) {
-    StartExtractingText();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AnnotationsTextManagerImpl::StartExtractingText,
+                       weak_factory_.GetWeakPtr()));
   }
 }
 
