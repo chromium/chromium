@@ -5287,7 +5287,6 @@ source_set("unit_tests") {
     "login/existing_user_controller_auto_login_unittest.cc",
     "login/existing_user_controller_base_test.cc",
     "login/existing_user_controller_base_test.h",
-    "login/existing_user_controller_forced_online_auth_unittest.cc",
     "login/hats_unlock_survey_trigger_unittest.cc",
     "login/hid_detection_revamp_field_trial_unittest.cc",
     "login/hwid_checker_unittest.cc",

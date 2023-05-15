@@ -301,18 +301,6 @@ int CountRegularUsers(const user_manager::UserList& users) {
   return regular_users_counter;
 }
 
-user_manager::UserList ExtractSamlLoginUsers(
-    const user_manager::UserList& users) {
-  user_manager::UserList saml_users_for_password_sync;
-  for (auto* user : users) {
-    if (user->using_saml() && user->HasGaiaAccount() &&
-        user_manager::UserManager::Get()->IsGaiaUserAllowed(*user)) {
-      saml_users_for_password_sync.push_back(user);
-    }
-  }
-  return saml_users_for_password_sync;
-}
-
 }  // namespace
 
 // Utility class used to wait for a Public Session policy to be available if
@@ -440,19 +428,6 @@ void ExistingUserController::UpdateLoginDisplay(
   base::UmaHistogramCounts100("Login.NumberOfUsersOnLoginScreen",
                               regular_users_counter);
   AuthEventsRecorder::Get()->OnUserCount(regular_users_counter);
-  const auto saml_users_for_password_sync = ExtractSamlLoginUsers(users);
-
-  // ExistingUserController owns PasswordSyncTokenLoginCheckers only if user
-  // pods are hidden.
-  if (!show_users_on_signin && !saml_users_for_password_sync.empty()) {
-    sync_token_checkers_ =
-        std::make_unique<PasswordSyncTokenCheckersCollection>();
-    sync_token_checkers_->StartPasswordSyncCheckers(
-        saml_users_for_password_sync,
-        /*observer*/ nullptr);
-  } else {
-    sync_token_checkers_.reset();
-  }
 
   if (LoginScreen::Get()) {
     LoginScreen::Get()->SetAllowLoginAsGuest(
