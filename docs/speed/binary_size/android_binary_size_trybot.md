@@ -22,7 +22,7 @@ The bot provides analysis using:
 
 ## Checks:
 
-- All monitored differences will be displayed below your CL on gerrit's CL
+- All monitored differences will be displayed below your CL on Gerrit's CL
   review page (in the Binary Size section).
 - Non-bordered changes are small changes below the failure limit.
 - Red-bordered changes are above the limit and are failing the tryjob.
@@ -43,7 +43,7 @@ The bot provides analysis using:
 - Look at the provided symbol diffs to understand where the size is coming from.
 - See if any of the generic [optimization advice] is applicable.
 - If you are writing a new feature or including a new library you might want to
-  think about skipping the android platform and to restrict this new
+  think about skipping the Android platform and to restrict this new
   feature/library to desktop platforms that might care less about binary size.
 - If reduction is not practical, add a rationale for the increase to the commit
   description. It should include:
@@ -51,12 +51,13 @@ The bot provides analysis using:
     - If you think that there might not be a consensus that the code your adding
       is worth the added file size, then add why you think it is.
         - To get a feeling for how large existing features are, refer to
-          [go/chrome-supersize] (Googlers only).
+          [go/chrome-supersize](Googlers only).
 
 - Add a footer to the commit description along the lines of:
     - `Binary-Size: Size increase is unavoidable (see above).`
     - `Binary-Size: Increase is temporary.`
-    - `Binary-Size: See commit description.` <-- use this if longer than one line.
+    - `Binary-Size: See commit description.` <-- use this if longer than one
+      line.
 
 ***note
 **Note:** Make sure there are no blank lines between `Binary-Size:` and other
@@ -70,8 +71,8 @@ footers.
 
 ### Dex Method Count
 
-- **What:** Checks that the number of Java methods after optimization does not
-  increase by more than 50.
+- **What:** Checks that the number of Java / Kotlin methods after optimization
+  does not increase by more than 50.
 - **Why:** Ensures that large changes to this metric are scrutinized.
 
 #### What to do if the Check Fails?
@@ -131,9 +132,9 @@ For more information on when to use `const char *` vs `const char[]`, see
 
 [LOGICALLY_CONST]: https://source.chromium.org/search?q=symbol:LOGICALLY_CONST
 
-### Added Symbols named “ForTest”
+### Added Symbols named "ForTest"
 
-- **What:** This checks that we don't have java symbols with “ForTest” in their
+- **What:** This checks that we don't have Java symbols with "ForTest" in their
   name in an optimized release APK.
 - **Why:** To prevent shipping unused test-only code to end-users.
 
@@ -169,7 +170,7 @@ For more information on when to use `const char *` vs `const char[]`, see
 
 - **What & Why:** Learn about these expectation files [here][expectation files].
 
-[expectation files]: /chrome/android/java/README.md
+[expectation files]: /chrome/android/expectations/README.md
 
 #### What to do if the Check Fails?
 
@@ -183,12 +184,12 @@ For more information on when to use `const char *` vs `const char[]`, see
 - Not all checks are perfect and sometimes you want to overrule the trybot (for
   example if you did your best and are unable to reduce binary size any
   further).
-- Adding a “Binary-Size: $ANY\_TEXT\_HERE” footer to your cl (next to “Bug:”)
+- Adding a "Binary-Size: $ANY\_TEXT\_HERE" footer to your CL (next to "Bug:")
   will bypass the bot assertions.
     - Most commits that trigger the warnings will also result in Telemetry
       alerts and be reviewed by a binary size sheriff. Failing to write an
       adequate justification may lead to the binary size sheriff filing a bug
-      against you to improve your cl.
+      against you to improve your CL.
 
 [binary-size@chromium.org]: https://groups.google.com/a/chromium.org/forum/#!forum/binary-size
 
@@ -204,10 +205,10 @@ For more information on when to use `const char *` vs `const char[]`, see
 - This is the text diff produced by the supersize tool.
 - It lists all changed symbols and for each one, which section it lives in,
   which source file it came from as well as what is its size before, after and
-  the delta for your cl.
+  the delta for your CL.
 - It also contains a histogram of symbol size deltas.
 - You can use this to find which symbols grew and where the binary size impact
-  of your cl comes from.
+  of your CL comes from.
 
 ### Supersize html diff
 
