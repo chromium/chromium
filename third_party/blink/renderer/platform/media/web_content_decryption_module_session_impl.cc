@@ -41,6 +41,7 @@ const char kLoadSessionUMAName[] = "LoadSession";
 const char kRemoveSessionUMAName[] = "RemoveSession";
 const char kUpdateSessionUMAName[] = "UpdateSession";
 const char kKeyStatusSystemCodeUMAName[] = "KeyStatusSystemCode";
+const char kInitialKeyStatusMixUMAName[] = "InitialKeyStatusMix";
 
 media::CdmSessionType ConvertSessionType(
     WebEncryptedMediaSessionType session_type) {
@@ -179,6 +180,62 @@ bool SanitizeResponse(const std::string& key_system,
   // TODO(jrummell): Verify responses for Widevine.
   sanitized_response->assign(response, response + response_length);
   return true;
+}
+
+// Reported to UMA. Do NOT change or reuse existing values.
+enum class KeyStatusMixForUma {
+  kAllUsable = 0,
+  kAllInternalError = 1,
+  kAllExpired = 2,
+  kAllOutputRestricted = 3,
+  kAllOutputDownscaled = 4,
+  kAllKeyStatusPending = 5,
+  kAllReleased = 6,
+  kEmpty = 7,
+  kMixedWithUsable = 8,
+  kMixedWithoutUsable = 9,
+  kMaxValue = kMixedWithoutUsable
+};
+
+KeyStatusMixForUma GetKeyStatusMixForUma(const media::CdmKeysInfo& keys_info) {
+  if (keys_info.empty()) {
+    return KeyStatusMixForUma::kEmpty;
+  }
+
+  bool has_usable = false;
+  bool is_mixed = false;
+  auto key_status = keys_info[0]->status;
+
+  for (const auto& key_info : keys_info) {
+    if (key_info->status == media::CdmKeyInformation::KeyStatus::USABLE) {
+      has_usable = true;
+    }
+    if (key_info->status != key_status) {
+      is_mixed = true;
+    }
+  }
+
+  if (!is_mixed) {
+    switch (key_status) {
+      case media::CdmKeyInformation::KeyStatus::USABLE:
+        return KeyStatusMixForUma::kAllUsable;
+      case media::CdmKeyInformation::KeyStatus::INTERNAL_ERROR:
+        return KeyStatusMixForUma::kAllInternalError;
+      case media::CdmKeyInformation::KeyStatus::EXPIRED:
+        return KeyStatusMixForUma::kAllExpired;
+      case media::CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED:
+        return KeyStatusMixForUma::kAllOutputRestricted;
+      case media::CdmKeyInformation::KeyStatus::OUTPUT_DOWNSCALED:
+        return KeyStatusMixForUma::kAllOutputDownscaled;
+      case media::CdmKeyInformation::KeyStatus::KEY_STATUS_PENDING:
+        return KeyStatusMixForUma::kAllKeyStatusPending;
+      case media::CdmKeyInformation::KeyStatus::RELEASED:
+        return KeyStatusMixForUma::kAllReleased;
+    }
+  } else {
+    return has_usable ? KeyStatusMixForUma::kMixedWithUsable
+                      : KeyStatusMixForUma::kMixedWithoutUsable;
+  }
 }
 
 }  // namespace
@@ -417,7 +474,7 @@ void WebContentDecryptionModuleSessionImpl::OnSessionKeysChange(
   WebVector<WebEncryptedMediaKeyInformation> keys(keys_info.size());
   for (size_t i = 0; i < keys_info.size(); ++i) {
     auto& key_info = keys_info[i];
-    keys[i].SetId(WebData(reinterpret_cast<char*>(&key_info->key_id[0]),
+    keys[i].SetId(WebData(reinterpret_cast<char*>(key_info->key_id.data()),
                           key_info->key_id.size()));
     keys[i].SetStatus(ConvertCdmKeyStatus(key_info->status));
     keys[i].SetSystemCode(key_info->system_code);
@@ -425,6 +482,15 @@ void WebContentDecryptionModuleSessionImpl::OnSessionKeysChange(
     base::UmaHistogramSparse(
         adapter_->GetKeySystemUMAPrefix() + kKeyStatusSystemCodeUMAName,
         key_info->system_code);
+  }
+
+  // Only report the UMA on the first keys change event per session.
+  if (!has_key_status_uma_reported_) {
+    has_key_status_uma_reported_ = true;
+    auto key_status_mix_for_uma = GetKeyStatusMixForUma(keys_info);
+    base::UmaHistogramEnumeration(
+        adapter_->GetKeySystemUMAPrefix() + kInitialKeyStatusMixUMAName,
+        key_status_mix_for_uma);
   }
 
   // Now send the event to blink.

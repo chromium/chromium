@@ -14833,6 +14833,19 @@ Called by update_bad_message_reasons.py.-->
   <int value="8" label="DisabledOnError"/>
 </enum>
 
+<enum name="CdmKeyStatusMix">
+  <int value="0" label="kAllUsable"/>
+  <int value="1" label="kAllInternalError"/>
+  <int value="2" label="kAllExpired"/>
+  <int value="3" label="kAllOutputRestricted"/>
+  <int value="4" label="kAllOutputDownscaled"/>
+  <int value="5" label="kAllKeyStatusPending"/>
+  <int value="6" label="kAllReleased"/>
+  <int value="7" label="kEmpty"/>
+  <int value="8" label="kMixedWithUsable"/>
+  <int value="9" label="kMixedWithoutUsable"/>
+</enum>
+
 <enum name="CdmLoadResult">
   <int value="0" label="Success"/>
   <int value="1" label="CDM file missing"/>

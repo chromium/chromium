@@ -2763,6 +2763,17 @@ chromium-metrics-reviews@google.com.
   <token key="KeySystem" variants="KeySystemWithRobustness"/>
 </histogram>
 
+<histogram name="Media.EME.{KeySystem}.InitialKeyStatusMix"
+    enum="CdmKeyStatusMix" expires_after="2024-04-11">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Reports a summary of key statuses associated with an EME CDM session.
+    Reported once per EME CDM session on the first key statuses update.
+  </summary>
+  <token key="KeySystem" variants="KeySystemWithRobustness"/>
+</histogram>
+
 <histogram name="Media.EME.{KeySystem}.KeyStatusSystemCode"
     enum="CdmSystemCode" expires_after="2024-04-11">
   <owner>xhwang@chromium.org</owner>
