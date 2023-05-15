@@ -143,11 +143,6 @@ using password_manager::PasswordCheckReferrer;
   [self stopPasswordIssuesCoordinator];
 }
 
-- (void)setShouldDismissOnAllIssuesGone {
-  // No-op: This method is only used in the context of a
-  // PasswordIssuesCoordinator.
-}
-
 #pragma mark - Private
 
 - (void)stopPasswordIssuesCoordinator {

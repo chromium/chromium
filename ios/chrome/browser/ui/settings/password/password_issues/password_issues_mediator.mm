@@ -246,10 +246,6 @@ NSInteger GetDismissedWarningsCount(
 }
 
 - (BOOL)hasOneIssueLeft {
-  if (_warningType == WarningType::kReusedPasswordsWarning) {
-    return _insecureCredentials.has_value() &&
-           _insecureCredentials->size() == 2;
-  }
   return _insecureCredentials.has_value() &&
          _insecureCredentials->size() == 1 && _dismissedWarningsCount == 0;
 }

@@ -288,11 +288,6 @@ using password_manager::WarningType;
   self.passwordIssuesCoordinator = nil;
 }
 
-- (void)setShouldDismissOnAllIssuesGone {
-  // No-op: This method is only used in the context of a
-  // PasswordIssuesCoordinator.
-}
-
 #pragma mark - PrivacySafeBrowsingCoordinatorDelegate
 
 - (void)privacySafeBrowsingCoordinatorDidRemove:
