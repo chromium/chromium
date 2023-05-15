@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/attestation/soft_bind_attestation_flow_impl.h"
 
 #include "base/containers/span.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/timer/timer.h"
@@ -138,8 +139,10 @@ const std::string& SoftBindAttestationFlowImpl::Session::GetUserKey() const {
 
 void SoftBindAttestationFlowImpl::Session::ReportFailure(
     const std::string& error_message) {
+  LOG(WARNING) << "Attestation session failure: " << error_message;
   if (!callback_) {
-    LOG(ERROR) << "Attestation session failure callback in null.";
+    LOG(WARNING) << "Callback is null";
+    base::debug::DumpWithoutCrashing();
     return;
   }
   std::move(callback_).Run(std::vector<std::string>{"INVALID:" + error_message},
@@ -148,6 +151,11 @@ void SoftBindAttestationFlowImpl::Session::ReportFailure(
 
 void SoftBindAttestationFlowImpl::Session::ReportSuccess(
     const std::vector<std::string>& certificate_chain) {
+  if (!callback_) {
+    LOG(WARNING) << "Attestation session success but callback is null";
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
   std::move(callback_).Run(certificate_chain, /*valid=*/true);
 }
 
