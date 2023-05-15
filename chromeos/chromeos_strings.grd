@@ -2815,6 +2815,36 @@
         <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DARK_MODE_SCHEDULE_ALT4" desc="Text for search result item which, when clicked, navigates the user to personalization app dark mode settings, with a dropdown to select scheduling mode. Alternate phrase for: 'Dark theme schedule', 'Dark mode schedule', 'Automatic dark mode', 'Automatic light mode'">
           Automatic dark theme
         </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR" desc="Text for search result item, which, when clicked, navigates the user to personalization app theme setting.">
+          Theme
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT1" desc="Text for search result item, which, when clicked, navigates the user to personalization app theme setting. Alternate phrase 1">
+          Theme color
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT2" desc="Text for search result item, which, when clicked, navigates the user to personalization app theme setting. Alternate phrase 2">
+          Accent color
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT3" desc="Text for search result item, which, when clicked, navigates the user to personalization app theme setting. Alternate phrase 3">
+          System color
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT4" desc="Text for search result item, which, when clicked, navigates the user to personalization app theme setting. Alternate phrase 4">
+          Launcher color
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT5" desc="Text for search result item, which, when clicked, navigates the user to personalization app theme setting. Alternate phrase 5">
+          Wallpaper color
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT6" desc="Text for search result item, which, when clicked, navigates the user to personalization app theme setting. Alternate phrase 6">
+          Desktop color
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT7" desc="Text for search result item, which, when clicked, navigates the user to personalization app theme setting. Alternate phrase 7">
+          Background image
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT8" desc="Text for search result item, which, when clicked, navigates the user to personalization app theme setting. Alternate phrase 8">
+          UI color
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_DYNAMIC_COLOR_ALT9" desc="Text for search result item, which, when clicked, navigates the user to personalization app theme setting. Alternate phrase 9">
+          Interface color
+        </message>
         <message name="IDS_PERSONALIZATION_APP_SEARCH_RESULT_KEYBOARD_BACKLIGHT" desc="Text for search result item which, when clicked, navigates the user to personalization app keyboard backlight setting.">
           Keyboard backlight
         </message>

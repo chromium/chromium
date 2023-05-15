@@ -82221,6 +82221,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="401" label="kDarkModeSchedule"/>
   <int value="402" label="kDarkModeTurnOff"/>
   <int value="403" label="kDarkModeTurnOn"/>
+  <int value="404" label="kDynamicColor"/>
 </enum>
 
 <enum name="PersonalizationThemeColorMode">

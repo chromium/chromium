@@ -23,6 +23,7 @@ enum SearchConceptId {
     kDarkModeSchedule = 401,
     kDarkModeTurnOff = 402,
     kDarkModeTurnOn = 403,
+    kDynamicColor = 404,
     kKeyboardBacklight = 500,
 };
 
