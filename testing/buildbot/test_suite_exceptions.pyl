@@ -2870,6 +2870,16 @@
       },
     },
   },
+  'media_foundation_browser_tests': {
+    'remove_from': [
+      # TODO(crbug.com/1445173): Enable Media Foundation browser tests on NVIDIA
+      # gpu bots once the Windows OS supports HW secure decryption.
+      'Win10 FYI x64 Debug (NVIDIA)',
+      'Win10 FYI x64 Release (AMD RX 5500 XT)',
+      'Win10 FYI x64 Release (NVIDIA)',
+      'Win10 FYI x86 Release (NVIDIA)',
+    ],
+  },
   'media_unittests': {
     'modifications': {
       'android-11-x86-rel': {

@@ -283,7 +283,9 @@ try_.gpu.optional_tests_builder(
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
+            cq.location_filter(path_regexp = "chrome/browser/media/.+"),
             cq.location_filter(path_regexp = "chrome/browser/vr/.+"),
+            cq.location_filter(path_regexp = "components/cdm/renderer/.+"),
             cq.location_filter(path_regexp = "content/browser/xr/.+"),
             cq.location_filter(path_regexp = "content/test/gpu/.+"),
             cq.location_filter(path_regexp = "device/vr/.+"),
@@ -291,6 +293,7 @@ try_.gpu.optional_tests_builder(
             cq.location_filter(path_regexp = "media/audio/.+"),
             cq.location_filter(path_regexp = "media/base/.+"),
             cq.location_filter(path_regexp = "media/capture/.+"),
+            cq.location_filter(path_regexp = "media/cdm/.+"),
             cq.location_filter(path_regexp = "media/filters/.+"),
             cq.location_filter(path_regexp = "media/gpu/.+"),
             cq.location_filter(path_regexp = "media/mojo/.+"),

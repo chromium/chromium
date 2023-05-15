@@ -2814,6 +2814,19 @@
       },
     },
 
+    'gpu_default_and_optional_win_media_foundation_specific_gtests': {
+      # MediaFoundation browser tests, which currently only run on Windows OS,
+      # and require physical hardware.
+      'media_foundation_browser_tests': {
+        'args': [
+          '--gtest_filter=MediaFoundationEncryptedMediaTest*',
+          '--use-gpu-in-tests'
+        ],
+        'test': 'browser_tests',
+        'ci_only': True,
+      },
+    },
+
     'gpu_default_and_optional_win_specific_gtests': {
       # WebNN DirectML backend unit tests, which currently only run on
       # Windows OS, and require physical hardware.
@@ -6514,6 +6527,7 @@
     'gpu_fyi_win_gtests': [
       'gpu_angle_unit_gtests',
       'gpu_common_gtests_passthrough',
+      'gpu_default_and_optional_win_media_foundation_specific_gtests',
       'gpu_default_and_optional_win_specific_gtests',
       'gpu_desktop_specific_gtests',
       'gpu_fyi_and_optional_non_linux_gtests',
@@ -7757,6 +7771,11 @@
     },
 
     'win_optional_gpu_tests_rel_gtests': {
+      'gpu_default_and_optional_win_media_foundation_specific_gtests': {
+        'variants': [
+          'WIN10_INTEL_UHD_630_STABLE',
+        ],
+      },
       'gpu_default_and_optional_win_specific_gtests': {
         'variants': [
           'WIN10_INTEL_UHD_630_STABLE',

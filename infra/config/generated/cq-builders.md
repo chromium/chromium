@@ -506,7 +506,9 @@ builder.
 * [win_optional_gpu_tests_rel](https://ci.chromium.org/p/chromium/builders/try/win_optional_gpu_tests_rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win_optional_gpu_tests_rel""))
 
   Location filters:
+  * [`//chrome/browser/media/.+`](https://cs.chromium.org/chromium/src/chrome/browser/media/)
   * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
+  * [`//components/cdm/renderer/.+`](https://cs.chromium.org/chromium/src/components/cdm/renderer/)
   * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
   * [`//content/test/gpu/.+`](https://cs.chromium.org/chromium/src/content/test/gpu/)
   * [`//device/vr/.+`](https://cs.chromium.org/chromium/src/device/vr/)
@@ -514,6 +516,7 @@ builder.
   * [`//media/audio/.+`](https://cs.chromium.org/chromium/src/media/audio/)
   * [`//media/base/.+`](https://cs.chromium.org/chromium/src/media/base/)
   * [`//media/capture/.+`](https://cs.chromium.org/chromium/src/media/capture/)
+  * [`//media/cdm/.+`](https://cs.chromium.org/chromium/src/media/cdm/)
   * [`//media/filters/.+`](https://cs.chromium.org/chromium/src/media/filters/)
   * [`//media/gpu/.+`](https://cs.chromium.org/chromium/src/media/gpu/)
   * [`//media/mojo/.+`](https://cs.chromium.org/chromium/src/media/mojo/)
