@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/common/url_constants.h"
@@ -46,7 +47,8 @@ void IsolatedWebAppValidator::ValidateIntegrityBlock(
   std::move(callback).Run(absl::nullopt);
 }
 
-base::expected<void, std::string> IsolatedWebAppValidator::ValidateMetadata(
+base::expected<void, UnusableSwbnFileError>
+IsolatedWebAppValidator::ValidateMetadata(
     const web_package::SignedWebBundleId& web_bundle_id,
     const absl::optional<GURL>& primary_url,
     const std::vector<GURL>& entries) {
@@ -54,8 +56,11 @@ base::expected<void, std::string> IsolatedWebAppValidator::ValidateMetadata(
   // URLs make no sense for Isolated Web Apps - the "primary URL" should be
   // retrieved from the web app manifest's `start_url` field.
   if (primary_url.has_value()) {
-    return base::unexpected("Primary URL must not be present, but was " +
-                            primary_url->possibly_invalid_spec());
+    std::string error_msg = "Primary URL must not be present, but was " +
+                            primary_url->possibly_invalid_spec();
+    return base::unexpected(UnusableSwbnFileError(
+        UnusableSwbnFileError::Error::kMetadataValidationError,
+        std::move(error_msg)));
   }
 
   // Verify that the bundle only contains isolated-app:// URLs using the
@@ -64,26 +69,37 @@ base::expected<void, std::string> IsolatedWebAppValidator::ValidateMetadata(
     base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
         IsolatedWebAppUrlInfo::Create(entry);
     if (!url_info.has_value()) {
-      return base::unexpected("The URL of an exchange is invalid: " +
-                              url_info.error());
+      std::string error_msg =
+          "The URL of an exchange is invalid: " + url_info.error();
+      return base::unexpected(UnusableSwbnFileError(
+          UnusableSwbnFileError::Error::kMetadataValidationError,
+          std::move(error_msg)));
     }
 
     const web_package::SignedWebBundleId& entry_web_bundle_id =
         url_info->web_bundle_id();
     if (entry_web_bundle_id != web_bundle_id) {
-      return base::unexpected(
+      std::string error_msg =
           "The URL of an exchange contains the wrong Signed Web Bundle ID: " +
-          entry_web_bundle_id.id());
+          entry_web_bundle_id.id();
+      return base::unexpected(UnusableSwbnFileError(
+          UnusableSwbnFileError::Error::kMetadataValidationError,
+          std::move(error_msg)));
     }
     if (entry.has_ref()) {
-      return base::unexpected(
+      std::string error_msg =
           "The URL of an exchange is invalid: URLs must not have a fragment "
-          "part.");
+          "part.";
+      return base::unexpected(UnusableSwbnFileError(
+          UnusableSwbnFileError::Error::kMetadataValidationError,
+          std::move(error_msg)));
     }
     if (entry.has_query()) {
-      return base::unexpected(
-          "The URL of an exchange is invalid: URLs must not have a query "
-          "part.");
+      std::string error_msg =
+          "The URL of an exchange is invalid: URLs must not have a query part.";
+      return base::unexpected(UnusableSwbnFileError(
+          UnusableSwbnFileError::Error::kMetadataValidationError,
+          std::move(error_msg)));
     }
   }
 

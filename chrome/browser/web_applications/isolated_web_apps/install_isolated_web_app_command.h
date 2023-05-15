@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -131,7 +132,7 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
 
   void CheckTrustAndSignaturesOfBundle(const base::FilePath& path);
   void OnTrustAndSignaturesChecked(
-      base::expected<void, IsolatedWebAppResponseReaderFactory::Error> result);
+      base::expected<void, UnusableSwbnFileError> status);
 
   void CreateStoragePartition();
 

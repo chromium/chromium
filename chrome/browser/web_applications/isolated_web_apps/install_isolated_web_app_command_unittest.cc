@@ -28,6 +28,7 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -181,7 +182,7 @@ std::unique_ptr<MockDataRetriever> CreateDefaultDataRetriever(
 class FakeResponseReaderFactory : public IsolatedWebAppResponseReaderFactory {
  public:
   explicit FakeResponseReaderFactory(
-      absl::optional<IsolatedWebAppResponseReaderFactory::Error> bundle_error)
+      base::expected<void, UnusableSwbnFileError> bundle_status)
       : IsolatedWebAppResponseReaderFactory(
             nullptr,
             base::BindRepeating(
@@ -189,7 +190,7 @@ class FakeResponseReaderFactory : public IsolatedWebAppResponseReaderFactory {
                          web_package::SignedWebBundleSignatureVerifier> {
                   return nullptr;
                 })),
-        bundle_error_(std::move(bundle_error)) {}
+        bundle_status_(std::move(bundle_status)) {}
 
   void CreateResponseReader(const base::FilePath& web_bundle_path,
                             const web_package::SignedWebBundleId& web_bundle_id,
@@ -197,15 +198,15 @@ class FakeResponseReaderFactory : public IsolatedWebAppResponseReaderFactory {
                             Callback callback) override {
     // Signatures _must_ be verified during installation.
     CHECK(!skip_signature_verification);
-    if (bundle_error_) {
-      std::move(callback).Run(base::unexpected(std::move(*bundle_error_)));
+    if (!bundle_status_.has_value()) {
+      std::move(callback).Run(base::unexpected(bundle_status_.error()));
     } else {
       std::move(callback).Run(nullptr);
     }
   }
 
  private:
-  absl::optional<IsolatedWebAppResponseReaderFactory::Error> bundle_error_;
+  base::expected<void, UnusableSwbnFileError> bundle_status_;
 };
 
 class InstallIsolatedWebAppCommandTest : public ::testing::Test {
@@ -251,7 +252,7 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
     std::unique_ptr<content::WebContents> web_contents;
     absl::optional<IsolatedWebAppLocation> location;
     raw_ptr<WebAppInstallFinalizer> install_finalizer = nullptr;
-    absl::optional<IsolatedWebAppResponseReaderFactory::Error> bundle_error;
+    base::expected<void, UnusableSwbnFileError> bundle_status = base::ok();
   };
 
   base::expected<InstallIsolatedWebAppCommandSuccess,
@@ -285,7 +286,7 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
     auto command = CreateCommand(parameters.url_info, std::move(web_contents),
                                  parameters.location, std::move(url_loader),
                                  test_future.GetCallback(),
-                                 std::move(parameters.bundle_error));
+                                 std::move(parameters.bundle_status));
 
     command->SetDataRetrieverForTesting(
         data_retriever != nullptr ? std::move(data_retriever)
@@ -303,8 +304,7 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
       base::OnceCallback<
           void(base::expected<InstallIsolatedWebAppCommandSuccess,
                               InstallIsolatedWebAppCommandError>)> callback,
-      absl::optional<IsolatedWebAppResponseReaderFactory::Error> bundle_error =
-          absl::nullopt) {
+      base::expected<void, UnusableSwbnFileError> bundle_status = base::ok()) {
     if (!location.has_value()) {
       location = CreateDevProxyLocation();
     }
@@ -313,7 +313,7 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
         url_info, location.value(), std::move(web_contents),
         std::move(url_loader), /*keep_alive=*/nullptr,
         /*profile_keep_alive=*/nullptr, std::move(callback),
-        std::make_unique<FakeResponseReaderFactory>(std::move(bundle_error)));
+        std::make_unique<FakeResponseReaderFactory>(std::move(bundle_status)));
   }
 
   base::expected<InstallIsolatedWebAppCommandSuccess,
@@ -1170,21 +1170,24 @@ class InstallIsolatedWebAppCommandBundleTest
 
 TEST_P(InstallIsolatedWebAppCommandBundleTest, InstallsWhenThereIsNoError) {
   IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
+
   EXPECT_TRUE(ExecuteCommand(Parameters{
                                  .url_info = url_info,
                                  .location = location_,
-                                 .bundle_error = absl::nullopt,
+                                 .bundle_status = base::ok(),
                              })
                   .has_value());
 }
 
 TEST_P(InstallIsolatedWebAppCommandBundleTest, ErrorsOnBundleError) {
   IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
-  EXPECT_THAT(
-      ExecuteCommand(Parameters{.url_info = url_info,
-                                .location = location_,
-                                .bundle_error = MetadataError("test error")}),
-      IsInstallationError(HasSubstr("test error")));
+  EXPECT_THAT(ExecuteCommand(Parameters{
+                  .url_info = url_info,
+                  .location = location_,
+                  .bundle_status = base::unexpected(UnusableSwbnFileError(
+                      UnusableSwbnFileError::Error::kMetadataParserVersionError,
+                      "test error"))}),
+              IsInstallationError(HasSubstr("test error")));
 }
 
 TEST_P(InstallIsolatedWebAppCommandBundleTest,
@@ -1196,7 +1199,7 @@ TEST_P(InstallIsolatedWebAppCommandBundleTest,
   auto installation_result =
       ExecuteCommand(Parameters{.url_info = url_info,
                                 .location = location_,
-                                .bundle_error = absl::nullopt});
+                                .bundle_status = base::ok()});
   if (GetParam()) {
     EXPECT_TRUE(installation_result.has_value());
   } else {

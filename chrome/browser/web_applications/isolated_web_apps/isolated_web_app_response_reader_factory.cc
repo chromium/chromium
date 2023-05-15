@@ -9,9 +9,12 @@
 
 #include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/error/uma_logging.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "chrome/common/url_constants.h"
@@ -66,32 +69,28 @@ void IsolatedWebAppResponseReaderFactory::CreateResponseReader(
 
 // static
 std::string IsolatedWebAppResponseReaderFactory::ErrorToString(
-    const Error& error) {
-  return (absl::visit(
-      base::Overloaded{
-          [](const web_package::mojom::BundleIntegrityBlockParseErrorPtr&
-                 error) {
-            return base::StringPrintf("Failed to parse integrity block: %s",
-                                      error->message.c_str());
-          },
-          [](const IntegrityBlockError& error) {
-            return base::StringPrintf("Failed to validate integrity block: %s",
-                                      error.message.c_str());
-          },
-          [](const web_package::SignedWebBundleSignatureVerifier::Error&
-                 error) {
-            return base::StringPrintf("Failed to verify signatures: %s",
-                                      error.message.c_str());
-          },
-          [](const web_package::mojom::BundleMetadataParseErrorPtr& error) {
-            return base::StringPrintf("Failed to parse metadata: %s",
-                                      error->message.c_str());
-          },
-          [](const MetadataError& error) {
-            return base::StringPrintf("Failed to validate metadata: %s",
-                                      error.message.c_str());
-          }},
-      error));
+    const UnusableSwbnFileError& error) {
+  switch (error.value()) {
+    case UnusableSwbnFileError::Error::kIntegrityBlockParserFormatError:
+    case UnusableSwbnFileError::Error::kIntegrityBlockParserInternalError:
+    case UnusableSwbnFileError::Error::kIntegrityBlockParserVersionError:
+      return base::StringPrintf("Failed to parse integrity block: %s",
+                                error.message().c_str());
+    case UnusableSwbnFileError::Error::kIntegrityBlockValidationError:
+      return base::StringPrintf("Failed to validate integrity block: %s",
+                                error.message().c_str());
+    case UnusableSwbnFileError::Error::kSignatureVerificationError:
+      return base::StringPrintf("Failed to verify signatures: %s",
+                                error.message().c_str());
+    case UnusableSwbnFileError::Error::kMetadataParserInternalError:
+    case UnusableSwbnFileError::Error::kMetadataParserFormatError:
+    case UnusableSwbnFileError::Error::kMetadataParserVersionError:
+      return base::StringPrintf("Failed to parse metadata: %s",
+                                error.message().c_str());
+    case UnusableSwbnFileError::Error::kMetadataValidationError:
+      return base::StringPrintf("Failed to validate metadata: %s",
+                                error.message().c_str());
+  }
 }
 
 void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockRead(
@@ -142,92 +141,23 @@ void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockAndMetadataRead(
     const base::FilePath& web_bundle_path,
     const web_package::SignedWebBundleId& web_bundle_id,
     Callback callback,
-    absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>
-        read_integrity_block_and_metadata_error) {
+    base::expected<void, UnusableSwbnFileError> status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  absl::optional<std::pair<Error, UnusableSwbnFileError>> two_errors;
-  if (read_integrity_block_and_metadata_error.has_value()) {
-    Error error = absl::visit(
-        base::Overloaded{
-            [](const web_package::mojom::BundleIntegrityBlockParseErrorPtr&
-                   error) -> Error { return error->Clone(); },
-            [](const SignedWebBundleReader::AbortedByCaller& error) -> Error {
-              return IntegrityBlockError(error.message);
-            },
-            [](const web_package::SignedWebBundleSignatureVerifier::Error&
-                   error) -> Error { return error; },
-            [](const web_package::mojom::BundleMetadataParseErrorPtr& error)
-                -> Error { return error->Clone(); },
-        },
-        *read_integrity_block_and_metadata_error);
-    two_errors = std::make_pair(
-        std::move(error),
-        ToUnusableSwbnFileError(*read_integrity_block_and_metadata_error));
+  if (status.has_value()) {
+    status = base::expected(validator_->ValidateMetadata(
+        web_bundle_id, reader->GetPrimaryURL(), reader->GetEntries()));
   }
 
-  if (!two_errors.has_value()) {
-    if (auto error_message = validator_->ValidateMetadata(
-            web_bundle_id, reader->GetPrimaryURL(), reader->GetEntries());
-        !error_message.has_value()) {
-      two_errors =
-          std::make_pair(MetadataError(error_message.error()),
-                         UnusableSwbnFileError::kMetadataValidationError);
-    }
-  }
+  UmaLogExpectedStatus("WebApp.Isolated.SwbnFileUsability", status);
 
-  const base::expected<void, UnusableSwbnFileError> usability_status =
-      two_errors.has_value()
-          ? base::expected<void, UnusableSwbnFileError>(
-                base::unexpected(two_errors->second))
-          : base::expected<void, UnusableSwbnFileError>(base::ok());
-  UmaLogExpectedStatus("WebApp.Isolated.SwbnFileUsability", usability_status);
-
-  if (two_errors.has_value()) {
-    std::move(callback).Run(base::unexpected(std::move(two_errors->first)));
+  if (!status.has_value()) {
+    std::move(callback).Run(base::unexpected(status.error()));
     return;
   }
+
   std::move(callback).Run(
       std::make_unique<IsolatedWebAppResponseReader>(std::move(reader)));
-}
-
-IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError
-IsolatedWebAppResponseReaderFactory::ToUnusableSwbnFileError(
-    const SignedWebBundleReader::ReadIntegrityBlockAndMetadataError& error) {
-  return absl::visit(
-      base::Overloaded{
-          [](const web_package::mojom::BundleIntegrityBlockParseErrorPtr&
-                 error) {
-            switch (error->type) {
-              case web_package::mojom::BundleParseErrorType::
-                  kParserInternalError:
-                return UnusableSwbnFileError::
-                    kIntegrityBlockParserInternalError;
-              case web_package::mojom::BundleParseErrorType::kFormatError:
-                return UnusableSwbnFileError::kIntegrityBlockParserFormatError;
-              case web_package::mojom::BundleParseErrorType::kVersionError:
-                return UnusableSwbnFileError::kIntegrityBlockParserVersionError;
-            }
-          },
-          [](const SignedWebBundleReader::AbortedByCaller& error) {
-            return UnusableSwbnFileError::kIntegrityBlockValidationError;
-          },
-          [](const web_package::SignedWebBundleSignatureVerifier::Error&
-                 error) {
-            return UnusableSwbnFileError::kSignatureVerificationError;
-          },
-          [](const web_package::mojom::BundleMetadataParseErrorPtr& error) {
-            switch (error->type) {
-              case web_package::mojom::BundleParseErrorType::
-                  kParserInternalError:
-                return UnusableSwbnFileError::kMetadataParserInternalError;
-              case web_package::mojom::BundleParseErrorType::kFormatError:
-                return UnusableSwbnFileError::kMetadataParserFormatError;
-              case web_package::mojom::BundleParseErrorType::kVersionError:
-                return UnusableSwbnFileError::kMetadataParserVersionError;
-            }
-          }},
-      error);
 }
 
 }  // namespace web_app

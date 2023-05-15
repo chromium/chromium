@@ -12,6 +12,7 @@
 #include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
 #include "base/types/expected.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -60,28 +61,22 @@ void GetSignedWebBundleIdByPath(
       [](std::unique_ptr<SignedWebBundleReader> reader_ownership,
          base::OnceCallback<void(
              base::expected<IsolatedWebAppUrlInfo, std::string>)> callback,
-         absl::optional<
-             SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>
-             read_error) {
-        DCHECK(read_error.has_value());
+         base::expected<void, UnusableSwbnFileError> read_status) {
+        CHECK(!read_status.has_value());
 
-        if (!absl::holds_alternative<SignedWebBundleReader::AbortedByCaller>(
-                read_error.value())) {
-          web_package::mojom::BundleIntegrityBlockParseErrorPtr* error_ptr =
-              absl::get_if<
-                  web_package::mojom::BundleIntegrityBlockParseErrorPtr>(
-                  &read_error.value());
-          // only other possible variant, as the other 2 variants shouldn't be
-          // reachable.
-          DCHECK(error_ptr);
-
+        // If the operation was aborted intentionally the reader will return
+        // kIntegrityBlockValidationError error. Strictly speaking we should
+        // have a separate error for this purpose. But because the code of this
+        // function will be soon refactored, let's use this temporary hacky
+        // solution.
+        if (read_status.error().value() !=
+            UnusableSwbnFileError::Error::kIntegrityBlockValidationError) {
           std::move(callback).Run(base::unexpected(
               "Failed to read the integrity block of the signed web bundle: " +
-              (*error_ptr)->message));
+              read_status.error().message()));
         }
       },
       std::move(reader), std::move(callback_second));
-  ;
 
   reader_raw_ptr->StartReading(std::move(integrity_block_result_callback),
                                std::move(read_error_callback));

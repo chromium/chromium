@@ -155,7 +155,7 @@ void IsolatedWebAppReaderRegistry::OnResponseReaderCreated(
     const base::FilePath& web_bundle_path,
     const web_package::SignedWebBundleId& web_bundle_id,
     base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
-                   IsolatedWebAppResponseReaderFactory::Error> reader) {
+                   UnusableSwbnFileError> reader) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto cache_entry_it = reader_cache_.Find(web_bundle_path);
@@ -235,7 +235,7 @@ void IsolatedWebAppReaderRegistry::OnResponseRead(
 // static
 IsolatedWebAppReaderRegistry::ReadResponseError
 IsolatedWebAppReaderRegistry::ReadResponseError::ForError(
-    const IsolatedWebAppResponseReaderFactory::Error& error) {
+    const UnusableSwbnFileError& error) {
   return ForOtherError(
       IsolatedWebAppResponseReaderFactory::ErrorToString(error));
 }

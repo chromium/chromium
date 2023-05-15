@@ -25,6 +25,7 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_dev_mode.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
@@ -204,9 +205,8 @@ void InstallIsolatedWebAppCommand::CheckTrustAndSignaturesOfBundle(
       /*skip_signature_verification=*/false,
       base::BindOnce(
           [](base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
-                            IsolatedWebAppResponseReaderFactory::Error> reader)
-              -> base::expected<void,
-                                IsolatedWebAppResponseReaderFactory::Error> {
+                            UnusableSwbnFileError> reader)
+              -> base::expected<void, UnusableSwbnFileError> {
             if (!reader.has_value()) {
               return base::unexpected(std::move(reader.error()));
             }
@@ -218,10 +218,10 @@ void InstallIsolatedWebAppCommand::CheckTrustAndSignaturesOfBundle(
 }
 
 void InstallIsolatedWebAppCommand::OnTrustAndSignaturesChecked(
-    base::expected<void, IsolatedWebAppResponseReaderFactory::Error> result) {
-  if (!result.has_value()) {
+    base::expected<void, UnusableSwbnFileError> status) {
+  if (!status.has_value()) {
     ReportFailure(
-        IsolatedWebAppResponseReaderFactory::ErrorToString(result.error()));
+        IsolatedWebAppResponseReaderFactory::ErrorToString(status.error()));
     return;
   }
 

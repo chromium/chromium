@@ -6,12 +6,14 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_SIGNED_WEB_BUNDLE_READER_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/shared_file.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
@@ -96,25 +98,8 @@ class SignedWebBundleReader {
       web_package::SignedWebBundleIntegrityBlock integrity_block,
       base::OnceCallback<void(SignatureVerificationAction)> callback)>;
 
-  // This error will be passed to `read_error_callback` if parsing is aborted by
-  // the caller as part of `integrity_block_result_callback`.
-  struct AbortedByCaller {
-    std::string message;
-  };
-
-  using ReadIntegrityBlockAndMetadataError = absl::variant<
-      // Triggered when the integrity block of the Signed Web Bundle does not
-      // exist or parsing it fails.
-      web_package::mojom::BundleIntegrityBlockParseErrorPtr,
-      // Triggered when the caller aborts parsing as part of
-      // `integrity_block_result_callback`.
-      AbortedByCaller,
-      // Triggered when signature verification fails.
-      web_package::SignedWebBundleSignatureVerifier::Error,
-      // Triggered when metadata parsing fails.
-      web_package::mojom::BundleMetadataParseErrorPtr>;
   using ReadErrorCallback = base::OnceCallback<void(
-      absl::optional<ReadIntegrityBlockAndMetadataError> error)>;
+      base::expected<void, UnusableSwbnFileError> status)>;
 
   // Creates a new instance of this class. `base_url` is used inside the
   // `WebBundleParser` to convert relative URLs contained in the Web Bundle into
@@ -275,7 +260,7 @@ class SignedWebBundleReader {
                         web_package::mojom::BundleMetadataParseErrorPtr error);
 
   void FulfillWithError(ReadErrorCallback callback,
-                        ReadIntegrityBlockAndMetadataError error);
+                        UnusableSwbnFileError error);
 
   void ReadResponseInternal(
       web_package::mojom::BundleResponseLocationPtr location,

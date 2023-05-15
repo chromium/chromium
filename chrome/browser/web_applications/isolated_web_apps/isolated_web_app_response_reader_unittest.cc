@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/unusable_swbn_file_error.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
@@ -52,11 +53,9 @@ class IsolatedWebAppResponseReaderTest : public ::testing::Test {
     return web_bundle_path;
   }
 
-  absl::optional<SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>
-  ReadIntegrityBlockAndMetadata(SignedWebBundleReader& reader) {
-    base::test::TestFuture<absl::optional<
-        SignedWebBundleReader::ReadIntegrityBlockAndMetadataError>>
-        future;
+  base::expected<void, UnusableSwbnFileError> ReadIntegrityBlockAndMetadata(
+      SignedWebBundleReader& reader) {
+    base::test::TestFuture<base::expected<void, UnusableSwbnFileError>> future;
     reader.StartReading(
         base::BindOnce(
             [](web_package::SignedWebBundleIntegrityBlock integrity_block,
@@ -90,8 +89,8 @@ TEST_F(IsolatedWebAppResponseReaderTest,
        ReadResponseStripsQueryParametersAndFragment) {
   base::FilePath web_bundle_path = CreateSignedBundleAndWriteToDisk();
   auto reader = SignedWebBundleReader::Create(web_bundle_path, base_url_);
-  auto error = ReadIntegrityBlockAndMetadata(*reader.get());
-  ASSERT_THAT(error.has_value(), IsFalse());
+  auto status = ReadIntegrityBlockAndMetadata(*reader.get());
+  ASSERT_TRUE(status.has_value());
 
   auto response_reader =
       std::make_unique<IsolatedWebAppResponseReader>(std::move(reader));
@@ -122,8 +121,8 @@ TEST_F(IsolatedWebAppResponseReaderTest,
 TEST_F(IsolatedWebAppResponseReaderTest, ReadResponseBody) {
   base::FilePath web_bundle_path = CreateSignedBundleAndWriteToDisk();
   auto reader = SignedWebBundleReader::Create(web_bundle_path, base_url_);
-  auto error = ReadIntegrityBlockAndMetadata(*reader.get());
-  ASSERT_THAT(error.has_value(), IsFalse());
+  auto status = ReadIntegrityBlockAndMetadata(*reader.get());
+  ASSERT_TRUE(status.has_value());
 
   auto response_reader =
       std::make_unique<IsolatedWebAppResponseReader>(std::move(reader));

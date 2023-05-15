@@ -55,8 +55,7 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       kResponseNotFound,
     };
 
-    static ReadResponseError ForError(
-        const IsolatedWebAppResponseReaderFactory::Error& error);
+    static ReadResponseError ForError(const UnusableSwbnFileError& error);
 
     static ReadResponseError ForError(
         const IsolatedWebAppResponseReader::Error& error);
@@ -110,7 +109,7 @@ class IsolatedWebAppReaderRegistry : public KeyedService {
       const base::FilePath& web_bundle_path,
       const web_package::SignedWebBundleId& web_bundle_id,
       base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
-                     IsolatedWebAppResponseReaderFactory::Error> reader);
+                     UnusableSwbnFileError> reader);
 
   void DoReadResponse(IsolatedWebAppResponseReader& reader,
                       network::ResourceRequest resource_request,

@@ -46,7 +46,6 @@ using testing::ElementsAre;
 using testing::Eq;
 using testing::IsFalse;
 using testing::IsTrue;
-using testing::NotNull;
 using testing::StartsWith;
 using testing::VariantWith;
 
@@ -203,13 +202,13 @@ class IsolatedWebAppResponseReaderFactoryTest : public ::testing::Test {
 
 using ReaderResult =
     base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
-                   IsolatedWebAppResponseReaderFactory::Error>;
+                   UnusableSwbnFileError>;
 
 class IsolatedWebAppResponseReaderFactoryIntegrityBlockParserErrorTest
     : public IsolatedWebAppResponseReaderFactoryTest,
-      public ::testing::WithParamInterface<std::pair<
-          web_package::mojom::BundleParseErrorType,
-          IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError>> {};
+      public ::testing::WithParamInterface<
+          std::pair<web_package::mojom::BundleParseErrorType,
+                    UnusableSwbnFileError::Error>> {};
 
 TEST_P(IsolatedWebAppResponseReaderFactoryIntegrityBlockParserErrorTest,
        TestIntegrityBlockParserError) {
@@ -226,13 +225,10 @@ TEST_P(IsolatedWebAppResponseReaderFactoryIntegrityBlockParserErrorTest,
   parser_factory_->RunIntegrityBlockCallback(nullptr, error->Clone());
 
   ReaderResult result = reader_future.Take();
+
   ASSERT_FALSE(result.has_value());
-  auto* actual_error =
-      absl::get_if<web_package::mojom::BundleIntegrityBlockParseErrorPtr>(
-          &result.error());
-  ASSERT_THAT(actual_error, NotNull());
-  EXPECT_THAT((*actual_error)->type, Eq(error->type));
-  EXPECT_THAT((*actual_error)->message, Eq(error->message));
+  auto actual_error = result.error();
+  EXPECT_EQ(actual_error, UnusableSwbnFileError(error));
 
   histogram_tester.ExpectBucketCount(
       ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
@@ -245,16 +241,13 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         std::make_pair(
             web_package::mojom::BundleParseErrorType::kParserInternalError,
-            IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError::
-                kIntegrityBlockParserInternalError),
+            UnusableSwbnFileError::Error::kIntegrityBlockParserInternalError),
         std::make_pair(
             web_package::mojom::BundleParseErrorType::kVersionError,
-            IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError::
-                kIntegrityBlockParserVersionError),
+            UnusableSwbnFileError::Error::kIntegrityBlockParserVersionError),
         std::make_pair(
             web_package::mojom::BundleParseErrorType::kFormatError,
-            IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError::
-                kIntegrityBlockParserFormatError)));
+            UnusableSwbnFileError::Error::kIntegrityBlockParserFormatError)));
 
 TEST_F(IsolatedWebAppResponseReaderFactoryTest,
        TestInvalidIntegrityBlockContents) {
@@ -276,16 +269,14 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest,
   FulfillIntegrityBlock();
 
   ReaderResult result = reader_future.Take();
+
   ASSERT_FALSE(result.has_value());
-  auto* actual_error = absl::get_if<IntegrityBlockError>(&result.error());
-  ASSERT_THAT(actual_error, NotNull());
-  EXPECT_THAT(actual_error->message, Eq("test error"));
+  auto actual_error = result.error();
+  EXPECT_THAT(actual_error.message(), Eq("test error"));
 
   histogram_tester.ExpectBucketCount(
       ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
-      IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError::
-          kIntegrityBlockValidationError,
-      1);
+      UnusableSwbnFileError::Error::kIntegrityBlockValidationError, 1);
 }
 
 class IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest
@@ -332,23 +323,17 @@ TEST_P(IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest,
 
     histogram_tester.ExpectBucketCount(
         ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
-        IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError::
-            kSignatureVerificationError,
-        0);
+        UnusableSwbnFileError::Error::kSignatureVerificationError, 0);
   } else {
     ReaderResult result = reader_future.Take();
+
     ASSERT_FALSE(result.has_value());
-    auto* actual_error =
-        absl::get_if<web_package::SignedWebBundleSignatureVerifier::Error>(
-            &result.error());
-    ASSERT_THAT(actual_error, NotNull());
-    EXPECT_THAT(actual_error->message, Eq(error_.message));
+    auto actual_error = result.error();
+    EXPECT_THAT(actual_error.message(), Eq(error_.message));
 
     histogram_tester.ExpectBucketCount(
         ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
-        IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError::
-            kSignatureVerificationError,
-        1);
+        UnusableSwbnFileError::Error::kSignatureVerificationError, 1);
   }
 }
 
@@ -364,9 +349,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 class IsolatedWebAppResponseReaderFactoryMetadataParserErrorTest
     : public IsolatedWebAppResponseReaderFactoryTest,
-      public ::testing::WithParamInterface<std::pair<
-          web_package::mojom::BundleParseErrorType,
-          IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError>> {};
+      public ::testing::WithParamInterface<
+          std::pair<web_package::mojom::BundleParseErrorType,
+                    UnusableSwbnFileError::Error>> {};
 
 TEST_P(IsolatedWebAppResponseReaderFactoryMetadataParserErrorTest,
        TestMetadataParserError) {
@@ -385,13 +370,10 @@ TEST_P(IsolatedWebAppResponseReaderFactoryMetadataParserErrorTest,
                                        error->Clone());
 
   ReaderResult result = reader_future.Take();
+
   ASSERT_FALSE(result.has_value());
-  auto* actual_error =
-      absl::get_if<web_package::mojom::BundleMetadataParseErrorPtr>(
-          &result.error());
-  ASSERT_THAT(actual_error, NotNull());
-  EXPECT_THAT((*actual_error)->type, Eq(error->type));
-  EXPECT_THAT((*actual_error)->message, Eq(error->message));
+  auto actual_error = result.error();
+  EXPECT_THAT(actual_error, Eq(UnusableSwbnFileError(error)));
 
   histogram_tester.ExpectBucketCount(
       ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
@@ -404,14 +386,13 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         std::make_pair(
             web_package::mojom::BundleParseErrorType::kParserInternalError,
-            IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError::
-                kMetadataParserInternalError),
-        std::make_pair(web_package::mojom::BundleParseErrorType::kVersionError,
-                       IsolatedWebAppResponseReaderFactory::
-                           UnusableSwbnFileError::kMetadataParserVersionError),
-        std::make_pair(web_package::mojom::BundleParseErrorType::kFormatError,
-                       IsolatedWebAppResponseReaderFactory::
-                           UnusableSwbnFileError::kMetadataParserFormatError)));
+            UnusableSwbnFileError::Error::kMetadataParserInternalError),
+        std::make_pair(
+            web_package::mojom::BundleParseErrorType::kVersionError,
+            UnusableSwbnFileError::Error::kMetadataParserVersionError),
+        std::make_pair(
+            web_package::mojom::BundleParseErrorType::kFormatError,
+            UnusableSwbnFileError::Error::kMetadataParserFormatError)));
 
 TEST_F(IsolatedWebAppResponseReaderFactoryTest, TestInvalidMetadataPrimaryUrl) {
   base::HistogramTester histogram_tester;
@@ -428,17 +409,15 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest, TestInvalidMetadataPrimaryUrl) {
                                        std::move(metadata));
 
   ReaderResult result = reader_future.Take();
+
   ASSERT_FALSE(result.has_value());
-  auto* actual_error = absl::get_if<MetadataError>(&result.error());
-  ASSERT_THAT(actual_error, NotNull());
-  EXPECT_THAT(actual_error->message,
+  auto actual_error = result.error();
+  EXPECT_THAT(actual_error.message(),
               StartsWith("Primary URL must not be present"));
 
   histogram_tester.ExpectBucketCount(
       ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
-      IsolatedWebAppResponseReaderFactory::UnusableSwbnFileError::
-          kMetadataValidationError,
-      1);
+      UnusableSwbnFileError::Error::kMetadataValidationError, 1);
 }
 
 TEST_F(IsolatedWebAppResponseReaderFactoryTest,
@@ -457,10 +436,10 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest,
                                        std::move(metadata));
 
   ReaderResult result = reader_future.Take();
+
   ASSERT_FALSE(result.has_value());
-  auto* actual_error = absl::get_if<MetadataError>(&result.error());
-  ASSERT_THAT(actual_error, NotNull());
-  EXPECT_THAT(actual_error->message,
+  auto actual_error = result.error();
+  EXPECT_THAT(actual_error.message(),
               StartsWith("The URL of an exchange is invalid"));
 }
 
