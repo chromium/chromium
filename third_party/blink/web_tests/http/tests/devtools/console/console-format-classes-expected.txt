@@ -1,7 +1,7 @@
 Tests that console produces instant previews for arrays and objects.
 
-console-format-classes.js:30 Error: custom error with link www.chromium.org
-    at console-format-classes.js:20:9 
+console-format-classes.js:33 Error: custom error with link www.chromium.org
+    at console-format-classes.js:23:9 
   console-message
     source-code
       console-message-anchor
@@ -10,7 +10,7 @@ console-format-classes.js:30 Error: custom error with link www.chromium.org
         object-value-error source-code
           devtools-link
           devtools-link
-console-format-classes.js:30 (6) [1, empty × 2, 2, (...), empty] 
+console-format-classes.js:33 (6) [1, empty × 2, 2, (...), empty] 
   console-message
     source-code
       console-message-anchor
@@ -31,7 +31,7 @@ console-format-classes.js:30 (6) [1, empty × 2, 2, (...), empty]
               object-value-undefined
             object-state-note info-note
               children
-console-format-classes.js:30 {a: 1} 
+console-format-classes.js:33 {a: 1} 
   console-message
     source-code
       console-message-anchor
@@ -48,7 +48,7 @@ console-format-classes.js:30 {a: 1}
               object-value-number
             object-state-note info-note
               children
-console-format-classes.js:30 {str: '', nan: NaN, posInf: Infinity, negInf: -Infinity, negZero: -0} 
+console-format-classes.js:33 {str: '', nan: NaN, posInf: Infinity, negInf: -Infinity, negZero: -0} 
   console-message
     source-code
       console-message-anchor
@@ -73,7 +73,7 @@ console-format-classes.js:30 {str: '', nan: NaN, posInf: Infinity, negInf: -Infi
               object-value-number
             object-state-note info-note
               children
-console-format-classes.js:30 {null: null, undef: undefined, re: /^[regexp]$/g, constructedRe: /foo\/bar/, bool: false} 
+console-format-classes.js:33 {null: null, undef: undefined, re: /^[regexp]$/g, constructedRe: /foo\/bar/, bool: false} 
   console-message
     source-code
       console-message-anchor
@@ -98,7 +98,7 @@ console-format-classes.js:30 {null: null, undef: undefined, re: /^[regexp]$/g, c
               object-value-boolean
             object-state-note info-note
               children
-console-format-classes.js:30 Proxy(Object) {a: 1} 
+console-format-classes.js:33 Proxy(Object) {a: 1} 
   console-message
     source-code
       console-message-anchor
@@ -116,7 +116,7 @@ console-format-classes.js:30 Proxy(Object) {a: 1}
               object-value-number
             object-state-note info-note
               children
-console-format-classes.js:30 HTMLAllCollection(4) [html, head, base, body] 
+console-format-classes.js:33 HTMLAllCollection(4) [html, head, base, body] 
   console-message
     source-code
       console-message-anchor
@@ -140,7 +140,7 @@ console-format-classes.js:30 HTMLAllCollection(4) [html, head, base, body]
                 webkit-html-tag-name
             object-state-note info-note
               children
-console-format-classes.js:34 (7) [Error: custom error with link www.chromium.org
+console-format-classes.js:37 (7) [Error: custom error with link www.chromium.org
     at test://evaluations/0/console-format-classes.j…, Array(6), {…}, {…}, {…}, Proxy(Object), HTMLAllCollection(4)] 
   console-message
     source-code

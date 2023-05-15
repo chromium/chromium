@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {ConsoleTestRunner} from 'console_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests that console preserves scroll position when switching away.\n`);
-  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   // Do not use ConsoleTestRunner.fixConsoleViewportDimensions because fixing the height will affect
   // tests that may cause scrolling while the console moves into/out of the drawer.

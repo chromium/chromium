@@ -1,26 +1,26 @@
 Tests that when stack overflow exception happens when inspector is open the stack trace is correctly shown in console.
 
-console-stack-overflow.js:15 Uncaught RangeError: Maximum call stack size exceeded
-    at overflow (console-stack-overflow.js:15:27)
-    at overflow (console-stack-overflow.js:15:27)
-    at overflow (console-stack-overflow.js:15:27)
-    at overflow (console-stack-overflow.js:15:27)
-    at overflow (console-stack-overflow.js:15:27)
-    at overflow (console-stack-overflow.js:15:27)
-    at overflow (console-stack-overflow.js:15:27)
-    at overflow (console-stack-overflow.js:15:27)
-    at overflow (console-stack-overflow.js:15:27)
-    at overflow (console-stack-overflow.js:15:27)
-overflow @ console-stack-overflow.js:15
-overflow @ console-stack-overflow.js:15
-overflow @ console-stack-overflow.js:15
-overflow @ console-stack-overflow.js:15
-overflow @ console-stack-overflow.js:15
-overflow @ console-stack-overflow.js:15
-overflow @ console-stack-overflow.js:15
-overflow @ console-stack-overflow.js:15
-overflow @ console-stack-overflow.js:15
-overflow @ console-stack-overflow.js:15
-overflow @ console-stack-overflow.js:15
+console-stack-overflow.js:18 Uncaught RangeError: Maximum call stack size exceeded
+    at overflow (console-stack-overflow.js:18:27)
+    at overflow (console-stack-overflow.js:18:27)
+    at overflow (console-stack-overflow.js:18:27)
+    at overflow (console-stack-overflow.js:18:27)
+    at overflow (console-stack-overflow.js:18:27)
+    at overflow (console-stack-overflow.js:18:27)
+    at overflow (console-stack-overflow.js:18:27)
+    at overflow (console-stack-overflow.js:18:27)
+    at overflow (console-stack-overflow.js:18:27)
+    at overflow (console-stack-overflow.js:18:27)
+overflow @ console-stack-overflow.js:18
+overflow @ console-stack-overflow.js:18
+overflow @ console-stack-overflow.js:18
+overflow @ console-stack-overflow.js:18
+overflow @ console-stack-overflow.js:18
+overflow @ console-stack-overflow.js:18
+overflow @ console-stack-overflow.js:18
+overflow @ console-stack-overflow.js:18
+overflow @ console-stack-overflow.js:18
+overflow @ console-stack-overflow.js:18
+overflow @ console-stack-overflow.js:18
 o
 

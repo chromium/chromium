@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {ConsoleTestRunner} from 'console_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests that the console can preserve log messages across cross-process navigations.`);
-  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   await TestRunner.navigatePromise('http://devtools.oopif.test:8000/devtools/console/resources/log-message.html')
   Common.settingForTest('preserveConsoleLog').set(true);

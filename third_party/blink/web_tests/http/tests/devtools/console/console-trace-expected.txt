@@ -1,8 +1,8 @@
 Tests that console.trace dumps stack trace with source URLs and line numbers.
 
-console-trace.js:13 console.trace
-b @ console-trace.js:13
-a @ console-trace.js:18
+console-trace.js:16 console.trace
+b @ console-trace.js:16
+a @ console-trace.js:21
 setTimeout (async)
-(anonymous) @ console-trace.js:26
+(anonymous) @ console-trace.js:29
 

@@ -1,14 +1,14 @@
 Tests that console logging uses proper message formatting.
 
-console-message-format.js:11 Message format number 1, 2 and 3.5
-console-message-format.js:12 Message format for string
-console-message-format.js:13 Object {foo: 'bar'}
-console-message-format.js:14 Array (2) ['foo', 'bar']
-console-message-format.js:15 Object as object: Object
-console-message-format.js:16 Array as object: Array(2)
-console-message-format.js:17 Floating as integers: 42 42
-console-message-format.js:18 Floating as is: 42.5
-console-message-format.js:19 Non-numbers as numbers: NaN NaN NaN
-console-message-format.js:20 String as is: string
-console-message-format.js:21 Object as string: [object HTMLDocument]
+console-message-format.js:14 Message format number 1, 2 and 3.5
+console-message-format.js:15 Message format for string
+console-message-format.js:16 Object {foo: 'bar'}
+console-message-format.js:17 Array (2) ['foo', 'bar']
+console-message-format.js:18 Object as object: Object
+console-message-format.js:19 Array as object: Array(2)
+console-message-format.js:20 Floating as integers: 42 42
+console-message-format.js:21 Floating as is: 42.5
+console-message-format.js:22 Non-numbers as numbers: NaN NaN NaN
+console-message-format.js:23 String as is: string
+console-message-format.js:24 Object as string: [object HTMLDocument]
 

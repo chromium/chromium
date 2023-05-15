@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {ConsoleTestRunner} from 'console_test_runner';
+
 (async function() {
   TestRunner.addResult(`Verifies viewport stick-to-bottom behavior when prompt has space below editable area.\n`);
-  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   await ConsoleTestRunner.waitUntilConsoleEditorLoaded();
   ConsoleTestRunner.fixConsoleViewportDimensions(600, 200);

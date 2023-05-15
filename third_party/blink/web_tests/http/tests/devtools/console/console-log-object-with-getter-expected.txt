@@ -1,9 +1,9 @@
 Tests that console logging dumps object values defined by getters and allows to expand it.
 
-console-log-object-with-getter.js:30 {}
-console-log-object-with-getter.js:31 (2) [(...), empty]
-console-log-object-with-getter.js:32 {}
-console-log-object-with-getter.js:30 {}foo: Objectget foo: ƒ ()set bar: ƒ (x)[[Prototype]]: Object
-console-log-object-with-getter.js:31 (2) [(...), empty]0: 1length: 2get 0: ƒ ()set 1: ƒ (x)[[Prototype]]: Array(0)
-console-log-object-with-getter.js:32 {}error: [Exception: custom stack]function: [Exception: ƒ ()]number: [Exception: 123]string: [Exception: "myString"]get error: ƒ error()get function: ƒ ()get number: ƒ number()get string: ƒ string()[[Prototype]]: Object
+console-log-object-with-getter.js:33 {}
+console-log-object-with-getter.js:34 (2) [(...), empty]
+console-log-object-with-getter.js:35 {}
+console-log-object-with-getter.js:33 {}foo: Objectget foo: ƒ ()set bar: ƒ (x)[[Prototype]]: Object
+console-log-object-with-getter.js:34 (2) [(...), empty]0: 1length: 2get 0: ƒ ()set 1: ƒ (x)[[Prototype]]: Array(0)
+console-log-object-with-getter.js:35 {}error: [Exception: custom stack]function: [Exception: ƒ ()]number: [Exception: 123]string: [Exception: "myString"]get error: ƒ error()get function: ƒ ()get number: ƒ number()get string: ƒ string()[[Prototype]]: Object
 

@@ -1,68 +1,68 @@
 Tests that console produces instant previews for arrays and objects.
 
-console-object-preview.js:10 Mutating object in a loop
-console-object-preview.js:14 {a: 0, b: 0, c: 0}
-console-object-preview.js:14 {a: 0, b: 0, c: 1}
-console-object-preview.js:14 {a: 0, b: 0, c: 2}
-console-object-preview.js:17 Mutating array in a loop
-console-object-preview.js:21 (3) [0, 0, 0]
-console-object-preview.js:21 (3) [0, 0, 1]
-console-object-preview.js:21 (3) [0, 0, 2]
-console-object-preview.js:24 Object with many properties
-console-object-preview.js:29 {property_0: 0, property_1: 1, property_2: 2, property_3: 3, property_4: 4, …}
-console-object-preview.js:31 Array with many properties
-console-object-preview.js:36 (2) [0, 1, property_0: 0, property_1: 1, property_2: 2, property_3: 3, property_4: 4, …]
-console-object-preview.js:38 Array with gaps and overflow
-console-object-preview.js:43 (5733) [32: 0, 89: 1, 146: 2, 203: 3, 260: 4, 317: 5, 374: 6, 431: 7, 488: 8, 545: 9, 602: 10, 659: 11, 716: 12, 773: 13, 830: 14, 887: 15, 944: 16, 1001: 17, 1058: 18, 1115: 19, 1172: 20, 1229: 21, 1286: 22, 1343: 23, 1400: 24, 1457: 25, 1514: 26, 1571: 27, 1628: 28, 1685: 29, 1742: 30, 1799: 31, 1856: 32, 1913: 33, 1970: 34, 2027: 35, 2084: 36, 2141: 37, 2198: 38, 2255: 39, 2312: 40, 2369: 41, 2426: 42, 2483: 43, 2540: 44, 2597: 45, 2654: 46, 2711: 47, 2768: 48, 2825: 49, 2882: 50, 2939: 51, 2996: 52, 3053: 53, 3110: 54, 3167: 55, 3224: 56, 3281: 57, 3338: 58, 3395: 59, 3452: 60, 3509: 61, 3566: 62, 3623: 63, 3680: 64, 3737: 65, 3794: 66, 3851: 67, 3908: 68, 3965: 69, 4022: 70, 4079: 71, 4136: 72, 4193: 73, 4250: 74, 4307: 75, 4364: 76, 4421: 77, 4478: 78, 4535: 79, 4592: 80, 4649: 81, 4706: 82, 4763: 83, 4820: 84, 4877: 85, 4934: 86, 4991: 87, 5048: 88, 5105: 89, 5162: 90, 5219: 91, 5276: 92, 5333: 93, 5390: 94, 5447: 95, 5504: 96, 5561: 97, 5618: 98, 5675: 99, …]
-console-object-preview.js:45 Array with gaps without overflow
-console-object-preview.js:50 (5619) [empty × 32, 0, empty × 56, 1, empty × 56, 2, empty × 56, 3, empty × 56, 4, empty × 56, 5, empty × 56, 6, empty × 56, 7, empty × 56, 8, empty × 56, 9, empty × 56, 10, empty × 56, 11, empty × 56, 12, empty × 56, 13, empty × 56, 14, empty × 56, 15, empty × 56, 16, empty × 56, 17, empty × 56, 18, empty × 56, 19, empty × 56, 20, empty × 56, 21, empty × 56, 22, empty × 56, 23, empty × 56, 24, empty × 56, 25, empty × 56, 26, empty × 56, 27, empty × 56, 28, empty × 56, 29, empty × 56, 30, empty × 56, 31, empty × 56, 32, empty × 56, 33, empty × 56, 34, empty × 56, 35, empty × 56, 36, empty × 56, 37, empty × 56, 38, empty × 56, 39, empty × 56, 40, empty × 56, 41, empty × 56, 42, empty × 56, 43, empty × 56, 44, empty × 56, 45, empty × 56, 46, empty × 56, 47, empty × 56, 48, empty × 56, 49, empty × 56, 50, empty × 56, 51, empty × 56, 52, empty × 56, 53, empty × 56, 54, empty × 56, 55, empty × 56, 56, empty × 56, 57, empty × 56, 58, empty × 56, 59, empty × 56, 60, empty × 56, 61, empty
-console-object-preview.js:52 Object with proto
-console-object-preview.js:55 {d: 1}
-console-object-preview.js:57 Sparse array
-console-object-preview.js:60 (150) [empty × 50, 50, empty × 99]
-console-object-preview.js:62 Dense array with indexes and propeties
-console-object-preview.js:68 (150) [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, …]
-console-object-preview.js:70 Object with properties containing whitespaces
-console-object-preview.js:77 {" a b ": " a b ", c d: "c d", "": "", "  ": "  ", "a↵↵b↵c": "a↵↵b↵c"}
-console-object-preview.js:79 Object with a document.all property
-console-object-preview.js:80 {all: HTMLAllCollection(4)}
-console-object-preview.js:82 Object with special numbers
-console-object-preview.js:84 {nan: NaN, posInf: Infinity, negInf: -Infinity, negZero: -0}
-console-object-preview.js:86 Object with exactly 5 properties: expected to be lossless
-console-object-preview.js:87 {a: 1, b: 2, c: 3, d: 4, e: 5}
-console-object-preview.js:89 {null: null, undef: undefined, regexp: /^[regexp]$/g, bool: false}
-console-object-preview.js:96 IHavePrivateProperties {regularProperty: 3, #privateProperty1: 1, #privateProperty2: 2}
+console-object-preview.js:13 Mutating object in a loop
+console-object-preview.js:17 {a: 0, b: 0, c: 0}
+console-object-preview.js:17 {a: 0, b: 0, c: 1}
+console-object-preview.js:17 {a: 0, b: 0, c: 2}
+console-object-preview.js:20 Mutating array in a loop
+console-object-preview.js:24 (3) [0, 0, 0]
+console-object-preview.js:24 (3) [0, 0, 1]
+console-object-preview.js:24 (3) [0, 0, 2]
+console-object-preview.js:27 Object with many properties
+console-object-preview.js:32 {property_0: 0, property_1: 1, property_2: 2, property_3: 3, property_4: 4, …}
+console-object-preview.js:34 Array with many properties
+console-object-preview.js:39 (2) [0, 1, property_0: 0, property_1: 1, property_2: 2, property_3: 3, property_4: 4, …]
+console-object-preview.js:41 Array with gaps and overflow
+console-object-preview.js:46 (5733) [32: 0, 89: 1, 146: 2, 203: 3, 260: 4, 317: 5, 374: 6, 431: 7, 488: 8, 545: 9, 602: 10, 659: 11, 716: 12, 773: 13, 830: 14, 887: 15, 944: 16, 1001: 17, 1058: 18, 1115: 19, 1172: 20, 1229: 21, 1286: 22, 1343: 23, 1400: 24, 1457: 25, 1514: 26, 1571: 27, 1628: 28, 1685: 29, 1742: 30, 1799: 31, 1856: 32, 1913: 33, 1970: 34, 2027: 35, 2084: 36, 2141: 37, 2198: 38, 2255: 39, 2312: 40, 2369: 41, 2426: 42, 2483: 43, 2540: 44, 2597: 45, 2654: 46, 2711: 47, 2768: 48, 2825: 49, 2882: 50, 2939: 51, 2996: 52, 3053: 53, 3110: 54, 3167: 55, 3224: 56, 3281: 57, 3338: 58, 3395: 59, 3452: 60, 3509: 61, 3566: 62, 3623: 63, 3680: 64, 3737: 65, 3794: 66, 3851: 67, 3908: 68, 3965: 69, 4022: 70, 4079: 71, 4136: 72, 4193: 73, 4250: 74, 4307: 75, 4364: 76, 4421: 77, 4478: 78, 4535: 79, 4592: 80, 4649: 81, 4706: 82, 4763: 83, 4820: 84, 4877: 85, 4934: 86, 4991: 87, 5048: 88, 5105: 89, 5162: 90, 5219: 91, 5276: 92, 5333: 93, 5390: 94, 5447: 95, 5504: 96, 5561: 97, 5618: 98, 5675: 99, …]
+console-object-preview.js:48 Array with gaps without overflow
+console-object-preview.js:53 (5619) [empty × 32, 0, empty × 56, 1, empty × 56, 2, empty × 56, 3, empty × 56, 4, empty × 56, 5, empty × 56, 6, empty × 56, 7, empty × 56, 8, empty × 56, 9, empty × 56, 10, empty × 56, 11, empty × 56, 12, empty × 56, 13, empty × 56, 14, empty × 56, 15, empty × 56, 16, empty × 56, 17, empty × 56, 18, empty × 56, 19, empty × 56, 20, empty × 56, 21, empty × 56, 22, empty × 56, 23, empty × 56, 24, empty × 56, 25, empty × 56, 26, empty × 56, 27, empty × 56, 28, empty × 56, 29, empty × 56, 30, empty × 56, 31, empty × 56, 32, empty × 56, 33, empty × 56, 34, empty × 56, 35, empty × 56, 36, empty × 56, 37, empty × 56, 38, empty × 56, 39, empty × 56, 40, empty × 56, 41, empty × 56, 42, empty × 56, 43, empty × 56, 44, empty × 56, 45, empty × 56, 46, empty × 56, 47, empty × 56, 48, empty × 56, 49, empty × 56, 50, empty × 56, 51, empty × 56, 52, empty × 56, 53, empty × 56, 54, empty × 56, 55, empty × 56, 56, empty × 56, 57, empty × 56, 58, empty × 56, 59, empty × 56, 60, empty × 56, 61, empty
+console-object-preview.js:55 Object with proto
+console-object-preview.js:58 {d: 1}
+console-object-preview.js:60 Sparse array
+console-object-preview.js:63 (150) [empty × 50, 50, empty × 99]
+console-object-preview.js:65 Dense array with indexes and propeties
+console-object-preview.js:71 (150) [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, …]
+console-object-preview.js:73 Object with properties containing whitespaces
+console-object-preview.js:80 {" a b ": ' a b ', c d: 'c d', "": '', "  ": '  ', "a↵↵b↵c": 'a\n\nb\nc'}
+console-object-preview.js:82 Object with a document.all property
+console-object-preview.js:83 {all: HTMLAllCollection(4)}
+console-object-preview.js:85 Object with special numbers
+console-object-preview.js:87 {nan: NaN, posInf: Infinity, negInf: -Infinity, negZero: -0}
+console-object-preview.js:89 Object with exactly 5 properties: expected to be lossless
+console-object-preview.js:90 {a: 1, b: 2, c: 3, d: 4, e: 5}
+console-object-preview.js:92 {null: null, undef: undefined, regexp: /^[regexp]$/g, bool: false}
+console-object-preview.js:99 IHavePrivateProperties {regularProperty: 3, #privateProperty1: 1, #privateProperty2: 2}
 Expanded all messages
-console-object-preview.js:10 Mutating object in a loop
-console-object-preview.js:14 {a: 0, b: 0, c: 0}a: 0b: 0c: 2__proto__: Object
-console-object-preview.js:14 {a: 0, b: 0, c: 1}a: 0b: 0c: 2__proto__: Object
-console-object-preview.js:14 {a: 0, b: 0, c: 2}a: 0b: 0c: 2__proto__: Object
-console-object-preview.js:17 Mutating array in a loop
-console-object-preview.js:21 (3) [0, 0, 0]0: 01: 02: 2length: 3__proto__: Array(0)
-console-object-preview.js:21 (3) [0, 0, 1]0: 01: 02: 2length: 3__proto__: Array(0)
-console-object-preview.js:21 (3) [0, 0, 2]0: 01: 02: 2length: 3__proto__: Array(0)
-console-object-preview.js:24 Object with many properties
-console-object-preview.js:29 {property_0: 0, property_1: 1, property_2: 2, property_3: 3, property_4: 4, …}property_0: 0property_1: 1property_2: 2property_3: 3property_4: 4property_5: 5property_6: 6property_7: 7property_8: 8property_9: 9__proto__: Object
-console-object-preview.js:31 Array with many properties
-console-object-preview.js:36 (2) [0, 1, property_0: 0, property_1: 1, property_2: 2, property_3: 3, property_4: 4, …]0: 01: 1property_0: 0property_1: 1property_2: 2property_3: 3property_4: 4property_5: 5property_6: 6property_7: 7property_8: 8property_9: 9length: 2__proto__: Array(0)
-console-object-preview.js:38 Array with gaps and overflow
-console-object-preview.js:43 (5733) [32: 0, 89: 1, 146: 2, 203: 3, 260: 4, 317: 5, 374: 6, 431: 7, 488: 8, 545: 9, 602: 10, 659: 11, 716: 12, 773: 13, 830: 14, 887: 15, 944: 16, 1001: 17, 1058: 18, 1115: 19, 1172: 20, 1229: 21, 1286: 22, 1343: 23, 1400: 24, 1457: 25, 1514: 26, 1571: 27, 1628: 28, 1685: 29, 1742: 30, 1799: 31, 1856: 32, 1913: 33, 1970: 34, 2027: 35, 2084: 36, 2141: 37, 2198: 38, 2255: 39, 2312: 40, 2369: 41, 2426: 42, 2483: 43, 2540: 44, 2597: 45, 2654: 46, 2711: 47, 2768: 48, 2825: 49, 2882: 50, 2939: 51, 2996: 52, 3053: 53, 3110: 54, 3167: 55, 3224: 56, 3281: 57, 3338: 58, 3395: 59, 3452: 60, 3509: 61, 3566: 62, 3623: 63, 3680: 64, 3737: 65, 3794: 66, 3851: 67, 3908: 68, 3965: 69, 4022: 70, 4079: 71, 4136: 72, 4193: 73, 4250: 74, 4307: 75, 4364: 76, 4421: 77, 4478: 78, 4535: 79, 4592: 80, 4649: 81, 4706: 82, 4763: 83, 4820: 84, 4877: 85, 4934: 86, 4991: 87, 5048: 88, 5105: 89, 5162: 90, 5219: 91, 5276: 92, 5333: 93, 5390: 94, 5447: 95, 5504: 96, 5561: 97, 5618: 98, 5675: 99, …][32 … 5675]573
-console-object-preview.js:45 Array with gaps without overflow
-console-object-preview.js:50 (5619) [empty × 32, 0, empty × 56, 1, empty × 56, 2, empty × 56, 3, empty × 56, 4, empty × 56, 5, empty × 56, 6, empty × 56, 7, empty × 56, 8, empty × 56, 9, empty × 56, 10, empty × 56, 11, empty × 56, 12, empty × 56, 13, empty × 56, 14, empty × 56, 15, empty × 56, 16, empty × 56, 17, empty × 56, 18, empty × 56, 19, empty × 56, 20, empty × 56, 21, empty × 56, 22, empty × 56, 23, empty × 56, 24, empty × 56, 25, empty × 56, 26, empty × 56, 27, empty × 56, 28, empty × 56, 29, empty × 56, 30, empty × 56, 31, empty × 56, 32, empty × 56, 33, empty × 56, 34, empty × 56, 35, empty × 56, 36, empty × 56, 37, empty × 56, 38, empty × 56, 39, empty × 56, 40, empty × 56, 41, empty × 56, 42, empty × 56, 43, empty × 56, 44, empty × 56, 45, empty × 56, 46, empty × 56, 47, empty × 56, 48, empty × 56, 49, empty × 56, 50, empty × 56, 51, empty × 56, 52, empty × 56, 53, empty × 56, 54, empty × 56, 55, empty × 56, 56, empty × 56, 57, empty × 56, 58, empty × 56, 59, empty × 56, 60, empty × 56, 61, empty
-console-object-preview.js:52 Object with proto
-console-object-preview.js:55 {d: 1}d: 1__proto__: Object
-console-object-preview.js:57 Sparse array
-console-object-preview.js:60 (150) [empty × 50, 50, empty × 99]50: 50length: 150__proto__: Array(0)
-console-object-preview.js:62 Dense array with indexes and propeties
-console-object-preview.js:68 (150) [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, …][0 … 99][100 … 149]property_0: 0property_1: 1property_2: 2property_3: 3property_4: 4property_5: 5property_6: 6property_7: 7property_8: 8property_9: 9property_10: 10property_11: 11property_12: 12property_13: 13property_14: 14property_15: 15property_16: 16property_17: 17property_18: 18property_19: 19property_20: 20property_21: 21property_22: 22property_23: 23property_24: 24property_25: 25property_26: 26property_27: 27property_28: 28property_29: 29property_30: 30property_31: 31property_32: 32property_33: 33property_34: 34property_35: 35property_36: 36property_37: 37property_38: 38property_39:
-console-object-preview.js:70 Object with properties containing whitespaces
-console-object-preview.js:77 {" a b ": " a b ", c d: "c d", "": "", "  ": "  ", "a↵↵b↵c": "a↵↵b↵c"}"": """  ": "  "" a b ": " a b ""a↵↵b↵c": "a↵↵b↵c"c d: "c d"__proto__: Object
-console-object-preview.js:79 Object with a document.all property
-console-object-preview.js:80 {all: HTMLAllCollection(4)}all: HTMLAllCollection(4) [html, head, base, body]__proto__: Object
-console-object-preview.js:82 Object with special numbers
-console-object-preview.js:84 {nan: NaN, posInf: Infinity, negInf: -Infinity, negZero: -0}nan: NaNnegInf: -InfinitynegZero: -0posInf: Infinity__proto__: Object
-console-object-preview.js:86 Object with exactly 5 properties: expected to be lossless
-console-object-preview.js:87 {a: 1, b: 2, c: 3, d: 4, e: 5}a: 1b: 2c: 3d: 4e: 5__proto__: Object
-console-object-preview.js:89 {null: null, undef: undefined, regexp: /^[regexp]$/g, bool: false}bool: falsenull: nullregexp: /^[regexp]$/gundef: undefined__proto__: Object
-console-object-preview.js:96 IHavePrivateProperties {regularProperty: 3, #privateProperty1: 1, #privateProperty2: 2}regularProperty: 3#privateProperty1: 1#privateProperty2: 2__proto__: Object
+console-object-preview.js:13 Mutating object in a loop
+console-object-preview.js:17 {a: 0, b: 0, c: 0}a: 0b: 0c: 2[[Prototype]]: Object
+console-object-preview.js:17 {a: 0, b: 0, c: 1}a: 0b: 0c: 2[[Prototype]]: Object
+console-object-preview.js:17 {a: 0, b: 0, c: 2}a: 0b: 0c: 2[[Prototype]]: Object
+console-object-preview.js:20 Mutating array in a loop
+console-object-preview.js:24 (3) [0, 0, 0]0: 01: 02: 2length: 3[[Prototype]]: Array(0)
+console-object-preview.js:24 (3) [0, 0, 1]0: 01: 02: 2length: 3[[Prototype]]: Array(0)
+console-object-preview.js:24 (3) [0, 0, 2]0: 01: 02: 2length: 3[[Prototype]]: Array(0)
+console-object-preview.js:27 Object with many properties
+console-object-preview.js:32 {property_0: 0, property_1: 1, property_2: 2, property_3: 3, property_4: 4, …}property_0: 0property_1: 1property_2: 2property_3: 3property_4: 4property_5: 5property_6: 6property_7: 7property_8: 8property_9: 9[[Prototype]]: Object
+console-object-preview.js:34 Array with many properties
+console-object-preview.js:39 (2) [0, 1, property_0: 0, property_1: 1, property_2: 2, property_3: 3, property_4: 4, …]0: 01: 1property_0: 0property_1: 1property_2: 2property_3: 3property_4: 4property_5: 5property_6: 6property_7: 7property_8: 8property_9: 9length: 2[[Prototype]]: Array(0)
+console-object-preview.js:41 Array with gaps and overflow
+console-object-preview.js:46 (5733) [32: 0, 89: 1, 146: 2, 203: 3, 260: 4, 317: 5, 374: 6, 431: 7, 488: 8, 545: 9, 602: 10, 659: 11, 716: 12, 773: 13, 830: 14, 887: 15, 944: 16, 1001: 17, 1058: 18, 1115: 19, 1172: 20, 1229: 21, 1286: 22, 1343: 23, 1400: 24, 1457: 25, 1514: 26, 1571: 27, 1628: 28, 1685: 29, 1742: 30, 1799: 31, 1856: 32, 1913: 33, 1970: 34, 2027: 35, 2084: 36, 2141: 37, 2198: 38, 2255: 39, 2312: 40, 2369: 41, 2426: 42, 2483: 43, 2540: 44, 2597: 45, 2654: 46, 2711: 47, 2768: 48, 2825: 49, 2882: 50, 2939: 51, 2996: 52, 3053: 53, 3110: 54, 3167: 55, 3224: 56, 3281: 57, 3338: 58, 3395: 59, 3452: 60, 3509: 61, 3566: 62, 3623: 63, 3680: 64, 3737: 65, 3794: 66, 3851: 67, 3908: 68, 3965: 69, 4022: 70, 4079: 71, 4136: 72, 4193: 73, 4250: 74, 4307: 75, 4364: 76, 4421: 77, 4478: 78, 4535: 79, 4592: 80, 4649: 81, 4706: 82, 4763: 83, 4820: 84, 4877: 85, 4934: 86, 4991: 87, 5048: 88, 5105: 89, 5162: 90, 5219: 91, 5276: 92, 5333: 93, 5390: 94, 5447: 95, 5504: 96, 5561: 97, 5618: 98, 5675: 99, …][32 … 5675]573
+console-object-preview.js:48 Array with gaps without overflow
+console-object-preview.js:53 (5619) [empty × 32, 0, empty × 56, 1, empty × 56, 2, empty × 56, 3, empty × 56, 4, empty × 56, 5, empty × 56, 6, empty × 56, 7, empty × 56, 8, empty × 56, 9, empty × 56, 10, empty × 56, 11, empty × 56, 12, empty × 56, 13, empty × 56, 14, empty × 56, 15, empty × 56, 16, empty × 56, 17, empty × 56, 18, empty × 56, 19, empty × 56, 20, empty × 56, 21, empty × 56, 22, empty × 56, 23, empty × 56, 24, empty × 56, 25, empty × 56, 26, empty × 56, 27, empty × 56, 28, empty × 56, 29, empty × 56, 30, empty × 56, 31, empty × 56, 32, empty × 56, 33, empty × 56, 34, empty × 56, 35, empty × 56, 36, empty × 56, 37, empty × 56, 38, empty × 56, 39, empty × 56, 40, empty × 56, 41, empty × 56, 42, empty × 56, 43, empty × 56, 44, empty × 56, 45, empty × 56, 46, empty × 56, 47, empty × 56, 48, empty × 56, 49, empty × 56, 50, empty × 56, 51, empty × 56, 52, empty × 56, 53, empty × 56, 54, empty × 56, 55, empty × 56, 56, empty × 56, 57, empty × 56, 58, empty × 56, 59, empty × 56, 60, empty × 56, 61, empty
+console-object-preview.js:55 Object with proto
+console-object-preview.js:58 {d: 1}d: 1[[Prototype]]: Object
+console-object-preview.js:60 Sparse array
+console-object-preview.js:63 (150) [empty × 50, 50, empty × 99]50: 50length: 150[[Prototype]]: Array(0)
+console-object-preview.js:65 Dense array with indexes and propeties
+console-object-preview.js:71 (150) [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, …][0 … 99][100 … 149]property_0: 0property_1: 1property_2: 2property_3: 3property_4: 4property_5: 5property_6: 6property_7: 7property_8: 8property_9: 9property_10: 10property_11: 11property_12: 12property_13: 13property_14: 14property_15: 15property_16: 16property_17: 17property_18: 18property_19: 19property_20: 20property_21: 21property_22: 22property_23: 23property_24: 24property_25: 25property_26: 26property_27: 27property_28: 28property_29: 29property_30: 30property_31: 31property_32: 32property_33: 33property_34: 34property_35: 35property_36: 36property_37: 37property_38: 38property_39:
+console-object-preview.js:73 Object with properties containing whitespaces
+console-object-preview.js:80 {" a b ": ' a b ', c d: 'c d', "": '', "  ": '  ', "a↵↵b↵c": 'a\n\nb\nc'}"": """  ": "  "" a b ": " a b ""a↵↵b↵c": "a\n\nb\nc"c d: "c d"[[Prototype]]: Object
+console-object-preview.js:82 Object with a document.all property
+console-object-preview.js:83 {all: HTMLAllCollection(4)}all: HTMLAllCollection(4) [html, head, base, body][[Prototype]]: Object
+console-object-preview.js:85 Object with special numbers
+console-object-preview.js:87 {nan: NaN, posInf: Infinity, negInf: -Infinity, negZero: -0}nan: NaNnegInf: -InfinitynegZero: -0posInf: Infinity[[Prototype]]: Object
+console-object-preview.js:89 Object with exactly 5 properties: expected to be lossless
+console-object-preview.js:90 {a: 1, b: 2, c: 3, d: 4, e: 5}a: 1b: 2c: 3d: 4e: 5[[Prototype]]: Object
+console-object-preview.js:92 {null: null, undef: undefined, regexp: /^[regexp]$/g, bool: false}bool: falsenull: nullregexp: /^[regexp]$/gundef: undefined[[Prototype]]: Object
+console-object-preview.js:99 IHavePrivateProperties {regularProperty: 3, #privateProperty1: 1, #privateProperty2: 2}regularProperty: 3#privateProperty1: 1#privateProperty2: 2[[Prototype]]: Object
 

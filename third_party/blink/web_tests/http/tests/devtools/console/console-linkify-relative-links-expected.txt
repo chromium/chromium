@@ -1,6 +1,6 @@
 Test that logging an error in console would linkify relative URLs
 
-console-linkify-relative-links.js:10 Error with relative links
+console-linkify-relative-links.js:13 Error with relative links
     at (foo1.js:10:50)
     at (foo2.js:10:50)
     at (:8000/foo3.js:10:50)

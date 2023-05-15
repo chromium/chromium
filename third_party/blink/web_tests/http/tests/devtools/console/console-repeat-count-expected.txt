@@ -7,29 +7,29 @@ await delayedPromise
 await delayedPromise
 undefined
 undefined
-2console-repeat-count.js:15 Message
-2console-repeat-count.js:18 Error: Message with error
-    at dumpMessages (console-repeat-count.js:18:21)
-    at console-repeat-count.js:49:1
-console-repeat-count.js:21 {a: 1}
-dumpMessages @ console-repeat-count.js:21
-(anonymous) @ console-repeat-count.js:49
-console-repeat-count.js:21 {a: 1}
-dumpMessages @ console-repeat-count.js:21
-(anonymous) @ console-repeat-count.js:49
-2console-repeat-count.js:31 Uncaught Primitive value
-(anonymous) @ console-repeat-count.js:31
+2console-repeat-count.js:18 Message
+2console-repeat-count.js:21 Error: Message with error
+    at dumpMessages (console-repeat-count.js:21:21)
+    at console-repeat-count.js:52:1
+console-repeat-count.js:24 {a: 1}
+dumpMessages @ console-repeat-count.js:24
+(anonymous) @ console-repeat-count.js:52
+console-repeat-count.js:24 {a: 1}
+dumpMessages @ console-repeat-count.js:24
+(anonymous) @ console-repeat-count.js:52
+2console-repeat-count.js:34 Uncaught Primitive value
+(anonymous) @ console-repeat-count.js:34
 setTimeout (async)
-throwPrimitiveValues @ console-repeat-count.js:31
-(anonymous) @ console-repeat-count.js:50
-console-repeat-count.js:26 Uncaught {a: 1}
-(anonymous) @ console-repeat-count.js:26
+throwPrimitiveValues @ console-repeat-count.js:34
+(anonymous) @ console-repeat-count.js:53
+console-repeat-count.js:29 Uncaught {a: 1}
+(anonymous) @ console-repeat-count.js:29
 setTimeout (async)
-throwObjects @ console-repeat-count.js:26
-(anonymous) @ console-repeat-count.js:51
-console-repeat-count.js:26 Uncaught {a: 1}
-(anonymous) @ console-repeat-count.js:26
+throwObjects @ console-repeat-count.js:29
+(anonymous) @ console-repeat-count.js:54
+console-repeat-count.js:29 Uncaught {a: 1}
+(anonymous) @ console-repeat-count.js:29
 setTimeout (async)
-throwObjects @ console-repeat-count.js:26
-(anonymous) @ console-repeat-count.js:51
+throwObjects @ console-repeat-count.js:29
+(anonymous) @ console-repeat-count.js:54
 

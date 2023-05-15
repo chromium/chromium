@@ -5,7 +5,7 @@ Node was hidden after dblclick: true
 Node was hidden after dblclick: true
 Node was hidden after dblclick: true
 logToConsole()
-console-edit-property-value.js:15 {a: 1, b: 'foo', c: null, d: 2}
+console-edit-property-value.js:18 {a: 1, b: 'foo', c: null, d: 2}
     a: 3
     b: "foo"
     c: (3) [1, 2, 3]

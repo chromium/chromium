@@ -16,5 +16,5 @@ $x('./a@href', document.body)
 VM:1 Uncaught DOMException: Failed to execute '$x' on 'CommandLineAPI': The string './a@href' is not a valid XPath expression.
     at <anonymous>:1:1
 (anonymous) @ VM:1
-console-xpath.js:25 complete
+console-xpath.js:28 complete
 

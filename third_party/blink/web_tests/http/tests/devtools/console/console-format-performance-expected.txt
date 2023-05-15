@@ -1,7 +1,7 @@
 Tests that console nicely formats performance getters.
 
-console-format-performance.js:14 PerformanceTiming {navigationStart: <number>, unloadEventStart: <number>, unloadEventEnd: <number>, redirectStart: <number>, redirectEnd: <number>, …}
-console-format-performance.js:15 MemoryInfo {totalJSHeapSize: <number>, usedJSHeapSize: <number>, jsHeapSizeLimit: <number>}
-console-format-performance.js:14 PerformanceTiming {navigationStart: <number>, unloadEventStart: <number>, unloadEventEnd: <number>, redirectStart: <number>, redirectEnd: <number>, …}
-console-format-performance.js:15 MemoryInfo {totalJSHeapSize: <number>, usedJSHeapSize: <number>, jsHeapSizeLimit: <number>}
+console-format-performance.js:17 PerformanceTiming {navigationStart: <number>, unloadEventStart: <number>, unloadEventEnd: <number>, redirectStart: <number>, redirectEnd: <number>, …}
+console-format-performance.js:18 MemoryInfo {totalJSHeapSize: <number>, usedJSHeapSize: <number>, jsHeapSizeLimit: <number>}
+console-format-performance.js:17 PerformanceTiming {navigationStart: <number>, unloadEventStart: <number>, unloadEventEnd: <number>, redirectStart: <number>, redirectEnd: <number>, …}
+console-format-performance.js:18 MemoryInfo {totalJSHeapSize: <number>, usedJSHeapSize: <number>, jsHeapSizeLimit: <number>}
 

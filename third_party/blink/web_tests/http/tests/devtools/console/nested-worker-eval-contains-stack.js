@@ -1,6 +1,9 @@
+
+import {TestRunner} from 'test_runner';
+import {ConsoleTestRunner} from 'console_test_runner';
 (async function() {
   TestRunner.addResult(`Tests exception message from eval on nested worker context in console contains stack trace.\n`);
-  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       function startWorker()

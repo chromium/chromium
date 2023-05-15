@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {ConsoleTestRunner} from 'console_test_runner';
+
 (async function() {
   'use strict';
   TestRunner.addResult(
     `Tests that evaluating 'console.log()' in the console will have access to its outer scope variables. Bug 60547.\n`
   );
 
-  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
