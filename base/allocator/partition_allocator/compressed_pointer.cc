@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/allocator/partition_allocator/compressed_pointer.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 
-#if PA_CONFIG(POINTER_COMPRESSION)
+#if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 namespace partition_alloc::internal {
 
@@ -25,4 +26,4 @@ void CompressedPointerBaseGlobal::ResetBaseForTesting() {
 
 }  // namespace partition_alloc::internal
 
-#endif  // PA_CONFIG(POINTER_COMPRESSION)
+#endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)

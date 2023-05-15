@@ -64,7 +64,8 @@ declare_args() {
   # check "belongs to one of the two pools" with a single bitmask operation.
   glue_core_pools = false
 
-  # Introduces pointer compression support in PA.
+  # Introduces pointer compression support in PA. These are 4-byte
+  # pointers that can point within the core pools (regular and BRP).
   #
   # This is effective only for memory allocated from PartitionAlloc, so it is
   # recommended to enable PA-E above, but isn't strictly necessary. Embedders

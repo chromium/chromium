@@ -293,14 +293,8 @@ constexpr bool kUseLazyCommit = false;
 #define PA_CONFIG_ENABLE_MAC11_MALLOC_SIZE_HACK() \
   (BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && BUILDFLAG(IS_MAC))
 
-// Enables compressed (4-byte) pointers that can point within the core pools
-// (Regular + BRP).
-#if BUILDFLAG(HAS_64_BIT_POINTERS) && BUILDFLAG(ENABLE_POINTER_COMPRESSION)
-#define PA_CONFIG_POINTER_COMPRESSION() 1
+#if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
-#if !BUILDFLAG(GLUE_CORE_POOLS)
-#error "Pointer compression works only with contiguous pools"
-#endif
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 #error "Dynamically selected pool size is currently not supported"
 #endif
@@ -308,10 +302,8 @@ constexpr bool kUseLazyCommit = false;
 // TODO(1376980): Address MTE once it's enabled.
 #error "Compressed pointers don't support tag in the upper bits"
 #endif
-#else  // BUILDFLAG(HAS_64_BIT_POINTERS) &&
-       // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
-#define PA_CONFIG_POINTER_COMPRESSION() 0
-#endif
+
+#endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
 // PA_CONFIG(IS_NONCLANG_MSVC): mimics the compound condition used by
 // Chromium's `//base/compiler_specific.h` to detect true (non-Clang)

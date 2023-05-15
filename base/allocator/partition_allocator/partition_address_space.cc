@@ -284,9 +284,9 @@ void PartitionAddressSpace::Init() {
       brp_pool_shadow_address - setup_.brp_pool_base_address_;
 #endif
 
-#if PA_CONFIG(POINTER_COMPRESSION)
+#if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
   CompressedPointerBaseGlobal::SetBase(setup_.regular_pool_base_address_);
-#endif  // PA_CONFIG(POINTER_COMPRESSION)
+#endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 }
 
 void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
@@ -383,9 +383,9 @@ void PartitionAddressSpace::UninitForTesting() {
   setup_.configurable_pool_base_address_ = kUninitializedPoolBaseAddress;
   setup_.configurable_pool_base_mask_ = 0;
   AddressPoolManager::GetInstance().ResetForTesting();
-#if PA_CONFIG(POINTER_COMPRESSION)
+#if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
   CompressedPointerBaseGlobal::ResetBaseForTesting();
-#endif  // PA_CONFIG(POINTER_COMPRESSION)
+#endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 }
 
 void PartitionAddressSpace::UninitConfigurablePoolForTesting() {
