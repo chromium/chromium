@@ -763,7 +763,9 @@ void ProfileMenuView::BuildProfileManagementFeatureButtons() {
 
   if (profiles_selectable) {
     AddProfileManagementShortcutFeatureButton(
-        vector_icons::kSettingsIcon,
+        features::IsChromeRefresh2023()
+            ? vector_icons::kSettingsChromeRefreshIcon
+            : vector_icons::kSettingsIcon,
         l10n_util::GetStringUTF16(IDS_PROFILES_MANAGE_PROFILES_BUTTON_TOOLTIP),
         base::BindRepeating(&ProfileMenuView::OnManageProfilesButtonClicked,
                             base::Unretained(this)));
