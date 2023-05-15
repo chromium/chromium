@@ -183,7 +183,7 @@
   }
 
   if (self.bookmark == node) {
-    self.bookmark = nullptr;
+    _bookmark = nullptr;
     [self.delegate bookmarkEditorMediatorWantsDismissal:self];
   } else if (self.folder == node) {
     [self changeFolder:self.bookmarkModel->mobile_node()];
@@ -192,7 +192,7 @@
 
 - (void)bookmarkModelRemovedAllNodes:(bookmarks::BookmarkModel*)model {
   CHECK(!self.ignoresBookmarkModelChanges);
-  self.bookmark = nullptr;
+  _bookmark = nullptr;
   self.folder = nullptr;
   [self.delegate bookmarkEditorMediatorWantsDismissal:self];
 }
@@ -245,7 +245,7 @@
   [self.delegate
       showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
                               nodes, {[self bookmarkModel]}, _browserState)];
-  [self setBookmark:nil];
+  _bookmark = nullptr;
 }
 
 #pragma mark - SyncObserverModelBridge
