@@ -78426,6 +78426,18 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Internal error"/>
 </enum>
 
+<enum name="OutputFormat">
+  <int value="0" label="Unset format state"/>
+  <int value="1" label="I420, 3 R8 GMBs"/>
+  <int value="2" label="Single NV12 GMB"/>
+  <int value="3" label="Dual NV12, one R8 and one RG88 GMBs"/>
+  <int value="4" label="XR30, 10:10:10:2 BGRX in one GMB"/>
+  <int value="5" label="XB30, 10:10:10:2 RGBX in one GMB"/>
+  <int value="6" label="RGBA, 8:8:8:8 RGBA in one GMB"/>
+  <int value="7" label="BGRA, 8:8:8:8 BGRA in one GMB"/>
+  <int value="8" label="P010, one P010 GMB"/>
+</enum>
+
 <enum name="OverlayFormat">
   <int value="0" label="BGRA"/>
   <int value="1" label="YUY2"/>

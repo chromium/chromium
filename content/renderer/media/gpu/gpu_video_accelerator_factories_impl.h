@@ -167,6 +167,9 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
 
   void OnChannelTokenReady(const base::UnguessableToken& token);
 
+  // Implementation of VideoFrameOutputFormat method.
+  OutputFormat VideoFrameOutputFormatImpl(media::VideoPixelFormat pixel_format);
+
   const scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const scoped_refptr<gpu::GpuChannelHost> gpu_channel_host_;
