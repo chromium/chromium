@@ -326,6 +326,9 @@ tast_disabled_tests_from_chrome_all = [
   # b/279351324: Until crrev.com/c/4475024 upreved.
   "a11y.LiveCaption.lacros",
 
+  # b/281983222
+  "inputs.InputMethodShelfInputs",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
