@@ -69,19 +69,24 @@ void FormTracker::TextFieldDidChange(const WebFormControlElement& element) {
   if (input_element.IsNull())
     return;
 
+  if (!unsafe_render_frame()) {
+    return;
+  }
+
   // Disregard text changes that aren't caused by user gestures or pastes. Note
   // that pastes aren't necessarily user gestures because Blink's conception of
   // user gestures is centered around creating new windows/tabs.
   if (user_gesture_required_ &&
-      !render_frame()->GetWebFrame()->HasTransientUserActivation() &&
-      !render_frame()->IsPasting())
+      !unsafe_render_frame()->GetWebFrame()->HasTransientUserActivation() &&
+      !unsafe_render_frame()->IsPasting()) {
     return;
+  }
 
   // We post a task for doing the Autofill as the caret position is not set
   // properly at this point (http://bugs.webkit.org/show_bug.cgi?id=16976) and
   // it is needed to trigger autofill.
   weak_ptr_factory_.InvalidateWeakPtrs();
-  render_frame()
+  unsafe_render_frame()
       ->GetWebFrame()
       ->GetTaskRunner(blink::TaskType::kInternalUserInteraction)
       ->PostTask(FROM_HERE,
@@ -97,9 +102,13 @@ void FormTracker::SelectControlDidChange(const WebFormControlElement& element) {
   if (ignore_control_changes_)
     return;
 
+  if (!unsafe_render_frame()) {
+    return;
+  }
+
   // Post a task to avoid processing select control change while it is changing.
   weak_ptr_factory_.InvalidateWeakPtrs();
-  render_frame()
+  unsafe_render_frame()
       ->GetWebFrame()
       ->GetTaskRunner(blink::TaskType::kInternalUserInteraction)
       ->PostTask(FROM_HERE, base::BindRepeating(
@@ -134,8 +143,9 @@ void FormTracker::FormControlDidChangeImpl(
   // The frame or document could be null because this function is called
   // asynchronously.
   const blink::WebDocument& doc = element.GetDocument();
-  if (!render_frame() || doc.IsNull() || !doc.GetFrame())
+  if (!unsafe_render_frame() || doc.IsNull() || !doc.GetFrame()) {
     return;
+  }
 
   if (element.Form().IsNull()) {
     last_interacted_formless_element_ = element;
@@ -162,10 +172,14 @@ void FormTracker::DidStartNavigation(
     const GURL& url,
     absl::optional<blink::WebNavigationType> navigation_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
-  blink::WebLocalFrame* navigated_frame = render_frame()->GetWebFrame();
-  // Ony handle primary main frame.
-  if (!navigated_frame->IsOutermostMainFrame())
+  if (!unsafe_render_frame()) {
     return;
+  }
+  // Ony handle primary main frame.
+  if (!unsafe_render_frame() ||
+      !unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame()) {
+    return;
+  }
 
   // Bug fix for crbug.com/368690. isProcessingUserGesture() is false when
   // the user is performing actions outside the page (e.g. typed url,
@@ -197,15 +211,16 @@ void FormTracker::WillSendSubmitEvent(const WebFormElement& form) {
 
 void FormTracker::WillSubmitForm(const WebFormElement& form) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
-
   // A form submission may target a frame other than the frame that owns |form|.
   // The WillSubmitForm() event is only fired on the target frame's FormTracker
   // (provided that both have the same origin). In such a case, we ignore the
   // form submission event. If we didn't, we would send |form| to an
   // AutofillAgent and then to a ContentAutofillDriver etc. which haven't seen
   // this form before. See crbug.com/1240247#c13 for details.
-  if (!form_util::IsOwnedByFrame(form, render_frame()))
+  if (!unsafe_render_frame() ||
+      !form_util::IsOwnedByFrame(form, unsafe_render_frame())) {
     return;
+  }
 
   FireFormSubmitted(form);
 }

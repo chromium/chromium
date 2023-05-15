@@ -1947,12 +1947,8 @@ bool ExtractFormData(const WebFormElement& form_element,
 }
 
 bool IsSomeControlElementVisible(
-    blink::WebLocalFrame* frame,
+    const blink::WebDocument& document,
     const std::set<FieldRendererId>& control_elements) {
-  WebDocument doc = frame->GetDocument();
-  if (doc.IsNull())
-    return false;
-
   // Returns true iff at least one element from |fields| is visible and there
   // exists an element in |control_elements| with the same field renderer id.
   // The average case time complexity is O(N log M), where N is the number of
@@ -1967,10 +1963,10 @@ bool IsSomeControlElementVisible(
                                     GetFieldRendererId(field));
             });
       };
-
-  return base::ranges::any_of(doc.Forms(), ContainsVisibleField,
-                              &WebFormElement::GetFormControlElements) ||
-         ContainsVisibleField(doc.UnassociatedFormControls());
+  return !document.IsNull() &&
+         (base::ranges::any_of(document.Forms(), ContainsVisibleField,
+                               &WebFormElement::GetFormControlElements) ||
+          ContainsVisibleField(document.UnassociatedFormControls()));
 }
 
 GURL GetCanonicalActionForForm(const WebFormElement& form) {

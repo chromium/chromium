@@ -64,7 +64,7 @@ class FormTracker : public content::RenderFrameObserver,
     virtual ~Observer() {}
   };
 
-  FormTracker(content::RenderFrame* render_frame);
+  explicit FormTracker(content::RenderFrame* render_frame);
 
   FormTracker(const FormTracker&) = delete;
   FormTracker& operator=(const FormTracker&) = delete;
@@ -108,6 +108,22 @@ class FormTracker : public content::RenderFrameObserver,
   void WillDetach() override;
   void WillSubmitForm(const blink::WebFormElement& form) override;
   void OnDestruct() override;
+
+  // The RenderFrame* is nullptr while the AutofillAgent that owns this
+  // FormTracker is pending deletion, between OnDestruct() and ~FormTracker().
+  content::RenderFrame* unsafe_render_frame() const {
+    return content::RenderFrameObserver::render_frame();
+  }
+
+  // Use unsafe_render_frame() instead.
+  template <typename T = int>
+  content::RenderFrame* render_frame(T* = 0) const {
+    static_assert(
+        std::is_void_v<T>,
+        "Beware that the RenderFrame may become nullptr by OnDestruct() "
+        "because AutofillAgent destructs itself asynchronously. Use "
+        "unsafe_render_frame() instead and make test that it is non-nullptr.");
+  }
 
   // content::WebLocalFrameObserver:
   void OnFrameDetached() override;

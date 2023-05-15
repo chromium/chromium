@@ -1945,8 +1945,9 @@ void PasswordAutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
 }
 
 void PasswordAutofillAgent::HidePopup() {
-  if (autofill_agent_)
-    autofill_agent_->GetAutofillDriver().HidePopup();
+  if (autofill_agent_ && autofill_agent_->unsafe_autofill_driver()) {
+    autofill_agent_->unsafe_autofill_driver()->HidePopup();
+  }
 }
 
 mojom::PasswordManagerDriver&

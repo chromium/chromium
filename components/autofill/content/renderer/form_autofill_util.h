@@ -150,9 +150,10 @@ bool ExtractFormData(const blink::WebFormElement& form_element,
                      const FieldDataManager& field_data_manager,
                      FormData* data);
 
-// Returns true if at least one element from |control_elements| is visible.
+// Returns true if at least one element from |control_elements| is visible in
+// |document|.
 bool IsSomeControlElementVisible(
-    blink::WebLocalFrame* frame,
+    const blink::WebDocument& document,
     const std::set<FieldRendererId>& control_elements);
 
 // Helper functions to assist in getting the canonical form of the action and
