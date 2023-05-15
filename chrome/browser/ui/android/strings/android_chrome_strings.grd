@@ -1083,7 +1083,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
         To measure the performance of an ad, limited types of data can be shared among sites, such as the time of day an ad was shown to you.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_1_ANDROID" desc="First description in the restricted notice which applies to Android only">
-        Chrome now shares only very limited information among sites and apps, such as when an ad was shown to you, to help sites measure the performance of ads.
+        We’re launching a new ad privacy feature called ad measurement. Chrome shares only very limited information among sites and apps, such as when an ad was shown to you, to help measure the performance of ads.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_ANDROID" desc="Special description in the restricted notice which applies to Android only">
         Your Android device may include a similar setting. If this setting is turned on in Chrome and on your Android device, a company may be able to measure the effectiveness of an ad across websites you visit and apps you use.
