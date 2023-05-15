@@ -372,7 +372,8 @@ class ScrollLatencyScrollbarBrowserTest : public ScrollLatencyBrowserTest {
 };
 
 // Crashes on Mac ASAN.  https://crbug.com/1188553
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug/1188553): Flaky on Linux Wayland CI/CQ builders.
+#if BUILDFLAG(IS_MAC) || defined(OZONE_PLATFORM_WAYLAND)
 #define MAYBE_ScrollbarThumbDragLatency DISABLED_ScrollbarThumbDragLatency
 #else
 #define MAYBE_ScrollbarThumbDragLatency ScrollbarThumbDragLatency
