@@ -168,7 +168,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.RemoteProcessInteractionResult"
-    enum="RemoteProcessInteractionResult" expires_after="2023-05-31">
+    enum="RemoteProcessInteractionResult" expires_after="2023-11-30">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -178,7 +178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TerminateProcessErrorCode.Posix"
-    enum="PopularOSErrno" expires_after="2023-05-31">
+    enum="PopularOSErrno" expires_after="2023-11-30">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
