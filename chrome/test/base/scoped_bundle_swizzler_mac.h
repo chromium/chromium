@@ -7,11 +7,9 @@
 
 #include <memory>
 
-namespace base {
-namespace mac {
+namespace base::mac {
 class ScopedObjCClassSwizzler;
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 // Within a given scope, swizzles the implementation of +[NSBundle mainBundle]
 // to return a partial mock of the original bundle. This partial mock has a
