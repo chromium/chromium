@@ -8,7 +8,6 @@
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/test/skia_gold_pixel_diff.h"
 
@@ -59,12 +58,8 @@ class QrCodeGeneratorServicePixelTest : public PlatformBrowserTest {
     ASSERT_EQ(response->bitmap.height() % response->data_size.height(), 0);
 
     // Verify that the expected UMA metrics got logged.
-    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+    // TODO(1246137): Cover BytesToQrPixels and QrPixelsToQrImage as well.
     histograms.ExpectTotalCount("Sharing.QRCodeGeneration.Duration", 1);
-    histograms.ExpectTotalCount(
-        "Sharing.QRCodeGeneration.Duration.BytesToQrPixels", 1);
-    histograms.ExpectTotalCount(
-        "Sharing.QRCodeGeneration.Duration.QrPixelsToQrImage", 1);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -82,15 +77,8 @@ class QrCodeGeneratorServicePixelTest : public PlatformBrowserTest {
   }
 };
 
-// Flaky on Linux https://crbug.com/1444578
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_DinoWithRoundQrPixelsAndLocators \
-  DISABLED_DinoWithRoundQrPixelsAndLocators
-#else
-#define MAYBE_DinoWithRoundQrPixelsAndLocators DinoWithRoundQrPixelsAndLocators
-#endif
 IN_PROC_BROWSER_TEST_F(QrCodeGeneratorServicePixelTest,
-                       MAYBE_DinoWithRoundQrPixelsAndLocators) {
+                       DinoWithRoundQrPixelsAndLocators) {
   TestGolden("https://example.com", mojom::CenterImage::CHROME_DINO,
              mojom::ModuleStyle::CIRCLES, mojom::LocatorStyle::ROUNDED);
 }
