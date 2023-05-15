@@ -3961,7 +3961,7 @@ deps = {
   'src/ui/gl/resources/angle-metal': {
     'packages': [{
        'package': 'chromium/gpu/angle-metal-shader-libraries',
-       'version': 'ixOfHKV8hd24AUIOOdBb8_wyTBlppezjgOOIaGdkQqoC',
+       'version': 'QHFpoeeUkDciaMpIq9hBoGtzqOwN4mszmqhtqpN6NUUC',
     }],
     'dep_type': 'cipd',
     'condition': 'checkout_mac or checkout_ios',
