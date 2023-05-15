@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/rand_util.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "cc/base/devtools_instrumentation.h"
@@ -574,6 +575,8 @@ class CC_EXPORT CompositorFrameReporter {
   std::vector<std::string> high_latency_substages_;
 
   ReporterType reporter_type_;
+
+  mutable base::MetricsSubSampler metrics_subsampler_;
 
   base::WeakPtrFactory<CompositorFrameReporter> weak_factory_{this};
 };
