@@ -617,7 +617,7 @@ void NativeWidgetMacNSWindowHost::UpdateCompositorProperties() {
           content_bounds_in_screen_.size(), display_.device_scale_factor()));
   compositor_->UpdateSurface(content_bounds_in_pixels,
                              display_.device_scale_factor(),
-                             display_.color_spaces());
+                             display_.color_spaces(), display_.id());
 }
 
 void NativeWidgetMacNSWindowHost::DestroyCompositor() {
@@ -1173,7 +1173,7 @@ void NativeWidgetMacNSWindowHost::OnWindowDisplayChanged(
             content_bounds_in_screen_.size(), display_.device_scale_factor()));
     compositor_->UpdateSurface(content_bounds_in_pixels,
                                display_.device_scale_factor(),
-                               display_.color_spaces());
+                               display_.color_spaces(), display_.id());
   }
 
   if (display_id_changed) {
@@ -1187,7 +1187,6 @@ void NativeWidgetMacNSWindowHost::OnWindowDisplayChanged(
 
     if (compositor_) {
       RequestVSyncParametersUpdate();
-      compositor_->compositor()->SetVSyncDisplayID(display_.id());
     }
   }
 }
