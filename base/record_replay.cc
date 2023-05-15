@@ -97,7 +97,9 @@ namespace recordreplay {
         (const char* name, void* lock), (name, lock))                   \
   Macro(V8RecordReplayRemoveOrderedSRWLock, (void* lock), (lock))       \
   Macro(V8RecordReplayMaybeTerminate,                                   \
-        (void (*callback)(void*), void* data), (callback, data))
+        (void (*callback)(void*), void* data), (callback, data))        \
+  Macro(V8RecordReplayGetCurrentJSStack,                                \
+        (std::string* stackTrace), (stackTrace))
 
 #if BUILDFLAG(IS_WIN)
 
@@ -326,6 +328,10 @@ void EndPassThroughEvents() {
 
 bool FeatureEnabled(const char* feature) {
   return V8RecordReplayFeatureEnabled(feature);
+}
+
+void GetCurrentJSStack(std::string* stackTrace) {
+  return V8RecordReplayGetCurrentJSStack(stackTrace);
 }
 
 void BrowserEvent(const char* name, const base::DictionaryValue& info) {

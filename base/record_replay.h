@@ -70,6 +70,11 @@ bool AreEventsDisallowed();
 
 bool FeatureEnabled(const char* feature);
 
+/**
+ * Get the current JS stack, if there is any.
+ */
+void GetCurrentJSStack(std::string* stackTrace);
+
 void BrowserEvent(const char* msg, const base::DictionaryValue& info);
 
 struct AutoPassThroughEvents {
