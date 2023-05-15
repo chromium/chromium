@@ -1009,9 +1009,12 @@ void PersonalizationAppWallpaperProviderImpl::FindImageMetadataInCollection(
       bool is_same_unit_id = info.unit_id.has_value() &&
                              proto_image.unit_id() == info.unit_id.value();
       bool is_same_url = info.location.rfind(proto_image.image_url(), 0) == 0;
-      if (is_same_url || is_same_unit_id) {
+      if (is_same_url) {
         backend_image = &proto_image;
         break;
+      }
+      if (is_same_unit_id) {
+        backend_image = &proto_image;
       }
     }
   }
