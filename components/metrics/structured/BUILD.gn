@@ -24,6 +24,10 @@ static_library("structured") {
     "structured_metrics_provider.h",
     "structured_metrics_recorder.cc",
     "structured_metrics_recorder.h",
+    "structured_metrics_scheduler.cc",
+    "structured_metrics_scheduler.h",
+    "structured_metrics_service.cc",
+    "structured_metrics_service.h",
   ]
 
   public_deps = [
@@ -239,6 +243,7 @@ source_set("unit_tests") {
     "persistent_proto_unittest.cc",
     "structured_metrics_provider_unittest.cc",
     "structured_metrics_recorder_unittest.cc",
+    "structured_metrics_service_unittest.cc",
   ]
 
   deps = [
@@ -249,7 +254,10 @@ source_set("unit_tests") {
     ":structured_metrics_validator",
     "//base",
     "//base/test:test_support",
+    "//components/metrics",
+    "//components/metrics:test_support",
     "//components/prefs",
+    "//components/prefs:test_support",
     "//testing/gtest",
   ]
 }

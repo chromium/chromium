@@ -28,8 +28,19 @@ StructuredMetricsReportingService::StructuredMetricsReportingService(
                  client->GetUploadSigningKey(),
                  /* logs_event_manager=*/nullptr) {}
 
+void StructuredMetricsReportingService::StoreLog(
+    const std::string& serialized_log,
+    metrics::MetricsLogsEventManager::CreateReason reason) {
+  LogMetadata metadata;
+  log_store_.StoreLog(serialized_log, metadata, reason);
+}
+
 metrics::LogStore* StructuredMetricsReportingService::log_store() {
   return &log_store_;
+}
+
+void StructuredMetricsReportingService::Purge() {
+  log_store_.Purge();
 }
 
 // Getters for MetricsLogUploader parameters.
@@ -55,4 +66,5 @@ void StructuredMetricsReportingService::RegisterPrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kLogStoreName);
 }
+
 }  // namespace metrics::structured::reporting
