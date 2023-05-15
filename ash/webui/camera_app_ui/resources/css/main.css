@@ -1306,6 +1306,7 @@ html[dir=rtl] .menu-header .icon {
  */
 #view-splash {
   align-items: center;
+  /* color-token-disable-next-line */
   background: var(--cros-sys-app_base, rgb(32, 33, 36));
   display: flex;
   justify-content: center;
@@ -1313,6 +1314,7 @@ html[dir=rtl] .menu-header .icon {
 
 #view-splash .icon {
   -webkit-mask: url(/images/camera_mode_photo.svg);
+  /* color-token-disable-next-line */
   background: var(--cros-sys-on_surface, rgb(233, 234, 237));
   height: 40px;
   width: 40px;

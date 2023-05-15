@@ -542,6 +542,147 @@ def check_strings(args):
     return returncode
 
 
+# Ref: https://developer.mozilla.org/en-US/docs/Web/CSS/named-color
+CSS_NAMED_COLORS = '''
+aliceblue antiquewhite aqua aquamarine azure beige bisque black blanchedalmond
+blue blueviolet brown burlywood cadetblue chartreuse chocolate coral
+cornflowerblue cornsilk crimson cyan darkblue darkcyan darkgoldenrod darkgray
+darkgreen darkgrey darkkhaki darkmagenta darkolivegreen darkorange darkorchid
+darkred darksalmon darkseagreen darkslateblue darkslategray darkslategrey
+darkturquoise darkviolet deeppink deepskyblue dimgray dimgrey dodgerblue
+firebrick floralwhite forestgreen fuchsia gainsboro ghostwhite gold goldenrod
+gray green greenyellow grey honeydew hotpink indianred indigo ivory khaki
+lavender lavenderblush lawngreen lemonchiffon lightblue lightcoral lightcyan
+lightgoldenrodyellow lightgray lightgreen lightgrey lightpink lightsalmon
+lightseagreen lightskyblue lightslategray lightslategrey lightsteelblue
+lightyellow lime limegreen linen magenta maroon mediumaquamarine mediumblue
+mediumorchid mediumpurple mediumseagreen mediumslateblue mediumspringgreen
+mediumturquoise mediumvioletred midnightblue mintcream mistyrose moccasin
+navajowhite navy oldlace olive olivedrab orange orangered orchid palegoldenrod
+palegreen paleturquoise palevioletred papayawhip peachpuff peru pink plum
+powderblue purple rebeccapurple red rosybrown royalblue saddlebrown salmon
+sandybrown seagreen seashell sienna silver skyblue slateblue slategray
+slategrey snow springgreen steelblue tan teal thistle tomato turquoise violet
+wheat white whitesmoke yellow yellowgreen
+'''.split()
+CSS_NAMED_COLORS_REGEX = '|'.join(CSS_NAMED_COLORS)
+
+# named color or #rgb / #rrggbb / #rrggbbaa
+CSS_COLOR_REGEX = f'{CSS_NAMED_COLORS_REGEX}|#[0-9a-fA-F]{{3,8}}'
+
+# colors_default.css is fallback for colors when dynamic color is not enabled.
+CSS_ALLOWLIST = ['css/colors_default.css']
+
+
+def check_color_tokens_css():
+    css_files = glob.glob('**/*.css', recursive=True)
+    returncode = 0
+
+    def print_error(filename, lineno, msg):
+        nonlocal returncode
+        print(f'{filename}:{lineno} - {msg}')
+        returncode = 1
+
+    for filename in css_files:
+        if filename in CSS_ALLOWLIST:
+            continue
+        with open(filename) as f:
+            css_lines = f.read().splitlines()
+
+        ignore_next_line = False
+        for lineno, line in enumerate(css_lines, 1):
+            if 'color-token-disable-next-line' in line:
+                ignore_next_line = True
+                continue
+            if ignore_next_line:
+                ignore_next_line = False
+                continue
+
+            line = line.strip()
+            # Ignore comments
+            if line.startswith('/*'):
+                continue
+
+            # Check all rgb() / rgba() uses are for box-shadow.
+            # This is a heuristic since this doesn't consider multi-line rule
+            # for now.
+            # TODO(pihsun): Use CSS variables for different kind of box-shadow,
+            # and remove this special casing of box-shadow.
+            if (re.search('rgba?\(', line)
+                    and not line.startswith('box-shadow: ')):
+                print_error(filename, lineno, 'hardcoded rgba() value found.')
+
+            # Check for color names and hexadecimal notations.
+            match = re.search(
+                # start of line or space
+                '(?:^|[ ])'
+                # ... followed by color
+                f'({CSS_COLOR_REGEX})'
+                # .. followed by end of line or space or ;
+                '(?:$|[ ;])',
+                line)
+            if match is not None:
+                print_error(filename, lineno,
+                            f'hardcoded color "{match[1]}" found.')
+
+    return returncode
+
+
+SVG_ALLOWLIST = [
+    # This image is only used as -webkit-mask, which needs to have
+    # solid fill color but the fill color itself is not used.
+    'images/barcode_scan_box_border_mask.svg',
+
+    # SVGs that are not migrated to dynamic color yet.
+    'images/camera_focus_aim.svg',
+    'images/camera_intent_result_cancel.svg',
+    'images/camera_intent_result_confirm.svg',
+]
+
+
+def check_color_tokens_svg():
+    svg_files = glob.glob('**/*.svg', recursive=True)
+    returncode = 0
+
+    def print_error(filename, lineno, msg):
+        nonlocal returncode
+        print(f'{filename}:{lineno} - {msg}')
+        returncode = 1
+
+    for filename in svg_files:
+        if filename in SVG_ALLOWLIST:
+            continue
+        with open(filename) as f:
+            svg_lines = f.read().splitlines()
+
+        for lineno, line in enumerate(svg_lines, 1):
+            line = line.strip()
+            # Check for color names and hexadecimal notations.
+            match = re.search(
+                # start of line or space (for inline CSS) or {fill,stroke}="
+                '(?:^|[ ]|fill="|stroke=")'
+                # ... followed by color
+                f'({CSS_COLOR_REGEX})'
+                # .. followed by end of line or space or ; or "
+                '(?:$|[ ;"])',
+                line)
+            if match is not None:
+                print_error(
+                    filename, lineno, f'hardcoded color "{match[1]}" found. '
+                    'Please omit the fill/stroke value and specify it in CSS, '
+                    "or use var(--secondary-color) if two colors are needed.")
+
+    return returncode
+
+
+def check_color_tokens(args):
+    """Checks all colors used in CSS and SVG files are using color tokens."""
+    returncode = 0
+    returncode |= check_color_tokens_css()
+    returncode |= check_color_tokens_svg()
+    return returncode
+
+
 def parse_args(args):
     parser = argparse.ArgumentParser(description='CCA developer tools.')
     parser.add_argument('--debug', action='store_true')
@@ -600,6 +741,14 @@ def parse_args(args):
             resources/strings/camera_strings.grd and
             resources/js/i18n_string.ts.''')
     check_strings_parser.set_defaults(func=check_strings)
+
+    # TODO(pihsun): Add argument to automatically generate / fix the files to a
+    # consistent state.
+    check_color_tokens_parser = subparsers.add_parser(
+        'check-color-tokens',
+        help='check color token usage in CSS and SVG files',
+        description='''Ensure all CSS files and SVG files.''')
+    check_color_tokens_parser.set_defaults(func=check_color_tokens)
 
     parser.set_defaults(func=lambda _args: parser.print_help())
 
