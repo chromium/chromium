@@ -351,19 +351,14 @@ std::string GetProductAndVersion(
     UserAgentReductionEnterprisePolicyState user_agent_reduction) {
   if (ShouldForceMajorVersionToMinorPosition(force_major_to_minor)) {
     // Force major version to 99 and major version to minor version position.
-    if (ShouldReduceUserAgentMinorVersion(user_agent_reduction)) {
-      return "Chrome/" + GetReducedMajorInMinorVersionNumber();
-    } else {
-      return "Chrome/" + GetMajorInMinorVersionNumber();
-    }
-  } else {
-    if (ShouldReduceUserAgentMinorVersion(user_agent_reduction)) {
-      return version_info::GetProductNameAndVersionForReducedUserAgent(
-          blink::features::kUserAgentFrozenBuildVersion.Get().data());
-    } else {
-      return version_info::GetProductNameAndVersionForUserAgent();
-    }
+    return "Chrome/" + (ShouldReduceUserAgentMinorVersion(user_agent_reduction)
+                            ? GetReducedMajorInMinorVersionNumber()
+                            : GetMajorInMinorVersionNumber());
   }
+  return ShouldReduceUserAgentMinorVersion(user_agent_reduction)
+             ? version_info::GetProductNameAndVersionForReducedUserAgent(
+                   blink::features::kUserAgentFrozenBuildVersion.Get())
+             : version_info::GetProductNameAndVersionForUserAgent();
 }
 
 // Internal function to handle return the full or "reduced" user agent string,
