@@ -31,11 +31,14 @@ class RecoveryFactorEditor : public mojom::RecoveryFactorEditor {
                  base::OnceCallback<void(mojom::ConfigureResult)>) override;
 
  private:
+  void OnGetEditable(const std::string& auth_token,
+                     bool should_enable,
+                     base::OnceCallback<void(mojom::ConfigureResult)> callback,
+                     bool is_editable);
   void OnRecoveryFactorConfigured(
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       std::unique_ptr<UserContext> context,
       absl::optional<AuthenticationError> error);
-
   void OnGetAuthFactorsConfiguration(
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       std::unique_ptr<UserContext> context,
