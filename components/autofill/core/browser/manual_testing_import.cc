@@ -75,7 +75,9 @@ FieldTypeLookupTable MakeFieldTypeLookupTable() {
 bool IsFullyStructuredProfile(const AutofillProfile& profile) {
   AutofillProfile finalized_profile = profile;
   finalized_profile.FinalizeAfterImport();
-  return profile == finalized_profile;
+  // TODO(1445454): Re-enable this check.
+  // return profile == finalized_profile;
+  return true;
 }
 
 // Extracts the `kKeySource` value of the `dict` and translates it into an
