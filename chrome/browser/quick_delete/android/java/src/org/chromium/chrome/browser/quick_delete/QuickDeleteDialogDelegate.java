@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -84,10 +85,20 @@ class QuickDeleteDialogDelegate {
 
     /**
      * A method to create the dialog attributes for the quick delete dialog.
+     *
+     * TODO(crbug.com/1412087): Update the browsing history text as per the mocks and update the
+     * screenshot for Quick Delete strings in android_chrome_strings.grd
      */
     private PropertyModel createQuickDeleteDialogProperty() {
         View quickDeleteDialogView =
                 LayoutInflater.from(mContext).inflate(R.layout.quick_delete_dialog, /*root=*/null);
+
+        // TODO(crbug.com/1412087): Supply the right quantity once the tab close logic is in place.
+        String tabDescription = mContext.getResources().getQuantityString(
+                R.plurals.quick_delete_dialog_tabs_closed_text, 1);
+        TextViewWithCompoundDrawables quickDeleteTabsCloseRowTextView =
+                quickDeleteDialogView.findViewById(R.id.quick_delete_tabs_close_row);
+        quickDeleteTabsCloseRowTextView.setText(tabDescription);
 
         TextViewWithClickableSpans searchHistoryDisambiguation =
                 quickDeleteDialogView.findViewById(R.id.search_history_disambiguation);

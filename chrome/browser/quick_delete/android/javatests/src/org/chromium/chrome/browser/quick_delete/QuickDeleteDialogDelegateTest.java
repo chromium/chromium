@@ -64,6 +64,11 @@ public class QuickDeleteDialogDelegateTest {
         mActivityTestRule.startMainActivityOnBlankPage();
     }
 
+    /**
+     * TODO(crbug.com/1412087): Update the tests to verify different states of
+     * |quick_delete_dialog_tabs_closed_text| and the various browsing history string possible which
+     * relies on local browsing history information.
+     */
     @Test
     @MediumTest
     @Feature({"RenderTest"})
@@ -73,8 +78,11 @@ public class QuickDeleteDialogDelegateTest {
         onView(withText(R.string.quick_delete_dialog_title)).check(matches(isDisplayed()));
         onView(withText(R.string.quick_delete_dialog_description)).check(matches(isDisplayed()));
         onView(withText(R.string.clear_history_title)).check(matches(isDisplayed()));
-        onView(withText(R.string.clear_cookies_and_site_data_title)).check(matches(isDisplayed()));
-        onView(withText(R.string.clear_cache_title)).check(matches(isDisplayed()));
+        onView(withText(mActivityTestRule.getActivity().getResources().getQuantityString(
+                       R.plurals.quick_delete_dialog_tabs_closed_text, 1)))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.quick_delete_dialog_cookies_cache_and_other_site_data_text))
+                .check(matches(isDisplayed()));
 
         // TODO(crbug.com/1412087): Get the full dialog for render test instead of just the custom
         // view.
