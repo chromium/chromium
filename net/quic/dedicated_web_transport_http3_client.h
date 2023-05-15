@@ -178,7 +178,6 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   std::unique_ptr<DatagramClientSocket> socket_;
   std::unique_ptr<quic::QuicSpdyClientSession> session_;
   raw_ptr<quic::QuicConnection> connection_;  // owned by |session_|
-  raw_ptr<quic::QuicSpdyStream, DanglingUntriaged> connect_stream_ = nullptr;
   raw_ptr<quic::WebTransportSession, DanglingUntriaged> web_transport_session_ =
       nullptr;
   std::unique_ptr<QuicChromiumPacketReader> packet_reader_;

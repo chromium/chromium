@@ -652,7 +652,6 @@ int DedicatedWebTransportHttp3Client::DoSendRequest() {
   if (stream == nullptr) {
     return ERR_QUIC_PROTOCOL_ERROR;
   }
-  connect_stream_ = stream;
 
   spdy::Http2HeaderBlock headers;
   DCHECK_EQ(url_.scheme(), url::kHttpsScheme);
