@@ -59,9 +59,12 @@ class HistoryClientImpl : public history::HistoryClient,
   void BookmarkAllUserNodesRemoved(bookmarks::BookmarkModel* model,
                                    const std::set<GURL>& removed_urls) override;
 
-  // BookmarkModel instance providing access to bookmarks. May be null during
+  // BookmarkModel instances providing access to bookmarks. May be null during
   // testing, and is null while shutting down.
-  bookmarks::BookmarkModel* local_or_syncable_bookmark_model_;
+  bookmarks::BookmarkModel* local_or_syncable_bookmark_model_ = nullptr;
+  // `account_bookmark_model_` is always nullptr.
+  // TODO(crbug.com/1425458): use the actual bookmark model.
+  bookmarks::BookmarkModel* account_bookmark_model_ = nullptr;
 
   // Callback invoked when URLs are removed from BookmarkModel.
   base::RepeatingCallback<void(const std::set<GURL>&)> on_bookmarks_removed_;
@@ -72,6 +75,9 @@ class HistoryClientImpl : public history::HistoryClient,
   base::ScopedObservation<bookmarks::BookmarkModel,
                           bookmarks::BaseBookmarkModelObserver>
       local_or_syncable_bookmark_model_observation_{this};
+  base::ScopedObservation<bookmarks::BookmarkModel,
+                          bookmarks::BaseBookmarkModelObserver>
+      account_bookmark_model_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_HISTORY_HISTORY_CLIENT_IMPL_H_
