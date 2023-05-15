@@ -74,13 +74,16 @@ bool ValidateGeneralizedTime(const GeneralizedTime& time) {
     return false;
   if (time.day < 1)
     return false;
-  if (time.hours < 0 || time.hours > 23)
+  if (time.hours > 23) {
     return false;
-  if (time.minutes < 0 || time.minutes > 59)
+  }
+  if (time.minutes > 59) {
     return false;
+  }
   // Leap seconds are allowed.
-  if (time.seconds < 0 || time.seconds > 60)
+  if (time.seconds > 60) {
     return false;
+  }
 
   // validate upper bound for day of month
   switch (time.month) {
