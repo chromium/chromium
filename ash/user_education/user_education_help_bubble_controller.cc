@@ -44,7 +44,8 @@ bool UserEducationHelpBubbleController::CreateHelpBubble(
     HelpBubbleId help_bubble_id,
     user_education::HelpBubbleParams help_bubble_params,
     ui::ElementIdentifier element_id,
-    ui::ElementContext element_context) {
+    ui::ElementContext element_context,
+    base::OnceClosure close_callback) {
   // Prohibit showing multiple help bubbles concurrently.
   if (help_bubble_) {
     return false;
@@ -67,17 +68,19 @@ bool UserEducationHelpBubbleController::CreateHelpBubble(
   }
 
   // Subscribe to be notified when the `help_bubble_` closes. Once closed, free
-  // `help_bubble_` related memory.
+  // `help_bubble_` related memory and run the provided `close_callback`.
   help_bubble_close_subscription_ =
       help_bubble_->AddOnCloseCallback(base::BindOnce(
           [](UserEducationHelpBubbleController* self,
+             base::OnceClosure close_callback,
              user_education::HelpBubble* help_bubble) {
             CHECK_EQ(self->help_bubble_.get(), help_bubble);
             self->help_bubble_.reset();
             self->help_bubble_close_subscription_ =
                 base::CallbackListSubscription();
+            std::move(close_callback).Run();
           },
-          base::Unretained(this)));
+          base::Unretained(this), std::move(close_callback)));
 
   // Indicate success.
   return true;

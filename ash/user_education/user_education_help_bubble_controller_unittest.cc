@@ -10,6 +10,7 @@
 #include "ash/user_education/mock_user_education_delegate.h"
 #include "ash/user_education/user_education_ash_test_base.h"
 #include "ash/user_education/user_education_types.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_params.h"
@@ -152,9 +153,15 @@ TEST_F(UserEducationHelpBubbleControllerTest, CreateHelpBubble) {
 
   // The `controller()` should indicate to the caller success when attempting to
   // create a new `help_bubble` since the previous `help_bubble` was closed.
+  // Note that this time a `close_callback` is provided.
+  base::MockOnceClosure close_callback;
   EXPECT_TRUE(controller()->CreateHelpBubble(
-      HelpBubbleId::kTest, HelpBubbleParams(), kElementId, element_context));
+      HelpBubbleId::kTest, HelpBubbleParams(), kElementId, element_context,
+      close_callback.Get()));
   Mock::VerifyAndClearExpectations(user_education_delegate());
+
+  // Expect that closing the `help_bubble` will invoke `close_callback`.
+  EXPECT_CALL(close_callback, Run);
 
   // Close the `help_bubble`.
   ASSERT_TRUE(help_bubble);

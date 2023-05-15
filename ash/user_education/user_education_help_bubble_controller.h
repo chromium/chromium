@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/callback_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 
 namespace ui {
@@ -45,12 +46,14 @@ class ASH_EXPORT UserEducationHelpBubbleController {
   // specified `help_bubble_params` for the tracked element associated with the
   // specified `element_id` in the specified `element_context`. A help bubble
   // may not be created under certain circumstances, e.g. if there is already a
-  // help bubble showing or if there is an ongoing tutorial running.
+  // help bubble showing or if there is an ongoing tutorial running. Iff a help
+  // bubble was created, `close_callback` is run when the help bubble is closed.
   // NOTE: Currently only the primary user profile is supported.
   bool CreateHelpBubble(HelpBubbleId help_bubble_id,
                         user_education::HelpBubbleParams help_bubble_params,
                         ui::ElementIdentifier element_id,
-                        ui::ElementContext element_context);
+                        ui::ElementContext element_context,
+                        base::OnceClosure close_callback = base::DoNothing());
 
  private:
   // The delegate owned by the `UserEducationController` which facilitates
