@@ -15,6 +15,8 @@
 
   --shortcuts-font-family-default: "Google Sans", Roboto, sans-serif;
   --shortcuts-font-size-default: 13px;
+
+  --shortcuts-lock-icon-color: var(--cros-icon-color-secondary);
 }
 
 :host-context(body.jelly-enabled) {
