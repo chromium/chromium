@@ -524,8 +524,9 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 
 // Verifies the site access toggle and site permissions button properties when
 // toggling site access for an extension that only requests active tab.
-// TODO(crbug.com/1445397): Flaky on TSan.
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+// TODO(crbug.com/1445397): Flaky on Linux TSan and Win ASan.
+#if (BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)) || \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_ActiveTabRequested_ToggleSiteAccess \
   DISABLED_ActiveTabRequested_ToggleSiteAccess
 #else
