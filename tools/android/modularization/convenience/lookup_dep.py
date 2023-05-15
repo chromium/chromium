@@ -190,11 +190,9 @@ class ClassLookupIndex:
     return matches
 
   def _entries_for(self, class_name) -> List[ClassEntry]:
-    class_entries = self._class_index.get(class_name)
-    assert class_entries is not None
-    return sorted(class_entries)
+    return sorted(self._class_index[class_name])
 
-  def _index_root(self) -> Dict[str, List[ClassEntry]]:
+  def _index_root(self) -> Dict[str, Set[ClassEntry]]:
     """Create the class to target index."""
     logging.debug('Running list_java_targets.py...')
     list_java_targets_command = [
@@ -263,10 +261,10 @@ class ClassLookupIndex:
           build_config.full_class_names.update(
               dep_build_config.full_class_names)
 
-    class_index = collections.defaultdict(list)
+    class_index = collections.defaultdict(set)
     for build_config in path_to_build_config.values():
       for full_class_name in build_config.full_class_names:
-        class_index[full_class_name].append(
+        class_index[full_class_name].add(
             ClassEntry(full_class_name=full_class_name,
                        target=build_config.target_name,
                        preferred_dep=build_config.preferred_dep))
