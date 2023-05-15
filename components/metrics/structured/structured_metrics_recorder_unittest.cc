@@ -860,8 +860,8 @@ TEST_F(StructuredMetricsRecorderTest, ExternalMetricsAreReported) {
   recorder_ = std::make_unique<TestStructuredMetricsRecorder>(
       system_profile_provider_.get());
   OnProfileAdded(TempDirPath());
-  OnRecordingEnabled();
   SetExternalMetricsDirForTest(events_dir);
+  OnRecordingEnabled();
   task_environment_.AdvanceClock(base::Hours(10));
   Wait();
   EXPECT_EQ(GetUMAEventMetrics().events_size(), 3);
@@ -880,8 +880,8 @@ TEST_F(StructuredMetricsRecorderTest,
   recorder_ = std::make_unique<TestStructuredMetricsRecorder>(
       system_profile_provider_.get());
   OnProfileAdded(TempDirPath());
-  OnRecordingDisabled();
   SetExternalMetricsDirForTest(events_dir);
+  OnRecordingDisabled();
   task_environment_.AdvanceClock(base::Hours(10));
   Wait();
   EXPECT_EQ(GetUMAEventMetrics().events_size(), 0);

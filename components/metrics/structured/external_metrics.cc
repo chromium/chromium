@@ -21,8 +21,7 @@
 #include "components/metrics/structured/storage.pb.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 
-namespace metrics {
-namespace structured {
+namespace metrics::structured {
 namespace {
 
 void FilterEvents(
@@ -80,7 +79,8 @@ bool FilterProto(EventsProto* proto,
 
 EventsProto ReadAndDeleteEvents(
     const base::FilePath& directory,
-    const base::flat_set<uint64_t>& disallowed_projects) {
+    const base::flat_set<uint64_t>& disallowed_projects,
+    bool recording_enabled) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   EventsProto result;
@@ -106,8 +106,8 @@ EventsProto ReadAndDeleteEvents(
     // events.
     //
     // Events will be dropped in that case so that more recent events can be
-    // processed.
-    if (file_counter > GetFileLimitPerScan()) {
+    // processed. Events will be dropped if recording has been disabled.
+    if (!recording_enabled || file_counter > GetFileLimitPerScan()) {
       base::DeleteFile(path);
       continue;
     }
@@ -184,7 +184,7 @@ void ExternalMetrics::CollectEvents() {
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ReadAndDeleteEvents, events_directory_,
-                     disallowed_projects_),
+                     disallowed_projects_, recording_enabled_),
       base::BindOnce(callback_));
 }
 
@@ -209,5 +209,12 @@ void ExternalMetrics::AddDisallowedProjectForTest(uint64_t project_name_hash) {
   disallowed_projects_.insert(project_name_hash);
 }
 
-}  // namespace structured
-}  // namespace metrics
+void ExternalMetrics::EnableRecording() {
+  recording_enabled_ = true;
+}
+
+void ExternalMetrics::DisableRecording() {
+  recording_enabled_ = false;
+}
+
+}  // namespace metrics::structured
