@@ -21,20 +21,16 @@ HistoryClientImpl::HistoryClientImpl(
     bookmarks::BookmarkModel* /*account_bookmark_model*/)
     : local_or_syncable_bookmark_model_(local_or_syncable_bookmark_model) {
   if (local_or_syncable_bookmark_model_) {
-    local_or_syncable_bookmark_model_->AddObserver(this);
+    local_or_syncable_bookmark_model_observation_.Observe(
+        local_or_syncable_bookmark_model_);
   }
 }
 
-HistoryClientImpl::~HistoryClientImpl() {
-  StopObservingBookmarkModel();
-}
+HistoryClientImpl::~HistoryClientImpl() = default;
 
 void HistoryClientImpl::StopObservingBookmarkModel() {
-  if (!local_or_syncable_bookmark_model_) {
-    return;
-  }
-  local_or_syncable_bookmark_model_->RemoveObserver(this);
   local_or_syncable_bookmark_model_ = nullptr;
+  local_or_syncable_bookmark_model_observation_.Reset();
 }
 
 void HistoryClientImpl::OnHistoryServiceCreated(
