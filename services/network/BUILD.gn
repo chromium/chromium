@@ -347,6 +347,10 @@ component("network_service") {
   }
 
   if (is_android) {
+    sources += [
+      "empty_network_service.cc",
+      "empty_network_service.h",
+    ]
     deps += [
       "//crypto",
       "//third_party/boringssl",

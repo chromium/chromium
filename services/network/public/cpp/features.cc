@@ -8,7 +8,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
-#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/mime_sniffer.h"
 
@@ -322,5 +321,9 @@ BASE_FEATURE(kPrefetchNoVarySearch,
 BASE_FEATURE(kLessChattyNetworkService,
              "LessChattyNetworkService",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kNetworkServiceEmptyOutOfProcess,
+             "NetworkServiceEmptyOutOfProcess",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 }  // namespace network::features

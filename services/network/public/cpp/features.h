@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 
 namespace network {
 namespace features {
@@ -135,6 +136,12 @@ COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kGetCookiesStringUma);
 // Decrease Mojo calls from network service to browser.
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kLessChattyNetworkService);
 
+#if BUILDFLAG(IS_ANDROID)
+// Create empty network service out of process only if canonical network service
+// is in process to see process overhead on Android.
+COMPONENT_EXPORT(NETWORK_CPP)
+BASE_DECLARE_FEATURE(kNetworkServiceEmptyOutOfProcess);
+#endif
 }  // namespace features
 }  // namespace network
 

@@ -374,3 +374,12 @@ interface NetworkService {
   // enabled.
   EnableDataUseUpdates(bool enable);
 };
+
+// Service that tests new process overhead on Android.
+// TODO(http://crbug.com/1395707): Remove this once
+// --disable-features=NetworkServiceInProcess2 is launched stable.
+[EnableIf=is_android, ServiceSandbox=sandbox.mojom.Sandbox.kNetwork]
+interface EmptyNetworkService {
+  // Test function to check if the service is available. Returns same `value`.
+  Ping(int32 value) => (int32 value);
+};
