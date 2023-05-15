@@ -94,6 +94,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1346748346194534595">Destra</translation>
 <translation id="1351937230027495976">Comprimi il menu</translation>
 <translation id="1360220746312242196">Durante la ricerca di una pagina, vai alla corrispondenza precedente della ricerca</translation>
+<translation id="1360788414852622716">È in corso la disattivazione del profilo. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="1364382257761975320">Per sbloccare Chromebook, utilizza la tua impronta</translation>
 <translation id="1365866993922957110">Ricevi gli aggiornamenti automatici</translation>
 <translation id="1372545819342940910">Salva scrivania per dopo</translation>
@@ -317,6 +318,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2440978926514840421">Registrazione GIF acquisita</translation>
 <translation id="2441427462554639370">Registrazione terminata a causa dell'esaurimento dello spazio di archiviazione</translation>
 <translation id="24452542372838207">Espandi la notifica</translation>
+<translation id="2448312741937722512">Tipo</translation>
 <translation id="2449089818483227734">Batteria in esaurimento</translation>
 <translation id="2450205753526923158">Modalità screenshot</translation>
 <translation id="2455994958736234930">Aggiungi www. e .com alla barra degli indirizzi, quindi apri il sito web</translation>
@@ -335,6 +337,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2531025035050312891">dispositivo lento</translation>
 <translation id="2542089167727451762">Tocca la tua immagine del profilo</translation>
 <translation id="254900897760075745">Copia i contenuti selezionati negli appunti</translation>
+<translation id="2549985041256363841">Avvia registrazione</translation>
 <translation id="255671100581129685">L'Assistente Google non è disponibile in una sessione pubblica.</translation>
 <translation id="256712445991462162">la lente d'ingrandimento ancorata</translation>
 <translation id="2573588302192866788">Impossibile connettere <ph name="NAME" /></translation>
@@ -537,6 +540,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3510164367642747937">Evidenzia il puntatore del mouse</translation>
 <translation id="3513798432020909783">Account gestito da <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Aggiorna il dispositivo entro 1 minuto}other{Aggiorna il dispositivo entro # minuti}}</translation>
+<translation id="3522979239100719575">È in corso la ricerca dei profili disponibili. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="3526440770046466733">Apri il link in una nuova scheda e rimani nella scheda corrente</translation>
 <translation id="353086728817903341">Connessione stabilita con <ph name="NUM_DEVICES" /> dispositivi</translation>
 <translation id="3533126039236445965">App nella barra delle app</translation>
@@ -898,6 +902,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5117590920725113268">Mostra mese successivo</translation>
 <translation id="5121628974188116412">Passa alla parte inferiore della pagina</translation>
 <translation id="5136175204352732067">Tastiera diversa collegata</translation>
+<translation id="5145331109270917438">Data modifica</translation>
 <translation id="5147567197700016471">Sbloccato</translation>
 <translation id="5150070631291639005">Impostazioni privacy</translation>
 <translation id="5155897006997040331">Velocità di lettura</translation>
@@ -1004,6 +1009,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5619862035903135339">Il criterio dell'amministratore disattiva l'acquisizione schermo</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Impossibile verificare la password. Riprova.</translation>
+<translation id="5646376287012673985">Posizione</translation>
 <translation id="5648021990716966815">Jack per microfono</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> richiede la tua attenzione.</translation>
 <translation id="5662075790140998213">Scrivania 10</translation>
@@ -1517,6 +1523,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8001755249288974029">Seleziona il testo dal cursore all'inizio della riga</translation>
 <translation id="8004512796067398576">Aumenta</translation>
 <translation id="8026334261755873520">Cancella dati di navigazione</translation>
+<translation id="8028993641010258682">Dimensioni</translation>
 <translation id="8029247720646289474">Connessione all'hotspot non riuscita</translation>
 <translation id="8029629653277878342">PIN o password obbligatori per maggiore sicurezza</translation>
 <translation id="8030169304546394654">Disconnessa</translation>
@@ -1532,6 +1539,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8083540854303889870">Elementi salvati per dopo</translation>
 <translation id="8091153018031979607">Inizia alle ore <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Aggiornamenti automatici</translation>
+<translation id="8092380135549145188">Controlli di scorrimento</translation>
 <translation id="8098591350844501178">Interrompi la trasmissione dello schermo su <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Sblocca app dalla barra delle app</translation>
 <translation id="8113423164597455979">On, tutte</translation>

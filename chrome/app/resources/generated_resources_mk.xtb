@@ -222,7 +222,6 @@
 <translation id="1181037720776840403">Отстрани</translation>
 <translation id="1181366777303791449">на <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">Не може да ја инсталира датотеката <ph name="EXTERNAL_CRX_FILE" /> во локалниот кеш.</translation>
-<translation id="1184709369107246085">Апликацијата <ph name="APPLICATION_NAME" /> бара важечка URL-адреса на <ph name="APPLICATION_NAME" />.</translation>
 <translation id="1185924365081634987">Исто така, може да се обидете да <ph name="GUEST_SIGNIN_LINK_START" />прелистувате како гостин<ph name="GUEST_SIGNIN_LINK_END" /> за да ја поправите оваа грешка на мрежата.</translation>
 <translation id="1187722533808055681">Неактивни будења</translation>
 <translation id="1188807932851744811">Дневникот не се постави.</translation>
@@ -487,15 +486,6 @@
 <translation id="1420834118113404499">Дозволи за аудио-визуелни содржини</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> за да се дозволи спарување</translation>
 <translation id="1422159345171879700">Вчитај ги небезбедните скрипти</translation>
-<translation id="1423716227250567100">Ова дејство:
-          <ph name="LINE_BREAKS" />
-           • ќе ги ресетира поставките и кратенките за Chrome
-           <ph name="LINE_BREAK" />
-           • ќе ги оневозможи екстензиите
-           <ph name="LINE_BREAK" />
-           • ќе ги избрише колачињата и другите привремени податоци од сајтовите
-            <ph name="LINE_BREAKS" />
-           Обележувачите, историјата и зачуваните лозинки нема да бидат засегнати.</translation>
 <translation id="1425040197660226913">Не може да се прикачи. Користете слика помала од 20 MB.</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> е блокирана</translation>
@@ -1684,7 +1674,6 @@
 <translation id="2398546389094871088">Фабричкото ресетирање на уредот нема да ги отстрани вашите профили на eSIM. Одете на <ph name="LINK_BEGIN" />Мобилни поставки<ph name="LINK_END" /> за да ги отстраните профиливе рачно.</translation>
 <translation id="2399699884460174994">Известувањата се вклучени</translation>
 <translation id="2399939490305346086">Податоци за најавување на безбедносниот клуч</translation>
-<translation id="2400323785194108001">Никогаш не го деактивирај сајтов</translation>
 <translation id="2400664245143453337">Потребно е итно ажурирање</translation>
 <translation id="2402226831639195063">Тонови</translation>
 <translation id="2406153734066939945">Да се избрише профилот и неговите податоци?</translation>
@@ -2957,7 +2946,6 @@
 <translation id="354060433403403521">Адаптер за наизменична струја</translation>
 <translation id="354068948465830244">Може да ги чита и изменува податоците за сајтот</translation>
 <translation id="3541823293333232175">Назначено</translation>
-<translation id="354204985370574425">Никогаш не го деактивирај сајтов</translation>
 <translation id="3543393733900874979">Ажурирањето не успеа (грешка: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">X9.62 ECDSA потпис со SHA-512</translation>
 <translation id="3544058026430919413">Компанијата може да дефинира група на сајтови што може да користат колачиња за да ја споделуваат вашата активност во групата. Ова е исклучено во „Инкогнито“.</translation>
@@ -2999,7 +2987,6 @@
 <translation id="3582299299336701326">Го претвора светлиот екран во темен и темниот екран во светол. Притиснете Search + Ctrl + H за да се вклучи и исклучи инверзија на боите.</translation>
 <translation id="3584169441612580296">Прочитајте ги и променете ги фотографиите, музиката и другите медиуми од компјутерoт</translation>
 <translation id="3584527007414070635">Продолжете го патувањето за <ph name="MODULE_TITLE" /></translation>
-<translation id="3586787825263265024">Апликацијата <ph name="APPLICATION_NAME" /> бара OneDrive за да биде достапна.</translation>
 <translation id="3586806079541226322">Датотекава не може да се отвори</translation>
 <translation id="3586931643579894722">Скриј детали</translation>
 <translation id="3587438013689771191">Дознајте повеќе за: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4282,7 +4269,6 @@
 <translation id="4699357559218762027">(автоматско стартување)</translation>
 <translation id="4701025263201366865">Најавување на родител</translation>
 <translation id="4701335814944566468">Прегледано вчера</translation>
-<translation id="4705624512518230041">Не може да се отвори <ph name="FILE_NAMES" /> кога OneDrive не е достапна</translation>
 <translation id="470644585772471629">Инверзија на боите</translation>
 <translation id="4707337002099455863">Секогаш вклучено на сите сајтови</translation>
 <translation id="4708849949179781599">Излези од <ph name="PRODUCT_NAME" /></translation>
@@ -4497,7 +4483,7 @@
 <translation id="4893454800196085005">Добро - DVD</translation>
 <translation id="4893522937062257019">На заклучен екран</translation>
 <translation id="4898011734382862273">Сертификатот „<ph name="CERTIFICATE_NAME" />“ претставува Орган за сертификати</translation>
-<translation id="4899052647152077033">Инверзија на бои</translation>
+<translation id="4899052647152077033">Инверзија на боите</translation>
 <translation id="4899696330053002588">Содржи реклами</translation>
 <translation id="489985760463306091">За да завршите со отстранувањето на штетниот софтвер, рестартирајте го компјутерот</translation>
 <translation id="4900392736118574277">Вашата страница на стартување е променета во <ph name="URL" />.</translation>
@@ -7756,7 +7742,6 @@
 <translation id="783229689197954457">Ако Google најде попуст, ќе го видите на страницава</translation>
 <translation id="7833720883933317473">Зачуваните приспособени зборови ќе се појават тука</translation>
 <translation id="7835178595033117206">Обележувачот е отстранет</translation>
-<translation id="7836535163829106376">Не може да се отвори URL-адресата за <ph name="FILE_NAMES" /></translation>
 <translation id="7836577093182643605">Список со блокирани теми што не сакате да се споделуваат со сајтови</translation>
 <translation id="7836850009646241041">Допрете го безбедносниот клуч пак</translation>
 <translation id="7837290304480415481">Управувајте со дозволи и поставки</translation>

@@ -317,6 +317,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2440978926514840421">Đã ghi ảnh GIF</translation>
 <translation id="2441427462554639370">Quá trình ghi đã kết thúc do dung lượng lưu trữ còn quá thấp</translation>
 <translation id="24452542372838207">Mở rộng thông báo</translation>
+<translation id="2448312741937722512">Loại</translation>
 <translation id="2449089818483227734">Pin yếu</translation>
 <translation id="2450205753526923158">Chế độ chụp ảnh màn hình</translation>
 <translation id="2455994958736234930">Thêm www. và .com vào thanh địa chỉ rồi mở trang web</translation>
@@ -335,6 +336,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2531025035050312891">thiết bị hoạt động chậm</translation>
 <translation id="2542089167727451762">Nhấn vào ảnh hồ sơ của bạn</translation>
 <translation id="254900897760075745">Sao chép nội dung đã chọn vào bảng nhớ tạm</translation>
+<translation id="2549985041256363841">Bắt đầu ghi</translation>
 <translation id="255671100581129685">Bạn không thể sử dụng Trợ lý Google trong phiên công khai.</translation>
 <translation id="256712445991462162">tính năng phóng to ở vị trí cố định</translation>
 <translation id="2573588302192866788">Không thể kết nối với <ph name="NAME" /></translation>
@@ -901,6 +903,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="5117590920725113268">Hiển thị tháng tiếp theo</translation>
 <translation id="5121628974188116412">Chuyển tới cuối trang</translation>
 <translation id="5136175204352732067">Đã kết nối bàn phím khác</translation>
+<translation id="5145331109270917438">Ngày sửa đổi</translation>
 <translation id="5147567197700016471">Đã mở khóa</translation>
 <translation id="5150070631291639005">Cài đặt quyền riêng tư</translation>
 <translation id="5155897006997040331">Tốc độ đọc</translation>
@@ -1007,6 +1010,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="5619862035903135339">Tính năng chụp ảnh màn hình bị tắt theo chính sách của quản trị viên</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Chưa xác minh được mật khẩu của bạn. Hãy thử lại.</translation>
+<translation id="5646376287012673985">Vị trí</translation>
 <translation id="5648021990716966815">Giắc cắm micrô</translation>
 <translation id="5652575806481723716">Có thông báo từ <ph name="FOCUSED_APP_NAME" />.</translation>
 <translation id="5662075790140998213">Không gian làm việc 10</translation>
@@ -1520,6 +1524,7 @@ Mới cài đặt</translation>
 <translation id="8001755249288974029">Chọn văn bản từ vị trí con trỏ đến đầu dòng</translation>
 <translation id="8004512796067398576">Tăng dần</translation>
 <translation id="8026334261755873520">Xóa dữ liệu duyệt web</translation>
+<translation id="8028993641010258682">Kích thước</translation>
 <translation id="8029247720646289474">Không kết nối được điểm phát sóng</translation>
 <translation id="8029629653277878342">Bạn cần nhập mã PIN hoặc mật khẩu để tăng cường bảo mật</translation>
 <translation id="8030169304546394654">Đã ngắt kết nối</translation>

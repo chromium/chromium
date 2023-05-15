@@ -129,7 +129,6 @@
 <translation id="390528597099634151">‏سبَق تسجيل دخول <ph name="EXISTING_USER" /> إلى هذا الملف الشخصي على Chromium. لتوفير تجربة تصفّح منفصلة دائمًا، يمكن لمتصفِّح Chromium إنشاء ملف شخصي خاص بك.</translation>
 <translation id="391789666908693569">‏تتم إدارة حسابك من قِبَل <ph name="MANAGER_NAME" />. وبإمكان المشرف الاطّلاع على الملف الشخصي لمتصفِّح Chromium وتعديل بياناته، مثل الإشارات المرجعية والسجلّ وكلمات المرور.</translation>
 <translation id="3945058413678539331">‏يحاول Chromium نسخ كلمات المرور. اكتب كلمة مرور Windows للسماح بذلك.</translation>
-<translation id="3962623956404948996">‏ينصح متصفِّح Chromium بفحص هذا الملف لأنّه قد يكون ضارًا.</translation>
 <translation id="3997429360543082038">‏لمحة عن نظام التشغيل Chromium</translation>
 <translation id="4019629340646866719">‏أصبح نظام التشغيل Chromium متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />، كما هو الحال في <ph name="BEGIN_LINK_LINUX_OSS" />بيئة تطوير Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">‏ساعد في تحسين Chromium بالإبلاغ عن <ph name="BEGIN_LINK" />الإعدادات الحالية<ph name="END_LINK" /></translation>

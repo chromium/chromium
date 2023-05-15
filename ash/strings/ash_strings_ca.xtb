@@ -317,6 +317,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2440978926514840421">S'ha gravat el GIF</translation>
 <translation id="2441427462554639370">La gravació ha finalitzat perquè queda molt poc espai d'emmagatzematge.</translation>
 <translation id="24452542372838207">Desplega la notificació</translation>
+<translation id="2448312741937722512">Tipus</translation>
 <translation id="2449089818483227734">Bateria baixa</translation>
 <translation id="2450205753526923158">Mode de captura de pantalla</translation>
 <translation id="2455994958736234930">Afegeix www. i .com a la barra d'adreces i, a continuació, obre el lloc web</translation>
@@ -335,6 +336,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2531025035050312891">dispositiu lent</translation>
 <translation id="2542089167727451762">Toca la teva imatge de perfil</translation>
 <translation id="254900897760075745">Copia el contingut seleccionat al porta-retalls</translation>
+<translation id="2549985041256363841">Inicia la gravació</translation>
 <translation id="255671100581129685">L'Assistent de Google no està disponible a les sessions públiques.</translation>
 <translation id="256712445991462162">la lupa acoblada</translation>
 <translation id="2573588302192866788">No s'han pogut connectar els <ph name="NAME" /></translation>
@@ -901,6 +903,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5117590920725113268">Mostra el mes següent</translation>
 <translation id="5121628974188116412">Ves a la part inferior de la pàgina</translation>
 <translation id="5136175204352732067">S'ha connectat un altre teclat</translation>
+<translation id="5145331109270917438">Data de modificació</translation>
 <translation id="5147567197700016471">Desbloquejat</translation>
 <translation id="5150070631291639005">Configuració de la privadesa</translation>
 <translation id="5155897006997040331">Velocitat de lectura</translation>
@@ -1007,6 +1010,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5619862035903135339">La política de l'administrador desactiva la captura de pantalla</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">No s'ha pogut verificar la contrasenya. Torna-ho a provar.</translation>
+<translation id="5646376287012673985">Ubicació</translation>
 <translation id="5648021990716966815">Connector per al micròfon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> sol·licita la teva atenció.</translation>
 <translation id="5662075790140998213">Escriptori 10</translation>
@@ -1517,6 +1521,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8001755249288974029">Selecciona text del cursor al principi de la línia</translation>
 <translation id="8004512796067398576">Incrementa</translation>
 <translation id="8026334261755873520">Esborra les dades de navegació</translation>
+<translation id="8028993641010258682">Mida</translation>
 <translation id="8029247720646289474">La connexió al punt d'accés Wi‑Fi ha fallat</translation>
 <translation id="8029629653277878342">Cal introduir el PIN o la contrasenya per disposar de més seguretat</translation>
 <translation id="8030169304546394654">Desconnectat</translation>

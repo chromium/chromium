@@ -131,7 +131,6 @@
 <translation id="390528597099634151">Цей профіль Chromium уже використовує <ph name="EXISTING_USER" />. Щоб переглядати веб-сторінки окремо, ви можете створити власний профіль Chromium.</translation>
 <translation id="391789666908693569">Вашим обліковим записом керує <ph name="MANAGER_NAME" />. Адміністратор вашої організації може бачити й редагувати цей профіль у веб-переглядачі Chromium і його дані, зокрема закладки, історію та паролі.</translation>
 <translation id="3945058413678539331">Chromium намагається скопіювати паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
-<translation id="3962623956404948996">Chromium радить просканувати цей файл, оскільки він може бути небезпечним</translation>
 <translation id="3997429360543082038">Про Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS і <ph name="BEGIN_LINK_LINUX_OSS" />середовище для розробки Linux<ph name="END_LINK_LINUX_OSS" /> працюють завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="4036079820698952681">Допоможіть покращити Chromium, надсилаючи звіти про <ph name="BEGIN_LINK" />поточні налаштування<ph name="END_LINK" /></translation>

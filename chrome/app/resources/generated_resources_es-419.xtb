@@ -220,7 +220,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1181366777303791449">en <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">No se puede instalar <ph name="EXTERNAL_CRX_FILE" /> en la memoria caché local.</translation>
-<translation id="1184709369107246085">La aplicación <ph name="APPLICATION_NAME" /> requiere una URL <ph name="APPLICATION_NAME" /> válida.</translation>
 <translation id="1185924365081634987">También puedes intentar <ph name="GUEST_SIGNIN_LINK_START" />navegar como invitado<ph name="GUEST_SIGNIN_LINK_END" /> para solucionar este error de red.</translation>
 <translation id="1187722533808055681">Reactivaciones</translation>
 <translation id="1188807932851744811">No se cargó el registro.</translation>
@@ -484,15 +483,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1420834118113404499">Licencias de medios</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> para habilitar la sincronización</translation>
 <translation id="1422159345171879700">Cargar secuencias de comandos inseguras</translation>
-<translation id="1423716227250567100">Si realizas esta acción, sucederá lo siguiente:
-          <ph name="LINE_BREAKS" />
-           • Se restablecerá la configuración y los accesos directos de Chrome.
-           <ph name="LINE_BREAK" />
-           • Se inhabilitarán las extensiones.
-           <ph name="LINE_BREAK" />
-           • Se borrarán las cookies y otros datos temporales de los sitios.
-            <ph name="LINE_BREAKS" />
-           Esta acción no afectará los favoritos, el historial ni las contraseñas guardadas.</translation>
 <translation id="1425040197660226913">No se puede subir. Usa una imágen que tenga un tamaño inferior a 20 MB.</translation>
 <translation id="1426410128494586442">Sí</translation>
 <translation id="142655739075382478">Se bloqueó <ph name="APP_NAME" /></translation>
@@ -1665,7 +1655,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2398546389094871088">Si aplicas la función Powerwash en el dispositivo, no se quitarán los perfiles de eSIM. Para quitarlos de forma manual, va a <ph name="LINK_BEGIN" />Configuración de los dispositivos móviles<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Se activaron las Notificaciones</translation>
 <translation id="2399939490305346086">Datos de acceso de la llave de seguridad</translation>
-<translation id="2400323785194108001">Nunca desactivar este sitio</translation>
 <translation id="2400664245143453337">Se requiere una actualización inmediata</translation>
 <translation id="2402226831639195063">Tonos</translation>
 <translation id="2406153734066939945">¿Quieres borrar este perfil y sus datos?</translation>
@@ -2938,7 +2927,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="354060433403403521">Adaptador de CA</translation>
 <translation id="354068948465830244">Esta extensión puede leer y cambiar los datos del sitio</translation>
 <translation id="3541823293333232175">Asignado</translation>
-<translation id="354204985370574425">Nunca desactivar este sitio</translation>
 <translation id="3543393733900874979">Error de actualización (error: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">Firma X9.62 ECDSA con SHA-512</translation>
 <translation id="3544058026430919413">Una empresa puede definir un grupo de sitios que pueden usar cookies para compartir tu actividad en el grupo. Esta función está desactivada en el modo Incógnito.</translation>
@@ -2980,7 +2968,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3582299299336701326">Oscurece las pantallas claras y aclara las oscuras. Presiona Búsqueda + Ctrl + H para activar y desactivar la inversión de colores.</translation>
 <translation id="3584169441612580296">Leer y cambiar fotos, música y otro contenido multimedia desde tu computadora</translation>
 <translation id="3584527007414070635">Reanuda tu exploración a <ph name="MODULE_TITLE" /></translation>
-<translation id="3586787825263265024">La aplicación <ph name="APPLICATION_NAME" /> requiere que OneDrive esté disponible.</translation>
 <translation id="3586806079541226322">No se puede abrir este archivo.</translation>
 <translation id="3586931643579894722">Ocultar detalles</translation>
 <translation id="3587438013689771191">Más información sobre <ph name="SUBPAGE_TITLE" /></translation>
@@ -4262,7 +4249,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4699357559218762027">(con inicio automático)</translation>
 <translation id="4701025263201366865">Se requiere el acceso del padre o la madre</translation>
 <translation id="4701335814944566468">Visto ayer</translation>
-<translation id="4705624512518230041">No se puede abrir <ph name="FILE_NAMES" /> cuando OneDrive no está disponible</translation>
 <translation id="470644585772471629">Inversión de colores</translation>
 <translation id="4707337002099455863">Siempre en todos los sitios</translation>
 <translation id="4708849949179781599">Salir <ph name="PRODUCT_NAME" /></translation>
@@ -7734,7 +7720,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="783229689197954457">Si Google encuentra un descuento, lo verás en esta página.</translation>
 <translation id="7833720883933317473">Las palabras personalizadas guardadas aparecerán aquí</translation>
 <translation id="7835178595033117206">Se quitó el favorito</translation>
-<translation id="7836535163829106376">No se puede abrir la URL de <ph name="FILE_NAMES" /></translation>
 <translation id="7836577093182643605">Lista de temas que bloqueaste y no quieres que se compartan con los sitios</translation>
 <translation id="7836850009646241041">Vuelve a tocar tu llave de seguridad</translation>
 <translation id="7837290304480415481">Administrar configuración y permisos</translation>

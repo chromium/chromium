@@ -661,7 +661,6 @@
 <translation id="5423269318075950257">Παρακολούθηση τιμής</translation>
 <translation id="543338862236136125">Επεξεργασία κωδικού πρόσβασης</translation>
 <translation id="5433691172869980887">Το όνομα χρήστη αντιγράφηκε</translation>
-<translation id="5439599923922718668">Συχνές επισκέψεις</translation>
 <translation id="5439618055789623719">Έχετε συνδεθεί ως <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Πληροφορίες ασφάλειας σελίδας</translation>
 <translation id="5443952882982198570">Πιστωτικές κάρτες</translation>
@@ -1118,6 +1117,7 @@
 <translation id="8197543752516192074">Μετάφραση σελίδας</translation>
 <translation id="8205564605687841303">Ακύρωση</translation>
 <translation id="8206354486702514201">Η ρύθμιση αυτή επιβάλλεται από τον διαχειριστή σας.</translation>
+<translation id="8214293972734702249">Καρφιτσωμένη, <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">Εικόνες και αρχεία στην κρυφή μνήμη</translation>
 <translation id="8237382152611443140">Ανοίξτε τις Ρυθμίσεις της Αυτόματης συμπλήρωσης κωδικού πρόσβασης</translation>
 <translation id="8248969482078657578">Οι Ανενεργές καρτέλες σάς βοηθούν να παραμένετε συγκεντρωμένοι</translation>

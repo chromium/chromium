@@ -317,6 +317,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2440978926514840421">Posnetek GIF je posnet</translation>
 <translation id="2441427462554639370">Snemanje se je končalo, ker kritično primanjkuje prostora za shranjevanje.</translation>
 <translation id="24452542372838207">Razširi obvestilo</translation>
+<translation id="2448312741937722512">Vrsta</translation>
 <translation id="2449089818483227734">Skoraj prazna baterija</translation>
 <translation id="2450205753526923158">Način posnetka zaslona</translation>
 <translation id="2455994958736234930">Dodajanje www. in .com v naslovno vrstico, nato odpiranje spletnega mesta</translation>
@@ -335,6 +336,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2531025035050312891">počasna naprava</translation>
 <translation id="2542089167727451762">Dotaknite se slike profila</translation>
 <translation id="254900897760075745">Kopiranje izbrane vsebine v odložišče</translation>
+<translation id="2549985041256363841">Začetek snemanja</translation>
 <translation id="255671100581129685">Pomočnik Google ni na voljo v javni seji.</translation>
 <translation id="256712445991462162">zasidrana lupa</translation>
 <translation id="2573588302192866788">Ni bilo mogoče povezati naprave <ph name="NAME" /></translation>
@@ -901,6 +903,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5117590920725113268">Prikaz naslednjega meseca</translation>
 <translation id="5121628974188116412">Premik na dno strani</translation>
 <translation id="5136175204352732067">Priklopljena je druga tipkovnica</translation>
+<translation id="5145331109270917438">Datum spremembe</translation>
 <translation id="5147567197700016471">Odklenjeno</translation>
 <translation id="5150070631291639005">Nastavitve zasebnosti</translation>
 <translation id="5155897006997040331">Hitrost branja</translation>
@@ -1007,6 +1010,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5619862035903135339">Pravilnik skrbnika onemogoča zajem zaslonske slike.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Vašega gesla ni bilo mogoče preveriti. Poskusite znova.</translation>
+<translation id="5646376287012673985">Lokacija</translation>
 <translation id="5648021990716966815">Vtič za mikrofon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> potrebuje vašo pozornost.</translation>
 <translation id="5662075790140998213">Namizje 10</translation>
@@ -1520,6 +1524,7 @@ Nova namestitev</translation>
 <translation id="8001755249288974029">Izbira besedila od kazalca do začetka vrstice</translation>
 <translation id="8004512796067398576">Povečava</translation>
 <translation id="8026334261755873520">Izbriši podatke brskanja</translation>
+<translation id="8028993641010258682">Velikost</translation>
 <translation id="8029247720646289474">Povezava z dostopno točko ni uspela</translation>
 <translation id="8029629653277878342">Zaradi večje varnosti je obvezna koda PIN ali geslo</translation>
 <translation id="8030169304546394654">Ni povezave</translation>

@@ -222,7 +222,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1181366777303791449">em <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">Não foi possível instalar o arquivo <ph name="EXTERNAL_CRX_FILE" /> no cache local.</translation>
-<translation id="1184709369107246085">O app <ph name="APPLICATION_NAME" /> exige um URL válido do <ph name="APPLICATION_NAME" />.</translation>
 <translation id="1185924365081634987">Tente <ph name="GUEST_SIGNIN_LINK_START" />navegar como convidado<ph name="GUEST_SIGNIN_LINK_END" /> para corrigir este erro da rede.</translation>
 <translation id="1187722533808055681">Ativações do estado ocioso</translation>
 <translation id="1188807932851744811">Registro não enviado.</translation>
@@ -487,15 +486,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1420834118113404499">Licenças de mídia</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> para permitir o pareamento</translation>
 <translation id="1422159345171879700">Carregar scripts não seguros</translation>
-<translation id="1423716227250567100">Essa ação vai:
-          <ph name="LINE_BREAKS" />
-           • redefinir as configurações e os atalhos do Chrome;
-           <ph name="LINE_BREAK" />
-           • desativar extensões;
-           <ph name="LINE_BREAK" />
-           • excluir cookies e outros dados temporários de sites.
-            <ph name="LINE_BREAKS" />
-           Os favoritos, o histórico e as senhas salvas não serão afetados.</translation>
 <translation id="1425040197660226913">Não foi possível fazer upload. Use um arquivo com menos de 20 MB.</translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="142655739075382478">O app <ph name="APP_NAME" /> está bloqueado</translation>
@@ -1684,7 +1674,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2398546389094871088">O Powerwash do dispositivo não removerá seus perfis de eSIM. Para remover esses perfis manualmente, acesse <ph name="LINK_BEGIN" />Configurações do celular<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Notificações ativadas</translation>
 <translation id="2399939490305346086">Dados de login da chave de segurança</translation>
-<translation id="2400323785194108001">Nunca desativar este site</translation>
 <translation id="2400664245143453337">Atualização imediata necessária</translation>
 <translation id="2402226831639195063">Tons</translation>
 <translation id="2406153734066939945">Excluir este perfil e os dados dele?</translation>
@@ -2957,7 +2946,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="354060433403403521">Carregador</translation>
 <translation id="354068948465830244">Pode ler e alterar os dados do site</translation>
 <translation id="3541823293333232175">Atribuído</translation>
-<translation id="354204985370574425">Nunca desativar este site</translation>
 <translation id="3543393733900874979">Falha na atualização (erro: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">Assinatura X9.62 ECDSA com SHA-512</translation>
 <translation id="3544058026430919413">Uma empresa pode definir um grupo de sites que podem usar cookies para compartilhar sua atividade no grupo. Essa opção fica desativada na navegação anônima.</translation>
@@ -2999,7 +2987,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3582299299336701326">Escureça telas claras e clareie as escuras. Pressione as teclas Pesquisa + Ctrl + H para ativar e desativar a inversão de cores.</translation>
 <translation id="3584169441612580296">Ler e alterar fotos, músicas e outras mídias do seu computador</translation>
 <translation id="3584527007414070635">Retome sua jornada sobre <ph name="MODULE_TITLE" /></translation>
-<translation id="3586787825263265024">O app <ph name="APPLICATION_NAME" /> exige que o OneDrive esteja disponível.</translation>
 <translation id="3586806079541226322">Não é possível abrir o arquivo</translation>
 <translation id="3586931643579894722">Ocultar detalhes</translation>
 <translation id="3587438013689771191">Saiba mais sobre: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4282,7 +4269,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4699357559218762027">(aberto automaticamente)</translation>
 <translation id="4701025263201366865">Login do familiar responsável</translation>
 <translation id="4701335814944566468">Visualizado ontem</translation>
-<translation id="4705624512518230041">Não é possível abrir o arquivo <ph name="FILE_NAMES" /> quando o OneDrive está indisponível</translation>
 <translation id="470644585772471629">Inversão de cores</translation>
 <translation id="4707337002099455863">Sempre em todos os sites</translation>
 <translation id="4708849949179781599">Encerrar o <ph name="PRODUCT_NAME" /></translation>
@@ -7757,7 +7743,6 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="783229689197954457">Se o Google encontrar um desconto, ele será exibido nesta página</translation>
 <translation id="7833720883933317473">As palavras personalizadas salvas serão exibidas aqui</translation>
 <translation id="7835178595033117206">Favorito removido</translation>
-<translation id="7836535163829106376">Não é possível abrir o URL do arquivo <ph name="FILE_NAMES" /></translation>
 <translation id="7836577093182643605">Lista de temas bloqueados que você não quer compartilhar com sites</translation>
 <translation id="7836850009646241041">Tente tocar na chave de segurança novamente</translation>
 <translation id="7837290304480415481">Gerenciar permissões e configurações</translation>

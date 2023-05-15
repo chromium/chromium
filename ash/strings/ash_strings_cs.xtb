@@ -317,6 +317,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2440978926514840421">GIF byl zaznamenán</translation>
 <translation id="2441427462554639370">Nahrávání bylo ukončeno z důvodu kriticky nízkého místa v úložišti</translation>
 <translation id="24452542372838207">Rozbalit oznámení</translation>
+<translation id="2448312741937722512">Typ</translation>
 <translation id="2449089818483227734">Slabá baterie</translation>
 <translation id="2450205753526923158">Režim snímku obrazovky</translation>
 <translation id="2455994958736234930">Přidat do adresního řádku předponu www. a příponu .com a poté otevřít web</translation>
@@ -335,6 +336,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2531025035050312891">zařízení je pomalé</translation>
 <translation id="2542089167727451762">Klepněte na profilovou fotku</translation>
 <translation id="254900897760075745">Zkopírovat vybraný obsah do schránky</translation>
+<translation id="2549985041256363841">Zahájit nahrávání</translation>
 <translation id="255671100581129685">Asistent Google není ve veřejné relaci k dispozici.</translation>
 <translation id="256712445991462162">zabudovaná lupa</translation>
 <translation id="2573588302192866788"><ph name="NAME" />: nelze se připojit</translation>
@@ -901,6 +903,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="5117590920725113268">Zobrazit další měsíc</translation>
 <translation id="5121628974188116412">Přejít na konec stránky</translation>
 <translation id="5136175204352732067">Je připojena jiná klávesnice</translation>
+<translation id="5145331109270917438">Datum úpravy</translation>
 <translation id="5147567197700016471">Odemknuto</translation>
 <translation id="5150070631291639005">Nastavení soukromí</translation>
 <translation id="5155897006997040331">Rychlost čtení</translation>
@@ -1007,6 +1010,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="5619862035903135339">Zásady administrátora záznam obrazovky zakazují</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Heslo se nepodařilo ověřit. Zkuste to znovu.</translation>
+<translation id="5646376287012673985">Poloha</translation>
 <translation id="5648021990716966815">Konektor mikrofonu</translation>
 <translation id="5652575806481723716">Aplikace <ph name="FOCUSED_APP_NAME" /> vyžaduje vaši pozornost.</translation>
 <translation id="5662075790140998213">Plocha 10</translation>
@@ -1520,6 +1524,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8001755249288974029">Vybrat text od kurzoru do začátku řádku</translation>
 <translation id="8004512796067398576">Zvýšit</translation>
 <translation id="8026334261755873520">Vymazat údaje o prohlížení</translation>
+<translation id="8028993641010258682">Velikost</translation>
 <translation id="8029247720646289474">Připojení k hotspotu se nezdařilo</translation>
 <translation id="8029629653277878342">Kvůli zabezpečení je potřeba zadat PIN nebo heslo</translation>
 <translation id="8030169304546394654">Odpojeno</translation>

@@ -222,7 +222,6 @@
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> တွင်</translation>
 <translation id="1183237619868651138">ဒေသတွင်း ကရှ်တွင် <ph name="EXTERNAL_CRX_FILE" /> အား မတပ်ဆင်နိုင်ပါ။</translation>
-<translation id="1184709369107246085"><ph name="APPLICATION_NAME" /> အပလီကေးရှင်းက မှန်ကန်သည့် <ph name="APPLICATION_NAME" /> URL လိုအပ်သည်။</translation>
 <translation id="1185924365081634987">သင်သည် <ph name="GUEST_SIGNIN_LINK_START" />ဧည့်သည် အဖြစ် ဝင်ကြည့်ရန်<ph name="GUEST_SIGNIN_LINK_END" /> ကြိုးစားကြည့်ကာ ဒီကွန်ရက် အမှားကို ပြင်ပေနိုင်သည်။</translation>
 <translation id="1187722533808055681">နားနေရာမှ နိုးလာ</translation>
 <translation id="1188807932851744811">လော့ဂ် မမွမ်းမံ ရသေးပါ။</translation>
@@ -486,15 +485,6 @@
 <translation id="1420834118113404499">မီဒီယာလိုင်စင်များ</translation>
 <translation id="1420920093772172268">တွဲချိတ်ခြင်းအား ခွင့်ပြုရန် <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1422159345171879700">မလုံခြုံသည့် Script များကို ဖွင့်ရန်</translation>
-<translation id="1423716227250567100">ဤလုပ်ဆောင်ချက်က အောက်ပါတို့ကို ပြုလုပ်ပါမည်-
-          <ph name="LINE_BREAKS" />
-           • Chrome ဆက်တင်များနှင့် Chrome ဖြတ်လမ်းလင့်ခ်များ ပြင်ဆင်သတ်မှတ်ခြင်း
-           <ph name="LINE_BREAK" />
-           • နောက်ဆက်တွဲများ ပိတ်ခြင်း
-           <ph name="LINE_BREAK" />
-           • ကွတ်ကီးနှင့် အခြား ယာယီဝဘ်ဆိုက်ဒေတာများ ဖျက်ခြင်း
-            <ph name="LINE_BREAKS" />
-           လိပ်စာများ၊ မှတ်တမ်းနှင့် သိမ်းထားသော စကားဝှက်များကို သက်ရောက်မှုရှိမည် မဟုတ်ပါ။</translation>
 <translation id="1425040197660226913">အပ်လုဒ်လုပ်၍ မရပါ။ ၂၀ MB ထက်သေးသောပုံ သုံးပါ။</translation>
 <translation id="1426410128494586442">Yes</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> ကို ပိတ်ထားသည်</translation>
@@ -1681,7 +1671,6 @@
 <translation id="2398546389094871088">စက်ကို powerwash ပြုလုပ်ခြင်းက သင့် eSIM ပရိုဖိုင်များကို ဖယ်ရှားမည်မဟုတ်ပါ။ ဤပရိုဖိုင်များကို ကိုယ်တိုင်ဖယ်ရှားရန် <ph name="LINK_BEGIN" />မိုဘိုင်း ဆက်တင်များ<ph name="LINK_END" /> သို့ သွားပါ။</translation>
 <translation id="2399699884460174994">အကြောင်းကြားချက်များ ဖွင့်ထားသည်</translation>
 <translation id="2399939490305346086">လုံခြုံရေးကီး လက်မှတ်ထိုးဝင်ခြင်းဒေတာများ</translation>
-<translation id="2400323785194108001">ဤဝဘ်ဆိုက်ကို ဘယ်တော့မှ မရပ်ပါနှင့်</translation>
 <translation id="2400664245143453337">ချက်ချင်း အပ်ဒိတ်လုပ်ရန် လိုအပ်သည်</translation>
 <translation id="2402226831639195063">မြည်သံများ</translation>
 <translation id="2406153734066939945">ဤပရိုဖိုင်နှင့် ၎င်း၏ဒေတာကို ဖျက်မလား။</translation>
@@ -2954,7 +2943,6 @@
 <translation id="354060433403403521">AC အဒက်တာ</translation>
 <translation id="354068948465830244">၎င်းသည် ဝဘ်ဆိုက်ဒေတာများကို ကြည့်ရှု၍ ပြောင်းလဲနိုင်သည်</translation>
 <translation id="3541823293333232175">သတ်မှတ်ထားသည်</translation>
-<translation id="354204985370574425">ဤဝဘ်ဆိုက်ကို ဘယ်တော့မှ မရပ်ပါနှင့်</translation>
 <translation id="3543393733900874979">အဆင့်မြှင့်ခြင်း မအောင်မြင်ပါ (မှားယွင်းမှု: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">SHA-512 ဖြင့် X9.62 ECDSA လက်မှတ်</translation>
 <translation id="3544058026430919413">အုပ်စုတွင်း သင့်လှုပ်ရှားမှုအား မျှဝေရန် ကွတ်ကီးသုံးနိုင်သည့် ဝဘ်ဆိုက်အုပ်စုကို ကုမ္ပဏီက သတ်မှတ်နိုင်သည်။ ၎င်းသည် ရုပ်ဖျက်တွင် ပိတ်နေမည်။</translation>
@@ -2996,7 +2984,6 @@
 <translation id="3582299299336701326">ဖန်သားပြင်ကို အလင်းမှ အမှောင်သို့၊ အမှောင်မှ အလင်းသို့ ပြောင်းနိုင်သည်။ အရောင်ပြောင်းပြန်ပြုလုပ်ခြင်း ဖွင့်၊ ပိတ် လုပ်ရန် Search + Ctrl + H ကို နှိပ်ပါ။</translation>
 <translation id="3584169441612580296">ဓာတ်ပုံများ၊ ဂီတ၊ နှင့် အခြား မီဒီယာကို သင့် ကွန်ပျူတာမှ ဖတ်ပါ၊ ပြောင်းလဲပါ။</translation>
 <translation id="3584527007414070635"><ph name="MODULE_TITLE" /> အတွက် ဆက်လုပ်ရန်</translation>
-<translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> အပလီကေးရှင်း သုံးနိုင်ရန် OneDrive လိုအပ်သည်။</translation>
 <translation id="3586806079541226322">ဤဖိုင်ကို ဖွင့်၍မရပါ</translation>
 <translation id="3586931643579894722">အသေးစိတ်များ ဝှက်ထားရန်</translation>
 <translation id="3587438013689771191">ပိုမိုလေ့လာရန်- <ph name="SUBPAGE_TITLE" /></translation>
@@ -4278,7 +4265,6 @@
 <translation id="4699357559218762027">(အလိုအလျောက်-စရန်)</translation>
 <translation id="4701025263201366865">မိဘ လက်မှတ်ထိုး ဝင်ရန်</translation>
 <translation id="4701335814944566468">မနေ့က ကြည့်ထားသည်</translation>
-<translation id="4705624512518230041">OneDrive မရနိုင်ပါက <ph name="FILE_NAMES" /> ကိုဖွင့်၍မရပါ</translation>
 <translation id="470644585772471629">အရောင် ပြောင်းပြန်ပြုလုပ်ရန်</translation>
 <translation id="4707337002099455863">ဝဘ်ဆိုက်အားလုံးတွင် အမြဲတမ်းဖွင့်ထားရန်</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />ကို ရပ်ပစ်ရန်</translation>
@@ -6324,6 +6310,7 @@
 <translation id="657866106756413002">ကွန်ရက်အခြေအနေ လျှပ်တစ်ပြက်</translation>
 <translation id="6579369886355986318">&amp;ထိန်းချုပ်မှုအားလုံးကို ပြရန်</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - ဒက်စ်တော့အကြောင်းအရာကို မျှဝေထားသည်</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% ပြီးပါပြီ</translation>
 <translation id="6580203076670148210">စကင်ဖတ်သည့် မြန်နှုန်း</translation>
 <translation id="6582080224869403177">သင့်လုံခြုံရေးကို အဆင့်မြှင့်ရန် <ph name="DEVICE_TYPE" /> ကို ပြင်ဆင်သတ်မှတ်ပါ။</translation>
 <translation id="6582274660680936615">သင်သည် ‘ဧည့်သည်’ အဖြစ် ဝင်ကြည့်နေသည်</translation>
@@ -6945,6 +6932,7 @@
 <translation id="7114054701490058191">စကားဝှက်များ မတူပါ</translation>
 <translation id="7114648273807173152">သင့် Google အကောင့်သို့ လက်မှတ်ထိုးဝင်ရာတွင် Smart Lock သုံးရန် 'ဆက်တင်များ &gt; ချိတ်ဆက်ထားသော ကိရိယာများ &gt; သင်၏ဖုန်း &gt; Smart Lock' သို့ သွားပါ။</translation>
 <translation id="7115361495406486998">ဆက်သွယ်နိုင်သော အဆက်အသွယ်များ မရှိပါ</translation>
+<translation id="7116554090938189816">ပရင်တာ SSL အသိအမှတ်ပြုလက်မှတ် သက်တမ်းကုန်သွားပြီ။ ပရင်တာကို ပြန်စပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="7117228822971127758">နောက်မှ ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="711840821796638741">စီမံကွပ်ကဲထားသည့် စာညှပ်များကို ပြရန်</translation>
 <translation id="711985611146095797">သင်လက်မှတ်ထိုးဝင်ထားသော Google Account များကို စီမံရန် ဤစာမျက်နှာက ခွင့်ပြုသည်။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
@@ -7748,7 +7736,6 @@
 <translation id="783229689197954457">Google သည် လျှော့ဈေးကိုတွေ့ပါက ၎င်းကို ဤစာမျက်နှာတွင် ပြပါမည်</translation>
 <translation id="7833720883933317473">သိမ်းဆည်းထားသော စိတ်ကြိုက်စကားလုံးများကို ဤနေရာတွင် တွေ့ရပါမည်</translation>
 <translation id="7835178595033117206">ဝဘ်လိပ်စာကို ဖယ်ရှားလိုက်ပါပြီ</translation>
-<translation id="7836535163829106376"><ph name="FILE_NAMES" /> အတွက် URL ကိုဖွင့်၍မရပါ</translation>
 <translation id="7836577093182643605">ဝဘ်ဆိုက်များနှင့် မျှဝေလိုခြင်းမရှိ၍ သင်ပိတ်ပင်ထားသော အကြောင်းအရာစာရင်း</translation>
 <translation id="7836850009646241041">သင့်လုံခြုံရေးကီးကို ထပ်ထိကြည့်ပါ</translation>
 <translation id="7837290304480415481">ခွင့်ပြုချက်နှင့် ဆက်တင်များ စီမံရန်</translation>

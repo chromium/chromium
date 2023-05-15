@@ -220,7 +220,6 @@
 <translation id="1181037720776840403">Ջնջել</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> էջում</translation>
 <translation id="1183237619868651138">Չհաջողվեց տեղադրել <ph name="EXTERNAL_CRX_FILE" />-ը տեղային քեշում:</translation>
-<translation id="1184709369107246085"><ph name="APPLICATION_NAME" /> հավելվածի աշխատանքի համար պահանջվում է <ph name="APPLICATION_NAME" /> հավելվածի վավեր URL։</translation>
 <translation id="1185924365081634987">Ցանցի այս սխալն ուղղելու համար փորձեք <ph name="GUEST_SIGNIN_LINK_START" />մտնել հյուրի ռեժիմ<ph name="GUEST_SIGNIN_LINK_END" />:</translation>
 <translation id="1187722533808055681">Անցումներ ակտիվ ռեժիմ</translation>
 <translation id="1188807932851744811">Մատյանը վերբեռնված չէ:</translation>
@@ -486,15 +485,6 @@
 <translation id="1420834118113404499">Մեդիա լիցենզիաներ</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />՝ զուգակցումը թույլատրելու համար</translation>
 <translation id="1422159345171879700">Բեռնել վտանգավոր հրահանգաշարերը</translation>
-<translation id="1423716227250567100">Այս գործողության արդյունքում տեղի կունենա հետևյալը․
-          <ph name="LINE_BREAKS" />
-           • Chrome-ի կարգավորումներն ու դյուրանցումները կվերակայվեն։
-           <ph name="LINE_BREAK" />
-           • Ընդլայնումները կանջատվեն։
-           <ph name="LINE_BREAK" />
-           • Քուքիները և կայքերի մյուս ժամանակավոր տվյալները կջնջվեն։
-            <ph name="LINE_BREAKS" />
-           Էջանիշները, պատմությունը և պահված գաղտնաբառերը կպահպանվեն։</translation>
 <translation id="1425040197660226913">Չի հաջողվում վերբեռնել։ Ընտրեք 20 ՄԲ-ից փոքր պատկեր։</translation>
 <translation id="1426410128494586442">Այո</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> հավելվածն արգելափակված է</translation>
@@ -1670,7 +1660,6 @@
 <translation id="2398546389094871088">Powerwash գործառույթն օգտագործելու դեպքում eSIM-ի պրոֆիլները չեն հեռացվում։ Դա հնարավոր է անել ձեռքով <ph name="LINK_BEGIN" />շարժական սարքերի համար կարգավորումներում<ph name="LINK_END" />։</translation>
 <translation id="2399699884460174994">Ծանուցումները միացվեցին</translation>
 <translation id="2399939490305346086">Անվտանգության բանալու մուտքային տվյալներ</translation>
-<translation id="2400323785194108001">Երբեք չապակտիվացնել այս կայքը</translation>
 <translation id="2400664245143453337">Անհապաղ թարմացրեք օպերացիոն համակարգը</translation>
 <translation id="2402226831639195063">Տոնային նշաններ</translation>
 <translation id="2406153734066939945">Ջնջե՞լ այս պրոֆիլը և դրա տվյալները</translation>
@@ -2943,7 +2932,6 @@
 <translation id="354060433403403521">AC հարմարիչ</translation>
 <translation id="354068948465830244">Ընդլայնումը կարող է ընթերցել և փոփոխել կայքի տվյալները</translation>
 <translation id="3541823293333232175">Նշանակված է</translation>
-<translation id="354204985370574425">Երբեք չապակտիվացնել այս կայքը</translation>
 <translation id="3543393733900874979">Թարմացումը չհաջողվեց (սխալ՝ <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">X9.62 ECDSA ստորագրություն SHA-512-ով</translation>
 <translation id="3544058026430919413">Ընկերությունը կարող է որոշել կայքերի խումբը, որոնք ունեն քուքիներն օգտագործելու թույլտվություն՝ ձեր գործողությունների մասին տեղեկությունները խմբում հասանելի դարձնելու համար։ Այս գործառույթն անջատված է ինկոգնիտո ռեժիմում։</translation>
@@ -2985,7 +2973,6 @@
 <translation id="3582299299336701326">Բաց գույները դարձնել մուգ, իսկ մուգ գույները՝ բաց։ Սեղմեք Որոնում + Ctrl + H՝ գունաշրջումը միացնելու և անջատելու համար։</translation>
 <translation id="3584169441612580296">Կարդալ և փոխել լուսանկարները, երաժշտությունը և ձեր համակարգչում պահվող այլ մեդիա ֆայլերը</translation>
 <translation id="3584527007414070635">Շարունակեք «<ph name="MODULE_TITLE" />» հարցումով որոնումը</translation>
-<translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> հավելվածի աշխատանքի համար պահանջվում է OneDrive պահոց։</translation>
 <translation id="3586806079541226322">Չհաջողվեց բացել ֆայլը</translation>
 <translation id="3586931643579894722">Թաքցնել մանրամասները</translation>
 <translation id="3587438013689771191">Իմանալ ավելին «<ph name="SUBPAGE_TITLE" />» ենթաէջի մասին</translation>
@@ -4267,7 +4254,6 @@
 <translation id="4699357559218762027">(ինքնագործարկում)</translation>
 <translation id="4701025263201366865">Մուտք ծնողի համար</translation>
 <translation id="4701335814944566468">Դիտել եք երեկ</translation>
-<translation id="4705624512518230041">Հնարավոր չէ բացել <ph name="FILE_NAMES" /> ֆայլերը, երբ OneDrive-ը հասանելի չէ</translation>
 <translation id="470644585772471629">Գունաշրջում</translation>
 <translation id="4707337002099455863">Միշտ բոլոր կայքերում</translation>
 <translation id="4708849949179781599">Quit <ph name="PRODUCT_NAME" /></translation>
@@ -7740,7 +7726,6 @@
 <translation id="783229689197954457">Երբ Google-ը զեղչեր գտնի, դրանք կցուցադրվեն այս էջում։</translation>
 <translation id="7833720883933317473">Պահված հատուկ բառերը կցուցադրվեն այստեղ</translation>
 <translation id="7835178595033117206">Էջանիշը հեռացվել է</translation>
-<translation id="7836535163829106376">Հնարավոր չէ բացել <ph name="FILE_NAMES" /> ֆայլերի URL-ը</translation>
 <translation id="7836577093182643605">Արգելափակված թեմաները, որոնցով չեք ցանկանում կիսվել կայքերի հետ</translation>
 <translation id="7836850009646241041">Փորձեք նորից հպել անվտանգության ձեր բանալուն</translation>
 <translation id="7837290304480415481">Կառավարել թույլտվությունները և կարգավորումները</translation>

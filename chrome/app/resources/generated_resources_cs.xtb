@@ -220,7 +220,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1181037720776840403">Odebrat</translation>
 <translation id="1181366777303791449">v doméně <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">Soubor <ph name="EXTERNAL_CRX_FILE" /> nelze nainstalovat do místní mezipaměti.</translation>
-<translation id="1184709369107246085">Aplikace <ph name="APPLICATION_NAME" /> vyžaduje platnou adresu URL <ph name="APPLICATION_NAME" />.</translation>
 <translation id="1185924365081634987">Chcete-li tuto chybu odstranit, můžete také zkusit <ph name="GUEST_SIGNIN_LINK_START" />procházení v roli hosta<ph name="GUEST_SIGNIN_LINK_END" />.</translation>
 <translation id="1187722533808055681">Probuzení z nečinnosti</translation>
 <translation id="1188807932851744811">Protokol nebyl nahrán.</translation>
@@ -486,15 +485,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1420834118113404499">Licence médií</translation>
 <translation id="1420920093772172268">Chcete-li povolit párování, <ph name="TURN_ON_BLUETOOTH_LINK" />.</translation>
 <translation id="1422159345171879700">Načíst nezabezpečené skripty</translation>
-<translation id="1423716227250567100">Budou provedeny tyto akce:
-          <ph name="LINE_BREAKS" />
-           • Resetují se nastavení a zkratky Chromu.
-           <ph name="LINE_BREAK" />
-           • Deaktivují se rozšíření.
-           <ph name="LINE_BREAK" />
-           • Smažou se soubory cookie a jiná dočasná data webů.
-            <ph name="LINE_BREAKS" />
-           Záložky, historie ani uložená hesla nebudou dotčena.</translation>
 <translation id="1425040197660226913">Soubor nelze nahrát. Použijte obrázek menší než 20 MB.</translation>
 <translation id="1426410128494586442">Ano</translation>
 <translation id="142655739075382478">Aplikace <ph name="APP_NAME" /> je zablokována</translation>
@@ -1670,7 +1660,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2398546389094871088">Resetování zařízení do továrního nastavení neodstraní profily eSIM karty. Profily musíte odstranit ručně v <ph name="LINK_BEGIN" />nastavení pro mobilní zařízení<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Oznámení jsou zapnutá</translation>
 <translation id="2399939490305346086">Přihlašovací údaje na bezpečnostním klíči</translation>
-<translation id="2400323785194108001">Tento web nikdy nedeaktivovat</translation>
 <translation id="2400664245143453337">Je vyžadována okamžitá aktualizace</translation>
 <translation id="2402226831639195063">Tóny</translation>
 <translation id="2406153734066939945">Smazat tento profil a jeho data?</translation>
@@ -2943,7 +2932,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="354060433403403521">Napájecí adaptér</translation>
 <translation id="354068948465830244">Rozšíření může číst a měnit data webů</translation>
 <translation id="3541823293333232175">Přiřazeno</translation>
-<translation id="354204985370574425">Tento web nikdy nedeaktivovat</translation>
 <translation id="3543393733900874979">Aktualizace se nezdařila (chyba: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">Podpis X9.62 ECDSA s SHA-512</translation>
 <translation id="3544058026430919413">Společnost může definovat skupinu webů, které mohou pomocí souborů cookie sdílet vaši aktivitu ve skupině. Tato možnost je v anonymním režimu vypnutá.</translation>
@@ -2985,7 +2973,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3582299299336701326">Ztmavit světlé obrazovky a zesvětlit tmavé obrazovky. Převrácení barev zapnete a vypnete stisknutím kláves Hledat + Ctrl + H.</translation>
 <translation id="3584169441612580296">Číst a měnit fotografie, hudbu a další média z počítače</translation>
 <translation id="3584527007414070635">Pokračovat v cestě: <ph name="MODULE_TITLE" /></translation>
-<translation id="3586787825263265024">Aplikace <ph name="APPLICATION_NAME" /> vyžaduje, aby byla k dispozici služba OneDrive.</translation>
 <translation id="3586806079541226322">Soubor nelze otevřít</translation>
 <translation id="3586931643579894722">Skrýt podrobnosti</translation>
 <translation id="3587438013689771191">Další informace: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4266,7 +4253,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4699357559218762027">(spuštěno automaticky)</translation>
 <translation id="4701025263201366865">Přihlášení rodiče</translation>
 <translation id="4701335814944566468">Zobrazeno včera</translation>
-<translation id="4705624512518230041">Soubory <ph name="FILE_NAMES" /> nelze otevřít, když není k dispozici OneDrive</translation>
 <translation id="470644585772471629">Převrácení barev</translation>
 <translation id="4707337002099455863">Vždy na všech webech</translation>
 <translation id="4708849949179781599">Ukončit <ph name="PRODUCT_NAME" /></translation>
@@ -7738,7 +7724,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="783229689197954457">Pokud Google najde cenu, zobrazí se na této stránce</translation>
 <translation id="7833720883933317473">Tady se budou zobrazovat uložená vlastní slova</translation>
 <translation id="7835178595033117206">Záložka byla odstraněna</translation>
-<translation id="7836535163829106376">Adresu URL pro soubory <ph name="FILE_NAMES" /> nelze otevřít</translation>
 <translation id="7836577093182643605">Seznam zablokovaných témat, která nechcete sdílet s weby</translation>
 <translation id="7836850009646241041">Zkuste se znovu dotknout bezpečnostního klíče</translation>
 <translation id="7837290304480415481">Spravovat oprávnění a nastavení</translation>

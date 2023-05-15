@@ -133,7 +133,6 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> бұл Chromium профиліне кіріп қойған. Браузерді пайдалану деректерін бөлек сақтау үшін Chromium сізге жеке профиль жасай алады.</translation>
 <translation id="391789666908693569">Аккаунтыңызды <ph name="MANAGER_NAME" /> басқарады. Әкімші осы Chromium браузерінің профилі мен оның бетбелгілер, тарих және құпия сөздер сияқты деректерін көре және өзгерте алады.</translation>
 <translation id="3945058413678539331">Chromium құпия сөздерді көшіргісі келеді. Бұған рұқсат беру үшін Windows құпия сөзіңізді теріңіз.</translation>
-<translation id="3962623956404948996">Chromium бұл файлды сканерлеуді ұсынады, себебі ол қауіпсіз болуы мүмкін.</translation>
 <translation id="3997429360543082038">ChromiumOS туралы</translation>
 <translation id="4019629340646866719">ChromiumOS жүйесі де <ph name="BEGIN_LINK_LINUX_OSS" />Linux әзірлеу ортасы<ph name="END_LINK_LINUX_OSS" /> сияқты <ph name="BEGIN_LINK_CROS_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_CROS_OSS" /> арқылы қолжетімді болады.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />Ағымдағы параметрлерді<ph name="END_LINK" /> хабарлау арқылы Chromium браузерін жақсартуға көмектесіңіз</translation>

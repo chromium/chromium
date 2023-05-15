@@ -217,6 +217,7 @@
 <translation id="2638662041295312666">Immagine accesso</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> selezionato</translation>
 <translation id="267442004702508783">aggiorna</translation>
+<translation id="268270014981824665">Attenuazione tastiera</translation>
 <translation id="2712812801627182647">Chiave di autenticazione TLS</translation>
 <translation id="2713444072780614174">Bianco</translation>
 <translation id="2717139507051041123">Attiva la modalità Colore scuro</translation>
@@ -224,6 +225,7 @@
 <translation id="2744221223678373668">Condivise</translation>
 <translation id="2751739896257479635">Autenticazione fase 2 di tipo EAP</translation>
 <translation id="2783010256799387990">SUPERATO</translation>
+<translation id="2787435249130282949">Tastiera più luminosa</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">App</translation>
 <translation id="28232023175184696">Impossibile connettersi a Internet. Fai clic per riprovare.</translation>
@@ -327,11 +329,13 @@
 <translation id="3749289110408117711">Nome file</translation>
 <translation id="3771294271822695279">File video</translation>
 <translation id="3784455785234192852">Blocca</translation>
+<translation id="380097101658023925">Controlli RGB</translation>
 <translation id="38114475217616659">Cancella tutta la cronologia</translation>
 <translation id="3820172043799983114">PIN non valido.</translation>
 <translation id="3824259034819781947">Allega file</translation>
 <translation id="3838338534323494292">Nuova password</translation>
 <translation id="3845880861638660475">Premi <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> per chiudere la finestra di dialogo.</translation>
+<translation id="3848280697030027394">Scurire la tastiera</translation>
 <translation id="385051799172605136">Indietro</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3862598938296403232">La descrizione è obbligatoria</translation>
@@ -403,6 +407,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Disabilita</translation>
 <translation id="439429847087949098">Riavvio di <ph name="DEVICE_NAME" /> in corso…</translation>
+<translation id="4395835743215824109">Personalizzazione della tastiera</translation>
 <translation id="4415951057168511744">Avatar attuale</translation>
 <translation id="4422041425070339732">Freccia giù</translation>
 <translation id="4425149324548788773">I miei file</translation>
@@ -442,6 +447,7 @@
 <translation id="4731797938093519117">Accesso genitore</translation>
 <translation id="473775607612524610">Aggiorna</translation>
 <translation id="4744944742468440486">Informazioni relative al testo selezionato</translation>
+<translation id="4771607256327216405">Aumentare la luminosità della tastiera</translation>
 <translation id="4773299976671772492">Interrotta</translation>
 <translation id="4782311465517282004">Ricevi definizioni, traduzioni o conversioni di unità quando tocchi e tieni premuto del testo oppure quando ci fai clic sopra con il pulsante destro del mouse.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
@@ -490,6 +496,7 @@
 <translation id="500920857929044050">Interrompi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Quando il tuo schermo è inattivo, mostra foto, ora, meteo e informazioni multimediali.</translation>
+<translation id="5038292761217083259">Tastiera multicolore</translation>
 <translation id="5039804452771397117">Consenti</translation>
 <translation id="5049856988445523908">SIM bloccata (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nome del gruppo</translation>
@@ -639,6 +646,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Attiva il tema scuro</translation>
 <translation id="6285899124799306373">Apri Avvio app</translation>
+<translation id="629550705077076970">Oscuramento della tastiera</translation>
 <translation id="6302401976930124515">Il test <ph name="TEST_NAME" /> è stato annullato</translation>
 <translation id="631063167932043783">App Esplora</translation>
 <translation id="6319207335391420837">Aggiorna il firmware su <ph name="DEVICE_NAME" /></translation>
@@ -657,6 +665,7 @@
 <translation id="6401427872449207797">Ricerca dal browser</translation>
 <translation id="6410257289063177456">File di immagine</translation>
 <translation id="641081527798843608">Corrispondenza oggetto</translation>
+<translation id="6411934471898487866">Luminosità della tastiera</translation>
 <translation id="6412715219990689313">Tastiera integrata</translation>
 <translation id="6417265370957905582">Assistente Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -806,10 +815,12 @@
 <translation id="7656388927906093505">Il dispositivo è un mouse.</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7665800271478495366">Cambia avatar</translation>
+<translation id="7683228889864052081">Tonalità della tastiera</translation>
 <translation id="7690294790491645610">Conferma nuova password</translation>
 <translation id="7701040980221191251">Nulla</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">Luce della tastiera</translation>
 <translation id="773153675489693198">Conteggio dei cicli</translation>
 <translation id="7747039790905080783">Chiave precondivisa</translation>
 <translation id="7762130827864645708">La password è stata modificata. Usa la nuova password d'ora in poi.</translation>
@@ -853,6 +864,7 @@
 <translation id="8075838845814659848">Carica rimanente</translation>
 <translation id="8076492880354921740">Schede</translation>
 <translation id="8082366717211101304">Impossibile risolvere la richiesta DNS da app Android</translation>
+<translation id="8082644724189923105">Zona tastiera</translation>
 <translation id="808894953321890993">Cambia password</translation>
 <translation id="8094062939584182041">Consenti a Google di inviarti email relative a questo problema</translation>
 <translation id="8104083085214006426">Stai usando una rete aperta e non protetta</translation>
@@ -901,6 +913,7 @@
 <translation id="8456761643544401578">Modalità Buio automatica</translation>
 <translation id="8461329675984532579">Nome del provider principale</translation>
 <translation id="8475690821716466388">la rete Wi-Fi è protetta con un protocollo WEP PSK inefficace</translation>
+<translation id="8476242415522716722">Illuminazione sotto la tastiera</translation>
 <translation id="8477551185774834963">la latenza DNS è leggermente al di sopra della soglia consentita</translation>
 <translation id="8483248364096924578">Indirizzo IP</translation>
 <translation id="8491311378305535241">Impossibile collegarti tramite firewall ai siti web HTTP da app Android</translation>
@@ -944,6 +957,7 @@
 <translation id="8845001906332463065">Richiedi assistenza</translation>
 <translation id="8855781559874488009">Impossibile collegarti tramite il firewall ai siti web HTTP</translation>
 <translation id="885701979325669005">Dati memorizzati dai siti</translation>
+<translation id="885704831271383379">Tastiera più scura</translation>
 <translation id="8863170912498892583">Abilita il tema scuro</translation>
 <translation id="8863888432376731307">Ricevi <ph name="INTENT" /> per "<ph name="QUERY" />" e non solo</translation>
 <translation id="8864415976656252616">Nessun contenuto suggerito. Visualizza i contenuti Help principali.</translation>

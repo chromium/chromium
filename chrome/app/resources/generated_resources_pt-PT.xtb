@@ -220,7 +220,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1181366777303791449">em <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">Não é possível instalar <ph name="EXTERNAL_CRX_FILE" /> na cache local.</translation>
-<translation id="1184709369107246085">A aplicação <ph name="APPLICATION_NAME" /> precisa de um URL do <ph name="APPLICATION_NAME" /> válido.</translation>
 <translation id="1185924365081634987">Também pode experimentar <ph name="GUEST_SIGNIN_LINK_START" />navegar como convidado<ph name="GUEST_SIGNIN_LINK_END" /> para corrigir este erro de rede.</translation>
 <translation id="1187722533808055681">Reativações após inatividade</translation>
 <translation id="1188807932851744811">Registo não carregado.</translation>
@@ -484,15 +483,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1420834118113404499">Licenças de multimédia</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> para permitir a sincronização</translation>
 <translation id="1422159345171879700">Carregar scripts não seguros</translation>
-<translation id="1423716227250567100">Esta ação irá:
-          <ph name="LINE_BREAKS" />
-           • Repor as definições e os atalhos do Chrome.
-           <ph name="LINE_BREAK" />
-           • Desativar extensões.
-           <ph name="LINE_BREAK" />
-           • Eliminar cookies e outros dados temporários de sites.
-            <ph name="LINE_BREAKS" />
-           Os marcadores, o histórico e as palavras-passe guardadas não serão afetados.</translation>
 <translation id="1425040197660226913">Não é possível carregar. Use uma imagem com menos de 20 MB.</translation>
 <translation id="1426410128494586442">Sim</translation>
 <translation id="142655739075382478">A app <ph name="APP_NAME" /> está bloqueada</translation>
@@ -1668,7 +1658,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2398546389094871088">A função Powerwash do dispositivo não remove os seus perfis de eSIM. Aceda a <ph name="LINK_BEGIN" />Definições para dispositivos móveis<ph name="LINK_END" /> para remover manualmente estes perfis.</translation>
 <translation id="2399699884460174994">Notificações ativadas</translation>
 <translation id="2399939490305346086">Dados de início de sessão da chave de segurança</translation>
-<translation id="2400323785194108001">Nunca desativar este site</translation>
 <translation id="2400664245143453337">É necessária uma atualização imediata</translation>
 <translation id="2402226831639195063">Tons</translation>
 <translation id="2406153734066939945">Eliminar este perfil e os respetivos dados?</translation>
@@ -2942,7 +2931,6 @@ Pretende pará-lo?</translation>
 <translation id="354060433403403521">Carregador</translation>
 <translation id="354068948465830244">Permite ler e alterar os dados do site</translation>
 <translation id="3541823293333232175">Atribuído</translation>
-<translation id="354204985370574425">Nunca desativar este site</translation>
 <translation id="3543393733900874979">A atualização falhou (erro: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">Assinatura X9.62 ECDSA com SHA-512</translation>
 <translation id="3544058026430919413">Uma empresa pode definir um grupo de sites que podem usar cookies para partilhar a sua atividade no grupo. Esta opção está desativada na Navegação anónima.</translation>
@@ -2984,7 +2972,6 @@ Pretende pará-lo?</translation>
 <translation id="3582299299336701326">Muda os ecrãs claros para escuros e os ecrãs escuros para claros. Prima Pesquisa + Ctrl + H para ativar e desativar a inversão de cores.</translation>
 <translation id="3584169441612580296">Ler e alterar fotos, música e outros elementos multimédia a partir do computador</translation>
 <translation id="3584527007414070635">Retome o seu percurso relativo a <ph name="MODULE_TITLE" /></translation>
-<translation id="3586787825263265024">A aplicação <ph name="APPLICATION_NAME" /> precisa que o OneDrive esteja disponível.</translation>
 <translation id="3586806079541226322">Não é possível abrir este ficheiro</translation>
 <translation id="3586931643579894722">Ocultar detalhes</translation>
 <translation id="3587438013689771191">Saber mais sobre: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4266,7 +4253,6 @@ Pretende pará-lo?</translation>
 <translation id="4699357559218762027">(com iniciação automática)</translation>
 <translation id="4701025263201366865">Início de sessão pelos pais</translation>
 <translation id="4701335814944566468">Visto ontem</translation>
-<translation id="4705624512518230041">Não é possível abrir <ph name="FILE_NAMES" /> quando o OneDrive não está disponível</translation>
 <translation id="470644585772471629">Inversão de cores</translation>
 <translation id="4707337002099455863">Sempre em todos os sites</translation>
 <translation id="4708849949179781599">Sair do <ph name="PRODUCT_NAME" /></translation>
@@ -7739,7 +7725,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="783229689197954457">Se a Google encontrar um desconto, este será apresentado nesta página</translation>
 <translation id="7833720883933317473">As palavras personalizadas guardadas aparecem aqui</translation>
 <translation id="7835178595033117206">Marcador removido</translation>
-<translation id="7836535163829106376">Não é possível abrir o URL de <ph name="FILE_NAMES" /></translation>
 <translation id="7836577093182643605">Lista de tópicos que bloqueou e que não quer partilhar com os sites</translation>
 <translation id="7836850009646241041">Experimente tocar novamente na sua chave de segurança.</translation>
 <translation id="7837290304480415481">Faça a gestão das autorizações e definições</translation>

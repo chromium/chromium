@@ -222,7 +222,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1181037720776840403">Fjarlægja</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">Ekki er hægt að setja <ph name="EXTERNAL_CRX_FILE" /> upp í staðbundnu skyndiminni.</translation>
-<translation id="1184709369107246085">Forritið <ph name="APPLICATION_NAME" /> krefst gildrar vefslóðar fyrir <ph name="APPLICATION_NAME" />.</translation>
 <translation id="1185924365081634987">Þú getur líka prófað að <ph name="GUEST_SIGNIN_LINK_START" />vafra sem gestur<ph name="GUEST_SIGNIN_LINK_END" /> til að laga þessa netvillu.</translation>
 <translation id="1187722533808055681">Vakningar í aðgerðaleysi</translation>
 <translation id="1188807932851744811">Annálsskrá ekki hlaðið inn.</translation>
@@ -487,15 +486,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1420834118113404499">Margmiðlunarleyfi</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> til að leyfa pörun</translation>
 <translation id="1422159345171879700">Hlaða ótraustar skriftur</translation>
-<translation id="1423716227250567100">Þessi aðgerð mun:
-          <ph name="LINE_BREAKS" />
-           • Endurstilla stillingar og flýtileiðir Chrome
-           <ph name="LINE_BREAK" />
-           • Slökkva á viðbótum
-           <ph name="LINE_BREAK" />
-           • Eyða fótsporum og öðrum tímabundnum vefsvæðisgögnum
-            <ph name="LINE_BREAKS" />
-           Þetta hefur ekki áhrif á bókamerki, feril og vistuð aðgangsorð.</translation>
 <translation id="1425040197660226913">Ekki hægt að hlaða upp. Notaðu mynd sem er minni en 20 MB.</translation>
 <translation id="1426410128494586442">Já</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> er á bannlista</translation>
@@ -1684,7 +1674,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2398546389094871088">Djúphreinsun tækisins fjarlægir ekki eSIM-prófílana þína. Opnaðu <ph name="LINK_BEGIN" />Farsímastillingar<ph name="LINK_END" /> til að fjarlægja þessa prófíla handvirkt.</translation>
 <translation id="2399699884460174994">Kveikt á tilkynningum</translation>
 <translation id="2399939490305346086">Innskráningargögn öryggislykils</translation>
-<translation id="2400323785194108001">Aldrei gera þetta vefsvæði óvirkt</translation>
 <translation id="2400664245143453337">Uppfæra þarf tafarlaust</translation>
 <translation id="2402226831639195063">Tónar</translation>
 <translation id="2406153734066939945">Eyða þessum prófíl og gögnum hans?</translation>
@@ -2957,7 +2946,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="354060433403403521">Hleðslutæki</translation>
 <translation id="354068948465830244">Þessi viðbót getur lesið og breytt vefsvæðagögnum</translation>
 <translation id="3541823293333232175">Úthlutað</translation>
-<translation id="354204985370574425">Aldrei gera þetta vefsvæði óvirkt</translation>
 <translation id="3543393733900874979">Uppfærsla mistókst (villa: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">X9.62 ECDSA undirskrift með SHA-512</translation>
 <translation id="3544058026430919413">Fyrirtæki getur skilgreint vefsvæðahóp sem getur notað fótspor til að deila virkni þinni með hópnum. Slökkt er á þessu í huliðsstillingu.</translation>
@@ -2999,7 +2987,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3582299299336701326">Gerðu ljósar skjámyndir dökkar og dökkar skjámyndir ljósar. Ýttu á Search + Ctrl + H til að kveikja og slökkva á umsnúningi lita.</translation>
 <translation id="3584169441612580296">Lesa og breyta myndum, tónlist og öðru margmiðlunarefni í tölvunni þinni</translation>
 <translation id="3584527007414070635">Halda áfram með ferli fyrir <ph name="MODULE_TITLE" /></translation>
-<translation id="3586787825263265024">Forritið <ph name="APPLICATION_NAME" /> krefst þess að OneDrive sé tiltækt.</translation>
 <translation id="3586806079541226322">Ekki er hægt að opna þessa skrá</translation>
 <translation id="3586931643579894722">Fela upplýsingar</translation>
 <translation id="3587438013689771191">Nánar um: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4282,7 +4269,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4699357559218762027">(ræst sjálfkrafa)</translation>
 <translation id="4701025263201366865">Innskráning foreldris</translation>
 <translation id="4701335814944566468">Skoðað í gær</translation>
-<translation id="4705624512518230041">Ekki er hægt að opna <ph name="FILE_NAMES" /> þegar OneDrive er ekki tiltækt</translation>
 <translation id="470644585772471629">Umsnúningur lita</translation>
 <translation id="4707337002099455863">Alltaf á öllum vefsvæðum</translation>
 <translation id="4708849949179781599">Loka <ph name="PRODUCT_NAME" /></translation>
@@ -7756,7 +7742,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="783229689197954457">Þú sérð það á þessari síðu ef Google hefur fundið afslátt</translation>
 <translation id="7833720883933317473">Vistuð sérsniðin orð munu birtast hér</translation>
 <translation id="7835178595033117206">Bókamerki fjarlægt</translation>
-<translation id="7836535163829106376">Ekki er hægt að opna vefslóð fyrir <ph name="FILE_NAMES" /></translation>
 <translation id="7836577093182643605">Listi yfir umfjöllunarefni á bannlista sem þú vilt ekki deila með vefsvæðum</translation>
 <translation id="7836850009646241041">Prófaðu að snerta öryggislykilinn aftur</translation>
 <translation id="7837290304480415481">Stjórna heimildum og stillingum</translation>

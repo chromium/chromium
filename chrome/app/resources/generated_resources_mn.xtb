@@ -222,7 +222,6 @@
 <translation id="1181037720776840403">Хасах</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" />-д</translation>
 <translation id="1183237619868651138"><ph name="EXTERNAL_CRX_FILE" />-г дотоод сүлжээний кешд суулгах боломжгүй байна.</translation>
-<translation id="1184709369107246085"><ph name="APPLICATION_NAME" /> аппликэйшн хүчинтэй <ph name="APPLICATION_NAME" /> URL шаардаж байна.</translation>
 <translation id="1185924365081634987">Энэ сүлжээний алдааг засахын тулд та <ph name="GUEST_SIGNIN_LINK_START" />зочин хэлбэрээр хайж<ph name="GUEST_SIGNIN_LINK_END" /> болох юм.</translation>
 <translation id="1187722533808055681">Сул зогсолт дууслаа</translation>
 <translation id="1188807932851744811">Протоколыг ачааллаагүй.</translation>
@@ -486,15 +485,6 @@
 <translation id="1420834118113404499">Хэвлэл мэдээллийн лиценз</translation>
 <translation id="1420920093772172268">Зөвшөөрөхийн тулд <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1422159345171879700">Аюултай скриптийг ачааллах</translation>
-<translation id="1423716227250567100">Энэ үйлдэл нь:
-          <ph name="LINE_BREAKS" />
-           • Chrome-н тохиргоо болон Chrome-н товчлолыг шинэчилнэ
-           <ph name="LINE_BREAK" />
-           • Өргөтгөлийг идэвхгүй болгоно
-           <ph name="LINE_BREAK" />
-           • Күүки болон бусад түр зуурын сайтын өгөгдлийг устгана
-            <ph name="LINE_BREAKS" />
-           Хавчуурга, түүх болон хадгалсан нууц үгэнд нөлөөлөхгүй.</translation>
 <translation id="1425040197660226913">Байршуулах боломжгүй. 20МБ-аас бага хэмжээтэй зураг ашиглана уу.</translation>
 <translation id="1426410128494586442">Тийм</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" />-г блоклосон</translation>
@@ -1679,7 +1669,6 @@
 <translation id="2398546389094871088">Төхөөрөмжөө Powerwash хийх нь таны eSIM профайлуудыг хасахгүй. Эдгээр профайлыг гар аргаар хасахын тулд <ph name="LINK_BEGIN" />Мобайл тохиргоо<ph name="LINK_END" /> руу очно уу.</translation>
 <translation id="2399699884460174994">Мэдэгдлийг асаасан</translation>
 <translation id="2399939490305346086">Аюулгүй байдлын түлхүүрийн нэвтрэх өгөгдөл</translation>
-<translation id="2400323785194108001">Энэ сайтыг хэзээ ч бүү идэвхгүй болго</translation>
 <translation id="2400664245143453337">Нэн даруй шинэчлэх шаардлагатай</translation>
 <translation id="2402226831639195063">Хөг</translation>
 <translation id="2406153734066939945">Энэ профайл болон үүний өгөгдлийг устгах уу?</translation>
@@ -2952,7 +2941,6 @@
 <translation id="354060433403403521">AC адаптэр</translation>
 <translation id="354068948465830244">Энэ нь сайтын өгөгдлийг унших болон өөрчлөх боломжтой</translation>
 <translation id="3541823293333232175">Оноосон</translation>
-<translation id="354204985370574425">Энэ сайтыг хэзээ ч бүү идэвхгүй болго</translation>
 <translation id="3543393733900874979">Шинэчлэл хийгдэж явцад алдаа гарсан байна (Алдаа: <ph name="ERROR_NUMBER" /> )</translation>
 <translation id="3543597750097719865">X9.62 ECDSA SHA-512-тэй гарын үсэг</translation>
 <translation id="3544058026430919413">Таны үйл ажиллагааг бүлэгт хуваалцахын тулд күүки ашиглах боломжтой сайтуудын бүлгийг компаниас тодорхойлох боломжтой. Энэ нь Нууцлалтай горимд унтраалттай.</translation>
@@ -2994,7 +2982,6 @@
 <translation id="3582299299336701326">Цайвар дэлгэцийг бараан, харин бараан дэлгэцийг цайвар болгоно уу. Өнгө хувиргалтыг асаах болон унтраахын тулд Search + Ctrl + H дээр дарна уу.</translation>
 <translation id="3584169441612580296">Компьютероосоо зураг, хөгжим болон бусад медиагаа уншуулах эсвэл өөрчлөх</translation>
 <translation id="3584527007414070635"><ph name="MODULE_TITLE" />-н аяллаа үргэлжлүүлэх</translation>
-<translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> аппликэйшн OneDrive-г боломжтой байхыг шаардаж байна.</translation>
 <translation id="3586806079541226322">Энэ файлыг нээх боломжгүй байна</translation>
 <translation id="3586931643579894722">Дэлгэрэнгүй мэдээлийг нуух</translation>
 <translation id="3587438013689771191">Дараахын тухай нэмэлт мэдээлэл авах: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4276,7 +4263,6 @@
 <translation id="4699357559218762027">(автоматаар эхлүүлсэн)</translation>
 <translation id="4701025263201366865">Эцэг эхийн нэвтрэлт</translation>
 <translation id="4701335814944566468">Өчигдөр үзсэн</translation>
-<translation id="4705624512518230041">OneDrive боломжгүй үед <ph name="FILE_NAMES" />-г нээж болохгүй</translation>
 <translation id="470644585772471629">Өнгө хувиргалт</translation>
 <translation id="4707337002099455863">Бүх сайт дээр үргэлж</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />-аас гарах</translation>
@@ -7747,7 +7733,6 @@
 <translation id="783229689197954457">Google хөнгөлөлт олсон тохиолдолд та энэ хуудсанд харна</translation>
 <translation id="7833720883933317473">Тохируулсан үгс энд харагдана</translation>
 <translation id="7835178595033117206">Хавчуургыг устгасан</translation>
-<translation id="7836535163829106376"><ph name="FILE_NAMES" />-н URL-г нээх боломжгүй</translation>
 <translation id="7836577093182643605">Таны сайтуудтай хуваалцахыг хүсэхгүй байгаа блоклосон сэдвүүдийн жагсаалт</translation>
 <translation id="7836850009646241041">Аюулгүй байдлын түлхүүртээ дахин хүрээд үзнэ үү</translation>
 <translation id="7837290304480415481">Зөвшөөрөл болон тохиргоог удирдах</translation>

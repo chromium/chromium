@@ -222,7 +222,6 @@
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> എന്നതിൽ</translation>
 <translation id="1183237619868651138">പ്രാദേശിക കാഷെയിൽ <ph name="EXTERNAL_CRX_FILE" /> ഇൻസ്റ്റാൾ ചെയ്യാനാവില്ല.</translation>
-<translation id="1184709369107246085"><ph name="APPLICATION_NAME" /> എന്ന ആപ്പിന് സാധുതയുള്ള ഒരു <ph name="APPLICATION_NAME" /> URL ആവശ്യമാണ്.</translation>
 <translation id="1185924365081634987">ഈ നെറ്റ്‌വർക്ക് പിശക് പരിഹരിക്കാൻ നിങ്ങൾക്ക് <ph name="GUEST_SIGNIN_LINK_START" />അതിഥിയായി ബ്രൗസ് ചെയ്യുന്നതിന്<ph name="GUEST_SIGNIN_LINK_END" /> പരീക്ഷിക്കാം.</translation>
 <translation id="1187722533808055681">നിഷ്‌ക്രിയാവസ്ഥയിൽ നിന്ന് സജീവമാകൽ</translation>
 <translation id="1188807932851744811">ലോഗ് അപ്‌ലോഡ് ചെയ്‌തില്ല.</translation>
@@ -486,15 +485,6 @@
 <translation id="1420834118113404499">മീഡിയ ലൈസൻസുകൾ</translation>
 <translation id="1420920093772172268">ജോടിയാക്കുന്നതിന്, <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1422159345171879700">സുരക്ഷിതമല്ലാത്ത സ്‌ക്രിപ്‌റ്റുകൾ ലോഡ് ചെയ്യുക</translation>
-<translation id="1423716227250567100">ഈ പ്രവർത്തനം ഇനിപ്പറയുന്നത് ചെയ്യും:
-          <ph name="LINE_BREAKS" />
-           • Chrome ക്രമീകരണവും Chrome കുറുക്കുവഴികളും റീസെറ്റ് ചെയ്യും
-           <ph name="LINE_BREAK" />
-           • വിപുലീകരണങ്ങൾ പ്രവർത്തനരഹിതമാക്കും
-           <ph name="LINE_BREAK" />
-           • കുക്കികളും മറ്റ് താൽക്കാലിക സൈറ്റ് ഡാറ്റയും ഇല്ലാതാക്കും
-            <ph name="LINE_BREAKS" />
-           ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം, സംരക്ഷിച്ച പാസ്‌വേഡുകൾ എന്നിവയെ ബാധിക്കില്ല.</translation>
 <translation id="1425040197660226913">അപ്‌ലോഡ് ചെയ്യാനാകില്ല. 20MB-യിൽ കുറവ് വലുപ്പമുള്ള ഒരു ചിത്രം ഉപയോഗിക്കുക.</translation>
 <translation id="1426410128494586442">അതെ</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു</translation>
@@ -1667,7 +1657,6 @@
 <translation id="2398546389094871088">ഉപകരണം Powerwash ചെയ്യുന്നത് നിങ്ങളുടെ ഇ-സിം പ്രൊഫൈലുകൾ നീക്കം ചെയ്യില്ല. ഈ പ്രൊഫൈലുകൾ നീക്കം ചെയ്യാൻ നേരിട്ട് <ph name="LINK_BEGIN" />മൊബൈൽ ക്രമീകരണത്തിലേക്ക്<ph name="LINK_END" /> പോകുക.</translation>
 <translation id="2399699884460174994">അറിയിപ്പുകൾ ഓണാക്കി</translation>
 <translation id="2399939490305346086">സുരക്ഷാ കീയുടെ സൈൻ ഇൻ ഡാറ്റ</translation>
-<translation id="2400323785194108001">ഈ സൈറ്റ് ഒരിക്കലും നിഷ്‌ക്രിയമാക്കരുത്</translation>
 <translation id="2400664245143453337">ഉടൻ അപ്ഡേറ്റ് ആവശ്യമാണ്</translation>
 <translation id="2402226831639195063">ടോണുകൾ</translation>
 <translation id="2406153734066939945">ഈ പ്രൊഫൈലും ഇതിലെ ഡാറ്റയും ഇല്ലാതാക്കണോ?</translation>
@@ -2940,7 +2929,6 @@
 <translation id="354060433403403521">AC അഡാപ്റ്റർ</translation>
 <translation id="354068948465830244">ഇതിന് സൈറ്റ് ഡാറ്റ വായിക്കാനും മാറ്റാനുമാവും</translation>
 <translation id="3541823293333232175">അസൈൻ ചെയ്‌തു</translation>
-<translation id="354204985370574425">ഈ സൈറ്റ് ഒരിക്കലും നിഷ്‌ക്രിയമാക്കരുത്</translation>
 <translation id="3543393733900874979">അപ്‌ഡേറ്റ് പരാജയപ്പെട്ടു (പിശക്: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">SHA-512 ഉള്ള X9.62 ECDSA സിഗ്നേച്ചർ</translation>
 <translation id="3544058026430919413">ഗ്രൂപ്പിലെ നിങ്ങളുടെ ആക്റ്റിവിറ്റി പങ്കിടാൻ കുക്കികൾ ഉപയോഗിക്കാവുന്ന സൈറ്റുകളുടെ ഗ്രൂപ്പിനെ കമ്പനിക്ക് നിർവചിക്കാം. ഇത് അദൃശ്യ മോഡിൽ ഓഫാണ്.</translation>
@@ -2982,7 +2970,6 @@
 <translation id="3582299299336701326">ലൈറ്റ് സ്ക്രീനുകൾ ഡാർക്ക് ആക്കാനും ഡാർക്ക് സ്ക്രീനുകൾ ലൈറ്റ് ആക്കാനും. നിറം വിപരീതമാക്കൽ ഓണാക്കാനും ഓഫാക്കാനും Search + Ctrl + H അമർത്തുക.</translation>
 <translation id="3584169441612580296">നിങ്ങളുടെ കമ്പ്യൂട്ടറിൽ നിന്ന് ഫോട്ടോകൾ, സംഗീതം, മറ്റ് മീഡിയ എന്നിവ വായിക്കുക, മാറ്റുക</translation>
 <translation id="3584527007414070635"><ph name="MODULE_TITLE" /> സംബന്ധിച്ച നിങ്ങളുടെ ജേർണി പുനരാരംഭിക്കുക</translation>
-<translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> ആപ്പ് ലഭ്യമാകണമെങ്കിൽ OneDrive ആവശ്യമാണ്.</translation>
 <translation id="3586806079541226322">ഈ ഫയൽ തുറക്കാനാവില്ല</translation>
 <translation id="3586931643579894722">വിശദാംശങ്ങൾ മറയ്‌ക്കുക‍‌</translation>
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" /> എന്നതിനെ കുറിച്ച് കൂടുതലറിയുക</translation>
@@ -4263,7 +4250,6 @@
 <translation id="4699357559218762027">(സ്വയമേവ-സമാരംഭിച്ചു)</translation>
 <translation id="4701025263201366865">രക്ഷിതാവിനുള്ള സൈൻ ഇൻ</translation>
 <translation id="4701335814944566468">ഇന്നലെ കണ്ടു</translation>
-<translation id="4705624512518230041">OneDrive ലഭ്യമല്ലാത്തപ്പോൾ <ph name="FILE_NAMES" /> തുറക്കാനാകില്ല</translation>
 <translation id="470644585772471629">നിറം വിപരീതമാക്കൽ</translation>
 <translation id="4707337002099455863">എപ്പോഴും എല്ലാ സൈറ്റിലും</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> പുറത്തുകടക്കുക</translation>
@@ -7736,7 +7722,6 @@
 <translation id="783229689197954457">Google ഡിസ്‌കൗണ്ട് കണ്ടെത്തിയാൽ നിങ്ങൾക്കത് ഈ പേജിൽ കാണാം</translation>
 <translation id="7833720883933317473">സംരക്ഷിച്ച ഇഷ്‌ടാനുസൃത പദങ്ങൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="7835178595033117206">ബുക്ക്‌മാര്‍ക്ക് നീക്കം ചെയ്‌തു</translation>
-<translation id="7836535163829106376"><ph name="FILE_NAMES" /> എന്നതിനുള്ള URL തുറക്കാനാകുന്നില്ല</translation>
 <translation id="7836577093182643605">സൈറ്റുകളുമായി പങ്കിടാൻ താൽപ്പര്യം ഇല്ലാത്തതിനാൽ നിങ്ങൾ ബ്ലോക്ക് ചെയ്‌ത വിഷയങ്ങളുടെ ലിസ്‌റ്റ്</translation>
 <translation id="7836850009646241041">നിങ്ങളുടെ സുരക്ഷാ കീയിൽ വീണ്ടും സ്‌പർശിച്ച് ശ്രമിക്കുക</translation>
 <translation id="7837290304480415481">അനുമതികളും ക്രമീകരണവും മാനേജ് ചെയ്യുക</translation>

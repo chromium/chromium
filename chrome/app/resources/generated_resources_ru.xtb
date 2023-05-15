@@ -220,7 +220,6 @@
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">Не удается установить файл <ph name="EXTERNAL_CRX_FILE" /> в локальный кеш.</translation>
-<translation id="1184709369107246085"><ph name="APPLICATION_NAME" />: необходим правильный URL для приложения "<ph name="APPLICATION_NAME" />".</translation>
 <translation id="1185924365081634987">Чтобы исправить данную сетевую ошибку, попробуйте <ph name="GUEST_SIGNIN_LINK_START" />войти в гостевом режиме<ph name="GUEST_SIGNIN_LINK_END" />.</translation>
 <translation id="1187722533808055681">переходы в активный режим</translation>
 <translation id="1188807932851744811">Журнал не загружен.</translation>
@@ -487,15 +486,6 @@
 <translation id="1420834118113404499">Медиалицензии</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, чтобы разрешить подключение</translation>
 <translation id="1422159345171879700">Загрузить небезопасные скрипты</translation>
-<translation id="1423716227250567100">Произойдут следующие изменения:
-          <ph name="LINE_BREAKS" />
-           • сброс настроек и сочетаний клавиш в Chrome;
-           <ph name="LINE_BREAK" />
-           • отключение расширений;
-           <ph name="LINE_BREAK" />
-           • удаление файлов cookie и других временных данных сайтов.
-            <ph name="LINE_BREAKS" />
-           Вам по-прежнему будут доступны закладки, история и сохраненные пароли.</translation>
 <translation id="1425040197660226913">Ошибка загрузки. Размер файла должен быть меньше 20 МБ.</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="142655739075382478">Приложение "<ph name="APP_NAME" />" заблокировано</translation>
@@ -1670,7 +1660,6 @@
 <translation id="2398546389094871088">При использовании функции Powerwash профили eSIM не удаляются. Это можно сделать вручную в разделе <ph name="LINK_BEGIN" />настроек для мобильных устройств<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Уведомления включены</translation>
 <translation id="2399939490305346086">Учетные данные электронного ключа</translation>
-<translation id="2400323785194108001">Не учитывать этот сайт при определении неактивных вкладок</translation>
 <translation id="2400664245143453337">Требуется немедленно обновить ОС</translation>
 <translation id="2402226831639195063">Тональные символы</translation>
 <translation id="2406153734066939945">Удалить профиль и все его данные?</translation>
@@ -2943,7 +2932,6 @@
 <translation id="354060433403403521">Зарядное устройство</translation>
 <translation id="354068948465830244">Расширение может получать доступ к данным сайта и изменять их</translation>
 <translation id="3541823293333232175">Назначено</translation>
-<translation id="354204985370574425">Не учитывать этот сайт при определении неактивных вкладок</translation>
 <translation id="3543393733900874979">Не удалось выполнить обновление (ошибка <ph name="ERROR_NUMBER" />).</translation>
 <translation id="3543597750097719865">Подпись ECDSA X9.62 с SHA-512</translation>
 <translation id="3544058026430919413">Компания может определить группу сайтов, которым разрешено использовать файлы cookie для передачи друг другу информации о действиях пользователя. В режиме инкогнито эта функция не работает.</translation>
@@ -2985,7 +2973,6 @@
 <translation id="3582299299336701326">Сделать светлые цвета темными, а темные светлыми. Чтобы включить или отключить инверсию цветов, нажмите Поиск + Ctrl + H.</translation>
 <translation id="3584169441612580296">Доступ к фотографиям, музыке и другим медиафайлам на вашем компьютере, а также их изменение</translation>
 <translation id="3584527007414070635">Продолжите поиск по теме "<ph name="MODULE_TITLE" />".</translation>
-<translation id="3586787825263265024">Для работы приложения <ph name="APPLICATION_NAME" /> требуется хранилище OneDrive.</translation>
 <translation id="3586806079541226322">Не удалось открыть файл</translation>
 <translation id="3586931643579894722">Скрыть подробности</translation>
 <translation id="3587438013689771191">Подробнее: статья "<ph name="SUBPAGE_TITLE" />"</translation>
@@ -4267,7 +4254,6 @@
 <translation id="4699357559218762027">(автозапуск)</translation>
 <translation id="4701025263201366865">Вход для родителя</translation>
 <translation id="4701335814944566468">Просмотрено вчера</translation>
-<translation id="4705624512518230041">Невозможно открыть файл "<ph name="FILE_NAMES" />", так как хранилище OneDrive недоступно</translation>
 <translation id="470644585772471629">Инверсия цветов</translation>
 <translation id="4707337002099455863">Разрешить на всех сайтах</translation>
 <translation id="4708849949179781599">Выйти из <ph name="PRODUCT_NAME" /></translation>
@@ -7744,7 +7730,6 @@
 <translation id="783229689197954457">Если скидка будет найдена, она появится на этой странице.</translation>
 <translation id="7833720883933317473">Здесь появятся сохраненные специальные слова</translation>
 <translation id="7835178595033117206">Закладка удалена</translation>
-<translation id="7836535163829106376">Невозможно открыть URL для файла "<ph name="FILE_NAMES" />"</translation>
 <translation id="7836577093182643605">Список заблокированных тем, которые не передаются сайтам</translation>
 <translation id="7836850009646241041">Прикоснитесь к сканеру отпечатков пальцев на электронном ключе ещё раз.</translation>
 <translation id="7837290304480415481">Управление разрешениями и настройками</translation>

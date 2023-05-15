@@ -317,6 +317,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2440978926514840421">GIF recording taken</translation>
 <translation id="2441427462554639370">Recording ended due to critically low storage space</translation>
 <translation id="24452542372838207">Expand notification</translation>
+<translation id="2448312741937722512">Types</translation>
 <translation id="2449089818483227734">Low battery</translation>
 <translation id="2450205753526923158">Screenshot mode</translation>
 <translation id="2455994958736234930">Add www. and .com to the address bar, then open website</translation>
@@ -335,6 +336,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2531025035050312891">device slow</translation>
 <translation id="2542089167727451762">Tap your profile image</translation>
 <translation id="254900897760075745">Copy selected content to clipboard</translation>
+<translation id="2549985041256363841">Start recording</translation>
 <translation id="255671100581129685">The Google Assistant is not available in a public session.</translation>
 <translation id="256712445991462162">the docked magnifier</translation>
 <translation id="2573588302192866788">Couldn't connect <ph name="NAME" /></translation>
@@ -901,6 +903,7 @@ Connect your device to power.</translation>
 <translation id="5117590920725113268">Show next month</translation>
 <translation id="5121628974188116412">Go to bottom of page</translation>
 <translation id="5136175204352732067">Different keyboard connected</translation>
+<translation id="5145331109270917438">Date modified</translation>
 <translation id="5147567197700016471">Unlocked</translation>
 <translation id="5150070631291639005">Privacy settings</translation>
 <translation id="5155897006997040331">Reading speed</translation>
@@ -1007,6 +1010,7 @@ Connect your device to power.</translation>
 <translation id="5619862035903135339">Administrator policy disables screen capture</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Your password couldn't be verified. Try again.</translation>
+<translation id="5646376287012673985">Location</translation>
 <translation id="5648021990716966815">Mic jack</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> requests your attention.</translation>
 <translation id="5662075790140998213">Desk 10</translation>
@@ -1520,6 +1524,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8001755249288974029">Select text from cursor to beginning of line</translation>
 <translation id="8004512796067398576">Increment</translation>
 <translation id="8026334261755873520">Clear browsing data</translation>
+<translation id="8028993641010258682">Size</translation>
 <translation id="8029247720646289474">Hotspot connection failed</translation>
 <translation id="8029629653277878342">PIN or password required for more security</translation>
 <translation id="8030169304546394654">Disconnected</translation>

@@ -133,7 +133,6 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> ഇതിനകം ഈ Chromium പ്രൊഫൈലിലേക്ക് സൈൻ ഇൻ ചെയ്തിരിക്കുന്നു. നിങ്ങൾക്ക് ഒറ്റയ്ക്ക് ബ്രൗസ് ചെയ്യാൻ, Chromium-ന് നിങ്ങളുടെ സ്വന്തം പ്രൊഫൈൽ സൃഷ്‌ടിക്കാനാകും.</translation>
 <translation id="391789666908693569">നിങ്ങളുടെ അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER_NAME" /> ആണ്. നിങ്ങളുടെ അഡ്‌മിന് ഈ Chromium ബ്രൗസർ പ്രൊഫൈലും ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം, പാസ്‌വേഡുകൾ എന്നിവ പോലുള്ള അതിലെ ഡാറ്റയും കാണാനും എഡിറ്റ് ചെയ്യാനുമാകും.</translation>
 <translation id="3945058413678539331">പാസ്‌വേഡുകൾ പകർത്താൻ Chromium ശ്രമിക്കുന്നു. ഇത് അനുവദിക്കാൻ നിങ്ങളുടെ Windows പാസ്‌വേഡ് നൽകുക.</translation>
-<translation id="3962623956404948996">ഈ ഫയൽ അപകടകരമാകാൻ സാധ്യതയുള്ളതിനാൽ ഇത് സ്‌കാൻ ചെയ്യാൻ Chromium നിർദ്ദേശിക്കുന്നു</translation>
 <translation id="3997429360543082038">ChromiumOS-നെ കുറിച്ച്</translation>
 <translation id="4019629340646866719">ChromiumOS സാധ്യമാക്കിയത് <ph name="BEGIN_LINK_LINUX_OSS" />Linux വികസന പരിതസ്ഥിതി<ph name="END_LINK_LINUX_OSS" /> പോലുള്ള അധിക <ph name="BEGIN_LINK_CROS_OSS" />ഓപ്പൺ സോഴ്‌സ് സോഫ്റ്റ്‌വെയർ<ph name="END_LINK_CROS_OSS" /> ഉപയോഗിച്ചാണ്.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />നിലവിലെ ക്രമീകരണം<ph name="END_LINK" /> റിപ്പോർട്ട് ചെയ്‌തുകൊണ്ട് Chromium മികച്ചതാക്കാൻ സഹായിക്കുക</translation>

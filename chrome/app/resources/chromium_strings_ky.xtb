@@ -133,7 +133,6 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> ушул Chromium профилине мурунтан эле кирип турат. Сиз серептеген нерселерди ажыратуу максатында Chromium сиз үчүн өзүнчө профиль түзүп бере алат.</translation>
 <translation id="391789666908693569">Аккаунтуңуз <ph name="MANAGER_NAME" /> тарабынан башкарылууда. Администраторуңуз Chromium серепчисиндеги профилди жана андагы маалыматты, мисалы, кыстармаларды, таржымалды жана сырсөздөрдү көрүп, түзөтө алат.</translation>
 <translation id="3945058413678539331">Chromium сырсөздөрдү көчүрүүгө аракет кылууда. Уруксат берүү үчүн Windows сырсөзүңүздү жазыңыз.</translation>
-<translation id="3962623956404948996">Chromium бул файлды текшерүүнү сунуштайт. Ал кооптуу болушу мүмкүн</translation>
 <translation id="3997429360543082038">ChromiumOS жөнүндө</translation>
 <translation id="4019629340646866719">ChromiumOS тутуму, <ph name="BEGIN_LINK_LINUX_OSS" />Linux'ту өнүктүрүү чөйрөсү<ph name="END_LINK_LINUX_OSS" /> сыяктуу, кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен иштейт.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />Учурдагы жөндөөлөр<ph name="END_LINK" /> жөнүндө кабар берип, Chromium'ду өркүндөтүүгө кол кабыш кылыңыз</translation>

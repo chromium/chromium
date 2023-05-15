@@ -222,7 +222,6 @@
 <translation id="1181037720776840403">Видалити</translation>
 <translation id="1181366777303791449">на сторінці <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">Не вдається встановити <ph name="EXTERNAL_CRX_FILE" /> у локальному кеші.</translation>
-<translation id="1184709369107246085">Щоб відкрити файл у додатку <ph name="APPLICATION_NAME" />, надайте його дійсну URL-адресу у сервісі <ph name="APPLICATION_NAME" />.</translation>
 <translation id="1185924365081634987">Щоб виправити цю помилку мережі, можна також спробувати <ph name="GUEST_SIGNIN_LINK_START" />перегляд у гостьовому режимі<ph name="GUEST_SIGNIN_LINK_END" />.</translation>
 <translation id="1187722533808055681">Вихід зі стану неактивності</translation>
 <translation id="1188807932851744811">Журнал не завантажено.</translation>
@@ -489,15 +488,6 @@
 <translation id="1420834118113404499">Медіа-ліцензії</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, щоб підключити</translation>
 <translation id="1422159345171879700">Завантажити небезпечні сценарії</translation>
-<translation id="1423716227250567100">Якщо виконати цю дію:
-          <ph name="LINE_BREAKS" />
-           • налаштування та ярлики Chrome буде скинуто;
-           <ph name="LINE_BREAK" />
-           • розширення буде вимкнено;
-           <ph name="LINE_BREAK" />
-           • файли cookie й інші тимчасові дані сайтів буде видалено.
-            <ph name="LINE_BREAKS" />
-           Це не вплине на закладки, історію та збережені паролі.</translation>
 <translation id="1425040197660226913">Не вдалося завантажити зображення. Додайте файл розміром до 20 МБ.</translation>
 <translation id="1426410128494586442">Так</translation>
 <translation id="142655739075382478">Додаток <ph name="APP_NAME" /> заблоковано</translation>
@@ -1686,7 +1676,6 @@
 <translation id="2398546389094871088">Під час виконання Powerwash на пристрої профілі eSIM-карти не видаляються. Це можна зробити вручну в розділі <ph name="LINK_BEGIN" />налаштування мобільних пристроїв<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Сповіщення ввімкнено</translation>
 <translation id="2399939490305346086">Дані для входу для ключа безпеки</translation>
-<translation id="2400323785194108001">Ніколи не деактивовувати цей сайт</translation>
 <translation id="2400664245143453337">Потрібно негайно встановити оновлення</translation>
 <translation id="2402226831639195063">Тони</translation>
 <translation id="2406153734066939945">Видалити профіль і його дані?</translation>
@@ -2959,7 +2948,6 @@
 <translation id="354060433403403521">Зарядний пристрій</translation>
 <translation id="354068948465830244">Може переглядати й змінювати дані сайту</translation>
 <translation id="3541823293333232175">Призначено</translation>
-<translation id="354204985370574425">Ніколи не деактивовувати цей сайт</translation>
 <translation id="3543393733900874979">Не вдалось оновити (помилка: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">Алгоритм ECDSA X9.62 з підписом SHA-512</translation>
 <translation id="3544058026430919413">Компанія може визначити групу сайтів, які використовуватимуть файли cookie, щоб показувати дані про ваші дії іншим сайтам-користувачам. В анонімному режимі цю функцію вимкнено.</translation>
@@ -3001,7 +2989,6 @@
 <translation id="3582299299336701326">Світлі екрани стануть темними й навпаки. Щоб увімкнути або вимкнути інверсію кольорів, натисніть клавішу пошуку + Ctrl + H.</translation>
 <translation id="3584169441612580296">Читати й змінювати фотографії, музику та інші медіафайли на комп’ютері</translation>
 <translation id="3584527007414070635">Відновити сеанс для запиту "<ph name="MODULE_TITLE" />"</translation>
-<translation id="3586787825263265024">Щоб відкрити файл у додатку <ph name="APPLICATION_NAME" />, потрібен доступ до OneDrive.</translation>
 <translation id="3586806079541226322">Не вдається відкрити цей файл</translation>
 <translation id="3586931643579894722">Сховати докладні дані</translation>
 <translation id="3587438013689771191">Докладніше про підсторінку "<ph name="SUBPAGE_TITLE" />"</translation>
@@ -4284,7 +4271,6 @@
 <translation id="4699357559218762027">(автозапуск)</translation>
 <translation id="4701025263201366865">Вхід для батьків</translation>
 <translation id="4701335814944566468">Переглянуто вчора</translation>
-<translation id="4705624512518230041">Неможливо відкрити файл "<ph name="FILE_NAMES" />", оскільки сервіс OneDrive недоступний</translation>
 <translation id="470644585772471629">Інверсія кольорів</translation>
 <translation id="4707337002099455863">Завжди на всіх сайтах</translation>
 <translation id="4708849949179781599">Вийти з <ph name="PRODUCT_NAME" /></translation>
@@ -7389,7 +7375,7 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516981202574715431">Додаток <ph name="APP_NAME" /> призупинено</translation>
 <translation id="7520766081042531487">Портал анонімного режиму: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="752098910262610337">Показати комбінації клавіш</translation>
+<translation id="752098910262610337">Показувати ярлики</translation>
 <translation id="7522255036471229694">Скажіть "Ok Google"</translation>
 <translation id="7523117833414447032">Озвучення великих літер</translation>
 <translation id="7523585675576642403">Перейменувати профіль</translation>
@@ -7758,7 +7744,6 @@
 <translation id="783229689197954457">Якщо Google знайде знижку, вона з’явиться на цій сторінці</translation>
 <translation id="7833720883933317473">Тут відображатимуться збережені спеціальні слова</translation>
 <translation id="7835178595033117206">Закладку видалено</translation>
-<translation id="7836535163829106376">Не вдається відкрити URL-адресу для файлу "<ph name="FILE_NAMES" />"</translation>
 <translation id="7836577093182643605">Список заблокованих тем, до яких ви не хочете надавати сайтам доступ</translation>
 <translation id="7836850009646241041">Спробуйте торкнутися ключа безпеки ще раз</translation>
 <translation id="7837290304480415481">Керувати дозволами й налаштуваннями</translation>

@@ -317,6 +317,7 @@
 <translation id="2440978926514840421">Выполнена запись в формате GIF</translation>
 <translation id="2441427462554639370">Запись приостановлена, потому что в хранилище почти нет свободного места.</translation>
 <translation id="24452542372838207">Развернуть уведомление</translation>
+<translation id="2448312741937722512">Тип</translation>
 <translation id="2449089818483227734">Низкий заряд батареи</translation>
 <translation id="2450205753526923158">Режим создания скриншота</translation>
 <translation id="2455994958736234930">Добавить "www." и ".com" к тексту в адресной строке и открыть сайт</translation>
@@ -335,6 +336,7 @@
 <translation id="2531025035050312891">устройство работает медленно</translation>
 <translation id="2542089167727451762">Нажмите на фото профиля</translation>
 <translation id="254900897760075745">Скопировать данные в буфер обмена</translation>
+<translation id="2549985041256363841">Начать запись</translation>
 <translation id="255671100581129685">Google Ассистент не работает в режиме открытого доступа.</translation>
 <translation id="256712445991462162">Закрепленная лупа</translation>
 <translation id="2573588302192866788">Не удалось подключить устройство "<ph name="NAME" />"</translation>
@@ -901,6 +903,7 @@
 <translation id="5117590920725113268">Показать следующий месяц</translation>
 <translation id="5121628974188116412">Перейти к нижней части экрана</translation>
 <translation id="5136175204352732067">Подключена другая клавиатура</translation>
+<translation id="5145331109270917438">Дата изменения</translation>
 <translation id="5147567197700016471">Устройство разблокировано.</translation>
 <translation id="5150070631291639005">Настройки конфиденциальности</translation>
 <translation id="5155897006997040331">Скорость чтения</translation>
@@ -1007,6 +1010,7 @@
 <translation id="5619862035903135339">Администратор запретил запись экрана.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Введен неверный пароль. Повторите попытку.</translation>
+<translation id="5646376287012673985">Местоположение</translation>
 <translation id="5648021990716966815">Микрофонный разъем</translation>
 <translation id="5652575806481723716">Приложение "<ph name="FOCUSED_APP_NAME" />" требует вашего внимания.</translation>
 <translation id="5662075790140998213">Рабочий стол 10</translation>
@@ -1520,6 +1524,7 @@
 <translation id="8001755249288974029">Выделить текст от курсора до начала строки</translation>
 <translation id="8004512796067398576">Увеличить</translation>
 <translation id="8026334261755873520">Очистить историю</translation>
+<translation id="8028993641010258682">Размер</translation>
 <translation id="8029247720646289474">Не удалось подключиться к точке доступа</translation>
 <translation id="8029629653277878342">В качестве дополнительной меры безопасности введите PIN-код или пароль.</translation>
 <translation id="8030169304546394654">Отключено</translation>

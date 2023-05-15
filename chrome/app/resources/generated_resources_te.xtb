@@ -223,7 +223,6 @@
 <translation id="1181037720776840403">తీసివేయండి</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" />‌లో</translation>
 <translation id="1183237619868651138">స్థానిక కాష్‌లో <ph name="EXTERNAL_CRX_FILE" />ను ఇన్‌స్టాల్ చేయడం సాధ్యపడదు.</translation>
-<translation id="1184709369107246085"><ph name="APPLICATION_NAME" /> అప్లికేషన్‌కు చెల్లుబాటు అయ్యే <ph name="APPLICATION_NAME" /> URL అవసరం.</translation>
 <translation id="1185924365081634987">మీరు ఈ నెట్‌వర్క్ ఎర్ర‌ర్‌ను పరిష్కరించడానికి <ph name="GUEST_SIGNIN_LINK_START" />అతిథిగా బ్రౌజ్ చేయడాన్ని<ph name="GUEST_SIGNIN_LINK_END" /> కూడా ప్రయత్నించవచ్చు.</translation>
 <translation id="1187722533808055681">ఇన్‌యాక్టివ్‌ మేల్కొలుపులు</translation>
 <translation id="1188807932851744811">లాగ్ అప్‌లోడ్ కాలేదు.</translation>
@@ -488,15 +487,6 @@
 <translation id="1420834118113404499">మీడియా లైసెన్స్‌లు</translation>
 <translation id="1420920093772172268">జత చేయడాన్ని అనుమతించడానికి <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1422159345171879700">అసురక్షిత స్క్రిప్ట్‌లను లోడ్ చేయి</translation>
-<translation id="1423716227250567100">ఈ చర్య కారణంగా:
-          <ph name="LINE_BREAKS" />
-           • Chrome సెట్టింగ్‌లు, Chrome షార్ట్‌కట్‌లు రీసెట్ చేయబడతాయి
-           <ph name="LINE_BREAK" />
-           •ఎక్స్‌టెన్షన్‌లు డిజేబుల్ చేయబడతాయి
-           <ph name="LINE_BREAK" />
-           • కుక్కీలు, అలాగే తాత్కాలిక సైట్ డేటా తొలగించబడుతుంది
-            <ph name="LINE_BREAKS" />
-           బుక్‌మార్క్‌లు, హిస్టరీ, అలాగే సేవ్ చేయబడిన పాస్‌వర్డ్‌లు ప్రభావితం కావు.</translation>
 <translation id="1425040197660226913">అప్‌లోడ్ చేయడం సాధ్యం కాదు. 20MB కంటే తక్కువ ఉన్న ఇమేజ్‌ను ఉపయోగించండి.</translation>
 <translation id="1426410128494586442">అవును</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> బ్లాక్ చేయబడింది</translation>
@@ -1686,7 +1676,6 @@
 <translation id="2398546389094871088">మీ పరికరాన్ని పవర్‌వాష్ చేయడం ద్వారా మీ eSIM ప్రొఫైళ్లు తీసివేయబడవు. ఈ ప్రొఫైళ్లను మాన్యువల్‌గా తీసివేయడానికి <ph name="LINK_BEGIN" />మొబైల్ సెట్టింగ్‌ల<ph name="LINK_END" />కు వెళ్ళండి.</translation>
 <translation id="2399699884460174994">నోటిఫికేషన్‌లు ఆన్ చేయబడ్డాయి</translation>
 <translation id="2399939490305346086">'సెక్యూరిటీ కీ' సైన్-ఇన్ డేటా</translation>
-<translation id="2400323785194108001">ఈ సైట్‌ను ఎన్నడూ డీయాక్టివేట్ చేయవద్దు</translation>
 <translation id="2400664245143453337">వెంటనే అప్‌డేట్ చేయడం అవసరం</translation>
 <translation id="2402226831639195063">టోన్‌లు</translation>
 <translation id="2406153734066939945">ఈ ప్రొఫైల్‌ను, దానిలోని డేటాను తొలగించాలా?</translation>
@@ -2969,7 +2958,6 @@
 <translation id="354060433403403521">AC అడాప్టర్</translation>
 <translation id="354068948465830244">ఇది సైట్ డేటాను చదవగలదు మరియు మార్చగలదు</translation>
 <translation id="3541823293333232175">కేటాయించబడింది</translation>
-<translation id="354204985370574425">ఈ సైట్‌ను ఎన్నడూ డీయాక్టివేట్ చేయవద్దు</translation>
 <translation id="3543393733900874979">అప్‌డేట్ చేయ‌డం విఫలమైంది (ఎర్ర‌ర్‌: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">SHA-512తో X9.62 ECDSA సంతకం</translation>
 <translation id="3544058026430919413">గ్రూప్‌లో మీ యాక్టివిటీని షేర్ చేయడానికి కుక్కీలను ఉపయోగించగల సైట్‌ల గ్రూప్‌ను కంపెనీ నిర్వచించగలదు. అజ్ఞాత మోడ్‌లో ఇది ఆఫ్‌లో ఉంది.</translation>
@@ -3011,7 +2999,6 @@
 <translation id="3582299299336701326">ప్రకాశవంతంగా ఉండే స్క్రీన్‌లను ముదురు రంగులోకి మారుస్తుంది, ముదురు రంగు స్క్రీన్‌లను ప్రకాశవంతంగా మారుస్తుంది. సెర్చ్ + Ctrl + Hని నొక్కి, కలర్ మార్పిడిని ఆన్, ఆఫ్ చేయండి.</translation>
 <translation id="3584169441612580296">మీ కంప్యూటర్‌లోని ఫోటోలు, సంగీతం మరియు ఇతర మీడియాను చదవడం మరియు మార్చడం</translation>
 <translation id="3584527007414070635"><ph name="MODULE_TITLE" /> కోసం మీ బ్రౌజింగ్ జర్నీని కొనసాగించండి</translation>
-<translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> అప్లికేషన్‌ను ఉపయోగించడానికి, పరికరంలో తప్పనిసరిగా OneDrive ఇన్‌స్టాల్ అయి ఉండాలి.</translation>
 <translation id="3586806079541226322">ఈ ఫైల్‌ను తెరవడం కుదరదు</translation>
 <translation id="3586931643579894722">వివరాలను దాచిపెట్టు</translation>
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" /> గురించి మరింత తెలుసుకోండి</translation>
@@ -4304,7 +4291,6 @@
 <translation id="4699357559218762027">(ఆటోమేటిక్‌గా ప్రారంభించబడింది)</translation>
 <translation id="4701025263201366865">తల్లి/తండ్రి సైన్ ఇన్</translation>
 <translation id="4701335814944566468">నిన్న చూశారు</translation>
-<translation id="4705624512518230041">పరికరంలో OneDrive అందుబాటులో లేకపోతే, <ph name="FILE_NAMES" />‌ను తెరవడం సాధ్యపడదు</translation>
 <translation id="470644585772471629">కలర్ మార్పిడి</translation>
 <translation id="4707337002099455863">ఎల్లప్పుడూ అన్ని సైట్‌లలో అనుమతించండి</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> నిష్క్రమించండి</translation>
@@ -7793,7 +7779,6 @@
 <translation id="783229689197954457">Google డిస్కౌంట్‌ను కనుగొన్నట్లయితే, మీరు దాన్ని ఈ పేజీలో చూడవచ్చు</translation>
 <translation id="7833720883933317473">సేవ్ చేసిన అనుకూల పదాలు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="7835178595033117206">బుక్‌మార్క్ తీసివేయబడింది</translation>
-<translation id="7836535163829106376"><ph name="FILE_NAMES" /> URLను తెరవడం సాధ్యం కాదు</translation>
 <translation id="7836577093182643605">సైట్‌లతో షేర్ చేయకూడదు అనే ఉద్దేశ్యంతో మీరు బ్లాక్ చేసిన టాపిక్‌ల యొక్క లిస్ట్</translation>
 <translation id="7836850009646241041">మీ సెక్యూరిటీ కీని మళ్లీ తాకి చూడండి</translation>
 <translation id="7837290304480415481">అనుమతులు మరియు సెట్టింగ్‌లను మేనేజ్ చేయండి</translation>

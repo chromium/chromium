@@ -317,6 +317,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2440978926514840421">GIF snimak je snimljen</translation>
 <translation id="2441427462554639370">Snimanje je prekinuto zbog jako malo slobodnog prostora za pohranu</translation>
 <translation id="24452542372838207">Proširi obavještenje</translation>
+<translation id="2448312741937722512">Vrsta</translation>
 <translation id="2449089818483227734">Baterija je slaba</translation>
 <translation id="2450205753526923158">Način rada za snimak ekrana</translation>
 <translation id="2455994958736234930">Dodavanje prefiksa www. i sufiksa .com u traci za adresu, a zatim otvaranje web lokacije</translation>
@@ -335,6 +336,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2531025035050312891">uređaj je spor</translation>
 <translation id="2542089167727451762">Dodirnite sliku profila</translation>
 <translation id="254900897760075745">Kopiranje odabranog sadržaja u međumemoriju</translation>
+<translation id="2549985041256363841">Započni snimanje</translation>
 <translation id="255671100581129685">Google Asistent nije dostupan u javnoj sesiji.</translation>
 <translation id="256712445991462162">fiksirano povećalo</translation>
 <translation id="2573588302192866788">Povezivanje s uređajem <ph name="NAME" /> nije uspjelo</translation>
@@ -901,6 +903,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5117590920725113268">Prikaz sljedećeg mjeseca</translation>
 <translation id="5121628974188116412">Odlazak na dno stranice</translation>
 <translation id="5136175204352732067">Povezana je drugačija tastatura</translation>
+<translation id="5145331109270917438">Datum izmjene</translation>
 <translation id="5147567197700016471">Otključano</translation>
 <translation id="5150070631291639005">Postavke privatnosti</translation>
 <translation id="5155897006997040331">Brzina čitanja</translation>
@@ -1007,6 +1010,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5619862035903135339">Administratorska pravila onemogućavaju snimanje ekrana</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Potvrđivanje lozinke nije uspjelo. Pokušajte ponovo.</translation>
+<translation id="5646376287012673985">Lokacija</translation>
 <translation id="5648021990716966815">Priključak za mikrofon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> traži da reagirate.</translation>
 <translation id="5662075790140998213">10. radna površina</translation>
@@ -1520,6 +1524,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8001755249288974029">Odabir teksta od kursora do početka reda</translation>
 <translation id="8004512796067398576">Povećavanje</translation>
 <translation id="8026334261755873520">Obrišite podatke pregledanja</translation>
+<translation id="8028993641010258682">Veličina</translation>
 <translation id="8029247720646289474">Povezivanje s pristupnom tačkom nije uspjelo</translation>
 <translation id="8029629653277878342">Potreban je PIN ili lozika za dodatnu sigurnost</translation>
 <translation id="8030169304546394654">Nije povezano</translation>

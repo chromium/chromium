@@ -222,7 +222,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1181037720776840403">Xóa</translation>
 <translation id="1181366777303791449">trên <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">Không thể cài đặt <ph name="EXTERNAL_CRX_FILE" /> trong bộ nhớ đệm cục bộ.</translation>
-<translation id="1184709369107246085">Ứng dụng <ph name="APPLICATION_NAME" /> cần URL <ph name="APPLICATION_NAME" /> hợp lệ.</translation>
 <translation id="1185924365081634987">Bạn cũng có thể thử <ph name="GUEST_SIGNIN_LINK_START" />duyệt với tư cách khách<ph name="GUEST_SIGNIN_LINK_END" /> để khắc phục lỗi mạng này.</translation>
 <translation id="1187722533808055681">Đánh thức khỏi chế độ rảnh</translation>
 <translation id="1188807932851744811">Nhật ký chưa được tải lên.</translation>
@@ -486,15 +485,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1420834118113404499">Giấy phép truyền thông</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> để cho phép ghép nối</translation>
 <translation id="1422159345171879700">Tải tập lệnh không an toàn</translation>
-<translation id="1423716227250567100">Hành động này sẽ:
-          <ph name="LINE_BREAKS" />
-           • Đặt lại các tùy chọn cài đặt Chrome và phím tắt Chrome
-           <ph name="LINE_BREAK" />
-           • Tắt tiện ích
-           <ph name="LINE_BREAK" />
-           • Xóa cookie và dữ liệu trang web tạm thời khác
-            <ph name="LINE_BREAKS" />
-           Dấu trang, nhật ký duyệt web và mật khẩu đã lưu sẽ không bị ảnh hưởng.</translation>
 <translation id="1425040197660226913">Không tải lên được. Hãy dùng hình ảnh có kích thước nhỏ hơn 20 MB.</translation>
 <translation id="1426410128494586442">Có</translation>
 <translation id="142655739075382478">Đã chặn <ph name="APP_NAME" /></translation>
@@ -1683,7 +1673,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2398546389094871088">Việc định dạng lại thiết bị bằng chức năng Powerwash sẽ không xóa hồ sơ eSIM của bạn. Hãy chuyển đến phần <ph name="LINK_BEGIN" />Cài đặt cho thiết bị di động<ph name="LINK_END" /> để xóa những hồ sơ này theo cách thủ công.</translation>
 <translation id="2399699884460174994">Đã bật thông báo</translation>
 <translation id="2399939490305346086">Dữ liệu đăng nhập trên khóa bảo mật</translation>
-<translation id="2400323785194108001">Không bao giờ vô hiệu hoá trang web này</translation>
 <translation id="2400664245143453337">Bạn cần cập nhật ngay</translation>
 <translation id="2402226831639195063">Âm</translation>
 <translation id="2406153734066939945">Xóa hồ sơ này và dữ liệu của hồ sơ?</translation>
@@ -2956,7 +2945,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="354060433403403521">Bộ sạc nguồn AC</translation>
 <translation id="354068948465830244">Tiện ích này có thể đọc và thay đổi dữ liệu trang web</translation>
 <translation id="3541823293333232175">Ðã gán</translation>
-<translation id="354204985370574425">Không bao giờ vô hiệu hoá trang web này</translation>
 <translation id="3543393733900874979">Cập nhật không thành công (lỗi: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">Chữ ký X9.62 ECDSA với SHA-512</translation>
 <translation id="3544058026430919413">Một công ty có thể xác định nhóm các trang web được sử dụng cookie để chia sẻ hoạt động của bạn trong nhóm. Tính năng này bị tắt trong chế độ Ẩn danh.</translation>
@@ -2998,7 +2986,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3582299299336701326">Làm tối màn hình sáng và làm sáng màn hình tối. Nhấn tổ hợp phím Tìm kiếm + Ctrl + H để bật và tắt tính năng đảo màu.</translation>
 <translation id="3584169441612580296">Đọc và thay đổi ảnh, nhạc và phương tiện khác từ máy tính của bạn</translation>
 <translation id="3584527007414070635">Tiếp tục tìm kiếm thông tin về <ph name="MODULE_TITLE" /></translation>
-<translation id="3586787825263265024">Ứng dụng <ph name="APPLICATION_NAME" /> cần có OneDrive.</translation>
 <translation id="3586806079541226322">Không thể mở tệp này</translation>
 <translation id="3586931643579894722">Ẩn chi tiết</translation>
 <translation id="3587438013689771191">Tìm hiểu thêm về <ph name="SUBPAGE_TITLE" /></translation>
@@ -4281,7 +4268,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4699357559218762027">(tự động chạy)</translation>
 <translation id="4701025263201366865">Hoạt động đăng nhập của cha mẹ</translation>
 <translation id="4701335814944566468">Vừa xem hôm qua</translation>
-<translation id="4705624512518230041">Không thể mở <ph name="FILE_NAMES" /> khi không có OneDrive</translation>
 <translation id="470644585772471629">Đảo màu</translation>
 <translation id="4707337002099455863">Luôn cho phép trên mọi trang web</translation>
 <translation id="4708849949179781599">Thoát <ph name="PRODUCT_NAME" /></translation>
@@ -7753,7 +7739,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="783229689197954457">Nếu Google tìm thấy một chương trình chiết khấu, bạn sẽ thấy thông tin đó trên trang này</translation>
 <translation id="7833720883933317473">Các từ tùy chỉnh đã lưu sẽ xuất hiện ở đây</translation>
 <translation id="7835178595033117206">Đã xóa dấu trang</translation>
-<translation id="7836535163829106376">Không thể mở URL cho <ph name="FILE_NAMES" /></translation>
 <translation id="7836577093182643605">Danh sách chủ đề bạn không cho phép chia sẻ với các trang web</translation>
 <translation id="7836850009646241041">Thử chạm lại vào khóa bảo mật</translation>
 <translation id="7837290304480415481">Quản lý quyền và chế độ cài đặt</translation>

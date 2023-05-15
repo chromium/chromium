@@ -222,7 +222,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1181366777303791449">on <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">Can't install <ph name="EXTERNAL_CRX_FILE" /> in local cache.</translation>
-<translation id="1184709369107246085">The application <ph name="APPLICATION_NAME" /> requires a valid <ph name="APPLICATION_NAME" /> URL.</translation>
 <translation id="1185924365081634987">You may also try to <ph name="GUEST_SIGNIN_LINK_START" />browse as guest<ph name="GUEST_SIGNIN_LINK_END" /> to fix this network error.</translation>
 <translation id="1187722533808055681">Idle wake ups</translation>
 <translation id="1188807932851744811">Log not uploaded.</translation>
@@ -486,15 +485,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1420834118113404499">Media licences</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> to allow pairing</translation>
 <translation id="1422159345171879700">Load Unsafe Scripts</translation>
-<translation id="1423716227250567100">This action will:
-          <ph name="LINE_BREAKS" />
-           • Reset Chrome settings and Chrome shortcuts
-           <ph name="LINE_BREAK" />
-           • Disable extensions
-           <ph name="LINE_BREAK" />
-           • Delete cookies and other temporary site data
-            <ph name="LINE_BREAKS" />
-           Bookmarks, history and saved passwords won't be affected.</translation>
 <translation id="1425040197660226913">Can't upload. Use an image smaller than 20 MB.</translation>
 <translation id="1426410128494586442">Yes</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> is blocked</translation>
@@ -1683,7 +1673,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2398546389094871088">Powerwashing your device won't remove your eSIM profiles. Go to <ph name="LINK_BEGIN" />Mobile settings<ph name="LINK_END" /> to manually remove these profiles.</translation>
 <translation id="2399699884460174994">Notifications turned on</translation>
 <translation id="2399939490305346086">Security key sign-in data</translation>
-<translation id="2400323785194108001">Never deactivate this site</translation>
 <translation id="2400664245143453337">Immediate update required</translation>
 <translation id="2402226831639195063">Tones</translation>
 <translation id="2406153734066939945">Delete this profile and its data?</translation>
@@ -2956,7 +2945,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="354060433403403521">AC adaptor</translation>
 <translation id="354068948465830244">This can read and change site data</translation>
 <translation id="3541823293333232175">Assigned</translation>
-<translation id="354204985370574425">Never deactivate this site</translation>
 <translation id="3543393733900874979">Update failed (error: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">X9.62 ECDSA Signature with SHA-512</translation>
 <translation id="3544058026430919413">A company can define a group of sites that can use cookies to share your activity in the group. This is off in Incognito.</translation>
@@ -2998,7 +2986,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3582299299336701326">Turn light screens dark, and dark screens light. Press Search + Ctrl + H to turn colour inversion on and off.</translation>
 <translation id="3584169441612580296">Read and change photos, music and other media from your computer</translation>
 <translation id="3584527007414070635">Resume your journey for <ph name="MODULE_TITLE" /></translation>
-<translation id="3586787825263265024">The application <ph name="APPLICATION_NAME" /> requires OneDrive to be available.</translation>
 <translation id="3586806079541226322">Can't open this file</translation>
 <translation id="3586931643579894722">Hide details</translation>
 <translation id="3587438013689771191">Learn more about: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4281,7 +4268,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4699357559218762027">(auto-launched)</translation>
 <translation id="4701025263201366865">Parent sign-in</translation>
 <translation id="4701335814944566468">Viewed yesterday</translation>
-<translation id="4705624512518230041">Can't open <ph name="FILE_NAMES" /> when OneDrive is not available</translation>
 <translation id="470644585772471629">Colour inversion</translation>
 <translation id="4707337002099455863">Always on All Sites</translation>
 <translation id="4708849949179781599">Quit <ph name="PRODUCT_NAME" /></translation>
@@ -7753,7 +7739,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="783229689197954457">If Google finds a discount, you will see it on this page</translation>
 <translation id="7833720883933317473">Saved custom words will appear here</translation>
 <translation id="7835178595033117206">Bookmark removed</translation>
-<translation id="7836535163829106376">Can't open the URL for <ph name="FILE_NAMES" /></translation>
 <translation id="7836577093182643605">List of topics that you blocked that you don't want shared with sites</translation>
 <translation id="7836850009646241041">Try touching your security key again</translation>
 <translation id="7837290304480415481">Manage permissions and settings</translation>

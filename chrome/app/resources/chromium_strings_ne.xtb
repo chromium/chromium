@@ -131,7 +131,6 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> अहिले यो Chromium प्रोफाइलमा साइन इन हुनुहुन्छ। तपाईंले ब्राउज गर्ने डेटा गोप्य राख्न Chromium ले तपाईंका निम्ति छुट्टै प्रोफाइल बनाइदिन सक्छ।</translation>
 <translation id="391789666908693569"><ph name="MANAGER_NAME" /> तपाईंको खाता व्यवस्थापन गर्नुहुन्छ। तपाईंका एड्मिन यो Chromium ब्राउजर प्रोफाइल र यसका बुकमार्क, इतिहास तथा पासवर्डलगायतका डेटा हेर्न तथा परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="3945058413678539331">Chromium ले पासवर्ड प्रतिलिपि गर्ने प्रयास गरिरहेको छ। यसो गर्ने अनुमति दिन Windows को आफ्नो पासवर्ड टाइप गर्नुहोस्।</translation>
-<translation id="3962623956404948996">यो फाइल हानिकारक हुन सक्ने भएकाले Chromium ले यो फाइल स्क्यान गर्न सिफारिस गर्छ</translation>
 <translation id="3997429360543082038">ChromiumOS का बारेमा</translation>
 <translation id="4019629340646866719">ChromiumOS पनि <ph name="BEGIN_LINK_LINUX_OSS" />Linux डेभलपमेन्ट इनभारमेन्ट<ph name="END_LINK_LINUX_OSS" /> जस्तै अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />खुला स्रोत सफ्टवेयर<ph name="END_LINK_CROS_OSS" /> प्रयोग गरी निर्माण गरिएको हो।</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />हालका सेटिङहरू <ph name="END_LINK" /> को रिपोर्ट गरेर Chromium लाई अझ राम्रो बनाउन मद्दत गर्नुहोस्</translation>

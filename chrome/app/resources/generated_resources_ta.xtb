@@ -222,7 +222,6 @@
 <translation id="1181037720776840403">அகற்று</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> இல்</translation>
 <translation id="1183237619868651138">அக தற்காலிகச் சேமிப்பில் <ph name="EXTERNAL_CRX_FILE" />ஐ நிறுவ முடியாது.</translation>
-<translation id="1184709369107246085"><ph name="APPLICATION_NAME" /> ஆப்ஸிற்குச் சரியான <ph name="APPLICATION_NAME" /> URL தேவை.</translation>
 <translation id="1185924365081634987">இந்த நெட்வொர்க் பிழையைச் சரிசெய்ய, <ph name="GUEST_SIGNIN_LINK_START" />கெஸ்டாக உலாவவும்<ph name="GUEST_SIGNIN_LINK_END" /> முயற்சி செய்யலாம்.</translation>
 <translation id="1187722533808055681">செயல்படாமல் இருக்கும் நினைவூட்டல்கள்</translation>
 <translation id="1188807932851744811">பதிவு பதிவேற்றப்படவில்லை.</translation>
@@ -486,15 +485,6 @@
 <translation id="1420834118113404499">மீடியா உரிமங்கள்</translation>
 <translation id="1420920093772172268">இணைக்க, <ph name="TURN_ON_BLUETOOTH_LINK" />ஐ அனுமதிக்கவும்</translation>
 <translation id="1422159345171879700">பாதுகாப்பற்ற ஸ்கிரிப்ட்களை ஏற்று</translation>
-<translation id="1423716227250567100">இதனால்:
-          <ph name="LINE_BREAKS" />
-           • Chrome அமைப்புகளும் Chrome ஷார்ட்கட்டுகளும் மீட்டமைக்கப்படும்
-           <ph name="LINE_BREAK" />
-           • நீட்டிப்புகள் முடக்கப்படும்
-           <ph name="LINE_BREAK" />
-           • குக்கீகளும் பிற தற்காலிகத் தளத் தரவும் நீக்கப்படும்
-            <ph name="LINE_BREAKS" />
-           புக்மார்க்குகள், வரலாறு, சேமிக்கப்பட்ட கடவுச்சொற்கள் ஆகியவற்றில் எந்தப் பாதிப்பும் ஏற்படாது.</translation>
 <translation id="1425040197660226913">பதிவேற்ற முடியவில்லை. ஃபைல் 20 மெ.பை. அளவைவிடச் சிறியதாக இருக்க வேண்டும்.</translation>
 <translation id="1426410128494586442">ஆம்</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> தடுக்கப்பட்டுள்ளது</translation>
@@ -1683,7 +1673,6 @@
 <translation id="2398546389094871088">உங்கள் சாதனத்தைப் பவர்வாஷ் செய்வதால் eSIM சுயவிவரங்கள் அகற்றப்படாது. இவற்றை அகற்ற <ph name="LINK_BEGIN" />மொபைல் அமைப்புகளுக்குச்<ph name="LINK_END" /> செல்லவும்.</translation>
 <translation id="2399699884460174994">அறிவிப்புகள் இயக்கப்பட்டுள்ளன</translation>
 <translation id="2399939490305346086">பாதுகாப்பு விசைக்கான உள்நுழைவுத் தகவல்கள்</translation>
-<translation id="2400323785194108001">இந்தத் தளத்தை ஒருபோதும் முடக்காதே</translation>
 <translation id="2400664245143453337">உடனடியாகப் புதுப்பிக்கப்பட வேண்டும்</translation>
 <translation id="2402226831639195063">டோன்கள்</translation>
 <translation id="2406153734066939945">இந்தச் சுயவிவரத்தையும் இதன் தரவையும் நீக்கவா?</translation>
@@ -2956,7 +2945,6 @@
 <translation id="354060433403403521">AC அடாப்டர்</translation>
 <translation id="354068948465830244">இந்த நீட்டிப்பால் தளத் தரவைப் படிக்கவும் மாற்றவும் முடியும்</translation>
 <translation id="3541823293333232175">ஒதுக்கியது</translation>
-<translation id="354204985370574425">இந்தத் தளத்தை ஒருபோதும் முடக்காதே</translation>
 <translation id="3543393733900874979">புதுப்பிப்பு தோல்வி (பிழை: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">SHA-512 உடனான X9.62 ECDSA கையொப்பம்</translation>
 <translation id="3544058026430919413">குழுவில் உங்கள் செயல்பாடுகளைப் பகிர்ந்து கொள்ளும் வகையில், குக்கீகளைப் பயன்படுத்தக்கூடிய தளங்களின் குழுவை நிறுவனம் வரையறுக்கலாம். இந்த அம்சம் மறைநிலைப் பயன்முறையில் முடக்கப்பட்டிருக்கும்.</translation>
@@ -2998,7 +2986,6 @@
 <translation id="3582299299336701326">லைட் ஸ்கிரீன்களை டார்க்காகவும், டார்க் ஸ்கிரீன்களை லைட்டாகவும் மாற்றலாம். கலர் இன்வெர்ஷனை இயக்கவும் முடக்கவும் Search + Ctrl + H அழுத்தவும்.</translation>
 <translation id="3584169441612580296">உங்கள் கம்ப்யூட்டரிலிருந்து படங்கள், இசை மற்றும் பிற மீடியாவைப் படிக்கலாம், மாற்றலாம்</translation>
 <translation id="3584527007414070635"><ph name="MODULE_TITLE" />க்கான உங்கள் பயணத்தை மீண்டும் தொடங்குங்கள்</translation>
-<translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> ஆப்ஸைத் திறக்க OneDrive வேண்டும்.</translation>
 <translation id="3586806079541226322">இந்த ஃபைலைத் திறக்க முடியாது</translation>
 <translation id="3586931643579894722">விவரங்களை மறை</translation>
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" /> குறித்து மேலும் தெரிந்துகொள்ளலாம்</translation>
@@ -4281,7 +4268,6 @@
 <translation id="4699357559218762027">(தானாக துவக்கப்பட்டது)</translation>
 <translation id="4701025263201366865">பெற்றோர் உள்நுழைதல்</translation>
 <translation id="4701335814944566468">நேற்று பார்வையிடப்பட்டது</translation>
-<translation id="4705624512518230041">OneDrive இல்லாதபோது <ph name="FILE_NAMES" /> ஐத் திறக்க முடியாது</translation>
 <translation id="470644585772471629">கலர் இன்வெர்ஷன்</translation>
 <translation id="4707337002099455863">அனைத்துத் தளங்களுக்கும் எப்போதும் அனுமதி</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> இலிருந்து வெளியேறு</translation>
@@ -7754,7 +7740,6 @@
 <translation id="783229689197954457">அந்தத் தயாரிப்புகளுக்கான தள்ளுபடியை Google கண்டறிந்தால் அவை இந்தப் பக்கத்தில் காட்டப்படும்</translation>
 <translation id="7833720883933317473">சேமித்த பிரத்தியேக சொற்கள் இங்கே தோன்றும்</translation>
 <translation id="7835178595033117206">புக்மார்க் அகற்றப்பட்டது</translation>
-<translation id="7836535163829106376"><ph name="FILE_NAMES" />க்கான URLலைத் திறக்க முடியவில்லை</translation>
 <translation id="7836577093182643605">தளங்களுடன் பகிர விரும்பாமல் நீங்கள் தடுத்துள்ள தலைப்புகளின் பட்டியல்</translation>
 <translation id="7836850009646241041">உங்கள் பாதுகாப்பு விசையை மீண்டும் தொடவும்</translation>
 <translation id="7837290304480415481">அனுமதிகளையும் அமைப்புகளையும் நிர்வகியுங்கள்</translation>

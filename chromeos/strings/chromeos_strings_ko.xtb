@@ -740,6 +740,7 @@
 <translation id="7130438335435247835">액세스포인트 네임(APN)</translation>
 <translation id="7131634559772719176">미리 설정 확인</translation>
 <translation id="7134436342991564651">{0,plural, =1{네임서버}other{네임서버}}</translation>
+<translation id="7135814714616751706">바로가기 검색</translation>
 <translation id="7143207342074048698">연결 중</translation>
 <translation id="7144878232160441200">다시 시도</translation>
 <translation id="714876143603641390">LAN 연결</translation>
@@ -770,6 +771,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />, <ph name="RESULT_TEXT" />, Search와 Space키를 눌러 Google 검색에서 검색결과를 확인하세요.</translation>
 <translation id="7343649194310845056">네트워크 기기</translation>
+<translation id="7353413232959255829">검색 결과 <ph name="LIST_SIZE" />개 중 <ph name="LIST_POSITION" />번: <ph name="SEARCH_RESULT_TEXT" />. 바로가기로 이동하려면 Enter를 누르세요.</translation>
 <translation id="7359657277149375382">파일 형식</translation>
 <translation id="73631062356239394">진단 데이터 공유</translation>
 <translation id="7375053625150546623">EAP</translation>

@@ -131,7 +131,6 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> इस Chromium प्रोफ़ाइल में पहले से साइन इन है. आपकी निजी ब्राउज़िंग के लिए, Chromium आपकी खुद की प्रोफ़ाइल बना सकता है.</translation>
 <translation id="391789666908693569">आपके खाते को <ph name="MANAGER_NAME" /> मैनेज करता है. आपका एडमिन, इस Chromium ब्राउज़र पर प्रोफ़ाइल और उसके डेटा, जैसे कि बुकमार्क, इतिहास, और पासवर्ड को देख सकता है और उसमें बदलाव कर सकता है.</translation>
 <translation id="3945058413678539331">क्रोमियम, पासवर्ड कॉपी करने की कोशिश कर रहा है. इसकी अनुमति देने के लिए Windows का पासवर्ड डालें.</translation>
-<translation id="3962623956404948996">Chromium इस फ़ाइल को स्कैन करने का सुझाव देता है, क्योंकि यह खतरनाक हो सकती है</translation>
 <translation id="3997429360543082038">ChromiumOS के बारे में जानकारी</translation>
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux डेवलपमेंट एनवायरमेंट<ph name="END_LINK_LINUX_OSS" /> की तरह, ChromiumOS को भी अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />ओपन सोर्स सॉफ़्टवेयर<ph name="END_LINK_CROS_OSS" /> की मदद से बनाया गया है.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />अभी वाली सेटिंग<ph name="END_LINK" /> की रिपोर्ट करके क्रोमियम को बेहतर बनाने में सहायता करें</translation>

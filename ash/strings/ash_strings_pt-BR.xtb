@@ -317,6 +317,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2440978926514840421">Gravação de GIF concluída</translation>
 <translation id="2441427462554639370">A gravação foi encerrada porque há pouco espaço de armazenamento</translation>
 <translation id="24452542372838207">Expandir notificação</translation>
+<translation id="2448312741937722512">Tipo</translation>
 <translation id="2449089818483227734">Pouca bateria</translation>
 <translation id="2450205753526923158">Modo de captura de tela</translation>
 <translation id="2455994958736234930">Adicionar www. e .com à barra de endereço e abrir sites</translation>
@@ -335,6 +336,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2531025035050312891">dispositivo lento</translation>
 <translation id="2542089167727451762">Toque na imagem do seu perfil</translation>
 <translation id="254900897760075745">Copiar conteúdo selecionado para a área de transferência</translation>
+<translation id="2549985041256363841">Iniciar gravação</translation>
 <translation id="255671100581129685">O Google Assistente não está disponível para uma sessão pública.</translation>
 <translation id="256712445991462162">a lupa em área fixa</translation>
 <translation id="2573588302192866788">Falha ao conectar <ph name="NAME" /></translation>
@@ -901,6 +903,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5117590920725113268">Mostrar próximo mês</translation>
 <translation id="5121628974188116412">Ir para a parte inferior da página</translation>
 <translation id="5136175204352732067">Teclado diferente conectado</translation>
+<translation id="5145331109270917438">Data da última modificação</translation>
 <translation id="5147567197700016471">Desbloqueado</translation>
 <translation id="5150070631291639005">Config. de privacidade</translation>
 <translation id="5155897006997040331">Velocidade de leitura</translation>
@@ -1007,6 +1010,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5619862035903135339">A captura de tela foi desativada pela política do administrador</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Não foi possível verificar sua senha. Tente de novo.</translation>
+<translation id="5646376287012673985">Local</translation>
 <translation id="5648021990716966815">Entrada para microfone</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> precisa de atenção.</translation>
 <translation id="5662075790140998213">Espaço de trabalho 10</translation>
@@ -1520,6 +1524,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8001755249288974029">Selecionar o texto do cursor até o início da linha</translation>
 <translation id="8004512796067398576">Aumentar</translation>
 <translation id="8026334261755873520">Remover dados de navegação</translation>
+<translation id="8028993641010258682">Tamanho</translation>
 <translation id="8029247720646289474">Falha na conexão com o ponto de acesso</translation>
 <translation id="8029629653277878342">O PIN ou a senha são necessários para aumentar a segurança</translation>
 <translation id="8030169304546394654">Desconectado</translation>

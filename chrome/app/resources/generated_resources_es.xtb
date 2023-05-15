@@ -220,7 +220,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1181366777303791449">en <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">No se puede instalar <ph name="EXTERNAL_CRX_FILE" /> en la memoria caché local.</translation>
-<translation id="1184709369107246085">La aplicación <ph name="APPLICATION_NAME" /> requiere una URL válida de <ph name="APPLICATION_NAME" />.</translation>
 <translation id="1185924365081634987">También puedes intentar <ph name="GUEST_SIGNIN_LINK_START" />navegar como invitado<ph name="GUEST_SIGNIN_LINK_END" /> para solucionar el problema de red.</translation>
 <translation id="1187722533808055681">Activación inactiva</translation>
 <translation id="1188807932851744811">No se ha subido el registro.</translation>
@@ -484,15 +483,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1420834118113404499">Licencias de contenido multimedia</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> para permitir la vinculación</translation>
 <translation id="1422159345171879700">Cargar secuencias de comandos no seguras</translation>
-<translation id="1423716227250567100">Al realizar esta acción:
-          <ph name="LINE_BREAKS" />
-           • Se restablecerán los ajustes y las combinaciones de teclas de Chrome.
-           <ph name="LINE_BREAK" />
-           • Se inhabilitarán las extensiones.
-           <ph name="LINE_BREAK" />
-           • Se eliminarán las cookies y otros datos temporales de sitios.
-            <ph name="LINE_BREAKS" />
-           Los marcadores, el historial y las contraseñas guardadas no se verán afectados.</translation>
 <translation id="1425040197660226913">No se puede subir. Usa una imagen de menos de 20 MB.</translation>
 <translation id="1426410128494586442">Sí</translation>
 <translation id="142655739075382478">Se ha bloqueado <ph name="APP_NAME" /></translation>
@@ -1669,7 +1659,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2398546389094871088">Hacer un Powerwash a tu dispositivo no eliminará los perfiles eSIM. Ve a <ph name="LINK_BEGIN" />Configuración del móvil<ph name="LINK_END" /> para eliminarlos manualmente.</translation>
 <translation id="2399699884460174994">Notificaciones activadas</translation>
 <translation id="2399939490305346086">Datos de inicio de sesión de la llave de seguridad</translation>
-<translation id="2400323785194108001">No desactivar nunca este sitio</translation>
 <translation id="2400664245143453337">Es necesario actualizar de inmediato</translation>
 <translation id="2402226831639195063">Tonos</translation>
 <translation id="2406153734066939945">¿Eliminar este perfil y sus datos?</translation>
@@ -2942,7 +2931,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="354060433403403521">Adaptador de CA</translation>
 <translation id="354068948465830244">Puede leer y cambiar datos de sitios</translation>
 <translation id="3541823293333232175">Asignado</translation>
-<translation id="354204985370574425">No desactivar nunca este sitio</translation>
 <translation id="3543393733900874979">Se ha producido un error durante la actualización (error: <ph name="ERROR_NUMBER" />).</translation>
 <translation id="3543597750097719865">Firma X9.62 ECDSA con SHA-512</translation>
 <translation id="3544058026430919413">Una empresa puede definir un grupo de sitios que pueden usar cookies para compartir tu actividad dentro del grupo. Esta función está desactivada en el modo Incógnito.</translation>
@@ -2984,7 +2972,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3582299299336701326">Si la pantalla es clara, la oscurece. Si es oscura, la aclara. Pulsa la tecla de búsqueda + Ctrl + H para activar y desactivar la inversión de colores.</translation>
 <translation id="3584169441612580296">Leer y modificar fotos, música y otros archivos multimedia de tu ordenador</translation>
 <translation id="3584527007414070635">Reanuda tu recorrido sobre <ph name="MODULE_TITLE" /></translation>
-<translation id="3586787825263265024">La aplicación <ph name="APPLICATION_NAME" /> requiere OneDrive para estar disponible.</translation>
 <translation id="3586806079541226322">No se puede abrir el archivo</translation>
 <translation id="3586931643579894722">Ocultar detalles</translation>
 <translation id="3587438013689771191">Más información sobre <ph name="SUBPAGE_TITLE" /></translation>
@@ -4265,7 +4252,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4699357559218762027">(con inicio automático)</translation>
 <translation id="4701025263201366865">Inicio de sesión del padre o de la madre</translation>
 <translation id="4701335814944566468">Visto ayer</translation>
-<translation id="4705624512518230041">No puedes abrir <ph name="FILE_NAMES" /> si OneDrive no está disponible</translation>
 <translation id="470644585772471629">Invertir colores</translation>
 <translation id="4707337002099455863">Permitir siempre en todos los sitios</translation>
 <translation id="4708849949179781599">Salir de <ph name="PRODUCT_NAME" /></translation>
@@ -7737,7 +7723,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="783229689197954457">Si Google encuentra un descuento, lo verás en esta página.</translation>
 <translation id="7833720883933317473">Las palabras personalizadas guardadas aparecerán aquí</translation>
 <translation id="7835178595033117206">Marcador eliminado</translation>
-<translation id="7836535163829106376">No se puede abrir la URL de <ph name="FILE_NAMES" /></translation>
 <translation id="7836577093182643605">Lista de temas que has bloqueado y que no quieres que se compartan con los sitios</translation>
 <translation id="7836850009646241041">Vuelve a tocar tu llave de seguridad</translation>
 <translation id="7837290304480415481">Gestionar permisos y configuración</translation>

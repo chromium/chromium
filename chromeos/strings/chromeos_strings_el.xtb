@@ -740,6 +740,7 @@
 <translation id="7130438335435247835">Όνομα σημείου πρόσβασης (APN)</translation>
 <translation id="7131634559772719176">Επιβεβαίωση προεπιλογής</translation>
 <translation id="7134436342991564651">{0,plural, =1{Διακομιστής ονομάτων}other{Διακομιστές ονομάτων}}</translation>
+<translation id="7135814714616751706">Αναζήτηση συντομεύσεων</translation>
 <translation id="7143207342074048698">Σύνδεση</translation>
 <translation id="7144878232160441200">Επανάληψη</translation>
 <translation id="714876143603641390">Συνδεσιμότητα LAN</translation>
@@ -770,6 +771,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />. <ph name="RESULT_TEXT" />. Πατήστε το πλήκτρο αναζήτησης και το πλήκτρο διαστήματος, για να δείτε το αποτέλεσμα στην Αναζήτηση Google.</translation>
 <translation id="7343649194310845056">Συσκευές δικτύου</translation>
+<translation id="7353413232959255829">Αποτέλεσμα αναζήτησης <ph name="LIST_POSITION" /> από <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Πατήστε Enter για πλοήγηση στη συντόμευση.</translation>
 <translation id="7359657277149375382">Τύπος αρχείου</translation>
 <translation id="73631062356239394">Κοινοποίηση διαγνωστικών δεδομένων</translation>
 <translation id="7375053625150546623">EAP</translation>

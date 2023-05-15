@@ -222,7 +222,6 @@
 <translation id="1181037720776840403">移除</translation>
 <translation id="1181366777303791449">在 <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">無法在本機快取中安裝 <ph name="EXTERNAL_CRX_FILE" />。</translation>
-<translation id="1184709369107246085">需要可存取「<ph name="APPLICATION_NAME" />」網址才能使用「<ph name="APPLICATION_NAME" />」應用程式。</translation>
 <translation id="1185924365081634987">您也可以嘗試<ph name="GUEST_SIGNIN_LINK_START" />以訪客身分瀏覽<ph name="GUEST_SIGNIN_LINK_END" />，藉此修正網絡問題。</translation>
 <translation id="1187722533808055681">閒置喚醒</translation>
 <translation id="1188807932851744811">尚未上載記錄。</translation>
@@ -486,15 +485,6 @@
 <translation id="1420834118113404499">媒體授權</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />以允許配對</translation>
 <translation id="1422159345171879700">載入不安全的指令碼</translation>
-<translation id="1423716227250567100">此動作將：
-          <ph name="LINE_BREAKS" />
-           • 重設 Chrome 設定及 Chrome 快速鍵
-           <ph name="LINE_BREAK" />
-           • 停用擴充程式
-           <ph name="LINE_BREAK" />
-           • 刪除 Cookie 和其他暫存網站資料
-            <ph name="LINE_BREAKS" />
-           書籤、記錄和已儲存的密碼並不會受到影響。</translation>
 <translation id="1425040197660226913">無法上載。請使用小於 20 MB 的圖片。</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="142655739075382478">已封鎖「<ph name="APP_NAME" />」</translation>
@@ -1683,7 +1673,6 @@
 <translation id="2398546389094871088">在裝置上執行 Powerwash 並不會移除 eSIM 卡設定檔。請前往<ph name="LINK_BEGIN" />流動裝置設定<ph name="LINK_END" />手動移除這些設定檔。</translation>
 <translation id="2399699884460174994">已開啟通知</translation>
 <translation id="2399939490305346086">安全密鑰登入資料</translation>
-<translation id="2400323785194108001">永不停用此網站</translation>
 <translation id="2400664245143453337">必須立即更新</translation>
 <translation id="2402226831639195063">音調</translation>
 <translation id="2406153734066939945">要刪除此設定檔和相關資料嗎？</translation>
@@ -2956,7 +2945,6 @@
 <translation id="354060433403403521">充電火牛</translation>
 <translation id="354068948465830244">可讀取及變更網站資料</translation>
 <translation id="3541823293333232175">已指派</translation>
-<translation id="354204985370574425">永不停用此網站</translation>
 <translation id="3543393733900874979">更新失敗 (錯誤：<ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">使用 SHA-1 的 X9.62 ECDSA 簽名</translation>
 <translation id="3544058026430919413">公司可定義網站群組，指定哪些網站可使用 Cookie 分享您在群組中的活動。網站群組不會在無痕模式下啟用。</translation>
@@ -2998,7 +2986,6 @@
 <translation id="3582299299336701326">將亮螢幕調暗，並將暗螢幕調亮。按下搜尋鍵 + Ctrl + H 鍵即可開啟或關閉色彩反轉功能。</translation>
 <translation id="3584169441612580296">讀取及變更您電腦中的相片、音樂及其他媒體</translation>
 <translation id="3584527007414070635">繼續瀏覽「<ph name="MODULE_TITLE" />」</translation>
-<translation id="3586787825263265024">需要可存取 OneDrive 才能使用「<ph name="APPLICATION_NAME" />」應用程式。</translation>
 <translation id="3586806079541226322">無法開啟此檔案</translation>
 <translation id="3586931643579894722">隱藏詳情</translation>
 <translation id="3587438013689771191">進一步了解：<ph name="SUBPAGE_TITLE" /></translation>
@@ -4281,7 +4268,6 @@
 <translation id="4699357559218762027">(自動啟動)</translation>
 <translation id="4701025263201366865">家長登入</translation>
 <translation id="4701335814944566468">昨天看過</translation>
-<translation id="4705624512518230041">如果無法存取 OneDrive，系統就無法開啟「<ph name="FILE_NAMES" />」</translation>
 <translation id="470644585772471629">色彩反轉</translation>
 <translation id="4707337002099455863">一律在所有網站上執行</translation>
 <translation id="4708849949179781599">離開 <ph name="PRODUCT_NAME" /></translation>
@@ -5993,7 +5979,6 @@
 <translation id="6266532094411434237">正在連接 <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">請選取您在 <ph name="HOST_NAME" /> 的驗證憑證</translation>
 <translation id="6268252012308737255">使用 <ph name="APP" /> 開啟</translation>
-<translation id="6270309713620950855">靜音自動提醒</translation>
 <translation id="6270391203985052864">網站將可以要求向您傳送通知</translation>
 <translation id="6270770586500173387">傳送<ph name="BEGIN_LINK1" />系統和應用程式資訊<ph name="END_LINK1" />，以及<ph name="BEGIN_LINK2" />指標數據<ph name="END_LINK2" /></translation>
 <translation id="6270896861225278704">瀏覽過程資訊卡</translation>
@@ -7235,7 +7220,6 @@
 <translation id="7392118418926456391">病毒掃描失敗</translation>
 <translation id="7392915005464253525">重新開啟已關閉視窗(&amp;E)</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{已複製 1 個項目}other{已複製 {COUNT} 個項目}}</translation>
-<translation id="7393435859300249877">如果您在使用特定應用程式 (例如視像通訊應用程式) 時向已靜音的麥克風說話，系統將會顯示通知。音訊資料絕不會外洩。</translation>
 <translation id="7395774987022469191">整個螢幕畫面</translation>
 <translation id="7396017167185131589">共用資料夾將會在這裡顯示</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> 會隨著系統一併啟動，即使在所有 <ph name="PRODUCT_NAME" /> 視窗都關閉後，仍會在背景繼續執行。</translation>
@@ -7754,7 +7738,6 @@
 <translation id="783229689197954457">如果 Google 找到折扣優惠，會在此頁面上顯示</translation>
 <translation id="7833720883933317473">已儲存的自訂字詞將會在這裡顯示</translation>
 <translation id="7835178595033117206">移除咗書籤</translation>
-<translation id="7836535163829106376">無法開啟「<ph name="FILE_NAMES" />」的網址</translation>
 <translation id="7836577093182643605">您唔希望系統同網站分享呢啲主題，因此已經封鎖咗嘅主題清單</translation>
 <translation id="7836850009646241041">請嘗試再次輕觸安全密鑰</translation>
 <translation id="7837290304480415481">管理權限和設定</translation>

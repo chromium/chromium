@@ -317,6 +317,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2440978926514840421">GIF kaydı alındı</translation>
 <translation id="2441427462554639370">Diskte depolama alanı kritik düzeyde olduğundan kayıt sonlandırıldı</translation>
 <translation id="24452542372838207">Bildirimi genişlet</translation>
+<translation id="2448312741937722512">Tür</translation>
 <translation id="2449089818483227734">Pil Seviyesi Düşük</translation>
 <translation id="2450205753526923158">Ekran görüntüsü modu</translation>
 <translation id="2455994958736234930">Adres çubuğuna www. ve .com yazıp web sitesini aç</translation>
@@ -335,6 +336,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2531025035050312891">cihaz yavaş</translation>
 <translation id="2542089167727451762">Profil resminize dokunun</translation>
 <translation id="254900897760075745">Seçili içeriği panoya kopyala</translation>
+<translation id="2549985041256363841">Kaydı başlat</translation>
 <translation id="255671100581129685">Google Asistan, herkese açık oturumda kullanılamaz.</translation>
 <translation id="256712445991462162">yerleştirilmiş büyüteç</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> bağlanamadı</translation>
@@ -901,6 +903,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5117590920725113268">Sonraki ayı göster</translation>
 <translation id="5121628974188116412">Sayfanın sonuna gider</translation>
 <translation id="5136175204352732067">Farklı klavye bağlandı</translation>
+<translation id="5145331109270917438">Değiştirilme tarihi</translation>
 <translation id="5147567197700016471">Kilitli değil</translation>
 <translation id="5150070631291639005">Gizlilik ayarları</translation>
 <translation id="5155897006997040331">Okuma hızı</translation>
@@ -1007,6 +1010,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5619862035903135339">Yönetici politikası ekran görüntüsü almaya izin vermiyor</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Kimliğiniz doğrulanamadı. Tekrar deneyin.</translation>
+<translation id="5646376287012673985">Konum</translation>
 <translation id="5648021990716966815">Mikrofon jakı</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />, ilgilenmenizi gerektiriyor.</translation>
 <translation id="5662075790140998213">Masa 10</translation>
@@ -1520,6 +1524,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8001755249288974029">İmleç konumundan satırın başına kadar olan metni seç</translation>
 <translation id="8004512796067398576">Artır</translation>
 <translation id="8026334261755873520">Tarama verilerini temizle</translation>
+<translation id="8028993641010258682">Boyut</translation>
 <translation id="8029247720646289474">Hotspot bağlantısı kurulamadı</translation>
 <translation id="8029629653277878342">Daha fazla güvenlik için PIN veya şifre gerekli</translation>
 <translation id="8030169304546394654">Bağlı değil</translation>

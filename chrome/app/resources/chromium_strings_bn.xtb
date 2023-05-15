@@ -131,7 +131,6 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> আগে থেকেই এই Chromium প্রোফাইলে সাইন-ইন করে আছেন। আপনার ব্রাউজিং আলাদা করতে, Chromium আপনার জন্য প্রোফাইল তৈরি করে দিতে পারে।</translation>
 <translation id="391789666908693569"><ph name="MANAGER_NAME" /> আপনার অ্যাকাউন্ট ম্যানেজ করে। আপনার অ্যাডমিনিস্ট্রেটর এই Chromium ব্রাউজার প্রোফাইল ও বুকমার্ক, ইতিহাস এবং পাসওয়ার্ডের মতো ডেটা দেখতে ও ম্যানেজ করতে পারবেন।</translation>
 <translation id="3945058413678539331">Chromium পাসওয়ার্ড কপি করার চেষ্টা করছে। অনুমতি দিতে আপনার Windows পাসওয়ার্ড টাইপ করুন।</translation>
-<translation id="3962623956404948996">ফাইলটি বিপজ্জনক হতে পারে বলে Chromium এটি স্ক্যান করার সাজেশন দেয়</translation>
 <translation id="3997429360543082038">ChromiumOS সম্পর্কে</translation>
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ডেভেলপমেন্ট এনভায়রনমেন্ট<ph name="END_LINK_LINUX_OSS" />-এর ক্ষেত্রে যেমন করা হয়েছে, তেমনভাবে অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" />-এর মাধ্যমে ChromiumOS তৈরি করা সম্ভব হয়েছে।</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />বর্তমান সেটিংস<ph name="END_LINK" />-এর রিপোর্ট করে Chromium-কে আরও ভালো করে তুলতে সাহায্য করুন</translation>

@@ -183,6 +183,7 @@
 <translation id="1774796056689732716">Календар, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> је тренутно изабран.</translation>
 <translation id="1787955149152357925">Искључено</translation>
 <translation id="181103072419391116">Јачина сигнала <ph name="SIGNAL_STRENGTH" />, управља администратор</translation>
+<translation id="1815245884418711390">Укључите/искључите хотспот. Хотспот је искључен.</translation>
 <translation id="1816896987747843206">Ово омогућава приступ камери за све апликације и веб-сајтове са дозволом за камеру</translation>
 <translation id="1823280932251546115">Статусна трака, време <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -241,6 +242,7 @@
 <translation id="2023558322300866873">Снимање пакета можете да зауставите у сваком тренутку</translation>
 <translation id="2034971124472263449">Ипак сачувај</translation>
 <translation id="2049240716062114887">Име радне површине је промењено у <ph name="DESK_NAME" /></translation>
+<translation id="206377500836174974">Пуно</translation>
 <translation id="2064048859448024834">Преглед камере је укључен</translation>
 <translation id="2067602449040652523">Осветљеност тастатуре</translation>
 <translation id="2075520525463668108">Укључи/искључи функцију <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" /></translation>
@@ -293,6 +295,7 @@
 <translation id="2339073806695260576">Додирните дугме писаљке на полици да бисте направили белешку и снимак екрана и да бисте користили ласерски показивач или лупу.</translation>
 <translation id="2341729377289034582">Вертикални приказ је закључан</translation>
 <translation id="2345226652884463045">Притисните Enter или тастер за претрагу + размак да бисте изабрали текст за измену.</translation>
+<translation id="2349785431103945039">Прегледајте детаље хотспота. Повежите се на мобилну мрежу да бисте користили хотспот.</translation>
 <translation id="2350794187831162545">Говор на језику <ph name="LANGUAGE" /> се сада локално обрађује и ради офлајн. Можете да промените језик диктирања у Подешавањима &gt; Приступачност.</translation>
 <translation id="2352467521400612932">Подешавања писаљке</translation>
 <translation id="2354174487190027830">Активирање мреже <ph name="NAME" /></translation>
@@ -317,6 +320,7 @@
 <translation id="2440978926514840421">GIF је снимљен</translation>
 <translation id="2441427462554639370">Снимање је прекинуто због изузетно мало простора</translation>
 <translation id="24452542372838207">Прошири обавештење</translation>
+<translation id="2448312741937722512">Тип</translation>
 <translation id="2449089818483227734">Низак ниво батерије</translation>
 <translation id="2450205753526923158">Режим снимка екрана</translation>
 <translation id="2455994958736234930">Додај www. и .com на траку за адресу, па отвори веб-сајт</translation>
@@ -335,6 +339,8 @@
 <translation id="2531025035050312891">спор уређај</translation>
 <translation id="2542089167727451762">Додирните слику профила</translation>
 <translation id="254900897760075745">Копирај изабрани садржај у привремену меморију</translation>
+<translation id="2549711466868162843">Унапреди осветљеност</translation>
+<translation id="2549985041256363841">Започни снимање</translation>
 <translation id="255671100581129685">Google помоћник није доступан у јавној сесији.</translation>
 <translation id="256712445991462162">монтирана лупа екрана</translation>
 <translation id="2573588302192866788">Није успело повезивање <ph name="NAME" /></translation>
@@ -427,6 +433,7 @@
 <translation id="3009178788565917040">Излаз</translation>
 <translation id="3009958530611748826">Изаберите фолдер за чување</translation>
 <translation id="301282384882049174">Дели администратор</translation>
+<translation id="301584155502740476">Прегледајте детаље хотспота. Хотспот је искључен.</translation>
 <translation id="3018135054368884502">Премотај медијски садржај унапред</translation>
 <translation id="3033545621352269033">Укључено</translation>
 <translation id="3033912566804961911">Комбинујте са: <ph name="DESK_NAME" /></translation>
@@ -487,6 +494,7 @@
 <translation id="3291862315280588024">Премештање на почетак претходне речи</translation>
 <translation id="3294437725009624529">Гост</translation>
 <translation id="3298690094479023523">Верификација PIN-а или лозинке још увек није успела. Пробајте поново.</translation>
+<translation id="3300193645498960160">Добићете обавештење ако говорите док је звук искључен. Звук остаје на уређају.</translation>
 <translation id="3307642347673023554">Прешли сте у режим лаптопа</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ће и даље моћи да се пријави касније.</translation>
 <translation id="3321628682574733415">Нетачан кôд родитеља</translation>
@@ -570,6 +578,7 @@
 <translation id="3621202678540785336">Улаз</translation>
 <translation id="3621712662352432595">Подешавања звука</translation>
 <translation id="3626281679859535460">Осветљеност</translation>
+<translation id="3629640897379005903">Прегледајте детаље хотспота. Хотспот се онемогућава.</translation>
 <translation id="3630697955794050612">искључено</translation>
 <translation id="3631369015426612114">Дозволи обавештења из следећих извора</translation>
 <translation id="3633097874324966332">Отворите подешавања Bluetooth-а да бисте упарили уређај</translation>
@@ -702,6 +711,7 @@
 <translation id="423685346499232137">Тренутно не можете да копирате ни налепите садржај</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Режим прегледа</translation>
+<translation id="4240756737570479726">Онемогућава се…</translation>
 <translation id="4242533952199664413">Отвори подешавања</translation>
 <translation id="4247123849143712100">Ажурирај и искључи</translation>
 <translation id="4250229828105606438">Снимак екрана</translation>
@@ -840,6 +850,7 @@
 <translation id="4864369630010738180">Пријављивање...</translation>
 <translation id="4864648187878336334">Радна површина 15</translation>
 <translation id="4868492592575313542">активирано</translation>
+<translation id="4871905435473761992">Прегледајте детаље хотспота. Мобилна мрежа не подржава хотспот.</translation>
 <translation id="4872237917498892622">Alt + тастер за претрагу или Shift</translation>
 <translation id="4872852897273142380">Фокусирај или истакни траку са обележивачима (ако се види)</translation>
 <translation id="4881695831933465202">Отвори</translation>
@@ -899,9 +910,11 @@
 <translation id="5104236669533825617">Прављење видео снимка екрана није успело</translation>
 <translation id="5107522548814527560">Веб</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">Замагљена позадина</translation>
 <translation id="5117590920725113268">Прикажи следећи месец</translation>
 <translation id="5121628974188116412">Идите на дно странице</translation>
 <translation id="5136175204352732067">Нека друга тастатура је повезана</translation>
+<translation id="5145331109270917438">Датум измене</translation>
 <translation id="5147567197700016471">Откључано</translation>
 <translation id="5150070631291639005">Подешавања приватности</translation>
 <translation id="5155897006997040331">Брзина читања</translation>
@@ -910,6 +923,7 @@
 <translation id="5168181903108465623">Доступни су уређаји за пребацивање</translation>
 <translation id="5170568018924773124">Прикажи у директоријуму</translation>
 <translation id="5176318573511391780">Сними део екрана</translation>
+<translation id="5187627942836026988">Прегледајте детаље хотспота. Администратор је блокирао хотспот.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> догађаја</translation>
 <translation id="5198715732953550718">Апликација <ph name="MOVED_APP_NAME" /> је комбинована са апликацијом <ph name="IN_PLACE_APP" /> да би се направио нови фолдер.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1008,6 +1022,7 @@
 <translation id="5619862035903135339">Смернице администратора онемогућавају снимање екрана</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Верификација лозинке није успела. Пробајте поново.</translation>
+<translation id="5646376287012673985">Локација</translation>
 <translation id="5648021990716966815">Утикач за микрофон</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> захтева вашу пажњу.</translation>
 <translation id="5662075790140998213">Радна површина 10</translation>
@@ -1081,6 +1096,7 @@
 <translation id="595202126637698455">Праћење учинка је омогућено</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Корисник под надзором</translation>
+<translation id="5961960957587052807">Светло</translation>
 <translation id="5965524703725988602">Укључите/искључите тамну тему. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Притисните Enter да бисте снимили прозор</translation>
 <translation id="5978382165065462689">Делите контролу над екраном преко Даљинске помоћи.</translation>
@@ -1253,6 +1269,7 @@
 <translation id="6752912906630585008">Радна површина <ph name="REMOVED_DESK" /> је уклоњена и спојена са радном површином <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">картице</translation>
 <translation id="6757237461819837179">Медији се не репродукују</translation>
+<translation id="6759628406555734414">Прегледајте детаље хотспота. Хотспот се омогућава.</translation>
 <translation id="6768043681523654438">меморијски простор</translation>
 <translation id="6777216307882431711">Напаја повезане уређаје са USB прикључком типа C</translation>
 <translation id="6781002679438061620">Радна површина 9</translation>
@@ -1277,6 +1294,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Преостала је једна цифра}one{Преостала је # цифра}few{Преостале су # цифре}other{Преостало је # цифара}}</translation>
 <translation id="6867938213751067702">Преузимање је паузирано <ph name="FILENAME" /></translation>
+<translation id="6874854809828346832">Прегледајте детаље хотспота. Хотспот је укључен.</translation>
 <translation id="6878400149835617132">Пречица је искључена</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 апликација}one{# апликација}few{# апликације}other{# апликација}}</translation>
 <translation id="6884665277231944629">Вратите се на данас</translation>
@@ -1286,6 +1304,7 @@
 <translation id="6896758677409633944">Копирај</translation>
 <translation id="6901883536534621389">Испробајте покрете за кретање</translation>
 <translation id="6919251195245069855">Нисмо успели да препознамо паметну картицу. Пробајте поново.</translation>
+<translation id="6920245099716267363">Укључите/искључите хотспот. Хотспот је укључен, 1 уређај је повезан.</translation>
 <translation id="6931576957638141829">Сачувајте у</translation>
 <translation id="6941333068993625698">Пошаљите повратне информације</translation>
 <translation id="6942518653766415536">Мени за формат снимања</translation>
@@ -1375,6 +1394,7 @@
 <translation id="7378203170292176219">Превуците да бисте изабрали област за снимање</translation>
 <translation id="7378594059915113390">Контроле за медије</translation>
 <translation id="7378889811480108604">Режим уштеде батерије је искључен</translation>
+<translation id="7382640522316003298">Укључите/искључите хотспот. Хотспот је укључен, уређаји (<ph name="DEVICECOUNT" />) су повезани.</translation>
 <translation id="7382680553121047388">Укључено</translation>
 <translation id="7384028040782072252">Кликните десним тастером било где да бисте променили редослед апликација</translation>
 <translation id="7386767620098596324">Укључите/искључите мрежну везу. <ph name="STATE_TEXT" />.</translation>
@@ -1425,6 +1445,7 @@
 <translation id="7579778809502851308">Снимање екрана</translation>
 <translation id="7593891976182323525">Тастер за претрагу или Shift</translation>
 <translation id="7600875258240007829">Погледајте сва обавештења</translation>
+<translation id="7601417191446344542">Желите ли да укључите аутоматски подсетник у нечујном режиму?</translation>
 <translation id="7607002721634913082">Паузирано</translation>
 <translation id="7609951632080598826">Приказ календара, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камера је поново повезана.</translation>
@@ -1521,6 +1542,7 @@
 <translation id="8001755249288974029">Изабери текст од курсора до почетка реда</translation>
 <translation id="8004512796067398576">Повећање</translation>
 <translation id="8026334261755873520">Обришите податке прегледања</translation>
+<translation id="8028993641010258682">Величина</translation>
 <translation id="8029247720646289474">Повезивање са хотспотом није успело</translation>
 <translation id="8029629653277878342">Треба да унесете PIN или лозинку ради додатне безбедности</translation>
 <translation id="8030169304546394654">Веза је прекинута</translation>
@@ -1547,6 +1569,7 @@
 <translation id="8131740175452115882">Потврди</translation>
 <translation id="8131994907636310308">Затворите повратну поруку за сортирање</translation>
 <translation id="8132793192354020517">Успостављена је веза са <ph name="NAME" /></translation>
+<translation id="8135163608236671037">Укључите/искључите хотспот. Хотспот је укључен, али ниједан уређај није повезан.</translation>
 <translation id="8138705869659070104">Активирај после подешавања</translation>
 <translation id="813913629614996137">Покреће се…</translation>
 <translation id="8142441511840089262">Двоструки клик</translation>
@@ -1727,6 +1750,7 @@
 <translation id="8990809378771970590">Користи се <ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">Режим инверзије боја је омогућен. Поново притисните Ctrl + тастер за претрагу + H да бисте га искључили.</translation>
 <translation id="899350903320462459">Откључајте уређај помоћу ИД-а пријављивања <ph name="LOGIN_ID" /> да бисте добили обавештење</translation>
+<translation id="8993733019280019776">Да ли причате? Микрофон је искључен. Изаберите микрофон да бисте га укључили.</translation>
 <translation id="9000771174482730261">УПРАВЉАЈТЕ МЕМОРИЈСКИМ ПРОСТОРОМ</translation>
 <translation id="9005984960510803406">Отворите Crosh прозор</translation>
 <translation id="9017320285115481645">Унесите приступни кôд родитеља за Family Link.</translation>

@@ -317,6 +317,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2440978926514840421">Nag-record ng GIF</translation>
 <translation id="2441427462554639370">Natapos ang pag-record dahil sa sobrang kaunting storage space</translation>
 <translation id="24452542372838207">Palawakin ang notification</translation>
+<translation id="2448312741937722512">Uri</translation>
 <translation id="2449089818483227734">Mahinang Baterya</translation>
 <translation id="2450205753526923158">Screenshot mode</translation>
 <translation id="2455994958736234930">Magdagdag ng www. at .com sa address bar, pagkatapos ay buksan ang website</translation>
@@ -335,6 +336,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2531025035050312891">mabagal ang device</translation>
 <translation id="2542089167727451762">I-tap ang iyong larawan sa profile</translation>
 <translation id="254900897760075745">Kopyahin ang napiling content sa clipboard</translation>
+<translation id="2549985041256363841">Simulang mag-record</translation>
 <translation id="255671100581129685">Hindi available ang Google Assistant sa isang pampublikong session.</translation>
 <translation id="256712445991462162">ang naka-dock na magnifier</translation>
 <translation id="2573588302192866788">Hindi maikonekta ang <ph name="NAME" /></translation>
@@ -901,6 +903,7 @@ Isaksak ang iyong device.</translation>
 <translation id="5117590920725113268">Ipakita ang susunod na buwan</translation>
 <translation id="5121628974188116412">Pumunta sa pinakababa ng page</translation>
 <translation id="5136175204352732067">Ibang keyboard ang nakakonekta</translation>
+<translation id="5145331109270917438">Petsa ng pagbabago</translation>
 <translation id="5147567197700016471">Na-unlock na</translation>
 <translation id="5150070631291639005">Mga setting ng privacy</translation>
 <translation id="5155897006997040331">Bilis ng pagbabasa</translation>
@@ -1007,6 +1010,7 @@ Isaksak ang iyong device.</translation>
 <translation id="5619862035903135339">Dini-disable ng patakaran ng administrator ang screen capture</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Hindi ma-verify ang iyong password. Subukan ulit.</translation>
+<translation id="5646376287012673985">Lokasyon</translation>
 <translation id="5648021990716966815">Jack ng mikropono</translation>
 <translation id="5652575806481723716">Hinihiling ng <ph name="FOCUSED_APP_NAME" /> ang iyong atensyon.</translation>
 <translation id="5662075790140998213">Desk 10</translation>
@@ -1520,6 +1524,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8001755249288974029">I-highlight ang text mula sa cursor hanggang sa simula ng linya</translation>
 <translation id="8004512796067398576">Taasan</translation>
 <translation id="8026334261755873520">I-clear ang data sa pag-browse</translation>
+<translation id="8028993641010258682">Laki</translation>
 <translation id="8029247720646289474">Hindi nakakonekta sa hotspot</translation>
 <translation id="8029629653277878342">Kinakailangan ang PIN o password para sa higit pang seguridad</translation>
 <translation id="8030169304546394654">Naalis sa pagkakakonekta</translation>

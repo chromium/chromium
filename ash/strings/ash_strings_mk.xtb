@@ -317,6 +317,7 @@
 <translation id="2440978926514840421">GIF-датотеката е снимена</translation>
 <translation id="2441427462554639370">Снимањето заврши бидејќи речиси нема простор за складирање на дискот</translation>
 <translation id="24452542372838207">Прошири го известувањето</translation>
+<translation id="2448312741937722512">Тип</translation>
 <translation id="2449089818483227734">Слаба батерија</translation>
 <translation id="2450205753526923158">Режим на слика од екранот</translation>
 <translation id="2455994958736234930">Додава www. и .com во лентата за адреси, па го отвора веб-сајтот</translation>
@@ -335,6 +336,7 @@
 <translation id="2531025035050312891">уредот е бавен</translation>
 <translation id="2542089167727451762">Допрете ја сликата на профилот</translation>
 <translation id="254900897760075745">Ги копира избраните содржини во привремената меморија</translation>
+<translation id="2549985041256363841">Започни со снимање</translation>
 <translation id="255671100581129685">„Помошникот на Google“ не е достапен во јавна сесија.</translation>
 <translation id="256712445991462162">закотвена лупа</translation>
 <translation id="2573588302192866788">Не можеше да се поврзе <ph name="NAME" /></translation>
@@ -902,6 +904,7 @@
 <translation id="5117590920725113268">Прикажи го следниот месец</translation>
 <translation id="5121628974188116412">Одете најдолу на страницата</translation>
 <translation id="5136175204352732067">Поврзана е друга тастатура</translation>
+<translation id="5145331109270917438">Датум на промена</translation>
 <translation id="5147567197700016471">Отклучено</translation>
 <translation id="5150070631291639005">Поставки за приватност</translation>
 <translation id="5155897006997040331">Брзина на читање</translation>
@@ -1008,6 +1011,7 @@
 <translation id="5619862035903135339">Администраторското правило оневозможува снимање на екранот</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Не можеше да се потврди лозинката. Обидете се повторно.</translation>
+<translation id="5646376287012673985">Локација</translation>
 <translation id="5648021990716966815">Приклучок за микрофон</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> го бара вашето внимание.</translation>
 <translation id="5662075790140998213">Работна површина 10</translation>
@@ -1521,6 +1525,7 @@
 <translation id="8001755249288974029">Го избира текстот од курсорот до почетокот на линијата</translation>
 <translation id="8004512796067398576">Зголемување</translation>
 <translation id="8026334261755873520">Исчисти податоци од прелистување</translation>
+<translation id="8028993641010258682">Големина</translation>
 <translation id="8029247720646289474">Поврзувањето со точка на пристап не успеа</translation>
 <translation id="8029629653277878342">Потребен е PIN или лозинка за поголема безбедност</translation>
 <translation id="8030169304546394654">Не е поврзано</translation>

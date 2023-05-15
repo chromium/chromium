@@ -317,6 +317,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2440978926514840421">GIF został nagrany</translation>
 <translation id="2441427462554639370">Nagrywanie zostało zakończone z powodu krytycznie małej ilości dostępnego miejsca</translation>
 <translation id="24452542372838207">Rozwiń powiadomienie</translation>
+<translation id="2448312741937722512">Typ</translation>
 <translation id="2449089818483227734">Słaba bateria</translation>
 <translation id="2450205753526923158">Tryb zrzutu ekranu</translation>
 <translation id="2455994958736234930">Dodaj na pasku adresu www. i .com, a następnie otwórz witrynę</translation>
@@ -335,6 +336,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2531025035050312891">wolne urządzenie</translation>
 <translation id="2542089167727451762">Kliknij swoje zdjęcie profilowe</translation>
 <translation id="254900897760075745">Skopiuj wybraną treść do schowka</translation>
+<translation id="2549985041256363841">Zacznij nagrywanie</translation>
 <translation id="255671100581129685">Asystent Google jest niedostępny w sesji publicznej.</translation>
 <translation id="256712445991462162">Lupa zadokowana</translation>
 <translation id="2573588302192866788">Nie udało się połączyć z urządzeniem <ph name="NAME" /></translation>
@@ -901,6 +903,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5117590920725113268">Pokaż przyszły miesiąc</translation>
 <translation id="5121628974188116412">Przejdź na dół strony</translation>
 <translation id="5136175204352732067">Podłączono inną klawiaturę</translation>
+<translation id="5145331109270917438">Data modyfikacji</translation>
 <translation id="5147567197700016471">Odblokowano</translation>
 <translation id="5150070631291639005">Ustawienia prywatności</translation>
 <translation id="5155897006997040331">Szybkość czytania</translation>
@@ -1007,6 +1010,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5619862035903135339">Możliwość robienia zrzutów ekranu jest wyłączona przez zasadę administratora</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Nie udało się zweryfikować Twojego hasła. Spróbuj ponownie.</translation>
+<translation id="5646376287012673985">Lokalizacja</translation>
 <translation id="5648021990716966815">Gniazdo mikrofonu</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> wymaga Twojej reakcji.</translation>
 <translation id="5662075790140998213">Biurko 10</translation>
@@ -1519,6 +1523,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8001755249288974029">Zaznacz tekst od kursora do początku wiersza</translation>
 <translation id="8004512796067398576">Zwiększ</translation>
 <translation id="8026334261755873520">Wyczyść dane przeglądania</translation>
+<translation id="8028993641010258682">Rozmiar</translation>
 <translation id="8029247720646289474">Nie udało się nawiązać połączenia z hotspotem</translation>
 <translation id="8029629653277878342">Dla większego bezpieczeństwa musisz podać kod PIN lub hasło</translation>
 <translation id="8030169304546394654">Rozłączone</translation>

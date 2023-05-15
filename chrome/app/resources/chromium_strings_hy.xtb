@@ -133,7 +133,6 @@
 <translation id="390528597099634151"><ph name="EXISTING_USER" />-ն արդեն մուտք է գործել Chromium-ի այս պրոֆիլը։ Ձեր դիտարկումների պատմությունն առանձին պահելու համար կարող եք Chromium-ի առանձին պրոֆիլ ստեղծել։</translation>
 <translation id="391789666908693569">Ձեր հաշիվը պատկանում է <ph name="MANAGER_NAME" /> տիրույթին: Ձեր ադմինիստրատորը կարող է տեսնել և խմբագրել Chromium դիտարկիչի այս պրոֆիլը և դրա տվյալները, օրինակ՝ էջանիշները, պատմությունը և գաղտնաբառերը։</translation>
 <translation id="3945058413678539331">Chromium-ը փորձում է պատճենել գաղտնաբառերը: Թույլատրելու համար մուտքագրեք Windows-ի ձեր գաղտնաբառը:</translation>
-<translation id="3962623956404948996">Chromium-ը խորհուրդ է տալիս ստուգել այս ֆայլը, քանի որ այն կարող է վտանգավոր լինել</translation>
 <translation id="3997429360543082038">ChromiumOS-ի մասին</translation>
 <translation id="4019629340646866719">ChromiumOS-ը ստեղծվել է <ph name="BEGIN_LINK_CROS_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_CROS_OSS" /> հիման վրա, ինչպիսին է <ph name="BEGIN_LINK_LINUX_OSS" />Լինուքսի մշակման միջավայրը<ph name="END_LINK_LINUX_OSS" />։</translation>
 <translation id="4036079820698952681">Օգնեք կատարելագործել Chromium-ը՝ հաղորդելով <ph name="BEGIN_LINK" />ընթացիկ կարգավորումների<ph name="END_LINK" /> մասին</translation>

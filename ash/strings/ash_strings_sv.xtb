@@ -94,6 +94,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1346748346194534595">Höger</translation>
 <translation id="1351937230027495976">Komprimera menyn</translation>
 <translation id="1360220746312242196">Gå till föregående matchning för sökningen när du söker på en sida</translation>
+<translation id="1360788414852622716">Profilen inaktiveras. Det kan ta några minuter.</translation>
 <translation id="1364382257761975320">Använd ditt fingeravtryck om du vill låsa upp Chromebook</translation>
 <translation id="1365866993922957110">Få automatiska uppdateringar</translation>
 <translation id="1372545819342940910">Spara skrivbordet till senare</translation>
@@ -317,6 +318,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2440978926514840421">GIF-inspelningen har tagits</translation>
 <translation id="2441427462554639370">Inspelningen avslutades eftersom det är mycket ont om lagringsutrymme</translation>
 <translation id="24452542372838207">Utöka avisering</translation>
+<translation id="2448312741937722512">Typ</translation>
 <translation id="2449089818483227734">Låg batterinivå</translation>
 <translation id="2450205753526923158">Skärmbildsläge</translation>
 <translation id="2455994958736234930">Lägg till www. och .com i adressfältet och öppna sedan webbplatsen</translation>
@@ -335,6 +337,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2531025035050312891">långsam enhet</translation>
 <translation id="2542089167727451762">Tryck på profilbilden</translation>
 <translation id="254900897760075745">Kopiera markerat innehåll till Urklipp</translation>
+<translation id="2549985041256363841">Börja spela in</translation>
 <translation id="255671100581129685">Google-assistenten är inte tillgänglig i en offentlig session.</translation>
 <translation id="256712445991462162">den dockade skärmförstoraren</translation>
 <translation id="2573588302192866788">Det gick inte att ansluta <ph name="NAME" /></translation>
@@ -537,6 +540,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3510164367642747937">Markera muspekaren</translation>
 <translation id="3513798432020909783">Kontot hanteras av <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Uppdatera enheten inom 1 minut}other{Uppdatera enheten inom # minuter}}</translation>
+<translation id="3522979239100719575">Söker efter tillgängliga profiler. Det kan ta några minuter.</translation>
 <translation id="3526440770046466733">Öppna länken i en ny flik och stanna kvar på den aktuella fliken</translation>
 <translation id="353086728817903341">Ansluten till <ph name="NUM_DEVICES" /> enheter</translation>
 <translation id="3533126039236445965">Appar på hyllan</translation>
@@ -901,6 +905,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5117590920725113268">Visa nästa månad</translation>
 <translation id="5121628974188116412">Till längst ned på sidan</translation>
 <translation id="5136175204352732067">Ett annat tangentbord har anslutits</translation>
+<translation id="5145331109270917438">Ändringsdatum</translation>
 <translation id="5147567197700016471">Olåst</translation>
 <translation id="5150070631291639005">Integritetsinställningar</translation>
 <translation id="5155897006997040331">Läshastighet</translation>
@@ -1007,6 +1012,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5619862035903135339">Skärmbild inaktiveras av en administratörspolicy</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Det gick inte att verifiera lösenordet. Försök igen.</translation>
+<translation id="5646376287012673985">Plats</translation>
 <translation id="5648021990716966815">Mikrofonuttag</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> begär din uppmärksamhet.</translation>
 <translation id="5662075790140998213">Skrivbord 10</translation>
@@ -1520,6 +1526,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8001755249288974029">Markera text från markören till början av raden</translation>
 <translation id="8004512796067398576">Öka</translation>
 <translation id="8026334261755873520">Rensa webbinformation</translation>
+<translation id="8028993641010258682">Storlek</translation>
 <translation id="8029247720646289474">Anslutning via surfzon misslyckades</translation>
 <translation id="8029629653277878342">Pinkod eller lösenord krävs för större säkerhet</translation>
 <translation id="8030169304546394654">Frånkopplad</translation>
@@ -1535,6 +1542,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8083540854303889870">Har sparats till senare</translation>
 <translation id="8091153018031979607">Börjar kl. <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatiska uppdateringar</translation>
+<translation id="8092380135549145188">Scrollningskontroller</translation>
 <translation id="8098591350844501178">Sluta casta skärmen till <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Lossa appen från hyllan</translation>
 <translation id="8113423164597455979">Alla appar på</translation>

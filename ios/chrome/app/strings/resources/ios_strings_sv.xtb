@@ -535,6 +535,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4592368184551360546">Tangentbord</translation>
 <translation id="4606247758155004938">Webbläsaren hanteras av din organisation.</translation>
 <translation id="461440297010471931">Söker med Google</translation>
+<translation id="4616391354457235490">Ångra</translation>
 <translation id="4619564267100705184">Verifiera din identitet</translation>
 <translation id="4619615317237390068">Flikar från andra enheter</translation>
 <translation id="4620246317052452550">Sidor du har läst</translation>
@@ -657,7 +658,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5423269318075950257">Bevaka pris</translation>
 <translation id="543338862236136125">Redigera lösenord</translation>
 <translation id="5433691172869980887">Användarnamnet har kopierats</translation>
-<translation id="5439599923922718668">Mest besökta</translation>
 <translation id="5439618055789623719">Inloggad som <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Sidans säkerhetsinfo</translation>
 <translation id="5443952882982198570">Kreditkort</translation>
@@ -852,6 +852,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 
 Sträva efter att använda ett unikt lösenord för varje webbplats.</translation>
 <translation id="650279896687777322">Läs mer …</translation>
+<translation id="6507973708545996744">Logga in om du vill ha läslistan på alla dina enheter.</translation>
 <translation id="6510072653668207258">Påminn mig senare</translation>
 <translation id="651505212789431520">Vill du avbryta synkroniseringen? Du kan när som helst aktivera synkronisering i inställningarna.</translation>
 <translation id="6518133107902771759">Verifiera</translation>

@@ -317,6 +317,7 @@
 <translation id="2440978926514840421">GIF の録画が完了しました</translation>
 <translation id="2441427462554639370">保存容量が非常に少なくなっているため、録画を終了しました</translation>
 <translation id="24452542372838207">通知を展開</translation>
+<translation id="2448312741937722512">種類</translation>
 <translation id="2449089818483227734">バッテリー残量が少なくなっています</translation>
 <translation id="2450205753526923158">スクリーンショット モード</translation>
 <translation id="2455994958736234930">アドレスバーに「www.」と「.com」を追加してからウェブサイトを開く</translation>
@@ -335,6 +336,7 @@
 <translation id="2531025035050312891">デバイスの動作が遅い</translation>
 <translation id="2542089167727451762">プロフィール画像をタップしてください</translation>
 <translation id="254900897760075745">選択した内容をクリップボードにコピーする</translation>
+<translation id="2549985041256363841">撮影を開始</translation>
 <translation id="255671100581129685">Google アシスタントは、公開セッションではご利用いただけません。</translation>
 <translation id="256712445991462162">ドッキング拡大鏡</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> を接続できませんでした</translation>
@@ -901,6 +903,7 @@
 <translation id="5117590920725113268">次の月を表示</translation>
 <translation id="5121628974188116412">ページの一番下に移動する</translation>
 <translation id="5136175204352732067">別のキーボードが接続されています</translation>
+<translation id="5145331109270917438">更新日</translation>
 <translation id="5147567197700016471">ロック解除済み</translation>
 <translation id="5150070631291639005">プライバシー設定</translation>
 <translation id="5155897006997040331">読み上げ速度</translation>
@@ -1007,6 +1010,7 @@
 <translation id="5619862035903135339">管理者が設定したポリシーにより、スクリーン キャプチャは無効になっています</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">パスワードを確認できませんでした。もう一度お試しください。</translation>
+<translation id="5646376287012673985">保存先</translation>
 <translation id="5648021990716966815">マイク差込口</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> から通知が届いています。</translation>
 <translation id="5662075790140998213">デスク 10</translation>
@@ -1054,7 +1058,7 @@
 <translation id="5841296711770970362">次のトラックに移動する</translation>
 <translation id="584525477304726060">長押しして最大化</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> が無効です。</translation>
-<translation id="5860033963881614850">オフ</translation>
+<translation id="5860033963881614850">OFF</translation>
 <translation id="5860491529813859533">オンにする</translation>
 <translation id="5867217927013474703">ネットワーク情報を収集しています</translation>
 <translation id="5867606971598166637">システム管理者が画面をモニタリングしています</translation>
@@ -1071,7 +1075,7 @@
 <translation id="5909862606227538307">アクティブでないデスクです。</translation>
 <translation id="5911231045062997865">Lacros ウィンドウは現在サポートされていません。他のアプリは保存されます。</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" />（<ph name="MAIL" />）</translation>
-<translation id="5916664084637901428">オン</translation>
+<translation id="5916664084637901428">ON</translation>
 <translation id="5920710855273935292">マイクはミュートです。</translation>
 <translation id="5922962980596822074">最近使用したウィンドウからウィンドウを表示する</translation>
 <translation id="5924855612669061715">アクセス ポイントはオンです</translation>
@@ -1521,6 +1525,7 @@
 <translation id="8001755249288974029">カーソル位置から行頭までのテキストを選択する</translation>
 <translation id="8004512796067398576">増やす</translation>
 <translation id="8026334261755873520">閲覧履歴データの削除</translation>
+<translation id="8028993641010258682">サイズ</translation>
 <translation id="8029247720646289474">アクセス ポイント接続エラー</translation>
 <translation id="8029629653277878342">セキュリティ強化のため PIN またはパスワードが必要です</translation>
 <translation id="8030169304546394654">切断済み</translation>

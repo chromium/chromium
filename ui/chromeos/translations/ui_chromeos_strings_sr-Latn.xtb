@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Nema nedavnih video snimaka</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, upravlja administrator, detalji</translation>
 <translation id="3645233063072417428">Premeštenih stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
+<translation id="3658269352872031728">Izabranih fajlova: <ph name="SELECTED_FILE_COUNT" /></translation>
 <translation id="3685122418104378273">Sinhronizacija sa Google diskom je podrazumevano onemogućena kada se koristi mobilna veza za prenos podataka.</translation>
 <translation id="3689865792480713551">Otkažite <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, nije aktivirana, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, detalji</translation>
@@ -577,6 +578,7 @@
 <translation id="5533102081734025921">Slika <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Izračunavanje veličine</translation>
 <translation id="554153475311314364">grčki, transliteracija</translation>
+<translation id="5554171655917412781">Izabranih foldera: <ph name="SELECTED_FOLDERS_COUNT" /></translation>
 <translation id="5580591966435005537">virtuelna mašina</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Širina znakova interpunkcije je puna</translation>
@@ -599,6 +601,7 @@
 <translation id="5724172041621205163">tajski sa patašote tastaturom</translation>
 <translation id="57383366388012121">Prošlog meseca</translation>
 <translation id="5756666464756035725">Mađarska QWERTY</translation>
+<translation id="5760252553414789727">Izabranih stavki: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">nemački (Švajcarska)</translation>
 <translation id="5769519078756170258">Host ili domen za izuzimanje</translation>
 <translation id="5775750595919327203">urdu</translation>

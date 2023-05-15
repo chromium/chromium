@@ -320,6 +320,7 @@
 <translation id="2440978926514840421">GIF रेकर्ड गरिएको छ</translation>
 <translation id="2441427462554639370">भण्डारणमा अत्यन्तै कम खाली ठाउँ भएकाले रेकर्डिङ बन्द भयो</translation>
 <translation id="24452542372838207">सूचना विस्तृत गर्नुहोस्‌</translation>
+<translation id="2448312741937722512">प्रकार</translation>
 <translation id="2449089818483227734">ब्याट्री कम छ</translation>
 <translation id="2450205753526923158">स्क्रिनसट मोड</translation>
 <translation id="2455994958736234930">एड्रेस बारमा www. र .com हाल्नुहोस् अनि वेबसाइट खोल्नुहोस्</translation>
@@ -339,6 +340,7 @@
 <translation id="2542089167727451762">आफ्नो प्रोफाइल छविमा ट्याप गर्नुहोस्</translation>
 <translation id="254900897760075745">चयन गरिएको सामग्री क्लिपबोर्डमा कपी गर्नुहोस्</translation>
 <translation id="2549711466868162843">प्रकाशको गुणस्तर सुधार गरियोस्</translation>
+<translation id="2549985041256363841">रेकर्डिङ सुरु गर्नुहोस्</translation>
 <translation id="255671100581129685">Google सहायक सार्वजनिक सत्रमा उपलब्ध छैन।</translation>
 <translation id="256712445991462162">डक गरिएको म्याग्निफायर</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> कनेक्ट गर्न सकिएन</translation>
@@ -911,6 +913,7 @@
 <translation id="5117590920725113268">अर्को महिना देखाउनुहोस्</translation>
 <translation id="5121628974188116412">पृष्ठको फेदमा जानुहोस्‌</translation>
 <translation id="5136175204352732067">भिन्न किबोर्ड जडान गरियो</translation>
+<translation id="5145331109270917438">मिति परिमार्जित</translation>
 <translation id="5147567197700016471">अनलक गरिएको छ</translation>
 <translation id="5150070631291639005">गोपनीयतासम्बन्धी सेटिङ</translation>
 <translation id="5155897006997040331">पढ्ने गति</translation>
@@ -1018,6 +1021,7 @@
 <translation id="5619862035903135339">एड्मिनले तोक्नुभएको नीतिअनुसार स्क्रिन क्याप्चर गर्ने सुविधा अफ गरिन्छ</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">तपाईंको पासवर्ड पुष्टि गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="5646376287012673985">लोकेसन</translation>
 <translation id="5648021990716966815">माइकको ज्याक</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> तपाईंको ध्यानाकर्षण गराउन चाहन्छ।</translation>
 <translation id="5662075790140998213">डेस्क १०</translation>
@@ -1537,6 +1541,7 @@
 <translation id="8001755249288974029">कर्सरबाट लाइनको सुरुसम्मको टेक्स्ट चयन गर्नुहोस्</translation>
 <translation id="8004512796067398576">बृद्धि</translation>
 <translation id="8026334261755873520">ब्राउजिङ लगत खालि गर्नुहोस्</translation>
+<translation id="8028993641010258682">आकार</translation>
 <translation id="8029247720646289474">हटस्पटमा कनेक्ट गर्न सकिएन</translation>
 <translation id="8029629653277878342">थप सुरक्षाका लागि PIN वा पासवर्ड चाहिन्छ</translation>
 <translation id="8030169304546394654">जडान विच्छेद भयो</translation>

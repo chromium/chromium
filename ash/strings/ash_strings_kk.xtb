@@ -317,6 +317,7 @@
 <translation id="2440978926514840421">GIF жазбасы алынды</translation>
 <translation id="2441427462554639370">Жад көлемінің аз болуына байланысты жазу тоқтатылды.</translation>
 <translation id="24452542372838207">Хабарландыруды жаю</translation>
+<translation id="2448312741937722512">Түрі</translation>
 <translation id="2449089818483227734">Батарея заряды аз</translation>
 <translation id="2450205753526923158">Скриншот режимі</translation>
 <translation id="2455994958736234930">Мекенжай жолағына www. және .com қосып, веб-сайтты ашу</translation>
@@ -335,6 +336,7 @@
 <translation id="2531025035050312891">құрылғы баяу</translation>
 <translation id="2542089167727451762">Профиль суретіңізді түртіңіз.</translation>
 <translation id="254900897760075745">Таңдалған мазмұнды буферге көшіру</translation>
+<translation id="2549985041256363841">Бейнеге түсіруді бастау</translation>
 <translation id="255671100581129685">Google Assistant баршаға ашық сеанста жұмыс істемейді.</translation>
 <translation id="256712445991462162">бекітілген ұлғайтқыш</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> құрылғысы қосылмады</translation>
@@ -901,6 +903,7 @@
 <translation id="5117590920725113268">Келесі айды көрсету</translation>
 <translation id="5121628974188116412">Беттің соңына өту</translation>
 <translation id="5136175204352732067">Басқа пернетақта жалғанды</translation>
+<translation id="5145331109270917438">Күні өзгертілген</translation>
 <translation id="5147567197700016471">Құлып ашылды.</translation>
 <translation id="5150070631291639005">Құпиялық параметрлері</translation>
 <translation id="5155897006997040331">Оқу жылдамдығы</translation>
@@ -1007,6 +1010,7 @@
 <translation id="5619862035903135339">Әкімші саясаты экранды түсіру режимін өшіреді.</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Құпия сөзіңіз расталмады. Қайталап көріңіз.</translation>
+<translation id="5646376287012673985">Орын</translation>
 <translation id="5648021990716966815">Микрофон ұяшығы</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> қолданбасы назар аударуыңызды сұрайды.</translation>
 <translation id="5662075790140998213">10-жұмыс үстелі</translation>
@@ -1520,6 +1524,7 @@
 <translation id="8001755249288974029">Курсордан жолдың басына дейінгі мәтінді таңдау</translation>
 <translation id="8004512796067398576">Арту</translation>
 <translation id="8026334261755873520">Шолу деректерін өшіру</translation>
+<translation id="8028993641010258682">Көлемі</translation>
 <translation id="8029247720646289474">Хотспотпен байланыс орнатылмады</translation>
 <translation id="8029629653277878342">Қауіпсіздікті күшейту үшін PIN коды немесе құпия сөз қажет.</translation>
 <translation id="8030169304546394654">Ажыратылған</translation>

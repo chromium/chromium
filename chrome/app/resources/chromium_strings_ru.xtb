@@ -129,7 +129,6 @@
 <translation id="390528597099634151">Пользователь <ph name="EXISTING_USER" /> уже выполнил вход в профиль Chromium. Вы можете создать свой профиль, чтобы использовать Chromium отдельно.</translation>
 <translation id="391789666908693569">Вашим аккаунтом управляет <ph name="MANAGER_NAME" />. Администратор может просматривать и изменять этот профиль Chromium и данные в нем, включая закладки, историю и пароли.</translation>
 <translation id="3945058413678539331">Chromium пытается скопировать пароли. Чтобы разрешить это действие, введите свой пароль Windows.</translation>
-<translation id="3962623956404948996">Chromium рекомендует просканировать этот потенциально вредоносный файл.</translation>
 <translation id="3997429360543082038">О Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS, как и <ph name="BEGIN_LINK_LINUX_OSS" />среда разработки Linux<ph name="END_LINK_LINUX_OSS" />, работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="4036079820698952681">Отправьте отчет о <ph name="BEGIN_LINK" />текущих настройках Chromium<ph name="END_LINK" />, чтобы помочь нам улучшить браузер</translation>

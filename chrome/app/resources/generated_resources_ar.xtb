@@ -220,7 +220,6 @@
 <translation id="1181037720776840403">إزالة</translation>
 <translation id="1181366777303791449">في <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">تعذّر تثبيت <ph name="EXTERNAL_CRX_FILE" /> في ذاكرة التخزين المؤقت المحلية.</translation>
-<translation id="1184709369107246085">‏يتطلّب تطبيق "<ph name="APPLICATION_NAME" />" عنوان URL صالحًا للملف على "<ph name="APPLICATION_NAME" />".</translation>
 <translation id="1185924365081634987">يمكنك أيضا أن تجرّب <ph name="GUEST_SIGNIN_LINK_START" />التصفح كضيف<ph name="GUEST_SIGNIN_LINK_END" /> لإصلاح هذا الخطأ في الشبكة.</translation>
 <translation id="1187722533808055681">عمليات التنشيط من الوضع بعيد</translation>
 <translation id="1188807932851744811">لم يتم تحميل السجل.</translation>
@@ -488,15 +487,6 @@
 <translation id="1420834118113404499">تراخيص الوسائط</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> للسماح بالإقران</translation>
 <translation id="1422159345171879700">تحميل النصوص البرمجية غير الآمنة</translation>
-<translation id="1423716227250567100">‏سيؤدي هذا الإجراء إلى:
-          <ph name="LINE_BREAKS" />
-           • إعادة ضبط إعدادات Chrome واختصاراته
-           <ph name="LINE_BREAK" />
-           • إيقاف الإضافات
-           <ph name="LINE_BREAK" />
-           • حذف ملفات تعريف الارتباط والبيانات المؤقَّتة الأخرى للمواقع الإلكترونية
-            <ph name="LINE_BREAKS" />
-                  لن تتأثر الإشارات المرجعية وكلمات المرور المحفوظة وسجلّ التصفُّح بهذا الإجراء.</translation>
 <translation id="1425040197660226913">يتعذّر تحميل الملف. يُرجى استخدام صورة بحجم أصغر من 20 ميغابايت.</translation>
 <translation id="1426410128494586442">نعم</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> محظور</translation>
@@ -1672,7 +1662,6 @@
 <translation id="2398546389094871088">‏لن يؤدي إجراء عملية Powerwash لجهازك إلى إزالة الملفات التعريفية لشرائح eSIM. انتقِل إلى <ph name="LINK_BEGIN" />إعدادات الجوّال<ph name="LINK_END" /> لإزالة هذه الملفات التعريفية يدويًّا.</translation>
 <translation id="2399699884460174994">تم تفعيل الإشعارات</translation>
 <translation id="2399939490305346086">بيانات تسجيل الدخول على مفتاح الأمان</translation>
-<translation id="2400323785194108001">عدم إيقاف هذا الموقع الإلكتروني مطلقًا</translation>
 <translation id="2400664245143453337">مطلوب التحديث فورًا</translation>
 <translation id="2402226831639195063">النبرات</translation>
 <translation id="2406153734066939945">هل تريد حذف هذا الملف الشخصي وكل بياناته؟</translation>
@@ -2946,7 +2935,6 @@
 <translation id="354060433403403521">‏محول AC</translation>
 <translation id="354068948465830244">يمكن أن يؤدي ذلك إلى قراءة بيانات الموقع الإلكتروني وتغييرها</translation>
 <translation id="3541823293333232175">تم تخصيص المفتاح.</translation>
-<translation id="354204985370574425">عدم إيقاف هذا الموقع الإلكتروني مطلقًا</translation>
 <translation id="3543393733900874979">تعذّر التحديث (خطأ: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">‏توقيع X9.62 ECDSA باستخدام SHA-512</translation>
 <translation id="3544058026430919413">يمكن للشركة تحديد مجموعة مواقع إلكترونية يمكنها استخدام ملفات تعريف الارتباط لمشاركة نشاطك في المجموعة. يتم إيقاف هذا الإعداد في "وضع التصفّح المتخفي".</translation>
@@ -2988,7 +2976,6 @@
 <translation id="3582299299336701326">‏تحوِّل هذه الميزة الشاشات المضيئة إلى شاشات مُعتمة والعكس. اضغط على مفتاح البحث ‏+ Ctrl ‏+ H لتفعيل ميزة "قلب الألوان" أو إيقافها.</translation>
 <translation id="3584169441612580296">التعرّف على الصور، والموسيقى، والوسائط الأخرى من الكمبيوتر وتغييرها</translation>
 <translation id="3584527007414070635">استئناف سجلّ أنشطة البحث والتصفُّح في "<ph name="MODULE_TITLE" />"</translation>
-<translation id="3586787825263265024">‏يتطلّب تطبيق "<ph name="APPLICATION_NAME" />" توفُّر تطبيق OneDrive.</translation>
 <translation id="3586806079541226322">يتعذّر فتح هذا الملف</translation>
 <translation id="3586931643579894722">إخفاء التفاصيل</translation>
 <translation id="3587438013689771191">مزيد من المعلومات حول "<ph name="SUBPAGE_TITLE" />"</translation>
@@ -4267,7 +4254,6 @@
 <translation id="4699357559218762027">(يتم تشغيله تلقائيًا)</translation>
 <translation id="4701025263201366865">تسجيل دخول أحد الوالدَين</translation>
 <translation id="4701335814944566468">تم الاطّلاع عليه أمس.</translation>
-<translation id="4705624512518230041">‏لا يمكن فتح "<ph name="FILE_NAMES" />" عند عدم توفُّر OneDrive</translation>
 <translation id="470644585772471629">قلب الألوان</translation>
 <translation id="4707337002099455863">تفعيل الإضافة دائمًا على جميع المواقع الإلكترونية</translation>
 <translation id="4708849949179781599">إنهاء <ph name="PRODUCT_NAME" /></translation>
@@ -7744,7 +7730,6 @@
 <translation id="783229689197954457">‏ستعرض هذه الصفحة أي خصم يعثر عليه Google.</translation>
 <translation id="7833720883933317473">ستظهر هنا الكلمات المُخصصة المحفوظة</translation>
 <translation id="7835178595033117206">تمت إزالة إشارة مرجعية</translation>
-<translation id="7836535163829106376">‏لا يمكن فتح عنوان URL لـ "<ph name="FILE_NAMES" />"</translation>
 <translation id="7836577093182643605">تضم هذه القائمة المواضيع التي حظرتها ولا تريد مشاركتها مع المواقع الإلكترونية.</translation>
 <translation id="7836850009646241041">يُرجى محاولة لمس مفتاح الأمان مرة أخرى.</translation>
 <translation id="7837290304480415481">إدارة الأذونات والإعدادات</translation>

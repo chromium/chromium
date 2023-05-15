@@ -219,7 +219,6 @@
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> मा</translation>
 <translation id="1183237619868651138">स्थानीय क्यासमा <ph name="EXTERNAL_CRX_FILE" /> स्थापना गर्न सक्दैन।</translation>
-<translation id="1184709369107246085"><ph name="APPLICATION_NAME" /> एप प्रयोग गर्न <ph name="APPLICATION_NAME" /> को मान्य URL चाहिन्छ।</translation>
 <translation id="1185924365081634987">यो नेटवर्क त्रुटिलाई सच्याउनको लागि तपाईंले <ph name="GUEST_SIGNIN_LINK_START" />अतिथीको रूपमा ब्राउज<ph name="GUEST_SIGNIN_LINK_END" /> गर्ने प्रयास पनि गर्न सक्नुहुन्छ।</translation>
 <translation id="1187722533808055681">निष्क्रिय वेक अपहरू</translation>
 <translation id="1188807932851744811">लग अपलोड गरिएन।</translation>
@@ -484,15 +483,6 @@
 <translation id="1420834118113404499">मिडियाका इजाजतपत्रहरू</translation>
 <translation id="1420920093772172268">जोडा बनाउने प्रक्रियालाई अनुमति दिन <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1422159345171879700">असुरक्षित स्क्रिप्टहरू लोड गर्नुहोस्</translation>
-<translation id="1423716227250567100">तपाईंले यसो गर्नुभयो भने:
-          <ph name="LINE_BREAKS" />
-           • Chrome का सेटिङ तथा Chrome सर्टकटहरू रिसेट हुने छन्
-           <ph name="LINE_BREAK" />
-           • एक्स्टेन्सनहरू अफ हुने छन्
-           <ph name="LINE_BREAK" />
-           • कुकी तथा साइटका अन्य अस्थायी डेटा मेटिने छन्
-            <ph name="LINE_BREAKS" />
-           बुकमार्क, इतिहास तथा सुरक्षित गरिएका पासवर्डहरूमा केही पनि असर पर्ने छैन।</translation>
 <translation id="1425040197660226913">अपलोड गर्न सकिएन। २० एम.बि. भन्दा सानो फोटो प्रयोग गर्नुहोस्।</translation>
 <translation id="1426410128494586442">हो</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> लाई ब्लक गरिएको छ</translation>
@@ -1670,7 +1660,6 @@
 <translation id="2398546389094871088">तपाईंले आफ्नो डिभाइस पावरवास गर्नुभयो भने तपाईंका eSIM प्रोफाइलहरू हट्ने छैनन्। यी प्रोफाइलहरू म्यानुअल रूपमा हटाउन <ph name="LINK_BEGIN" />मोबाइल सेटिङ<ph name="LINK_END" />मा जानुहोस्।</translation>
 <translation id="2399699884460174994">सूचनाहरू अन गरिए</translation>
 <translation id="2399939490305346086">सुरक्षा साँचोको साइन इनसम्बन्धी डेटा</translation>
-<translation id="2400323785194108001">यो साइट कहिल्यै पनि डिएक्टिभेट नगरियोस्</translation>
 <translation id="2400664245143453337">तत्काल अद्यावधिक गर्न आवश्यक छ</translation>
 <translation id="2402226831639195063">टोनहरू</translation>
 <translation id="2406153734066939945">यो प्रोफाइल र यसका डेटा मेटाउने हो?</translation>
@@ -2954,7 +2943,6 @@
 <translation id="354060433403403521">AC एड्याप्टर</translation>
 <translation id="354068948465830244">यसले साइटको डेटा पढ्न र परिवर्तन गर्न सक्छ</translation>
 <translation id="3541823293333232175">काम तोकियो</translation>
-<translation id="354204985370574425">यो साइट कहिल्यै पनि डिएक्टिभेट नगरियोस्</translation>
 <translation id="3543393733900874979">अद्यावधिक असफल भयो (त्रुटि: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">SHA-512 सहितको X9.62 ECDSA हस्ताक्षर</translation>
 <translation id="3544058026430919413">कुनै कम्पनीले तपाईंले यो समूहमा गर्ने गतिविधिसम्बन्धी जानकारी सेयर गर्न कुकीहरू प्रयोग गर्न सक्ने साइटहरूको समूह बनाउन सक्छ। इन्कोग्निटो मोडमा यो सुविधा अफ हुन्छ।</translation>
@@ -2996,7 +2984,6 @@
 <translation id="3582299299336701326">उज्यालो स्क्रिनलाई अँध्यारो र अँध्यारो स्क्रिनलाई उज्यालो बनाउनुहोस्। कलर इन्भर्सन अन र अफ गर्न Search + Ctrl + H थिच्नुहोस्।</translation>
 <translation id="3584169441612580296">तपाईंको कम्प्युटरबाट तस्बिरहरू, सङ्गीत र अन्य मिडिया पढ्नुहोस् र परिवर्तन गर्नुहोस्</translation>
 <translation id="3584527007414070635"><ph name="MODULE_TITLE" /> खोज्ने कार्य सुचारु गर्नुहोस्</translation>
-<translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> एप प्रयोग गर्न OneDrive उपलब्ध हुनु पर्छ।</translation>
 <translation id="3586806079541226322">यो फाइल खोल्न सकिँदैन</translation>
 <translation id="3586931643579894722">विवरणहरू लुकाउनुहोस्</translation>
 <translation id="3587438013689771191">यसका बारेमा थप जान्नुहोस्: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4287,7 +4274,6 @@
 <translation id="4699357559218762027">(स्वत: सुरुवात गरिएको)</translation>
 <translation id="4701025263201366865">अभिभावकको साइन इन</translation>
 <translation id="4701335814944566468">हिजो हेरिएको</translation>
-<translation id="4705624512518230041">OneDrive उपलब्ध नभएका बेला <ph name="FILE_NAMES" /> खोल्न सकिँदैन</translation>
 <translation id="470644585772471629">कलर इन्भर्सन</translation>
 <translation id="4707337002099455863">सधैँ सबै साइटमा</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> छोड्नुहोस्</translation>
@@ -7776,7 +7762,6 @@
 <translation id="783229689197954457">Google ले छुट भेट्टाएका खण्डमा तपाईं यो पेजमा उक्त छुटसम्बन्धी जानकारी देख्नु हुने छ</translation>
 <translation id="7833720883933317473">सुरक्षित गरिएका आफू अनुकूलका शब्दहरू यहाँ देखापर्ने छन्</translation>
 <translation id="7835178595033117206">पुस्तक चिन्ह हटाइयो</translation>
-<translation id="7836535163829106376"><ph name="FILE_NAMES" /> को URL खोल्न सकिएन</translation>
 <translation id="7836577093182643605">साइटहरूसँग सेयर गर्न नचाहेका कारण तपाईंले ब्लक गर्नुभएका विषयहरूको सूची</translation>
 <translation id="7836850009646241041">आफ्नो सुरक्षा साँचो फेरि छोई हेर्नुहोस्</translation>
 <translation id="7837290304480415481">अनुमति तथा सेटिङ व्यवस्थापन गर्नुहोस्</translation>

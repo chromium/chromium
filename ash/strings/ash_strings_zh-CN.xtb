@@ -317,6 +317,7 @@
 <translation id="2440978926514840421">已完成 GIF 录制</translation>
 <translation id="2441427462554639370">已停止录制，因为存储空间严重不足</translation>
 <translation id="24452542372838207">展开通知</translation>
+<translation id="2448312741937722512">类型</translation>
 <translation id="2449089818483227734">电池电量低</translation>
 <translation id="2450205753526923158">截屏模式</translation>
 <translation id="2455994958736234930">在地址栏中添加 www. 和 .com，然后打开网站</translation>
@@ -335,6 +336,7 @@
 <translation id="2531025035050312891">设备运行缓慢</translation>
 <translation id="2542089167727451762">请点按您的个人资料图片</translation>
 <translation id="254900897760075745">将所选内容复制到剪贴板</translation>
+<translation id="2549985041256363841">开始录制</translation>
 <translation id="255671100581129685">无法在公用自助终端使用 Google 助理。</translation>
 <translation id="256712445991462162">停靠的放大镜</translation>
 <translation id="2573588302192866788">无法连接“<ph name="NAME" />”</translation>
@@ -901,6 +903,7 @@
 <translation id="5117590920725113268">显示下一个月</translation>
 <translation id="5121628974188116412">转到网页底部</translation>
 <translation id="5136175204352732067">所连接的键盘已不是原来的那个</translation>
+<translation id="5145331109270917438">修改日期</translation>
 <translation id="5147567197700016471">已解锁</translation>
 <translation id="5150070631291639005">隐私设置</translation>
 <translation id="5155897006997040331">朗读速度</translation>
@@ -1007,6 +1010,7 @@
 <translation id="5619862035903135339">管理员政策已停用截屏功能</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">无法验证您的密码。请重试。</translation>
+<translation id="5646376287012673985">位置信息</translation>
 <translation id="5648021990716966815">麦克风耳机插孔</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />中有需要您关注的新动态。</translation>
 <translation id="5662075790140998213">桌面 10</translation>
@@ -1517,6 +1521,7 @@
 <translation id="8001755249288974029">选中从光标处到行首的文字</translation>
 <translation id="8004512796067398576">增加</translation>
 <translation id="8026334261755873520">清除浏览数据</translation>
+<translation id="8028993641010258682">大小</translation>
 <translation id="8029247720646289474">热点连接失败</translation>
 <translation id="8029629653277878342">需要输入 PIN 码或密码以增强安全性</translation>
 <translation id="8030169304546394654">连接已断开</translation>

@@ -129,7 +129,6 @@
 <translation id="390528597099634151">Този потребителски профил в Chromium вече се използва от <ph name="EXISTING_USER" />. За да бъде сърфирането ви отделно, браузърът може да създаде ваш собствен потребителски профил.</translation>
 <translation id="391789666908693569">Профилът ви се управлява от <ph name="MANAGER_NAME" />. Администраторът ви може да вижда и редактира този потребителски профил в браузъра Chromium, както и данните му – например отметките, историята и паролите.</translation>
 <translation id="3945058413678539331">Chromium опитва да копира паролите. За да разрешите това, въведете паролата си за Windows.</translation>
-<translation id="3962623956404948996">Chromium препоръчва този файл да бъде сканиран, защото може да е опасен</translation>
 <translation id="3997429360543082038">Всичко за Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />. Това се отнася и за <ph name="BEGIN_LINK_LINUX_OSS" />базираната на Linux среда на програмиране<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Помогнете за подобряването на Chromium, като подадете сигнал за <ph name="BEGIN_LINK" />текущите настройки<ph name="END_LINK" /></translation>

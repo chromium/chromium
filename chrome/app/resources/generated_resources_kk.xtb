@@ -220,7 +220,6 @@
 <translation id="1181037720776840403">Өшіру</translation>
 <translation id="1181366777303791449">Күні: <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">Жергілікті кэште <ph name="EXTERNAL_CRX_FILE" /> орнату мүмкін емес.</translation>
-<translation id="1184709369107246085"><ph name="APPLICATION_NAME" /> қолданбасы жарамды <ph name="APPLICATION_NAME" /> URL мекенжайын қажет етеді.</translation>
 <translation id="1185924365081634987">Сонымен қатар бұл желі қатесін түзету үшін <ph name="GUEST_SIGNIN_LINK_START" />қонақ ретінде шарлап<ph name="GUEST_SIGNIN_LINK_END" /> көруңізге болады.</translation>
 <translation id="1187722533808055681">Күту режимінен іске қосу</translation>
 <translation id="1188807932851744811">Журнал жүктеп салынбаған.</translation>
@@ -484,15 +483,6 @@
 <translation id="1420834118113404499">Мультимедиа лицензиялары</translation>
 <translation id="1420920093772172268">Жұптауға рұқсат беру үшін <ph name="TURN_ON_BLUETOOTH_LINK" /></translation>
 <translation id="1422159345171879700">Қауіпті сценарийлерді жүктеу</translation>
-<translation id="1423716227250567100">Бұл әрекет:
-          <ph name="LINE_BREAKS" />
-           • Chrome параметрлері мен Chrome таңбашаларын бастапқы күйге қайтарады;
-           <ph name="LINE_BREAK" />
-           • кеңейтімдерді өшіреді;
-           <ph name="LINE_BREAK" />
-           • cookie файлдарын және сайттың басқа уақытша деректерін жояды;
-            <ph name="LINE_BREAKS" />
-           бетбелгілерге, тарихқа және сақталған құпия сөздерге ештеңе болмайды.</translation>
 <translation id="1425040197660226913">Жүктеп салу мүмкін емес. 20 МБ-тан кішірек кескін таңдаңыз.</translation>
 <translation id="1426410128494586442">Иә</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> бөгелді</translation>
@@ -1665,7 +1655,6 @@
 <translation id="2398546389094871088">Құрылғыңызда Powerwash функциясын пайдалану кезінде eSIM профильдеріңіз өшірілмейді. Бұл профильдерді қолмен өшіру үшін <ph name="LINK_BEGIN" />Мобильдік құрылғы параметрлері<ph name="LINK_END" /> бөліміне кіріңіз.</translation>
 <translation id="2399699884460174994">Хабарландырулар қосылды</translation>
 <translation id="2399939490305346086">Қауіпсіздік кілтіне кіру деректері</translation>
-<translation id="2400323785194108001">Бұл сайтты ешқашан өшірмеу</translation>
 <translation id="2400664245143453337">Дереу жаңарту қажет</translation>
 <translation id="2402226831639195063">Сигнал дыбыстары</translation>
 <translation id="2406153734066939945">Бұл профиль және оның деректері жойылсын ба?</translation>
@@ -2938,7 +2927,6 @@
 <translation id="354060433403403521">АТ адаптері</translation>
 <translation id="354068948465830244">Бұл сайт деректерін оқи және өзгерте алады</translation>
 <translation id="3541823293333232175">Тағайындалды</translation>
-<translation id="354204985370574425">Бұл сайтты ешқашан өшірмеу</translation>
 <translation id="3543393733900874979">Жаңарту сәтсіз болды (қате: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">X9.62 ECDSA, SHA-512 алгоритмімен қол қою</translation>
 <translation id="3544058026430919413">Компания әрекетіңізді топтағы басқа мүшелермен бөлісу үшін cookie файлдарын қолданатын сайттар тобын анықтай алады. Бұл Инкогнито режимінде өшірілген.</translation>
@@ -2980,7 +2968,6 @@
 <translation id="3582299299336701326">Ашық экрандарды қарайтып, күңгірт экрандарды ашық ете аласыз. "Іздеу" + Ctrl + H перне тіркесімімен түс инверсиясын қосуға және өшіруге болады.</translation>
 <translation id="3584169441612580296">Компьютеріңізден фотосуреттерді, музыканы және басқа медиа файлдарын оқу және өзгерту</translation>
 <translation id="3584527007414070635"><ph name="MODULE_TITLE" /> сеансын жалғастыру</translation>
-<translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> қолданбасы OneDrive қызметінің қолжетімді болуын қажет етеді.</translation>
 <translation id="3586806079541226322">Бұл файлды ашу мүмкін емес</translation>
 <translation id="3586931643579894722">Мәліметтерді жасыру</translation>
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" /> туралы толық ақпарат</translation>
@@ -4262,7 +4249,6 @@
 <translation id="4699357559218762027">(автоматты іске қосу)</translation>
 <translation id="4701025263201366865">Ата-ананың жүйеге кіруі</translation>
 <translation id="4701335814944566468">Кеше көрілген.</translation>
-<translation id="4705624512518230041">OneDrive қолжетімсіз кезде <ph name="FILE_NAMES" /> файлын ашу мүмкін емес</translation>
 <translation id="470644585772471629">Түс инверсиясы</translation>
 <translation id="4707337002099455863">Әрдайым барлық сайтта</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> жүйесінен шығу</translation>
@@ -7730,7 +7716,6 @@
 <translation id="783229689197954457">Google жеңілдік тапса, оны осы беттен көресіз.</translation>
 <translation id="7833720883933317473">Сақталған арнаулы сөздер осы жерге шығады</translation>
 <translation id="7835178595033117206">Бетбелгі өшірілген</translation>
-<translation id="7836535163829106376"><ph name="FILE_NAMES" /> URL мекенжайын ашу мүмкін емес</translation>
 <translation id="7836577093182643605">Сіз бөгеген және сайттармен бөлісуді қаламайтын тақырыптар тізімі</translation>
 <translation id="7836850009646241041">Қауіпсіздік кілтін тағы түртіп көріңіз.</translation>
 <translation id="7837290304480415481">Рұқсаттар мен параметрлерді басқару</translation>

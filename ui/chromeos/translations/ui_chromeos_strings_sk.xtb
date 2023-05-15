@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Žiadne nedávne videá</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ovládaná správcom, podrobnosti</translation>
 <translation id="3645233063072417428">Počet presunutých položiek: <ph name="NUMBER_OF_ITEMS" />.</translation>
+<translation id="3658269352872031728">Počet vybraných súborov: <ph name="SELECTED_FILE_COUNT" /></translation>
 <translation id="3685122418104378273">Synchronizácia Disku Google je pri používaní mobilných dát v predvolenom nastavení zakázaná.</translation>
 <translation id="3689865792480713551">Zrušiť <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, neaktivovaná, <ph name="CONNECTION_STATUS" />, sila signálu: <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
@@ -577,6 +578,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5533102081734025921">Obrázok <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Prebieha výpočet veľkosti</translation>
 <translation id="554153475311314364">Grécka klávesnica (prepis)</translation>
+<translation id="5554171655917412781">Počet vybraných priečinkov: <ph name="SELECTED_FOLDERS_COUNT" /></translation>
 <translation id="5580591966435005537">virtuálne zariadenie</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Šírka interpunkcie je Plná</translation>
@@ -599,6 +601,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5724172041621205163">Thajská klávesnica s rozložením Pattachote</translation>
 <translation id="57383366388012121">Posledný mesiac</translation>
 <translation id="5756666464756035725">Maďarská QWERTY</translation>
+<translation id="5760252553414789727">Počet vybraných položiek: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">Nemecká (Švajčiarsko) klávesnica</translation>
 <translation id="5769519078756170258">Hostiteľ alebo doména na vylúčenie</translation>
 <translation id="5775750595919327203">Urdská klávesnica</translation>

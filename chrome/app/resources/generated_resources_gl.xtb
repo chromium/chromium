@@ -220,7 +220,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1181366777303791449">en <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">Non se pode instalar <ph name="EXTERNAL_CRX_FILE" /> na caché local.</translation>
-<translation id="1184709369107246085">A aplicación <ph name="APPLICATION_NAME" /> require un URL de <ph name="APPLICATION_NAME" /> válido.</translation>
 <translation id="1185924365081634987">Tamén podes intentar <ph name="GUEST_SIGNIN_LINK_START" />navegar como invitado<ph name="GUEST_SIGNIN_LINK_END" /> para corrixir este erro de rede.</translation>
 <translation id="1187722533808055681">Activacións desde o modo inactivo</translation>
 <translation id="1188807932851744811">Rexistro non cargado.</translation>
@@ -484,15 +483,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1420834118113404499">Licenzas multimedia</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" /> para permitir a sincronización</translation>
 <translation id="1422159345171879700">Cargar scripts non seguros</translation>
-<translation id="1423716227250567100">Ao realizar esta acción, ocorrerá o seguinte:
-          <ph name="LINE_BREAKS" />
-           • Restableceranse a configuración e os atallos de Chrome.
-           <ph name="LINE_BREAK" />
-           • Desactivaranse as extensións.
-           <ph name="LINE_BREAK" />
-           • Eliminaranse as cookies e outros datos temporais dos sitios.
-            <ph name="LINE_BREAKS" />
-           Os marcadores, o historial e os contrasinais gardados non se verán afectados.</translation>
 <translation id="1425040197660226913">Non se puido cargar o ficheiro. Usa unha imaxe que teña menos de 20 MB.</translation>
 <translation id="1426410128494586442">Si</translation>
 <translation id="142655739075382478">A aplicación <ph name="APP_NAME" /> está bloqueada</translation>
@@ -1667,7 +1657,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2398546389094871088">Os perfís de eSIM non se quitarán ao executar a función Powerwash do dispositivo. Para quitalos de xeito manual, vai a <ph name="LINK_BEGIN" />Configuración para móbiles<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Activáronse as notificacións</translation>
 <translation id="2399939490305346086">Datos de inicio de sesión da chave de seguranza</translation>
-<translation id="2400323785194108001">Non desactivar nunca este sitio</translation>
 <translation id="2400664245143453337">Requírese unha actualización de inmediato</translation>
 <translation id="2402226831639195063">Tons</translation>
 <translation id="2406153734066939945">Querer borrar este perfil e os seus datos?</translation>
@@ -2940,7 +2929,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="354060433403403521">Adaptador de CA</translation>
 <translation id="354068948465830244">Pode consultar e modificar os datos do sitio</translation>
 <translation id="3541823293333232175">Asignado</translation>
-<translation id="354204985370574425">Non desactivar nunca este sitio</translation>
 <translation id="3543393733900874979">Non se puido efectuar a actualización (erro: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">Sinatura X9.62 ECDSA con SHA-512</translation>
 <translation id="3544058026430919413">Unha empresa pode definir un grupo de sitios que poden usar as cookies para compartir a túa actividade no grupo. Esta opción está desactivada no modo de incógnito.</translation>
@@ -2982,7 +2970,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3582299299336701326">Escurece as pantallas claras e aclarea as escuras. Para activar e desactivar a inversión da cor, preme Buscar + Control + H.</translation>
 <translation id="3584169441612580296">Ler e modificar fotos, música e outros ficheiros multimedia do teu ordenador</translation>
 <translation id="3584527007414070635">Retomar o teu percorrido para <ph name="MODULE_TITLE" /></translation>
-<translation id="3586787825263265024">A aplicación <ph name="APPLICATION_NAME" /> require que OneDrive estea dispoñible.</translation>
 <translation id="3586806079541226322">Non se pode abrir este ficheiro</translation>
 <translation id="3586931643579894722">Ocultar detalles</translation>
 <translation id="3587438013689771191">Máis información sobre: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4264,7 +4251,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4699357559218762027">(iniciada automaticamente)</translation>
 <translation id="4701025263201366865">Inicio de sesión do pai ou da nai</translation>
 <translation id="4701335814944566468">Consultouse onte</translation>
-<translation id="4705624512518230041">Non se pode abrir <ph name="FILE_NAMES" /> se OneDrive non está dispoñible</translation>
 <translation id="470644585772471629">Inversión da cor</translation>
 <translation id="4707337002099455863">Sempre en todos os sitios</translation>
 <translation id="4708849949179781599">Pechar <ph name="PRODUCT_NAME" /></translation>
@@ -7733,7 +7719,6 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="783229689197954457">Se Google atopa algún desconto, veralo nesta páxina</translation>
 <translation id="7833720883933317473">As palabras personalizadas gardadas aparecerán aquí</translation>
 <translation id="7835178595033117206">Quitouse o marcador</translation>
-<translation id="7836535163829106376">Non se puido abrir o URL de <ph name="FILE_NAMES" /></translation>
 <translation id="7836577093182643605">Lista de temas que bloqueaches e que non queres compartir cos sitios</translation>
 <translation id="7836850009646241041">Proba a tocar de novo a túa chave de seguranza</translation>
 <translation id="7837290304480415481">Xestionar permisos e configuración</translation>

@@ -133,7 +133,6 @@
 <translation id="390528597099634151">Корисникот <ph name="EXISTING_USER" /> веќе е најавен на овој профил на Chromium. За да прелистувате одделно, Chromium може да создаде одделен профил за вас.</translation>
 <translation id="391789666908693569">Со сметката управува <ph name="MANAGER_NAME" />. Администраторот може да го види и изменува овој профил на прелистувач Chromium и податоците за него, како обележувачи, историја и лозинки.</translation>
 <translation id="3945058413678539331">Chromium се обидува да копира лозинки. Внесете ја својата лозинка за Windows за да го овозможите тоа.</translation>
-<translation id="3962623956404948996">Chromium препорачува скенирање на датотекава бидејќи можеби е опасна</translation>
 <translation id="3997429360543082038">За Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS е овозможен од дополнителен <ph name="BEGIN_LINK_CROS_OSS" />софтвер со отворен код<ph name="END_LINK_CROS_OSS" />, како што е <ph name="BEGIN_LINK_LINUX_OSS" />средината за развој на Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Помогнете да го подобриме Chromium со пријавување на <ph name="BEGIN_LINK" />тековните поставки<ph name="END_LINK" /></translation>

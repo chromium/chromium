@@ -740,6 +740,7 @@
 <translation id="7130438335435247835">Numele punctului de acces (APN)</translation>
 <translation id="7131634559772719176">Confirmă presetarea</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server de nume}few{Servere de nume}other{Servere de nume}}</translation>
+<translation id="7135814714616751706">Caută comenzi rapide</translation>
 <translation id="7143207342074048698">Se conectează</translation>
 <translation id="7144878232160441200">Reîncearcă</translation>
 <translation id="714876143603641390">Conectivitatea prin LAN</translation>
@@ -770,6 +771,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; apasă tasta de căutare + bara de spațiu pentru a vedea rezultatul în Căutarea Google.</translation>
 <translation id="7343649194310845056">Dispozitive de rețea</translation>
+<translation id="7353413232959255829">Rezultatul căutării <ph name="LIST_POSITION" /> din <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Apasă pe Enter pentru a naviga la comanda rapidă.</translation>
 <translation id="7359657277149375382">Tip de fișier</translation>
 <translation id="73631062356239394">Trimite date de diagnosticare</translation>
 <translation id="7375053625150546623">EAP</translation>

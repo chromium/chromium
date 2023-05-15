@@ -183,6 +183,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1774796056689732716">Calendar, <ph name="CURRENT_MONTH_YEAR" />, momentan s-a selectat <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Dezactivată</translation>
 <translation id="181103072419391116">Puterea semnalului: <ph name="SIGNAL_STRENGTH" />, gestionată de administratorul tău</translation>
+<translation id="1815245884418711390">Comută hotspotul. Hotspotul este dezactivat.</translation>
 <translation id="1816896987747843206">Astfel, accesul la cameră este permis pentru toate aplicațiile și site-urile care au permisiunea adecvată</translation>
 <translation id="1823280932251546115">Bara de stare, ora: <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -241,6 +242,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2023558322300866873">Poți opri oricând capturarea pachetelor</translation>
 <translation id="2034971124472263449">Salvează oricum</translation>
 <translation id="2049240716062114887">Numele desktopului a fost schimbat în <ph name="DESK_NAME" /></translation>
+<translation id="206377500836174974">Maximă</translation>
 <translation id="2064048859448024834">Previzualizarea camerei este activată</translation>
 <translation id="2067602449040652523">Luminozitatea tastaturii</translation>
 <translation id="2075520525463668108">Activează / dezactivează <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> este <ph name="CAPTURE_STATE" /></translation>
@@ -293,6 +295,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2339073806695260576">Atinge butonul creion de pe raft ca să creezi note și capturi de ecran, să folosești indicatorul laser sau lupa.</translation>
 <translation id="2341729377289034582">Blocată pe verticală</translation>
 <translation id="2345226652884463045">Apasă pe Enter sau căutare + spațiu pentru a selecta textul de editat.</translation>
+<translation id="2349785431103945039">Afișează detaliile despre hotspot. Conectează-te la rețeaua mobilă pentru a folosi hotspotul.</translation>
 <translation id="2350794187831162545">Vorbirea în <ph name="LANGUAGE" /> este acum procesată local și funcționează offline. Poți să schimbi limba de dictare în Setări &gt; Accesibilitate.</translation>
 <translation id="2352467521400612932">Setările creionului</translation>
 <translation id="2354174487190027830">Se activează <ph name="NAME" /></translation>
@@ -317,6 +320,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2440978926514840421">S-a înregistrat GIF-ul</translation>
 <translation id="2441427462554639370">Înregistrarea s-a oprit din cauza epuizării spațiului de stocare</translation>
 <translation id="24452542372838207">Extinde notificarea</translation>
+<translation id="2448312741937722512">Tipul</translation>
 <translation id="2449089818483227734">Nivel scăzut al bateriei</translation>
 <translation id="2450205753526923158">Modul Captură de ecran</translation>
 <translation id="2455994958736234930">Adaugă www. și .com în bara de adrese, apoi deschide site-ul</translation>
@@ -335,6 +339,8 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2531025035050312891">dispozitiv lent</translation>
 <translation id="2542089167727451762">Atinge imaginea de profil</translation>
 <translation id="254900897760075745">Copiază conținutul selectat în clipboard</translation>
+<translation id="2549711466868162843">Îmbunătățește luminozitatea</translation>
+<translation id="2549985041256363841">Pornește înregistrarea</translation>
 <translation id="255671100581129685">Asistentul Google nu este disponibil într-o sesiune publică.</translation>
 <translation id="256712445991462162">lupa andocată</translation>
 <translation id="2573588302192866788">Conexiunea cu <ph name="NAME" /> nu s-a putut realiza</translation>
@@ -427,6 +433,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3009178788565917040">Ieșiri</translation>
 <translation id="3009958530611748826">Selectează un dosar în care să salvezi</translation>
 <translation id="301282384882049174">Distribuit de administrator</translation>
+<translation id="301584155502740476">Afișează detaliile despre hotspot. Hotspotul este dezactivat.</translation>
 <translation id="3018135054368884502">Conținut media cu derulare rapidă</translation>
 <translation id="3033545621352269033">Activat</translation>
 <translation id="3033912566804961911">Combină cu <ph name="DESK_NAME" /></translation>
@@ -487,6 +494,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3291862315280588024">Deplasați cursorul la începutul cuvântului anterior</translation>
 <translation id="3294437725009624529">Invitat</translation>
 <translation id="3298690094479023523">Codul PIN sau parola tot nu au putut fi confirmate. Încearcă din nou.</translation>
+<translation id="3300193645498960160">Vei primi o notificare dacă vorbești cu sunetul dezactivat. Conținutul audio nu părăsește niciodată dispozitivul.</translation>
 <translation id="3307642347673023554">S-a comutat la modul laptop</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> se poate conecta în continuare mai târziu.</translation>
 <translation id="3321628682574733415">Codul pentru părinte este incorect</translation>
@@ -570,6 +578,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3621202678540785336">Intrări</translation>
 <translation id="3621712662352432595">Setări audio</translation>
 <translation id="3626281679859535460">Luminozitate</translation>
+<translation id="3629640897379005903">Afișează detaliile despre hotspot. Se dezactivează hotspotul.</translation>
 <translation id="3630697955794050612">dezactivată</translation>
 <translation id="3631369015426612114">Permite notificările de la</translation>
 <translation id="3633097874324966332">Deschide setările Bluetooth pentru a asocia dispozitivul</translation>
@@ -701,6 +710,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="423685346499232137">Nu se poate copia sau insera conținut în acest moment</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modul de prezentare generală</translation>
+<translation id="4240756737570479726">Se dezactivează...</translation>
 <translation id="4242533952199664413">Deschide setările</translation>
 <translation id="4247123849143712100">Actualizează și închide</translation>
 <translation id="4250229828105606438">Captură de ecran</translation>
@@ -839,6 +849,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4864369630010738180">Se conectează...</translation>
 <translation id="4864648187878336334">Biroul 15</translation>
 <translation id="4868492592575313542">activată</translation>
+<translation id="4871905435473761992">Afișează detaliile despre hotspot. Rețeaua mobilă nu acceptă hotspoturi.</translation>
 <translation id="4872237917498892622">Alt+Căutare sau Shift</translation>
 <translation id="4872852897273142380">Focalizează pe sau evidențiază bara de marcaje (dacă este afișată)</translation>
 <translation id="4881695831933465202">Deschide</translation>
@@ -898,9 +909,11 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5104236669533825617">Nu se poate crea înregistrarea de pe ecran</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5111318697104479778"><ph name="DESC" /> <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">Încețoșarea fundalului</translation>
 <translation id="5117590920725113268">Afișează luna următoare</translation>
 <translation id="5121628974188116412">Navighează la sfârșitul paginii</translation>
 <translation id="5136175204352732067">Altă tastatură conectată</translation>
+<translation id="5145331109270917438">Data modificării</translation>
 <translation id="5147567197700016471">Deblocat</translation>
 <translation id="5150070631291639005">Setări de confidențialitate</translation>
 <translation id="5155897006997040331">Viteza de citire</translation>
@@ -909,6 +922,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5168181903108465623">Dispozitive de proiecție disponibile</translation>
 <translation id="5170568018924773124">Afișează în dosar</translation>
 <translation id="5176318573511391780">Înregistrează ecranul parțial</translation>
+<translation id="5187627942836026988">Afișează detaliile despre hotspot. Hotspotul este blocat de administrator.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> evenimente</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> a fost combinată cu <ph name="IN_PLACE_APP" /> pentru a crea un dosar nou.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1007,6 +1021,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5619862035903135339">Politica implementată de administrator dezactivează capturarea ecranului</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5627392655516693966">Parola ta nu a putut fi confirmată. Încearcă din nou.</translation>
+<translation id="5646376287012673985">Locație</translation>
 <translation id="5648021990716966815">Mufă pentru microfon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> are nevoie de atenție.</translation>
 <translation id="5662075790140998213">Biroul 10</translation>
@@ -1080,6 +1095,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="595202126637698455">Urmărirea performanței este activată</translation>
 <translation id="5955304353782037793">aplicație</translation>
 <translation id="5958529069007801266">Utilizator monitorizat</translation>
+<translation id="5961960957587052807">Ușoară</translation>
 <translation id="5965524703725988602">Activează / dezactivează Tema întunecată. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Apasă pe Enter pentru a înregistra fereastra</translation>
 <translation id="5978382165065462689">În prezent, permiți controlul la ecran prin Asistență la distanță.</translation>
@@ -1252,6 +1268,7 @@ Instalare nouă</translation>
 <translation id="6752912906630585008">Desktopul <ph name="REMOVED_DESK" /> a fost eliminat și îmbinat cu desktopul <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">file</translation>
 <translation id="6757237461819837179">Nu se redă conținut media</translation>
+<translation id="6759628406555734414">Afișează detaliile despre hotspot. Se activează hotspotul.</translation>
 <translation id="6768043681523654438">stocare</translation>
 <translation id="6777216307882431711">Se încarcă dispozitivele USB-C conectate</translation>
 <translation id="6781002679438061620">Biroul 9</translation>
@@ -1276,6 +1293,7 @@ Instalare nouă</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Încă o cifră}few{Încă # cifre}other{Încă # de cifre}}</translation>
 <translation id="6867938213751067702">Descărcarea a fost întreruptă pentru <ph name="FILENAME" /></translation>
+<translation id="6874854809828346832">Afișează detaliile despre hotspot. Hotspotul este activat.</translation>
 <translation id="6878400149835617132">Comanda rapidă a fost dezactivată</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{O aplicație}few{# aplicații}other{# de aplicații}}</translation>
 <translation id="6884665277231944629">Revino la ziua de azi</translation>
@@ -1285,6 +1303,7 @@ Instalare nouă</translation>
 <translation id="6896758677409633944">Copiază</translation>
 <translation id="6901883536534621389">Încearcă gesturile pentru navigare</translation>
 <translation id="6919251195245069855">Nu s-a recunoscut cardul inteligent. Încearcă din nou.</translation>
+<translation id="6920245099716267363">Comută hotspotul. Hotspotul este activat, un dispozitiv conectat.</translation>
 <translation id="6931576957638141829">Salvează în</translation>
 <translation id="6941333068993625698">Trimite feedback</translation>
 <translation id="6942518653766415536">Meniu cu formatul de înregistrare</translation>
@@ -1374,6 +1393,7 @@ Instalare nouă</translation>
 <translation id="7378203170292176219">Trage pentru a selecta o zonă de înregistrat</translation>
 <translation id="7378594059915113390">Comenzi media</translation>
 <translation id="7378889811480108604">Modul Economisirea bateriei este dezactivat</translation>
+<translation id="7382640522316003298">Comută hotspotul. Hotspotul este activat, <ph name="DEVICECOUNT" /> dispozitive conectate.</translation>
 <translation id="7382680553121047388">Activat</translation>
 <translation id="7384028040782072252">Dă clic dreapta oriunde ca să-ți reordonezi aplicațiile</translation>
 <translation id="7386767620098596324">Comută conexiunea la rețea. <ph name="STATE_TEXT" />.</translation>
@@ -1424,6 +1444,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7579778809502851308">Captură de ecran</translation>
 <translation id="7593891976182323525">Căutare sau Shift</translation>
 <translation id="7600875258240007829">Vezi toate notificările</translation>
+<translation id="7601417191446344542">Activezi reafișarea notificării privind sunetul dezactivat?</translation>
 <translation id="7607002721634913082">Întreruptă</translation>
 <translation id="7609951632080598826">Afișarea calendar, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Camera foto a fost reconectată.</translation>
@@ -1520,6 +1541,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8001755249288974029">Selectează textul începând de la cursor până la începutul rândului</translation>
 <translation id="8004512796067398576">Incrementează</translation>
 <translation id="8026334261755873520">Șterge datele de navigare</translation>
+<translation id="8028993641010258682">Dimensiune</translation>
 <translation id="8029247720646289474">Conectarea la hotspot nu a reușit</translation>
 <translation id="8029629653277878342">Este necesar codul PIN sau parola pentru mai multă siguranță</translation>
 <translation id="8030169304546394654">Deconectat</translation>
@@ -1546,6 +1568,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8131740175452115882">Confirmați</translation>
 <translation id="8131994907636310308">Închide notificarea toast de sortare</translation>
 <translation id="8132793192354020517">Conectat la <ph name="NAME" /></translation>
+<translation id="8135163608236671037">Comută hotspotul. Hotspotul este activat. Niciun dispozitiv conectat.</translation>
 <translation id="8138705869659070104">Activează după configurare</translation>
 <translation id="813913629614996137">Se inițializează...</translation>
 <translation id="8142441511840089262">Dublu clic</translation>
@@ -1726,6 +1749,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8990809378771970590">Se folosește <ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">Modul de inversare a culorilor este activat. Apasă Ctrl + Căutare + H din nou pentru a-l dezactiva.</translation>
 <translation id="899350903320462459">Deblochează dispozitivul ca <ph name="LOGIN_ID" /> pentru efectuarea acțiunii de notificare</translation>
+<translation id="8993733019280019776">Ai spus ceva? Microfonul este dezactivat. Selectează microfonul pentru a-l activa.</translation>
 <translation id="9000771174482730261">GESTIONEAZĂ SPAȚIUL DE STOCARE</translation>
 <translation id="9005984960510803406">Deschide fereastra Crosh</translation>
 <translation id="9017320285115481645">Introdu codul de acces parental pentru Family Link.</translation>

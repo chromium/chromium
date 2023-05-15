@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">최근 동영상 없음</translation>
 <translation id="3634507049637220048">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, 관리자가 관리함, 세부정보</translation>
 <translation id="3645233063072417428">항목 <ph name="NUMBER_OF_ITEMS" />개를 이동했습니다.</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" />개의 파일이 선택됨</translation>
 <translation id="3685122418104378273">모바일 데이터를 사용할 때는 Google Drive 동기화가 기본적으로 사용 중지됩니다.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> 작업을 취소합니다.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째 네트워크, <ph name="NETWORK_NAME" />, 비활성화됨, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
@@ -577,6 +578,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> 이미지</translation>
 <translation id="5534520101572674276">크기를 계산하는 중</translation>
 <translation id="554153475311314364">그리스어(음역)</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" />개의 폴더가 선택됨</translation>
 <translation id="5580591966435005537">가상 머신</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">구두점 폭을 최대로 설정</translation>
@@ -599,6 +601,7 @@
 <translation id="5724172041621205163">태국어(파타초테 키보드)</translation>
 <translation id="57383366388012121">지난달</translation>
 <translation id="5756666464756035725">헝가리어 QWERTY</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" />개의 항목이 선택됨</translation>
 <translation id="5763377084591234761">독일어(스위스)</translation>
 <translation id="5769519078756170258">제외할 호스트 또는 도메인</translation>
 <translation id="5775750595919327203">우르두어</translation>

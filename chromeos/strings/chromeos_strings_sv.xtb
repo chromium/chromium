@@ -217,6 +217,7 @@
 <translation id="2638662041295312666">Inloggningsbild</translation>
 <translation id="2640549051766135490">Detta album har markerats: <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="267442004702508783">uppdatera</translation>
+<translation id="268270014981824665">tona ned tangentbordet</translation>
 <translation id="2712812801627182647">TLS-autentiseringsnyckel</translation>
 <translation id="2713444072780614174">Vit</translation>
 <translation id="2717139507051041123">Aktivera mörkt färgläge</translation>
@@ -224,6 +225,7 @@
 <translation id="2744221223678373668">Delade</translation>
 <translation id="2751739896257479635">Fas 2 i EAP-autentisering</translation>
 <translation id="2783010256799387990">SLUTFÖRT</translation>
+<translation id="2787435249130282949">ljusare tangentbord</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Appar</translation>
 <translation id="28232023175184696">Det gick inte att ansluta till internet. Klicka om du vill försöka igen.</translation>
@@ -327,11 +329,13 @@
 <translation id="3749289110408117711">Filnamn</translation>
 <translation id="3771294271822695279">Videofiler</translation>
 <translation id="3784455785234192852">Lås</translation>
+<translation id="380097101658023925">RGB-kontroller</translation>
 <translation id="38114475217616659">Rensa all historik</translation>
 <translation id="3820172043799983114">Ogiltig pinkod</translation>
 <translation id="3824259034819781947">Bifoga filer</translation>
 <translation id="3838338534323494292">Nytt lösenord</translation>
 <translation id="3845880861638660475">Tryck på <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> för att stänga dialogrutan.</translation>
+<translation id="3848280697030027394">mörkare tangentbord</translation>
 <translation id="385051799172605136">Föregående</translation>
 <translation id="3858860766373142691">Namn</translation>
 <translation id="3862598938296403232">Beskrivning krävs</translation>
@@ -403,6 +407,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Inaktivera</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> startas om</translation>
+<translation id="4395835743215824109">anpassa tangentbord</translation>
 <translation id="4415951057168511744">Aktuell avatar</translation>
 <translation id="4422041425070339732">nedåtpil</translation>
 <translation id="4425149324548788773">Min enhet</translation>
@@ -442,6 +447,7 @@
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
 <translation id="473775607612524610">Uppdatera</translation>
 <translation id="4744944742468440486">Information om det som är markerat</translation>
+<translation id="4771607256327216405">öka ljusstyrkan på tangentbordet</translation>
 <translation id="4773299976671772492">Har stoppats</translation>
 <translation id="4782311465517282004">Få definitioner, översättningar eller enhetskonverteringar när du högerklickar eller trycker länge på text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
@@ -490,6 +496,7 @@
 <translation id="500920857929044050">Avsluta testet</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Visa foton, tid, väder och medieinformation på skärmen vid inaktivitet.</translation>
+<translation id="5038292761217083259">flerfärgat tangentbord</translation>
 <translation id="5039804452771397117">Tillåt</translation>
 <translation id="5049856988445523908">SIM-kortet är låst (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppnamn</translation>
@@ -639,6 +646,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Aktivera mörkt tema</translation>
 <translation id="6285899124799306373">öppna appstartaren</translation>
+<translation id="629550705077076970">tona ned tangentbordet</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />-testet har avbrutits</translation>
 <translation id="631063167932043783">Appen Utforska</translation>
 <translation id="6319207335391420837">Uppdatera firmware på <ph name="DEVICE_NAME" /></translation>
@@ -657,6 +665,7 @@
 <translation id="6401427872449207797">webbläsarsökning</translation>
 <translation id="6410257289063177456">Bildfiler</translation>
 <translation id="641081527798843608">Ämnesmatchning</translation>
+<translation id="6411934471898487866">ljusstyrka för tangentbordet</translation>
 <translation id="6412715219990689313">Inbyggt tangentbord</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
 <translation id="6423239382391657905">Öppen VPN</translation>
@@ -806,10 +815,12 @@
 <translation id="7656388927906093505">Enheten är en mus.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7665800271478495366">Byt avatar</translation>
+<translation id="7683228889864052081">nyans på tangentbordet</translation>
 <translation id="7690294790491645610">Bekräfta det nya lösenordet</translation>
 <translation id="7701040980221191251">Inga</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">tangentbordsljus</translation>
 <translation id="773153675489693198">Antal cykler</translation>
 <translation id="7747039790905080783">I förväg delad nyckel</translation>
 <translation id="7762130827864645708">Lösenordet har bytts. Använd det nya lösenordet i fortsättningen.</translation>
@@ -853,6 +864,7 @@
 <translation id="8075838845814659848">Batteritid som återstår</translation>
 <translation id="8076492880354921740">Flikar</translation>
 <translation id="8082366717211101304">Det gick inte att matcha DNS från Android-appar</translation>
+<translation id="8082644724189923105">tangentbordszon</translation>
 <translation id="808894953321890993">Ändra lösenord</translation>
 <translation id="8094062939584182041">Tillåt att Google skickar e-post till dig om det här problemet</translation>
 <translation id="8104083085214006426">Du använder ett öppet och osäkert nätverk</translation>
@@ -901,6 +913,7 @@
 <translation id="8456761643544401578">Automatiskt mörkt läge</translation>
 <translation id="8461329675984532579">Hemleverantörens namn</translation>
 <translation id="8475690821716466388">wifi-nätverket använder det svaga säkerhetsprotokollet WEP PSK</translation>
+<translation id="8476242415522716722">bakgrundsbelysning för tangentbord</translation>
 <translation id="8477551185774834963">DNS-latensen är något högre än det godtagbara tröskelvärdet</translation>
 <translation id="8483248364096924578">IP-adress</translation>
 <translation id="8491311378305535241">Det gick inte att ansluta till HTTPS-webbplatser från Android-appar genom brandvägg</translation>
@@ -944,6 +957,7 @@
 <translation id="8845001906332463065">Få hjälp</translation>
 <translation id="8855781559874488009">Det gick inte att ansluta till HTTP-webbplatser genom brandvägg</translation>
 <translation id="885701979325669005">Lagring</translation>
+<translation id="885704831271383379">mörkare tangentbord</translation>
 <translation id="8863170912498892583">Aktivera mörkt tema</translation>
 <translation id="8863888432376731307">Be om en <ph name="INTENT" /> av <ph name="QUERY" /> och annat</translation>
 <translation id="8864415976656252616">Inga innehållsförslag. Visa populärt hjälpinnehåll.</translation>

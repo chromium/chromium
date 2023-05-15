@@ -21,6 +21,9 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" />を常に翻訳</translation>
 <translation id="110724200315609752">開いているウィンドウに切り替え</translation>
 <translation id="1112015203684611006">印刷できませんでした。</translation>
+<translation id="1113057722807951993">Google Pay のお支払い方法と住所は、パスフレーズによる暗号化の対象には含まれません。
+
+この設定を変更するには、<ph name="BEGIN_LINK" />アカウントの Chrome データを消去<ph name="END_LINK" />します。</translation>
 <translation id="1125564390852150847">新しいタブを作成。</translation>
 <translation id="1126809382673880764">危険なウェブサイト、ダウンロード、拡張機能から保護されていません。セーフ ブラウジングによる保護は、Gmail や Google 検索など他の Google サービスで利用可能な場合は、引き続き有効です。</translation>
 <translation id="1145536944570833626">既存のデータを削除します。</translation>
@@ -158,6 +161,7 @@
 <translation id="1989112275319619282">閲覧</translation>
 <translation id="1990820278544963435">検索</translation>
 <translation id="199425419756152024">パスワードを表示</translation>
+<translation id="2008357574463816229">パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chrome データを消去<ph name="END_LINK" />してください。</translation>
 <translation id="2010008505735295285">再読み込み</translation>
 <translation id="2015722694326466240">パスワードを表示するには、まずデバイスにパスワードを設定する必要があります。</translation>
 <translation id="2021670401941426298">検索履歴を削除する場合は、お使いの検索エンジンの手順をご確認ください（該当する場合）。</translation>
@@ -657,7 +661,6 @@
 <translation id="5423269318075950257">価格のトラッキング</translation>
 <translation id="543338862236136125">パスワードを編集</translation>
 <translation id="5433691172869980887">ユーザー名がコピーされました</translation>
-<translation id="5439599923922718668">よく使用するサイト</translation>
 <translation id="5439618055789623719"><ph name="USER_EMAIL" /> としてログインしています</translation>
 <translation id="54401264925851789">ページのセキュリティ情報</translation>
 <translation id="5443952882982198570">クレジット カード</translation>
@@ -707,6 +710,9 @@
 <translation id="5745916533876677730">前のタブに移動する</translation>
 <translation id="5755162682436943950">ログアウトしています。ログインして同期をオンにするダイアログを開きます。</translation>
 <translation id="5758631781033351321">リーディング リストはここに表示されます</translation>
+<translation id="5762370665605786758">Google Pay のお支払い方法と住所は、パスフレーズによる暗号化の対象には含まれません。
+
+パスフレーズを知っているユーザーだけが暗号化されたデータを見ることができます。パスフレーズは Google には送信されず、保存されることもありません。パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chrome データを消去<ph name="END_LINK" />してください。</translation>
 <translation id="5765456154762864099">メニュー → 設定 → 既定のブラウザ</translation>
 <translation id="5777888488419460501">アカウントに保存</translation>
 <translation id="5782227691023083829">翻訳しています...</translation>
@@ -725,7 +731,7 @@
 <translation id="5857090052475505287">新しいフォルダ</translation>
 <translation id="5857770089550859117">同期を開始するにはパスフレーズが必要です。</translation>
 <translation id="5859715514067755465">進む</translation>
-<translation id="5860033963881614850">オフ</translation>
+<translation id="5860033963881614850">OFF</translation>
 <translation id="5869029295770560994">OK</translation>
 <translation id="5871497086027727873">1件の項目を移動しました</translation>
 <translation id="5896576662943111387">iOS 向けの設計</translation>
@@ -848,6 +854,9 @@
 <translation id="6476800141292307438">ページを<ph name="LANGUAGE" />に翻訳しています。画面の下の方にオプションがあります。</translation>
 <translation id="648164694371393720">認証エラー</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />件の項目を削除しました</translation>
+<translation id="6484712497741564393"><ph name="EMAIL" /> としてログインしています。
+
+データはパスフレーズで暗号化されます。Google アカウントで Chrome のデータを使用して保存するには、パスフレーズを入力してください。</translation>
 <translation id="6497772452874122664"><ph name="TIME" /> を信用できる場合は、他のサイトで保存したパスワードを使用できます。
 
 各サイトで個別のパスワードを使用することをご検討ください。</translation>
@@ -894,6 +903,7 @@
 <translation id="6730682669179532099">パスワードをエクスポートできません</translation>
 <translation id="6732087373923685049">カメラ</translation>
 <translation id="6748108480210050150">From</translation>
+<translation id="6753469262000681876">ロックダウン モード</translation>
 <translation id="6760509555861141183">最近使用したタブに戻る</translation>
 <translation id="6762812039470893796">選択をすべて解除</translation>
 <translation id="6780034285637185932">郵便番号</translation>
@@ -1120,6 +1130,9 @@
 <translation id="8299417921174340354">パスワードを使用するには、まずデバイスにパスコードを設定する必要があります。</translation>
 <translation id="8299613349954694191">ウェブをプライベート モードで閲覧するにはシークレット タブを開きます。</translation>
 <translation id="8316944564970119719">サイトとパスワードを入力し、保存する</translation>
+<translation id="8317835149433843300">Google Pay のお支払い方法と住所は暗号化されません。Chrome の閲覧履歴は Google アカウントに保存されません。
+
+パスフレーズを知っているユーザーだけが暗号化されたデータを見ることができます。パスフレーズは Google には送信されず、保存されることもありません。パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chrome データを消去<ph name="END_LINK" />してください。</translation>
 <translation id="8319076807703933069">新しく検索</translation>
 <translation id="8323906514956095947">長押しすると、タブのオプションがさらに表示されます</translation>
 <translation id="8328777765163860529">すべて閉じる</translation>
@@ -1142,6 +1155,9 @@
 <translation id="8487700953926739672">オフラインでの利用</translation>
 <translation id="8488923644885757471">新しいウインドウを開く</translation>
 <translation id="8490978609246021741">変更を保存</translation>
+<translation id="8491300088149538575"><ph name="EMAIL" /> としてログインしています。
+
+データは <ph name="TIME" /> にパスフレーズで暗号化されました。Google アカウントで Chrome のデータを使用して保存するには、パスフレーズを入力してください。</translation>
 <translation id="8503813439785031346">ユーザー名</translation>
 <translation id="850600235656508448">シークレット モードで開く</translation>
 <translation id="8517375800490286174">オープンソースライセンス</translation>

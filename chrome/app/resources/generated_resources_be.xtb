@@ -220,7 +220,6 @@
 <translation id="1181037720776840403">Выдаліць</translation>
 <translation id="1181366777303791449">на <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">Не ўдаецца ўсталяваць <ph name="EXTERNAL_CRX_FILE" /> у лакальны кэш.</translation>
-<translation id="1184709369107246085"><ph name="APPLICATION_NAME" />: неабходны правільны URL-адрас для праграмы "<ph name="APPLICATION_NAME" />".</translation>
 <translation id="1185924365081634987">Каб выправіць памылку сеткі, таксама можна паспрабаваць праглядаць вэб-старонкі <ph name="GUEST_SIGNIN_LINK_START" />ў рэжыме госця<ph name="GUEST_SIGNIN_LINK_END" />.</translation>
 <translation id="1187722533808055681">Пераходы ў актыўны рэжым</translation>
 <translation id="1188807932851744811">Журнал не запампаваны.</translation>
@@ -486,15 +485,6 @@
 <translation id="1420834118113404499">Мультымедыйныя ліцэнзіі</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />, каб дазволіць спалучэнне</translation>
 <translation id="1422159345171879700">Загрузіць небяспечныя сцэнарыі</translation>
-<translation id="1423716227250567100">У выніку гэтага дзеяння будуць:
-          <ph name="LINE_BREAKS" />
-           • скінуты налады і спалучэнні клавіш Chrome;
-           <ph name="LINE_BREAK" />
-           • адключаны пашырэнні;
-           <ph name="LINE_BREAK" />
-           • выдалены файлы cookie і іншыя часовыя даныя сайтаў.
-            <ph name="LINE_BREAKS" />
-           Гэта дзеянне не закране закладкі, гісторыю і захаваныя паролі.</translation>
 <translation id="1425040197660226913">Запампаваць файл не ўдалося. Аб'ём відарыса не павінен перавышаць 20 МБ.</translation>
 <translation id="1426410128494586442">Так</translation>
 <translation id="142655739075382478">Праграма "<ph name="APP_NAME" />" заблакіравана</translation>
@@ -1668,7 +1658,6 @@
 <translation id="2398546389094871088">Пры выкарыстанні функцыі Powerwash для скіду налад профілі eSIM-карты не выдаляюцца. Іх можна выдаліць уручную ў <ph name="LINK_BEGIN" />наладах мабільнай прылады<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Апавяшчэнні ўключаны</translation>
 <translation id="2399939490305346086">Уліковыя даныя ключа бяспекі</translation>
-<translation id="2400323785194108001">Ніколі не адключаць гэты сайт</translation>
 <translation id="2400664245143453337">Патрабуецца неадкладнае абнаўленне</translation>
 <translation id="2402226831639195063">Танальныя сігналы</translation>
 <translation id="2406153734066939945">Выдаліць профіль і ўсе яго даныя?</translation>
@@ -2939,7 +2928,6 @@
 <translation id="354060433403403521">Адаптар пераменнага току</translation>
 <translation id="354068948465830244">Гэта пашырэнне можа чытаць і змяняць даныя на сайце</translation>
 <translation id="3541823293333232175">Прызначана</translation>
-<translation id="354204985370574425">Ніколі не адключаць гэты сайт</translation>
 <translation id="3543393733900874979">Збой абнаўлення (памылка: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">Подпіс X9.62 ECDSA з SHA-512</translation>
 <translation id="3544058026430919413">Кампанія можа вызначыць групу сайтаў, якім будзе дазволена выкарыстоўваць файлы cookie для перадачы адзін аднаму інфармацыі пра вашы дзеянні ў групе. У рэжыме інкогніта гэта функцыя не працуе.</translation>
@@ -2981,7 +2969,6 @@
 <translation id="3582299299336701326">Рабіце светлыя экраны цёмнымі, а цёмныя – светлымі. Каб уключыць або выключыць інверсію колераў, націсніце Пошук + Ctrl + H.</translation>
 <translation id="3584169441612580296">Прагляд і змяненне з камп'ютара фота, музыкі і іншых файлаў мультымедыя</translation>
 <translation id="3584527007414070635">Узнавіце шлях, які вы прайшлі, шукаючы "<ph name="MODULE_TITLE" />"</translation>
-<translation id="3586787825263265024">Для работы праграме "<ph name="APPLICATION_NAME" />" патрабуецца доступ да OneDrive.</translation>
 <translation id="3586806079541226322">Не ўдалося адкрыць гэты файл</translation>
 <translation id="3586931643579894722">Схаваць падрабязнасці</translation>
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" />: даведайцеся больш</translation>
@@ -4259,7 +4246,6 @@
 <translation id="4699357559218762027">(аўтаматычны запуск)</translation>
 <translation id="4701025263201366865">Уваход для бацькоў</translation>
 <translation id="4701335814944566468">Прагледжана ўчора</translation>
-<translation id="4705624512518230041">Калі няма доступу да OneDrive, адкрыць файл "<ph name="FILE_NAMES" />" немагчыма</translation>
 <translation id="470644585772471629">Інверсія колераў</translation>
 <translation id="4707337002099455863">Заўсёды на ўсіх сайтах</translation>
 <translation id="4708849949179781599">Выйсці з браўзера <ph name="PRODUCT_NAME" /></translation>
@@ -7735,7 +7721,6 @@
 <translation id="783229689197954457">Калі Google знойдзе скідку, яна з'явіцца на гэтай старонцы</translation>
 <translation id="7833720883933317473">Дададзеныя карыстальнікам словы, якія былі захаваны, з'явяцца тут</translation>
 <translation id="7835178595033117206">Закладка выдалена</translation>
-<translation id="7836535163829106376">Не ўдаецца адкрыць URL-адрас для файла "<ph name="FILE_NAMES" />"</translation>
 <translation id="7836577093182643605">Спіс заблакіраваных вамі тэм, якія вы не хочаце абагульваць з сайтамі</translation>
 <translation id="7836850009646241041">Паспрабуйце дакрануцца да ключа бяспекі яшчэ раз</translation>
 <translation id="7837290304480415481">Кіраваць дазволамі і наладамі</translation>
