@@ -11,6 +11,7 @@
 #include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/chromeos/kcer_nss/kcer_token_impl_nss.h"
@@ -46,15 +47,6 @@ std::ostream& operator<<(std::ostream& stream, Token val) {
 
 namespace {
 
-std::string KeyTypeToStr(KeyType key_type) {
-  switch (key_type) {
-    case KeyType::kRsa:
-      return "kRsa";
-    case KeyType::kEcc:
-      return "kEcc";
-  }
-}
-
 constexpr char kPublicKeyBase64[] =
     "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArURIGgAq8joyzjFdUpzmOeDa5VgTC8"
     "n77sMCQsm01mwk+6NwHhCSyCfXoB9EuMcKynj9SZbCgArnsHcZiqBsKpU/VnBO/"
@@ -64,12 +56,89 @@ constexpr char kPublicKeyBase64[] =
     "eoy7MtXwSchI0e2Q8QdUneNp529Ee+pUQ5Uki1L2pE4Pnyj+j2i2x4wGFGdJgiBMSvtpvdPdF+"
     "NMfjdbVaDzTF3rcL3lNCxRb4xk3TMFXV7dQIDAQAB";
 
+std::string KeyTypeToStr(KeyType key_type) {
+  switch (key_type) {
+    case KeyType::kRsa:
+      return "kRsa";
+    case KeyType::kEcc:
+      return "kEcc";
+  }
+}
+
 std::vector<uint8_t> StrToBytes(const std::string& val) {
   return std::vector<uint8_t>(val.begin(), val.end());
 }
 
 scoped_refptr<base::SingleThreadTaskRunner> IOTaskRunner() {
   return content::GetIOThreadTaskRunner({});
+}
+
+std::string ToString(const std::vector<SigningScheme>& vec) {
+  std::stringstream res;
+  res << "[";
+  for (const SigningScheme& s : vec) {
+    res << static_cast<int>(s) << ", ";
+  }
+  res << "]";
+  return res.str();
+}
+
+std::string ToString(const absl::optional<chaps::KeyPermissions>& val) {
+  if (!val.has_value()) {
+    return "<empty>";
+  }
+  // Should be updated if `KeyPermissions` struct is changed.
+  return base::StringPrintf("[arc:%d corp:%d]", val->key_usages().arc(),
+                            val->key_usages().corporate());
+}
+
+bool operator==(const absl::optional<chaps::KeyPermissions>& a,
+                const absl::optional<chaps::KeyPermissions>& b) {
+  if (!a.has_value() || !b.has_value()) {
+    return (a.has_value() == b.has_value());
+  }
+  return (a->SerializeAsString() == b->SerializeAsString());
+}
+
+bool KeyInfoEquals(const KeyInfo& expected, const KeyInfo& actual) {
+  if (expected.is_hardware_backed != actual.is_hardware_backed) {
+    LOG(ERROR) << "ERROR: is_hardware_backed: expected: "
+               << expected.is_hardware_backed
+               << ", actual: " << actual.is_hardware_backed;
+    return false;
+  }
+  if (expected.key_type != actual.key_type) {
+    LOG(ERROR) << "ERROR: key_type: expected: " << int(expected.key_type)
+               << ", actual: " << int(actual.key_type);
+    return false;
+  }
+  if (expected.supported_signing_schemes != actual.supported_signing_schemes) {
+    LOG(ERROR) << "ERROR: supported_signing_schemes: expected: "
+               << ToString(expected.supported_signing_schemes)
+               << ", actual: " << ToString(actual.supported_signing_schemes);
+    return false;
+  }
+  if (expected.nickname != actual.nickname) {
+    LOG(ERROR) << "ERROR: nickname: expected: "
+               << expected.nickname.value_or("<empty>")
+               << ", actual: " << actual.nickname.value_or("<empty>");
+    return false;
+  }
+  if (expected.key_permissions != actual.key_permissions) {
+    LOG(ERROR) << "ERROR: key_permissions: expected: "
+               << ToString(expected.key_permissions)
+               << ", actual: " << ToString(actual.key_permissions);
+    return false;
+  }
+  if (expected.cert_provisioning_profile_id !=
+      actual.cert_provisioning_profile_id) {
+    LOG(ERROR) << "ERROR: cert_provisioning_profile_id: expected: "
+               << expected.cert_provisioning_profile_id.value_or("<empty>")
+               << ", actual: "
+               << actual.cert_provisioning_profile_id.value_or("<empty>");
+    return false;
+  }
+  return true;
 }
 
 // Reads a file in the PEM format, decodes it, returns the content of the first
@@ -95,6 +164,7 @@ class TokenHolder {
  public:
   explicit TokenHolder(Token token) {
     io_token_ = std::make_unique<internal::KcerTokenImplNss>(token);
+    io_token_->SetAttributeTranslationForTesting(/*is_enabled=*/true);
     weak_ptr_ = io_token_->GetWeakPtr();
     // After this point `io_token_` should only be used on the IO thread.
   }
@@ -295,6 +365,10 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   base::test::TestFuture<base::expected<void, Error>> set_nickname_waiter;
   kcer->SetKeyNickname(PrivateKeyHandle(PublicKeySpki()), "new_nickname",
                        set_nickname_waiter.GetCallback());
+  base::test::TestFuture<base::expected<void, Error>> set_permissions_waiter;
+  kcer->SetKeyPermissions(PrivateKeyHandle(PublicKeySpki()),
+                          chaps::KeyPermissions(),
+                          set_permissions_waiter.GetCallback());
   // Close the list with one more GenerateRsaKey, so all methods are tested
   // with other methods before and after them.
   base::test::TestFuture<base::expected<PublicKey, Error>>
@@ -334,6 +408,9 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
             Error::kTokenInitializationFailed);
   ASSERT_FALSE(set_nickname_waiter.Get().has_value());
   EXPECT_EQ(set_nickname_waiter.Get().error(),
+            Error::kTokenInitializationFailed);
+  ASSERT_FALSE(set_permissions_waiter.Get().has_value());
+  EXPECT_EQ(set_permissions_waiter.Get().error(),
             Error::kTokenInitializationFailed);
   ASSERT_FALSE(generate_rsa_waiter_2.Get().has_value());
   EXPECT_EQ(generate_rsa_waiter_2.Get().error(),
@@ -411,42 +488,72 @@ TEST_F(KcerNssTest, GetKeyInfoGeneric) {
   ASSERT_TRUE(generate_waiter.Get().has_value());
   const PublicKey& public_key = generate_waiter.Get().value();
 
+  KeyInfo expected_key_info;
+  // Hardware- vs software-backed indicators on real devices are provided by
+  // Chaps and are wrong in unit tests.
+  expected_key_info.is_hardware_backed = true;
+  // NSS sets an empty nickname by default, this doesn't have to be like this in
+  // general.
+  expected_key_info.nickname = "";
+  // Custom attributes are stored differently in tests and have empty values by
+  // default.
+  expected_key_info.key_permissions = chaps::KeyPermissions();
+  expected_key_info.cert_provisioning_profile_id = "";
+
   {
     base::test::TestFuture<base::expected<KeyInfo, Error>> key_info_waiter;
     kcer->GetKeyInfo(PrivateKeyHandle(public_key),
                      key_info_waiter.GetCallback());
     ASSERT_TRUE(key_info_waiter.Get().has_value());
     const KeyInfo& key_info = key_info_waiter.Get().value();
-    // Hardware- vs software-backed indicators on real devices are provided by
-    // Chaps and are wrong in unit tests.
-    EXPECT_EQ(key_info.is_hardware_backed, true);
-    // NSS sets an empty nickname by default, doesn't have to be like this in
-    // general.
-    ASSERT_TRUE(key_info.nickname.has_value());
-    EXPECT_EQ(key_info.nickname.value(), "");
-    EXPECT_FALSE(key_info.key_permissions.has_value());
-    EXPECT_FALSE(key_info.cert_provisioning_profile_id.has_value());
+
+    // Copy some fields, their values are covered by dedicated tests, this test
+    // only checks that they don't change when they shouldn't.
+    expected_key_info.key_type = key_info.key_type;
+    expected_key_info.supported_signing_schemes =
+        key_info.supported_signing_schemes;
+
+    EXPECT_TRUE(KeyInfoEquals(expected_key_info, key_info));
   }
 
-  constexpr char kNickname[] = "new_nickname";
-  base::test::TestFuture<base::expected<void, Error>> set_nickname_waiter;
-  kcer->SetKeyNickname(PrivateKeyHandle(public_key), kNickname,
-                       set_nickname_waiter.GetCallback());
-  ASSERT_TRUE(set_nickname_waiter.Get().has_value());
+  {
+    expected_key_info.nickname = "new_nickname";
+
+    base::test::TestFuture<base::expected<void, Error>> set_nickname_waiter;
+    kcer->SetKeyNickname(PrivateKeyHandle(public_key),
+                         expected_key_info.nickname.value(),
+                         set_nickname_waiter.GetCallback());
+    ASSERT_TRUE(set_nickname_waiter.Get().has_value());
+  }
 
   {
     base::test::TestFuture<base::expected<KeyInfo, Error>> key_info_waiter;
     kcer->GetKeyInfo(PrivateKeyHandle(public_key),
                      key_info_waiter.GetCallback());
     ASSERT_TRUE(key_info_waiter.Get().has_value());
-    const KeyInfo& key_info = key_info_waiter.Get().value();
-    // Hardware- vs software-backed indicators on real devices are provided by
-    // Chaps and are wrong in unit tests.
-    EXPECT_EQ(key_info.is_hardware_backed, true);
-    ASSERT_TRUE(key_info.nickname.has_value());
-    EXPECT_EQ(key_info.nickname.value(), kNickname);
-    EXPECT_FALSE(key_info.key_permissions.has_value());
-    EXPECT_FALSE(key_info.cert_provisioning_profile_id.has_value());
+    EXPECT_TRUE(
+        KeyInfoEquals(expected_key_info, key_info_waiter.Get().value()));
+  }
+
+  {
+    expected_key_info.key_permissions->mutable_key_usages()->set_corporate(
+        true);
+    expected_key_info.key_permissions->mutable_key_usages()->set_arc(true);
+
+    base::test::TestFuture<base::expected<void, Error>> set_permissions_waiter;
+    kcer->SetKeyPermissions(PrivateKeyHandle(public_key),
+                            expected_key_info.key_permissions.value(),
+                            set_permissions_waiter.GetCallback());
+    ASSERT_TRUE(set_permissions_waiter.Get().has_value());
+  }
+
+  {
+    base::test::TestFuture<base::expected<KeyInfo, Error>> key_info_waiter;
+    kcer->GetKeyInfo(PrivateKeyHandle(public_key),
+                     key_info_waiter.GetCallback());
+    ASSERT_TRUE(key_info_waiter.Get().has_value());
+    EXPECT_TRUE(
+        KeyInfoEquals(expected_key_info, key_info_waiter.Get().value()));
   }
 
   // TODO(244408716): Test setting and reading other key attributes when that's
