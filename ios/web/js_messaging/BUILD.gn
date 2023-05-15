@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
-import("//ios/web/public/js_messaging/optimize_js.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
 
 source_set("js_messaging") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -157,18 +157,28 @@ source_set("web_view_js_utils") {
   ]
 }
 
-optimize_js("setup_frame_js") {
+optimize_ts("setup_frame_js") {
   visibility = [ ":js_messaging" ]
 
-  primary_script = "resources/setup_frame.js"
-  sources = [ "resources/setup_frame.js" ]
+  sources = [ "resources/setup_frame.ts" ]
+
+  deps = [
+    "//ios/web/public/js_messaging:frame_id",
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }
 
-optimize_js("frame_listeners_js") {
+optimize_ts("frame_listeners_js") {
   visibility = [ ":js_messaging" ]
 
-  primary_script = "resources/frame_listeners.js"
-  sources = [ "resources/frame_listeners.js" ]
+  sources = [ "resources/frame_listeners.ts" ]
+
+  deps = [
+    "//ios/web/public/js_messaging:frame_id",
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }
 
 source_set("unittests") {
