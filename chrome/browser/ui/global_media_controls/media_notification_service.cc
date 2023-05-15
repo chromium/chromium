@@ -142,11 +142,15 @@ MediaNotificationService::MediaNotificationService(Profile* profile,
   if (!media_router::MediaRouterEnabled(profile)) {
     return;
   }
-  // base::Unretained() is safe here because cast_notification_producer_ is
-  // deleted before item_manager_.
+  // CastMediaNotificationProducer is owned by
+  // CastMediaNotificationProducerKeyedService in Ash.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // base::Unretained() is safe here because `cast_notification_producer_` is
+  // deleted before `item_manager_`.
   cast_notification_producer_ = std::make_unique<CastMediaNotificationProducer>(
       profile, item_manager_.get());
   item_manager_->AddItemProducer(cast_notification_producer_.get());
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
     presentation_request_notification_producer_ =
