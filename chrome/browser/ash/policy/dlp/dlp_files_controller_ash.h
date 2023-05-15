@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -115,6 +116,8 @@ class DlpFilesControllerAsh : public DlpFilesController {
 
   using GetDisallowedTransfersCallback =
       base::OnceCallback<void(std::vector<storage::FileSystemURL>)>;
+  using CheckIfTransferAllowedCallback =
+      base::OnceCallback<void(std::set<storage::FileSystemURL>)>;
   using GetFilesRestrictedByAnyRuleCallback = GetDisallowedTransfersCallback;
   using FilterDisallowedUploadsCallback =
       base::OnceCallback<void(std::vector<ui::SelectedFileInfo>)>;
@@ -138,6 +141,15 @@ class DlpFilesControllerAsh : public DlpFilesController {
       storage::FileSystemURL destination,
       bool is_move,
       GetDisallowedTransfersCallback result_callback);
+
+  // Checks whether transferring `transferred_urls` to `destination` is
+  // allowed. Runs `result_callback` with false if the user cancelled the
+  // warning. Otherwise, it'll return the blocked entries.
+  void CheckIfTransferAllowed(
+      file_manager::io_task::IOTaskId task_id,
+      const std::vector<storage::FileSystemURL>& transferred_urls,
+      storage::FileSystemURL destination,
+      CheckIfTransferAllowedCallback result_callback);
 
   // Retrieves metadata for each entry in |files| and returns it as a list in
   // |result_callback|. If |destination| is passed, marks the files that are not

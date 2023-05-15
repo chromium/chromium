@@ -100,6 +100,10 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
   std::unique_ptr<storage::CopyOrMoveHookDelegate> GetHookDelegate(
       size_t idx) override;
 
+  // Continues executing the IO task after DLP checks are done.
+  void OnCheckIfTransferAllowed(
+      std::set<storage::FileSystemURL> blocked_entries);
+
   raw_ptr<Profile, ExperimentalAsh> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 

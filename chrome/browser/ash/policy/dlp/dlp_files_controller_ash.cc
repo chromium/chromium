@@ -623,6 +623,15 @@ void DlpFilesControllerAsh::GetDisallowedTransfers(
                      base::Unretained(roots_recursion_delegate)));
 }
 
+void DlpFilesControllerAsh::CheckIfTransferAllowed(
+    file_manager::io_task::IOTaskId task_id,
+    const std::vector<storage::FileSystemURL>& transferred_urls,
+    storage::FileSystemURL destination,
+    CheckIfTransferAllowedCallback result_callback) {
+  // TODO(b/281043020): Add Implementation.
+  std::move(result_callback).Run(/*blocked_entries=*/{});
+}
+
 void DlpFilesControllerAsh::RequestCopyAccess(
     const storage::FileSystemURL& source_file,
     const storage::FileSystemURL& destination,
