@@ -6,10 +6,6 @@
 
 #include "base/metrics/histogram_macros.h"
 
-SmartLockMetricsRecorder::UsageRecorder::UsageRecorder() = default;
-
-SmartLockMetricsRecorder::UsageRecorder::~UsageRecorder() = default;
-
 SmartLockMetricsRecorder::SmartLockMetricsRecorder() = default;
 
 SmartLockMetricsRecorder::~SmartLockMetricsRecorder() {}
@@ -57,19 +53,6 @@ void SmartLockMetricsRecorder::RecordAuthMethodChoiceSignInPasswordState(
 }
 
 // static
-void SmartLockMetricsRecorder::SetUsageRecorderInstance(
-    SmartLockMetricsRecorder::UsageRecorder* usage_recorder) {
-  SmartLockMetricsRecorder::g_usage_recorder = usage_recorder;
-}
-
-// static
 void SmartLockMetricsRecorder::RecordAuthResultSuccess(bool success) {
   UMA_HISTOGRAM_BOOLEAN("SmartLock.AuthResult", success);
-
-  if (SmartLockMetricsRecorder::g_usage_recorder) {
-    SmartLockMetricsRecorder::g_usage_recorder->RecordUsage(success);
-  }
 }
-
-SmartLockMetricsRecorder::UsageRecorder*
-    SmartLockMetricsRecorder::g_usage_recorder = nullptr;

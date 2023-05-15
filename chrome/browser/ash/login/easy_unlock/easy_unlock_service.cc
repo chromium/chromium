@@ -181,16 +181,14 @@ bool EasyUnlockService::AttemptAuth(const AccountId& account_id) {
 
   if (!GetAccountId().is_valid()) {
     PA_LOG(ERROR) << "Empty user account. Auth attempt failed.";
-    SmartLockMetricsRecorder::RecordAuthResultUnlockFailure(
-        SmartLockMetricsRecorder::SmartLockAuthResultFailureReason::
-            kEmptyUserAccount);
+    RecordAuthResult(SmartLockMetricsRecorder::
+                         SmartLockAuthResultFailureReason::kEmptyUserAccount);
     return false;
   }
 
   if (GetAccountId() != account_id) {
-    SmartLockMetricsRecorder::RecordAuthResultUnlockFailure(
-        SmartLockMetricsRecorder::SmartLockAuthResultFailureReason::
-            kInvalidAccoundId);
+    RecordAuthResult(SmartLockMetricsRecorder::
+                         SmartLockAuthResultFailureReason::kInvalidAccoundId);
 
     PA_LOG(ERROR) << "Check failed: " << GetAccountId().Serialize() << " vs "
                   << account_id.Serialize();
@@ -199,7 +197,7 @@ bool EasyUnlockService::AttemptAuth(const AccountId& account_id) {
 
   auth_attempt_ = std::make_unique<EasyUnlockAuthAttempt>(account_id);
   if (!auth_attempt_->Start()) {
-    SmartLockMetricsRecorder::RecordAuthResultUnlockFailure(
+    RecordAuthResult(
         SmartLockMetricsRecorder::SmartLockAuthResultFailureReason::
             kAuthAttemptCannotStart);
     auth_attempt_.reset();
@@ -465,7 +463,7 @@ void EasyUnlockService::OnScreenDidUnlock(
       // TODO(crbug.com/1171972): Deprecate the AuthMethodChoice metric.
       SmartLockMetricsRecorder::RecordSmartLockUnlockAuthMethodChoice(
           SmartLockMetricsRecorder::SmartLockAuthMethodChoice::kSmartLock);
-      SmartLockMetricsRecorder::RecordAuthResultUnlockSuccess();
+      RecordAuthResult(/*failure_reason=*/absl::nullopt);
       RecordEasyUnlockScreenUnlockDuration(base::TimeTicks::Now() -
                                            lock_screen_last_shown_timestamp_);
     } else {
@@ -738,6 +736,19 @@ void EasyUnlockService::PrepareForSuspend() {
   }
 }
 
+void EasyUnlockService::RecordAuthResult(
+    absl::optional<SmartLockMetricsRecorder::SmartLockAuthResultFailureReason>
+        failure_reason) {
+  if (failure_reason.has_value()) {
+    SmartLockMetricsRecorder::RecordAuthResultUnlockFailure(
+        failure_reason.value());
+    feature_usage_metrics_->RecordUsage(/*success=*/false);
+  } else {
+    SmartLockMetricsRecorder::RecordAuthResultUnlockSuccess();
+    feature_usage_metrics_->RecordUsage(/*success=*/true);
+  }
+}
+
 void EasyUnlockService::ResetSmartLockState() {
   smart_lock_state_.reset();
   auth_attempt_.reset();
@@ -828,14 +839,10 @@ void EasyUnlockService::ShowNotificationIfNewDevicePresent(
 void EasyUnlockService::StartFeatureUsageMetrics() {
   feature_usage_metrics_ =
       std::make_unique<SmartLockFeatureUsageMetrics>(multidevice_setup_client_);
-
-  SmartLockMetricsRecorder::SetUsageRecorderInstance(
-      feature_usage_metrics_.get());
 }
 
 void EasyUnlockService::StopFeatureUsageMetrics() {
   feature_usage_metrics_.reset();
-  SmartLockMetricsRecorder::SetUsageRecorderInstance(nullptr);
 }
 
 void EasyUnlockService::UpdateAppState() {

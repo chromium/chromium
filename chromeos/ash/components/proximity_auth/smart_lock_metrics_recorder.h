@@ -7,22 +7,6 @@
 
 class SmartLockMetricsRecorder {
  public:
-  // The UsageRecorder abstract class is implemented within
-  // SmartLockFeatureUsageMetrics to avoid a circular dependency. RecordUsage()
-  // is used to track Smart Lock feature usage for the Standard Feature Usage
-  // Logging (SFUL) framework.
-  class UsageRecorder {
-   public:
-    UsageRecorder();
-
-    UsageRecorder(const UsageRecorder&) = delete;
-    UsageRecorder& operator=(const UsageRecorder&) = delete;
-
-    virtual ~UsageRecorder();
-
-    virtual void RecordUsage(bool success) = 0;
-  };
-
   SmartLockMetricsRecorder();
   ~SmartLockMetricsRecorder();
 
@@ -116,17 +100,8 @@ class SmartLockMetricsRecorder {
   static void RecordAuthMethodChoiceSignInPasswordState(
       SmartLockAuthEventPasswordState password_state);
 
-  static void SetUsageRecorderInstance(UsageRecorder* usage_recorder);
-
  private:
   static void RecordAuthResultSuccess(bool success);
-
-  // TODO(b/227674947): After deleting EasyUnlockServiceSignIn and combining
-  // EasyUnlockService and EasyUnlockServiceRegular into one class, delete
-  // g_usage_recorder and simplify our SFUL implementation. We can call
-  // SmartLockFeatureUsageMetrics::RecordUsage() on our SFUL instance directly
-  // within that combined class.
-  static UsageRecorder* g_usage_recorder;
 };
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PROXIMITY_AUTH_SMART_LOCK_METRICS_RECORDER_H_
