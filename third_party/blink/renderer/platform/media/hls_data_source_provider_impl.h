@@ -32,9 +32,7 @@ class HlsDataSourceProviderImpl : public media::HlsDataSourceProvider {
       scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       const base::TickClock* tick_clock);
 
-  void SetOwner(media::HlsManifestDemuxerEngine* owner) override;
-
-  // |media::HlsManifestDemuxerEngine::DataSourceProvider| implementation
+  // `media::DataSourceProvider` implementation
   void RequestDataSource(GURL uri,
                          absl::optional<media::hls::types::ByteRange> range,
                          RequestCb callback) override;
@@ -64,7 +62,6 @@ class HlsDataSourceProviderImpl : public media::HlsDataSourceProvider {
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   std::unique_ptr<BufferedDataSourceHostImpl> buffered_data_source_host_;
-  media::HlsManifestDemuxerEngine* owner_ = nullptr;
 
   // Set of all active `MultiBufferDataSource`s belonging to the
   // `HlsDataSourceImpl`s created by this provider. This uses a
