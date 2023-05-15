@@ -124,7 +124,7 @@ PermissionHatsTriggerHelper::PromptParametersForHaTS::PromptParametersForHaTS(
     const std::string& survey_display_time,
     absl::optional<base::TimeDelta> prompt_display_duration,
     OneTimePermissionPromptsDecidedBucket one_time_prompts_decided_bucket,
-    const GURL& gurl)
+    absl::optional<GURL> gurl)
     : request_type(request_type),
       action(action),
       prompt_disposition(prompt_disposition),
@@ -134,7 +134,7 @@ PermissionHatsTriggerHelper::PromptParametersForHaTS::PromptParametersForHaTS(
       survey_display_time(survey_display_time),
       prompt_display_duration(prompt_display_duration),
       one_time_prompts_decided_bucket(one_time_prompts_decided_bucket),
-      url(gurl.spec()) {}
+      url(gurl.has_value() ? gurl->spec() : "") {}
 
 PermissionHatsTriggerHelper::PromptParametersForHaTS::PromptParametersForHaTS(
     const PromptParametersForHaTS& other) = default;
