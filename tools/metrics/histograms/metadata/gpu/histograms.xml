@@ -1365,6 +1365,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.SharedImage.FormatPixmapSupport"
+    enum="FormatPixmapSupport" expires_after="2023-12-01">
+  <owner>vasilyt@chromium.org</owner>
+  <owner>hitawala@chromium.org</owner>
+  <summary>
+    Tracks which formats can be supported for creating SharedImages with real
+    GpuMemoryBuffers on Ozone based platforms. Result is an enum that represents
+    multiplanar buffer formats in order of possible support eg. NV12, YV12 and
+    whether they can be used on platform that supports native pixmaps. This is
+    logged once per gpu process launch.
+  </summary>
+</histogram>
+
 <histogram name="GPU.SoftwareRendering" enum="BooleanSoftwareRendering"
     expires_after="2023-09-10">
   <owner>zmo@chromium.org</owner>

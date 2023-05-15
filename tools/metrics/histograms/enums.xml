@@ -45038,6 +45038,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="Success"/>
 </enum>
 
+<enum name="FormatPixmapSupport">
+  <int value="0" label="No format with Native Pixmaps"/>
+  <int value="1" label="NV12 format with Native Pixmaps"/>
+  <int value="2" label="YV12 format with Native Pixmaps"/>
+</enum>
+
 <enum name="FormDataDeserializationStatus">
   <int value="0" label="Login database success"/>
   <int value="1" label="Login database failure"/>

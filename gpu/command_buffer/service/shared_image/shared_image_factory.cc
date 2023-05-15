@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -103,6 +104,31 @@ const char* GmbTypeToString(gfx::GpuMemoryBufferType type) {
   NOTREACHED();
 }
 
+#if defined(USE_OZONE)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum FormatPixmapSupport { kNone = 0, kNV12 = 1, kYV12 = 2, kMaxValue = kYV12 };
+
+// Return the supported format in order of fallback support.
+FormatPixmapSupport GetFormatPixmapSupport(
+    std::vector<gfx::BufferFormat> supported_formats) {
+  FormatPixmapSupport val = FormatPixmapSupport::kNone;
+  for (auto format : supported_formats) {
+    if (format == gfx::BufferFormat::YUV_420_BIPLANAR) {
+      val = FormatPixmapSupport::kNV12;
+      break;
+    } else if (format == gfx::BufferFormat::YVU_420) {
+      val = FormatPixmapSupport::kYV12;
+    }
+  }
+  return val;
+}
+
+// Set bool only once as formats supported on platform don't change on factory
+// creation.
+bool set_format_supported_metric = false;
+#endif
+
 }  // namespace
 
 // Overrides for flat_set lookups:
@@ -137,6 +163,28 @@ SharedImageFactory::SharedImageFactory(
       is_for_display_compositor_(is_for_display_compositor),
       gr_context_type_(context_state ? context_state->gr_context_type()
                                      : GrContextType::kGL) {
+#if defined(USE_OZONE)
+  if (!set_format_supported_metric) {
+    bool is_pixmap_supported = ui::OzonePlatform::GetInstance()
+                                   ->GetPlatformRuntimeProperties()
+                                   .supports_native_pixmaps;
+    // Only log histogram for formats that are used with real GMBs containing
+    // native pixmap.
+    if (is_pixmap_supported) {
+      auto* factory =
+          ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
+      if (factory) {
+        // Get all formats that are supported by platform.
+        auto supported_formats = factory->GetSupportedFormatsForTexturing();
+        auto format = GetFormatPixmapSupport(supported_formats);
+        base::UmaHistogramEnumeration("GPU.SharedImage.FormatPixmapSupport",
+                                      format);
+      }
+    }
+    set_format_supported_metric = true;
+  }
+#endif
+
   auto shared_memory_backing_factory =
       std::make_unique<SharedMemoryImageBackingFactory>();
   factories_.push_back(std::move(shared_memory_backing_factory));
