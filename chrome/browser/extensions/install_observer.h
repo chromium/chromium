@@ -71,10 +71,6 @@ class InstallObserver {
                                   const std::string& extension_id,
                                   bool success) {}
 
-  // Called if the extension fails to install.
-  virtual void OnInstallFailure(content::BrowserContext* context,
-                                const std::string& extension_id) {}
-
   // Called when the app list is reordered. If |extension_id| is set, it
   // indicates the extension ID that was re-ordered.
   virtual void OnAppsReordered(

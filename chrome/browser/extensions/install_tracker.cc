@@ -113,8 +113,6 @@ void InstallTracker::OnFinishCrxInstall(const std::string& extension_id,
 void InstallTracker::OnInstallFailure(
     const std::string& extension_id) {
   RemoveActiveInstall(extension_id);
-  for (auto& observer : observers_)
-    observer.OnInstallFailure(browser_context_, extension_id);
 }
 
 void InstallTracker::Shutdown() {
