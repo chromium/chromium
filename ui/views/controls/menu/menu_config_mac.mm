@@ -36,6 +36,7 @@ void InitMaterialMenuConfig(views::MenuConfig* config) {
   config->auxiliary_corner_radius = 4;
   config->item_top_margin = 4;
   config->item_bottom_margin = 4;
+  config->item_horizontal_border_padding = 0;
 }
 
 }  // namespace

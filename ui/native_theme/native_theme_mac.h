@@ -104,7 +104,8 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
   // high contrast.
   void PaintSelectedMenuItem(cc::PaintCanvas* canvas,
                              const ColorProvider* color_provider,
-                             const gfx::Rect& rect) const;
+                             const gfx::Rect& rect,
+                             const MenuItemExtraParams& extra_params) const;
 
   void PaintScrollBarTrackGradient(cc::PaintCanvas* canvas,
                                    const gfx::Rect& rect,

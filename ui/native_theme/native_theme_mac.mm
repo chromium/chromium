@@ -482,7 +482,7 @@ void NativeThemeMac::PaintMenuItemBackground(
       // Draw nothing over the regular background.
       break;
     case NativeTheme::kHovered:
-      PaintSelectedMenuItem(canvas, color_provider, rect);
+      PaintSelectedMenuItem(canvas, color_provider, rect, menu_item);
       break;
     default:
       NOTREACHED();
@@ -529,14 +529,18 @@ NativeThemeMac::~NativeThemeMac() {
       removeObserver:high_contrast_notification_token_];
 }
 
-void NativeThemeMac::PaintSelectedMenuItem(cc::PaintCanvas* canvas,
-                                           const ColorProvider* color_provider,
-                                           const gfx::Rect& rect) const {
+void NativeThemeMac::PaintSelectedMenuItem(
+    cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
+    const gfx::Rect& rect,
+    const MenuItemExtraParams& extra_params) const {
   DCHECK(color_provider);
   // Draw the background.
   cc::PaintFlags flags;
+  flags.setAntiAlias(true);
   flags.setColor(color_provider->GetColor(kColorMenuItemBackgroundSelected));
-  canvas->drawRect(gfx::RectToSkRect(rect), flags);
+  const SkScalar radius = SkIntToScalar(extra_params.corner_radius);
+  canvas->drawRoundRect(gfx::RectToSkRect(rect), radius, radius, flags);
 }
 
 void NativeThemeMac::InitializeDarkModeStateAndObserver() {
