@@ -39,7 +39,6 @@ class Extension;
 // contextual extension side panels given the difference in behavior betweeen
 // these two panel types.
 class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
-                                      public IconImage::Observer,
                                       public SidePanelService::Observer,
                                       public TabStripModelObserver {
  public:
@@ -55,12 +54,6 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
 
   // Returns the WebContents managed by `host_`.
   content::WebContents* GetHostWebContentsForTesting() const;
-
-  // Calls LoadExtensionIcon() again. Since LoadExtensionIcon() is called right
-  // when this class is created, it's difficult for tests to catch the
-  // OnExtensionIconImageChanged event. This method allows tests to initiate
-  // and wait for that event.
-  void LoadExtensionIconForTesting();
 
  private:
   SidePanelEntry::Key GetEntryKey() const;
@@ -88,9 +81,6 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
 
   // ExtensionViewViews::Observer
   void OnViewDestroying() override;
-
-  // IconImage::Observer
-  void OnExtensionIconImageChanged(IconImage* image) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
