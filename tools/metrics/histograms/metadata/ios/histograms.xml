@@ -2108,6 +2108,52 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SandboxMetrics.DocumentsSize" units="MB"
+    expires_after="2023-10-01">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The total amount of storage used by the application Documents directory.
+    Chrome uses this directory to store files downloaded by the user. Logged at
+    application startup, maximum once every 2 weeks, if the
+    `kLogApplicationStorageSizeMetrics` flag is enabled.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SandboxMetrics.LibrarySize" units="MB"
+    expires_after="2023-10-01">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The total amount of storage used by the application Library directory.
+    Chrome uses this directory to store application data and caches. Logged at
+    application startup, maximum once every 2 weeks, if the
+    `kLogApplicationStorageSizeMetrics` flag is enabled.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SandboxMetrics.OptimizationGuideModelDownloadedItems"
+    units="items" expires_after="2023-10-01">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The number of download directories used by the optimization guide model
+    downloads. Logged at application startup, maximum once every 2 weeks, if the
+    `kLogApplicationStorageSizeMetrics` flag is enabled.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SandboxMetrics.OptimizationGuideModelDownloadsSize"
+    units="KB" expires_after="2023-10-01">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The total amount of storage used by the optimization guide model downloads.
+    Logged at application startup, maximum once every 2 weeks, if the
+    `kLogApplicationStorageSizeMetrics` flag is enabled.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SandboxMetrics.TotalCapacity" enum="IOSStorageCapacity"
     expires_after="2023-10-01">
   <owner>michaeldo@chromium.org</owner>

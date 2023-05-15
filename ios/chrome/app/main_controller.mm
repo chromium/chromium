@@ -36,10 +36,12 @@
 #import "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/app/app_metrics_app_state_agent.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
+#import "ios/chrome/app/application_storage_metrics.h"
 #import "ios/chrome/app/blocking_scene_commands.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/enterprise_app_agent.h"
 #import "ios/chrome/app/fast_app_terminate_buildflags.h"
+#import "ios/chrome/app/features.h"
 #import "ios/chrome/app/feed_app_agent.h"
 #import "ios/chrome/app/first_run_app_state_agent.h"
 #import "ios/chrome/app/memory_monitor.h"
@@ -209,6 +211,11 @@ NSString* const kPurgeWebSessionStates = @"PurgeWebSessionStates";
 
 // Constants for deferred favicons clean up.
 NSString* const kFaviconsCleanup = @"FaviconsCleanup";
+
+// The minimum amount of time (2 weeks in seconds) between calculating and
+// logging metrics about the amount of device storage space used by Chrome.
+const NSTimeInterval kMinimumTimeBetweenDocumentsSizeLogging =
+    60.0 * 60.0 * 24.0 * 14.0;
 
 // Adapted from chrome/browser/ui/browser_init.cc.
 void RegisterComponentsForUpdate() {
@@ -1143,6 +1150,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [self scheduleSaveFieldTrialValuesForExternals];
   [self scheduleEnterpriseManagedDeviceCheck];
   [self scheduleFaviconsCleanup];
+  [self scheduleLogDocumentsSize];
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
   [self scheduleDumpDocumentsStatistics];
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
@@ -1217,6 +1225,23 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   }
 }
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
+
+- (void)scheduleLogDocumentsSize {
+  if (!base::FeatureList::IsEnabled(kLogApplicationStorageSizeMetrics)) {
+    return;
+  }
+
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSDate* lastLogged = base::mac::ObjCCast<NSDate>(
+      [defaults objectForKey:kLastApplicationStorageMetricsLogTime]);
+  if (lastLogged && [[NSDate date] timeIntervalSinceDate:lastLogged] <
+                        kMinimumTimeBetweenDocumentsSizeLogging) {
+    return;
+  }
+
+  base::FilePath profilePath = self.appState.mainBrowserState->GetStatePath();
+  LogApplicationStorageMetrics(profilePath);
+}
 
 - (void)expireFirstUserActionRecorder {
   // Clear out any scheduled calls to this method. For example, the app may have
