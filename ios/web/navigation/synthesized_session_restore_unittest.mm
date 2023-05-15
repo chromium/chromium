@@ -60,27 +60,19 @@ class SynthesizedSessionRestoreTest : public web::WebTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<WebStateImpl> web_state_;
-  SynthesizedSessionRestore synthesized_restore_helper_;
 };
 
-TEST_F(SynthesizedSessionRestoreTest, TestLessThaniOS15) {
-  if (base::ios::IsRunningOnIOS15OrLater())
-    return;
-
-  std::vector<std::unique_ptr<NavigationItem>> items;
-  CreateTestNavigationItems(3, items);
-  synthesized_restore_helper_.Init(0, items, false);
-  EXPECT_FALSE(synthesized_restore_helper_.Restore(web_state_.get()));
-}
-
+// Test that the synthetic session data blob can be successfully loaded
+// by WebStateImpl and correctly restores the session.
 TEST_F(SynthesizedSessionRestoreTest, TestRestore) {
-  if (!base::ios::IsRunningOnIOS15OrLater())
-    return;
   std::vector<std::unique_ptr<NavigationItem>> items;
   CreateTestNavigationItems(100, items);
-  synthesized_restore_helper_.Init(0, items, false);
 
-  EXPECT_TRUE(synthesized_restore_helper_.Restore(web_state_.get()));
+  NSData* synthesized_data = SynthesizedSessionRestore(
+      /*last_committed_item_index=*/0, items, /*off_the_record=*/false);
+  EXPECT_GT(synthesized_data.length, 0u);
+
+  EXPECT_TRUE(web_state_->SetSessionStateData(synthesized_data));
   EXPECT_EQ(web_state_->GetNavigationItemCount(), 100);
 }
 

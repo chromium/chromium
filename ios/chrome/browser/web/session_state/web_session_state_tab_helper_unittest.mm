@@ -128,8 +128,10 @@ TEST_F(WebSessionStateTabHelperTest, SessionStateRestore) {
   EXPECT_TRUE(base::CopyFile(filePath, newFilePath));
 
   // Only restore for session restore URLs.
-  ASSERT_TRUE(WebSessionStateTabHelper::FromWebState(web_state.get())
-                  ->RestoreSessionFromCache());
+  NSData* data = WebSessionStateTabHelper::FromWebState(web_state.get())
+                     ->FetchSessionFromCache();
+  ASSERT_TRUE(data);
+  EXPECT_TRUE(web_state->SetSessionStateData(data));
 
   // kChromeUIAboutNewTabURL should get rewritten to kChromeUINewTabURL.
   ASSERT_EQ(web_state->GetLastCommittedURL(), GURL(kChromeUINewTabURL));

@@ -95,6 +95,15 @@ extern const char kRestoreNavigationTime[];
 //   attached state when a new navigation starts.
 class NavigationManagerImpl : public NavigationManager {
  public:
+  // Callback used to fetch WKWebView session data blob.
+  using SessionDataBlobFetcher = base::OnceCallback<NSData*()>;
+
+  // Enumeration representing the source of a WKWebView session data blob.
+  enum class SessionDataBlobSource {
+    kSessionCache,
+    kSynthesized,
+  };
+
   NavigationManagerImpl();
   ~NavigationManagerImpl() override;
 
@@ -104,6 +113,10 @@ class NavigationManagerImpl : public NavigationManager {
   // Setters for NavigationManagerDelegate and BrowserState.
   void SetDelegate(NavigationManagerDelegate* delegate);
   void SetBrowserState(BrowserState* browser_state);
+
+  // Setter for the callback used to fetch the native session data blob from
+  // the session cache.
+  void SetNativeSessionFetcher(SessionDataBlobFetcher native_session_fetcher);
 
   // Helper functions for notifying WebStateObservers of changes.
   // TODO(stuartmorgan): Make these private once the logic triggering them moves
@@ -318,6 +331,10 @@ class NavigationManagerImpl : public NavigationManager {
     kForwardList,
   };
 
+  // Appends a new session blob fetcher with given source.
+  void AppendSessionDataBlobFetcher(SessionDataBlobFetcher loader,
+                                    SessionDataBlobSource source);
+
   // Restores the state of the `items_restored` in the navigation items
   // associated with the WKBackForwardList. `back_list` is used to specify if
   // the items passed are the list containing the back list or the forward list.
@@ -450,10 +467,11 @@ class NavigationManagerImpl : public NavigationManager {
   // FinalizeSessionRestore().
   std::vector<base::OnceClosure> restore_session_completion_callbacks_;
 
-  // Used to trigger a WKWebView native session restore with a synthesized
-  // data blob (rather than a cached one). This is useful for when there is a
-  // cache miss, or when syncing tabs between devices.
-  SynthesizedSessionRestore synthesized_restore_helper_;
+  // Stores the different WKWebView session data blob loaders. Loaders are
+  // tried in the order they are registered, and the native session loading
+  // code stops at the first session successfully loaded.
+  std::vector<std::pair<SessionDataBlobFetcher, SessionDataBlobSource>>
+      session_data_blob_fetchers_;
 };
 
 }  // namespace web
