@@ -4830,8 +4830,8 @@ TEST_F(BrowserAutofillManagerTest, FillPhoneNumber) {
 
     field.max_length = default_max_length;
     field.autocomplete_attribute = test_field.autocomplete_attribute;
-    field.parsed_autocomplete = ParseAutocompleteAttribute(
-        test_field.autocomplete_attribute, default_max_length);
+    field.parsed_autocomplete =
+        ParseAutocompleteAttribute(test_field.autocomplete_attribute);
     form_with_autocompletetype.fields.push_back(field);
   }
 
@@ -8540,8 +8540,7 @@ TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
   // Has less than 3 fields but has autocomplete attribute.
   const char* autocomplete = "given-name";
   form.fields[0].autocomplete_attribute = autocomplete;
-  form.fields[0].parsed_autocomplete =
-      ParseAutocompleteAttribute(autocomplete, form.fields[0].max_length);
+  form.fields[0].parsed_autocomplete = ParseAutocompleteAttribute(autocomplete);
 
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
@@ -8553,8 +8552,7 @@ TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
 
   // Has more than 3 fields and at least one autocomplete attribute.
   form.fields[0].autocomplete_attribute = autocomplete;
-  form.fields[0].parsed_autocomplete =
-      ParseAutocompleteAttribute(autocomplete, form.fields[0].max_length);
+  form.fields[0].parsed_autocomplete = ParseAutocompleteAttribute(autocomplete);
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
   // Is off the record.

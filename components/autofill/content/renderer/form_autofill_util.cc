@@ -1512,17 +1512,16 @@ bool HasAutocompleteAttribute(const WebElement& element) {
 }
 
 void MaybeEmitInputAssignedAutocompleteValueToIdOrNameAttributesIssue(
-    const WebFormControlElement& element,
-    uint64_t max_length) {
+    const WebFormControlElement& element) {
   if (HasAutocompleteAttribute(element)) {
     return;
   }
 
   auto ParsedHtmlAttributeValueToAutocompleteHasFieldType =
-      [&max_length](const std::string& attribute_value) {
+      [](const std::string& attribute_value) {
         absl::optional<AutocompleteParsingResult>
             parsed_attribute_to_autocomplete =
-                ParseAutocompleteAttribute(attribute_value, max_length);
+                ParseAutocompleteAttribute(attribute_value);
         if (!parsed_attribute_to_autocomplete) {
           return false;
         }
@@ -1620,7 +1619,7 @@ bool OwnedOrUnownedFormToFormData(
     if (base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
       MaybeEmitInputWithEmptyIdAndNameIssue(control_element);
       MaybeEmitInputAssignedAutocompleteValueToIdOrNameAttributesIssue(
-          control_element, form->fields.back().max_length);
+          control_element);
     }
 
     if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
@@ -2152,8 +2151,8 @@ void WebFormControlElementToFormField(
   field->max_length =
       IsTextInput(input_element) ? input_element.MaxLength() : 0;
   field->autocomplete_attribute = GetAutocompleteAttribute(element);
-  field->parsed_autocomplete = ParseAutocompleteAttribute(
-      field->autocomplete_attribute, field->max_length);
+  field->parsed_autocomplete =
+      ParseAutocompleteAttribute(field->autocomplete_attribute);
 
   if (base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
     ValidateAutocompleteAttributeForElement(element);
@@ -2204,8 +2203,8 @@ void WebFormControlElementToFormField(
     }
     if (field->autocomplete_attribute.empty()) {
       field->autocomplete_attribute = GetAutocompleteAttribute(host);
-      field->parsed_autocomplete = ParseAutocompleteAttribute(
-          field->autocomplete_attribute, field->max_length);
+      field->parsed_autocomplete =
+          ParseAutocompleteAttribute(field->autocomplete_attribute);
     }
     if (field->css_classes.empty() && host.HasAttribute(*kClass))
       field->css_classes = host.GetAttribute(*kClass).Utf16();

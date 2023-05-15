@@ -16,10 +16,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   const std::string autocomplete_attribute =
       provider.ConsumeRandomLengthString();
-  const int64_t field_max_length =
-      provider.ConsumeIntegralInRange<int64_t>(0, 100);
-  std::ignore = autofill::ParseAutocompleteAttribute(autocomplete_attribute,
-                                                     field_max_length);
+  std::ignore = autofill::ParseAutocompleteAttribute(autocomplete_attribute);
 
   return 0;
 }

@@ -350,8 +350,7 @@ std::unique_ptr<FormStructure> ConstructDefaultEmailFormStructure() {
       ConstructFormDateFromTypeValuePairs({{EMAIL_ADDRESS, kDefaultMail}});
   const char* autocomplete = "email";
   form.fields[0].autocomplete_attribute = autocomplete;
-  form.fields[0].parsed_autocomplete =
-      ParseAutocompleteAttribute(autocomplete, form.fields[0].max_length);
+  form.fields[0].parsed_autocomplete = ParseAutocompleteAttribute(autocomplete);
   return ConstructFormStructureFromFormData(form);
 }
 
