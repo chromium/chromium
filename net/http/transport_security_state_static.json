@@ -78425,7 +78425,6 @@
     { "name": "anz.co.nz", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "apert.be", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "aqua-dom33.ru", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
-    { "name": "aquafirm.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "arachnid.tk", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "aroma-therapy.tk", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "arqpericial.es", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
