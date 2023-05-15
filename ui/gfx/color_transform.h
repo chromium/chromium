@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/effects/SkRuntimeEffect.h"
@@ -17,6 +18,9 @@
 #include "ui/gfx/hdr_metadata.h"
 
 namespace gfx {
+
+COLOR_SPACE_EXPORT BASE_DECLARE_FEATURE(kHlgPqUnifiedTonemap);
+COLOR_SPACE_EXPORT BASE_DECLARE_FEATURE(kHlgPqSdrRelative);
 
 class COLOR_SPACE_EXPORT ColorTransform {
  public:
