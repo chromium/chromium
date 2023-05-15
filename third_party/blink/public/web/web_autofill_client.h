@@ -31,6 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_AUTOFILL_CLIENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_AUTOFILL_CLIENT_H_
 
+#include "third_party/blink/public/web/web_element.h"
+#include "third_party/blink/public/web/web_local_frame.h"
+
 namespace blink {
 
 class WebFormControlElement;
@@ -39,9 +42,29 @@ class WebInputElement;
 class WebKeyboardEvent;
 class WebNode;
 class WebString;
+class WebElement;
 
 class WebAutofillClient {
  public:
+  struct FormIssue {
+    FormIssue(blink::WebString frame,
+              blink::mojom::GenericIssueErrorType type,
+              int node,
+              blink::WebString attribute)
+        : frame_id(frame),
+          issue_type(type),
+          violating_node(node),
+          violating_node_attribute(attribute) {}
+    FormIssue(blink::WebString frame,
+              blink::mojom::GenericIssueErrorType type,
+              int node)
+        : frame_id(frame), issue_type(type), violating_node(node) {}
+
+    blink::WebString frame_id;
+    blink::mojom::GenericIssueErrorType issue_type;
+    int violating_node;
+    blink::WebString violating_node_attribute;
+  };
   // These methods are called when the users edits a text-field.
   virtual void TextFieldDidEndEditing(const WebInputElement&) {}
   virtual void TextFieldDidChange(const WebFormControlElement&) {}
@@ -85,6 +108,11 @@ class WebAutofillClient {
 
   // Called when the given form element is reset.
   virtual void FormElementReset(const WebFormElement&) {}
+
+  // Processes the current forms and returns an array of issues found.
+  virtual std::vector<FormIssue> ProccessFormsAndReturnIssues() {
+    return std::vector<FormIssue>();
+  }
 
   // Called when the empty value is set for the given input element, which is
   // or has been a password field.

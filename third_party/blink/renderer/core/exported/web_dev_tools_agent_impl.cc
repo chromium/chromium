@@ -316,7 +316,7 @@ void WebDevToolsAgentImpl::AttachSession(DevToolsSession* session,
   session->CreateAndAppend<InspectorAuditsAgent>(
       network_agent,
       &inspected_frames->Root()->GetPage()->GetInspectorIssueStorage(),
-      inspected_frames);
+      inspected_frames, web_local_frame_impl_->AutofillClient());
 
   session->CreateAndAppend<InspectorMediaAgent>(
       inspected_frames, /*worker_global_scope=*/nullptr);

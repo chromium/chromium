@@ -1031,6 +1031,12 @@ void AutofillAgent::TriggerReparseWithResponse(
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+std::vector<blink::WebAutofillClient::FormIssue>
+AutofillAgent::ProccessFormsAndReturnIssues() {
+  ProcessForms();
+  return {};
+}
+
 void AutofillAgent::ProcessForms() {
   FormCache::UpdateFormCacheResult cache =
       form_cache_.UpdateFormCache(field_data_manager_.get());

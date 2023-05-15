@@ -259,6 +259,8 @@ class AutofillAgent : public content::RenderFrameObserver,
       const blink::WebFormControlElement& element) override;
   void FormElementReset(const blink::WebFormElement& form) override;
   void PasswordFieldReset(const blink::WebInputElement& element) override;
+  std::vector<blink::WebAutofillClient::FormIssue>
+  ProccessFormsAndReturnIssues() override;
 
   void HandleFocusChangeComplete();
   void SendFocusedInputChangedNotificationToBrowser(
