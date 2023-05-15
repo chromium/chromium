@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/time/default_tick_clock.h"
-#include "chrome/browser/ash/authpolicy/authpolicy_credentials_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/file_system_provider/service_factory.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager_factory.h"
@@ -55,7 +54,6 @@ SmbServiceFactory::SmbServiceFactory()
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(file_system_provider::ServiceFactory::GetInstance());
-  DependsOn(AuthPolicyCredentialsManagerFactory::GetInstance());
   DependsOn(KerberosCredentialsManagerFactory::GetInstance());
   DependsOn(file_manager::VolumeManagerFactory::GetInstance());
 }
