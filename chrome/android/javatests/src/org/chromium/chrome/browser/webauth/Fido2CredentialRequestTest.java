@@ -44,6 +44,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
 import org.chromium.blink.mojom.AuthenticatorStatus;
@@ -62,6 +63,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.webauthn.AuthenticatorImpl;
 import org.chromium.components.webauthn.Fido2Api;
 import org.chromium.components.webauthn.Fido2ApiCallHelper;
@@ -1338,11 +1340,11 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
     public void testGetAssertion_securePaymentConfirmation_canReplaceClientDataJson() {
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
 
-        Fido2ApiTestHelper.setSecurePaymentConfirmationEnabled(mMocker);
         String clientDataJson = "520";
         Fido2ApiTestHelper.mockClientDataJson(mMocker, clientDataJson);
 
@@ -1364,11 +1366,11 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
     public void testGetAssertion_securePaymentConfirmation_clientDataJsonCannotBeEmpty() {
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
 
-        Fido2ApiTestHelper.setSecurePaymentConfirmationEnabled(mMocker);
         Fido2ApiTestHelper.mockClientDataJson(mMocker, null);
 
         mFrameHost.setLastCommittedURL(new GURL("https://www.chromium.org/pay"));
@@ -1388,14 +1390,13 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
     public void testGetAssertion_securePaymentConfirmation_buildClientDataJsonParameters() {
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
 
         GURL topUrl = new GURL("https://www.chromium.org/pay");
         mFrameHost.setLastCommittedURL(topUrl);
-
-        Fido2ApiTestHelper.setSecurePaymentConfirmationEnabled(mMocker);
 
         // ClientDataJsonImplJni is mocked directly instead of using
         // Fido2ApiTestHelper.mockClientDataJson so that it can be used to verify the call arguments

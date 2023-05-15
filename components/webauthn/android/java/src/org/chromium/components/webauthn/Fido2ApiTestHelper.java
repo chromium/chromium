@@ -38,8 +38,6 @@ import org.chromium.blink.mojom.PublicKeyCredentialRpEntity;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.blink.mojom.PublicKeyCredentialUserEntity;
 import org.chromium.blink.mojom.UvmEntry;
-import org.chromium.components.payments.PaymentFeatureList;
-import org.chromium.components.payments.PaymentFeatureListJni;
 import org.chromium.content.browser.ClientDataJsonImpl;
 import org.chromium.content.browser.ClientDataJsonImplJni;
 import org.chromium.mojo_base.mojom.TimeDelta;
@@ -624,22 +622,8 @@ public class Fido2ApiTestHelper {
     }
 
     /**
-     * Mocks PaymentFeatureList so that the Security Payment Confirmation flag has been enabled.
-     * @param mocker The mocker used to mock the PaymentFeatureListJni.
-     */
-    public static void setSecurePaymentConfirmationEnabled(JniMocker mocker) {
-        PaymentFeatureList.Natives paymentFeatureListJni = new PaymentFeatureList.Natives() {
-            @Override
-            public boolean isEnabled(String featureName) {
-                return featureName.equals(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION);
-            }
-        };
-        mocker.mock(PaymentFeatureListJni.TEST_HOOKS, paymentFeatureListJni);
-    }
-
-    /**
      * Mocks ClientDataJson so that it returns the provided result.
-     * @param mocker The mocker used to mock the PaymentFeatureListJni.
+     * @param mocker The JNI mocker
      * @param mockResult The mock value for {@link ClientDataJson#buildClientDataJson} to return.
      */
     public static void mockClientDataJson(JniMocker mocker, String mockResult) {
