@@ -46,12 +46,12 @@ void VideoSourceImpl::CreatePushSubscription(
   auto subscription = std::make_unique<PushVideoStreamSubscriptionImpl>(
       std::move(subscription_receiver), std::move(subscriber),
       requested_settings, std::move(callback), &broadcaster_);
+  auto* subscription_ptr = subscription.get();
   subscription->SetOnClosedHandler(base::BindOnce(
       &VideoSourceImpl::OnPushSubscriptionClosedOrDisconnectedOrDiscarded,
-      weak_factory_.GetWeakPtr(), subscription.get()));
-  auto* subscription_ptr = subscription.get();
+      weak_factory_.GetWeakPtr(), subscription_ptr));
   push_subscriptions_.insert(
-      std::make_pair(subscription.get(), std::move(subscription)));
+      std::make_pair(subscription_ptr, std::move(subscription)));
   switch (device_status_) {
     case DeviceStatus::kNotStarted:
       StartDeviceWithSettings(requested_settings);
