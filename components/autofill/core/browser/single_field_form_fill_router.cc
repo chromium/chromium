@@ -104,10 +104,10 @@ void SingleFieldFormFillRouter::OnRemoveCurrentSingleFieldSuggestion(
     const std::u16string& value,
     Suggestion::FrontendId frontend_id) {
   if (merchant_promo_code_manager_ &&
-      frontend_id == POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY) {
+      frontend_id == PopupItemId::kMerchantPromoCodeEntry) {
     merchant_promo_code_manager_->OnRemoveCurrentSingleFieldSuggestion(
         field_name, value, frontend_id);
-  } else if (iban_manager_ && frontend_id == POPUP_ITEM_ID_IBAN_ENTRY) {
+  } else if (iban_manager_ && frontend_id == PopupItemId::kIbanEntry) {
     iban_manager_->OnRemoveCurrentSingleFieldSuggestion(field_name, value,
                                                         frontend_id);
   } else {
@@ -120,11 +120,11 @@ void SingleFieldFormFillRouter::OnSingleFieldSuggestionSelected(
     const std::u16string& value,
     Suggestion::FrontendId frontend_id) {
   if (merchant_promo_code_manager_ &&
-      (frontend_id == POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY ||
-       frontend_id == POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS)) {
+      (frontend_id == PopupItemId::kMerchantPromoCodeEntry ||
+       frontend_id == PopupItemId::kSeePromoCodeDetails)) {
     merchant_promo_code_manager_->OnSingleFieldSuggestionSelected(value,
                                                                   frontend_id);
-  } else if (iban_manager_ && frontend_id == POPUP_ITEM_ID_IBAN_ENTRY) {
+  } else if (iban_manager_ && frontend_id == PopupItemId::kIbanEntry) {
     iban_manager_->OnSingleFieldSuggestionSelected(value, frontend_id);
   } else {
     autocomplete_history_manager_->OnSingleFieldSuggestionSelected(value,

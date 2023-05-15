@@ -228,7 +228,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
 // static
 Suggestion AutofillSuggestionGenerator::CreateSeparator() {
   Suggestion suggestion;
-  suggestion.frontend_id = POPUP_ITEM_ID_SEPARATOR;
+  suggestion.frontend_id = PopupItemId::kSeparator;
   return suggestion;
 }
 
@@ -236,7 +236,7 @@ Suggestion AutofillSuggestionGenerator::CreateSeparator() {
 Suggestion AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry() {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
-  suggestion.frontend_id = POPUP_ITEM_ID_AUTOFILL_OPTIONS;
+  suggestion.frontend_id = PopupItemId::kAutofillOptions;
   suggestion.icon = "settingsIcon";
   return suggestion;
 }
@@ -292,7 +292,7 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForIBANs(
     suggestion.custom_icon =
         ui::ResourceBundle::GetSharedInstance().GetImageNamed(
             IDR_AUTOFILL_IBAN);
-    suggestion.frontend_id = POPUP_ITEM_ID_IBAN_ENTRY;
+    suggestion.frontend_id = PopupItemId::kIbanEntry;
     suggestion.payload = Suggestion::ValueToFill(iban->GetStrippedValue());
     suggestion.main_text.value = iban->GetIdentifierStringForAutofillDisplay();
     if (!iban->nickname().empty())
@@ -325,7 +325,7 @@ AutofillSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
     }
     suggestion.payload = Suggestion::BackendId(
         base::NumberToString(promo_code_offer->GetOfferId()));
-    suggestion.frontend_id = POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY;
+    suggestion.frontend_id = PopupItemId::kMerchantPromoCodeEntry;
 
     // Every offer for a given merchant leads to the same GURL, so we grab the
     // first offer's offer details url as the payload for the footer to set
@@ -350,7 +350,7 @@ AutofillSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
     suggestions.emplace_back(l10n_util::GetStringUTF16(
         IDS_AUTOFILL_PROMO_CODE_SUGGESTIONS_FOOTER_TEXT));
     Suggestion& suggestion = suggestions.back();
-    suggestion.frontend_id = POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS;
+    suggestion.frontend_id = PopupItemId::kSeePromoCodeDetails;
 
     // We set the payload for the footer as |footer_offer_details_url|, which is
     // the offer details url of the first offer we had for this merchant. We
@@ -655,7 +655,7 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
     suggestion.payload = Suggestion::BackendId(server_duplicate_card->guid());
   }
 
-  suggestion.frontend_id = POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY;
+  suggestion.frontend_id = PopupItemId::kVirtualCreditCardEntry;
   suggestion.feature_for_iph =
       feature_engagement::kIPHAutofillVirtualCardSuggestionFeature.name;
 

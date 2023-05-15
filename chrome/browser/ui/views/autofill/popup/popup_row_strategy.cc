@@ -88,14 +88,14 @@ constexpr int kAutocompleteDeleteIconHorizontalPadding = 8;
 
 // Popup items that use a leading icon instead of a trailing one.
 constexpr PopupItemId kItemTypesUsingLeadingIcons[] = {
-    PopupItemId::POPUP_ITEM_ID_CLEAR_FORM,
-    PopupItemId::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS,
-    PopupItemId::POPUP_ITEM_ID_AUTOFILL_OPTIONS,
-    PopupItemId::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY,
-    PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY,
-    PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN,
-    PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN,
-    PopupItemId::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE};
+    PopupItemId::kClearForm,
+    PopupItemId::kShowAccountCards,
+    PopupItemId::kAutofillOptions,
+    PopupItemId::kAllSavedPasswordsEntry,
+    PopupItemId::kPasswordAccountStorageEmpty,
+    PopupItemId::kPasswordAccountStorageOptIn,
+    PopupItemId::kPasswordAccountStorageReSignin,
+    PopupItemId::kPasswordAccountStorageOptInAndGenerate};
 
 std::unique_ptr<views::ImageView> ImageViewFromImageSkia(
     const gfx::ImageSkia& image_skia) {
@@ -373,7 +373,7 @@ void AddSuggestionContentToView(
     std::vector<std::unique_ptr<views::View>> subtext_views,
     PopupCellView& content_view) {
   bool has_control_element =
-      suggestion.frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY &&
+      suggestion.frontend_id == PopupItemId::kAutocompleteEntry &&
       base::FeatureList::IsEnabled(
           features::kAutofillShowAutocompleteDeleteButton);
   views::BoxLayout& layout =
@@ -544,7 +544,7 @@ ContentItemAccessibilityDelegate::ContentItemAccessibilityDelegate(
   set_size_ = 0;
   set_index_ = line_number + 1;
   for (int i = 0; i < controller->GetLineCount(); ++i) {
-    if (controller->GetSuggestionAt(i).frontend_id == POPUP_ITEM_ID_SEPARATOR) {
+    if (controller->GetSuggestionAt(i).frontend_id == PopupItemId::kSeparator) {
       if (i < line_number) {
         --set_index_;
       }
@@ -720,7 +720,7 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateControl() {
 
   // If the feature is enabled, autocomplete entries have a delete button.
   if (GetController()->GetSuggestionAt(GetLineNumber()).frontend_id ==
-          POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY &&
+          PopupItemId::kAutocompleteEntry &&
       base::FeatureList::IsEnabled(
           features::kAutofillShowAutocompleteDeleteButton)) {
     std::unique_ptr<PopupCellView> view =

@@ -115,20 +115,20 @@ class IBANManagerTest : public testing::Test {
                                     base::StringPiece nickname) {
     IBAN iban = SetUpIBAN(value, nickname);
     Suggestion iban_suggestion(iban.GetIdentifierStringForAutofillDisplay());
-    iban_suggestion.frontend_id = POPUP_ITEM_ID_IBAN_ENTRY;
+    iban_suggestion.frontend_id = PopupItemId::kIbanEntry;
     return iban_suggestion;
   }
 
   Suggestion SetUpSeparator() {
     Suggestion separator;
-    separator.frontend_id = POPUP_ITEM_ID_SEPARATOR;
+    separator.frontend_id = PopupItemId::kSeparator;
     return separator;
   }
 
   Suggestion SetUpFooterManagePaymentMethods() {
     Suggestion footer_suggestion(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
-    footer_suggestion.frontend_id = POPUP_ITEM_ID_AUTOFILL_OPTIONS;
+    footer_suggestion.frontend_id = PopupItemId::kAutofillOptions;
     footer_suggestion.icon = "settingsIcon";
     return footer_suggestion;
   }
@@ -435,7 +435,7 @@ TEST_F(IBANManagerTest, Metrics_SuggestionSelected) {
   EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
       AutoselectFirstSuggestion(false), test_field, autofill_client_,
       suggestions_handler_.GetWeakPtr(), context));
-  iban_manager_.OnSingleFieldSuggestionSelected(u"", POPUP_ITEM_ID_IBAN_ENTRY);
+  iban_manager_.OnSingleFieldSuggestionSelected(u"", PopupItemId::kIbanEntry);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.Iban.Suggestions",
@@ -447,7 +447,7 @@ TEST_F(IBANManagerTest, Metrics_SuggestionSelected) {
   EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
       AutoselectFirstSuggestion(false), test_field, autofill_client_,
       suggestions_handler_.GetWeakPtr(), context));
-  iban_manager_.OnSingleFieldSuggestionSelected(u"", POPUP_ITEM_ID_IBAN_ENTRY);
+  iban_manager_.OnSingleFieldSuggestionSelected(u"", PopupItemId::kIbanEntry);
 
   histogram_tester.ExpectBucketCount(
       "Autofill.Iban.Suggestions",

@@ -123,9 +123,9 @@ struct Suggestion {
 #if DCHECK_IS_ON()
   bool Invariant() const {
     switch (frontend_id.as_popup_item_id()) {
-      case PopupItemId::POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS:
+      case PopupItemId::kSeePromoCodeDetails:
         return absl::holds_alternative<GURL>(payload);
-      case PopupItemId::POPUP_ITEM_ID_IBAN_ENTRY:
+      case PopupItemId::kIbanEntry:
         return absl::holds_alternative<ValueToFill>(payload);
       default:
         return absl::holds_alternative<BackendId>(payload);

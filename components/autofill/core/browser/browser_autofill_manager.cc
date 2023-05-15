@@ -205,37 +205,37 @@ void LogValuePatternsMetric(const FormData& form) {
 FillDataType GetEventTypeFromSingleFieldSuggestionFrontendId(
     Suggestion::FrontendId frontend_id) {
   switch (frontend_id.as_popup_item_id()) {
-    case POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY:
+    case PopupItemId::kAutocompleteEntry:
       return FillDataType::kSingleFieldFormFillerAutocomplete;
-    case POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY:
+    case PopupItemId::kMerchantPromoCodeEntry:
       return FillDataType::kSingleFieldFormFillerPromoCode;
-    case POPUP_ITEM_ID_IBAN_ENTRY:
+    case PopupItemId::kIbanEntry:
       return FillDataType::kSingleFieldFormFillerIban;
-    case POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE:
-    case POPUP_ITEM_ID_PASSWORD_ENTRY:
-    case POPUP_ITEM_ID_SEPARATOR:
-    case POPUP_ITEM_ID_CLEAR_FORM:
-    case POPUP_ITEM_ID_AUTOFILL_OPTIONS:
-    case POPUP_ITEM_ID_DATALIST_ENTRY:
-    case POPUP_ITEM_ID_SCAN_CREDIT_CARD:
-    case POPUP_ITEM_ID_TITLE:
-    case POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO:
-    case POPUP_ITEM_ID_USERNAME_ENTRY:
-    case POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY:
-    case POPUP_ITEM_ID_GENERATE_PASSWORD_ENTRY:
-    case POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS:
-    case POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN:
-    case POPUP_ITEM_ID_USE_VIRTUAL_CARD:
-    case POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE:
-    case POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY:
-    case POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY:
-    case POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_RE_SIGNIN:
-    case POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY:
-    case POPUP_ITEM_ID_MIXED_FORM_MESSAGE:
-    case POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY:
-    case POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL:
-    case POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS:
-    case POPUP_ITEM_ID_WEBAUTHN_SIGN_IN_WITH_ANOTHER_DEVICE:
+    case PopupItemId::kInsecureContextPaymentDisabledMessage:
+    case PopupItemId::kPasswordEntry:
+    case PopupItemId::kSeparator:
+    case PopupItemId::kClearForm:
+    case PopupItemId::kAutofillOptions:
+    case PopupItemId::kDatalistEntry:
+    case PopupItemId::kScanCreditCard:
+    case PopupItemId::kTitle:
+    case PopupItemId::kCreditCardSigninPromo:
+    case PopupItemId::kUsernameEntry:
+    case PopupItemId::kAllSavedPasswordsEntry:
+    case PopupItemId::kGeneratePasswordEntry:
+    case PopupItemId::kShowAccountCards:
+    case PopupItemId::kPasswordAccountStorageOptIn:
+    case PopupItemId::kUseVirtualCard:
+    case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
+    case PopupItemId::kAccountStoragePasswordEntry:
+    case PopupItemId::kAccountStorageUsernameEntry:
+    case PopupItemId::kPasswordAccountStorageReSignin:
+    case PopupItemId::kPasswordAccountStorageEmpty:
+    case PopupItemId::kMixedFormMessage:
+    case PopupItemId::kVirtualCreditCardEntry:
+    case PopupItemId::kWebauthnCredential:
+    case PopupItemId::kSeePromoCodeDetails:
+    case PopupItemId::kWebauthnSignInWithAnotherDevice:
       NOTREACHED();
   }
   NOTREACHED();
@@ -1577,7 +1577,7 @@ bool BrowserAutofillManager::GetDeletionConfirmationText(
     Suggestion::FrontendId identifier,
     std::u16string* title,
     std::u16string* body) {
-  if (identifier == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
+  if (identifier == PopupItemId::kAutocompleteEntry) {
     if (title)
       title->assign(value);
     if (body) {
@@ -3242,7 +3242,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     } else {
       Suggestion warning_suggestion(
           l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_MIXED_FORM));
-      warning_suggestion.frontend_id = POPUP_ITEM_ID_MIXED_FORM_MESSAGE;
+      warning_suggestion.frontend_id = PopupItemId::kMixedFormMessage;
       suggestions->emplace_back(warning_suggestion);
     }
     return;
@@ -3321,7 +3321,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
   if (ShouldShowVirtualCardOption(context->form_structure)) {
     suggestions->emplace_back(l10n_util::GetStringUTF16(
         IDS_AUTOFILL_CLOUD_TOKEN_DROPDOWN_OPTION_LABEL));
-    suggestions->back().frontend_id = POPUP_ITEM_ID_USE_VIRTUAL_CARD;
+    suggestions->back().frontend_id = PopupItemId::kUseVirtualCard;
   }
 #endif
 
@@ -3335,7 +3335,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     Suggestion warning_suggestion(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION));
     warning_suggestion.frontend_id =
-        POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE;
+        PopupItemId::kInsecureContextPaymentDisabledMessage;
     suggestions->assign(1, warning_suggestion);
   }
 }

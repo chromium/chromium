@@ -1551,37 +1551,37 @@ TEST_F(BrowserAutofillManagerTest, OnSingleFieldSuggestionSelected) {
   EXPECT_CALL(
       *single_field_form_fill_router_,
       OnSingleFieldSuggestionSelected(
-          test_value, Suggestion::FrontendId(POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY)))
+          test_value, Suggestion::FrontendId(PopupItemId::kAutocompleteEntry)))
       .Times(1);
 
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, form, field);
+      test_value, PopupItemId::kAutocompleteEntry, form, field);
 
   EXPECT_CALL(
       *single_field_form_fill_router_,
       OnSingleFieldSuggestionSelected(
-          test_value, Suggestion::FrontendId(POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY)))
+          test_value, Suggestion::FrontendId(PopupItemId::kAutocompleteEntry)))
       .Times(1);
 
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, form, field);
+      test_value, PopupItemId::kAutocompleteEntry, form, field);
 
   EXPECT_CALL(*single_field_form_fill_router_,
               OnSingleFieldSuggestionSelected(
-                  test_value, Suggestion::FrontendId(POPUP_ITEM_ID_IBAN_ENTRY)))
+                  test_value, Suggestion::FrontendId(PopupItemId::kIbanEntry)))
       .Times(1);
 
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, POPUP_ITEM_ID_IBAN_ENTRY, form, field);
+      test_value, PopupItemId::kIbanEntry, form, field);
 
   EXPECT_CALL(*single_field_form_fill_router_,
               OnSingleFieldSuggestionSelected(
-                  test_value, Suggestion::FrontendId(
-                                  POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY)))
+                  test_value,
+                  Suggestion::FrontendId(PopupItemId::kMerchantPromoCodeEntry)))
       .Times(1);
 
   browser_autofill_manager_->OnSingleFieldSuggestionSelected(
-      test_value, POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY, form, field);
+      test_value, PopupItemId::kMerchantPromoCodeEntry, form, field);
 }
 
 // Test that we return all address profile suggestions when all form fields
@@ -8775,7 +8775,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
   Suggestion virtual_card_suggestion = Suggestion(
       "Virtual card",
       std::string("nickname  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
-      label, kVisaCard, autofill::POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY);
+      label, kVisaCard, autofill::PopupItemId::kVirtualCreditCardEntry);
 
   CheckSuggestions(
       form.fields[1].global_id(), virtual_card_suggestion,
@@ -8796,7 +8796,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
 
   virtual_card_suggestion =
       Suggestion("Virtual card", std::string("Elvis Presley"), label, kVisaCard,
-                 autofill::POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY);
+                 autofill::PopupItemId::kVirtualCreditCardEntry);
 
   CheckSuggestions(
       form.fields[0].global_id(), virtual_card_suggestion,
@@ -9907,7 +9907,7 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedForm) {
   CheckSuggestions(
       field.global_id(),
       Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_MIXED_FORM), "",
-                 "", POPUP_ITEM_ID_MIXED_FORM_MESSAGE));
+                 "", PopupItemId::kMixedFormMessage));
 }
 
 // Test that if a form is mixed content we do not show a warning if the opt out
@@ -9948,7 +9948,7 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedFormUserTyped) {
   CheckSuggestions(
       field.global_id(),
       Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_MIXED_FORM), "",
-                 "", POPUP_ITEM_ID_MIXED_FORM_MESSAGE));
+                 "", PopupItemId::kMixedFormMessage));
 
   // Pretend user started typing and make sure we no longer set suggestions.
   form.fields[0].value = u"Michael";
@@ -10538,7 +10538,7 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
           browser_autofill_manager_->GetPackedCreditCardID(7)),
       Suggestion(l10n_util::GetStringUTF8(
                      IDS_AUTOFILL_CLOUD_TOKEN_DROPDOWN_OPTION_LABEL),
-                 "", "", PopupItemId::POPUP_ITEM_ID_USE_VIRTUAL_CARD));
+                 "", "", PopupItemId::kUseVirtualCard));
 }
 
 // Ensures the "Use a virtual card number" option should be shown when there are
@@ -10582,7 +10582,7 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
           browser_autofill_manager_->GetPackedCreditCardID(7)),
       Suggestion(l10n_util::GetStringUTF8(
                      IDS_AUTOFILL_CLOUD_TOKEN_DROPDOWN_OPTION_LABEL),
-                 "", "", PopupItemId::POPUP_ITEM_ID_USE_VIRTUAL_CARD));
+                 "", "", PopupItemId::kUseVirtualCard));
 }
 #endif
 

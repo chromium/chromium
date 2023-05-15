@@ -420,7 +420,7 @@ bool CreditCardFormEventLogger::DoesCardHaveOffer(
 
 bool CreditCardFormEventLogger::DoSuggestionsIncludeVirtualCard() {
   auto is_virtual_card = [](const Suggestion& suggestion) {
-    return suggestion.frontend_id == POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY;
+    return suggestion.frontend_id == PopupItemId::kVirtualCreditCardEntry;
   };
   return base::ranges::any_of(suggestions_, is_virtual_card);
 }

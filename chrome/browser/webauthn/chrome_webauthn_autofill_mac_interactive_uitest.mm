@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnMacAutofillIntegrationTest, SelectAccount) {
   for (suggestion_index = 0; suggestion_index < suggestions.size();
        ++suggestion_index) {
     if (suggestions[suggestion_index].frontend_id ==
-        autofill::PopupItemId::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL) {
+        autofill::PopupItemId::kWebauthnCredential) {
       webauthn_entry = suggestions[suggestion_index];
       break;
     }

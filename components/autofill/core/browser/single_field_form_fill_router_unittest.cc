@@ -223,7 +223,7 @@ TEST_F(SingleFieldFormFillRouterTest,
 
   single_field_form_fill_router_->OnRemoveCurrentSingleFieldSuggestion(
       /*field_name=*/u"Field Name", /*value=*/u"Value",
-      POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY);
+      PopupItemId::kAutocompleteEntry);
 }
 
 // Ensure that the router routes to AutocompleteHistoryManager for this
@@ -233,7 +233,7 @@ TEST_F(SingleFieldFormFillRouterTest,
   EXPECT_CALL(*autocomplete_history_manager_, OnSingleFieldSuggestionSelected);
 
   single_field_form_fill_router_->OnSingleFieldSuggestionSelected(
-      /*value=*/u"Value", POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY);
+      /*value=*/u"Value", PopupItemId::kAutocompleteEntry);
 }
 
 // Ensure that the router routes to MerchantPromoCodeManager for this
@@ -328,7 +328,7 @@ TEST_F(SingleFieldFormFillRouterTest,
 
   single_field_form_fill_router_->OnRemoveCurrentSingleFieldSuggestion(
       /*field_name=*/u"Field Name", /*value=*/u"Value",
-      POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY);
+      PopupItemId::kMerchantPromoCodeEntry);
 }
 
 // Ensure that the router routes to MerchantPromoCodeManager for this
@@ -338,7 +338,7 @@ TEST_F(SingleFieldFormFillRouterTest,
   EXPECT_CALL(*merchant_promo_code_manager_, OnSingleFieldSuggestionSelected);
 
   single_field_form_fill_router_->OnSingleFieldSuggestionSelected(
-      /*value=*/u"Value", POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY);
+      /*value=*/u"Value", PopupItemId::kMerchantPromoCodeEntry);
 }
 
 // Ensure that SingleFieldFormFillRouter::OnGetSingleFieldSuggestions() returns
@@ -428,7 +428,7 @@ TEST_F(SingleFieldFormFillRouterTest,
 
   single_field_form_fill_router_->OnRemoveCurrentSingleFieldSuggestion(
       /*field_name=*/u"Field Name", /*value=*/u"Value",
-      POPUP_ITEM_ID_IBAN_ENTRY);
+      PopupItemId::kIbanEntry);
 }
 
 }  // namespace autofill

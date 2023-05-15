@@ -42,8 +42,7 @@ using autofill::AutofillJavaScriptFeature;
 using autofill::FieldDataManager;
 using autofill::FieldRendererId;
 using autofill::FormRendererId;
-using autofill::POPUP_ITEM_ID_CLEAR_FORM;
-using autofill::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS;
+using autofill::PopupItemId;
 using autofill::PopupType;
 using base::test::ios::WaitUntilCondition;
 
@@ -227,7 +226,7 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
   // Make the suggestions available to AutofillAgent.
   std::vector<autofill::Suggestion> autofillSuggestions;
   autofillSuggestions.push_back(
-      autofill::Suggestion("", "", "", POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS));
+      autofill::Suggestion("", "", "", PopupItemId::kShowAccountCards));
   [autofill_agent_ showAutofillPopup:autofillSuggestions
                        popupDelegate:mock_delegate.GetWeakPtr()];
 
@@ -258,7 +257,7 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
 
   // "Show credit cards from account" should be the only suggestion.
   EXPECT_EQ(1U, completion_handler_suggestions.count);
-  EXPECT_EQ(POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS,
+  EXPECT_EQ(PopupItemId::kShowAccountCards,
             completion_handler_suggestions[0].identifier);
 }
 
@@ -275,7 +274,7 @@ TEST_F(AutofillAgentTests,
       .WillOnce(testing::Return(PopupType::kUnspecified));
   // Initialize suggestion.
   std::vector<autofill::Suggestion> autofillSuggestions = {
-      autofill::Suggestion("", "", "icon", POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS)};
+      autofill::Suggestion("", "", "icon", PopupItemId::kShowAccountCards)};
   // Completion handler to retrieve suggestions.
   auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
                              id<FormSuggestionProvider> delegate) {
@@ -319,7 +318,7 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
   autofillSuggestions.push_back(
       autofill::Suggestion("", "", "", autofill::Suggestion::FrontendId(321)));
   autofillSuggestions.push_back(
-      autofill::Suggestion("", "", "", POPUP_ITEM_ID_CLEAR_FORM));
+      autofill::Suggestion("", "", "", PopupItemId::kClearForm));
   [autofill_agent_
       showAutofillPopup:autofillSuggestions
           popupDelegate:base::WeakPtr<autofill::AutofillPopupDelegate>()];
@@ -352,7 +351,7 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearForm) {
   // "Clear Form" should appear as the first suggestion. Otherwise, the order of
   // suggestions should not change.
   EXPECT_EQ(3U, completion_handler_suggestions.count);
-  EXPECT_EQ(POPUP_ITEM_ID_CLEAR_FORM,
+  EXPECT_EQ(PopupItemId::kClearForm,
             completion_handler_suggestions[0].identifier);
   EXPECT_EQ(123, completion_handler_suggestions[1].identifier);
   EXPECT_EQ(321, completion_handler_suggestions[2].identifier);
@@ -371,7 +370,7 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
   autofillSuggestions.push_back(
       autofill::Suggestion("", "", "", autofill::Suggestion::FrontendId(321)));
   autofillSuggestions.push_back(
-      autofill::Suggestion("", "", "", POPUP_ITEM_ID_CLEAR_FORM));
+      autofill::Suggestion("", "", "", PopupItemId::kClearForm));
   [autofill_agent_
       showAutofillPopup:autofillSuggestions
           popupDelegate:base::WeakPtr<autofill::AutofillPopupDelegate>()];
@@ -402,7 +401,7 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ClearFormWithGPay) {
   });
 
   EXPECT_EQ(3U, completion_handler_suggestions.count);
-  EXPECT_EQ(POPUP_ITEM_ID_CLEAR_FORM,
+  EXPECT_EQ(PopupItemId::kClearForm,
             completion_handler_suggestions[0].identifier);
   EXPECT_EQ(123, completion_handler_suggestions[1].identifier);
   EXPECT_EQ(321, completion_handler_suggestions[2].identifier);
