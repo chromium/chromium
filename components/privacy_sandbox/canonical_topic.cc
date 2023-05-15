@@ -53,10 +53,9 @@ std::u16string CanonicalTopic::GetLocalizedRepresentation() const {
 }
 
 base::Value CanonicalTopic::ToValue() const {
-  base::Value value(base::Value::Type::DICT);
-  value.SetKey(kTopicId, base::Value(topic_id_.value()));
-  value.SetKey(kTaxonomyVersion, base::Value(taxonomy_version_));
-  return value;
+  return base::Value(base::Value::Dict()
+                         .Set(kTopicId, topic_id_.value())
+                         .Set(kTaxonomyVersion, taxonomy_version_));
 }
 
 /*static*/ absl::optional<CanonicalTopic> CanonicalTopic::FromValue(
