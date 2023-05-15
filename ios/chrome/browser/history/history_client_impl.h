@@ -59,6 +59,10 @@ class HistoryClientImpl : public history::HistoryClient,
   void BookmarkAllUserNodesRemoved(bookmarks::BookmarkModel* model,
                                    const std::set<GURL>& removed_urls) override;
 
+  // Callback registered in `favicons_changed_subscription_`.
+  void OnFaviconsChanged(const std::set<GURL>& page_urls,
+                         const GURL& favicon_url);
+
   // BookmarkModel instances providing access to bookmarks. May be null during
   // testing, and is null while shutting down.
   bookmarks::BookmarkModel* local_or_syncable_bookmark_model_ = nullptr;

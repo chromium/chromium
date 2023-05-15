@@ -44,11 +44,10 @@ void HistoryClientImpl::OnHistoryServiceCreated(
     on_bookmarks_removed_ =
         base::BindRepeating(&history::HistoryService::URLsNoLongerBookmarked,
                             base::Unretained(history_service));
-    favicons_changed_subscription_ =
-        history_service->AddFaviconsChangedCallback(base::BindRepeating(
-            &bookmarks::BookmarkModel::OnFaviconsChanged,
-            base::Unretained(local_or_syncable_bookmark_model_)));
   }
+  favicons_changed_subscription_ =
+      history_service->AddFaviconsChangedCallback(base::BindRepeating(
+          &HistoryClientImpl::OnFaviconsChanged, base::Unretained(this)));
 }
 
 void HistoryClientImpl::Shutdown() {
@@ -110,4 +109,15 @@ void HistoryClientImpl::BookmarkAllUserNodesRemoved(
     const std::set<GURL>& removed_urls) {
   if (on_bookmarks_removed_)
     on_bookmarks_removed_.Run(removed_urls);
+}
+
+void HistoryClientImpl::OnFaviconsChanged(const std::set<GURL>& page_urls,
+                                          const GURL& favicon_url) {
+  for (bookmarks::BookmarkModel* bookmark_model :
+       {local_or_syncable_bookmark_model_, account_bookmark_model_}) {
+    if (!bookmark_model) {
+      continue;
+    }
+    bookmark_model->OnFaviconsChanged(page_urls, favicon_url);
+  }
 }
