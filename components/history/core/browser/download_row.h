@@ -123,9 +123,15 @@ struct DownloadRow {
   // completion and not shown in the UI.
   bool transient = false;
 
-  // The id and name of the extension that created this download.
-  std::string by_ext_id;
+  // Field that either contains the id of the extension that created this
+  // download, or the id of the web app that created this download. These are
+  // mutually exclusive.
+  std::string by_ext_or_web_app_id;
+  // The name of the extension that created this download.
   std::string by_ext_name;
+  // Whether the field `by_ext_or_web_app_id` is for a web app. (true = web app,
+  // false = extension.) Is false if that field is empty.
+  bool is_by_web_app = false;
 
   // Data slices that have been downloaded so far. The slices must be ordered
   // by their offset.
