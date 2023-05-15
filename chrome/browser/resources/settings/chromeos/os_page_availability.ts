@@ -27,44 +27,25 @@ export {OsPageAvailability};
  * overriding load time data within tests.
  */
 export function createPageAvailability(): OsPageAvailability {
-  if (isGuest()) {
-    return {
-      apps: true,
-      bluetooth: true,
-      crostini: true,
-      dateTime: true,
-      device: true,
-      files: false,
-      internet: true,
-      kerberos: isKerberosEnabled(),
-      multidevice: false,
-      osAccessibility: true,
-      osLanguages: true,
-      osPeople: false,
-      osPrinting: true,
-      osPrivacy: true,
-      osReset: isPowerwashAllowed(),
-      osSearch: true,
-      personalization: false,
-    };
-  }
+  const isGuestMode = isGuest();
+
   return {
     apps: true,
     bluetooth: true,
     crostini: true,
     dateTime: true,
     device: true,
-    files: true,
+    files: !isGuestMode,
     internet: true,
     kerberos: isKerberosEnabled(),
-    multidevice: true,
+    multidevice: !isGuestMode,
     osAccessibility: true,
     osLanguages: true,
-    osPeople: true,
+    osPeople: !isGuestMode,
     osPrinting: true,
     osPrivacy: true,
     osReset: isPowerwashAllowed(),
     osSearch: true,
-    personalization: true,
+    personalization: !isGuestMode,
   };
 }

@@ -246,6 +246,7 @@ build_webui_tests("build") {
 
     "os_settings_ui/os_settings_ui_about_page_test.js",
     "os_settings_ui/os_settings_ui_menu_test.js",
+    "os_settings_ui/os_settings_ui_page_availability_test.ts",
     "os_settings_ui/os_settings_ui_test.ts",
     "os_settings_ui/os_settings_hats_ui_test.ts",
     "os_settings_ui/test_os_settings_hats_browser_proxy.ts",

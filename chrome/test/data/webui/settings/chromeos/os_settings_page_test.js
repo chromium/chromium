@@ -44,10 +44,6 @@ suite('<os-settings-page>', function() {
 
   /** @return {OsSettingsPageElement} */
   function init() {
-    loadTimeData.overrideValues({
-      isKerberosEnabled: true,  // Simulate Kerberos enabled
-    });
-
     const element = document.createElement('os-settings-page');
     element.prefs = prefElement.prefs;
     element.pageAvailability = createPageAvailabilityForTesting();
@@ -56,125 +52,6 @@ suite('<os-settings-page>', function() {
     return element;
   }
 
-  suite('Basic pages', () => {
-    suiteSetup(() => {
-      Router.getInstance().navigateTo(routes.BASIC);
-      settingsPage = init();
-    });
-
-    suiteTeardown(() => {
-      settingsPage.remove();
-      CrSettingsPrefs.resetForTesting();
-      Router.getInstance().resetRouteForTesting();
-    });
-
-    const basicPages = [
-      'settings-internet-page',
-      'os-settings-bluetooth-page',
-      'settings-multidevice-page',
-      'settings-kerberos-page',
-      'os-settings-people-page',
-      'settings-device-page',
-      'settings-personalization-page',
-      'os-settings-search-page',
-      'os-settings-privacy-page',
-      'os-settings-apps-page',
-      'os-settings-a11y-page',
-    ];
-    basicPages.forEach((pageName) => {
-      test(`${pageName} exists`, () => {
-        const pageElement = settingsPage.shadowRoot.querySelector(pageName);
-        assertTrue(!!pageElement, `Element <${pageName}> was not found.`);
-      });
-    });
-  });
-
-  suite('Advanced pages', () => {
-    suiteSetup(async () => {
-      Router.getInstance().navigateTo(routes.BASIC);
-      settingsPage = init();
-      const idleRender =
-          settingsPage.shadowRoot.querySelector('settings-idle-load');
-      await idleRender.get();
-    });
-
-    suiteTeardown(() => {
-      settingsPage.remove();
-      CrSettingsPrefs.resetForTesting();
-      Router.getInstance().resetRouteForTesting();
-    });
-
-    const advancedPages = [
-      'settings-date-time-page',
-      'os-settings-languages-section',
-      'os-settings-files-page',
-      'os-settings-printing-page',
-      'settings-crostini-page',
-      'os-settings-reset-page',
-    ];
-    advancedPages.forEach((pageName) => {
-      test(`${pageName} exists`, () => {
-        const pageElement = settingsPage.shadowRoot.querySelector(pageName);
-        assertTrue(!!pageElement, `Element <${pageName}> was not found.`);
-      });
-    });
-  });
-
-  suite('In Guest mode', () => {
-    suiteSetup(async () => {
-      Router.getInstance().navigateTo(routes.BASIC);
-      loadTimeData.overrideValues({isGuest: true});
-      settingsPage = init();
-
-      const idleRender =
-          settingsPage.shadowRoot.querySelector('settings-idle-load');
-      await idleRender.get();
-    });
-
-    suiteTeardown(() => {
-      settingsPage.remove();
-      CrSettingsPrefs.resetForTesting();
-      Router.getInstance().resetRouteForTesting();
-    });
-
-    const visiblePages = [
-      'settings-internet-page',
-      'os-settings-bluetooth-page',
-      'settings-kerberos-page',
-      'settings-device-page',
-      'os-settings-search-page',
-      'os-settings-privacy-page',
-      'os-settings-apps-page',
-      'os-settings-a11y-page',
-      'settings-date-time-page',
-      'os-settings-languages-section',
-      'os-settings-printing-page',
-      'settings-crostini-page',
-      'os-settings-reset-page',
-    ];
-    visiblePages.forEach((pageName) => {
-      test(`${pageName} should exist`, () => {
-        const pageElement = settingsPage.shadowRoot.querySelector(pageName);
-        assertTrue(
-            !!pageElement, `Element <${pageName}> should exist in Guest mode.`);
-      });
-    });
-
-    const hiddenPages = [
-      'settings-multidevice-page',
-      'os-settings-people-page',
-      'settings-personalization-page',
-      'os-settings-files-page',
-    ];
-    hiddenPages.forEach((pageName) => {
-      test(`${pageName} should not exist`, () => {
-        const pageElement = settingsPage.shadowRoot.querySelector(pageName);
-        assertEquals(
-            null, pageElement,
-            `Element <${pageName}> should not exist in Guest mode.`);
-      });
-    });
-  });
 
   suite('Page availability', () => {
     suiteSetup(async () => {
@@ -192,14 +69,79 @@ suite('<os-settings-page>', function() {
       Router.getInstance().resetRouteForTesting();
     });
 
-    [{
-      pageName: 'osReset',
-      elementName: 'os-settings-reset-page',
-    },
-     {
-       pageName: 'kerberos',
-       elementName: 'settings-kerberos-page',
-     }].forEach(({pageName, elementName}) => {
+    [
+        // Basic pages
+        {
+          pageName: 'internet',
+          elementName: 'settings-internet-page',
+        },
+        {
+          pageName: 'bluetooth',
+          elementName: 'os-settings-bluetooth-page',
+        },
+        {
+          pageName: 'multidevice',
+          elementName: 'settings-multidevice-page',
+        },
+        {
+          pageName: 'kerberos',
+          elementName: 'settings-kerberos-page',
+        },
+        {
+          pageName: 'osPeople',
+          elementName: 'os-settings-people-page',
+        },
+        {
+          pageName: 'device',
+          elementName: 'settings-device-page',
+        },
+        {
+          pageName: 'personalization',
+          elementName: 'settings-personalization-page',
+        },
+        {
+          pageName: 'osSearch',
+          elementName: 'os-settings-search-page',
+        },
+        {
+          pageName: 'osPrivacy',
+          elementName: 'os-settings-privacy-page',
+        },
+        {
+          pageName: 'apps',
+          elementName: 'os-settings-apps-page',
+        },
+        {
+          pageName: 'osAccessibility',
+          elementName: 'os-settings-a11y-page',
+        },
+
+        // Advanced section pages
+        {
+          pageName: 'dateTime',
+          elementName: 'settings-date-time-page',
+        },
+        {
+          pageName: 'osLanguages',
+          elementName: 'os-settings-languages-section',
+        },
+        {
+          pageName: 'files',
+          elementName: 'os-settings-files-page',
+        },
+        {
+          pageName: 'osPrinting',
+          elementName: 'os-settings-printing-page',
+        },
+        {
+          pageName: 'crostini',
+          elementName: 'settings-crostini-page',
+        },
+        {
+          pageName: 'osReset',
+          elementName: 'os-settings-reset-page',
+        },
+    ].forEach(({pageName, elementName}) => {
       test(`${pageName} page is controlled by pageAvailability`, () => {
         // Make page available
         settingsPage.pageAvailability = {

@@ -82,16 +82,6 @@ export class OsSettingsPageElement extends OsSettingsPageElementBase {
       androidAppsInfo: Object,
 
       /**
-       * Whether the user is in guest mode.
-       */
-      isGuestMode_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean('isGuest');
-        },
-      },
-
-      /**
        * Dictionary defining page availability.
        */
       pageAvailability: {

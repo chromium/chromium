@@ -579,6 +579,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['OsSettingsUi', 'os_settings_ui/os_settings_ui_test.js'],
  ['OsSettingsUiAboutPage', 'os_settings_ui/os_settings_ui_about_page_test.js'],
  ['OsSettingsUiMenu', 'os_settings_ui/os_settings_ui_menu_test.js'],
+ [
+   'OsSettingsUiPageAvailability',
+   'os_settings_ui/os_settings_ui_page_availability_test.js',
+ ],
  ['OsSettingsUiToolbar', 'os_settings_ui/os_settings_ui_toolbar_test.js'],
  [
    'OsSettingsUiUserActionRecorder',
