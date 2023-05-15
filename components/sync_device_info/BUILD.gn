@@ -65,6 +65,9 @@ static_library("sync_device_info") {
     deps += [ "//chromeos/constants" ]
   }
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
   if (is_ios) {
     sources += [ "local_device_info_util_ios.mm" ]
   }
