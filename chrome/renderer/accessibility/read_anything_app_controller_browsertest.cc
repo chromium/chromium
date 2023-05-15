@@ -583,12 +583,12 @@ TEST_F(ReadAnythingAppControllerTest, DisplayNodeIdsContains_ContentNodes) {
   SetUpdateTreeID(&update);
   update.nodes.resize(1);
   update.nodes[0].id = 3;
-  update.nodes[0].AddIntAttribute(ax::mojom::IntAttribute::kScrollX, 100);
-  // This update changes the horizontal scroll position of node 3. When the
-  // controller receives it in AccessibilityEventReceived, it will re-distill
-  // the tree. This is an example of a generated event.
+  // This update says the page loaded. When the controller receives it in
+  // AccessibilityEventReceived, it will re-distill the tree. This is an
+  // example of a non-generated event.
   EXPECT_CALL(*distiller_, Distill).Times(1);
-  AccessibilityEventReceived({update});
+  ui::AXEvent load_complete(0, ax::mojom::Event::kLoadComplete);
+  AccessibilityEventReceived({update}, {load_complete});
   OnAXTreeDistilled({3});
   EXPECT_TRUE(DisplayNodeIdsContains(1));
   EXPECT_FALSE(DisplayNodeIdsContains(2));
@@ -941,11 +941,11 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ("2345", GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
 
-  // Send update 1. This triggers distillation via a generated event. The data
-  // is also unserialized.
+  // Send update 1. This triggers distillation via a non-generated event. The
+  // data is also unserialized.
   EXPECT_CALL(*distiller_, Distill).Times(1);
-  updates[1].nodes[0].AddIntAttribute(ax::mojom::IntAttribute::kScrollY, 100);
-  AccessibilityEventReceived({updates[1]});
+  ui::AXEvent load_complete_1(1, ax::mojom::Event::kLoadComplete);
+  AccessibilityEventReceived({updates[1]}, {load_complete_1});
   EXPECT_EQ("23456", GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
 
@@ -953,10 +953,8 @@ TEST_F(ReadAnythingAppControllerTest,
   // event. This does not result in distillation (yet). The data is not
   // unserialized.
   EXPECT_CALL(*distiller_, Distill).Times(0);
-  // Keep the root scrolled.
-  updates[2].nodes[0].AddIntAttribute(ax::mojom::IntAttribute::kScrollY, 100);
-  ui::AXEvent load_complete(1, ax::mojom::Event::kLoadComplete);
-  AccessibilityEventReceived({updates[2]}, {load_complete});
+  ui::AXEvent load_complete_2(2, ax::mojom::Event::kLoadComplete);
+  AccessibilityEventReceived({updates[2]}, {load_complete_2});
   EXPECT_EQ("23456", GetTextContent(1));
   Mock::VerifyAndClearExpectations(distiller_);
 

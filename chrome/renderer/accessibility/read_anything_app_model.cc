@@ -543,10 +543,6 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
   // It's up to the consumer to pick but its generally good to prefer generated.
   for (const auto& event : event_generator) {
     switch (event.event_params.event) {
-      case ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:
-      case ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
-        requires_distillation_ = true;
-        break;
       case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
         if (event.event_params.event_from == ax::mojom::EventFrom::kUser) {
           requires_post_process_selection_ = true;
@@ -618,6 +614,8 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::REQUIRED_STATE_CHANGED:
       case ui::AXEventGenerator::Event::ROLE_CHANGED:
       case ui::AXEventGenerator::Event::ROW_COUNT_CHANGED:
+      case ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED:
+      case ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED:
       case ui::AXEventGenerator::Event::SELECTED_CHANGED:
       case ui::AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
       case ui::AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
