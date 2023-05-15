@@ -256,8 +256,8 @@ void FileSystemAccessFileWriterImpl::CloseImpl(CloseCallback callback) {
           /*source_url=*/swap_url(),
           /*dest_url=*/url(),
           FileSystemOperation::CopyOrMoveOptionSet(
-              FileSystemOperation::CopyOrMoveOption::
-                  kPreserveDestinationPermissions),
+              {FileSystemOperation::CopyOrMoveOption::
+                   kPreserveDestinationPermissions}),
           std::move(quarantine_connection_callback_),
           has_transient_user_activation_);
   // Allows the unique pointer to be bound to the callback so the helper stays

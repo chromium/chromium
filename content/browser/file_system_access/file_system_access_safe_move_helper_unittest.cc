@@ -180,8 +180,8 @@ class FileSystemAccessSafeMoveHelperTest : public testing::Test {
                                                     kFrameId),
         source_url, dest_url,
         storage::FileSystemOperation::CopyOrMoveOptionSet(
-            storage::FileSystemOperation::CopyOrMoveOption::
-                kPreserveDestinationPermissions),
+            {storage::FileSystemOperation::CopyOrMoveOption::
+                 kPreserveDestinationPermissions}),
         quarantine_callback_,
         /*has_transient_user_activation=*/false);
   }

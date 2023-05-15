@@ -1156,9 +1156,10 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   interest_group.priority_signals_overrides = {{{"old1", 1}, {"old2", 2}}};
   interest_group.seller_capabilities.emplace();
   interest_group.seller_capabilities->insert(std::make_pair(
-      kOriginA, blink::SellerCapabilities::kInterestGroupCounts));
-  interest_group.all_sellers_capabilities =
-      blink::SellerCapabilities::kLatencyStats;
+      kOriginA, blink::SellerCapabilitiesType(
+                    {blink::SellerCapabilities::kInterestGroupCounts})));
+  interest_group.all_sellers_capabilities = {
+      blink::SellerCapabilities::kLatencyStats};
   interest_group.update_url = kUpdateUrlA;
   interest_group.bidding_url = kBiddingLogicUrlA;
   interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
@@ -1216,12 +1217,13 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
 
   EXPECT_EQ(group.all_sellers_capabilities,
             blink::SellerCapabilitiesType(
-                blink::SellerCapabilities::kInterestGroupCounts,
-                blink::SellerCapabilities::kLatencyStats));
+                {blink::SellerCapabilities::kInterestGroupCounts,
+                 blink::SellerCapabilities::kLatencyStats}));
   ASSERT_TRUE(group.seller_capabilities);
   ASSERT_EQ(group.seller_capabilities->size(), 1u);
   EXPECT_EQ(group.seller_capabilities->at(kOriginA),
-            blink::SellerCapabilities::kLatencyStats);
+            blink::SellerCapabilitiesType(
+                {blink::SellerCapabilities::kLatencyStats}));
   ASSERT_TRUE(group.bidding_url.has_value());
   EXPECT_EQ(group.bidding_url->spec(),
             base::StringPrintf("%s/interest_group/new_bidding_logic.js",
@@ -2086,11 +2088,13 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidSellerCapabilitiesIgnored) {
   ASSERT_EQ(groups.size(), 1u);
   const auto& group = groups[0].interest_group;
   EXPECT_EQ(group.all_sellers_capabilities,
-            blink::SellerCapabilities::kInterestGroupCounts);
+            blink::SellerCapabilitiesType(
+                {blink::SellerCapabilities::kInterestGroupCounts}));
   ASSERT_TRUE(group.seller_capabilities);
   ASSERT_EQ(group.seller_capabilities->size(), 1u);
   EXPECT_EQ(group.seller_capabilities->at(kOriginA),
-            blink::SellerCapabilities::kLatencyStats);
+            blink::SellerCapabilitiesType(
+                {blink::SellerCapabilities::kLatencyStats}));
 }
 
 // The server response can't be parsed as valid JSON. The update is cancelled.
@@ -4705,8 +4709,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateSupportsDeprecatedNames) {
             "https://example.com/new_render");
   EXPECT_EQ(group.all_sellers_capabilities,
             blink::SellerCapabilitiesType(
-                blink::SellerCapabilities::kInterestGroupCounts,
-                blink::SellerCapabilities::kLatencyStats));
+                {blink::SellerCapabilities::kInterestGroupCounts,
+                 blink::SellerCapabilities::kLatencyStats}));
   EXPECT_EQ(group.execution_mode,
             blink::InterestGroup::ExecutionMode::kGroupedByOriginMode);
 }

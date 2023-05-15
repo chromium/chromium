@@ -2681,8 +2681,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         const auto& group = groups[0].interest_group;
         return group.all_sellers_capabilities ==
                    blink::SellerCapabilitiesType(
-                       blink::SellerCapabilities::kInterestGroupCounts,
-                       blink::SellerCapabilities::kLatencyStats) &&
+                       {blink::SellerCapabilities::kInterestGroupCounts,
+                        blink::SellerCapabilities::kLatencyStats}) &&
                group.execution_mode ==
                    blink::InterestGroup::ExecutionMode::kGroupedByOriginMode;
       }));
@@ -2727,21 +2727,23 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                     /*name=*/"cars")
                     .SetSellerCapabilities(
                         {{{url::Origin::Create(GURL("https://example.test")),
-                           blink::SellerCapabilities::kInterestGroupCounts}}})
+                           {blink::SellerCapabilities::kInterestGroupCounts}}}})
                     .SetAllSellerCapabilities(
-                        blink::SellerCapabilities::kLatencyStats)
+                        {blink::SellerCapabilities::kLatencyStats})
                     .Build()));
 
   std::vector<StorageInterestGroup> groups = GetInterestGroupsForOwner(origin);
   ASSERT_EQ(groups.size(), 1u);
   const blink::InterestGroup& group = groups[0].interest_group;
   EXPECT_EQ(group.all_sellers_capabilities,
-            blink::SellerCapabilities::kLatencyStats);
+            blink::SellerCapabilitiesType(
+                {blink::SellerCapabilities::kLatencyStats}));
   ASSERT_TRUE(group.seller_capabilities);
   ASSERT_EQ(group.seller_capabilities->size(), 1u);
   EXPECT_EQ(group.seller_capabilities->at(
                 url::Origin::Create(GURL("https://example.test"))),
-            blink::SellerCapabilities::kInterestGroupCounts);
+            blink::SellerCapabilitiesType(
+                {blink::SellerCapabilities::kInterestGroupCounts}));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -5272,7 +5274,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                     .SetAds({{{ad2_url, /*metadata=*/absl::nullopt}}})
                     .SetUpdateUrl(update_url)
                     .SetAllSellerCapabilities(
-                        blink::SellerCapabilities::kInterestGroupCounts)
+                        {blink::SellerCapabilities::kInterestGroupCounts})
                     .Build()));
 
   // `ad2_url` wins, because "cars" is removed for not satisfying
@@ -5300,8 +5302,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             for (const StorageInterestGroup& group : groups) {
               if (group.interest_group.all_sellers_capabilities !=
                   blink::SellerCapabilitiesType(
-                      blink::SellerCapabilities::kInterestGroupCounts,
-                      blink::SellerCapabilities::kLatencyStats)) {
+                      {blink::SellerCapabilities::kInterestGroupCounts,
+                       blink::SellerCapabilities::kLatencyStats})) {
                 return false;
               }
             }
@@ -5368,7 +5370,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                     .SetUpdateUrl(update_url)
                     .SetSellerCapabilities(
                         {{{test_origin,
-                           blink::SellerCapabilities::kInterestGroupCounts}}})
+                           {blink::SellerCapabilities::kInterestGroupCounts}}}})
                     .Build()));
 
   // `ad2_url` wins, because "cars" is removed for not satisfying
@@ -5405,8 +5407,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
               }
               if (it->second !=
                   blink::SellerCapabilitiesType(
-                      blink::SellerCapabilities::kInterestGroupCounts,
-                      blink::SellerCapabilities::kLatencyStats)) {
+                      {blink::SellerCapabilities::kInterestGroupCounts,
+                       blink::SellerCapabilities::kLatencyStats})) {
                 return false;
               }
             }
@@ -5477,7 +5479,7 @@ IN_PROC_BROWSER_TEST_F(
                     .SetUpdateUrl(update_url)
                     .SetSellerCapabilities(
                         {{{other_origin,
-                           blink::SellerCapabilities::kInterestGroupCounts}}})
+                           {blink::SellerCapabilities::kInterestGroupCounts}}}})
                     .Build()));
 
   // There is no winner, because "cars" is removed for not satisfying
@@ -5514,8 +5516,8 @@ IN_PROC_BROWSER_TEST_F(
               }
               if (it->second !=
                   blink::SellerCapabilitiesType(
-                      blink::SellerCapabilities::kInterestGroupCounts,
-                      blink::SellerCapabilities::kLatencyStats)) {
+                      {blink::SellerCapabilities::kInterestGroupCounts,
+                       blink::SellerCapabilities::kLatencyStats})) {
                 return false;
               }
             }
@@ -5569,7 +5571,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
               .SetAds({{{ad1_url, /*metadata=*/absl::nullopt}}})
               .SetUpdateUrl(update_url)
               .SetAllSellerCapabilities(
-                  blink::SellerCapabilities::kInterestGroupCounts)
+                  {blink::SellerCapabilities::kInterestGroupCounts})
               .Build()));
   EXPECT_EQ(kSuccess,
             JoinInterestGroupAndVerify(
@@ -5610,8 +5612,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             for (const StorageInterestGroup& group : groups) {
               if (group.interest_group.all_sellers_capabilities !=
                   blink::SellerCapabilitiesType(
-                      blink::SellerCapabilities::kInterestGroupCounts,
-                      blink::SellerCapabilities::kLatencyStats)) {
+                      {blink::SellerCapabilities::kInterestGroupCounts,
+                       blink::SellerCapabilities::kLatencyStats})) {
                 return false;
               }
             }

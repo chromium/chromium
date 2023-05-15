@@ -758,8 +758,8 @@ void FileSystemAccessFileHandleImpl::DidCreateSwapFile(
                      std::move(callback)),
       url(), swap_url,
       storage::FileSystemOperation::CopyOrMoveOptionSet(
-          storage::FileSystemOperation::CopyOrMoveOption::
-              kPreserveLastModified),
+          {storage::FileSystemOperation::CopyOrMoveOption::
+               kPreserveLastModified}),
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
       std::make_unique<storage::CopyOrMoveHookDelegate>());
 }

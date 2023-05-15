@@ -52,15 +52,13 @@ ukm::SourceId ToSourceId(int64_t navigation_id) {
 // which are related to the document finishing loading).
 // We ignore them to make tests easier to read and write.
 
-constexpr blink::scheduler::WebSchedulerTrackedFeatures kFeaturesToIgnore =
-    blink::scheduler::WebSchedulerTrackedFeatures(
-        blink::scheduler::WebSchedulerTrackedFeature::kDocumentLoaded,
-        blink::scheduler::WebSchedulerTrackedFeature::
-            kOutstandingNetworkRequestFetch,
-        blink::scheduler::WebSchedulerTrackedFeature::
-            kOutstandingNetworkRequestXHR,
-        blink::scheduler::WebSchedulerTrackedFeature::
-            kOutstandingNetworkRequestOthers);
+constexpr blink::scheduler::WebSchedulerTrackedFeatures kFeaturesToIgnore = {
+    blink::scheduler::WebSchedulerTrackedFeature::kDocumentLoaded,
+    blink::scheduler::WebSchedulerTrackedFeature::
+        kOutstandingNetworkRequestFetch,
+    blink::scheduler::WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR,
+    blink::scheduler::WebSchedulerTrackedFeature::
+        kOutstandingNetworkRequestOthers};
 
 using UkmMetrics = ukm::TestUkmRecorder::HumanReadableUkmMetrics;
 using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
@@ -121,7 +119,7 @@ class BackForwardCacheMetricsBrowserTestBase : public ContentBrowserTest,
     EXPECT_EQ(base::Difference(
                   current_frame_host()->GetBackForwardCacheDisablingFeatures(),
                   kFeaturesToIgnore),
-              blink::scheduler::WebSchedulerTrackedFeatures(feature));
+              blink::scheduler::WebSchedulerTrackedFeatures({feature}));
 
     // Close the web contents to ensure that no new notifications arrive to the
     // function local callback above after this function has returned.
