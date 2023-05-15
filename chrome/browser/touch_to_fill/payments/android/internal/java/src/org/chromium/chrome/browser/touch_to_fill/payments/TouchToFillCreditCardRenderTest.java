@@ -81,23 +81,24 @@ public class TouchToFillCreditCardRenderTest {
 
     private static final CreditCard VISA =
             createCreditCard("Visa", "4111111111111111", "05", AutofillTestHelper.nextYear(), true,
-                    "Visa", "• • • • 1111", R.drawable.visa_card, "visa");
+                    "Visa", "• • • • 1111", R.drawable.visa_metadata_card, "visa");
     private static final CreditCard MASTER_CARD =
             createCreditCard("MasterCard", "5555555555554444", "08", AutofillTestHelper.nextYear(),
-                    true, "Mastercard", "• • • • 4444", R.drawable.mc_card, "mastercard");
-    private static final CreditCard SERVER_MASTER_CARD =
-            createCreditCard("MasterCard", "5454545454545454", "11", AutofillTestHelper.nextYear(),
-                    false, "MasterCard-GPay", "• • • • 5454", R.drawable.mc_card, "mastercard");
-    private static final CreditCard DISCOVER =
-            createCreditCard("Discover", "6011111111111117", "09", AutofillTestHelper.nextYear(),
-                    true, "Discover", "• • • • 1117", R.drawable.discover_card, "discover");
+                    true, "Mastercard", "• • • • 4444", R.drawable.mc_metadata_card, "mastercard");
+    private static final CreditCard SERVER_MASTER_CARD = createCreditCard("MasterCard",
+            "5454545454545454", "11", AutofillTestHelper.nextYear(), false, "MasterCard-GPay",
+            "• • • • 5454", R.drawable.mc_metadata_card, "mastercard");
+    private static final CreditCard DISCOVER = createCreditCard("Discover", "6011111111111117",
+            "09", AutofillTestHelper.nextYear(), true, "Discover", "• • • • 1117",
+            R.drawable.discover_metadata_card, "discover");
     private static final CreditCard AMERICAN_EXPRESS = createCreditCard("American Express",
             "378282246310005", "10", AutofillTestHelper.nextYear(), true, "American Express",
-            "• • • • 0005", R.drawable.amex_card, "american express");
+            "• • • • 0005", R.drawable.amex_metadata_card, "american express");
     private static final CreditCard MASTERCARD_VIRTUAL_CARD = createVirtualCreditCard(
             /* name= */ "MasterCard-GPay", /* number= */ "5454545454545454", /* month= */ "11",
             /* year= */ AutofillTestHelper.nextYear(), /* network= */ "Mastercard",
-            /* iconId= */ R.drawable.mc_card, /* cardNameForAutofillDisplay= */ "MasterCard-GPay",
+            /* iconId= */ R.drawable.mc_metadata_card,
+            /* cardNameForAutofillDisplay= */ "MasterCard-GPay",
             /* obfuscatedLastFourDigits= */ "• • • • 5454");
 
     private BottomSheetController mBottomSheetController;
