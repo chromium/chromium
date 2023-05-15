@@ -1351,12 +1351,6 @@ const char kEnablePixelCanvasRecordingDescription[] =
     "with the pixel and improves text rendering. This should be enabled when a "
     "device is using fractional scale factor.";
 
-const char kReduceHorizontalFlingVelocityName[] =
-    "Reduce horizontal fling velocity";
-const char kReduceHorizontalFlingVelocityDescription[] =
-    "Reduces the velocity of horizontal flings to 20% of their original"
-    "velocity.";
-
 extern const char kDropInputEventsBeforeFirstPaintName[] =
     "Drop Input Events Before First Paint";
 extern const char kDropInputEventsBeforeFirstPaintDescription[] =

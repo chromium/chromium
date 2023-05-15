@@ -6479,11 +6479,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "reduce-horizontal-fling-velocity",
-    "owners": [ "flackr", "input-dev" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "reduce-user-agent-android-version-device-model",
     "owners": [ "miketaylr", "victortan"],
     "expiry_milestone": 116

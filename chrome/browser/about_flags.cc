@@ -6909,11 +6909,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kCrOSEnforceSystemAecNs)},
 #endif
 
-    {"reduce-horizontal-fling-velocity",
-     flag_descriptions::kReduceHorizontalFlingVelocityName,
-     flag_descriptions::kReduceHorizontalFlingVelocityDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kReduceHorizontalFlingVelocity)},
-
     {"enable-css-selector-fragment-anchor",
      flag_descriptions::kEnableCssSelectorFragmentAnchorName,
      flag_descriptions::kEnableCssSelectorFragmentAnchorDescription, kOsAll,

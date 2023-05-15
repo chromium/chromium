@@ -753,9 +753,6 @@ extern const char kEnableInputDeviceSettingsSplitDescription[];
 extern const char kExperimentalRgbKeyboardPatternsName[];
 extern const char kExperimentalRgbKeyboardPatternsDescription[];
 
-extern const char kReduceHorizontalFlingVelocityName[];
-extern const char kReduceHorizontalFlingVelocityDescription[];
-
 extern const char kRetailCouponsName[];
 extern const char kRetailCouponsDescription[];
 
