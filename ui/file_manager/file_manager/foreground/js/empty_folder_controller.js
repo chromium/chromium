@@ -161,6 +161,58 @@ export class EmptyFolderController {
   }
 
   /**
+   * TODO(b/254586358): i18n these strings.
+   * Shows the ODFS reauthentication required message. Include the "Sign in"
+   * and "Settings" links and set the handlers.
+   * @private
+   */
+  showODFSReauthenticationMessage_() {
+    const titleSpan = document.createElement('span');
+    titleSpan.id = 'empty-folder-title';
+    titleSpan.innerText = 'You\'ve been logged out';
+
+    const signInLink = document.createElement('a');
+    signInLink.setAttribute('class', 'sign-in');
+    signInLink.innerText = 'Sign in';
+    signInLink.addEventListener('click', this.onODFSSignIn_.bind(this));
+
+    const inBetweenText = document.createElement('span');
+    inBetweenText.innerText = ' to your OneDrive account to open Office files' +
+        ' stored on your Chromebook or go to ';
+
+    const settingsLink = document.createElement('a');
+    settingsLink.setAttribute('class', 'settings');
+    settingsLink.innerText = 'Settings';
+    settingsLink.addEventListener('click', this.onSettings_.bind(this));
+
+    const descSpan = document.createElement('span');
+    descSpan.id = 'empty-folder-desc';
+    descSpan.appendChild(signInLink);
+    descSpan.appendChild(inBetweenText);
+    descSpan.appendChild(settingsLink);
+
+    this.label_.appendChild(titleSpan);
+    this.label_.appendChild(document.createElement('br'));
+    this.label_.appendChild(descSpan);
+  }
+
+  /**
+   * Called when "Sign in" link for ODFS reauthentication is clicked.
+   * @private
+   */
+  onODFSSignIn_() {
+    // TODO(cassycc): handle sign in.
+  }
+
+  /**
+   * Called when "Settings" link for ODFS reauthentication is clicked.
+   * @private
+   */
+  onSettings_() {
+    // TODO(cassycc): handle settings navigation.
+  }
+
+  /**
    * Updates visibility of empty folder UI. `odfsAndReauthenticationRequired` is
    * true when the volume is ODFS and reauthentication is required.
    * @param {boolean} odfsAndReauthenticationRequired
@@ -205,11 +257,7 @@ export class EmptyFolderController {
     }
 
     if (svgRef == ODFS_REAUTHENTICATION_REQUIRED) {
-      // TODO(b/254586358): i18n these strings.
-      this.showMessage_(
-          'You\'ve been logged out',
-          'Sign in to your OneDrive account to open Office files' +
-              '\nstored on your Chromebook or go to Settings');
+      this.showODFSReauthenticationMessage_();
       return;
     }
 

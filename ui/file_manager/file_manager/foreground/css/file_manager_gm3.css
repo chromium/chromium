@@ -1024,10 +1024,18 @@ body.check-select #read-only-indicator {
   margin-top: 16px;
   text-align: center;
   width: 320px;
+  /* Ensure links in label are on top when not hidden so a click is not
+  absorbed by an empty file-list. */
+  z-index: 999;
 }
 
 #empty-folder #empty-folder-title {
   font: var(--cros-button-2-font);
+}
+
+#empty-folder > .label > span#empty-folder-desc > a {
+  color: var(--cros-text-color-prominent);
+  font: var(--cros-body-1-font);
 }
 
 #detail-table {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {createChild} from '../../common/js/dom_utils.js';
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
@@ -204,9 +204,10 @@ export function testShownForODFS() {
   emptyFolderController.onScanFailed_(event);
 
   assertFalse(element.hidden);
-  const text = emptyFolderController.label_.innerText;
-  // TODO(b/254586358): use the i18n version of this string.
-  assertTrue(text.includes('You\'ve been logged out'));
+  const signInLink = emptyFolderController.label_.querySelector('.sign-in');
+  assertNotEquals(signInLink, null);
+  const settingsLink = emptyFolderController.label_.querySelector('.settings');
+  assertNotEquals(settingsLink, null);
 }
 
 /**

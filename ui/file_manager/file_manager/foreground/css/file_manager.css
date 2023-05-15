@@ -1251,10 +1251,18 @@ body.check-select #read-only-indicator {
   font: var(--cros-body-2-font);
   margin-top: 16px;
   text-align: center;
+  /* Ensure links in label are on top when not hidden so a click is not
+  absorbed by an empty file-list. */
+  z-index: 999;
 }
 
 #empty-folder > .label > span#empty-folder-title {
   font-weight: bold;
+}
+
+#empty-folder > .label > span#empty-folder-desc > a {
+  color: var(--cros-text-color-prominent);
+  font: var(--cros-body-1-font);
 }
 
 #detail-table {
