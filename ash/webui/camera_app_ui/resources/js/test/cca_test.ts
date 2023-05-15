@@ -349,6 +349,14 @@ export class CCATest {
   }
 
   /**
+   * Gets current boolean value of |key|.
+   */
+  static getState(key: string): boolean {
+    const stateKey = state.assertState(key);
+    return state.get(stateKey);
+  }
+
+  /**
    * Calculates the expected duration of the time-lapse video recorded for
    * |recordDuration| seconds.
    */
@@ -523,5 +531,29 @@ export class CCATest {
 
   static getFpsObserver(): FpsObserver {
     return new FpsObserver(getPreviewVideo());
+  }
+
+  /**
+   * Waits until the state |key| is changed to |expected| and resolves the
+   * millisecond unix timestamp of the state change.
+   */
+  static waitStateChange(key: string, expected: boolean): Promise<number> {
+    const stateKey = state.assertState(key);
+    const current = state.get(stateKey);
+    if (current === expected) {
+      throw new Error(`Cannot start observing because the state of ${
+          stateKey} is already ${expected}`);
+    }
+    return new Promise((resolve, reject) => {
+      function onChange(newState: boolean) {
+        state.removeObserver(stateKey, onChange);
+        if (newState !== expected) {
+          reject(
+              new Error(`The changed "${stateKey}" state is not ${expected}`));
+        }
+        resolve(Date.now());
+      }
+      state.addObserver(stateKey, onChange);
+    });
   }
 }
