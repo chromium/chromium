@@ -56,6 +56,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.CFIPageSizeMismatch" units="BooleanOccurred"
+    expires_after="2024-06-01">
+  <owner>sroettger@google.com</owner>
+  <owner>v8-security@google.com</owner>
+  <summary>
+    Whether there's a mismatch between the maximum page size we assume at
+    compile time and the page size we assume at runtime.
+
+    This metric is recorded once at renderer startup when the
+    ThreadIsolatedAllocator is initialized.
+  </summary>
+</histogram>
+
 <histogram name="V8.CodeCacheRejectReason" enum="V8CodeCacheRejectReason"
     expires_after="M77">
   <owner>yangguo@chromium.org</owner>

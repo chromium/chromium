@@ -12,6 +12,8 @@
 #include "base/allocator/partition_allocator/thread_isolation/alignment.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/memory/page_size.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 
 namespace {
@@ -50,6 +52,15 @@ void PkeyDisableWriteAccess(int pkey) {
 namespace gin {
 
 void ThreadIsolationData::InitializeBeforeThreadCreation() {
+  bool page_size_mismatch = PA_THREAD_ISOLATED_ALIGN_SZ < base::GetPageSize();
+  base::UmaHistogramBoolean("V8.CFIPageSizeMismatch", page_size_mismatch);
+  if (page_size_mismatch) {
+    // We write-protect global variables and need to align and pad them to (a
+    // multiple of) the OS page size. But since page size is not a compile time
+    // constant, check at runtime that our value was large enough.
+    return;
+  }
+
   pkey = PkeyAlloc(0);
   if (pkey == -1) {
     return;
