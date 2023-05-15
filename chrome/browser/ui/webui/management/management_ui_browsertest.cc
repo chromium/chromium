@@ -61,7 +61,8 @@ class ManagementUITest : public InProcessBrowserTest {
 };
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
+// TODO(crbug.com/1443363): flaky.
+IN_PROC_BROWSER_TEST_F(ManagementUITest, DISABLED_ManagementStateChange) {
   profile_policy_connector()->OverrideIsManagedForTesting(false);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("chrome://management")));
