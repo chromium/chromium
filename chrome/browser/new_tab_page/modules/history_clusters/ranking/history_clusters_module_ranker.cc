@@ -6,7 +6,10 @@
 
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
+#include "chrome/browser/cart/cart_db.h"
+#include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_util.h"
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
@@ -19,8 +22,9 @@
 
 HistoryClustersModuleRanker::HistoryClustersModuleRanker(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
+    CartService* cart_service,
     const base::flat_set<std::string>& category_boostlist)
-    : category_boostlist_(category_boostlist) {
+    : cart_service_(cart_service), category_boostlist_(category_boostlist) {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (model_provider) {
     model_handler_ = std::make_unique<HistoryClustersModuleRankingModelHandler>(
@@ -34,12 +38,28 @@ HistoryClustersModuleRanker::~HistoryClustersModuleRanker() = default;
 void HistoryClustersModuleRanker::RankClusters(
     std::vector<history::Cluster> clusters,
     ClustersCallback callback) {
+  if (IsCartModuleEnabled() && cart_service_) {
+    cart_service_->LoadAllActiveCarts(
+        base::BindOnce(&HistoryClustersModuleRanker::OnAllSignalsReady,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(clusters),
+                       std::move(callback)));
+  } else {
+    OnAllSignalsReady(std::move(clusters), std::move(callback),
+                      /*success=*/false, /*active_carts=*/{});
+  }
+}
+
+void HistoryClustersModuleRanker::OnAllSignalsReady(
+    std::vector<history::Cluster> clusters,
+    ClustersCallback callback,
+    bool success,
+    std::vector<CartDB::KeyAndValue> active_carts) {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (model_handler_ && model_handler_->CanExecuteAvailableModel()) {
     std::vector<HistoryClustersModuleRankingSignals> ranking_signals;
     ranking_signals.reserve(clusters.size());
     for (const auto& cluster : clusters) {
-      ranking_signals.emplace_back(category_boostlist_, cluster);
+      ranking_signals.emplace_back(active_carts, category_boostlist_, cluster);
     }
     model_handler_->ExecuteBatch(
         ranking_signals,
