@@ -42,5 +42,19 @@ std::vector<uint8_t> FakeFastPairDataEncryptor::CreateAdditionalDataPacket(
   return additional_data_packet_encrypted_bytes_;
 }
 
+bool FakeFastPairDataEncryptor::VerifyEncryptedAdditionalData(
+    const std::array<uint8_t, kHmacVerifyLenBytes> hmacSha256First8Bytes,
+    std::array<uint8_t, kNonceSizeBytes> nonce,
+    const std::vector<uint8_t>& encrypted_additional_data) {
+  return verify_;
+}
+
+std::vector<uint8_t>
+FakeFastPairDataEncryptor::EncryptAdditionalDataWithSecretKey(
+    std::array<uint8_t, kNonceSizeBytes> nonce,
+    const std::vector<uint8_t>& additional_data) {
+  return encrypted_additional_data_;
+}
+
 }  // namespace quick_pair
 }  // namespace ash

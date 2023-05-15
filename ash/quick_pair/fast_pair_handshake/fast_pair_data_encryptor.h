@@ -17,6 +17,7 @@
 
 inline constexpr int kBlockSizeBytes = 16;
 constexpr int kNonceSizeBytes = 8;
+constexpr uint8_t kHmacVerifyLenBytes = 8;
 
 namespace ash {
 namespace quick_pair {
@@ -49,6 +50,19 @@ class FastPairDataEncryptor {
   // according to the Fast Pair spec:
   // https://developers.google.com/nearby/fast-pair/specifications/characteristics#AdditionalData
   virtual std::vector<uint8_t> CreateAdditionalDataPacket(
+      std::array<uint8_t, kNonceSizeBytes> nonce,
+      const std::vector<uint8_t>& additional_data) = 0;
+
+  // Verifies the authenticity of `encrypted_additional_data` by generating an
+  // HMAC SHA-256 hash and comparing it to `hmacSha256`.
+  virtual bool VerifyEncryptedAdditionalData(
+      const std::array<uint8_t, kHmacVerifyLenBytes> hmacSha256First8Bytes,
+      std::array<uint8_t, kNonceSizeBytes> nonce,
+      const std::vector<uint8_t>& encrypted_additional_data) = 0;
+
+  // Encrypts `additional_data` according to the Fast Pair spec:
+  // https://developers.google.com/nearby/fast-pair/specifications/characteristics#AdditionalData
+  virtual std::vector<uint8_t> EncryptAdditionalDataWithSecretKey(
       std::array<uint8_t, kNonceSizeBytes> nonce,
       const std::vector<uint8_t>& additional_data) = 0;
 
