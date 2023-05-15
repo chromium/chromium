@@ -50,8 +50,8 @@ void SaveAddressProfileInfobarModalInteractionHandler::SaveEditedProfile(
 
 void SaveAddressProfileInfobarModalInteractionHandler::SaveEditedProfile(
     InfoBarIOS* infobar,
-    autofill::AutofillProfile* profileData) {
-  GetInfoBarDelegate(infobar)->SetProfile(profileData);
+    autofill::AutofillProfile* profile) {
+  GetInfoBarDelegate(infobar)->SetProfile(profile);
   GetInfoBarDelegate(infobar)->EditAccepted();
   infobar->set_accepted(true);
 }
