@@ -372,8 +372,8 @@ OmniboxView::OmniboxView(OmniboxEditModelDelegate* edit_model_delegate,
   // TODO(crbug.com/1404748): Verify if this can actually happen and prevent it
   //  such that checking `model()` before use is no longer necessary.
   if (client) {
-    controller_ = std::make_unique<OmniboxController>(this, edit_model_delegate,
-                                                      std::move(client));
+    controller_ = std::make_unique<OmniboxController>(
+        /*view=*/this, edit_model_delegate, std::move(client));
   }
 }
 
