@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_keyboard_configuration_v1" version="3">
+  <interface name="zcr_keyboard_configuration_v1" version="4">
     <description summary="extends wl_keyboard with events for device configuration change">
       Allows a wl_keyboard to notify device configuration change events of
       the keyboard to the client.
@@ -57,7 +57,7 @@
     </request>
   </interface>
 
-  <interface name="zcr_keyboard_device_configuration_v1" version="3">
+  <interface name="zcr_keyboard_device_configuration_v1" version="4">
     <description summary="extension of wl_keyboard protocol">
       The zcr_keyboard_device_configuration_v1 interface extends the wl_keyboard
       interface with events to describe device configuration of a keyboard.
@@ -100,6 +100,24 @@
         Union of supported scan code key bits of all connected keyboards.
       </description>
       <arg name="key_bits" type="array" summary="Uint64 key bits" />
+    </event>
+
+    <!-- Version 4 additions -->
+    <event name="layout_install" since="4">
+      <description summary="installed keyboard layout">
+        Notify that the user installed a new keyboard layout. This doesn't
+        mean the user is switching to this layout. Actual switch will be
+        notified through `layout_change` event.
+
+        This event provides a file descriptor to the client which can be
+        memory-mapped to provide a keyboard mapping description. Difference
+        between this and wl_keyboards's `keymap` event is this event will be sent both
+        on client startup and also on newly-added layout (not on layout switch).
+      </description>
+      <arg name="name" type="string" summary="XKB layout name e.g. us(dvorak)"/>
+      <arg name="format" type="uint" enum="wl_keyboard.keymap_format" summary="keymap format"/>
+      <arg name="fd" type="fd" summary="keymap file descriptor"/>
+      <arg name="size" type="uint" summary="keymap size, in bytes"/>
     </event>
   </interface>
 
