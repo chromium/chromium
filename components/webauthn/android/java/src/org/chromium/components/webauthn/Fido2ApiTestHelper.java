@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.webauth;
+package org.chromium.components.webauthn;
 
 import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import android.content.Intent;
+import android.os.ConditionVariable;
 import android.os.Parcel;
 import android.os.SystemClock;
 import android.util.Base64;
@@ -39,8 +40,6 @@ import org.chromium.blink.mojom.PublicKeyCredentialUserEntity;
 import org.chromium.blink.mojom.UvmEntry;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentFeatureListJni;
-import org.chromium.components.webauthn.Fido2Api;
-import org.chromium.components.webauthn.WebAuthnCredentialDetails;
 import org.chromium.content.browser.ClientDataJsonImpl;
 import org.chromium.content.browser.ClientDataJsonImplJni;
 import org.chromium.mojo_base.mojom.TimeDelta;
@@ -51,6 +50,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /* NO_BUILDER:
@@ -288,6 +288,62 @@ public class Fido2ApiTestHelper {
             -13, -22, 61, 32, 79, 53, 106, 127, -67, 32, 4, 0, 0, 6, 0, -1, -1, 20, 0, 0, 0, 15, 0,
             0, 0, 98, 111, 98, 64, 101, 120, 97, 109, 112, 108, 101, 46, 99, 111, 109, 0};
 
+    // Serialized registration response converted from JSON received from the Credential Manager
+    // API.
+    private static final byte[] TEST_SERIALIZED_CREDMAN_MAKE_CREDENTIAL_RESPONSE = new byte[] {64,
+            0, 0, 0, 0, 0, 0, 0, 56, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 104, 1, 0, 0, 0,
+            0, 0, 0, 48, 2, 0, 0, 0, 0, 0, 0, 56, 2, 0, 0, 0, 0, 0, 0, -7, -1, -1, -1, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0,
+            0, 0, 0, 0, 112, 0, 0, 0, 0, 0, 0, 0, 112, 0, 0, 0, 0, 0, 0, 0, 51, 0, 0, 0, 43, 0, 0,
+            0, 78, 51, 103, 120, 53, 49, 101, 106, 103, 77, 79, 99, 107, 56, 54, 101, 49, 84, 76,
+            71, 118, 78, 67, 112, 51, 54, 90, 86, 49, 100, 101, 105, 102, 99, 117, 73, 95, 104, 87,
+            51, 101, 87, 107, 0, 0, 0, 0, 0, 40, 0, 0, 0, 32, 0, 0, 0, 55, 120, 49, -25, 87, -93,
+            -128, -61, -100, -109, -50, -98, -43, 50, -58, -68, -48, -87, -33, -90, 85, -43, -41,
+            -94, 125, -53, -120, -2, 21, -73, 121, 105, 8, 0, 0, 0, 0, 0, 0, 0, -84, 0, 0, 0, -92,
+            0, 0, 0, 17, -54, 103, 117, 94, -24, 15, -48, -108, 31, 8, 99, -50, -54, -38, 125, -48,
+            -25, 91, 114, 111, 41, 32, 108, -21, -25, 66, -10, -32, -107, -62, 102, 93, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 55, 120, 49, -25, 87, -93, -128,
+            -61, -100, -109, -50, -98, -43, 50, -58, -68, -48, -87, -33, -90, 85, -43, -41, -94,
+            125, -53, -120, -2, 21, -73, 121, 105, -91, 1, 2, 3, 38, 32, 1, 33, 88, 32, -44, 11,
+            -114, -24, 96, -51, 111, 103, 66, 47, -29, 52, 75, -3, -57, 84, -63, 121, -95, -102,
+            -54, -112, -12, 115, -82, -100, -11, 86, -118, -106, -3, 8, 34, 88, 32, -35, 48, -66,
+            126, 31, 89, 68, -128, 30, 121, 109, 105, 78, 6, 90, 36, -58, -12, -69, 67, -56, 102,
+            -27, -125, -20, 4, -49, 64, 8, -77, -22, -80, 0, 0, 0, 0, -54, 0, 0, 0, -62, 0, 0, 0,
+            -93, 99, 102, 109, 116, 100, 110, 111, 110, 101, 103, 97, 116, 116, 83, 116, 109, 116,
+            -96, 104, 97, 117, 116, 104, 68, 97, 116, 97, 88, -92, 17, -54, 103, 117, 94, -24, 15,
+            -48, -108, 31, 8, 99, -50, -54, -38, 125, -48, -25, 91, 114, 111, 41, 32, 108, -21, -25,
+            66, -10, -32, -107, -62, 102, 93, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 32, 55, 120, 49, -25, 87, -93, -128, -61, -100, -109, -50, -98, -43, 50, -58,
+            -68, -48, -87, -33, -90, 85, -43, -41, -94, 125, -53, -120, -2, 21, -73, 121, 105, -91,
+            1, 2, 3, 38, 32, 1, 33, 88, 32, -44, 11, -114, -24, 96, -51, 111, 103, 66, 47, -29, 52,
+            75, -3, -57, 84, -63, 121, -95, -102, -54, -112, -12, 115, -82, -100, -11, 86, -118,
+            -106, -3, 8, 34, 88, 32, -35, 48, -66, 126, 31, 89, 68, -128, 30, 121, 109, 105, 78, 6,
+            90, 36, -58, -12, -69, 67, -56, 102, -27, -125, -20, 4, -49, 64, 8, -77, -22, -80, 0, 0,
+            0, 0, 0, 0, 16, 0, 0, 0, 2, 0, 0, 0, 4, 0, 0, 0, 3, 0, 0, 0, 99, 0, 0, 0, 91, 0, 0, 0,
+            48, 89, 48, 19, 6, 7, 42, -122, 72, -50, 61, 2, 1, 6, 8, 42, -122, 72, -50, 61, 3, 1, 7,
+            3, 66, 0, 4, -44, 11, -114, -24, 96, -51, 111, 103, 66, 47, -29, 52, 75, -3, -57, 84,
+            -63, 121, -95, -102, -54, -112, -12, 115, -82, -100, -11, 86, -118, -106, -3, 8, -35,
+            48, -66, 126, 31, 89, 68, -128, 30, 121, 109, 105, 78, 6, 90, 36, -58, -12, -69, 67,
+            -56, 102, -27, -125, -20, 4, -49, 64, 8, -77, -22, -80, 0, 0, 0, 0, 0};
+
+    // Serialized assertion response converted from JSON received from the Credential Manager API.
+    private static final byte[] TEST_SERIALIZED_CREDMAN_GET_CREDENTIAL_RESPONSE = new byte[] {80, 0,
+            0, 0, 0, 0, 0, 0, 72, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, -40, 0, 0, 0, 0, 0,
+            0, 0, 32, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0,
+            32, 0, 0, 0, 0, 0, 0, 0, 48, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 80, 0, 0, 0,
+            0, 0, 0, 0, 23, 0, 0, 0, 15, 0, 0, 0, 98, 111, 98, 64, 101, 120, 97, 109, 112, 108, 101,
+            46, 99, 111, 109, 0, 40, 0, 0, 0, 32, 0, 0, 0, 106, -74, -93, 37, 53, -69, 59, -77, -36,
+            -5, -4, 68, 32, 13, 51, -17, -4, 125, -52, -62, 73, -54, -54, 28, 60, 55, 6, 39, -55,
+            -67, 5, 81, 8, 0, 0, 0, 0, 0, 0, 0, 45, 0, 0, 0, 37, 0, 0, 0, 116, -90, -22, -110, 19,
+            -55, -100, 47, 116, -78, 36, -110, -77, 32, -49, 64, 38, 42, -108, -63, -87, 80, -96,
+            57, 127, 41, 37, 11, 96, -124, 30, -16, 29, 0, 0, 0, 0, 0, 0, 0, 78, 0, 0, 0, 70, 0, 0,
+            0, 48, 68, 2, 32, 38, 99, -77, -120, -102, -49, -28, -77, -66, 30, -123, -27, -65, -113,
+            4, -92, -110, -110, 120, 75, -38, -69, -117, 69, -123, 64, 54, 60, 54, -16, -17, -17, 2,
+            32, 60, 114, -37, 38, -92, -4, -16, -2, 119, 95, 41, -16, 59, -72, 18, -105, -125, 119,
+            -88, -7, -2, -38, 100, -25, -4, -111, 11, -52, 1, -20, -121, 115, 0, 0, 19, 0, 0, 0, 11,
+            0, 0, 0, 85, 50, 104, 107, 97, 72, 78, 111, 99, 50, 103, 0, 0, 0, 0, 0};
+
     // TEST_USER_HANDLE is the user ID contained within `TEST_DISCOVERABLE_CREDENTIAL_ASSERTION`.
     public static final byte[] TEST_USER_HANDLE = "bob@example.com".getBytes(UTF_8);
 
@@ -299,6 +355,10 @@ public class Fido2ApiTestHelper {
     private static final int[] TEST_USER_VERIFICATION_METHOD = new int[] {0x00000002, 0x00000200};
     private static final short[] TEST_KEY_PROTECTION_TYPE = new short[] {0x0002, 0x0001};
     private static final short[] TEST_MATCHER_PROTECTION_TYPE = new short[] {0x0004, 0x0001};
+    private static final String TEST_SERIALIZED_MAKE_CREDENTIAL_REQUEST_JSON =
+            "{serialized_make_request}";
+    private static final String TEST_SERIALIZED_GET_ASSERTION_REQUEST_JSON =
+            "{serialized_get_request}";
 
     /**
      * Builds a test intent to be returned by a successful call to makeCredential.
@@ -607,5 +667,99 @@ public class Fido2ApiTestHelper {
         credential.mIsDiscoverable = true;
         credential.mIsPayment = false;
         return credential;
+    }
+
+    public static void mockFido2CredentialRequestJni(JniMocker mocker) {
+        Fido2CredentialRequest.Natives fido2CredentialRequestJni =
+                new Fido2CredentialRequest.Natives() {
+                    @Override
+                    public String createOptionsToJson(ByteBuffer serializedOptions) {
+                        return TEST_SERIALIZED_MAKE_CREDENTIAL_REQUEST_JSON;
+                    }
+
+                    @Override
+                    public byte[] makeCredentialResponseFromJson(String json) {
+                        return TEST_SERIALIZED_CREDMAN_MAKE_CREDENTIAL_RESPONSE;
+                    }
+
+                    @Override
+                    public String getOptionsToJson(ByteBuffer serializedOptions) {
+                        return TEST_SERIALIZED_GET_ASSERTION_REQUEST_JSON;
+                    }
+
+                    @Override
+                    public byte[] getCredentialResponseFromJson(String json) {
+                        return TEST_SERIALIZED_CREDMAN_GET_CREDENTIAL_RESPONSE;
+                    }
+                };
+        mocker.mock(Fido2CredentialRequestJni.TEST_HOOKS, fido2CredentialRequestJni);
+    }
+
+    public static AuthenticatorCallback getAuthenticatorCallback() {
+        return new AuthenticatorCallback();
+    }
+
+    /**
+     * Callback class to pass to Fido2CredentialRequest WebAuthn operations.
+     */
+    public static class AuthenticatorCallback {
+        private Integer mStatus;
+        private MakeCredentialAuthenticatorResponse mMakeCredentialResponse;
+        private GetAssertionAuthenticatorResponse mGetAssertionAuthenticatorResponse;
+        private List<byte[]> mGetMatchingCredentialIdsResponse;
+
+        // Signals when request is complete.
+        private final ConditionVariable mDone = new ConditionVariable();
+
+        AuthenticatorCallback() {}
+
+        public void onRegisterResponse(int status, MakeCredentialAuthenticatorResponse response) {
+            assert mStatus == null;
+            mStatus = status;
+            mMakeCredentialResponse = response;
+            unblock();
+        }
+
+        public void onSignResponse(int status, GetAssertionAuthenticatorResponse response) {
+            assert mStatus == null;
+            mStatus = status;
+            mGetAssertionAuthenticatorResponse = response;
+            unblock();
+        }
+
+        public void onGetMatchingCredentialIds(List<byte[]> matchingCredentialIds) {
+            mGetMatchingCredentialIdsResponse = matchingCredentialIds;
+            unblock();
+        }
+
+        public void onError(int status) {
+            assert mStatus == null;
+            mStatus = status;
+            unblock();
+        }
+
+        public Integer getStatus() {
+            return mStatus;
+        }
+
+        public MakeCredentialAuthenticatorResponse getMakeCredentialResponse() {
+            return mMakeCredentialResponse;
+        }
+
+        public GetAssertionAuthenticatorResponse getGetAssertionResponse() {
+            return mGetAssertionAuthenticatorResponse;
+        }
+
+        public List<byte[]> getGetMatchingCredentialIdsResponse() {
+            return mGetMatchingCredentialIdsResponse;
+        }
+
+        public void blockUntilCalled() {
+            mDone.block();
+        }
+
+        private void unblock() {
+            mDone.open();
+        }
     }
 }

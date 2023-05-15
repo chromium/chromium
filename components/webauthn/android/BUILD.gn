@@ -62,13 +62,23 @@ android_library("java") {
 android_library("test_support_java") {
   testonly = true
   sources = [
+    "java/src/org/chromium/components/webauthn/Fido2ApiTestHelper.java",
     "java/src/org/chromium/components/webauthn/MockFido2CredentialRequest.java",
   ]
   deps = [
     ":java",
+    "//base:base_java_test_support",
+    "//components/payments/content/android:feature_list_java",
+    "//components/payments/mojom:mojom_java",
     "//content/public/android:content_java",
+    "//mojo/public/mojom/base:base_java",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//third_party/junit:junit",
     "//url:origin_java",
+    "//url/mojom:url_mojom_gurl_java",
+    "//url/mojom:url_mojom_origin_java",
   ]
 }
 
