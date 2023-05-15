@@ -208,6 +208,18 @@ bool BleV2Medium::IsExtendedAdvertisementsAvailable() {
   return false;
 }
 
+bool BleV2Medium::GetRemotePeripheral(const std::string& mac_address,
+                                      GetRemotePeripheralCallback callback) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool BleV2Medium::GetRemotePeripheral(api::ble_v2::BlePeripheral::UniqueId id,
+                                      GetRemotePeripheralCallback callback) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 void BleV2Medium::PresentChanged(bool present) {
   NOTIMPLEMENTED();
 }

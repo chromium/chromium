@@ -24,6 +24,7 @@ class BleV2Peripheral : public api::ble_v2::BlePeripheral {
   ~BleV2Peripheral() override;
 
   std::string GetAddress() const override;
+  UniqueId GetUniqueId() const override;
   void UpdateDeviceInfo(bluetooth::mojom::DeviceInfoPtr device_info);
 
  private:

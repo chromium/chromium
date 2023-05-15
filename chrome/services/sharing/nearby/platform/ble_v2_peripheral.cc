@@ -19,6 +19,11 @@ std::string BleV2Peripheral::GetAddress() const {
   return device_info_->address;
 }
 
+BleV2Peripheral::UniqueId BleV2Peripheral::GetUniqueId() const {
+  NOTIMPLEMENTED();
+  return 0;
+}
+
 void BleV2Peripheral::UpdateDeviceInfo(
     bluetooth::mojom::DeviceInfoPtr device_info) {
   DCHECK_EQ(device_info_->address, device_info->address);
