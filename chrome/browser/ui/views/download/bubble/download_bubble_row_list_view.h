@@ -25,13 +25,14 @@ class DownloadBubbleRowListView : public views::FlexLayoutView {
 
   static std::unique_ptr<views::View> CreateWithScroll(
       bool is_partial_view,
-      Browser* browser,
-      DownloadBubbleUIController* bubble_controller,
-      DownloadBubbleNavigationHandler* navigation_handler,
+      base::WeakPtr<Browser> browser,
+      base::WeakPtr<DownloadBubbleUIController> bubble_controller,
+      base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
       std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
       int fixed_width);
 
-  DownloadBubbleRowListView(bool is_partial_view, Browser* browser);
+  DownloadBubbleRowListView(bool is_partial_view,
+                            base::WeakPtr<Browser> browser);
   ~DownloadBubbleRowListView() override;
   DownloadBubbleRowListView(const DownloadBubbleRowListView&) = delete;
   DownloadBubbleRowListView& operator=(const DownloadBubbleRowListView&) =
@@ -42,7 +43,7 @@ class DownloadBubbleRowListView : public views::FlexLayoutView {
 
   bool is_partial_view_;
   base::Time creation_time_;
-  raw_ptr<Browser> browser_ = nullptr;
+  base::WeakPtr<Browser> browser_ = nullptr;
   raw_ptr<views::ImageView> info_icon_ = nullptr;
 };
 

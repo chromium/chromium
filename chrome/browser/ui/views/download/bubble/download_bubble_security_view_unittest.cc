@@ -93,13 +93,13 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
             bubble_delegate_));
 
     row_list_view_ = std::make_unique<DownloadBubbleRowListView>(
-        /*is_partial_view=*/true, browser_.get());
+        /*is_partial_view=*/true, browser_->AsWeakPtr());
     const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
         views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
     row_view_ = std::make_unique<DownloadBubbleRowView>(
         DownloadItemModel::Wrap(&download_item_), row_list_view_.get(),
-        bubble_controller_.get(), bubble_navigator_.get(), browser_.get(),
-        bubble_width);
+        bubble_controller_->GetWeakPtr(), bubble_navigator_->GetWeakPtr(),
+        browser_->AsWeakPtr(), bubble_width);
   }
 
   void TearDown() override {

@@ -31,8 +31,9 @@ class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
   explicit DownloadShelfContextMenuView(DownloadItemView* download_item_view);
   explicit DownloadShelfContextMenuView(
       base::WeakPtr<DownloadUIModel> download_ui_model);
-  DownloadShelfContextMenuView(base::WeakPtr<DownloadUIModel> download_ui_model,
-                               DownloadBubbleUIController* bubble_controller);
+  DownloadShelfContextMenuView(
+      base::WeakPtr<DownloadUIModel> download_ui_model,
+      base::WeakPtr<DownloadBubbleUIController> bubble_controller);
   DownloadShelfContextMenuView(const DownloadShelfContextMenuView&) = delete;
   DownloadShelfContextMenuView& operator=(const DownloadShelfContextMenuView&) =
       delete;
@@ -61,7 +62,7 @@ class DownloadShelfContextMenuView : public DownloadShelfContextMenu {
   raw_ptr<DownloadItemView> download_item_view_ = nullptr;
 
   // Use this instead of DownloadItemView to submit download for feedback.
-  raw_ptr<DownloadBubbleUIController> bubble_controller_ = nullptr;
+  base::WeakPtr<DownloadBubbleUIController> bubble_controller_ = nullptr;
 
   base::OnceClosure on_menu_will_show_callback_;
 

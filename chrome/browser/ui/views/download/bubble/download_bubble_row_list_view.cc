@@ -38,9 +38,9 @@ constexpr int kMaxHeightForRowList = 450;
 //  static
 std::unique_ptr<views::View> DownloadBubbleRowListView::CreateWithScroll(
     bool is_partial_view,
-    Browser* browser,
-    DownloadBubbleUIController* bubble_controller,
-    DownloadBubbleNavigationHandler* navigation_handler,
+    base::WeakPtr<Browser> browser,
+    base::WeakPtr<DownloadBubbleUIController> bubble_controller,
+    base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
     std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
     int fixed_width) {
   auto row_list_view =
@@ -49,8 +49,8 @@ std::unique_ptr<views::View> DownloadBubbleRowListView::CreateWithScroll(
     // raw pointer is safe as the toolbar owns the bubble, which owns an
     // individual row view.
     row_list_view->AddChildView(std::make_unique<DownloadBubbleRowView>(
-        std::move(model), row_list_view.get(), bubble_controller,
-        navigation_handler, browser, fixed_width));
+        std::move(model), row_list_view.get(), std::move(bubble_controller),
+        std::move(navigation_handler), browser, fixed_width));
   }
 
   auto scroll_view = std::make_unique<views::ScrollView>();
@@ -63,11 +63,12 @@ std::unique_ptr<views::View> DownloadBubbleRowListView::CreateWithScroll(
   return scroll_view;
 }
 
-DownloadBubbleRowListView::DownloadBubbleRowListView(bool is_partial_view,
-                                                     Browser* browser)
+DownloadBubbleRowListView::DownloadBubbleRowListView(
+    bool is_partial_view,
+    base::WeakPtr<Browser> browser)
     : is_partial_view_(is_partial_view),
       creation_time_(base::Time::Now()),
-      browser_(browser) {
+      browser_(std::move(browser)) {
   SetOrientation(views::LayoutOrientation::kVertical);
   SetNotifyEnterExitOnChild(true);
   if (IsIncognitoInfoRowEnabled()) {
@@ -127,6 +128,9 @@ DownloadBubbleRowListView::~DownloadBubbleRowListView() {
 }
 
 bool DownloadBubbleRowListView::IsIncognitoInfoRowEnabled() {
+  if (!browser_) {
+    return false;
+  }
   Profile* profile = browser_->profile();
   return download::IsDownloadBubbleV2Enabled(profile) &&
          profile->IsOffTheRecord();

@@ -405,7 +405,7 @@ bool DownloadToolbarButtonView::ShouldShowInkdropAfterIphInteraction() {
 std::unique_ptr<views::View> DownloadToolbarButtonView::GetPrimaryView() {
   if (is_primary_partial_view_) {
     return DownloadBubblePartialView::Create(
-        browser_, bubble_controller_.get(), this,
+        browser_->AsWeakPtr(), bubble_controller_->GetWeakPtr(), GetWeakPtr(),
         bubble_controller_->GetPartialView(),
         base::BindOnce(&DownloadToolbarButtonView::DeactivateAutoClose,
                        base::Unretained(this)));
@@ -413,7 +413,8 @@ std::unique_ptr<views::View> DownloadToolbarButtonView::GetPrimaryView() {
 
   std::unique_ptr<views::View> rows_with_scroll =
       DownloadBubbleRowListView::CreateWithScroll(
-          /*is_partial_view=*/false, browser_, bubble_controller_.get(), this,
+          /*is_partial_view=*/false, browser_->AsWeakPtr(),
+          bubble_controller_->GetWeakPtr(), GetWeakPtr(),
           bubble_controller_->GetMainView(),
           ChromeLayoutProvider::Get()->GetDistanceMetric(
               views::DISTANCE_BUBBLE_PREFERRED_WIDTH));

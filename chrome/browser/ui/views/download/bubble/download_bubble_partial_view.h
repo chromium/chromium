@@ -25,9 +25,9 @@ class DownloadBubblePartialView : public views::View,
   METADATA_HEADER(DownloadBubblePartialView);
 
   static std::unique_ptr<DownloadBubblePartialView> Create(
-      Browser* browser,
-      DownloadBubbleUIController* bubble_controller,
-      DownloadBubbleNavigationHandler* navigation_handler,
+      base::WeakPtr<Browser> browser,
+      base::WeakPtr<DownloadBubbleUIController> bubble_controller,
+      base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
       std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
       base::OnceClosure on_interacted_closure);
 
@@ -47,9 +47,9 @@ class DownloadBubblePartialView : public views::View,
 
  private:
   DownloadBubblePartialView(
-      Browser* browser,
-      DownloadBubbleUIController* bubble_controller,
-      DownloadBubbleNavigationHandler* navigation_handler,
+      base::WeakPtr<Browser> browser,
+      base::WeakPtr<DownloadBubbleUIController> bubble_controller,
+      base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
       std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
       base::OnceClosure on_interacted_closure);
 
