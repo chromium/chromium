@@ -242,10 +242,3 @@ It wraps the user-supplied script inside
 before passing it to `WebView::CallFunctionWithTimeout`.
 The [`executeAsyncScript`] function is responsible for waiting for the
 async script to finish, as required by the WebDriver standard.
-
-### Use ` WebViewImpl::CallAsyncFunction` Method
-
-This method is similar to `WebView::CallUserAsyncFunction`,
-but is intended for ChromeDriver's own embedded script code.
-This is only used to implement some obsolete features that we expect to
-remove in ChromeDriver version 85 (https://crbug.com/chromedriver/3376).

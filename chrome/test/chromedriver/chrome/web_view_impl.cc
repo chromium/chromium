@@ -840,15 +840,6 @@ Status WebViewImpl::CallFunction(const std::string& frame,
                                  result);
 }
 
-Status WebViewImpl::CallAsyncFunction(const std::string& frame,
-                                      const std::string& function,
-                                      const base::Value::List& args,
-                                      const base::TimeDelta& timeout,
-                                      std::unique_ptr<base::Value>* result) {
-  return CallAsyncFunctionInternal(
-      frame, function, args, false, timeout, result);
-}
-
 Status WebViewImpl::CallUserSyncScript(const std::string& frame,
                                        const std::string& script,
                                        const base::Value::List& args,
@@ -879,8 +870,7 @@ Status WebViewImpl::CallUserAsyncFunction(
     const base::Value::List& args,
     const base::TimeDelta& timeout,
     std::unique_ptr<base::Value>* result) {
-  return CallAsyncFunctionInternal(
-      frame, function, args, true, timeout, result);
+  return CallAsyncFunctionInternal(frame, function, args, timeout, result);
 }
 
 // TODO (crbug.com/chromedriver/4364): Simplify this function
@@ -1573,13 +1563,12 @@ Status WebViewImpl::CallAsyncFunctionInternal(
     const std::string& frame,
     const std::string& function,
     const base::Value::List& args,
-    bool is_user_supplied,
     const base::TimeDelta& timeout,
     std::unique_ptr<base::Value>* result) {
   base::Value::List async_args;
   async_args.Append("return (" + function + ").apply(null, arguments);");
   async_args.Append(args.Clone());
-  async_args.Append(is_user_supplied);
+  async_args.Append(/*is_user_supplied=*/true);
   std::unique_ptr<base::Value> tmp;
   Timeout local_timeout(timeout);
   Status status = CallFunctionWithTimeout(frame, kExecuteAsyncScriptScript,

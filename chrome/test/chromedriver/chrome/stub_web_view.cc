@@ -97,14 +97,6 @@ Status StubWebView::CallFunction(const std::string& frame,
   return Status(kOk);
 }
 
-Status StubWebView::CallAsyncFunction(const std::string& frame,
-                                      const std::string& function,
-                                      const base::Value::List& args,
-                                      const base::TimeDelta& timeout,
-                                      std::unique_ptr<base::Value>* result) {
-  return Status(kOk);
-}
-
 Status StubWebView::CallUserAsyncFunction(
     const std::string& frame,
     const std::string& function,
