@@ -1990,10 +1990,10 @@ class MAYBE_BrowserNavigatorTestWithMockScreen : public BrowserNavigatorTest {
     BrowserNavigatorTest::SetScreenInstance();
 #else
     mock_screen_.Init();
-    mock_screen_.display_list().AddDisplay({1, gfx::Rect(0, 0, 800, 800)},
+    mock_screen_.display_list().AddDisplay({1, gfx::Rect(0, 0, 800, 700)},
                                            display::DisplayList::Type::PRIMARY);
     mock_screen_.display_list().AddDisplay(
-        {2, gfx::Rect(800, 0, 800, 800)},
+        {2, gfx::Rect(800, 0, 800, 700)},
         display::DisplayList::Type::NOT_PRIMARY);
     ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2004,7 +2004,7 @@ class MAYBE_BrowserNavigatorTestWithMockScreen : public BrowserNavigatorTest {
     // This has to happen later than `SetScreenInstance` as the Ash shell does
     // not exist yet.
     display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-        .UpdateDisplay("0+0-800x800,800+0-800x800");
+        .UpdateDisplay("0+0-800x700,800+0-800x700");
     ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }

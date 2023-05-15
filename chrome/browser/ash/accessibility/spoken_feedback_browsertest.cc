@@ -1479,10 +1479,10 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreSecondaryDisplay) {
       Shell::GetAllRootWindowControllers();
   EXPECT_EQ(1U, root_controllers.size());
 
-  // Make two displays, each 800 by 800, side by side.
+  // Make two displays, each 800 by 700, side by side.
   ShellTestApi shell_test_api;
   display::test::DisplayManagerTestApi(shell_test_api.display_manager())
-      .UpdateDisplay("800x800,801+0-800x800");
+      .UpdateDisplay("800x700,801+0-800x700");
   ASSERT_EQ(2u, shell_test_api.display_manager()->GetNumDisplays());
   display::test::DisplayManagerTestApi display_manager_test_api(
       shell_test_api.display_manager());
@@ -1512,7 +1512,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreSecondaryDisplay) {
   params.parent = root_window;
 
   // This is the right edge of the screen.
-  params.bounds = {1550, 0, 50, 700};
+  params.bounds = {1550, 0, 50, 600};
   widget->Init(std::move(params));
 
   views::View* view = new views::View();

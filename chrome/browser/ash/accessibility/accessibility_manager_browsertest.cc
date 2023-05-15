@@ -899,7 +899,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
                        ChromeVoxPanelMultipleDisplays) {
   // Start with two displays, the non-primary one is active for new windows.
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-      .UpdateDisplay("600x600,800x800");
+      .UpdateDisplay("600x550,800x750");
   auto root_windows = ash::Shell::GetAllRootWindows();
   ASSERT_EQ(2u, root_windows.size());
   ASSERT_EQ(ash::Shell::GetPrimaryRootWindow(), root_windows[0]);

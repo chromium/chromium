@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,
   gfx::Size min_size(240, 240);
   display::test::DisplayManagerTestApi display_manager_test(
       ash::Shell::Get()->display_manager());
-  display_manager_test.UpdateDisplay("400x400");
+  display_manager_test.UpdateDisplay("400x350");
 
   WaitForTestSystemAppInstall();
   Browser* browser;

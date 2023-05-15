@@ -528,11 +528,11 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestOneDisplay) {
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestPrimaryDisplay) {
   ash::ShellTestApi shell_test_api;
-  // Create two displays, both 800x800px, next to each other. The primary
+  // Create two displays, both 800x750px, next to each other. The primary
   // display has top left corner at (0, 0), and the secondary display has
   // top left corner at (801, 0).
   display::test::DisplayManagerTestApi(shell_test_api.display_manager())
-      .UpdateDisplay("800x800,801+0-800x800");
+      .UpdateDisplay("800x750,801+0-800x750");
   // Ensure it worked. By default InProcessBrowserTest uses just one display.
   ASSERT_EQ(2u, shell_test_api.display_manager()->GetNumDisplays());
   display::test::DisplayManagerTestApi display_manager_test_api(
@@ -545,11 +545,11 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestPrimaryDisplay) {
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestSecondaryDisplay) {
   ash::ShellTestApi shell_test_api;
-  // Create two displays, both 800x800px, next to each other. The primary
+  // Create two displays, both 800x750px, next to each other. The primary
   // display has top left corner at (0, 0), and the secondary display has
   // top left corner at (801, 0).
   display::test::DisplayManagerTestApi(shell_test_api.display_manager())
-      .UpdateDisplay("800x800,801+0-800x800");
+      .UpdateDisplay("800x750,801+0-800x750");
   // Ensure it worked. By default InProcessBrowserTest uses just one display.
   ASSERT_EQ(2u, shell_test_api.display_manager()->GetNumDisplays());
   display::test::DisplayManagerTestApi display_manager_test_api(
