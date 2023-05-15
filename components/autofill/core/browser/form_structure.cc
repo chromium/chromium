@@ -10,6 +10,7 @@
 #include <deque>
 #include <map>
 #include <memory>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -414,7 +415,7 @@ std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
   AutofillUploadContents upload;
   upload.set_submission(observed_submission);
   upload.set_client_version(
-      version_info::GetProductNameAndVersionForUserAgent());
+      std::string(version_info::GetProductNameAndVersionForUserAgent()));
   upload.set_form_signature(form_signature().value());
   upload.set_autofill_used(form_was_autofilled);
   upload.set_data_present(data_present);
@@ -500,7 +501,7 @@ std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
        base::flat_map<FormGlobalId, FormSignature>(std::move(subforms))) {
     uploads.emplace_back();
     uploads.back().set_client_version(
-        version_info::GetProductNameAndVersionForUserAgent());
+        std::string(version_info::GetProductNameAndVersionForUserAgent()));
     uploads.back().set_form_signature(subform_signature.value());
     uploads.back().set_autofill_used(form_was_autofilled);
     uploads.back().set_data_present(data_present);
@@ -521,7 +522,7 @@ bool FormStructure::EncodeQueryRequest(
   queried_form_signatures->reserve(forms.size());
 
   query->set_client_version(
-      version_info::GetProductNameAndVersionForUserAgent());
+      std::string(version_info::GetProductNameAndVersionForUserAgent()));
 
   // If a page contains repeated forms, detect that and encode only one form as
   // the returned data would be the same for all the repeated forms.

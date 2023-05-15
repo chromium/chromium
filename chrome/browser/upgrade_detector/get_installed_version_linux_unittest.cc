@@ -61,7 +61,7 @@ MULTIPROCESS_TEST_MAIN(GetProductVersionInChildProc) {
 
     case ChildMode::kWithVersion:
       // Print the current version and report success.
-      printf("%s\n", version_info::GetVersionNumber().c_str());
+      printf("%s\n", version_info::GetVersionNumber().data());
       return 0;
   }
   return 1;

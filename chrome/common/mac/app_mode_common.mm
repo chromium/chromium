@@ -93,7 +93,7 @@ static_assert(
 // static
 ChromeConnectionConfig ChromeConnectionConfig::GenerateForCurrentProcess() {
   return {
-      .framework_version = version_info::GetVersionNumber(),
+      .framework_version = std::string(version_info::GetVersionNumber()),
       .is_mojo_ipcz_enabled = mojo::core::IsMojoIpczEnabled(),
   };
 }

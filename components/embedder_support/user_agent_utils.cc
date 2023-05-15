@@ -4,6 +4,7 @@
 
 #include "components/embedder_support/user_agent_utils.h"
 
+#include <string>
 #include <vector>
 
 #include "base/command_line.h"
@@ -232,7 +233,7 @@ std::string GetVersionNumber(const UserAgentOptions& options) {
   // Force major version to 99.
   return ShouldForceMajorVersionToMinorPosition(options.force_major_to_minor)
              ? GetMajorInMinorVersionNumber()
-             : version_info::GetVersionNumber();
+             : std::string(version_info::GetVersionNumber());
 }
 
 const blink::UserAgentBrandList GetUserAgentBrandList(
@@ -273,7 +274,7 @@ const blink::UserAgentBrandList GetUserAgentBrandMajorVersionList(
     bool enable_updated_grease_by_policy) {
   return GetUserAgentBrandList(version_info::GetMajorVersionNumber(),
                                enable_updated_grease_by_policy,
-                               version_info::GetVersionNumber(),
+                               std::string(version_info::GetVersionNumber()),
                                blink::UserAgentBrandVersionType::kMajorVersion);
 }
 
@@ -291,7 +292,7 @@ blink::UserAgentBrandList GetUserAgentBrandFullVersionList(
     bool enable_updated_grease_by_policy) {
   return GetUserAgentBrandList(version_info::GetMajorVersionNumber(),
                                enable_updated_grease_by_policy,
-                               version_info::GetVersionNumber(),
+                               std::string(version_info::GetVersionNumber()),
                                blink::UserAgentBrandVersionType::kFullVersion);
 }
 
@@ -358,7 +359,8 @@ std::string GetProductAndVersion(
   return ShouldReduceUserAgentMinorVersion(user_agent_reduction)
              ? version_info::GetProductNameAndVersionForReducedUserAgent(
                    blink::features::kUserAgentFrozenBuildVersion.Get())
-             : version_info::GetProductNameAndVersionForUserAgent();
+             : std::string(
+                   version_info::GetProductNameAndVersionForUserAgent());
 }
 
 // Internal function to handle return the full or "reduced" user agent string,
@@ -577,7 +579,7 @@ std::string GetPlatformForUAMetadata() {
   return "Chromium OS";
 # endif
 #else
-  return version_info::GetOSType();
+  return std::string(version_info::GetOSType());
 #endif
 }
 

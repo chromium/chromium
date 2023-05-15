@@ -197,7 +197,7 @@ void NaClDomHandler::AddOperatingSystemInfo(base::Value::List* list) {
   // OS version information.
   // TODO(jvoung): refactor this to share the extra windows labeling
   // with about:flash, or something.
-  std::string os_label = version_info::GetOSType();
+  std::string os_label(version_info::GetOSType());
 #if BUILDFLAG(IS_WIN)
   base::win::OSInfo* os = base::win::OSInfo::GetInstance();
   switch (os->version()) {

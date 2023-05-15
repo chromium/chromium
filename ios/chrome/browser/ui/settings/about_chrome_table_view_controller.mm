@@ -182,7 +182,7 @@ const CGFloat kDefaultHeight = 70;
 }
 
 - (std::string)versionString {
-  std::string versionString = version_info::GetVersionNumber();
+  std::string versionString(version_info::GetVersionNumber());
   std::string versionStringModifier = GetChannelString();
   if (!versionStringModifier.empty()) {
     versionString = versionString + " " + versionStringModifier;

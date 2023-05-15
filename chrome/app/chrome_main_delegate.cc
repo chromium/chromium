@@ -396,14 +396,14 @@ bool HandleCreditsSwitch(const base::CommandLine& command_line) {
 bool HandleVersionSwitches(const base::CommandLine& command_line) {
 #if !BUILDFLAG(IS_MAC)
   if (command_line.HasSwitch(switches::kProductVersion)) {
-    printf("%s\n", version_info::GetVersionNumber().c_str());
+    printf("%s\n", version_info::GetVersionNumber().data());
     return true;
   }
 #endif
 
   if (command_line.HasSwitch(switches::kVersion)) {
-    printf("%s %s %s\n", version_info::GetProductName().c_str(),
-           version_info::GetVersionNumber().c_str(),
+    printf("%s %s %s\n", version_info::GetProductName().data(),
+           version_info::GetVersionNumber().data(),
            chrome::GetChannelName(chrome::WithExtendedStable(true)).c_str());
     return true;
   }

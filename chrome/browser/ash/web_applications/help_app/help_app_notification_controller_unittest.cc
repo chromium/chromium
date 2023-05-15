@@ -56,15 +56,15 @@ class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
     builder.SetProfileName("user@gmail.com");
     std::unique_ptr<TestingProfile> profile = builder.Build();
     // Set profile creation version, otherwise it defaults to 1.0.0.0.
-    ChromeVersionService::SetVersion(profile->GetPrefs(),
-                                     version_info::GetVersionNumber());
+    ChromeVersionService::SetVersion(
+        profile->GetPrefs(), std::string(version_info::GetVersionNumber()));
     return profile;
   }
 
   std::unique_ptr<TestingProfile> CreateChildProfile() {
     std::unique_ptr<TestingProfile> profile = CreateRegularProfile();
-    ChromeVersionService::SetVersion(profile->GetPrefs(),
-                                     version_info::GetVersionNumber());
+    ChromeVersionService::SetVersion(
+        profile->GetPrefs(), std::string(version_info::GetVersionNumber()));
     profile->SetIsSupervisedProfile();
     return profile;
   }

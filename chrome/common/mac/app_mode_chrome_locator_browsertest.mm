@@ -68,8 +68,8 @@ TEST(ChromeLocatorTest, GetChromeBundleInfoWithLatestVersion) {
   base::FilePath framework_path;
   base::FilePath framework_dylib_path;
   EXPECT_TRUE(app_mode::GetChromeBundleInfo(
-      chrome_bundle_path, version_info::GetVersionNumber(), &executable_path,
-      &framework_path, &framework_dylib_path));
+      chrome_bundle_path, std::string(version_info::GetVersionNumber()),
+      &executable_path, &framework_path, &framework_dylib_path));
   EXPECT_TRUE(base::PathExists(executable_path));
   EXPECT_TRUE(base::DirectoryExists(framework_path));
   EXPECT_TRUE(base::PathExists(framework_dylib_path));

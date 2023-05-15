@@ -42,7 +42,8 @@ namespace {
 web::WebUIIOSDataSource* CreateFlagsUIHTMLSource() {
   web::WebUIIOSDataSource* source =
       web::WebUIIOSDataSource::Create(kChromeUIFlagsHost);
-  source->AddString(flags_ui::kVersion, version_info::GetVersionNumber());
+  source->AddString(flags_ui::kVersion,
+                    std::string(version_info::GetVersionNumber()));
 
   source->UseStringsJs();
   FlagsUI::AddFlagsIOSStrings(source);

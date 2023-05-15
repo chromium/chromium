@@ -75,7 +75,8 @@ void PopulateBrowserMetadata(bool include_device_info,
   base::FilePath browser_id;
   if (base::PathService::Get(base::DIR_EXE, &browser_id))
     browser_proto->set_browser_id(browser_id.AsUTF8Unsafe());
-  browser_proto->set_chrome_version(version_info::GetVersionNumber());
+  browser_proto->set_chrome_version(
+      std::string(version_info::GetVersionNumber()));
   if (include_device_info)
     browser_proto->set_machine_user(policy::GetOSUsername());
 }

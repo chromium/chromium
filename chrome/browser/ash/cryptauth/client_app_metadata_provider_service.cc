@@ -332,8 +332,8 @@ void ClientAppMetadataProviderService::OnInstanceIdTokenFetched(
   metadata.set_locale(ChromeContentBrowserClient().GetApplicationLocale());
   metadata.set_device_os_version(base::GetLinuxDistro());
   metadata.set_device_os_version_code(SoftwareVersionCodeAsInt64());
-  metadata.set_device_os_release(version_info::GetVersionNumber());
-  metadata.set_device_os_codename(version_info::GetProductName());
+  metadata.set_device_os_release(std::string(version_info::GetVersionNumber()));
+  metadata.set_device_os_codename(std::string(version_info::GetProductName()));
 
   // device_display_diagonal_mils is unused because it only applies to
   // phones/tablets.
@@ -423,7 +423,7 @@ instance_id::InstanceID* ClientAppMetadataProviderService::GetInstanceId() {
 
 int64_t ClientAppMetadataProviderService::SoftwareVersionCodeAsInt64() {
   static const int64_t version_code =
-      ConvertVersionCodeToInt64(version_info::GetVersionNumber());
+      ConvertVersionCodeToInt64(std::string(version_info::GetVersionNumber()));
   return version_code;
 }
 

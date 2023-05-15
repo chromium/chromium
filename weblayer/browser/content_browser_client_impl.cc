@@ -422,7 +422,7 @@ void ContentBrowserClientImpl::LogWebFeatureForCurrentPage(
 }
 
 std::string ContentBrowserClientImpl::GetProduct() {
-  return version_info::GetProductNameAndVersionForUserAgent();
+  return std::string(version_info::GetProductNameAndVersionForUserAgent());
 }
 
 std::string ContentBrowserClientImpl::GetUserAgent() {

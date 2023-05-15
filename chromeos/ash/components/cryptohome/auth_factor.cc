@@ -34,7 +34,7 @@ bool AuthFactorRef::operator==(const AuthFactorRef& other) const {
 // =============== `AuthFactorCommonMetadata` ===============
 AuthFactorCommonMetadata::AuthFactorCommonMetadata()
     : chrome_version_last_updated_(
-          ComponentVersion(version_info::GetVersionNumber())) {}
+          ComponentVersion(std::string(version_info::GetVersionNumber()))) {}
 
 AuthFactorCommonMetadata::AuthFactorCommonMetadata(ComponentVersion chrome,
                                                    ComponentVersion chromeos)

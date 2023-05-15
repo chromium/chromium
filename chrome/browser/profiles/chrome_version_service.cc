@@ -33,7 +33,7 @@ void ChromeVersionService::OnProfileLoaded(PrefService* prefs,
   // If this is a new profile set version to current version, otherwise
   // (pre-existing profile), leave pref at default value (1.0.0.0) to
   // avoid any first-run behavior.
-  std::string version = version_info::GetVersionNumber();
+  std::string version(version_info::GetVersionNumber());
   if (prefs->FindPreference(prefs::kProfileCreatedByVersion)->
       IsDefaultValue() && is_new_profile) {
     SetVersion(prefs, version);

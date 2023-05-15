@@ -70,7 +70,8 @@ content::WebUIDataSource* CreateAndAddFlagsUIHTMLSource(Profile* profile) {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types jstemplate;");
-  source->AddString(flags_ui::kVersion, version_info::GetVersionNumber());
+  source->AddString(flags_ui::kVersion,
+                    std::string(version_info::GetVersionNumber()));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!user_manager::UserManager::Get()->IsCurrentUserOwner() &&

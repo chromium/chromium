@@ -158,7 +158,7 @@ const char* UpdateQueryParams::GetNaclArch() {
 
 // static
 std::string UpdateQueryParams::GetProdVersion() {
-  return version_info::GetVersionNumber();
+  return std::string(version_info::GetVersionNumber());
 }
 
 // static

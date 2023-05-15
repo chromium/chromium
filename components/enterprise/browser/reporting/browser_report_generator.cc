@@ -57,7 +57,7 @@ void BrowserReportGenerator::GenerateBasicInfo(em::BrowserReport* report,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (contains_version_and_channel) {
-    report->set_browser_version(version_info::GetVersionNumber());
+    report->set_browser_version(std::string(version_info::GetVersionNumber()));
     report->set_channel(policy::ConvertToProtoChannel(delegate_->GetChannel()));
     if (delegate_->IsExtendedStableChannel())
       report->set_is_extended_stable_channel(true);

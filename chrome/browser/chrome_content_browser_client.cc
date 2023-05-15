@@ -6765,7 +6765,7 @@ void ChromeContentBrowserClient::LogWebFeatureForCurrentPage(
 }
 
 std::string ChromeContentBrowserClient::GetProduct() {
-  return version_info::GetProductNameAndVersionForUserAgent();
+  return std::string(version_info::GetProductNameAndVersionForUserAgent());
 }
 
 std::string ChromeContentBrowserClient::GetUserAgent() {

@@ -89,7 +89,7 @@ const base::Version& ConfiguratorImpl::GetBrowserVersion() const {
 }
 
 std::string ConfiguratorImpl::GetOSLongName() const {
-  return version_info::GetOSType();
+  return std::string(version_info::GetOSType());
 }
 
 base::flat_map<std::string, std::string> ConfiguratorImpl::ExtraRequestParams()

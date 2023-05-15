@@ -403,7 +403,7 @@ bool ChromeExtensionsBrowserClient::DidVersionUpdate(
     last_version = base::Version(last_version_str);
   }
 
-  std::string current_version_str = version_info::GetVersionNumber();
+  std::string current_version_str(version_info::GetVersionNumber());
   const base::Version& current_version = version_info::GetVersion();
   pref_service->SetString(pref_names::kLastChromeVersion, current_version_str);
 

@@ -53,7 +53,7 @@ const cryptauth::GcmDeviceInfo& GcmDeviceInfoProviderImpl::GetGcmDeviceInfo()
     const {
   static const base::NoDestructor<cryptauth::GcmDeviceInfo> gcm_device_info([] {
     static const google::protobuf::int64 kSoftwareVersionCode =
-        HashStringToInt64(version_info::GetLastChange());
+        HashStringToInt64(std::string(version_info::GetLastChange()));
 
     cryptauth::GcmDeviceInfo gcm_device_info;
 
@@ -61,7 +61,7 @@ const cryptauth::GcmDeviceInfo& GcmDeviceInfoProviderImpl::GetGcmDeviceInfo()
         CryptAuthDeviceIdProviderImpl::GetInstance()->GetDeviceId());
     gcm_device_info.set_device_type(cryptauth::CHROME);
     gcm_device_info.set_device_software_version(
-        version_info::GetVersionNumber());
+        std::string(version_info::GetVersionNumber()));
     gcm_device_info.set_device_software_version_code(kSoftwareVersionCode);
     gcm_device_info.set_locale(
         ChromeContentBrowserClient().GetApplicationLocale());

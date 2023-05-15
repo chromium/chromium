@@ -92,7 +92,8 @@ base::Version AwComponentUpdaterConfigurator::GetBrowserVersion() const {
 }
 
 std::string AwComponentUpdaterConfigurator::GetChannel() const {
-  return version_info::GetChannelString(version_info::android::GetChannel());
+  return std::string(
+      version_info::GetChannelString(version_info::android::GetChannel()));
 }
 
 std::string AwComponentUpdaterConfigurator::GetLang() const {

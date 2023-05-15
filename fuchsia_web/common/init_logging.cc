@@ -48,7 +48,7 @@ bool InitLoggingFromCommandLineDefaultingToStderrForTest(
 void LogComponentStartWithVersion(base::StringPiece component_name) {
   std::string version_string = base::StringPrintf(
       "Starting %.*s %s", base::saturated_cast<int>(component_name.length()),
-      component_name.data(), version_info::GetVersionNumber().c_str());
+      component_name.data(), version_info::GetVersionNumber().data());
 #if !defined(OFFICIAL_BUILD)
   version_string +=
       base::StrCat({" (built at ", version_info::GetLastChange(), ")"});

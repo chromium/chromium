@@ -49,11 +49,12 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
   html_source->AddLocalizedString(version_ui::kApplicationLabel,
                                   IDS_IOS_PRODUCT_NAME);
   html_source->AddString(version_ui::kVersion,
-                         version_info::GetVersionNumber());
+                         std::string(version_info::GetVersionNumber()));
   html_source->AddString(version_ui::kVersionModifier,
-                         GetChannelString(GetChannel()));
+                         std::string(GetChannelString(GetChannel())));
   html_source->AddLocalizedString(version_ui::kOSName, IDS_VERSION_UI_OS);
-  html_source->AddString(version_ui::kOSType, version_info::GetOSType());
+  html_source->AddString(version_ui::kOSType,
+                         std::string(version_info::GetOSType()));
 
   html_source->AddLocalizedString(version_ui::kCompany,
                                   IDS_IOS_ABOUT_VERSION_COMPANY_NAME);
@@ -67,7 +68,7 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
                                  base::NumberToString16(exploded_time.year)));
   html_source->AddLocalizedString(version_ui::kRevision,
                                   IDS_VERSION_UI_REVISION);
-  std::string last_change = version_info::GetLastChange();
+  std::string last_change(version_info::GetLastChange());
   // Shorten the git hash to display it correctly on small devices.
   if ((ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) &&
       last_change.length() > 12) {
@@ -110,7 +111,8 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
       version_ui::SeedTypeToUiString(
           GetApplicationContext()->GetVariationsService()->GetSeedType()));
 
-  html_source->AddString(version_ui::kSanitizer, version_info::GetSanitizerList());
+  html_source->AddString(version_ui::kSanitizer,
+                         std::string(version_info::GetSanitizerList()));
 
   html_source->UseStringsJs();
   html_source->AddResourcePath(version_ui::kVersionJS, IDR_VERSION_UI_JS);

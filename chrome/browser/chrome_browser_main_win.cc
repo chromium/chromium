@@ -391,9 +391,10 @@ void MigratePinnedTaskBarShortcutsIfNeeded() {
         local_state->GetString(prefs::kShortcutMigrationVersion));
     if (!last_version_migrated.IsValid() ||
         last_version_migrated < kLastVersionNeedingMigration) {
-      shell_integration::win::MigrateTaskbarPins(base::BindOnce(
-          &PrefService::SetString, base::Unretained(local_state),
-          prefs::kShortcutMigrationVersion, version_info::GetVersionNumber()));
+      shell_integration::win::MigrateTaskbarPins(
+          base::BindOnce(&PrefService::SetString, base::Unretained(local_state),
+                         prefs::kShortcutMigrationVersion,
+                         std::string(version_info::GetVersionNumber())));
     }
   }
 }

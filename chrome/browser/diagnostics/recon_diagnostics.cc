@@ -297,7 +297,7 @@ class VersionTest : public DiagnosticsTest {
   VersionTest& operator=(const VersionTest&) = delete;
 
   bool ExecuteImpl(DiagnosticsModel::Observer* observer) override {
-    std::string current_version = version_info::GetVersionNumber();
+    std::string current_version(version_info::GetVersionNumber());
     if (current_version.empty()) {
       RecordFailure(DIAG_RECON_EMPTY_VERSION, "Empty Version");
       return true;

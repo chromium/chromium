@@ -60,11 +60,11 @@ bool IsBrowserSigninAllowed(Profile* profile) {
 }
 
 std::string GetOAuth2MintTokenFlowVersion() {
-  return version_info::GetVersionNumber();
+  return std::string(version_info::GetVersionNumber());
 }
 
 std::string GetOAuth2MintTokenFlowChannel() {
-  return version_info::GetChannelString(chrome::GetChannel());
+  return std::string(version_info::GetChannelString(chrome::GetChannel()));
 }
 
 void RecordFunctionResult(const IdentityGetAuthTokenError& error,

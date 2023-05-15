@@ -177,7 +177,7 @@ NSString* GetHttpsOnlyModeErrorPageHtml(web::WebState* web_state,
 // form "productname/version". Used as part of the user agent string.
 std::string GetMobileProduct() {
   return base::StringPrintf(kProductTagWithPlaceholder,
-                            version_info::GetVersionNumber().c_str());
+                            version_info::GetVersionNumber().data());
 }
 
 // Returns a string describing the product name and version, of the

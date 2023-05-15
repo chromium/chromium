@@ -159,10 +159,10 @@ void UploadToReportingServer(
   }
   absl::optional<ReportingSettings> settings =
       reporting_client->GetReportingSettings();
-  const std::string version = version_info::GetVersionNumber();
-  const std::string channel =
-      version_info::GetChannelString(chrome::GetChannel());
-  const std::string platform = version_info::GetOSType();
+  const std::string version(version_info::GetVersionNumber());
+  const std::string channel(
+      version_info::GetChannelString(chrome::GetChannel()));
+  const std::string platform(version_info::GetOSType());
 
   int64_t latest_creation_time = -1;
 

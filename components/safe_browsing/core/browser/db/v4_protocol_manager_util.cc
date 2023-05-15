@@ -81,7 +81,7 @@ V4ProtocolConfig GetV4ProtocolConfig(const std::string& client_name,
                                      bool disable_auto_update) {
   return V4ProtocolConfig(client_name, disable_auto_update,
                           google_apis::GetAPIKey(),
-                          version_info::GetVersionNumber());
+                          std::string(version_info::GetVersionNumber()));
 }
 
 void SetSbV4UrlPrefixForTesting(const char* url_prefix) {

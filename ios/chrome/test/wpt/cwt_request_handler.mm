@@ -578,7 +578,7 @@ base::Value CWTRequestHandler::GetVersionInfo() {
 
   // The full revision starts with a git hash and ends with the revision
   // number in the following format: @{#123456}
-  std::string full_revision = version_info::GetLastChange();
+  std::string full_revision(version_info::GetLastChange());
   size_t start_position = full_revision.rfind("#") + 1;
 
   if (start_position == std::string::npos) {

@@ -129,7 +129,7 @@ std::string Configurator::GetLang() const {
 }
 
 std::string Configurator::GetOSLongName() const {
-  return version_info::GetOSType();
+  return std::string(version_info::GetOSType());
 }
 
 base::flat_map<std::string, std::string> Configurator::ExtraRequestParams()

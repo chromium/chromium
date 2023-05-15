@@ -416,7 +416,7 @@ class PausableResponseProvider : public HtmlResponseProvider {
   [ChromeEarlGrey goForward];
   [ChromeEarlGrey goForward];
 
-  const std::string version = version_info::GetVersionNumber();
+  const std::string version(version_info::GetVersionNumber());
   [ChromeEarlGrey waitForWebStateContainingText:version];
 
   // Make sure that kChromeUIVersionURL URL is displayed in the omnibox.

@@ -2266,7 +2266,7 @@ bool DeviceStatusCollector::GetActivityTimes(
 bool DeviceStatusCollector::GetVersionInfo(
     em::DeviceStatusReportRequest* status) {
   status->set_os_version(os_version_);
-  status->set_browser_version(version_info::GetVersionNumber());
+  status->set_browser_version(std::string(version_info::GetVersionNumber()));
   status->set_is_lacros_primary_browser(
       crosapi::browser_util::IsLacrosPrimaryBrowser());
   status->set_channel(ConvertToProtoChannel(chrome::GetChannel()));

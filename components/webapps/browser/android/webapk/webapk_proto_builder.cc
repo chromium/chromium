@@ -106,7 +106,8 @@ std::unique_ptr<std::string> BuildProtoInBackground(
   webapk->set_manifest_url(shortcut_info.manifest_url.spec());
   webapk->set_requester_application_package(
       base::android::BuildInfo::GetInstance()->package_name());
-  webapk->set_requester_application_version(version_info::GetVersionNumber());
+  webapk->set_requester_application_version(
+      std::string(version_info::GetVersionNumber()));
   webapk->set_android_abi(getCurrentAbi());
   webapk->set_package_name(package_name);
   webapk->set_version(version);

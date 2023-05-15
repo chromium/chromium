@@ -56,7 +56,7 @@ using chrome_test_util::ForwardButton;
   [ChromeEarlGrey loadURL:WebUIPageUrlWithHost(kChromeUIVersionHost)];
 
   // Verify that app version is present on the page.
-  const std::string version = version_info::GetVersionNumber();
+  const std::string version(version_info::GetVersionNumber());
   [ChromeEarlGrey waitForWebStateContainingText:version];
 
   NSString* userAgent = [ChromeEarlGrey mobileUserAgentString];
