@@ -180,7 +180,7 @@ CheckError CheckError::DCheck(const char* condition,
 CheckError CheckError::DCheckOp(char* log_message_str,
                                 const base::Location& location) {
   auto* const log_message = new DCheckLogMessage(
-      location.file_name(), location.line_number(), LOGGING_FATAL);
+      location.file_name(), location.line_number(), LOGGING_DCHECK);
   log_message->stream() << log_message_str;
   free(log_message_str);
   return CheckError(log_message);
