@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Copyright 2022 The Chromium Authors
+Copyright 2023 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -19,11 +19,9 @@ found in the LICENSE file.
       android:layout_centerHorizontal="true"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:layout_marginHorizontal="@dimen/pwd_migration_warning_margin"
+      android:layout_marginVertical="6dp"
       android:layout_gravity="center_horizontal"
-      android:layout_marginEnd="16dp"
-      android:layout_marginStart="16dp"
-      android:layout_marginTop="6dp"
-      android:layout_marginBottom="6dp"
       android:importantForAccessibility="no"
       app:srcCompat="@drawable/drag_handlebar" />
 
@@ -32,10 +30,7 @@ found in the LICENSE file.
       android:layout_below="@id/drag_handlebar"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginEnd="16dp"
-      android:layout_marginStart="16dp"
-      android:layout_marginTop="16dp"
-      android:layout_marginBottom="15dp"
+      android:layout_marginHorizontal="@dimen/pwd_migration_warning_margin"
       android:clipToPadding="false"
       android:divider="@null"
       tools:listitem="@layout/touch_to_fill_credential_item_modern"
@@ -43,21 +38,26 @@ found in the LICENSE file.
 
       <ImageView
           android:id="@+id/touch_to_fill_sheet_header_image"
-          android:layout_width="32dp"
-          android:layout_height="32dp"
+          android:layout_width="@dimen/pwd_migration_warning_icon_size"
+          android:layout_height="@dimen/pwd_migration_warning_icon_size"
           android:layout_gravity="center_horizontal"
-          android:layout_marginBottom="8dp"
+          android:layout_marginVertical="16dp"
           android:importantForAccessibility="no"/>
 
       <androidx.appcompat.widget.DialogTitle
           android:id="@+id/touch_to_fill_sheet_title"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:layout_marginBottom="16dp"
           android:layout_gravity="center_horizontal"
-          android:paddingTop="10dp"
-          android:paddingBottom="10dp"
           android:textAlignment="center"
           android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"
           android:text="@string/password_migration_warning_title"/>
+
+      <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal" />
   </LinearLayout>
 </RelativeLayout>

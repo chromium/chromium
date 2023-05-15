@@ -738,6 +738,16 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PASSWORD_MIGRATION_WARNING_TITLE" desc="The title of the password migration warning sheet.">
         We’re changing how passwords are saved on this device
       </message>
+      <message name="IDS_PASSWORD_MIGRATION_WARNING_SUBTITLE" desc="The subtitle of the password migration warning sheet." formatter_data="android_java">
+        Your lists of saved passwords for Chrome and Chrome <ph name="ERROR_DESCRIPTION">%1$s<ex>Dev</ex></ph> will merge after version 121. You’ll be able to autofill all your saved passwords on both apps.
+      </message>
+      <message name="IDS_PASSWORD_MIGRATION_WARNING_ACKNOWLEDGE" desc="The text on the button that acknowledges the password migration warning.">
+        Got it
+      </message>
+      <message name="IDS_PASSWORD_MIGRATION_WARNING_OTHER_OPTIONS" desc="The text on the button that leads to other options in the password migration warning sheet.">
+        Other options
+      </message>
+
 
       <!-- Lock Screen Fragment -->
       <message name="IDS_LOCKSCREEN_DESCRIPTION_COPY" desc="When a user attempts to copy a password for a particular website into clipboard in Chrome's settings, Chrome launches a lock screen to verify the user's identity and displays the following explanation.">

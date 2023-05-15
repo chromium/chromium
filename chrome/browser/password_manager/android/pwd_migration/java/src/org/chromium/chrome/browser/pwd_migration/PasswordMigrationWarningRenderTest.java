@@ -67,7 +67,7 @@ public class PasswordMigrationWarningRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(0)
+                    .setRevision(1)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 

@@ -11,7 +11,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
@@ -27,6 +29,8 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 class PasswordMigrationWarningView implements BottomSheetContent {
     private final BottomSheetController mBottomSheetController;
     private Callback<Integer> mDismissHandler;
+    private FragmentManager mFragmentManager;
+    private PasswordMigrationWarningIntroFragment mIntroFragment;
     private final RelativeLayout mContentView;
 
     private final BottomSheetObserver mBottomSheetObserver = new EmptyBottomSheetObserver() {
@@ -56,6 +60,14 @@ class PasswordMigrationWarningView implements BottomSheetContent {
                 mContentView.findViewById(R.id.touch_to_fill_sheet_header_image);
         sheetHeaderImage.setImageDrawable(AppCompatResources.getDrawable(
                 context, PasswordManagerResourceProviderFactory.create().getPasswordManagerIcon()));
+
+        mFragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+        mIntroFragment = new PasswordMigrationWarningIntroFragment(context);
+        mFragmentManager.beginTransaction()
+                .setReorderingAllowed(true)
+                .add(R.id.fragment_container_view, mIntroFragment,
+                        "PasswordMigrationWarningFragment")
+                .commit();
     }
 
     void setDismissHandler(Callback<Integer> dismissHandler) {
