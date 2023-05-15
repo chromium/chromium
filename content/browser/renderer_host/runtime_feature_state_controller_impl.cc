@@ -73,7 +73,7 @@ void RuntimeFeatureStateControllerImpl::ApplyFeatureDiffForOriginTrial(
       // supported, we cannot assume that invalid tokens are a sign of a
       // compromised renderer.
       if (blink::origin_trials::IsTrialValid(feature_name) &&
-          blink::origin_trials::IsTrialEnabledForBrowserProcessReadWriteAccess(
+          blink::origin_trials::IsTrialEnabledForBrowserProcessReadAccess(
               feature_name)) {
         validated_features[feature_pair.first] =
             feature_pair.second->is_enabled;

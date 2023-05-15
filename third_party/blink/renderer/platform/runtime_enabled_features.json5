@@ -176,14 +176,20 @@
       default: "enabled_or_overridden",
     },
 
+    // browser_process_read_access indicates the runtime feature state should be
+    // readable in the browserprocess via RuntimeFeatureStateReadContext.
     browser_process_read_access: {
       default: false,
       value_type: "bool",
     },
+
+    // browser_process_read_write_access indicates the runtime feature state
+    // should be writable in the browserprocess via RuntimeFeatureStateContext.
     browser_process_read_write_access: {
       default: false,
       value_type: "bool",
     },
+
     override_from_pref: {
       valid_keys: [
         // Chrome Prefs name (string) from which we will conditionally override
@@ -343,6 +349,7 @@
       origin_trial_feature_name: "AttributionReportingCrossAppWeb",
       origin_trial_allows_third_party: true,
       base_feature: "none",
+      browser_process_read_access: true,
     },
     {
       // This only exists so we can use RuntimeEnabled in the IDL file
