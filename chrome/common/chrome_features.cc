@@ -400,6 +400,11 @@ BASE_FEATURE(kEnableWebUsbOnExtensionServiceWorker,
              "EnableWebUsbOnExtensionServiceWorker",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable extended descriptions for key settings in Chrome settings.
+BASE_FEATURE(kExtendedSettingsDescriptions,
+             "ExtendedSettingsDescriptions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_ANDROID)
 // Lazy initialize IndividualSettings for extensions from enterprise policy
 // that are not installed.

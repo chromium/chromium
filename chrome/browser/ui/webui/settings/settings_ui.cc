@@ -354,6 +354,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       !chrome::ShouldDisplayManagedUi(profile) && !profile->IsChild();
   html_source->AddBoolean("showPrivacyGuide", show_privacy_guide);
 
+  html_source->AddBoolean(
+      "enableExtendedSettingsDescriptions",
+      base::FeatureList::IsEnabled(features::kExtendedSettingsDescriptions));
+
   html_source->AddBoolean("esbSettingsImprovementsEnabled",
                           base::FeatureList::IsEnabled(
                               safe_browsing::kEsbIphBubbleAndCollapseSettings));
