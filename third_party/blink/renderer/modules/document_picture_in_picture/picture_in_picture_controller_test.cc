@@ -815,6 +815,12 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
   // CSS for a blue background should have been copied from the opener.
   EXPECT_EQ(GetBodyBackgroundColor(v8_scope, pictureInPictureDocument),
             "rgb(0, 0, 255)");
+
+  // Changing the opener's sheets should not result in a change to PiP.
+  CSSStyleSheet* sheet = DynamicTo<CSSStyleSheet>(FindStyleSheetInOpener());
+  sheet->deleteRule(0, v8_scope.GetExceptionState());
+  EXPECT_EQ(GetBodyBackgroundColor(v8_scope, pictureInPictureDocument),
+            "rgb(0, 0, 255)");
 }
 
 TEST_F(PictureInPictureControllerTestWithChromeClient,
