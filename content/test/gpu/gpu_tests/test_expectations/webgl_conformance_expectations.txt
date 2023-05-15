@@ -581,6 +581,7 @@ crbug.com/1276552 [ android-pixel-4 android-r passthrough qualcomm renderer-skia
 
 # Failing test when experiment DrDc is enabled via fieldtrial_testing_config.json.
 crbug.com/1289303 [ android angle-disabled no-passthrough qualcomm renderer-skia-gl target-cpu-32 ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
+crbug.com/1289303 [ android-pixel-4 android-r ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 
 ## Samsung failures ##
 
