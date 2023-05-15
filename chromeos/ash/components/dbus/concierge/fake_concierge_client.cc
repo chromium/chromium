@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 
@@ -410,6 +411,15 @@ void FakeConciergeClient::InstallPflash(
         callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), install_pflash_response_));
+}
+
+void FakeConciergeClient::AggressiveBalloon(
+    const vm_tools::concierge::AggressiveBalloonRequest& request,
+    chromeos::DBusMethodCallback<vm_tools::concierge::AggressiveBalloonResponse>
+        callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), aggressive_balloon_response_));
 }
 
 void FakeConciergeClient::NotifyVmStarted(

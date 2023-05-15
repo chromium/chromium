@@ -22,7 +22,7 @@ class ArcBridgeService;
 
 enum class SwapState {
   ENABLE,
-  ENABLE_WITH_SWAPOUT,
+  FORCE_ENABLE,
   DISABLE,
 };
 
@@ -62,7 +62,25 @@ class ArcVmmManager : public KeyedService {
   void SendSwapRequest(vm_tools::concierge::SwapOperation operation,
                        base::OnceClosure success_callback);
 
+  void SendAggressiveBalloonRequest(bool enable,
+                                    base::OnceClosure success_callback);
+
   void PostWithSwapDelay(base::OnceClosure callback);
+
+  // Called by `SendSwapRequest` and should not be called by other caller.
+  // Enable aggressive balloon and reclaim ARCVM guest memory.
+  // Shrink memory before enable swap. The function send enable swap request
+  // after shrink success.
+  void ShrinkArcVmMemoryAndEnableSwap(
+      vm_tools::concierge::SwapOperation requested_operation);
+
+  // Called by callback from `ShrinkArcVmMemoryAndEnableSwap` and should not be
+  // called by other caller. Update shrink result.
+  void SetShrinkResult(bool success);
+
+  // Log the time stamp and result of last shrink memory request.
+  absl::optional<base::Time> last_shrink_timestamp_;
+  absl::optional<bool> last_shrink_result_;
 
   // The default delay from swap enabled and swap out. Basically it's used for
   // keyboard swap. In finch, it will be replaced by the flag parameter.

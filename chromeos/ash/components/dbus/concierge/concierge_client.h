@@ -299,6 +299,13 @@ class COMPONENT_EXPORT(CONCIERGE) ConciergeClient
       chromeos::DBusMethodCallback<vm_tools::concierge::InstallPflashResponse>
           callback) = 0;
 
+  // Enables or disables aggressive balloon.
+  // |callback| is called after the method call finishes.
+  virtual void AggressiveBalloon(
+      const vm_tools::concierge::AggressiveBalloonRequest& request,
+      chromeos::DBusMethodCallback<
+          vm_tools::concierge::AggressiveBalloonResponse> callback) = 0;
+
   // Creates and initializes the global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);
 

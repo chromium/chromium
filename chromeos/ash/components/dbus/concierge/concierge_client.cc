@@ -295,6 +295,14 @@ class ConciergeClientImpl : public ConciergeClient {
                      std::move(callback));
   }
 
+  void AggressiveBalloon(
+      const vm_tools::concierge::AggressiveBalloonRequest& request,
+      chromeos::DBusMethodCallback<
+          vm_tools::concierge::AggressiveBalloonResponse> callback) override {
+    CallMethod(concierge::kAggressiveBalloonMethod, request,
+               std::move(callback));
+  }
+
   void Init(dbus::Bus* bus) override {
     concierge_proxy_ = bus->GetObjectProxy(
         concierge::kVmConciergeServiceName,

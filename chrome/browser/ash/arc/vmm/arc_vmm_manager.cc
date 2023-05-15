@@ -17,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/arc/vmm/arc_vmm_swap_scheduler.h"
 #include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -43,6 +44,9 @@ class ArcVmmManagerFactory
   ArcVmmManagerFactory() = default;
   ~ArcVmmManagerFactory() override = default;
 };
+
+// The minimal time interval for two successful ARCVM memory shrink request.
+const base::TimeDelta kMinimalShrinkMemoryInterval = base::Minutes(10);
 
 }  // namespace
 
@@ -93,37 +97,45 @@ ArcVmmManager::ArcVmmManager(content::BrowserContext* context,
 ArcVmmManager::~ArcVmmManager() = default;
 
 void ArcVmmManager::SetSwapState(SwapState state) {
+  vm_tools::concierge::SwapOperation op;
   switch (state) {
     case SwapState::ENABLE:
-      // Trim ARCVM memory before enable vmm swap in order to squeeze the vm
-      // memory. Send enable operation if trim success.
-      DCHECK(!trim_call_.is_null());
-      trim_call_.Run(
-          base::BindOnce(
-              [](base::OnceClosure success_closure, bool success,
-                 const std::string& failure_reason) {
-                if (success) {
-                  std::move(success_closure).Run();
-                } else {
-                  LOG(ERROR) << "Failed to trim ARCVM memory when enable vmm "
-                                "swap, reason: "
-                             << failure_reason;
-                }
-              },
-              base::BindOnce(&ArcVmmManager::SendSwapRequest,
-                             weak_ptr_factory_.GetWeakPtr(),
-                             vm_tools::concierge::SwapOperation::ENABLE,
-                             base::DoNothing())),
-          arc::ArcVmReclaimType::kReclaimAll, arc::ArcSession::kNoPageLimit);
+      op = vm_tools::concierge::SwapOperation::ENABLE;
       break;
-    case SwapState::ENABLE_WITH_SWAPOUT:
-      SendSwapRequest(vm_tools::concierge::SwapOperation::FORCE_ENABLE,
-                      base::DoNothing());
+    case SwapState::FORCE_ENABLE:
+      op = vm_tools::concierge::SwapOperation::FORCE_ENABLE;
       break;
     case SwapState::DISABLE:
-      SendSwapRequest(vm_tools::concierge::SwapOperation::DISABLE,
-                      base::DoNothing());
+      op = vm_tools::concierge::SwapOperation::DISABLE;
       break;
+  }
+
+  if (state == SwapState::DISABLE) {
+    SendSwapRequest(op, base::DoNothing());
+    return;
+  }
+
+  // Enable or ForceEnable need shrink ARCVM memory first.
+  if (!last_shrink_timestamp_ ||
+      base::Time::Now() - last_shrink_timestamp_.value() >
+          kMinimalShrinkMemoryInterval) {
+    last_shrink_timestamp_ = base::Time::Now();
+    last_shrink_result_ = false;
+    // Following attempts to enable vmm-swap will be ignored until
+    // `ShrinkArcVmMemoryAndEnableSwap()` finish. As a result, it will send an
+    // enable swap request as a coalesced request if it succeeds to shrink the
+    // ARCVM memory.
+    ShrinkArcVmMemoryAndEnableSwap(op);
+  } else {
+    if (last_shrink_result_.value_or(false)) {
+      // If recently the memory shrinking succeed, just send enable request
+      // rather than shrink memory again.
+      SendSwapRequest(op, base::DoNothing());
+    } else {
+      // If recently the memory failed to shrink, skip the request.
+      VLOG(0) << "Skip enable swap request due to last arcvm memory shrink "
+                 "failure";
+    }
   }
 }
 
@@ -156,9 +168,74 @@ void ArcVmmManager::SendSwapRequest(
           operation, std::move(success_callback)));
 }
 
+void ArcVmmManager::SendAggressiveBalloonRequest(
+    bool enable,
+    base::OnceClosure success_callback) {
+  auto* client = ash::ConciergeClient::Get();
+  if (!client) {
+    LOG(ERROR) << "Cannot find concierge client to swap ARCVM";
+    return;
+  }
+
+  vm_tools::concierge::AggressiveBalloonRequest request;
+  request.set_name(kArcVmName);
+  request.set_owner_id(user_id_hash_);
+  request.set_enable(enable);
+  client->AggressiveBalloon(
+      request,
+      base::BindOnce(
+          [](bool enabled, base::OnceClosure cb,
+             absl::optional<vm_tools::concierge::AggressiveBalloonResponse>
+                 response) {
+            if (!response->success()) {
+              LOG(ERROR) << "Failed to send aggressive balloon request: "
+                         << enabled
+                         << ". Reason: " << response->failure_reason();
+            } else {
+              std::move(cb).Run();
+            }
+          },
+          enable, std::move(success_callback)));
+}
+
 void ArcVmmManager::PostWithSwapDelay(base::OnceClosure callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, std::move(callback), swap_out_delay_);
+}
+
+void ArcVmmManager::ShrinkArcVmMemoryAndEnableSwap(
+    vm_tools::concierge::SwapOperation requested_operation) {
+  // Trim ARCVM memory before enable vmm swap in order to squeeze the vm
+  // memory. Send enable operation if trim success.
+  DCHECK(!trim_call_.is_null());
+  trim_call_.Run(
+      base::BindOnce(
+          [](base::OnceClosure success_closure, bool success,
+             const std::string& failure_reason) {
+            if (success) {
+              std::move(success_closure).Run();
+            } else {
+              LOG(ERROR) << "Failed to trim ARCVM memory when enable vmm "
+                            "swap, reason: "
+                         << failure_reason;
+            }
+          },
+          // If successfully execute trim, request enable aggressive balloon.
+          base::BindOnce(&ArcVmmManager::SendAggressiveBalloonRequest,
+                         weak_ptr_factory_.GetWeakPtr(), true,
+                         // If enable aggressive balloon successful, set shrink
+                         // result and re-send enable swap request.
+                         base::BindOnce(&ArcVmmManager::SetShrinkResult,
+                                        weak_ptr_factory_.GetWeakPtr(), true)
+                             .Then(base::BindOnce(
+                                 &ArcVmmManager::SendSwapRequest,
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 requested_operation, base::DoNothing())))),
+      arc::ArcVmReclaimType::kReclaimAll, arc::ArcSession::kNoPageLimit);
+}
+
+void ArcVmmManager::SetShrinkResult(bool success) {
+  last_shrink_result_ = success;
 }
 
 // ArcVmmManager::AcceleratorTarget --------------------------------------------
@@ -180,7 +257,7 @@ class ArcVmmManager::AcceleratorTarget : public ui::AcceleratorTarget {
   // ui::AcceleratorTarget:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override {
     if (accelerator == vmm_swap_enabled_) {
-      manager_->SetSwapState(SwapState::ENABLE_WITH_SWAPOUT);
+      manager_->SetSwapState(SwapState::FORCE_ENABLE);
     } else if (accelerator == vmm_swap_disabled_) {
       manager_->SetSwapState(SwapState::DISABLE);
     } else {

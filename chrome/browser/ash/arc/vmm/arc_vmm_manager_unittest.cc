@@ -101,6 +101,12 @@ class ArcVmmManagerTest : public testing::Test {
     manager_->set_user_id_hash("test_user_hash_id");
   }
 
+  void InitAggressiveBallonResponse() {
+    vm_tools::concierge::AggressiveBalloonResponse response;
+    response.set_success(true);
+    client()->set_aggressive_balloon_response(response);
+  }
+
   void SetTrimCall(bool trim_result) {
     manager()->trim_call_ = base::BindLambdaForTesting(
         [trim_result](ArcVmWorkingSetTrimExecutor::ResultCallback callback,
@@ -131,6 +137,7 @@ class ArcVmmManagerTest : public testing::Test {
 TEST_F(ArcVmmManagerTest, EnableSwapWhenTrimSuccess) {
   InitVmmManager();
   SetTrimCall(true);
+  InitAggressiveBallonResponse();
 
   // Send "ENABLE".
   EXPECT_EQ(0, client()->enable_count());
@@ -145,6 +152,7 @@ TEST_F(ArcVmmManagerTest, EnableSwapWhenTrimSuccess) {
 TEST_F(ArcVmmManagerTest, NotEnableSwapWhenTrimFail) {
   InitVmmManager();
   SetTrimCall(false);
+  InitAggressiveBallonResponse();
 
   // Send "ENABLE".
   EXPECT_EQ(0, client()->enable_count());
@@ -158,7 +166,10 @@ TEST_F(ArcVmmManagerTest, NotEnableSwapWhenTrimFail) {
 
 TEST_F(ArcVmmManagerTest, ForceSwapSuccess) {
   InitVmmManager();
-  manager()->SetSwapState(SwapState::ENABLE_WITH_SWAPOUT);
+  SetTrimCall(true);
+  InitAggressiveBallonResponse();
+
+  manager()->SetSwapState(SwapState::FORCE_ENABLE);
   base::RunLoop().RunUntilIdle();
   // Send "FORCE_ENABLE".
   EXPECT_EQ(1, client()->force_enable_count());
