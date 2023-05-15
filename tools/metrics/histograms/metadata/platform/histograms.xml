@@ -2354,16 +2354,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="PlatformFile.UnknownErrors.Windows" enum="WinGetLastError"
-    expires_after="M95">
-  <owner>dmurph@chromium.org</owner>
-  <owner>pwnall@chromium.org</owner>
-  <summary>
-    Errors returned by CreateFile on Windows that PlatformFileError doesn't yet
-    support.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>
