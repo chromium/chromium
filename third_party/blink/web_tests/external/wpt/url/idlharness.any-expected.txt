@@ -50,10 +50,10 @@ PASS URLSearchParams interface: existence and properties of interface prototype 
 PASS URLSearchParams interface: existence and properties of interface prototype object's @@unscopables property
 PASS URLSearchParams interface: attribute size
 PASS URLSearchParams interface: operation append(USVString, USVString)
-PASS URLSearchParams interface: operation delete(USVString)
+PASS URLSearchParams interface: operation delete(USVString, optional USVString)
 PASS URLSearchParams interface: operation get(USVString)
 PASS URLSearchParams interface: operation getAll(USVString)
-PASS URLSearchParams interface: operation has(USVString)
+PASS URLSearchParams interface: operation has(USVString, optional USVString)
 PASS URLSearchParams interface: operation set(USVString, USVString)
 PASS URLSearchParams interface: operation sort()
 PASS URLSearchParams interface: iterable<USVString, USVString>
@@ -63,14 +63,14 @@ PASS Stringification of new URLSearchParams("hi=there&thank=you")
 PASS URLSearchParams interface: new URLSearchParams("hi=there&thank=you") must inherit property "size" with the proper type
 PASS URLSearchParams interface: new URLSearchParams("hi=there&thank=you") must inherit property "append(USVString, USVString)" with the proper type
 PASS URLSearchParams interface: calling append(USVString, USVString) on new URLSearchParams("hi=there&thank=you") with too few arguments must throw TypeError
-PASS URLSearchParams interface: new URLSearchParams("hi=there&thank=you") must inherit property "delete(USVString)" with the proper type
-PASS URLSearchParams interface: calling delete(USVString) on new URLSearchParams("hi=there&thank=you") with too few arguments must throw TypeError
+PASS URLSearchParams interface: new URLSearchParams("hi=there&thank=you") must inherit property "delete(USVString, optional USVString)" with the proper type
+PASS URLSearchParams interface: calling delete(USVString, optional USVString) on new URLSearchParams("hi=there&thank=you") with too few arguments must throw TypeError
 PASS URLSearchParams interface: new URLSearchParams("hi=there&thank=you") must inherit property "get(USVString)" with the proper type
 PASS URLSearchParams interface: calling get(USVString) on new URLSearchParams("hi=there&thank=you") with too few arguments must throw TypeError
 PASS URLSearchParams interface: new URLSearchParams("hi=there&thank=you") must inherit property "getAll(USVString)" with the proper type
 PASS URLSearchParams interface: calling getAll(USVString) on new URLSearchParams("hi=there&thank=you") with too few arguments must throw TypeError
-PASS URLSearchParams interface: new URLSearchParams("hi=there&thank=you") must inherit property "has(USVString)" with the proper type
-PASS URLSearchParams interface: calling has(USVString) on new URLSearchParams("hi=there&thank=you") with too few arguments must throw TypeError
+PASS URLSearchParams interface: new URLSearchParams("hi=there&thank=you") must inherit property "has(USVString, optional USVString)" with the proper type
+PASS URLSearchParams interface: calling has(USVString, optional USVString) on new URLSearchParams("hi=there&thank=you") with too few arguments must throw TypeError
 PASS URLSearchParams interface: new URLSearchParams("hi=there&thank=you") must inherit property "set(USVString, USVString)" with the proper type
 PASS URLSearchParams interface: calling set(USVString, USVString) on new URLSearchParams("hi=there&thank=you") with too few arguments must throw TypeError
 PASS URLSearchParams interface: new URLSearchParams("hi=there&thank=you") must inherit property "sort()" with the proper type

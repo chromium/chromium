@@ -84,7 +84,8 @@ crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-
 crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 external/wpt/preload/modulepreload-as.html [ Timeout Failure ]
+crbug.com/626703 external/wpt/clipboard-apis/async-navigator-clipboard-write-multiple.tentative.https.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/preload/modulepreload-as.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/html/semantics/popovers/popover-hide-crash.html [ Timeout ]
 crbug.com/626703 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/unfenced-top.https.html [ Timeout ]
 crbug.com/626703 [ Release ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/can-load-api.https.html [ Timeout ]

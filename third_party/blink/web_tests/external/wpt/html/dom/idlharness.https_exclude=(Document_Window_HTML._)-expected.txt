@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1415 tests; 1385 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1425 tests; 1391 PASS, 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -845,6 +845,16 @@ PASS ElementInternals interface: attribute validationMessage
 PASS ElementInternals interface: operation checkValidity()
 PASS ElementInternals interface: operation reportValidity()
 PASS ElementInternals interface: attribute labels
+PASS VisibilityStateEntry interface: existence and properties of interface object
+PASS VisibilityStateEntry interface object length
+PASS VisibilityStateEntry interface object name
+PASS VisibilityStateEntry interface: existence and properties of interface prototype object
+PASS VisibilityStateEntry interface: existence and properties of interface prototype object's "constructor" property
+PASS VisibilityStateEntry interface: existence and properties of interface prototype object's @@unscopables property
+FAIL VisibilityStateEntry interface: attribute name assert_own_property: expected property "name" missing
+FAIL VisibilityStateEntry interface: attribute entryType assert_own_property: expected property "entryType" missing
+FAIL VisibilityStateEntry interface: attribute startTime assert_own_property: expected property "startTime" missing
+FAIL VisibilityStateEntry interface: attribute duration assert_own_property: expected property "duration" missing
 PASS UserActivation interface: existence and properties of interface object
 PASS UserActivation interface object length
 PASS UserActivation interface object name
