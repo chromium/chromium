@@ -134,6 +134,11 @@
 #include "ui/gfx/geometry/point.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"  // nogncheck
+#endif
+
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
@@ -2781,17 +2786,21 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, ContextMenuInspectElement) {
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
-// This test executes the context menu command 'LanguageSettings' which will
-// load chrome://settings/languages in a browser window. This is a browser-
-// initiated operation and so we expect this to succeed if the embedder is
-// allowed to perform the operation.
+// This test executes the context menu command 'LanguageSettings'.
+// On Ash, this will open the language settings in the OS Settings app.
+// Elsewhere, it will load chrome://settings/languages in a browser window.
+// In either case, this is a browser-initiated operation and so we expect it
+// to succeed if the embedder is allowed to perform the operation.
 IN_PROC_BROWSER_TEST_F(WebViewTest, ContextMenuLanguageSettings) {
   LoadAppWithGuest("web_view/context_menus/basic");
-
   content::WebContents* embedder = GetEmbedderWebContents();
   ASSERT_TRUE(embedder);
 
-  // Create and build our test context menu.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::SystemWebAppManager::Get(browser()->profile())
+      ->InstallSystemAppsForTesting();
+#endif
+
   content::WebContentsAddedObserver web_contents_added_observer;
 
   GURL page_url("http://www.google.com");
@@ -2800,14 +2809,20 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, ContextMenuLanguageSettings) {
                                         GURL(), GURL()));
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_LANGUAGE_SETTINGS, 0);
 
+  // Verify that a new WebContents has been created that is at the appropriate
+  // Language Settings page.
   content::WebContents* new_contents =
       web_contents_added_observer.GetWebContents();
-
-  // Verify that a new WebContents has been created that is at the Language
-  // Settings page.
-  EXPECT_EQ(GURL(std::string(chrome::kChromeUISettingsURL) +
-                 chrome::kLanguageOptionsSubPage),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_EQ(
+      GURL(chrome::kChromeUIOSSettingsURL)
+          .Resolve(chromeos::settings::mojom::kLanguagesAndInputSectionPath),
+      new_contents->GetVisibleURL());
+#else
+  EXPECT_EQ(GURL(chrome::kChromeUISettingsURL)
+                .Resolve(chrome::kLanguageOptionsSubPage),
             new_contents->GetVisibleURL());
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewTest, ContextMenusAPI_Basic) {

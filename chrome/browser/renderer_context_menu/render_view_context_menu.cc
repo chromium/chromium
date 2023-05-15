@@ -279,6 +279,8 @@
 #include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/aura/window.h"
 #endif
@@ -4007,10 +4009,19 @@ void RenderViewContextMenu::ExecPartialTranslate() {
 }
 
 void RenderViewContextMenu::ExecLanguageSettings(int event_flags) {
+// Open the browser language settings.
+// Exception: On Ash, the browser language settings consists solely of a link to
+// the OS language settings, so just open the OS settings directly (this has the
+// added benefit of also doing the right thing when Lacros is enabled).
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+      GetProfile(), chromeos::settings::mojom::kLanguagesAndInputSectionPath);
+#else
   WindowOpenDisposition disposition = ui::DispositionFromEventFlags(
       event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB);
   GURL url = chrome::GetSettingsUrl(chrome::kLanguageOptionsSubPage);
   OpenURL(url, GURL(), disposition, ui::PAGE_TRANSITION_LINK);
+#endif
 }
 
 void RenderViewContextMenu::ExecProtocolHandlerSettings(int event_flags) {
