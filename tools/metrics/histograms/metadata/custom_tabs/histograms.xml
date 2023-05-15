@@ -495,7 +495,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CustomTabs.RetainableSessionsV2.TimeBetweenLaunch{IdentifierType}"
-    units="seconds" expires_after="2023-06-12">
+    units="seconds" expires_after="2023-10-22">
   <owner>wenyufu@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
