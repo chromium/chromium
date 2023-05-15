@@ -297,8 +297,7 @@ using PriceNotificationItems =
 // to and populates the data into the Price Notifications UI.
 - (void)fetchTrackedItems {
   __weak PriceNotificationsPriceTrackingMediator* weakSelf = self;
-  commerce::GetAllPriceTrackedBookmarks(
-      self.shoppingService, self.bookmarkModel,
+  self.shoppingService->GetAllPriceTrackedBookmarks(
       base::BindOnce(
           ^(std::vector<const bookmarks::BookmarkNode*> subscribedItems) {
             if (!weakSelf) {

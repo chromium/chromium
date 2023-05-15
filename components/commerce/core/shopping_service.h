@@ -39,6 +39,7 @@ class Value;
 
 namespace bookmarks {
 class BookmarkModel;
+class BookmarkNode;
 }  // namespace bookmarks
 
 namespace network {
@@ -281,6 +282,17 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // callback-based version |IsSubscribed| is preferred. Information provided
   // by this API is not guaranteed to be correct.
   virtual bool IsSubscribedFromCache(const CommerceSubscription& subscription);
+
+  // Gets all bookmarks that are price tracked. Internally this calls the
+  // function by the same name in price_tracking_utils.h.
+  virtual void GetAllPriceTrackedBookmarks(
+      base::OnceCallback<void(std::vector<const bookmarks::BookmarkNode*>)>
+          callback);
+
+  // Gets all bookmarks that have shopping information associated with them.
+  // Internally this calls the function by the same name in
+  // price_tracking_utils.h.
+  virtual std::vector<const bookmarks::BookmarkNode*> GetAllShoppingBookmarks();
 
   // Fetch users' pref from server on whether to receive price tracking emails.
   void FetchPriceEmailPref();

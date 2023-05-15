@@ -24,6 +24,7 @@
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/metrics/scheduled_metrics_manager.h"
 #include "components/commerce/core/pref_names.h"
+#include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
@@ -515,6 +516,18 @@ void ShoppingService::GetUpdatedProductInfoForBookmarks(
 size_t ShoppingService::GetMaxProductBookmarkUpdatesPerBatch() {
   return optimization_guide::features::
       MaxUrlsForOptimizationGuideServiceHintsFetch();
+}
+
+void ShoppingService::GetAllPriceTrackedBookmarks(
+    base::OnceCallback<void(std::vector<const bookmarks::BookmarkNode*>)>
+        callback) {
+  commerce::GetAllPriceTrackedBookmarks(this, bookmark_model_,
+                                        std::move(callback));
+}
+
+std::vector<const bookmarks::BookmarkNode*>
+ShoppingService::GetAllShoppingBookmarks() {
+  return commerce::GetAllShoppingBookmarks(bookmark_model_);
 }
 
 void ShoppingService::GetMerchantInfoForUrl(const GURL& url,

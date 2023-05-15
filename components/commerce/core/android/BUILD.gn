@@ -16,6 +16,7 @@ android_library("core_java") {
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
+    "//components/bookmarks/common/android:bookmarks_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//url:gurl_java",
   ]

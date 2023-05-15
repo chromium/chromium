@@ -292,6 +292,9 @@ TEST_F(ShoppingListHandlerTest, TestGetProductInfo_FeatureEnabled) {
 
   std::vector<const bookmarks::BookmarkNode*> bookmark_list;
   bookmark_list.push_back(product);
+  shopping_service_->SetGetAllPriceTrackedBookmarksCallbackValue(bookmark_list);
+  shopping_service_->SetGetAllShoppingBookmarksValue(bookmark_list);
+
   std::vector<shopping_list::mojom::BookmarkProductInfoPtr> mojo_list =
       ShoppingListHandler::BookmarkListToMojoList(*bookmark_model_,
                                                   bookmark_list, "en-us");
@@ -315,6 +318,9 @@ TEST_F(ShoppingListHandlerTest, TestGetAllShoppingInfo_FeatureEnabled) {
   std::vector<const bookmarks::BookmarkNode*> bookmark_list;
   bookmark_list.push_back(product);
   bookmark_list.push_back(product2);
+  shopping_service_->SetGetAllPriceTrackedBookmarksCallbackValue(bookmark_list);
+  shopping_service_->SetGetAllShoppingBookmarksValue(bookmark_list);
+
   std::vector<shopping_list::mojom::BookmarkProductInfoPtr> mojo_list =
       ShoppingListHandler::BookmarkListToMojoList(*bookmark_model_,
                                                   bookmark_list, "en-us");
