@@ -41,7 +41,8 @@ import {getTemplate} from './os_people_page.html.js';
 const OsSettingsPeoplePageElementBase =
     LockStateMixin(RouteObserverMixin(DeepLinkingMixin(PolymerElement)));
 
-class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
+export class OsSettingsPeoplePageElement extends
+    OsSettingsPeoplePageElementBase {
   static get is() {
     return 'os-settings-people-page' as const;
   }

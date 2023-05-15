@@ -550,6 +550,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['OsPairedBluetoothList', 'os_paired_bluetooth_list_tests.js'],
  ['OsPairedBluetoothListItem', 'os_paired_bluetooth_list_item_tests.js'],
  ['OsPageAvailability', 'os_page_availability_test.js'],
+ ['OsPeoplePage', 'os_people_page/os_people_page_test.js'],
  ['OsPeoplePageAddUserDialog', 'os_people_page/add_user_dialog_test.js'],
  [
    'OsPeoplePageFingerprintListSubpage',
@@ -590,7 +591,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'ParentalControlsPage',
    'parental_controls_page/parental_controls_page_test.js'
  ],
- ['PeoplePage', 'os_people_page_test.js'],
  [
    'PeoplePageAccountManagerSubpage',
    'people_page_account_manager_subpage_test.js',
