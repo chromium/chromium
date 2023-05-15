@@ -341,6 +341,17 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // Removes the `up_next_view_`.
   void RemoveUpNextView();
 
+  // Callback after the animation showing the up next view has ended.
+  void OnShowUpNextAnimationEnded();
+
+  // Animates scrolling the Calendar `scroll_view_` by the given offset. Uses
+  // layer transforms to mimic scrolling and then sets a final scroll position
+  // on the scroll view to give the illusion of animating scrolling.
+  void AnimateScrollByOffset(int offset);
+
+  // Post animation callback for `AnimateScrollByOffset()`.
+  void OnAnimateScrollByOffsetComplete(int offset);
+
   // Used by the `CalendarUpNextView` to open the event list for today's date.
   void OpenEventListForTodaysDate();
 
@@ -421,6 +432,11 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
 
   // If the Calendar View destructor is being called.
   bool is_destroying_ = false;
+
+  // Set to true if the user has scrolled the Calendar at all, either via the
+  // scroll view directly or used the month arrow buttons, in the lifetime of
+  // the CalendarView.
+  bool user_has_scrolled_ = false;
 
   // Timer that fires when the calendar view is settled on, i.e. finished
   // scrolling to, a currently-visible month

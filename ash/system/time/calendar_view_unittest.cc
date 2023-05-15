@@ -24,6 +24,7 @@
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/detailed_view_delegate.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_view.h"
@@ -43,6 +44,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/controls/button/label_button.h"
@@ -1509,6 +1511,7 @@ class CalendarViewAnimationTest : public AshTestBase {
     return scroll_view()->GetVerticalScrollBarMode();
   }
 
+  views::Widget* widget() { return widget_.get(); }
   CalendarView* calendar_view() { return calendar_view_; }
 
   views::Label* month_header() { return calendar_view_->header_->header_; }
@@ -2804,6 +2807,219 @@ TEST_F(CalendarViewWithJellyEnabledTest, ShouldShowUpNextWithCachedData) {
                     CreateMockEventListWithTwoEventsOneEndingInOneMin());
   EXPECT_TRUE(up_next_view());
   EXPECT_EQ(size_t(2), up_next_scroll_contents()->children().size());
+}
+
+class CalendarViewAnimationWithJellyEnabledTest
+    : public CalendarViewAnimationTest {
+ public:
+  CalendarViewAnimationWithJellyEnabledTest() = default;
+  CalendarViewAnimationWithJellyEnabledTest(
+      const CalendarViewAnimationWithJellyEnabledTest&) = delete;
+  CalendarViewAnimationWithJellyEnabledTest& operator=(
+      const CalendarViewAnimationWithJellyEnabledTest&) = delete;
+  ~CalendarViewAnimationWithJellyEnabledTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeatures({features::kCalendarJelly}, {});
+    CalendarViewAnimationTest::SetUp();
+  }
+
+  std::unique_ptr<google_apis::calendar::EventList> CreateUpcomingEvents(
+      base::Time date) {
+    const auto start_time = date + base::Minutes(5);
+    const auto end_time = start_time + base::Hours(1);
+    auto event_list = std::make_unique<google_apis::calendar::EventList>();
+    event_list->set_time_zone("Greenwich Mean Time");
+    event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
+        "id_0", "summary_0", start_time, end_time));
+
+    return event_list;
+  }
+
+  void MockEventsFetched(
+      base::Time date,
+      std::unique_ptr<google_apis::calendar::EventList> event_list) {
+    Shell::Get()->system_tray_model()->calendar_model()->OnEventsFetched(
+        calendar_utils::GetStartOfMonthUTC(date),
+        google_apis::ApiErrorCode::HTTP_SUCCESS, event_list.get());
+  }
+
+ private:
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+};
+
+TEST_F(CalendarViewAnimationWithJellyEnabledTest,
+       ShouldScrollToShowTodaysCell_WhenUpNextViewCoversIt) {
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  base::Time date;
+  // Pick a date towards the end of the month so up next covers the bottom row.
+  ASSERT_TRUE(base::Time::FromString("25 Apr 2023 10:00 GMT", &date));
+  task_environment()->AdvanceClock(date - base::Time::Now());
+
+  CreateCalendarView();
+  // Force the size of the calendar to be small enough that the bottom row of
+  // date cells will be covered by the up next view.
+  widget()->SetFullscreen(false);
+  widget()->SetSize(gfx::Size(kTrayMenuWidth, 350));
+
+  histogram_tester->ExpectTotalCount(
+      "Ash.CalendarView.SmoothScrollToTodaysDateCell.MonthView."
+      "AnimationSmoothness",
+      0);
+  histogram_tester->ExpectTotalCount(
+      "Ash.CalendarView.SmoothScrollToTodaysDateCell.LabelView."
+      "AnimationSmoothness",
+      0);
+
+  const int initial_scroll_position = scroll_view()->GetVisibleRect().y();
+
+  // Fetch an upcoming event so up next is displayed.
+  MockEventsFetched(calendar_utils::GetStartOfMonthUTC(date),
+                    CreateUpcomingEvents(date));
+
+  // Wait for the show up next animation and smooth scrolling to complete.
+  EXPECT_TRUE(calendar_view()->up_next_view());
+  ui::LayerAnimationStoppedWaiter animation_waiter;
+  animation_waiter.Wait(calendar_view()->up_next_view()->layer());
+  animation_waiter.Wait(current_month()->layer());
+
+  // After the up next view is shown, the scroll view should have moved to
+  // reveal todays date cell.
+  EXPECT_NE(initial_scroll_position, scroll_view()->GetVisibleRect().y());
+  const bool todays_date_cell_is_visible =
+      scroll_view()->GetBoundsInScreen().Intersects(
+          calendar_view()
+              ->calendar_view_controller()
+              ->todays_date_cell_view()
+              ->GetBoundsInScreen());
+  EXPECT_TRUE(todays_date_cell_is_visible);
+
+  // Histograms don't immediately fire after the animation completes, so wait
+  // for that to happen.
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+  histogram_tester->ExpectTotalCount(
+      "Ash.CalendarView.SmoothScrollToTodaysDateCell.MonthView."
+      "AnimationSmoothness",
+      1);
+  histogram_tester->ExpectTotalCount(
+      "Ash.CalendarView.SmoothScrollToTodaysDateCell.LabelView."
+      "AnimationSmoothness",
+      1);
+}
+
+TEST_F(CalendarViewAnimationWithJellyEnabledTest,
+       ShouldNotScrollToShowTodaysCell_WhenUpNextViewDoesNotCoverIt) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  base::Time date;
+  // Pick a date at the start of the month so up next doesn't cover it.
+  ASSERT_TRUE(base::Time::FromString("1 Apr 2023 10:00 GMT", &date));
+  task_environment()->AdvanceClock(date - base::Time::Now());
+  CreateCalendarView();
+  // Force the size of the calendar to be small enough that the bottom row of
+  // date cells will be covered by the up next view.
+  widget()->SetFullscreen(false);
+  widget()->SetSize(gfx::Size(kTrayMenuWidth, 350));
+
+  const int initial_scroll_position = scroll_view()->GetVisibleRect().y();
+
+  // Fetch an upcoming event so up next is displayed.
+  MockEventsFetched(calendar_utils::GetStartOfMonthUTC(date),
+                    CreateUpcomingEvents(date));
+
+  // Wait for the show up next animation to complete.
+  EXPECT_TRUE(calendar_view()->up_next_view());
+  ui::LayerAnimationStoppedWaiter().Wait(
+      calendar_view()->up_next_view()->layer());
+
+  // After the up next view is shown, the scroll view should not have moved as
+  // the today date cell should remain visible.
+  EXPECT_EQ(initial_scroll_position, scroll_view()->GetVisibleRect().y());
+  const bool todays_date_cell_is_visible =
+      scroll_view()->GetBoundsInScreen().Intersects(
+          calendar_view()
+              ->calendar_view_controller()
+              ->todays_date_cell_view()
+              ->GetBoundsInScreen());
+  EXPECT_TRUE(todays_date_cell_is_visible);
+}
+
+TEST_F(
+    CalendarViewAnimationWithJellyEnabledTest,
+    ShouldNotScrollToShowTodaysCell_WhenUserHasScrolled_AndAnUpcomingEventAppears) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  base::Time date;
+  // Pick a date towards the end of the month so up next covers the bottom row.
+  ASSERT_TRUE(base::Time::FromString("25 Apr 2023 10:00 GMT", &date));
+  task_environment()->AdvanceClock(date - base::Time::Now());
+  CreateCalendarView();
+  // Force the size of the calendar to be small enough that the bottom row of
+  // date cells will be covered by the up next view.
+  widget()->SetFullscreen(false);
+  widget()->SetSize(gfx::Size(kTrayMenuWidth, 350));
+
+  // Fetch an event that starts in 11 mins so up next isn't showing.
+  MockEventsFetched(calendar_utils::GetStartOfMonthUTC(date),
+                    CreateUpcomingEvents(date + base::Minutes(6)));
+  EXPECT_FALSE(calendar_view()->up_next_view());
+
+  // Scroll up a bit so that today is off the screen.
+  ScrollUpOneMonth();
+  ui::LayerAnimationStoppedWaiter animation_waiter;
+  animation_waiter.Wait(current_month()->layer());
+
+  const int initial_scroll_position = scroll_view()->GetVisibleRect().y();
+
+  // Now advance time so that our upcoming meeting is about to start and up next
+  // appears.
+  task_environment()->FastForwardBy(base::Minutes(5));
+  EXPECT_TRUE(calendar_view()->up_next_view());
+  animation_waiter.Wait(calendar_view()->up_next_view()->layer());
+
+  // After the up next view is shown, the scroll view should not have moved as
+  // the user has previously interacted with the scroll view.
+  EXPECT_EQ(initial_scroll_position, scroll_view()->GetVisibleRect().y());
+}
+
+TEST_F(CalendarViewAnimationWithJellyEnabledTest,
+       ShouldNotScrollToShowTodaysCell_WhenTodaysDateCellIsNull) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  base::Time date;
+  // Pick a date towards the end of the month so up next covers the bottom row.
+  ASSERT_TRUE(base::Time::FromString("25 Apr 2023 10:00 GMT", &date));
+  task_environment()->AdvanceClock(date - base::Time::Now());
+  CreateCalendarView();
+  // Force the size of the calendar to be small enough that the bottom row of
+  // date cells will be covered by the up next view.
+  widget()->SetFullscreen(false);
+  widget()->SetSize(gfx::Size(kTrayMenuWidth, 350));
+
+  // Fetch an event that starts in 11 mins so up next isn't showing.
+  MockEventsFetched(calendar_utils::GetStartOfMonthUTC(date),
+                    CreateUpcomingEvents(date + base::Minutes(6)));
+  EXPECT_FALSE(calendar_view()->up_next_view());
+
+  // Make todays date cell null. This would be null if the user had scrolled
+  // outside of the 4 months that are on screen.
+  calendar_view()->calendar_view_controller()->set_todays_date_cell_view(
+      nullptr);
+
+  const int initial_scroll_position = scroll_view()->GetVisibleRect().y();
+
+  // Now advance time so that our upcoming meeting is about to start and up next
+  // appears.
+  task_environment()->FastForwardBy(base::Minutes(5));
+  EXPECT_TRUE(calendar_view()->up_next_view());
+
+  // After the up next view is shown, the scroll view should not have moved as
+  // todays date cell is null.
+  EXPECT_EQ(initial_scroll_position, scroll_view()->GetVisibleRect().y());
 }
 
 }  // namespace ash
