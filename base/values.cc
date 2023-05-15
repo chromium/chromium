@@ -1184,30 +1184,6 @@ const Value* Value::FindPath(StringPiece path) const {
   return GetDict().FindByDottedPath(path);
 }
 
-absl::optional<int> Value::FindIntPath(StringPiece path) const {
-  return GetDict().FindIntByDottedPath(path);
-}
-
-const std::string* Value::FindStringPath(StringPiece path) const {
-  return GetDict().FindStringByDottedPath(path);
-}
-
-std::string* Value::FindStringPath(StringPiece path) {
-  return GetDict().FindStringByDottedPath(path);
-}
-
-const Value* Value::FindListPath(StringPiece path) const {
-  const Value* cur = GetDict().FindByDottedPath(path);
-  if (!cur || cur->type() != Type::LIST) {
-    return nullptr;
-  }
-  return cur;
-}
-
-Value* Value::FindListPath(StringPiece path) {
-  return const_cast<Value*>(std::as_const(*this).FindListPath(path));
-}
-
 bool operator==(const Value& lhs, const Value& rhs) {
   return lhs.data_ == rhs.data_;
 }

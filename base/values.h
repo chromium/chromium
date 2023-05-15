@@ -799,24 +799,6 @@ class BASE_EXPORT GSL_OWNER Value {
   Value* FindPath(StringPiece path);
   const Value* FindPath(StringPiece path) const;
 
-  // Convenience accessors used when the expected type of a value is known.
-  // Similar to Find<Type>Key() but accepts paths instead of keys.
-  //
-  // DEPRECATED: Use `Value::Dict::FindIntByDottedPath()`, or
-  // `Value::Dict::FindInt()` if the path only has one component, i.e. has no
-  // dots.
-  absl::optional<int> FindIntPath(StringPiece path) const;
-  // DEPRECATED: Use `Value::Dict::FindStringByDottedPath()`, or
-  // `Value::Dict::FindString()` if the path only has one component, i.e. has no
-  // dots.
-  const std::string* FindStringPath(StringPiece path) const;
-  std::string* FindStringPath(StringPiece path);
-  // DEPRECATED: Use `Value::Dict::FindListByDottedPath()`, or
-  // `Value::Dict::FindList()` if the path only has one component, i.e. has no
-  // dots.
-  Value* FindListPath(StringPiece path);
-  const Value* FindListPath(StringPiece path) const;
-
   // Note: Do not add more types. See the file-level comment above for why.
 
   // Comparison operators so that Values can easily be used with standard
