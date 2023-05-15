@@ -1447,11 +1447,12 @@ gfx::SizeF GetReferenceBoxSize(const LayoutBox* box,
                                const gfx::RectF& bounding_box,
                                CoordBox coord_box) {
   if (box) {
-    // In SVG contexts, all values behave as view-box.
-    if (box->IsSVG()) {
-      return SVGLengthContext(To<SVGElement>(box->GetNode())).ResolveViewport();
-    }
     if (const LayoutBlock* containing_block = box->ContainingBlock()) {
+      // In SVG contexts, all values behave as view-box.
+      if (box->IsSVG()) {
+        return SVGLengthContext(To<SVGElement>(box->GetNode()))
+            .ResolveViewport();
+      }
       // https://drafts.csswg.org/css-box-4/#typedef-coord-box
       switch (coord_box) {
         case CoordBox::kFillBox:
