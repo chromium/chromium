@@ -34,6 +34,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Lens"/>
   <variant name="ReadAnything"/>
   <variant name="ReadingList"/>
+  <variant name="ShoppingInsights"/>
   <variant name="SideSearch"/>
   <variant name="UserNotes"/>
   <variant name="WebView"/>

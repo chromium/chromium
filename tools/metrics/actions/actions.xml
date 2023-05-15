@@ -30991,6 +30991,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SidePanel.ShoppingInsights.Shown">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <description>
+    Recorded when the shopping insights side panel entry is shown.
+  </description>
+</action>
+
 <action name="SidePanel.Show">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>

@@ -56,6 +56,7 @@ std::string GetHistogramNameForId(SidePanelEntry::Id id) {
            {SidePanelEntry::Id::kCustomizeChrome, "CustomizeChrome"},
            {SidePanelEntry::Id::kWebView, "WebView"},
            {SidePanelEntry::Id::kSearchCompanion, "Companion"},
+           {SidePanelEntry::Id::kShoppingInsights, "ShoppingInsights"},
            {SidePanelEntry::Id::kExtension, "Extension"}});
   auto* i = id_to_histogram_name_map.find(id);
   DCHECK(i != id_to_histogram_name_map.cend());
