@@ -1080,8 +1080,7 @@ TEST_F(HintsManagerTest, CanApplyOptimizationUrlWithNoHost) {
                                             /*optimization_metadata=*/nullptr);
 
   // Make sure decisions are logged correctly.
-  EXPECT_EQ(OptimizationTypeDecision::kNoHintAvailable,
-            optimization_type_decision);
+  EXPECT_EQ(OptimizationTypeDecision::kInvalidURL, optimization_type_decision);
 }
 
 TEST_F(HintsManagerTest, CanApplyOptimizationHasFilterForTypeButNotLoadedYet) {

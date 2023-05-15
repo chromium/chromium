@@ -77284,6 +77284,18 @@ Called by update_net_trust_anchors.py.-->
     (Added in M80, Previously, this was combined with &quot;No hint available
     for page load&quot;.)
   </int>
+  <int value="11" label="Hint was being fetched but was not registered">
+    A fetch to get the hint for the page load from the remote Optimization Guide
+    Service was started, but requested optimization type was not registered.
+    (Added in M115, Previously, this was combined with &quot;No hint available
+    for page load&quot;.)
+  </int>
+  <int value="12" label="Hint requested for an invalid URL">
+    A fetch to get the hint for the page load from the remote Optimization Guide
+    Service was started, but requested URL was invalid. (Added in M115,
+    Previously, this was combined with &quot;No hint available for page
+    load&quot;.)
+  </int>
 </enum>
 
 <enum name="OptimizationGuidePageContentAnnotationsStorageStatus">
