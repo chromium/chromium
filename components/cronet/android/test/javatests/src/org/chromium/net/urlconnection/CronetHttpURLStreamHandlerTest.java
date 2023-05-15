@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.NativeTestServer;
@@ -32,6 +33,7 @@ import java.net.URL;
 /**
  * Tests for CronetHttpURLStreamHandler class.
  */
+@Batch(Batch.UNIT_TESTS)
 @RunWith(AndroidJUnit4.class)
 public class CronetHttpURLStreamHandlerTest {
     @Rule
@@ -47,6 +49,7 @@ public class CronetHttpURLStreamHandlerTest {
 
     @After
     public void tearDown() throws Exception {
+        mTestFramework.shutdownEngine();
         NativeTestServer.shutdownNativeTestServer();
     }
 
