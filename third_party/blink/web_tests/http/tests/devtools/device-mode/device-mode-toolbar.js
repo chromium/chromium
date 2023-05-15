@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {DeviceModeTestRunner} from 'device_mode_test_runner';
+
 (async function() {
   TestRunner.addResult(`Test toolbar state when switching modes.\n`);
-  await TestRunner.loadTestModule('device_mode_test_runner');
 
   var phoneA = DeviceModeTestRunner.buildFakePhone();
   var view = new Emulation.DeviceModeView();
