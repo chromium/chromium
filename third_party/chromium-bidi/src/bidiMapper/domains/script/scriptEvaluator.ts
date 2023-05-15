@@ -79,7 +79,9 @@ export class ScriptEvaluator {
         functionDeclaration: String((obj: unknown) => obj),
         awaitPromise: false,
         arguments: [arg],
-        generateWebDriverValue: true,
+        serializationOptions: {
+          serialization: 'deep',
+        },
         executionContextId: realm.executionContextId,
       });
     return realm.cdpToBidiValue(cdpWebDriverValue, resultOwnership);
@@ -89,15 +91,24 @@ export class ScriptEvaluator {
     realm: Realm,
     expression: string,
     awaitPromise: boolean,
-    resultOwnership: Script.ResultOwnership
+    resultOwnership: Script.ResultOwnership,
+    serializationOptions: Script.SerializationOptions
   ): Promise<Script.ScriptResult> {
+    if (![0, undefined].includes(serializationOptions?.maxDomDepth))
+      throw new Error('serializationOptions.maxDomDepth!=0 is not supported');
+
     const cdpEvaluateResult = await realm.cdpClient.sendCommand(
       'Runtime.evaluate',
       {
         contextId: realm.executionContextId,
         expression,
         awaitPromise,
-        generateWebDriverValue: true,
+        serializationOptions: {
+          serialization: 'deep',
+          ...(serializationOptions?.maxObjectDepth
+            ? {}
+            : {maxDepth: serializationOptions?.maxObjectDepth}),
+        },
       }
     );
 
@@ -128,8 +139,12 @@ export class ScriptEvaluator {
     _this: Script.ArgumentValue,
     _arguments: Script.ArgumentValue[],
     awaitPromise: boolean,
-    resultOwnership: Script.ResultOwnership
+    resultOwnership: Script.ResultOwnership,
+    serializationOptions: Script.SerializationOptions
   ): Promise<Script.ScriptResult> {
+    if (![0, undefined].includes(serializationOptions?.maxDomDepth))
+      throw new Error('serializationOptions.maxDomDepth!=0 is not supported');
+
     const callFunctionAndSerializeScript = `(...args)=>{ return _callFunction((\n${functionDeclaration}\n), args);
       function _callFunction(f, args) {
         const deserializedThis = args.shift();
@@ -156,7 +171,12 @@ export class ScriptEvaluator {
           functionDeclaration: callFunctionAndSerializeScript,
           awaitPromise,
           arguments: thisAndArgumentsList, // this, arguments.
-          generateWebDriverValue: true,
+          serializationOptions: {
+            serialization: 'deep',
+            ...(serializationOptions?.maxObjectDepth
+              ? {}
+              : {maxDepth: serializationOptions?.maxObjectDepth}),
+          },
           executionContextId: realm.executionContextId,
         }
       );
@@ -438,7 +458,9 @@ export class ScriptEvaluator {
             }),
             returnByValue: false,
             executionContextId: realm.executionContextId,
-            generateWebDriverValue: false,
+            serializationOptions: {
+              serialization: 'deep',
+            },
           }
         );
         const channelHandle = createChannelHandleResult.result.objectId;
@@ -461,7 +483,9 @@ export class ScriptEvaluator {
             ],
             returnByValue: false,
             executionContextId: realm.executionContextId,
-            generateWebDriverValue: false,
+            serializationOptions: {
+              serialization: 'deep',
+            },
           }
         );
         return {objectId: sendMessageArgResult.result.objectId};
@@ -532,7 +556,9 @@ export class ScriptEvaluator {
           ],
           awaitPromise: true,
           executionContextId: realm.executionContextId,
-          generateWebDriverValue: true,
+          serializationOptions: {
+            serialization: 'deep',
+          },
         }
       );
 

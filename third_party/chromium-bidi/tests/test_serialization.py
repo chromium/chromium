@@ -16,7 +16,7 @@
 import copy
 
 import pytest
-from anys import ANY_LIST, ANY_STR
+from anys import ANY_STR
 from test_helpers import (ANY_SHARED_ID, execute_command, goto_url,
                           read_JSON_message, send_JSON_command, subscribe)
 
@@ -37,8 +37,9 @@ async def assert_serialization(websocket, context_id, js_str_object,
             "method": "script.evaluate",
             "params": {
                 "expression": f"(()=>{{"
-                              f"console.log({js_str_object});"
-                              f"return {js_str_object}"
+                              f"const value = {js_str_object};"
+                              f"console.log(value);"
+                              f"return value;"
                               f"}})()",
                 "target": {
                     "context": context_id
@@ -184,87 +185,174 @@ async def test_serialization_deserialization(websocket, context_id,
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("jsString, excepted_serialized",
-                         [("function(){}", {
-                             "type": "function",
-                             "handle": ANY_STR
-                         }),
-                          ("Promise.resolve(1)", {
-                              "type": "promise",
-                              "handle": ANY_STR
-                          }),
-                          ("new WeakMap()", {
-                              "type": "weakmap",
-                              "handle": ANY_STR
-                          }),
-                          ("new WeakSet()", {
-                              "type": "weakset",
-                              "handle": ANY_STR
-                          }),
-                          ("new Proxy({}, {})", {
-                              "type": "proxy",
-                              "handle": ANY_STR
-                          }),
-                          ("new Int32Array()", {
-                              "type": "typedarray",
-                              "handle": ANY_STR
-                          }),
-                          ("{'foo': {'bar': 'baz'}, 'qux': 'quux'}", {
-                              "type": "object",
-                              "handle": ANY_STR,
-                              "value": [["foo", {
-                                  "type": "object"
-                              }], ["qux", {
-                                  "type": "string",
-                                  "value": "quux"
-                              }]]
-                          }),
-                          ("[1, 'a', {foo: 'bar'}, [2,[3,4]]]", {
-                              "type": "array",
-                              "handle": ANY_STR,
-                              "value": [{
-                                  "type": "number",
-                                  "value": 1
-                              }, {
-                                  "type": "string",
-                                  "value": "a"
-                              }, {
-                                  "type": "object"
-                              }, {
-                                  "type": "array"
-                              }]
-                          }),
-                          ("new Set([1, 'a', {foo: 'bar'}, [2,[3,4]]])", {
-                              "type": "set",
-                              "handle": ANY_STR,
-                              "value": [{
-                                  "type": "number",
-                                  "value": 1
-                              }, {
-                                  "type": "string",
-                                  "value": "a"
-                              }, {
-                                  "type": "object"
-                              }, {
-                                  "type": "array"
-                              }]
-                          }),
-                          ("Symbol('foo')", {
-                              "type": "symbol",
-                              "handle": ANY_STR
-                          }),
-                          ("this.window", {
-                              "type": "window",
-                              "handle": ANY_STR
-                          }),
-                          ("new Error('Woops!')", {
-                              "type": "error",
-                              "handle": ANY_STR
-                          }),
-                          ("new URL('https://example.com')", {
-                              "type": "object",
-                              "handle": ANY_STR
-                          })])
+@pytest.mark.parametrize(
+    "jsString, excepted_serialized",
+    [("function(){}", {
+        "type": "function",
+        "handle": ANY_STR
+    }), ("Promise.resolve(1)", {
+        "type": "promise",
+        "handle": ANY_STR
+    }), ("new WeakMap()", {
+        "type": "weakmap",
+        "handle": ANY_STR
+    }), ("new WeakSet()", {
+        "type": "weakset",
+        "handle": ANY_STR
+    }),
+     ("new Proxy({}, {})", {
+         "type": "proxy",
+         "handle": ANY_STR
+     }), ("new Int32Array()", {
+         "type": "typedarray",
+         "handle": ANY_STR
+     }),
+     ("{'foo': {'bar': 'baz'}, 'qux': 'quux'}", {
+         "type": "object",
+         "handle": ANY_STR,
+         "value": [[
+             "foo", {
+                 "type": "object",
+                 "value": [["bar", {
+                     "type": "string",
+                     "value": "baz"
+                 }]]
+             }
+         ], ["qux", {
+             "type": "string",
+             "value": "quux"
+         }]]
+     }),
+     ("[1, 'a', {foo: 'bar'}, [2,[3,4]]]", {
+         "type": "array",
+         "handle": ANY_STR,
+         "value": [{
+             "type": "number",
+             "value": 1
+         }, {
+             "type": "string",
+             "value": "a"
+         }, {
+             "type": "object",
+             "value": [["foo", {
+                 "type": "string",
+                 "value": "bar"
+             }]]
+         }, {
+             "type": "array",
+             "value": [{
+                 "type": "number",
+                 "value": 2,
+             }, {
+                 "type": "array",
+                 "value": [{
+                     "type": 'number',
+                     "value": 3,
+                 }, {
+                     "type": "number",
+                     "value": 4,
+                 }]
+             }]
+         }]
+     }),
+     ("new Set([1, 'a', {foo: 'bar'}, [2,[3,4]]])", {
+         "type": "set",
+         "handle": ANY_STR,
+         "value": [{
+             "type": "number",
+             "value": 1
+         }, {
+             "type": "string",
+             "value": "a"
+         }, {
+             "type": "object",
+             "value": [["foo", {
+                 "type": "string",
+                 "value": "bar"
+             }]]
+         }, {
+             "type": "array",
+             "value": [{
+                 "type": "number",
+                 "value": 2,
+             }, {
+                 "type": "array",
+                 "value": [{
+                     "type": 'number',
+                     "value": 3,
+                 }, {
+                     "type": "number",
+                     "value": 4,
+                 }]
+             }]
+         }]
+     }), ("Symbol('foo')", {
+         "type": "symbol",
+         "handle": ANY_STR
+     }), ("this.window", {
+         "type": "window",
+         "handle": ANY_STR
+     }), ("new Error('Woops!')", {
+         "type": "error",
+         "handle": ANY_STR
+     }),
+     ("new URL('https://example.com')", {
+         "type": "object",
+         "handle": ANY_STR
+     }),
+     ("(()=>{"
+      "     const foo={a: []};"
+      "     const bar=[1,2];"
+      "     const result={1: foo, 2: foo, 3: bar, 4: bar};"
+      "     result.self=result;"
+      "     return result;"
+      " })()", {
+          "type": "object",
+          "handle": ANY_STR,
+          "internalId": "3",
+          "value": [[{
+              "type": "number",
+              "value": 1
+          }, {
+              "type": "object",
+              "value": [["a", {
+                  "type": "array",
+                  "value": []
+              }]],
+              "internalId": "1"
+          }],
+                    [{
+                        "type": "number",
+                        "value": 2
+                    }, {
+                        "type": "object",
+                        "internalId": "1"
+                    }],
+                    [{
+                        "type": "number",
+                        "value": 3
+                    }, {
+                        "type": "array",
+                        "value": [{
+                            "type": "number",
+                            "value": 1
+                        }, {
+                            "type": "number",
+                            "value": 2
+                        }],
+                        "internalId": "2"
+                    }],
+                    [{
+                        "type": "number",
+                        "value": 4
+                    }, {
+                        "type": "array",
+                        "internalId": "2"
+                    }], ["self", {
+                        "type": "object",
+                        "internalId": "3"
+                    }]],
+      })])
 async def test_serialization_function(websocket, context_id, jsString,
                                       excepted_serialized):
     await assert_serialization(websocket, context_id, jsString,
@@ -290,7 +378,8 @@ async def test_serialization_function(websocket, context_id, jsString,
         "type": "object",
         "handle": ANY_STR,
         "value": [["foo", {
-            "type": "object"
+            "type": "object",
+            "value": []
         }], ["qux", {
             "type": "string",
             "value": "quux"
@@ -313,7 +402,8 @@ async def test_serialization_function(websocket, context_id, jsString,
         "type": "map",
         "handle": ANY_STR,
         "value": [["foo", {
-            "type": "object"
+            "type": "object",
+            "value": []
         }], ["qux", {
             "type": "string",
             "value": "quux"
@@ -440,25 +530,7 @@ async def test_serialization_node(websocket, context_id, html):
             "childNodeCount": 2,
             "attributes": {
                 "some_attr_name": "some_attr_value"
-            },
-            "children": [{
-                "type": "node",
-                "sharedId": ANY_SHARED_ID,
-                "value": {
-                    "nodeType": 3,
-                    "nodeValue": "some text",
-                }
-            }, {
-                "type": "node",
-                "sharedId": ANY_SHARED_ID,
-                "value": {
-                    "nodeType": 1,
-                    "localName": "h2",
-                    "namespaceURI": "http://www.w3.org/1999/xhtml",
-                    "childNodeCount": 1,
-                    "attributes": {}
-                }
-            }]
+            }
         }
     } == result["result"]
 
@@ -502,7 +574,6 @@ async def test_serialization_nested_node(websocket, context_id, html,
             "localName": "div",
             "namespaceURI": "http://www.w3.org/1999/xhtml",
             "childNodeCount": 2,
-            "children": ANY_LIST,
             "attributes": {
                 "some_attr_name": "some_attr_value"
             },
@@ -554,9 +625,15 @@ async def test_deserialization_nestedObjectInObject(websocket, context_id):
         "type": "success",
         "result": {
             "type": "object",
-            "value": [["nested_object", {
-                "type": "object"
-            }]]
+            "value": [[
+                "nested_object", {
+                    "type": "object",
+                    'value': [["a", {
+                        "type": "number",
+                        "value": 1,
+                    }]]
+                }
+            ]]
         },
         "realm": ANY_STR
     } == result
@@ -602,8 +679,12 @@ async def test_deserialization_nestedObjectInArray(websocket, context_id):
         "result": {
             "type": "array",
             "value": [{
-                "type": "object"
-            }]
+                "type": "object",
+                "value": [["a", {
+                    "type": "number",
+                    "value": 1,
+                }]]
+            }],
         },
         "realm": ANY_STR
     } == result

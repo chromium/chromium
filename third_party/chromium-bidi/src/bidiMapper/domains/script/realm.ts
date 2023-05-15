@@ -108,8 +108,8 @@ export class Realm {
       | Protocol.Runtime.EvaluateResponse,
     resultOwnership: Script.ResultOwnership
   ): CommonDataTypes.RemoteValue {
-    const cdpWebDriverValue = cdpValue.result.webDriverValue!;
-    const bidiValue = this.webDriverValueToBiDi(cdpWebDriverValue);
+    const deepSerializedValue = cdpValue.result.deepSerializedValue!;
+    const bidiValue = this.deepSerializedToBiDi(deepSerializedValue);
 
     if (cdpValue.result.objectId) {
       const objectId = cdpValue.result.objectId;
@@ -130,12 +130,17 @@ export class Realm {
     return bidiValue;
   }
 
-  webDriverValueToBiDi(
-    webDriverValue: Protocol.Runtime.WebDriverValue
+  deepSerializedToBiDi(
+    webDriverValue: Protocol.Runtime.DeepSerializedValue
   ): CommonDataTypes.RemoteValue {
     // This relies on the CDP to implement proper BiDi serialization, except
     // backendNodeId/sharedId and `platformobject`.
     const result = webDriverValue as any;
+
+    if (Object.hasOwn(result, 'weakLocalObjectReference')) {
+      result.internalId = `${result.weakLocalObjectReference}`;
+      delete result['weakLocalObjectReference'];
+    }
 
     // Platform object is a special case. It should have only `{type: object}`
     // without `value` field.
@@ -156,7 +161,7 @@ export class Realm {
       }
       if (Object.hasOwn(bidiValue, 'children')) {
         for (const i in bidiValue.children) {
-          bidiValue.children[i] = this.webDriverValueToBiDi(
+          bidiValue.children[i] = this.deepSerializedToBiDi(
             bidiValue.children[i]
           );
         }
@@ -166,14 +171,14 @@ export class Realm {
     // Recursively update the nested values.
     if (['array', 'set'].includes(webDriverValue.type)) {
       for (const i in bidiValue) {
-        bidiValue[i] = this.webDriverValueToBiDi(bidiValue[i]);
+        bidiValue[i] = this.deepSerializedToBiDi(bidiValue[i]);
       }
     }
     if (['object', 'map'].includes(webDriverValue.type)) {
       for (const i in bidiValue) {
         bidiValue[i] = [
-          this.webDriverValueToBiDi(bidiValue[i][0]),
-          this.webDriverValueToBiDi(bidiValue[i][1]),
+          this.deepSerializedToBiDi(bidiValue[i][0]),
+          this.deepSerializedToBiDi(bidiValue[i][1]),
         ];
       }
     }
@@ -227,7 +232,8 @@ export class Realm {
     _this: Script.ArgumentValue,
     _arguments: Script.ArgumentValue[],
     awaitPromise: boolean,
-    resultOwnership: Script.ResultOwnership
+    resultOwnership: Script.ResultOwnership,
+    serializationOptions: Script.SerializationOptions
   ): Promise<Script.CallFunctionResult> {
     const context = this.#browsingContextStorage.getContext(
       this.browsingContextId
@@ -241,7 +247,8 @@ export class Realm {
         _this,
         _arguments,
         awaitPromise,
-        resultOwnership
+        resultOwnership,
+        serializationOptions
       ),
     };
   }
@@ -249,7 +256,8 @@ export class Realm {
   async scriptEvaluate(
     expression: string,
     awaitPromise: boolean,
-    resultOwnership: Script.ResultOwnership
+    resultOwnership: Script.ResultOwnership,
+    serializationOptions: Script.SerializationOptions
   ): Promise<Script.EvaluateResult> {
     const context = this.#browsingContextStorage.getContext(
       this.browsingContextId
@@ -261,7 +269,8 @@ export class Realm {
         this,
         expression,
         awaitPromise,
-        resultOwnership
+        resultOwnership,
+        serializationOptions
       ),
     };
   }

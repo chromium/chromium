@@ -379,7 +379,7 @@ export namespace CommonDataTypes {
     | NodeRemoteValue
     | WindowProxyRemoteValue;
 
-  export type InternalId = number;
+  export type InternalId = string;
 
   export type ListRemoteValue = RemoteValue[];
 
@@ -631,6 +631,12 @@ export namespace Script {
   // ResultOwnership = "root" / "none"
   export type ResultOwnership = 'root' | 'none';
 
+  export type SerializationOptions = {
+    maxDomDepth?: number;
+    maxObjectDepth?: number;
+    includeShadowTree?: 'none' | 'open' | 'all';
+  };
+
   // ScriptEvaluateParameters = {
   //   expression: text;
   //   target: Target;
@@ -642,6 +648,7 @@ export namespace Script {
     awaitPromise: boolean;
     target: Target;
     resultOwnership?: ResultOwnership;
+    serializationOptions?: SerializationOptions;
   };
 
   export type EvaluateResult = {
@@ -678,6 +685,7 @@ export namespace Script {
     arguments?: ArgumentValue[];
     this?: ArgumentValue;
     resultOwnership?: ResultOwnership;
+    serializationOptions?: SerializationOptions;
   };
 
   export type CallFunctionResult = {

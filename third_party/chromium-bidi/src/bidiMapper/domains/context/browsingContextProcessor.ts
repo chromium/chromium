@@ -359,7 +359,8 @@ export class BrowsingContextProcessor {
     return realm.scriptEvaluate(
       params.expression,
       params.awaitPromise,
-      params.resultOwnership ?? 'none'
+      params.resultOwnership ?? 'none',
+      params.serializationOptions ?? {}
     );
   }
 
@@ -390,7 +391,8 @@ export class BrowsingContextProcessor {
       }, // `this` is `undefined` by default.
       params.arguments || [], // `arguments` is `[]` by default.
       params.awaitPromise,
-      params.resultOwnership ?? 'none'
+      params.resultOwnership ?? 'none',
+      params.serializationOptions ?? {}
     );
   }
 

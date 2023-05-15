@@ -265,6 +265,17 @@ export namespace Script {
   // ResultOwnership = "root" / "none"
   const ResultOwnershipSchema = zod.enum(['root', 'none']);
 
+  // SerializationOptions = {
+  //   ?maxDomDepth: (js-uint / null) .default 0,
+  //   ?maxObjectDepth: (js-uint / null) .default null,
+  //   ?includeShadowTree: ("none" / "open" / "all") .default "none",
+  // }
+  const SerializationOptions = zod.object({
+    maxDomDepth: zod.number().int().min(0).optional(),
+    maxObjectDepth: zod.number().int().min(0).max(MAX_INT).optional(),
+    includeShadowTree: zod.enum(['none', 'open', 'all']).optional(),
+  });
+
   // ScriptEvaluateParameters = {
   //   expression: text;
   //   target: Target;
@@ -276,6 +287,7 @@ export namespace Script {
     awaitPromise: zod.boolean(),
     target: TargetSchema,
     resultOwnership: ResultOwnershipSchema.optional(),
+    // serializationOptions: SerializationOptions.optional(),
   });
 
   export function parseEvaluateParams(
@@ -352,20 +364,22 @@ export namespace Script {
   ]);
 
   // CallFunctionParameters = {
-  //   functionDeclaration: text;
-  //   awaitPromise: bool;
-  //   target: script.Target;
-  //   ?arguments: [*script.ArgumentValue];
-  //   ?this: script.ArgumentValue;
-  //   ?resultOwnership: script.ResultOwnership;
+  //   functionDeclaration: text,
+  //   awaitPromise: bool,
+  //   target: script.Target,
+  //   ?arguments: [*script.ArgumentValue],
+  //   ?resultOwnership: script.ResultOwnership,
+  //   ?serializationOptions: script.SerializationOptions,
+  //   ?this: script.ArgumentValue,
   // }
   const CallFunctionParametersSchema = zod.object({
     functionDeclaration: zod.string(),
+    awaitPromise: zod.boolean(),
     target: TargetSchema,
     arguments: zod.array(ArgumentValueSchema).optional(),
-    this: ArgumentValueSchema.optional(),
-    awaitPromise: zod.boolean(),
     resultOwnership: ResultOwnershipSchema.optional(),
+    serializationOptions: SerializationOptions.optional(),
+    this: ArgumentValueSchema.optional(),
   });
 
   export function parseCallFunctionParams(
