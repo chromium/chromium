@@ -12,11 +12,13 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
 import org.json.JSONObject;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
@@ -32,19 +34,19 @@ import java.util.Arrays;
 /**
  * Tests HttpURLConnection upload using QUIC.
  */
+@Batch(Batch.UNIT_TESTS)
 @RunWith(AndroidJUnit4.class)
 public class QuicUploadTest {
     @Rule
     public final CronetTestRule mTestRule = new CronetTestRule();
 
+    private CronetTestRule.CronetTestFramework mTestFramework;
     private CronetEngine mCronetEngine;
 
     @Before
     public void setUp() throws Exception {
-        // Load library first to create MockCertVerifier.
-        System.loadLibrary("cronet_tests");
-        ExperimentalCronetEngine.Builder builder =
-                new ExperimentalCronetEngine.Builder(getContext());
+        mTestFramework = mTestRule.buildCronetTestFramework();
+        ExperimentalCronetEngine.Builder builder = mTestFramework.mBuilder;
 
         QuicTestServer.startQuicTestServer(getContext());
 
@@ -60,7 +62,13 @@ public class QuicUploadTest {
         CronetTestUtil.setMockCertVerifierForTesting(
                 builder, QuicTestServer.createMockCertVerifier());
 
-        mCronetEngine = builder.build();
+        mCronetEngine = mTestFramework.startEngine();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        mTestFramework.shutdownEngine();
+        QuicTestServer.shutdownQuicTestServer();
     }
 
     @Test
