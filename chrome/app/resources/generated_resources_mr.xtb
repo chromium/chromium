@@ -863,7 +863,7 @@
 <translation id="1749733017156547309">पासवर्ड आवश्यक आहे</translation>
 <translation id="1750172676754093297">तुमची सिक्युरिटी की फिंगरप्रिंट स्टोअर करू शकत नाही</translation>
 <translation id="1751262127955453661">तुम्ही या साइटसाठी सर्व टॅब बंद करेपर्यंत <ph name="ORIGIN" /> ला <ph name="FOLDERNAME" /> मधील फाइल संपादित करता येतील</translation>
-<translation id="17513872634828108">खुले टॅब</translation>
+<translation id="17513872634828108">उघडे टॅब</translation>
 <translation id="175196451752279553">पु&amp;न्हा बंद टॅब उघडा</translation>
 <translation id="1753067873202720523">तुमचे Chromebook सुरू असताना ते शुल्क आकारु शकत नाही.</translation>
 <translation id="1753905327828125965">सर्वाधिक भेट दिलेले</translation>
@@ -4009,7 +4009,7 @@
 <translation id="4546308221697447294">Google Chrome सह जलदगतीने ब्राउझ करा</translation>
 <translation id="4546345569117159016">उजवीकडील बटण</translation>
 <translation id="4546692474302123343">Google Assistant व्हॉइस इनपुट</translation>
-<translation id="4547659257713117923">अन्य डिव्हाइसेसवरील कोणतेही टॅब नाहीत</translation>
+<translation id="4547659257713117923">अन्य डिव्हाइसवरील कोणतेही टॅब नाहीत</translation>
 <translation id="4547672827276975204">आपोआप सेट करा</translation>
 <translation id="4549791035683739768">तुमच्या सिक्युरिटी कीवर कोणतीही फिंगरप्रिंट स्टोअर केलेली नाहीत</translation>
 <translation id="4550926046134589611">सपोर्ट असलेल्या काही लिंक तरीही <ph name="APP_NAME" /> मध्ये उघडतील.</translation>
@@ -4089,7 +4089,7 @@
 <translation id="4617880081511131945">कनेक्शन स्थापित करू शकत नाही</translation>
 <translation id="4618195822946934889">URL मध्ये फक्त ASCII वर्ण असू शकतात</translation>
 <translation id="4619564267100705184">हे तुम्हीच असल्याची पडताळणी करा</translation>
-<translation id="4619615317237390068">अन्य डिव्हाइसेसमधील टॅब</translation>
+<translation id="4619615317237390068">अन्य डिव्हाइसमधील टॅब</translation>
 <translation id="4620809267248568679">या सेटिंगची एक्स्टेंशनद्वारे अंमलबजावणी कली जाते.</translation>
 <translation id="4622051949285931942">ऑटोमॅटिक अपडेट बंद करायची आहेत का?</translation>
 <translation id="4623167406982293031">खात्याची पडताळणी करा</translation>
@@ -4166,7 +4166,7 @@
 <translation id="4682830185876172415">अलीकडील डाउनलोड</translation>
 <translation id="4683629100208651599">लोअरकेस करा</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (डीफॉल्ट)</translation>
-<translation id="4684427112815847243">सर्वकाही संंकालित करा</translation>
+<translation id="4684427112815847243">सर्व सिंक करा</translation>
 <translation id="4687613760714619596">अज्ञात डिव्हाइस (<ph name="DEVICE_ID" />)</translation>
 <translation id="4687718960473379118">साइटने सुचवलेल्या जाहिराती</translation>
 <translation id="4688036121858134881">स्थानिक लॉग आयडी: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
@@ -4372,7 +4372,7 @@
 <translation id="4878653975845355462">तुमच्या अ‍ॅडमिनिस्ट्रेटरने कस्टम बॅकग्राउंड बंद केले आहेत</translation>
 <translation id="4878718769565915065">या सिक्युरिटी कीवर फिंगरप्रिंट जोडता आली नाही</translation>
 <translation id="4879491255372875719">आपोआप (डीफॉल्ट)</translation>
-<translation id="4880827082731008257">इतिहास शोध</translation>
+<translation id="4880827082731008257">शोध इतिहास</translation>
 <translation id="4881062916686771679">या फाइलमध्ये मालवेअर आहे, ज्यामुळे तुमची वैयक्तिक किंवा सोशल नेटवर्क खाती धोक्यात येऊ शकतात<ph name="USER_EMAIL" /></translation>
 <translation id="4881685975363383806">मला पुढील वेळी आठवण करून देऊ नका</translation>
 <translation id="4881695831933465202">उघडा</translation>
@@ -4738,7 +4738,7 @@
 <translation id="523862956770478816">साइट परवानग्या</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" सुरू करायचे?</translation>
 <translation id="5243522832766285132">कृपया थोड्या वेळानंतर पुन्हा प्रयत्न करा</translation>
-<translation id="5244474230056479698"><ph name="EMAIL" /> वर संकालित करीत आहे</translation>
+<translation id="5244474230056479698"><ph name="EMAIL" /> शी सिंक करत आहे</translation>
 <translation id="5245610266855777041">शाळा खात्यासोबत सुरुवात करा</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> क्रॅश झाला आहे. ॲप्लिकेशन रीस्टार्ट करण्यासाठी या फुग्यावर क्लिक करा.</translation>
 <translation id="5247051749037287028">डिस्प्ले नाव (पर्यायी)</translation>
@@ -5447,7 +5447,7 @@
 <translation id="5886384907280980632">आता बंद करा</translation>
 <translation id="5888889603768021126">यासह साइन इन केले</translation>
 <translation id="5889282057229379085">कमाल इंटरमिजिएट CA संख्या: <ph name="NUM_INTERMEDIATE_CA" /></translation>
-<translation id="5889629805140803638">तुमच्या स्वतःच्या <ph name="BEGIN_LINK" />सिंक पासफ्रेझ<ph name="END_LINK" /> सह सिंक केलेला डेटा एंक्रिप्ट करा. Google Pay वरील पेमेंट पद्धती आणि पत्ते एंक्रिप्ट केले जाणार नाहीत. Chrome वरील ब्राउझिंग इतिहास सिंक होणार नाही.</translation>
+<translation id="5889629805140803638">तुमच्या स्वतःच्या <ph name="BEGIN_LINK" />सिंक पासफ्रेझ<ph name="END_LINK" /> सह सिंक केलेला डेटा एंक्रिप्ट करा. Google Pay वरील पेमेंट पद्धती आणि अ‍ॅड्रेस एंक्रिप्ट केले जाणार नाहीत. Chrome वरील ब्राउझिंग इतिहास सिंक होणार नाही.</translation>
 <translation id="5891688036610113830">प्राधान्य दिलेली वाय-फाय नेटवर्क</translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
 <translation id="5895335062901455404">तुमचे Google खाते वापरून तुम्ही साइन इन कराल, तेव्हा कोणत्याही ChromeOS Flex डिव्हाइसवर तुमची सेव्ह केलेली प्राधान्ये आणि अ‍ॅक्टिव्हिटी तयार असतील. काय सिंक करायचे हे तुम्ही सेटिंग्ज मध्ये निवडू शकता.</translation>
@@ -5848,7 +5848,7 @@
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">सिस्टम: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="624789221780392884">अपडेट तयार</translation>
-<translation id="6248988683584659830">शोध सेटिंग</translation>
+<translation id="6248988683584659830">शोध सेटिंग्ज</translation>
 <translation id="6249200942125593849">a11y व्यवस्थापित करा</translation>
 <translation id="6250186368828697007">तुम्ही तुमची स्क्रीन शेअर करत असताना तपशील लपवले जातात</translation>
 <translation id="6251870443722440887">GDI हँडल</translation>
@@ -6002,7 +6002,7 @@
 <translation id="6404187344102273690">Chromebook गेमिंग</translation>
 <translation id="6404511346730675251">बुकमार्क संपादित करा</translation>
 <translation id="6406303162637086258">ब्राउझर रीस्टार्ट प्रतिकृती करा</translation>
-<translation id="6406506848690869874">Sync</translation>
+<translation id="6406506848690869874">सिंक करा</translation>
 <translation id="6406708970972405507">सेटिंग्ज - <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">तुमच्या डिव्हाइसवर डेटा सेव्ह करण्याची अनुमती आहे</translation>
 <translation id="6408118934673775994"><ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, आणि <ph name="WEBSITE_3" /> वर तुमचा डेटा वाचा आणि बदला</translation>
@@ -8029,7 +8029,7 @@
 <translation id="8225265270453771718">ॲप्लिकेशन विंडो शेअर करा</translation>
 <translation id="8226222018808695353">निषिद्ध केलेले</translation>
 <translation id="8226619461731305576">रांग</translation>
-<translation id="8227119283605456246">फाईल संलग्न करा</translation>
+<translation id="8227119283605456246">फाइल अटॅच करा</translation>
 <translation id="8228783756378591900">हा दस्तऐवज तुमच्या संस्थेच्या सुरक्षितता धोरणांनुसार तपासत आहे…</translation>
 <translation id="8230134520748321204"><ph name="ORIGIN" /> साठी पासवर्ड सेव्ह करायचा आहे का?</translation>
 <translation id="8230446983261649357">साइटला इमेज दाखवण्याची अनुमती देऊ नका</translation>
@@ -8298,7 +8298,7 @@
 <translation id="8471959340398751476">सवलती बंद आहेत. तुम्ही कस्टमाइझ करा मेनूमधून त्या सुरू करू शकता</translation>
 <translation id="8472563193954285009">{COUNT,plural, =0{Your passwords are unique}=1{{COUNT} पुन्हा वापरलेला पासवर्ड}other{{COUNT} पुन्हा वापरलेले पासवर्ड}}</translation>
 <translation id="8472623782143987204">हार्डवेअर-बॅक्ड</translation>
-<translation id="8473863474539038330">पत्ते आणि बरेच काही</translation>
+<translation id="8473863474539038330">अ‍ॅड्रेस आणि बरेच काही</translation>
 <translation id="8475313423285172237">तुमच्या कॉंप्युटरवरील दुसऱ्या प्रोग्रामने Chrome च्या काम करण्याचा मार्ग बदलू शकणारा एक्स्टेंशन जोडला.</translation>
 <translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />ChromeOS डिव्‍हाइसना आपोआप अहवाल पाठवण्‍याची अनुमती देण्‍याने आम्‍हाला ChromeOS मध्‍ये कोणती सुधारणा करायची आणि कशाचे निराकरण करायचे याला प्राधान्य देण्‍यात मदत होते. या अहवालांमध्ये ChromeOS कधी क्रॅश होते, कोणती वैशिष्ट्ये वापरली गेली, सामान्यतः किती मेमरी वापरली गेली आणि Android अ‍ॅप निदान व वापर डेटा यांसारख्या गोष्टींचा समावेश असू शकतो. काही एकत्रित डेटा Google अ‍ॅप्स आणि Android डेव्हलपर यांसारख्या भागीदारांनादेखील मदत करेल.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />तुम्ही तुमच्या लहान मुलाच्या ChromeOS डिव्‍हाइस सेटिंग्‍जमध्‍ये कधीही या अहवालांना अनुमती देणे सुरू करू शकता किंवा थांबवू शकता. तुम्ही डोमेन अ‍ॅडमिनिस्ट्रेटर असल्यास, तुम्ही हे सेटिंग ॲडमिन कन्सोलमध्ये बदलू शकता.<ph name="END_PARAGRAPH2" />

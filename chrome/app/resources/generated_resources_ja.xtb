@@ -5385,7 +5385,7 @@
 <translation id="5857675236236529683">準備ができたら、ここでリーディング リストを確認できます</translation>
 <translation id="5858490737742085133">ターミナル</translation>
 <translation id="585979798156957858">外部メタキー</translation>
-<translation id="5860033963881614850">オフ</translation>
+<translation id="5860033963881614850">OFF</translation>
 <translation id="5860254591544742609">タイトルバーを表示</translation>
 <translation id="5860491529813859533">オンにする</translation>
 <translation id="5860494867054883682">デバイスを <ph name="CHANNEL_NAME" /> チャンネルに更新しています（<ph name="PROGRESS_PERCENT" />）</translation>
@@ -5454,7 +5454,7 @@
   <ph name="EXPONENT_HEX_DUMP" /></translation>
 <translation id="5915207966717429886">データの保存を許可する</translation>
 <translation id="5916655001090539219">自動読み上げ</translation>
-<translation id="5916664084637901428">オン</translation>
+<translation id="5916664084637901428">ON</translation>
 <translation id="59174027418879706">有効</translation>
 <translation id="5920543303088087579">このネットワークへの接続は管理者によって無効にされています</translation>
 <translation id="5921257443092182237">Google の位置情報サービスでは、このデバイスの現在地を推定するために、Wi-Fi、モバイル ネットワーク、センサーなどの情報源が使用されます。</translation>
@@ -6540,7 +6540,7 @@
 <translation id="6902837902700739466">デバイスをドメインに追加しましょう</translation>
 <translation id="6903022061658753260">このアカウントで同期をオンにしたすべての Chrome ブラウザでデータが同期されます。Chrome OS の同期オプションについては、<ph name="LINK_BEGIN" />Chrome OS の設定<ph name="LINK_END" />をご覧ください。</translation>
 <translation id="6903590427234129279">すべて開く（<ph name="URL_COUNT" /> 件の URL）</translation>
-<translation id="6903907808598579934">同期を有効にする</translation>
+<translation id="6903907808598579934">同期を ON にする</translation>
 <translation id="6904344821472985372">ファイル アクセス権を取り消す</translation>
 <translation id="6904655473976120856">終了するには [アプリ] ボタンを押します</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{パスワードの安全性を維持するため、1 分間操作がないと、Google パスワード マネージャーにより操作がロックされます}other{パスワードの安全性を維持するため、{NUM_MINS} 分間操作がないと、Google パスワード マネージャーにより操作がロックされます}}</translation>
