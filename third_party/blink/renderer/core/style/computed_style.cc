@@ -1443,9 +1443,7 @@ bool ComputedStyle::HasFilters() const {
 
 namespace {
 
-gfx::SizeF GetReferenceBoxSize(const LayoutBox* box,
-                               const gfx::RectF& bounding_box,
-                               CoordBox coord_box) {
+gfx::SizeF GetReferenceBoxSize(const LayoutBox* box, CoordBox coord_box) {
   if (box) {
     if (const LayoutBlock* containing_block = box->ContainingBlock()) {
       // In SVG contexts, all values behave as view-box.
@@ -1467,7 +1465,9 @@ gfx::SizeF GetReferenceBoxSize(const LayoutBox* box,
       }
     }
   }
-  return bounding_box.size();
+  // As the motion path calculations can be called before all the layout
+  // has been correctly calculated, we can end up here.
+  return {0.0, 0.0};
 }
 
 gfx::PointF GetOffsetFromContainingBlock(const LayoutBox* box) {
@@ -1599,8 +1599,7 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
   if (const auto* shape_operation =
           DynamicTo<ShapeOffsetPathOperation>(offset_path)) {
     const BasicShape& basic_shape = shape_operation->GetBasicShape();
-    const gfx::SizeF reference_box_size =
-        GetReferenceBoxSize(box, bounding_box, coord_box);
+    const gfx::SizeF reference_box_size = GetReferenceBoxSize(box, coord_box);
     const gfx::PointF starting_point =
         GetStartingPointOfThePath(box, OffsetPosition(), reference_box_size);
     switch (basic_shape.GetType()) {
@@ -1629,8 +1628,7 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
   } else if (const auto* coord_box_operation =
                  DynamicTo<CoordBoxOffsetPathOperation>(offset_path)) {
     if (box && box->ContainingBlock()) {
-      const gfx::SizeF reference_box_size =
-          GetReferenceBoxSize(box, bounding_box, coord_box);
+      const gfx::SizeF reference_box_size = GetReferenceBoxSize(box, coord_box);
       const gfx::PointF starting_point =
           GetStartingPointOfThePath(box, OffsetPosition(), reference_box_size);
       scoped_refptr<BasicShapeInset> inset = BasicShapeInset::Create();
