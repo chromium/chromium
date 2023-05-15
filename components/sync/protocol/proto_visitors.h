@@ -642,6 +642,7 @@ VISIT_PROTO_FIELDS(const sync_pb::GetUpdatesMessage& proto) {
   VISIT_REP(from_progress_marker);
   VISIT(streaming);
   VISIT(need_encryption_key);
+  VISIT(create_mobile_bookmarks_folder);
   VISIT_ENUM(get_updates_origin);
   VISIT(is_retry);
   VISIT_REP(client_contexts);
