@@ -6,6 +6,7 @@
 
 #include "base/bit_cast.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/time/clock.h"
@@ -101,7 +102,17 @@ const UkmMemberFn kSegmentationUkmOutputMethods[] = {
     &Segmentation_ModelExecution::SetActualResult4,
     &Segmentation_ModelExecution::SetActualResult5,
     &Segmentation_ModelExecution::SetActualResult6};
-}  // namespace
+
+// 1 out of 100 model execution will be reported.
+const int kDefaultModelExecutionSamplingRate = 100;
+
+int GetModelExecutionSamplingRate() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      segmentation_platform::features::
+          kSegmentationPlatformModelExecutionSampling,
+      segmentation_platform::kModelExecutionSamplingRateKey,
+      kDefaultModelExecutionSamplingRate);
+}
 
 // Helper method to add model prediction results to UKM log.
 void AddPredictionResultToUkmModelExecution(
@@ -113,6 +124,7 @@ void AddPredictionResultToUkmModelExecution(
     (SegmentationUkmHelper::FloatToInt64(results[i]));
   }
 }
+}  // namespace
 
 namespace segmentation_platform {
 
@@ -144,6 +156,8 @@ void SegmentationUkmHelper::Initialize() {
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT,
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2};
   }
+  sampling_rate_ = GetModelExecutionSamplingRate();
+  DCHECK_GE(sampling_rate_, 0);
 }
 
 ukm::SourceId SegmentationUkmHelper::RecordModelExecutionResult(
@@ -152,6 +166,14 @@ ukm::SourceId SegmentationUkmHelper::RecordModelExecutionResult(
     const ModelProvider::Request& input_tensor,
     const std::vector<float>& results) {
   ukm::SourceId source_id = ukm::NoURLSourceId();
+  // Do some sampling before sending out UKM.
+  if (sampling_rate_ == 0) {
+    return source_id;
+  }
+
+  if (base::RandInt(1, sampling_rate_) > 1) {
+    return source_id;
+  }
   ukm::builders::Segmentation_ModelExecution execution_result(source_id);
 
   // Add inputs to ukm message.

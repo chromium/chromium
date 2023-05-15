@@ -95,11 +95,6 @@ const char kDeviceTierUmaName[] = "DeviceTier";
 const char kTabResumptionClassifierKey[] = "tab_resupmtion_classifier";
 const char kTabResumptionClassifierUmaName[] = "TabResumptionClassifier";
 
-// The key provide a list of segment IDs, separated by commas, whose ML model
-// execution results are allowed to be uploaded through UKM.
-const char kSegmentIdsAllowedForReportingKey[] =
-    "segment_ids_allowed_for_reporting";
-
 // Config parameter name specified in experiment configs. Any experiment config
 // or feature can include this param and segmentation will enable the config for
 // storing cached results.
@@ -170,6 +165,9 @@ const char kTabletProductivityUserModelLabelHigh[] = "High";
 const char kContextualPageActionModelInputPriceTracking[] = "can_track_price";
 const char kContextualPageActionModelInputReaderMode[] = "has_reader_mode";
 
+// Finch parameter key for sampling rate of the model execution results.
+constexpr char kModelExecutionSamplingRateKey[] =
+    "model_execution_sampling_rate";
 }  // namespace segmentation_platform
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_CONSTANTS_H_
