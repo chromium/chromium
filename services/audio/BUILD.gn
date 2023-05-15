@@ -79,10 +79,6 @@ source_set("audio") {
     "//build:chromeos_buildflags",
   ]
 
-  if (is_android) {
-    deps += [ ":audio_service_jni_headers" ]
-  }
-
   public_deps = [
     "//base",
     "//media",
@@ -132,12 +128,6 @@ source_set("audio") {
     "//media:media_config",
     "//media/audio:platform_config",
   ]
-}
-
-if (is_android) {
-  generate_jni("audio_service_jni_headers") {
-    sources = [ "public/java/src/org/chromium/audio/AudioFeatureList.java" ]
-  }
 }
 
 # NOTE: This is its own component target because it exposes static storage
