@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {App, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
-import {isPermissionEnabled} from 'chrome://resources/cr_components/app_management/permission_util.js';
-import {getPermission} from 'chrome://resources/cr_components/app_management/util.js';
+import {getPermission, getPermissionValueAsTriState} from 'chrome://resources/cr_components/app_management/util.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -82,15 +81,21 @@ export class AppManagementReadOnlyPermissionItemElement extends
     const permission = getPermission(app, permissionType);
     assert(permission);
 
-    const value = isPermissionEnabled(permission.value);
+    const value = getPermissionValueAsTriState(app, permissionType);
 
-    if (value && permission.details) {
+    if (value === TriState.kAllow && permission.details) {
       return this.i18n(
           'appManagementPermissionAllowedWithDetails', permission.details);
     }
 
-    return value ? this.i18n('appManagementPermissionAllowed') :
-                   this.i18n('appManagementPermissionDenied');
+    switch (value) {
+      case TriState.kAllow:
+        return this.i18n('appManagementPermissionAllowed');
+      case TriState.kBlock:
+        return this.i18n('appManagementPermissionDenied');
+      case TriState.kAsk:
+        return this.i18n('appManagementPermissionAsk');
+    }
   }
 }
 

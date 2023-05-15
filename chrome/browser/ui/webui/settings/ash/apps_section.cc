@@ -275,6 +275,7 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
       {"appManagementPermissionAllowed", IDS_APP_MANAGEMENT_PERMISSION_ALLOWED},
       {"appManagementPermissionAllowedWithDetails",
        IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_WITH_DETAILS},
+      {"appManagementPermissionAsk", IDS_APP_MANAGEMENT_PERMISSION_ASK},
       {"appManagementPermissionDenied", IDS_APP_MANAGEMENT_PERMISSION_DENIED},
       {"appManagementPermissionsLabel", IDS_APP_MANAGEMENT_PERMISSIONS},
       {"appManagementPinToShelfLabel", IDS_APP_MANAGEMENT_PIN_TO_SHELF},

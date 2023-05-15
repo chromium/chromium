@@ -4,11 +4,11 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
-import {App, Permission, PermissionType} from './app_management.mojom-webui.js';
+import {App, Permission, PermissionType, TriState} from './app_management.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementUserAction, AppType, OptionalBool} from './constants.js';
 import {PermissionTypeIndex} from './permission_constants.js';
-import {isPermissionEnabled} from './permission_util.js';
+import {isBoolValue, isPermissionEnabled, isTriStateValue} from './permission_util.js';
 
 /**
  * @fileoverview Utility functions for the App Management page.
@@ -46,6 +46,26 @@ export function getPermissionValueBool(
   assert(permission);
 
   return isPermissionEnabled(permission.value);
+}
+
+/**
+ * Returns the TriState value of a permission. If the permission value is not
+ * already a TriState, it will be converted based on the boolean value.
+ */
+export function getPermissionValueAsTriState(
+    app: App, permissionType: PermissionTypeIndex): TriState {
+  const permission = getPermission(app, permissionType);
+  assert(permission);
+
+  if (isTriStateValue(permission.value)) {
+    return permission.value.tristateValue!;
+  }
+
+  if (isBoolValue(permission.value)) {
+    return permission.value.boolValue!? TriState.kAllow : TriState.kBlock;
+  }
+
+  assertNotReached();
 }
 
 /**
