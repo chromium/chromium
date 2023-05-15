@@ -26,8 +26,6 @@ source_set("v4l2") {
   sources = [
     "buffer_affinity_tracker.cc",
     "buffer_affinity_tracker.h",
-    "generic_v4l2_device.cc",
-    "generic_v4l2_device.h",
     "legacy/v4l2_slice_video_decode_accelerator.cc",
     "legacy/v4l2_slice_video_decode_accelerator.h",
     "legacy/v4l2_stateful_workaround.cc",

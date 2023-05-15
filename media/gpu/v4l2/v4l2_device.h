@@ -722,7 +722,7 @@ class MEDIA_GPU_EXPORT V4L2Device
   // Open a V4L2 device of |type| for use with |v4l2_pixfmt|.
   // Return true on success.
   // The device will be closed in the destructor.
-  [[nodiscard]] virtual bool Open(Type type, uint32_t v4l2_pixfmt) = 0;
+  [[nodiscard]] bool Open(Type type, uint32_t v4l2_pixfmt);
 
   // Returns the driver name.
   std::string GetDriverName();
@@ -733,7 +733,7 @@ class MEDIA_GPU_EXPORT V4L2Device
 
   // Parameters and return value are the same as for the standard ioctl() system
   // call.
-  [[nodiscard]] virtual int Ioctl(int request, void* arg) = 0;
+  [[nodiscard]] int Ioctl(int request, void* arg);
 
   // This method sleeps until either:
   // - SetDevicePollInterrupt() is called (on another thread),
@@ -742,7 +742,7 @@ class MEDIA_GPU_EXPORT V4L2Device
   //   |*event_pending| will be set to true.
   // Returns false on error, true otherwise.
   // This method should be called from a separate thread.
-  virtual bool Poll(bool poll_device, bool* event_pending) = 0;
+  bool Poll(bool poll_device, bool* event_pending);
 
   // These methods are used to interrupt the thread sleeping on Poll() and force
   // it to return regardless of device state, which is usually when the client
@@ -750,51 +750,50 @@ class MEDIA_GPU_EXPORT V4L2Device
   // client state change, etc.). When SetDevicePollInterrupt() is called, Poll()
   // will return immediately, and any subsequent calls to it will also do so
   // until ClearDevicePollInterrupt() is called.
-  virtual bool SetDevicePollInterrupt() = 0;
-  virtual bool ClearDevicePollInterrupt() = 0;
+  bool SetDevicePollInterrupt();
+  bool ClearDevicePollInterrupt();
 
   // Wrappers for standard mmap/munmap system calls.
-  virtual void* Mmap(void* addr,
-                     unsigned int len,
-                     int prot,
-                     int flags,
-                     unsigned int offset) = 0;
-  virtual void Munmap(void* addr, unsigned int len) = 0;
+  void* Mmap(void* addr,
+             unsigned int len,
+             int prot,
+             int flags,
+             unsigned int offset);
+  void Munmap(void* addr, unsigned int len);
 
   // Return a vector of dmabuf file descriptors, exported for V4L2 buffer with
   // |index|, assuming the buffer contains |num_planes| V4L2 planes and is of
   // |type|. Return an empty vector on failure.
   // The caller is responsible for closing the file descriptors after use.
-  virtual std::vector<base::ScopedFD> GetDmabufsForV4L2Buffer(
-      int index,
-      size_t num_planes,
-      enum v4l2_buf_type type) = 0;
+  std::vector<base::ScopedFD> GetDmabufsForV4L2Buffer(int index,
+                                                      size_t num_planes,
+                                                      enum v4l2_buf_type type);
 
   // Return true if the given V4L2 pixfmt can be used in CreateEGLImage()
   // for the current platform.
-  virtual bool CanCreateEGLImageFrom(const Fourcc fourcc) const = 0;
+  bool CanCreateEGLImageFrom(const Fourcc fourcc) const;
 
   // Create an EGLImage from provided |handle|, taking full ownership of it.
   // Some implementations may also require the V4L2 |buffer_index| of the buffer
   // for which |handle| has been exported.
   // Return EGL_NO_IMAGE_KHR on failure.
-  virtual EGLImageKHR CreateEGLImage(EGLDisplay egl_display,
-                                     EGLContext egl_context,
-                                     GLuint texture_id,
-                                     const gfx::Size& size,
-                                     unsigned int buffer_index,
-                                     const Fourcc fourcc,
-                                     gfx::NativePixmapHandle handle) const = 0;
+  EGLImageKHR CreateEGLImage(EGLDisplay egl_display,
+                             EGLContext egl_context,
+                             GLuint texture_id,
+                             const gfx::Size& size,
+                             unsigned int buffer_index,
+                             const Fourcc fourcc,
+                             gfx::NativePixmapHandle handle) const;
 
   // Destroys the EGLImageKHR.
-  virtual EGLBoolean DestroyEGLImage(EGLDisplay egl_display,
-                                     EGLImageKHR egl_image) const = 0;
+  EGLBoolean DestroyEGLImage(EGLDisplay egl_display,
+                             EGLImageKHR egl_image) const;
 
   // Returns the supported texture target for the V4L2Device.
-  virtual GLenum GetTextureTarget() const = 0;
+  GLenum GetTextureTarget() const;
 
   // Returns the preferred V4L2 input formats for |type| or empty if none.
-  virtual std::vector<uint32_t> PreferredInputFormat(Type type) const = 0;
+  std::vector<uint32_t> PreferredInputFormat(Type type) const;
 
   // Get minimum and maximum resolution for fourcc |pixelformat| and store to
   // |min_resolution| and |max_resolution|.
@@ -814,24 +813,23 @@ class MEDIA_GPU_EXPORT V4L2Device
 
   // Return V4L2 pixelformats supported by the available image processor
   // devices for |buf_type|.
-  virtual std::vector<uint32_t> GetSupportedImageProcessorPixelformats(
-      v4l2_buf_type buf_type) = 0;
+  std::vector<uint32_t> GetSupportedImageProcessorPixelformats(
+      v4l2_buf_type buf_type);
 
   // Return supported profiles for decoder, including only profiles for given
   // fourcc |pixelformats|.
-  virtual VideoDecodeAccelerator::SupportedProfiles GetSupportedDecodeProfiles(
-      const std::vector<uint32_t>& pixelformats) = 0;
+  VideoDecodeAccelerator::SupportedProfiles GetSupportedDecodeProfiles(
+      const std::vector<uint32_t>& pixelformats);
 
   // Return supported profiles for encoder.
-  virtual VideoEncodeAccelerator::SupportedProfiles
-  GetSupportedEncodeProfiles() = 0;
+  VideoEncodeAccelerator::SupportedProfiles GetSupportedEncodeProfiles();
 
   // Return true if image processing is supported, false otherwise.
-  virtual bool IsImageProcessingSupported() = 0;
+  bool IsImageProcessingSupported();
 
   // Return true if JPEG codec is supported, false otherwise.
-  virtual bool IsJpegDecodingSupported() = 0;
-  virtual bool IsJpegEncodingSupported() = 0;
+  bool IsJpegDecodingSupported();
+  bool IsJpegEncodingSupported();
 
   // Start polling on this V4L2Device. |event_callback| will be posted to
   // the caller's sequence if a buffer is ready to be dequeued and/or a V4L2
@@ -870,24 +868,47 @@ class MEDIA_GPU_EXPORT V4L2Device
   // Set periodic keyframe placement (group of pictures length)
   bool SetGOPLength(uint32_t gop_length);
 
- protected:
+ private:
   friend class base::RefCountedThreadSafe<V4L2Device>;
+  // Vector of video device node paths and corresponding pixelformats supported
+  // by each device node.
+  using Devices = std::vector<std::pair<std::string, std::vector<uint32_t>>>;
+
+  // Lazily initialize static data after sandbox is enabled.  Return false on
+  // init failure.
+  static bool PostSandboxInitialization();
+
   V4L2Device();
-  virtual ~V4L2Device();
+  ~V4L2Device();
 
   VideoDecodeAccelerator::SupportedProfiles EnumerateSupportedDecodeProfiles(
       const std::vector<uint32_t>& pixelformats);
 
   VideoEncodeAccelerator::SupportedProfiles EnumerateSupportedEncodeProfiles();
 
- private:
   // Perform platform-specific initialization of the device instance.
   // Return true on success, false on error or if the particular implementation
   // is not available.
-  [[nodiscard]] virtual bool Initialize() = 0;
+  [[nodiscard]] bool Initialize();
 
-  // Associates a v4l2_buf_type to its queue.
-  base::flat_map<enum v4l2_buf_type, V4L2Queue*> queues_;
+  // Open device node for |path| as a device of |type|.
+  bool OpenDevicePath(const std::string& path, Type type);
+
+  // Close the currently open device.
+  void CloseDevice();
+
+  // Enumerate all V4L2 devices on the system for |type| and store the results
+  // under devices_by_type_[type].
+  void EnumerateDevicesForType(V4L2Device::Type type);
+
+  // Return device information for all devices of |type| available in the
+  // system. Enumerates and queries devices on first run and caches the results
+  // for subsequent calls.
+  const Devices& GetDevicesForType(V4L2Device::Type type);
+
+  // Return device node path for device of |type| supporting |pixfmt|, or
+  // an empty string if the given combination is not supported by the system.
+  std::string GetDevicePathFor(V4L2Device::Type type, uint32_t pixfmt);
 
   // Callback that is called upon a queue's destruction, to cleanup its pointer
   // in queues_.
@@ -902,6 +923,23 @@ class MEDIA_GPU_EXPORT V4L2Device
 
   // The request queue stores all requests allocated to be used.
   std::unique_ptr<V4L2RequestsQueue> requests_queue_;
+
+  // Stores information for all devices available on the system
+  // for each device Type.
+  std::map<V4L2Device::Type, Devices> devices_by_type_;
+
+  // The actual device fd.
+  base::ScopedFD device_fd_;
+
+  // eventfd fd to signal device poll thread when its poll() should be
+  // interrupted.
+  base::ScopedFD device_poll_interrupt_fd_;
+
+  // Use libv4l2 when operating |device_fd_|.
+  bool use_libv4l2_ = false;
+
+  // Associates a v4l2_buf_type to its queue.
+  base::flat_map<enum v4l2_buf_type, V4L2Queue*> queues_;
 
   SEQUENCE_CHECKER(client_sequence_checker_);
 };
