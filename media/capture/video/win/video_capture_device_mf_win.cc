@@ -2023,11 +2023,13 @@ void VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal(
       camera_rotation_ = GetCameraRotation(device_descriptor_.facing);
 
     Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
-    // Use the hardware path only if it is enabled and the selected pixel format
-    // is NV12 (which is the only supported one).
+    // Use the hardware path only if it is enabled and the produced pixel format
+    // is NV12 (which is the only supported one) and the requested format is
+    // also NV12.
     if (dxgi_device_manager_ &&
         selected_video_capability_->supported_format.pixel_format ==
             PIXEL_FORMAT_NV12 &&
+        params_.requested_format.pixel_format == PIXEL_FORMAT_NV12 &&
         SUCCEEDED(GetTextureFromMFBuffer(buffer.Get(), &texture))) {
       HRESULT hr =
           DeliverTextureToClient(texture.Get(), reference_time, timestamp);
