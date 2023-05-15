@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/mac/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -13,6 +14,7 @@
 #import "ios/chrome/browser/passwords/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issue.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_presenter.h"
@@ -21,6 +23,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -43,6 +46,19 @@ PasswordIssue* CreateTestPasswordIssue() {
   return [[PasswordIssue alloc]
                 initWithCredential:password_manager::CredentialUIEntry(form)
       enableCompromisedDescription:NO];
+}
+
+// Text for testing the header of the page.
+NSString* GetHeaderText() {
+  return l10n_util::GetNSString(IDS_IOS_WEAK_PASSWORD_ISSUES_DESCRIPTION);
+}
+
+// URL for testing the header of the page.
+CrURL* GetHeaderURL() {
+  return [[CrURL alloc]
+      initWithGURL:GURL(
+                       password_manager::
+                           kPasswordManagerHelpCenterCreateStrongPasswordsURL)];
 }
 
 }  // namespace
@@ -71,8 +87,6 @@ PasswordIssue* CreateTestPasswordIssue() {
 }
 
 - (void)dismissAndOpenURL:(CrURL*)URL {
-  // TODO(crbug.com/1419986): Add unit test checking the right url was passed
-  // after tapping the header's link.
   _openedURL = URL;
 }
 
@@ -125,6 +139,28 @@ class PasswordIssuesTableViewControllerTest
         static_cast<PasswordIssuesTableViewController*>(controller());
     [passwords_controller setPasswordIssues:@[ issue_group ]
                 dismissedWarningsButtonText:dismissed_warnings_button_text];
+  }
+
+  // Sets the PasswordPasswordIssuesTableViewController header.
+  void SetHeader(NSString* header_text, CrURL* header_url) {
+    PasswordIssuesTableViewController* passwords_controller =
+        GetPasswordIssuesController();
+
+    [passwords_controller setHeader:header_text URL:header_url];
+  }
+
+  // Verifies that a header with the given text and url is in the model.
+  void CheckHeader(NSString* expected_text, CrURL* expected_url) {
+    PasswordIssuesTableViewController* passwords_controller =
+        GetPasswordIssuesController();
+    TableViewModel* model = passwords_controller.tableViewModel;
+
+    TableViewLinkHeaderFooterItem* header =
+        base::mac::ObjCCastStrict<TableViewLinkHeaderFooterItem>(
+            [model headerForSectionIndex:0]);
+
+    EXPECT_NSEQ(header.text, expected_text);
+    EXPECT_NSEQ(header.urls, @[ expected_url ]);
   }
 
   FakePasswordIssuesPresenter* presenter() { return presenter_; }
@@ -265,4 +301,38 @@ TEST_F(PasswordIssuesTableViewControllerTest, TestDismissAfterIssuesGone) {
   [passwords_controller setPasswordIssues:@[] dismissedWarningsButtonText:nil];
 
   EXPECT_TRUE(presenter().dismissalTriggered);
+}
+
+// Test setting the header text and url adds the header item in the model.
+TEST_F(PasswordIssuesTableViewControllerTest, TestSetHeader) {
+  NSString* header_text = GetHeaderText();
+  CrURL* header_url = GetHeaderURL();
+  SetHeader(header_text, header_url);
+  CheckHeader(header_text, header_url);
+}
+
+// Test verifies tapping the link in the header triggers function in presenter.
+TEST_F(PasswordIssuesTableViewControllerTest, TestTapHeaderLink) {
+  NSString* header_text = GetHeaderText();
+  CrURL* header_url = GetHeaderURL();
+  SetHeader(header_text, header_url);
+
+  PasswordIssuesTableViewController* passwords_controller =
+      GetPasswordIssuesController();
+
+  TableViewLinkHeaderFooterView* header_view =
+      base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(
+          [passwords_controller tableView:passwords_controller.tableView
+                   viewForHeaderInSection:0]);
+
+  // Verify header view has view controller as its delegate.
+  // This guarantees taps on the link are forwarded to the view controller.
+  EXPECT_NSEQ(header_view.delegate, passwords_controller);
+
+  EXPECT_FALSE(presenter().openedURL);
+  // Simulate tap in header link.
+  [passwords_controller view:header_view didTapLinkURL:header_url];
+
+  // Verify url is forwarded to presenter.
+  EXPECT_NSEQ(presenter().openedURL, header_url);
 }
