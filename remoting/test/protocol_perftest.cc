@@ -24,7 +24,6 @@
 #include "net/test/test_data_directory.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/rsa_key_pair.h"
-#include "remoting/base/url_request.h"
 #include "remoting/client/audio/audio_player.h"
 #include "remoting/client/chromoting_client.h"
 #include "remoting/client/client_context.h"
