@@ -2326,11 +2326,8 @@ bool PrintRenderFrameHelper::PrintPagesNative(
   page_params->content_area = gfx::Rect(print_params.page_size);
   bool is_pdf =
       IsPrintingPdfFrame(prep_frame_view_->frame(), prep_frame_view_->node());
-  PrintPageInternal(print_params, printed_pages[0], page_count,
-                    GetScaleFactor(print_params.scale_factor, is_pdf), frame,
-                    &metafile);
-  for (size_t i = 1; i < printed_pages.size(); ++i) {
-    PrintPageInternal(print_params, printed_pages[i], page_count,
+  for (uint32_t printed_page : printed_pages) {
+    PrintPageInternal(print_params, printed_page, page_count,
                       GetScaleFactor(print_params.scale_factor, is_pdf), frame,
                       &metafile);
   }
