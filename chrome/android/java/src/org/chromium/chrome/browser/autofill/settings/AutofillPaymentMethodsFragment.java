@@ -142,17 +142,13 @@ public class AutofillPaymentMethodsFragment
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH)) {
             if (mReauthenticatorBridge == null) {
-                // The DeviceAuthRequester value also determines canUseAuthentication() underlying
-                // logic. Here we set a value to ensure it checks biometric only (exclude screen
-                // lock).
-                // TODO(crbug.com/1434875): Update when we split canUseAuthentication() function.
                 mReauthenticatorBridge = ReauthenticatorBridge.create(
                         DeviceAuthRequester.PAYMENT_METHODS_REAUTH_IN_SETTINGS);
             }
             // We don't show the Reauth toggle when Autofill credit card is disabled or the device
             // doesn't have biometric auth.
             if (PersonalDataManager.isAutofillCreditCardEnabled()
-                    && mReauthenticatorBridge.canUseAuthentication()) {
+                    && mReauthenticatorBridge.canUseAuthenticationWithBiometric()) {
                 ChromeSwitchPreference mandatoryReauthSwitch =
                         new ChromeSwitchPreference(getStyledContext(), null);
                 mandatoryReauthSwitch.setTitle(

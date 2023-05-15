@@ -50,7 +50,8 @@ public class IncognitoReauthManagerTest {
     public void
     testIncognitoReauthManager_WhenCantUseAuthentication_FiresCallbackWithNotPossible() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
-        when(mReauthenticatorBridgeMock.canUseAuthentication()).thenReturn(false);
+        when(mReauthenticatorBridgeMock.canUseAuthenticationWithBiometricOrScreenLock())
+                .thenReturn(false);
 
         mIncognitoReauthManager.startReauthenticationFlow(mIncognitoReauthCallbackMock);
         verify(mIncognitoReauthCallbackMock).onIncognitoReauthNotPossible();
@@ -61,7 +62,8 @@ public class IncognitoReauthManagerTest {
     @MediumTest
     public void testIncognitoReauthManager_WhenFeatureDisabled_FiresCallbackWithNotPossible() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(false);
-        when(mReauthenticatorBridgeMock.canUseAuthentication()).thenReturn(false);
+        when(mReauthenticatorBridgeMock.canUseAuthenticationWithBiometricOrScreenLock())
+                .thenReturn(false);
 
         mIncognitoReauthManager.startReauthenticationFlow(mIncognitoReauthCallbackMock);
         verify(mIncognitoReauthCallbackMock).onIncognitoReauthNotPossible();
@@ -73,7 +75,8 @@ public class IncognitoReauthManagerTest {
     public void
     testIncognitoReauthManager_WhenReauthenticationSucceeded_FiresCallbackWithSuccess() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
-        when(mReauthenticatorBridgeMock.canUseAuthentication()).thenReturn(true);
+        when(mReauthenticatorBridgeMock.canUseAuthenticationWithBiometricOrScreenLock())
+                .thenReturn(true);
         doAnswer(invocationOnMock -> {
             Callback<Boolean> callback = invocationOnMock.getArgument(0);
             callback.onResult(true);
@@ -91,7 +94,8 @@ public class IncognitoReauthManagerTest {
     @MediumTest
     public void testIncognitoReauthManager_WhenReauthenticationFailed_FiresCallbackWithFailed() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
-        when(mReauthenticatorBridgeMock.canUseAuthentication()).thenReturn(true);
+        when(mReauthenticatorBridgeMock.canUseAuthenticationWithBiometricOrScreenLock())
+                .thenReturn(true);
         doAnswer(invocationOnMock -> {
             Callback<Boolean> callback = invocationOnMock.getArgument(0);
             callback.onResult(false);

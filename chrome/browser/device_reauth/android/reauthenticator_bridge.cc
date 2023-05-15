@@ -34,13 +34,14 @@ ReauthenticatorBridge::~ReauthenticatorBridge() {
   }
 }
 
-bool ReauthenticatorBridge::CanUseAuthentication(JNIEnv* env) {
-  if (!authenticator_) {
-    return false;
-  }
-  return requester_ == device_reauth::DeviceAuthRequester::kIncognitoReauthPage
-             ? authenticator_->CanAuthenticateWithBiometricOrScreenLock()
-             : authenticator_->CanAuthenticateWithBiometrics();
+bool ReauthenticatorBridge::CanUseAuthenticationWithBiometric(JNIEnv* env) {
+  return authenticator_ && authenticator_->CanAuthenticateWithBiometrics();
+}
+
+bool ReauthenticatorBridge::CanUseAuthenticationWithBiometricOrScreenLock(
+    JNIEnv* env) {
+  return authenticator_ &&
+         authenticator_->CanAuthenticateWithBiometricOrScreenLock();
 }
 
 void ReauthenticatorBridge::Reauthenticate(JNIEnv* env,
