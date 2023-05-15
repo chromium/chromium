@@ -641,10 +641,14 @@ TEST_F(FileSystemAccessManagerImplTest,
   auto lock = manager_->TakeWriteLock(
       test_file_url, FileSystemAccessWriteLockManager::WriteLockType::kShared);
   ASSERT_TRUE(lock);
+  auto swap_lock = manager_->TakeWriteLock(
+      test_swap_url,
+      FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
+  ASSERT_TRUE(swap_lock);
 
   mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
       manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
-                                 std::move(lock),
+                                 std::move(lock), std::move(swap_lock),
                                  FileSystemAccessManagerImpl::SharedHandleState(
                                      allow_grant_, allow_grant_),
                                  /*auto_close=*/false));
@@ -679,10 +683,14 @@ TEST_F(FileSystemAccessManagerImplTest, FileWriterCloseDoesNotAbortOnDestruct) {
   auto lock = manager_->TakeWriteLock(
       test_file_url, FileSystemAccessWriteLockManager::WriteLockType::kShared);
   ASSERT_TRUE(lock);
+  auto swap_lock = manager_->TakeWriteLock(
+      test_swap_url,
+      FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
+  ASSERT_TRUE(swap_lock);
 
   mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
       manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
-                                 std::move(lock),
+                                 std::move(lock), std::move(swap_lock),
                                  FileSystemAccessManagerImpl::SharedHandleState(
                                      allow_grant_, allow_grant_),
                                  /*auto_close=*/false));
@@ -728,10 +736,14 @@ TEST_F(FileSystemAccessManagerImplTest,
   auto lock = manager_->TakeWriteLock(
       test_file_url, FileSystemAccessWriteLockManager::WriteLockType::kShared);
   ASSERT_TRUE(lock);
+  auto swap_lock = manager_->TakeWriteLock(
+      test_swap_url,
+      FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
+  ASSERT_TRUE(swap_lock);
 
   mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
       manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
-                                 std::move(lock),
+                                 std::move(lock), std::move(swap_lock),
                                  FileSystemAccessManagerImpl::SharedHandleState(
                                      allow_grant_, allow_grant_),
                                  /*auto_close=*/false));
@@ -766,10 +778,14 @@ TEST_F(FileSystemAccessManagerImplTest,
   auto lock = manager_->TakeWriteLock(
       test_file_url, FileSystemAccessWriteLockManager::WriteLockType::kShared);
   ASSERT_TRUE(lock);
+  auto swap_lock = manager_->TakeWriteLock(
+      test_swap_url,
+      FileSystemAccessWriteLockManager::WriteLockType::kExclusive);
+  ASSERT_TRUE(swap_lock);
 
   mojo::Remote<blink::mojom::FileSystemAccessFileWriter> writer_remote(
       manager_->CreateFileWriter(kBindingContext, test_file_url, test_swap_url,
-                                 std::move(lock),
+                                 std::move(lock), std::move(swap_lock),
                                  FileSystemAccessManagerImpl::SharedHandleState(
                                      allow_grant_, allow_grant_),
                                  /*auto_close=*/true));

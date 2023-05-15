@@ -502,10 +502,7 @@ void FileSystemAccessFileHandleImpl::DidVerifyHasWritePermissions(
   if (!lock) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(
-            FileSystemAccessStatus::kNoModificationAllowedError,
-            "Writable streams cannot be created if there "
-            "is an open Access Handle "
-            "associated with the same file."),
+            FileSystemAccessStatus::kNoModificationAllowedError),
         mojo::NullRemote());
     return;
   }
@@ -574,18 +571,27 @@ void FileSystemAccessFileHandleImpl::CreateSwapFile(
   storage::FileSystemURL swap_url = GetSwapURL(swap_path);
   DCHECK(swap_url.is_valid());
 
+  auto swap_lock =
+      manager()->TakeWriteLock(swap_url, WriteLockType::kExclusive);
+  if (!swap_lock) {
+    CreateSwapFile(count + 1, keep_existing_data, auto_close, std::move(lock),
+                   std::move(callback));
+    return;
+  }
+
 #if BUILDFLAG(IS_MAC)
   // TODO(https://crbug.com/1413443): Expand use of copy-on-write swap files to
   // other file systems which support it.
   if (CanUseCowSwapFile() && keep_existing_data) {
     CreateClonedSwapFile(count, swap_url, auto_close, std::move(lock),
-                         std::move(callback));
+                         std::move(swap_lock), std::move(callback));
     return;
   }
 #endif  // BUILDFLAG(IS_MAC)
 
   CreateEmptySwapFile(count, swap_url, keep_existing_data, auto_close,
-                      std::move(lock), std::move(callback));
+                      std::move(lock), std::move(swap_lock),
+                      std::move(callback));
 }
 
 void FileSystemAccessFileHandleImpl::CreateEmptySwapFile(
@@ -594,6 +600,7 @@ void FileSystemAccessFileHandleImpl::CreateEmptySwapFile(
     bool keep_existing_data,
     bool auto_close,
     scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,
     CreateFileWriterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(count >= 0);
@@ -604,7 +611,7 @@ void FileSystemAccessFileHandleImpl::CreateEmptySwapFile(
       base::BindOnce(&FileSystemAccessFileHandleImpl::DidCreateSwapFile,
                      weak_factory_.GetWeakPtr(), count, swap_url,
                      keep_existing_data, auto_close, std::move(lock),
-                     std::move(callback)),
+                     std::move(swap_lock), std::move(callback)),
       swap_url,
       /*exclusive=*/true);
 }
@@ -615,6 +622,7 @@ void FileSystemAccessFileHandleImpl::CreateClonedSwapFile(
     const storage::FileSystemURL& swap_url,
     bool auto_close,
     scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,
     CreateFileWriterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(count >= 0);
@@ -627,7 +635,8 @@ void FileSystemAccessFileHandleImpl::CreateClonedSwapFile(
       FROM_HERE, &FileSystemOperationRunner::FileExists,
       base::BindOnce(&FileSystemAccessFileHandleImpl::DoCloneSwapFile,
                      weak_factory_.GetWeakPtr(), count, swap_url, auto_close,
-                     std::move(lock), std::move(callback)),
+                     std::move(lock), std::move(swap_lock),
+                     std::move(callback)),
       swap_url);
 }
 
@@ -636,6 +645,7 @@ void FileSystemAccessFileHandleImpl::DoCloneSwapFile(
     const storage::FileSystemURL& swap_url,
     bool auto_close,
     scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,
     CreateFileWriterCallback callback,
     base::File::Error result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -652,10 +662,10 @@ void FileSystemAccessFileHandleImpl::DoCloneSwapFile(
   // will fail.
   DCHECK_EQ(result, base::File::Error::FILE_ERROR_NOT_FOUND);
 
-  auto after_clone_callback =
-      base::BindOnce(&FileSystemAccessFileHandleImpl::DidCloneSwapFile,
-                     weak_factory_.GetWeakPtr(), count, swap_url, auto_close,
-                     std::move(lock), std::move(callback));
+  auto after_clone_callback = base::BindOnce(
+      &FileSystemAccessFileHandleImpl::DidCloneSwapFile,
+      weak_factory_.GetWeakPtr(), count, swap_url, auto_close, std::move(lock),
+      std::move(swap_lock), std::move(callback));
 
   if (swap_file_cloning_will_fail_for_testing_) {
     std::move(after_clone_callback).Run(base::File::Error::FILE_ERROR_FAILED);
@@ -673,6 +683,7 @@ void FileSystemAccessFileHandleImpl::DidCloneSwapFile(
     const storage::FileSystemURL& swap_url,
     bool auto_close,
     scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,
     CreateFileWriterCallback callback,
     base::File::Error result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -684,7 +695,8 @@ void FileSystemAccessFileHandleImpl::DidCloneSwapFile(
     // (which do not support copy-on-write) from a Mac (which otherwise does).
     // In that case, fall back on the create + copy technique.
     CreateEmptySwapFile(count, swap_url, /*keep_existing_data=*/true,
-                        auto_close, std::move(lock), std::move(callback));
+                        auto_close, std::move(lock), std::move(swap_lock),
+                        std::move(callback));
     return;
   }
 
@@ -693,7 +705,7 @@ void FileSystemAccessFileHandleImpl::DidCloneSwapFile(
   std::move(callback).Run(
       file_system_access_error::Ok(),
       manager()->CreateFileWriter(
-          context(), url(), swap_url, std::move(lock),
+          context(), url(), swap_url, std::move(lock), std::move(swap_lock),
           FileSystemAccessManagerImpl::SharedHandleState(
               handle_state().read_grant, handle_state().write_grant),
           auto_close));
@@ -706,6 +718,7 @@ void FileSystemAccessFileHandleImpl::DidCreateSwapFile(
     bool keep_existing_data,
     bool auto_close,
     scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,
     CreateFileWriterCallback callback,
     base::File::Error result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -730,7 +743,7 @@ void FileSystemAccessFileHandleImpl::DidCreateSwapFile(
     std::move(callback).Run(
         file_system_access_error::Ok(),
         manager()->CreateFileWriter(
-            context(), url(), swap_url, std::move(lock),
+            context(), url(), swap_url, std::move(lock), std::move(swap_lock),
             FileSystemAccessManagerImpl::SharedHandleState(
                 handle_state().read_grant, handle_state().write_grant),
             auto_close));
@@ -741,7 +754,8 @@ void FileSystemAccessFileHandleImpl::DidCreateSwapFile(
       FROM_HERE, &FileSystemOperationRunner::Copy,
       base::BindOnce(&FileSystemAccessFileHandleImpl::DidCopySwapFile,
                      weak_factory_.GetWeakPtr(), swap_url, auto_close,
-                     std::move(lock), std::move(callback)),
+                     std::move(lock), std::move(swap_lock),
+                     std::move(callback)),
       url(), swap_url,
       storage::FileSystemOperation::CopyOrMoveOptionSet(
           storage::FileSystemOperation::CopyOrMoveOption::
@@ -754,6 +768,7 @@ void FileSystemAccessFileHandleImpl::DidCopySwapFile(
     const storage::FileSystemURL& swap_url,
     bool auto_close,
     scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,
     CreateFileWriterCallback callback,
     base::File::Error result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -770,7 +785,7 @@ void FileSystemAccessFileHandleImpl::DidCopySwapFile(
   std::move(callback).Run(
       file_system_access_error::Ok(),
       manager()->CreateFileWriter(
-          context(), url(), swap_url, std::move(lock),
+          context(), url(), swap_url, std::move(lock), std::move(swap_lock),
           FileSystemAccessManagerImpl::SharedHandleState(
               handle_state().read_grant, handle_state().write_grant),
           auto_close));

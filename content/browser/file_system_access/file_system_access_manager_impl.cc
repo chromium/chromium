@@ -1080,11 +1080,10 @@ FileSystemAccessManagerImpl::CreateFileWriter(
     const storage::FileSystemURL& url,
     const storage::FileSystemURL& swap_url,
     scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,
     const SharedHandleState& handle_state,
     bool auto_close) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(lock->type() ==
-         FileSystemAccessWriteLockManager::WriteLockType::kShared);
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> result;
 
@@ -1092,9 +1091,9 @@ FileSystemAccessManagerImpl::CreateFileWriter(
   bool has_transient_user_activation = rfh && rfh->HasTransientUserActivation();
 
   CreateFileWriter(
-      binding_context, url, swap_url, std::move(lock), handle_state,
-      result.InitWithNewPipeAndPassReceiver(), has_transient_user_activation,
-      auto_close,
+      binding_context, url, swap_url, std::move(lock), std::move(swap_lock),
+      handle_state, result.InitWithNewPipeAndPassReceiver(),
+      has_transient_user_activation, auto_close,
       GetContentClient()->browser()->GetQuarantineConnectionCallback());
   return result;
 }
@@ -1105,6 +1104,7 @@ FileSystemAccessManagerImpl::CreateFileWriter(
     const storage::FileSystemURL& url,
     const storage::FileSystemURL& swap_url,
     scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+    scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,
     const SharedHandleState& handle_state,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessFileWriter> receiver,
     bool has_transient_user_activation,
@@ -1114,8 +1114,9 @@ FileSystemAccessManagerImpl::CreateFileWriter(
 
   auto writer = std::make_unique<FileSystemAccessFileWriterImpl>(
       this, PassKey(), binding_context, url, swap_url, std::move(lock),
-      handle_state, std::move(receiver), has_transient_user_activation,
-      auto_close, quarantine_connection_callback);
+      std::move(swap_lock), handle_state, std::move(receiver),
+      has_transient_user_activation, auto_close,
+      quarantine_connection_callback);
 
   base::WeakPtr<FileSystemAccessFileWriterImpl> writer_weak =
       writer->weak_ptr();
