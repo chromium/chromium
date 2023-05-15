@@ -230,14 +230,16 @@
                 data-svg="camera_shutter_video_snapshot.svg"></button>
       </div>
       <div id="shutters-group" class="buttons right-stripe circle">
-        <button id="recordvideo" class="shutter inkdrop" tabindex="0"
-                i18n-label="record_video_start_button">
-          <div class="red-dot"></div>
-          <div class="white-square"></div>
+        <div id="recordvideo-container">
+          <button id="recordvideo" class="shutter inkdrop" tabindex="0"
+                  i18n-label="record_video_start_button">
+            <div class="red-dot"></div>
+            <div class="white-square"></div>
+          </button>
           <svg id="shutter-progress-bar">
             <circle></circle>
           </svg>
-        </button>
+        </div>
         <button id="start-takephoto" class="shutter inkdrop" tabindex="0"
                 i18n-label="take_photo_button"
                 data-svg="camera_shutter_photo_start.svg"></button>
@@ -554,7 +556,8 @@
     </div>
     <div id="view-flash">
       <div id="processing-indicator" class="centered-overlay">
-        <div class="icon"></div>
+        <svg-wrapper class="icon" name="document_mode_spinner.svg">
+        </svg-wrapper>
         <div class="msg" tabindex="0" i18n-text="msg_processing_image"></div>
       </div>
     </div>

@@ -175,7 +175,7 @@ Use these custom properties to control the feature toasts, for example:
 .ripple {
   --duration: 2s;
 
-  background: white;
+  background: var(--cros-sys-ripple_primary);
   border-radius: var(--border-radius-rounded-with-short-side);
   opacity: 0;
   pointer-events: none;

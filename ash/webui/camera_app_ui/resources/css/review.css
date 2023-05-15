@@ -3,12 +3,11 @@
  * found in the LICENSE file. */
 
 .review-views {
-  background: var(--grey-900);
+  background: var(--cros-sys-app_base);
 }
 
 .review-frame {
   align-items: center;
-  border: 1px solid rgba(var(--grey-200-rgb), 0.38);
   bottom: calc(var(--bottom-line) * 2);
   display: flex;
   justify-content: center;

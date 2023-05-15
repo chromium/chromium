@@ -28,6 +28,8 @@ export class SvgWrapper extends LitElement {
     svg {
       display: block;
       fill: currentColor;
+      stroke: currentColor;
+      stroke-width: 0;
     }
   `;
 

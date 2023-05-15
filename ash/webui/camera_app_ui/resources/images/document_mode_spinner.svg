@@ -68,21 +68,13 @@
           transform: rotate(-360deg);
         }
       }
-      @keyframes colors {
-        from {
-          stroke: #C4C4C4;
-        }
-        to {
-          stroke: #C4C4C4;
-        }
-      }
       .qp-circular-loader-path {
-        animation-duration: 1333ms, 5332ms, 5332ms; /* ARCTIME, 4*ARCTIME, 4*ARCTIME */
+        animation-duration: 1333ms, 5332ms; /* ARCTIME, 4*ARCTIME */
         animation-fill-mode: forwards;
-        animation-iteration-count: infinite, infinite, infinite;
-        animation-name: fillunfill, rot, colors;
-        animation-play-state: running, running, running;
-        animation-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1), steps(4), linear;
+        animation-iteration-count: infinite, infinite;
+        animation-name: fillunfill, rot;
+        animation-play-state: running, running;
+        animation-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1), steps(4);
       }
   </style>
   <!-- 3= STROKEWIDTH -->
@@ -92,7 +84,7 @@
   <!-- ARCSIZE would affect the 1.5,14 part of this... 1.5,14 is specific to
        270 degrees -->
   <g class="qp-circular-loader">
-    <path class="qp-circular-loader-path" fill="none" 
+    <path class="qp-circular-loader-path" fill="none"
           d="M 14,1.5 A 12.5,12.5 0 1 1 1.5,14" stroke-width="3"
           stroke-linecap="round"></path>
   </g>

@@ -38,8 +38,10 @@ body.video.taking.enable-gif-recording:not(.recording) #shutter-progress-bar>cir
 
   fill: transparent;
   height: var(--svg-size);
+  left: 50%;
   pointer-events: none;
   position: absolute;
+  top: 50%;
   transform: translate(-50%, -50%);
   width: var(--svg-size);
 }
@@ -48,7 +50,8 @@ body.video.taking.enable-gif-recording:not(.recording) #shutter-progress-bar>cir
   cx: 50%;
   cy: 50%;
   r: calc(var(--outer-radius) - var(--bar-width));
-  stroke: white;
+  /* TODO(pihsun): Use cros.sys.white when it's available. */
+  stroke: var(--cros-ref-primary100);
   stroke-width: var(--bar-width);
   /* The dash strip will appear from 3 o'clock direction while we want to start
    * from 12 o'clock. Rotate 90deg counterclockwise accordingly. */

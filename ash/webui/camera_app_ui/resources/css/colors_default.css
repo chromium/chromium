@@ -8,7 +8,31 @@
  * enabled by default.
  */
 :root {
+  /* Standard CrOS styles */
+  --blue-300-rgb: 138, 180, 248;
+  --blue-300: rgb(var(--blue-300-rgb));
+  --blue-500: rgb(66, 133, 244);
+  --blue-600: rgb(26, 115, 232);
+  --red-300-rgb: 242, 139, 130;
+  --red-300: rgb(var(--red-300-rgb));
+  --red-600: rgb(217, 48, 37);
+  --grey-100: rgb(241, 243, 244);
+  --grey-200-rgb: 233, 234, 237;
+  --grey-200: rgb(var(--grey-200-rgb));
+  --grey-400: rgb(189, 193, 198);
+  --grey-500: rgb(154, 160, 166);
+  --grey-600: rgb(128, 134, 139);
+  --grey-700: rgb(95, 99, 104);
+  --grey-900-rgb: 32, 33, 36;
+  --grey-900: rgb(var(--grey-900-rgb));
+  --yellow-300: rgb(253, 214, 99);
+
+  /* Note that in M2 blue-0 is lightest and blue-1000 is darkest, but in M3
+   * blue0 is darkest and blue100 is lightest. */
+  --cros-ref-blue40: var(--blue-600);
   --cros-ref-error40: #f44336;
+  --cros-ref-primary100: white;
+  --cros-ref-red40: var(--red-600);
   --cros-sys-app_base: var(--grey-900);
   --cros-sys-base_elevated: var(--grey-900);
   --cros-sys-error_container: rgba(var(--red-300-rgb), 0.3);
@@ -25,8 +49,12 @@
   --cros-sys-on_primary_container: var(--grey-200);
   --cros-sys-on_surface: var(--grey-200);
   --cros-sys-primary: var(--blue-300);
+  --cros-sys-primary_container: rgb(24, 24, 24);
+  --cros-sys-progress: var(--blue-300);
+  --cros-sys-ripple_primary: white;
   --cros-sys-scrim: rgba(0, 0, 0, 0.6);
   --cros-sys-scrim2: rgba(0, 0, 0, 0.6);
+  --cros-sys-scrollbar: rgba(255, 255, 255, 0.2);
   --cros-sys-secondary: var(--grey-400);
   --cros-sys-secondary_container: var(--grey-600);
   --cros-sys-separator: rgba(255, 255, 255, 0.14);
@@ -187,4 +215,8 @@ button.shutter {
 
 .review-views .button-group button[i18n-text=label_share] svg-wrapper {
   color: var(--blue-300);
+}
+
+.review-frame {
+  border: 1px solid rgba(var(--grey-200-rgb), 0.38);
 }
