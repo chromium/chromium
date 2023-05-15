@@ -16,6 +16,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
@@ -26,6 +27,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 
 using views::FlexLayout;
@@ -154,11 +156,15 @@ void FeatureTile::CreateChildViews() {
                                       ? views::LayoutOrientation::kHorizontal
                                       : views::LayoutOrientation::kVertical);
   title_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-  title_container->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
+  title_container->SetCrossAxisAlignment(
+      is_compact ? views::LayoutAlignment::kStart
+                 : views::LayoutAlignment::kStretch);
   title_container->SetPreferredSize(is_compact ? kCompactTitleContainerSize
                                                : kTitlesContainerSize);
 
   label_ = title_container->AddChildView(std::make_unique<views::Label>());
+  label_->SetHorizontalAlignment(is_compact ? gfx::ALIGN_CENTER
+                                            : gfx::ALIGN_LEFT);
   label_->SetAutoColorReadabilityEnabled(false);
   label_->SetFontList(ash::TypographyProvider::Get()->ResolveTypographyToken(
       ash::TypographyToken::kCrosButton2));
@@ -168,12 +174,14 @@ void FeatureTile::CreateChildViews() {
     // TODO(b/259459827): verify multi-line text is rendering correctly, not
     // clipping and center aligned.
     label_->SetMultiLine(true);
+    label_->SetMaxLines(2);  // Elide after 2 lines.
     label_->SetLineHeight(kCompactTitleLineHeight);
     label_->SetFontList(ash::TypographyProvider::Get()->ResolveTypographyToken(
         ash::TypographyToken::kCrosAnnotation2));
   } else {
     sub_label_ =
         title_container->AddChildView(std::make_unique<views::Label>());
+    sub_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     sub_label_->SetAutoColorReadabilityEnabled(false);
     sub_label_->SetFontList(
         ash::TypographyProvider::Get()->ResolveTypographyToken(

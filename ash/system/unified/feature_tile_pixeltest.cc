@@ -91,6 +91,13 @@ TEST_F(FeatureTilePixelTest, PrimaryTile) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "toggled",
       /*revision_number=*/0, widget_.get()));
+
+  // Test eliding.
+  tile->SetLabel(u"A very very long label");
+  tile->SetSubLabel(u"A very very long label");
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "elided",
+      /*revision_number=*/0, widget_.get()));
 }
 
 TEST_F(FeatureTilePixelTest, CompactTile) {
@@ -116,6 +123,12 @@ TEST_F(FeatureTilePixelTest, CompactTile) {
   tile->SetToggled(true);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "toggled",
+      /*revision_number=*/0, widget_.get()));
+
+  // Test eliding.
+  tile->SetLabel(u"A very very long label");
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "elided",
       /*revision_number=*/0, widget_.get()));
 }
 
