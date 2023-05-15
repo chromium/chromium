@@ -15,14 +15,10 @@ namespace ash::office_fallback {
 using DialogChoiceCallback =
     base::OnceCallback<void(const std::string& choice)>;
 
-// The reason for why the user's file can't open. The enum should be consistent
-// with the FallbackReason enum in office_fallback_dialog.ts.
+// The reason why the user's file can't open.
 enum class FallbackReason {
   kOffline,
   kDriveUnavailable,
-  kOneDriveUnavailable,
-  kErrorOpeningWeb,
-  kInvalidGoogleDocsURL,
 };
 
 // Defines the web dialog used to allow users to choose what to do when failing

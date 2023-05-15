@@ -61,18 +61,9 @@ void GetDialogTextIds(
     case ash::office_fallback::FallbackReason::kDriveUnavailable:
       title_id = IDS_OFFICE_FALLBACK_TITLE_DRIVE_UNAVAILABLE;
       reason_message_id = IDS_OFFICE_FALLBACK_REASON_DRIVE_UNAVAILABLE;
+      instructions_message_id =
+          IDS_OFFICE_FALLBACK_INSTRUCTIONS_DRIVE_UNAVAILABLE;
       break;
-    case ash::office_fallback::FallbackReason::kOneDriveUnavailable:
-      title_id = IDS_OFFICE_FALLBACK_TITLE_ONEDRIVE_UNAVAILABLE;
-      reason_message_id = IDS_OFFICE_FALLBACK_REASON_ONEDRIVE_UNAVAILABLE;
-      break;
-    case ash::office_fallback::FallbackReason::kErrorOpeningWeb:
-      title_id = IDS_OFFICE_FALLBACK_TITLE_ERROR_OPENING_WEB;
-      reason_message_id = IDS_OFFICE_FALLBACK_REASON_ERROR_OPENING_WEB;
-      break;
-    case ash::office_fallback::FallbackReason::kInvalidGoogleDocsURL:
-      title_id = IDS_OFFICE_FALLBACK_TITLE_INVALID_GOOGLE_DOCS_URL;
-      reason_message_id = IDS_OFFICE_FALLBACK_REASON_INVALID_GOOGLE_DOCS_URL;
   }
 }
 }  // namespace

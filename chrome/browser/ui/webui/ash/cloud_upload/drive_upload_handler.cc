@@ -120,7 +120,7 @@ void DriveUploadHandler::Run(UploadCallback callback) {
   }
 
   if (!drive_integration_service_) {
-    OnEndUpload(GURL(), "No drive integration service");
+    OnEndUpload(GURL(), "No Drive integration service");
     return;
   }
 
@@ -129,6 +129,11 @@ void DriveUploadHandler::Run(UploadCallback callback) {
 
   // Observe Drive updates.
   drive_integration_service_->GetDriveFsHost()->AddObserver(this);
+
+  if (!drive_integration_service_->IsMounted()) {
+    OnEndUpload(GURL(), "Google Drive is not mounted");
+    return;
+  }
 
   // Destination url.
   base::FilePath destination_folder_path =

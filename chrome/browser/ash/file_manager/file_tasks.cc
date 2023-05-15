@@ -438,9 +438,19 @@ bool ExecuteWebDriveOfficeTask(Profile* profile,
                                const TaskDescriptor& task,
                                const std::vector<FileSystemURL>& file_urls,
                                gfx::NativeWindow modal_parent) {
+  drive::DriveIntegrationService* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   bool offline = drive::util::GetDriveConnectionStatus(profile) !=
                  drive::util::DRIVE_CONNECTED;
-  if (offline) {
+  if (!integration_service || !integration_service->IsMounted() ||
+      !integration_service->GetDriveFsInterface()) {
+    UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
+                              OfficeDriveErrors::DRIVEFS_INTERFACE);
+
+    return GetUserFallbackChoice(
+        profile, task, file_urls, modal_parent,
+        ash::office_fallback::FallbackReason::kDriveUnavailable);
+  } else if (offline) {
     UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
                               OfficeDriveErrors::OFFLINE);
     // TODO(petermarshall): Quick Office vs. other default handler.
@@ -449,21 +459,9 @@ bool ExecuteWebDriveOfficeTask(Profile* profile,
         ash::office_fallback::FallbackReason::kOffline);
   }
 
-  drive::DriveIntegrationService* integration_service =
-      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
-  if (integration_service && integration_service->IsMounted() &&
-      integration_service->GetDriveFsInterface()) {
-    return ash::cloud_upload::CloudOpenTask::Execute(
-        profile, file_urls, ash::cloud_upload::CloudProvider::kGoogleDrive,
-        modal_parent);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
-                              OfficeDriveErrors::DRIVEFS_INTERFACE);
-
-    return GetUserFallbackChoice(
-        profile, task, file_urls, modal_parent,
-        ash::office_fallback::FallbackReason::kDriveUnavailable);
-  }
+  return ash::cloud_upload::CloudOpenTask::Execute(
+      profile, file_urls, ash::cloud_upload::CloudProvider::kGoogleDrive,
+      modal_parent);
 }
 
 using ash::file_system_provider::ProvidedFileSystemInfo;
