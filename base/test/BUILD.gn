@@ -176,6 +176,10 @@ static_library("test_support") {
       # TODO(rasikan): Add to ios and chromeos when unblocked by the chromiumos
       # change to add the shared lib to the chrome-binary-tests directory.
       public_deps += [ ":test_trace_processor" ]
+      sources += [
+        "test_trace_processor.cc",
+        "test_trace_processor.h",
+      ]
       if (is_ios) {
         deps += [
           ":test_trace_processor+bundle",
@@ -499,9 +503,9 @@ if (enable_base_tracing) {
     defines = [ "TEST_TRACE_PROCESSOR_IMPL" ]
     testonly = true
     sources = [
-      "test_trace_processor.cc",
-      "test_trace_processor.h",
       "test_trace_processor_export.h",
+      "test_trace_processor_impl.cc",
+      "test_trace_processor_impl.h",
     ]
     deps = [
       "//third_party/abseil-cpp:absl",
@@ -512,7 +516,7 @@ if (enable_base_tracing) {
     }
 
     if (is_ios) {
-      info_plist = "test_trace_processor.plist"
+      info_plist = "test_trace_processor_impl.plist"
       output_name = "TestTraceProcessor"
       bundle_deps_filter = [ "//third_party/icu:icudata" ]
     }

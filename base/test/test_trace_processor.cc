@@ -2,82 +2,58 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "test_trace_processor.h"
-#include <sstream>
-#include "third_party/perfetto/include/perfetto/trace_processor/trace_processor.h"
+#include "base/test/test_trace_processor.h"
 
 namespace base::test {
 
-TestTraceProcessor::TestTraceProcessor() {
-  config_ = std::make_unique<perfetto::trace_processor::Config>();
-  trace_processor_ =
-      perfetto::trace_processor::TraceProcessor::CreateInstance(*config_);
-}
-
-TestTraceProcessor::~TestTraceProcessor() = default;
-
-std::vector<std::vector<std::string>> TestTraceProcessor::ExecuteQuery(
-    const std::string& sql) {
-  std::vector<std::vector<std::string>> result;
-  auto it = trace_processor_->ExecuteQuery(sql);
-  // Write column names.
-  std::vector<std::string> column_names;
-  for (uint32_t c = 0; c < it.ColumnCount(); ++c) {
-    column_names.push_back(it.GetColumnName(c));
-  }
-  result.push_back(column_names);
-  // Write rows.
-  while (it.Next()) {
-    std::vector<std::string> row;
-    for (uint32_t c = 0; c < it.ColumnCount(); ++c) {
-      perfetto::trace_processor::SqlValue sql_value = it.Get(c);
-      std::ostringstream ss;
-      switch (sql_value.type) {
-        case perfetto::trace_processor::SqlValue::Type::kLong:
-          ss << sql_value.AsLong();
-          row.push_back(ss.str());
-          break;
-        case perfetto::trace_processor::SqlValue::Type::kDouble:
-          ss << sql_value.AsDouble();
-          row.push_back(ss.str());
-          break;
-        case perfetto::trace_processor::SqlValue::Type::kString:
-          row.push_back(sql_value.AsString());
-          break;
-        case perfetto::trace_processor::SqlValue::Type::kBytes:
-          row.push_back("<raw bytes>");
-          break;
-        case perfetto::trace_processor::SqlValue::Type::kNull:
-          row.push_back("[NULL]");
-          break;
-        default:
-          row.push_back("unknown");
-      }
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+std::unique_ptr<perfetto::TracingSession> StartTrace(
+    const StringPiece& category_filter_string) {
+  std::unique_ptr<perfetto::TracingSession> session =
+      perfetto::Tracing::NewTrace();
+  perfetto::protos::gen::TraceConfig config =
+      TracingEnvironment::GetDefaultTraceConfig();
+  for (auto& data_source : *config.mutable_data_sources()) {
+    perfetto::protos::gen::TrackEventConfig track_event_config;
+    base::trace_event::TraceConfigCategoryFilter category_filter;
+    category_filter.InitializeFromString(category_filter_string);
+    for (const auto& included_category :
+         category_filter.included_categories()) {
+      track_event_config.add_enabled_categories(included_category);
     }
-    result.push_back(row);
+    for (const auto& disabled_category :
+         category_filter.disabled_categories()) {
+      track_event_config.add_enabled_categories(disabled_category);
+    }
+    for (const auto& excluded_category :
+         category_filter.excluded_categories()) {
+      track_event_config.add_disabled_categories(excluded_category);
+    }
+    data_source.mutable_config()->set_track_event_config_raw(
+        track_event_config.SerializeAsString());
   }
-  return result;
+  session->Setup(config);
+  session->StartBlocking();
+  return session;
 }
 
-absl::Status TestTraceProcessor::ParseTrace(std::unique_ptr<uint8_t[]> buf,
-                                            size_t size) {
-  auto status =
-      trace_processor_->Parse(perfetto::trace_processor::TraceBlobView(
-          perfetto::trace_processor::TraceBlob::TakeOwnership(std::move(buf),
-                                                              size)));
-  // TODO(rasikan): Add DCHECK that the trace is well-formed and parsing doesn't
-  // have any errors (e.g. to catch the cases when someone emits overlapping
-  // trace events on the same track).
-  trace_processor_->NotifyEndOfFile();
-  return status.ok() ? absl::OkStatus() : absl::UnknownError(status.message());
+std::vector<char> StopTrace(std::unique_ptr<perfetto::TracingSession> session) {
+  base::TrackEvent::Flush();
+  session->StopBlocking();
+  return session->ReadTraceBlocking();
 }
 
-absl::Status TestTraceProcessor::ParseTrace(
-    const std::vector<char>& raw_trace) {
-  auto size = raw_trace.size();
-  std::unique_ptr<uint8_t[]> data_copy(new uint8_t[size]);
-  std::copy(raw_trace.begin(), raw_trace.end(), data_copy.get());
-  return ParseTrace(std::move(data_copy), size);
+base::expected<TestTraceProcessorImpl::QueryResult, std::string> RunQuery(
+    const std::string& query,
+    const std::vector<char>& trace) {
+  TestTraceProcessorImpl trace_processor;
+  absl::Status status = trace_processor.ParseTrace(trace);
+  if (!status.ok()) {
+    return base::unexpected(std::string(status.message()));
+  }
+  return base::ok(trace_processor.ExecuteQuery(query));
 }
+
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 }  // namespace base::test

@@ -11,33 +11,22 @@
 #ifndef BASE_TEST_TEST_TRACE_PROCESSOR_H_
 #define BASE_TEST_TEST_TRACE_PROCESSOR_H_
 
-#include <memory>
-#include "test_trace_processor_export.h"
-#include "third_party/abseil-cpp/absl/status/status.h"
+#include "base/test/test_trace_processor_impl.h"
+#include "base/test/trace_test_utils.h"
+#include "base/types/expected.h"
 
-namespace perfetto::trace_processor {
-struct Config;
-class TraceProcessor;
-}  // namespace perfetto::trace_processor
+// TODO(rasikan): Put these functions in a class.
 
 namespace base::test {
 
-class TEST_TRACE_PROCESSOR_EXPORT TestTraceProcessor {
- public:
-  TestTraceProcessor();
-  ~TestTraceProcessor();
+std::unique_ptr<perfetto::TracingSession> StartTrace(
+    const StringPiece& category_filter_string);
 
-  absl::Status ParseTrace(std::unique_ptr<uint8_t[]> buf, size_t size);
-  absl::Status ParseTrace(const std::vector<char>& raw_trace);
+std::vector<char> StopTrace(std::unique_ptr<perfetto::TracingSession> session);
 
-  // Runs the sql query on the parsed trace and returns the result as a
-  // vector of strings.
-  std::vector<std::vector<std::string>> ExecuteQuery(const std::string& sql);
-
- private:
-  std::unique_ptr<perfetto::trace_processor::Config> config_;
-  std::unique_ptr<perfetto::trace_processor::TraceProcessor> trace_processor_;
-};
+base::expected<TestTraceProcessorImpl::QueryResult, std::string> RunQuery(
+    const std::string& query,
+    const std::vector<char>& trace);
 
 }  // namespace base::test
 
