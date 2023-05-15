@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/no_destructor.h"
 #include "chrome/services/cups_proxy/cups_proxy_service_delegate.h"
 #include "chrome/services/cups_proxy/proxy_manager.h"
 #include "chromeos/ash/components/dbus/cups_proxy/cups_proxy_client.h"
@@ -18,15 +17,14 @@
 
 namespace cups_proxy {
 
+namespace {
+
+CupsProxyService* g_instance = nullptr;
+
+}  // namespace
+
 CupsProxyService::CupsProxyService() = default;
 CupsProxyService::~CupsProxyService() = default;
-
-// static
-void CupsProxyService::Spawn(
-    std::unique_ptr<CupsProxyServiceDelegate> delegate) {
-  static base::NoDestructor<CupsProxyService> service;
-  service->BindToCupsProxyDaemon(std::move(delegate));
-}
 
 void CupsProxyService::BindToCupsProxyDaemon(
     std::unique_ptr<CupsProxyServiceDelegate> delegate) {
@@ -69,6 +67,26 @@ void CupsProxyService::OnBindToCupsProxyDaemon(bool success) {
   }
 
   DVLOG(1) << "CupsProxyService: bootstrap success!";
+}
+
+// static
+void CupsProxyService::Spawn(
+    std::unique_ptr<CupsProxyServiceDelegate> delegate) {
+  DCHECK(!g_instance);
+  g_instance = new CupsProxyService();
+  g_instance->BindToCupsProxyDaemon(std::move(delegate));
+}
+
+// static
+CupsProxyService* CupsProxyService::GetInstance() {
+  return g_instance;
+}
+
+// static
+void CupsProxyService::Shutdown() {
+  DCHECK(g_instance);
+  delete g_instance;
+  g_instance = nullptr;
 }
 
 }  // namespace cups_proxy

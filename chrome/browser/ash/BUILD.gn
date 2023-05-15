@@ -6261,8 +6261,12 @@ source_set("unit_tests") {
   }
 
   if (use_cups) {
-    sources += [ "printing/cups_print_job_manager_utils_unittest.cc" ]
+    sources += [
+      "printing/cups_print_job_manager_utils_unittest.cc",
+      "printing/cups_proxy_service_manager_unittest.cc",
+    ]
     deps += [
+      "//chromeos/ash/components/dbus/cups_proxy:cups_proxy",
       "//printing:printing_base",
       "//printing/backend",
     ]
