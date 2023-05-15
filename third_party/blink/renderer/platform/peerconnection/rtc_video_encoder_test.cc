@@ -633,15 +633,21 @@ class RTCVideoEncoderEncodeTest
     std::vector<base::test::FeatureRef> enabled_features = {
         features::kZeroCopyTabCapture,
     };
+    std::vector<base::test::FeatureRef> disabled_features;
+
     if (GetParam().init_on_first_frame) {
       enabled_features.push_back(
+          features::kWebRtcInitializeEncoderOnFirstFrame);
+    } else {
+      disabled_features.push_back(
           features::kWebRtcInitializeEncoderOnFirstFrame);
     }
     if (GetParam().async_encode) {
       enabled_features.push_back(features::kWebRtcEncoderAsyncEncode);
+    } else {
+      disabled_features.push_back(features::kWebRtcEncoderAsyncEncode);
     }
-    feature_list_.InitWithFeatures(enabled_features,
-                                   /*disabled_features=*/{});
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   ~RTCVideoEncoderEncodeTest() override = default;
