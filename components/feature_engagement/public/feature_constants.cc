@@ -447,9 +447,6 @@ BASE_FEATURE(kIPHDefaultSiteViewFeature,
 BASE_FEATURE(kIPHFollowWhileBrowsingFeature,
              "IPH_FollowWhileBrowsing",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHOverflowMenuTipFeature,
-             "IPH_OverflowMenuTip",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHPriceNotificationsWhileBrowsingFeature,
              "IPH_PriceNotificationsWhileBrowsing",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -641,11 +641,6 @@ const char kNewNTPOmniboxLayoutDescription[] =
 const char kNewOverflowMenuName[] = "New Overflow Menu";
 const char kNewOverflowMenuDescription[] = "Enables the new overflow menu";
 
-const char kNewOverflowMenuAlternateIPHName[] =
-    "New Overflow Menu Alternative IPH";
-const char kNewOverflowMenuAlternateIPHDescription[] =
-    "Uses the alternative IPH flow for the new overflow menu";
-
 const char kNTPViewHierarchyRepairName[] = "NTP View Hierarchy Repair";
 const char kNTPViewHierarchyRepairDescription[] =
     "Checks if NTP view hierarchy is broken and fixes it if necessary.";

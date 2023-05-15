@@ -617,9 +617,6 @@ Things to consider:
       <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED" desc="Disclaimer telling users what will happen to their passwords">
         Your password will be saved to Google Password Manager for <ph name="EMAIL">$1<ex>example@gmail.com</ex></ph>.
       </message>
-      <message name="IDS_IOS_OVERFLOW_MENU_TIP" desc="The text of the tip explaining to the user that the Overflow Menu has new items">
-        Get to know the new Chrome menu
-      </message>
       <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_MESSAGE" desc="The error message to show in the account table when there is a passphrase error. [iOS only]">
         To use and save Chrome data in your Google Account, enter your passphrase.
       </message>

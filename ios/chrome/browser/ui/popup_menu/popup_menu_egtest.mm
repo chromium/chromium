@@ -219,7 +219,7 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 }
 
 // Tests that the overflow menu IPH shows up when triggered.
-- (void)testOverflowMenuIPH {
+- (void)testOverflowMenuIPHForHistory {
   if (![ChromeEarlGrey isNewOverflowMenuEnabled]) {
     EARL_GREY_TEST_SKIPPED(
         @"The overflow menu IPH only exists when the overflow menu is enabled.")
@@ -228,7 +228,7 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   // Enable the IPH Demo Mode feature to ensure the IPH triggers
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back(base::StringPrintf(
-      "--enable-features=%s:chosen_feature/IPH_OverflowMenuTip",
+      "--enable-features=%s:chosen_feature/IPH_iOSHistoryOnOverflowMenuFeature",
       feature_engagement::kIPHDemoMode.name));
 
   // The IPH appears immediately on startup, so don't open a new tab when the

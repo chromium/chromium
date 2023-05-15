@@ -183,7 +183,6 @@ BASE_DECLARE_FEATURE(kIPHBadgedTranslateManualTriggerFeature);
 BASE_DECLARE_FEATURE(kIPHDiscoverFeedHeaderFeature);
 BASE_DECLARE_FEATURE(kIPHDefaultSiteViewFeature);
 BASE_DECLARE_FEATURE(kIPHFollowWhileBrowsingFeature);
-BASE_DECLARE_FEATURE(kIPHOverflowMenuTipFeature);
 BASE_DECLARE_FEATURE(kIPHPriceNotificationsWhileBrowsingFeature);
 BASE_DECLARE_FEATURE(kIPHiOSDefaultBrowserBadgeEligibilityFeature);
 BASE_DECLARE_FEATURE(kIPHiOSDefaultBrowserOverflowMenuBadgeFeature);

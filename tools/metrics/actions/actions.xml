@@ -37654,8 +37654,6 @@ should be able to be added at any place in this file.
   <suffix name="NewTabPageHomeButton"
       label="For NewTabPageHomeButton feature."/>
   <suffix name="NewTabTip" label="For NewTabTip feature."/>
-  <suffix name="OverflowMenuTip"
-      label="For the overflow menu help tip on iOS."/>
   <suffix name="PageInfo" label="In product help for opening PageInfo."/>
   <suffix name="PageInfoStoreInfo" label="For PageInfoStoreInfo feature."/>
   <suffix name="PageZoom" label="For Page Zoom feature."/>

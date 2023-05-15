@@ -121,7 +121,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDiscoverFeedHeaderFeature,
     &kIPHDefaultSiteViewFeature,
     &kIPHFollowWhileBrowsingFeature,
-    &kIPHOverflowMenuTipFeature,
     &kIPHPriceNotificationsWhileBrowsingFeature,
     &kIPHiOSDefaultBrowserBadgeEligibilityFeature,
     &kIPHiOSDefaultBrowserOverflowMenuBadgeFeature,

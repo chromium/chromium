@@ -22,10 +22,6 @@ BASE_FEATURE(kNewOverflowMenuShareChromeAction,
              "kNewOverflowMenuShareChromeAction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNewOverflowMenuAlternateIPH,
-             "NewOverflowMenuAlternateIPH",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsNewOverflowMenuEnabled() {
   if (@available(iOS 15, *)) {
     return base::FeatureList::IsEnabled(kNewOverflowMenu);
@@ -42,9 +38,4 @@ bool IsSmartSortingPriceTrackingDestinationEnabled() {
 bool IsNewOverflowMenuShareChromeActionEnabled() {
   return IsNewOverflowMenuEnabled() &&
          base::FeatureList::IsEnabled(kNewOverflowMenuShareChromeAction);
-}
-
-bool IsNewOverflowMenuAlternateIPHEnabled() {
-  return IsNewOverflowMenuEnabled() &&
-         base::FeatureList::IsEnabled(kNewOverflowMenuAlternateIPH);
 }

@@ -4575,6 +4575,9 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_VERIFY_BUTTON_LABEL" desc="The label of the verify your account action button in the identity error info bar. [iOS only]">
         Verify
       </message>
+      <message name="IDS_IOS_VIEW_BROWSING_HISTORY_OVERFLOW_MENU_TIP" desc="The text of the tip explaining that browsing history can be viewed from the Overflow Menu.">
+        View browsing history
+      </message>
     </messages>
   </release>
 </grit>

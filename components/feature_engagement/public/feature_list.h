@@ -225,7 +225,6 @@ DEFINE_VARIATION_PARAM(kIPHDiscoverFeedHeaderFeature,
 DEFINE_VARIATION_PARAM(kIPHDefaultSiteViewFeature, "IPH_DefaultSiteView");
 DEFINE_VARIATION_PARAM(kIPHFollowWhileBrowsingFeature,
                        "IPH_FollowWhileBrowsing");
-DEFINE_VARIATION_PARAM(kIPHOverflowMenuTipFeature, "IPH_OverflowMenuTip");
 DEFINE_VARIATION_PARAM(kIPHPriceNotificationsWhileBrowsingFeature,
                        "IPHPriceNotificationsWhileBrowsing");
 DEFINE_VARIATION_PARAM(kIPHiOSDefaultBrowserBadgeEligibilityFeature,
@@ -434,7 +433,6 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHDiscoverFeedHeaderFeature),
         VARIATION_ENTRY(kIPHDefaultSiteViewFeature),
         VARIATION_ENTRY(kIPHFollowWhileBrowsingFeature),
-        VARIATION_ENTRY(kIPHOverflowMenuTipFeature),
         VARIATION_ENTRY(kIPHPriceNotificationsWhileBrowsingFeature),
         VARIATION_ENTRY(kIPHiOSDefaultBrowserBadgeEligibilityFeature),
         VARIATION_ENTRY(kIPHiOSDefaultBrowserOverflowMenuBadgeFeature),
