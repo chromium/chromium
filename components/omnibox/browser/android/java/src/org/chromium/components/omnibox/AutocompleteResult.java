@@ -62,7 +62,7 @@ public class AutocompleteResult {
      * @param groupsInfo Additional information about the AutocompleteMatch groups.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    AutocompleteResult(long nativeResult, @Nullable List<AutocompleteMatch> suggestions,
+    public AutocompleteResult(long nativeResult, @Nullable List<AutocompleteMatch> suggestions,
             @Nullable GroupsInfo groupsInfo) {
         // Consider all locally constructed AutocompleteResult objects as coming from Cache.
         // These results do not have a native counterpart, meaning there's no corresponding C++

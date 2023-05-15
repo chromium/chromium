@@ -7,10 +7,11 @@ package org.chromium.chrome.browser.omnibox.suggestions.mostvisited;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.endsWith;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -26,25 +27,27 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionView;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -84,23 +87,19 @@ public class MostVisitedTilesTest {
     private static final String SEARCH_QUERY = "related search query";
     private static final int MV_TILE_CAROUSEL_MATCH_POSITION = 1;
 
-    @ClassRule
-    public static final ChromeTabbedActivityTestRule sActivityTestRule =
+    public final @Rule ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    @Mock
-    private Profile mProfile;
-
-    @Mock
-    private AutocompleteController mController;
-
-    @Captor
-    private ArgumentCaptor<AutocompleteController.OnSuggestionsReceivedListener> mListener;
+    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    public @Rule JniMocker mJniMocker = new JniMocker();
+    private @Mock AutocompleteController.Natives mAutocompleteControllerJniMock;
+    private @Captor ArgumentCaptor<AutocompleteController> mAutocompleteControllerCaptor;
 
     private ChromeTabbedActivity mActivity;
     private LocationBarLayout mLocationBarLayout;
 
     private AutocompleteCoordinator mAutocomplete;
+    private AutocompleteController mController;
     private EmbeddedTestServer mTestServer;
     private Tab mTab;
     private SuggestionInfo<BaseCarouselSuggestionView> mCarousel;
@@ -112,36 +111,32 @@ public class MostVisitedTilesTest {
     private SuggestTile mTile3;
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
-        sActivityTestRule.startMainActivityOnBlankPage();
-        sActivityTestRule.waitForActivityNativeInitializationComplete();
-    }
+    public static void setUpClass() throws Exception {}
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        AutocompleteControllerProvider.setControllerForTesting(mController);
-        mActivity = sActivityTestRule.getActivity();
+        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mAutocompleteControllerJniMock);
+        doReturn(1L).when(mAutocompleteControllerJniMock).create(any(), any());
+
+        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.waitForActivityNativeInitializationComplete();
+
+        verify(mAutocompleteControllerJniMock, times(1))
+                .create(mAutocompleteControllerCaptor.capture(), any());
+        mController = mAutocompleteControllerCaptor.getValue();
+
+        mActivity = mActivityTestRule.getActivity();
         mOmnibox = new OmniboxTestUtils(mActivity);
         mLocationBarLayout = mActivity.findViewById(R.id.location_bar);
         mAutocomplete = mLocationBarLayout.getAutocompleteCoordinator();
         mTab = mActivity.getActivityTab();
-        mStartUrl = sActivityTestRule.getTestServer().getURL(START_PAGE_LOCATION);
+        mStartUrl = mActivityTestRule.getTestServer().getURL(START_PAGE_LOCATION);
 
         ChromeTabUtils.waitForInteractable(mTab);
         ChromeTabUtils.loadUrlOnUiThread(mTab, mStartUrl);
         ChromeTabUtils.waitForTabPageLoaded(mTab, null);
 
-        // clang-format off
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAutocomplete.setAutocompleteProfile(mProfile);
-        });
-        // clang-format on
-
-        verify(mController).addOnSuggestionsReceivedListener(mListener.capture());
-
         setUpSuggestionsToShow();
-        focusOmniboxAndWaitForSuggestions();
 
         mCarousel = mOmnibox.findSuggestionWithType(OmniboxSuggestionUiType.TILE_NAVSUGGEST);
     }
@@ -157,15 +152,15 @@ public class MostVisitedTilesTest {
      */
     private void setUpSuggestionsToShow() {
         // Set up basic AutocompleteResult hosting a MostVisitedTiles suggestion.
-        mTestServer = sActivityTestRule.getTestServer();
+        mTestServer = mActivityTestRule.getTestServer();
         mTile1 = new SuggestTile("About", new GURL(mTestServer.getURL("/echo/tile1.html")), false);
         mTile2 = new SuggestTile(
                 "Happy Server", new GURL(mTestServer.getURL("/echo/tile2.html")), false);
         mTile3 = new SuggestTile(
                 "Test Server", new GURL(mTestServer.getURL("/echo/tile3.html")), false);
 
-        AutocompleteResult autocompleteResult = AutocompleteResult.fromCache(
-                null, GroupsInfo.newBuilder().putGroupConfigs(1, SECTION_2_WITH_HEADER).build());
+        AutocompleteResult autocompleteResult = spy(AutocompleteResult.fromCache(
+                null, GroupsInfo.newBuilder().putGroupConfigs(1, SECTION_2_WITH_HEADER).build()));
         AutocompleteMatchBuilder builder = new AutocompleteMatchBuilder();
 
         // First suggestion is the current content of the Omnibox.
@@ -190,17 +185,11 @@ public class MostVisitedTilesTest {
         autocompleteResult.getSuggestionsList().add(builder.build());
         builder.reset();
 
-        doAnswer(invocation -> {
-            mListener.getValue().onSuggestionsReceived(autocompleteResult, mStartUrl, true);
-            return null;
-        })
-                .when(mController)
-                .startZeroSuggest(endsWith(START_PAGE_LOCATION), any(), anyInt(), any());
-    }
+        doReturn(true).when(autocompleteResult).verifyCoherency(anyInt(), anyInt());
 
-    private void focusOmniboxAndWaitForSuggestions() {
-        ChromeTabUtils.waitForInteractable(mTab);
         mOmnibox.requestFocus();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mController.onSuggestionsReceived(autocompleteResult, mStartUrl, true); });
         mOmnibox.checkSuggestionsShown();
     }
 
@@ -319,6 +308,7 @@ public class MostVisitedTilesTest {
         final int tileToDelete = 2;
         ModalDialogManager manager = mAutocomplete.getModalDialogManagerForTest();
         longClickTileAtPosition(tileToDelete);
+        verify(mAutocompleteControllerJniMock, times(1)).stop(anyLong(), /* clear?=*/eq(false));
 
         // Wait for the delete dialog to come up...
         CriteriaHelper.pollUiThread(() -> {
@@ -332,8 +322,9 @@ public class MostVisitedTilesTest {
         // ... and go away.
         CriteriaHelper.pollUiThread(() -> { return manager.getCurrentDialogForTest() == null; });
 
-        verify(mController, times(1))
-                .deleteMatchElement(eq(MV_TILE_CAROUSEL_MATCH_POSITION), eq(tileToDelete));
+        verify(mAutocompleteControllerJniMock, times(1))
+                .deleteMatchElement(
+                        anyLong(), eq(MV_TILE_CAROUSEL_MATCH_POSITION), eq(tileToDelete));
     }
 
     @Test
@@ -353,6 +344,7 @@ public class MostVisitedTilesTest {
 
         // ... and go away.
         CriteriaHelper.pollUiThread(() -> { return manager.getCurrentDialogForTest() == null; });
-        verify(mController, never()).deleteMatchElement(anyInt(), anyInt());
+        verify(mAutocompleteControllerJniMock, never())
+                .deleteMatchElement(anyLong(), anyInt(), anyInt());
     }
 }
