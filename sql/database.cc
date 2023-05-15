@@ -1675,6 +1675,11 @@ bool Database::DoesColumnExist(const char* table_name,
                                const char* column_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!db_) {
+    DCHECK(poisoned_) << "Illegal use of Database without a db";
+    return false;
+  }
+
   // sqlite3_table_column_metadata uses out-params to return column definition
   // details, such as the column type and whether it allows NULL values. These
   // aren't needed to compute the current method's result, so we pass in nullptr
