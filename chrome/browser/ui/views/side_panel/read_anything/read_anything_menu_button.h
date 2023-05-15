@@ -40,8 +40,6 @@ class ReadAnythingMenuButton : public views::MenuButton {
                            ui::ColorId foreground_color,
                            ui::ColorId selected_color);
 
-  void SetFont(const std::string& font_name);
-
  private:
   void ButtonPressed();
 

@@ -44,7 +44,6 @@ const int kButtonPadding = 2;
 const int kIconSize = 16;
 const int kColorsIconSize = 24;
 const int kSpacingIconSize = 20;
-const int kMenuLabelFontSizePx = 15;
 
 // Font size in em
 const double kReadAnythingDefaultFontScale = 1;

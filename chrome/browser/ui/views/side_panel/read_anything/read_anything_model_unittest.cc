@@ -230,21 +230,6 @@ TEST_F(ReadAnythingModelTest, FontModelGetFontNameVietnameseOptions) {
   EXPECT_EQ("STIX Two Text", GetFontModel()->GetFontNameAt(4));
 }
 
-TEST_F(ReadAnythingModelTest, LabelFontListModelGetsCurrentFontList) {
-  InitModel();
-  std::string default_font = string_constants::kReadAnythingDefaultFontName;
-
-  const std::vector<std::string> expected_fonts = {
-      "Poppins",     "Sans-serif",  "Serif",        "Comic Neue",
-      "Lexend Deca", "EB Garamond", "STIX Two Text"};
-
-  for (size_t i = 0; i < expected_fonts.size(); i++) {
-    auto retrieved_fonts = GetFontModel()->GetLabelFontNameAt(i);
-    EXPECT_EQ(expected_fonts[i], retrieved_fonts[0]);
-    EXPECT_EQ(default_font, retrieved_fonts[1]);
-  }
-}
-
 TEST_F(ReadAnythingModelTest, DefaultIndexSetOnSetSelectedFontByIndex) {
   InitModel();
   size_t testIndex = 2;
@@ -275,27 +260,4 @@ TEST_F(ReadAnythingModelTest, FontModelSetsDropdownAndForegroundColors) {
   EXPECT_EQ(color_info.selected_dropdown_color_id,
             GetFontModel()->GetDropdownSelectedBackgroundColorIdAt(0).value());
 }
-
-TEST_F(ReadAnythingModelTest, GetLabelFontList_DoesNotCrashBeforeSet) {
-  ReadAnythingColorsModel* color_model = model_->GetColorsModel();
-  EXPECT_EQ(nullptr, color_model->GetLabelFontListAt(0));
-
-  ReadAnythingLineSpacingModel* line_spacing_model =
-      model_->GetLineSpacingModel();
-  EXPECT_EQ(nullptr, line_spacing_model->GetLabelFontListAt(0));
-
-  ReadAnythingLetterSpacingModel* letter_spacing_model =
-      model_->GetLetterSpacingModel();
-  EXPECT_EQ(nullptr, letter_spacing_model->GetLabelFontListAt(0));
-}
-
-TEST_F(ReadAnythingModelTest, GetLabelFontList_GetsCorrectFontList) {
-  ReadAnythingColorsModel* color_model = model_->GetColorsModel();
-  color_model->SetLabelFontList("Arial");
-
-  const gfx::FontList* font_list = color_model->GetLabelFontListAt(0);
-  EXPECT_EQ(2, (int)font_list->GetFonts().size());
-  EXPECT_EQ("Arial", font_list->GetPrimaryFont().GetFontName());
-}
-
 #endif  // !defined(ADDRESS_SANITIZER)

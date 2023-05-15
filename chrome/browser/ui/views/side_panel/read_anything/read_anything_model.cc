@@ -288,25 +288,6 @@ std::string ReadAnythingFontModel::GetFontNameAt(size_t index) {
   return base::UTF16ToUTF8(font_choices_[index].name);
 }
 
-// This method uses the text from the drop down at |index| and constructs a
-// FontList to be used by the |ReadAnythingFontCombobox::MenuModel| to make
-// each option to display in its associated font.
-// This text is not visible to the user.
-// We add the default font to have a back-up font and a set size in case
-// the chosen font does not work for some reason.
-// E.g. User chooses 'Serif', this method returns {'Serif, Sans-serif'}.
-std::vector<std::string> ReadAnythingFontModel::GetLabelFontNameAt(
-    size_t index) {
-  std::string font_label = base::UTF16ToUTF8(GetDropDownTextAt(index));
-  std::vector<std::string> font_vector = {
-      font_label, string_constants::kReadAnythingDefaultFontName};
-  return font_vector;
-}
-
-absl::optional<int> ReadAnythingFontModel::GetLabelFontSize() {
-  return kMenuLabelFontSizePx;
-}
-
 absl::optional<ui::ColorId>
 ReadAnythingFontModel::GetDropdownForegroundColorIdAt(size_t index) const {
   return foreground_color_id_;

@@ -55,7 +55,6 @@ void ReadAnythingFontCombobox::GetAccessibleNodeData(
 }
 
 void ReadAnythingFontCombobox::FontNameChangedCallback() {
-  UpdateFont();
   if (delegate_)
     delegate_->OnFontChoiceChanged(GetSelectedIndex().value());
 }

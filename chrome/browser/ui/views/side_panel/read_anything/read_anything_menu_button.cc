@@ -89,10 +89,6 @@ void ReadAnythingMenuButton::SetDropdownColorIds(ui::ColorId background_color,
   menu_model_->SetSelectedBackgroundColorId(selected_color);
 }
 
-void ReadAnythingMenuButton::SetFont(const std::string& font_name) {
-  menu_model_->SetLabelFontList(font_name);
-}
-
 BEGIN_METADATA(ReadAnythingMenuButton, MenuButton)
 ADD_PROPERTY_METADATA(ReadAnythingMenuModel*, MenuModel)
 END_METADATA

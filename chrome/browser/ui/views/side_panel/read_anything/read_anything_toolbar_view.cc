@@ -214,11 +214,6 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
   letter_spacing_button_->SetIcon(kReadAnythingLetterSpacingIcon, kIconSize,
                                   foreground_color_id, focus_ring_color_id);
 
-  // Update fonts.
-  colors_button_->SetFont(font_name);
-  line_spacing_button_->SetFont(font_name);
-  letter_spacing_button_->SetFont(font_name);
-
   // Update the background colors for the dropdowns.
   colors_button_->SetDropdownColorIds(dropdown_color_id, foreground_color_id,
                                       selected_dropdown_color_id);
