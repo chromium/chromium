@@ -27121,9 +27121,9 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="1" label="Elements"/>
   <int value="2" label="Resources"/>
   <int value="3" label="Network"/>
-  <int value="4" label="Scripts"/>
-  <int value="5" label="Timeline"/>
-  <int value="6" label="Heap profiler"/>
+  <int value="4" label="Sources"/>
+  <int value="5" label="Performance"/>
+  <int value="6" label="Memory"/>
   <int value="7" label="Legacy Audits"/>
   <int value="8" label="Console"/>
   <int value="9" label="Layers"/>
@@ -27135,7 +27135,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="15" label="Drawer - Search"/>
   <int value="16" label="Security"/>
   <int value="17" label="JavaScript Profiler"/>
-  <int value="18" label="Audits"/>
+  <int value="18" label="Lighthouse"/>
   <int value="19" label="Drawer - Coverage"/>
   <int value="20" label="Drawer - Protocol monitor"/>
   <int value="21" label="Drawer - Remote devices"/>
