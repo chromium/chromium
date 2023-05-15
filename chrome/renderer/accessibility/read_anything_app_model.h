@@ -10,6 +10,7 @@
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_event_generator.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_selection.h"
 
 namespace ui {
@@ -150,6 +151,8 @@ class ReadAnythingAppModel {
 
   void ProcessNonGeneratedEvents(const std::vector<ui::AXEvent>& events);
   void ProcessGeneratedEvents(const ui::AXEventGenerator& event_generator);
+
+  ui::AXNode* GetParentForSelection(ui::AXNode* node);
 
   // State.
   // AXTrees of web contents in the browser’s tab strip.

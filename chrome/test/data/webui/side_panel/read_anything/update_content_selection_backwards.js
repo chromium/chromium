@@ -123,7 +123,7 @@
   chrome.readAnything.setContentForTesting(axTree, []);
   // The expected string contains the complete text of each node in the
   // selection.
-  const expected = '<div><p>Hello</p><p>World</p><p>Friend</p></div>';
+  const expected = '<div><p>Hello</p><p>World</p><p>Friend!</p></div>';
   assertContainerInnerHTML(expected);
   const selection = readAnythingApp.getSelection();
   assertEquals(selection.anchorNode.textContent, 'Hello');

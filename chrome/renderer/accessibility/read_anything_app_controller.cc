@@ -134,6 +134,19 @@ void SetAXNodeDataHtmlTag(v8::Isolate* isolate,
                                    html_tag);
 }
 
+void SetAXNodeDataDisplay(v8::Isolate* isolate,
+                          gin::Dictionary* v8_dict,
+                          ui::AXNodeData* ax_node_data) {
+  v8::Local<v8::Value> v8_display;
+  v8_dict->Get("display", &v8_display);
+  std::string display;
+  if (!gin::Converter<std::string>::FromV8(isolate, v8_display, &display)) {
+    return;
+  }
+  ax_node_data->AddStringAttribute(ax::mojom::StringAttribute::kDisplay,
+                                   display);
+}
+
 void SetAXNodeDataTextDirection(v8::Isolate* isolate,
                                 gin::Dictionary* v8_dict,
                                 ui::AXNodeData* ax_node_data) {
@@ -290,6 +303,7 @@ ui::AXTreeUpdate GetSnapshotFromV8SnapshotLite(
     SetAXNodeDataTextDirection(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataTextStyle(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataUrl(isolate, &v8_node_dict, &ax_node_data);
+    SetAXNodeDataDisplay(isolate, &v8_node_dict, &ax_node_data);
     snapshot.nodes.push_back(ax_node_data);
   }
 

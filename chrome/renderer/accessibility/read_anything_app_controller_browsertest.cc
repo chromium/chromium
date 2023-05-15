@@ -320,7 +320,8 @@ TEST_F(ReadAnythingAppControllerTest, GetChildren_WithContentNodes) {
   EXPECT_EQ(4, GetChildren(1)[1]);
 }
 
-TEST_F(ReadAnythingAppControllerTest, GetChildren_WithSelection) {
+TEST_F(ReadAnythingAppControllerTest,
+       GetChildren_WithSelection_ContainsNearbyNodes) {
   // Create selection from node 3-4.
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
@@ -332,16 +333,18 @@ TEST_F(ReadAnythingAppControllerTest, GetChildren_WithSelection) {
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = false;
   AccessibilityEventReceived({update});
-  EXPECT_EQ(2u, GetChildren(1).size());
+  EXPECT_EQ(3u, GetChildren(1).size());
   EXPECT_EQ(0u, GetChildren(2).size());
   EXPECT_EQ(0u, GetChildren(3).size());
   EXPECT_EQ(0u, GetChildren(4).size());
 
-  EXPECT_EQ(3, GetChildren(1)[0]);
-  EXPECT_EQ(4, GetChildren(1)[1]);
+  EXPECT_EQ(2, GetChildren(1)[0]);
+  EXPECT_EQ(3, GetChildren(1)[1]);
+  EXPECT_EQ(4, GetChildren(1)[2]);
 }
 
-TEST_F(ReadAnythingAppControllerTest, GetChildren_WithBackwardSelection) {
+TEST_F(ReadAnythingAppControllerTest,
+       GetChildren_WithBackwardSelection_ContainsNearbyNodes) {
   // Create backward selection from node 4-3.
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
@@ -353,13 +356,14 @@ TEST_F(ReadAnythingAppControllerTest, GetChildren_WithBackwardSelection) {
   update.tree_data.sel_focus_offset = 0;
   update.tree_data.sel_is_backward = true;
   AccessibilityEventReceived({update});
-  EXPECT_EQ(2u, GetChildren(1).size());
+  EXPECT_EQ(3u, GetChildren(1).size());
   EXPECT_EQ(0u, GetChildren(2).size());
   EXPECT_EQ(0u, GetChildren(3).size());
   EXPECT_EQ(0u, GetChildren(4).size());
 
-  EXPECT_EQ(3, GetChildren(1)[0]);
-  EXPECT_EQ(4, GetChildren(1)[1]);
+  EXPECT_EQ(2, GetChildren(1)[0]);
+  EXPECT_EQ(3, GetChildren(1)[1]);
+  EXPECT_EQ(4, GetChildren(1)[2]);
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetHtmlTag) {
@@ -537,7 +541,8 @@ TEST_F(ReadAnythingAppControllerTest, IsNodeIgnoredForReadAnything) {
   EXPECT_EQ(true, IsNodeIgnoredForReadAnything(4));
 }
 
-TEST_F(ReadAnythingAppControllerTest, SelectionNodeIdsContains_Selection) {
+TEST_F(ReadAnythingAppControllerTest,
+       SelectionNodeIdsContains_SelectionAndNearbyNodes) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
   update.has_tree_data = true;
@@ -552,11 +557,11 @@ TEST_F(ReadAnythingAppControllerTest, SelectionNodeIdsContains_Selection) {
   EXPECT_TRUE(SelectionNodeIdsContains(1));
   EXPECT_TRUE(SelectionNodeIdsContains(2));
   EXPECT_TRUE(SelectionNodeIdsContains(3));
-  EXPECT_FALSE(SelectionNodeIdsContains(4));
+  EXPECT_TRUE(SelectionNodeIdsContains(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest,
-       SelectionNodeIdsContains_BackwardSelection) {
+       SelectionNodeIdsContains_BackwardSelectionAndNearbyNodes) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
   update.has_tree_data = true;
@@ -570,7 +575,7 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_TRUE(SelectionNodeIdsContains(1));
   EXPECT_TRUE(SelectionNodeIdsContains(2));
   EXPECT_TRUE(SelectionNodeIdsContains(3));
-  EXPECT_FALSE(SelectionNodeIdsContains(4));
+  EXPECT_TRUE(SelectionNodeIdsContains(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest, DisplayNodeIdsContains_ContentNodes) {

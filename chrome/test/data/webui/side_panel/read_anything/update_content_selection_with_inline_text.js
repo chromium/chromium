@@ -60,9 +60,8 @@
   // ++++staticText name='Hello' id=3
   // ++paragraph htmlTag='p' id=4
   // ++++staticText name='World' id=5
-  // ++paragraph htmlTag='p' id=6
-  // ++++staticText name='Friend' id=7
-  // ++++staticText name='!' id=8
+  // ++++link htmlTag='a' id=6
+  // +++++staticText name='Friend' id=7
   const axTree = {
     rootId: 1,
     nodes: [
@@ -70,7 +69,7 @@
         id: 1,
         role: 'rootWebArea',
         htmlTag: '#document',
-        childIds: [2, 4, 6],
+        childIds: [2, 4],
       },
       {
         id: 2,
@@ -87,7 +86,7 @@
         id: 4,
         role: 'paragraph',
         htmlTag: 'p',
-        childIds: [5],
+        childIds: [5, 6],
       },
       {
         id: 5,
@@ -96,26 +95,22 @@
       },
       {
         id: 6,
-        role: 'paragraph',
-        htmlTag: 'p',
-        childIds: [7, 8],
+        role: 'link',
+        htmlTag: 'a',
+        display: 'inline',
+        childIds: [7],
       },
       {
         id: 7,
         role: 'staticText',
         name: 'Friend',
       },
-      {
-        id: 8,
-        role: 'staticText',
-        name: '!',
-      },
     ],
     selection: {
-      anchor_object_id: 5,
+      anchor_object_id: 7,
       focus_object_id: 7,
-      anchor_offset: 1,
-      focus_offset: 2,
+      anchor_offset: 0,
+      focus_offset: 1,
       is_backward: false,
     },
   };
@@ -123,13 +118,13 @@
   chrome.readAnything.setContentForTesting(axTree, []);
   // The expected string contains the complete text of each node in the
   // selection.
-  const expected = '<div><p>World</p><p>Friend!</p></div>';
+  const expected = '<div><p>World<a>Friend</a></p></div>';
   assertContainerInnerHTML(expected);
   const selection = readAnythingApp.getSelection();
-  assertEquals(selection.anchorNode.textContent, 'World');
+  assertEquals(selection.anchorNode.textContent, 'Friend');
   assertEquals(selection.focusNode.textContent, 'Friend');
-  assertEquals(selection.anchorOffset, 1);
-  assertEquals(selection.focusOffset, 2);
+  assertEquals(selection.anchorOffset, 0);
+  assertEquals(selection.focusOffset, 1);
 
   return result;
 })();

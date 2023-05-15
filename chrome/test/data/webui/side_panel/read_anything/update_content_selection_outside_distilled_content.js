@@ -100,7 +100,7 @@
   chrome.readAnything.setContentForTesting(axTree, [2]);
   // The selection is outside the content nodes.The expected string contains
   // the complete text of each node in the selection.
-  const expected = '<div><p>World</p><p>Friend</p></div>';
+  const expected = '<div><p>World</p><p>Friend!</p></div>';
   assertContainerInnerHTML(expected);
 
   return result;

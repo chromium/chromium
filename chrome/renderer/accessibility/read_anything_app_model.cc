@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/renderer/accessibility/read_anything_app_model.h"
+#include <cstddef>
+#include <string>
 
 #include "base/containers/contains.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_serializable_tree.h"
@@ -134,20 +137,63 @@ void ReadAnythingAppModel::ComputeSelectionNodeIds() {
     }
   }
 
-  // Do a pre-order walk of the tree from the start node to the end node and add
-  // all nodes to the list.
-  // TODO(crbug.com/1266555): Right now, we are going from start node to an
-  // unignored node that is before or equal to the end node. This condition was
-  // changed from next_node != end node because when a paragraph is selected
-  // with a triple click, we sometimes pass the end node, causing a SEGV_ACCERR.
-  // We need to investigate this case in more depth.
-  ui::AXNode* next_node = start_node->GetNextUnignoredInTreeOrder();
-  while (next_node && next_node->CompareTo(*end_node) <= 0) {
-    if (!IsNodeIgnoredForReadAnything(next_node->id())) {
-      InsertSelectionNode(next_node->id());
-    }
-    next_node = next_node->GetNextUnignoredInTreeOrder();
+  // Find the parent of the start and end nodes so we can look at nearby sibling
+  // nodes. Since the start and end nodes might be in different section of the
+  // tree, get the parents for start and end separately. Otherwise, the end
+  // selection might not render.
+  ui::AXNode* start_parent = GetParentForSelection(start_node);
+  ui::AXNode* end_parent = GetParentForSelection(end_node);
+
+  // If either parent is missing, selection is invalid and we should return
+  // early.
+  if (start_parent == nullptr || end_parent == nullptr) {
+    return;
   }
+
+  ui::AXNode* first_sibling_node =
+      start_parent->GetFirstUnignoredChildCrossingTreeBoundary();
+  ui::AXNode* last_sibling_node =
+      end_parent->GetLastUnignoredChildCrossingTreeBoundary();
+
+  // If the last sibling node is null, selection is invalid and we should
+  // return early.
+  if (last_sibling_node == nullptr) {
+    return;
+  }
+
+  // TODO(b/1266555): Consider using ax_position.h here to better manage
+  // selection.
+  // Traverse the tree from and including the first sibling node to the last
+  // last sibling node, inclusive. This ensures that when select-to-distill
+  // is used to distill non-distillable content (such as Gmail), text
+  // outside of the selected portion but on the same line is still
+  // distilled, even if there's special formatting.
+  while (first_sibling_node &&
+         first_sibling_node->CompareTo(*last_sibling_node).value_or(1) <= 0) {
+    if (!IsNodeIgnoredForReadAnything(first_sibling_node->id())) {
+      InsertSelectionNode(first_sibling_node->id());
+    }
+
+    first_sibling_node = first_sibling_node->GetNextUnignoredInTreeOrder();
+  }
+}
+
+ui::AXNode* ReadAnythingAppModel::GetParentForSelection(ui::AXNode* node) {
+  ui::AXNode* parent = node->GetUnignoredParentCrossingTreeBoundary();
+  // For most nodes, the parent is the same as the most direct parent. However,
+  // to handle special types of text formatting such as links and custom spans,
+  // another parent may be needed. e.g. when a link is highlighted, the start
+  // node has an "inline" display but the parent we want would have a "block"
+  // display role, so in order to get the common parent of
+  // all sibling nodes, the grandparent should be used.
+  while (parent && parent->GetUnignoredParentCrossingTreeBoundary() &&
+         parent->HasStringAttribute(ax::mojom::StringAttribute::kDisplay) &&
+         parent->GetStringAttribute(ax::mojom::StringAttribute::kDisplay)
+                 .find("inline") != std::string::npos) {
+    parent = parent->GetUnignoredParentCrossingTreeBoundary();
+  }
+
+  return parent;
 }
 
 void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {

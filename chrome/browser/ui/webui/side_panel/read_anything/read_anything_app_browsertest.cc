@@ -167,6 +167,17 @@ IN_PROC_BROWSER_TEST_F(
       "update_content_selection_partially_outside_distilled_content.js"));
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest,
+                       UpdateContent_Selection_Backwards_WithInlineText) {
+  ASSERT_TRUE(
+      RunTest("update_content_selection_backwards_with_inline_text.js"));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest,
+                       UpdateContent_Selection_WithInlineText) {
+  ASSERT_TRUE(RunTest("update_content_selection_with_inline_text.js"));
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_SetSelectedText) {
   ASSERT_TRUE(RunTest("update_content_set_selected_text.js"));
 }
