@@ -109,8 +109,12 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
     return trigger_verification_;
   }
 
-  const Vector<KURL>& os_sources() const { return os_sources_; }
-  const Vector<KURL>& os_triggers() const { return os_triggers_; }
+  const std::vector<std::vector<GURL>>& os_sources() const {
+    return os_sources_;
+  }
+  const std::vector<std::vector<GURL>>& os_triggers() const {
+    return os_triggers_;
+  }
 
   size_t disconnects() const { return disconnects_; }
 
@@ -134,12 +138,12 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
     trigger_verification_.push_back(std::move(verification));
   }
 
-  void OsSourceDataAvailable(const KURL& registration_url) override {
-    os_sources_.push_back(registration_url);
+  void OsSourceDataAvailable(std::vector<GURL> registration_urls) override {
+    os_sources_.emplace_back(std::move(registration_urls));
   }
 
-  void OsTriggerDataAvailable(const KURL& registration_url) override {
-    os_triggers_.push_back(registration_url);
+  void OsTriggerDataAvailable(std::vector<GURL> registration_urls) override {
+    os_triggers_.emplace_back(std::move(registration_urls));
   }
 
   Vector<attribution_reporting::SourceRegistration> source_data_;
@@ -148,8 +152,8 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
 
   Vector<absl::optional<network::TriggerVerification>> trigger_verification_;
 
-  Vector<KURL> os_sources_;
-  Vector<KURL> os_triggers_;
+  std::vector<std::vector<GURL>> os_sources_;
+  std::vector<std::vector<GURL>> os_triggers_;
 
   size_t disconnects_ = 0;
   mojo::Receiver<mojom::blink::AttributionDataHost> receiver_{this};
@@ -678,8 +682,9 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest, RegisterOsTrigger) {
   ASSERT_TRUE(mock_data_host);
 
   mock_data_host->Flush();
-  EXPECT_THAT(mock_data_host->os_triggers(),
-              ::testing::ElementsAre(KURL("https://r.test/x")));
+  EXPECT_THAT(
+      mock_data_host->os_triggers(),
+      ::testing::ElementsAre(::testing::ElementsAre(GURL("https://r.test/x"))));
 }
 
 }  // namespace

@@ -6,7 +6,6 @@ module blink.mojom;
 
 import "components/attribution_reporting/registration.mojom";
 import "services/network/public/mojom/attribution.mojom";
-import "url/mojom/url.mojom";
 
 // Browser-process interface responsible for processing attribution
 // configurations registered by the renderer. These configurations may be sent
@@ -24,12 +23,12 @@ interface AttributionDataHost {
                        network.mojom.TriggerVerification? verification);
 
   // Called when OS source data from the renderer is available for a given
-  // attributionsrc request. The OS will make a subsequent request to
-  // `registration_url` to obtain the actual registration.
-  OsSourceDataAvailable(url.mojom.Url registration_url);
+  // attributionsrc request. The OS will make subsequent requests to
+  // to obtain the actual registration.
+  OsSourceDataAvailable(attribution_reporting.mojom.OsRegistration registration);
 
   // Called when OS trigger data from the renderer is available for a given
-  // attributionsrc request. The OS will make a subsequent request to
-  // `registration_url` to obtain the actual registration.
-  OsTriggerDataAvailable(url.mojom.Url registration_url);
+  // attributionsrc request. The OS will make subsequent requests to
+  // to obtain the actual registration.
+  OsTriggerDataAvailable(attribution_reporting.mojom.OsRegistration registration);
 };

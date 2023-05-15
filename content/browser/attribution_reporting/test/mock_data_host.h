@@ -52,8 +52,12 @@ class MockDataHost : public blink::mojom::AttributionDataHost {
     return trigger_data_;
   }
 
-  const std::vector<GURL>& os_sources() const { return os_sources_; }
-  const std::vector<GURL>& os_triggers() const { return os_triggers_; }
+  const std::vector<std::vector<GURL>>& os_sources() const {
+    return os_sources_;
+  }
+  const std::vector<std::vector<GURL>>& os_triggers() const {
+    return os_triggers_;
+  }
   void WaitForOsSources(size_t);
   void WaitForOsTriggers(size_t);
 
@@ -70,8 +74,8 @@ class MockDataHost : public blink::mojom::AttributionDataHost {
       attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::TriggerRegistration,
       absl::optional<network::TriggerVerification>) override;
-  void OsSourceDataAvailable(const GURL& registration_url) override;
-  void OsTriggerDataAvailable(const GURL& registration_url) override;
+  void OsSourceDataAvailable(std::vector<GURL> registration_urls) override;
+  void OsTriggerDataAvailable(std::vector<GURL> registration_urls) override;
 
   size_t min_source_data_count_ = 0;
   std::vector<attribution_reporting::SourceRegistration> source_data_;
@@ -80,10 +84,10 @@ class MockDataHost : public blink::mojom::AttributionDataHost {
   std::vector<attribution_reporting::TriggerRegistration> trigger_data_;
 
   size_t min_os_sources_count_ = 0;
-  std::vector<GURL> os_sources_;
+  std::vector<std::vector<GURL>> os_sources_;
 
   size_t min_os_triggers_count_ = 0;
-  std::vector<GURL> os_triggers_;
+  std::vector<std::vector<GURL>> os_triggers_;
 
   base::RunLoop wait_loop_;
   mojo::Receiver<blink::mojom::AttributionDataHost> receiver_{this};

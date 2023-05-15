@@ -1396,8 +1396,8 @@ IN_PROC_BROWSER_TEST_F(
 struct OsRegistrationTestCase {
   const char* name;
   const char* header;
-  std::vector<GURL> expected_os_sources;
-  std::vector<GURL> expected_os_triggers;
+  std::vector<std::vector<GURL>> expected_os_sources;
+  std::vector<std::vector<GURL>> expected_os_triggers;
 };
 
 class AttributionSrcCrossAppWebEnabledOsRegistrationBrowserTest
@@ -1413,8 +1413,10 @@ INSTANTIATE_TEST_SUITE_P(
             .header = "Attribution-Reporting-Register-OS-Source",
             .expected_os_sources =
                 {
-                    GURL("https://r1.test/x"),
-                    GURL("https://r2.test/y"),
+                    {
+                        GURL("https://r1.test/x"),
+                        GURL("https://r2.test/y"),
+                    },
                 },
         },
         OsRegistrationTestCase{
@@ -1422,8 +1424,10 @@ INSTANTIATE_TEST_SUITE_P(
             .header = "Attribution-Reporting-Register-OS-Trigger",
             .expected_os_triggers =
                 {
-                    GURL("https://r1.test/x"),
-                    GURL("https://r2.test/y"),
+                    {
+                        GURL("https://r1.test/x"),
+                        GURL("https://r2.test/y"),
+                    },
                 },
         }),
     [](const auto& info) { return info.param.name; });  // test name generator

@@ -690,29 +690,33 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
 }
 
 void AttributionDataHostManagerImpl::OsSourceDataAvailable(
-    const GURL& registration_url) {
+    std::vector<GURL> registration_urls) {
   const ReceiverContext* context = GetReceiverContextForSource();
   if (!context) {
     return;
   }
 
-  attribution_manager_->HandleOsRegistration(
-      OsRegistration(registration_url, context->context_origin(),
-                     context->input_event()),
-      context->render_frame_id());
+  for (GURL& url : registration_urls) {
+    attribution_manager_->HandleOsRegistration(
+        OsRegistration(std::move(url), context->context_origin(),
+                       context->input_event()),
+        context->render_frame_id());
+  }
 }
 
 void AttributionDataHostManagerImpl::OsTriggerDataAvailable(
-    const GURL& registration_url) {
+    std::vector<GURL> registration_urls) {
   const ReceiverContext* context = GetReceiverContextForTrigger();
   if (!context) {
     return;
   }
 
-  attribution_manager_->HandleOsRegistration(
-      OsRegistration(registration_url, context->context_origin(),
-                     /*input_event=*/absl::nullopt),
-      context->render_frame_id());
+  for (GURL& url : registration_urls) {
+    attribution_manager_->HandleOsRegistration(
+        OsRegistration(std::move(url), context->context_origin(),
+                       /*input_event=*/absl::nullopt),
+        context->render_frame_id());
+  }
 }
 
 void AttributionDataHostManagerImpl::OnReceiverDisconnected() {

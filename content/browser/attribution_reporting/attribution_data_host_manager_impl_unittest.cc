@@ -2686,7 +2686,7 @@ TEST_F(AttributionDataHostManagerImplTest, OsSourceAvailable) {
       /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger,
       kFrameId, /*last_navigation_id=*/kNavigationId);
 
-  data_host_remote->OsSourceDataAvailable(kRegistrationUrl);
+  data_host_remote->OsSourceDataAvailable({kRegistrationUrl});
   data_host_remote.FlushForTesting();
 }
 
@@ -2706,7 +2706,7 @@ TEST_F(AttributionDataHostManagerImplTest, OsTriggerAvailable) {
       /*is_within_fenced_frame=*/false, RegistrationType::kSourceOrTrigger,
       kFrameId, /*last_navigation_id=*/kNavigationId);
 
-  data_host_remote->OsTriggerDataAvailable(kRegistrationUrl);
+  data_host_remote->OsTriggerDataAvailable({kRegistrationUrl});
   data_host_remote.FlushForTesting();
 }
 
