@@ -19,7 +19,9 @@ bool StructTraits<blink::mojom::ViewTransitionElementDataView,
       !data.ReadViewportMatrix(&out->viewport_matrix) ||
       !data.ReadOverflowRectInLayoutSpace(
           &out->overflow_rect_in_layout_space) ||
-      !data.ReadSnapshotId(&out->snapshot_id)) {
+      !data.ReadSnapshotId(&out->snapshot_id) ||
+      !data.ReadCapturedRectInLayoutSpace(
+          &out->captured_rect_in_layout_space)) {
     return false;
   }
 

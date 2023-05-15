@@ -263,16 +263,6 @@ crbug.com/1430357 [ Mac ] virtual/view-transition/external/wpt/css/css-view-tran
 crbug.com/1430357 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/massive-element-* [ Failure Pass ]
 
 # View transition SPA failures with MPA serialization.
-crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-below-and-on-top-of-viewport-partially-onscreen-old.html [ Failure ]
-crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-below-viewport-offscreen-old.html [ Failure ]
-crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-below-viewport-partially-onscreen-old.html [ Failure ]
-crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-left-of-viewport-offscreen-old.html [ Failure ]
-crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-left-of-viewport-partially-onscreen-old.html [ Failure ]
-crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-on-top-of-viewport-offscreen-old.html [ Failure ]
-crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-on-top-of-viewport-partially-onscreen-old.html [ Failure ]
-crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-right-and-left-of-viewport-partially-onscreen-old.html [ Failure ]
-crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-right-of-viewport-offscreen-old.html [ Failure ]
-crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/massive-element-right-of-viewport-partially-onscreen-old.html [ Failure ]
 crbug.com/1443559 virtual/view-transition-mpa-serialization/inspector-protocol/css/css-get-styles-for-view-transition.js [ Failure ]
 crbug.com/1443559 virtual/view-transition-mpa-serialization/view-transition/capture-callback-exception.html [ Failure ]
 crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/old-content-captures-clip-path.html [ Failure ]

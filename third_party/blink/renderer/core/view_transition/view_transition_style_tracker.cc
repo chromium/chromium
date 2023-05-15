@@ -376,6 +376,8 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     element_data->visual_overflow_rect_in_layout_space =
         PhysicalRect::EnclosingRect(
             transition_state_element.overflow_rect_in_layout_space);
+    element_data->captured_rect_in_layout_space =
+        transition_state_element.captured_rect_in_layout_space;
 
     element_data->CacheGeometryState();
 
@@ -1505,9 +1507,10 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
     element.snapshot_id = element_data->old_snapshot_id;
     element.paint_order = element_data->element_index;
     element.is_root = false;
+    element.captured_rect_in_layout_space =
+        element_data->captured_rect_in_layout_space;
 
     // TODO(khushalsagar): Also writing mode.
-    // TODO(vmpstr): Also captured_rect_in_layout_space.
 
     DCHECK(!old_root_data_ || element.paint_order > 0);
   }
