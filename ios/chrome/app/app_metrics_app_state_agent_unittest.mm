@@ -93,9 +93,7 @@ class AppMetricsAppStateAgentTest : public PlatformTest {
         base::BindRepeating(&FakeProfileSessionDurationsService::Create));
     browser_state_ = test_cbs_builder.Build();
 
-    app_state_ = [[FakeAppState alloc] initWithBrowserLauncher:nil
-                                            startupInformation:nil
-                                           applicationDelegate:nil];
+    app_state_ = [[FakeAppState alloc] initWithStartupInformation:nil];
   }
 
   void SetUp() override {

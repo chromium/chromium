@@ -9,9 +9,7 @@
 #import "base/test/task_environment.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/browser_launcher.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
-#import "ios/chrome/app/main_application_delegate.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -58,15 +56,9 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
  public:
   StartSurfaceSceneAgentTest()
       : browser_state_(TestChromeBrowserState::Builder().Build()),
-        browser_launcher_mock_(
-            [OCMockObject mockForProtocol:@protocol(BrowserLauncher)]),
         startup_information_([[FakeStartupInformation alloc] init]),
-        main_application_delegate_(
-            [OCMockObject mockForClass:[MainApplicationDelegate class]]),
         app_state_([[FakeAppStateInitStage alloc]
-            initWithBrowserLauncher:browser_launcher_mock_
-                 startupInformation:startup_information_
-                applicationDelegate:main_application_delegate_]),
+            initWithStartupInformation:startup_information_]),
         scene_state_([[FakeSceneState alloc]
             initWithAppState:app_state_
                 browserState:browser_state_.get()]),
@@ -89,9 +81,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  id browser_launcher_mock_;
   FakeStartupInformation* startup_information_;
-  id main_application_delegate_;
   FakeAppStateInitStage* app_state_;
   // The scene state that the agent works with.
   FakeSceneState* scene_state_;

@@ -7,9 +7,7 @@
 #import "base/ios/block_types.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/app/application_delegate/app_state+private.h"
-#import "ios/chrome/app/application_delegate/browser_launcher.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
-#import "ios/chrome/app/main_application_delegate.h"
 #import "ios/chrome/app/safe_mode_app_state_agent+private.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
@@ -58,14 +56,10 @@ class SafeModeAppStateAgentTest : public BlockCleanupTest {
   SafeModeAppStateAgentTest() {
     browser_state_ = TestChromeBrowserState::Builder().Build();
     window_ = [OCMockObject mockForClass:[UIWindow class]];
-    browser_launcher_mock_ =
-        [OCMockObject mockForProtocol:@protocol(BrowserLauncher)];
     startup_information_mock_ =
         [OCMockObject mockForProtocol:@protocol(StartupInformation)];
     connection_information_mock_ =
         [OCMockObject mockForProtocol:@protocol(ConnectionInformation)];
-    main_application_delegate_ =
-        [OCMockObject mockForClass:[MainApplicationDelegate class]];
   }
 
   void swizzleSafeModeShouldStart(BOOL shouldStart) {
@@ -84,22 +78,18 @@ class SafeModeAppStateAgentTest : public BlockCleanupTest {
       // and initiate after app state is created.
       main_scene_state_ = [FakeSceneState alloc];
 
-      app_state_ =
-          [[AppState alloc] initWithBrowserLauncher:browser_launcher_mock_
-                                 startupInformation:startup_information_mock_
-                                applicationDelegate:main_application_delegate_];
+      app_state_ = [[AppState alloc]
+          initWithStartupInformation:startup_information_mock_];
 
       main_scene_state_ =
           [main_scene_state_ initWithAppState:app_state_
                                  browserState:browser_state_.get()];
-      main_scene_state_.window = getWindowMock();
+      main_scene_state_.window = GetWindowMock();
     }
     return app_state_;
   }
 
-  id getWindowMock() { return window_; }
-
-  id getBrowserLauncherMock() { return browser_launcher_mock_; }
+  id GetWindowMock() { return window_; }
 
   FakeSceneState* GetSceneState() { return main_scene_state_; }
 
@@ -112,15 +102,13 @@ class SafeModeAppStateAgentTest : public BlockCleanupTest {
   std::unique_ptr<ScopedBlockSwizzler> safe_mode_swizzler_;
   DecisionBlock safe_mode_swizzle_block_;
 
-  id browser_launcher_mock_;
   id startup_information_mock_;
   id connection_information_mock_;
-  id main_application_delegate_;
   id window_;
 };
 
 TEST_F(SafeModeAppStateAgentTest, startSafeMode) {
-  id windowMock = getWindowMock();
+  id windowMock = GetWindowMock();
   [[windowMock expect] makeKeyAndVisible];
   [[[windowMock stub] andReturn:nil] rootViewController];
   [[windowMock stub] setRootViewController:[OCMArg any]];

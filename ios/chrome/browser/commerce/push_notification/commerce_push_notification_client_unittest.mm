@@ -173,9 +173,8 @@ class CommercePushNotificationClientTest : public PlatformTest {
     shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForBrowserState(
             chrome_browser_state_.get()));
-    app_state_ = [[AppState alloc] initWithBrowserLauncher:nil
-                                        startupInformation:nil
-                                       applicationDelegate:nil];
+    app_state_ = [[AppState alloc] initWithStartupInformation:nil];
+
     scene_state_foreground_ =
         [[FakeSceneState alloc] initWithAppState:app_state_
                                     browserState:chrome_browser_state_.get()];

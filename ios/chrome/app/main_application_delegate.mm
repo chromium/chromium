@@ -15,7 +15,6 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/browser_launcher.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
@@ -36,6 +35,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/keyboard/menu_builder.h"
 #import "ios/web/common/uikit_ui_util.h"
@@ -57,8 +57,6 @@ const int kMainIntentCheckDelay = 1;
   // Metrics mediator used to check and update the metrics accordingly to the
   // user preferences.
   MetricsMediator* _metricsMediator;
-  // Browser launcher to have a global launcher.
-  id<BrowserLauncher> _browserLauncher;
   // Container for startup information.
   id<StartupInformation> _startupInformation;
   // The set of "scene sessions" that needs to be discarded. See
@@ -86,11 +84,9 @@ const int kMainIntentCheckDelay = 1;
     _mainController = [[MainController alloc] init];
     _metricsMediator = [[MetricsMediator alloc] init];
     [_mainController setMetricsMediator:_metricsMediator];
-    _browserLauncher = _mainController;
     _startupInformation = _mainController;
-    _appState = [[AppState alloc] initWithBrowserLauncher:_browserLauncher
-                                       startupInformation:_startupInformation
-                                      applicationDelegate:self];
+    _appState =
+        [[AppState alloc] initWithStartupInformation:_startupInformation];
     _pushNotificationDelegate = [[PushNotificationDelegate alloc] init];
     [_mainController setAppState:_appState];
   }
@@ -262,6 +258,8 @@ const int kMainIntentCheckDelay = 1;
     completionHandler();
     return;
   }
+  // TODO(crbug.com/1442203) Remove this Browser dependency, ideally by
+  // refactoring into a dedicated agent.
   Browser* browser =
       _mainController.browserProviderInterface.mainBrowserProvider.browser;
   if (!browser) {
@@ -430,9 +428,11 @@ const int kMainIntentCheckDelay = 1;
   }
 }
 
-// Notifies the FET that the app has launched from external intent (i.e. through
-// the share sheet), which is an eligibility criterion for the default browser
-// blue dot promo.
+// Notifies the Feature Engagement Tracker (FET) that the app has launched from
+// an external intent (i.e. through the share sheet), which is an eligibility
+// criterion for the default browser blue dot promo.
+// TODO(crbug.com/1442203) Remove this Browser dependency, ideally by
+// refactoring into a dedicated agent.
 - (void)notifyFETAppStartupFromExternalIntent {
   Browser* browser =
       _mainController.browserProviderInterface.mainBrowserProvider.browser;

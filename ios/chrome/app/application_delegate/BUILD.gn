@@ -178,7 +178,6 @@ source_set("application_delegate_internal") {
   public_deps = [ ":app_state_header" ]
   sources = [
     "app_state.mm",
-    "browser_launcher.h",
     "metrics_mediator.h",
     "metrics_mediator.mm",
     "url_opener.h",

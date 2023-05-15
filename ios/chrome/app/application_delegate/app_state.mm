@@ -21,13 +21,11 @@
 #import "components/metrics/metrics_service.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/app/application_delegate/app_state+private.h"
-#import "ios/chrome/app/application_delegate/browser_launcher.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/user_activity_handler.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
-#import "ios/chrome/app/main_application_delegate.h"
 #import "ios/chrome/browser/browsing_data/sessions_storage_util.h"
 #import "ios/chrome/browser/crash_report/crash_helper.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
@@ -128,12 +126,6 @@ NSString* const kStartupAttemptReset = @"StartupAttemptReset";
 @end
 
 @implementation AppState {
-  // Browser launcher to launch browser in different states.
-  __weak id<BrowserLauncher> _browserLauncher;
-
-  // UIApplicationDelegate for the application.
-  __weak MainApplicationDelegate* _mainApplicationDelegate;
-
   // Whether the application is currently in the background.
   // This is a workaround for rdar://22392526 where
   // -applicationDidEnterBackground: can be called twice.
@@ -146,18 +138,14 @@ NSString* const kStartupAttemptReset = @"StartupAttemptReset";
 
 @synthesize userInteracted = _userInteracted;
 
-- (instancetype)
-initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
-     startupInformation:(id<StartupInformation>)startupInformation
-    applicationDelegate:(MainApplicationDelegate*)applicationDelegate {
+- (instancetype)initWithStartupInformation:
+    (id<StartupInformation>)startupInformation {
   self = [super init];
   if (self) {
     _observers = [AppStateObserverList
         observersWithProtocol:@protocol(AppStateObserver)];
     _agents = [[NSMutableArray alloc] init];
     _startupInformation = startupInformation;
-    _browserLauncher = browserLauncher;
-    _mainApplicationDelegate = applicationDelegate;
     _appCommandDispatcher = [[CommandDispatcher alloc] init];
 
     // Subscribe to scene connection notifications.
@@ -255,14 +243,11 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
   [self.startupInformation expireFirstUserActionRecorder];
 
-  // Do not save cookies if it is already in progress.
-  id<BrowserProvider> currentBrowserProvider =
-      _browserLauncher.browserProviderInterface.currentBrowserProvider;
-  if (currentBrowserProvider.browser && !_savingCookies) {
+  if (self.mainBrowserState && !_savingCookies) {
     // Save cookies to disk. The empty critical closure guarantees that the task
     // will be run before backgrounding.
     scoped_refptr<net::URLRequestContextGetter> getter =
-        currentBrowserProvider.browser->GetBrowserState()->GetRequestContext();
+        self.mainBrowserState->GetRequestContext();
     _savingCookies = YES;
     __weak AppState* weakSelf = self;
 

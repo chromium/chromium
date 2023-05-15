@@ -10,9 +10,7 @@
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/browser_launcher.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
-#import "ios/chrome/app/main_application_delegate.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/default_browser/utils_test_support.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
@@ -61,16 +59,10 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
         std::make_unique<FakeAuthenticationServiceDelegate>());
     std::unique_ptr<Browser> browser_ =
         std::make_unique<TestBrowser>(browser_state_.get());
-    id browser_launcher_mock =
-        [OCMockObject mockForProtocol:@protocol(BrowserLauncher)];
     FakeStartupInformation* startup_information =
         [[FakeStartupInformation alloc] init];
-    id main_application_delegate =
-        [OCMockObject mockForClass:[MainApplicationDelegate class]];
     app_state_ =
-        [[AppState alloc] initWithBrowserLauncher:browser_launcher_mock
-                               startupInformation:startup_information
-                              applicationDelegate:main_application_delegate];
+        [[AppState alloc] initWithStartupInformation:startup_information];
     app_state_.mainBrowserState = browser_state_.get();
     promos_manager_ = std::make_unique<MockPromosManager>();
     scene_state_ =

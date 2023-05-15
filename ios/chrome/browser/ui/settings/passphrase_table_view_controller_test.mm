@@ -96,9 +96,7 @@ void PassphraseTableViewControllerTest::SetUp() {
       chrome_browser_state_.get(),
       std::make_unique<FakeAuthenticationServiceDelegate>());
   browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
-  app_state_ = [[AppState alloc] initWithBrowserLauncher:nil
-                                      startupInformation:nil
-                                     applicationDelegate:nil];
+  app_state_ = [[AppState alloc] initWithStartupInformation:nil];
   scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
   SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
