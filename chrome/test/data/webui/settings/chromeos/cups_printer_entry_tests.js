@@ -104,7 +104,6 @@ function createPrinterEntry(printerType) {
       },
       printerProtocol: 'ipp',
       printerQueue: 'moreinfohere',
-      printerStatusReason: PrinterStatusReason.UNKNOWN_REASON,
     },
     printerType: printerType,
   };
