@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_delta_serialization.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "content/child/child_process.h"
 #include "ipc/ipc_sender.h"
@@ -40,6 +41,10 @@ void ChildHistogramFetcherFactoryImpl::CreateFetcher(
     // global allocator will cause a CHECK() failure.
     base::GlobalHistogramAllocator::CreateWithSharedMemoryRegion(shared_memory);
   }
+
+  // Emit a local histogram, which should not be reported to servers. This is
+  // monitored from the serverside.
+  LOCAL_HISTOGRAM_BOOLEAN("UMA.LocalHistogram", true);
 
   base::PersistentHistogramAllocator* global_allocator =
       base::GlobalHistogramAllocator::Get();

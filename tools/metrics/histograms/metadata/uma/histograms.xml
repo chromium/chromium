@@ -372,6 +372,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.LocalHistogram" enum="Boolean" expires_after="never">
+<!-- expires-never: Used to monitor that local histograms are not reported. -->
+
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    A local histogram that should never be reported to the servers. If this
+    histogram appears on the serverside, it is possibly an indication that local
+    histograms are making it into UMA logs. Emitted in the constructor and
+    destructor of MetricsService, and in child processes after setting up the
+    shared memory.
+  </summary>
+</histogram>
+
 <histogram name="UMA.LogSize.OnSuccess" units="KB" expires_after="2023-10-01">
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
