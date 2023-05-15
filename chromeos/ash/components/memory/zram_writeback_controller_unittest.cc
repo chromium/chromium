@@ -36,9 +36,11 @@ class MockZramWritebackBackend : public ZramWritebackBackend {
   ~MockZramWritebackBackend() override = default;
 
   MOCK_METHOD2(EnableWriteback, void(uint64_t size_mb, IntCallback cb));
-  MOCK_METHOD2(SetWritebackLimit, void(uint64_t size_pages, IntCallback cb));
-  MOCK_METHOD2(InitiateWriteback, void(ZramWritebackMode mode, Callback cb));
-  MOCK_METHOD2(MarkIdle, void(base::TimeDelta age, Callback cb));
+  MOCK_METHOD2(SetWritebackLimit,
+               void(uint64_t size_pages, BoolIntCallback cb));
+  MOCK_METHOD2(InitiateWriteback,
+               void(ZramWritebackMode mode, BoolCallback cb));
+  MOCK_METHOD2(MarkIdle, void(base::TimeDelta age, BoolCallback cb));
   MOCK_METHOD0(WritebackAlreadyEnabled, bool());
 
   MOCK_METHOD1(GetCurrentBackingDevSize, void(IntCallback cb));
@@ -94,8 +96,9 @@ class ZramWritebackControllerTest : public testing::Test {
   }
 
  protected:
-  using Callback = MockZramWritebackBackend::Callback;
+  using BoolCallback = MockZramWritebackBackend::BoolCallback;
   using IntCallback = MockZramWritebackBackend::IntCallback;
+  using BoolIntCallback = MockZramWritebackBackend::BoolIntCallback;
 
   MockZramWritebackPolicy* policy() { return policy_; }
   MockZramWritebackBackend* backend() { return backend_; }
@@ -119,9 +122,8 @@ TEST_F(ZramWritebackControllerTest, TestInitializationSequence) {
   constexpr uint64_t kZramSizeMb = 1000;
   EXPECT_CALL(*backend(), WritebackAlreadyEnabled()).WillOnce(Return(false));
   EXPECT_CALL(*backend(), EnableWriteback(_, _))
-      .WillOnce(Invoke([](uint64_t size, IntCallback cb) {
-        std::move(cb).Run(true, kWbSize);
-      }));
+      .WillOnce(Invoke(
+          [](uint64_t size, IntCallback cb) { std::move(cb).Run(kWbSize); }));
   EXPECT_CALL(*backend(), GetZramDiskSizeBytes())
       .WillRepeatedly(Return(kZramSizeMb << kMbShift));
   EXPECT_CALL(*policy(), Initialize(kZramSizeMb, kWbSize)).Times(1);
@@ -135,8 +137,7 @@ TEST_F(ZramWritebackControllerTest, TestInitializationSequenceAlreadyEnabled) {
   EXPECT_CALL(*backend(), WritebackAlreadyEnabled()).WillOnce(Return(true));
   EXPECT_CALL(*backend(), EnableWriteback(_, _)).Times(0);
   EXPECT_CALL(*backend(), GetCurrentBackingDevSize(_))
-      .WillOnce(
-          Invoke([](IntCallback cb) { std::move(cb).Run(true, kWbSize); }));
+      .WillOnce(Invoke([](IntCallback cb) { std::move(cb).Run(kWbSize); }));
 
   EXPECT_CALL(*backend(), GetZramDiskSizeBytes())
       .WillRepeatedly(Return(kZramSizeMb << kMbShift));
@@ -159,9 +160,8 @@ class SimpleStrictZramWritebackControllerTest
     // Do a basic setup with standard values.
     EXPECT_CALL(*backend(), WritebackAlreadyEnabled()).WillOnce(Return(false));
     EXPECT_CALL(*backend(), EnableWriteback(_, _))
-        .WillOnce(Invoke([](uint64_t size, IntCallback cb) {
-          std::move(cb).Run(true, kWbSize);
-        }));
+        .WillOnce(Invoke(
+            [](uint64_t size, IntCallback cb) { std::move(cb).Run(kWbSize); }));
     EXPECT_CALL(*backend(), GetZramDiskSizeBytes())
         .WillRepeatedly(Return(kZramSizeMb << kMbShift));
     EXPECT_CALL(*policy(), Initialize(kZramSizeMb, kWbSize)).Times(1);
@@ -212,8 +212,9 @@ TEST_F(SimpleStrictZramWritebackControllerTest, TestFailSetWritebackLimit) {
   // backend.
   EXPECT_CALL(*backend(), SetWritebackLimit(_, _))
       .Times(1)
-      .WillRepeatedly(Invoke(
-          [](uint64_t limit, IntCallback cb) { std::move(cb).Run(false, 1); }));
+      .WillRepeatedly(Invoke([](uint64_t limit, BoolIntCallback cb) {
+        std::move(cb).Run(false, 1);
+      }));
   // We invoked the SetWritebackLimit callback with false (failed), so no
   // further methods should be called, we're a strict mock so that's how we
   // confirm this.
@@ -266,7 +267,7 @@ TEST_F(AdvancedStrictZramWritebackControllerTest,
 
   EXPECT_CALL(*backend(), SetWritebackLimit(_, _))
       .Times(times_)
-      .WillRepeatedly(Invoke([](uint64_t limit, IntCallback cb) {
+      .WillRepeatedly(Invoke([](uint64_t limit, BoolIntCallback cb) {
         std::move(cb).Run(true, kPageLimit);
       }));
   EXPECT_CALL(*policy(), CanWritebackIdle()).WillOnce(Return(true));
@@ -282,12 +283,13 @@ TEST_F(AdvancedStrictZramWritebackControllerTest,
 
   // We expect to do an idle sweep of 60s.
   EXPECT_CALL(*backend(), MarkIdle(base::Seconds(60), _))
-      .WillOnce(Invoke(
-          [](base::TimeDelta age, Callback cb) { std::move(cb).Run(true); }));
+      .WillOnce(Invoke([](base::TimeDelta age, BoolCallback cb) {
+        std::move(cb).Run(true);
+      }));
 
   // We expect to now initiate a writeback for idle.
   EXPECT_CALL(*backend(), InitiateWriteback(ZramWritebackMode::kModeIdle, _))
-      .WillOnce(Invoke([](ZramWritebackMode mode, Callback cb) {
+      .WillOnce(Invoke([](ZramWritebackMode mode, BoolCallback cb) {
         std::move(cb).Run(true);
       }));
 

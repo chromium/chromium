@@ -28,13 +28,15 @@ class COMPONENT_EXPORT(ASH_MEMORY) ZramWritebackBackend {
  public:
   virtual ~ZramWritebackBackend() = default;
 
-  using IntCallback = base::OnceCallback<void(bool, int64_t)>;
+  using IntCallback = base::OnceCallback<void(int64_t)>;
   virtual void EnableWriteback(uint64_t size_mb, IntCallback cb) = 0;
-  virtual void SetWritebackLimit(uint64_t size_pages, IntCallback cb) = 0;
 
-  using Callback = base::OnceCallback<void(bool)>;
-  virtual void InitiateWriteback(ZramWritebackMode mode, Callback cb) = 0;
-  virtual void MarkIdle(base::TimeDelta age, Callback cb) = 0;
+  using BoolIntCallback = base::OnceCallback<void(bool, int64_t)>;
+  virtual void SetWritebackLimit(uint64_t size_pages, BoolIntCallback cb) = 0;
+
+  using BoolCallback = base::OnceCallback<void(bool)>;
+  virtual void InitiateWriteback(ZramWritebackMode mode, BoolCallback cb) = 0;
+  virtual void MarkIdle(base::TimeDelta age, BoolCallback cb) = 0;
   virtual bool WritebackAlreadyEnabled() = 0;
 
   // If and only if writeback already enabled returns true, then

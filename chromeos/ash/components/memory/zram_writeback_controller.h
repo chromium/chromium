@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(ASH_MEMORY) ZramWritebackController {
 
   void PeriodicWriteback();
   void ReadyToWriteback();
-  void OnEnableWriteback(bool result, int64_t writeback_size_mb);
+  void OnEnableWriteback(int64_t writeback_size_mb);
   void OnSetWritebackLimit(bool result, int64_t num_pages);
   void CompleteInitialization(uint64_t zram_size_mb,
                               uint64_t writeback_size_mb);

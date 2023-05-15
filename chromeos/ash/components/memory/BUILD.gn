@@ -15,6 +15,7 @@ component("memory") {
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/resourced:resourced",
+    "//chromeos/ash/components/dbus/swap_management",
     "//chromeos/dbus/constants",
     "//components/memory_pressure",
     "//crypto",
