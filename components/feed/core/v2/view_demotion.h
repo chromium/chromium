@@ -4,6 +4,8 @@
 #ifndef COMPONENTS_FEED_CORE_V2_VIEW_DEMOTION_H_
 #define COMPONENTS_FEED_CORE_V2_VIEW_DEMOTION_H_
 
+#include <stdint.h>
+
 #include <iosfwd>
 #include <vector>
 #include "base/functional/callback_forward.h"
