@@ -55,6 +55,8 @@ class MockReadAnythingPageHandler
   mojo::Receiver<read_anything::mojom::UntrustedPageHandler> receiver_{this};
 };
 
+using testing::Mock;
+
 class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
  public:
   ReadAnythingAppControllerTest() = default;
@@ -101,6 +103,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     AccessibilityEventReceived({snapshot});
     OnActiveAXTreeIDChanged(tree_id_);
     OnAXTreeDistilled({});
+    Mock::VerifyAndClearExpectations(distiller_);
   }
 
   void SetUpdateTreeID(ui::AXTreeUpdate* update) {
@@ -593,6 +596,7 @@ TEST_F(ReadAnythingAppControllerTest, DisplayNodeIdsContains_ContentNodes) {
   EXPECT_TRUE(DisplayNodeIdsContains(1));
   EXPECT_FALSE(DisplayNodeIdsContains(2));
   EXPECT_TRUE(DisplayNodeIdsContains(3));
+  Mock::VerifyAndClearExpectations(distiller_);
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -744,11 +748,13 @@ TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged) {
     EXPECT_CALL(*distiller_, Distill).Times(1);
     OnActiveAXTreeIDChanged(tree_ids[i]);
     EXPECT_EQ("Tree " + base::NumberToString(i), GetTextContent(1));
+    Mock::VerifyAndClearExpectations(distiller_);
   }
 
   // Changing the active tree ID to the same ID does nothing.
   EXPECT_CALL(*distiller_, Distill).Times(0);
   OnActiveAXTreeIDChanged(tree_ids[2]);
+  Mock::VerifyAndClearExpectations(distiller_);
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -761,9 +767,11 @@ TEST_F(ReadAnythingAppControllerTest,
   update.nodes[0].id = 1;
   AccessibilityEventReceived({update});
   OnAXTreeDistilled({1});
+
   EXPECT_CALL(*distiller_, Distill).Times(1);
   OnActiveAXTreeIDChanged(id_1, GURL("www.google.com"));
   EXPECT_TRUE(isSelectable());
+  Mock::VerifyAndClearExpectations(distiller_);
 
   ui::AXTreeUpdate update_1;
   SetUpdateTreeID(&update_1, tree_id_);
@@ -772,12 +780,14 @@ TEST_F(ReadAnythingAppControllerTest,
   update_1.nodes[0].id = 1;
   AccessibilityEventReceived({update_1});
   OnAXTreeDistilled({1});
+
   EXPECT_CALL(*distiller_, Distill).Times(1);
   OnActiveAXTreeIDChanged(
       tree_id_, GURL("https://docs.google.com/document/d/"
                      "1t6x1PQaQWjE8wb9iyYmFaoK1XAEgsl8G1Hx3rzfpoKA/"
                      "edit?ouid=103677288878638916900&usp=docs_home&ths=true"));
   EXPECT_FALSE(isSelectable());
+  Mock::VerifyAndClearExpectations(distiller_);
 }
 
 TEST_F(ReadAnythingAppControllerTest, DoesNotCrashIfActiveAXTreeIDUnknown) {
@@ -786,6 +796,7 @@ TEST_F(ReadAnythingAppControllerTest, DoesNotCrashIfActiveAXTreeIDUnknown) {
   OnActiveAXTreeIDChanged(tree_id);
   OnAXTreeDestroyed(tree_id);
   OnAXTreeDistilled({1});
+  Mock::VerifyAndClearExpectations(distiller_);
 }
 
 TEST_F(ReadAnythingAppControllerTest, DoesNotCrashIfActiveAXTreeIDNotInTrees) {
@@ -853,6 +864,7 @@ TEST_F(ReadAnythingAppControllerTest, OnAXTreeDestroyed_EraseTreeCalled) {
   EXPECT_CALL(*distiller_, Distill).Times(0);
   AccessibilityEventReceived({initial_update});
   EXPECT_EQ("234", GetTextContent(1));
+  Mock::VerifyAndClearExpectations(distiller_);
 
   std::vector<ui::AXTreeUpdate> updates;
   for (int i = 0; i < 3; i++) {
@@ -876,11 +888,13 @@ TEST_F(ReadAnythingAppControllerTest, OnAXTreeDestroyed_EraseTreeCalled) {
   EXPECT_CALL(*distiller_, Distill).Times(0);
   AccessibilityEventReceived({updates[0]});
   EXPECT_EQ("2345", GetTextContent(1));
+  Mock::VerifyAndClearExpectations(distiller_);
 
   // Send update 1.
   EXPECT_CALL(*distiller_, Distill).Times(0);
   AccessibilityEventReceived({updates[1]});
   EXPECT_EQ("23456", GetTextContent(1));
+  Mock::VerifyAndClearExpectations(distiller_);
 
   // Destroy the tree.
   ASSERT_TRUE(HasTree(tree_id_));
@@ -890,13 +904,6 @@ TEST_F(ReadAnythingAppControllerTest, OnAXTreeDestroyed_EraseTreeCalled) {
 
 TEST_F(ReadAnythingAppControllerTest,
        DistillationInProgress_TreeUpdateReceivedOnActiveTree) {
-  // TODO(accessibility): this entire file's usage of mocks is incorrect. It
-  // should resemble what this test does. As is, the EXPECT_CALL expectations
-  // are mismatched with the calls they're supposed to align with. Mocks run
-  // *after* all calls (implicitly at the end of the test) or explicitly via
-  // VerifyAndClearExpectations*.
-  using testing::Mock;
-
   // Set the name of each node to be its id.
   ui::AXTreeUpdate initial_update;
   SetUpdateTreeID(&initial_update);
@@ -989,6 +996,7 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_CALL(*distiller_, Distill).Times(0);
   AccessibilityEventReceived({initial_update});
   EXPECT_EQ("234", GetTextContent(1));
+  Mock::VerifyAndClearExpectations(distiller_);
 
   std::vector<ui::AXTreeUpdate> updates;
   for (int i = 0; i < 3; i++) {
@@ -1013,11 +1021,13 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_CALL(*distiller_, Distill).Times(1);
   ui::AXEvent load_complete(1, ax::mojom::Event::kLoadComplete);
   AccessibilityEventReceived({updates[0]}, {load_complete});
+  Mock::VerifyAndClearExpectations(distiller_);
 
   // Send update 1. Since there's no event (generated or not) which triggers
   // distllation, we have no calls.
   EXPECT_CALL(*distiller_, Distill).Times(0);
   AccessibilityEventReceived({updates[1]});
+  Mock::VerifyAndClearExpectations(distiller_);
 
   // Ensure that there are no crashes after an accessibility event is received
   // immediately after distilling.
@@ -1025,6 +1035,7 @@ TEST_F(ReadAnythingAppControllerTest,
   OnAXTreeDistilled({1});
   SetDistillationInProgress(true);
   AccessibilityEventReceived({updates[2]});
+  Mock::VerifyAndClearExpectations(distiller_);
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -1051,12 +1062,17 @@ TEST_F(ReadAnythingAppControllerTest,
 
   EXPECT_CALL(*distiller_, Distill).Times(0);
   AccessibilityEventReceived({updates[0]});
+  Mock::VerifyAndClearExpectations(distiller_);
+
   EXPECT_CALL(*distiller_, Distill).Times(1);
   ui::AXEvent load_complete(1, ax::mojom::Event::kLoadComplete);
   AccessibilityEventReceived({updates[1]}, {load_complete});
+  Mock::VerifyAndClearExpectations(distiller_);
+
   EXPECT_CALL(*distiller_, Distill).Times(0);
   AccessibilityEventReceived({updates[2]});
   EXPECT_EQ("56", GetTextContent(1));
+  Mock::VerifyAndClearExpectations(distiller_);
 
   // Calling OnActiveAXTreeID updates the active AXTreeID.
   ui::AXTreeID tree_id_2 = ui::AXTreeID::CreateNewAXTreeID();
@@ -1064,6 +1080,7 @@ TEST_F(ReadAnythingAppControllerTest,
   ASSERT_EQ(tree_id_, ActiveTreeId());
   OnActiveAXTreeIDChanged(tree_id_2);
   ASSERT_EQ(tree_id_2, ActiveTreeId());
+  Mock::VerifyAndClearExpectations(distiller_);
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -1126,10 +1143,12 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_CALL(*distiller_, Distill).Times(0);
   AccessibilityEventReceived({updates[0]});
   AccessibilityEventReceived(tree_id_, {updates[1], updates[2]});
+  Mock::VerifyAndClearExpectations(distiller_);
 
   // Switch to a new active tree. Should not crash.
   EXPECT_CALL(*distiller_, Distill).Times(0);
   OnActiveAXTreeIDChanged(ui::AXTreeIDUnknown());
+  Mock::VerifyAndClearExpectations(distiller_);
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnLinkClicked) {
@@ -1137,6 +1156,7 @@ TEST_F(ReadAnythingAppControllerTest, OnLinkClicked) {
   EXPECT_CALL(page_handler_, OnLinkClicked(tree_id_, ax_node_id)).Times(1);
   OnLinkClicked(ax_node_id);
   page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(distiller_);
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnLinkClicked_DistillationInProgress) {
@@ -1147,13 +1167,16 @@ TEST_F(ReadAnythingAppControllerTest, OnLinkClicked_DistillationInProgress) {
   update.nodes.resize(1);
   update.nodes[0].id = 1;
   AccessibilityEventReceived({update});
+
   EXPECT_CALL(*distiller_, Distill).Times(1);
   OnActiveAXTreeIDChanged(new_tree_id);
+  Mock::VerifyAndClearExpectations(distiller_);
 
   // If distillation is in progress, OnLinkClicked should not be called.
   EXPECT_CALL(page_handler_, OnLinkClicked).Times(0);
   OnLinkClicked(2);
   page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(distiller_);
 }
 
 TEST_F(ReadAnythingAppControllerTest, OnSelectionChange) {
@@ -1176,6 +1199,7 @@ TEST_F(ReadAnythingAppControllerTest, OnSelectionChange) {
                                 focus_node_id, focus_offset))
       .Times(1);
   OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id, focus_offset);
+  Mock::VerifyAndClearExpectations(distiller_);
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -1199,6 +1223,7 @@ TEST_F(ReadAnythingAppControllerTest,
       .Times(0);
   OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id, focus_offset);
   page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(distiller_);
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -1213,11 +1238,13 @@ TEST_F(ReadAnythingAppControllerTest,
   AccessibilityEventReceived({update});
   EXPECT_CALL(*distiller_, Distill).Times(1);
   OnActiveAXTreeIDChanged(new_tree_id);
+  Mock::VerifyAndClearExpectations(distiller_);
 
   // If distillation is in progress, OnSelectionChange should not be called.
   EXPECT_CALL(page_handler_, OnSelectionChange).Times(0);
   OnSelectionChange(2, 0, 3, 1);
   page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(distiller_);
 }
 
 TEST_F(ReadAnythingAppControllerTest,
@@ -1242,6 +1269,7 @@ TEST_F(ReadAnythingAppControllerTest,
       .Times(0);
   OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id, focus_offset);
   page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(distiller_);
 }
 
 TEST_F(ReadAnythingAppControllerTest, Selection_Forward) {
