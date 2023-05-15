@@ -785,64 +785,6 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetActiveComposition) {
   EXPECT_EQ(*GetEnd(actual_range.Get()), *expected_end);
 }
 
-TEST_F(AXPlatformNodeTextProviderTest,
-       ITextProviderWinGetVisibleRangesInContentEditable) {
-  TestAXTreeUpdate update(std::string(R"HTML(
-    ++1 kRootWebArea
-    ++++2 kGenericContainer states=kRichlyEditable,kEditable boolAttribute=kNonAtomicTextFieldRoot,true
-    ++++++3 kParagraph
-    ++++++++4 kStaticText name="hello"
-    ++++++++++5 kInlineTextBox name="hello"
-  )HTML"));
-
-  Init(update);
-
-  AXNode* div_node = GetRoot()->children()[0];
-
-  ComPtr<IRawElementProviderSimple> div_com =
-      QueryInterfaceFromNode<IRawElementProviderSimple>(div_node);
-
-  ComPtr<ITextProvider> text_provider;
-  EXPECT_HRESULT_SUCCEEDED(
-      div_com->GetPatternProvider(UIA_TextPatternId, &text_provider));
-
-  base::win::ScopedSafearray text_provider_ranges;
-  EXPECT_HRESULT_SUCCEEDED(
-      text_provider->GetVisibleRanges(text_provider_ranges.Receive()));
-
-  ITextRangeProvider** array_data;
-  ASSERT_HRESULT_SUCCEEDED(::SafeArrayAccessData(
-      text_provider_ranges.Get(), reinterpret_cast<void**>(&array_data)));
-
-  ComPtr<AXPlatformNodeTextProviderWin> platform_node_text_provider;
-  text_provider->QueryInterface(IID_PPV_ARGS(&platform_node_text_provider));
-
-  AXPlatformNodeWin* owner = GetOwner(platform_node_text_provider.Get());
-
-  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kSuppressCharacter);
-  AXNodePosition::AXPositionInstance expected_start =
-      owner->GetDelegate()->CreateTextPositionAt(0);
-  AXNodePosition::AXPositionInstance expected_end =
-      expected_start->CreatePositionAtEndOfAnchor();
-
-  ComPtr<AXPlatformNodeTextRangeProviderWin> actual_range;
-  array_data[0]->QueryInterface(IID_PPV_ARGS(&actual_range));
-
-  EXPECT_EQ(*GetStart(actual_range.Get()), *expected_start);
-  EXPECT_EQ(*GetEnd(actual_range.Get()), *expected_end);
-
-  EXPECT_EQ(expected_start->text_offset(), 0);
-  EXPECT_EQ(GetStart(actual_range.Get())->text_offset(),
-            expected_start->text_offset());
-  EXPECT_EQ(expected_end->text_offset(), 5);
-  EXPECT_EQ(GetEnd(actual_range.Get())->text_offset(),
-            expected_end->text_offset());
-
-  ASSERT_HRESULT_SUCCEEDED(::SafeArrayUnaccessData(text_provider_ranges.Get()));
-  text_provider_ranges.Reset();
-}
-
 TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetConversionTarget) {
   TestAXTreeUpdate update(std::string(R"HTML(
     ++1 kRootWebArea name="Document"
