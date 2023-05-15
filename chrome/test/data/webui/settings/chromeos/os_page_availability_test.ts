@@ -30,7 +30,7 @@ suite('Page availability', () => {
 
     const loadTimeControlled: LoadTimeControlledPage[] = [
       {pageName: 'kerberos', loadTimeId: 'isKerberosEnabled'},
-      {pageName: 'reset', loadTimeId: 'allowPowerwash'},
+      {pageName: 'osReset', loadTimeId: 'allowPowerwash'},
     ];
     loadTimeControlled.forEach(({pageName, loadTimeId}) => {
       test(`${pageName} page is available when ${loadTimeId}=true`, () => {
@@ -49,7 +49,6 @@ suite('Page availability', () => {
 
   suite('When signed in as user', () => {
     const alwaysAvailable: Array<keyof OsPageAvailability> = [
-      'a11y',
       'apps',
       'bluetooth',
       'crostini',
@@ -57,13 +56,14 @@ suite('Page availability', () => {
       'device',
       'files',
       'internet',
-      'languages',
       'multidevice',
-      'people',
+      'osAccessibility',
+      'osLanguages',
+      'osPeople',
+      'osPrinting',
+      'osPrivacy',
+      'osSearch',
       'personalization',
-      'printing',
-      'privacy',
-      'search',
     ];
     alwaysAvailable.forEach((pageName) => {
       test(`${pageName} page should always be available`, () => {
@@ -81,17 +81,17 @@ suite('Page availability', () => {
     });
 
     const alwaysAvailable: Array<keyof OsPageAvailability> = [
-      'a11y',
       'apps',
       'bluetooth',
       'crostini',
       'dateTime',
       'device',
       'internet',
-      'languages',
-      'printing',
-      'privacy',
-      'search',
+      'osAccessibility',
+      'osLanguages',
+      'osPrinting',
+      'osPrivacy',
+      'osSearch',
     ];
     alwaysAvailable.forEach((pageName) => {
       test(`${pageName} page should always be available`, () => {
@@ -103,7 +103,7 @@ suite('Page availability', () => {
     const neverAvailable: Array<keyof OsPageAvailability> = [
       'files',
       'multidevice',
-      'people',
+      'osPeople',
       'personalization',
     ];
     neverAvailable.forEach((pageName) => {

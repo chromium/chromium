@@ -16,26 +16,9 @@
  */
 
 import {isGuest, isKerberosEnabled, isPowerwashAllowed} from './common/load_time_booleans.js';
+import {OsPageAvailability} from './mojom-webui/routes.mojom-webui.js';
 
-export interface OsPageAvailability {
-  a11y: boolean;
-  apps: boolean;
-  bluetooth: boolean;
-  crostini: boolean;
-  dateTime: boolean;
-  device: boolean;
-  files: boolean;
-  internet: boolean;
-  kerberos: boolean;
-  languages: boolean;
-  multidevice: boolean;
-  people: boolean;
-  personalization: boolean;
-  printing: boolean;
-  privacy: boolean;
-  reset: boolean;
-  search: boolean;
-}
+export {OsPageAvailability};
 
 /**
  * Used to create the pageAvailability object.
@@ -46,7 +29,6 @@ export interface OsPageAvailability {
 export function createPageAvailability(): OsPageAvailability {
   if (isGuest()) {
     return {
-      a11y: true,
       apps: true,
       bluetooth: true,
       crostini: true,
@@ -55,18 +37,18 @@ export function createPageAvailability(): OsPageAvailability {
       files: false,
       internet: true,
       kerberos: isKerberosEnabled(),
-      languages: true,
       multidevice: false,
-      people: false,
+      osAccessibility: true,
+      osLanguages: true,
+      osPeople: false,
+      osPrinting: true,
+      osPrivacy: true,
+      osReset: isPowerwashAllowed(),
+      osSearch: true,
       personalization: false,
-      printing: true,
-      privacy: true,
-      reset: isPowerwashAllowed(),
-      search: true,
     };
   }
   return {
-    a11y: true,
     apps: true,
     bluetooth: true,
     crostini: true,
@@ -75,13 +57,14 @@ export function createPageAvailability(): OsPageAvailability {
     files: true,
     internet: true,
     kerberos: isKerberosEnabled(),
-    languages: true,
     multidevice: true,
-    people: true,
+    osAccessibility: true,
+    osLanguages: true,
+    osPeople: true,
+    osPrinting: true,
+    osPrivacy: true,
+    osReset: isPowerwashAllowed(),
+    osSearch: true,
     personalization: true,
-    printing: true,
-    privacy: true,
-    reset: isPowerwashAllowed(),
-    search: true,
   };
 }

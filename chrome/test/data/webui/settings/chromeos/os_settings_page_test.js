@@ -193,7 +193,7 @@ suite('<os-settings-page>', function() {
     });
 
     [{
-      pageName: 'reset',
+      pageName: 'osReset',
       elementName: 'os-settings-reset-page',
     },
      {
