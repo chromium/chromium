@@ -576,7 +576,9 @@ AsyncMatch V4LocalDatabaseManager::CheckCsdAllowlistUrl(const GURL& url,
   return HandleAllowlistCheck(std::move(check), /*allow_async_check=*/true);
 }
 
-bool V4LocalDatabaseManager::MatchDownloadAllowlistUrl(const GURL& url) {
+void V4LocalDatabaseManager::MatchDownloadAllowlistUrl(
+    const GURL& url,
+    base::OnceCallback<void(bool)> callback) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
 
   StoresToCheck stores_to_check({GetUrlCsdDownloadAllowlistId()});
@@ -584,10 +586,12 @@ bool V4LocalDatabaseManager::MatchDownloadAllowlistUrl(const GURL& url) {
   if (!AreAllStoresAvailableNow(stores_to_check) || !CanCheckUrl(url)) {
     // Fail close: Allowlist nothing. This may generate download-protection
     // pings for allowlisted domains, but that's fine.
-    return false;
+    sb_task_runner()->PostTask(FROM_HERE,
+                               base::BindOnce(std::move(callback), false));
+    return;
   }
 
-  return HandleUrlSynchronously(url, stores_to_check);
+  HandleUrl(url, stores_to_check, std::move(callback));
 }
 
 ThreatSource V4LocalDatabaseManager::GetThreatSource() const {
@@ -895,9 +899,10 @@ void V4LocalDatabaseManager::ScheduleFullHashCheck(
   }
 }
 
-bool V4LocalDatabaseManager::HandleUrlSynchronously(
+void V4LocalDatabaseManager::HandleUrl(
     const GURL& url,
-    const StoresToCheck& stores_to_check) {
+    const StoresToCheck& stores_to_check,
+    base::OnceCallback<void(bool)> callback) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
 
   std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
@@ -905,7 +910,8 @@ bool V4LocalDatabaseManager::HandleUrlSynchronously(
       std::vector<GURL>(1, url),
       MechanismExperimentHashDatabaseCache::kNoExperiment);
 
-  return GetPrefixMatches(check);
+  sb_task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), GetPrefixMatches(check)));
 }
 
 void V4LocalDatabaseManager::OnFullHashResponse(

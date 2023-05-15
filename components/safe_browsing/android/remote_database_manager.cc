@@ -358,10 +358,12 @@ AsyncMatch RemoteSafeBrowsingDatabaseManager::CheckCsdAllowlistUrl(
   return is_match ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH;
 }
 
-bool RemoteSafeBrowsingDatabaseManager::MatchDownloadAllowlistUrl(
-    const GURL& url) {
+void RemoteSafeBrowsingDatabaseManager::MatchDownloadAllowlistUrl(
+    const GURL& url,
+    base::OnceCallback<void(bool)> callback) {
   NOTREACHED();
-  return true;
+  sb_task_runner()->PostTask(FROM_HERE,
+                             base::BindOnce(std::move(callback), true));
 }
 
 safe_browsing::ThreatSource RemoteSafeBrowsingDatabaseManager::GetThreatSource()

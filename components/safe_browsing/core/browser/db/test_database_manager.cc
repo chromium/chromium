@@ -90,10 +90,11 @@ AsyncMatch TestSafeBrowsingDatabaseManager::CheckCsdAllowlistUrl(
   return AsyncMatch::MATCH;
 }
 
-bool TestSafeBrowsingDatabaseManager::MatchDownloadAllowlistUrl(
-    const GURL& url) {
+void TestSafeBrowsingDatabaseManager::MatchDownloadAllowlistUrl(
+    const GURL& url,
+    base::OnceCallback<void(bool)> callback) {
   NOTIMPLEMENTED();
-  return true;
+  std::move(callback).Run(true);
 }
 
 safe_browsing::ThreatSource TestSafeBrowsingDatabaseManager::GetThreatSource()
