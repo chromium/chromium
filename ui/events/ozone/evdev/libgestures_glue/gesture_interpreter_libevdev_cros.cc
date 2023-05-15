@@ -142,7 +142,6 @@ void GestureInterpreterLibevdevCros::OnLibEvdevCrosOpen(
     Evdev* evdev,
     EventStateRec* evstate) {
   DCHECK(evdev->info.is_monotonic) << "libevdev must use monotonic timestamps";
-  VLOG(9) << "HACK DO NOT REMOVE OR LINK WILL FAIL" << (void*)gestures_log;
 
   // Set device pointer and initialize properties.
   evdev_ = evdev;
