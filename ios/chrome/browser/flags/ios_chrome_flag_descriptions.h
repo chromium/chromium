@@ -568,6 +568,10 @@ extern const char kNewNTPOmniboxLayoutDescription[];
 extern const char kNewOverflowMenuName[];
 extern const char kNewOverflowMenuDescription[];
 
+// Title and description for the flag to enable overflow menu customization
+extern const char kOverflowMenuCustomizationName[];
+extern const char kOverflowMenuCustomizationDescription[];
+
 // Title and description for temporary bug fix to broken NTP view hierarhy.
 // TODO(crbug.com/1262536): Remove this when fixed.
 extern const char kNTPViewHierarchyRepairName[];

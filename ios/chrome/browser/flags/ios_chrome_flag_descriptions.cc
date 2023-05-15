@@ -641,6 +641,10 @@ const char kNewNTPOmniboxLayoutDescription[] =
 const char kNewOverflowMenuName[] = "New Overflow Menu";
 const char kNewOverflowMenuDescription[] = "Enables the new overflow menu";
 
+const char kOverflowMenuCustomizationName[] = "Overflow Menu Customization";
+const char kOverflowMenuCustomizationDescription[] =
+    "Allow users to customize the order of the overflow menu";
+
 const char kNTPViewHierarchyRepairName[] = "NTP View Hierarchy Repair";
 const char kNTPViewHierarchyRepairDescription[] =
     "Checks if NTP view hierarchy is broken and fixes it if necessary.";

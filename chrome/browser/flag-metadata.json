@@ -5893,6 +5893,11 @@
     "expiry_milestone": 114
   },
   {
+    "name": "overflow-menu-customization",
+    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "overlay-scrollbars",
     "owners": [ "chaopeng", "bokan", "input-dev" ],
     "expiry_milestone": 114
