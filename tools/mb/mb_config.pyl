@@ -1737,7 +1737,7 @@
       'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
       'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
       'no_secondary_abi', 'use_clang_coverage', 'partial_code_coverage_instrumentation',
-      'enable_dangling_raw_ptr_checks',
+      'enable_dangling_raw_ptr_feature_flag'
     ],
 
     'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_native_coverage_siso': [
