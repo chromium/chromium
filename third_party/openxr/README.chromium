@@ -1,8 +1,8 @@
 Name: OpenXR SDK
 Short Name: OpenXR
 URL: https://github.com/KhronosGroup/OpenXR-SDK
-Version: 1.0.17sd
-Revision: bf21ccb1007bb531b45d9978919a56ea5059c245
+Version: 1.0.27
+Revision: 58a00cf85c39ad5ec4dc43a769624e420c06179a
 License: Apache 2.0
 License File: src/LICENSE
 Security Critical: yes
@@ -14,4 +14,52 @@ XR—platforms and devices.
 
 Local Modifications:
 No modifications to upstream files. BUILD.gn contains all of the configurations
-needed to build the OpenXR loader in Chromium.
+needed to build the OpenXR loader in Chromium, along with its dependencies. The
+readme was expanded with information about transitive dependencies that are
+copied directly into the OpenXR SDK repository.
+
+
+
+Name: JNIPP
+Short Name: JNIPP
+URL: https://github.com/mitchdowd/jnipp
+Version: N/A
+Revision: unknown
+License: MIT
+License File: src/src/external/jnipp/LICENSE
+Security Critical: yes
+
+Description:
+JNIPP is just a C++ wrapper for the standard Java Native Interface (JNI).It
+tries to take some of the long-winded annoyance out of integrating your Java
+and C++ code.
+
+Local Modifications:
+No modifications to upstream files. BUILD.gn contains all of the configurations
+needed to build the library in Chromium. Since it is a transitive dependency
+that was directly included in OpenXR SDK repository, the exact revision is
+unknown. The library also does not have any versioned releases.
+
+
+
+Name: android-jni-wrappers
+Short Name: android-jni-wrappers
+URL: https://gitlab.freedesktop.org/monado/utilities/android-jni-wrappers
+Version: N/A
+Revision: unknown
+License: Apache 2.0
+License File: https://gitlab.freedesktop.org/monado/utilities/android-jni-wrappers/-/blob/a3ca2c505a338cdffcca2bf91021ee72b010122f/LICENSES/Apache-2.0.txt
+Security Critical: yes
+
+Description:
+Python tool to generate C++ wrappers for (mostly Android-related) JNI/Java
+objects. Generated files are typically slightly hand-modified.
+
+Local Modifications:
+No modifications to upstream files. BUILD.gn contains all of the configurations
+needed to build the library in Chromium, along with its dependencies. Since it
+is a transitive dependency that was directly included in OpenXR SDK repository,
+the exact revision is unknown. The library also does not have any versioned
+releases. The library contains auto-generated files with unknown hand-made
+modifications. The library is triple-licensed, and the copy from OpenXR SDK
+repository does not include a LICENSE file.
