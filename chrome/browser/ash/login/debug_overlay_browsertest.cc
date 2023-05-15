@@ -61,6 +61,7 @@ class DebugOverlayOnLoginTest : public DebugOverlayTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DebugOverlayTest, HideAndShow) {
+  WaitForOobeUI();
   test::OobeJS().ExpectHidden(kDebugOverlay);
   test::OobeJS().ExpectVisible(kDebugButton);
   test::OobeJS().ClickOn(kDebugButton);
@@ -86,6 +87,7 @@ class DebugOverlayScreensTest : public DebugOverlayTest,
 };
 
 IN_PROC_BROWSER_TEST_P(DebugOverlayScreensTest, ExpectScreenButtonsCount) {
+  WaitForOobeUI();
   test::OobeJS().ExpectHidden(kDebugOverlay);
   test::OobeJS().ExpectVisible(kDebugButton);
   test::OobeJS().ClickOn(kDebugButton);

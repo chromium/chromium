@@ -518,6 +518,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerTest, SwitchLanguage) {
   ASSERT_TRUE(WizardController::default_controller() != nullptr);
   WizardController::default_controller()->AdvanceToScreen(
       WelcomeView::kScreenId);
+  test::WaitForWelcomeScreen();
 
   // Checking the default locale. Provided that the profile is cleared in SetUp.
   EXPECT_EQ("en-US", g_browser_process->GetApplicationLocale());
@@ -615,6 +616,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
     WizardController* wizard_controller =
         WizardController::default_controller();
     wizard_controller->SetCurrentScreen(nullptr);
+    WaitForOobeUI();
     wizard_controller->SetSharedURLLoaderFactoryForTesting(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
@@ -3069,6 +3071,7 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoScreenForEnterpriseEnrollmentTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GaiaInfoTest, TransitionToGaiaInfo) {
+  WaitForOobeUI();
   WizardController::default_controller()->AdvanceToScreen(
       UserCreationView::kScreenId);
   test::OobeJS().ClickOnPath({"user-creation", "selfButton"});
@@ -3077,6 +3080,7 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoTest, TransitionToGaiaInfo) {
 }
 
 IN_PROC_BROWSER_TEST_F(GaiaInfoTest, TransitionFromGaiaInfo) {
+  WaitForOobeUI();
   WizardController::default_controller()->AdvanceToScreen(
       GaiaInfoScreenView::kScreenId);
   test::OobeJS().ClickOnPath({"gaia-info", "nextButton"});
@@ -3084,6 +3088,7 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoTest, TransitionFromGaiaInfo) {
 }
 
 IN_PROC_BROWSER_TEST_F(GaiaInfoTest, SkipGaiaInfoForChildAccountCreation) {
+  WaitForOobeUI();
   WizardController::default_controller()->AdvanceToScreen(
       UserCreationView::kScreenId);
   test::OobeJS().ClickOnPath({"user-creation", "childButton"});
@@ -3094,6 +3099,7 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoTest, SkipGaiaInfoForChildAccountCreation) {
 }
 
 IN_PROC_BROWSER_TEST_F(GaiaInfoTest, SkipGaiaInfoForChildSignIn) {
+  WaitForOobeUI();
   WizardController::default_controller()->AdvanceToScreen(
       UserCreationView::kScreenId);
   test::OobeJS().ClickOnPath({"user-creation", "childButton"});
@@ -3112,6 +3118,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerGaiaTest, GoBackToGaiaInfo) {
   LoginDisplayHost::default_host()
       ->GetWizardContext()
       ->is_user_creation_enabled = true;
+  WaitForOobeUI();
   WizardController::default_controller()->AdvanceToScreen(
       GaiaInfoScreenView::kScreenId);
   test::OobeJS().ClickOnPath({"gaia-info", "nextButton"});
@@ -3129,6 +3136,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerGaiaTest,
       ->is_user_creation_enabled = true;
   LoginDisplayHost::default_host()->GetWizardContext()->is_add_person_flow =
       true;
+  WaitForOobeUI();
 
   WizardController::default_controller()->AdvanceToScreen(
       GaiaInfoScreenView::kScreenId);
@@ -3151,6 +3159,8 @@ IN_PROC_BROWSER_TEST_P(GoingBackFromGaiaScreenInChildFlowTest,
 
   WizardController::default_controller()->AdvanceToScreen(
       UserCreationView::kScreenId);
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+
   test::OobeJS().ClickOnPath({"user-creation", "childButton"});
   test::OobeJS().ClickOnPath({"user-creation", "nextButton"});
   test::OobeJS().ClickOnPath({"user-creation", std::get<1>(GetParam())});

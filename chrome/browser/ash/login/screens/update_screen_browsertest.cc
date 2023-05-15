@@ -203,6 +203,7 @@ class UpdateScreenTest : public OobeBaseTest,
   }
 
   void ShowUpdateScreen() {
+    WaitForOobeUI();
     WizardController::default_controller()->AdvanceToScreen(
         UpdateView::kScreenId);
     // When opt out option is not available we try to wait and don't show the

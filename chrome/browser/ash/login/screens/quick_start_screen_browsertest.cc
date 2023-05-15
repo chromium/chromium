@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, QRCode) {
 
 IN_PROC_BROWSER_TEST_F(QuickStartAcceleratorBrowserTest,
                        ButtonVisibleOnWelcomeScreen) {
-  OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  test::WaitForWelcomeScreen();
   test::OobeJS().ExpectHiddenPath(kQuickStartButtonPath);
 
   WizardController::default_controller()->HandleAccelerator(
