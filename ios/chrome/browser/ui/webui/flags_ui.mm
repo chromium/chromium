@@ -26,7 +26,7 @@
 #import "ios/chrome/browser/flags/about_flags.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 #import "ios/web/public/webui/web_ui_ios_data_source.h"
 #import "ios/web/public/webui/web_ui_ios_message_handler.h"

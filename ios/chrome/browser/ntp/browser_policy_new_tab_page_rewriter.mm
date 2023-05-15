@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/browser_state.h"
 

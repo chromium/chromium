@@ -7,9 +7,9 @@
 #import "base/memory/weak_ptr.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
-#import "ios/chrome/browser/url/url_util.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

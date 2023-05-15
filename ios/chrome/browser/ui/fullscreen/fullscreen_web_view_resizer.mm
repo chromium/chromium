@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_web_view_resizer.h"
 
 #import "base/ios/ios_util.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
-#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"

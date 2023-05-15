@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/reading_list/reading_list_download_service.h"
 #import "ios/chrome/browser/reading_list/reading_list_download_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"

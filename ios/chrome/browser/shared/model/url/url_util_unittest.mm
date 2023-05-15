@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/url/url_util.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "net/base/mac/url_conversions.h"
 #import "testing/gtest_mac.h"

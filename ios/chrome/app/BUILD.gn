@@ -48,8 +48,8 @@ source_set("app") {
 
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/url:constants",
     "//net",
     "//url",
   ]

@@ -18,7 +18,7 @@
 #import "components/net_log/net_export_ui_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/webui/net_export_tab_helper.h"
 #import "ios/chrome/browser/webui/show_mail_composer_context.h"
 #import "ios/chrome/common/channel_info.h"

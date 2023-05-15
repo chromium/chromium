@@ -39,7 +39,7 @@
 #import "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/net/cookies/system_cookie_store.h"
 #import "ios/web/public/browsing_data/system_cookie_store_util.h"
 #import "ios/web/public/thread/web_task_traits.h"

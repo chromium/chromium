@@ -10,7 +10,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/window_activities/move_tab_activity_type_buildflags.h"
 #import "ios/web/public/navigation/navigation_manager.h"

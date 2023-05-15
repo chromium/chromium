@@ -4,8 +4,8 @@
 
 #import <XCTest/XCTest.h>
 
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/webui/interstitials/interstitial_ui_constants.h"
-#import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"

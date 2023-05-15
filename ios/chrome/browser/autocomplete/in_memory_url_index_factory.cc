@@ -16,7 +16,7 @@
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/url/chrome_url_constants.h"
+#include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #include "ios/components/webui/web_ui_url_constants.h"
 
 namespace ios {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_URL_URL_UTIL_H_
-#define IOS_CHROME_BROWSER_URL_URL_UTIL_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_URL_URL_UTIL_H_
+#define IOS_CHROME_BROWSER_SHARED_MODEL_URL_URL_UTIL_H_
 
 #import <Foundation/Foundation.h>
 
@@ -57,4 +57,4 @@ bool SchemeIsAppStoreScheme(const std::string& scheme);
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_URL_URL_UTIL_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_URL_URL_UTIL_H_

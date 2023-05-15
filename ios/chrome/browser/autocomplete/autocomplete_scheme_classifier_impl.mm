@@ -6,7 +6,7 @@
 
 #import "base/check_op.h"
 #import "base/strings/string_util.h"
-#import "ios/chrome/browser/url/url_util.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "url/url_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

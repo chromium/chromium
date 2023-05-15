@@ -41,7 +41,7 @@ source_set("enterprise_info_popover_view_controller") {
     ":info_popover_view_controller",
     "//base:base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/url:constants",
+    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",

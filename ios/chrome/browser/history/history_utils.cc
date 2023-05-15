@@ -5,7 +5,7 @@
 #include "ios/chrome/browser/history/history_utils.h"
 
 #include "components/dom_distiller/core/url_constants.h"
-#include "ios/chrome/browser/url/chrome_url_constants.h"
+#include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #include "ios/components/webui/web_ui_url_constants.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
