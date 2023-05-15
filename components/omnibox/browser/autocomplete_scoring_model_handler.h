@@ -46,6 +46,10 @@ class AutocompleteScoringModelHandler
   absl::optional<std::vector<float>> GetModelInput(
       const ScoringSignals& scoring_signals);
 
+  // Construct a batch model input from a vector of scoring signals.
+  absl::optional<std::vector<std::vector<float>>> GetBatchModelInput(
+      const std::vector<const ScoringSignals*>& scoring_signals_vec);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(AutocompleteScoringModelHandlerTest,
                            ExtractInputFromScoringSignalsTest);

@@ -24,6 +24,10 @@ class AutocompleteScoringModelService : public KeyedService {
  public:
   using ResultCallback =
       base::OnceCallback<void(std::tuple<absl::optional<float>, size_t, GURL>)>;
+  using BatchResultCallback = base::OnceCallback<void(
+      absl::optional<std::vector<absl::optional<float>>>,
+      std::vector<size_t>,
+      std::vector<GURL>)>;
   using ScoringSignals =
       ::metrics::OmniboxEventProto::Suggestion::ScoringSignals;
 
@@ -45,6 +49,16 @@ class AutocompleteScoringModelService : public KeyedService {
                                  GURL match_destination_url,
                                  ResultCallback result_callback);
 
+  // Invokes the model to scores a batch of URL candidates with their signals.
+  // Calls `batch_result_callback` with a batch of optional prediction scores
+  // from the model.
+  void BatchScoreAutocompleteUrlMatches(
+      base::CancelableTaskTracker* tracker,
+      const std::vector<const ScoringSignals*>& batch_scoring_signals,
+      const std::vector<size_t>& match_indexes,
+      const std::vector<GURL>& match_destination_urls,
+      BatchResultCallback batch_result_callback);
+
   // Returns whether the scoring model is loaded and the pointer to the
   // handler is non-null.
   bool UrlScoringModelAvailable();
@@ -60,10 +74,20 @@ class AutocompleteScoringModelService : public KeyedService {
       const absl::optional<AutocompleteScoringModelExecutor::ModelOutput>&
           model_output);
 
+  void ProcessBatchModelOutput(
+      BatchResultCallback batch_result_callback,
+      const std::vector<size_t>& match_indexes,
+      const std::vector<GURL>& match_destination_urls,
+      const std::vector<
+          absl::optional<AutocompleteScoringModelExecutor::ModelOutput>>&
+          batch_model_output);
+
   scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner_;
 
   // Autocomplete URL scoring model.
   std::unique_ptr<AutocompleteScoringModelHandler> url_scoring_model_handler_;
+
+  base::WeakPtrFactory<AutocompleteScoringModelService> weak_ptr_factory_{this};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_SCORING_MODEL_SERVICE_H_

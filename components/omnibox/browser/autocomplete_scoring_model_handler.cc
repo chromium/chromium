@@ -87,6 +87,23 @@ AutocompleteScoringModelHandler::GetModelInput(
                                         model_metadata.value());
 }
 
+absl::optional<std::vector<std::vector<float>>>
+AutocompleteScoringModelHandler::GetBatchModelInput(
+    const std::vector<const ScoringSignals*>& scoring_signals_vec) {
+  std::vector<std::vector<float>> batch_model_input;
+  for (const auto* scoring_signals : scoring_signals_vec) {
+    const absl::optional<std::vector<float>> model_input =
+        GetModelInput(*scoring_signals);
+    if (model_input) {
+      batch_model_input.push_back(std::move(*model_input));
+    } else {
+      // Return null if any input in the batch is invalid.
+      return absl::nullopt;
+    }
+  }
+  return batch_model_input;
+}
+
 std::vector<float>
 AutocompleteScoringModelHandler::ExtractInputFromScoringSignals(
     const ScoringSignals& scoring_signals,

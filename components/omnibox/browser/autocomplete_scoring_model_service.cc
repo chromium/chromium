@@ -62,7 +62,7 @@ void AutocompleteScoringModelService::ScoreAutocompleteUrlMatch(
   url_scoring_model_handler_->ExecuteModelWithInput(
       tracker,
       base::BindOnce(&AutocompleteScoringModelService::ProcessModelOutput,
-                     base::Unretained(this), std::move(result_callback),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(result_callback),
                      match_index, match_destination_url),
       *input_signals);
 }
@@ -70,6 +70,39 @@ void AutocompleteScoringModelService::ScoreAutocompleteUrlMatch(
 bool AutocompleteScoringModelService::UrlScoringModelAvailable() {
   return url_scoring_model_handler_ &&
          url_scoring_model_handler_->ModelAvailable();
+}
+
+void AutocompleteScoringModelService::BatchScoreAutocompleteUrlMatches(
+    base::CancelableTaskTracker* tracker,
+    const std::vector<const ScoringSignals*>& batch_scoring_signals,
+    const std::vector<size_t>& match_indexes,
+    const std::vector<GURL>& match_destination_urls,
+    BatchResultCallback batch_result_callback) {
+  TRACE_EVENT0(
+      "omnibox",
+      "AutocompleteScoringModelService::BatchScoreAutocompleteUrlMatches");
+
+  if (!UrlScoringModelAvailable()) {
+    std::move(batch_result_callback)
+        .Run(absl::nullopt, match_indexes, match_destination_urls);
+    return;
+  }
+
+  absl::optional<std::vector<std::vector<float>>> batch_input =
+      url_scoring_model_handler_->GetBatchModelInput(batch_scoring_signals);
+  if (!batch_input) {
+    std::move(batch_result_callback)
+        .Run(absl::nullopt, match_indexes, match_destination_urls);
+    return;
+  }
+
+  url_scoring_model_handler_->BatchExecuteModelWithInput(
+      tracker,
+      base::BindOnce(&AutocompleteScoringModelService::ProcessBatchModelOutput,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(batch_result_callback), match_indexes,
+                     match_destination_urls),
+      *batch_input);
 }
 
 void AutocompleteScoringModelService::ProcessModelOutput(
@@ -91,4 +124,27 @@ void AutocompleteScoringModelService::ProcessModelOutput(
   }
   std::move(result_callback)
       .Run(std::make_tuple(absl::nullopt, match_index, match_destination_url));
+}
+
+void AutocompleteScoringModelService::ProcessBatchModelOutput(
+    BatchResultCallback batch_result_callback,
+    const std::vector<size_t>& match_indexes,
+    const std::vector<GURL>& match_destination_urls,
+    const std::vector<
+        absl::optional<AutocompleteScoringModelExecutor::ModelOutput>>&
+        batch_model_output) {
+  TRACE_EVENT0("omnibox",
+               "AutocompleteScoringModelService::ProcessBatchModelOutput");
+
+  std::vector<absl::optional<float>> batch_output_scores;
+  for (const auto& output : batch_model_output) {
+    if (output) {
+      batch_output_scores.push_back(output.value()[0]);
+    } else {
+      batch_output_scores.push_back(absl::nullopt);
+    }
+  }
+
+  std::move(batch_result_callback)
+      .Run(batch_output_scores, match_indexes, match_destination_urls);
 }
