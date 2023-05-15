@@ -364,11 +364,6 @@ void BookmarkUndoService::Shutdown() {
   observed_models_.clear();
 }
 
-void BookmarkUndoService::BookmarkModelLoaded(BookmarkModel* model,
-                                              bool ids_reassigned) {
-  undo_manager_.RemoveAllOperations();
-}
-
 void BookmarkUndoService::BookmarkModelBeingDeleted(BookmarkModel* model) {
   // Delete all undo operations to avoid dangling pointers to `BookmarkModel`
   // that is getting destroyed. `BookmarkModel` is a `KeyedService`, so it is

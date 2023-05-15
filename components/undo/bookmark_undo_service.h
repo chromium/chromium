@@ -46,8 +46,6 @@ class BookmarkUndoService : public bookmarks::BaseBookmarkModelObserver,
  private:
   // bookmarks::BaseBookmarkModelObserver:
   void BookmarkModelChanged() override {}
-  void BookmarkModelLoaded(bookmarks::BookmarkModel* model,
-                           bool ids_reassigned) override;
   void BookmarkModelBeingDeleted(bookmarks::BookmarkModel* model) override;
   void BookmarkNodeMoved(bookmarks::BookmarkModel* model,
                          const bookmarks::BookmarkNode* old_parent,
