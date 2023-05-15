@@ -8,7 +8,7 @@
 #include "content/public/browser/web_ui_controller.h"
 
 #include "base/functional/callback.h"
-#include "chrome/browser/signin/dice_web_signin_interceptor.h"
+#include "chrome/browser/signin/web_signin_interceptor.h"
 
 namespace content {
 class WebUI;
@@ -24,8 +24,7 @@ class DiceWebSigninInterceptUI : public content::WebUIController {
 
   // Initializes the DiceWebSigninInterceptUI.
   void Initialize(
-      const DiceWebSigninInterceptor::Delegate::BubbleParameters&
-          bubble_parameters,
+      const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       base::OnceCallback<void(int)> show_widget_with_height_callback,
       base::OnceCallback<void(SigninInterceptionUserChoice)>
           completion_callback);

@@ -40,7 +40,7 @@ signin_metrics::PromoAction kTestPromoAction =
 
 // Dummy delegate that declines all interceptions.
 class TestDiceWebSigninInterceptorDelegate
-    : public DiceWebSigninInterceptor::Delegate {
+    : public WebSigninInterceptor::Delegate {
  public:
   ~TestDiceWebSigninInterceptorDelegate() override = default;
 
@@ -49,7 +49,7 @@ class TestDiceWebSigninInterceptorDelegate
     return false;
   }
 
-  std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
   ShowSigninInterceptionBubble(
       content::WebContents* web_contents,
       const BubbleParameters& bubble_parameters,
@@ -61,8 +61,8 @@ class TestDiceWebSigninInterceptorDelegate
   void ShowFirstRunExperienceInNewProfile(
       Browser* browser,
       const CoreAccountId& account_id,
-      DiceWebSigninInterceptor::SigninInterceptionType interception_type)
-      override {}
+      WebSigninInterceptor::SigninInterceptionType interception_type) override {
+  }
 };
 
 class MockDiceWebSigninInterceptor : public DiceWebSigninInterceptor {

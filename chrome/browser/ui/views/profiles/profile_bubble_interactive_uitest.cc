@@ -50,14 +50,13 @@ class ProfileBubbleInteractiveUiTest : public InProcessBrowserTest {
   }
 
   // Returns dummy parameters for the interception bubble.
-  DiceWebSigninInterceptor::Delegate::BubbleParameters
-  GetTestBubbleParameters() {
+  WebSigninInterceptor::Delegate::BubbleParameters GetTestBubbleParameters() {
     AccountInfo account;
     account.account_id = CoreAccountId::FromGaiaId("ID1");
     AccountInfo primary_account;
     primary_account.account_id = CoreAccountId::FromGaiaId("ID2");
-    return DiceWebSigninInterceptor::Delegate::BubbleParameters(
-        DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser, account,
+    return WebSigninInterceptor::Delegate::BubbleParameters(
+        WebSigninInterceptor::SigninInterceptionType::kMultiUser, account,
         primary_account);
   }
 

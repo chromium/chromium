@@ -27,7 +27,7 @@
 namespace {
 
 class ForcedProfileSwitchInterceptionHandle
-    : public ScopedDiceWebSigninInterceptionBubbleHandle {
+    : public ScopedWebSigninInterceptionBubbleHandle {
  public:
   explicit ForcedProfileSwitchInterceptionHandle(
       base::OnceCallback<void(SigninInterceptionResult)> callback) {
@@ -45,18 +45,16 @@ class ForcedProfileSwitchInterceptionHandle
 };
 
 class ForcedEnterpriseSigninInterceptionHandle
-    : public ScopedDiceWebSigninInterceptionBubbleHandle {
+    : public ScopedWebSigninInterceptionBubbleHandle {
  public:
   ForcedEnterpriseSigninInterceptionHandle(
       Browser* browser,
-      const DiceWebSigninInterceptor::Delegate::BubbleParameters&
-          bubble_parameters,
+      const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback)
       : browser_(browser->AsWeakPtr()),
         profile_creation_required_by_policy_(
             bubble_parameters.interception_type ==
-            DiceWebSigninInterceptor::SigninInterceptionType::
-                kEnterpriseForced),
+            WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced),
         show_link_data_option_(bubble_parameters.show_link_data_option),
         callback_(std::move(callback)) {
     DCHECK(browser_);
@@ -122,13 +120,13 @@ bool DiceWebSigninInterceptorDelegate::IsSigninInterceptionSupported(
   return IsSigninInterceptionSupportedInternal(*browser);
 }
 
-std::unique_ptr<ScopedDiceWebSigninInterceptionBubbleHandle>
+std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
 DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble(
     content::WebContents* web_contents,
-    const BubbleParameters& bubble_parameters,
+    const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
     base::OnceCallback<void(SigninInterceptionResult)> callback) {
   if (bubble_parameters.interception_type ==
-      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced) {
+      WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced) {
     return std::make_unique<ForcedProfileSwitchInterceptionHandle>(
         std::move(callback));
   }
@@ -139,9 +137,9 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble(
   }
 
   if (bubble_parameters.interception_type ==
-          DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced ||
+          WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced ||
       bubble_parameters.interception_type ==
-          DiceWebSigninInterceptor::SigninInterceptionType::
+          WebSigninInterceptor::SigninInterceptionType::
               kEnterpriseAcceptManagement) {
     return std::make_unique<ForcedEnterpriseSigninInterceptionHandle>(
         chrome::FindBrowserWithWebContents(web_contents), bubble_parameters,
@@ -156,12 +154,12 @@ DiceWebSigninInterceptorDelegate::ShowSigninInterceptionBubble(
 void DiceWebSigninInterceptorDelegate::ShowFirstRunExperienceInNewProfile(
     Browser* browser,
     const CoreAccountId& account_id,
-    DiceWebSigninInterceptor::SigninInterceptionType interception_type) {
+    WebSigninInterceptor::SigninInterceptionType interception_type) {
   if (base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept)) {
     browser->signin_view_controller()
         ->ShowModalInterceptFirstRunExperienceDialog(
             account_id, interception_type ==
-                            DiceWebSigninInterceptor::SigninInterceptionType::
+                            WebSigninInterceptor::SigninInterceptionType::
                                 kEnterpriseForced);
   } else {
     // Don't show the customization bubble if a valid policy theme is set.
