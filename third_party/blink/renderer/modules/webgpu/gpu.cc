@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/modules/webgpu/string_utils.h"
+#include "third_party/blink/renderer/modules/webgpu/wgsl_language_features.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
@@ -120,16 +121,24 @@ GPU* GPU::gpu(NavigatorBase& navigator) {
 GPU::GPU(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),
       ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+      wgsl_language_features_(MakeGarbageCollected<WGSLLanguageFeatures>()),
       mappable_buffer_handles_(
-          base::MakeRefCounted<BoxedMappableWGPUBufferHandles>()) {}
+          base::MakeRefCounted<BoxedMappableWGPUBufferHandles>()) {
+  DCHECK(wgsl_language_features_->FeatureNameSet().empty());
+}
 
 GPU::~GPU() = default;
+
+WGSLLanguageFeatures* GPU::wgslLanguageFeatures() const {
+  return wgsl_language_features_;
+}
 
 void GPU::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   Supplement<NavigatorBase>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(mappable_buffers_);
+  visitor->Trace(wgsl_language_features_);
 }
 
 void GPU::ContextDestroyed() {

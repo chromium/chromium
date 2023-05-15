@@ -2834,6 +2834,7 @@ interface FragmentDirective
     method createSelectorDirective
 interface GPU
     attribute @@toStringTag
+    getter wgslLanguageFeatures
     method constructor
     method getPreferredCanvasFormat
     method requestAdapter
@@ -9940,6 +9941,16 @@ interface VisualViewport : EventTarget
     method constructor
     setter onresize
     setter onscroll
+interface WGSLLanguageFeatures
+    attribute @@toStringTag
+    getter size
+    method @@iterator
+    method constructor
+    method entries
+    method forEach
+    method has
+    method keys
+    method values
 interface WakeLock
     attribute @@toStringTag
     method constructor

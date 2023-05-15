@@ -97,6 +97,8 @@ blink_modules_sources("webgpu") {
     "string_utils.h",
     "texture_utils.cc",
     "texture_utils.h",
+    "wgsl_language_features.cc",
+    "wgsl_language_features.h",
   ]
   deps = [
     "//gpu/command_buffer/client:webgpu_interface",
