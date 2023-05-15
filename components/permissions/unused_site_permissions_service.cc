@@ -172,11 +172,7 @@ void UnusedSitePermissionsService::RegrantPermissionsForOrigin(
 
   base::Value::List* permission_type_list =
       stored_value.GetDict().FindList(kRevokedKey);
-  // Check the format of the returned value since it is coming from disk.
-  if (!permission_type_list) {
-    NOTREACHED();
-    return;
-  }
+  CHECK(permission_type_list);
 
   // Re-grant the permissions that are revoked. This service only auto-revokes
   // permissions that were ALLOW, so re-granting will switch those permissions

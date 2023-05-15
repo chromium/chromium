@@ -163,13 +163,12 @@ SiteSettingsPermissionsHandler::PopulateUnusedSitePermissionsData() {
     const base::Value& stored_value = revoked_permissions.setting_value;
     DCHECK(stored_value.is_dict());
 
-    // The revoked permissions list should be reachable by given key.
-    DCHECK(stored_value.GetDict().FindList(permissions::kRevokedKey));
+    const base::Value::List* type_list =
+        stored_value.GetDict().FindList(permissions::kRevokedKey);
+    CHECK(type_list);
 
-    auto type_list =
-        stored_value.GetDict().FindList(permissions::kRevokedKey)->Clone();
     base::Value::List permissions_value_list;
-    for (base::Value& type : type_list) {
+    for (base::Value& type : type_list->Clone()) {
       permissions_value_list.Append(
           site_settings::ContentSettingsTypeToGroupName(
               static_cast<ContentSettingsType>(type.GetInt())));
