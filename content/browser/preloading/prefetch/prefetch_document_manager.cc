@@ -190,8 +190,6 @@ void PrefetchDocumentManager::ProcessCandidates(
         prefetches.emplace_back(
             candidate->url,
             PrefetchType(
-                /*use_isolated_network_context=*/referring_site !=
-                    prefetch_site,
                 /*use_prefetch_proxy=*/
                 candidate->requires_anonymous_client_ip_when_cross_origin,
                 candidate->eagerness),

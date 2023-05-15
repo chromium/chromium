@@ -224,22 +224,22 @@ void RecordRedirectResult(PrefetchRedirectResult result) {
 }
 
 void RecordRedirectNetworkContextTransition(
-    bool prefetch_requires_isolated_network_context,
+    bool previous_requires_isolated_network_context,
     bool redirect_requires_isolated_network_context) {
   PrefetchRedirectNetworkContextTransition transition;
-  if (!prefetch_requires_isolated_network_context &&
+  if (!previous_requires_isolated_network_context &&
       !redirect_requires_isolated_network_context) {
     transition = PrefetchRedirectNetworkContextTransition::kDefaultToDefault;
   }
-  if (!prefetch_requires_isolated_network_context &&
+  if (!previous_requires_isolated_network_context &&
       redirect_requires_isolated_network_context) {
     transition = PrefetchRedirectNetworkContextTransition::kDefaultToIsolated;
   }
-  if (prefetch_requires_isolated_network_context &&
+  if (previous_requires_isolated_network_context &&
       !redirect_requires_isolated_network_context) {
     transition = PrefetchRedirectNetworkContextTransition::kIsolatedToDefault;
   }
-  if (prefetch_requires_isolated_network_context &&
+  if (previous_requires_isolated_network_context &&
       redirect_requires_isolated_network_context) {
     transition = PrefetchRedirectNetworkContextTransition::kIsolatedToIsolated;
   }
@@ -476,8 +476,7 @@ void PrefetchService::CheckEligibilityOfPrefetch(
   // TODO(https://crbug.com/1439986): Allow same-site cross-origin prefetches
   // that require the prefetch proxy to be made.
   if (prefetch_container->IsProxyRequiredForURL(url) &&
-      !prefetch_container->GetPrefetchType()
-           .IsIsolatedNetworkContextRequired()) {
+      !prefetch_container->IsIsolatedNetworkContextRequiredForURL(url)) {
     std::move(result_callback)
         .Run(url, prefetch_container, false,
              PrefetchStatus::
@@ -487,8 +486,7 @@ void PrefetchService::CheckEligibilityOfPrefetch(
 
   // We do not need to check the cookies of prefetches that do not need an
   // isolated network context.
-  if (!prefetch_container->GetPrefetchType()
-           .IsIsolatedNetworkContextRequired()) {
+  if (!prefetch_container->IsIsolatedNetworkContextRequiredForURL(url)) {
     std::move(result_callback)
         .Run(url, prefetch_container, true, absl::nullopt);
     return;
@@ -559,8 +557,7 @@ void PrefetchService::StartProxyLookupCheck(
   // TODO(https://crbug.com/1343903): Copy proxy settings over to the isolated
   // network context for the prefetch in order to allow non-private cross origin
   // prefetches to be made using the existing proxy settings.
-  if (!prefetch_container->GetPrefetchType()
-           .IsIsolatedNetworkContextRequired()) {
+  if (!prefetch_container->IsIsolatedNetworkContextRequiredForURL(url)) {
     std::move(result_callback)
         .Run(url, prefetch_container, true, absl::nullopt);
     return;
@@ -646,8 +643,7 @@ void PrefetchService::OnGotEligibilityResult(
     // network context. If the cookies in the default partition associated with
     // this URL change after this point, then the prefetched resources should
     // not be served.
-    if (prefetch_container->GetPrefetchType()
-            .IsIsolatedNetworkContextRequired()) {
+    if (prefetch_container->IsIsolatedNetworkContextRequiredForURL(url)) {
       prefetch_container->RegisterCookieListener(
           url, browser_context_->GetDefaultStoragePartition()
                    ->GetCookieManagerForBrowserProcess());
@@ -692,8 +688,7 @@ void PrefetchService::OnGotEligibilityResultForRedirect(
   }
 
   prefetch_container->OnEligibilityCheckComplete(url, eligible, status);
-  if (prefetch_container->GetPrefetchType()
-          .IsIsolatedNetworkContextRequired()) {
+  if (prefetch_container->IsIsolatedNetworkContextRequiredForURL(url)) {
     prefetch_container->RegisterCookieListener(
         url, browser_context_->GetDefaultStoragePartition()
                  ->GetCookieManagerForBrowserProcess());
@@ -1019,15 +1014,18 @@ PrefetchStreamingURLLoaderStatus PrefetchService::OnPrefetchRedirect(
 
   // Check if the redirect requires a different network context than the
   // original prefetch.
-  net::SchemefulSite redirect_site(redirect_info.new_url);
-  bool is_isolated_network_context_required =
-      prefetch_container->GetReferringSite() != redirect_site;
+  bool redirect_requires_isolated_network_context =
+      prefetch_container->IsIsolatedNetworkContextRequiredForURL(
+          redirect_info.new_url);
+  bool previous_requires_isolated_network_context =
+      prefetch_container
+          ->IsIsolatedNetworkContextRequiredForPreviousRedirectHop(
+              redirect_info.new_url);
   RecordRedirectNetworkContextTransition(
-      prefetch_container->GetPrefetchType().IsIsolatedNetworkContextRequired(),
-      is_isolated_network_context_required);
-  if (is_isolated_network_context_required !=
-      prefetch_container->GetPrefetchType()
-          .IsIsolatedNetworkContextRequired()) {
+      previous_requires_isolated_network_context,
+      redirect_requires_isolated_network_context);
+  if (redirect_requires_isolated_network_context !=
+      previous_requires_isolated_network_context) {
     // TODO(https://crbug.com/1266876): Allow for redirects to switch network
     // contexts in a prefetch.
 
@@ -1283,8 +1281,8 @@ void PrefetchService::CopyIsolatedCookies(
 
   // We only need to copy cookies if the prefetch used an isolated network
   // context.
-  if (!prefetch_container->GetPrefetchType()
-           .IsIsolatedNetworkContextRequired()) {
+  if (!prefetch_container->IsIsolatedNetworkContextRequiredForURL(
+          prefetch_container->GetCurrentURLToServe())) {
     return;
   }
 

@@ -14,19 +14,12 @@ namespace content {
 // handled.
 class CONTENT_EXPORT PrefetchType {
  public:
-  PrefetchType(bool use_isolated_network_context,
-               bool use_prefetch_proxy,
+  PrefetchType(bool use_prefetch_proxy,
                blink::mojom::SpeculationEagerness eagerness);
   ~PrefetchType();
 
   PrefetchType(const PrefetchType& prefetch_type);
   PrefetchType& operator=(const PrefetchType& prefetch_type);
-
-  // Whether prefetches of this type need to use an isolated network context, or
-  // use the default network context.
-  bool IsIsolatedNetworkContextRequired() const {
-    return use_isolated_network_context_;
-  }
 
   // Whether this prefetch should bypass the proxy even though it would need to
   // be proxied for anonymity. For use in test automation only.
@@ -45,7 +38,6 @@ class CONTENT_EXPORT PrefetchType {
   friend CONTENT_EXPORT bool operator==(const PrefetchType& prefetch_type_1,
                                         const PrefetchType& prefetch_type_2);
 
-  bool use_isolated_network_context_;
   bool use_prefetch_proxy_;
   bool proxy_bypassed_for_testing_ = false;
   blink::mojom::SpeculationEagerness eagerness_;

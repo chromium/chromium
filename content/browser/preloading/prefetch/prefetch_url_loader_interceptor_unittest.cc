@@ -168,8 +168,8 @@ class TestPrefetchService : public PrefetchService {
 
   void CopyIsolatedCookies(
       base::WeakPtr<PrefetchContainer> prefetch_container) override {
-    if (!prefetch_container->GetPrefetchType()
-             .IsIsolatedNetworkContextRequired()) {
+    if (!prefetch_container->IsIsolatedNetworkContextRequiredForURL(
+            prefetch_container->GetCurrentURLToServe())) {
       return;
     }
 
@@ -445,8 +445,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
           main_rfh()->GetGlobalId(), kTestUrl,
-          PrefetchType(/*use_isolated_network_context=*/true,
-                       /*use_prefetch_proxy=*/true,
+          PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
           /*no_vary_search_expected=*/absl::nullopt,
@@ -522,8 +521,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
           main_rfh()->GetGlobalId(), kTestUrl,
-          PrefetchType(/*use_isolated_network_context=*/true,
-                       /*use_prefetch_proxy=*/true,
+          PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
           /*no_vary_search_expected=*/absl::nullopt,
@@ -603,13 +601,14 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   // No cookies are copied for prefetches where |use_isolated_network_context|
   // is false (i.e. same origin prefetches).
+  blink::mojom::Referrer referrer;
+  referrer.url = GURL("https://example.com/referrer");
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
           main_rfh()->GetGlobalId(), kTestUrl,
-          PrefetchType(/*use_isolated_network_context=*/false,
-                       /*use_prefetch_proxy=*/false,
+          PrefetchType(/*use_prefetch_proxy=*/false,
                        blink::mojom::SpeculationEagerness::kEager),
-          blink::mojom::Referrer(),
+          referrer,
           /*no_vary_search_expected=*/absl::nullopt,
           blink::mojom::SpeculationInjectionWorld::kNone,
           /*prefetch_document_manager=*/nullptr);
@@ -703,8 +702,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
           main_rfh()->GetGlobalId(), kTestUrl,
-          PrefetchType(/*use_isolated_network_context=*/true,
-                       /*use_prefetch_proxy=*/true,
+          PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
           /*no_vary_search_expected=*/absl::nullopt,
@@ -756,8 +754,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
           main_rfh()->GetGlobalId(), kTestUrl,
-          PrefetchType(/*use_isolated_network_context=*/true,
-                       /*use_prefetch_proxy=*/true,
+          PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
           /*no_vary_search_expected=*/absl::nullopt,
@@ -814,8 +811,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
           main_rfh()->GetGlobalId(), kTestUrl,
-          PrefetchType(/*use_isolated_network_context=*/true,
-                       /*use_prefetch_proxy=*/true,
+          PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
           /*no_vary_search_expected=*/absl::nullopt,
@@ -887,8 +883,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
           main_rfh()->GetGlobalId(), kTestUrl,
-          PrefetchType(/*use_isolated_network_context=*/true,
-                       /*use_prefetch_proxy=*/true,
+          PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
           /*no_vary_search_expected=*/absl::nullopt,
@@ -942,8 +937,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeFailure)) {
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
           main_rfh()->GetGlobalId(), kTestUrl,
-          PrefetchType(/*use_isolated_network_context=*/true,
-                       /*use_prefetch_proxy=*/true,
+          PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
           /*no_vary_search_expected=*/absl::nullopt,
@@ -1001,8 +995,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
           main_rfh()->GetGlobalId(), kTestUrl,
-          PrefetchType(/*use_isolated_network_context=*/true,
-                       /*use_prefetch_proxy=*/true,
+          PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
           /*no_vary_search_expected=*/absl::nullopt,
@@ -1088,8 +1081,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
   std::unique_ptr<PrefetchContainer> prefetch_container =
       std::make_unique<PrefetchContainer>(
           main_rfh()->GetGlobalId(), kTestUrl,
-          PrefetchType(/*use_isolated_network_context=*/true,
-                       /*use_prefetch_proxy=*/true,
+          PrefetchType(/*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
           /*no_vary_search_expected=*/absl::nullopt,

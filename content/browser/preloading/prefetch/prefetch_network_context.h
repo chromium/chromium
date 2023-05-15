@@ -30,6 +30,7 @@ class CONTENT_EXPORT PrefetchNetworkContext {
  public:
   PrefetchNetworkContext(
       PrefetchService* prefetch_service,
+      bool use_isolated_network_context,
       const PrefetchType& prefetch_type,
       const blink::mojom::Referrer& referring_origin,
       const GlobalRenderFrameHostId& referring_render_frame_host_id);
@@ -69,10 +70,11 @@ class CONTENT_EXPORT PrefetchNetworkContext {
 
   raw_ptr<PrefetchService> prefetch_service_;
 
-  // Determines whether or not an isolated network context or the default
-  // network context should be used. If an isolated network context is required,
-  // also determines if it should be configured to use the Prefetch Proxy or
-  // not.
+  // Whether an isolated network context or the default network context should
+  // be used.
+  const bool use_isolated_network_context_;
+
+  // Used to determine if the prefetch proxy should be used.
   const PrefetchType prefetch_type_;
 
   // These parameters are used when considering to proxy |url_loader_factory_|

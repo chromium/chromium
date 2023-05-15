@@ -11,12 +11,9 @@
 
 namespace content {
 
-PrefetchType::PrefetchType(bool use_isolated_network_context,
-                           bool use_prefetch_proxy,
+PrefetchType::PrefetchType(bool use_prefetch_proxy,
                            blink::mojom::SpeculationEagerness eagerness)
-    : use_isolated_network_context_(use_isolated_network_context),
-      use_prefetch_proxy_(use_prefetch_proxy),
-      eagerness_(eagerness) {}
+    : use_prefetch_proxy_(use_prefetch_proxy), eagerness_(eagerness) {}
 
 PrefetchType::~PrefetchType() = default;
 PrefetchType::PrefetchType(const PrefetchType& prefetch_type) = default;
@@ -30,11 +27,9 @@ void PrefetchType::SetProxyBypassedForTest() {
 
 bool operator==(const PrefetchType& prefetch_type_1,
                 const PrefetchType& prefetch_type_2) {
-  return std::tie(prefetch_type_1.use_isolated_network_context_,
-                  prefetch_type_1.use_prefetch_proxy_,
+  return std::tie(prefetch_type_1.use_prefetch_proxy_,
                   prefetch_type_1.eagerness_) ==
-         std::tie(prefetch_type_2.use_isolated_network_context_,
-                  prefetch_type_2.use_prefetch_proxy_,
+         std::tie(prefetch_type_2.use_prefetch_proxy_,
                   prefetch_type_2.eagerness_);
 }
 

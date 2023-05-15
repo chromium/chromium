@@ -278,7 +278,8 @@ PrefetchContainer::PrefetchContainer(
 
   // `PreloadingPrediction` is added in `PreloadingDecider`.
 
-  redirect_chain_.push_back(std::make_unique<SinglePrefetch>(prefetch_url_));
+  redirect_chain_.push_back(
+      std::make_unique<SinglePrefetch>(prefetch_url_, referring_site_));
 }
 
 PrefetchContainer::~PrefetchContainer() {
@@ -348,8 +349,8 @@ PrefetchNetworkContext* PrefetchContainer::GetOrCreateNetworkContext(
     PrefetchService* prefetch_service) {
   if (!network_context_) {
     network_context_ = std::make_unique<PrefetchNetworkContext>(
-        prefetch_service, prefetch_type_, referrer_,
-        referring_render_frame_host_id_);
+        prefetch_service, IsIsolatedNetworkContextRequiredForURL(GetURL()),
+        prefetch_type_, referrer_, referring_render_frame_host_id_);
   }
   return network_context_.get();
 }
@@ -406,7 +407,8 @@ bool PrefetchContainer::IsInitialPrefetchEligible() const {
 }
 
 void PrefetchContainer::AddRedirectHop(const GURL& url) {
-  redirect_chain_.push_back(std::make_unique<SinglePrefetch>(url));
+  redirect_chain_.push_back(
+      std::make_unique<SinglePrefetch>(url, referring_site_));
 }
 
 absl::optional<bool> PrefetchContainer::GetEligibilityResultForRedirect(
@@ -652,9 +654,8 @@ bool PrefetchContainer::IsPrefetchServable(
 bool PrefetchContainer::DoesCurrentURLToServeMatch(const GURL& url) const {
   DCHECK(index_redirect_chain_to_serve_ >= 1 &&
          index_redirect_chain_to_serve_ < redirect_chain_.size());
-  return redirect_chain_[index_redirect_chain_to_serve_]->url_ == url ||
-         IsMatchingNoVarySearchUrl(
-             redirect_chain_[index_redirect_chain_to_serve_]->url_, url);
+  return IsMatchingURL(redirect_chain_[index_redirect_chain_to_serve_]->url_,
+                       url);
 }
 
 const GURL& PrefetchContainer::GetCurrentURLToServe() const {
@@ -698,11 +699,12 @@ void PrefetchContainer::SimulateAttemptAtInterceptorForTest() {
 
 PrefetchContainer::SinglePrefetch* PrefetchContainer::GetSinglePrefetch(
     const GURL& url) const {
+  // TODO(https://crbug.com/1444568): Handle the case where the given URL
+  // matches multiple entries in |redirect_chain_|.
   for (auto itr = redirect_chain_.rbegin(); itr != redirect_chain_.rend();
        itr++) {
     GURL single_prefetch_url = (*itr)->url_;
-    if (single_prefetch_url == url ||
-        IsMatchingNoVarySearchUrl(single_prefetch_url, url)) {
+    if (IsMatchingURL(single_prefetch_url, url)) {
       return itr->get();
     }
   }
@@ -710,9 +712,32 @@ PrefetchContainer::SinglePrefetch* PrefetchContainer::GetSinglePrefetch(
   return nullptr;
 }
 
-bool PrefetchContainer::IsMatchingNoVarySearchUrl(
-    const GURL& internal_url,
-    const GURL& external_url) const {
+PrefetchContainer::SinglePrefetch* PrefetchContainer::GetPreviousSinglePrefetch(
+    const GURL& url) const {
+  // TODO(https://crbug.com/1444568): Handle the case where the given URL
+  // matches multiple entries in |redirect_chain_|.
+  for (auto itr = redirect_chain_.rbegin(); itr != redirect_chain_.rend();
+       itr++) {
+    GURL single_prefetch_url = (*itr)->url_;
+    if (IsMatchingURL(single_prefetch_url, url)) {
+      // Once the SinglePrefetch that matches the given URL is found, then
+      // increment the reverse iterator to get the previous one.
+      itr++;
+      return itr != redirect_chain_.rend() ? itr->get() : nullptr;
+    }
+  }
+  NOTREACHED();
+  return nullptr;
+}
+
+bool PrefetchContainer::IsMatchingURL(const GURL& internal_url,
+                                      const GURL& external_url) const {
+  // Check if the URLs match directly.
+  if (internal_url == external_url) {
+    return true;
+  }
+
+  // Otherwise, try to use no_vary_search_helper_.
   if (!no_vary_search_helper_) {
     return false;
   }
@@ -756,6 +781,20 @@ void PrefetchContainer::OnReturnPrefetchToServe(bool served) {
   }
 }
 
+bool PrefetchContainer::IsIsolatedNetworkContextRequiredForURL(
+    const GURL& url) const {
+  SinglePrefetch* this_prefetch = GetSinglePrefetch(url);
+  CHECK(this_prefetch);
+  return this_prefetch->is_isolated_network_context_required_;
+}
+
+bool PrefetchContainer::IsIsolatedNetworkContextRequiredForPreviousRedirectHop(
+    const GURL& url) const {
+  SinglePrefetch* previous_prefetch = GetPreviousSinglePrefetch(url);
+  CHECK(previous_prefetch);
+  return previous_prefetch->is_isolated_network_context_required_;
+}
+
 bool PrefetchContainer::IsProxyRequiredForURL(const GURL& url) const {
   return !referring_origin_.IsSameOriginWith(url) &&
          prefetch_type_.IsProxyRequiredWhenCrossOrigin();
@@ -767,8 +806,13 @@ std::ostream& operator<<(std::ostream& ostream,
                  << ", URL=" << prefetch_container.GetURL() << "]";
 }
 
-PrefetchContainer::SinglePrefetch::SinglePrefetch(const GURL& url)
-    : url_(url) {}
+PrefetchContainer::SinglePrefetch::SinglePrefetch(
+    const GURL& url,
+    const net::SchemefulSite& referring_site)
+    : url_(url) {
+  net::SchemefulSite this_site(url_);
+  is_isolated_network_context_required_ = referring_site != this_site;
+}
 
 PrefetchContainer::SinglePrefetch::~SinglePrefetch() = default;
 

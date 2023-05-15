@@ -82,6 +82,15 @@ class CONTENT_EXPORT PrefetchContainer {
   // The type of this prefetch. Controls how the prefetch is handled.
   const PrefetchType& GetPrefetchType() const { return prefetch_type_; }
 
+  // Whether or not an isolated network context is required to fetch the given
+  // url.
+  bool IsIsolatedNetworkContextRequiredForURL(const GURL& url) const;
+
+  // Whether or not an isolated network context is required for the previous
+  // redirect hop of the given url.
+  bool IsIsolatedNetworkContextRequiredForPreviousRedirectHop(
+      const GURL& url) const;
+
   // Whether or not the prefetch proxy would be required to fetch the given url
   // based on |prefetch_type_|.
   bool IsProxyRequiredForURL(const GURL& url) const;
@@ -297,7 +306,8 @@ class CONTENT_EXPORT PrefetchContainer {
   // broader prefetch. A prefetch can request multiple URLs due to redirects.
   class SinglePrefetch {
    public:
-    explicit SinglePrefetch(const GURL& url);
+    explicit SinglePrefetch(const GURL& url,
+                            const net::SchemefulSite& referring_site);
     ~SinglePrefetch();
 
     SinglePrefetch(const SinglePrefetch&) = delete;
@@ -307,6 +317,8 @@ class CONTENT_EXPORT PrefetchContainer {
     // prefetch URL, or a URL from a redirect resulting from requesting the
     // original prefetch URL.
     GURL url_;
+
+    bool is_isolated_network_context_required_;
 
     // Whether this |url_| is eligible to be prefetched
     absl::optional<bool> is_eligible_;
@@ -340,9 +352,13 @@ class CONTENT_EXPORT PrefetchContainer {
   // Helper function to get the |SinglePrefetch| for the given URL.
   SinglePrefetch* GetSinglePrefetch(const GURL& url) const;
 
-  // Helper function to match URLs using |no_vary_search_helper_|.
-  bool IsMatchingNoVarySearchUrl(const GURL& internal_url,
-                                 const GURL& external_url) const;
+  // Helper function go get the |SinglePrefetch| that preceded the given URL.
+  // If called on the original URL of the prefetch, then nullptr is returned.
+  SinglePrefetch* GetPreviousSinglePrefetch(const GURL& url) const;
+
+  // Helper function to match URLs either directly or using
+  // |no_vary_search_helper_|.
+  bool IsMatchingURL(const GURL& internal_url, const GURL& external_url) const;
 
   // The ID of the RenderFrameHost that triggered the prefetch.
   GlobalRenderFrameHostId referring_render_frame_host_id_;
