@@ -518,12 +518,20 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   RandomHelper random(seed);
 
   const std::string seed_str = base::NumberToString(seed);
-  absl::optional<std::string> manifest_id;
-  if (random.next_bool())
-    manifest_id = "manifest_id_" + seed_str;
+  absl::optional<std::string> relative_manifest_id;
+  if (random.next_bool()) {
+    std::string path = "manifest_id_" + seed_str;
+    if (random.next_bool()) {
+      path += "?query=test";
+    }
+    if (random.next_bool()) {
+      path += "#fragment";
+    }
+    relative_manifest_id = path;
+  }
   const GURL scope = base_url.Resolve("scope" + seed_str + "/");
   const GURL start_url = scope.Resolve("start" + seed_str);
-  const AppId app_id = GenerateAppId(manifest_id, start_url);
+  const AppId app_id = GenerateAppId(relative_manifest_id, start_url);
 
   const std::string name = "Name" + seed_str;
   const std::string description = "Description" + seed_str;
@@ -595,7 +603,10 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
 
   app->SetName(name);
   app->SetDescription(description);
-  app->SetManifestId(manifest_id);
+  if (relative_manifest_id) {
+    app->SetManifestId(
+        GenerateManifestId(relative_manifest_id.value(), start_url));
+  }
   app->SetStartUrl(GURL(start_url));
   app->SetScope(GURL(scope));
   app->SetThemeColor(theme_color);
@@ -884,7 +895,7 @@ AppId InstallPwaForCurrentUrl(Browser* browser) {
   // Depending on the installability criteria, different dialogs can be used.
   chrome::SetAutoAcceptWebAppDialogForTesting(true, true);
   chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
-  WebAppTestInstallObserver observer(browser->profile());
+  WebAppTestInstallWithOsHooksObserver observer(browser->profile());
   observer.BeginListening();
   CHECK(chrome::ExecuteCommand(browser, IDC_INSTALL_PWA));
   AppId app_id = observer.Wait();

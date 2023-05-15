@@ -87,10 +87,10 @@ WebAppInstallFinalizer::FinalizeOptions GetFinalizerOptionsForSubApps(
 
 std::vector<AppId> CreateAppIdsForLock(
     const AppId& parent_app_id,
-    const std::vector<std::pair<UnhashedAppId, GURL>>& sub_apps) {
+    const std::vector<std::pair<ManifestId, GURL>>& sub_apps) {
   std::vector<AppId> app_ids_vector = {parent_app_id};
   for (const auto& data : sub_apps) {
-    app_ids_vector.push_back(GenerateAppIdFromUnhashed(data.first));
+    app_ids_vector.push_back(GenerateAppIdFromManifestId(data.first));
   }
   return app_ids_vector;
 }
@@ -99,7 +99,7 @@ std::vector<AppId> CreateAppIdsForLock(
 
 SubAppInstallCommand::SubAppInstallCommand(
     const AppId& parent_app_id,
-    std::vector<std::pair<UnhashedAppId, GURL>> sub_apps,
+    std::vector<std::pair<ManifestId, GURL>> sub_apps,
     SubAppInstallResultCallback install_callback,
     Profile* profile,
     std::unique_ptr<WebAppUrlLoader> url_loader,
@@ -130,7 +130,7 @@ base::Value SubAppInstallCommand::ToDebugValue() const {
   base::Value::List pending_installs;
   for (const auto& installs_remaining : requested_installs_) {
     base::Value::Dict install_data;
-    install_data.Set("unhashed_app_id", installs_remaining.first);
+    install_data.Set("manifest_id", installs_remaining.first.spec());
     install_data.Set("install_url", installs_remaining.second.spec());
     pending_installs.Append(base::Value(std::move(install_data)));
   }
@@ -194,15 +194,15 @@ void SubAppInstallCommand::OnShutdown() {
 
 void SubAppInstallCommand::StartNextInstall() {
   DCHECK(!requested_installs_.empty());
-  std::pair<UnhashedAppId, GURL> install_info =
+  std::pair<ManifestId, GURL> install_info =
       std::move(requested_installs_.back());
-  const UnhashedAppId& unhashed_app_id = install_info.first;
+  const ManifestId& manifest_id = install_info.first;
   GURL install_url = install_info.second;
   requested_installs_.pop_back();
 
   DCHECK(AreWebAppsUserInstallable(profile_));
   if (IsWebContentsDestroyed()) {
-    MaybeFinishInstall(unhashed_app_id,
+    MaybeFinishInstall(manifest_id,
                        webapps::InstallResultCode::kWebContentsDestroyed);
     return;
   }
@@ -212,11 +212,11 @@ void SubAppInstallCommand::StartNextInstall() {
       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
       base::BindOnce(
           &SubAppInstallCommand::OnWebAppUrlLoadedGetWebAppInstallInfo,
-          weak_ptr_factory_.GetWeakPtr(), unhashed_app_id, install_url));
+          weak_ptr_factory_.GetWeakPtr(), manifest_id, install_url));
 }
 
 void SubAppInstallCommand::OnWebAppUrlLoadedGetWebAppInstallInfo(
-    const UnhashedAppId& unhashed_app_id,
+    const ManifestId& manifest_id,
     const GURL& url_to_load,
     WebAppUrlLoader::Result result) {
   if (result != WebAppUrlLoader::Result::kUrlLoaded) {
@@ -225,19 +225,19 @@ void SubAppInstallCommand::OnWebAppUrlLoadedGetWebAppInstallInfo(
   }
 
   if (result == WebAppUrlLoader::Result::kRedirectedUrlLoaded) {
-    MaybeFinishInstall(unhashed_app_id,
+    MaybeFinishInstall(manifest_id,
                        webapps::InstallResultCode::kInstallURLRedirected);
     return;
   }
 
   if (result == WebAppUrlLoader::Result::kFailedPageTookTooLong) {
-    MaybeFinishInstall(unhashed_app_id,
+    MaybeFinishInstall(manifest_id,
                        webapps::InstallResultCode::kInstallURLLoadTimeOut);
     return;
   }
 
   if (result != WebAppUrlLoader::Result::kUrlLoaded) {
-    MaybeFinishInstall(unhashed_app_id,
+    MaybeFinishInstall(manifest_id,
                        webapps::InstallResultCode::kInstallURLLoadFailed);
     return;
   }
@@ -245,21 +245,21 @@ void SubAppInstallCommand::OnWebAppUrlLoadedGetWebAppInstallInfo(
   data_retriever_->GetWebAppInstallInfo(
       &lock_->shared_web_contents(),
       base::BindOnce(&SubAppInstallCommand::OnGetWebAppInstallInfo,
-                     weak_ptr_factory_.GetWeakPtr(), unhashed_app_id));
+                     weak_ptr_factory_.GetWeakPtr(), manifest_id));
 }
 
 void SubAppInstallCommand::OnGetWebAppInstallInfo(
-    const UnhashedAppId& unhashed_app_id,
+    const ManifestId& manifest_id,
     std::unique_ptr<WebAppInstallInfo> install_info) {
   if (!install_info) {
-    MaybeFinishInstall(unhashed_app_id,
+    MaybeFinishInstall(manifest_id,
                        webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
     return;
   }
   install_info->parent_app_id = parent_app_id_;
 
-  DCHECK(base::Contains(pending_installs_map_, unhashed_app_id));
-  const GURL& install_url = pending_installs_map_[unhashed_app_id];
+  DCHECK(base::Contains(pending_installs_map_, manifest_id));
+  const GURL& install_url = pending_installs_map_[manifest_id];
   // Set start_url to fallback_start_url as web_contents may have been
   // redirected. Will be overridden by manifest values if present.
   if (install_url.is_valid()) {
@@ -271,12 +271,12 @@ void SubAppInstallCommand::OnGetWebAppInstallInfo(
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
       &lock_->shared_web_contents(), /*bypass_service_worker_check=*/false,
       base::BindOnce(&SubAppInstallCommand::OnDidPerformInstallableCheck,
-                     weak_ptr_factory_.GetWeakPtr(), unhashed_app_id,
+                     weak_ptr_factory_.GetWeakPtr(), manifest_id,
                      std::move(install_info)));
 }
 
 void SubAppInstallCommand::OnDidPerformInstallableCheck(
-    const UnhashedAppId& unhashed_app_id,
+    const ManifestId& manifest_id,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     blink::mojom::ManifestPtr opt_manifest,
     const GURL& manifest_url,
@@ -286,7 +286,7 @@ void SubAppInstallCommand::OnDidPerformInstallableCheck(
   if (!valid_manifest_for_web_app) {
     LOG(WARNING) << "Did not install " << web_app_info->start_url.spec()
                  << " because it didn't have a manifest for web app";
-    MaybeFinishInstall(unhashed_app_id,
+    MaybeFinishInstall(manifest_id,
                        webapps::InstallResultCode::kNotValidManifestForWebApp);
     return;
   }
@@ -296,21 +296,20 @@ void SubAppInstallCommand::OnDidPerformInstallableCheck(
                                  web_app_info.get());
   }
 
-  AppId app_id =
-      GenerateAppId(web_app_info->manifest_id, web_app_info->start_url);
+  AppId app_id = GenerateAppIdFromManifestId(web_app_info->manifest_id);
 
-  const AppId expected_app_id = GenerateAppIdFromUnhashed(unhashed_app_id);
+  const AppId expected_app_id = GenerateAppIdFromManifestId(manifest_id);
   if (app_id != expected_app_id) {
     log_entry_.LogExpectedAppIdError("OnDidPerformInstallableCheck",
                                      web_app_info->start_url.spec(), app_id,
                                      expected_app_id);
-    MaybeFinishInstall(unhashed_app_id,
+    MaybeFinishInstall(manifest_id,
                        webapps::InstallResultCode::kExpectedAppIdCheckFailed);
     return;
   }
 
   if (lock_->registrar().WasInstalledBySubApp(app_id)) {
-    MaybeFinishInstall(unhashed_app_id,
+    MaybeFinishInstall(manifest_id,
                        webapps::InstallResultCode::kSuccessAlreadyInstalled);
     return;
   }
@@ -322,12 +321,12 @@ void SubAppInstallCommand::OnDidPerformInstallableCheck(
   data_retriever_->GetIcons(
       &lock_->shared_web_contents(), std::move(icon_urls), skip_page_favicons,
       base::BindOnce(&SubAppInstallCommand::OnIconsRetrievedShowDialog,
-                     weak_ptr_factory_.GetWeakPtr(), unhashed_app_id,
+                     weak_ptr_factory_.GetWeakPtr(), manifest_id,
                      std::move(web_app_info)));
 }
 
 void SubAppInstallCommand::OnIconsRetrievedShowDialog(
-    const UnhashedAppId& unhashed_app_id,
+    const ManifestId& manifest_id,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     IconsDownloadedResult result,
     IconsMap icons_map,
@@ -340,20 +339,20 @@ void SubAppInstallCommand::OnIconsRetrievedShowDialog(
                                       icons_http_results);
 
   acceptance_callbacks_.emplace_back(
-      unhashed_app_id, std::move(web_app_info),
+      manifest_id, std::move(web_app_info),
       base::BindOnce(&SubAppInstallCommand::OnDialogCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), unhashed_app_id));
+                     weak_ptr_factory_.GetWeakPtr(), manifest_id));
   num_pending_dialog_callbacks_--;
   DCHECK_GE(num_pending_dialog_callbacks_, 0u);
   MaybeShowDialog();
 }
 
 void SubAppInstallCommand::OnDialogCompleted(
-    const UnhashedAppId& unhashed_app_id,
+    const ManifestId& manifest_id,
     bool user_accepted,
     std::unique_ptr<WebAppInstallInfo> web_app_info) {
   if (!user_accepted) {
-    MaybeFinishInstall(unhashed_app_id,
+    MaybeFinishInstall(manifest_id,
                        webapps::InstallResultCode::kUserInstallDeclined);
     return;
   }
@@ -363,35 +362,33 @@ void SubAppInstallCommand::OnDialogCompleted(
   lock_->install_finalizer().FinalizeInstall(
       *web_app_info, GetFinalizerOptionsForSubApps(parent_app_id_),
       base::BindOnce(&SubAppInstallCommand::OnInstallFinalized,
-                     weak_ptr_factory_.GetWeakPtr(), unhashed_app_id,
+                     weak_ptr_factory_.GetWeakPtr(), manifest_id,
                      web_app_info->start_url));
 }
 
-void SubAppInstallCommand::OnInstallFinalized(
-    const UnhashedAppId& unhashed_app_id,
-    const GURL& start_url,
-    const AppId& app_id,
-    webapps::InstallResultCode code,
-    OsHooksErrors os_hooks_errors) {
+void SubAppInstallCommand::OnInstallFinalized(const ManifestId& manifest_id,
+                                              const GURL& start_url,
+                                              const AppId& app_id,
+                                              webapps::InstallResultCode code,
+                                              OsHooksErrors os_hooks_errors) {
   if (code != webapps::InstallResultCode::kSuccessNewInstall) {
-    MaybeFinishInstall(unhashed_app_id, code);
+    MaybeFinishInstall(manifest_id, code);
     return;
   }
 
   RecordWebAppInstallationTimestamp(profile_->GetPrefs(), app_id,
                                     webapps::WebappInstallSource::SUB_APP);
-  MaybeFinishInstall(unhashed_app_id,
+  MaybeFinishInstall(manifest_id,
                      webapps::InstallResultCode::kSuccessNewInstall);
 }
 
-void SubAppInstallCommand::MaybeFinishInstall(
-    const UnhashedAppId& unhashed_app_id,
-    webapps::InstallResultCode code) {
+void SubAppInstallCommand::MaybeFinishInstall(const ManifestId& manifest_id,
+                                              webapps::InstallResultCode code) {
   // Verifying that other asynchronous calls have not already installed this
   // app and thus removed it from the pending installs map.
-  DCHECK(base::Contains(pending_installs_map_, unhashed_app_id));
+  DCHECK(base::Contains(pending_installs_map_, manifest_id));
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
-  AddResultAndRemoveFromPendingInstalls(unhashed_app_id, code);
+  AddResultAndRemoveFromPendingInstalls(manifest_id, code);
   // In case an installation returns with a failure before running the dialog
   // callback.
   if (state_ == State::kPendingDialogCallbacks &&
@@ -421,7 +418,7 @@ void SubAppInstallCommand::MaybeShowDialog() {
 
   // TODO(https://crbug.com/1313109): Replace the placeholder blanket user
   // acceptance below with a permissions dialog shown to the user.
-  for (auto& [unhashed_app_id, web_app_info, acceptance_callback] :
+  for (auto& [manifest_id, web_app_info, acceptance_callback] :
        acceptance_callbacks_) {
     if (dialog_not_accepted_for_testing_) {
       std::move(acceptance_callback).Run(false, std::move(web_app_info));
@@ -448,15 +445,15 @@ void SubAppInstallCommand::MaybeFinishCommand() {
 }
 
 void SubAppInstallCommand::AddResultAndRemoveFromPendingInstalls(
-    const UnhashedAppId& unhashed_app_id,
+    const ManifestId& manifest_id,
     webapps::InstallResultCode result) {
   auto mojo_result = InstallResultCodeToMojo(result);
-  std::pair result_pair(unhashed_app_id, mojo_result);
-  AddResultToDebugData(unhashed_app_id, pending_installs_map_[unhashed_app_id],
-                       GenerateAppIdFromUnhashed(unhashed_app_id), result,
+  std::pair result_pair(manifest_id, mojo_result);
+  AddResultToDebugData(manifest_id, pending_installs_map_[manifest_id],
+                       GenerateAppIdFromManifestId(manifest_id), result,
                        mojo_result);
   results_.emplace_back(result_pair);
-  pending_installs_map_.erase(unhashed_app_id);
+  pending_installs_map_.erase(manifest_id);
 }
 
 bool SubAppInstallCommand::IsWebContentsDestroyed() {
@@ -464,13 +461,13 @@ bool SubAppInstallCommand::IsWebContentsDestroyed() {
 }
 
 void SubAppInstallCommand::AddResultToDebugData(
-    const UnhashedAppId& unhashed_app_id,
+    const ManifestId& manifest_id,
     const GURL& install_url,
     const AppId& installed_app_id,
     webapps::InstallResultCode detailed_code,
     const blink::mojom::SubAppsServiceResultCode& result_code) {
   base::Value::Dict install_info;
-  install_info.Set("unhashed_app_id", unhashed_app_id);
+  install_info.Set("manifest_id", manifest_id.spec());
   install_info.Set("install_url", install_url.spec());
   install_info.Set("detailed_result_code", base::ToString(detailed_code));
   install_info.Set("result_code", base::ToString(result_code));

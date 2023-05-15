@@ -41,8 +41,8 @@ class InstallFromSyncCommand
     Params() = delete;
     ~Params();
     Params(const Params&);
-    Params(AppId app_id,
-           const absl::optional<std::string>& manifest_id,
+    Params(const AppId& app_id,
+           const ManifestId& manifest_id,
            const GURL& start_url,
            const std::string& title,
            const GURL& scope,
@@ -50,7 +50,7 @@ class InstallFromSyncCommand
            const absl::optional<mojom::UserDisplayMode>& user_display_mode,
            const std::vector<apps::IconInfo>& icons);
     const AppId app_id;
-    const absl::optional<std::string> manifest_id;
+    const ManifestId manifest_id;
     const GURL start_url;
     const std::string title;
     const GURL scope;

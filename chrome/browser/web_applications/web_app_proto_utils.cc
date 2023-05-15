@@ -162,8 +162,12 @@ sync_pb::WebAppSpecifics WebAppToSyncProto(const WebApp& app) {
   DCHECK(app.start_url().is_valid());
 
   sync_pb::WebAppSpecifics sync_proto;
-  if (app.manifest_id().has_value())
-    sync_proto.set_manifest_id(app.manifest_id().value());
+  // The relative id does not include the initial '/' character.
+  std::string relative_manifest_id_path = app.manifest_id().PathForRequest();
+  if (relative_manifest_id_path.starts_with("/")) {
+    relative_manifest_id_path = relative_manifest_id_path.substr(1);
+  }
+  sync_proto.set_relative_manifest_id(relative_manifest_id_path);
   sync_proto.set_start_url(app.start_url().spec());
   sync_proto.set_user_display_mode(
       ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(

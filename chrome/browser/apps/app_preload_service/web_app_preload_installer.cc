@@ -99,7 +99,7 @@ void WebAppPreloadInstaller::InstallApp(
 std::string WebAppPreloadInstaller::GetAppId(
     const PreloadAppDefinition& app) const {
   // The app's "Web app manifest ID" is the equivalent of the unhashed app ID.
-  return web_app::GenerateAppIdFromUnhashed(app.GetWebAppManifestId().spec());
+  return web_app::GenerateAppIdFromManifestId(app.GetWebAppManifestId());
 }
 
 void WebAppPreloadInstaller::InstallAppImpl(

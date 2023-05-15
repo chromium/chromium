@@ -177,7 +177,7 @@ void ExternallyManagedInstallCommand::OnDidPerformInstallableCheck(
         web_contents_->GetLastCommittedURL(), *web_app_info_);
   }
 
-  app_id_ = GenerateAppId(web_app_info_->manifest_id, web_app_info_->start_url);
+  app_id_ = GenerateAppIdFromManifestId(web_app_info_->manifest_id);
 
   // If the manifest specified icons, don't use the page icons.
   const bool skip_page_favicons = opt_manifest && !opt_manifest->icons.empty();

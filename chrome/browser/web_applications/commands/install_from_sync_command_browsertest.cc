@@ -40,9 +40,10 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, SimpleInstall) {
   auto* provider = WebAppProvider::GetForTest(profile());
   base::RunLoop loop;
   InstallFromSyncCommand::Params params = InstallFromSyncCommand::Params(
-      id, absl::nullopt, test_url, "Test Title",
-      https_server()->GetURL("/banners/"), absl::nullopt,
-      mojom::UserDisplayMode::kStandalone,
+      id, GenerateManifestIdFromStartUrlOnly(test_url), /*start_url=*/test_url,
+      "Test Title",
+      /*scope=*/https_server()->GetURL("/banners/"),
+      /*theme_color=*/absl::nullopt, mojom::UserDisplayMode::kStandalone,
       {apps::IconInfo(https_server()->GetURL("/banners/launcher-icon-2x.png"),
                       96)});
   provider->command_manager().ScheduleCommand(
@@ -80,9 +81,10 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
   base::RunLoop loop;
   {
     InstallFromSyncCommand::Params params = InstallFromSyncCommand::Params(
-        id, absl::nullopt, test_url, "Test Title",
-        https_server()->GetURL("/banners/"), absl::nullopt,
-        mojom::UserDisplayMode::kStandalone,
+        id, GenerateManifestIdFromStartUrlOnly(test_url),
+        /*start_url=*/test_url, "Test Title",
+        /*scope=*/https_server()->GetURL("/banners/"),
+        /*theme_color=*/absl::nullopt, mojom::UserDisplayMode::kStandalone,
         {apps::IconInfo(https_server()->GetURL("/banners/launcher-icon-2x.png"),
                         96)});
     provider->command_manager().ScheduleCommand(
@@ -97,9 +99,10 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
   }
   {
     InstallFromSyncCommand::Params params = InstallFromSyncCommand::Params(
-        other_id, absl::nullopt, other_test_url, "Test Title",
-        https_server()->GetURL("/banners/"), absl::nullopt,
-        mojom::UserDisplayMode::kStandalone,
+        other_id, GenerateManifestIdFromStartUrlOnly(other_test_url),
+        /*start_url=*/other_test_url, "Test Title",
+        /*scope=*/https_server()->GetURL("/banners/"),
+        /*theme_color=*/absl::nullopt, mojom::UserDisplayMode::kStandalone,
         {apps::IconInfo(https_server()->GetURL("/banners/launcher-icon-2x.png"),
                         96)});
     provider->command_manager().ScheduleCommand(

@@ -396,9 +396,10 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
 
   // Required fields:
   const GURL start_url = web_app.start_url();
-  DCHECK(!start_url.is_empty() && start_url.is_valid());
+  DCHECK(start_url.is_valid());
 
   DCHECK(!web_app.app_id().empty());
+  DCHECK(web_app.manifest_id().is_valid());
 
   // Set sync data to sync proto.
   *(local_data->mutable_sync_data()) = WebAppToSyncProto(web_app);
@@ -849,15 +850,18 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     return nullptr;
   }
 
-  absl::optional<std::string> manifest_id = absl::nullopt;
-  if (sync_data.has_manifest_id())
-    manifest_id = absl::optional<std::string>(sync_data.manifest_id());
+  ManifestId manifest_id;
+  if (sync_data.has_relative_manifest_id()) {
+    manifest_id =
+        GenerateManifestId(sync_data.relative_manifest_id(), start_url);
+  } else {
+    manifest_id = GenerateManifestIdFromStartUrlOnly(start_url);
+  }
 
-  const AppId app_id = GenerateAppId(manifest_id, start_url);
+  AppId app_id = GenerateAppIdFromManifestId(manifest_id);
 
   auto web_app = std::make_unique<WebApp>(app_id);
   web_app->SetStartUrl(start_url);
-
   web_app->SetManifestId(manifest_id);
 
   // Required fields:
@@ -1663,7 +1667,9 @@ std::unique_ptr<WebApp> WebAppDatabase::ParseWebApp(const AppId& app_id,
   }
 
   if (web_app->app_id() != app_id) {
-    DLOG(ERROR) << "WebApps LevelDB error: app_id doesn't match storage key";
+    DLOG(ERROR) << "WebApps LevelDB error: app_id doesn't match storage key "
+                << app_id << " vs " << web_app->app_id() << ", from "
+                << web_app->manifest_id();
     return nullptr;
   }
 

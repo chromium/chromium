@@ -19,6 +19,7 @@ blink::mojom::ManifestPtr GetValidManifest() {
   manifest->name = u"foo";
   manifest->short_name = u"bar";
   manifest->start_url = GURL("http://example.com");
+  manifest->id = manifest->start_url;
   manifest->display = blink::mojom::DisplayMode::kStandalone;
 
   blink::Manifest::ImageResource icon;
@@ -41,6 +42,7 @@ TEST(WebappsUtilsTest, CompatibleURLHasNoPassword) {
 
   blink::mojom::ManifestPtr manifest = GetValidManifest();
   manifest->start_url = kUrlWithPassword;
+  manifest->id = kUrlWithPassword;
   EXPECT_FALSE(WebappsUtils::AreWebManifestUrlsWebApkCompatible(*manifest));
 
   manifest = GetValidManifest();

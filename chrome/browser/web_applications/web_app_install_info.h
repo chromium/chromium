@@ -185,7 +185,11 @@ struct WebAppInstallInfo {
       const GURL& document_url,
       const WebAppInstallInfo& other);
 
+  // TODO(b/280862254): Remove this constructor to force users to use specify
+  // the manifest_id.
   WebAppInstallInfo();
+
+  explicit WebAppInstallInfo(const web_app::ManifestId& manifest_id);
 
   // Deleted to prevent accidental copying. Use Clone() to deep copy explicitly.
   WebAppInstallInfo& operator=(const WebAppInstallInfo&) = delete;
@@ -200,7 +204,10 @@ struct WebAppInstallInfo {
   WebAppInstallInfo Clone() const;
 
   // Id specified in the manifest.
-  absl::optional<std::string> manifest_id;
+  // TODO(b/280862254): After the manifest id constructor is required, this can
+  // be guaranteed to be valid & non-empty.
+  // https://www.w3.org/TR/appmanifest/#id-member
+  web_app::ManifestId manifest_id;
 
   // Title of the application.
   std::u16string title;

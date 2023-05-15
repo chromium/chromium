@@ -59,7 +59,6 @@ class AppBannerManagerDesktop
   bool IsRelatedNonWebAppInstalled(
       const blink::Manifest::RelatedApplication& related_app) const override;
   bool IsWebAppConsideredInstalled() const override;
-  std::string GetAppIdentifier() override;
 
   // Called when the web app install initiated by a banner has completed.
   virtual void DidFinishCreatingWebApp(const web_app::AppId& app_id,

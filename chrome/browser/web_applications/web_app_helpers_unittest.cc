@@ -32,12 +32,18 @@ TEST(WebAppHelpers, GenerateAppId) {
                                "?utm_source=web_app_manifest")));
 }
 
-TEST(WebAppHelpers, GenerateRecommendedId) {
-  EXPECT_EQ("", GenerateRecommendedId(GURL()));
-  EXPECT_EQ("/", GenerateRecommendedId(GURL("https://example.com/")));
-  EXPECT_EQ("/", GenerateRecommendedId(GURL("https://example.com")));
-  EXPECT_EQ("/start?a=b",
-            GenerateRecommendedId(GURL("https://example.com/start?a=b")));
+TEST(WebAppHelpers, GenerateManifestIdFromStartUrlOnly) {
+  EXPECT_EQ(GURL(), GenerateManifestIdFromStartUrlOnly(GURL()));
+  EXPECT_EQ(GURL("https://example.com/"),
+            GenerateManifestIdFromStartUrlOnly(GURL("https://example.com/")));
+  EXPECT_EQ(GURL("https://example.com"),
+            GenerateManifestIdFromStartUrlOnly(GURL("https://example.com")));
+  EXPECT_EQ(GURL("https://example.com/start?a=b"),
+            GenerateManifestIdFromStartUrlOnly(
+                GURL("https://example.com/start?a=b")));
+  EXPECT_EQ(GURL("https://example.com/start"),
+            GenerateManifestIdFromStartUrlOnly(
+                GURL("https://example.com/start#fragment")));
 }
 
 TEST(WebAppHelpers, IsValidWebAppUrl) {
@@ -82,4 +88,26 @@ TEST(WebAppHelpers, ManifestIdEncoding) {
   // "/"" is excluded from encoding according to url spec.
   EXPECT_NE(GenerateAppId("a/b", start_url), GenerateAppId("a%2Fb", start_url));
 }
+
+TEST(WebAppHelpers, ManifestIdWithQueriesAndFragments) {
+  GURL start_url_long = GURL("https://example.com/start_url/long/path.html");
+  GURL url = GURL("https://example.com/test");
+  GURL url_with_query = GURL("https://example.com/test?id");
+  GURL url_with_fragment = GURL("https://example.com/test#id");
+  GURL url_with_query_and_fragment =
+      GURL("https://example.com/test?id#fragment");
+
+  EXPECT_EQ(url, GenerateManifestIdFromStartUrlOnly(url));
+  EXPECT_EQ(url, GenerateManifestIdFromStartUrlOnly(url_with_fragment));
+  EXPECT_EQ(url_with_query, GenerateManifestIdFromStartUrlOnly(url_with_query));
+  EXPECT_EQ(url_with_query,
+            GenerateManifestIdFromStartUrlOnly(url_with_query_and_fragment));
+
+  EXPECT_EQ(url, GenerateManifestId("test", start_url_long));
+  EXPECT_EQ(url, GenerateManifestId("test#id", start_url_long));
+  EXPECT_EQ(url_with_query, GenerateManifestId("test?id", start_url_long));
+  EXPECT_EQ(url_with_query,
+            GenerateManifestId("test?id#fragment", start_url_long));
+}
+
 }  // namespace web_app

@@ -29,8 +29,8 @@ struct Manifest {
 
   mojo_base.mojom.String16? description;
 
-  // Defaults to start_url with origin stripped when id field is not present.
-  mojo_base.mojom.String16? id;
+  // This is empty if the start_url is empty.
+  url.mojom.Url id;
 
   url.mojom.Url start_url;
 

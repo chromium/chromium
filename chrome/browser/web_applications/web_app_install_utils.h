@@ -58,6 +58,11 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
                                   const GURL& manifest_url,
                                   WebAppInstallInfo* web_app_info);
 
+// Same as above, but returns a fresh WebAppInstallInfo.
+WebAppInstallInfo CreateWebAppInfoFromManifest(
+    const blink::mojom::Manifest& manifest,
+    const GURL& manifest_url);
+
 // Form a list of icons to download: Remove icons with invalid urls.
 base::flat_set<GURL> GetValidIconUrlsToDownload(
     const WebAppInstallInfo& web_app_info);

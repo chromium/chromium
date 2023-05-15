@@ -1453,7 +1453,7 @@ VISIT_PROTO_FIELDS(const sync_pb::WebAppSpecifics& proto) {
   VISIT_REP(icon_infos);
   VISIT(user_page_ordinal);
   VISIT(user_launch_ordinal);
-  VISIT(manifest_id);
+  VISIT(relative_manifest_id);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::WifiConfigurationSpecifics::

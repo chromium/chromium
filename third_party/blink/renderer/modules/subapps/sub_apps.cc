@@ -47,7 +47,7 @@ Vector<std::pair<String, V8SubAppsResultCode>> AddResultsFromMojo(
         add_result->result_code == SubAppsServiceResultCode::kSuccess
             ? V8SubAppsResultCode(V8SubAppsResultCode::Enum::kSuccess)
             : V8SubAppsResultCode(V8SubAppsResultCode::Enum::kFailure);
-    add_results_idl.emplace_back(add_result->unhashed_app_id_path, result_code);
+    add_results_idl.emplace_back(add_result->manifest_id_path, result_code);
   }
   return add_results_idl;
 }
@@ -60,7 +60,7 @@ Vector<std::pair<String, V8SubAppsResultCode>> RemoveResultsFromMojo(
         remove_result->result_code == SubAppsServiceResultCode::kSuccess
             ? V8SubAppsResultCode(V8SubAppsResultCode::Enum::kSuccess)
             : V8SubAppsResultCode(V8SubAppsResultCode::Enum::kFailure);
-    results.emplace_back(remove_result->unhashed_app_id_path, result_code);
+    results.emplace_back(remove_result->manifest_id_path, result_code);
   }
   return results;
 }
@@ -69,9 +69,9 @@ Vector<SubAppsServiceAddParametersPtr> AddOptionsToMojo(
     HeapVector<std::pair<String, Member<SubAppsAddParams>>>
         sub_apps_to_add_idl) {
   Vector<SubAppsServiceAddParametersPtr> sub_apps_to_add_mojo;
-  for (auto& [unhashed_app_id_path, add_params] : sub_apps_to_add_idl) {
+  for (auto& [manifest_id_path, add_params] : sub_apps_to_add_idl) {
     sub_apps_to_add_mojo.emplace_back(SubAppsServiceAddParameters::New(
-        unhashed_app_id_path, add_params->installURL()));
+        manifest_id_path, add_params->installURL()));
   }
   return sub_apps_to_add_mojo;
 }
@@ -82,8 +82,8 @@ HeapVector<std::pair<String, Member<SubAppsListResult>>> ListResultsFromMojo(
   for (auto& sub_app_entry : sub_apps_list_mojo) {
     SubAppsListResult* list_result = SubAppsListResult::Create();
     list_result->setAppName(std::move(sub_app_entry->app_name));
-    sub_apps_list_idl.emplace_back(
-        std::move(sub_app_entry->unhashed_app_id_path), list_result);
+    sub_apps_list_idl.emplace_back(std::move(sub_app_entry->manifest_id_path),
+                                   list_result);
   }
   return sub_apps_list_idl;
 }
@@ -168,8 +168,8 @@ ScriptPromise SubApps::add(
   }
 
   // Check that the arguments are root-relative paths.
-  for (const auto& [unhashed_app_id_path, add_params] : sub_apps_to_add) {
-    if (KURL(unhashed_app_id_path).IsValid() ||
+  for (const auto& [manifest_id_path, add_params] : sub_apps_to_add) {
+    if (KURL(manifest_id_path).IsValid() ||
         KURL(add_params->installURL()).IsValid()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
@@ -221,15 +221,15 @@ ScriptPromise SubApps::list(ScriptState* script_state,
 }
 
 ScriptPromise SubApps::remove(ScriptState* script_state,
-                              const Vector<String>& unhashed_app_id_paths,
+                              const Vector<String>& manifest_id_paths,
                               ExceptionState& exception_state) {
   if (!CheckPreconditionsMaybeThrow(exception_state)) {
     return ScriptPromise();
   }
 
   // Check that the arguments are root-relative paths.
-  for (const auto& unhashed_app_id_path : unhashed_app_id_paths) {
-    if (KURL(unhashed_app_id_path).IsValid()) {
+  for (const auto& manifest_id_path : manifest_id_paths) {
+    if (KURL(manifest_id_path).IsValid()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
           "Arguments must be root-relative paths.");
@@ -239,7 +239,7 @@ ScriptPromise SubApps::remove(ScriptState* script_state,
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   GetService()->Remove(
-      unhashed_app_id_paths,
+      manifest_id_paths,
       resolver->WrapCallbackInScriptScope(
           WTF::BindOnce([](ScriptPromiseResolver* resolver,
                            Vector<SubAppsServiceRemoveResultPtr> results_mojo) {

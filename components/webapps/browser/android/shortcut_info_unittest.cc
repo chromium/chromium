@@ -271,7 +271,7 @@ TEST_F(ShortcutInfoTest, DisplayOverride) {
 
 TEST_F(ShortcutInfoTest, ManifestIdGenerated) {
   manifest_.start_url = GURL("https://new.com/start");
-  manifest_.id = u"new_id";
+  manifest_.id = GURL("https://new.com/new_id");
 
   info_.UpdateFromManifest(manifest_);
 
@@ -280,7 +280,6 @@ TEST_F(ShortcutInfoTest, ManifestIdGenerated) {
 
 TEST_F(ShortcutInfoTest, ManifestIdFallback) {
   manifest_.start_url = GURL("https://new.com/start");
-  manifest_.id = absl::nullopt;
 
   info_.UpdateFromManifest(manifest_);
 

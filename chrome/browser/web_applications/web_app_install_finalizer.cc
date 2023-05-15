@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/barrier_callback.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -49,6 +51,7 @@
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
@@ -130,10 +133,18 @@ void WebAppInstallFinalizer::FinalizeInstall(
     return;
   }
 
-  AppId app_id =
-      GenerateAppId(web_app_info.manifest_id, web_app_info.start_url);
-  std::string app_id_unhashed =
-      GenerateAppIdUnhashed(web_app_info.manifest_id, web_app_info.start_url);
+  ManifestId manifest_id = web_app_info.manifest_id;
+  if (manifest_id.is_valid()) {
+    CHECK(url::Origin::Create(manifest_id)
+              .IsSameOriginWith(url::Origin::Create(web_app_info.start_url)));
+  } else {
+    // TODO(b/280862254): After the manifest id constructor is required, this
+    // can be removed.
+    CHECK_IS_TEST();
+    manifest_id = GenerateManifestIdFromStartUrlOnly(web_app_info.start_url);
+  }
+
+  AppId app_id = GenerateAppIdFromManifestId(manifest_id);
   OnDidGetWebAppOriginAssociations origin_association_validated_callback =
       base::BindOnce(&WebAppInstallFinalizer::OnOriginAssociationValidated,
                      weak_ptr_factory_.GetWeakPtr(), web_app_info.Clone(),
@@ -147,7 +158,7 @@ void WebAppInstallFinalizer::FinalizeInstall(
   }
 
   origin_association_manager_->GetWebAppOriginAssociations(
-      GURL(app_id_unhashed), web_app_info.scope_extensions,
+      manifest_id, web_app_info.scope_extensions,
       std::move(origin_association_validated_callback));
 }
 
@@ -343,8 +354,18 @@ void WebAppInstallFinalizer::FinalizeUpdate(
     InstallFinalizedCallback callback) {
   CHECK(started_);
 
-  const AppId app_id =
-      GenerateAppId(web_app_info.manifest_id, web_app_info.start_url);
+  ManifestId manifest_id = web_app_info.manifest_id;
+  if (manifest_id.is_valid()) {
+    CHECK(url::Origin::Create(manifest_id)
+              .IsSameOriginWith(url::Origin::Create(web_app_info.start_url)));
+  } else {
+    // TODO(b/280862254): After the manifest id constructor is required, this
+    // can be removed.
+    CHECK_IS_TEST();
+    manifest_id = GenerateManifestIdFromStartUrlOnly(web_app_info.start_url);
+  }
+
+  const AppId app_id = GenerateAppIdFromManifestId(manifest_id);
   const WebApp* existing_web_app = GetWebAppRegistrar().GetAppById(app_id);
 
   if (!existing_web_app ||

@@ -122,6 +122,7 @@ blink::mojom::ManifestPtr BuildDefaultManifest() {
   manifest->name = base::ASCIIToUTF16(kDefaultManifestName);
   manifest->short_name = base::ASCIIToUTF16(kDefaultManifestShortName);
   manifest->start_url = GURL(kDefaultStartUrl);
+  manifest->id = GURL(kDefaultStartUrl);
   manifest->display = kDefaultManifestDisplayMode;
 
   blink::Manifest::ImageResource primary_icon;

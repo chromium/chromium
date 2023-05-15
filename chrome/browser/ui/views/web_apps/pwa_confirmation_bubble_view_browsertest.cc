@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -36,12 +37,15 @@ class PWAConfirmationBubbleViewBrowserTest : public InProcessBrowserTest {
     auto app_info = std::make_unique<WebAppInstallInfo>();
     app_info->title = u"Test app 2";
     app_info->start_url = GURL("https://example2.com");
+    app_info->manifest_id = GURL("https://example2.com");
     app_info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     return app_info;
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  web_app::OsIntegrationManager::ScopedSuppressForTesting
+      scoped_os_suppression_;
 };
 
 IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,

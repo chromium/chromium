@@ -546,12 +546,9 @@ DisplayMode WebAppRegistrar::GetEffectiveDisplayModeFromManifest(
   return GetAppDisplayMode(app_id);
 }
 
-std::string WebAppRegistrar::GetComputedUnhashedAppId(
-    const AppId& app_id) const {
+GURL WebAppRegistrar::GetComputedManifestId(const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app ? GenerateAppIdUnhashed(web_app->manifest_id(),
-                                         web_app->start_url())
-                 : std::string();
+  return web_app ? web_app->manifest_id() : GURL();
 }
 
 bool WebAppRegistrar::IsTabbedWindowModeEnabled(const AppId& app_id) const {
@@ -946,10 +943,9 @@ const GURL& WebAppRegistrar::GetAppStartUrl(const AppId& app_id) const {
   return web_app ? web_app->start_url() : GURL::EmptyGURL();
 }
 
-absl::optional<std::string> WebAppRegistrar::GetAppManifestId(
-    const AppId& app_id) const {
+ManifestId WebAppRegistrar::GetAppManifestId(const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->manifest_id() : absl::nullopt;
+  return web_app ? web_app->manifest_id() : ManifestId();
 }
 
 const std::string* WebAppRegistrar::GetAppLaunchQueryParams(

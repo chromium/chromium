@@ -6,6 +6,7 @@
 
 #include <sstream>
 
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/skia_util.h"
@@ -233,7 +234,8 @@ base::Value WebAppShortcutsMenuItemInfo::AsDebugValue() const {
 WebAppInstallInfo WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
     const GURL& document_url,
     const WebAppInstallInfo& other) {
-  WebAppInstallInfo create_shortcut_info;
+  WebAppInstallInfo create_shortcut_info(
+      web_app::GenerateManifestIdFromStartUrlOnly(document_url));
   create_shortcut_info.title = other.title;
   create_shortcut_info.description = other.description;
   create_shortcut_info.start_url = document_url;
@@ -256,6 +258,11 @@ WebAppInstallInfo WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
 
 WebAppInstallInfo::WebAppInstallInfo() = default;
 
+WebAppInstallInfo::WebAppInstallInfo(const web_app::ManifestId& manifest_id)
+    : manifest_id(manifest_id) {
+  CHECK(manifest_id.is_valid());
+}
+
 WebAppInstallInfo::WebAppInstallInfo(const WebAppInstallInfo& other) = default;
 
 WebAppInstallInfo::WebAppInstallInfo(WebAppInstallInfo&&) = default;
@@ -264,7 +271,9 @@ WebAppInstallInfo& WebAppInstallInfo::operator=(WebAppInstallInfo&&) = default;
 
 WebAppInstallInfo::WebAppInstallInfo(
     const webapps::mojom::WebPageMetadata& metadata)
-    : title(metadata.application_name),
+    : manifest_id(web_app::GenerateManifestIdFromStartUrlOnly(
+          metadata.application_url)),
+      title(metadata.application_name),
       description(metadata.description),
       start_url(metadata.application_url) {
   for (const auto& icon : metadata.icons) {

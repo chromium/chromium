@@ -4054,12 +4054,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ManifestId,
   AppId app_id = InstallWebApp();
 
   // manifest_id should default to start_url when it's not provided in manifest.
-  EXPECT_EQ(GetProvider()
-                .registrar_unsafe()
-                .GetAppById(app_id)
-                ->manifest_id()
-                .value(),
-            "start");
+  EXPECT_EQ(GetProvider().registrar_unsafe().GetAppById(app_id)->manifest_id(),
+            http_server_.GetURL("/start"));
 
   constexpr char kManifestTemplate2[] = R"(
     {
@@ -4080,43 +4076,6 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ManifestId,
 
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpToDate, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ManifestId,
-                       AllowManifestIdUpdateWhenAppIdIsNotChanged) {
-  constexpr char kManifestTemplate[] = R"(
-    {
-      "name": "Test app name",
-      "id": "$1",
-      "start_url": "/start",
-      "scope": "/",
-      "display": "standalone",
-      "icons": $2
-    }
-  )";
-  OverrideManifest(kManifestTemplate, {"start", kInstallableIconList});
-  AppId app_id = InstallWebApp();
-  // Manually set manifest_id to null. manifest_id can be null when the app is
-  // sync installed from older versions of Chromium.
-  {
-    ScopedRegistryUpdate update(&GetProvider().sync_bridge_unsafe());
-    WebApp* app = update->UpdateApp(app_id);
-    app->SetManifestId(absl::nullopt);
-  }
-  EXPECT_FALSE(GetProvider()
-                   .registrar_unsafe()
-                   .GetAppById(app_id)
-                   ->manifest_id()
-                   .has_value());
-  // Reload page to trigger an manifest update that re-fetches the manifest with
-  // id specified to be same as the default start_url.
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
-            ManifestUpdateResult::kAppUpdated);
-  EXPECT_TRUE(GetProvider()
-                  .registrar_unsafe()
-                  .GetAppById(app_id)
-                  ->manifest_id()
-                  .has_value());
 }
 
 class ManifestUpdateManagerBrowserTest_ScopeExtensions

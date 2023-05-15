@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -110,6 +111,7 @@ void FakeDataRetriever::BuildDefaultDataToRetrieve(const GURL& url,
 
   auto manifest = blink::mojom::Manifest::New();
   manifest->start_url = url;
+  manifest->id = GenerateManifestIdFromStartUrlOnly(manifest->start_url);
   manifest->scope = scope;
   manifest->display = DisplayMode::kStandalone;
   manifest->short_name = u"Manifest Name";

@@ -651,6 +651,8 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestTooManyIcons) {
 // each.
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestTooManyShortcutIcons) {
   blink::mojom::Manifest manifest;
+  manifest.start_url = GURL("http://www.chromium.org/");
+  manifest.id = GURL("http://www.chromium.org/");
   const unsigned kNumShortcuts = 5;
 
   for (unsigned int i = 0; i < kNumShortcuts; ++i) {
@@ -668,9 +670,8 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifestTooManyShortcutIcons) {
 
     manifest.shortcuts.push_back(std::move(shortcut_item));
   }
-  WebAppInstallInfo web_app_info;
-  UpdateWebAppInfoFromManifest(
-      manifest, GURL("http://www.chromium.org/manifest.json"), &web_app_info);
+  WebAppInstallInfo web_app_info = CreateWebAppInfoFromManifest(
+      manifest, GURL("http://www.chromium.org/manifest.json"));
 
   std::vector<WebAppShortcutsMenuItemInfo::Icon> all_icons;
   for (const auto& shortcut : web_app_info.shortcuts_menu_item_infos) {

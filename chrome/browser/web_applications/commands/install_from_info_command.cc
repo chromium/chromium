@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -33,10 +34,12 @@ InstallFromInfoCommand::InstallFromInfoCommand(
     OnceInstallCallback install_callback)
     : WebAppCommandTemplate<AppLock>("InstallFromInfoCommand"),
       profile_(profile),
-      lock_description_(std::make_unique<AppLockDescription>(
-          GenerateAppId(install_info->manifest_id, install_info->start_url))),
-      app_id_(
-          GenerateAppId(install_info->manifest_id, install_info->start_url)),
+      manifest_id_(
+          install_info->manifest_id.is_empty()
+              ? GenerateManifestIdFromStartUrlOnly(install_info->start_url)
+              : install_info->manifest_id),
+      app_id_(GenerateAppIdFromManifestId(manifest_id_)),
+      lock_description_(std::make_unique<AppLockDescription>(app_id_)),
       install_info_(std::move(install_info)),
       overwrite_existing_manifest_fields_(overwrite_existing_manifest_fields),
       install_surface_(install_surface),
@@ -47,6 +50,12 @@ InstallFromInfoCommand::InstallFromInfoCommand(
              bool _) { std::move(install_callback).Run(app_id, code); },
           std::move(install_callback))) {
   PopulateInitialDebugInfo();
+  if (install_info_->manifest_id.is_empty()) {
+    // TODO(b/280862254): After the manifest id constructor is required, this
+    // can be removed.
+    install_info_->manifest_id = manifest_id_;
+  }
+  CHECK(install_info_->manifest_id.is_valid());
 }
 
 InstallFromInfoCommand::InstallFromInfoCommand(
@@ -58,10 +67,12 @@ InstallFromInfoCommand::InstallFromInfoCommand(
     const WebAppInstallParams& install_params)
     : WebAppCommandTemplate<AppLock>("InstallFromInfoCommand"),
       profile_(profile),
-      lock_description_(std::make_unique<AppLockDescription>(
-          GenerateAppId(install_info->manifest_id, install_info->start_url))),
-      app_id_(
-          GenerateAppId(install_info->manifest_id, install_info->start_url)),
+      manifest_id_(
+          install_info->manifest_id.is_empty()
+              ? GenerateManifestIdFromStartUrlOnly(install_info->start_url)
+              : install_info->manifest_id),
+      app_id_(GenerateAppIdFromManifestId(manifest_id_)),
+      lock_description_(std::make_unique<AppLockDescription>(app_id_)),
       install_info_(std::move(install_info)),
       overwrite_existing_manifest_fields_(overwrite_existing_manifest_fields),
       install_surface_(install_surface),
@@ -72,6 +83,12 @@ InstallFromInfoCommand::InstallFromInfoCommand(
              bool _) { std::move(install_callback).Run(app_id, code); },
           std::move(install_callback))),
       install_params_(install_params) {
+  if (install_info_->manifest_id.is_empty()) {
+    // TODO(b/280862254): After the manifest id constructor is required, this
+    // can be removed.
+    install_info_->manifest_id = manifest_id_;
+  }
+  CHECK(install_info_->manifest_id.is_valid());
   if (!install_params.locally_installed) {
     DCHECK(!install_params.add_to_applications_menu);
     DCHECK(!install_params.add_to_desktop);
@@ -91,16 +108,24 @@ InstallFromInfoCommand::InstallFromInfoCommand(
     const std::vector<AppId>& apps_or_extensions_to_uninstall)
     : WebAppCommandTemplate<AppLock>("InstallFromInfoCommand"),
       profile_(profile),
-      lock_description_(std::make_unique<AppLockDescription>(
-          GenerateAppId(install_info->manifest_id, install_info->start_url))),
-      app_id_(
-          GenerateAppId(install_info->manifest_id, install_info->start_url)),
+      manifest_id_(
+          install_info->manifest_id.is_empty()
+              ? GenerateManifestIdFromStartUrlOnly(install_info->start_url)
+              : install_info->manifest_id),
+      app_id_(GenerateAppIdFromManifestId(manifest_id_)),
+      lock_description_(std::make_unique<AppLockDescription>(app_id_)),
       install_info_(std::move(install_info)),
       overwrite_existing_manifest_fields_(overwrite_existing_manifest_fields),
       install_surface_(install_surface),
       install_callback_(std::move(install_callback)),
       install_params_(install_params),
       apps_or_extensions_to_uninstall_(apps_or_extensions_to_uninstall) {
+  if (install_info_->manifest_id.is_empty()) {
+    // TODO(b/280862254): After the manifest id constructor is required, this
+    // can be removed.
+    install_info_->manifest_id = manifest_id_;
+  }
+  CHECK(install_info_->manifest_id.is_valid());
   if (!install_params.locally_installed) {
     DCHECK(!install_params.add_to_applications_menu);
     DCHECK(!install_params.add_to_desktop);
@@ -150,6 +175,7 @@ void InstallFromInfoCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
 
 void InstallFromInfoCommand::PopulateInitialDebugInfo() {
   debug_value_.Set("app_id", app_id_);
+  debug_value_.Set("manifest_id", manifest_id_.spec());
   debug_value_.Set("start_url", install_info_->start_url.spec());
   debug_value_.Set("overwrite_existing_manifest_fields",
                    overwrite_existing_manifest_fields_);

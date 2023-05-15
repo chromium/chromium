@@ -452,12 +452,11 @@ String ManifestParser::ParseDescription(const JSONObject* object) {
   return description.has_value() ? *description : String();
 }
 
-String ManifestParser::ParseId(const JSONObject* object,
-                               const KURL& start_url) {
+KURL ManifestParser::ParseId(const JSONObject* object, const KURL& start_url) {
   if (!start_url.IsValid()) {
     ManifestUmaUtil::ParseIdResult(
         ManifestUmaUtil::ParseIdResultType::kInvalidStartUrl);
-    return String();
+    return KURL();
   }
   KURL start_url_origin = KURL(SecurityOrigin::Create(start_url)->ToString());
 
@@ -474,9 +473,7 @@ String ManifestParser::ParseId(const JSONObject* object,
     id = start_url;
   }
   id.RemoveFragmentIdentifier();
-  // TODO(https://crbug.com/1231765): rename the field to relative_id to reflect
-  // the actual value.
-  return id.GetString().Substring(id.PathStart() + 1);
+  return id;
 }
 
 KURL ManifestParser::ParseStartURL(const JSONObject* object) {

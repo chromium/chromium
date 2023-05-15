@@ -196,7 +196,7 @@
       }
    },
    "manifest_icons": [  ],
-   "manifest_id": null,
+   "manifest_id": "https://example.com/scope1234/start1234",
    "manifest_update_time": "1970-02-12 16:20:18.762 UTC",
    "manifest_url": "https://example.com/manifest1234.json",
    "note_taking_new_note_url": "",
@@ -315,7 +315,6 @@
    },
    "tab_strip": null,
    "theme_color": "rgba(151,34,83,0.8823529411764706)",
-   "unhashed_app_id": "https://example.com/scope1234/start1234",
    "url_handlers": [ {
       "exclude_paths": [  ],
       "has_origin_wildcard": true,

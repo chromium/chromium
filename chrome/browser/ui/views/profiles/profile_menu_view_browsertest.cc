@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
@@ -150,13 +151,14 @@ std::unique_ptr<KeyedService> CreateTestTracker(content::BrowserContext*) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 
+const char kPasswordManagerId[] = "chrome://password-manager/";
 const char kPasswordManagerPWAUrl[] = "chrome://password-manager/?source=pwa";
 
 std::unique_ptr<WebAppInstallInfo> CreatePasswordManagerWebAppInfo() {
   auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = GURL(kPasswordManagerPWAUrl);
   web_app_info->title = u"Password Manager";
-  web_app_info->manifest_id = "";
+  web_app_info->manifest_id = GURL(kPasswordManagerId);
   return web_app_info;
 }
 

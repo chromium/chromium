@@ -71,25 +71,21 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
 
   // app_id is a hash of start_url. Parse start_url first:
   const GURL start_url(sync_data.start_url());
-  if (start_url.is_empty() || !start_url.is_valid()) {
+  if (!start_url.is_valid()) {
     DLOG(ERROR) << "ApplySyncDataToApp: start_url parse error.";
     return;
   }
-  absl::optional<std::string> manifest_id = absl::nullopt;
-  if (sync_data.has_manifest_id())
-    manifest_id = absl::optional<std::string>(sync_data.manifest_id());
-
-  if (app->app_id() != GenerateAppId(manifest_id, start_url)) {
-    DLOG(ERROR) << "ApplySyncDataToApp: app_id doesn't match id generated "
-                   "from manifest id or start_url.";
-    return;
+  ManifestId manifest_id;
+  if (sync_data.has_relative_manifest_id()) {
+    manifest_id =
+        GenerateManifestId(sync_data.relative_manifest_id(), start_url);
+  } else {
+    manifest_id = GenerateManifestIdFromStartUrlOnly(start_url);
   }
 
-  if (!app->manifest_id().has_value()) {
-    app->SetManifestId(manifest_id);
-  } else if (app->manifest_id() != manifest_id) {
-    DLOG(ERROR) << "ApplySyncDataToApp: existing manifest_id doesn't match "
-                   "manifest_id.";
+  if (app->app_id() != GenerateAppIdFromManifestId(manifest_id)) {
+    DLOG(ERROR) << "ApplySyncDataToApp: app_id doesn't match id generated "
+                   "from manifest id or start_url.";
     return;
   }
 
@@ -98,6 +94,13 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
   } else if (app->start_url() != start_url) {
     DLOG(ERROR)
         << "ApplySyncDataToApp: existing start_url doesn't match start_url.";
+    return;
+  }
+
+  if (app->manifest_id() != manifest_id) {
+    DLOG(ERROR) << "ApplySyncDataToApp: existing manifest_id doesn't match "
+                   "manifest_id. "
+                << app->manifest_id().spec() << " vs " << manifest_id.spec();
     return;
   }
 
@@ -385,11 +388,13 @@ void WebAppSyncBridge::CheckRegistryUpdateData(
   for (const std::unique_ptr<WebApp>& web_app : update_data.apps_to_create) {
     DCHECK(!registrar_->GetAppById(web_app->app_id()));
     DCHECK(!web_app->untranslated_name().empty());
+    DCHECK(web_app->manifest_id().is_valid());
   }
 
   for (const std::unique_ptr<WebApp>& web_app : update_data.apps_to_update) {
     DCHECK(registrar_->GetAppById(web_app->app_id()));
     DCHECK(!web_app->untranslated_name().empty());
+    DCHECK(web_app->manifest_id().is_valid());
   }
 
   for (const AppId& app_id : update_data.apps_to_delete)
@@ -585,6 +590,24 @@ void WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
     // storage.
     auto web_app = std::make_unique<WebApp>(app_id);
 
+    const GURL start_url(specifics.start_url());
+    if (!start_url.is_valid()) {
+      DLOG(ERROR) << "WebAppSyncBridge: start_url parse error.";
+      return;
+    }
+
+    // Set the manifest id first, as ApplySyncDataToApp verifies that the
+    // computed manifest ids match.
+    ManifestId manifest_id;
+    if (specifics.has_relative_manifest_id()) {
+      manifest_id =
+          GenerateManifestId(specifics.relative_manifest_id(), start_url);
+    } else {
+      manifest_id = GenerateManifestIdFromStartUrlOnly(start_url);
+    }
+
+    web_app->SetManifestId(manifest_id);
+
     // Request a followup sync-initiated install for this stub app to fetch
     // full local data and all the icons.
     web_app->SetIsFromSyncAndPendingInstallation(true);
@@ -771,10 +794,14 @@ std::string WebAppSyncBridge::GetClientTag(
     return std::string();
   }
 
-  absl::optional<std::string> manifest_id = absl::nullopt;
-  if (specifics.has_manifest_id())
-    manifest_id = absl::optional<std::string>(specifics.manifest_id());
-  return GenerateAppId(manifest_id, start_url);
+  ManifestId manifest_id;
+  if (specifics.has_relative_manifest_id()) {
+    manifest_id =
+        GenerateManifestId(specifics.relative_manifest_id(), start_url);
+  } else {
+    manifest_id = GenerateManifestIdFromStartUrlOnly(start_url);
+  }
+  return GenerateAppIdFromManifestId(manifest_id);
 }
 
 std::string WebAppSyncBridge::GetStorageKey(

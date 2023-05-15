@@ -260,9 +260,7 @@ class WebApp {
 
   const GURL& manifest_url() const { return manifest_url_; }
 
-  const absl::optional<std::string>& manifest_id() const {
-    return manifest_id_;
-  }
+  ManifestId manifest_id() const;
 
   const absl::optional<LaunchHandler>& launch_handler() const {
     return launch_handler_;
@@ -425,7 +423,7 @@ class WebApp {
   void SetSyncFallbackData(SyncFallbackData sync_fallback_data);
   void SetCaptureLinks(blink::mojom::CaptureLinks capture_links);
   void SetManifestUrl(const GURL& manifest_url);
-  void SetManifestId(const absl::optional<std::string>& manifest_id);
+  void SetManifestId(const ManifestId& manifest_id);
   void SetWindowControlsOverlayEnabled(bool enabled);
   void SetLaunchHandler(absl::optional<LaunchHandler> launch_handler);
   void SetParentAppId(const absl::optional<AppId>& parent_app_id);
@@ -542,7 +540,7 @@ class WebApp {
       blink::mojom::CaptureLinks::kUndefined;
   ClientData client_data_;
   GURL manifest_url_;
-  absl::optional<std::string> manifest_id_;
+  ManifestId manifest_id_;
   // The state of the user's approval of the app's use of the File Handler API.
   ApiApprovalState file_handler_approval_state_ =
       ApiApprovalState::kRequiresPrompt;

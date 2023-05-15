@@ -8,6 +8,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/overloaded.h"
@@ -32,6 +33,7 @@
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/color_utils.h"
+#include "url/origin.h"
 
 namespace web_app {
 
@@ -239,6 +241,20 @@ const SortedSizesPx& WebApp::downloaded_icon_sizes(IconPurpose purpose) const {
   }
 }
 
+ManifestId WebApp::manifest_id() const {
+  // Almost all production use-cases should have the manifest_id set, but in
+  // some test it is not. If the manifest id is not set, then fall back to the
+  // start_url, as per the algorithm in
+  // https://www.w3.org/TR/appmanifest/#id-member.
+  if (manifest_id_.is_empty()) {
+    CHECK_IS_TEST();
+    // This is why the function must return a value instead of a const ref, as
+    // this object would be temporary.
+    return GenerateManifestIdFromStartUrlOnly(start_url_);
+  }
+  return manifest_id_;
+}
+
 void WebApp::AddSource(WebAppManagement::Type source) {
   sources_[source] = true;
 }
@@ -323,7 +339,13 @@ void WebApp::SetDescription(const std::string& description) {
 }
 
 void WebApp::SetStartUrl(const GURL& start_url) {
-  DCHECK(start_url.is_valid());
+  CHECK(start_url.is_valid());
+  if (manifest_id_.is_empty()) {
+    manifest_id_ = GenerateManifestIdFromStartUrlOnly(start_url);
+  }
+  CHECK(url::Origin::Create(manifest_id())
+            .IsSameOriginWith(url::Origin::Create(start_url)))
+      << manifest_id().spec() << " " << start_url.spec();
   start_url_ = start_url;
 }
 
@@ -525,7 +547,12 @@ void WebApp::SetManifestUrl(const GURL& manifest_url) {
   manifest_url_ = manifest_url;
 }
 
-void WebApp::SetManifestId(const absl::optional<std::string>& manifest_id) {
+void WebApp::SetManifestId(const ManifestId& manifest_id) {
+  CHECK(manifest_id.is_valid());
+  CHECK(start_url_.is_empty() ||
+        url::Origin::Create(start_url_)
+            .IsSameOriginWith(url::Origin::Create(manifest_id)))
+      << start_url_.spec() << " vs " << manifest_id.spec();
   manifest_id_ = manifest_id;
 }
 
@@ -954,8 +981,6 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("launch_query_params", ConvertOptional(launch_query_params_));
 
-  root.Set("manifest_id", ConvertOptional(manifest_id_));
-
   root.Set("manifest_update_time", base::ToString(manifest_update_time_));
 
   root.Set("manifest_url", base::ToString(manifest_url_));
@@ -1023,7 +1048,7 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("theme_color", ColorToString(theme_color_));
 
-  root.Set("unhashed_app_id", GenerateAppIdUnhashed(manifest_id_, start_url_));
+  root.Set("manifest_id", manifest_id_.spec());
 
   root.Set("url_handlers", ConvertDebugValueList(url_handlers_));
 

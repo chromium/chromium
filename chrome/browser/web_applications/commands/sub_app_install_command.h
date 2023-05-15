@@ -39,14 +39,14 @@ class WebAppUrlLoader;
 class WebAppDataRetriever;
 
 using AppInstallResults =
-    std::vector<std::pair<AppId, blink::mojom::SubAppsServiceResultCode>>;
+    std::vector<std::pair<ManifestId, blink::mojom::SubAppsServiceResultCode>>;
 using SubAppInstallResultCallback = base::OnceCallback<void(AppInstallResults)>;
 
 class SubAppInstallCommand
     : public WebAppCommandTemplate<SharedWebContentsWithAppLock> {
  public:
   SubAppInstallCommand(const AppId& parent_app_id,
-                       std::vector<std::pair<UnhashedAppId, GURL>> sub_apps,
+                       std::vector<std::pair<ManifestId, GURL>> sub_apps,
                        SubAppInstallResultCallback install_callback,
                        Profile* profile,
                        std::unique_ptr<WebAppUrlLoader> url_loader,
@@ -75,45 +75,43 @@ class SubAppInstallCommand
 
   // Functions to perform install flow for each sub app.
   void StartNextInstall();
-  void OnWebAppUrlLoadedGetWebAppInstallInfo(
-      const UnhashedAppId& unhashed_app_id,
-      const GURL& url_to_load,
-      WebAppUrlLoader::Result result);
-  void OnGetWebAppInstallInfo(const UnhashedAppId& unhashed_app_id,
+  void OnWebAppUrlLoadedGetWebAppInstallInfo(const ManifestId& manifest_id,
+                                             const GURL& url_to_load,
+                                             WebAppUrlLoader::Result result);
+  void OnGetWebAppInstallInfo(const ManifestId& manifest_id,
                               std::unique_ptr<WebAppInstallInfo> install_info);
   void OnDidPerformInstallableCheck(
-      const UnhashedAppId& unhashed_app_id,
+      const ManifestId& manifest_id,
       std::unique_ptr<WebAppInstallInfo> web_app_info,
       blink::mojom::ManifestPtr opt_manifest,
       const GURL& manifest_url,
       bool valid_manifest_for_web_app,
       webapps::InstallableStatusCode error_code);
   void OnIconsRetrievedShowDialog(
-      const UnhashedAppId& unhashed_app_id,
+      const ManifestId& manifest_id,
       std::unique_ptr<WebAppInstallInfo> web_app_info,
       IconsDownloadedResult result,
       IconsMap icons_map,
       DownloadedIconsHttpResults icons_http_results);
-  void OnDialogCompleted(const UnhashedAppId& unhashed_app_id,
+  void OnDialogCompleted(const ManifestId& manifest_id,
                          bool user_accepted,
                          std::unique_ptr<WebAppInstallInfo> web_app_info);
-  void OnInstallFinalized(const UnhashedAppId& unhashed_app_id,
+  void OnInstallFinalized(const ManifestId& manifest_id,
                           const GURL& start_url,
                           const AppId& app_id,
                           webapps::InstallResultCode code,
                           OsHooksErrors os_hooks_errors);
-  void MaybeFinishInstall(const UnhashedAppId& app_id,
+  void MaybeFinishInstall(const ManifestId& app_id,
                           webapps::InstallResultCode code);
 
   // Functions to manage all sub apps installations.
   void MaybeShowDialog();
   void MaybeFinishCommand();
-  void AddResultAndRemoveFromPendingInstalls(
-      const UnhashedAppId& unhashed_app_id,
-      webapps::InstallResultCode result);
+  void AddResultAndRemoveFromPendingInstalls(const ManifestId& manifest_id,
+                                             webapps::InstallResultCode result);
   bool IsWebContentsDestroyed();
   void AddResultToDebugData(
-      const UnhashedAppId& unhashed_app_id,
+      const ManifestId& manifest_id,
       const GURL& url,
       const AppId& installed_app_id,
       webapps::InstallResultCode detailed_code,
@@ -123,20 +121,20 @@ class SubAppInstallCommand
   std::unique_ptr<SharedWebContentsWithAppLock> lock_;
 
   const AppId parent_app_id_;
-  std::vector<std::pair<UnhashedAppId, GURL>> requested_installs_;
+  std::vector<std::pair<ManifestId, GURL>> requested_installs_;
   SubAppInstallResultCallback install_callback_;
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
-  base::flat_map<UnhashedAppId, GURL> pending_installs_map_;
+  base::flat_map<ManifestId, GURL> pending_installs_map_;
   size_t num_pending_dialog_callbacks_ = 0;
   AppInstallResults results_;
   InstallErrorLogEntry log_entry_;
   base::Value::Dict debug_install_results_;
   std::vector<
-      std::tuple<UnhashedAppId,
+      std::tuple<ManifestId,
                  std::unique_ptr<WebAppInstallInfo>,
                  base::OnceCallback<void(bool user_accepted,
                                          std::unique_ptr<WebAppInstallInfo>)>>>

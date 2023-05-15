@@ -66,6 +66,14 @@ message WebAppSpecifics {
   // |user_page_ordinal| page.
   optional string user_launch_ordinal = 8;
 
-  // Used to store id specified in the manifest.
-  optional string manifest_id = 9;
+  // Used to store id specified in the manifest. This is a path that is relative
+  // to the start_url, similar to how the id field is parsed in
+  // https://www.w3.org/TR/appmanifest/#id-member, except this field does not
+  // include a scheme or origin. This is only the path after the origin,
+  // excluding the first "/".
+  // Note: If this field is not set, then the manifest_id is generated using the
+  // start_url in GenerateManifestIdFromStartUrlOnly. This is different than if
+  // this is set to "", which means the manifest_id will be set to the origin of
+  // the start_url.
+  optional string relative_manifest_id = 9;
 }

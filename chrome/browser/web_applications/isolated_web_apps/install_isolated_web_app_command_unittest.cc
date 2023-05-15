@@ -42,6 +42,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -127,7 +128,7 @@ IsolatedWebAppLocation CreateDevProxyLocation(
 
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url) {
   auto manifest = blink::mojom::Manifest::New();
-  manifest->id = u"";
+  manifest->id = application_url.DeprecatedGetOriginAsURL();
   manifest->scope = application_url.Resolve("/");
   manifest->start_url = application_url.Resolve("/testing-start-url.html");
   manifest->display = DisplayMode::kStandalone;
@@ -686,40 +687,10 @@ using InstallIsolatedWebAppCommandManifestTest =
     InstallIsolatedWebAppCommandTest;
 
 TEST_F(InstallIsolatedWebAppCommandManifestTest,
-       InstallationFailsWhenManifestHasNoId) {
-  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  blink::mojom::ManifestPtr manifest =
-      CreateDefaultManifest(url_info.origin().GetURL());
-  manifest->id = absl::nullopt;
-
-  EXPECT_THAT(
-      ExecuteCommandWithManifest(url_info, manifest.Clone()),
-      IsInstallationError(HasSubstr(
-          "Manifest `id` is not present. manifest_url: " +
-          CreateDefaultManifestURL(url_info.origin().GetURL()).spec())));
-
-  EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()), IsNull());
-}
-
-TEST_F(InstallIsolatedWebAppCommandManifestTest,
-       FailsWhenManifestIdHasInvalidUTF8Character) {
-  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
-  blink::mojom::ManifestPtr manifest =
-      CreateDefaultManifest(url_info.origin().GetURL());
-  char16_t invalid_utf8_chars = {0xD801};
-  manifest->id = std::u16string{invalid_utf8_chars};
-
-  EXPECT_THAT(ExecuteCommandWithManifest(url_info, manifest.Clone()),
-              IsInstallationError(HasSubstr(
-                  "Failed to convert manifest `id` from UTF16 to UTF8")));
-}
-
-TEST_F(InstallIsolatedWebAppCommandManifestTest,
        PassesManifestIdToFinalizerWhenManifestIdIsEmpty) {
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   blink::mojom::ManifestPtr manifest =
       CreateDefaultManifest(url_info.origin().GetURL());
-  manifest->id = u"";
 
   EXPECT_TRUE(
       ExecuteCommandWithManifest(url_info, manifest.Clone()).has_value());
@@ -732,7 +703,7 @@ TEST_F(InstallIsolatedWebAppCommandManifestTest,
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   blink::mojom::ManifestPtr manifest =
       CreateDefaultManifest(url_info.origin().GetURL());
-  manifest->id = u"test-manifest-id";
+  manifest->id = url_info.origin().GetURL().Resolve("/test-manifest-id");
 
   EXPECT_THAT(ExecuteCommandWithManifest(url_info, manifest.Clone()),
               IsInstallationError(HasSubstr(R"(Manifest `id` must be "/")")));
@@ -1138,7 +1109,7 @@ TEST_F(InstallIsolatedWebAppCommandMetricsTest,
   IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
   blink::mojom::ManifestPtr manifest =
       CreateDefaultManifest(url_info.origin().GetURL());
-  manifest->id = u"test manifest id";
+  manifest->id = url_info.origin().GetURL().Resolve("/test manifest id");
 
   base::HistogramTester histogram_tester;
 

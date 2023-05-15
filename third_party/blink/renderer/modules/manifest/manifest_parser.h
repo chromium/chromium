@@ -155,7 +155,7 @@ class MODULES_EXPORT ManifestParser {
   String ParseDescription(const JSONObject* object);
 
   // Parses the 'id' field of the manifest.
-  String ParseId(const JSONObject* object, const KURL& start_url);
+  KURL ParseId(const JSONObject* object, const KURL& start_url);
 
   // Parses the 'scope' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#scope-member. Returns the parsed KURL if

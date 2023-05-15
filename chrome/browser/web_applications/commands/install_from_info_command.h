@@ -95,11 +95,12 @@ class InstallFromInfoCommand : public WebAppCommandTemplate<AppLock> {
                                     bool did_uninstall_and_replace);
 
   const raw_ptr<Profile> profile_;
+  ManifestId manifest_id_;
+  AppId app_id_;
 
   std::unique_ptr<AppLockDescription> lock_description_;
   std::unique_ptr<AppLock> lock_;
 
-  AppId app_id_;
   std::unique_ptr<WebAppInstallInfo> install_info_;
   bool overwrite_existing_manifest_fields_;
   webapps::WebappInstallSource install_surface_;

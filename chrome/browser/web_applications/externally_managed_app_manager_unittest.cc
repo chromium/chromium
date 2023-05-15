@@ -455,8 +455,8 @@ class ExternallyAppManagerTest : public WebAppTest {
     install_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
     install_page_state.redirection_url = absl::nullopt;
 
-    install_page_state.page_install_info =
-        std::make_unique<WebAppInstallInfo>();
+    install_page_state.page_install_info = std::make_unique<WebAppInstallInfo>(
+        GenerateManifestIdFromStartUrlOnly(start_url));
     install_page_state.page_install_info->title = u"Basic app title";
 
     install_page_state.manifest_url = manifest_url;
@@ -466,6 +466,9 @@ class ExternallyAppManagerTest : public WebAppTest {
     install_page_state.opt_manifest->scope =
         url::Origin::Create(start_url).GetURL();
     install_page_state.opt_manifest->start_url = start_url;
+    install_page_state.opt_manifest->id =
+        GenerateManifestIdFromStartUrlOnly(start_url);
+
     install_page_state.opt_manifest->display =
         blink::mojom::DisplayMode::kStandalone;
     install_page_state.opt_manifest->short_name = u"Basic app name";
@@ -667,7 +670,8 @@ TEST_F(ExternallyAppManagerTest, PolicyAppOverridesUserInstalledApp) {
         web_contents_manager().GetOrCreatePageState(kInstallUrl);
     install_page_state.opt_manifest->short_name = u"Test user app";
 
-    auto install_info = std::make_unique<WebAppInstallInfo>();
+    auto install_info = std::make_unique<WebAppInstallInfo>(
+        GenerateManifestIdFromStartUrlOnly(kStartUrl));
     install_info->start_url = kStartUrl;
     install_info->title = u"Test user app";
     absl::optional<AppId> user_app_id =

@@ -339,6 +339,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
 
   // Required fields:
   app->SetStartUrl(start_url);
+  app->SetManifestId(GenerateManifestIdFromStartUrlOnly(start_url));
   app->SetName(name);
   app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
   app->SetIsLocallyInstalled(false);
@@ -389,7 +390,6 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_EQ(app->run_on_os_login_mode(), RunOnOsLoginMode::kNotRun);
   EXPECT_FALSE(app->run_on_os_login_os_integration_state().has_value());
   EXPECT_TRUE(app->manifest_url().is_empty());
-  EXPECT_FALSE(app->manifest_id().has_value());
   EXPECT_TRUE(app->permissions_policy().empty());
   EXPECT_FALSE(app->isolation_data().has_value());
   RegisterApp(std::move(app));
@@ -401,6 +401,8 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
 
   // Required fields were serialized:
   EXPECT_EQ(app_id, app_copy->app_id());
+  EXPECT_EQ(GenerateManifestIdFromStartUrlOnly(start_url),
+            app_copy->manifest_id());
   EXPECT_EQ(start_url, app_copy->start_url());
   EXPECT_EQ(name, app_copy->untranslated_name());
   EXPECT_EQ(mojom::UserDisplayMode::kBrowser, app_copy->user_display_mode());
@@ -459,7 +461,6 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_EQ(app_copy->run_on_os_login_mode(), RunOnOsLoginMode::kNotRun);
   EXPECT_FALSE(app_copy->run_on_os_login_os_integration_state().has_value());
   EXPECT_TRUE(app_copy->manifest_url().is_empty());
-  EXPECT_FALSE(app_copy->manifest_id().has_value());
   EXPECT_TRUE(app_copy->permissions_policy().empty());
   EXPECT_FALSE(app_copy->tab_strip());
 }
@@ -615,7 +616,6 @@ class WebAppDatabaseProtoDataTest : public ::testing::Test {
 
 TEST_F(WebAppDatabaseProtoDataTest, DoesNotSetIsolationDataIfNotIsolated) {
   std::unique_ptr<WebApp> web_app = CreateMinimalWebApp();
-
   std::unique_ptr<WebApp> protoed_web_app = ToAndFromProto(*web_app);
   EXPECT_THAT(*web_app,
               AllOf(Eq(*protoed_web_app),

@@ -83,6 +83,7 @@ class ExternallyManagedInstallCommandTest : public WebAppTest {
     manifest->name = u"Example App";
     manifest->short_name = u"App";
     manifest->start_url = kWebAppUrl;
+    manifest->id = GenerateManifestIdFromStartUrlOnly(kWebAppUrl);
     manifest->display = blink::mojom::DisplayMode::kStandalone;
     return manifest;
   }
