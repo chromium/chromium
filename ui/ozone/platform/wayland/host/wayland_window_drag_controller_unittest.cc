@@ -1424,20 +1424,24 @@ TEST_P(WaylandWindowDragControllerTest,
   ScheduleTestTask(
       base::BindLambdaForTesting([&]() { move_loop_handler->EndMoveLoop(); }));
 
-  // 3. Run the move loop.
+  // 3. Run the move loop. The client should receive the data_device.data_offer
+  // and data_device.data_enter events before the drag is haulted. Ensure these
+  // server events arrive at the client before proceeding to ensure tests are
+  // asserting on a consistent expected ordering of events.
   EXPECT_FALSE(move_loop_handler->RunMoveLoop({}));
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
   // 4. Destroy the dragged window just after quitting move loop.
   const auto* dangling_window_ptr = window_.get();
   window_.reset();
   EXPECT_NE(dangling_window_ptr, drag_controller()->pointer_grab_owner_);
-  EXPECT_EQ(State::kAttached, drag_controller()->state());
+  EXPECT_EQ(State::kIdle, drag_controller()->state());
 
   // 5. Ensure no events are dispatched for drop. Which indirectly means that
   // drop handling code at window drag controller does not call into the above
   // destroyed dragged window.
   EXPECT_CALL(delegate_, DispatchEvent(_)).Times(0);
-  SendDndDrop();
+  drag_controller()->OnDragDrop();
 
   // 6. Verifies that related state is correctly reset after drop.
   EXPECT_EQ(State::kIdle, drag_controller()->state());
@@ -1462,6 +1466,7 @@ TEST_P(WaylandWindowDragControllerTest,
       DragEventSource::kMouse,
       /*allow_system_drag=*/false);
   EXPECT_EQ(State::kAttached, drag_controller()->state());
+  EXPECT_TRUE(drag_controller()->IsActiveDragAndDropSession());
 
   // 3. Spawns a new toplevel |window_2| out of the origin |window_|. Similarly
   // to when a tab is detached in a Chrome's tab drag session.
@@ -1484,43 +1489,32 @@ TEST_P(WaylandWindowDragControllerTest,
     SendDndMotion({11, 10});
     EXPECT_EQ(gfx::Point(11, 10), cursor_tracker->GetCursorSurfacePoint());
 
-    // Destroy the window being currently dragged.
+    // Destroy the window being currently dragged. This will end the drag
+    // session.
     window_2.reset();
+    EXPECT_FALSE(drag_controller()->IsActiveDragAndDropSession());
 
-    // Verifies that motion events are no longer propagated, as the dragged
-    // window was just destroyed.
+    // Verify drag-and-drop events are not propagated after the drag ends.
+    EXPECT_CALL(delegate_2, DispatchEvent(_)).Times(0);
     EXPECT_CALL(delegate_2, OnBoundsChanged(_)).Times(0);
     SendDndMotion({12, 10});
-    EXPECT_EQ(gfx::Point(12, 10), cursor_tracker->GetCursorSurfacePoint());
+    drag_controller()->OnDragDrop();
 
-    // Destroy the current drag controler's pointer events grabber.
-    window_.reset();
-
-    // And verifies neither motion events are propagated nor internal "last
-    // cursor position" gets updated.
-    EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
-    SendDndMotion({13, 10});
-    EXPECT_EQ(gfx::Point(12, 10), cursor_tracker->GetCursorSurfacePoint());
-
-    drag_controller()->StopDragging();
+    // Verify that internal "last cursor position" is not updated after the
+    // grab owner is destroyed.
+    EXPECT_EQ(gfx::Point(11, 10), cursor_tracker->GetCursorSurfacePoint());
   }));
 
   ASSERT_TRUE(GetWmMoveLoopHandler(*window_2));
   EXPECT_FALSE(GetWmMoveLoopHandler(*window_2)->RunMoveLoop({}));
 
-  EXPECT_EQ(State::kAttached, drag_controller()->state());
-
-  // 5. Ensure no events are dispatched for drop. Which indirectly means that
-  // drop handling code at window drag controller does not call into the above
-  // destroyed dragged window.
-  EXPECT_CALL(delegate_2, DispatchEvent(_)).Times(0);
-  SendDndDrop();
-
-  // 6. Verifies that related state is correctly reset after drop.
+  // 4. Verifies that related state is correctly reset after the drag was
+  // terminated. The remaining `window_` should remain under the pointer.
   EXPECT_EQ(State::kIdle, drag_controller()->state());
-  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
-  EXPECT_EQ(gfx::kNullAcceleratedWidget,
-            screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
+  EXPECT_EQ(window_.get(),
+            window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+  EXPECT_EQ(window_->GetWidget(),
+            screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
 }
 
 // Ensures correct behavior when ext-drag protocol is not available, such as:
@@ -1663,6 +1657,135 @@ TEST_P(WaylandWindowDragControllerTest, NoopUnlessPointerOrTouchPressed) {
       DragEventSource::kTouch,
       /*allow_system_drag=*/false);
   ASSERT_EQ(State::kIdle, drag_controller()->state());
+}
+
+// Ensure events are handled appropriately when the target window is destroyed
+// while the move loop is running (i.e. dragging in the detached state).
+// Regression test for crbug.com/1433577.
+TEST_P(WaylandWindowDragControllerTest,
+       HandleTargetWindowDestruction_DetachedState) {
+  // Send some initial pointer events to `window_`.
+  ASSERT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+  SendPointerEnter(window_.get(), &delegate_);
+  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+  SendPointerMotion(window_.get(), &delegate_, {10, 10});
+
+  // Start the window drag session.
+  auto* wayland_extension = GetWaylandExtension(*window_);
+  wayland_extension->StartWindowDraggingSessionIfNeeded(
+      DragEventSource::kMouse,
+      /*allow_system_drag=*/false);
+  EXPECT_EQ(State::kAttached, drag_controller()->state());
+  EXPECT_TRUE(drag_controller()->IsActiveDragAndDropSession());
+
+  // Spawns a new toplevel `window_2` out of the origin `window_`. Similarly to
+  // when a tab is detached in a Chrome's tab drag session.
+  PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
+  properties.type = PlatformWindowType::kWindow;
+  MockWaylandPlatformWindowDelegate delegate_2;
+  EXPECT_CALL(delegate_2, OnAcceleratedWidgetAvailable(_)).Times(1);
+  auto window_2 =
+      delegate_2.CreateWaylandWindow(connection_.get(), std::move(properties));
+  ASSERT_NE(gfx::kNullAcceleratedWidget, window_2->GetWidget());
+
+  // Spin the nested move loop and schedule a sequence of test steps to be
+  // pefomed while it is running.
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    auto* cursor_tracker = connection_->wayland_cursor_position();
+    ASSERT_TRUE(cursor_tracker);
+
+    // Running the move loop will initiate dragging the window in the detached
+    // state.
+    EXPECT_EQ(State::kDetached, drag_controller()->state());
+
+    // Send a motion event and verify it is correctly propagated.
+    EXPECT_CALL(delegate_2, OnBoundsChanged(_)).Times(1);
+    SendDndMotion({11, 10});
+    EXPECT_EQ(gfx::Point(11, 10), cursor_tracker->GetCursorSurfacePoint());
+
+    // Destroy the target window (which at this point should be the origin
+    // window, grab owner and the target window).
+    EXPECT_EQ(window_.get(),
+              drag_controller()->drag_target_window_for_testing());
+    EXPECT_EQ(window_.get(),
+              drag_controller()->pointer_grab_owner_for_testing());
+    EXPECT_EQ(window_.get(), drag_controller()->origin_window_for_testing());
+    window_.reset();
+    EXPECT_FALSE(drag_controller()->IsActiveDragAndDropSession());
+
+    // Verify drag-and-drop events are not propagated for either the dragged
+    // window or the origin windows after the drag ends.
+    EXPECT_CALL(delegate_, DispatchEvent(_)).Times(0);
+    EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
+    EXPECT_CALL(delegate_2, DispatchEvent(_)).Times(0);
+    EXPECT_CALL(delegate_2, OnBoundsChanged(_)).Times(0);
+    SendDndMotion({12, 10});
+    drag_controller()->OnDragDrop();
+
+    // Verify that internal "last cursor position" is not updated after the
+    // grab owner is destroyed.
+    EXPECT_EQ(gfx::Point(11, 10), cursor_tracker->GetCursorSurfacePoint());
+  }));
+
+  ASSERT_TRUE(GetWmMoveLoopHandler(*window_2));
+  EXPECT_FALSE(GetWmMoveLoopHandler(*window_2)->RunMoveLoop({}));
+
+  // Verifies that related state is correctly reset.
+  EXPECT_EQ(State::kIdle, drag_controller()->state());
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+  EXPECT_EQ(gfx::kNullAcceleratedWidget,
+            screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
+}
+
+// Ensure events are handled appropriately when the target window is destroyed
+// while dragging a tab attached to the window (i.e. dragging in the attached
+// state).
+// Regression test for crbug.com/1433577.
+TEST_P(WaylandWindowDragControllerTest,
+       HandleTargetWindowDestruction_AttachedState) {
+  // Send some initial pointer events to |window_|.
+  ASSERT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+  SendPointerEnter(window_.get(), &delegate_);
+  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+  SendPointerMotion(window_.get(), &delegate_, {10, 10});
+
+  // Start the window drag session.
+  auto* wayland_extension = GetWaylandExtension(*window_);
+  wayland_extension->StartWindowDraggingSessionIfNeeded(
+      DragEventSource::kMouse,
+      /*allow_system_drag=*/false);
+  EXPECT_EQ(State::kAttached, drag_controller()->state());
+  EXPECT_TRUE(drag_controller()->IsActiveDragAndDropSession());
+
+  // Move the tab around in the tab strip and validate the cursor is tracked
+  // correctly.
+  auto* cursor_tracker = connection_->wayland_cursor_position();
+  ASSERT_TRUE(cursor_tracker);
+
+  SendDndMotion({11, 10});
+  EXPECT_EQ(gfx::Point(11, 10), cursor_tracker->GetCursorSurfacePoint());
+  SendDndMotion({12, 10});
+  EXPECT_EQ(gfx::Point(12, 10), cursor_tracker->GetCursorSurfacePoint());
+
+  // Destroy the target window (which at this point should be the origin window,
+  // grab owner and the target window).
+  EXPECT_EQ(window_.get(), drag_controller()->drag_target_window_for_testing());
+  EXPECT_EQ(window_.get(), drag_controller()->pointer_grab_owner_for_testing());
+  EXPECT_EQ(window_.get(), drag_controller()->origin_window_for_testing());
+  window_.reset();
+  EXPECT_FALSE(drag_controller()->IsActiveDragAndDropSession());
+
+  // Verify drag-and-drop events are not propagated after the drag session has
+  // ended.
+  EXPECT_CALL(delegate_, DispatchEvent(_)).Times(0);
+  SendDndMotion({13, 10});
+  drag_controller()->OnDragDrop();
+
+  // Verifies that related state is correctly reset.
+  EXPECT_EQ(State::kIdle, drag_controller()->state());
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+  EXPECT_EQ(gfx::kNullAcceleratedWidget,
+            screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
