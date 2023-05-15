@@ -28,6 +28,8 @@ constexpr uint64_t kLowMemoryDeviceThresholdMB = 1024;
 // Updated Desktop default threshold to match the Android 2021 definition.
 constexpr uint64_t kLowMemoryDeviceThresholdMB = 2048;
 #endif
+
+absl::optional<uint64_t> g_amount_of_physical_memory_mb_for_testing;
 }  // namespace
 
 // static
@@ -38,15 +40,20 @@ int SysInfo::NumberOfEfficientProcessors() {
 
 // static
 uint64_t SysInfo::AmountOfPhysicalMemory() {
+  constexpr uint64_t kMB = 1024 * 1024;
+
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableLowEndDeviceMode)) {
     // Keep using 512MB as the simulated RAM amount for when users or tests have
     // manually enabled low-end device mode. Note this value is different from
     // the threshold used for low end devices.
-    constexpr uint64_t kSimulatedMemoryForEnableLowEndDeviceMode =
-        512 * 1024 * 1024;
+    constexpr uint64_t kSimulatedMemoryForEnableLowEndDeviceMode = 512 * kMB;
     return std::min(kSimulatedMemoryForEnableLowEndDeviceMode,
                     AmountOfPhysicalMemoryImpl());
+  }
+
+  if (g_amount_of_physical_memory_mb_for_testing) {
+    return g_amount_of_physical_memory_mb_for_testing.value() * kMB;
   }
 
   return AmountOfPhysicalMemoryImpl();
@@ -181,6 +188,19 @@ std::string SysInfo::ProcessCPUArchitecture() {
 #else
   return std::string();
 #endif
+}
+
+// static
+absl::optional<uint64_t> SysInfo::SetAmountOfPhysicalMemoryMbForTesting(
+    const uint64_t amount_of_memory_mb) {
+  absl::optional<uint64_t> current = g_amount_of_physical_memory_mb_for_testing;
+  g_amount_of_physical_memory_mb_for_testing.emplace(amount_of_memory_mb);
+  return current;
+}
+
+// static
+void SysInfo::ClearAmountOfPhysicalMemoryMbForTesting() {
+  g_amount_of_physical_memory_mb_for_testing.reset();
 }
 
 }  // namespace base

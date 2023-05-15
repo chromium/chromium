@@ -16,6 +16,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/feature_list.h"
@@ -38,6 +39,10 @@ BASE_EXPORT extern const char kLsbReleaseTimeKey[];
 
 namespace debug {
 FORWARD_DECLARE_TEST(SystemMetricsTest, ParseMeminfo);
+}
+
+namespace test {
+class ScopedAmountOfPhysicalMemoryOverride;
 }
 
 class FilePath;
@@ -254,6 +259,7 @@ class BASE_EXPORT SysInfo {
 #endif
 
  private:
+  friend class test::ScopedAmountOfPhysicalMemoryOverride;
   FRIEND_TEST_ALL_PREFIXES(SysInfoTest, AmountOfAvailablePhysicalMemory);
   FRIEND_TEST_ALL_PREFIXES(debug::SystemMetricsTest, ParseMeminfo);
 
@@ -268,6 +274,12 @@ class BASE_EXPORT SysInfo {
   static uint64_t AmountOfAvailablePhysicalMemory(
       const SystemMemoryInfoKB& meminfo);
 #endif
+
+  // Sets the amount of physical memory in MB for testing, thus allowing tests
+  // to run irrespective of the host machine's configuration.
+  static absl::optional<uint64_t> SetAmountOfPhysicalMemoryMbForTesting(
+      uint64_t amount_of_memory_mb);
+  static void ClearAmountOfPhysicalMemoryMbForTesting();
 };
 
 }  // namespace base
