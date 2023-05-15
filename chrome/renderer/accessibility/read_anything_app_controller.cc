@@ -769,6 +769,11 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
 
   ui::AXNode* focus_node = model_.GetAXNode(focus_node_id);
   ui::AXNode* anchor_node = model_.GetAXNode(anchor_node_id);
+  if (!focus_node || !anchor_node) {
+    // Sometimes when the side panel size is adjusted, a focus or anchor node
+    // may be null. Return early if this happens.
+    return;
+  }
   // Some text fields, like Gmail, allow a <div> to be returned as a focus
   // node for selection, most frequently when a triple click causes an entire
   // range of text to be selected, including non-text nodes. This can cause
