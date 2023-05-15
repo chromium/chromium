@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+let resolve;
+let reject;
+window.completePromise = new Promise((res, rej) => {
+  resolve = res;
+  reject = rej;
+});
+
 // Based on BrowserTestReporter() in //chrome/test/data/webui/mocha_adapter.js
 // TODO(crbug.com/1027612): Look into using that class directly.
 function TestReporter(runner) {
@@ -33,7 +40,10 @@ function TestReporter(runner) {
   });
 
   runner.on('end', function() {
-    window.domAutomationController.send(failures === 0 && passes > 0);
+    if (failures === 0 && passes > 0) {
+      return resolve();
+    }
+    return reject(new Error('Some tests failed, or no tests were run'));
   });
 }
 
