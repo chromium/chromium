@@ -45,6 +45,7 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_service.mojom.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
@@ -4307,6 +4308,86 @@ IN_PROC_BROWSER_TEST_P(NavigationRequestMPArchBrowserTest,
       }
     }
   }
+}
+
+// Tests that when trying to commit an error page for a failed navigation, but
+// the renderer process of the, the navigation won't commit and won't crash.
+// Regression test for https://crbug.com/1444360.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       RendererCrashedBeforeCommitErrorPage) {
+  // Navigate to `url_a` first.
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+
+  // Set up an URLLoaderInterceptor which will cause future navigations to fail.
+  auto url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
+      base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
+        network::URLLoaderCompletionStatus status;
+        status.error_code = net::ERR_NOT_IMPLEMENTED;
+        params->client->OnComplete(status);
+        return true;
+      }));
+
+  // Do a navigation to `url_b1` that will fail and commit an error page. This
+  // is important so that the next error page navigation won't need to create a
+  // speculative RenderFrameHost (unless RenderDocument is enabled) and won't
+  // get cancelled earlier than commit time due to speculative RFH deletion.
+  GURL url_b1(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  EXPECT_FALSE(NavigateToURL(shell(), url_b1));
+  EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), url_b1);
+  EXPECT_TRUE(
+      shell()->web_contents()->GetPrimaryMainFrame()->IsErrorDocument());
+
+  // For the next navigation, set up a throttle that will be used to wait for
+  // WillFailRequest() and then defer the navigation, so that we can crash the
+  // error page process first.
+  TestNavigationThrottleInstaller installer(
+      shell()->web_contents(),
+      NavigationThrottle::PROCEED /* will_start_result */,
+      NavigationThrottle::PROCEED /* will_redirect_result */,
+      NavigationThrottle::DEFER /* will_fail_result */,
+      NavigationThrottle::PROCEED /* will_process_result */,
+      NavigationThrottle::PROCEED /* will_commit_without_url_loader_result */);
+
+  // Start a navigation to `url_b2` that will also fail, but before it commits
+  // an error page, cause the error page process to crash.
+  GURL url_b2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  TestNavigationManager manager(shell()->web_contents(), url_b2);
+  shell()->LoadURL(url_b2);
+  EXPECT_TRUE(manager.WaitForRequestStart());
+
+  // Resume the navigation and wait for WillFailRequest(). After this point, we
+  // will have picked the final RenderFrameHost & RenderProcessHost for the
+  // failed navigation.
+  manager.ResumeNavigation();
+  installer.WaitForThrottleWillFail();
+
+  // Kill the error page process. This will cause for the navigation to `url_b2`
+  // to return early in `NavigationRequest::ReadyToCommitNavigation()` and not
+  // commit a new error page.
+  RenderProcessHost* process_to_kill =
+      manager.GetNavigationHandle()->GetRenderFrameHost()->GetProcess();
+  ASSERT_TRUE(process_to_kill->IsInitializedAndNotDead());
+  {
+    // Trigger a renderer kill by calling DoSomething() which will cause a bad
+    // message to be reported.
+    RenderProcessHostBadIpcMessageWaiter kill_waiter(process_to_kill);
+    mojo::Remote<mojom::TestService> service;
+    process_to_kill->BindReceiver(service.BindNewPipeAndPassReceiver());
+    service->DoSomething(base::DoNothing());
+    EXPECT_EQ(bad_message::RPH_MOJO_PROCESS_ERROR, kill_waiter.Wait());
+  }
+  ASSERT_FALSE(process_to_kill->IsInitializedAndNotDead());
+
+  // Resume the navigation, which won't commit.
+  if (!ShouldCreateNewHostForAllFrames()) {
+    installer.navigation_throttle()->ResumeNavigation();
+  }
+  EXPECT_TRUE(manager.WaitForNavigationFinished());
+  EXPECT_FALSE(WaitForLoadStop(shell()->web_contents()));
+
+  // The tab stayed at `url_b1` as the `url_b2` navigation didn't commit.
+  EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), url_b1);
 }
 
 }  // namespace content
