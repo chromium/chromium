@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
 #include "chromeos/ash/components/dbus/kerberos/fake_kerberos_client.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
 #include "chromeos/ash/components/dbus/media_analytics/fake_media_analytics_client.h"
@@ -60,16 +59,6 @@ void FakeUpstartClient::StopJob(const std::string& job,
   const bool result = stop_job_cb_ ? stop_job_cb_.Run(job, upstart_env) : true;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
-}
-
-void FakeUpstartClient::StartAuthPolicyService() {
-  FakeAuthPolicyClient::Get()->SetStarted(true);
-}
-
-void FakeUpstartClient::RestartAuthPolicyService() {
-  DLOG_IF(WARNING, !FakeAuthPolicyClient::Get()->started())
-      << "Trying to restart authpolicyd which is not started";
-  FakeAuthPolicyClient::Get()->SetStarted(true);
 }
 
 void FakeUpstartClient::StartMediaAnalytics(

@@ -48,8 +48,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/audio",
-    "//chromeos/ash/components/dbus/authpolicy",
-    "//chromeos/ash/components/dbus/authpolicy:authpolicy_proto",
     "//chromeos/ash/components/dbus/biod:test_support",
     "//chromeos/ash/components/dbus/cec_service:unit_tests",
     "//chromeos/ash/components/dbus/cros_disks:unit_tests",
@@ -82,7 +80,6 @@ source_set("unit_tests") {
   }
   sources = [
     "audio/cras_audio_client_unittest.cc",
-    "authpolicy/fake_authpolicy_client_unittest.cc",
     "biod/biod_client_unittest.cc",
     "biod/fake_biod_client_unittest.cc",
     "dbus_thread_manager_unittest.cc",

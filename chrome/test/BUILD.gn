@@ -4476,7 +4476,6 @@ if (!is_android) {
         "//chromeos/ash/components/dbus:test_support",
         "//chromeos/ash/components/dbus/attestation",
         "//chromeos/ash/components/dbus/attestation:attestation_proto",
-        "//chromeos/ash/components/dbus/authpolicy",
         "//chromeos/ash/components/dbus/biod",
         "//chromeos/ash/components/dbus/biod:biod_proto",
         "//chromeos/ash/components/dbus/cicerone",
