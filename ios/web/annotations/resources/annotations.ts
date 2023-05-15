@@ -299,6 +299,7 @@ function enumerateTextNodes(
     filterInvisibles: boolean = false): void {
   const nodes: Node[] = [root];
   let index = 0;
+  let isPreviousSpace = true;
 
   while (nodes.length > 0) {
     let node = nodes.pop();
@@ -313,8 +314,11 @@ function enumerateTextNodes(
         continue;
       }
       if (node.nodeName === 'BR') {
+        if (isPreviousSpace)
+          continue;
         if (!process(node, index, '\n'))
           break;
+        isPreviousSpace = true;
         index += 1;
         continue;
       }
@@ -326,9 +330,10 @@ function enumerateTextNodes(
       }
       // No need to add a line break before `body` as it is the first element.
       if (node.nodeName.toUpperCase() !== 'BODY' &&
-          style.display !== 'inline') {
+          style.display !== 'inline' && !isPreviousSpace) {
         if (!process(node, index, '\n'))
           break;
+        isPreviousSpace = true;
         index += 1;
       }
 
@@ -347,8 +352,12 @@ function enumerateTextNodes(
         nodes.push(node.childNodes[childIdx]!);
       }
     } else if (node.nodeType === Node.TEXT_NODE && node.textContent) {
+      const isSpace = node.textContent.trim() === '';
+      if (isSpace && isPreviousSpace)
+        continue;
       if (!process(node, index, node.textContent))
         break;
+      isPreviousSpace = isSpace;
       index += node.textContent.length;
     }
   }

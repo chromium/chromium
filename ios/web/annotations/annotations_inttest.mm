@@ -251,7 +251,7 @@ TEST_F(AnnotationTextManagerTest, ExtractText) {
                          "<p>Enjoy</p>"
                          "</body></html>");
 
-  EXPECT_EQ("\nYou'll find it on"
+  EXPECT_EQ("You'll find it on"
             "\nCastro Street, Mountain View, CA"
             "\nEnjoy",
             observer()->extracted_text());
@@ -266,7 +266,7 @@ TEST_F(AnnotationTextManagerTest, DecorateText) {
                          "<p>text</p>"
                          "</body></html>");
 
-  std::string text = "\ntext"
+  std::string text = "text"
                      "\nannotation"
                      "\ntext";
   EXPECT_EQ(text, observer()->extracted_text());
@@ -297,7 +297,7 @@ TEST_F(AnnotationTextManagerTest, NoDecorateText) {
                          "<p>text</p>"
                          "</body></html>");
 
-  std::string text = "\ntext"
+  std::string text = "text"
                      "annotation1"
                      "annotation2"
                      "\ntext";
