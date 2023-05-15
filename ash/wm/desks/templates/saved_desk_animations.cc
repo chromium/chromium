@@ -25,9 +25,6 @@ void FadeInLayer(ui::Layer* layer, int duration_in_ms) {
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .Once()
-      .SetDuration(base::TimeDelta())
-      .SetOpacity(layer, 0.0f)
-      .Then()
       .SetDuration(base::Milliseconds(duration_in_ms))
       .SetOpacity(layer, 1.0f, gfx::Tween::LINEAR);
 }
@@ -62,6 +59,10 @@ void FadeOutLayer(ui::Layer* layer,
 void PerformFadeInLayer(ui::Layer* layer, bool animate) {
   if (!animate) {
     layer->SetOpacity(1.f);
+    return;
+  }
+  // If the layer is already at, or animating to opaque, then we don't animate.
+  if (layer->GetTargetOpacity() == 1.0f) {
     return;
   }
 
