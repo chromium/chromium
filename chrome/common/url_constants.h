@@ -445,6 +445,10 @@ extern const char kSmartPrivacySettingsLearnMoreURL[];
 // The URL for the "Learn more" page for the network file shares settings page.
 extern const char kSmbSharesLearnMoreURL[];
 
+// The URL for the "Learn more" page for Speak-on-mute Detection in the privacy
+// hub page.
+extern const char kSpeakOnMuteDetectionLearnMoreURL[];
+
 // The URL for the "Learn more" page for Suggested Content in the privacy page.
 extern const char kSuggestedContentLearnMoreURL[];
 

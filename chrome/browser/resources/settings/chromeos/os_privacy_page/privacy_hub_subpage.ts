@@ -105,6 +105,17 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
       },
 
       /**
+       * Whether the part of speak-on-mute detection should be displayed.
+       */
+      showSpeakOnMuteDetectionPage_: {
+        type: Boolean,
+        readOnly: true,
+        value: () => {
+          return loadTimeData.getBoolean('showSpeakOnMuteDetectionPage');
+        },
+      },
+
+      /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
@@ -112,6 +123,7 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         value: () => new Set<Setting>([
           Setting.kCameraOnOff,
           Setting.kMicrophoneOnOff,
+          Setting.kSpeakOnMuteDetectionOnOff,
           Setting.kGeolocationOnOff,
           Setting.kUsageStatsAndCrashReports,
         ]),
@@ -127,6 +139,7 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   private microphoneHardwareToggleActive_: boolean;
   private shouldDisableMicrophoneToggle_: boolean;
   private showPrivacyHubMVPPage_: boolean;
+  private showSpeakOnMuteDetectionPage_: boolean;
 
   constructor() {
     super();
