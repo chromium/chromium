@@ -304,16 +304,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   if (self.signOutFlowInProgress) {
     return;
   }
-  syncer::SyncService::DisableReasonSet disableReasons =
-      self.syncService->GetDisableReasons();
-  syncer::SyncService::DisableReasonSet userChoiceDisableReason =
-      syncer::SyncService::DisableReasonSet(
-          syncer::SyncService::DISABLE_REASON_USER_CHOICE);
-  // Manage sync settings needs to stay opened if sync is disabled with
-  // DISABLE_REASON_USER_CHOICE. Manage sync settings is the only way for a
-  // user to turn on the sync engine (and remove DISABLE_REASON_USER_CHOICE).
-  // The sync engine turned back on automatically by enabling any datatype.
-  if (!disableReasons.Empty() && disableReasons != userChoiceDisableReason) {
+  if (!self.syncService->GetDisableReasons().Empty()) {
     [self closeManageSyncSettings];
   }
 }

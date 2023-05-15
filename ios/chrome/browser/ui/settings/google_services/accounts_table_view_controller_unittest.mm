@@ -64,8 +64,7 @@ void SetSyncStateTransportActive(const CoreAccountInfo& account,
   sync_service->SetAccountInfo(account);
   sync_service->SetHasSyncConsent(false);
   sync_service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-  sync_service->SetDisableReasons(
-      {syncer::SyncService::DisableReason::DISABLE_REASON_USER_CHOICE});
+  sync_service->SetDisableReasons({});
   ASSERT_FALSE(sync_service->IsSyncFeatureEnabled());
 }
 

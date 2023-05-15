@@ -35,7 +35,9 @@ bool SyncService::IsSyncFeatureEnabled() const {
 }
 
 bool SyncService::CanSyncFeatureStart() const {
-  return GetDisableReasons().Empty() && HasSyncConsent();
+  return GetDisableReasons().Empty() && HasSyncConsent() &&
+         !IsSyncFeatureDisabledViaDashboard() &&
+         IsSyncFeatureConsideredRequested();
 }
 
 bool SyncService::IsEngineInitialized() const {

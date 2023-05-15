@@ -198,11 +198,6 @@ SyncStatusLabels SetUpDistinctCase(
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case STATUS_CASE_SYNC_RESET_FROM_DASHBOARD: {
-      // Note: On desktop, if there is a primary account, then
-      // DISABLE_REASON_USER_CHOICE can only occur if Sync was reset from the
-      // dashboard, and the UI treats it as such.
-      service->SetDisableReasons(
-          {syncer::SyncService::DISABLE_REASON_USER_CHOICE});
       service->SetSyncFeatureDisabledViaDashboard(true);
       service->SetFirstSetupComplete(true);
       service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);

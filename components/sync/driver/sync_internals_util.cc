@@ -151,8 +151,6 @@ std::string GetDisableReasonsString(
     reason_strings.push_back("Enterprise policy");
   if (disable_reasons.Has(SyncService::DISABLE_REASON_NOT_SIGNED_IN))
     reason_strings.push_back("Not signed in");
-  if (disable_reasons.Has(SyncService::DISABLE_REASON_USER_CHOICE))
-    reason_strings.push_back("User choice");
   if (disable_reasons.Has(SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR))
     reason_strings.push_back("Unrecoverable error");
   return base::JoinString(reason_strings, ", ");

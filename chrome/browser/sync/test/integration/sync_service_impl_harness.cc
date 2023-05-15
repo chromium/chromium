@@ -532,7 +532,8 @@ bool SyncServiceImplHarness::EnableSyncForRegisteredDatatypes() {
   }
 
   service()->GetUserSettings()->SetSelectedTypes(
-      true, service()->GetUserSettings()->GetRegisteredSelectableTypes());
+      /*sync_everything=*/true,
+      service()->GetUserSettings()->GetRegisteredSelectableTypes());
 
   if (AwaitSyncSetupCompletion()) {
     DVLOG(1)
@@ -553,7 +554,8 @@ bool SyncServiceImplHarness::DisableSyncForAllDatatypes() {
     return false;
   }
 
-  service()->StopAndClear();
+  service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
 
   DVLOG(1) << "DisableSyncForAllDatatypes(): Disabled sync for all "
            << "datatypes on " << profile_debug_name_;
@@ -610,7 +612,5 @@ std::string SyncServiceImplHarness::GetClientInfoString(
 }
 
 bool SyncServiceImplHarness::IsSyncEnabledByUser() const {
-  return service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete() &&
-         !service()->HasDisableReason(
-             SyncServiceImpl::DISABLE_REASON_USER_CHOICE);
+  return service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete();
 }

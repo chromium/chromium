@@ -123,6 +123,9 @@ class TestSyncService : public SyncService {
   // KeyedService implementation.
   void Shutdown() override;
 
+ protected:
+  bool IsSyncFeatureConsideredRequested() const override;
+
  private:
   TestSyncUserSettings user_settings_;
 

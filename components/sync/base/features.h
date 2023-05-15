@@ -179,6 +179,7 @@ BASE_DECLARE_FEATURE(kEnablePreferencesAccountStorage);
 // is enabled. If the feature is on, the new approach is used, which leans on
 // the state reported by IdentityManager. If false, the legacy approach is used,
 // which is based on preference prefs::kSyncRequested.
+// TODO(crbug.com/1219990): Remove this.
 BASE_DECLARE_FEATURE(kSyncIgnoreSyncRequestedPreference);
 #endif  // BUILDFLAG(!IS_CHROMEOS_ASH)
 

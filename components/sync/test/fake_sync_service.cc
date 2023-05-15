@@ -173,6 +173,10 @@ void FakeSyncService::AddTrustedVaultRecoveryMethodFromWeb(
     int method_type_hint,
     base::OnceClosure callback) {}
 
+bool FakeSyncService::IsSyncFeatureConsideredRequested() const {
+  return HasSyncConsent();
+}
+
 void FakeSyncService::Shutdown() {}
 
 }  // namespace syncer

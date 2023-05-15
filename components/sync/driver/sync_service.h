@@ -116,10 +116,8 @@ class SyncSetupInProgressHandle {
 //   setup-in-progress handles, datatype configuration will begin.
 class SyncService : public KeyedService {
  public:
-  // The set of reasons due to which Sync can be disabled.
-  // Except for DISABLE_REASON_USER_CHOICE, these apply to both
-  // sync-the-transport and sync-the-feature.
-  // Meant to be used as a enum set.
+  // The set of reasons due to which Sync can be disabled. These apply to both
+  // sync-the-transport and sync-the-feature. Meant to be used as a enum set.
   enum DisableReason {
     // Sync is disabled by enterprise policy, either browser policy (through
     // prefs) or account policy received from the Sync server.
@@ -127,13 +125,6 @@ class SyncService : public KeyedService {
     DISABLE_REASON_FIRST = DISABLE_REASON_ENTERPRISE_POLICY,
     // Sync can't start because there is no authenticated user.
     DISABLE_REASON_NOT_SIGNED_IN,
-    // Sync-the-feature is suppressed by user choice. This mostly means there is
-    // no signed-in user (in which case DISABLE_REASON_NOT_SIGNED_IN will also
-    // be present), but can also happen after a "Reset Sync" operation from the
-    // dashboard.
-    // TODO(crbug.com/1429261): Remove this reason (and update the comment
-    // above), so that all the reasons affect Sync-the-transport.
-    DISABLE_REASON_USER_CHOICE,
     // Sync has encountered an unrecoverable error. It won't attempt to start
     // again until either the browser is restarted, or the user fully signs out
     // and back in again.
@@ -503,6 +494,19 @@ class SyncService : public KeyedService {
 
  protected:
   SyncService() = default;
+
+  // This is needed here for CanSyncFeatureStart().
+  //
+  // Returns whether SyncService should consider the user opted into enabling
+  // sync-the-feature, given two alternative ways to determine it (except on
+  // Ash where both are relevant). Historically, this was referred to as NOT
+  // having DISABLE_REASON_USER_CHOICE.
+  // TODO(crbug.com/1444344): Remove this API together with
+  // CanSyncFeatureStart().
+  // TODO(crbug.com/1219990): This API may also be removed once feature
+  // kSyncIgnoreSyncRequestedPreference is cleaned up, since HasSyncConsent()
+  // and GetDisableReasons() guarantee that this function returns true.
+  virtual bool IsSyncFeatureConsideredRequested() const = 0;
 };
 
 }  // namespace syncer

@@ -159,16 +159,16 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, OptedInToSync_SyncActive) {
 }
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest,
-       OptedInToSync_SyncDisabledByUser) {
+       OptedInToSync_SyncDisabledByEnterprisePolicy) {
   EnableSync();
-  sync_service_.SetDisableReasons({SyncService::DISABLE_REASON_USER_CHOICE});
+  sync_service_.SetDisableReasons(
+      {SyncService::DISABLE_REASON_ENTERPRISE_POLICY});
 
   base::HistogramTester ht;
   StartAndEndSession(kSessionTime);
 
-  // If the user opted in to sync, but then disabled sync (e.g. via policy or
-  // from the Android OS settings), then they are counted as having opted out
-  // of sync.
+  // If the user opted in to sync, but then disabled sync via enterprise policy,
+  // then they are counted as having opted out of sync.
   ExpectOneSessionWithDuration(ht, {"NotOptedInToSyncWithAccount"},
                                kSessionTime);
   ExpectNoSession(
@@ -195,7 +195,7 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
        SyncDisabled_PrimaryAccountInAuthError) {
   EnableSync();
   SetInvalidCredentialsAuthError();
-  sync_service_.SetDisableReasons({SyncService::DISABLE_REASON_USER_CHOICE});
+  sync_service_.SetHasSyncConsent(false);
 
   base::HistogramTester ht;
   StartAndEndSession(kSessionTime);

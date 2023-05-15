@@ -176,10 +176,9 @@ TEST_F(SyncServiceImplStartupTest, StartFirstTime) {
   // Should not actually start, rather just clean things up and wait
   // to be enabled.
   sync_service()->Initialize();
-  EXPECT_EQ(
-      SyncService::DisableReasonSet({SyncService::DISABLE_REASON_NOT_SIGNED_IN,
-                                     SyncService::DISABLE_REASON_USER_CHOICE}),
-      sync_service()->GetDisableReasons());
+  EXPECT_EQ(SyncService::DisableReasonSet(
+                {SyncService::DISABLE_REASON_NOT_SIGNED_IN}),
+            sync_service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             sync_service()->GetTransportState());
   EXPECT_EQ(nullptr, data_type_manager());
@@ -499,11 +498,9 @@ TEST_F(SyncServiceImplStartupTest, ManagedStartup) {
   CreateSyncService(SyncServiceImpl::MANUAL_START);
 
   sync_service()->Initialize();
-  // Sync was disabled due to the policy, setting SyncRequested to false and
-  // causing DISABLE_REASON_USER_CHOICE.
+  // Sync was disabled due to the policy.
   EXPECT_EQ(SyncService::DisableReasonSet(
-                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY,
-                 SyncService::DISABLE_REASON_USER_CHOICE}),
+                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY}),
             sync_service()->GetDisableReasons());
   // Service should not be started by Initialize() since it's managed.
   EXPECT_EQ(nullptr, data_type_manager());
@@ -534,7 +531,15 @@ TEST_P(SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
   sync_prefs()->SetSyncRequested(true);
   sync_prefs()->SetFirstSetupComplete();
   SimulateTestUserSigninAndEnableSyncFeature();
+
+  // To make this test more realistic, the StartBehavior is chosen depending on
+  // the platform, which influences the behavior for
+  // IsSyncFeatureDisabledViaDashboard().
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  CreateSyncService(SyncServiceImpl::AUTO_START);
+#else
   CreateSyncService(SyncServiceImpl::MANUAL_START);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Initialize() and wait for deferred startup.
   sync_service()->Initialize();
@@ -552,11 +557,9 @@ TEST_P(SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
   pref_service()->SetBoolean(prefs::internal::kSyncManaged, true);
   // Give re-startup a chance to happen (it shouldn't!).
   base::RunLoop().RunUntilIdle();
-  // Sync was disabled due to the policy, setting SyncRequested to false and
-  // causing DISABLE_REASON_USER_CHOICE.
+  // Sync was disabled due to the policy.
   ASSERT_EQ(SyncService::DisableReasonSet(
-                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY,
-                 SyncService::DISABLE_REASON_USER_CHOICE}),
+                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY}),
             sync_service()->GetDisableReasons());
   EXPECT_FALSE(sync_service()->IsEngineInitialized());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
@@ -574,28 +577,22 @@ TEST_P(SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
   EXPECT_TRUE(sync_service()->IsEngineInitialized());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
+  EXPECT_EQ(SyncService::DisableReasonSet(),
+            sync_service()->GetDisableReasons());
 
-  // On ChromeOS Ash, DISABLE_REASON_USER_CHOICE stays even after the policy is
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_TRUE(
+      sync_service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
+  // On ChromeOS Ash, sync-the-feature stays disabled even after the policy is
   // removed, for historic reasons. It is unclear if this behavior is optional,
   // because it is indistinguishable from the sync-reset-via-dashboard case.
   // It can be resolved by invoking SetSyncFeatureRequested().
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(
-      SyncService::DisableReasonSet({SyncService::DISABLE_REASON_USER_CHOICE}),
-      sync_service()->GetDisableReasons());
+  EXPECT_TRUE(sync_service()->IsSyncFeatureDisabledViaDashboard());
 #else
-  if (GetParam()) {
-    EXPECT_EQ(SyncService::DisableReasonSet(),
-              sync_service()->GetDisableReasons());
-  } else {
-    EXPECT_EQ(SyncService::DisableReasonSet(
-                  {SyncService::DISABLE_REASON_USER_CHOICE}),
-              sync_service()->GetDisableReasons());
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   EXPECT_FALSE(
       sync_service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(sync_service()->IsSyncFeatureActive());
 }
@@ -641,10 +638,9 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
 
   // There is no signed-in user, so also nobody has decided that Sync should be
   // started.
-  EXPECT_EQ(
-      SyncService::DisableReasonSet({SyncService::DISABLE_REASON_NOT_SIGNED_IN,
-                                     SyncService::DISABLE_REASON_USER_CHOICE}),
-      sync_service()->GetDisableReasons());
+  EXPECT_EQ(SyncService::DisableReasonSet(
+                {SyncService::DISABLE_REASON_NOT_SIGNED_IN}),
+            sync_service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             sync_service()->GetTransportState());
 
@@ -654,9 +650,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   component_factory()->AllowFakeEngineInitCompletion(false);
   SimulateTestUserSigninWithoutSyncFeature();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(
-      SyncService::DisableReasonSet({SyncService::DISABLE_REASON_USER_CHOICE}),
-      sync_service()->GetDisableReasons());
+  EXPECT_TRUE(sync_service()->GetDisableReasons().Empty());
   EXPECT_EQ(SyncService::TransportState::INITIALIZING,
             sync_service()->GetTransportState());
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());

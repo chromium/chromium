@@ -279,7 +279,7 @@ class FakeUserPolicySigninService : public policy::UserPolicySigninService {
   bool is_hanging_ = false;
 };
 
-class FakePolicyService : public policy::MockPolicyService {
+class FakePolicyService : public testing::NiceMock<policy::MockPolicyService> {
  public:
   void SimulateCloudPolicyUpdate() {
     ASSERT_TRUE(observer_);

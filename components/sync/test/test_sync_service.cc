@@ -142,7 +142,6 @@ void TestSyncService::FireSyncCycleCompleted() {
 }
 
 void TestSyncService::SetSyncFeatureRequested() {
-  disable_reasons_.Remove(SyncService::DISABLE_REASON_USER_CHOICE);
   sync_feature_disabled_via_dashboard_ = false;
 }
 
@@ -312,6 +311,10 @@ void TestSyncService::AddTrustedVaultRecoveryMethodFromWeb(
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
     base::OnceClosure callback) {}
+
+bool TestSyncService::IsSyncFeatureConsideredRequested() const {
+  return HasSyncConsent();
+}
 
 void TestSyncService::Shutdown() {
   for (SyncServiceObserver& observer : observers_)

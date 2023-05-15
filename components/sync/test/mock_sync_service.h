@@ -137,6 +137,7 @@ class MockSyncService : public SyncService {
               GetAllNodesForDebugging,
               (base::OnceCallback<void(base::Value::List)> callback),
               (override));
+  MOCK_METHOD(bool, IsSyncFeatureConsideredRequested, (), (const override));
 
   // KeyedService implementation.
   MOCK_METHOD(void, Shutdown, (), (override));

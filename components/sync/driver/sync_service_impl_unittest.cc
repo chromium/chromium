@@ -261,7 +261,7 @@ TEST_F(SyncServiceImplTest, SuccessfulInitialization) {
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);
   InitializeForNthSync();
-  EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
+  EXPECT_TRUE(service()->GetDisableReasons().Empty());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 }
@@ -269,7 +269,7 @@ TEST_F(SyncServiceImplTest, SuccessfulInitialization) {
 TEST_F(SyncServiceImplTest, SuccessfulLocalBackendInitialization) {
   CreateServiceWithLocalSyncBackend();
   InitializeForNthSync();
-  EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
+  EXPECT_TRUE(service()->GetDisableReasons().Empty());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 }
@@ -289,7 +289,7 @@ TEST_F(SyncServiceImplTest, NeedsConfirmation) {
       /*selected_types=*/UserSelectableTypeSet::All());
   service()->Initialize();
 
-  EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
+  EXPECT_TRUE(service()->GetDisableReasons().Empty());
 
   // Sync should immediately start up in transport mode.
   base::RunLoop().RunUntilIdle();
@@ -343,11 +343,9 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyBeforeInit) {
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);
   InitializeForNthSync();
-  // Sync was disabled due to the policy, setting SyncRequested to false and
-  // causing DISABLE_REASON_USER_CHOICE.
+  // Sync was disabled due to the policy.
   EXPECT_EQ(SyncService::DisableReasonSet(
-                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY,
-                 SyncService::DISABLE_REASON_USER_CHOICE}),
+                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY}),
             service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
@@ -384,11 +382,9 @@ TEST_P(SyncServiceImplTestWithIgnoreSyncRequestedFeature,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   InitializeForNthSync();
-  // Sync was disabled due to the policy, setting SyncRequested to false and
-  // causing DISABLE_REASON_USER_CHOICE.
+  // Sync was disabled due to the policy.
   EXPECT_EQ(SyncService::DisableReasonSet(
-                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY,
-                 SyncService::DISABLE_REASON_USER_CHOICE}),
+                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY}),
             service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
@@ -403,6 +399,7 @@ TEST_P(SyncServiceImplTestWithIgnoreSyncRequestedFeature,
             service()->GetTransportState());
   EXPECT_FALSE(service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(service()->IsSyncFeatureActive());
+  EXPECT_TRUE(service()->GetDisableReasons().Empty());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS Ash, the first setup is marked as complete automatically, due
@@ -410,13 +407,11 @@ TEST_P(SyncServiceImplTestWithIgnoreSyncRequestedFeature,
   ASSERT_TRUE(
       service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
 
-  // On ChromeOS Ash, DISABLE_REASON_USER_CHOICE stays even after the policy is
-  // removed, for historic reasons. It is unclear if this behavior is optimal,
+  // On ChromeOS Ash, sync-the-feature stays disabled even after the policy is
+  // removed, for historic reasons. It is unclear if this behavior is optional,
   // because it is indistinguishable from the sync-reset-via-dashboard case.
   // It can be resolved by invoking SetSyncFeatureRequested().
-  EXPECT_EQ(
-      SyncService::DisableReasonSet({SyncService::DISABLE_REASON_USER_CHOICE}),
-      service()->GetDisableReasons());
+  EXPECT_TRUE(service()->IsSyncFeatureDisabledViaDashboard());
   service()->SetSyncFeatureRequested();
 
 #else
@@ -455,11 +450,9 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyAfterInit) {
 
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
 
-  // Sync was disabled due to the policy, setting SyncRequested to false and
-  // causing DISABLE_REASON_USER_CHOICE.
+  // Sync was disabled due to the policy.
   EXPECT_EQ(SyncService::DisableReasonSet(
-                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY,
-                 SyncService::DISABLE_REASON_USER_CHOICE}),
+                {SyncService::DISABLE_REASON_ENTERPRISE_POLICY}),
             service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
@@ -503,10 +496,9 @@ TEST_F(SyncServiceImplTest, EarlySignOut) {
   // Wait for SyncServiceImpl to be notified.
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(
-      SyncService::DisableReasonSet({SyncService::DISABLE_REASON_NOT_SIGNED_IN,
-                                     SyncService::DISABLE_REASON_USER_CHOICE}),
-      service()->GetDisableReasons());
+  EXPECT_EQ(SyncService::DisableReasonSet(
+                {SyncService::DISABLE_REASON_NOT_SIGNED_IN}),
+            service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
   EXPECT_FALSE(service()->IsSyncFeatureActive());
@@ -535,11 +527,9 @@ TEST_F(SyncServiceImplTest, SignOutDisablesSyncTransportAndSyncFeature) {
       signin_metrics::SignoutDelete::kIgnoreMetric);
   // Wait for SyncServiceImpl to be notified.
   base::RunLoop().RunUntilIdle();
-  // SyncRequested was set to false, causing DISABLE_REASON_USER_CHOICE.
-  EXPECT_EQ(
-      SyncService::DisableReasonSet({SyncService::DISABLE_REASON_NOT_SIGNED_IN,
-                                     SyncService::DISABLE_REASON_USER_CHOICE}),
-      service()->GetDisableReasons());
+  EXPECT_EQ(SyncService::DisableReasonSet(
+                {SyncService::DISABLE_REASON_NOT_SIGNED_IN}),
+            service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
 }
@@ -567,10 +557,9 @@ TEST_F(SyncServiceImplTest,
   // These are specific to sync-the-feature and should be cleared.
   EXPECT_FALSE(
       service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
-  EXPECT_EQ(
-      SyncService::DisableReasonSet({SyncService::DISABLE_REASON_NOT_SIGNED_IN,
-                                     SyncService::DISABLE_REASON_USER_CHOICE}),
-      service()->GetDisableReasons());
+  EXPECT_EQ(SyncService::DisableReasonSet(
+                {SyncService::DISABLE_REASON_NOT_SIGNED_IN}),
+            service()->GetDisableReasons());
   EXPECT_EQ(1, component_factory()->clear_transport_data_call_count());
 #if BUILDFLAG(IS_IOS)
   SyncPrefs sync_prefs(prefs());
@@ -613,18 +602,6 @@ TEST_F(SyncServiceImplTest,
 #if BUILDFLAG(IS_IOS)
   EXPECT_FALSE(sync_prefs.IsOptedInForBookmarksAndReadingListAccountStorage());
 #endif  // BUILDFLAG(IS_IOS)
-}
-
-TEST_F(SyncServiceImplTest, DisableReasonUserChoiceIfStartsSignedOut) {
-  // Set up bad state.
-  SyncPrefs sync_prefs(prefs());
-  sync_prefs.SetSyncRequested(true);
-
-  CreateService(SyncServiceImpl::MANUAL_START);
-  service()->Initialize();
-
-  EXPECT_TRUE(
-      service()->HasDisableReason(SyncService::DISABLE_REASON_USER_CHOICE));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1033,9 +1010,7 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   // Ash does not support signout.
   EXPECT_TRUE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  EXPECT_EQ(
-      SyncService::DisableReasonSet({SyncService::DISABLE_REASON_USER_CHOICE}),
-      service()->GetDisableReasons());
+  EXPECT_TRUE(service()->GetDisableReasons().Empty());
   // Since ChromeOS doesn't support signout and so the account is still there
   // and available, Sync will restart in standalone transport mode.
   base::RunLoop().RunUntilIdle();
@@ -1049,10 +1024,9 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 #endif
-  EXPECT_EQ(
-      SyncService::DisableReasonSet({SyncService::DISABLE_REASON_NOT_SIGNED_IN,
-                                     SyncService::DISABLE_REASON_USER_CHOICE}),
-      service()->GetDisableReasons());
+  EXPECT_EQ(SyncService::DisableReasonSet(
+                {SyncService::DISABLE_REASON_NOT_SIGNED_IN}),
+            service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
   EXPECT_TRUE(service()->GetLastSyncedTimeForDebugging().is_null());
@@ -1131,21 +1105,21 @@ TEST_F(SyncServiceImplTest, LocalBackendUnimpactedByPolicy) {
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(false));
   CreateServiceWithLocalSyncBackend();
   InitializeForNthSync();
-  EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
+  EXPECT_TRUE(service()->GetDisableReasons().Empty());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
   // The transport should continue active even if kSyncManaged becomes true.
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
 
-  EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
+  EXPECT_TRUE(service()->GetDisableReasons().Empty());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
   // Setting kSyncManaged back to false should also make no difference.
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(false));
 
-  EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
+  EXPECT_TRUE(service()->GetDisableReasons().Empty());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 }

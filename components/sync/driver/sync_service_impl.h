@@ -240,6 +240,9 @@ class SyncServiceImpl : public SyncService,
 
   SyncClient* GetSyncClientForTest();
 
+ protected:
+  bool IsSyncFeatureConsideredRequested() const override;
+
  private:
   enum UnrecoverableErrorReason {
     ERROR_REASON_ENGINE_INIT_FAILURE,

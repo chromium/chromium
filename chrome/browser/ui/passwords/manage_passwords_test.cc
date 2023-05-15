@@ -210,14 +210,11 @@ void ManagePasswordsTest::ConfigurePasswordSync(bool is_enabled) {
 
   if (is_enabled) {
     sync_service->SetHasSyncConsent(true);
-    sync_service->SetDisableReasons({});
     sync_service->GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/false,
         /*types=*/{syncer::UserSelectableType::kPasswords});
   } else {
     sync_service->SetHasSyncConsent(false);
-    sync_service->SetDisableReasons(
-        {syncer::SyncService::DISABLE_REASON_USER_CHOICE});
     sync_service->GetUserSettings()->SetSelectedTypes(
         /*sync_everything=*/false,
         /*types=*/syncer::UserSelectableTypeSet());
