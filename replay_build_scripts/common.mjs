@@ -43,6 +43,20 @@ export function currentPlatform() {
   }
 }
 
+export function outputArchitecture() {
+  switch (currentPlatform()) {
+    case Platform.macOS:
+      if (process.env.REPLAY_BUILD_ARM) {
+        return "arm64";
+      }
+      return "x86_64";
+    case Platform.linux:
+      return "x86_64";
+    case Platform.windows:
+      return "x86_64";
+  }
+}
+
 export function assert(v, why = "") {
   if (!v) {
     const error = new Error(`Assertion Failed: ${why}`);

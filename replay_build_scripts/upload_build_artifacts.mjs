@@ -6,6 +6,7 @@ import {
   log,
   spawnChecked,
   Platform,
+  outputArchitecture,
 } from "./common.mjs";
 import { readSymbols } from "./symbolication.mjs";
 
@@ -18,7 +19,8 @@ const BUILDKITE_BUILD_ID_ARTIFACT = "build_id";
 const BUILDKITE_ARTIFACT_DIRECTORY = path.join(
   process.env.BUILDKITE_BUILD_CHECKOUT_PATH || "./",
   "build_id",
-  currentPlatform()
+  currentPlatform(),
+  outputArchitecture()
 );
 
 function uploadToAllBuckets(localPath, s3Path) {
