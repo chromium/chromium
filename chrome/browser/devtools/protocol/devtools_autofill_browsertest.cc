@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/strcat.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -45,8 +47,81 @@ class DevToolsAutofillTest : public DevToolsProtocolTestBase {
   content::RenderFrameHost* main_frame() {
     return web_contents()->GetPrimaryMainFrame();
   }
+
   TestAutofillManager* main_autofill_manager() {
     return TestAutofillManager::GetForRenderFrameHost(main_frame());
+  }
+
+  std::string EvaluateAndGetValue(const std::string& expression,
+                                  const std::string& unique_context_id) {
+    base::Value::Dict params;
+    params.Set("expression", expression);
+    if (!unique_context_id.empty()) {
+      params.Set("uniqueContextId", unique_context_id);
+    }
+    const base::Value::Dict* result =
+        SendCommand("Runtime.evaluate", std::move(params));
+    return *result->FindStringByDottedPath("result.value");
+  }
+
+  int GetBackendNodeIdByIdAttribute(const std::string& expression) {
+    return GetBackendNodeIdByIdAttribute(expression, "");
+  }
+
+  int GetBackendNodeIdByIdAttribute(const std::string& id_attribute,
+                                    const std::string& unique_context_id) {
+    std::string object_id;
+    {
+      base::Value::Dict params;
+      params.Set("expression", base::StrCat({"document.getElementById('",
+                                             id_attribute, "')"}));
+      if (!unique_context_id.empty()) {
+        params.Set("uniqueContextId", unique_context_id);
+      }
+      const base::Value::Dict* result =
+          SendCommand("Runtime.evaluate", std::move(params));
+      object_id = *result->FindStringByDottedPath("result.objectId");
+    }
+
+    base::Value::Dict params;
+    params.Set("objectId", object_id);
+    const base::Value::Dict* result =
+        SendCommand("DOM.describeNode", std::move(params));
+    return *result->FindIntByDottedPath("node.backendNodeId");
+  }
+
+  base::Value::Dict GetTestCreditCard() {
+    base::Value::Dict card;
+    card.Set("number", "4444444444444444");
+    card.Set("name", "John Smith");
+    card.Set("expiryMonth", "01");
+    card.Set("expiryYear", "2030");
+    card.Set("cvc", "123");
+    return card;
+  }
+
+  base::Value::Dict GetFilledOutForm(const std::string& unique_context_id) {
+    base::Value::Dict card;
+    card.Set("number",
+             EvaluateAndGetValue(
+                 "document.getElementById('CREDIT_CARD_NUMBER').value",
+                 unique_context_id));
+    card.Set("name",
+             EvaluateAndGetValue(
+                 "document.getElementById('CREDIT_CARD_NAME_FULL').value",
+                 unique_context_id));
+    card.Set("expiryMonth",
+             EvaluateAndGetValue(
+                 "document.getElementById('CREDIT_CARD_EXP_MONTH').value",
+                 unique_context_id));
+    card.Set(
+        "expiryYear",
+        EvaluateAndGetValue(
+            "document.getElementById('CREDIT_CARD_EXP_4_DIGIT_YEAR').value",
+            unique_context_id));
+    // CVC is not filled out in the form.
+    card.Set("cvc", "123");
+    return card;
   }
 
  private:
@@ -64,65 +139,86 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCard) {
   ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
   Attach();
 
-  content::SimulateMouseClickOrTapElementWithId(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "CREDIT_CARD_NUMBER");
-
   EXPECT_TRUE(main_autofill_manager()->WaitForFormsSeen(1));
 
-  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
-
-  std::string object_id;
-  {
-    base::Value::Dict params;
-    params.Set("expression", "document.getElementById('CREDIT_CARD_NUMBER')");
-    const base::Value::Dict* result =
-        SendCommand("Runtime.evaluate", std::move(params));
-    object_id = *result->FindStringByDottedPath("result.objectId");
-  }
-
-  int backend_node_id = 0;
-  {
-    base::Value::Dict params;
-    params.Set("objectId", object_id);
-    const base::Value::Dict* result =
-        SendCommand("DOM.describeNode", std::move(params));
-    backend_node_id = *result->FindIntByDottedPath("node.backendNodeId");
-  }
+  int backend_node_id = GetBackendNodeIdByIdAttribute("CREDIT_CARD_NUMBER");
 
   base::Value::Dict params;
   params.Set("fieldId", backend_node_id);
+  params.Set("card", GetTestCreditCard());
 
-  base::Value::Dict card;
-  card.Set("number", "4444444444444444");
-  card.Set("name", "John Smith");
-  card.Set("expiryMonth", "01");
-  card.Set("expiryYear", "2030");
-  card.Set("cvc", "123");
-  params.Set("card", std::move(card));
+  SendCommandSync("Autofill.trigger", std::move(params));
+  EXPECT_EQ(*result(), base::Value::Dict());
+  EXPECT_EQ(GetFilledOutForm(""), GetTestCreditCard());
+}
 
-  const base::Value::Dict* result =
-      SendCommandSync("Autofill.trigger", std::move(params));
+// TODO(crbug.com/1416789): The test currently fails on chromeos probably
+// because of a difference in behaviour between the chrome-branded and not
+// chrome-branded patterns in Autofill.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TriggerCreditCardInIframe DISABLED_TriggerCreditCardInIframe
+#else
+#define MAYBE_TriggerCreditCardInIframe TriggerCreditCardInIframe
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, MAYBE_TriggerCreditCardInIframe) {
+  embedded_test_server()->ServeFilesFromSourceDirectory(
+      "chrome/test/data/autofill");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL(
+      "/autofill_creditcard_form_in_iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+  Attach();
 
-  EXPECT_EQ(*result, base::Value::Dict());
+  EXPECT_TRUE(main_autofill_manager()->WaitForFormsSeen(1));
 
-  std::string ccNameResult =
-      EvalJs(rfh, "document.getElementById('CREDIT_CARD_NAME_FULL').value")
-          .ExtractString();
-  std::string ccNumberResult =
-      EvalJs(rfh, "document.getElementById('CREDIT_CARD_NUMBER').value")
-          .ExtractString();
-  std::string ccExpiryMonthResult =
-      EvalJs(rfh, "document.getElementById('CREDIT_CARD_EXP_MONTH').value")
-          .ExtractString();
-  std::string ccExpiryYearResult =
-      EvalJs(rfh,
-             "document.getElementById('CREDIT_CARD_EXP_4_DIGIT_YEAR').value")
-          .ExtractString();
-  EXPECT_EQ(ccNameResult, "John Smith");
-  EXPECT_EQ(ccNumberResult, "4444444444444444");
-  EXPECT_EQ(ccExpiryMonthResult, "01");
-  EXPECT_EQ(ccExpiryYearResult, "2030");
+  std::string frame_id;
+  {
+    const base::Value::Dict* result = SendCommandSync("Page.getFrameTree");
+    const base::Value::List* frames =
+        result->FindListByDottedPath("frameTree.childFrames");
+    const base::Value::Dict* frame_dict = frames->front().GetIfDict();
+    frame_id = *frame_dict->FindStringByDottedPath("frame.id");
+  }
+
+  std::string unique_context_id;
+  {
+    base::Value::Dict command_params;
+    SendCommandSync("Runtime.enable");
+    base::Value::Dict params;
+    for (int context_count = 1; true; context_count++) {
+      params = WaitForNotification("Runtime.executionContextCreated", true);
+      if (*params.FindStringByDottedPath("context.auxData.frameId") ==
+          frame_id) {
+        unique_context_id = *params.FindStringByDottedPath("context.uniqueId");
+        break;
+      }
+      ASSERT_LT(context_count, 2);
+    }
+  }
+
+  int backend_node_id =
+      GetBackendNodeIdByIdAttribute("CREDIT_CARD_NUMBER", unique_context_id);
+
+  {
+    base::Value::Dict params;
+    params.Set("fieldId", backend_node_id);
+    params.Set("card", GetTestCreditCard());
+    params.Set("frameId", "wrong");
+    SendCommandSync("Autofill.trigger", std::move(params));
+    EXPECT_EQ(*error()->FindString("message"), "Frame not found");
+  }
+
+  {
+    base::Value::Dict params;
+    params.Set("fieldId", backend_node_id);
+    params.Set("card", GetTestCreditCard());
+    params.Set("frameId", frame_id);
+    SendCommandSync("Autofill.trigger", std::move(params));
+    EXPECT_EQ(*result(), base::Value::Dict());
+  }
+
+  EXPECT_EQ(GetFilledOutForm(unique_context_id), GetTestCreditCard());
 }
 
 }  // namespace
