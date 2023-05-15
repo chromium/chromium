@@ -49,18 +49,9 @@ class NGLineBreakerTest : public RenderingTest {
       void (*callback)(const NGLineBreaker&, const NGLineInfo&) = nullptr,
       bool fill_first_space_ = false) {
     DCHECK(node);
-
     node.PrepareLayoutIfNeeded();
-
-    NGConstraintSpaceBuilder builder(
-        WritingMode::kHorizontalTb,
-        {WritingMode::kHorizontalTb, TextDirection::kLtr},
-        /* is_new_fc */ false);
-    builder.SetAvailableSize({available_width, kIndefiniteSize});
-    NGConstraintSpace space = builder.ToConstraintSpace();
-
+    NGConstraintSpace space = ConstraintSpaceForAvailableSize(available_width);
     const NGInlineBreakToken* break_token = nullptr;
-
     Vector<std::pair<String, unsigned>> lines;
     trailing_whitespaces_.resize(0);
     NGExclusionSpace exclusion_space;

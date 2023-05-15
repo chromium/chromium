@@ -18,13 +18,7 @@ class NGParagraphLineBreakerTest : public RenderingTest {
     const NGPhysicalBoxFragment* fragment =
         node.GetLayoutBox()->GetPhysicalFragment(0);
     const LayoutUnit width = fragment->Size().width;
-
-    NGConstraintSpaceBuilder builder(
-        WritingMode::kHorizontalTb,
-        {WritingMode::kHorizontalTb, TextDirection::kLtr},
-        /* is_new_fc */ false);
-    builder.SetAvailableSize(LogicalSize(width, LayoutUnit::Max()));
-    NGConstraintSpace space = builder.ToConstraintSpace();
+    NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
     NGLineLayoutOpportunity line_opportunity(width);
     return NGParagraphLineBreaker::AttemptParagraphBalancing(node, space,
                                                              line_opportunity);
