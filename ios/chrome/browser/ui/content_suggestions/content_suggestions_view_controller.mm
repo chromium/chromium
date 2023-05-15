@@ -517,8 +517,15 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
         initWithContentView:self.mostVisitedStackView
                        type:ContentSuggestionsModuleType::kMostVisited];
     if (ShouldPutMostVisitedSitesInMagicStack()) {
-      [_magicStack insertArrangedSubview:self.mostVisitedModuleContainer
-                                 atIndex:0];
+      // Only add it to the Magic Stack here if it is after the inital
+      // construction of the Magic Stack.
+      if (_magicStack) {
+        [_magicStack
+            insertArrangedSubview:self.mostVisitedModuleContainer
+                          atIndex:[self indexForMagicStackModule:
+                                            ContentSuggestionsModuleType::
+                                                kMostVisited]];
+      }
     } else {
       [self.verticalStackView
           insertArrangedSubview:self.mostVisitedModuleContainer
@@ -631,6 +638,23 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
         constraintEqualToAnchor:_magicStackScrollView.heightAnchor],
     _magicStackScrollViewWidthAnchor
   ]];
+}
+
+// Returns the index position `moduleType` should be placed in the Magic Stack.
+// This should only be used when looking to add a module after the inital Magic
+// Stack construction.
+- (NSUInteger)indexForMagicStackModule:
+    (ContentSuggestionsModuleType)moduleType {
+  NSUInteger index = 0;
+  for (NSNumber* moduleTypeNum in _magicStackModuleOrder) {
+    ContentSuggestionsModuleType type =
+        (ContentSuggestionsModuleType)[moduleTypeNum intValue];
+    if (type == moduleType) {
+      return index;
+    }
+    index++;
+  }
+  NOTREACHED_NORETURN();
 }
 
 // Determines the final page offset given the scroll `offset` and the `velocity`
