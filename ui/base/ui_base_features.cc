@@ -110,7 +110,7 @@ BASE_FEATURE(kLacrosResourcesFileSharing,
 // Enabling this fixes b/265853952.
 BASE_FEATURE(kAlwaysConfirmComposition,
              "AlwaysConfirmComposition",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Update of the virtual keyboard settings UI as described in
@@ -436,12 +436,12 @@ bool IsVariableRefreshRateEnabled() {
 // Fixes b/267944900.
 BASE_FEATURE(kWaylandKeepSelectionFix,
              "WaylandKeepSelectionFix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Fixes b/267944900.
 BASE_FEATURE(kWaylandCancelComposition,
              "WaylandCancelComposition",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWaylandScreenCoordinatesEnabled,
              "WaylandScreenCoordinatesEnabled",
