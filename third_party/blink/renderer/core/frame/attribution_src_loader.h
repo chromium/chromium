@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "components/attribution_reporting/registration_type.mojom-blink-forward.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -18,7 +19,6 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace network {
-struct AttributionReportingRuntimeFeatures;
 class TriggerVerification;
 }  // namespace network
 

@@ -578,7 +578,9 @@ void AttributionDataHostManagerImpl::NotifyNavigationRegistrationData(
     network::AttributionReportingRuntimeFeatures runtime_features,
     bool is_final_response) {
   if (auto header = RegistrarAndHeader::Get(
-          headers, runtime_features.cross_app_web_enabled)) {
+          headers,
+          runtime_features.Has(
+              network::AttributionReportingRuntimeFeature::kCrossAppWeb))) {
     auto [it, inserted] = registrations_.emplace(
         source_origin, is_within_fenced_frame, std::move(input_event),
         render_frame_id,
@@ -774,8 +776,9 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
     return;
   }
 
-  auto attribution_header =
-      RegistrarAndHeader::Get(headers, runtime_features.cross_app_web_enabled);
+  auto attribution_header = RegistrarAndHeader::Get(
+      headers, runtime_features.Has(
+                   network::AttributionReportingRuntimeFeature::kCrossAppWeb));
   if (!attribution_header) {
     MaybeOnRegistrationsFinished(it);
     return;

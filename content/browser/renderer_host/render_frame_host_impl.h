@@ -105,6 +105,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/mojom/sensor_provider.mojom-forward.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
@@ -213,7 +214,6 @@ class MessageFilter;
 }
 
 namespace network {
-struct AttributionReportingRuntimeFeatures;
 class ResourceRequestBody;
 }  // namespace network
 
@@ -2405,12 +2405,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const std::string& event_data,
       const std::string& event_type,
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-      const network::AttributionReportingRuntimeFeatures&
+      network::AttributionReportingRuntimeFeatures
           attribution_reporting_runtime_features) override;
   void SetFencedFrameAutomaticBeaconReportEventData(
       const std::string& event_data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-      const network::AttributionReportingRuntimeFeatures&
+      network::AttributionReportingRuntimeFeatures
           attribution_reporting_runtime_features) override;
   void SendPrivateAggregationRequestsForFencedFrameEvent(
       const std::string& event_type) override;

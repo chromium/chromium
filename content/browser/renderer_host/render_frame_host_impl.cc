@@ -8231,7 +8231,7 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
     const std::string& event_data,
     const std::string& event_type,
     const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-    const network::AttributionReportingRuntimeFeatures&
+    network::AttributionReportingRuntimeFeatures
         attribution_reporting_runtime_features) {
   for (const blink::FencedFrame::ReportingDestination& destination :
        destinations) {
@@ -8379,7 +8379,7 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
 void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
     const std::string& event_data,
     const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
-    const network::AttributionReportingRuntimeFeatures&
+    network::AttributionReportingRuntimeFeatures
         attribution_reporting_runtime_features) {
   if (event_data.length() > blink::kFencedFrameMaxBeaconLength) {
     mojo::ReportBadMessage(

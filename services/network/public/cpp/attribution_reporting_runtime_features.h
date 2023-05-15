@@ -5,16 +5,20 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_ATTRIBUTION_REPORTING_RUNTIME_FEATURES_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_ATTRIBUTION_REPORTING_RUNTIME_FEATURES_H_
 
-#include "base/component_export.h"
+#include "base/containers/enum_set.h"
 
 namespace network {
 
-// This corresponds to network::mojom::AttributionReportingRuntimeFeatures.
-// See the comments there.
-struct COMPONENT_EXPORT(NETWORK_CPP_ATTRIBUTION)
-    AttributionReportingRuntimeFeatures {
-  bool cross_app_web_enabled = false;
+enum class AttributionReportingRuntimeFeature {
+  kCrossAppWeb,
+  kMinValue = kCrossAppWeb,
+  kMaxValue = kCrossAppWeb,
 };
+
+using AttributionReportingRuntimeFeatures =
+    base::EnumSet<AttributionReportingRuntimeFeature,
+                  AttributionReportingRuntimeFeature::kMinValue,
+                  AttributionReportingRuntimeFeature::kMaxValue>;
 
 }  // namespace network
 

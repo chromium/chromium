@@ -538,11 +538,13 @@ network::mojom::AttributionSupport AttributionSrcLoader::GetSupport() const {
 
 network::AttributionReportingRuntimeFeatures
 AttributionSrcLoader::GetRuntimeFeatures() const {
-  return network::AttributionReportingRuntimeFeatures{
-      .cross_app_web_enabled =
-          RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
-              local_frame_->DomWindow()),
-  };
+  network::AttributionReportingRuntimeFeatures runtime_features;
+  if (RuntimeEnabledFeatures::AttributionReportingCrossAppWebEnabled(
+          local_frame_->DomWindow())) {
+    runtime_features.Put(
+        network::AttributionReportingRuntimeFeature::kCrossAppWeb);
+  }
+  return runtime_features;
 }
 
 bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(

@@ -313,7 +313,8 @@ void SetAttributionReportingHeaders(net::URLRequest& url_request,
   // base::Feature (which is set from the browser, so trustworthy) and the
   // runtime feature (which can be spoofed in a compromised renderer, so is
   // best-effort).
-  if (request.attribution_reporting_runtime_features.cross_app_web_enabled &&
+  if (request.attribution_reporting_runtime_features.Has(
+          AttributionReportingRuntimeFeature::kCrossAppWeb) &&
       base::FeatureList::IsEnabled(
           features::kAttributionReportingCrossAppWeb)) {
     url_request.SetExtraRequestHeaderByName(
