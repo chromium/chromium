@@ -519,6 +519,8 @@ const FeatureEntry::FeatureParam kEnableExpKitTextClassifierPhoneNumber[] = {
     {"phonenumber", "true"}};
 const FeatureEntry::FeatureParam kEnableExpKitTextClassifierEmail[] = {
     {"email", "true"}};
+const FeatureEntry::FeatureParam kEnableExpKitTextClassifierOneTap[] = {
+    {"onetap", "true"}};
 const FeatureEntry::FeatureParam kEnableExpKitTextClassifierAll[] = {
     {"date", "true"},
     {"address", "true"},
@@ -534,7 +536,9 @@ const FeatureEntry::FeatureVariation kEnableExpKitTextClassifierVariations[] = {
     {"Enabled for phonenumber", kEnableExpKitTextClassifierPhoneNumber,
      std::size(kEnableExpKitTextClassifierPhoneNumber), nullptr},
     {"Enabled for email", kEnableExpKitTextClassifierEmail,
-     std::size(kEnableExpKitTextClassifierEmail), nullptr}};
+     std::size(kEnableExpKitTextClassifierEmail), nullptr},
+    {"Enabled for One Tap mode", kEnableExpKitTextClassifierOneTap,
+     std::size(kEnableExpKitTextClassifierOneTap), nullptr}};
 
 const FeatureEntry::FeatureParam kFollowingFeedSortTypeGroupedByPublisher[] = {
     {kFollowingFeedDefaultSortTypeGroupedByPublisher, "true"},
