@@ -3979,13 +3979,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Indicates whether this frame has third-party storage
   // partitioning enabled. This depends on the deprecation trial (which can
   // block), content browser client (which can block), and base feature (which
-  // can allow/block). `main_frame_for_storage_partitioning` indicates the top
-  // most frame that third-party storage partitioning is affected by (this can
-  // be the real main frame or it could be a subframe when taking into account
-  // special embedding cases, see CalculateStorageKey's implementation for more
-  // information.)
+  // can allow/block). The `new_rfh_origin` is the same one passed into
+  // CalculateStorageKey.
   bool IsThirdPartyStoragePartitioningEnabled(
-      RenderFrameHostImpl* main_frame_for_storage_partitioning);
+      const url::Origin& new_rfh_origin);
+
+  // Returns the recursive list of parent frames starting with `this` and ending
+  // with the top-level frame, or one frame before the top-level frame if the
+  // top-level frame is an extension. The `new_rfh_origin` is the same one
+  // passed into CalculateStorageKey.
+  std::vector<RenderFrameHostImpl*> GetAncestorChainForStorageKeyCalculation(
+      const url::Origin& new_rfh_origin);
 
   // The RenderViewHost that this RenderFrameHost is associated with.
   //

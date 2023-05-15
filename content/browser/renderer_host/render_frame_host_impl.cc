@@ -4081,7 +4081,11 @@ absl::optional<base::UnguessableToken> RenderFrameHostImpl::ComputeNonce(
 }
 
 bool RenderFrameHostImpl::IsThirdPartyStoragePartitioningEnabled(
-    RenderFrameHostImpl* main_frame_for_storage_partitioning) {
+    const url::Origin& new_rfh_origin) {
+  const std::vector<RenderFrameHostImpl*> ancestor_chain =
+      GetAncestorChainForStorageKeyCalculation(new_rfh_origin);
+  RenderFrameHostImpl* main_frame_for_storage_partitioning =
+      ancestor_chain.back();
   // If we're in the main frame the state of third-party storage partitioning
   // doesn't matter as the StorageKey will be first-party no matter what.
   if (main_frame_for_storage_partitioning == this) {
@@ -4100,6 +4104,19 @@ bool RenderFrameHostImpl::IsThirdPartyStoragePartitioningEnabled(
           .IsDisableThirdPartyStoragePartitioningEnabled()) {
     return false;
   }
+  // If the deprecation trial is enabled for this third-party frame or parent
+  // frame we have directive to override the current value of
+  // net::features::ThirdPartyStoragePartitioning.
+  std::vector<url::Origin> third_party_origins = {new_rfh_origin};
+  for (size_t i = 0; i < ancestor_chain.size() - 1; ++i) {
+    third_party_origins.push_back(ancestor_chain[i]->GetLastCommittedOrigin());
+  }
+  if (rfs_document_data_for_storage_key->runtime_feature_state_read_context()
+          .IsDisableThirdPartyStoragePartitioningEnabledForThirdParty(
+              main_frame_for_storage_partitioning->GetLastCommittedOrigin(),
+              third_party_origins)) {
+    return false;
+  }
   // If the enterprise policy blocks, we have directive to override the
   // current value of net::features::ThirdPartyStoragePartitioning.
   // We can safely read the last comitted-origin (even during navigation)
@@ -4112,24 +4129,9 @@ bool RenderFrameHostImpl::IsThirdPartyStoragePartitioningEnabled(
   return blink::StorageKey::IsThirdPartyStoragePartitioningEnabled();
 }
 
-blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
-    const url::Origin& new_rfh_origin,
-    const base::UnguessableToken* nonce) {
-  if (nonce) {
-    // If the nonce isn't null, we can use the simpler form of the constructor.
-    return blink::StorageKey::CreateWithNonce(new_rfh_origin, *nonce);
-  }
-
-  if (base::FeatureList::IsEnabled(
-          features::kShouldAllowFirstPartyStorageKeyOverrideFromEmbedder) &&
-      GetContentClient()->browser()->ShouldUseFirstPartyStorageKey(
-          new_rfh_origin)) {
-    // Extension subframes should not take their top-level site into account
-    // when determining storage access. Thus, we construct all extension frame
-    // StorageKeys as first-party using the extension origin.
-    return blink::StorageKey::CreateFirstParty(new_rfh_origin);
-  }
-
+std::vector<RenderFrameHostImpl*>
+RenderFrameHostImpl::GetAncestorChainForStorageKeyCalculation(
+    const url::Origin& new_rfh_origin) {
   std::vector<RenderFrameHostImpl*> ancestor_chain;
   RenderFrameHostImpl* current = this;
   while (current) {
@@ -4137,7 +4139,7 @@ blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
     current = current->parent_;
   }
 
-  // Make sure to always use the |new_rfh_origin| when referring to the current
+  // Make sure to always use the `new_rfh_origin` when referring to the current
   // RenderFrameHost. The origin might differ when the RenderFrameHost is reused
   // when SiteIsolation is off.
   auto origin = [&](RenderFrameHostImpl* rfh) {
@@ -4168,6 +4170,36 @@ blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
   if (ignore_top_level_extension) {
     ancestor_chain.pop_back();
   }
+  return ancestor_chain;
+}
+
+blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
+    const url::Origin& new_rfh_origin,
+    const base::UnguessableToken* nonce) {
+  if (nonce) {
+    // If the nonce isn't null, we can use the simpler form of the constructor.
+    return blink::StorageKey::CreateWithNonce(new_rfh_origin, *nonce);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kShouldAllowFirstPartyStorageKeyOverrideFromEmbedder) &&
+      GetContentClient()->browser()->ShouldUseFirstPartyStorageKey(
+          new_rfh_origin)) {
+    // Extension subframes should not take their top-level site into account
+    // when determining storage access. Thus, we construct all extension frame
+    // StorageKeys as first-party using the extension origin.
+    return blink::StorageKey::CreateFirstParty(new_rfh_origin);
+  }
+
+  const std::vector<RenderFrameHostImpl*> ancestor_chain =
+      GetAncestorChainForStorageKeyCalculation(new_rfh_origin);
+
+  // Make sure to always use the `new_rfh_origin` when referring to the current
+  // RenderFrameHost. The origin might differ when the RenderFrameHost is reused
+  // when SiteIsolation is off.
+  auto origin = [&](RenderFrameHostImpl* rfh) {
+    return rfh == this ? new_rfh_origin : rfh->GetLastCommittedOrigin();
+  };
   net::SchemefulSite top_level_site(origin(ancestor_chain.back()));
 
   // Compute the AncestorChainBit. It represents whether every ancestors are
@@ -4189,7 +4221,7 @@ blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
   // We want the RuntimeFeatureStateReadContext from the effective main frame
   // (keeping in mind `ignore_top_level_extension`).
   bool is_third_party_storage_partitioning_allowed =
-      IsThirdPartyStoragePartitioningEnabled(ancestor_chain.back());
+      IsThirdPartyStoragePartitioningEnabled(new_rfh_origin);
 
   return blink::StorageKey::Create(new_rfh_origin, top_level_site,
                                    ancestor_chain_bit,

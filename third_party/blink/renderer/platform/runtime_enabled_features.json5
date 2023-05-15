@@ -1372,6 +1372,7 @@
       origin_trial_feature_name: "DisableThirdPartyStoragePartitioning",
       origin_trial_type: "deprecation",
       origin_trial_allows_insecure: true,
+      origin_trial_allows_third_party: true,
       status: "experimental",
       base_feature: "none",
       browser_process_read_write_access: true,

@@ -97,6 +97,14 @@ def browser_read_access(features):
     ]
 
 
+def browser_read_access_with_third_party(features):
+    return [
+        f for f in features if (f['browser_process_read_access']
+                                or f['browser_process_read_write_access'])
+        and f['origin_trial_allows_third_party']
+    ]
+
+
 def browser_write_access(features):
     return [f for f in features if f['browser_process_read_write_access']]
 
