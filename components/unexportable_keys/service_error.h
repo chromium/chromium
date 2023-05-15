@@ -9,7 +9,7 @@
 
 namespace unexportable_keys {
 
-// Various errors returned by `UnexportableKeyService`.
+// Various errors returned by this component.
 enum class ServiceError {
   // crypto:: operation returned an error.
   kCryptoApiFailed,
@@ -21,7 +21,9 @@ enum class ServiceError {
   // Unexportable key provider is not available on this platform.
   kNoKeyProvider,
   // None of the requested algorithms are supported by the key provider.
-  kAlgorithmNotSupported
+  kAlgorithmNotSupported,
+  // The key object hasn't been created yet. Try again later.
+  kKeyNotReady,
 };
 
 // Return value for methods which perform unexportable keys operations that may
