@@ -241,6 +241,23 @@ void LocalTabGroupListener::RemoveLocalWebContentsNotInSavedGroup() {
 
 void LocalTabGroupListener::RemoveWebContentsFromSync(
     content::WebContents* contents) {
-  contents->Close();
   web_contents_to_tab_id_map_.erase(contents);
+
+  Browser* const browser =
+      SavedTabGroupUtils::GetBrowserWithTabGroupId(local_id_);
+  CHECK(browser);
+  CHECK(browser->tab_strip_model());
+  int model_index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
+  CHECK(model_index != TabStripModel::kNoTab);
+
+  // Unload listeners can delay or prevent a tab closing. Remove the tab from
+  // the group first so the local and saved groups can be consistent even if
+  // this happens.
+  browser->tab_strip_model()->RemoveFromGroup({model_index});
+
+  // Removing the tab from the group may have moved the tab to maintain group
+  // contiguity. Find the tab again and close it.
+  model_index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
+  browser->tab_strip_model()->CloseWebContentsAt(
+      model_index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 }
