@@ -28,6 +28,7 @@
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "components/webapps/common/switches.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -180,6 +181,8 @@ void AppBannerManager::SetTimeDeltaForTesting(int days) {
 void AppBannerManager::RequestAppBanner(const GURL& validated_url) {
   DCHECK_EQ(State::INACTIVE, state_);
 
+  ml_promoter_->StartGatheringMetricsForFrameUrl(validated_url);
+
   UpdateState(State::ACTIVE);
   if (ShouldBypassEngagementChecks())
     status_reporter_ = std::make_unique<ConsoleStatusReporter>(web_contents());
@@ -248,9 +251,11 @@ AppBannerManager::AppBannerManager(content::WebContents* web_contents)
       SiteEngagementObserver(site_engagement::SiteEngagementService::Get(
           web_contents->GetBrowserContext())),
       manager_(InstallableManager::FromWebContents(web_contents)),
+      ml_promoter_(MLInstallabilityPromoter::FromWebContents(web_contents)),
       manifest_(blink::mojom::Manifest::New()),
       status_reporter_(std::make_unique<NullStatusReporter>()) {
   DCHECK(manager_);
+  CHECK(ml_promoter_);
 
   AppBannerSettingsHelper::UpdateFromFieldTrial();
 }

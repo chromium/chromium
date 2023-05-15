@@ -39,6 +39,8 @@ source_set("browser") {
     "installable/installable_params.h",
     "installable/installable_task_queue.cc",
     "installable/installable_task_queue.h",
+    "installable/ml_installability_promoter.cc",
+    "installable/ml_installability_promoter.h",
     "pwa_install_path_tracker.cc",
     "pwa_install_path_tracker.h",
     "webapps_client.cc",
