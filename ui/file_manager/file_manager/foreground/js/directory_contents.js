@@ -9,6 +9,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 import {mountGuest} from '../../common/js/api.js';
 import {AsyncQueue, ConcurrentQueue} from '../../common/js/async_util.js';
 import {createDOMError} from '../../common/js/dom_utils.js';
+import {isEntryInsideDrive} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {metrics} from '../../common/js/metrics.js';
@@ -258,6 +259,20 @@ export class SearchV2ContentScanner extends ContentScanner {
     this.rootType_ = locationInfo ? locationInfo.rootType : null;
     this.query_ = query.toLowerCase();
     this.options_ = options || getDefaultSearchOptions();
+    this.driveSearchTypeMap_ = new Map([
+      [
+        VolumeManagerCommon.RootType.DRIVE_OFFLINE,
+        chrome.fileManagerPrivate.SearchType.OFFLINE,
+      ],
+      [
+        VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME,
+        chrome.fileManagerPrivate.SearchType.SHARED_WITH_ME,
+      ],
+      [
+        VolumeManagerCommon.RootType.DRIVE_RECENT,
+        chrome.fileManagerPrivate.SearchType.EXCLUDE_DIRECTORIES,
+      ],
+    ]);
   }
 
   /**
@@ -437,13 +452,15 @@ export class SearchV2ContentScanner extends ContentScanner {
    * @private
    */
   createDriveSearch_(modifiedTimestamp, category, maxResults) {
+    const searchType = this.driveSearchTypeMap_.get(this.rootType_) ||
+        chrome.fileManagerPrivate.SearchType.ALL;
     return new Promise((resolve, reject) => {
       metrics.startInterval('Search.Drive.Latency');
       chrome.fileManagerPrivate.searchDriveMetadata(
           {
             query: this.query_,
             category: category,
-            types: chrome.fileManagerPrivate.SearchType.ALL,
+            types: searchType,
             maxResults: maxResults,
             timestamp: modifiedTimestamp,
           },
@@ -472,7 +489,7 @@ export class SearchV2ContentScanner extends ContentScanner {
    * @private
    */
   createDirectorySearch_(modifiedTimestamp, category, maxResults) {
-    if (this.rootType_ === VolumeManagerCommon.RootType.DRIVE) {
+    if (isEntryInsideDrive({rootType: this.rootType_})) {
       return [this.createDriveSearch_(modifiedTimestamp, category, maxResults)];
     }
     if (this.options_.location == SearchLocation.THIS_FOLDER) {
