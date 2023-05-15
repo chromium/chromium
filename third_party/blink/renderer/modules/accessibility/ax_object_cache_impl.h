@@ -233,7 +233,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // Called during the accessibility lifecycle to refresh the AX tree.
   void ProcessDeferredAccessibilityEvents(Document&) override;
   // Is there work to be done when layout becomes clean?
-  bool IsDirty() const override;
+  bool IsDirty() override;
 
   // Called when a HTMLFrameOwnerElement (such as an iframe element) changes the
   // embedding token of its child frame.
@@ -513,6 +513,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   void ResetSerializer() override;
   void MarkElementDirty(const Node*) override;
 
+  // Returns true if UpdateTreeIfNeeded has been called and has not yet
+  /// finished.
+  bool UpdatingTree() { return updating_tree_; }
+
  protected:
   void PostPlatformNotification(
       AXObject* obj,
@@ -563,6 +567,17 @@ class MODULES_EXPORT AXObjectCacheImpl
         "Avoids conversion when passed from/to ui::AXTreeUpdate or "
         "blink::WebAXObject");
   };
+
+  // Calls UpdateTreeIfNeededOnce if NeedsUpdate is true on the root AXObject,
+  // and a second time if it is still true.
+  void UpdateTreeIfNeeded();
+  // Updates the AX tree once by walking from the root, calling AXObject::
+  // UpdateChildrenIfNecessary on each AXObject for which NeedsUpdate is true.
+  // This method is part of a11y-during-render, and in particular transitioning
+  // to an eager (as opposed to lazy) AX tree update pattern. See
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1342801#c12 for more
+  // details.
+  void UpdateTreeIfNeededOnce();
 
   // Create an AXObject, and do not check if a previous one exists.
   // Also, initialize the object and add it to maps for later retrieval.
@@ -934,6 +949,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   Deque<ui::AXEvent> pending_events_;
 
+  bool updating_tree_ = false;
   // Make sure the next serialization sends everything.
   bool mark_all_dirty_ = false;
 

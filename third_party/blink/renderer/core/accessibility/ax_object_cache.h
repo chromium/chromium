@@ -211,7 +211,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   static bool IsInsideFocusableElementOrARIAWidget(const Node&);
 
   // Returns true if there are any pending updates that need processing.
-  virtual bool IsDirty() const = 0;
+  virtual bool IsDirty() = 0;
 
   virtual void SerializeLocationChanges() = 0;
 
