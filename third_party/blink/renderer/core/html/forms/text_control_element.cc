@@ -183,19 +183,10 @@ String TextControlElement::StrippedPlaceholder() const {
   return stripped.ToString();
 }
 
-static bool IsNotLineBreak(UChar ch) {
-  return ch != kNewlineCharacter && ch != kCarriageReturnCharacter;
-}
-
-bool TextControlElement::IsPlaceholderEmpty() const {
-  const AtomicString& attribute_value =
-      FastGetAttribute(html_names::kPlaceholderAttr);
-  return attribute_value.GetString().Find(IsNotLineBreak) == kNotFound;
-}
-
 bool TextControlElement::PlaceholderShouldBeVisible() const {
   return SupportsPlaceholder() && InnerEditorValue().empty() &&
-         !IsPlaceholderEmpty() && SuggestedValue().empty();
+         FastHasAttribute(html_names::kPlaceholderAttr) &&
+         SuggestedValue().empty();
 }
 
 HTMLElement* TextControlElement::PlaceholderElement() const {

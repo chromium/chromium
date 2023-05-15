@@ -15,51 +15,49 @@ input:not(:placeholder-shown) {
 <div style="display:none">
     <!-- Does not match: no placeholder defined. -->
     <input type="text" id="no-placeholder">
-    <!-- Does not match: empty placeholder. -->
-    <input type="text" id="empty-placeholder" placeholder>
-    <input type="text" id="empty-placeholder2" placeholder="">
-    <!-- Does not match: placeholder contains only newline or carriage return characters. -->
-    <input type="text" id="placeholder-contains-only-newline">
-    <input type="text" id="placeholder-contains-only-carriageReturn">
     <!-- Does not match: the placeholder is not shown when a value is set -->
     <input type="text" id="with-value" placeholder="WebKit" value="FooBar">
     <!-- Valid cases -->
     <input type="text" id="valid-placeholder" placeholder="WebKit">
     <input type="text" id="valid-placeholder-with-empty-value" placeholder="WebKit" value>
     <input type="text" id="valid-placeholder-with-empty-value2" placeholder="WebKit" value="">
+    <input type="text" id="empty-placeholder" placeholder>
+    <input type="text" id="empty-placeholder2" placeholder="">
+    <input type="text" id="placeholder-contains-only-newline">
+    <input type="text" id="placeholder-contains-only-carriageReturn">
 </div>
 <script>
 description('Check the basic features of the ":placeholder-shown" pseudo class with the &lt;input&gt; element.');
 document.getElementById('placeholder-contains-only-newline').setAttribute('placeholder', '\n');
 document.getElementById('placeholder-contains-only-carriageReturn').setAttribute('placeholder', '\r');
-shouldBe('document.querySelectorAll(":placeholder-shown").length', '3');
+shouldBe('document.querySelectorAll(":placeholder-shown").length', '7');
 shouldBe('document.querySelectorAll(":placeholder-shown")[0]', 'document.getElementById("valid-placeholder")');
 shouldBe('document.querySelectorAll(":placeholder-shown")[1]', 'document.getElementById("valid-placeholder-with-empty-value")');
 shouldBe('document.querySelectorAll(":placeholder-shown")[2]', 'document.getElementById("valid-placeholder-with-empty-value2")');
+shouldBe('document.querySelectorAll(":placeholder-shown")[3]', 'document.getElementById("empty-placeholder")');
+shouldBe('document.querySelectorAll(":placeholder-shown")[4]', 'document.getElementById("empty-placeholder2")');
+shouldBe('document.querySelectorAll(":placeholder-shown")[5]', 'document.getElementById("placeholder-contains-only-newline")');
+shouldBe('document.querySelectorAll(":placeholder-shown")[6]', 'document.getElementById("placeholder-contains-only-carriageReturn")');
 shouldBeEqualToString('getComputedStyle(document.getElementById("no-placeholder")).backgroundColor', 'rgb(255, 255, 255)');
-shouldBeEqualToString('getComputedStyle(document.getElementById("empty-placeholder")).backgroundColor', 'rgb(255, 255, 255)');
-shouldBeEqualToString('getComputedStyle(document.getElementById("empty-placeholder2")).backgroundColor', 'rgb(255, 255, 255)');
-shouldBeEqualToString('getComputedStyle(document.getElementById("placeholder-contains-only-newline")).backgroundColor', 'rgb(255, 255, 255)');
-shouldBeEqualToString('getComputedStyle(document.getElementById("placeholder-contains-only-carriageReturn")).backgroundColor', 'rgb(255, 255, 255)');
 shouldBeEqualToString('getComputedStyle(document.getElementById("with-value")).backgroundColor', 'rgb(255, 255, 255)');
 shouldBeEqualToString('getComputedStyle(document.getElementById("valid-placeholder")).backgroundColor', 'rgb(1, 2, 3)');
 shouldBeEqualToString('getComputedStyle(document.getElementById("valid-placeholder-with-empty-value")).backgroundColor', 'rgb(1, 2, 3)');
 shouldBeEqualToString('getComputedStyle(document.getElementById("valid-placeholder-with-empty-value2")).backgroundColor', 'rgb(1, 2, 3)');
+shouldBeEqualToString('getComputedStyle(document.getElementById("empty-placeholder")).backgroundColor', 'rgb(1, 2, 3)');
+shouldBeEqualToString('getComputedStyle(document.getElementById("empty-placeholder2")).backgroundColor', 'rgb(1, 2, 3)');
+shouldBeEqualToString('getComputedStyle(document.getElementById("placeholder-contains-only-newline")).backgroundColor', 'rgb(1, 2, 3)');
+shouldBeEqualToString('getComputedStyle(document.getElementById("placeholder-contains-only-carriageReturn")).backgroundColor', 'rgb(1, 2, 3)');
 debug("");
-shouldBe('document.querySelectorAll("input:not(:placeholder-shown)").length', '6');
+shouldBe('document.querySelectorAll("input:not(:placeholder-shown)").length', '2');
 shouldBe('document.querySelectorAll("input:not(:placeholder-shown)")[0]', 'document.getElementById("no-placeholder")');
-shouldBe('document.querySelectorAll("input:not(:placeholder-shown)")[1]', 'document.getElementById("empty-placeholder")');
-shouldBe('document.querySelectorAll("input:not(:placeholder-shown)")[2]', 'document.getElementById("empty-placeholder2")');
-shouldBe('document.querySelectorAll("input:not(:placeholder-shown)")[3]', 'document.getElementById("placeholder-contains-only-newline")');
-shouldBe('document.querySelectorAll("input:not(:placeholder-shown)")[4]', 'document.getElementById("placeholder-contains-only-carriageReturn")');
-shouldBe('document.querySelectorAll("input:not(:placeholder-shown)")[5]', 'document.getElementById("with-value")');
+shouldBe('document.querySelectorAll("input:not(:placeholder-shown)")[1]', 'document.getElementById("with-value")');
 shouldBeEqualToString('getComputedStyle(document.getElementById("no-placeholder")).color', 'rgb(4, 5, 6)');
-shouldBeEqualToString('getComputedStyle(document.getElementById("empty-placeholder")).color', 'rgb(4, 5, 6)');
-shouldBeEqualToString('getComputedStyle(document.getElementById("empty-placeholder2")).color', 'rgb(4, 5, 6)');
-shouldBeEqualToString('getComputedStyle(document.getElementById("placeholder-contains-only-newline")).color', 'rgb(4, 5, 6)');
-shouldBeEqualToString('getComputedStyle(document.getElementById("placeholder-contains-only-carriageReturn")).color', 'rgb(4, 5, 6)');
 shouldBeEqualToString('getComputedStyle(document.getElementById("with-value")).color', 'rgb(4, 5, 6)');
 shouldBeEqualToString('getComputedStyle(document.getElementById("valid-placeholder")).color', 'rgb(0, 0, 0)');
 shouldBeEqualToString('getComputedStyle(document.getElementById("valid-placeholder-with-empty-value")).color', 'rgb(0, 0, 0)');
 shouldBeEqualToString('getComputedStyle(document.getElementById("valid-placeholder-with-empty-value2")).color', 'rgb(0, 0, 0)');
+shouldBeEqualToString('getComputedStyle(document.getElementById("empty-placeholder")).color', 'rgb(0, 0, 0)');
+shouldBeEqualToString('getComputedStyle(document.getElementById("empty-placeholder2")).color', 'rgb(0, 0, 0)');
+shouldBeEqualToString('getComputedStyle(document.getElementById("placeholder-contains-only-newline")).color', 'rgb(0, 0, 0)');
+shouldBeEqualToString('getComputedStyle(document.getElementById("placeholder-contains-only-carriageReturn")).color', 'rgb(0, 0, 0)');
 </script>
