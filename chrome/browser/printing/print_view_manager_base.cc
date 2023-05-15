@@ -1192,7 +1192,7 @@ void PrintViewManagerBase::CompleteScriptedPrint(
       &PrintViewManagerBase::ScriptedPrintReply, weak_ptr_factory_.GetWeakPtr(),
       std::move(callback), render_process_host->GetID());
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  ModuleDatabase::GetInstance()->DisableThirdPartyBlocking();
+  ModuleDatabase::DisableThirdPartyBlocking();
 #endif
 
   std::unique_ptr<PrinterQuery> printer_query =
