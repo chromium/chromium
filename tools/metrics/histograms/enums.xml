@@ -26629,6 +26629,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="71" label="outermostTargetSelector"/>
   <int value="72" label="jsProfilerTemporarilyEnable"/>
   <int value="73" label="highlightErrorsElementsPanel"/>
+  <int value="74" label="setAllBreakpointsEagerly"/>
 </enum>
 
 <enum name="DevToolsGridOverlayOpenedFrom">
