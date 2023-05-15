@@ -111,12 +111,7 @@ NavigationManager::WebLoadParams& NavigationManager::WebLoadParams::operator=(
   return *this;
 }
 
-NavigationManagerImpl::NavigationManagerImpl()
-    : delegate_(nullptr),
-      browser_state_(nullptr),
-      pending_item_index_(-1),
-      last_committed_item_index_(-1),
-      web_view_cache_(this) {}
+NavigationManagerImpl::NavigationManagerImpl() = default;
 
 NavigationManagerImpl::~NavigationManagerImpl() = default;
 

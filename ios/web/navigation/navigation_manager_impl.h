@@ -393,10 +393,10 @@ class NavigationManagerImpl : public NavigationManager {
   void FinalizeSessionRestore();
 
   // The primary delegate for this manager.
-  NavigationManagerDelegate* delegate_;
+  NavigationManagerDelegate* delegate_ = nullptr;
 
   // The BrowserState that is associated with this instance.
-  BrowserState* browser_state_;
+  BrowserState* browser_state_ = nullptr;
 
   // List of transient url rewriters added by `AddTransientURLRewriter()`.
   std::vector<BrowserURLRewriter::URLRewriter> transient_url_rewriters_;
@@ -409,11 +409,11 @@ class NavigationManagerImpl : public NavigationManager {
   // -1 if pending_item_ represents a new navigation or there is no pending
   // navigation. Otherwise, this is the index of the pending_item in the
   // back-forward list.
-  int pending_item_index_;
+  int pending_item_index_ = -1;
 
   // Index of the last committed item in the main frame. If there is none, this
   // field will equal to -1.
-  int last_committed_item_index_;
+  int last_committed_item_index_ = -1;
 
   // The NavigationItem that corresponds to the empty window open navigation. It
   // has to be stored separately because it has no WKBackForwardListItem. It is
@@ -434,7 +434,7 @@ class NavigationManagerImpl : public NavigationManager {
   // have to be lazily created on read, this is the only workaround.
   mutable TimeSmoother time_smoother_;
 
-  WKWebViewCache web_view_cache_;
+  WKWebViewCache web_view_cache_{this};
 
   // Whether this navigation manager is in the process of restoring session
   // history into WKWebView. It is set in Restore() and unset in
