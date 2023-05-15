@@ -24,9 +24,9 @@ BUILD_CONFIG_OUT_DIRECTORY = 'out_directory'
 METRICS_COUNT = 'COUNT'
 METRICS_COUNT_RELOCATIONS = 'Relocations'
 METRICS_SIZE = 'SIZE'
+METRICS_SIZE_APK_FILE = 'APK File'
 
 METADATA_APK_FILENAME = 'apk_file_name'  # Path relative to output_directory.
-METADATA_APK_SIZE = 'apk_size'  # File size of apk in bytes.
 METADATA_APK_SPLIT_NAME = 'apk_split_name'  # Name of the split if applicable.
 METADATA_ZIPALIGN_OVERHEAD = 'zipalign_padding'  # Overhead from zipalign.
 METADATA_SIGNING_BLOCK_SIZE = 'apk_signature_block_size'  # Size in bytes.
