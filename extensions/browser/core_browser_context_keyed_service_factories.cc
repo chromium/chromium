@@ -11,6 +11,7 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_message_filter.h"
 #include "extensions/browser/extension_prefs_factory.h"
+#include "extensions/browser/extension_prefs_helper_factory.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extension_service_worker_message_filter.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_stream_manager.h"
@@ -32,6 +33,7 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   ExtensionMessageFilter::EnsureShutdownNotifierFactoryBuilt();
   ExtensionServiceWorkerMessageFilter::EnsureShutdownNotifierFactoryBuilt();
   ExtensionPrefsFactory::GetInstance();
+  ExtensionPrefsHelperFactory::GetInstance();
   ImageLoaderFactory::GetInstance();
   MimeHandlerStreamManager::EnsureFactoryBuilt();
   ProcessManagerFactory::GetInstance();
