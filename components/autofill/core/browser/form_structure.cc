@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/form_structure.h"
 
 #include <stdint.h>
-#include <utility>
 
 #include <algorithm>
 #include <deque>

@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/browser/user_population.h"
 
 #include "base/feature_list.h"
+#include "base/strings/strcat.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -57,8 +58,8 @@ ChromeUserPopulation GetUserPopulation(
       GetProfileManagementStatus(browser_policy_connector));
 
   std::string user_agent =
-      version_info::GetProductNameAndVersionForUserAgent() + "/" +
-      version_info::GetOSType();
+      base::StrCat({version_info::GetProductNameAndVersionForUserAgent(), "/",
+                    version_info::GetOSType()});
   population.set_user_agent(user_agent);
 
   if (num_profiles)

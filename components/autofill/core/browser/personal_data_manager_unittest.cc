@@ -423,7 +423,7 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
   void StopTheDedupeProcess() {
     personal_data_->pref_service_->SetInteger(
         prefs::kAutofillLastVersionDeduped,
-        atoi(version_info::GetVersionNumber().c_str()));
+        version_info::GetMajorVersionNumberAsInt());
   }
 
   void AddProfileToPersonalDataManager(const AutofillProfile& profile) {

@@ -72,7 +72,7 @@ void QuirksClient::StartDownload() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // URL of icc file on Quirks Server.
-  int major_version = atoi(version_info::GetVersionNumber().c_str());
+  int major_version = version_info::GetMajorVersionNumberAsInt();
   std::string url = base::StringPrintf(
       kQuirksUrlFormat, IdToHexString(product_id_).c_str(), major_version);
 

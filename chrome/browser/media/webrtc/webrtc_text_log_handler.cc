@@ -460,9 +460,9 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
   }
 
   // Chrome version
-  LogToCircularBuffer("Chrome version: " + version_info::GetVersionNumber() +
-                      " " +
-                      chrome::GetChannelName(chrome::WithExtendedStable(true)));
+  LogToCircularBuffer(
+      base::StrCat({"Chrome version: ", version_info::GetVersionNumber(), " ",
+                    chrome::GetChannelName(chrome::WithExtendedStable(true))}));
 
   // OS
   LogToCircularBuffer(base::SysInfo::OperatingSystemName() + " " +

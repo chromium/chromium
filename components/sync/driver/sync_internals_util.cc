@@ -10,6 +10,7 @@
 
 #include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -223,9 +224,10 @@ std::string GetVersionString(const std::string& channel) {
   } else {
     version_modifier = " " + version_modifier;
   }
-  return version_info::GetProductName() + " " + version_info::GetOSType() +
-         " " + version_info::GetVersionNumber() + " (" +
-         version_info::GetLastChange() + ")" + version_modifier;
+  return base::StrCat({version_info::GetProductName(), " ",
+                       version_info::GetOSType(), " ",
+                       version_info::GetVersionNumber(), " (",
+                       version_info::GetLastChange(), ")", version_modifier});
 }
 
 std::string GetTimeStr(base::Time time,

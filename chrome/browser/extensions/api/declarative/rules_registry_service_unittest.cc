@@ -11,7 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "base/values.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/version_info/channel.h"
@@ -143,9 +143,9 @@ TEST_F(RulesRegistryServiceTest, DefaultRulesRegistryRegistered) {
   };
 
   for (const auto& test_case : test_cases) {
-    SCOPED_TRACE(base::StringPrintf(
-        "Testing Channel %s",
-        version_info::GetChannelString(test_case.channel).c_str()));
+    SCOPED_TRACE(
+        base::StrCat({"Testing Channel ",
+                      version_info::GetChannelString(test_case.channel)}));
     ScopedCurrentChannel scoped_channel(test_case.channel);
 
     ASSERT_EQ(test_case.expect_api_enabled,

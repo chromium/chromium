@@ -230,11 +230,9 @@ const std::string& GetReducedMajorInMinorVersionNumber() {
 
 std::string GetVersionNumber(const UserAgentOptions& options) {
   // Force major version to 99.
-  if (ShouldForceMajorVersionToMinorPosition(options.force_major_to_minor))
-    return GetMajorInMinorVersionNumber();
-
-  const std::string& version_str = version_info::GetVersionNumber();
-  return version_str;
+  return ShouldForceMajorVersionToMinorPosition(options.force_major_to_minor)
+             ? GetMajorInMinorVersionNumber()
+             : version_info::GetVersionNumber();
 }
 
 const blink::UserAgentBrandList GetUserAgentBrandList(

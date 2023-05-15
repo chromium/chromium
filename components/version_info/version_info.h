@@ -39,7 +39,7 @@ constexpr std::string GetVersionNumber() {
 // Returns the product name and version information for the User-Agent header,
 // in the format: Chrome/<major_version>.<minor_version>.<build>.<patch>.
 constexpr std::string GetProductNameAndVersionForUserAgent() {
-  return "Chrome/" + GetVersionNumber();
+  return "Chrome/" PRODUCT_VERSION;
 }
 
 // Returns the major component (aka the milestone) of the version as an int,

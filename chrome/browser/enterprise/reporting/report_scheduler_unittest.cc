@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -728,7 +729,8 @@ TEST_F(ReportSchedulerTest, OnUpdate) {
   CreateScheduler();
   g_browser_process->GetBuildState()->SetUpdate(
       BuildState::UpdateType::kNormalUpdate,
-      base::Version("1" + version_info::GetVersionNumber()), absl::nullopt);
+      base::Version(base::StrCat({"1", version_info::GetVersionNumber()})),
+      absl::nullopt);
   task_environment_.RunUntilIdle();
 
   // The timestamp should not have been updated, since a periodic report was not
@@ -752,7 +754,8 @@ TEST_F(ReportSchedulerTest, OnUpdateAndPersistentError) {
   CreateScheduler();
   g_browser_process->GetBuildState()->SetUpdate(
       BuildState::UpdateType::kNormalUpdate,
-      base::Version("1" + version_info::GetVersionNumber()), absl::nullopt);
+      base::Version(base::StrCat({"1", version_info::GetVersionNumber()})),
+      absl::nullopt);
   task_environment_.RunUntilIdle();
 
   // The timestamp should not have been updated, since a periodic report was not
@@ -764,7 +767,8 @@ TEST_F(ReportSchedulerTest, OnUpdateAndPersistentError) {
   // The report should be stopped in case of persistent error.
   g_browser_process->GetBuildState()->SetUpdate(
       BuildState::UpdateType::kNormalUpdate,
-      base::Version("2" + version_info::GetVersionNumber()), absl::nullopt);
+      base::Version(base::StrCat({"2", version_info::GetVersionNumber()})),
+      absl::nullopt);
   histogram_tester_.ExpectUniqueSample(kUploadTriggerMetricName, 2, 1);
 }
 
@@ -790,7 +794,8 @@ TEST_F(ReportSchedulerTest, DeferredTimer) {
 
   g_browser_process->GetBuildState()->SetUpdate(
       BuildState::UpdateType::kNormalUpdate,
-      base::Version("1" + version_info::GetVersionNumber()), absl::nullopt);
+      base::Version(base::StrCat({"1", version_info::GetVersionNumber()})),
+      absl::nullopt);
   task_environment_.RunUntilIdle();
   ::testing::Mock::VerifyAndClearExpectations(generator_);
   ::testing::Mock::VerifyAndClearExpectations(uploader_);

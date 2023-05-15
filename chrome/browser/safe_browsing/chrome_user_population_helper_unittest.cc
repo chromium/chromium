@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
@@ -186,8 +187,8 @@ TEST(GetUserPopulationForProfileTest, PopulatesUserAgent) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
   std::string user_agent =
-      version_info::GetProductNameAndVersionForUserAgent() + "/" +
-      version_info::GetOSType();
+      base::StrCat({version_info::GetProductNameAndVersionForUserAgent(), "/",
+                    version_info::GetOSType()});
   ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
   EXPECT_EQ(population.user_agent(), user_agent);
 }
