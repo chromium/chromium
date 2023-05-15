@@ -1733,7 +1733,8 @@ void RasterImplementation::ReadbackYUVPixelsAsync(
   yuv_request_queue_.push(std::move(request));
   SignalQuery(query,
               base::BindOnce(&RasterImplementation::OnAsyncYUVReadbackDone,
-                             base::Unretained(this), request_ptr));
+                             base::Unretained(this),
+                             base::UnsafeDanglingUntriaged(request_ptr)));
 }
 
 void RasterImplementation::OnAsyncYUVReadbackDone(
