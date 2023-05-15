@@ -7071,7 +7071,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <ph name="MODULE_TITLE">$1<ex>Office Chairs</ex></ph> hidden
       </message>
       <message name="IDS_NTP_MODULES_DISABLE_TOAST_MESSAGE" desc="Text shown in the toast confirming a module has been disabled.">
-        You won't see <ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph> again on this page
+        You won't see <ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph> on this page again
       </message>
       <message name="IDS_NTP_MODULES_DISMISS_BUTTON_TEXT" desc="Text shown on the disable button of an NTP module.">
         Hide <ph name="MODULE_TITLE">$1<ex>Office Chairs</ex></ph>

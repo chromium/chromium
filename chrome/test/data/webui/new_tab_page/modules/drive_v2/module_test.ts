@@ -184,7 +184,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
         // Assert.
         const event: DisableModuleEvent = await whenFired;
         assertEquals(
-            'You won\'t see Drive files again on this page',
+            'You won\'t see Drive files on this page again',
             event.detail.message);
       });
 });
