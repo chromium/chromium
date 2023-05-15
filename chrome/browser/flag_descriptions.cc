@@ -2478,7 +2478,8 @@ const char kOverlayScrollbarsDescription[] =
 
 const char kOverlayStrategiesName[] = "Select HW overlay strategies";
 const char kOverlayStrategiesDescription[] =
-    "Select strategies used to promote quads to HW overlays.";
+    "Select strategies used to promote quads to HW overlays. Note that "
+    "strategies other than Default may break playback of protected content.";
 const char kOverlayStrategiesDefault[] = "Default";
 const char kOverlayStrategiesNone[] = "None";
 const char kOverlayStrategiesUnoccludedFullscreen[] =
