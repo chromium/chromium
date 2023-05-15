@@ -510,6 +510,32 @@ void SetKeyPermissionsOnWorkerThread(KeyPermissionsAttributeId attribute_id,
   return std::move(callback).Run({});
 }
 
+void SetCertProvisioningProfileIdOnWorkerThread(
+    CertProvisioningIdAttributeId attribute_id,
+    crypto::ScopedPK11Slot slot,
+    PrivateKeyHandle key,
+    std::string cert_prov_id,
+    Kcer::StatusCallback callback) {
+  base::expected<crypto::ScopedSECKEYPrivateKey, Error> private_key =
+      GetSECKEYPrivateKey(slot, key);
+  if (!private_key.has_value()) {
+    return std::move(callback).Run(base::unexpected(private_key.error()));
+  }
+
+  SECItem attribute_value;
+  attribute_value.data = reinterpret_cast<uint8_t*>(cert_prov_id.data());
+  attribute_value.len = cert_prov_id.size();
+
+  if (SECStatus res = PK11_WriteRawAttribute(
+          /*objType=*/PK11_TypePrivKey, private_key.value().get(),
+          attribute_id.value(), &attribute_value);
+      res != SECSuccess) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kFailedToWriteAttribute));
+  }
+  return std::move(callback).Run({});
+}
+
 scoped_refptr<const Cert> BuildKcerCert(
     Token token,
     const net::ScopedCERTCertificate& nss_cert) {
@@ -855,7 +881,27 @@ void KcerTokenImplNss::SetCertProvisioningProfileId(
     std::string profile_id,
     Kcer::StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  // TODO(244408716): Implement.
+
+  if (UNLIKELY(state_ == State::kInitializationFailed)) {
+    return HandleInitializationFailed(std::move(callback));
+  } else if (is_blocked_) {
+    return task_queue_.push(
+        base::BindOnce(&KcerTokenImplNss::SetCertProvisioningProfileId,
+                       weak_factory_.GetWeakPtr(), std::move(key),
+                       std::move(profile_id), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = std::move(callback).Then(BlockQueueGetUnblocker());
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&SetCertProvisioningProfileIdOnWorkerThread,
+                     GetCertProvisioningIdAttributeId(),
+                     crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
+                     std::move(key), std::move(profile_id),
+                     std::move(unblocking_callback)));
 }
 
 void KcerTokenImplNss::OnCertsModified(Kcer::StatusCallback callback,

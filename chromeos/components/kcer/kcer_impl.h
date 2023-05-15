@@ -132,6 +132,11 @@ class KcerImpl : public Kcer {
       StatusCallback callback,
       base::expected<PrivateKeyHandle, Error> key_or_error);
 
+  void SetCertProvisioningProfileIdWithToken(
+      std::string profile_id,
+      StatusCallback callback,
+      base::expected<PrivateKeyHandle, Error> key_or_error);
+
   // Task runner for the tokens. Can be nullptr if no tokens are available
   // to the current Kcer instance.
   scoped_refptr<base::TaskRunner> token_task_runner_;

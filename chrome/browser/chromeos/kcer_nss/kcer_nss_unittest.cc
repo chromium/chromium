@@ -369,6 +369,10 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   kcer->SetKeyPermissions(PrivateKeyHandle(PublicKeySpki()),
                           chaps::KeyPermissions(),
                           set_permissions_waiter.GetCallback());
+  base::test::TestFuture<base::expected<void, Error>> set_cert_prov_waiter;
+  kcer->SetCertProvisioningProfileId(PrivateKeyHandle(PublicKeySpki()),
+                                     "cert_prov_id",
+                                     set_cert_prov_waiter.GetCallback());
   // Close the list with one more GenerateRsaKey, so all methods are tested
   // with other methods before and after them.
   base::test::TestFuture<base::expected<PublicKey, Error>>
@@ -411,6 +415,9 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
             Error::kTokenInitializationFailed);
   ASSERT_FALSE(set_permissions_waiter.Get().has_value());
   EXPECT_EQ(set_permissions_waiter.Get().error(),
+            Error::kTokenInitializationFailed);
+  ASSERT_FALSE(set_cert_prov_waiter.Get().has_value());
+  EXPECT_EQ(set_cert_prov_waiter.Get().error(),
             Error::kTokenInitializationFailed);
   ASSERT_FALSE(generate_rsa_waiter_2.Get().has_value());
   EXPECT_EQ(generate_rsa_waiter_2.Get().error(),
@@ -556,8 +563,25 @@ TEST_F(KcerNssTest, GetKeyInfoGeneric) {
         KeyInfoEquals(expected_key_info, key_info_waiter.Get().value()));
   }
 
-  // TODO(244408716): Test setting and reading other key attributes when that's
-  // implemented.
+  {
+    expected_key_info.cert_provisioning_profile_id = "cert_prov_id_123";
+
+    base::test::TestFuture<base::expected<void, Error>> set_permissions_waiter;
+    kcer->SetCertProvisioningProfileId(
+        PrivateKeyHandle(public_key),
+        expected_key_info.cert_provisioning_profile_id.value(),
+        set_permissions_waiter.GetCallback());
+    ASSERT_TRUE(set_permissions_waiter.Get().has_value());
+  }
+
+  {
+    base::test::TestFuture<base::expected<KeyInfo, Error>> key_info_waiter;
+    kcer->GetKeyInfo(PrivateKeyHandle(public_key),
+                     key_info_waiter.GetCallback());
+    ASSERT_TRUE(key_info_waiter.Get().has_value());
+    EXPECT_TRUE(
+        KeyInfoEquals(expected_key_info, key_info_waiter.Get().value()));
+  }
 }
 
 // Test different ways to call DoesPrivateKeyExist() method and that it returns
