@@ -682,6 +682,10 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        CommitTextReplacesSelection) {
+  if (!GetParam().fix_265853952) {
+    GTEST_SKIP() << "Temporarily disabled for crbug.com/1445055";
+  }
+
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
           GetParam(),
@@ -1117,6 +1121,10 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        SendKeyEventShortcutsModifiesSelection) {
+  if (!GetParam().fix_265853952) {
+    GTEST_SKIP() << "Temporarily disabled for crbug.com/1445055";
+  }
+
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
           GetParam(),
@@ -1556,6 +1564,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
   if (!GetParam().fix_265853952) {
     GTEST_SKIP() << "Temporarily disabled for crbug.com/1445055";
   }
+
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
           GetParam(),
@@ -1634,6 +1643,10 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
 // See b/267944900 for more information.
 IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
                        EscapeAfterResetKeepsSelection) {
+  if (!GetParam().fix_265853952) {
+    GTEST_SKIP() << "Temporarily disabled for crbug.com/1445055";
+  }
+
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
           GetParam(),
