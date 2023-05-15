@@ -283,6 +283,8 @@ blink_core_sources("animation") {
     "timeline_inset.h",
     "timeline_offset.cc",
     "timeline_offset.h",
+    "timeline_range.cc",
+    "timeline_range.h",
     "timing.cc",
     "timing.h",
     "timing_calculations.h",

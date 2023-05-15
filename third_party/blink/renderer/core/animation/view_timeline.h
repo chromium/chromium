@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/animation/timeline_inset.h"
+#include "third_party/blink/renderer/core/animation/timeline_range.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -50,6 +51,8 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
       const absl::optional<TimelineOffset>& rangeEnd,
       const Timing&) override;
 
+  TimelineRange GetTimelineRange() const override;
+
   // IDL API implementation.
   Element* subject() const;
 
@@ -60,17 +63,10 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
 
   const TimelineInset& GetInset() const;
 
-  // Converts a delay that is expressed as a (phase,percentage) pair to
-  // a fractional offset.
-  double ToFractionalOffset(const TimelineOffset& timeline_offset) const;
-
   CSSNumericValue* startOffset() const;
   CSSNumericValue* endOffset() const;
 
   bool ResolveTimelineOffsets() const;
-
-  Animation* Play(AnimationEffect*,
-                  ExceptionState& = ASSERT_NO_EXCEPTION) override;
 
   void Trace(Visitor*) const override;
 
@@ -89,12 +85,8 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   absl::optional<gfx::PointF> SubjectPosition() const;
 
  private:
-  // Cache values to make timeline phase conversions more efficient.
-  mutable double target_offset_;
-  mutable double target_size_;
-  mutable double viewport_size_;
-  mutable double start_side_inset_;
-  mutable double end_side_inset_;
+  double ToFractionalOffset(const TimelineOffset& timeline_offset) const;
+
   // Cache values for post-layout validation check.  If the subject position or
   // size changes, then the range boundaries are stale.
   mutable absl::optional<LayoutSize> subject_size_;

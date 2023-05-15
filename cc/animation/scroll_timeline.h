@@ -36,6 +36,7 @@ class CC_ANIMATION_EXPORT ScrollTimeline : public AnimationTimeline {
   };
 
   struct ScrollOffsets {
+    ScrollOffsets() = default;
     ScrollOffsets(double start_offset, double end_offset) {
       start = start_offset;
       end = end_offset;

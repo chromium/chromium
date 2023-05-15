@@ -24,6 +24,7 @@ AnimationTimeline::AnimationTimeline(Document* document)
 void AnimationTimeline::AnimationAttached(Animation* animation) {
   DCHECK(!animations_.Contains(animation));
   animations_.insert(animation);
+  animation->ResolveTimelineOffsets(GetTimelineRange());
 }
 
 void AnimationTimeline::AnimationDetached(Animation* animation) {
@@ -31,6 +32,7 @@ void AnimationTimeline::AnimationDetached(Animation* animation) {
   animations_needing_update_.erase(animation);
   if (animation->Outdated())
     outdated_animation_count_--;
+  animation->ResolveTimelineOffsets(GetTimelineRange());
 }
 
 bool CompareAnimations(const Member<Animation>& left,

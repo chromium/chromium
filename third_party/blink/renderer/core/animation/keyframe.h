@@ -25,8 +25,8 @@ using PropertyHandleSet = HashSet<PropertyHandle>;
 class Element;
 class ComputedStyle;
 class CompositorKeyframeValue;
+class TimelineRange;
 class V8ObjectBuilder;
-class ViewTimeline;
 
 // A base class representing an animation keyframe.
 //
@@ -144,15 +144,11 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
   // we sort by original index of the keyframe if specified.
   static bool LessThan(const Member<Keyframe>& a, const Member<Keyframe>& b);
 
-  // Compute the offset if dependent on a view timeline.  Returns true if the
+  // Compute the offset if dependent on a timeline range.  Returns true if the
   // offset changed.
-  bool ResolveTimelineOffset(const ViewTimeline* view_timeline,
+  bool ResolveTimelineOffset(const TimelineRange&,
                              double range_start,
                              double range_end);
-
-  // Resets the offset if it depends on a view timeline.  Returns true if the
-  // offset was reset.
-  bool ResetOffsetResolvedFromTimeline();
 
   // Add the properties represented by this keyframe to the given V8 object.
   //
@@ -261,9 +257,9 @@ class CORE_EXPORT Keyframe : public GarbageCollected<Keyframe> {
   absl::optional<double> computed_offset_;
   // Offsets of the form <name> <percent>. These offsets are layout depending
   // and need to be re-resolved on a style change affecting the corresponding
-  // view timeline. If the effect is not associated with an animation that is
-  // attached to a view-timeline, then the offset and computed offset will be
-  // null.
+  // timeline range. If the effect is not associated with an animation that is
+  // attached to a timeline with a non-empty timeline range,
+  // then the offset and computed offset will be null.
   absl::optional<TimelineOffset> timeline_offset_;
 
   // The original index in the keyframe list is used to resolve ties in the

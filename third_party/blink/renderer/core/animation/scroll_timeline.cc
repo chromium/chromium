@@ -131,6 +131,10 @@ absl::optional<ScrollOffsets> ScrollTimeline::GetResolvedScrollOffsets() const {
   return timeline_state_snapshotted_.scroll_offsets;
 }
 
+absl::optional<ScrollOffsets> ScrollTimeline::GetResolvedViewOffsets() const {
+  return timeline_state_snapshotted_.view_offsets;
+}
+
 // TODO(crbug.com/1336260): Since phase can only be kActive or kInactive and
 // currentTime  can only be null if phase is inactive or before the first
 // snapshot we can probably drop phase.
@@ -270,6 +274,12 @@ AnimationTimeDelta ScrollTimeline::CalculateIntrinsicIterationDuration(
     }
   }
   return AnimationTimeDelta();
+}
+
+TimelineRange ScrollTimeline::GetTimelineRange() const {
+  absl::optional<ScrollOffsets> scroll_offsets = GetResolvedScrollOffsets();
+  return scroll_offsets.has_value() ? TimelineRange(scroll_offsets.value())
+                                    : TimelineRange();
 }
 
 void ScrollTimeline::ServiceAnimations(TimingUpdateReason reason) {
@@ -422,12 +432,14 @@ void ScrollTimeline::InvalidateEffectTargetStyle() const {
 }
 
 bool ScrollTimeline::ValidateSnapshot() {
-  auto state = ComputeTimelineState();
-  if (ValidateTimelineOffsets() && timeline_state_snapshotted_ == state) {
+  // ValidateTimelineOffsets will resolve timeline offsets according to
+  // data in `timeline_state_snapshotted_`, so that needs to be updated
+  // before the call.
+  TimelineState old_state = timeline_state_snapshotted_;
+  timeline_state_snapshotted_ = ComputeTimelineState();
+  if (ValidateTimelineOffsets() && old_state == timeline_state_snapshotted_) {
     return true;
   }
-
-  timeline_state_snapshotted_ = state;
 
   // Mark an attached animation's target as dirty if the play state is running
   // or finished. Idle animations are not in effect and the effect of a paused

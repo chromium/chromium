@@ -89,6 +89,8 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
     return CalculateIntrinsicIterationDuration(nullptr, timing);
   }
 
+  TimelineRange GetTimelineRange() const override;
+
   AnimationTimeDelta ZeroTime() override { return AnimationTimeDelta(); }
 
   void ServiceAnimations(TimingUpdateReason) override;
@@ -108,9 +110,10 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   // removed before the ScrollTimeline was created.
   Node* ResolvedSource() const { return resolved_source_; }
 
-  // Return the latest resolved scroll offsets. This will be empty when
+  // Return the latest resolved scroll/view offsets. This will be empty when
   // timeline is inactive.
   absl::optional<ScrollOffsets> GetResolvedScrollOffsets() const;
+  absl::optional<ScrollOffsets> GetResolvedViewOffsets() const;
 
   float GetResolvedZoom() const { return timeline_state_snapshotted_.zoom; }
 

@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "cc/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
+#include "third_party/blink/renderer/core/animation/timeline_range.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -85,6 +86,9 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
       const Timing&) {
     return AnimationTimeDelta();
   }
+
+  // See class TimelineRange.
+  virtual TimelineRange GetTimelineRange() const { return TimelineRange(); }
 
   Document* GetDocument() const { return document_; }
   virtual void AnimationAttached(Animation*);

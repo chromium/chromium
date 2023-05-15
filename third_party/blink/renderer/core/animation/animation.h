@@ -58,6 +58,7 @@ class AnimationTimeline;
 class Element;
 class PaintArtifactCompositor;
 class TreeScope;
+class TimelineRange;
 
 class CORE_EXPORT Animation : public EventTargetWithInlineData,
                               public ActiveScriptWrappable<Animation>,
@@ -243,6 +244,8 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   }
 
   void OnRangeUpdate();
+
+  bool ResolveTimelineOffsets(const TimelineRange&);
 
   Document* GetDocument() const;
 

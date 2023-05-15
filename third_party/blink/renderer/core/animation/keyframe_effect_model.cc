@@ -378,54 +378,10 @@ bool KeyframeEffectModelBase::SetLogicalPropertyResolutionContext(
   return changed;
 }
 
-void KeyframeEffectModelBase::SetViewTimelineIfRequired(
-    const ViewTimeline* timeline) {
-  if (view_timeline_ == timeline) {
-    return;
-  }
-
-  bool has_timeline_offset_in_keyframe = false;
-  for (const auto& keyframe : keyframes_) {
-    if (keyframe->GetTimelineOffset()) {
-      has_timeline_offset_in_keyframe = true;
-      break;
-    }
-  }
-
-  if (!has_timeline_offset_in_keyframe) {
-    // Keyframes are essentially immutable once the keyframe model is
-    // constructed. Thus, we should never be in a position where
-    // has_timeline_offset_in_keyframe changes from true to false between
-    // checks, and we should never have a set view timeline that needs to be
-    // cleared.
-    DCHECK(!view_timeline_);
-    return;
-  }
-
-  if (view_timeline_ && !timeline) {
-    // Clear offsets that are resolved from timeline offsets.
-    bool needs_update = false;
-    for (const auto& keyframe : keyframes_) {
-      needs_update |= keyframe->ResetOffsetResolvedFromTimeline();
-    }
-
-    if (needs_update) {
-      std::stable_sort(keyframes_.begin(), keyframes_.end(),
-                       &Keyframe::LessThan);
-      ClearCachedData();
-    }
-  }
-  view_timeline_ = timeline;
-  if (timeline) {
-    timeline->ResolveTimelineOffsets();
-  }
-}
-
 void KeyframeEffectModelBase::Trace(Visitor* visitor) const {
   visitor->Trace(keyframes_);
   visitor->Trace(keyframe_groups_);
   visitor->Trace(interpolation_effect_);
-  visitor->Trace(view_timeline_);
   EffectModel::Trace(visitor);
 }
 
@@ -537,21 +493,29 @@ void KeyframeEffectModelBase::IndexKeyframesAndResolveComputedOffsets() {
   }
 }
 
-bool KeyframeEffectModelBase::ResolveTimelineOffsets(double range_start,
-                                                     double range_end) {
-  if (!view_timeline_) {
+bool KeyframeEffectModelBase::ResolveTimelineOffsets(
+    const TimelineRange& timeline_range,
+    double range_start,
+    double range_end) {
+  if (timeline_range == last_timeline_range_ &&
+      last_range_start_ == range_start && last_range_end_ == range_end) {
     return false;
   }
 
   bool needs_update = false;
   for (const auto& keyframe : keyframes_) {
     needs_update |=
-        keyframe->ResolveTimelineOffset(view_timeline_, range_start, range_end);
+        keyframe->ResolveTimelineOffset(timeline_range, range_start, range_end);
   }
   if (needs_update) {
     std::stable_sort(keyframes_.begin(), keyframes_.end(), &Keyframe::LessThan);
     ClearCachedData();
   }
+
+  last_timeline_range_ = timeline_range;
+  last_range_start_ = range_start;
+  last_range_end_ = range_end;
+
   return needs_update;
 }
 
@@ -560,6 +524,10 @@ void KeyframeEffectModelBase::ClearCachedData() {
   interpolation_effect_->Clear();
   last_fraction_ = std::numeric_limits<double>::quiet_NaN();
   needs_compositor_keyframes_snapshot_ = true;
+
+  last_timeline_range_ = absl::nullopt;
+  last_range_start_ = absl::nullopt;
+  last_range_end_ = absl::nullopt;
 }
 
 bool KeyframeEffectModelBase::IsReplaceOnly() const {

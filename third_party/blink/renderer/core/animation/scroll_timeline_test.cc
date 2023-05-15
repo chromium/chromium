@@ -73,30 +73,39 @@ class ScrollTimelineTest : public RenderingTest {
 
 class TestScrollTimeline : public ScrollTimeline {
  public:
-  TestScrollTimeline(Document* document, Element* source)
+  TestScrollTimeline(Document* document, Element* source, bool snapshot = true)
       : ScrollTimeline(document,
                        TimelineAttachment::kLocal,
                        ScrollTimeline::ReferenceType::kSource,
                        source,
                        ScrollAxis::kVertical) {
-    UpdateSnapshot();
+    if (snapshot) {
+      UpdateSnapshot();
+    }
   }
 
   void Trace(Visitor* visitor) const override {
     ScrollTimeline::Trace(visitor);
   }
+
+  // UpdateSnapshot has 'protected' visibility.
+  void UpdateSnapshotForTesting() { UpdateSnapshot(); }
 };
 
 class TestViewTimeline : public ViewTimeline {
  public:
-  TestViewTimeline(Document* document, Element* subject)
+  TestViewTimeline(Document* document, Element* subject, bool snapshot = true)
       : ViewTimeline(document,
                      TimelineAttachment::kLocal,
                      subject,
                      ScrollAxis::kVertical,
                      TimelineInset()) {
-    UpdateSnapshot();
+    if (snapshot) {
+      UpdateSnapshot();
+    }
   }
+
+  void UpdateSnapshotForTesting() { UpdateSnapshot(); }
 };
 
 TEST_F(ScrollTimelineTest, CurrentTimeIsNullIfSourceIsNotScrollable) {
@@ -862,6 +871,71 @@ TEST_F(ScrollTimelineTest, ViewTimelineOffsetZoom) {
     ASSERT_TRUE(timeline->endOffset());
     EXPECT_EQ("300px", timeline->endOffset()->toString());
   }
+}
+
+TEST_F(ScrollTimelineTest, ScrollTimelineGetTimelineRange) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller {
+        overflow-y: auto;
+        width: 100px;
+        height: 100px;
+      }
+      .spacer {
+        height: 400px;
+      }
+    }
+    </style>
+    <div id='scroller'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  auto* timeline = MakeGarbageCollected<TestScrollTimeline>(
+      &GetDocument(), GetElementById("scroller"), /* snapshot */ false);
+
+  // GetTimelineRange before taking a snapshot.
+  EXPECT_TRUE(timeline->GetTimelineRange().IsEmpty());
+
+  timeline->UpdateSnapshotForTesting();
+  EXPECT_EQ(TimelineRange(TimelineRange::ScrollOffsets(0, 300)),
+            timeline->GetTimelineRange());
+}
+
+TEST_F(ScrollTimelineTest, ViewTimelineGetTimelineRange) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller {
+        overflow-y: auto;
+        width: 100px;
+        height: 100px;
+        border: 20px solid black;
+      }
+      .spacer {
+        height: 200px;
+      }
+      #subject {
+        height: 100px;
+      }
+    }
+    </style>
+    <div id='scroller'>
+      <div class='spacer'></div>
+      <div id='subject'></div>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  auto* timeline = MakeGarbageCollected<TestViewTimeline>(
+      &GetDocument(), GetElementById("subject"), /* snapshot */ false);
+
+  // GetTimelineRange before taking a snapshot.
+  EXPECT_TRUE(timeline->GetTimelineRange().IsEmpty());
+
+  timeline->UpdateSnapshotForTesting();
+  EXPECT_EQ(TimelineRange(TimelineRange::ScrollOffsets(100, 300),
+                          /* subject_size */ 100),
+            timeline->GetTimelineRange());
 }
 
 }  //  namespace blink

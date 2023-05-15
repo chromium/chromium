@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/animation/interpolation_effect.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
+#include "third_party/blink/renderer/core/animation/timeline_range.h"
 #include "third_party/blink/renderer/core/animation/transition_keyframe.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
@@ -171,12 +172,12 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
 
   virtual KeyframeEffectModelBase* Clone() = 0;
 
-  void SetViewTimelineIfRequired(const ViewTimeline* timeline);
-
   // Ensure timeline offsets are properly resolved. If any of the offsets
   // changed, the keyframes are resorted and cached data is cleared. Returns
   // true if one or more offsets were affected.
-  bool ResolveTimelineOffsets(double range_start, double range_end);
+  bool ResolveTimelineOffsets(const TimelineRange&,
+                              double range_start,
+                              double range_end);
 
   void Trace(Visitor*) const override;
 
@@ -243,7 +244,11 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
   mutable bool has_revert_ = false;
   mutable bool has_named_range_keyframes_ = false;
 
-  Member<const ViewTimeline> view_timeline_;
+  // The timeline and animation ranges last used to resolve
+  // named range offsets. (See ResolveTimelineOffsets).
+  absl::optional<TimelineRange> last_timeline_range_;
+  absl::optional<double> last_range_start_;
+  absl::optional<double> last_range_end_;
 
   friend class KeyframeEffectModelTest;
 };

@@ -219,16 +219,15 @@ absl::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
     // inherited_time_.
     double relative_offset;
     if (timeline->IsViewTimeline()) {
+      TimelineRange timeline_range = timeline->GetTimelineRange();
       // TODO(kevers): Support animation-range for a non-view scroll-timeline.
       if (playback_rate_ >= 0) {
         relative_offset =
-            range_start ? DynamicTo<ViewTimeline>(timeline)->ToFractionalOffset(
-                              range_start.value())
+            range_start ? timeline_range.ToFractionalOffset(range_start.value())
                         : 0;
       } else {
         relative_offset =
-            range_end ? DynamicTo<ViewTimeline>(timeline)->ToFractionalOffset(
-                            range_end.value())
+            range_end ? timeline_range.ToFractionalOffset(range_end.value())
                       : 1;
       }
     } else {
@@ -314,13 +313,10 @@ class CSSTransitionProxy : public AnimationProxy {
 };
 
 // A keyframe can have an offset as a fixed percent or as a
-// <timeline-range percent>. In the later case, we resolve as a fixed
-// percent, though this value can change as layout changes. Setting the
-// resolved offset is best effort and will be fixed or ignored later if it
-// still cannot be resolved.
-bool SetOffsets(Keyframe& keyframe,
-                const KeyframeOffset& offset,
-                const AnimationTimeline* timeline) {
+// <timeline-range percent>. In the later case, we store the specified
+// offset on the Keyframe, and delay the resolution that offset until later.
+// (See ResolveTimelineOffset).
+bool SetOffsets(Keyframe& keyframe, const KeyframeOffset& offset) {
   if (offset.name == TimelineOffset::NamedRange::kNone) {
     keyframe.SetOffset(offset.percent);
     return false;
@@ -328,13 +324,7 @@ bool SetOffsets(Keyframe& keyframe,
 
   TimelineOffset timeline_offset(offset.name,
                                  Length::Percent(100 * offset.percent));
-  if (timeline && timeline->IsViewTimeline() && timeline->IsResolved()) {
-    double fractional_offset =
-        To<ViewTimeline>(timeline)->ToFractionalOffset(timeline_offset);
-    keyframe.SetOffset(fractional_offset);
-  } else {
-    keyframe.SetOffset(absl::nullopt);
-  }
+  keyframe.SetOffset(absl::nullopt);
   keyframe.SetTimelineOffset(timeline_offset);
   return true;
 }
@@ -353,7 +343,6 @@ StringKeyframeVector ProcessKeyframesRule(
     TimingFunction* default_timing_function,
     WritingMode writing_mode,
     TextDirection text_direction,
-    AnimationTimeline* timeline,
     bool& has_named_range_keyframes) {
   StringKeyframeVector keyframes;
   const HeapVector<Member<StyleRuleKeyframe>>& style_keyframes =
@@ -364,7 +353,7 @@ StringKeyframeVector ProcessKeyframesRule(
     const Vector<KeyframeOffset>& offsets = style_keyframe->Keys();
     DCHECK(!offsets.empty());
 
-    has_named_range_keyframes |= SetOffsets(*keyframe, offsets[0], timeline);
+    has_named_range_keyframes |= SetOffsets(*keyframe, offsets[0]);
     keyframe->SetEasing(default_timing_function);
     const CSSPropertyValueSet& properties = style_keyframe->Properties();
     for (unsigned j = 0; j < properties.PropertyCount(); j++) {
@@ -410,7 +399,7 @@ StringKeyframeVector ProcessKeyframesRule(
     // The last keyframe specified at a given offset is used.
     for (wtf_size_t j = 1; j < offsets.size(); ++j) {
       StringKeyframe* clone = To<StringKeyframe>(keyframe->Clone());
-      has_named_range_keyframes |= SetOffsets(*clone, offsets[j], timeline);
+      has_named_range_keyframes |= SetOffsets(*clone, offsets[j]);
       keyframes.push_back(clone);
     }
   }
@@ -462,8 +451,7 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
     const AtomicString& name,
     TimingFunction* default_timing_function,
     EffectModel::CompositeOperation composite,
-    size_t animation_index,
-    AnimationTimeline* timeline) {
+    size_t animation_index) {
   // The algorithm for constructing string keyframes for a CSS animation is
   // covered in the following spec:
   // https://drafts.csswg.org/css-animations-2/#keyframes
@@ -515,7 +503,7 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
   keyframes = ProcessKeyframesRule(
       keyframes_rule, find_result.tree_scope, element.GetDocument(),
       parent_style, default_timing_function, writing_direction.GetWritingMode(),
-      writing_direction.Direction(), timeline, has_named_range_keyframes);
+      writing_direction.Direction(), has_named_range_keyframes);
 
   absl::optional<double> last_offset;
   wtf_size_t merged_frame_count = 0;
@@ -653,9 +641,6 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
   if (animation_index > 0 && model->HasSyntheticKeyframes()) {
     UseCounter::Count(element.GetDocument(),
                       WebFeature::kCSSAnimationsStackedNeutralKeyframe);
-  }
-  if (has_named_range_keyframes) {
-    model->SetViewTimelineIfRequired(DynamicTo<ViewTimeline>(timeline));
   }
 
   return model;
@@ -1735,7 +1720,7 @@ void CSSAnimations::CalculateAnimationUpdate(
                   CreateKeyframeEffectModel(
                       resolver, element, animating_element, writing_direction,
                       parent_style, name, keyframe_timing_function.get(),
-                      composite, i, timeline),
+                      composite, i),
                   timing, animation_proxy),
               specified_timing, keyframes_rule, timeline,
               animation_data->PlayStateList(), range_start, range_end);
@@ -1757,7 +1742,7 @@ void CSSAnimations::CalculateAnimationUpdate(
                 CreateKeyframeEffectModel(resolver, element, animating_element,
                                           writing_direction, parent_style, name,
                                           keyframe_timing_function.get(),
-                                          composite, i, timeline),
+                                          composite, i),
                 timing, animation_proxy),
             specified_timing, keyframes_rule, timeline,
             animation_data->PlayStateList(), range_start, range_end);
