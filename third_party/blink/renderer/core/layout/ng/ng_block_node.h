@@ -20,6 +20,7 @@ class NGColumnSpannerPath;
 class NGConstraintSpace;
 class NGEarlyBreak;
 class NGFragmentItems;
+class NGInlineNode;
 class NGLayoutResult;
 class NGPhysicalBoxFragment;
 class NGPhysicalFragment;
@@ -144,7 +145,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   // or nodes consisting purely of block-level, floats, and/or out-of-flow
   // positioned children will return false.
   bool IsInlineFormattingContextRoot(
-      NGLayoutInputNode* first_child_out = nullptr) const;
+      NGInlineNode* first_child_out = nullptr) const;
 
   bool IsInlineLevel() const;
   bool IsAtomicInlineLevel() const;

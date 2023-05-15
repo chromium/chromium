@@ -466,9 +466,8 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::Layout() {
   // Inline children require an inline child layout context to be
   // passed between siblings. We want to stack-allocate that one, but
   // only on demand, as it's quite big.
-  NGLayoutInputNode first_child(nullptr);
-  if (Node().IsInlineFormattingContextRoot(&first_child)) {
-    NGInlineNode inline_child = To<NGInlineNode>(first_child);
+  NGInlineNode inline_child(nullptr);
+  if (Node().IsInlineFormattingContextRoot(&inline_child)) {
     if (UNLIKELY(NeedsLineInfoList(inline_child))) {
       result = LayoutWithLineInfoList(inline_child);
     } else {
