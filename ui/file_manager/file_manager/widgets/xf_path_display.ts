@@ -108,13 +108,14 @@ function getCSS(): CSSResultGroup {
         display: none !important;
       }
       :host {
+        align-items: center;
+        border-top: 1px solid var(--cros-sys-separator);
         display: flex;
         flex-direction: row;
-        align-items: center;
-        padding: 8px;
-        border-top: 1px solid var(--cros-sys-separator);
         font: var(--cros-button-1-font);
         outline: none;
+        padding: 8px;
+        padding-inline-start: 20px;
         user-select: none;
       }
       div.folder {
@@ -126,6 +127,9 @@ function getCSS(): CSSResultGroup {
         min-width: 0;
         padding: 4px 4px;
         border-radius: 8px;
+      }
+      div.folder:first-of-type {
+        padding-inline-start: 0;
       }
       div.mid-folder {
         color: var(--cros-sys-on_surface_variant);

@@ -404,6 +404,9 @@ function getCSS(): CSSResultGroup {
       padding-inline: 12px;
       white-space: nowrap;
     }
+    :host(:first-of-type) #dropdown-toggle {
+      margin-inline-start: 0;
+    }
     :host-context(.focus-outline-visible) #dropdown-toggle:focus {
       outline: 2px solid var(--cros-sys-focus_ring);
       outline-offset: 2px;
