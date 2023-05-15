@@ -14,15 +14,6 @@ namespace content {
 
 // Please keep features in alphabetical order.
 
-#if BUILDFLAG(IS_ANDROID)
-// Use chromim's implementation of selection magnifier built using surface
-// control APIs, instead of using the system-provided magnifier.
-BASE_DECLARE_FEATURE(kAndroidSurfaceControlMagnifier);
-
-CONTENT_EXPORT bool IsAndroidSurfaceControlMagnifierEnabled();
-
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // When enabled, RenderFrameHostManager::CommitPending will also update the
 // visibility of all child views, not just that of the main frame.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kNavigationUpdatesChildViewsVisibility);

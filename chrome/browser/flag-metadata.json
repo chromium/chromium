@@ -7075,6 +7075,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "surface-control-magnifier",
+    "owners": [ "boliu" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "sync-autofill-wallet-usage-data",
     "owners": [ "alexandertekle@google.com", "treib" ],
     "expiry_milestone": 120

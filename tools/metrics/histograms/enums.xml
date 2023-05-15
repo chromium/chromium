@@ -66127,6 +66127,7 @@ from previous Chrome versions.
   <int value="1913263516" label="OculusVR:enabled"/>
   <int value="1913298816" label="OverlayScrollbar:enabled"/>
   <int value="1913926782" label="ChromeModernAlternateCardLayout:disabled"/>
+  <int value="1914131031" label="AndroidSurfaceControlMagnifier:enabled"/>
   <int value="1914347357" label="AutofillEnableVirtualCard:disabled"/>
   <int value="1915028326" label="BuiltInModuleKvStorage:disabled"/>
   <int value="1915178511" label="disable-blink-features"/>
@@ -66316,6 +66317,7 @@ from previous Chrome versions.
   <int value="2004604350" label="AutofillGetPaymentsIdentityFromSync:enabled"/>
   <int value="2004651603" label="NativeFileSystemAPI:disabled"/>
   <int value="2004829262" label="enable-webgl-draft-extensions"/>
+  <int value="2004933261" label="AndroidSurfaceControlMagnifier:disabled"/>
   <int value="2005009211" label="OmniboxAdaptiveSuggestionsCount:disabled"/>
   <int value="2005012791" label="AblateSendPendingAccessibilityEvents:enabled"/>
   <int value="2005245012" label="SecurityInterstitialsDarkMode:disabled"/>

@@ -7,28 +7,9 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "cc/slim/features.h"  // nogncheck
-#include "ui/gfx/android/android_surface_control_compat.h"
-#endif
-
 namespace content {
 
 // Please keep features in alphabetical order.
-
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kAndroidSurfaceControlMagnifier,
-             "AndroidSurfaceControlMagnifier",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsAndroidSurfaceControlMagnifierEnabled() {
-  static bool enabled =
-      gfx::SurfaceControl::SupportsSurfacelessControl() &&
-      features::IsSlimCompositorEnabled() &&
-      base::FeatureList::IsEnabled(kAndroidSurfaceControlMagnifier);
-  return enabled;
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kNavigationUpdatesChildViewsVisibility,
              "NavigationUpdatesChildViewsVisibility",

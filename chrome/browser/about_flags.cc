@@ -9979,6 +9979,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"slim-compositor", flag_descriptions::kSlimCompositorName,
      flag_descriptions::kSlimCompositorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kSlimCompositor)},
+
+    {"surface-control-magnifier",
+     flag_descriptions::kSurfaceControlMagnifierName,
+     flag_descriptions::kSurfaceControlMagnifierDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAndroidSurfaceControlMagnifier)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"autofill-enable-iban-client-side-url-filtering",
