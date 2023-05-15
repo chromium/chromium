@@ -87,10 +87,12 @@ TEST_F(NtpBackgroundServiceTest, CorrectCollectionRequest) {
   ntp::background::GetCollectionsRequest collection_request;
   EXPECT_TRUE(collection_request.ParseFromString(request_body));
   EXPECT_EQ("foo", collection_request.language());
-  EXPECT_EQ(2, collection_request.filtering_label_size());
+  EXPECT_EQ(3, collection_request.filtering_label_size());
   EXPECT_EQ("chrome_desktop_ntp", collection_request.filtering_label(0));
   EXPECT_EQ("chrome_desktop_ntp.M" + version_info::GetMajorVersionNumber(),
             collection_request.filtering_label(1));
+  EXPECT_EQ("chrome_desktop_ntp.panorama",
+            collection_request.filtering_label(2));
 }
 
 TEST_F(NtpBackgroundServiceTest, CollectionInfoNetworkError) {

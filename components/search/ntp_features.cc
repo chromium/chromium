@@ -28,13 +28,13 @@ BASE_FEATURE(kCacheOneGoogleBar,
 // on NTP Customize Chrome background change.
 BASE_FEATURE(kCustomizeChromeColorExtraction,
              "CustomizeChromeColorExtraction",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Customize Chrome will be an option in the Unified Side Panel
 // when on the New Tab Page.
 BASE_FEATURE(kCustomizeChromeSidePanel,
              "CustomizeChromeSidePanel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Forces a dark Google logo for a specific subset of Chrome Web Store themes
 // (see crbug.com/1329552). This is enabled by default to allow finch to disable

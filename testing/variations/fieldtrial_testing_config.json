@@ -4100,13 +4100,6 @@
             ],
             "experiments": [
                 {
-                    "name": "Panorama",
-                    "enable_features": [
-                        "CustomizeChromeColorExtraction",
-                        "CustomizeChromeSidePanel"
-                    ]
-                },
-                {
                     "name": "Panorama_In_Product_Help",
                     "enable_features": [
                         "CustomizeChromeColorExtraction",
