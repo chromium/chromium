@@ -5092,6 +5092,7 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
   }
 
   void SetupAndRegisterServiceWorker() {
+    RegisterRequestMonitorForRequestCount();
     RegisterRequestHandlerForSlowResponsePage();
     StartServerAndNavigateToSetup();
 
@@ -5117,6 +5118,14 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
   EvalJsResult GetInnerText() {
     // This script asks the service worker what fetch events it saw.
     return EvalJs(GetPrimaryMainFrame(), "document.body.innerText;");
+  }
+
+  int GetRequestCount(const std::string& relative_url) const {
+    const auto& it = request_log_.find(relative_url);
+    if (it == request_log_.end()) {
+      return 0;
+    }
+    return it->second.size();
   }
 
  private:
@@ -5145,6 +5154,10 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
             return http_response;
           }
 
+          if (base::Contains(request.GetURL().query(), "server_close_socket")) {
+            return std::make_unique<net::test_server::RawHttpResponse>("", "");
+          }
+
           const bool is_slow =
               base::Contains(request.GetURL().query(), "server_slow");
 
@@ -5170,6 +5183,16 @@ class ServiceWorkerRaceNetworkRequestBrowserTest
           return http_response;
         }));
   }
+  void RegisterRequestMonitorForRequestCount() {
+    embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
+        &ServiceWorkerRaceNetworkRequestBrowserTest::MonitorRequestHandler,
+        base::Unretained(this)));
+  }
+  void MonitorRequestHandler(const net::test_server::HttpRequest& request) {
+    request_log_[request.relative_url].push_back(request);
+  }
+  std::map<std::string, std::vector<net::test_server::HttpRequest>>
+      request_log_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -5212,7 +5235,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
-                       NetworkRequest_Wins_NotFound) {
+                       NetworkRequest_Wins_NotFound_FetchHandler_Respond) {
   SetupAndRegisterServiceWorker();
 
   // Network request is faster, but the response is not found.
@@ -5226,6 +5249,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
       1);
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the fetch handler",
             GetInnerText());
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
+                       NetworkRequest_Wins_NotFound_FetchHandler_NotRespond) {
+  SetupAndRegisterServiceWorker();
 
   // If the fallback request is not found. Then expect 404.
   NavigateToURLBlockUntilNavigationsComplete(
@@ -5238,20 +5266,26 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                        NetworkRequest_Wins_FetchHandler_Fallback) {
-  SetupAndRegisterServiceWorker();
+  // If RaceNetworkRequest comes first, there is a network error, and the fetch
+  // handler result is a fallback. In this case the response from
+  // RaceNetworkRequest is not used, because we need to support the case when
+  // the fetch handler returns a meaningful response e.g. offline page.
+  //
   // This test works in the following steps.
   // 1. Start RaceNetworkRequest.
   // 2. Start service worker, and trigger fetch handler that fallback to
   //    network.
-  // 3. Cancel RaceNetworkRequest.
+  // 3. Get a network error during RaceNetworkRequest.
   // 4. Start fallback network request, neither RaceNetworkRequest nor the fetch
   //    handler is involved.
   // 5. Get the response from the fallback network request.
-  const GURL slow_url = embedded_test_server()->GetURL(
-      "/service_worker/mock_response?sw_fallback&sw_slow");
-  NavigateToURLBlockUntilNavigationsComplete(shell(), slow_url, 1);
-  EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Response from the network",
-            GetInnerText());
+  SetupAndRegisterServiceWorker();
+  const std::string relative_url =
+      "/service_worker/mock_response?server_close_socket&sw_fallback&sw_slow";
+  EXPECT_FALSE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
+  // Request count should be 2 (RaceNetworkRequest + fallback request).
+  EXPECT_EQ(2, GetRequestCount(relative_url));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
@@ -5309,13 +5343,23 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
                        FetchHandler_Wins_Fallback) {
   SetupAndRegisterServiceWorker();
-  // Fetch handler will fallback. This case the response from the default
-  // fallback requset will be used. RaceNetworkRequset is not involved.
-  const GURL slow_url = embedded_test_server()->GetURL(
-      "/service_worker/mock_response?server_slow&sw_fallback");
+  // Fetch handler will fallback. This case the response from RaceNetworkRequest
+  // is returned as a final response.
+  const std::string relative_url =
+      "/service_worker/mock_response?server_slow&sw_fallback";
+  const GURL slow_url = embedded_test_server()->GetURL(relative_url);
   NavigateToURLBlockUntilNavigationsComplete(shell(), slow_url, 1);
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Slow response from the network",
             GetInnerText());
+  // Request count should be 1 (RaceNetworkRequest). No additional request to
+  // the server.
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+
+  // TODO(crbug.com/1420517) Ensure if the network error result is from
+  // RaceNetworkRequest. The current code only tests if the network error
+  // happens.
+  ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+  EXPECT_FALSE(NavigateToURL(shell(), slow_url));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
@@ -5460,13 +5504,23 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
   WorkerRunningStatusObserver observer(public_context());
   ReloadBlockUntilNavigationsComplete(shell(), 1);
   observer.WaitUntilRunning();
-  // Fetch handler will fallback. This case the response from the default
-  // fallback requset will be used. RaceNetworkRequset is not involved.
+  // Fetch handler will fallback. This case the response from RaceNetworkRequest
+  // is returned as a final response.
+  const std::string relative_url =
+      "/service_worker/mock_response?server_slow&sw_fallback";
   EXPECT_EQ("[ServiceWorkerRaceNetworkRequest] Slow response from the network",
             EvalJs(GetPrimaryMainFrame(),
-                   "fetch('/service_worker/mock_response?"
-                   "server_slow&sw_fallback').then(response => "
-                   "response.text())"));
+                   "fetch('" + relative_url +
+                       "').then(response => response.text())"));
+  // Request count should be 1 (RaceNetworkRequest). No additional request to
+  // the server.
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+
+  // TODO(crbug.com/1420517) Ensure if the network error result is from
+  // RaceNetworkRequest. The current code only tests if the network error
+  // happens.
+  ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+  EXPECT_FALSE(ExecJs(GetPrimaryMainFrame(), "fetch('" + relative_url + "')"));
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerRaceNetworkRequestBrowserTest,
