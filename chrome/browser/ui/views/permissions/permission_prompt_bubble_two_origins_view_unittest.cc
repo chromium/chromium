@@ -6,16 +6,19 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/test_browser_window.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
-
-using PermissionPromptBubbleTwoOriginsViewTest = ChromeViewsTestBase;
 
 namespace {
 
@@ -84,15 +87,45 @@ class TestDelegateTwoOrigins : public permissions::PermissionPrompt::Delegate {
   std::vector<permissions::PermissionRequest*> raw_requests_;
   base::WeakPtrFactory<TestDelegateTwoOrigins> weak_factory_{this};
 };
-
-std::unique_ptr<PermissionPromptBubbleBaseView> CreateBubble(
-    TestDelegateTwoOrigins* delegate) {
-  return std::make_unique<PermissionPromptBubbleTwoOriginsView>(
-      nullptr, delegate->GetWeakPtr(), base::TimeTicks::UnixEpoch(),
-      PermissionPromptStyle::kBubbleOnly);
-}
-
 }  // namespace
+
+class PermissionPromptBubbleTwoOriginsViewTest : public ChromeViewsTestBase {
+ public:
+  void SetUp() override {
+    ChromeViewsTestBase::SetUp();
+    CreateBrowser();
+  }
+
+  Browser* browser() { return browser_.get(); }
+
+  std::unique_ptr<PermissionPromptBubbleBaseView> CreateBubble(
+      TestDelegateTwoOrigins* delegate) {
+    return std::make_unique<PermissionPromptBubbleTwoOriginsView>(
+        browser(), delegate->GetWeakPtr(), base::TimeTicks::Now(),
+        PermissionPromptStyle::kBubbleOnly);
+  }
+
+ private:
+  void CreateBrowser() {
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        HistoryServiceFactory::GetInstance(),
+        HistoryServiceFactory::GetDefaultFactory());
+    profile_builder.AddTestingFactory(
+        FaviconServiceFactory::GetInstance(),
+        FaviconServiceFactory::GetDefaultFactory());
+    profile_ = profile_builder.Build();
+    browser_window_ = std::make_unique<TestBrowserWindow>();
+    Browser::CreateParams params(profile_.get(), /*user_gesture=*/true);
+    params.type = Browser::TYPE_NORMAL;
+    params.window = browser_window_.get();
+    browser_.reset(Browser::Create(params));
+  }
+
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<Browser> browser_;
+  std::unique_ptr<TestBrowserWindow> browser_window_;
+};
 
 TEST_F(PermissionPromptBubbleTwoOriginsViewTest,
        TitleMentionsTwoOriginsAndPermission) {
