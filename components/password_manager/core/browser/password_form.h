@@ -45,7 +45,7 @@ struct AlternativeElement {
   ~AlternativeElement();
 
   bool operator==(const AlternativeElement&) const;
-  std::strong_ordering operator<=>(const AlternativeElement&) const;
+  bool operator<(const AlternativeElement&) const;
 
   // The value of the field.
   std::u16string value;
