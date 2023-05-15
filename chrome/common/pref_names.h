@@ -1244,6 +1244,7 @@ extern const char kLastWhatsNewVersion[];
 extern const char kLensRegionSearchEnabled[];
 extern const char kSidePanelHorizontalAlignment[];
 extern const char kSidePanelCompanionEntryPinnedToToolbar[];
+extern const char kGoogleSearchSidePanelEnabled[];
 extern const char kLensDesktopNTPSearchEnabled[];
 #endif
 

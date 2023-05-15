@@ -1884,6 +1884,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kOutOfProcessSystemDnsResolutionEnabled,
     base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+  { key::kGoogleSearchSidePanelEnabled,
+    prefs::kGoogleSearchSidePanelEnabled,
+    base::Value::Type::BOOLEAN },
+#endif  // BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 };
 // clang-format on
 

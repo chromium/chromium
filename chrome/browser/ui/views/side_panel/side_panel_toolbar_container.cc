@@ -182,8 +182,10 @@ void SidePanelToolbarContainer::CreatePinnedEntryButtons() {
   // update pinned entry toolbar buttons as the coordinator becomes aware of
   // them. This sort of observation is unnecessary for now when there is only
   // one pinned entry.
+  // Runtime availability checks are set to `true` because pinned buttons should
+  // be created only if runtime checks pass.
   if (!SearchCompanionSidePanelCoordinator::IsSupported(
-          browser_view_->GetProfile())) {
+          browser_view_->GetProfile(), /*include_runtime_checks=*/true)) {
     return;
   }
   auto* search_companion_coordinator =

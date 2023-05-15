@@ -1,0 +1,27 @@
+caption: Enable <ph name="PRODUCT_NAME">$1<ex>Google Search Side Panel</ex></ph>
+
+desc: |-
+  If set to Enabled or not set, <ph name="PRODUCT_NAME">$1<ex>Google Search Side Panel</ex></ph> is allowed on all web pages.
+
+  If set to Disabled, <ph name="PRODUCT_NAME">$1<ex>Google Search Side Panel</ex></ph> is not available on any webpage.
+default: true
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable <ph name="PRODUCT_NAME">$1<ex>Google Search Side Panel</ex></ph> on all web pages
+  value: true
+- caption: Disable <ph name="PRODUCT_NAME">$1<ex>Google Search Side Panel</ex></ph> on all web pages
+  value: false
+owners:
+- file://chrome/browser/companion/OWNERS
+- tbansal@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:115-
+- chrome_os:115-
+tags:
+- google-sharing
+type: main

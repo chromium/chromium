@@ -1105,6 +1105,7 @@ policies:
   1104: ReportAppUsageCollectionRateMs
   1105: BrowserContextAwareAccessSignalsAllowlist
   1106: UserContextAwareAccessSignalsAllowlist
+  1107: GoogleSearchSidePanelEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

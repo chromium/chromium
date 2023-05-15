@@ -89,9 +89,12 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
   }
 
   // Create Search Companion coordinator.
+  // Disable runtime checks so that coordinator can monitor the runtime changes
+  // in the availability of companion.
   if (base::FeatureList::IsEnabled(companion::features::kSidePanelCompanion) &&
       SearchCompanionSidePanelCoordinator::IsSupported(
-          browser->profile(), /*include_dsp_check=*/false)) {
+          browser->profile(),
+          /*include_runtime_checks=*/false)) {
     SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(browser);
   }
 

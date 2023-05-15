@@ -1683,6 +1683,9 @@ const char kSidePanelHorizontalAlignment[] = "side_panel.is_right_aligned";
 // a button in the toolbar.
 const char kSidePanelCompanionEntryPinnedToToolbar[] =
     "side_panel.companion_pinned_to_toolbar";
+// Corresponds to the enterprise policy.
+const char kGoogleSearchSidePanelEnabled[] =
+    "side_panel.google_search_side_panel_enabled";
 #endif
 
 // Number of minutes of inactivity before running actions from
