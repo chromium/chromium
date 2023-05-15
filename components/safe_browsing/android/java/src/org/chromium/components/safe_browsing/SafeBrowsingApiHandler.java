@@ -12,6 +12,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Java interface that a SafeBrowsingApiHandler must implement when used with
  * {@code SafeBrowsingApiBridge}.
+ * TODO(crbug.com/1444515): Remove this interface once it is fully renamed to SafetyNetApiHandler.
  */
 public interface SafeBrowsingApiHandler {
     /**

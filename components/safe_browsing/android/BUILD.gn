@@ -18,6 +18,7 @@ android_library("safe_browsing_java") {
   sources = [
     "java/src/org/chromium/components/safe_browsing/SafeBrowsingApiBridge.java",
     "java/src/org/chromium/components/safe_browsing/SafeBrowsingApiHandler.java",
+    "java/src/org/chromium/components/safe_browsing/SafetyNetApiHandler.java",
   ]
 }
 
