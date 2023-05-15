@@ -23,7 +23,7 @@ constexpr base::FeatureParam<std::string> kHomepageURLForCompanion{
 
 constexpr base::FeatureParam<std::string> kImageUploadURLForCompanion{
     &kSidePanelCompanion, "companion-image-upload-url",
-    "https://www.example.com"};
+    "https://lens.google.com/upload"};
 constexpr base::FeatureParam<bool> kEnableOpenCompanionForImageSearch{
     &kSidePanelCompanion, "open-companion-for-image-search", true};
 constexpr base::FeatureParam<bool> kEnableOpenCompanionForWebSearch{
