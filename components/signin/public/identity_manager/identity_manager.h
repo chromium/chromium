@@ -55,6 +55,7 @@ class AccountFetcherService;
 class AccountTrackerService;
 class GaiaCookieManagerService;
 class NewTabPageUI;
+class PrivacySandboxSettingsDelegate;
 
 namespace signin {
 
@@ -591,10 +592,11 @@ class IdentityManager : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest, RefreshAccountInfoIfStale);
   FRIEND_TEST_ALL_PREFIXES(IdentityManagerTest, FindExtendedPrimaryAccountInfo);
 
-  // Only caller to FindExtendedPrimaryAccountInfo().
-  // TODO(https://crbug.com/1213351): Delete once the private call has been
+  // Both classes only call FindExtendedPrimaryAccountInfo().
+  // TODO(https://crbug.com/1213351): Delete once the private calls have been
   // removed.
   friend class ::NewTabPageUI;
+  friend class ::PrivacySandboxSettingsDelegate;
 
   // Returns the extended account info for the primary account. This function
   // does not require tokens to be loaded.
