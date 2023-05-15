@@ -623,6 +623,12 @@ suite('PrivacySandboxDialogNoticeROW', function() {
   });
 
   test('moreButton', async function() {
+    // TODO(crbug.com/1432915): flaky on mac.
+    // <if expr="is_macosx">
+    if (1) {
+      this.skip();
+    }
+    // </if>
     await verifyActionOccured(
         browserProxy, PrivacySandboxPromptAction.NOTICE_SHOWN);
     await flushTasks();
