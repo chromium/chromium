@@ -1621,9 +1621,6 @@ DisableForRenderFrameHostReasonToProtocol(
               ContentFileChooser;
         case BackForwardCacheDisable::DisabledReasonId::kSerial:
           return Page::BackForwardCacheNotRestoredReasonEnum::ContentSerial;
-        case BackForwardCacheDisable::DisabledReasonId::kFileSystemAccess:
-          return Page::BackForwardCacheNotRestoredReasonEnum::
-              ContentFileSystemAccess;
         case BackForwardCacheDisable::DisabledReasonId::
             kMediaDevicesDispatcherHost:
           return Page::BackForwardCacheNotRestoredReasonEnum::
