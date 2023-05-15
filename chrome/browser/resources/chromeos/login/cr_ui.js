@@ -48,6 +48,13 @@ export class Oobe extends DisplayManager {
   }
 
   /**
+   * Does the initial transition to the OOBE flow after booting animation.
+   */
+  static triggerDown() {
+    Oobe.getInstance().triggerDown();
+  }
+
+  /**
    * Update body class to switch between OOBE UI and Login UI.
    * @param {boolean} showOobe True if UI is in an OOBE mode (as opposed to
    * login).

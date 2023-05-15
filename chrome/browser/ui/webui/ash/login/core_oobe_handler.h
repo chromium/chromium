@@ -37,6 +37,7 @@ class CoreOobeView {
   virtual void ReloadContent(base::Value::Dict dictionary) = 0;
   virtual void UpdateClientAreaSize(const gfx::Size& size) = 0;
   virtual void ToggleSystemInfo() = 0;
+  virtual void TriggerDown() = 0;
   virtual void ForwardCancel() = 0;
   virtual void LaunchHelpApp(int help_topic_id) = 0;
 };
@@ -82,6 +83,7 @@ class CoreOobeHandler : public BaseWebUIHandler,
   // Updates client area size based on the primary screen size.
   void UpdateClientAreaSize(const gfx::Size& size) override;
   void ToggleSystemInfo() override;
+  void TriggerDown() override;
   // Forwards the cancel accelerator value to the shown screen.
   void ForwardCancel() override;
   void LaunchHelpApp(int help_topic_id) override;

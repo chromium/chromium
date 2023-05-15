@@ -74,6 +74,7 @@ class OobeUI : public ui::MojoWebUIController {
     virtual void OnCurrentScreenChanged(OobeScreenId current_screen,
                                         OobeScreenId new_screen) = 0;
 
+    virtual void OnBackdropLoaded() {}
     virtual void OnDestroyingOobeUI() = 0;
 
    protected:
@@ -98,6 +99,9 @@ class OobeUI : public ui::MojoWebUIController {
 
   // Called when the screen has changed.
   void CurrentScreenChanged(OobeScreenId screen);
+
+  // Called when the backdrop image of the OOBE is loaded.
+  void OnBackdropLoaded();
 
   bool IsJSReady(base::OnceClosure display_is_ready_callback);
 

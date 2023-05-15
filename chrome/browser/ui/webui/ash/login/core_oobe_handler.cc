@@ -170,7 +170,7 @@ void CoreOobeHandler::HandleUpdateCurrentScreen(
 }
 
 void CoreOobeHandler::HandleBackdropLoaded() {
-  // TODO (b/269104621) Event picked up by b/269104621
+  GetOobeUI()->OnBackdropLoaded();
 }
 
 void CoreOobeHandler::HandleEnableShelfButtons(bool enable) {
@@ -228,6 +228,10 @@ void CoreOobeHandler::UpdateClientAreaSize(const gfx::Size& size) {
 
 void CoreOobeHandler::ToggleSystemInfo() {
   CallJS("cr.ui.Oobe.toggleSystemInfo");
+}
+
+void CoreOobeHandler::TriggerDown() {
+  CallJS("cr.ui.Oobe.triggerDown");
 }
 
 void CoreOobeHandler::LaunchHelpApp(int help_topic_id) {

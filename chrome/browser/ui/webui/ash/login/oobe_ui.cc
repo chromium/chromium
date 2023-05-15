@@ -761,6 +761,12 @@ void OobeUI::CurrentScreenChanged(OobeScreenId new_screen) {
     observer.OnCurrentScreenChanged(previous_screen_, new_screen);
 }
 
+void OobeUI::OnBackdropLoaded() {
+  for (Observer& observer : observer_list_) {
+    observer.OnBackdropLoaded();
+  }
+}
+
 bool OobeUI::IsJSReady(base::OnceClosure display_is_ready_callback) {
   if (!ready_)
     ready_callbacks_.AddUnsafe(std::move(display_is_ready_callback));
