@@ -981,7 +981,7 @@ void DesktopMediaPickerViews::NotifyDialogResult(const DesktopMediaID& source) {
 // static
 std::unique_ptr<DesktopMediaPicker> DesktopMediaPicker::Create(
     const content::MediaStreamRequest* request) {
-  if (base::FeatureList::IsEnabled(media::kShareThisTabDialog) &&
+  if (base::FeatureList::IsEnabled(media::kShareThisTabDialog) && request &&
       request->video_type ==
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
     return std::make_unique<ShareThisTabDialogViews>();
