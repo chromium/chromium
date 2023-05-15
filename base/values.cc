@@ -1156,22 +1156,6 @@ Value* Value::SetKey(StringPiece key, Value&& value) {
   return GetDict().Set(key, std::move(value));
 }
 
-Value* Value::SetStringKey(StringPiece key, StringPiece value) {
-  return GetDict().Set(key, value);
-}
-
-Value* Value::SetStringKey(StringPiece key, StringPiece16 value) {
-  return GetDict().Set(key, value);
-}
-
-Value* Value::SetStringKey(StringPiece key, const char* value) {
-  return GetDict().Set(key, value);
-}
-
-Value* Value::SetStringKey(StringPiece key, std::string&& value) {
-  return GetDict().Set(key, std::move(value));
-}
-
 bool Value::RemoveKey(StringPiece key) {
   return GetDict().Remove(key);
 }

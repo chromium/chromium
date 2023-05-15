@@ -766,20 +766,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // DEPRECATED: Prefer `Value::Dict::Set()`.
   Value* SetKey(StringPiece key, Value&& value);
 
-  // `Set<Type>Key` looks up `key` in the underlying dictionary and associates a
-  // corresponding Value() constructed from the second parameter. Compared to
-  // `SetKey()`, this avoids un-necessary temporary `Value()` creation, as well
-  // ambiguities in the value type.
-  //
-  // DEPRECATED: Prefer `Value::Dict::Set()`.
-  Value* SetStringKey(StringPiece key, StringPiece val);
-  // DEPRECATED: Prefer `Value::Dict::Set()`.
-  Value* SetStringKey(StringPiece key, StringPiece16 val);
-  // DEPRECATED: Prefer `Value::Dict::Set()`.
-  Value* SetStringKey(StringPiece key, const char* val);
-  // DEPRECATED: Prefer `Value::Dict::Set()`.
-  Value* SetStringKey(StringPiece key, std::string&& val);
-
   // This attempts to remove the value associated with `key`. In case of
   // failure, e.g. the key does not exist, false is returned and the underlying
   // dictionary is not changed. In case of success, `key` is deleted from the
