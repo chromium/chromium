@@ -28,16 +28,18 @@ StarScanSnapshot::StarScanSnapshot(const PCScanInternal& pcscan) {
     clear_worklist_.Push(super_pages.begin(), super_pages.end());
     scan_worklist_.Push(super_pages.begin(), super_pages.end());
     sweep_worklist_.Push(super_pages.begin(), super_pages.end());
-    if (pcscan.WriteProtectionEnabled())
+    if (pcscan.WriteProtectionEnabled()) {
       unprotect_worklist_.Push(super_pages.begin(), super_pages.end());
+    }
   }
 
   for (const auto& root : pcscan.nonscannable_roots()) {
     const auto& super_pages = root.second;
     clear_worklist_.Push(super_pages.begin(), super_pages.end());
     sweep_worklist_.Push(super_pages.begin(), super_pages.end());
-    if (pcscan.WriteProtectionEnabled())
+    if (pcscan.WriteProtectionEnabled()) {
       unprotect_worklist_.Push(super_pages.begin(), super_pages.end());
+    }
   }
 }
 

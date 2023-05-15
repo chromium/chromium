@@ -79,13 +79,16 @@ void ScanLoop<Derived>::Run(uintptr_t begin, uintptr_t end) {
 // 64bit regular pool, and only for x86 because a special instruction set is
 // required.
 #if defined(ARCH_CPU_X86_64)
-  if (simd_type_ == SimdSupport::kAVX2)
+  if (simd_type_ == SimdSupport::kAVX2) {
     return RunAVX2(begin, end);
-  if (simd_type_ == SimdSupport::kSSE41)
+  }
+  if (simd_type_ == SimdSupport::kSSE41) {
     return RunSSE4(begin, end);
+  }
 #elif PA_CONFIG(STARSCAN_NEON_SUPPORTED)
-  if (simd_type_ == SimdSupport::kNEON)
+  if (simd_type_ == SimdSupport::kNEON) {
     return RunNEON(begin, end);
+  }
 #endif  // PA_CONFIG(STARSCAN_NEON_SUPPORTED)
   return RunUnvectorized(begin, end);
 }
@@ -108,11 +111,13 @@ void ScanLoop<Derived>::RunUnvectorized(uintptr_t begin, uintptr_t end) {
     // Keep it MTE-untagged. See DisableMTEScope for details.
     const uintptr_t maybe_ptr = *reinterpret_cast<uintptr_t*>(begin);
 #if BUILDFLAG(HAS_64_BIT_POINTERS)
-    if (PA_LIKELY((maybe_ptr & mask) != base))
+    if (PA_LIKELY((maybe_ptr & mask) != base)) {
       continue;
+    }
 #else
-    if (!maybe_ptr)
+    if (!maybe_ptr) {
       continue;
+    }
 #endif  // BUILDFLAG(HAS_64_BIT_POINTERS)
     derived().CheckPointer(maybe_ptr);
   }
@@ -144,18 +149,23 @@ __attribute__((target("avx2"))) void ScanLoop<Derived>::RunAVX2(uintptr_t begin,
     const __m256i vand = _mm256_and_si256(maybe_ptrs, regular_pool_mask);
     const __m256i vcmp = _mm256_cmpeq_epi64(vand, vbase);
     const int mask = _mm256_movemask_pd(_mm256_castsi256_pd(vcmp));
-    if (PA_LIKELY(!mask))
+    if (PA_LIKELY(!mask)) {
       continue;
+    }
     // It's important to extract pointers from the already loaded vector.
     // Otherwise, new loads can break in-pool assumption checked above.
-    if (mask & 0b0001)
+    if (mask & 0b0001) {
       derived().CheckPointer(_mm256_extract_epi64(maybe_ptrs, 0));
-    if (mask & 0b0010)
+    }
+    if (mask & 0b0010) {
       derived().CheckPointer(_mm256_extract_epi64(maybe_ptrs, 1));
-    if (mask & 0b0100)
+    }
+    if (mask & 0b0100) {
       derived().CheckPointer(_mm256_extract_epi64(maybe_ptrs, 2));
-    if (mask & 0b1000)
+    }
+    if (mask & 0b1000) {
       derived().CheckPointer(_mm256_extract_epi64(maybe_ptrs, 3));
+    }
   }
   // Run unvectorized on the remainder of the region.
   RunUnvectorized(begin, end);
@@ -183,8 +193,9 @@ __attribute__((target("sse4.1"))) void ScanLoop<Derived>::RunSSE4(
     const __m128i vand = _mm_and_si128(maybe_ptrs, regular_pool_mask);
     const __m128i vcmp = _mm_cmpeq_epi64(vand, vbase);
     const int mask = _mm_movemask_pd(_mm_castsi128_pd(vcmp));
-    if (PA_LIKELY(!mask))
+    if (PA_LIKELY(!mask)) {
       continue;
+    }
     // It's important to extract pointers from the already loaded vector.
     // Otherwise, new loads can break in-pool assumption checked above.
     if (mask & 0b01) {
@@ -222,14 +233,17 @@ void ScanLoop<Derived>::RunNEON(uintptr_t begin, uintptr_t end) {
     const uint64x2_t vand = vandq_u64(maybe_ptrs, regular_pool_mask);
     const uint64x2_t vcmp = vceqq_u64(vand, vbase);
     const uint32_t max = vmaxvq_u32(vreinterpretq_u32_u64(vcmp));
-    if (PA_LIKELY(!max))
+    if (PA_LIKELY(!max)) {
       continue;
+    }
     // It's important to extract pointers from the already loaded vector.
     // Otherwise, new loads can break in-pool assumption checked above.
-    if (vgetq_lane_u64(vcmp, 0))
+    if (vgetq_lane_u64(vcmp, 0)) {
       derived().CheckPointer(vgetq_lane_u64(maybe_ptrs, 0));
-    if (vgetq_lane_u64(vcmp, 1))
+    }
+    if (vgetq_lane_u64(vcmp, 1)) {
       derived().CheckPointer(vgetq_lane_u64(maybe_ptrs, 1));
+    }
   }
   // Run unvectorized on the remainder of the region.
   RunUnvectorized(begin, end);

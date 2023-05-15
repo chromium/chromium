@@ -32,8 +32,9 @@ void PCScanSchedulingBackend::DisableScheduling() {
 void PCScanSchedulingBackend::EnableScheduling() {
   scheduling_enabled_.store(true, std::memory_order_relaxed);
   // Check if *Scan needs to be run immediately.
-  if (NeedsToImmediatelyScan())
+  if (NeedsToImmediatelyScan()) {
     PCScan::PerformScan(PCScan::InvocationMode::kNonBlocking);
+  }
 }
 
 size_t PCScanSchedulingBackend::ScanStarted() {
@@ -182,8 +183,9 @@ bool MUAwareTaskBasedBackend::NeedsToImmediatelyScan() {
     ScopedGuard guard(scheduler_lock_);
     // If |hard_limit_| was set to zero, the soft limit was reached. Bail out if
     // it's not.
-    if (hard_limit_)
+    if (hard_limit_) {
       return false;
+    }
 
     // Check if mutator utilization requiremet is satisfied.
     reschedule_delay = earliest_next_scan_time_ - base::TimeTicks::Now();
@@ -199,8 +201,9 @@ bool MUAwareTaskBasedBackend::NeedsToImmediatelyScan() {
   }
   // Don't reschedule under the lock as the callback can call free() and
   // recursively enter the lock.
-  if (should_reschedule)
+  if (should_reschedule) {
     schedule_delayed_scan_(reschedule_delay.InMicroseconds());
+  }
   return false;
 }
 

@@ -112,13 +112,15 @@ void UserFaultFDWPSet(int uffd,
 }  // namespace
 
 void UserFaultFDWriteProtector::ProtectPages(uintptr_t begin, size_t length) {
-  if (IsSupported())
+  if (IsSupported()) {
     UserFaultFDWPSet(uffd_, begin, length, UserFaultFDWPMode::kProtect);
+  }
 }
 
 void UserFaultFDWriteProtector::UnprotectPages(uintptr_t begin, size_t length) {
-  if (IsSupported())
+  if (IsSupported()) {
     UserFaultFDWPSet(uffd_, begin, length, UserFaultFDWPMode::kUnprotect);
+  }
 }
 
 PCScan::ClearType UserFaultFDWriteProtector::SupportedClearType() const {

@@ -37,9 +37,10 @@ class RacefulWorklist {
    public:
     explicit RandomizedView(RacefulWorklist& worklist)
         : worklist_(worklist), offset_(0) {
-      if (worklist.data_.size() > 0)
+      if (worklist.data_.size() > 0) {
         offset_ = static_cast<size_t>(
             internal::base::RandGenerator(worklist.data_.size()));
+      }
     }
 
     RandomizedView(const RandomizedView&) = delete;
@@ -77,8 +78,9 @@ class RacefulWorklist {
 template <typename T>
 template <typename Function>
 void RacefulWorklist<T>::VisitNonConcurrently(Function f) const {
-  for (const auto& t : data_)
+  for (const auto& t : data_) {
     f(t.value);
+  }
 }
 
 template <typename T>
@@ -91,15 +93,17 @@ void RacefulWorklist<T>::RandomizedView::Visit(Function f) {
 
   // To avoid worklist iteration, quick check if the worklist was already
   // visited.
-  if (worklist_.fully_visited_.load(std::memory_order_acquire))
+  if (worklist_.fully_visited_.load(std::memory_order_acquire)) {
     return;
+  }
 
   const auto offset_it = std::next(data.begin(), offset_);
 
   // First, visit items starting from the offset.
   for (auto it = offset_it; it != data.end(); ++it) {
-    if (it->is_visited.load(std::memory_order_relaxed))
+    if (it->is_visited.load(std::memory_order_relaxed)) {
       continue;
+    }
     if (it->is_being_visited.load(std::memory_order_relaxed)) {
       to_revisit.push_back(it);
       continue;
@@ -111,8 +115,9 @@ void RacefulWorklist<T>::RandomizedView::Visit(Function f) {
 
   // Then, visit items before the offset.
   for (auto it = data.begin(); it != offset_it; ++it) {
-    if (it->is_visited.load(std::memory_order_relaxed))
+    if (it->is_visited.load(std::memory_order_relaxed)) {
       continue;
+    }
     if (it->is_being_visited.load(std::memory_order_relaxed)) {
       to_revisit.push_back(it);
       continue;
@@ -124,8 +129,9 @@ void RacefulWorklist<T>::RandomizedView::Visit(Function f) {
 
   // Finally, racefully visit items that were scanned by some other thread.
   for (auto it : to_revisit) {
-    if (PA_LIKELY(it->is_visited.load(std::memory_order_relaxed)))
+    if (PA_LIKELY(it->is_visited.load(std::memory_order_relaxed))) {
       continue;
+    }
     // Don't bail out here if the item is being visited by another thread.
     // This is helpful to guarantee forward progress if the other thread
     // is making slow progress.

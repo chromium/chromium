@@ -99,9 +99,9 @@ class PCScanInternal final {
   void ProtectPages(uintptr_t begin, size_t size);
   void UnprotectPages(uintptr_t begin, size_t size);
 
-  void ClearRootsForTesting();                               // IN-TEST
-  void ReinitForTesting(PCScan::InitConfig);                 // IN-TEST
-  void FinishScanForTesting();                               // IN-TEST
+  void ClearRootsForTesting();                // IN-TEST
+  void ReinitForTesting(PCScan::InitConfig);  // IN-TEST
+  void FinishScanForTesting();                // IN-TEST
 
   void RegisterStatsReporter(partition_alloc::StatsReporter* reporter);
   partition_alloc::StatsReporter& GetReporter();

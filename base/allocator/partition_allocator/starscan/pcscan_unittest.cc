@@ -145,10 +145,11 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
   for (size_t i = 0; i < num_slots; ++i) {
     void* ptr = root.AllocWithFlagsNoHooks(0, object_size, PartitionPageSize());
     EXPECT_TRUE(ptr);
-    if (i == 0)
+    if (i == 0) {
       first = root.ObjectToSlotStart(ptr);
-    else if (i == num_slots - 1)
+    } else if (i == num_slots - 1) {
       last = root.ObjectToSlotStart(ptr);
+    }
   }
 
   EXPECT_EQ(SlotSpan::FromSlotStart(first), SlotSpan::FromSlotStart(last));
@@ -175,8 +176,9 @@ bool IsInFreeList(uintptr_t slot_start) {
   auto* slot_span = SlotSpan::FromSlotStart(slot_start);
   for (auto* entry = slot_span->get_freelist_head(); entry;
        entry = entry->GetNext(slot_span->bucket->slot_size)) {
-    if (entry == slot_start_tagged)
+    if (entry == slot_start_tagged) {
       return true;
+    }
   }
   return false;
 }
@@ -830,8 +832,9 @@ TEST_F(PartitionAllocPCScanTest, DanglingPointerOutsideUsablePart) {
 TEST_F(PartitionAllocPCScanWithMTETest, QuarantineOnlyOnTagOverflow) {
   using ListType = List<64>;
 
-  if (!base::CPU::GetInstanceNoAllocation().has_mte())
+  if (!base::CPU::GetInstanceNoAllocation().has_mte()) {
     return;
+  }
 
   {
     auto* obj1 = ListType::Create(root());
