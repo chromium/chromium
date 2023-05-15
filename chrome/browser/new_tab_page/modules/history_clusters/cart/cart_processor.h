@@ -20,6 +20,10 @@ class CartProcessor {
   CartProcessor& operator=(const CartProcessor&) = delete;
   ~CartProcessor();
 
+  // Check if `cart` is associated with the `visit_url`.
+  static bool IsCartAssociatedWithVisitURL(CartDB::KeyAndValue& cart,
+                                           GURL visit_url);
+
   // Get the most relevant cart for the given `cluster`.
   void GetCartForCluster(
       history_clusters::mojom::ClusterPtr cluster,
