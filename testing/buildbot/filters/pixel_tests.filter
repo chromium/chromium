@@ -70,7 +70,6 @@ QrCodeGeneratorServicePixelTest.*
 RelaunchRecommendedBubbleViewDialogTest.*
 RelaunchRequiredDialogViewDialogTest.*
 ReopenTabPromoControllerDialogBrowserTest.*
-SAAEnabledPermissionPromptBubbleViewBrowserTest.*
 SafetyTipPageInfoBubbleViewDialogTest.*
 ScreenCaptureNotificationUiBrowserTest.*
 SecurePaymentConfirmationDialogViewTest.InvokeUi_*

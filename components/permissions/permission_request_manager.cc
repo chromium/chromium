@@ -544,10 +544,6 @@ GURL PermissionRequestManager::GetRequestingOrigin() const {
 }
 
 GURL PermissionRequestManager::GetEmbeddingOrigin() const {
-  if (embedding_origin_for_testing_.has_value()) {
-    return embedding_origin_for_testing_.value();
-  }
-
   return PermissionUtil::GetLastCommittedOriginAsURL(
       web_contents()->GetPrimaryMainFrame());
 }
