@@ -107,6 +107,13 @@ struct ServiceWorkerSubresourceLoadMetrics {
   // i.e. the service worker did not call `respondWith`, and network fallback.
   bool mock_fallback = false;
 
+  // True if dictionary subresource is handled by a service worker.
+  // i.e. the service worker called `respondWith` to return the resource.
+  bool dictionary_handled = false;
+  // True if dictionary subresource is not handled by a service worker.
+  // i.e. the service worker did not call `respondWith`, and network fallback.
+  bool dictionary_fallback = false;
+
   bool operator==(const ServiceWorkerSubresourceLoadMetrics& other) const {
     return image_handled == other.image_handled &&
            image_fallback == other.image_fallback &&
@@ -135,7 +142,9 @@ struct ServiceWorkerSubresourceLoadMetrics {
            speculation_rules_handled == other.speculation_rules_handled &&
            speculation_rules_fallback == other.speculation_rules_fallback &&
            mock_handled == other.mock_handled &&
-           mock_fallback == other.mock_fallback;
+           mock_fallback == other.mock_fallback &&
+           dictionary_handled == other.dictionary_handled &&
+           dictionary_fallback == other.dictionary_fallback;
   }
 };
 

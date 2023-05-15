@@ -61,6 +61,8 @@ const char* RequestDestinationToString(
       return "fencedframe";
     case network::mojom::RequestDestination::kWebIdentity:
       return "webidentity";
+    case network::mojom::RequestDestination::kDictionary:
+      return "dictionary";
   }
 }
 

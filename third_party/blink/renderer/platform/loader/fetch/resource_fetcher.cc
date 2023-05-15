@@ -145,6 +145,7 @@ const std::string ResourceTypeName(ResourceType type) {
     RESOURCE_TYPE_NAME(Manifest)          // 12
     RESOURCE_TYPE_NAME(SpeculationRules)  // 13
     RESOURCE_TYPE_NAME(Mock)              // 14
+    RESOURCE_TYPE_NAME(Dictionary)        // 15
   }
 }
 
@@ -173,6 +174,7 @@ ResourceLoadPriority TypeToPriority(ResourceType type) {
       return ResourceLoadPriority::kLow;
     case ResourceType::kLinkPrefetch:
     case ResourceType::kSpeculationRules:
+    case ResourceType::kDictionary:
       return ResourceLoadPriority::kVeryLow;
   }
 
@@ -396,6 +398,8 @@ mojom::blink::RequestContextType ResourceFetcher::DetermineRequestContext(
       return mojom::blink::RequestContextType::SUBRESOURCE;
     case ResourceType::kSpeculationRules:
       return mojom::blink::RequestContextType::SUBRESOURCE;
+    case ResourceType::kDictionary:
+      return mojom::blink::RequestContextType::SUBRESOURCE;
   }
   NOTREACHED();
   return mojom::blink::RequestContextType::SUBRESOURCE;
@@ -427,6 +431,7 @@ network::mojom::RequestDestination ResourceFetcher::DetermineRequestDestination(
     case ResourceType::kRaw:
     case ResourceType::kLinkPrefetch:
     case ResourceType::kMock:
+    case ResourceType::kDictionary:
       return network::mojom::RequestDestination::kEmpty;
   }
   NOTREACHED();
@@ -2973,6 +2978,13 @@ void ResourceFetcher::UpdateServiceWorkerSubresourceMetrics(
         metrics.mock_handled |= true;
       } else {
         metrics.mock_fallback |= true;
+      }
+      break;
+    case ResourceType::kDictionary:  // 14
+      if (handled_by_serviceworker) {
+        metrics.dictionary_handled |= true;
+      } else {
+        metrics.dictionary_fallback |= true;
       }
       break;
   }

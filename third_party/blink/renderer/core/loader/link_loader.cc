@@ -141,6 +141,7 @@ bool LinkLoader::LoadLink(const LinkLoadParameters& params,
     PreloadHelper::PrefetchIfNeeded(params, document, pending_preload_);
   PreloadHelper::ModulePreloadIfNeeded(
       params, document, nullptr /* viewport_description */, pending_preload_);
+  PreloadHelper::FetchDictionaryIfNeeded(params, document, pending_preload_);
 
   absl::optional<mojom::blink::PrerenderTriggerType> trigger_type =
       PrerenderTriggerTypeFromRelAttribute(params.rel, document);

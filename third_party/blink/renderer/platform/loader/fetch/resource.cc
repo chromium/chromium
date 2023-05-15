@@ -1165,6 +1165,8 @@ const char* Resource::ResourceTypeToString(
       return "SpeculationRule";
     case ResourceType::kMock:
       return "Mock";
+    case ResourceType::kDictionary:
+      return "Dictionary";
   }
   NOTREACHED();
   return InitiatorTypeNameToString(fetch_initiator_name);
@@ -1189,6 +1191,7 @@ bool Resource::IsLoadEventBlockingResourceType() const {
     case ResourceType::kManifest:
     case ResourceType::kMock:
     case ResourceType::kSpeculationRules:
+    case ResourceType::kDictionary:
       return false;
   }
   NOTREACHED();

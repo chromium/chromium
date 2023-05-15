@@ -1800,6 +1800,8 @@ message ClientSafeBrowsingReportRequest {
     FENCED_FRAME = 23;
     // Federated Credential Management requests
     WEB_IDENTITY = 24;
+    // <link rel=dictionary>
+    DICTIONARY = 25;
   }
 
   // Only populated for interstitial reports (URL_PHISHING, URL_MALWARE,

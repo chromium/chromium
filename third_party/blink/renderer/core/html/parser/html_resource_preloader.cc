@@ -134,6 +134,8 @@ bool HTMLResourcePreloader::AllowPreloadRequest(PreloadRequest* preload) const {
                  features::kLightweightNoStatePrefetch, "skip_async_script",
                  true) ||
              preload->DeferOption() == FetchParameters::DeferOption::kNoDefer;
+    case ResourceType::kDictionary:
+      return false;
   }
 }
 

@@ -46,6 +46,7 @@ chromium-metrics-reviews@google.com.
 <variants name="ResourceType">
   <variant name="Audio" summary="Audio"/>
   <variant name="CSSStyleSheet" summary="CSS Style Sheet"/>
+  <variant name="Dictionary" summary="Dictionary"/>
   <variant name="Font" summary="Font"/>
   <variant name="Image" summary="Image"/>
   <variant name="LinkPrefetch" summary="Link Prefetch"/>

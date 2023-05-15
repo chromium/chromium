@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/loader/resource/link_dictionary_resource.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
@@ -20,6 +21,7 @@ static HashSet<AtomicString>& SupportedTokensLink() {
   // There is a use counter for <link rel="monetization"> but the feature is
   // actually not implemented yet, so "monetization" is not included in the
   // list below. See https://crbug.com/1031476
+  // clang-format off
   DEFINE_STATIC_LOCAL(HashSet<AtomicString>, tokens,
                       ({
                           "preload",
@@ -38,6 +40,7 @@ static HashSet<AtomicString>& SupportedTokensLink() {
                           "modulepreload",
                           "allowed-alt-sxg",
                       }));
+  // clang-format on
 
   return tokens;
 }
@@ -54,10 +57,15 @@ static HashSet<AtomicString>& SupportedTokensAnchorAndAreaAndForm() {
 }
 
 bool RelList::ValidateTokenValue(const AtomicString& token_value,
-                                 ExceptionState&) const {
+                                 ExceptionState& state) const {
   //  https://html.spec.whatwg.org/C/#linkTypes
+  ExecutionContext* execution_context =
+      GetElement().GetDocument().GetExecutionContext();
   if (GetElement().HasTagName(html_names::kLinkTag)) {
     if (SupportedTokensLink().Contains(token_value)) {
+      return true;
+    } else if (CompressionDictionaryTransportFullyEnabled(execution_context) &&
+               token_value == "dictionary") {
       return true;
     }
   } else if ((GetElement().HasTagName(html_names::kATag) ||

@@ -94,7 +94,8 @@ enum class ResourceType : uint8_t {
   kManifest = 12,
   kSpeculationRules = 13,
   kMock = 14,  // Only for testing
-  kMaxValue = kMock
+  kDictionary = 15,
+  kMaxValue = kDictionary
 };
 
 // A resource that is held in the cache. Classes who want to use this object

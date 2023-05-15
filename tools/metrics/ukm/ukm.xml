@@ -21558,6 +21558,18 @@ be describing additional metrics about the same event.
       CSSStyleSheet in the page. (boolean value. true: 1 or false: 0)
     </summary>
   </metric>
+  <metric name="DictionaryFallback">
+    <summary>
+      True if there are network fallback sub-resources of Dictionary in the
+      page. (boolean value. true: 1 or false: 0)
+    </summary>
+  </metric>
+  <metric name="DictionaryHandled">
+    <summary>
+      True if there are service workers handling sub-resource loads of
+      Dictionary in the page. (boolean value. true: 1 or false: 0)
+    </summary>
+  </metric>
   <metric name="FontFallback">
     <summary>
       True if there are network fallback sub-resources of CSSStyleSheet in the
