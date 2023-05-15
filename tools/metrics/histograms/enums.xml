@@ -32787,6 +32787,8 @@ Called by update_document_policy_enum.py.-->
   <int value="1102" label="ReportAppInventory"/>
   <int value="1103" label="ReportAppUsage"/>
   <int value="1104" label="ReportAppUsageCollectionRateMs"/>
+  <int value="1105" label="BrowserContextAwareAccessSignalsAllowlist"/>
+  <int value="1106" label="UserContextAwareAccessSignalsAllowlist"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

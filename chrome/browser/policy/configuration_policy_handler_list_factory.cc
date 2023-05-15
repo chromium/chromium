@@ -1990,6 +1990,14 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           key::kContextAwareAccessSignalsAllowlist,
           enterprise_connectors::kContextAwareAccessSignalsAllowlistPref,
           chrome_schema));
+#if !BUILDFLAG(IS_FUCHSIA)
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
+          key::kUserContextAwareAccessSignalsAllowlist,
+          enterprise_connectors::kUserContextAwareAccessSignalsAllowlistPref,
+          chrome_schema));
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
   handlers->AddHandler(std::make_unique<GuestModePolicyHandler>());
   handlers->AddHandler(std::make_unique<headless::HeadlessModePolicyHandler>());
@@ -2214,6 +2222,12 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   handlers->AddHandler(std::make_unique<LocalSyncPolicyHandler>());
   handlers->AddHandler(std::make_unique<ThemeColorPolicyHandler>());
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
+          key::kBrowserContextAwareAccessSignalsAllowlist,
+          enterprise_connectors::kBrowserContextAwareAccessSignalsAllowlistPref,
+          chrome_schema));
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)

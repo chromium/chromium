@@ -1103,6 +1103,8 @@ policies:
   1102: ReportAppInventory
   1103: ReportAppUsage
   1104: ReportAppUsageCollectionRateMs
+  1105: BrowserContextAwareAccessSignalsAllowlist
+  1106: UserContextAwareAccessSignalsAllowlist
 atomic_groups:
   1: Homepage
   2: RemoteAccess
