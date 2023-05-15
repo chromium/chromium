@@ -791,14 +791,14 @@ class TestScreenEnvironment {
   void SetUp() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-        .UpdateDisplay("0+0-800x800,800+0-800x800");
+        .UpdateDisplay("100+100-801x802,901+0-802x803");
 #elif BUILDFLAG(IS_MAC)
     virtual_display_mac_util_ =
         std::make_unique<display::test::VirtualDisplayMacUtil>();
     display_id_ = virtual_display_mac_util_->AddDisplay(
         1, display::test::VirtualDisplayMacUtil::k1680x1050);
 #else
-    screen_.display_list().AddDisplay({2, gfx::Rect(800, 0, 800, 800)},
+    screen_.display_list().AddDisplay({2, gfx::Rect(901, 0, 802, 803)},
                                       display::DisplayList::Type::NOT_PRIMARY);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     ASSERT_GE(display::Screen::GetScreen()->GetNumDisplays(), 2);
@@ -815,7 +815,7 @@ class TestScreenEnvironment {
   void RemoveSecondDisplay() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-        .UpdateDisplay("0+0-800x800");
+        .UpdateDisplay("100+100-801x802");
 #elif BUILDFLAG(IS_MAC)
     virtual_display_mac_util_->RemoveDisplay(display_id_);
 #else

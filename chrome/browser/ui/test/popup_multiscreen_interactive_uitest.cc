@@ -83,7 +83,7 @@ class PopupMultiScreenTest : public PopupTestBase,
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-        .UpdateDisplay("100+100-801x802,901+100-802x802");
+        .UpdateDisplay("100+100-801x802,901+100-802x803");
     return true;
 #elif BUILDFLAG(IS_MAC)
     if (display::test::VirtualDisplayMacUtil::IsAPIAvailable()) {
