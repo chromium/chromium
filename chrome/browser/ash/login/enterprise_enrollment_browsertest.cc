@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/browser_process.h"
-#include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
@@ -41,31 +40,6 @@ constexpr char kPartitionAttribute[] = ".partition";
 constexpr char kEnrollmentUI[] = "enterprise-enrollment";
 
 const test::UIPath kWebview = {kEnrollmentUI, "step-signin", "signin-frame"};
-
-class MockAuthPolicyClient : public FakeAuthPolicyClient {
- public:
-  MockAuthPolicyClient() = default;
-  ~MockAuthPolicyClient() override = default;
-  void JoinAdDomain(const authpolicy::JoinDomainRequest& request,
-                    int password_fd,
-                    JoinCallback callback) override {
-    if (expected_request_) {
-      ASSERT_EQ(expected_request_->SerializeAsString(),
-                request.SerializeAsString());
-      expected_request_.reset();
-    }
-    FakeAuthPolicyClient::JoinAdDomain(request, password_fd,
-                                       std::move(callback));
-  }
-
-  void set_expected_request(
-      std::unique_ptr<authpolicy::JoinDomainRequest> expected_request) {
-    expected_request_ = std::move(expected_request);
-  }
-
- private:
-  std::unique_ptr<authpolicy::JoinDomainRequest> expected_request_;
-};
 
 }  // namespace
 
