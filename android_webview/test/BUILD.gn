@@ -4,6 +4,7 @@
 
 import("//android_webview/system_webview_apk_tmpl.gni")
 import("//android_webview/variables.gni")
+import("//build/config/android/jni.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/python.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -143,6 +144,7 @@ android_apk("webview_instrumentation_apk") {
   product_config_java_packages = [ webview_product_config_java_package ]
 
   shared_libraries = [ ":libstandalonelibwebviewchromium" ]
+  srcjar_deps = [ ":libstandalonelibwebviewchromium__jni_registration" ]
 
   command_line_flags_file = "android-webview-command-line"
 }
@@ -198,7 +200,7 @@ android_library("draw_fn_impl_java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
-shared_library("libstandalonelibwebviewchromium") {
+shared_library_with_jni("libstandalonelibwebviewchromium") {
   testonly = true
   sources = [
     "shell/src/draw_fn/allocator.cc",
@@ -230,6 +232,7 @@ shared_library("libstandalonelibwebviewchromium") {
   libs = [ "android" ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   configs += [ "//build/config/android:hide_all_but_jni" ]
+  java_targets = [ ":webview_instrumentation_apk" ]
 }
 
 instrumentation_test_apk("webview_instrumentation_test_apk") {
@@ -493,6 +496,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//android_webview/test/embedded_test_server:aw_net_test_support_apk",
     "//net/android:net_test_support_apk",
   ]
+  srcjar_deps = [ ":libstandalonelibwebviewchromium__jni_registration" ]
 }
 
 android_library("webview_instrumentation_test_mock_services_java") {

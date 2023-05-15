@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/jni.gni")
 import("//build/config/android/rules.gni")
 import("//chrome/android/modules/buildflags.gni")
 
@@ -22,10 +23,10 @@ group("native") {
   deps = [ ":test_dummy" ]
 }
 
-component("test_dummy") {
+component_with_jni("test_dummy") {
+  java_targets = [ ":java" ]
   sources = [ "entrypoints.cc" ]
   deps = [
-    ":jni_registration($default_toolchain)",
     "//base",
     "//chrome/browser/test_dummy/internal:native",
   ]
@@ -34,17 +35,7 @@ component("test_dummy") {
   if (use_native_partitions) {
     cflags = [ "-fsymbol-partition=test_dummy_partition" ]
   }
-}
-
-if (current_toolchain == default_toolchain) {
-  generate_jni_registration("jni_registration") {
-    no_transitive_deps = true
-    targets = [ "//chrome/browser/test_dummy/internal:java" ]
-    manual_jni_registration = true
-    namespace = "test_dummy"
-    module_name = "test_dummy"
-    if (allow_jni_multiplexing) {
-      enable_jni_multiplexing = true
-    }
-  }
+  manual_jni_registration = true
+  namespace = "test_dummy"
+  module_name = "test_dummy"
 }

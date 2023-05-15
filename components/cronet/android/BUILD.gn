@@ -49,7 +49,7 @@ generate_jni("cronet_jni_headers") {
 }
 
 generate_jni_registration("cronet_jni_registration") {
-  targets = [ ":cronet_impl_native_base_java" ]
+  java_targets = [ ":cronet_impl_native_base_java" ]
   manual_jni_registration = true
 
   # JNI generated is used for test and non-test apks.
@@ -1177,6 +1177,10 @@ instrumentation_test_apk("cronet_test_instrumentation_apk") {
       "test/proguard.cfg",
     ]
   }
+  srcjar_deps = [
+    ":cronet_jni_registration",
+    ":cronet_tests_jni_registration",
+  ]
 }
 
 android_resources("cronet_smoketests_platform_only_apk_resources") {
@@ -1219,6 +1223,10 @@ instrumentation_test_apk(
       "test/proguard.cfg",
     ]
   }
+
+  # There is no native in this apk. However, since we depend on //base, we
+  # need something that provides a GEN_JNI, as //base uses GEN_JNI.
+  srcjar_deps = [ ":cronet_jni_registration" ]
 }
 
 instrumentation_test_apk(
@@ -1254,6 +1262,10 @@ instrumentation_test_apk(
       "test/proguard.cfg",
     ]
   }
+
+  # There is no native in this apk. However, since we depend on //base, we
+  # need something that provides a GEN_JNI, as //base uses GEN_JNI.
+  srcjar_deps = [ ":cronet_jni_registration" ]
 }
 
 android_apk("cronet_perf_test_apk") {
@@ -1292,6 +1304,10 @@ android_apk("cronet_perf_test_apk") {
     ]
     enable_proguard_checks = false
   }
+  srcjar_deps = [
+    ":cronet_jni_registration",
+    ":cronet_tests_jni_registration",
+  ]
 }
 
 test("cronet_unittests_android") {
@@ -1376,7 +1392,7 @@ android_java_prebuilt("repackage_test_jars_without_jni_java") {
 
 # ...then, generate the final, merged GEN_JNI class...
 generate_jni_registration("cronet_tests_jni_registration") {
-  targets = _test_deps
+  java_targets = _test_deps
   manual_jni_registration = true
   testonly = true
   module_name = "cronet_tests"

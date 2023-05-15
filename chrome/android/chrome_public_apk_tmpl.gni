@@ -551,32 +551,48 @@ template("chrome_common_apk_or_module_tmpl") {
       shared_libraries += invoker.shared_libraries
     } else if (_is_test) {
       shared_libraries += [ "//chrome/android:libchromefortest" ]
-    } else if (_is_monochrome) {
+      srcjar_deps = [ "//chrome/android:libchromefortest__jni_registration($default_toolchain)" ]
+    } else if (_is_monochrome || _is_trichrome) {
+      # We are only doing the jni_registrations for Trichrome - the actual
+      # native libraries will end up in the Trichrome library.
       if (android_64bit_target_cpu) {
         # Build //android_webview:monochrome with the opposite bitness that
         # Chrome runs in.
         if (_is_64_bit_browser) {
-          shared_libraries += [ "//chrome/android:libmonochrome_64" ]
-          if (_include_32_bit_webview) {
-            secondary_abi_shared_libraries += [ "//android_webview:monochrome_64($android_secondary_abi_toolchain)" ]
-          }
-          if (build_hwasan_splits) {
-            shared_libraries +=
-                [ "//chrome/android:libmonochrome_64($_hwasan_toolchain)" ]
+          srcjar_deps = [ "//chrome/android:libmonochrome_64__jni_registration($default_toolchain)" ]
+          if (_is_monochrome) {
+            shared_libraries += [ "//chrome/android:libmonochrome_64" ]
+            if (_include_32_bit_webview) {
+              secondary_abi_shared_libraries += [ "//android_webview:monochrome_64($android_secondary_abi_toolchain)" ]
+            }
+            if (build_hwasan_splits) {
+              shared_libraries +=
+                  [ "//chrome/android:libmonochrome_64($_hwasan_toolchain)" ]
+            }
           }
         } else {
-          if (_include_64_bit_webview) {
-            shared_libraries += [ "//android_webview:monochrome" ]
+          srcjar_deps = [ "//chrome/android:libmonochrome__jni_registration($android_secondary_abi_toolchain)" ]
+          if (_is_monochrome) {
+            if (_include_64_bit_webview) {
+              shared_libraries += [ "//android_webview:monochrome" ]
+            }
+            secondary_abi_shared_libraries += [ "//chrome/android:libmonochrome($android_secondary_abi_toolchain)" ]
           }
-          secondary_abi_shared_libraries += [
-            "//chrome/android:libmonochrome($android_secondary_abi_toolchain)",
-          ]
         }
       } else {
-        shared_libraries += [ "//chrome/android:libmonochrome" ]
+        srcjar_deps = [ "//chrome/android:libmonochrome__jni_registration($default_toolchain)" ]
+        if (_is_monochrome) {
+          shared_libraries += [ "//chrome/android:libmonochrome" ]
+        }
       }
     } else if (!_is_trichrome) {
       shared_libraries += [ "//chrome/android:libchrome" ]
+      srcjar_deps =
+          [ "//chrome/android:libchrome__jni_registration($default_toolchain)" ]
+    }
+
+    if (defined(invoker.srcjar_deps)) {
+      srcjar_deps += invoker.srcjar_deps
     }
 
     if (enable_arcore) {
@@ -725,6 +741,7 @@ template("chrome_common_apk_or_module_tmpl") {
                                  "secondary_abi_loadable_modules",
                                  "secondary_abi_shared_libraries",
                                  "shared_libraries",
+                                 "srcjar_deps",
                                  "version_code",
                                  "version_name",
                                ])

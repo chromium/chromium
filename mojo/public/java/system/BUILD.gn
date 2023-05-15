@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/jni.gni")
 import("//build/config/android/rules.gni")
 
 group("system") {
@@ -136,7 +137,7 @@ android_library("mojo_javatests") {
   data = [ "//mojo/public/interfaces/bindings/tests/data/validation/" ]
 }
 
-shared_library("mojo_java_unittests") {
+shared_library_with_jni("mojo_java_unittests") {
   testonly = true
 
   sources = [
@@ -158,6 +159,7 @@ shared_library("mojo_java_unittests") {
   defines = [ "UNIT_TEST" ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   configs += [ "//build/config/android:hide_all_but_jni" ]
+  java_targets = [ ":mojo_test_apk__test_apk" ]
 }
 
 instrumentation_test_apk("mojo_test_apk") {
@@ -170,4 +172,5 @@ instrumentation_test_apk("mojo_test_apk") {
     "//mojo/public/java:bindings_java",
   ]
   shared_libraries = [ ":mojo_java_unittests" ]
+  srcjar_deps = [ ":mojo_java_unittests__jni_registration" ]
 }

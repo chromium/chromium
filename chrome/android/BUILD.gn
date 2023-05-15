@@ -60,6 +60,11 @@ if (current_toolchain == default_toolchain) {
 
   template("chrome_public_bundle") {
     _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
+    if (_is_monochrome) {
+      _module_descs = monochrome_module_descs
+    } else {
+      _module_descs = chrome_module_descs
+    }
 
     _base_module_target_name = "${invoker.target_name}__base_bundle_module"
     chrome_public_apk_or_module_tmpl(_base_module_target_name) {
@@ -76,7 +81,13 @@ if (current_toolchain == default_toolchain) {
                                "resource_ids_provider_dep",
                              ])
       target_type = "android_app_bundle_module"
-      bundle_target = ":${invoker.target_name}"
+
+      srcjar_deps = []
+      foreach(_module_desc, _module_descs) {
+        if (defined(_module_desc.jni_registration)) {
+          srcjar_deps += [ _module_desc.jni_registration ]
+        }
+      }
 
       if (defined(invoker.expected_android_manifest_template)) {
         expected_android_manifest =
@@ -108,11 +119,7 @@ if (current_toolchain == default_toolchain) {
                              ])
       base_module_target = ":$_base_module_target_name"
       manifest_package = chrome_public_manifest_package
-      if (_is_monochrome) {
-        module_descs = monochrome_module_descs
-      } else {
-        module_descs = chrome_module_descs
-      }
+      module_descs = _module_descs
       chrome_deps = [ ":delegate_public_impl_java" ]
     }
   }
@@ -3500,6 +3507,7 @@ template("libchrome_impl") {
       deps += [ "//chrome/browser/android/vr:module_factory" ]
     }
 
+    java_targets = [ "//chrome/android:chrome_public_apk" ]
     forward_variables_from(invoker, "*", [ "deps" ])
   }
 }
@@ -3549,9 +3557,6 @@ chrome_common_shared_library("libchromefortest") {
   if (enable_vr) {
     deps += [ "//chrome/browser/android/vr:test_support" ]
   }
-  if (allow_jni_multiplexing) {
-    enable_jni_multiplexing = true
-  }
 
   # Make this a partitioned library, since some partitioned code is linked in
   # (otherwise, the library will warn at build time that it contains multiple
@@ -3559,6 +3564,19 @@ chrome_common_shared_library("libchromefortest") {
   # required or packaged into the APK. This can be removed if LLD starts
   # supporting a "no partitions" argument (https://crbug.com/1021108).
   module_descs = []
+
+  java_targets = [
+    "//chrome/android:chrome_public_unit_test_apk__test_apk",
+    "//chrome/android:chrome_public_test_apk__test_apk",
+    "//chrome/test/android:chrome_java_test_pagecontroller_tests__test_apk",
+    "//chrome/test/android:chrome_java_test_wpr_tests__test_apk",
+    "//chrome/test/android:chrome_java_test_feed_test__test_apk",
+    "//chrome/test/android:chrome_webapk_integration_tests__test_apk",
+    "//chrome/test/android:chrome_java_test_pagecontroller_codelab__test_apk",
+  ]
+  if (enable_vr) {
+    java_targets += [ "//chrome/android:chrome_public_test_vr_apk__test_apk" ]
+  }
 }
 
 # Monochrome equivalent of Chrome's APK or bundle library template.
@@ -3582,6 +3600,11 @@ template("libmonochrome_apk_or_bundle_tmpl") {
 
     if (allow_jni_multiplexing) {
       enable_jni_multiplexing = true
+    }
+    if (android_64bit_target_cpu) {
+      java_targets = [ "//chrome/android:monochrome_64_public_bundle" ]
+    } else {
+      java_targets = [ "//chrome/android:monochrome_public_bundle" ]
     }
 
     if (enable_vr) {
