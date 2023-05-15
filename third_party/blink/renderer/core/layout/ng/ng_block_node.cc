@@ -1663,7 +1663,7 @@ void NGBlockNode::CopyFragmentItemsToLayoutBox(
         if (UNLIKELY(layout_box->HasSelfPaintingLayer()))
           layout_box->Layer()->SetNeedsVisualOverflowRecalc();
 #if DCHECK_IS_ON()
-        layout_box->InvalidateVisualOverflow();
+        layout_box->InvalidateVisualOverflowForDCheck();
 #endif
         continue;
       }

@@ -1920,8 +1920,31 @@ void LayoutObject::RecalcNormalFlowChildVisualOverflowIfNeeded() {
   RecalcVisualOverflow();
 }
 
-#if DCHECK_IS_ON()
 void LayoutObject::InvalidateVisualOverflow() {
+  if (!IsInLayoutNGInlineFormattingContext() && !IsLayoutNGObject() &&
+      !IsLayoutBlock() && !NeedsLayout()) {
+    // TODO(crbug.com/1128199): This is still needed because
+    // RecalcVisualOverflow() does not actually compute the visual overflow
+    // for inline elements (legacy layout). However in LayoutNG
+    // RecalcInlineChildrenInkOverflow() is called and visual overflow is
+    // recomputed properly so we don't need this (see crbug.com/1043927).
+    SetNeedsLayoutAndIntrinsicWidthsRecalc(
+        layout_invalidation_reason::kStyleChange);
+  } else {
+    if (IsInLayoutNGInlineFormattingContext() && !NeedsLayout()) {
+      if (auto* text = DynamicTo<LayoutText>(this)) {
+        text->InvalidateVisualOverflow();
+      }
+    }
+    PaintingLayer()->SetNeedsVisualOverflowRecalc();
+    // TODO(crbug.com/1385848): This looks like an over-invalidation.
+    // visual overflow change should not require checking for layout change.
+    SetShouldCheckForPaintInvalidation();
+  }
+}
+
+#if DCHECK_IS_ON()
+void LayoutObject::InvalidateVisualOverflowForDCheck() {
   if (auto* box = DynamicTo<LayoutBox>(this)) {
     for (const NGPhysicalBoxFragment& fragment : box->PhysicalFragments())
       fragment.GetMutableForPainting().InvalidateInkOverflow();
@@ -2600,27 +2623,9 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
   }
 
   if (diff.NeedsRecomputeVisualOverflow()) {
-    if (!IsInLayoutNGInlineFormattingContext() && !IsLayoutNGObject() &&
-        !IsLayoutBlock() && !NeedsLayout()) {
-      // TODO(crbug.com/1128199): This is still needed because
-      // RecalcVisualOverflow() does not actually compute the visual overflow
-      // for inline elements (legacy layout). However in LayoutNG
-      // RecalcInlineChildrenInkOverflow() is called and visual overflow is
-      // recomputed properly so we don't need this (see crbug.com/1043927).
-      SetNeedsLayoutAndIntrinsicWidthsRecalc(
-          layout_invalidation_reason::kStyleChange);
-    } else {
-      if (IsInLayoutNGInlineFormattingContext() && !NeedsLayout()) {
-        if (auto* text = DynamicTo<LayoutText>(this))
-          text->InvalidateVisualOverflow();
-      }
-      PaintingLayer()->SetNeedsVisualOverflowRecalc();
-      // TODO(crbug.com/1385848): This looks like an over-invalidation.
-      // visual overflow change should not require checking for layout change.
-      SetShouldCheckForPaintInvalidation();
-    }
-#if DCHECK_IS_ON()
     InvalidateVisualOverflow();
+#if DCHECK_IS_ON()
+    InvalidateVisualOverflowForDCheck();
 #endif
   }
 
@@ -4944,7 +4949,7 @@ void LayoutObject::MarkSelfPaintingLayerForVisualOverflowRecalc() {
       box_model_object->Layer()->SetNeedsVisualOverflowRecalc();
   }
 #if DCHECK_IS_ON()
-  InvalidateVisualOverflow();
+  InvalidateVisualOverflowForDCheck();
 #endif
 }
 

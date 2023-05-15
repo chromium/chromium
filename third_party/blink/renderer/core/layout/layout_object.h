@@ -2209,6 +2209,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   virtual RecalcLayoutOverflowResult RecalcLayoutOverflow();
 
+  // Invalidate visual overflow, using a method that varies based
+  // the object type and state of layout.
+  void InvalidateVisualOverflow();
+
   // Recalculates visual overflow for this object and non-self-painting
   // PaintLayer descendants.
   virtual void RecalcVisualOverflow();
@@ -2216,7 +2220,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 #if DCHECK_IS_ON()
   // Enables DCHECK to ensure that the visual overflow for |this| is computed.
   // The actual invalidation is maintained in |PaintLayer|.
-  void InvalidateVisualOverflow();
+  void InvalidateVisualOverflowForDCheck();
 #endif
 
   // Subclasses must reimplement this method to compute the size and position
