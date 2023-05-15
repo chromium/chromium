@@ -9,15 +9,10 @@
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
 
-#import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/app_state_observer.h"
-
+// Passes information from the application level to the push notification
+// infrastructure.
 @interface PushNotificationDelegate
-    : NSObject <UNUserNotificationCenterDelegate, AppStateObserver>
-
-- (instancetype)initWithAppState:(AppState*)appState NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
+    : NSObject <UNUserNotificationCenterDelegate>
 
 // Passes the contents of an incoming push notification to the appropriate
 // `PushNotificationClient` for processing and logs the time it takes for the
@@ -29,6 +24,9 @@
 // token this function aggregates all the necessary information and registers
 // the device to the Push Notification server.
 - (void)applicationDidRegisterWithAPNS:(NSData*)deviceToken;
+
+// Called when the Browser objects are ready to use.
+- (void)browserDidBecomeReady;
 @end
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_PUSH_NOTIFICATION_DELEGATE_H_
