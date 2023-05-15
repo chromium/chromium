@@ -11,6 +11,7 @@
 #include "gin/gin_export.h"
 #include "gin/time_clamper.h"
 #include "gin/v8_platform_page_allocator.h"
+#include "gin/v8_platform_thread_isolated_allocator.h"
 #include "v8/include/v8-platform.h"
 
 namespace gin {
@@ -31,6 +32,9 @@ class GIN_EXPORT V8Platform : public v8::Platform {
   // enabling Arm's Branch Target Instructions for executable pages. This is
   // verified in the tests for gin::PageAllocator.
   PageAllocator* GetPageAllocator() override;
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+  ThreadIsolatedAllocator* GetThreadIsolatedAllocator() override;
+#endif
   void OnCriticalMemoryPressure() override;
   v8::ZoneBackingAllocator* GetZoneBackingAllocator() override;
 #endif

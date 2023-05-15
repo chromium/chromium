@@ -12,6 +12,7 @@ include_rules = [
   # For loading V8's initial snapshot from external files.
   "+gin/public/isolate_holder.h",
   "+gin/public/snapshot_fd_data.h",
+  "+gin/thread_isolation.h",
   "+gin/v8_initializer.h",
   "+services/network/public/cpp/features.h",
   "+services/resource_coordinator/public",

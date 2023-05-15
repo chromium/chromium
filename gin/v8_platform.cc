@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_job.h"
 #include "base/task/task_traits.h"
@@ -25,6 +26,8 @@
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
 #include "gin/per_isolate_data.h"
+#include "gin/thread_isolation.h"
+#include "gin/v8_platform_thread_isolated_allocator.h"
 #include "v8_platform_page_allocator.h"
 
 namespace gin {
@@ -325,6 +328,15 @@ V8Platform::~V8Platform() = default;
 PageAllocator* V8Platform::GetPageAllocator() {
   return g_page_allocator.Pointer();
 }
+
+#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
+ThreadIsolatedAllocator* V8Platform::GetThreadIsolatedAllocator() {
+  if (!GetThreadIsolationData().Initialized()) {
+    return nullptr;
+  }
+  return GetThreadIsolationData().allocator.get();
+}
+#endif  // BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
 void V8Platform::OnCriticalMemoryPressure() {
 // We only have a reservation on 32-bit Windows systems.
