@@ -122,6 +122,9 @@ const char* CacheCounter::GetPrefName() const {
 }
 
 void CacheCounter::Count() {
+  // Cancel existing requests.
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   // disk_cache::Backend currently does not implement counting for subsets of
   // cache, only for the entire cache. Thus, ignore the time period setting and
   // always request counting for the unbounded time interval. It is up to the
