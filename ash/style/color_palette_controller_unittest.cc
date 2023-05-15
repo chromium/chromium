@@ -332,7 +332,7 @@ TEST_F(ColorPaletteControllerTest, GenerateSampleScheme) {
       results,
       testing::UnorderedElementsAre(
           Sample(ColorScheme::kTonalSpot, SkColorSetRGB(0xff, 0xb3, 0xae)),
-          Sample(ColorScheme::kExpressive, SkColorSetRGB(0xa0, 0xd4, 0x8f))));
+          Sample(ColorScheme::kExpressive, SkColorSetRGB(0xc8, 0xbf, 0xff))));
 }
 
 TEST_F(ColorPaletteControllerTest, GenerateSampleScheme_AllValues_Teal) {

@@ -223,7 +223,7 @@ std::unique_ptr<Palette> GeneratePalette(SkColor seed_color,
           std::to_array<double>({120, 120, 20, 45, 20, 15, 20, 120, 120});
       const base::flat_map<double, double> tertiary_hues_to_rotations =
           Zip(hues, tertiary_rotations);
-      config = {Transform(120.0, 40.0),
+      config = {Transform(-90, 40.0),
                 Transform(0.0, 24.0, secondary_hues_to_rotations),
                 Transform(0.0, 32.0, tertiary_hues_to_rotations), Chroma(8.0),
                 Chroma(12.0)};
