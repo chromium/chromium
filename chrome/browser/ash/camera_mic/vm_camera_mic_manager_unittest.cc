@@ -330,7 +330,7 @@ TEST_F(VmCameraMicManagerPrivacyIndicatorsTest, Notification) {
 TEST_F(VmCameraMicManagerPrivacyIndicatorsTest, PrivacyIndicatorsView) {
   // Make sure privacy indicators work on multiple displays.
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
-      .UpdateDisplay("800x800,801+0-800x800");
+      .UpdateDisplay("800x700,801+0-800x700");
 
   SetCameraAccessing(kPluginVm, false);
   SetCameraPrivacyIsOn(false);

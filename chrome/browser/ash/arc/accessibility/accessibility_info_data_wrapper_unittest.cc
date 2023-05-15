@@ -89,7 +89,7 @@ TEST_F(AccessibilityInfoDataWrapperTest, NonRootNodeBounds) {
 }
 
 TEST_F(AccessibilityInfoDataWrapperTest, RootNodeBounds) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("400x300");
 
   auto shell_surface = exo::test::ShellSurfaceBuilder({200, 200})
                            .SetGeometry(gfx::Rect(10, 10, 200, 200))
@@ -107,7 +107,7 @@ TEST_F(AccessibilityInfoDataWrapperTest, RootNodeBounds) {
 }
 
 TEST_F(AccessibilityInfoDataWrapperTest, RootNodeBoundsOnExternalDisplay) {
-  UpdateDisplay("400x400,500x500");
+  UpdateDisplay("400x300,600x500");
 
   auto shell_surface = exo::test::ShellSurfaceBuilder({200, 200})
                            .SetGeometry(gfx::Rect(410, 10, 200, 200))
@@ -125,7 +125,7 @@ TEST_F(AccessibilityInfoDataWrapperTest, RootNodeBoundsOnExternalDisplay) {
 }
 
 TEST_F(AccessibilityInfoDataWrapperTest, BoundsScalingPiArc) {
-  UpdateDisplay("400x400*2");  // 2x device scale factor.
+  UpdateDisplay("400x300*2");  // 2x device scale factor.
 
   // With default_scale_cancellation, Android has default (1x) scale factor.
   wm_helper->SetDefaultScaleCancellation(true);
@@ -146,7 +146,7 @@ TEST_F(AccessibilityInfoDataWrapperTest, BoundsScalingPiArc) {
 }
 
 TEST_F(AccessibilityInfoDataWrapperTest, BoundsScalingFromRvcArcAndLater) {
-  UpdateDisplay("400x400*2");  // 2x device scale factor.
+  UpdateDisplay("400x300*2");  // 2x device scale factor.
 
   // Without default_scale_cancellation, Android use the same (2x) scale factor.
   wm_helper->SetDefaultScaleCancellation(false);
