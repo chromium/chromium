@@ -6,6 +6,10 @@
 
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @implementation PasswordControllerDriverHelper {
   web::WebState* _webState;
 }
