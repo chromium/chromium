@@ -220,7 +220,7 @@ void ShowReauthForAccount(Profile* profile,
   ::GetAccountManagerFacade(profile->GetPath().value())
       ->ShowReauthAccountDialog(account_manager::AccountManagerFacade::
                                     AccountAdditionSource::kContentAreaReauth,
-                                email, base::OnceClosure());
+                                email, base::DoNothing());
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Pass `false` for `enable_sync`, as this function is not expected to start a
   // sync setup flow after the reauth.

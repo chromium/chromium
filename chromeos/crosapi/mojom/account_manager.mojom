@@ -7,7 +7,7 @@
 // versioning. Bump this value before making a change to any of the following
 // interfaces / enums.
 //
-// Next MinVersion: 13
+// Next MinVersion: 14
 
 module crosapi.mojom;
 
@@ -236,9 +236,11 @@ interface AccountManager {
     [MinVersion=8] AccountAdditionOptions? add_account_options) =>
     (AccountUpsertionResult result);
 
-  // Launches account reauthentication dialog for provided `email`.
+  // Launches account reauthentication dialog for provided `email` and returns
+  // `result` with the reauthenticated/added account.
   [MinVersion = 3]
-  ShowReauthAccountDialog@4(string email) => ();
+  ShowReauthAccountDialog@4(string email) =>
+    ([MinVersion=13]AccountUpsertionResult? result);
 
   // Launches OS Settings > Accounts.
   [MinVersion = 4]

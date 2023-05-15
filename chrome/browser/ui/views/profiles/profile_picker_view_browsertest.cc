@@ -523,7 +523,7 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
       crosapi::AccountManagerMojoService* mojo_service =
           MaybeGetAshAccountManagerMojoServiceForTests();
       DCHECK(mojo_service);
-      mojo_service->OnAccountAdditionFinishedForTesting(
+      mojo_service->OnAccountUpsertionFinishedForTesting(
           account_manager::AccountUpsertionResult::FromAccount(
               {kAccountKey, email}));
       fake_ui->CloseDialog();

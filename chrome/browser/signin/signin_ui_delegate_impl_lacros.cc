@@ -120,7 +120,7 @@ void SigninUiDelegateImplLacros::ShowReauthUI(
 
   AccountReconcilor* account_reconcilor =
       AccountReconcilorFactory::GetForProfile(profile);
-  base::OnceClosure reauth_completed_closure =
+  auto reauth_completed_closure =
       base::BindOnce(&SigninUiDelegateImplLacros::OnReauthComplete,
                      // base::Unretained() is fine because
                      // SigninUiDelegateImplLacros is a singleton.
@@ -169,7 +169,13 @@ void SigninUiDelegateImplLacros::OnReauthComplete(
     const base::FilePath& profile_path,
     signin_metrics::AccessPoint access_point,
     signin_metrics::PromoAction promo_action,
-    const std::string& email) {
+    const std::string& email,
+    const account_manager::AccountUpsertionResult& result) {
+  if (result.status() !=
+      account_manager::AccountUpsertionResult::Status::kSuccess) {
+    return;
+  }
+
   Profile* profile =
       g_browser_process->profile_manager()->GetProfileByPath(profile_path);
   if (!profile)

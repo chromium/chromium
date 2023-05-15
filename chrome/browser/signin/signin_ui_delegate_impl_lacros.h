@@ -56,7 +56,8 @@ class SigninUiDelegateImplLacros : public SigninUiDelegate {
       const base::FilePath& profile_path,
       signin_metrics::AccessPoint access_point,
       signin_metrics::PromoAction promo_action,
-      const std::string& email);
+      const std::string& email,
+      const account_manager::AccountUpsertionResult& result);
 };
 
 }  // namespace signin_ui_util

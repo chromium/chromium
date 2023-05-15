@@ -179,10 +179,12 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
         account_manager::ToMojoAccountUpsertionResult(*upsertion_result_));
   }
 
-  void ShowReauthAccountDialog(const std::string& email,
-                               base::OnceClosure closure) override {
+  void ShowReauthAccountDialog(
+      const std::string& email,
+      ShowReauthAccountDialogCallback callback) override {
     show_reauth_account_dialog_calls_++;
-    std::move(closure).Run();
+    std::move(callback).Run(
+        account_manager::ToMojoAccountUpsertionResult(*upsertion_result_));
   }
 
   void ShowManageAccountsSettings() override {
@@ -605,11 +607,16 @@ TEST_F(AccountManagerFacadeImplTest,
 TEST_F(AccountManagerFacadeImplTest, ShowReauthAccountDialogCallsMojo) {
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
+
+  account_manager().SetAccountUpsertionResult(
+      account_manager::AccountUpsertionResult::FromStatus(
+          account_manager::AccountUpsertionResult::Status::
+              kUnexpectedResponse));
   EXPECT_EQ(0, account_manager().show_reauth_account_dialog_calls());
   account_manager_facade->ShowReauthAccountDialog(
       account_manager::AccountManagerFacade::AccountAdditionSource::
-          kSettingsAddAccountButton,
-      kTestAccountEmail, base::OnceClosure());
+          kContentAreaReauth,
+      kTestAccountEmail, base::DoNothing());
   account_manager_facade->FlushMojoForTesting();
   EXPECT_EQ(1, account_manager().show_reauth_account_dialog_calls());
 }
@@ -618,10 +625,14 @@ TEST_F(AccountManagerFacadeImplTest, ShowReauthAccountDialogUMA) {
   base::HistogramTester tester;
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
+
+  auto result = account_manager::AccountUpsertionResult::FromStatus(
+      account_manager::AccountUpsertionResult::Status::kAlreadyInProgress);
+  account_manager().SetAccountUpsertionResult(result);
   auto source = AccountManagerFacade::AccountAdditionSource::kContentAreaReauth;
 
   account_manager_facade->ShowReauthAccountDialog(source, kTestAccountEmail,
-                                                  base::OnceClosure());
+                                                  base::DoNothing());
   account_manager_facade->FlushMojoForTesting();
 
   // Check that UMA stats were sent.

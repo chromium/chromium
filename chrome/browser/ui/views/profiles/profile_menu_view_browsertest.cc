@@ -98,6 +98,7 @@
 #include "chrome/browser/lacros/account_manager/fake_account_manager_ui_dialog_waiter.h"
 #include "chrome/browser/signin/signin_ui_delegate_impl_lacros.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #endif
 
 namespace {
@@ -738,6 +739,15 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSigninErrorButtonTest, OpenReauthDialog) {
       .WillOnce([&loop]() { loop.Quit(); });
 
   // Complete reauth.
+  // Fake that this account was successfully reauthenticated via the UI.
+  crosapi::AccountManagerMojoService* mojo_service =
+      MaybeGetAshAccountManagerMojoServiceForTests();
+  DCHECK(mojo_service);
+  account_manager::AccountKey kAccountKey{account_info_.gaia,
+                                          account_manager::AccountType::kGaia};
+  mojo_service->OnAccountUpsertionFinishedForTesting(
+      account_manager::AccountUpsertionResult::FromAccount(
+          {kAccountKey, account_info_.email}));
   account_manager_ui->CloseDialog();
 
   // Wait until the Sync confirmation is shown.

@@ -62,9 +62,11 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
       AccountAdditionSource source,
       base::OnceCallback<void(const account_manager::AccountUpsertionResult&
                                   result)> callback) override;
-  void ShowReauthAccountDialog(AccountAdditionSource source,
-                               const std::string& email,
-                               base::OnceClosure callback) override;
+  void ShowReauthAccountDialog(
+      AccountAdditionSource source,
+      const std::string& email,
+      base::OnceCallback<void(const account_manager::AccountUpsertionResult&
+                                  result)> callback) override;
   void ShowManageAccountsSettings() override;
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const AccountKey& account,
@@ -142,11 +144,11 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   void OnReceiverReceived(
       mojo::PendingReceiver<AccountManagerObserver> receiver);
   // Callback for `crosapi::mojom::AccountManager::ShowAddAccountDialog`.
-  void OnShowAddAccountDialogFinished(
+  void OnSigninDialogActionFinished(
       base::OnceCallback<
           void(const account_manager::AccountUpsertionResult& result)> callback,
       crosapi::mojom::AccountUpsertionResultPtr mojo_result);
-  void FinishAddAccount(
+  void FinishUpsertAccount(
       base::OnceCallback<
           void(const account_manager::AccountUpsertionResult& result)> callback,
       const account_manager::AccountUpsertionResult& result);

@@ -542,7 +542,7 @@ void ArcAuthService::HandleUpdateCredentialsRequest(const std::string& email) {
   ::GetAccountManagerFacade(profile_->GetPath().value())
       ->ShowReauthAccountDialog(
           account_manager::AccountManagerFacade::AccountAdditionSource::kArc,
-          email, base::OnceClosure());
+          email, base::DoNothing());
 }
 
 void ArcAuthService::OnRefreshTokenUpdatedForAccount(
