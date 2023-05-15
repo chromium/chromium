@@ -1954,7 +1954,7 @@ BASE_FEATURE(kRgbKeyboard, "RgbKeyboard", base::FEATURE_ENABLED_BY_DEFAULT);
 // jelly-colors flag to also be enabled.
 BASE_FEATURE(kScanningAppJelly,
              "ScanningAppJelly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables screensaver customized running time.
 BASE_FEATURE(kScreenSaverDuration,
