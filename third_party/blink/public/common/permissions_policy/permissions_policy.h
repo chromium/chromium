@@ -26,6 +26,9 @@ struct ResourceRequest;
 
 namespace blink {
 
+class Request;
+class ResourceRequest;
+
 // Permissions Policy is a mechanism for controlling the availability of web
 // platform features in a frame, including all embedded frames. It can be used
 // to remove features, automatically refuse API permission requests, or modify
@@ -249,7 +252,12 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       mojom::PermissionsPolicyFeature feature) const;
 
  private:
+  friend class Request;
+  friend class ResourceRequest;
   friend class PermissionsPolicyTest;
+
+  // List of features that have an explicit opt-in mechanism.
+  static const mojom::PermissionsPolicyFeature defined_opt_in_features_[];
 
   PermissionsPolicy(url::Origin origin,
                     const PermissionsPolicyFeatureList& feature_list);
@@ -277,6 +285,13 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       mojom::PermissionsPolicyFeature feature,
       const url::Origin& origin,
       const std::set<mojom::PermissionsPolicyFeature>& opt_in_features) const;
+
+  // Returns whether or not the given feature is enabled by this policy for a
+  // specific origin, given that the feature is an opt-in feature, and the
+  // subresource request for which we are querying has opted-into this feature.
+  bool IsFeatureEnabledForSubresourceRequestAssumingOptIn(
+      mojom::PermissionsPolicyFeature feature,
+      const url::Origin& origin) const;
 
   bool InheritedValueForFeature(
       const PermissionsPolicy* parent_policy,
