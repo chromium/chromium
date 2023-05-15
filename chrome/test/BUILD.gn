@@ -8573,7 +8573,7 @@ test("unit_tests") {
     deps += [ "//dbus:test_support" ]
   }
 
-  if (is_android || is_chromeos_ash || is_win) {
+  if (is_android || is_chromeos || is_win) {
     sources += [ "../browser/media/protected_media_identifier_permission_context_unittest.cc" ]
   }
 

@@ -31,7 +31,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include <utility>
 
-#include "ash/constants/ash_switches.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -67,7 +66,8 @@ ProtectedMediaIdentifierPermissionContext::GetPermissionStatusInternal(
            << embedding_origin.spec() << ")";
 
   if (!requesting_origin.is_valid() || !embedding_origin.is_valid() ||
-      !IsProtectedMediaIdentifierEnabled()) {
+      !IsProtectedMediaIdentifierEnabled(
+          Profile::FromBrowserContext(browser_context()))) {
     return CONTENT_SETTING_BLOCK;
   }
 
@@ -127,12 +127,13 @@ void ProtectedMediaIdentifierPermissionContext::UpdateTabContext(
 
 // TODO(xhwang): We should consolidate the "protected content" related pref
 // across platforms.
+// static
 bool ProtectedMediaIdentifierPermissionContext::
-    IsProtectedMediaIdentifierEnabled() const {
+    IsProtectedMediaIdentifierEnabled(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
-  Profile* profile = Profile::FromBrowserContext(browser_context());
   // Identifier is not allowed in incognito or guest mode.
-  if (profile->IsOffTheRecord() || profile->IsGuestSession()) {
+  if (profile != nullptr &&
+      (profile->IsOffTheRecord() || profile->IsGuestSession())) {
     DVLOG(1) << "Protected media identifier disabled in incognito or guest "
                 "mode.";
     return false;
