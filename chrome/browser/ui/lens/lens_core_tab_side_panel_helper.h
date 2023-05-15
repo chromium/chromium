@@ -7,6 +7,7 @@
 
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace lens {
 
@@ -22,6 +23,11 @@ bool IsInProgressiveWebApp(content::WebContents* web_contents);
 TemplateURLService* GetTemplateURLService(content::WebContents* web_contents);
 
 }  // namespace internal
+
+// Returns the upper bound of the initial content area size of the side panel
+// if the Lens side panel were to be opened or used right now.
+gfx::Size GetSidePanelInitialContentSizeUpperBound(
+    content::WebContents* web_contents);
 
 // Returns if the v2 unified side panel is enabled when Google is the default
 // search engine.
