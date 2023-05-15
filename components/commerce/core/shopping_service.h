@@ -125,8 +125,8 @@ struct ProductInfo {
 
   std::string title;
   GURL image_url;
-  uint64_t product_cluster_id{0};
-  uint64_t offer_id{0};
+  absl::optional<uint64_t> product_cluster_id;
+  absl::optional<uint64_t> offer_id;
   std::string currency_code;
   int64_t amount_micros{0};
   absl::optional<int64_t> previous_amount_micros;

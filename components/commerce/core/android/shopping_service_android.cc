@@ -75,7 +75,9 @@ ShoppingServiceAndroid::GetAvailableProductInfoForUrl(
     info_java_object = Java_ShoppingService_createProductInfo(
         env, ConvertUTF8ToJavaString(env, info->title),
         url::GURLAndroid::FromNativeGURL(env, GURL(info->image_url)),
-        info->product_cluster_id, info->offer_id,
+        info->product_cluster_id.has_value(),
+        info->product_cluster_id.value_or(0), info->offer_id.has_value(),
+        info->offer_id.value_or(0),
         ConvertUTF8ToJavaString(env, info->currency_code), info->amount_micros,
         ConvertUTF8ToJavaString(env, info->country_code),
         info->previous_amount_micros.has_value(),
@@ -95,7 +97,9 @@ void ShoppingServiceAndroid::HandleProductInfoCallback(
     info_java_object = Java_ShoppingService_createProductInfo(
         env, ConvertUTF8ToJavaString(env, info->title),
         url::GURLAndroid::FromNativeGURL(env, GURL(info->image_url)),
-        info->product_cluster_id, info->offer_id,
+        info->product_cluster_id.has_value(),
+        info->product_cluster_id.value_or(0), info->offer_id.has_value(),
+        info->offer_id.value_or(0),
         ConvertUTF8ToJavaString(env, info->currency_code), info->amount_micros,
         ConvertUTF8ToJavaString(env, info->country_code),
         info->previous_amount_micros.has_value(),

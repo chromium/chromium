@@ -217,10 +217,11 @@ void ShoppingListUiTabHelper::HandleProductInfoResponse(
   if (url != web_contents()->GetLastCommittedURL())
     return;
 
-  if (!info.has_value() || info.value().image_url.is_empty())
+  if (!CanTrackPrice(info) || !info.has_value() || info->image_url.is_empty()) {
     return;
+  }
 
-  cluster_id_for_page_.emplace(info->product_cluster_id);
+  cluster_id_for_page_.emplace(info->product_cluster_id.value());
   UpdatePriceTrackingStateFromSubscriptions();
 
   // TODO(1360850): Delay this fetch by possibly waiting until page load has
@@ -269,8 +270,9 @@ void ShoppingListUiTabHelper::SetPriceTrackingState(
             web_contents()->GetLastCommittedURL());
     if (info.has_value()) {
       commerce::SetPriceTrackingStateForClusterId(
-          shopping_service_.get(), bookmark_model_, info->product_cluster_id,
-          enable, std::move(wrapped_callback));
+          shopping_service_.get(), bookmark_model_,
+          info->product_cluster_id.value(), enable,
+          std::move(wrapped_callback));
     }
   }
 }

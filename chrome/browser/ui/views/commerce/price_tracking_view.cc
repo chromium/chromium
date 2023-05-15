@@ -185,10 +185,10 @@ void PriceTrackingView::UpdatePriceTrackingState(const GURL& url) {
     DCHECK(!is_price_track_enabled_);
     absl::optional<commerce::ProductInfo> info =
         service->GetAvailableProductInfoForUrl(url);
-    if (info.has_value()) {
+    if (commerce::CanTrackPrice(info)) {
       commerce::SetPriceTrackingStateForClusterId(
-          service, model, info->product_cluster_id, is_price_track_enabled_,
-          std::move(callback));
+          service, model, info->product_cluster_id.value(),
+          is_price_track_enabled_, std::move(callback));
     }
   }
 }

@@ -22,15 +22,15 @@ public class ShoppingService {
     public static final class ProductInfo {
         public final String title;
         public final GURL imageUrl;
-        public final long productClusterId;
-        public final long offerId;
+        public final Optional<Long> productClusterId;
+        public final Optional<Long> offerId;
         public final String currencyCode;
         public final long amountMicros;
         public final Optional<Long> previousAmountMicros;
         public final String countryCode;
 
-        public ProductInfo(String title, GURL imageUrl, long productClusterId, long offerId,
-                String currencyCode, long amountMicros, String countryCode,
+        public ProductInfo(String title, GURL imageUrl, Optional<Long> productClusterId,
+                Optional<Long> offerId, String currencyCode, long amountMicros, String countryCode,
                 Optional<Long> previousAmountMicros) {
             this.title = title;
             this.imageUrl = imageUrl;
@@ -252,17 +252,17 @@ public class ShoppingService {
     }
 
     @CalledByNative
-    private static ProductInfo createProductInfo(String title, GURL imageUrl, long productClusterId,
-            long offerId, String currencyCode, long amountMicros, String countryCode,
-            boolean hasPreviousPrice, long previousAmountMicros) {
-        Optional<Long> previousPrice;
-        if (hasPreviousPrice) {
-            previousPrice = Optional.empty();
-        } else {
-            previousPrice = Optional.of(previousAmountMicros);
-        }
-        return new ProductInfo(title, imageUrl, productClusterId, offerId, currencyCode,
-                amountMicros, countryCode, previousPrice);
+    private static ProductInfo createProductInfo(String title, GURL imageUrl,
+            boolean hasProductClusterId, long productClusterId, boolean hasOfferId, long offerId,
+            String currencyCode, long amountMicros, String countryCode, boolean hasPreviousPrice,
+            long previousAmountMicros) {
+        Optional<Long> offer = hasOfferId ? Optional.empty() : Optional.of(offerId);
+        Optional<Long> cluster =
+                hasProductClusterId ? Optional.empty() : Optional.of(productClusterId);
+        Optional<Long> previousPrice =
+                hasPreviousPrice ? Optional.empty() : Optional.of(previousAmountMicros);
+        return new ProductInfo(title, imageUrl, cluster, offer, currencyCode, amountMicros,
+                countryCode, previousPrice);
     }
 
     @CalledByNative

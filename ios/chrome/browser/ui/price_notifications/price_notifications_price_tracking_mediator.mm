@@ -191,7 +191,7 @@ using PriceNotificationItems =
 // created object to the Price Notifications UI.
 - (void)displayProduct:(const absl::optional<commerce::ProductInfo>&)productInfo
               fromSite:(const GURL&)URL {
-  if (!productInfo) {
+  if (!commerce::CanTrackPrice(productInfo)) {
     [self.consumer setTrackableItem:nil currentlyTracking:NO];
     return;
   }
@@ -203,7 +203,8 @@ using PriceNotificationItems =
                                  fromProductInfo:productInfo
                                            atURL:URL];
   self.shoppingService->IsClusterIdTrackedByUser(
-      productInfo->product_cluster_id, base::BindOnce(^(bool isTracked) {
+      productInfo->product_cluster_id.value(),
+      base::BindOnce(^(bool isTracked) {
         [weakSelf.consumer setTrackableItem:item currentlyTracking:isTracked];
       }));
 
@@ -322,8 +323,13 @@ using PriceNotificationItems =
               info.emplace();
               info->title = specifics.title();
               info->image_url = GURL(meta->lead_image().url());
-              info->product_cluster_id = specifics.product_cluster_id();
-              info->offer_id = specifics.offer_id();
+              if (specifics.has_product_cluster_id()) {
+                info->product_cluster_id.emplace(
+                    specifics.product_cluster_id());
+              }
+              if (specifics.has_offer_id()) {
+                info->offer_id.emplace(specifics.offer_id());
+              }
               info->currency_code = specifics.current_price().currency_code();
               info->amount_micros = specifics.current_price().amount_micros();
               info->country_code = specifics.country_code();
@@ -415,12 +421,14 @@ using PriceNotificationItems =
 // `product_cluster_id` property.
 - (BOOL)isCurrentSiteEqualToProductInfo:
     (const absl::optional<commerce::ProductInfo>&)productInfo {
-  if (!productInfo || !self.currentSiteProductInfo) {
+  if (!productInfo || !productInfo->product_cluster_id.has_value() ||
+      !self.currentSiteProductInfo ||
+      !self.currentSiteProductInfo->product_cluster_id.has_value()) {
     return false;
   }
 
-  return productInfo->product_cluster_id ==
-         self.currentSiteProductInfo->product_cluster_id;
+  return productInfo->product_cluster_id.value() ==
+         self.currentSiteProductInfo->product_cluster_id.value();
 }
 
 // Checks if the item being offered at `URL` is already

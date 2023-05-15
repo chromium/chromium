@@ -320,10 +320,10 @@ void BookmarkBubbleView::ShowBubble(
                                   base::Unretained(bubble_delegate))))
       .SetInitiallyFocusedField(kBookmarkName);
 
-  if (product_info.has_value() && !product_image.IsEmpty()) {
+  if (commerce::CanTrackPrice(product_info) && !product_image.IsEmpty()) {
     bool is_price_tracked = shopping_service->IsSubscribedFromCache(
         commerce::BuildUserSubscriptionForClusterId(
-            product_info->product_cluster_id));
+            product_info->product_cluster_id.value()));
     if (!base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
       dialog_model_builder.AddSeparator();
     }

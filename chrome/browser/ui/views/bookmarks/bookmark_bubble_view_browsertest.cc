@@ -73,8 +73,9 @@ class BookmarkBubbleViewBrowserTest : public DialogBrowserTest {
 #endif
 
     if (name == "bookmark_details_on_trackable_product") {
-      mock_shopping_service_->SetResponseForGetProductInfoForUrl(
-          commerce::ProductInfo());
+      commerce::ProductInfo info;
+      info.product_cluster_id.emplace(12345L);
+      mock_shopping_service_->SetResponseForGetProductInfoForUrl(info);
       mock_shopping_service_->SetIsSubscribedCallbackValue(false);
       MockShoppingListUiTabHelper::CreateForWebContents(
           browser()->tab_strip_model()->GetActiveWebContents());

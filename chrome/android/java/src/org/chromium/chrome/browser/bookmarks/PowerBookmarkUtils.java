@@ -55,7 +55,9 @@ public class PowerBookmarkUtils {
                 ShoppingServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
         if (service == null) return false;
 
-        return service.getAvailableProductInfoForUrl(tab.getUrl()) != null;
+        ShoppingService.ProductInfo info = service.getAvailableProductInfoForUrl(tab.getUrl());
+
+        return info != null && info.productClusterId.isPresent();
     }
 
     /**

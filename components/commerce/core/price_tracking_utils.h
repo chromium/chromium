@@ -22,6 +22,10 @@ class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
+namespace power_bookmarks {
+class ShoppingSpecifics;
+}  // namespace power_bookmarks
+
 namespace commerce {
 
 struct CommerceSubscription;
@@ -116,6 +120,12 @@ bool IsEmailDisabledByUser(PrefService* pref_service);
 // Build a user-tracked price tracking subscription object for the provided
 // cluster ID.
 CommerceSubscription BuildUserSubscriptionForClusterId(uint64_t cluster_id);
+
+// Returns whether price tracking can be initiated given either a ProductInfo
+// or a ShoppingSpecifics object.
+bool CanTrackPrice(const ProductInfo& info);
+bool CanTrackPrice(const absl::optional<ProductInfo>& info);
+bool CanTrackPrice(const power_bookmarks::ShoppingSpecifics& specifics);
 
 }  // namespace commerce
 

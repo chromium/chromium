@@ -382,15 +382,17 @@ bool PopulateOrUpdateBookmarkMetaIfNeeded(
     changed = true;
   }
 
-  if (specifics->offer_id() != info.offer_id) {
-    specifics->set_offer_id(info.offer_id);
+  if (info.offer_id.has_value() &&
+      specifics->offer_id() != info.offer_id.value()) {
+    specifics->set_offer_id(info.offer_id.value());
     changed = true;
   }
 
   // Only update the cluster ID if it was previously empty. Having this value
   // change would cause serious problems elsewhere.
-  if (!specifics->has_product_cluster_id()) {
-    specifics->set_product_cluster_id(info.product_cluster_id);
+  if (info.product_cluster_id.has_value() &&
+      !specifics->has_product_cluster_id()) {
+    specifics->set_product_cluster_id(info.product_cluster_id.value());
     changed = true;
   }
   // Consider adding a DCHECK for old and new cluster ID equality in the else
@@ -425,6 +427,18 @@ CommerceSubscription BuildUserSubscriptionForClusterId(uint64_t cluster_id) {
   return CommerceSubscription(
       SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
       base::NumberToString(cluster_id), ManagementType::kUserManaged);
+}
+
+bool CanTrackPrice(const ProductInfo& info) {
+  return info.product_cluster_id.has_value();
+}
+
+bool CanTrackPrice(const absl::optional<ProductInfo>& info) {
+  return info.has_value() && CanTrackPrice(info.value());
+}
+
+bool CanTrackPrice(const power_bookmarks::ShoppingSpecifics& specifics) {
+  return specifics.has_product_cluster_id();
 }
 
 }  // namespace commerce
