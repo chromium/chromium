@@ -384,6 +384,10 @@ extern const base::FeatureParam<int> kRichSuggestionVerticalMargin;
 // Returns true if the feature to enable GM3 icons is enabled.
 bool IsChromeRefreshIconsEnabled();
 
+// Omnibox CR23 - suggestion icons.
+// Returns true if the feature to enable CR23 suggestion icons is enabled.
+bool IsChromeRefreshSuggestIconsEnabled();
+
 // Omnibox GM3 - text style.
 // Returns true if the feature to enable GM3 text styling is enabled.
 bool IsGM3TextStyleEnabled();

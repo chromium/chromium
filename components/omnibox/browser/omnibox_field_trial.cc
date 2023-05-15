@@ -692,6 +692,12 @@ bool OmniboxFieldTrial::IsChromeRefreshIconsEnabled() {
   return enabled;
 }
 
+bool OmniboxFieldTrial::IsChromeRefreshSuggestIconsEnabled() {
+  return features::GetChromeRefresh2023Level() ==
+             features::ChromeRefresh2023Level::kLevel2 ||
+         base::FeatureList::IsEnabled(omnibox::kExpandedStateSuggestIcons);
+}
+
 bool OmniboxFieldTrial::IsGM3TextStyleEnabled() {
   return features::GetChromeRefresh2023Level() ==
              features::ChromeRefresh2023Level::kLevel2 ||
