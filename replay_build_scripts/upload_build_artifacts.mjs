@@ -429,4 +429,4 @@ async function buildSymbolsArchive(
   fs.unlinkSync(jsonFile);
 }
 
-main({});
+main({ driverRevision: process.env.DRIVER_REVISION });
