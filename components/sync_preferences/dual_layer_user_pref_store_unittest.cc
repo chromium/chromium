@@ -451,7 +451,7 @@ TEST_F(DualLayerUserPrefStoreTest, WritesMutableValueFromLocalToBothStores) {
   ASSERT_EQ(*mutable_value, original_value);
 
   // Update it!
-  mutable_value->SetStringKey("key", "new_value");
+  mutable_value->GetDict().Set("key", "new_value");
 
   const base::Value expected_value = mutable_value->Clone();
 
@@ -484,7 +484,7 @@ TEST_F(DualLayerUserPrefStoreTest, WritesMutableValueFromAccountToBothStores) {
   ASSERT_EQ(*mutable_value, original_value);
 
   // Update it!
-  mutable_value->SetStringKey("key", "new_value");
+  mutable_value->GetDict().Set("key", "new_value");
 
   const base::Value expected_value = mutable_value->Clone();
 
@@ -521,7 +521,7 @@ TEST_F(DualLayerUserPrefStoreTest, WritesMutableValueFromBothToBothStores) {
   ASSERT_EQ(*mutable_value, original_account_value);
 
   // Update it!
-  mutable_value->SetStringKey("key", "new_value");
+  mutable_value->GetDict().Set("key", "new_value");
 
   const base::Value expected_value = mutable_value->Clone();
 
@@ -555,7 +555,7 @@ TEST_F(DualLayerUserPrefStoreTest, ClearsMutableValueFromBothStores) {
   ASSERT_TRUE(mutable_value);
   ASSERT_EQ(*mutable_value, original_value);
 
-  mutable_value->SetStringKey("key", "new_value");
+  mutable_value->GetDict().Set("key", "new_value");
 
   // While the mutable value is "pending" (hasn't been "released" via
   // ReportValueChanged()), the pref gets cleared.
@@ -755,17 +755,17 @@ TEST_F(DualLayerUserPrefStoreTest, NotifiesOfMutableValuePrefChanges) {
 
   base::Value* value1 = nullptr;
   ASSERT_TRUE(store()->GetMutableValue(kPref1, &value1));
-  value1->SetStringKey("key1", "new_value1");
+  value1->GetDict().Set("key1", "new_value1");
   store()->ReportValueChanged(kPref1, 0);
 
   base::Value* value2 = nullptr;
   ASSERT_TRUE(store()->GetMutableValue(kPref2, &value2));
-  value2->SetStringKey("key2", "new_value2");
+  value2->GetDict().Set("key2", "new_value2");
   store()->ReportValueChanged(kPref2, 0);
 
   base::Value* value3 = nullptr;
   ASSERT_TRUE(store()->GetMutableValue(kPref3, &value3));
-  value3->SetStringKey("key3", "new_value3");
+  value3->GetDict().Set("key3", "new_value3");
   store()->ReportValueChanged(kPref3, 0);
 
   store()->RemoveObserver(&observer);

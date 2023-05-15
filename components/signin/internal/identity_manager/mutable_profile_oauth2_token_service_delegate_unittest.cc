@@ -992,11 +992,10 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, GaiaIdMigration) {
 
     ScopedListPrefUpdate update(&pref_service_, prefs::kAccountInfo);
     update->clear();
-    base::Value dict(base::Value::Type::DICT);
-    dict.SetStringKey("account_id", email);
-    dict.SetStringKey("email", email);
-    dict.SetStringKey("gaia", gaia_id);
-    update->Append(std::move(dict));
+    update->Append(base::Value::Dict()
+                       .Set("account_id", email)
+                       .Set("email", email)
+                       .Set("gaia", gaia_id));
     account_tracker_service_.ResetForTesting();
 
     AddAuthTokenManually("AccountId-" + email, "refresh_token");
