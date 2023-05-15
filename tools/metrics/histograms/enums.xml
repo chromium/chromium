@@ -17568,6 +17568,7 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="17" label="APK download"/>
   <int value="19" label="Blocked Ad redirect"/>
   <int value="20" label="Blocked Ad popup"/>
+  <int value="21" label="Hash-prefix real-time experiment"/>
 </enum>
 
 <enum name="ClientSidePhishingResult">
