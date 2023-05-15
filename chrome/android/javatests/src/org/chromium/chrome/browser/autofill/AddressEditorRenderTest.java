@@ -18,6 +18,7 @@ import android.view.View;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Rule;
@@ -166,6 +167,13 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
 
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         super.setUpTest();
+    }
+
+    @After
+    @Override
+    public void tearDownTest() throws Exception {
+        PersonalDataManager.setInstanceForTesting(null);
+        super.tearDownTest();
     }
 
     @AfterClass

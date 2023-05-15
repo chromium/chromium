@@ -179,6 +179,7 @@ public class AddressEditorTest {
     public void tearDown() {
         // Reset default locale to avoid changing it for other tests.
         Locale.setDefault(DEFAULT_LOCALTE);
+        PersonalDataManager.setInstanceForTesting(null);
     }
 
     private void setUpSupportedCountries(List<DropdownKeyValue> supportedContries) {
