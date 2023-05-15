@@ -1878,11 +1878,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kCloudApAuthEnabled,
     base::Value::Type::INTEGER },
 #endif  // BUILDFLAG(IS_WIN)
-#if BUILDFLAG(ENABLE_PPAPI)
-  { key::kForceEnablePepperVideoDecoderDevAPI,
-    policy::policy_prefs::kForceEnablePepperVideoDecoderDevAPI,
-    base::Value::Type::BOOLEAN },
-#endif // BUILDFLAG(ENABLE_PPAPI)
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   { key::kOutOfProcessSystemDnsResolutionEnabled,
     prefs::kOutOfProcessSystemDnsResolutionEnabled,

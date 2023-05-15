@@ -215,12 +215,6 @@ const char kEnableBenchmarkingDescription[] =
     "after 3 restarts. On the third restart, the flag will appear to be off "
     "but the effect is still active.";
 
-extern const char kSupportPepperVideoDecoderDevAPIName[] =
-    "Controls whether the Pepper PPB_VideoDecoder(Dev) API is supported";
-extern const char kSupportPepperVideoDecoderDevAPIDescription[] =
-    "When disabled, Chrome will return 0 if asked to create the "
-    "PPB_VideoDecoder(Dev) API by in-process callers";
-
 extern const char kCmdDecoderAlwaysGetSizeFromSourceTextureName[] =
     "Controls whether the GLES2 validating decoder always gets size from the "
     "source texture when copying textures";

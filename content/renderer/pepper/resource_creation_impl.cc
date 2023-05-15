@@ -4,18 +4,12 @@
 
 #include "content/renderer/pepper/resource_creation_impl.h"
 
-#include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
-#include "content/common/content_switches_internal.h"
-#include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
 #include "content/renderer/pepper/ppb_audio_impl.h"
 #include "content/renderer/pepper/ppb_buffer_impl.h"
 #include "content/renderer/pepper/ppb_graphics_3d_impl.h"
 #include "content/renderer/pepper/ppb_image_data_impl.h"
-#include "content/renderer/pepper/ppb_video_decoder_impl.h"
 #include "ppapi/c/pp_bool.h"
 #include "ppapi/c/pp_size.h"
 #include "ppapi/c/pp_var.h"
@@ -34,25 +28,6 @@ using ppapi::PPB_InputEvent_Shared;
 using ppapi::StringVar;
 
 namespace content {
-
-namespace {
-
-// Returns whether the PPB_VideoDecoder(Dev) API is enabled. The API is enabled
-// iff either:
-// (a) the relevant base::Feature is set, or
-// (b) the relevant "force-enable" switch is passed on the command line (this
-// overrides the value of the base::Feature).
-bool IsVideoDecoderDevAPIEnabled() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceEnablePepperVideoDecoderDevAPI)) {
-    return true;
-  }
-
-  return base::FeatureList::IsEnabled(
-      features::kSupportPepperVideoDecoderDevAPI);
-}
-
-}  // namespace
 
 ResourceCreationImpl::ResourceCreationImpl(PepperPluginInstanceImpl* instance) {
 }
@@ -311,14 +286,8 @@ PP_Resource ResourceCreationImpl::CreateVideoDecoderDev(
     PP_Instance instance,
     PP_Resource graphics3d_id,
     PP_VideoDecoder_Profile profile) {
-  base::UmaHistogramBoolean(
-      "NaCl.ResourceCreationImpl.CreateVideoDecoderDev_Invoked", true);
-
-  if (IsVideoDecoderDevAPIEnabled()) {
-    return create_video_decoder_dev_impl_callback_.Run(instance, graphics3d_id,
-                                                       profile);
-  }
-
+  // This API is no longer supported: See crbug.com/1382469 for details and
+  // history.
   return 0;
 }
 

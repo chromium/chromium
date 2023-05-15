@@ -341,14 +341,6 @@ BASE_FEATURE(kEnableMachineLearningModelLoaderWebPlatformApi,
              "EnableMachineLearningModelLoaderWebPlatformApi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables support for the PPB_VideoDecoder(Dev) API. If this feature is
-// false (and the command-line override is not set in the renderer), the API
-// will appear as unsupported if asked for by a plugin.
-// See crbug.com/1382469 for details.
-BASE_FEATURE(kSupportPepperVideoDecoderDevAPI,
-             "SupportPepperVideoDecoderDevAPI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables service workers on chrome-untrusted:// urls.
 BASE_FEATURE(kEnableServiceWorkersForChromeUntrusted,
              "EnableServiceWorkersForChromeUntrusted",

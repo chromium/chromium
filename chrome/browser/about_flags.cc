@@ -9802,13 +9802,6 @@ const FeatureEntry kFeatureEntries[] = {
          policy::features::kSafeSitesFilterBehaviorPolicyAndroid)},
 #endif
 
-#if BUILDFLAG(ENABLE_NACL)
-    {"support-pepper-video-decoder-dev-api",
-     flag_descriptions::kSupportPepperVideoDecoderDevAPIName,
-     flag_descriptions::kSupportPepperVideoDecoderDevAPIDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSupportPepperVideoDecoderDevAPI)},
-#endif
-
     {"cmd-decoder-always-get-size-from-source-texture",
      flag_descriptions::kCmdDecoderAlwaysGetSizeFromSourceTextureName,
      flag_descriptions::kCmdDecoderAlwaysGetSizeFromSourceTextureDescription,

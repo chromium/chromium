@@ -465,11 +465,6 @@ const char kEnableWebGLImageChromium[] = "enable-webgl-image-chromium";
 // file:///alias/some/path.html into file:///replacement/some/path.html.
 const char kFileUrlPathAlias[] = "file-url-path-alias";
 
-// Force-enables the PPB_VideoDecoder(Dev) API, overriding the value from any
-// ongoing Finch experiment.
-const char kForceEnablePepperVideoDecoderDevAPI[] =
-    "force-enable-pepper-video-decoder-dev-api";
-
 // This forces pages to be loaded as presentation receivers.  Useful for testing
 // behavior specific to presentation receivers.
 // Spec: https://www.w3.org/TR/presentation-api/#interface-presentationreceiver

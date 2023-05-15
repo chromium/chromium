@@ -1579,8 +1579,6 @@ void ChromeContentBrowserClient::RegisterLocalStatePrefs(
       prefs::kThrottleNonVisibleCrossOriginIframesAllowed, true);
   registry->RegisterBooleanPref(prefs::kNewBaseUrlInheritanceBehaviorAllowed,
                                 true);
-  registry->RegisterBooleanPref(
-      policy::policy_prefs::kForceEnablePepperVideoDecoderDevAPI, false);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kOutOfProcessSystemDnsResolutionEnabled,
                                 true);
@@ -2999,16 +2997,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
                                     switches::kChangeStackGuardOnForkEnabled);
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  if (process_type != switches::kZygoteProcess) {
-    DCHECK(g_browser_process);
-    PrefService* local_state = g_browser_process->local_state();
-    DCHECK(local_state);
-    if (local_state->GetBoolean(
-            policy::policy_prefs::kForceEnablePepperVideoDecoderDevAPI)) {
-      command_line->AppendSwitch(
-          ::switches::kForceEnablePepperVideoDecoderDevAPI);
-    }
-  }
 }
 
 std::string

@@ -816,6 +816,10 @@ const char kVideoTutorialsLastUpdatedTimeKey[] =
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Deprecated 05/2023
+const char kForceEnablePepperVideoDecoderDevAPI[] =
+    "policy.force_enable_pepper_video_decoder_dev_api";
+
+// Deprecated 05/2023
 const char kUseMojoVideoDecoderForPepperAllowed[] =
     "policy.use_mojo_video_decoder_for_pepper_allowed";
 
@@ -917,6 +921,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kLastChromadMigrationAttemptTime,
                              /*default_value=*/base::Time());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 05/2023.
+  registry->RegisterBooleanPref(kForceEnablePepperVideoDecoderDevAPI, false);
 
   // Deprecated 05/2023.
   registry->RegisterBooleanPref(kUseMojoVideoDecoderForPepperAllowed, true);
@@ -1908,6 +1915,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kEnrollmentIdUploadedOnChromad);
   local_state->ClearPref(kLastChromadMigrationAttemptTime);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Added 05/2023.
+  local_state->ClearPref(kForceEnablePepperVideoDecoderDevAPI);
 
   // Added 05/2023.
   local_state->ClearPref(kUseMojoVideoDecoderForPepperAllowed);
