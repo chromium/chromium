@@ -2874,44 +2874,11 @@ bool AutofillTable::RemoveAutofillDataModifiedBetween(
 
 bool AutofillTable::RemoveOriginURLsModifiedBetween(
     const base::Time& delete_begin,
-    const base::Time& delete_end,
-    std::vector<std::unique_ptr<AutofillProfile>>* profiles) {
+    const base::Time& delete_end) {
   DCHECK(delete_end.is_null() || delete_begin < delete_end);
 
   time_t delete_begin_t = delete_begin.ToTimeT();
   time_t delete_end_t = GetEndTime(delete_end);
-
-  // Remember Autofill profiles with URL origins in the time range.
-  sql::Statement s_profiles_get;
-  SelectBetween(db_, s_profiles_get, kAutofillProfilesTable, {kGuid, kOrigin},
-                kDateModified, delete_begin_t, delete_end_t);
-
-  std::vector<std::string> profile_guids;
-  while (s_profiles_get.Step()) {
-    std::string guid = s_profiles_get.ColumnString(0);
-    std::string origin = s_profiles_get.ColumnString(1);
-    if (GURL(origin).is_valid())
-      profile_guids.push_back(guid);
-  }
-  if (!s_profiles_get.Succeeded())
-    return false;
-
-  // Clear out the origins for the found Autofill profiles.
-  for (const std::string& guid : profile_guids) {
-    sql::Statement s_profile;
-    UpdateBuilder(db_, s_profile, kAutofillProfilesTable, {kOrigin}, "guid=?");
-    s_profile.BindString(0, "");
-    s_profile.BindString(1, guid);
-    if (!s_profile.Run())
-      return false;
-
-    std::unique_ptr<AutofillProfile> profile =
-        GetAutofillProfile(guid, AutofillProfile::Source::kLocalOrSyncable);
-    if (!profile)
-      return false;
-
-    profiles->push_back(std::move(profile));
-  }
 
   // Remember Autofill credit cards with URL origins in the time range.
   sql::Statement s_credit_cards_get;
