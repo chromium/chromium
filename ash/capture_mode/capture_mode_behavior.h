@@ -103,8 +103,15 @@ class CaptureModeBehavior {
  protected:
   explicit CaptureModeBehavior(const CaptureModeSessionConfigs& configs);
 
-  // Called by `GetCaptureBarBounds` to adjust the width of the bar on different
-  // types of behavior.
+  // Returns the anchor bounds of the bar in screen coordinates, which depends
+  // on the anchor window of the bar. The anchor window can be the given `root`
+  // window or the selected window depending on the actual type of the behavior.
+  // And we will exclude the shelf/hotseat if the bar is anchored to the root
+  // window when necessary.
+  virtual gfx::Rect GetBarAnchorBoundsInScreen(aura::Window* root) const;
+
+  // Called by `GetCaptureBarBounds` to adjust the width of the bar on the
+  // actual type of the behavior.
   virtual int GetCaptureBarWidth() const;
 
   // Capture mode session configs to be used for the current capture mode

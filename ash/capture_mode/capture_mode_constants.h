@@ -122,6 +122,11 @@ constexpr float kInnerHightlightBorderThickness =
 constexpr float kOuterHightlightBorderThickness =
     1.5 * views::kHighlightBorderThickness;
 
+// Distance from the bottom of the capture bar to the bottom of the anchor
+// bounds of the bar. See `GetBarAnchorBoundsInScreen` for more details of the
+// bar's anchor bounds.
+constexpr int kCaptureBarBottomPadding = 16;
+
 }  // namespace ash::capture_mode
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_CONSTANTS_H_

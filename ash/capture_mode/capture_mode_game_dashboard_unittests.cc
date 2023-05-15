@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
@@ -22,6 +23,8 @@ class GameDashboardCaptureModeTest : public AshTestBase {
   GameDashboardCaptureModeTest& operator=(const GameDashboardCaptureModeTest&) =
       delete;
   ~GameDashboardCaptureModeTest() override = default;
+
+  aura::Window* window() const { return window_.get(); }
 
   // AshTestBase:
   void SetUp() override {
@@ -96,6 +99,21 @@ TEST_F(GameDashboardCaptureModeTest, CaptureBar) {
   EXPECT_FALSE(GetWindowToggleButton());
   EXPECT_TRUE(GetSettingsButton());
   EXPECT_TRUE(GetCloseButton());
+}
+
+TEST_F(GameDashboardCaptureModeTest, CaptureBarPosition) {
+  StartGameCaptureModeSession();
+  views::Widget* bar_widget = GetCaptureModeBarWidget();
+  ASSERT_TRUE(bar_widget);
+
+  const gfx::Rect window_bounds = window()->GetBoundsInScreen();
+  const gfx::Rect bar_bounds = bar_widget->GetWindowBoundsInScreen();
+  // Checks that the game capture bar is inside the window. And centered above a
+  // constant distance from the bottom of the window.
+  EXPECT_TRUE(window_bounds.Contains(bar_bounds));
+  EXPECT_EQ(bar_bounds.CenterPoint().x(), window_bounds.CenterPoint().x());
+  EXPECT_EQ(bar_bounds.bottom() + capture_mode::kCaptureBarBottomPadding,
+            window_bounds.bottom());
 }
 
 }  // namespace ash

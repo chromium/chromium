@@ -12,12 +12,15 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/game_capture_bar_view.h"
 #include "ash/capture_mode/normal_capture_bar_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
+#include "ash/shell.h"
+#include "ash/wm/mru_window_tracker.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -28,17 +31,15 @@ namespace ash {
 
 namespace {
 
-// Full size of capture mode bar view, the width of which will be
-// adjusted based on the current active behavior.
-constexpr gfx::Size kFullBarSize{376, 64};
+// Width of the full capture bar, which includes all the elements of the normal
+// capture bar.
+constexpr int kFullCaptureBarWidth = 376;
 
-// Size of the game capture bar.
-constexpr gfx::Size kGameCaptureBarSize{260, 64};
+// Width of the game capture bar.
+constexpr int kGameCaptureBarWidth = 260;
 
-// Distance from the bottom of the capture bar to the bottom of the display, top
-// of the hotseat or top of the shelf depending on the shelf alignment or
-// hotseat visibility.
-constexpr int kDistanceFromShelfOrHotseatTopDp = 16;
+// Height of the capture bar.
+constexpr int kCaptureBarHeight = 64;
 
 // Returns the current configs before been overwritten by the client-initiated
 // capture mode session
@@ -141,7 +142,7 @@ class ProjectorBehavior : public CaptureModeBehavior {
 
  protected:
   int GetCaptureBarWidth() const override {
-    return kFullBarSize.width() - capture_mode::kButtonSize.width() -
+    return kFullCaptureBarWidth - capture_mode::kButtonSize.width() -
            capture_mode::kSpaceBetweenCaptureModeTypeButtons;
   }
 
@@ -194,9 +195,14 @@ class GameDashboardBehavior : public CaptureModeBehavior {
   }
 
  protected:
-  int GetCaptureBarWidth() const override {
-    return kGameCaptureBarSize.width();
+  gfx::Rect GetBarAnchorBoundsInScreen(aura::Window* root) const override {
+    const aura::Window* selected_window =
+        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)[0];
+    CHECK(selected_window);
+    return selected_window->GetBoundsInScreen();
   }
+
+  int GetCaptureBarWidth() const override { return kGameCaptureBarWidth; }
 };
 
 }  // namespace
@@ -322,10 +328,21 @@ CaptureModeBehavior::CreateCaptureModeBarView() {
 }
 
 gfx::Rect CaptureModeBehavior::GetCaptureBarBounds(aura::Window* root) const {
-  DCHECK(root);
+  auto bounds = GetBarAnchorBoundsInScreen(root);
+  const int bar_y = bounds.bottom() - capture_mode::kCaptureBarBottomPadding -
+                    kCaptureBarHeight;
+  bounds.ClampToCenteredSize(
+      gfx::Size(GetCaptureBarWidth(), kCaptureBarHeight));
+  bounds.set_y(bar_y);
+  return bounds;
+}
 
+gfx::Rect CaptureModeBehavior::GetBarAnchorBoundsInScreen(
+    aura::Window* root) const {
+  CHECK(root);
   auto bounds = root->GetBoundsInScreen();
-  int bar_y = bounds.bottom();
+  int new_bottom = bounds.bottom();
+
   Shelf* shelf = Shelf::ForWindow(root);
   if (shelf->IsHorizontalAlignment()) {
     // Get the widget which has the shelf icons. This is the hotseat widget if
@@ -336,19 +353,14 @@ gfx::Rect CaptureModeBehavior::GetCaptureBarBounds(aura::Window* root) const {
     views::Widget* shelf_widget =
         hotseat_extended ? static_cast<views::Widget*>(shelf->hotseat_widget())
                          : static_cast<views::Widget*>(shelf->shelf_widget());
-    bar_y = shelf_widget->GetWindowBoundsInScreen().y();
+    new_bottom = shelf_widget->GetWindowBoundsInScreen().y();
   }
-
-  gfx::Size bar_size = kFullBarSize;
-  bar_size.set_width(GetCaptureBarWidth());
-  bar_y -= (kDistanceFromShelfOrHotseatTopDp + bar_size.height());
-  bounds.ClampToCenteredSize(bar_size);
-  bounds.set_y(bar_y);
+  bounds.set_height(new_bottom - bounds.y());
   return bounds;
 }
 
 int CaptureModeBehavior::GetCaptureBarWidth() const {
-  return kFullBarSize.width();
+  return kFullCaptureBarWidth;
 }
 
 }  // namespace ash
