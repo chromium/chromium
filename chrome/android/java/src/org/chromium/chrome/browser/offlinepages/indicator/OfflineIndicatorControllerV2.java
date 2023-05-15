@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.offlinepages.indicator;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -57,6 +58,7 @@ public class OfflineIndicatorControllerV2 {
     public static final String OFFLINE_INDICATOR_SHOWN_DURATION_V2 =
             "OfflineIndicator.ShownDurationV2";
 
+    @SuppressLint("StaticFieldLeak")
     private static OfflineDetector sMockOfflineDetector;
     private static Supplier<Long> sMockElapsedTimeSupplier;
     private static OfflineIndicatorMetricsDelegate sMockOfflineIndicatorMetricsDelegate;
@@ -120,7 +122,7 @@ public class OfflineIndicatorControllerV2 {
         } else {
             mOfflineDetector = new OfflineDetector((Boolean offline)
                                                            -> onConnectionStateChanged(offline),
-                    (Boolean isForeground) -> onApplicationStateChanged(isForeground));
+                    (Boolean isForeground) -> onApplicationStateChanged(isForeground), mContext);
         }
 
         // Initializes the application state.
