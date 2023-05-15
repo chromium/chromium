@@ -155,6 +155,10 @@ crosapi::mojom::AccountUpsertionResult::Status ToMojoAccountAdditionStatus(
 
 absl::optional<account_manager::Account> FromMojoAccount(
     const crosapi::mojom::AccountPtr& mojom_account) {
+  if (mojom_account.is_null()) {
+    return absl::nullopt;
+  }
+
   const absl::optional<account_manager::AccountKey> account_key =
       FromMojoAccountKey(mojom_account->key);
   if (!account_key.has_value())
@@ -175,6 +179,10 @@ crosapi::mojom::AccountPtr ToMojoAccount(
 
 absl::optional<account_manager::AccountKey> FromMojoAccountKey(
     const crosapi::mojom::AccountKeyPtr& mojom_account_key) {
+  if (mojom_account_key.is_null()) {
+    return absl::nullopt;
+  }
+
   const absl::optional<account_manager::AccountType> account_type =
       FromMojoAccountType(mojom_account_key->account_type);
   if (!account_type.has_value())
@@ -230,6 +238,10 @@ crosapi::mojom::AccountType ToMojoAccountType(
 
 absl::optional<GoogleServiceAuthError> FromMojoGoogleServiceAuthError(
     const crosapi::mojom::GoogleServiceAuthErrorPtr& mojo_error) {
+  if (mojo_error.is_null()) {
+    return absl::nullopt;
+  }
+
   switch (mojo_error->state) {
     case cm::GoogleServiceAuthError::State::kNone:
       return GoogleServiceAuthError::AuthErrorNone();
@@ -286,6 +298,10 @@ crosapi::mojom::GoogleServiceAuthErrorPtr ToMojoGoogleServiceAuthError(
 absl::optional<account_manager::AccountUpsertionResult>
 FromMojoAccountUpsertionResult(
     const crosapi::mojom::AccountUpsertionResultPtr& mojo_result) {
+  if (mojo_result.is_null()) {
+    return absl::nullopt;
+  }
+
   absl::optional<account_manager::AccountUpsertionResult::Status> status =
       FromMojoAccountAdditionStatus(mojo_result->status);
   if (!status.has_value())
@@ -341,8 +357,9 @@ crosapi::mojom::AccountUpsertionResultPtr ToMojoAccountUpsertionResult(
 absl::optional<account_manager::AccountAdditionOptions>
 FromMojoAccountAdditionOptions(
     const crosapi::mojom::AccountAdditionOptionsPtr& mojo_options) {
-  if (!mojo_options)
+  if (mojo_options.is_null()) {
     return absl::nullopt;
+  }
 
   account_manager::AccountAdditionOptions result;
   result.is_available_in_arc = mojo_options->is_available_in_arc;
