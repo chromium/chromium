@@ -7499,8 +7499,6 @@ static_library("browser") {
       "supervised_user/supervised_user_browser_utils.h",
       "supervised_user/supervised_user_google_auth_navigation_throttle.cc",
       "supervised_user/supervised_user_google_auth_navigation_throttle.h",
-      "supervised_user/supervised_user_interstitial.cc",
-      "supervised_user/supervised_user_interstitial.h",
       "supervised_user/supervised_user_interstitial_tab_closer.cc",
       "supervised_user/supervised_user_interstitial_tab_closer.h",
       "supervised_user/supervised_user_metrics_service_factory.cc",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/supervised_user_interstitial.h"
+#include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 
 #include <stddef.h>
 
@@ -16,8 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/web_content_handler.h"
@@ -31,6 +29,7 @@
 #include "components/user_manager/user_manager.h"
 #endif
 
+namespace supervised_user {
 namespace {
 
 // TODO(b/250924204): Implement shared logic to get the user's given name.
@@ -46,10 +45,10 @@ std::u16string GetActiveUserFirstName() {
 
 // static
 std::unique_ptr<SupervisedUserInterstitial> SupervisedUserInterstitial::Create(
-    std::unique_ptr<supervised_user::WebContentHandler> web_content_handler,
-    supervised_user::SupervisedUserService& supervised_user_service,
+    std::unique_ptr<WebContentHandler> web_content_handler,
+    SupervisedUserService& supervised_user_service,
     const GURL& url,
-    supervised_user::FilteringBehaviorReason reason) {
+    FilteringBehaviorReason reason) {
   std::unique_ptr<SupervisedUserInterstitial> interstitial = base::WrapUnique(
       new SupervisedUserInterstitial(std::move(web_content_handler),
                                      supervised_user_service, url, reason));
@@ -60,10 +59,10 @@ std::unique_ptr<SupervisedUserInterstitial> SupervisedUserInterstitial::Create(
 }
 
 SupervisedUserInterstitial::SupervisedUserInterstitial(
-    std::unique_ptr<supervised_user::WebContentHandler> web_content_handler,
-    supervised_user::SupervisedUserService& supervised_user_service,
+    std::unique_ptr<WebContentHandler> web_content_handler,
+    SupervisedUserService& supervised_user_service,
     const GURL& url,
-    supervised_user::FilteringBehaviorReason reason)
+    FilteringBehaviorReason reason)
     : supervised_user_service_(supervised_user_service),
       web_content_handler_(std::move(web_content_handler)),
       url_(url),
@@ -72,11 +71,12 @@ SupervisedUserInterstitial::~SupervisedUserInterstitial() {}
 
 // static
 std::string SupervisedUserInterstitial::GetHTMLContents(
-    supervised_user::SupervisedUserService* supervised_user_service,
+    SupervisedUserService* supervised_user_service,
     PrefService* pref_service,
-    supervised_user::FilteringBehaviorReason reason,
+    FilteringBehaviorReason reason,
     bool already_sent_request,
-    bool is_main_frame) {
+    bool is_main_frame,
+    const std::string& application_locale) {
   std::string custodian = supervised_user_service->GetCustodianName();
   std::string second_custodian =
       supervised_user_service->GetSecondCustodianName();
@@ -93,11 +93,10 @@ std::string SupervisedUserInterstitial::GetHTMLContents(
       supervised_user_service->remote_web_approvals_manager()
           .AreApprovalRequestsEnabled();
 
-  return supervised_user::BuildErrorPageHtml(
+  return BuildErrorPageHtml(
       allow_access_requests, profile_image_url, profile_image_url2, custodian,
       custodian_email, second_custodian, second_custodian_email, reason,
-      g_browser_process->GetApplicationLocale(), already_sent_request,
-      is_main_frame);
+      application_locale, already_sent_request, is_main_frame);
 }
 
 void SupervisedUserInterstitial::GoBack() {
@@ -133,7 +132,7 @@ void SupervisedUserInterstitial::ShowFeedback() {
       supervised_user_service_->GetSecondCustodianName();
 
   std::u16string reason = l10n_util::GetStringUTF16(
-      supervised_user::GetBlockMessageID(reason_, second_custodian.empty()));
+      GetBlockMessageID(reason_, second_custodian.empty()));
   web_content_handler_->ShowFeedback(url_, reason);
   return;
 }
@@ -149,3 +148,4 @@ void SupervisedUserInterstitial::OutputRequestPermissionSourceMetric() {
   UMA_HISTOGRAM_ENUMERATION(kInterstitialPermissionSourceHistogramName, source,
                             RequestPermissionSource::HISTOGRAM_BOUNDING_VALUE);
 }
+}  // namespace supervised_user

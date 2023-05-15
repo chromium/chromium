@@ -13,6 +13,7 @@ include_rules = [
   "+components/signin",
   "+components/sync",
   "+components/url_matcher",
+  "+components/user_manager",
   "+extensions/buildflags",
   "+google_apis",
   "+net",
