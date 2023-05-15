@@ -254,8 +254,7 @@ SkImageInfo CanvasResource::CreateSkImageInfo() const {
 }
 
 viz::SharedImageFormat CanvasResource::GetSharedImageFormat() const {
-  return viz::SharedImageFormat::SinglePlane(
-      viz::SkColorTypeToResourceFormat(info_.colorType()));
+  return viz::SkColorTypeToSinglePlaneSharedImageFormat(info_.colorType());
 }
 
 gfx::BufferFormat CanvasResource::GetBufferFormat() const {

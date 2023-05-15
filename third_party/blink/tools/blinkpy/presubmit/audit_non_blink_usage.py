@@ -1294,6 +1294,7 @@ _CONFIG = [
             'media::.+',
             'libyuv::.+',
             'viz::SkColorTypeToResourceFormat',
+            'viz::SkColorTypeToSinglePlaneSharedImageFormat',
         ]
     },
     {

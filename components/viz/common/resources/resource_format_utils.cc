@@ -133,6 +133,12 @@ ResourceFormat SkColorTypeToResourceFormat(SkColorType color_type) {
   NOTREACHED_NORETURN();
 }
 
+SharedImageFormat SkColorTypeToSinglePlaneSharedImageFormat(
+    SkColorType color_type) {
+  return SharedImageFormat::SinglePlane(
+      SkColorTypeToResourceFormat(color_type));
+}
+
 int BitsPerPixel(ResourceFormat format) {
   switch (format) {
     case RGBA_F16:
