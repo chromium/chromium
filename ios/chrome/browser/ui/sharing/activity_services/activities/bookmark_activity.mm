@@ -9,9 +9,9 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/shared/public/commands/bookmark_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -99,11 +99,9 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
   // presented by the bookmark command below.
   [self activityDidFinish:YES];
 
-  BookmarkAddCommand* command =
-      [[BookmarkAddCommand alloc] initWithURL:self.URL
-                                        title:self.title
-                         presentFolderChooser:NO];
-  [self.handler bookmark:command];
+  [self.handler createOrEditBookmarkWithURL:[[URLWithTitle alloc]
+                                                initWithURL:self.URL
+                                                      title:self.title]];
 }
 
 #pragma mark - Private

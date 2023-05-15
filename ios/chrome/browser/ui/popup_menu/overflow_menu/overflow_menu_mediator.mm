@@ -1510,10 +1510,7 @@ NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
   if (!currentWebState) {
     return;
   }
-  BookmarkAddCommand* command =
-      [[BookmarkAddCommand alloc] initWithWebState:currentWebState
-                              presentFolderChooser:NO];
-  [self.bookmarksCommandsHandler bookmark:command];
+  [self.bookmarksCommandsHandler bookmarkWithWebState:currentWebState];
 }
 
 // Dismisses the menu and adds the current page to the reading list.

@@ -1308,7 +1308,7 @@
   } else {
     base::RecordAction(base::UserMetricsAction(
         "MobileTabGridOpenedBookmarkEditorForNewBookmark"));
-    [self.bookmarksCoordinator bookmarkURL:URL title:title];
+    [self.bookmarksCoordinator createBookmarkURL:URL title:title];
   }
 }
 

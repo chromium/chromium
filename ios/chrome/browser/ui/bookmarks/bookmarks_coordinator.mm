@@ -226,7 +226,7 @@ enum class PresentedState {
   return _snackbarCommandsHandler;
 }
 
-- (void)bookmarkURL:(const GURL&)URL title:(NSString*)title {
+- (void)createBookmarkURL:(const GURL&)URL title:(NSString*)title {
   if (!_profileBookmarkModel->loaded()) {
     return;
   }
@@ -541,30 +541,39 @@ enum class PresentedState {
 
 #pragma mark - BookmarksCommands
 
-- (void)bookmark:(BookmarkAddCommand*)command {
-  DCHECK(command.URLs.count > 0) << "URLs are missing " << [self description];
+- (void)bookmarkWithWebState:(web::WebState*)webState {
+  GURL URL = webState->GetLastCommittedURL();
+  NSString* title = tab_util::GetTabTitle(webState);
+  [self createOrEditBookmarkWithURL:[[URLWithTitle alloc] initWithURL:URL
+                                                                title:title]];
+}
+
+- (void)createOrEditBookmarkWithURL:(URLWithTitle*)URLWithTitle {
+  DCHECK(URLWithTitle) << [self description];
+  NSString* title = URLWithTitle.title;
+  GURL URL = URLWithTitle.URL;
+  if (!_profileBookmarkModel->loaded()) {
+    return;
+  }
+
+  const BookmarkNode* existingBookmark =
+      _profileBookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
+
+  if (existingBookmark) {
+    [self presentBookmarkEditorForURL:URL];
+  } else {
+    [self createBookmarkURL:URL title:title];
+  }
+}
+
+- (void)bookmarkWithFolderChooser:(NSArray<URLWithTitle*>*)URLs {
+  DCHECK(URLs.count > 0) << "URLs are missing " << [self description];
 
   if (!_profileBookmarkModel->loaded()) {
     return;
   }
 
-  if (command.URLs.count == 1 && !command.presentFolderChooser) {
-    URLWithTitle* URLWithTitle = command.URLs.firstObject;
-    DCHECK(URLWithTitle) << [self description];
-
-    const BookmarkNode* existingBookmark =
-        _profileBookmarkModel->GetMostRecentlyAddedUserNodeForURL(
-            URLWithTitle.URL);
-
-    if (existingBookmark) {
-      [self presentBookmarkEditorForURL:URLWithTitle.URL];
-    } else {
-      [self bookmarkURL:URLWithTitle.URL title:URLWithTitle.title];
-    }
-    return;
-  }
-
-  _URLs = command.URLs;
+  _URLs = URLs;
   [self presentFolderChooser];
 }
 

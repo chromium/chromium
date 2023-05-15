@@ -36,7 +36,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/shared/public/commands/bookmark_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
@@ -1087,8 +1086,7 @@ void RecordTabGridCloseTabsCount(int count) {
 
   NSArray<URLWithTitle*>* URLs = [self urlsWithTitleFromItemIDs:items];
 
-  BookmarkAddCommand* command = [[BookmarkAddCommand alloc] initWithURLs:URLs];
-  [bookmarkHandler bookmark:command];
+  [bookmarkHandler bookmarkWithFolderChooser:URLs];
 }
 
 - (NSArray<URLWithTitle*>*)urlsWithTitleFromItemIDs:(NSArray<NSString*>*)items {

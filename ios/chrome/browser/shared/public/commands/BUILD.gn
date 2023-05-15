@@ -8,8 +8,6 @@ source_set("commands") {
   sources = [
     "activity_service_commands.h",
     "application_commands.h",
-    "bookmark_add_command.h",
-    "bookmark_add_command.mm",
     "bookmarks_commands.h",
     "bring_android_tabs_commands.h",
     "browser_commands.h",

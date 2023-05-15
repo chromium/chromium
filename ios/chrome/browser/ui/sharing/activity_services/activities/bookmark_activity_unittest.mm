@@ -10,7 +10,6 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
-#import "ios/chrome/browser/shared/public/commands/bookmark_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -121,11 +120,12 @@ TEST_F(BookmarkActivityTest, PerformActivity_BookmarkAddCommand) {
   BookmarkActivity* activity = CreateActivity(testUrl);
 
   [[mocked_handler_ expect]
-      bookmark:[OCMArg checkWithBlock:^BOOL(BookmarkAddCommand* value) {
-        EXPECT_EQ(testUrl, value.URLs.firstObject.URL);
-        EXPECT_EQ(kTestTitle, value.URLs.firstObject.title);
-        return YES;
-      }]];
+      createOrEditBookmarkWithURL:[OCMArg
+                                      checkWithBlock:^BOOL(URLWithTitle* URL) {
+                                        EXPECT_EQ(testUrl, URL.URL);
+                                        EXPECT_EQ(kTestTitle, URL.title);
+                                        return YES;
+                                      }]];
 
   id activity_partial_mock = OCMPartialMock(activity);
   [[activity_partial_mock expect] activityDidFinish:YES];

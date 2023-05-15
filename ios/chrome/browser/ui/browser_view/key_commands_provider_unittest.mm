@@ -686,10 +686,11 @@ TEST_F(KeyCommandsProviderTest, AddToBookmarks_AddURL) {
   id handler = OCMStrictProtocolMock(@protocol(BookmarksCommands));
   provider_.bookmarksCommandsHandler = handler;
   GURL url = GURL("https://e.test");
-  id addCommand = [OCMArg checkWithBlock:^BOOL(BookmarkAddCommand* command) {
-    return command.URLs.count == 1 && command.URLs.firstObject.URL == url;
+  id addCommand = [OCMArg checkWithBlock:^BOOL(URLWithTitle* URL) {
+    return URL.URL == url;
   }];
-  OCMExpect([provider_.bookmarksCommandsHandler bookmark:addCommand]);
+  OCMExpect([provider_.bookmarksCommandsHandler
+      createOrEditBookmarkWithURL:addCommand]);
   web::FakeWebState* web_state = InsertNewWebState(0);
   web_state->SetCurrentURL(url);
 
