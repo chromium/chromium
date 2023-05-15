@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkShoppingItemRow;
 import org.chromium.chrome.browser.bookmarks.TestingDelegate;
+import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -190,6 +191,7 @@ public class BookmarkTest {
 
     @Before
     public void setUp() {
+        ShoppingFeatures.setShoppingListEligibleForTesting(false);
         mActivityTestRule.startMainActivityOnBlankPage();
         runOnUiThreadBlocking(() -> {
             mBookmarkModel = mActivityTestRule.getActivity().getBookmarkModelForTesting();
@@ -1728,8 +1730,8 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    @Features.EnableFeatures({ChromeFeatureList.SHOPPING_LIST})
     public void testShoppingFilterInBookmarks() throws InterruptedException, ExecutionException {
+        ShoppingFeatures.setShoppingListEligibleForTesting(true);
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         openBookmarkManager();
         BookmarkTestUtil.waitForBookmarkModelLoaded();
@@ -1746,9 +1748,9 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    @Features.EnableFeatures({ChromeFeatureList.SHOPPING_LIST})
     public void testShoppingDataPresentButFeatureDisabled()
             throws InterruptedException, ExecutionException {
+        ShoppingFeatures.setShoppingListEligibleForTesting(true);
         BookmarkId id = addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
         PowerBookmarkMeta.Builder meta = PowerBookmarkMeta.newBuilder().setShoppingSpecifics(
                 ShoppingSpecifics.newBuilder().setProductClusterId(1234L).build());

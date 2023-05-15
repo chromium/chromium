@@ -19,8 +19,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
+import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncService;
@@ -897,8 +897,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
             updateOrAdd(index++, buildBookmarkListItem(bookmarkListEntry));
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHOPPING_LIST)
-                && topLevelFoldersShowing()) {
+        if (ShoppingFeatures.isShoppingListEligible() && topLevelFoldersShowing()) {
             updateOrAdd(index++, buildDividerListItem());
             updateOrAdd(index++, buildShoppingFilterListItem());
         }
