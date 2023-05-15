@@ -28,7 +28,7 @@ import {PrinterListEntry} from './cups_printer_types.js';
 import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl} from './cups_printers_browser_proxy.js';
 import {CupsPrintersEntryListMixin} from './cups_printers_entry_list_mixin.js';
 import {getTemplate} from './cups_saved_printers.html.js';
-import {getStatusReasonFromPrinterStatus, PrinterStatus} from './printer_status.js';
+import {getStatusReasonFromPrinterStatus, PrinterStatus, PrinterStatusReason} from './printer_status.js';
 
 /**
  * If the Show more button is visible, the minimum number of printers we show
@@ -123,6 +123,17 @@ export class SettingsCupsSavedPrintersElement extends
       listBlurred_: Boolean,
 
       /**
+       * The cache of printer status reasons. Used by printer status entries to
+       * look up their current printer status.
+       */
+      printerStatusReasonCache_: {
+        type: Map<string, PrinterStatusReason>,
+        value() {
+          return new Map();
+        },
+      },
+
+      /**
        * True when the "printer-settings-printer-status" feature flag is
        * enabled.
        */
@@ -157,6 +168,7 @@ export class SettingsCupsSavedPrintersElement extends
   private listBlurred_: boolean;
   private newPrinters_: PrinterListEntry[];
   private visiblePrinterCounter_: number;
+  private printerStatusReasonCache_: Map<string, PrinterStatusReason>;
   private isPrinterSettingsPrinterStatusEnabled_: boolean;
 
   constructor() {
@@ -367,8 +379,8 @@ export class SettingsCupsSavedPrintersElement extends
   }
 
   /**
-   * For each printer status received, search for its respective saved printer
-   * and update its status.
+   * For each printer status received, add it to the printer status cache then
+   * notify its respective printer entry to update its status.
    */
   private onPrinterStatusReceived_(printerStatus: PrinterStatus) {
     assert(this.isPrinterSettingsPrinterStatusEnabled_);
@@ -376,28 +388,19 @@ export class SettingsCupsSavedPrintersElement extends
       return;
     }
 
-    // Find the associated printer and set its status reason.
-    const index = this.savedPrinters.findIndex(
-        printer => printer.printerInfo.printerId === printerStatus.printerId);
-    if (index === -1) {
-      return;
-    }
+    this.printerStatusReasonCache_.set(
+        printerStatus.printerId,
+        getStatusReasonFromPrinterStatus(printerStatus));
 
-    this.savedPrinters[index].printerInfo.printerStatusReason =
-        getStatusReasonFromPrinterStatus(printerStatus);
-
-
-    // Even though the online state is set on `savedPrinters`, the actual
-    // printer entries displayed are from `filteredPrinters_`. So notify the
-    // specific filtered printer entry to update its icon.
+    // The actual printer entries displayed are from `filteredPrinters_`. So
+    // notify the specific filtered printer entry to update its icon.
     const filteredIndex = this.filteredPrinters_.findIndex(
         printer => printer.printerInfo.printerId === printerStatus.printerId);
     if (filteredIndex === -1) {
       return;
     }
 
-    this.notifyPath(
-        `filteredPrinters_.${filteredIndex}.printerInfo.printerStatusReason`);
+    this.notifyPath(`filteredPrinters_.${filteredIndex}.printerInfo.printerId`);
   }
 }
 

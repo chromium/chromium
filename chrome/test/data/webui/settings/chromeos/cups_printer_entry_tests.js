@@ -119,6 +119,7 @@ suite('CupsPrinterEntry', function() {
     printerEntryTestElement =
         document.createElement('settings-cups-printers-entry');
     assertTrue(!!printerEntryTestElement);
+    printerEntryTestElement.printerStatusReasonCache = new Map();
     document.body.appendChild(printerEntryTestElement);
   });
 
@@ -208,6 +209,11 @@ suite('CupsPrinterEntry', function() {
   // Verify the correct printer status icon is shown based on the printer's
   // status reason.
   test('savedPrinterCorrectPrinterStatusIcon', function() {
+    const printerStatusReasonCache = new Map();
+    printerStatusReasonCache.set('id1', PrinterStatusReason.NO_ERROR);
+    printerStatusReasonCache.set('id2', PrinterStatusReason.OUT_OF_PAPER);
+
+    printerEntryTestElement.printerStatusReasonCache = printerStatusReasonCache;
     printerEntryTestElement.printerEntry =
         createPrinterEntry(PrinterType.SAVED);
 
@@ -218,18 +224,14 @@ suite('CupsPrinterEntry', function() {
             .icon);
 
     // Set to a good status reason.
-    printerEntryTestElement.set(
-        'printerEntry.printerInfo.printerStatusReason',
-        PrinterStatusReason.NO_ERROR);
+    printerEntryTestElement.set('printerEntry.printerInfo.printerId', 'id1');
     assertEquals(
         'os-settings:printer-status-green',
         printerEntryTestElement.shadowRoot.querySelector('#printerStatusIcon')
             .icon);
 
     // Set to an error status reason.
-    printerEntryTestElement.set(
-        'printerEntry.printerInfo.printerStatusReason',
-        PrinterStatusReason.OUT_OF_PAPER);
+    printerEntryTestElement.set('printerEntry.printerInfo.printerId', 'id2');
     assertEquals(
         'os-settings:printer-status-red',
         printerEntryTestElement.shadowRoot.querySelector('#printerStatusIcon')

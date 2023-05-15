@@ -18,7 +18,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
 import {getTemplate} from './cups_printers_entry.html.js';
-import {computePrinterState, PrinterState} from './printer_status.js';
+import {computePrinterState, PrinterState, PrinterStatusReason} from './printer_status.js';
 
 const SettingsCupsPrintersEntryElementBase = FocusRowMixin(PolymerElement);
 
@@ -58,6 +58,13 @@ export class SettingsCupsPrintersEntryElement extends
       },
 
       /**
+       * The cache of printer status reasons used to look up this entry's
+       * current printer status. Populated and maintained by
+       * cups_saved_printers.ts.
+       */
+      printerStatusReasonCache: Map<string, PrinterStatusReason>,
+
+      /**
        * True when the "printer-settings-printer-status" feature flag is
        * enabled.
        */
@@ -87,6 +94,7 @@ export class SettingsCupsPrintersEntryElement extends
   savingPrinter: boolean;
   subtext: string;
   userPrintersAllowed: boolean;
+  printerStatusReasonCache: Map<string, PrinterStatusReason>;
   private isPrinterSettingsRevampEnabled_: boolean;
   private isPrinterSettingsPrinterStatusEnabled_: boolean;
 
@@ -199,9 +207,14 @@ export class SettingsCupsPrintersEntryElement extends
       return `os-settings:printer-status-green`;
     }
 
+    const printerStatusReason = this.printerStatusReasonCache.get(
+        this.printerEntry.printerInfo.printerId);
+    if (!printerStatusReason) {
+      return `os-settings:printer-status-grey`;
+    }
+
     let iconColor = '';
-    switch (computePrinterState(
-        this.printerEntry.printerInfo.printerStatusReason)) {
+    switch (computePrinterState(printerStatusReason)) {
       case PrinterState.GOOD:
         iconColor = 'green';
         break;
