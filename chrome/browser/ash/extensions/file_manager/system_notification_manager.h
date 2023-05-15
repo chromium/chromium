@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
@@ -258,16 +259,13 @@ class SystemNotificationManager {
           uma_types_for_buttons,
       absl::optional<int> button_index);
 
-  using DataProtectionWarningContinueCallback = base::RepeatingClosure;
-
   /**
    * Click handler for Data Leak Prevention or Enterprise Connectors policy
    * notifications.
    */
   void HandleDataProtectionPolicyNotificationClick(
-      file_manager::io_task::IOTaskId task_id,
-      const std::string& notification_id,
-      DataProtectionWarningContinueCallback callback,
+      base::RepeatingClosure proceed_callback,
+      base::RepeatingClosure cancel_callback,
       absl::optional<int> button_index);
 
   /**
@@ -291,15 +289,12 @@ class SystemNotificationManager {
       const Volume& volume);
 
   /**
-   * Makes a notification instance Data Leak Prevention or Enterprise Connectors
-   * errors and warnings. For warnings, |continue_callback| should be passed in
-   * order to resume the task in case the user chooses to.
+   * Makes a notification instance Data Protection errors and warnings.
    */
   std::unique_ptr<message_center::Notification>
   MakeDataProtectionPolicyNotification(
       const std::string& notification_id,
-      const file_manager::io_task::ProgressStatus& status,
-      DataProtectionWarningContinueCallback continue_callback);
+      const file_manager::io_task::ProgressStatus& status);
 
   /**
    * Makes a notification instance for Data Protection progress notifications.
@@ -310,14 +305,10 @@ class SystemNotificationManager {
       const file_manager::io_task::ProgressStatus& status);
 
   /**
-   * Helper function to show a policy warning dialog.
+   * Helper function to show a data protection policy dialog.
    */
-  void ShowPolicyWarningDialog(DataProtectionWarningContinueCallback callback);
-
-  /**
-   * Helper function to show a policy error dialog.
-   */
-  void ShowPolicyErrorDialog();
+  void ShowDataProtectionPolicyDialog(file_manager::io_task::IOTaskId task_id,
+                                      policy::FilesDialogType type);
 
   /**
    * Helper function bound to notification instances that hides notifications.
@@ -328,6 +319,11 @@ class SystemNotificationManager {
    * Helper function to cancel a task.
    */
   void CancelTask(file_manager::io_task::IOTaskId task_id);
+
+  /**
+   * Helper function to resume a task.
+   */
+  void ResumeTask(file_manager::io_task::IOTaskId task_id);
 
   /**
    * Maps device paths to their mount status.

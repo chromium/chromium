@@ -15,6 +15,13 @@
 
 namespace policy {
 
+// Dialog type (warning or error).
+enum class FilesDialogType {
+  kUnknown,  // Not a valid type - no dialog will be created.
+  kWarning,  // Warning dialog - user can select to proceed or not.
+  kError,    // Error dialog - overview of blocked files.
+};
+
 // FilesPolicyDialog is a window modal dialog used to show detailed overview of
 // warnings and files blocked by data protection policies.
 class FilesPolicyDialog : public PolicyDialogBase {

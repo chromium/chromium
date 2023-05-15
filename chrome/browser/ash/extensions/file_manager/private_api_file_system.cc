@@ -62,7 +62,10 @@
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/fileapi/recent_disk_source.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
+#include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -274,6 +277,20 @@ DlpRulesManagerComponentToApiEnum(
   }
   NOTREACHED() << "Unknown component type.";
   return {};
+}
+
+policy::FilesDialogType ApiPolicyDialogTypeToChromeEnum(
+    api::file_manager_private::PolicyDialogType type) {
+  switch (type) {
+    case api::file_manager_private::POLICY_DIALOG_TYPE_NONE:
+      return policy::FilesDialogType::kUnknown;
+    case api::file_manager_private::POLICY_DIALOG_TYPE_WARNING:
+      return policy::FilesDialogType::kWarning;
+    case api::file_manager_private::POLICY_DIALOG_TYPE_ERROR:
+      return policy::FilesDialogType::kError;
+  }
+  NOTREACHED() << "Unknown policy dialog type " << type;
+  return policy::FilesDialogType::kUnknown;
 }
 
 }  // namespace
@@ -1701,7 +1718,22 @@ FileManagerPrivateShowPolicyDialogFunction::Run() {
     return RespondNow(Error("Invalid task id"));
   }
 
-  // TODO(b/279436140): Call FilesPolicyNotificationManager.
+  policy::FilesDialogType type = ApiPolicyDialogTypeToChromeEnum(params->type);
+  if (type == policy::FilesDialogType::kUnknown) {
+    return RespondNow(Error("No dialog type passed for task_id *",
+                            base::NumberToString(params->task_id)));
+  }
+
+  policy::FilesPolicyNotificationManager* manager =
+      policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+          browser_context());
+  if (!manager) {
+    LOG(ERROR) << "No FilesPolicyNotificationManager instantiated,"
+                  "can't show policy dialog for task_id "
+               << params->task_id;
+    Respond(NoArguments());
+  }
+  manager->ShowDialog(params->task_id, type);
 
   return RespondNow(NoArguments());
 }

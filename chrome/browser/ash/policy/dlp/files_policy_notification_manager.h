@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_DLP_FILES_POLICY_NOTIFICATION_MANAGER_H_
 #define CHROME_BROWSER_ASH_POLICY_DLP_FILES_POLICY_NOTIFICATION_MANAGER_H_
 
+#include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/chromeos/policy/dlp/dialogs/files_policy_dialog.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -26,6 +28,11 @@ class FilesPolicyNotificationManager : public KeyedService {
       const FilesPolicyNotificationManager&) = delete;
 
   ~FilesPolicyNotificationManager() override;
+
+  // Shows a policy dialog of type `type` for task identified by `task_id`. Used
+  // for copy and move operations.
+  void ShowDialog(file_manager::io_task::IOTaskId task_id,
+                  FilesDialogType type);
 };
 
 }  // namespace policy

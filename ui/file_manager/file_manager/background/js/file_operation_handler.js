@@ -100,9 +100,8 @@ export class FileOperationHandler {
             if (event.itemCount === 1) {
               // Single item: the user can continue the action directly from
               // the notification.
-              chrome.fileManagerPrivate.resumeIOTask(
-                  event.taskId,
-                  chrome.fileManagerPrivate.ResumeParams('', false));
+              // TODO(b/281973963): Pass resume reason.
+              chrome.fileManagerPrivate.resumeIOTask(event.taskId, {});
             } else {
               // Multiple items: the user can continue the action from the
               // review dialog.
