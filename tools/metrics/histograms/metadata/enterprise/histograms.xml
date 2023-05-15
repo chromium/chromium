@@ -907,6 +907,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DeviceTrust.Inline.Attestation.PolicyLevel"
+    enum="DTAttestationPolicyLevel" expires_after="2024-05-11">
+  <owner>hmare@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Policy levels enabled for the Device Trust connector during the DTC inline
+    flow process. The inline flow can occur during a user navigation, and the
+    policy level determines the content of the attestation services' challenge
+    response.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DeviceTrust.Key.TrustLevel" enum="DTKeyTrustLevel"
     expires_after="2023-12-01">
   <owner>hmare@google.com</owner>

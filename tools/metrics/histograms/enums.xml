@@ -29935,6 +29935,14 @@ Called by update_document_policy_enum.py.-->
   <int value="3" label="Challenge Response Sent"/>
 </enum>
 
+<enum name="DTAttestationPolicyLevel">
+  <int value="0" label="No policy enabled for the inline flow"/>
+  <int value="1" label="Unknown policy for the Inline flow"/>
+  <int value="2" label="Inline flow for browser"/>
+  <int value="3" label="Inline flow for user"/>
+  <int value="4" label="Inline flow for user and browser"/>
+</enum>
+
 <enum name="DTAttestationResult">
   <int value="0" label="Missing Core Signals"/>
   <int value="1" label="Missing Signing Key"/>

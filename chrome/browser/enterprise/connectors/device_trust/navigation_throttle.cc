@@ -177,6 +177,7 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
       // Because BuildChallengeResponse() may run the resume callback
       // synchronously, this call is deferred to ensure that this method returns
       // DEFER before `resume_navigation_callback` is invoked.
+      LogAttestationPolicyLevel(levels);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(

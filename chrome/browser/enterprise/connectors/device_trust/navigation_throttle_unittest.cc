@@ -64,6 +64,8 @@ constexpr char kFunnelHistogramName[] =
     "Enterprise.DeviceTrust.Attestation.Funnel";
 constexpr char kHandshakeResultHistogram[] =
     "Enterprise.DeviceTrust.Handshake.Result";
+constexpr char kPolicyLevelsHistogramName[] =
+    "Enterprise.DeviceTrust.Attestation.PolicyLevel";
 
 scoped_refptr<net::HttpResponseHeaders> GetHeaderChallenge(
     const std::string& challenge) {
@@ -141,6 +143,9 @@ class DeviceTrustNavigationThrottleTest : public testing::Test {
     EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest().action());
     histogram_tester_.ExpectUniqueSample(
         kFunnelHistogramName, DTAttestationFunnelStep::kChallengeReceived, 1);
+    histogram_tester_.ExpectUniqueSample(
+        kPolicyLevelsHistogramName, DTAttestationPolicyLevel::kUserAndBrowser,
+        1);
     run_loop.Run();
     histogram_tester_.ExpectTotalCount(
         base::StringPrintf(kLatencyHistogramName,
@@ -305,7 +310,8 @@ TEST_F(DeviceTrustNavigationThrottleTest, TestTimeout) {
   EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest().action());
   histogram_tester_.ExpectUniqueSample(
       kFunnelHistogramName, DTAttestationFunnelStep::kChallengeReceived, 1);
-
+  histogram_tester_.ExpectUniqueSample(
+      kPolicyLevelsHistogramName, DTAttestationPolicyLevel::kUserAndBrowser, 1);
   task_environment_.FastForwardBy(kTimeoutTime);
 
   run_loop.Run();
