@@ -187,9 +187,16 @@
 
   .folder {
     --cr-icon-color: currentColor;
+    --cr-icon-size: 16px;
     height: 16px;
     margin: 0;
     width: 16px;
+  }
+
+  :host-context([chrome-refresh-2023]) .folder {
+    --cr-icon-size: 20px;
+    height: 20px;
+    width: 20px;
   }
 
   .count {
