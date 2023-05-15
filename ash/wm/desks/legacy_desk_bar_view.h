@@ -6,25 +6,17 @@
 #define ASH_WM_DESKS_LEGACY_DESK_BAR_VIEW_H_
 
 #include <memory>
-#include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/wm/desks/cros_next_default_desk_button.h"
 #include "ash/wm/desks/cros_next_desk_icon_button.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
-#include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/desks/templates/saved_desk_metrics_util.h"
-#include "base/callback_list.h"
-#include "base/memory/raw_ptr.h"
-#include "ui/views/controls/scroll_view.h"
+#include "ash/wm/desks/desk_drag_proxy.h"
+#include "ash/wm/desks/desk_mini_view.h"
+#include "ash/wm/overview/overview_grid.h"
 #include "ui/views/view.h"
 
 namespace ash {
-
-class DeskBarHoverObserver;
-class DeskDragProxy;
-class DeskMiniView;
-class OverviewGrid;
 
 // A bar that resides at the top portion of the overview, which contains desk
 // mini views, the new desk button, the library button, and the scroll arrow
@@ -37,13 +29,6 @@ class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
   LegacyDeskBarView& operator=(const LegacyDeskBarView&) = delete;
 
   ~LegacyDeskBarView() override;
-
-  void Init() override;
-
-  // Updates the visibility state of the close buttons on all the mini_views as
-  // a result of mouse and gesture events.
-  void OnHoverStateMayHaveChanged();
-  void OnGestureTap(const gfx::Rect& screen_rect, bool is_long_gesture);
 
   // Called when an item is being dragged in overview mode to update whether it
   // is currently intersecting with this view, and the |screen_location| of the
@@ -135,17 +120,11 @@ class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
       CrOSNextDeskIconButton::State target_state) override;
 
  private:
-  friend class DesksTestApi;
-
   // If drag a desk over a scroll button (i.e., the desk intersects the button),
   // scroll the desk bar. If the desk is dropped or leaves the button, end
   // scroll. Return true if the scroll is triggered. Return false if the scroll
   // is ended.
   bool MaybeScrollByDraggedDesk();
-
-  // Observes mouse events on the desk bar widget and updates the states of the
-  // mini_views accordingly.
-  std::unique_ptr<DeskBarHoverObserver> hover_observer_;
 
   // Drag proxy for the dragged desk.
   std::unique_ptr<DeskDragProxy> drag_proxy_;

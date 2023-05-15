@@ -9,8 +9,12 @@
 #include "ash/wm/desks/cros_next_desk_icon_button.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_action_context_menu.h"
+#include "ash/wm/desks/desk_bar_controller.h"
+#include "ash/wm/desks/desk_bar_view.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
@@ -24,40 +28,52 @@ namespace ash {
 
 namespace {
 
-const LegacyDeskBarView* GetDesksBarView() {
+const DeskBarViewBase* GetDeskBarView(DeskBarViewBase::Type type) {
   auto* root_window = Shell::GetPrimaryRootWindow();
-  auto* overview_controller = Shell::Get()->overview_controller();
-  DCHECK(overview_controller->InOverviewSession());
-  return overview_controller->overview_session()
-      ->GetGridWithRootWindow(root_window)
-      ->desks_bar_view();
+  if (type == DeskBarViewBase::Type::kOverview) {
+    auto* overview_controller = Shell::Get()->overview_controller();
+    CHECK(overview_controller->InOverviewSession());
+    return overview_controller->overview_session()
+        ->GetGridWithRootWindow(root_window)
+        ->desks_bar_view();
+  } else {
+    auto* desk_bar_controller = DesksController::Get()->desk_bar_controller();
+    CHECK(desk_bar_controller);
+    return desk_bar_controller->GetDeskBarView(root_window);
+  }
 }
 
 }  // namespace
 
 // static
-ScrollArrowButton* DesksTestApi::GetDesksBarLeftScrollButton() {
-  return GetDesksBarView()->left_scroll_button_;
+ScrollArrowButton* DesksTestApi::GetDeskBarLeftScrollButton(
+    DeskBarViewBase::Type type) {
+  return GetDeskBarView(type)->left_scroll_button_;
 }
 
 // static
-ScrollArrowButton* DesksTestApi::GetDesksBarRightScrollButton() {
-  return GetDesksBarView()->right_scroll_button_;
+ScrollArrowButton* DesksTestApi::GetDeskBarRightScrollButton(
+    DeskBarViewBase::Type type) {
+  return GetDeskBarView(type)->right_scroll_button_;
 }
 
 // static
-views::ScrollView* DesksTestApi::GetDesksBarScrollView() {
-  return GetDesksBarView()->scroll_view_;
+views::ScrollView* DesksTestApi::GetDeskBarScrollView(
+    DeskBarViewBase::Type type) {
+  return GetDeskBarView(type)->scroll_view_;
 }
 
 // static
-const DeskMiniView* DesksTestApi::GetDesksBarDragView() {
-  return GetDesksBarView()->drag_view_;
+const DeskMiniView* DesksTestApi::GetDeskBarDragView(
+    DeskBarViewBase::Type type) {
+  return GetDeskBarView(type)->drag_view_;
 }
 
 // static
-DeskActionContextMenu* DesksTestApi::GetContextMenuForDesk(int index) {
-  return GetDesksBarView()->mini_views()[index]->context_menu_.get();
+DeskActionContextMenu* DesksTestApi::GetContextMenuForDesk(
+    DeskBarViewBase::Type type,
+    int index) {
+  return GetDeskBarView(type)->mini_views()[index]->context_menu_.get();
 }
 
 // static
@@ -68,13 +84,17 @@ views::LabelButton* DesksTestApi::GetCloseAllUndoToastDismissButton() {
 }
 
 // static
-const ui::SimpleMenuModel& DesksTestApi::GetContextMenuModelForDesk(int index) {
-  return GetContextMenuForDesk(index)->context_menu_model_;
+const ui::SimpleMenuModel& DesksTestApi::GetContextMenuModelForDesk(
+    DeskBarViewBase::Type type,
+    int index) {
+  return GetContextMenuForDesk(type, index)->context_menu_model_;
 }
 
 // static
-views::View* DesksTestApi::GetHighlightOverlayForDeskPreview(int index) {
-  return GetDesksBarView()
+views::View* DesksTestApi::GetHighlightOverlayForDeskPreview(
+    DeskBarViewBase::Type type,
+    int index) {
+  return GetDeskBarView(type)
       ->mini_views()[index]
       ->desk_preview()
       ->highlight_overlay_;
@@ -108,22 +128,23 @@ bool DesksTestApi::DesksControllerCanUndoDeskRemoval() {
 }
 
 // static
-bool DesksTestApi::IsContextMenuRunningForDesk(int index) {
-  return GetContextMenuForDesk(index)->context_menu_runner_->IsRunning();
+bool DesksTestApi::IsContextMenuRunningForDesk(DeskBarViewBase::Type type,
+                                               int index) {
+  return GetContextMenuForDesk(type, index)->context_menu_runner_->IsRunning();
 }
 
 // static
-bool DesksTestApi::IsDesksBarLeftGradientVisible() {
+bool DesksTestApi::IsDeskBarLeftGradientVisible(DeskBarViewBase::Type type) {
   const auto& gradient_mask =
-      GetDesksBarView()->scroll_view_->layer()->gradient_mask();
+      GetDeskBarView(type)->scroll_view_->layer()->gradient_mask();
   return !gradient_mask.IsEmpty() &&
          cc::MathUtil::IsWithinEpsilon(gradient_mask.steps()[0].fraction, 0.f);
 }
 
 // static
-bool DesksTestApi::IsDesksBarRightGradientVisible() {
+bool DesksTestApi::IsDeskBarRightGradientVisible(DeskBarViewBase::Type type) {
   const auto& gradient_mask =
-      GetDesksBarView()->scroll_view_->layer()->gradient_mask();
+      GetDeskBarView(type)->scroll_view_->layer()->gradient_mask();
   return !gradient_mask.IsEmpty() &&
          cc::MathUtil::IsWithinEpsilon(
              gradient_mask.steps()[gradient_mask.step_count() - 1].fraction,

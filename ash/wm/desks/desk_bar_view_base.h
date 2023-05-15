@@ -25,6 +25,8 @@
 
 namespace ash {
 
+class DeskBarHoverObserver;
+
 // Base class for desk bar views, including desk bar view within overview and
 // desk bar view for the desk button.
 class ASH_EXPORT DeskBarViewBase : public views::View,
@@ -38,6 +40,18 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   enum class State {
     kZero,
     kExpanded,
+  };
+
+  enum class LibraryUiVisibility {
+    // Library UI visibility is yet to checked or needs an update. The bar will
+    // check all prerequisites and the desk model.
+    kToBeChecked,
+
+    // Library UI should be visible.
+    kVisible,
+
+    // Library UI should be hidden.
+    kHidden,
   };
 
   DeskBarViewBase(const DeskBarViewBase&) = delete;
@@ -129,6 +143,10 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
     return library_button_label_;
   }
 
+  void set_library_ui_visibility(LibraryUiVisibility library_ui_visibility) {
+    library_ui_visibility_ = library_ui_visibility;
+  }
+
   // views::View:
   const char* GetClassName() const override;
   void Layout() override;
@@ -139,7 +157,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // bar was created. This should only be called after this view has been added
   // to a widget, as it needs to call `GetWidget()` when it's performing a
   // layout.
-  virtual void Init();
+  void Init();
 
   // Returns true if it is currently in zero state.
   bool IsZeroState() const;
@@ -201,6 +219,15 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // this function, and rename this function by removing the prefix CrOSNext.
   void UpdateLibraryButtonVisibilityCrOSNext();
 
+  // Updates the visibility state of the close buttons on all the mini_views as
+  // a result of mouse and gesture events.
+  void OnHoverStateMayHaveChanged();
+  void OnGestureTap(const gfx::Rect& screen_rect, bool is_long_gesture);
+
+  // Indicates if it should show the library UI in the bar. This will only query
+  // the desk model when needed.
+  bool ShouldShowLibraryUi();
+
   // Called to update state of `button` and apply the scale animation to the
   // button. For the new desk button, this is called when the make the new desk
   // button a drop target for the window being dragged or at the end of the
@@ -232,6 +259,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
 
  protected:
   friend class DeskBarScrollViewLayout;
+  friend class DesksTestApi;
 
   DeskBarViewBase(aura::Window* root, Type type);
   ~DeskBarViewBase() override;
@@ -299,6 +327,11 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // view.
   bool dragged_item_over_bar_ = false;
 
+  // This controls whether or not to show the library UI, e.g. the library
+  // button.
+  LibraryUiVisibility library_ui_visibility_ =
+      LibraryUiVisibility::kToBeChecked;
+
   // The `OverviewGrid` that contains this object if this is a `Type::kOverview`
   // bar, nullptr otherwise.
   raw_ptr<OverviewGrid, ExperimentalAsh> overview_grid_ = nullptr;
@@ -347,6 +380,10 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // Scroll arrow buttons.
   raw_ptr<ScrollArrowButton, ExperimentalAsh> left_scroll_button_ = nullptr;
   raw_ptr<ScrollArrowButton, ExperimentalAsh> right_scroll_button_ = nullptr;
+
+  // Observes mouse events on the desk bar widget and updates the states of the
+  // mini_views accordingly.
+  std::unique_ptr<DeskBarHoverObserver> hover_observer_;
 
   // ScrollView callback subscriptions.
   base::CallbackListSubscription on_contents_scrolled_subscription_;

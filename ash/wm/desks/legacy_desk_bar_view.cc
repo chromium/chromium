@@ -4,68 +4,31 @@
 
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 
-#include <iterator>
-#include <utility>
-
-#include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/window_properties.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
-#include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/utility/haptics_util.h"
-#include "ash/wm/desks/desk_action_view.h"
-#include "ash/wm/desks/desk_drag_proxy.h"
-#include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_mini_view_animations.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
-#include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/desks/expanded_desks_bar_button.h"
-#include "ash/wm/desks/scroll_arrow_button.h"
-#include "ash/wm/desks/templates/saved_desk_presenter.h"
-#include "ash/wm/desks/templates/saved_desk_util.h"
-#include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_session.h"
-#include "ash/wm/overview/overview_utils.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
-#include "base/functional/bind.h"
-#include "base/i18n/rtl.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/events/devices/device_data_manager.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
-#include "ui/events/devices/input_device.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/types/event_type.h"
-#include "ui/gfx/text_elider.h"
-#include "ui/views/background.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/highlight_border.h"
-#include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/cursor_manager.h"
-#include "ui/wm/core/window_animations.h"
 
 namespace ash {
 
 namespace {
-gfx::Rect GetGestureEventScreenRect(const ui::Event& event) {
-  DCHECK(event.IsGestureEvent());
-  return event.AsGestureEvent()->details().bounding_box();
-}
-
 OverviewHighlightController* GetHighlightController() {
   auto* overview_controller = Shell::Get()->overview_controller();
   DCHECK(overview_controller->InOverviewSession());
@@ -73,62 +36,6 @@ OverviewHighlightController* GetHighlightController() {
 }
 
 }  // namespace
-
-// -----------------------------------------------------------------------------
-// DeskBarHoverObserver:
-
-class DeskBarHoverObserver : public ui::EventObserver {
- public:
-  DeskBarHoverObserver(LegacyDeskBarView* owner, aura::Window* widget_window)
-      : owner_(owner),
-        event_monitor_(views::EventMonitor::CreateWindowMonitor(
-            this,
-            widget_window,
-            {ui::ET_MOUSE_PRESSED, ui::ET_MOUSE_DRAGGED, ui::ET_MOUSE_RELEASED,
-             ui::ET_MOUSE_MOVED, ui::ET_MOUSE_ENTERED, ui::ET_MOUSE_EXITED,
-             ui::ET_GESTURE_LONG_PRESS, ui::ET_GESTURE_LONG_TAP,
-             ui::ET_GESTURE_TAP, ui::ET_GESTURE_TAP_DOWN})) {}
-
-  DeskBarHoverObserver(const DeskBarHoverObserver&) = delete;
-  DeskBarHoverObserver& operator=(const DeskBarHoverObserver&) = delete;
-
-  ~DeskBarHoverObserver() override = default;
-
-  // ui::EventObserver:
-  void OnEvent(const ui::Event& event) override {
-    switch (event.type()) {
-      case ui::ET_MOUSE_PRESSED:
-      case ui::ET_MOUSE_DRAGGED:
-      case ui::ET_MOUSE_RELEASED:
-      case ui::ET_MOUSE_MOVED:
-      case ui::ET_MOUSE_ENTERED:
-      case ui::ET_MOUSE_EXITED:
-        owner_->OnHoverStateMayHaveChanged();
-        break;
-
-      case ui::ET_GESTURE_LONG_PRESS:
-      case ui::ET_GESTURE_LONG_TAP:
-        owner_->OnGestureTap(GetGestureEventScreenRect(event),
-                             /*is_long_gesture=*/true);
-        break;
-
-      case ui::ET_GESTURE_TAP:
-      case ui::ET_GESTURE_TAP_DOWN:
-        owner_->OnGestureTap(GetGestureEventScreenRect(event),
-                             /*is_long_gesture=*/false);
-        break;
-
-      default:
-        NOTREACHED();
-        break;
-    }
-  }
-
- private:
-  raw_ptr<LegacyDeskBarView, ExperimentalAsh> owner_;
-
-  std::unique_ptr<views::EventMonitor> event_monitor_;
-};
 
 // -----------------------------------------------------------------------------
 // LegacyDeskBarView:
@@ -143,27 +50,6 @@ LegacyDeskBarView::~LegacyDeskBarView() {
   DesksController::Get()->RemoveObserver(this);
   if (drag_view_) {
     EndDragDesk(drag_view_, /*end_by_user=*/false);
-  }
-}
-
-void LegacyDeskBarView::Init() {
-  DeskBarViewBase::Init();
-
-  // TODO(b/278946144): Migrate `DeskBarHoverObserver` to use base class.
-  hover_observer_ = std::make_unique<DeskBarHoverObserver>(
-      this, GetWidget()->GetNativeWindow());
-}
-
-void LegacyDeskBarView::OnHoverStateMayHaveChanged() {
-  for (auto* mini_view : mini_views_) {
-    mini_view->UpdateDeskButtonVisibility();
-  }
-}
-
-void LegacyDeskBarView::OnGestureTap(const gfx::Rect& screen_rect,
-                                     bool is_long_gesture) {
-  for (auto* mini_view : mini_views_) {
-    mini_view->OnWidgetGestureTap(screen_rect, is_long_gesture);
   }
 }
 

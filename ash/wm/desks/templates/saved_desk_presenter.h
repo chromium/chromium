@@ -38,10 +38,6 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   SavedDeskPresenter& operator=(const SavedDeskPresenter&) = delete;
   ~SavedDeskPresenter() override;
 
-  bool should_show_saved_desk_library() {
-    return should_show_saved_desk_library_;
-  }
-
   // Retrieve the current and max count for a given saved desk type. Note that
   // these are snapshots of the model state, which may not match the current UI
   // state.
@@ -56,8 +52,7 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
 
   // Update UI for saved desk library. More specifically, it updates the
   // visibility of the library button, save desk button, and the saved desk
-  // grid. The grid contents are not updated. It also updates
-  // `should_show_saved_desk_library_`.
+  // grid. The grid contents are not updated.
   void UpdateUIForSavedDeskLibrary();
 
   // Calls the DeskModel to get all the saved desk entries, with a callback to
@@ -142,10 +137,6 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   base::ScopedObservation<desks_storage::DeskModel,
                           desks_storage::DeskModelObserver>
       desk_model_observation_{this};
-
-  // If the user has at least one saved desk entry, the saved desk library
-  // should be shown. Otherwise, it should be invisible.
-  bool should_show_saved_desk_library_ = false;
 
   // Test closure that runs after the UI has been updated async after a call to
   // the model.
