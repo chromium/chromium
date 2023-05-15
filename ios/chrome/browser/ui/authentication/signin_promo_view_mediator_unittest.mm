@@ -195,7 +195,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     } else {
       title = GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
     }
-    OCMExpect([primary_button_ setTitle:title forState:UIControlStateNormal]);
+    OCMExpect([signin_promo_view_ configurePrimaryButtonWithTitle:title]);
     image_view_profile_image_ = nil;
   }
 
@@ -233,9 +233,9 @@ class SigninPromoViewMediatorTest : public PlatformTest {
                              ? identity_.userGivenName
                              : identity_.userEmail;
         std::u16string name16 = SysNSStringToUTF16(name);
-        OCMExpect([primary_button_
-            setTitle:GetNSStringF(IDS_IOS_SIGNIN_PROMO_CONTINUE_AS, name16)
-            forState:UIControlStateNormal]);
+        OCMExpect([signin_promo_view_
+            configurePrimaryButtonWithTitle:
+                GetNSStringF(IDS_IOS_SIGNIN_PROMO_CONTINUE_AS, name16)]);
         OCMExpect([secondary_button_
             setTitle:GetNSString(IDS_IOS_SIGNIN_PROMO_CHANGE_ACCOUNT)
             forState:UIControlStateNormal]);
@@ -297,9 +297,9 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     NSString* name = identity_.userGivenName.length ? identity_.userGivenName
                                                     : identity_.userEmail;
     std::u16string name16 = SysNSStringToUTF16(name);
-    OCMExpect([primary_button_
-        setTitle:GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC)
-        forState:UIControlStateNormal]);
+    OCMExpect([signin_promo_view_
+        configurePrimaryButtonWithTitle:GetNSString(
+                                            IDS_IOS_SYNC_PROMO_TURN_ON_SYNC)]);
     image_view_profile_image_ = nil;
   }
 
