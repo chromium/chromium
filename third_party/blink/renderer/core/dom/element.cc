@@ -3431,19 +3431,10 @@ static ContainerQueryEvaluator* ComputeContainerQueryEvaluator(
       return nullptr;
     }
   }
-  // If we're switching to display:contents, any existing results cached on
-  // ContainerQueryEvaluator are no longer valid, since any style recalc
-  // based on that information would *not* be corrected by a subsequent
-  // interleaved style recalc, since the element has no layout object.
-  if (old_style && !element.LayoutObjectIsNeeded(new_style) &&
-      element.LayoutObjectIsNeeded(*old_style)) {
-    return MakeGarbageCollected<ContainerQueryEvaluator>();
+  if (evaluator) {
+    return evaluator;
   }
-  // Otherwise, the existing ContainerQueryEvaluator can be used, if any.
-  if (!evaluator) {
-    evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
-  }
-  return evaluator;
+  return MakeGarbageCollected<ContainerQueryEvaluator>();
 }
 
 static const StyleRecalcChange ApplyComputedStyleDiff(

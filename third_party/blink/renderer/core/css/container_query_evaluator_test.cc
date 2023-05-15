@@ -772,4 +772,55 @@ TEST_F(ContainerQueryEvaluatorTest, ScopedCaching) {
   EXPECT_EQ(cache.size(), 2u);
 }
 
+TEST_F(ContainerQueryEvaluatorTest, DisplayContentsStyleQueryInvalidation) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      /* Register --foo to avoid recalc due to inheritance. */
+      @property --foo {
+        syntax: "none|bar";
+        inherits: false;
+        initial-value: none;
+      }
+      #container.contents {
+        --foo: bar;
+        display: contents;
+      }
+      @container style(--foo: bar) {
+        #container > div.bar {
+          --match: true;
+        }
+      }
+    </style>
+    <div id="container">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div class="bar"></div>
+      <div></div>
+      <div></div>
+    </div>
+  )HTML");
+
+  Element* container = GetDocument().getElementById("container");
+  ASSERT_TRUE(container);
+  ContainerQueryEvaluator* evaluator = container->GetContainerQueryEvaluator();
+  ASSERT_TRUE(evaluator);
+
+  container->setAttribute(html_names::kClassAttr, "contents");
+
+  unsigned before_count = GetStyleEngine().StyleForElementCount();
+
+  UpdateAllLifecyclePhasesForTest();
+
+  unsigned after_count = GetStyleEngine().StyleForElementCount();
+
+  // #container and div.bar should be affected. In particular, we should not
+  // recalc style for other <div> children of #container.
+  EXPECT_EQ(2u, after_count - before_count);
+
+  // The ContainerQueryEvaluator should still be the same. No need to re-create
+  // the evaluator if when the display changes.
+  EXPECT_EQ(evaluator, container->GetContainerQueryEvaluator());
+}
+
 }  // namespace blink
