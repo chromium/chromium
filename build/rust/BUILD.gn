@@ -70,3 +70,13 @@ config("proc_macro_extern") {
 config("forbid_unsafe") {
   rustflags = [ "-Funsafe_code" ]
 }
+
+config("panic_immediate_abort") {
+  visibility = [ "//build/rust/std/rules:*" ]
+  if (is_official_build) {
+    rustflags = [
+      "--cfg",
+      "panic_immediate_abort",
+    ]
+  }
+}

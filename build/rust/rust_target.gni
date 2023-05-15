@@ -132,11 +132,7 @@ template("rust_target") {
     _configs += invoker.library_configs
   }
 
-  _forward_to_host_toolchain = false
   if (invoker.target_type == "rust_proc_macro") {
-    if (current_toolchain != host_toolchain_no_sanitizers) {
-      _forward_to_host_toolchain = true
-    }
     _main_target_suffix = "${target_name}__proc_macro"
   } else {
     _main_target_suffix = "__rlib"
@@ -188,16 +184,17 @@ template("rust_target") {
   # TODO(crbug.com/1256930) - verify this is correct
   assert(defined(invoker.sources), "sources must be listed")
 
-  if (_forward_to_host_toolchain) {
-    # Redirect to the host toolchain.
+  if (invoker.target_type == "rust_proc_macro" &&
+      !toolchain_for_rust_host_build_tools) {
+    # Redirect to the proc macro toolchain, which uses prebuilt stdlib libraries
+    # that are not built with panic=abort.
     group(_target_name) {
       testonly = _testonly
       if (defined(_visibility)) {
         visibility = _visibility
       }
-      public_deps = [
-        ":${_target_name}${_main_target_suffix}($host_toolchain_no_sanitizers)",
-      ]
+      public_deps =
+          [ ":${_target_name}${_main_target_suffix}($rust_macro_toolchain)" ]
     }
 
     not_needed(invoker, "*")

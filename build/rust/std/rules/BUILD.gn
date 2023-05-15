@@ -194,7 +194,10 @@ cargo_crate("core") {
     "//build/config/compiler:chromium_code",
     "//build/config/coverage:default_coverage",
   ]
-  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  library_configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//build/rust:panic_immediate_abort",
+  ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ "//build/rust/std:std_build_deps" ]
@@ -729,7 +732,10 @@ cargo_crate("std") {
   cargo_pkg_name = "std"
   cargo_pkg_description = "The Rust Standard Library"
   library_configs -= [ "//build/config/compiler:chromium_code" ]
-  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  library_configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//build/rust:panic_immediate_abort",
+  ]
   executable_configs -= [ "//build/config/compiler:chromium_code" ]
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [

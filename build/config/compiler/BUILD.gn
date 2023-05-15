@@ -946,7 +946,6 @@ config("compiler") {
     # sequences, ignoring the platform, when stderr is not a terminal.
     rustflags += [ "--color=always" ]
   }
-
   if (rust_abi_target != "") {
     rustflags += [ "--target=$rust_abi_target" ]
   }
@@ -956,6 +955,16 @@ config("compiler") {
   }
   if (is_official_build) {
     rustflags += [ "-Ccodegen-units=1" ]
+  }
+  if (!rust_prebuilt_stdlib) {
+    # When building against the Chromium Rust stdlib (which we compile) always
+    # abort instead of unwinding when panic occurs. In official builds, panics
+    # abort immediately (this is configured in the stdlib) to keep binary size
+    # down. So we unconditionally match behaviour in unofficial too.
+    rustflags += [
+      "-Cpanic=abort",
+      "-Zpanic_abort_tests",
+    ]
   }
 }
 

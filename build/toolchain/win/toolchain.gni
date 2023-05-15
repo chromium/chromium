@@ -28,8 +28,8 @@ if (host_os == "win") {
 _clang_bin_path = rebase_path("$clang_base_path/bin", root_build_dir)
 
 # Makes a single MSVC toolchain. Callers should normally instead invoke
-# "msvc_toolchain" which might make an additional toolchain available
-# without sanitizers if required.
+# "msvc_toolchain" which makes an additional toolchain for Rust targets that
+# are build-time artificts such as proc macros.
 #
 # Parameters:
 #   environment: File name of environment file.
@@ -47,9 +47,6 @@ template("single_msvc_toolchain") {
 
       # This value needs to be passed through unchanged.
       host_toolchain = host_toolchain
-
-      # This value needs to be passed through unchanged.
-      host_toolchain_no_sanitizers = host_toolchain_no_sanitizers
     }
 
     if (defined(toolchain_args.is_clang)) {
@@ -566,8 +563,9 @@ template("single_msvc_toolchain") {
   }
 }
 
-# Makes a single MSVC toolchain, or possibly two if we
-# need an additional toolchain without sanitizers enabled.
+# Makes an MSVC toolchain for the target, and an equivalent toolchain with the
+# prebuilt Rust stdlib for building proc macros (and other for-build-use
+# artifacts).
 template("msvc_toolchain") {
   single_msvc_toolchain(target_name) {
     assert(defined(invoker.toolchain_args),
@@ -583,9 +581,10 @@ template("msvc_toolchain") {
     # toolchains, but presubmit checks require that we explicitly exclude them
   }
 
-  if (using_sanitizer) {
-    # Make an additional toolchain with no sanitizers.
-    single_msvc_toolchain("${target_name}_no_sanitizers") {
+  if (enable_rust && current_toolchain == default_toolchain) {
+    # Make an additional toolchain which uses the prebuilt stdlib shipped with
+    # rustc.
+    single_msvc_toolchain("${target_name}_for_rust_host_build_tools") {
       assert(defined(invoker.toolchain_args),
              "Toolchains must declare toolchain_args")
       forward_variables_from(invoker,
@@ -598,7 +597,12 @@ template("msvc_toolchain") {
       toolchain_args = {
         # Populate toolchain args from the invoker.
         forward_variables_from(invoker.toolchain_args, "*")
-        toolchain_disables_sanitizers = true
+        toolchain_for_rust_host_build_tools = true
+
+        # The host build tools are static release builds to make the Chromium
+        # build faster.
+        is_debug = false
+        is_component_build = false
       }
     }
   }

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/rust.gni")
 import("//build/rust/rust_executable.gni")
 import("//build/rust/rust_macro.gni")
 import("//build/rust/rust_static_library.gni")
@@ -296,8 +295,7 @@ template("cargo_crate") {
     # Extra targets required to make build script work
     action("${_build_script_name}_output") {
       script = rebase_path("//build/rust/run_build_script.py")
-      build_script_target =
-          ":${_build_script_name}($host_toolchain_no_sanitizers)"
+      build_script_target = ":${_build_script_name}($rust_macro_toolchain)"
       deps = [ build_script_target ]
 
       # The build script may be built with a different toolchain when
@@ -352,7 +350,10 @@ template("cargo_crate") {
       }
     }
 
-    if (current_toolchain == host_toolchain_no_sanitizers) {
+    if (toolchain_for_rust_host_build_tools) {
+      # The build script is only available to be built on the host, and we use
+      # the rust_macro_toolchain for it to unblock building them while the
+      # Chromium stdlib is still being compiled.
       rust_executable(_build_script_name) {
         sources = invoker.build_sources
         crate_root = invoker.build_root

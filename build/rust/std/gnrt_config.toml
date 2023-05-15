@@ -41,6 +41,7 @@ extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
 # Dependencies of profiler_builtins must have instrumentation disabled
 remove_library_configs = ['//build/config/coverage:default_coverage']
 extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
+add_library_configs = ['//build/rust:panic_immediate_abort']
 
 [crate.libc]
 # Many flags are set by libc's build.rs based on new enough rustc but we don't
@@ -90,6 +91,7 @@ extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
 # See https://github.com/rust-lang/rust/blob/master/library/std/build.rs
 cfg = ['backtrace_in_libstd']
 env = ['STD_ENV_ARCH=$rust_target_arch']
+add_library_configs = ['//build/rust:panic_immediate_abort']
 
 # Remove this from std. It will be depended on directly when needed.
 exclude_deps_in_gn = ['profiler_builtins']

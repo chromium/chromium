@@ -64,11 +64,6 @@ declare_args() {
   # more work is done.
   use_goma_rust = false
 
-  # The host toolchain to use when you don't want sanitizers enabled. By default
-  # it is the regular toolchain, but when that toolchain has sanitizers, then
-  # this variable is changed to avoid them.
-  host_toolchain_no_sanitizers = host_toolchain
-
   # Force-enable `--color=always` for rustc, even when it would be disabled for
   # a platform. Mostly applicable to Windows, where new versions can handle ANSI
   # escape sequences but it's not reliable in general.
@@ -263,13 +258,20 @@ assert(!toolchain_has_rust || rust_target_arch != "")
 rustc_common_args = "--crate-name {{crate_name}} {{source}} --crate-type {{crate_type}} {{rustflags}}"
 
 # Rust procedural macros are shared objects loaded into a prebuilt host rustc
-# binary. To build them, we obviously need to build for the host. Not only that,
-# but because the host rustc is prebuilt, it lacks the machinery to be able to
-# load shared objects built using sanitizers (ASAN etc.) For that reason, we need
-# to use a host toolchain that lacks sanitizers. This is only strictly necessary
-# for procedural macros, but we may also choose to build standalone Rust host
-# executable tools using the same toolchain, as they're likely to depend upon
-# similar dependencies (syn, quote etc.) and it saves a little build time.
-if (using_sanitizer || toolchain_disables_sanitizers) {
-  host_toolchain_no_sanitizers = "${host_toolchain}_no_sanitizers"
+# binary. To build them, we obviously need to build for the host. Not only
+# that, but because the host rustc is prebuilt, it lacks the machinery to be
+# able to load shared objects built using sanitizers (ASAN etc.). For that
+# reason, we need to use a host toolchain that lacks sanitizers. Additionally,
+# proc macros should use panic=unwind, which means they need a stdlib that is
+# compiled the same way, as is the stdlib that we ship with the compiler.
+if (toolchain_for_rust_host_build_tools) {
+  rust_macro_toolchain = current_toolchain
+} else {
+  rust_macro_toolchain = "${host_toolchain}_for_rust_host_build_tools"
 }
+
+# When this is true, a prebuilt Rust stdlib will be used. This has implications
+# such as that the panic strategy (unwind, abort) must match how the stdlib is
+# compiled, which is typically as unwind.
+rust_prebuilt_stdlib =
+    !use_chromium_rust_toolchain || toolchain_for_rust_host_build_tools

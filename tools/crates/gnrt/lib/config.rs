@@ -35,6 +35,9 @@ pub struct CrateConfig {
     pub rustflags: Vec<String>,
     /// Sets GN output_dir variable.
     pub output_dir: Option<String>,
+    /// Adds the specified default library configs in the target.
+    #[serde(default)]
+    pub add_library_configs: Vec<String>,
     /// Removes the specified default library configs in the target.
     #[serde(default)]
     pub remove_library_configs: Vec<String>,
