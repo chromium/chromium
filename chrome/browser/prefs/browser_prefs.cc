@@ -832,6 +832,11 @@ const char kPPAPISharedImagesSwapChainAllowed[] =
 const char kOfficeSetupComplete[] = "filebrowser.office.setup_complete";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 05/2023.
+#if BUILDFLAG(IS_ANDROID)
+const char kTimesUPMAuthErrorShown[] = "times_upm_auth_error_shown";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1153,6 +1158,11 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kOfficeSetupComplete, false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 05/2023.
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterIntegerPref(kTimesUPMAuthErrorShown, 0);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -2208,6 +2218,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kOfficeSetupComplete);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Added 05/2023.
+#if BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kTimesUPMAuthErrorShown);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
