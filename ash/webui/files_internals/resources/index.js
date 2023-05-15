@@ -6,12 +6,12 @@ import {PageHandler} from '/ash/webui/files_internals/mojom/files_internals.mojo
 
 const pageHandler = PageHandler.getRemote();
 
-const refreshOfficeSetupComplete = async () => {
-  const officeSetupStatus =
-      document.getElementById('office-setup-complete-status');
-  const officeSetupComplete =
-      (await pageHandler.getOfficeSetupComplete()).complete;
-  officeSetupStatus.innerText = officeSetupComplete ? 'Yes' : 'No';
+const refreshOfficeFileHandlers = async () => {
+  const officeFileHandlersSpan =
+      document.getElementById('office-default-file-handlers');
+  const officeFileHandlers =
+      (await pageHandler.getOfficeFileHandlers()).handlers;
+  officeFileHandlersSpan.innerText = officeFileHandlers;
 };
 
 const refreshMoveConfirmationShownForDrive = async () => {
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Office file handlers
-  refreshOfficeSetupComplete();
+  refreshOfficeFileHandlers();
   refreshMoveConfirmationShownForDrive();
   refreshMoveConfirmationShownForOneDrive();
   refreshMoveConfirmationShownForLocalToDrive();
@@ -111,11 +111,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   refreshAlwaysMoveToDriveStatus();
   refreshAlwaysMoveToOneDriveStatus();
 
-  const clearSetupButton =
-      document.getElementById('clear-office-setup-complete');
-  clearSetupButton.addEventListener('click', () => {
-    pageHandler.setOfficeSetupComplete(false);
-    refreshOfficeSetupComplete();
+  const clearfileHandlers =
+      document.getElementById('clear-office-file-handlers');
+  clearfileHandlers.addEventListener('click', () => {
+    pageHandler.clearOfficeFileHandlers();
+    refreshOfficeFileHandlers();
     refreshMoveConfirmationShownForDrive();
     refreshMoveConfirmationShownForOneDrive();
     refreshMoveConfirmationShownForLocalToDrive();

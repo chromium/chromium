@@ -27,8 +27,8 @@ class ChromeFilesInternalsUIDelegate : public ash::FilesInternalsUIDelegate {
   bool GetSmbfsEnableVerboseLogging() const override;
   void SetSmbfsEnableVerboseLogging(bool enabled) override;
 
-  bool GetOfficeSetupComplete() const override;
-  void SetOfficeSetupComplete(bool complete) override;
+  std::string GetOfficeFileHandlers() const override;
+  void ClearOfficeFileHandlers() override;
 
   bool GetMoveConfirmationShownForDrive() const override;
   bool GetMoveConfirmationShownForOneDrive() const override;

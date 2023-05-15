@@ -417,6 +417,11 @@ std::set<std::string> WordGroupExtensions();
 std::set<std::string> ExcelGroupExtensions();
 std::set<std::string> PowerPointGroupExtensions();
 
+// The same as above but MIME types.
+std::set<std::string> WordGroupMimeTypes();
+std::set<std::string> ExcelGroupMimeTypes();
+std::set<std::string> PowerPointGroupMimeTypes();
+
 // Updates the default task for each of the office file types.
 void SetWordFileHandler(Profile* profile, const TaskDescriptor& task);
 void SetExcelFileHandler(Profile* profile, const TaskDescriptor& task);
@@ -439,12 +444,6 @@ void SetPowerPointFileHandlerToFilesSWA(Profile* profile,
                                         const std::string& action_id);
 
 // TODO(petermarshall): Move these to a new file office_file_tasks.cc/h
-// Sets the user preference storing whether the setup flow for office files has
-// ever been completed.
-void SetOfficeSetupComplete(Profile* profile, bool complete = true);
-// Whether or not the setup flow for office files has ever been completed.
-bool OfficeSetupComplete(Profile* profile);
-
 // Sets the user preference storing whether we should always move office files
 // to Google Drive without first asking the user.
 void SetAlwaysMoveOfficeFilesToDrive(Profile* profile, bool complete = true);

@@ -823,6 +823,11 @@ const char kUseMojoVideoDecoderForPepperAllowed[] =
 const char kPPAPISharedImagesSwapChainAllowed[] =
     "policy.ppapi_shared_images_swap_chain_allowed";
 
+// Deprecated 05/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kOfficeSetupComplete[] = "filebrowser.office.setup_complete";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1136,6 +1141,11 @@ void RegisterProfilePrefsForMigration(
                                std::string());
   registry->RegisterTimePref(kVideoTutorialsLastUpdatedTimeKey, base::Time());
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Deprecated 05/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kOfficeSetupComplete, false);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -2183,6 +2193,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kVideoTutorialsPreferredLocaleKey);
   profile_prefs->ClearPref(kVideoTutorialsLastUpdatedTimeKey);
 #endif  // BUILDFLAG(IS_ANDROID
+
+// Added 05/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kOfficeSetupComplete);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

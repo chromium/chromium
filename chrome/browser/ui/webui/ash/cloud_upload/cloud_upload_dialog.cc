@@ -772,7 +772,6 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
   using file_manager::file_tasks::
       SetOfficeMoveConfirmationShownForLocalToOneDrive;
   using file_manager::file_tasks::SetOfficeMoveConfirmationShownForOneDrive;
-  using file_manager::file_tasks::SetOfficeSetupComplete;
   using file_manager::file_tasks::SetPowerPointFileHandlerToFilesSWA;
   using file_manager::file_tasks::SetWordFileHandlerToFilesSWA;
 
@@ -798,10 +797,8 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
           profile_,
           file_manager::file_tasks::kActionIdWebDriveOfficePowerPoint);
     }
-    SetOfficeSetupComplete(profile_);
     OpenOrMoveFiles();
   } else if (user_response == kUserActionConfirmOrUploadToOneDrive) {
-    SetOfficeSetupComplete(profile_);
     // Default handlers have already been set by this point for
     // Office/OneDrive.
     OpenOrMoveFiles();
@@ -893,7 +890,6 @@ void CloudOpenTask::LocalTaskExecuted(
   if (HasPowerPointFile(file_urls_)) {
     SetPowerPointFileHandler(profile_, task);
   }
-  file_manager::file_tasks::SetOfficeSetupComplete(profile_);
 }
 
 // Find the file tasks that can open the `file_urls` and pass them to the

@@ -100307,7 +100307,7 @@ would be helpful to identify which type is being sent.
   <int value="100123" label="LanguageRemapSearchKeyTo"/>
   <int value="100124" label="MultiProfileNeverShowIntro"/>
   <int value="100125" label="MultiProfileWarningShowDismissed"/>
-  <int value="100126" label="OfficeSetupComplete"/>
+  <int value="100126" label="(obsolete) OfficeSetupComplete"/>
   <int value="100127" label="ResolveTimezoneByGeolocationMethod"/>
   <int value="100128" label="ResolveTimezoneByGeolocationMigratedToMethod"/>
   <int value="100129" label="ShelfDefaultPinLayoutRolls"/>

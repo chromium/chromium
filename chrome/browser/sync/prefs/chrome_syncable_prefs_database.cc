@@ -172,7 +172,7 @@ enum {
   kLanguageRemapSearchKeyTo = 100123,
   kMultiProfileNeverShowIntro = 100124,
   kMultiProfileWarningShowDismissed = 100125,
-  kOfficeSetupComplete = 100126,
+  // kOfficeSetupComplete = 100126, // deprecated
   kResolveTimezoneByGeolocationMethod = 100127,
   kResolveTimezoneByGeolocationMigratedToMethod = 100128,
   kShelfDefaultPinLayoutRolls = 100129,
@@ -645,8 +645,6 @@ const auto& SyncablePreferences() {
         {prefs::kMultiProfileWarningShowDismissed,
          {syncable_prefs_ids::kMultiProfileWarningShowDismissed,
           syncer::OS_PREFERENCES}},
-        {prefs::kOfficeSetupComplete,
-         {syncable_prefs_ids::kOfficeSetupComplete, syncer::OS_PREFERENCES}},
         {prefs::kResolveTimezoneByGeolocationMethod,
          {syncable_prefs_ids::kResolveTimezoneByGeolocationMethod,
           syncer::OS_PREFERENCES}},

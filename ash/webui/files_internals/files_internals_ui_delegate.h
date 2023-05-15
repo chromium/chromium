@@ -19,8 +19,8 @@ class FilesInternalsUIDelegate {
   virtual bool GetSmbfsEnableVerboseLogging() const = 0;
   virtual void SetSmbfsEnableVerboseLogging(bool enabled) = 0;
 
-  virtual bool GetOfficeSetupComplete() const = 0;
-  virtual void SetOfficeSetupComplete(bool complete) = 0;
+  virtual std::string GetOfficeFileHandlers() const = 0;
+  virtual void ClearOfficeFileHandlers() = 0;
 
   virtual bool GetMoveConfirmationShownForDrive() const = 0;
   virtual bool GetMoveConfirmationShownForOneDrive() const = 0;

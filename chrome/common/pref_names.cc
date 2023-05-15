@@ -1852,9 +1852,6 @@ const char kDefaultTasksBySuffix[] = "filebrowser.tasks.default_by_suffix";
 const char kDefaultHandlersForFileExtensions[] =
     "filebrowser.default_handlers_for_file_extensions";
 
-// Whether the office files setup flow has ever been completed by the user.
-const char kOfficeSetupComplete[] = "filebrowser.office.setup_complete";
-
 // Whether we should always move office files to Google Drive without prompting
 // the user first.
 const char kOfficeFilesAlwaysMoveToDrive[] =

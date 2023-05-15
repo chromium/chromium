@@ -26,14 +26,14 @@ void FilesInternalsPageHandler::SetSmbfsEnableVerboseLogging(bool enabled) {
   files_internals_ui_->delegate()->SetSmbfsEnableVerboseLogging(enabled);
 }
 
-void FilesInternalsPageHandler::GetOfficeSetupComplete(
-    GetOfficeSetupCompleteCallback callback) {
+void FilesInternalsPageHandler::GetOfficeFileHandlers(
+    GetOfficeFileHandlersCallback callback) {
   std::move(callback).Run(
-      files_internals_ui_->delegate()->GetOfficeSetupComplete());
+      files_internals_ui_->delegate()->GetOfficeFileHandlers());
 }
 
-void FilesInternalsPageHandler::SetOfficeSetupComplete(bool complete) {
-  files_internals_ui_->delegate()->SetOfficeSetupComplete(complete);
+void FilesInternalsPageHandler::ClearOfficeFileHandlers() {
+  files_internals_ui_->delegate()->ClearOfficeFileHandlers();
 }
 
 void FilesInternalsPageHandler::GetMoveConfirmationShownForDrive(

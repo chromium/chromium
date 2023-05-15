@@ -129,7 +129,6 @@ void CloudUploadPageHandler::SetOfficeAsDefaultHandler() {
       profile_, kActionIdOpenInOffice);
   file_manager::file_tasks::SetPowerPointFileHandlerToFilesSWA(
       profile_, kActionIdOpenInOffice);
-  file_manager::file_tasks::SetOfficeSetupComplete(profile_);
 }
 
 void CloudUploadPageHandler::GetAlwaysMoveOfficeFilesToDrive(

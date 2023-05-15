@@ -493,9 +493,6 @@ ResultingTasks::~ResultingTasks() = default;
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kDefaultHandlersForFileExtensions);
-  registry->RegisterBooleanPref(
-      prefs::kOfficeSetupComplete, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(prefs::kOfficeFilesAlwaysMoveToDrive, false);
   registry->RegisterBooleanPref(prefs::kOfficeFilesAlwaysMoveToOneDrive, false);
   registry->RegisterBooleanPref(prefs::kOfficeMoveConfirmationShownForDrive,
@@ -1183,6 +1180,15 @@ std::set<std::string> WordGroupExtensions() {
   return *extensions;
 }
 
+std::set<std::string> WordGroupMimeTypes() {
+  static const base::NoDestructor<std::set<std::string>> mime_types(
+      std::initializer_list<std::string>(
+          {"application/msword",
+           "application/"
+           "vnd.openxmlformats-officedocument.wordprocessingml.document"}));
+  return *mime_types;
+}
+
 bool HasExplicitDefaultFileHandler(Profile* profile,
                                    const std::string& extension) {
   std::string lower_extension = base::ToLowerASCII(extension);
@@ -1192,11 +1198,7 @@ bool HasExplicitDefaultFileHandler(Profile* profile,
 }
 
 void SetWordFileHandler(Profile* profile, const TaskDescriptor& task) {
-  UpdateDefaultTask(
-      profile, task, WordGroupExtensions(),
-      {"application/msword",
-       "application/"
-       "vnd.openxmlformats-officedocument.wordprocessingml.document"});
+  UpdateDefaultTask(profile, task, WordGroupExtensions(), WordGroupMimeTypes());
 }
 
 void SetWordFileHandlerToFilesSWA(Profile* profile,
@@ -1212,11 +1214,18 @@ std::set<std::string> ExcelGroupExtensions() {
   return *extensions;
 }
 
+std::set<std::string> ExcelGroupMimeTypes() {
+  static const base::NoDestructor<std::set<std::string>> mime_types(
+      std::initializer_list<std::string>(
+          {"application/vnd.ms-excel",
+           "application/"
+           "vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+  return *mime_types;
+}
+
 void SetExcelFileHandler(Profile* profile, const TaskDescriptor& task) {
-  UpdateDefaultTask(
-      profile, task, ExcelGroupExtensions(),
-      {"application/vnd.ms-excel",
-       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+  UpdateDefaultTask(profile, task, ExcelGroupExtensions(),
+                    ExcelGroupMimeTypes());
 }
 
 void SetExcelFileHandlerToFilesSWA(Profile* profile,
@@ -1232,12 +1241,18 @@ std::set<std::string> PowerPointGroupExtensions() {
   return *extensions;
 }
 
+std::set<std::string> PowerPointGroupMimeTypes() {
+  static const base::NoDestructor<std::set<std::string>> mime_types(
+      std::initializer_list<std::string>(
+          {"application/vnd.ms-powerpoint",
+           "application/"
+           "vnd.openxmlformats-officedocument.presentationml.presentation"}));
+  return *mime_types;
+}
+
 void SetPowerPointFileHandler(Profile* profile, const TaskDescriptor& task) {
-  UpdateDefaultTask(
-      profile, task, PowerPointGroupExtensions(),
-      {"application/vnd.ms-powerpoint",
-       "application/"
-       "vnd.openxmlformats-officedocument.presentationml.presentation"});
+  UpdateDefaultTask(profile, task, PowerPointGroupExtensions(),
+                    PowerPointGroupMimeTypes());
 }
 
 void SetPowerPointFileHandlerToFilesSWA(Profile* profile,
@@ -1245,14 +1260,6 @@ void SetPowerPointFileHandlerToFilesSWA(Profile* profile,
   TaskDescriptor task(kFileManagerSwaAppId, TaskType::TASK_TYPE_WEB_APP,
                       ToSwaActionId(action_id));
   SetPowerPointFileHandler(profile, task);
-}
-
-void SetOfficeSetupComplete(Profile* profile, bool complete) {
-  profile->GetPrefs()->SetBoolean(prefs::kOfficeSetupComplete, complete);
-}
-
-bool OfficeSetupComplete(Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(prefs::kOfficeSetupComplete);
 }
 
 void SetAlwaysMoveOfficeFilesToDrive(Profile* profile, bool always_move) {

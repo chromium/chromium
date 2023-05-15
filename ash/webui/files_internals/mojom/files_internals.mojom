@@ -11,10 +11,12 @@ interface PageHandler {
   // Sets the smbfs.enable_verbose_logging pref.
   SetSmbfsEnableVerboseLogging(bool enabled);
 
-  // Gets the filebrowser.office.setup_complete pref.
-  GetOfficeSetupComplete() => (bool complete);
-  // Sets the filebrowser.office.setup_complete pref.
-  SetOfficeSetupComplete(bool complete);
+  // Gets the filebrowser.tasks sub-prefs for Office file types. Returns a
+  // base::Value as a debug string, which is allowed because this is a debug
+  // WebUI and the string is coming from the browser process.
+  GetOfficeFileHandlers() => (string handlers);
+  // Clears the filebrowser.tasks sub-prefs for Office file types.
+  ClearOfficeFileHandlers();
 
   // Gets the filebrowser.office.move_confirmation_shown_for_drive pref.
   GetMoveConfirmationShownForDrive() => (bool confirmation_shown);

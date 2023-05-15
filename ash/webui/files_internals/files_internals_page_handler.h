@@ -29,8 +29,8 @@ class FilesInternalsPageHandler : public mojom::files_internals::PageHandler {
   void GetSmbfsEnableVerboseLogging(
       GetSmbfsEnableVerboseLoggingCallback callback) override;
   void SetSmbfsEnableVerboseLogging(bool enabled) override;
-  void GetOfficeSetupComplete(GetOfficeSetupCompleteCallback callback) override;
-  void SetOfficeSetupComplete(bool complete) override;
+  void GetOfficeFileHandlers(GetOfficeFileHandlersCallback callback) override;
+  void ClearOfficeFileHandlers() override;
   void GetMoveConfirmationShownForDrive(
       GetMoveConfirmationShownForDriveCallback callback) override;
   void GetMoveConfirmationShownForOneDrive(
