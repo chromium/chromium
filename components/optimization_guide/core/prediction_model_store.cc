@@ -396,12 +396,18 @@ void PredictionModelStore::PurgeInactiveModels() {
   DCHECK(local_state_);
   for (const auto& expired_model_dir :
        ModelStoreMetadataEntryUpdater::PurgeAllInactiveMetadata(local_state_)) {
-    DCHECK(!expired_model_dir.IsAbsolute());
+    // Backward compatibility: Model dirs were absolute in the earlier versions,
+    // and it was only in experiment. The latest versions use relative paths.
+    DCHECK(!expired_model_dir.IsAbsolute() ||
+           base_store_dir_.IsParent(expired_model_dir));
+    base::FilePath absolute_model_dir =
+        expired_model_dir.IsAbsolute()
+            ? expired_model_dir
+            : base_store_dir_.Append(expired_model_dir);
     // This is called at startup. So no need to schedule the deletion of the
     // model dirs, and instead can be deleted immediately.
     background_task_runner_->PostTask(
-        FROM_HERE, base::GetDeletePathRecursivelyCallback(
-                       base_store_dir_.Append(expired_model_dir)));
+        FROM_HERE, base::GetDeletePathRecursivelyCallback(absolute_model_dir));
   }
 }
 
