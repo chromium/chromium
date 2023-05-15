@@ -49,6 +49,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
+#include "components/webauthn/android/webauthn_cred_man_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -66,6 +67,7 @@ using BlocklistedStatus =
     password_manager::OriginCredentialStore::BlocklistedStatus;
 using FillingSource = ManualFillingController::FillingSource;
 using IsExactMatch = autofill::UserInfo::IsExactMatch;
+using ShouldShowAction = ManualFillingController::ShouldShowAction;
 
 namespace {
 
@@ -280,32 +282,36 @@ void PasswordAccessoryControllerImpl::CreateForWebContentsForTesting(
 
 void PasswordAccessoryControllerImpl::OnOptionSelected(
     autofill::AccessoryAction selected_action) {
-  if (selected_action == autofill::AccessoryAction::USE_OTHER_PASSWORD) {
-    ShowAllPasswords();
-    return;
+  switch (selected_action) {
+    case autofill::AccessoryAction::USE_OTHER_PASSWORD:
+      ShowAllPasswords();
+      return;
+    case autofill::AccessoryAction::MANAGE_PASSWORDS:
+      password_manager_launcher::ShowPasswordSettings(
+          &GetWebContents(),
+          password_manager::ManagePasswordsReferrer::kPasswordsAccessorySheet,
+          /*manage_passkeys=*/false);
+      return;
+    case autofill::AccessoryAction::GENERATE_PASSWORD_MANUAL:
+      OnGenerationRequested(
+          autofill::password_generation::PasswordGenerationType::kManual);
+      GetManualFillingController()->Hide();
+      return;
+    case autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC:
+      OnGenerationRequested(
+          autofill::password_generation::PasswordGenerationType::kAutomatic);
+      GetManualFillingController()->Hide();
+      return;
+    case autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY:
+      if (WebAuthnCredManDelegate* delegate =
+              WebAuthnCredManDelegate::GetRequestDelegate(&GetWebContents())) {
+        delegate->TriggerFullRequest();
+      }
+      return;
+    default:
+      NOTREACHED() << "Unhandled selected action: "
+                   << static_cast<int>(selected_action);
   }
-  if (selected_action == autofill::AccessoryAction::MANAGE_PASSWORDS) {
-    password_manager_launcher::ShowPasswordSettings(
-        &GetWebContents(),
-        password_manager::ManagePasswordsReferrer::kPasswordsAccessorySheet,
-        /*manage_passkeys=*/false);
-    return;
-  }
-  if (selected_action == autofill::AccessoryAction::GENERATE_PASSWORD_MANUAL) {
-    OnGenerationRequested(
-        autofill::password_generation::PasswordGenerationType::kManual);
-    GetManualFillingController()->Hide();
-    return;
-  }
-  if (selected_action ==
-      autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC) {
-    OnGenerationRequested(
-        autofill::password_generation::PasswordGenerationType::kAutomatic);
-    GetManualFillingController()->Hide();
-    return;
-  }
-  NOTREACHED() << "Unhandled selected action: "
-               << static_cast<int>(selected_action);
 }
 
 void PasswordAccessoryControllerImpl::OnToggleChanged(
@@ -387,6 +393,18 @@ void PasswordAccessoryControllerImpl::OnGenerationRequested(
 
   DCHECK(pwd_generation_controller);
   pwd_generation_controller->OnGenerationRequested(type);
+}
+
+void PasswordAccessoryControllerImpl::UpdateCredManReentryUi() {
+  if (!WebAuthnCredManDelegate::IsCredManEnabled()) {
+    return;  // No updates required.
+  }
+  if (WebAuthnCredManDelegate* delegate =
+          WebAuthnCredManDelegate::GetRequestDelegate(&GetWebContents())) {
+    mf_controller_->OnAccessoryActionAvailabilityChanged(
+        ShouldShowAction(delegate->HasResults()),
+        autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY);
+  }
 }
 
 PasswordAccessoryControllerImpl::LastFocusedFieldInfo::LastFocusedFieldInfo(

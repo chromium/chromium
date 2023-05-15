@@ -467,6 +467,7 @@ source_set("unit_tests") {
     "//components/security_state/core",
     "//components/strings:components_strings_grit",
     "//components/ukm:test_support",
+    "//components/webauthn/android:android",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

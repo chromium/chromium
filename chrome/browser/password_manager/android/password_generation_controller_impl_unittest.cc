@@ -469,8 +469,7 @@ TEST_F(PasswordGenerationControllerTest,
   // Keyboard accessory shouldn't be called.
   EXPECT_CALL(mock_manual_filling_controller_,
               OnAccessoryActionAvailabilityChanged(
-                  ShouldShowAction(true),
-                  autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC))
+                  _, autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC))
       .Times(0);
   controller()->OnAutomaticGenerationAvailable(
       active_driver(), GetTestGenerationUIData1(), gfx::RectF(100, 20));

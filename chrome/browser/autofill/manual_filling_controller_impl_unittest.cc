@@ -473,6 +473,14 @@ TEST_F(ManualFillingControllerLegacyTest,
   controller()->OnOptionSelected(AccessoryAction::GENERATE_PASSWORD_MANUAL);
 }
 
+TEST_F(ManualFillingControllerTest, ForwardsCredManActionToPasswordController) {
+  EXPECT_CALL(
+      mock_pwd_controller_,
+      OnOptionSelected(AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY));
+  controller()->OnOptionSelected(
+      AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY);
+}
+
 TEST_F(ManualFillingControllerLegacyTest, ForwardsAddressManagingToController) {
   EXPECT_CALL(mock_address_controller_,
               OnOptionSelected(AccessoryAction::MANAGE_ADDRESSES));

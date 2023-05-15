@@ -497,16 +497,13 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForAction(
     case AccessoryAction::USE_OTHER_PASSWORD:
     case AccessoryAction::GENERATE_PASSWORD_AUTOMATIC:
     case AccessoryAction::TOGGLE_SAVE_PASSWORDS:
+    case AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY:
       return pwd_controller_.get();
     case AccessoryAction::MANAGE_ADDRESSES:
       return address_controller_.get();
     case AccessoryAction::MANAGE_CREDIT_CARDS:
       return cc_controller_.get();
     case AccessoryAction::AUTOFILL_SUGGESTION:
-    case AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY:
-      // TODO(crbug/1444418): Implement.
-      NOTIMPLEMENTED();
-      ABSL_FALLTHROUGH_INTENDED;
     case AccessoryAction::COUNT:
       NOTREACHED() << "Controller not defined for action: "
                    << static_cast<int>(action);

@@ -272,6 +272,7 @@ class MockPasswordAccessoryControllerImpl
               RefreshSuggestionsForField,
               (autofill::mojom::FocusedFieldType, bool),
               (override));
+  MOCK_METHOD(void, UpdateCredManReentryUi, (), (override));
 };
 
 #endif
@@ -1181,6 +1182,19 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   GetClient()->FocusedInputChanged(
       driver.get(), observed_form_data.fields[0].unique_renderer_id,
       FocusedFieldType::kFillablePasswordField);
+}
+
+TEST_F(ChromePasswordManagerClientAndroidTest,
+       FocusedInputChangeUpdatesCredManReentryUi) {
+  std::unique_ptr<password_manager::ContentPasswordManagerDriver> driver =
+      CreateContentPasswordManagerDriver(main_rfh());
+  MockPasswordAccessoryControllerImpl* weak_mock_pwd_controller =
+      SetUpMockPwdAccessoryForClientUse(driver.get());
+
+  EXPECT_CALL(*weak_mock_pwd_controller, UpdateCredManReentryUi);
+
+  GetClient()->FocusedInputChanged(driver.get(), FieldRendererId(123),
+                                   FocusedFieldType::kFillablePasswordField);
 }
 
 TEST_F(ChromePasswordManagerClientAndroidTest,

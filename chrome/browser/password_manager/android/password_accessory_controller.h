@@ -60,6 +60,10 @@ class PasswordAccessoryController
   // the automatically provided button.
   virtual void OnGenerationRequested(
       autofill::password_generation::PasswordGenerationType type) = 0;
+
+  // Asks the controller to update the UI allowing users to continue with the
+  // CredMan conditional UI.
+  virtual void UpdateCredManReentryUi() = 0;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_ACCESSORY_CONTROLLER_H_
