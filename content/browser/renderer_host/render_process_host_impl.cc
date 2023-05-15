@@ -40,6 +40,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_shared_memory.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/metrics/statistics_recorder.h"
@@ -100,6 +101,7 @@
 #include "content/browser/media/frameless_media_interface_proxy.h"
 #include "content/browser/media/media_internals.h"
 #include "content/browser/metrics/histogram_controller.h"
+#include "content/browser/metrics/histogram_shared_memory_config.h"
 #include "content/browser/mime_registry_impl.h"
 #include "content/browser/network_service_instance_impl.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
@@ -4788,26 +4790,23 @@ void RenderProcessHostImpl::CreateSharedRendererHistogramAllocator() {
   if (destination == base::kNullProcessHandle)
     return;
 
-  // Create persistent/shared memory and allow histograms to be stored in
-  // it. Memory that is not actually used won't be physically mapped by the
-  // system. RendererMetrics usage, as reported in UMA, peaked around 0.7MiB
-  // as of 2016-12-20.
-  base::WritableSharedMemoryRegion shm_region =
-      base::WritableSharedMemoryRegion::Create(2 << 20);  // 2 MiB
-  base::WritableSharedMemoryMapping shm_mapping = shm_region.Map();
-  if (!shm_region.IsValid() || !shm_mapping.IsValid())
-    return;
+  // Get the renderer histogram shared memory configuration.
+  auto shared_memory_config =
+      GetHistogramSharedMemoryConfig(PROCESS_TYPE_RENDERER);
+  CHECK(shared_memory_config.has_value());
 
-  // If a renderer crashes before completing startup and gets restarted, this
-  // method will get called a second time meaning that a metrics-allocator
-  // already exists. We have to recreate it here because previously used
-  // |shm_region| is gone.
-  metrics_allocator_ =
-      std::make_unique<base::WritableSharedPersistentMemoryAllocator>(
-          std::move(shm_mapping), GetID(), "RendererMetrics");
+  // Create the shared memory region and allocator.
+  auto shared_memory = base::HistogramSharedMemory::Create(
+      GetID(), shared_memory_config.value());
+  if (!shared_memory.has_value()) {
+    return;
+  }
+
+  // Move the region and allocator out of the |shared_memory| helper.
+  metrics_allocator_ = shared_memory->TakeAllocator();
 
   HistogramController::GetInstance()->SetHistogramMemory<RenderProcessHost>(
-      this, std::move(shm_region));
+      this, shared_memory->TakeRegion());
 }
 
 ChildProcessTerminationInfo RenderProcessHostImpl::GetChildTerminationInfo(

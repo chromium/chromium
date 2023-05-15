@@ -1327,6 +1327,8 @@ source_set("browser") {
     "message_port_provider.cc",
     "metrics/histogram_controller.cc",
     "metrics/histogram_controller.h",
+    "metrics/histogram_shared_memory_config.cc",
+    "metrics/histogram_shared_memory_config.h",
     "metrics/histogram_subscriber.h",
     "metrics/histogram_synchronizer.cc",
     "metrics/histogram_synchronizer.h",
