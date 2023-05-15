@@ -302,6 +302,14 @@ class SystemNotificationManager {
       DataProtectionWarningContinueCallback continue_callback);
 
   /**
+   * Makes a notification instance for Data Protection progress notifications.
+   */
+  std::unique_ptr<message_center::Notification>
+  MakeDataProtectionPolicyProgressNotification(
+      const std::string& notification_id,
+      const file_manager::io_task::ProgressStatus& status);
+
+  /**
    * Helper function to show a policy warning dialog.
    */
   void ShowPolicyWarningDialog(DataProtectionWarningContinueCallback callback);

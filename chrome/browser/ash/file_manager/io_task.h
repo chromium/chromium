@@ -149,6 +149,9 @@ class ProgressStatus {
   // or Enterprise Connectors policies.
   bool HasPolicyError() const;
 
+  // True if the task is in scanning state.
+  bool IsScanning() const;
+
   // Returns a default method for obtaining the source name.
   std::string GetSourceName(Profile* profile) const;
 

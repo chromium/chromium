@@ -50,6 +50,10 @@ bool ProgressStatus::HasPolicyError() const {
   return state == State::kError && policy_error.has_value();
 }
 
+bool ProgressStatus::IsScanning() const {
+  return state == State::kScanning;
+}
+
 std::string ProgressStatus::GetSourceName(Profile* profile) const {
   if (!source_name.empty()) {
     return source_name;

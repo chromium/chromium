@@ -172,7 +172,7 @@ std::u16string GetPolicyNotificationMessage(const ProgressStatus& status) {
 // TODO(b/279435843): Replace with translation strings.
 std::u16string GetPolicyNotificationCancelButton(const ProgressStatus& status) {
   if (status.HasWarning()) {
-    return u"Cancel";
+    return l10n_util::GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL);
   } else {
     return u"Dismiss";
   }
@@ -358,13 +358,12 @@ SystemNotificationManager::CreateIOTaskProgressNotification(
   std::vector<message_center::ButtonInfo> notification_buttons;
 
   // Add "Cancel" button.
-  notification_buttons.emplace_back(message_center::ButtonInfo(
-      l10n_util::GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL)));
+  notification_buttons.emplace_back(
+      l10n_util::GetStringUTF16(IDS_FILE_BROWSER_CANCEL_LABEL));
 
   if (paused) {  // For paused tasks, add "Open Files app" button.
-    notification_buttons.emplace_back(
-        message_center::ButtonInfo(l10n_util::GetStringUTF16(
-            IDS_REMOVABLE_DEVICE_NAVIGATION_BUTTON_LABEL)));
+    notification_buttons.emplace_back(l10n_util::GetStringUTF16(
+        IDS_REMOVABLE_DEVICE_NAVIGATION_BUTTON_LABEL));
   }
 
   notification->set_buttons(notification_buttons);
@@ -747,6 +746,18 @@ void SystemNotificationManager::HandleIOTaskProgress(
     return;
   }
 
+  // If the task is currently in the scanning state, show a data protection
+  // progress notification.
+  if (status.IsScanning()) {
+    Dismiss(id);
+    std::unique_ptr<message_center::Notification> notification =
+        MakeDataProtectionPolicyProgressNotification(id, status);
+    GetNotificationDisplayService()->Display(
+        NotificationHandler::Type::TRANSIENT, *notification,
+        /*metadata=*/nullptr);
+    return;
+  }
+
   // If the IOTask state has completed, remove the IOTask progress from system
   // notifications.
   if (status.IsCompleted()) {
@@ -1105,6 +1116,19 @@ SystemNotificationManager::MakeDataProtectionPolicyNotification(
   notification->set_buttons(notification_buttons);
 
   return notification;
+}
+
+std::unique_ptr<message_center::Notification>
+SystemNotificationManager::MakeDataProtectionPolicyProgressNotification(
+    const std::string& notification_id,
+    const file_manager::io_task::ProgressStatus& status) {
+  // TODO(b/279435843): Replace with translation strings.
+  std::u16string message =
+      u"Checking files with your organization's security policies.";
+  // TODO(b/282130948): Set progress value.
+  return CreateIOTaskProgressNotification(status.task_id, notification_id,
+                                          app_name_, message, /*paused=*/false,
+                                          /*progress=*/0);
 }
 
 void SystemNotificationManager::ShowPolicyWarningDialog(
