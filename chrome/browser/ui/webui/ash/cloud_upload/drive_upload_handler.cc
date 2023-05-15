@@ -6,9 +6,11 @@
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
@@ -39,14 +41,17 @@ void OnUploadDone(scoped_refptr<DriveUploadHandler> drive_upload_handler,
 }
 
 std::string GetTargetAppName(base::FilePath file_path) {
-  const std::string extension = file_path.FinalExtension();
-  if (extension == ".doc" || extension == ".docx") {
+  const std::string extension = base::ToLowerASCII(file_path.FinalExtension());
+  if (base::Contains(file_manager::file_tasks::WordGroupExtensions(),
+                     extension)) {
     return "Google Docs";
   }
-  if (extension == ".xls" || extension == ".xlsx") {
+  if (base::Contains(file_manager::file_tasks::ExcelGroupExtensions(),
+                     extension)) {
     return "Google Sheets";
   }
-  if (extension == ".ppt" || extension == ".pptx") {
+  if (base::Contains(file_manager::file_tasks::PowerPointGroupExtensions(),
+                     extension)) {
     return "Google Slides";
   }
   return "Google Docs";

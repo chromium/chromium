@@ -306,6 +306,7 @@ IconType GetIconTypeForPath(const base::FilePath& filepath) {
           {".PPT", IconType::kPpt},
           {".PPTX", IconType::kPpt},
           {".XLS", IconType::kExcel},
+          {".XLSM", IconType::kExcel},
           {".XLSX", IconType::kExcel},
           {".TINI", IconType::kTini},
       });

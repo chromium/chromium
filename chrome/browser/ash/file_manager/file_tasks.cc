@@ -1153,11 +1153,15 @@ bool IsHtmlFile(const base::FilePath& path) {
 }
 
 bool IsOfficeFile(const base::FilePath& path) {
-  constexpr const char* kOfficeExtensions[] = {".doc",  ".docx", ".xls",
-                                               ".xlsx", ".ppt",  ".pptx"};
-  for (const char* extension : kOfficeExtensions) {
-    if (path.MatchesExtension(extension)) {
-      return true;
+  std::vector<std::set<std::string>> groups = {WordGroupExtensions(),
+                                               ExcelGroupExtensions(),
+                                               PowerPointGroupExtensions()};
+
+  for (const std::set<std::string>& group : groups) {
+    for (const std::string& extension : group) {
+      if (path.MatchesExtension(extension)) {
+        return true;
+      }
     }
   }
   return false;
@@ -1208,7 +1212,7 @@ void SetWordFileHandlerToFilesSWA(Profile* profile,
 
 std::set<std::string> ExcelGroupExtensions() {
   static const base::NoDestructor<std::set<std::string>> extensions(
-      std::initializer_list<std::string>({".xls", ".xlsx"}));
+      std::initializer_list<std::string>({".xls", ".xlsm", ".xlsx"}));
   return *extensions;
 }
 
@@ -1216,6 +1220,7 @@ std::set<std::string> ExcelGroupMimeTypes() {
   static const base::NoDestructor<std::set<std::string>> mime_types(
       std::initializer_list<std::string>(
           {"application/vnd.ms-excel",
+           "application/vnd.ms-excel.sheet.macroEnabled.12",
            "application/"
            "vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
   return *mime_types;

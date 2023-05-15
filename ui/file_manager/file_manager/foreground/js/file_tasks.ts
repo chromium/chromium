@@ -846,7 +846,7 @@ type TypeTaskPickerType = typeof TaskPickerType[keyof typeof TaskPickerType];
 
 /** Office file extensions. */
 const OFFICE_EXTENSIONS =
-    new Set(['.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx']);
+    new Set(['.doc', '.docx', '.xls', 'xlsm', '.xlsx', '.ppt', '.pptx']);
 
 export interface AnnotatedTask extends chrome.fileManagerPrivate.FileTask {
   iconType: string;

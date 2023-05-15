@@ -124,7 +124,7 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFileManager() {
                     {"doc", "docx"});
   AppendFileHandler(*info,
                     ::file_manager::file_tasks::kActionIdWebDriveOfficeExcel,
-                    {"xls", "xlsx"});
+                    {"xls", "xlsm", "xlsx"});
   AppendFileHandler(
       *info, ::file_manager::file_tasks::kActionIdWebDriveOfficePowerPoint,
       {"ppt", "pptx"});
