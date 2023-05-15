@@ -53,6 +53,7 @@
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_frame_owner_properties.h"
@@ -73,6 +74,7 @@ class TickClock;
 }
 
 namespace blink {
+class AgentGroupScheduler;
 class WebFrame;
 class WebLocalFrameImpl;
 struct WebNavigationParams;
@@ -396,6 +398,9 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
           remote_frame_host,
       mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver);
 
+  // Creates a new uninitialized WebView.
+  WebViewImpl* CreateWebView(WebViewClient*, bool compositing_enabled);
+
   // Helper for creating a local child frame of a remote parent frame.
   WebLocalFrameImpl* CreateLocalChild(
       WebRemoteFrame& parent,
@@ -465,8 +470,8 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
         is_for_scalable_page);
   }
 
-  blink::scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() {
-    return *agent_group_scheduler_;
+  AgentGroupScheduler& GetAgentGroupScheduler() {
+    return agent_group_scheduler_->GetAgentGroupScheduler();
   }
 
  private:

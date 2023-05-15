@@ -34,6 +34,9 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
+#include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_source.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
@@ -136,8 +139,10 @@ class WebRtcAudioRendererTest : public testing::Test {
   WebRtcAudioRendererTest()
       : source_(new MockAudioRendererSource()),
         agent_group_scheduler_(
-            blink::scheduler::WebThreadScheduler::MainThreadScheduler()
-                .CreateWebAgentGroupScheduler()),
+            std::make_unique<blink::scheduler::WebAgentGroupScheduler>(
+                ThreadScheduler::Current()
+                    ->ToMainThreadScheduler()
+                    ->CreateAgentGroupScheduler())),
         web_view_(blink::WebView::Create(
             /*client=*/nullptr,
             /*is_hidden=*/false,
