@@ -23,30 +23,34 @@ class KombuchaInProcessFuzzer
     InteractiveBrowserTestT::TearDownOnMainThread();
   }
 
-  void SetUpOnMainThread() override {
-    InteractiveBrowserTestT::SetUpOnMainThread();
-    host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_test_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
-    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-        &KombuchaInProcessFuzzer::HandleHTTPRequest, base::Unretained(this)));
-    ASSERT_TRUE(embedded_test_server()->Start());
-  }
+  void SetUpOnMainThread() override;
   int Fuzz(const uint8_t* data, size_t size) override;
-  std::unique_ptr<net::test_server::HttpResponse> HandleHTTPRequest(
-      const net::test_server::HttpRequest& request) const;
+  static std::unique_ptr<net::test_server::HttpResponse> HandleHTTPRequest(
+      std::string response_body,
+      const net::test_server::HttpRequest& request);
 
   std::string current_fuzz_case_;
 };
 
 REGISTER_IN_PROCESS_FUZZER(KombuchaInProcessFuzzer)
 
+void KombuchaInProcessFuzzer::SetUpOnMainThread() {
+  InteractiveBrowserTestT::SetUpOnMainThread();
+  host_resolver()->AddRule("*", "127.0.0.1");
+  embedded_test_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &KombuchaInProcessFuzzer::HandleHTTPRequest, current_fuzz_case_));
+  ASSERT_TRUE(embedded_test_server()->Start());
+}
+
 std::unique_ptr<net::test_server::HttpResponse>
 KombuchaInProcessFuzzer::HandleHTTPRequest(
-    const net::test_server::HttpRequest& request) const {
+    std::string response_body,
+    const net::test_server::HttpRequest& request) {
   std::unique_ptr<net::test_server::BasicHttpResponse> response;
   response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_content_type("text/html");
-  response->set_content(current_fuzz_case_);
+  response->set_content(response_body);
   response->set_code(net::HTTP_OK);
   return response;
 }

@@ -18,17 +18,11 @@ class HtmlInProcessFuzzer : virtual public InProcessFuzzer {
   HtmlInProcessFuzzer()
       : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
-  void SetUpOnMainThread() override {
-    InProcessFuzzer::SetUpOnMainThread();
-    host_resolver()->AddRule("*", "127.0.0.1");
-    https_test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
-    https_test_server_.RegisterRequestHandler(base::BindRepeating(
-        &HtmlInProcessFuzzer::HandleHTTPRequest, base::Unretained(this)));
-    ASSERT_TRUE(https_test_server_.Start());
-  }
+  void SetUpOnMainThread() override;
   int Fuzz(const uint8_t* data, size_t size) override;
-  std::unique_ptr<net::test_server::HttpResponse> HandleHTTPRequest(
-      const net::test_server::HttpRequest& request) const;
+  static std::unique_ptr<net::test_server::HttpResponse> HandleHTTPRequest(
+      std::string response_body,
+      const net::test_server::HttpRequest& request);
 
   net::EmbeddedTestServer https_test_server_;
   std::string current_fuzz_case_;
@@ -36,13 +30,23 @@ class HtmlInProcessFuzzer : virtual public InProcessFuzzer {
 
 REGISTER_IN_PROCESS_FUZZER(HtmlInProcessFuzzer)
 
+void HtmlInProcessFuzzer::SetUpOnMainThread() {
+  InProcessFuzzer::SetUpOnMainThread();
+  host_resolver()->AddRule("*", "127.0.0.1");
+  https_test_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_test_server_.RegisterRequestHandler(base::BindRepeating(
+      &HtmlInProcessFuzzer::HandleHTTPRequest, current_fuzz_case_));
+  ASSERT_TRUE(https_test_server_.Start());
+}
+
 std::unique_ptr<net::test_server::HttpResponse>
 HtmlInProcessFuzzer::HandleHTTPRequest(
-    const net::test_server::HttpRequest& request) const {
+    std::string response_body,
+    const net::test_server::HttpRequest& request) {
   std::unique_ptr<net::test_server::BasicHttpResponse> response;
   response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_content_type("text/html");
-  response->set_content(current_fuzz_case_);
+  response->set_content(response_body);
   response->set_code(net::HTTP_OK);
   return response;
 }
