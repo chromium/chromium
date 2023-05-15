@@ -261,9 +261,9 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWithDepthCheckWKResult) {
   EXPECT_FALSE(current_list);
 }
 
+// Tests that NSObjectFromValueResult converts nullptr to nil.
 TEST_F(WebViewJsUtilsTest, NSObjectFromNullptr) {
   id wk_result = web::NSObjectFromValueResult(nullptr);
-  // `wk_result` should be nil.
   EXPECT_FALSE(wk_result);
 }
 
