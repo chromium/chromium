@@ -65,7 +65,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/caption_button_types.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_util.h"
 
@@ -242,22 +241,9 @@ class CaptionButtonModel : public chromeos::CaptionButtonModel {
 
   // Overridden from ash::CaptionButtonModel:
   bool IsVisible(views::CaptionButtonIcon icon) const override {
-    // TODO(b/276933044): Remove this workaround when ARC is uprevved.
-    if (icon == views::CaptionButtonIcon::CAPTION_BUTTON_ICON_FLOAT) {
-      return !(
-          visible_button_mask_ &
-          (1
-           << views::CaptionButtonIcon::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE));
-    }
     return visible_button_mask_ & (1 << icon);
   }
   bool IsEnabled(views::CaptionButtonIcon icon) const override {
-    if (icon == views::CaptionButtonIcon::CAPTION_BUTTON_ICON_FLOAT) {
-      return !(
-          enabled_button_mask_ &
-          (1
-           << views::CaptionButtonIcon::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE));
-    }
     return enabled_button_mask_ & (1 << icon);
   }
   bool InZoomMode() const override {
