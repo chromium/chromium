@@ -58,10 +58,6 @@
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/download/download_item_web_app_data.h"
-#endif
-
 using history::DownloadState;
 
 namespace {
@@ -144,22 +140,13 @@ const char DownloadHistoryData::kKey[] =
   "DownloadItem DownloadHistoryData";
 
 history::DownloadRow GetDownloadRow(download::DownloadItem* item) {
-  std::string by_ext_or_web_app_id, by_ext_name;
-  bool is_by_web_app = false;
+  std::string by_ext_id, by_ext_name;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::DownloadedByExtension* by_ext =
       extensions::DownloadedByExtension::Get(item);
   if (by_ext) {
-    by_ext_or_web_app_id = by_ext->id();
+    by_ext_id = by_ext->id();
     by_ext_name = by_ext->name();
-  }
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-  DownloadItemWebAppData* web_app_data = DownloadItemWebAppData::Get(item);
-  if (web_app_data) {
-    by_ext_or_web_app_id = web_app_data->id();
-    is_by_web_app = true;
   }
 #endif
 
@@ -191,9 +178,8 @@ history::DownloadRow GetDownloadRow(download::DownloadItem* item) {
   download.opened = item->GetOpened();
   download.last_access_time = item->GetLastAccessTime();
   download.transient = item->IsTransient();
-  download.by_ext_or_web_app_id = by_ext_or_web_app_id;
+  download.by_ext_id = by_ext_id;
   download.by_ext_name = by_ext_name;
-  download.is_by_web_app = is_by_web_app;
   download.download_slice_info = history::GetHistoryDownloadSliceInfos(*item);
   TruncatedDataUrlAtTheEndIfNeeded(&download.url_chain);
   return download;
@@ -235,9 +221,8 @@ ShouldUpdateHistoryResult ShouldUpdateHistory(
       (previous->opened != current.opened) ||
       (previous->last_access_time != current.last_access_time) ||
       (previous->transient != current.transient) ||
-      (previous->by_ext_or_web_app_id != current.by_ext_or_web_app_id) ||
+      (previous->by_ext_id != current.by_ext_id) ||
       (previous->by_ext_name != current.by_ext_name) ||
-      (previous->is_by_web_app != current.is_by_web_app) ||
       (previous->download_slice_info != current.download_slice_info)) {
     return ShouldUpdateHistoryResult::UPDATE;
   }
@@ -450,26 +435,15 @@ void DownloadHistory::LoadHistoryDownloads(
                                   history_reason)) {
       OnDownloadUpdated(notifier_.GetManager(), item);
     }
-    bool should_update_observers = false;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    if (!row.by_ext_or_web_app_id.empty() && !row.is_by_web_app &&
-        !row.by_ext_name.empty()) {
+    if (!row.by_ext_id.empty() && !row.by_ext_name.empty()) {
       SCOPED_UMA_HISTOGRAM_TIMER(
           "Download.LoadHistoryDownloads.AddExtensionInfoAndNotifyTime");
-      new extensions::DownloadedByExtension(item, row.by_ext_or_web_app_id,
+      new extensions::DownloadedByExtension(item, row.by_ext_id,
                                             row.by_ext_name);
-      should_update_observers = true;
-    }
-#endif
-#if !BUILDFLAG(IS_ANDROID)
-    if (!row.by_ext_or_web_app_id.empty() && row.is_by_web_app) {
-      new DownloadItemWebAppData(item, row.by_ext_or_web_app_id);
-      should_update_observers = true;
-    }
-#endif
-    if (should_update_observers) {
       item->UpdateObservers();
     }
+#endif
     DCHECK_EQ(DownloadHistoryData::PERSISTED,
               DownloadHistoryData::Get(item)->state());
   }

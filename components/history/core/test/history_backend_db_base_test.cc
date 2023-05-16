@@ -144,9 +144,8 @@ bool HistoryBackendDBBaseTest::AddDownload(uint32_t id,
   download.opened = false;
   download.last_access_time = time;
   download.transient = true;
-  download.by_ext_or_web_app_id = "by_ext_id";
+  download.by_ext_id = "by_ext_id";
   download.by_ext_name = "by_ext_name";
-  download.is_by_web_app = false;
   return db_->CreateDownload(download);
 }
 

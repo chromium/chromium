@@ -41,10 +41,6 @@
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/download/download_item_web_app_data.h"
-#endif
-
 using testing::_;
 using testing::DoAll;
 using testing::Invoke;
@@ -470,15 +466,8 @@ class DownloadHistoryTest : public testing::Test {
         .WillRepeatedly(Return(&item(index)));
     EXPECT_CALL(item(index), IsTemporary()).WillRepeatedly(Return(false));
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    if (!row->is_by_web_app) {
-      new extensions::DownloadedByExtension(
-          &item(index), row->by_ext_or_web_app_id, row->by_ext_name);
-    }
-#endif
-#if !BUILDFLAG(IS_ANDROID)
-    if (!row->by_ext_or_web_app_id.empty() && row->is_by_web_app) {
-      new DownloadItemWebAppData(&item(index), row->by_ext_or_web_app_id);
-    }
+    new extensions::DownloadedByExtension(&item(index), row->by_ext_id,
+                                          row->by_ext_name);
 #endif
 
     std::vector<download::DownloadItem*> items;
@@ -999,27 +988,5 @@ TEST_F(DownloadHistoryTest,
   EXPECT_TRUE(DownloadHistory::IsPersisted(&item(0)));
   EXPECT_TRUE(DownloadHistory::IsPersisted(&item(1)));
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-// Test that web app id is inserted into history.
-TEST_F(DownloadHistoryTest, ByWebAppId) {
-  // Create a fresh item not from download DB
-  CreateDownloadHistory({});
-
-  history::DownloadRow row;
-  row.by_ext_or_web_app_id = "by_web_app_id";
-  row.is_by_web_app = true;
-  InitBasicItem(FILE_PATH_LITERAL("/foo/bar.pdf"), "http://example.com/bar.pdf",
-                "http://example.com/referrer.html",
-                download::DownloadItem::COMPLETE, &row);
-
-  EXPECT_CALL(item(0), IsDone()).WillRepeatedly(Return(true));
-
-  CallOnDownloadCreated(0);
-  ExpectDownloadCreated(row);
-  EXPECT_TRUE(DownloadHistory::IsPersisted(&item(0)));
-  EXPECT_NE(DownloadItemWebAppData::Get(&item(0)), nullptr);
-}
-#endif
 
 }  // anonymous namespace
