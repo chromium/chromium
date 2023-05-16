@@ -61,6 +61,7 @@ TEST_F(H266ParserTest, RawVvcStreamFileParsingShouldSucceed) {
     int num_parsed_nalus = 0;
     while (true) {
       H266NALU nalu;
+      H266PictureHeader ph;
       H266Parser::Result res = parser_.AdvanceToNextNALU(&nalu);
       if (res == H266Parser::kEndOfStream) {
         DVLOG(1) << "Number of successfully parsed NALUs before EOS: "
@@ -93,6 +94,9 @@ TEST_F(H266ParserTest, RawVvcStreamFileParsingShouldSucceed) {
           int aps_id;
           res = parser_.ParseAPS(nalu, &aps_id, &aps_type);
           EXPECT_TRUE(!!parser_.GetAPS(aps_type, aps_id));
+          break;
+        case H266NALU::kPH:
+          res = parser_.ParsePHNut(nalu, &ph);
           break;
         // TODO(crbugs.com/1417910): add more NALU types.
         default:
@@ -1188,6 +1192,170 @@ TEST_F(H266ParserTest, ParseAPSShouldConstructCorrectLmcsData) {
   aps_type = H266APS::ParamType::kLmcs;
   const H266APS* nonexisting_aps = parser_.GetAPS(aps_type, 2);
   EXPECT_TRUE(!nonexisting_aps);
+}
+
+// Verify parsing of simple PH_NUT.
+TEST_F(H266ParserTest, ParseSimplePHNutShouldSucceed) {
+  LoadParserFile("bbb_9tiles_18slices.vvc");
+  H266NALU target_nalu;
+  int sps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  // Parsing of the SPS should generate fake VPS with vps_id = 0;
+  const H266VPS* vps = parser_.GetVPS(0);
+  EXPECT_TRUE(!!vps);
+  const H266SPS* sps = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps);
+  int pps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  const H266PPS* pps = parser_.GetPPS(pps_id);
+  EXPECT_TRUE(!!pps);
+
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPH));
+  H266PictureHeader ph;
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePHNut(target_nalu, &ph));
+  EXPECT_TRUE(ph.ph_gdr_or_irap_pic_flag);
+  EXPECT_FALSE(ph.ph_non_ref_pic_flag);
+  EXPECT_FALSE(ph.ph_gdr_pic_flag);
+  EXPECT_FALSE(ph.ph_inter_slice_allowed_flag);
+  EXPECT_EQ(ph.ph_pic_parameter_set_id, 0);
+  EXPECT_EQ(ph.ph_pic_order_cnt_lsb, 0);
+  EXPECT_FALSE(ph.ph_lmcs_enabled_flag);
+  EXPECT_FALSE(ph.ph_partition_constraints_override_flag);
+  EXPECT_FALSE(ph.ph_joint_cbcr_sign_flag);
+}
+
+// Verify parsing of complex PH_NUT in which the RPL, deblocking filter,
+// SAO, ALF and etc are coded, instead of placing them in slice header(not
+// even in the picture header structure of slice header, which will be covered
+// by slice header parsing tests.).
+TEST_F(H266ParserTest, ParseComplexPHNutShouldSucceed) {
+  LoadParserFile("bbb_rpl_in_ph_nut.vvc");
+  H266NALU target_nalu;
+  int sps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  // Parsing of the SPS should generate fake VPS with vps_id = 0;
+  const H266VPS* vps = parser_.GetVPS(0);
+  EXPECT_TRUE(!!vps);
+  const H266SPS* sps = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps);
+  int pps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  const H266PPS* pps = parser_.GetPPS(pps_id);
+  EXPECT_TRUE(!!pps);
+
+  // Parse the first PH_NUT which is for slices of the IDR_N_LP frame.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPH));
+  H266PictureHeader ph;
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePHNut(target_nalu, &ph));
+  EXPECT_TRUE(ph.ph_gdr_or_irap_pic_flag);
+  EXPECT_FALSE(ph.ph_non_ref_pic_flag);
+  EXPECT_FALSE(ph.ph_gdr_pic_flag);
+  EXPECT_FALSE(ph.ph_inter_slice_allowed_flag);
+  EXPECT_EQ(ph.ph_pic_parameter_set_id, 0);
+  EXPECT_EQ(ph.ph_pic_order_cnt_lsb, 0);
+  EXPECT_FALSE(ph.ph_alf_enabled_flag);
+  EXPECT_FALSE(ph.ph_lmcs_enabled_flag);
+  // For this test clip, RPL 0 in ref_pic_lists() is based on one of
+  // ref_pic_struct(0, rplsIdx), where rplsIdx is indicated by rpl_idx[0].
+  EXPECT_EQ(sps->sps_num_ref_pic_lists[0], 20);
+  EXPECT_FALSE(sps->sps_rpl1_same_as_rpl0_flag);
+  EXPECT_FALSE(pps->pps_rpl1_idx_present_flag);
+  EXPECT_TRUE(ph.ref_pic_lists.rpl_sps_flag[0]);
+  EXPECT_EQ(ph.ref_pic_lists.rpl_idx[0], 0);
+  // rpl_sps_flag[1] & rpl_idx[1] is not present in PH, but they are inferred to
+  // be equal to rpl_sps_flag[0] since sps_num_ref_pic_lists[i] is non-zero.
+  EXPECT_EQ(sps->sps_num_ref_pic_lists[1], 20);
+  EXPECT_EQ(ph.ref_pic_lists.rpl_sps_flag[1], ph.ref_pic_lists.rpl_sps_flag[0]);
+  EXPECT_EQ(ph.ref_pic_lists.rpl_idx[1], ph.ref_pic_lists.rpl_idx[0]);
+
+  EXPECT_FALSE(ph.ph_partition_constraints_override_flag);
+  EXPECT_EQ(ph.ph_qp_delta, -5);
+  EXPECT_FALSE(ph.ph_joint_cbcr_sign_flag);
+  EXPECT_TRUE(ph.ph_sao_luma_enabled_flag);
+  EXPECT_TRUE(ph.ph_sao_chroma_enabled_flag);
+
+  // Parse the second PH_NUT which is for slices of first STSA frame.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPH));
+  H266PictureHeader ph2;
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePHNut(target_nalu, &ph2));
+  EXPECT_FALSE(ph2.ph_gdr_or_irap_pic_flag);
+  EXPECT_FALSE(ph2.ph_non_ref_pic_flag);
+  EXPECT_TRUE(ph2.ph_inter_slice_allowed_flag);
+  EXPECT_FALSE(ph2.ph_intra_slice_allowed_flag);
+  EXPECT_EQ(ph2.ph_pic_parameter_set_id, 0);
+  EXPECT_EQ(ph2.ph_pic_order_cnt_lsb, 4);
+  // RPL 0/1 is signalled in PH, since rpl_sps_flag[1] is inferred to be
+  // equal to rpl_sps_flag[0], which is 0 here.
+  EXPECT_EQ(ph2.ref_pic_lists.rpl_sps_flag[0], 0);
+  EXPECT_EQ(ph2.ref_pic_lists.rpl_sps_flag[1],
+            ph2.ref_pic_lists.rpl_sps_flag[0]);
+  EXPECT_EQ(ph2.ref_pic_lists.rpl_ref_lists[0].num_ref_entries, 1);
+  EXPECT_EQ(ph2.ref_pic_lists.rpl_ref_lists[0].abs_delta_poc_st[0], 3);
+  EXPECT_EQ(ph2.ref_pic_lists.rpl_ref_lists[1].num_ref_entries, 1);
+  EXPECT_EQ(ph2.ref_pic_lists.rpl_ref_lists[1].abs_delta_poc_st[0], 3);
+
+  EXPECT_TRUE(ph2.ph_temporal_mvp_enabled_flag);
+  EXPECT_FALSE(ph2.ph_collocated_from_l0_flag);
+
+  // Verify the weighted prediction table.
+  EXPECT_EQ(ph2.pred_weight_table.luma_log2_weight_denom, 0);
+  EXPECT_EQ(ph2.pred_weight_table.delta_chroma_log2_weight_denom, 0);
+  EXPECT_EQ(ph2.pred_weight_table.num_l0_weights, 1);
+  EXPECT_FALSE(ph2.pred_weight_table.luma_weight_l0_flag[0]);
+  EXPECT_FALSE(ph2.pred_weight_table.chroma_weight_l0_flag[0]);
+  EXPECT_EQ(ph2.pred_weight_table.num_l1_weights, 1);
+  EXPECT_FALSE(ph2.pred_weight_table.luma_weight_l1_flag[0]);
+  EXPECT_FALSE(ph2.pred_weight_table.chroma_weight_l1_flag[0]);
+
+  // Verify other misc syntax elements.
+  EXPECT_EQ(ph2.ph_qp_delta, 4);
+  EXPECT_FALSE(ph2.ph_joint_cbcr_sign_flag);
+  EXPECT_TRUE(ph2.ph_sao_chroma_enabled_flag);
+  EXPECT_TRUE(ph2.ph_sao_chroma_enabled_flag);
+
+  // Parse till the end of the stream for the last PH_NUT.
+  H266PictureHeader last_ph;
+  while (ParseNalusUntilNut(&target_nalu, H266NALU::kPH)) {
+    EXPECT_EQ(H266Parser::kOk, parser_.ParsePHNut(target_nalu, &last_ph));
+  }
+  EXPECT_EQ(last_ph.ph_pic_order_cnt_lsb, 3);
+  EXPECT_EQ(last_ph.ref_pic_lists.rpl_ref_lists[0].num_ref_entries, 2);
+  EXPECT_EQ(last_ph.ref_pic_lists.rpl_ref_lists[0].abs_delta_poc_st[0], 0);
+  EXPECT_EQ(last_ph.ref_pic_lists.rpl_ref_lists[0].abs_delta_poc_st[1], 2);
+  EXPECT_EQ(last_ph.ref_pic_lists.rpl_ref_lists[1].abs_delta_poc_st[0], 0);
+  EXPECT_EQ(last_ph.ref_pic_lists.rpl_ref_lists[1].abs_delta_poc_st[1], 2);
+  EXPECT_EQ(last_ph.pred_weight_table.luma_log2_weight_denom, 0);
+  EXPECT_EQ(last_ph.pred_weight_table.delta_chroma_log2_weight_denom, 0);
+  EXPECT_EQ(last_ph.pred_weight_table.num_l0_weights, 2);
+  EXPECT_FALSE(last_ph.pred_weight_table.luma_weight_l0_flag[0]);
+  EXPECT_FALSE(last_ph.pred_weight_table.luma_weight_l0_flag[1]);
+  EXPECT_FALSE(last_ph.pred_weight_table.chroma_weight_l0_flag[0]);
+  EXPECT_FALSE(last_ph.pred_weight_table.chroma_weight_l0_flag[1]);
+  EXPECT_EQ(last_ph.pred_weight_table.num_l1_weights, 2);
+  EXPECT_FALSE(last_ph.pred_weight_table.luma_weight_l1_flag[0]);
+  EXPECT_FALSE(last_ph.pred_weight_table.chroma_weight_l1_flag[0]);
+  EXPECT_EQ(last_ph.ph_qp_delta, 7);
+}
+
+TEST_F(H266ParserTest, ParsePHNutWithoutParsingPPSShouldFail) {
+  LoadParserFile("bbb_9tiles_18slices.vvc");
+  H266NALU target_nalu;
+  int sps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  // Parsing of the SPS should generate fake VPS with vps_id = 0;
+  const H266VPS* vps = parser_.GetVPS(0);
+  EXPECT_TRUE(!!vps);
+  const H266SPS* sps = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps);
+
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPH));
+  H266PictureHeader ph;
+  EXPECT_EQ(H266Parser::kInvalidStream, parser_.ParsePHNut(target_nalu, &ph));
 }
 
 }  // namespace media

@@ -108,6 +108,14 @@ H266LmcsData::H266LmcsData() {
   memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
 }
 
+H266PredWeightTable::H266PredWeightTable() {
+  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
+}
+
+H266PictureHeader::H266PictureHeader() {
+  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
+}
+
 H266Parser::H266Parser() = default;
 
 H266Parser::~H266Parser() = default;
@@ -2350,9 +2358,12 @@ H266Parser::Result H266Parser::ParsePPS(const H266NALU& nalu, int* pps_id) {
   }
   READ_BOOL_OR_RETURN(&pps->pps_rpl1_idx_present_flag);
   READ_BOOL_OR_RETURN(&pps->pps_weighted_pred_flag);
+  if (!sps->sps_weighted_pred_flag) {
+    TRUE_OR_RETURN(!pps->pps_weighted_pred_flag);
+  }
   READ_BOOL_OR_RETURN(&pps->pps_weighted_bipred_flag);
-  if (pps->pps_weighted_pred_flag) {
-    TRUE_OR_RETURN(pps->pps_weighted_bipred_flag == 0);
+  if (!sps->sps_weighted_bipred_flag) {
+    TRUE_OR_RETURN(!pps->pps_weighted_bipred_flag);
   }
   READ_BOOL_OR_RETURN(&pps->pps_ref_wraparound_enabled_flag);
   if (sps->sps_ref_pic_resampling_enabled_flag == 0 ||
@@ -2883,6 +2894,752 @@ H266Parser::Result H266Parser::ParseAPS(const H266NALU& nalu,
       active_scaling_list_aps_[*aps_id] = std::move(aps);
       break;
   }
+
+  return kOk;
+}
+
+// 7.3.9 & 7.4.10
+H266Parser::Result H266Parser::ParseRefPicLists(
+    const H266SPS& sps,
+    const H266PPS& pps,
+    H266RefPicLists* ref_pic_lists) {
+  DCHECK(ref_pic_lists);
+
+  for (int i = 0; i < 2; i++) {
+    if (sps.sps_num_ref_pic_lists[i] > 0 &&
+        (i == 0 || (i == 1 && pps.pps_rpl1_idx_present_flag))) {
+      READ_BOOL_OR_RETURN(&ref_pic_lists->rpl_sps_flag[i]);
+    } else {
+      if (sps.sps_num_ref_pic_lists[i] == 0) {
+        ref_pic_lists->rpl_sps_flag[i] = 0;
+      } else if (sps.sps_num_ref_pic_lists[i] > 0) {
+        if (pps.pps_rpl1_idx_present_flag == 0 && i == 1) {
+          ref_pic_lists->rpl_sps_flag[i] = ref_pic_lists->rpl_sps_flag[0];
+        }
+      }
+    }
+
+    if (ref_pic_lists->rpl_sps_flag[i]) {
+      if (sps.sps_num_ref_pic_lists[i] > 1 &&
+          (i == 0 || (i == 1 && pps.pps_rpl1_idx_present_flag))) {
+        READ_BITS_OR_RETURN(base::bits::Log2Ceiling(static_cast<uint32_t>(
+                                sps.sps_num_ref_pic_lists[i])),
+                            &ref_pic_lists->rpl_idx[i]);
+        IN_RANGE_OR_RETURN(ref_pic_lists->rpl_idx[i], 0,
+                           sps.sps_num_ref_pic_lists[i] - 1);
+      } else {
+        if (sps.sps_num_ref_pic_lists[i] == 1) {
+          ref_pic_lists->rpl_idx[i] = 0;
+        }
+        if (i == 1 && pps.pps_rpl1_idx_present_flag == 0 &&
+            sps.sps_num_ref_pic_lists[1] > 1) {
+          ref_pic_lists->rpl_idx[i] = ref_pic_lists->rpl_idx[0];
+        }
+      }
+    } else {
+      ParseRefPicListStruct(i, sps.sps_num_ref_pic_lists[i], sps,
+                            &ref_pic_lists->rpl_ref_lists[i]);
+    }
+
+    for (int j = 0; j < ref_pic_lists->rpl_ref_lists[i].num_ltrp_entries; j++) {
+      if (ref_pic_lists->rpl_ref_lists[i].ltrp_in_header_flag) {
+        READ_BITS_OR_RETURN(sps.sps_log2_max_pic_order_cnt_lsb_minus4 + 4,
+                            &ref_pic_lists->poc_lsb_lt[i][j]);
+        // Currently we do not use PocLsbLt[i][j], so equation 147 is not
+        // handled.
+      }
+      READ_BOOL_OR_RETURN(
+          &ref_pic_lists->delta_poc_msb_cycle_present_flag[i][j]);
+      if (ref_pic_lists->delta_poc_msb_cycle_present_flag[i][j]) {
+        READ_UE_OR_RETURN(&ref_pic_lists->delta_poc_msb_cycle_lt[i][j]);
+        IN_RANGE_OR_RETURN(
+            ref_pic_lists->delta_poc_msb_cycle_lt[i][j], 0,
+            std::pow(2, 32 - sps.sps_log2_max_pic_order_cnt_lsb_minus4 - 4));
+      } else {
+        ref_pic_lists->delta_poc_msb_cycle_lt[i][j] = 0;
+      }
+    }
+
+    // Equation 146
+    ref_pic_lists->rpls_idx[i] = ref_pic_lists->rpl_sps_flag[i]
+                                     ? ref_pic_lists->rpl_idx[i]
+                                     : sps.sps_num_ref_pic_lists[i];
+  }
+
+  return kOk;
+}
+
+H266Parser::Result H266Parser::ParsePredWeightTable(
+    const H266SPS& sps,
+    const H266PPS& pps,
+    const H266RefPicLists& ref_pic_lists,
+    int num_ref_idx_active[2],
+    H266PredWeightTable* pred_weight_table) {
+  // 7.3.8
+  READ_UE_OR_RETURN(&pred_weight_table->luma_log2_weight_denom);
+  IN_RANGE_OR_RETURN(pred_weight_table->luma_log2_weight_denom, 0, 7);
+  if (sps.sps_chroma_format_idc != 0) {
+    READ_SE_OR_RETURN(&pred_weight_table->delta_chroma_log2_weight_denom);
+  } else {
+    pred_weight_table->delta_chroma_log2_weight_denom = 0;
+  }
+  pred_weight_table->chroma_log2_weight_denom =
+      pred_weight_table->luma_log2_weight_denom +
+      pred_weight_table->delta_chroma_log2_weight_denom;
+  IN_RANGE_OR_RETURN(pred_weight_table->chroma_log2_weight_denom, 0, 7);
+
+  if (pps.pps_wp_info_in_ph_flag) {
+    READ_UE_OR_RETURN(&pred_weight_table->num_l0_weights);
+    IN_RANGE_OR_RETURN(
+        pred_weight_table->num_l0_weights, 0,
+        std::min(15, ref_pic_lists.rpl_ref_lists[0].num_ref_entries));
+    pred_weight_table->num_weights_l0 = pred_weight_table->num_l0_weights;
+  } else {
+    pred_weight_table->num_weights_l0 = num_ref_idx_active[0];
+  }
+  for (int i = 0; i < pred_weight_table->num_weights_l0; i++) {
+    READ_BOOL_OR_RETURN(&pred_weight_table->luma_weight_l0_flag[i]);
+  }
+  if (sps.sps_chroma_format_idc != 0) {
+    for (int i = 0; i < pred_weight_table->num_weights_l0; i++) {
+      READ_BOOL_OR_RETURN(&pred_weight_table->chroma_weight_l0_flag[i]);
+    }
+  }
+  for (int i = 0; i < pred_weight_table->num_weights_l0; i++) {
+    if (pred_weight_table->luma_weight_l0_flag[i]) {
+      READ_SE_OR_RETURN(&pred_weight_table->delta_luma_weight_l0[i]);
+      IN_RANGE_OR_RETURN(pred_weight_table->delta_luma_weight_l0[i], -128, 127);
+      READ_SE_OR_RETURN(&pred_weight_table->luma_offset_l0[i]);
+      IN_RANGE_OR_RETURN(pred_weight_table->luma_offset_l0[i], -128, 127);
+    } else {
+      pred_weight_table->delta_luma_weight_l0[i] = 0;
+      pred_weight_table->luma_offset_l0[i] = 0;
+    }
+    if (pred_weight_table->chroma_weight_l0_flag[i]) {
+      for (int j = 0; j < 2; j++) {
+        READ_SE_OR_RETURN(&pred_weight_table->delta_chroma_weight_l0[i][j]);
+        IN_RANGE_OR_RETURN(pred_weight_table->delta_chroma_weight_l0[i][j],
+                           -128, 127);
+        READ_SE_OR_RETURN(&pred_weight_table->delta_chroma_offset_l0[i][j]);
+        IN_RANGE_OR_RETURN(pred_weight_table->delta_chroma_offset_l0[i][j],
+                           -4 * 128, 4 * 127);
+      }
+    }
+  }
+
+  if (pps.pps_weighted_bipred_flag && pps.pps_wp_info_in_ph_flag &&
+      ref_pic_lists.rpl_ref_lists[1].num_ref_entries > 0) {
+    READ_UE_OR_RETURN(&pred_weight_table->num_l1_weights);
+    IN_RANGE_OR_RETURN(
+        pred_weight_table->num_l1_weights, 0,
+        std::min(15, ref_pic_lists.rpl_ref_lists[1].num_ref_entries));
+  }
+  // Equation 145
+  if (!pps.pps_weighted_bipred_flag ||
+      (pps.pps_wp_info_in_ph_flag &&
+       ref_pic_lists.rpl_ref_lists[1].num_ref_entries == 0)) {
+    pred_weight_table->num_weights_l1 = 0;
+  } else if (pps.pps_wp_info_in_ph_flag) {
+    pred_weight_table->num_weights_l1 = pred_weight_table->num_l1_weights;
+  } else {
+    pred_weight_table->num_weights_l1 = num_ref_idx_active[1];
+  }
+
+  for (int i = 0; i < pred_weight_table->num_weights_l1; i++) {
+    READ_BOOL_OR_RETURN(&pred_weight_table->luma_weight_l0_flag[i]);
+  }
+  if (sps.sps_chroma_format_idc != 0) {
+    for (int i = 0; i < pred_weight_table->num_weights_l1; i++) {
+      READ_BOOL_OR_RETURN(&pred_weight_table->chroma_weight_l1_flag[i]);
+    }
+  }
+  for (int i = 0; i < pred_weight_table->num_weights_l1; i++) {
+    if (pred_weight_table->luma_weight_l1_flag[i]) {
+      READ_SE_OR_RETURN(&pred_weight_table->delta_luma_weight_l1[i]);
+      IN_RANGE_OR_RETURN(pred_weight_table->delta_luma_weight_l1[i], -128, 127);
+      READ_SE_OR_RETURN(&pred_weight_table->luma_offset_l1[i]);
+      IN_RANGE_OR_RETURN(pred_weight_table->luma_offset_l1[i], -128, 127);
+    } else {
+      pred_weight_table->delta_luma_weight_l1[i] = 0;
+      pred_weight_table->luma_offset_l1[i] = 0;
+    }
+    if (pred_weight_table->chroma_weight_l1_flag[i]) {
+      for (int j = 0; j < 2; j++) {
+        READ_SE_OR_RETURN(&pred_weight_table->delta_chroma_weight_l1[i][j]);
+        IN_RANGE_OR_RETURN(pred_weight_table->delta_chroma_weight_l1[i][j],
+                           -128, 127);
+        READ_SE_OR_RETURN(&pred_weight_table->delta_chroma_offset_l1[i][j]);
+        IN_RANGE_OR_RETURN(pred_weight_table->delta_chroma_offset_l1[i][j],
+                           -4 * 128, 4 * 127);
+      }
+    }
+  }
+
+  return kOk;
+}
+
+H266Parser::Result H266Parser::ParsePHNut(const H266NALU& nalu,
+                                          H266PictureHeader* ph) {
+  DCHECK(ph);
+  memset(reinterpret_cast<void*>(ph), 0, sizeof(H266PictureHeader));
+
+  if (nalu.nal_unit_type != H266NALU::kPH) {
+    DVLOG(1) << "Not a picture header NALU.";
+    return kIgnored;
+  }
+
+  ph->nal_unit_type = nalu.nal_unit_type;
+  return ParsePictureHeaderStructure(nalu, ph);
+}
+
+H266Parser::Result H266Parser::ParsePHInSlice(const H266NALU& nalu,
+                                              H266PictureHeader* ph) {
+  DCHECK(ph);
+  memset(reinterpret_cast<void*>(ph), 0, sizeof(H266PictureHeader));
+
+  if (!(nalu.nal_unit_type >= H266NALU::kTrail &&
+        nalu.nal_unit_type <= H266NALU::kReservedIRAP11)) {
+    DVLOG(1) << "Embedded picture header structure must be in slice.";
+    return kInvalidStream;
+  }
+
+  // The nalu type of slice that current picture header is embedded into.
+  ph->nal_unit_type = nalu.nal_unit_type;
+  return ParsePictureHeaderStructure(nalu, ph);
+}
+
+// 7.3.2.8 Picture header structure
+// May be in separate PH_NUT or included in slice header. They convey
+// information for a particular picture including but not limited to:
+// 1. Indication of IRAP/GDR, and if inter-intra slices are allowed.
+// 2. LSB and MSB of POC, coding partitioning.
+// 3. Picture level collocated info and tool switches.
+// 4. RPLs, deblocking/QP info, etc.
+// Be noted for each picture there needs to be exactly one PH associated
+// with it.
+H266Parser::Result H266Parser::ParsePictureHeaderStructure(
+    const H266NALU& nalu,
+    H266PictureHeader* ph) {
+  READ_BOOL_OR_RETURN(&ph->ph_gdr_or_irap_pic_flag);
+  READ_BOOL_OR_RETURN(&ph->ph_non_ref_pic_flag);
+  if (ph->ph_gdr_or_irap_pic_flag) {
+    READ_BOOL_OR_RETURN(&ph->ph_gdr_pic_flag);
+  } else {
+    ph->ph_gdr_pic_flag = 0;
+  }
+  READ_BOOL_OR_RETURN(&ph->ph_inter_slice_allowed_flag);
+
+  if (ph->ph_inter_slice_allowed_flag) {
+    READ_BOOL_OR_RETURN(&ph->ph_intra_slice_allowed_flag);
+  } else {
+    ph->ph_intra_slice_allowed_flag = 1;
+  }
+
+  READ_UE_OR_RETURN(&ph->ph_pic_parameter_set_id);
+  IN_RANGE_OR_RETURN(ph->ph_pic_parameter_set_id, 0, 63);
+
+  const H266PPS* pps = GetPPS(ph->ph_pic_parameter_set_id);
+  if (!pps) {
+    DVLOG(1) << "Invalid PPS in picture header.";
+    return kInvalidStream;
+  }
+
+  const H266SPS* sps = GetSPS(pps->pps_seq_parameter_set_id);
+  if (!sps) {
+    DVLOG(1) << "Failed to find SPS for current PPS.";
+    return kInvalidStream;
+  }
+  const H266VPS* vps = GetVPS(sps->sps_video_parameter_set_id);
+  if (!vps) {
+    DVLOG(1) << "VPS for current SPS is not found.";
+    return kInvalidStream;
+  }
+
+  if (ph->ph_gdr_or_irap_pic_flag && !ph->ph_gdr_pic_flag) {
+    int general_layer_idx = vps->GetGeneralLayerIdx(nalu.nuh_layer_id);
+    if (general_layer_idx > 0 & general_layer_idx < kMaxLayers &&
+        vps->vps_independent_layer_flag[general_layer_idx]) {
+      TRUE_OR_RETURN(!ph->ph_inter_slice_allowed_flag);
+    }
+  }
+
+  // Late validation of ph_gdr_pic_flag as pps id is fetched after
+  // ph_gdr_pic_flag.
+  if (sps->sps_gdr_enabled_flag == 0) {
+    TRUE_OR_RETURN(ph->ph_gdr_pic_flag == 0);
+  }
+
+  READ_BITS_OR_RETURN(sps->sps_log2_max_pic_order_cnt_lsb_minus4 + 4,
+                      &ph->ph_pic_order_cnt_lsb);
+  IN_RANGE_OR_RETURN(ph->ph_pic_order_cnt_lsb, 0,
+                     sps->max_pic_order_cnt_lsb - 1);
+  if (ph->ph_gdr_pic_flag) {
+    READ_UE_OR_RETURN(&ph->ph_recovery_poc_cnt);
+    IN_RANGE_OR_RETURN(ph->ph_recovery_poc_cnt, 0,
+                       sps->max_pic_order_cnt_lsb - 1);
+  }
+
+  if (sps->num_extra_ph_bits > 0) {
+    SKIP_BITS_OR_RETURN(sps->num_extra_ph_bits);
+  }
+
+  if (sps->sps_poc_msb_cycle_flag) {
+    READ_BOOL_OR_RETURN(&ph->ph_poc_msb_cycle_present_flag);
+    if (ph->ph_poc_msb_cycle_present_flag) {
+      READ_BITS_OR_RETURN(sps->sps_poc_msb_cycle_len_minus1 + 1,
+                          &ph->ph_poc_msb_cycle_val);
+    }
+  }
+
+  // PH alf info.
+  if (sps->sps_alf_enabled_flag && pps->pps_alf_info_in_ph_flag) {
+    READ_BOOL_OR_RETURN(&ph->ph_alf_enabled_flag);
+    if (ph->ph_alf_enabled_flag) {
+      READ_BITS_OR_RETURN(3, &ph->ph_num_alf_aps_ids_luma);
+      for (int i = 0; i < ph->ph_num_alf_aps_ids_luma; i++) {
+        READ_BITS_OR_RETURN(3, &ph->ph_alf_aps_id_luma[i]);
+      }
+      if (sps->sps_chroma_format_idc != 0) {
+        READ_BOOL_OR_RETURN(&ph->ph_alf_cb_enabled_flag);
+        READ_BOOL_OR_RETURN(&ph->ph_alf_cr_enabled_flag);
+      } else {
+        ph->ph_alf_cb_enabled_flag = ph->ph_alf_cr_enabled_flag = 0;
+      }
+      if (ph->ph_alf_cb_enabled_flag || ph->ph_alf_cr_enabled_flag) {
+        READ_BITS_OR_RETURN(3, &ph->ph_alf_aps_id_chroma);
+      }
+      if (sps->sps_ccalf_enabled_flag) {
+        READ_BOOL_OR_RETURN(&ph->ph_alf_cc_cb_enabled_flag);
+        if (ph->ph_alf_cc_cb_enabled_flag) {
+          READ_BITS_OR_RETURN(3, &ph->ph_alf_cc_cb_aps_id);
+        }
+        READ_BOOL_OR_RETURN(&ph->ph_alf_cc_cr_enabled_flag);
+        if (ph->ph_alf_cc_cr_enabled_flag) {
+          READ_BITS_OR_RETURN(3, &ph->ph_alf_cc_cr_aps_id);
+        }
+      } else {
+        ph->ph_alf_cc_cb_enabled_flag = 0;
+        ph->ph_alf_cc_cr_enabled_flag = 0;
+      }
+    }
+  } else {
+    ph->ph_alf_enabled_flag = 0;
+    ph->ph_alf_cb_enabled_flag = ph->ph_alf_cr_enabled_flag = 0;
+    ph->ph_alf_cc_cb_enabled_flag = 0;
+    ph->ph_alf_cc_cr_enabled_flag = 0;
+  }
+
+  if (sps->sps_lmcs_enabled_flag) {
+    READ_BOOL_OR_RETURN(&ph->ph_lmcs_enabled_flag);
+    if (ph->ph_lmcs_enabled_flag) {
+      READ_BITS_OR_RETURN(2, &ph->ph_lmcs_aps_id);
+      if (sps->sps_chroma_format_idc != 0) {
+        READ_BOOL_OR_RETURN(&ph->ph_chroma_residual_scale_flag);
+      } else {
+        ph->ph_chroma_residual_scale_flag = 0;
+      }
+    }
+  } else {
+    ph->ph_lmcs_enabled_flag = 0;
+    ph->ph_chroma_residual_scale_flag = 0;
+  }
+
+  if (sps->sps_explicit_scaling_list_enabled_flag) {
+    READ_BOOL_OR_RETURN(&ph->ph_explicit_scaling_list_enabled_flag);
+    if (ph->ph_explicit_scaling_list_enabled_flag) {
+      READ_BITS_OR_RETURN(3, &ph->ph_scaling_list_aps_id);
+    }
+  } else {
+    ph->ph_explicit_scaling_list_enabled_flag = 0;
+  }
+
+  if (sps->sps_virtual_boundaries_enabled_flag &&
+      !sps->sps_virtual_boundaries_present_flag) {
+    READ_BOOL_OR_RETURN(&ph->ph_virtual_boundaries_present_flag);
+    // Equation 77.
+    ph->virtual_boundaries_present_flag = 0;
+    if (sps->sps_virtual_boundaries_enabled_flag) {
+      ph->virtual_boundaries_present_flag =
+          sps->sps_virtual_boundaries_present_flag ||
+          ph->ph_virtual_boundaries_present_flag;
+    }
+    if (ph->ph_virtual_boundaries_present_flag) {
+      READ_UE_OR_RETURN(&ph->ph_num_ver_virtual_boundaries);
+      IN_RANGE_OR_RETURN(ph->ph_num_ver_virtual_boundaries, 0,
+                         (pps->pps_pic_width_in_luma_samples <= 8) ? 0 : 3);
+      for (int i = 0; i < ph->ph_num_ver_virtual_boundaries; i++) {
+        READ_UE_OR_RETURN(&ph->ph_virtual_boundary_pos_x_minus1[i]);
+        IN_RANGE_OR_RETURN(ph->ph_virtual_boundary_pos_x_minus1[i], 0,
+                           (pps->pps_pic_width_in_luma_samples + 7 / 8) - 2);
+      }
+
+      READ_UE_OR_RETURN(&ph->ph_num_hor_virtual_boundaries);
+      IN_RANGE_OR_RETURN(ph->ph_num_hor_virtual_boundaries, 0,
+                         (pps->pps_pic_height_in_luma_samples <= 8) ? 0 : 3);
+      for (int i = 0; i < ph->ph_num_hor_virtual_boundaries; i++) {
+        READ_UE_OR_RETURN(&ph->ph_virtual_boundary_pos_y_minus1[i]);
+        IN_RANGE_OR_RETURN(ph->ph_virtual_boundary_pos_y_minus1[i], 0,
+                           (pps->pps_pic_height_in_luma_samples + 7 / 8) - 2);
+      }
+    } else {
+      ph->ph_num_ver_virtual_boundaries = 0;
+    }
+  } else {
+    ph->ph_virtual_boundaries_present_flag = 0;
+    ph->ph_num_ver_virtual_boundaries = 0;
+  }
+
+  if (pps->pps_output_flag_present_flag && !ph->ph_non_ref_pic_flag) {
+    READ_BOOL_OR_RETURN(&ph->ph_pic_output_flag);
+  } else {
+    ph->ph_pic_output_flag = 1;
+  }
+
+  if (pps->pps_rpl_info_in_ph_flag) {
+    ParseRefPicLists(*sps, *pps, &ph->ref_pic_lists);
+  }
+
+  if (sps->sps_partition_constraints_override_enabled_flag) {
+    READ_BOOL_OR_RETURN(&ph->ph_partition_constraints_override_flag);
+  } else {
+    ph->ph_partition_constraints_override_flag = 0;
+  }
+
+  if (ph->ph_intra_slice_allowed_flag) {
+    if (ph->ph_partition_constraints_override_flag) {
+      READ_UE_OR_RETURN(&ph->ph_log2_diff_min_qt_min_cb_intra_slice_luma);
+      IN_RANGE_OR_RETURN(
+          ph->ph_log2_diff_min_qt_min_cb_intra_slice_luma, 0,
+          std::min(6, sps->ctb_log2_size_y) - sps->min_cb_log2_size_y);
+      // Equation 82
+      ph->min_qt_log2_size_intra_y =
+          ph->ph_log2_diff_min_qt_min_cb_intra_slice_luma +
+          sps->min_cb_log2_size_y;
+
+      READ_UE_OR_RETURN(&ph->ph_max_mtt_hierarchy_depth_intra_slice_luma);
+      IN_RANGE_OR_RETURN(ph->ph_max_mtt_hierarchy_depth_intra_slice_luma, 0,
+                         2 * (sps->ctb_log2_size_y - sps->min_cb_log2_size_y));
+
+      if (ph->ph_max_mtt_hierarchy_depth_intra_slice_luma != 0) {
+        READ_UE_OR_RETURN(&ph->ph_log2_diff_max_bt_min_qt_intra_slice_luma);
+        IN_RANGE_OR_RETURN(ph->ph_log2_diff_max_bt_min_qt_intra_slice_luma, 0,
+                           (sps->sps_qtbtt_dual_tree_intra_flag
+                                ? std::min(6, sps->ctb_log2_size_y)
+                                : sps->ctb_log2_size_y) -
+                               ph->min_qt_log2_size_intra_y);
+        READ_UE_OR_RETURN(&ph->ph_log2_diff_max_tt_min_qt_intra_slice_luma);
+        IN_RANGE_OR_RETURN(
+            ph->ph_log2_diff_max_tt_min_qt_intra_slice_luma, 0,
+            std::min(6, sps->ctb_log2_size_y) - ph->min_qt_log2_size_intra_y);
+      } else {
+        ph->ph_log2_diff_max_bt_min_qt_intra_slice_luma =
+            sps->sps_log2_diff_max_bt_min_qt_intra_slice_luma;
+        ph->ph_log2_diff_max_tt_min_qt_intra_slice_luma =
+            sps->sps_log2_diff_max_tt_min_qt_intra_slice_luma;
+      }
+
+      if (sps->sps_qtbtt_dual_tree_intra_flag) {
+        READ_UE_OR_RETURN(&ph->ph_log2_diff_min_qt_min_cb_intra_slice_chroma);
+        IN_RANGE_OR_RETURN(
+            ph->ph_log2_diff_min_qt_min_cb_intra_slice_chroma, 0,
+            std::min(6, sps->ctb_log2_size_y) - sps->min_cb_log2_size_y);
+        READ_UE_OR_RETURN(&ph->ph_max_mtt_hierarchy_depth_intra_slice_chroma);
+        IN_RANGE_OR_RETURN(
+            ph->ph_max_mtt_hierarchy_depth_intra_slice_chroma, 0,
+            2 * (sps->ctb_log2_size_y - sps->min_cb_log2_size_y));
+
+        // Equation 83
+        ph->min_qt_log2_size_intra_c =
+            ph->ph_log2_diff_min_qt_min_cb_intra_slice_chroma +
+            sps->min_cb_log2_size_y;
+
+        if (ph->ph_max_mtt_hierarchy_depth_intra_slice_chroma) {
+          READ_UE_OR_RETURN(&ph->ph_log2_diff_max_bt_min_qt_intra_slice_chroma);
+          IN_RANGE_OR_RETURN(
+              ph->ph_log2_diff_max_bt_min_qt_intra_slice_chroma, 0,
+              std::min(6, sps->ctb_log2_size_y) - ph->min_qt_log2_size_intra_c);
+          READ_UE_OR_RETURN(&ph->ph_log2_diff_max_tt_min_qt_intra_slice_chroma);
+          IN_RANGE_OR_RETURN(
+              ph->ph_log2_diff_max_tt_min_qt_intra_slice_chroma, 0,
+              std::min(6, sps->ctb_log2_size_y) - ph->min_qt_log2_size_intra_c);
+        } else {
+          ph->ph_log2_diff_max_bt_min_qt_intra_slice_chroma =
+              sps->sps_log2_diff_max_bt_min_qt_intra_slice_chroma;
+          ph->ph_log2_diff_max_tt_min_qt_intra_slice_chroma =
+              sps->sps_log2_diff_max_tt_min_qt_intra_slice_chroma;
+        }
+      } else {
+        ph->ph_log2_diff_max_bt_min_qt_intra_slice_chroma =
+            sps->sps_log2_diff_max_bt_min_qt_intra_slice_chroma;
+        ph->ph_log2_diff_max_tt_min_qt_intra_slice_chroma =
+            sps->sps_log2_diff_max_tt_min_qt_intra_slice_chroma;
+        ph->ph_log2_diff_min_qt_min_cb_intra_slice_chroma =
+            sps->sps_log2_diff_min_qt_min_cb_intra_slice_chroma;
+        ph->ph_max_mtt_hierarchy_depth_intra_slice_chroma =
+            sps->sps_max_mtt_hierarchy_depth_intra_slice_chroma;
+      }
+    } else {
+      ph->ph_log2_diff_min_qt_min_cb_intra_slice_luma =
+          sps->sps_log2_diff_min_qt_min_cb_intra_slice_luma;
+      ph->ph_max_mtt_hierarchy_depth_intra_slice_luma =
+          sps->sps_max_mtt_hierarchy_depth_intra_slice_luma;
+      ph->ph_log2_diff_max_bt_min_qt_intra_slice_luma =
+          sps->sps_log2_diff_max_bt_min_qt_intra_slice_luma;
+      ph->ph_log2_diff_max_tt_min_qt_intra_slice_luma =
+          sps->sps_log2_diff_max_tt_min_qt_intra_slice_luma;
+      ph->ph_log2_diff_max_bt_min_qt_intra_slice_chroma =
+          sps->sps_log2_diff_max_bt_min_qt_intra_slice_chroma;
+      ph->ph_log2_diff_max_tt_min_qt_intra_slice_chroma =
+          sps->sps_log2_diff_max_tt_min_qt_intra_slice_chroma;
+      ph->ph_log2_diff_min_qt_min_cb_intra_slice_chroma =
+          sps->sps_log2_diff_min_qt_min_cb_intra_slice_chroma;
+      ph->ph_max_mtt_hierarchy_depth_intra_slice_chroma =
+          sps->sps_max_mtt_hierarchy_depth_intra_slice_chroma;
+    }
+    if (pps->pps_cu_qp_delta_enabled_flag) {
+      READ_UE_OR_RETURN(&ph->ph_cu_qp_delta_subdiv_intra_slice);
+      IN_RANGE_OR_RETURN(
+          ph->ph_cu_qp_delta_subdiv_intra_slice, 0,
+          2 * (sps->ctb_log2_size_y - ph->min_qt_log2_size_intra_y +
+               ph->ph_max_mtt_hierarchy_depth_intra_slice_luma));
+    } else {
+      ph->ph_cu_qp_delta_subdiv_intra_slice = 0;
+    }
+    if (pps->pps_cu_chroma_qp_offset_list_enabled_flag) {
+      READ_UE_OR_RETURN(&ph->ph_cu_chroma_qp_offset_subdiv_intra_slice);
+      IN_RANGE_OR_RETURN(
+          ph->ph_cu_chroma_qp_offset_subdiv_intra_slice, 0,
+          2 * (sps->ctb_log2_size_y - ph->min_qt_log2_size_intra_y +
+               ph->ph_max_mtt_hierarchy_depth_intra_slice_luma));
+    } else {
+      ph->ph_cu_chroma_qp_offset_subdiv_intra_slice = 0;
+    }
+  }  // ph_intra_slice_allowed_flag
+
+  if (ph->ph_inter_slice_allowed_flag) {  // Syntax parsing till before
+                                          // ph_qp_delta
+    if (ph->ph_partition_constraints_override_flag) {
+      READ_UE_OR_RETURN(&ph->ph_log2_diff_min_qt_min_cb_inter_slice);
+      IN_RANGE_OR_RETURN(
+          ph->ph_log2_diff_min_qt_min_cb_inter_slice, 0,
+          std::min(6, sps->ctb_log2_size_y) - sps->min_cb_log2_size_y);
+      // Equation 84
+      ph->min_qt_log2_size_inter_y =
+          ph->ph_log2_diff_min_qt_min_cb_inter_slice + sps->min_cb_log2_size_y;
+
+      READ_UE_OR_RETURN(&ph->ph_max_mtt_hierarchy_depth_inter_slice);
+      IN_RANGE_OR_RETURN(ph->ph_max_mtt_hierarchy_depth_inter_slice, 0,
+                         2 * (sps->ctb_log2_size_y - sps->min_cb_log2_size_y));
+
+      if (ph->ph_max_mtt_hierarchy_depth_inter_slice != 0) {
+        READ_UE_OR_RETURN(&ph->ph_log2_diff_max_bt_min_qt_inter_slice);
+        IN_RANGE_OR_RETURN(ph->ph_log2_diff_max_bt_min_qt_inter_slice, 0,
+                           sps->ctb_log2_size_y - ph->min_qt_log2_size_inter_y);
+        READ_UE_OR_RETURN(&ph->ph_log2_diff_max_tt_min_qt_inter_slice);
+        IN_RANGE_OR_RETURN(
+            ph->ph_log2_diff_max_tt_min_qt_inter_slice, 0,
+            std::min(6, sps->ctb_log2_size_y) - ph->min_qt_log2_size_inter_y);
+      } else {
+        ph->ph_log2_diff_max_bt_min_qt_inter_slice =
+            sps->sps_log2_diff_max_bt_min_qt_inter_slice;
+        ph->ph_log2_diff_max_tt_min_qt_inter_slice =
+            sps->sps_log2_diff_max_tt_min_qt_inter_slice;
+      }
+    } else {
+      ph->ph_log2_diff_min_qt_min_cb_inter_slice =
+          sps->sps_log2_diff_max_bt_min_qt_inter_slice;
+      ph->ph_max_mtt_hierarchy_depth_inter_slice =
+          sps->sps_max_mtt_hierarchy_depth_inter_slice;
+      ph->ph_log2_diff_max_bt_min_qt_inter_slice =
+          sps->sps_log2_diff_max_bt_min_qt_inter_slice;
+      ph->ph_log2_diff_max_tt_min_qt_inter_slice =
+          sps->sps_log2_diff_max_tt_min_qt_inter_slice;
+    }
+
+    if (pps->pps_cu_qp_delta_enabled_flag) {
+      READ_UE_OR_RETURN(&ph->ph_cu_qp_delta_subdiv_inter_slice);
+      IN_RANGE_OR_RETURN(
+          ph->ph_cu_qp_delta_subdiv_inter_slice, 0,
+          2 * (sps->ctb_log2_size_y - ph->min_qt_log2_size_inter_y +
+               ph->ph_max_mtt_hierarchy_depth_inter_slice));
+    } else {
+      ph->ph_cu_qp_delta_subdiv_inter_slice = 0;
+    }
+
+    if (pps->pps_cu_chroma_qp_offset_list_enabled_flag) {
+      READ_UE_OR_RETURN(&ph->ph_cu_chroma_qp_offset_subdiv_inter_slice);
+      IN_RANGE_OR_RETURN(
+          ph->ph_cu_chroma_qp_offset_subdiv_inter_slice, 0,
+          2 * (sps->ctb_log2_size_y - ph->min_qt_log2_size_inter_y +
+               ph->ph_max_mtt_hierarchy_depth_inter_slice));
+    } else {
+      ph->ph_cu_chroma_qp_offset_subdiv_inter_slice = 0;
+    }
+
+    if (sps->sps_temporal_mvp_enabled_flag) {
+      READ_BOOL_OR_RETURN(&ph->ph_temporal_mvp_enabled_flag);
+
+      if (ph->ph_temporal_mvp_enabled_flag && pps->pps_rpl_info_in_ph_flag) {
+        if (ph->ref_pic_lists.rpl_ref_lists[1].num_ref_entries > 0) {
+          READ_BOOL_OR_RETURN(&ph->ph_collocated_from_l0_flag);
+        } else {
+          ph->ph_collocated_from_l0_flag = 1;
+        }
+
+        if ((ph->ph_collocated_from_l0_flag &&
+             ph->ref_pic_lists.rpl_ref_lists[0].num_ref_entries > 1) ||
+            (!ph->ph_collocated_from_l0_flag &&
+             ph->ref_pic_lists.rpl_ref_lists[1].num_ref_entries > 1)) {
+          READ_UE_OR_RETURN(&ph->ph_collocated_ref_idx);
+          if (ph->ph_collocated_from_l0_flag) {
+            IN_RANGE_OR_RETURN(
+                ph->ph_collocated_ref_idx, 0,
+                ph->ref_pic_lists.rpl_ref_lists[0].num_ref_entries - 1);
+          } else {
+            IN_RANGE_OR_RETURN(
+                ph->ph_collocated_ref_idx, 0,
+                ph->ref_pic_lists.rpl_ref_lists[1].num_ref_entries - 1);
+          }
+        } else {
+          ph->ph_collocated_ref_idx = 0;
+        }
+      }
+    }
+
+    if (sps->sps_mmvd_fullpel_only_enabled_flag) {
+      READ_BOOL_OR_RETURN(&ph->ph_mmvd_fullpel_only_flag);
+    } else {
+      ph->ph_mmvd_fullpel_only_flag = 0;
+    }
+
+    bool presence_flag = 0;
+    if (!pps->pps_rpl_info_in_ph_flag) {
+      presence_flag = 1;
+    } else if (ph->ref_pic_lists.rpl_ref_lists[1].num_ref_entries > 0) {
+      presence_flag = 1;
+    }
+    if (presence_flag) {
+      READ_BOOL_OR_RETURN(&ph->ph_mvd_l1_zero_flag);
+      if (sps->sps_bdof_control_present_in_ph_flag) {
+        READ_BOOL_OR_RETURN(&ph->ph_bdof_disabled_flag);
+      } else {
+        ph->ph_bdof_disabled_flag = 1 - sps->sps_bdof_enabled_flag;
+      }
+      if (sps->sps_dmvr_control_present_in_ph_flag) {
+        READ_BOOL_OR_RETURN(&ph->ph_dmvr_disabled_flag);
+      } else {
+        ph->ph_dmvr_disabled_flag = 1 - sps->sps_dmvr_enabled_flag;
+      }
+    } else {
+      ph->ph_mvd_l1_zero_flag = 1;
+      ph->ph_bdof_disabled_flag = 1;
+    }
+
+    if (sps->sps_prof_control_present_in_ph_flag) {
+      READ_BOOL_OR_RETURN(&ph->ph_prof_disabled_flag);
+    } else {
+      if (sps->sps_affine_prof_enabled_flag) {
+        ph->ph_prof_disabled_flag = 0;
+      } else {
+        ph->ph_prof_disabled_flag = 1;
+      }
+    }
+
+    if ((pps->pps_weighted_pred_flag || pps->pps_weighted_bipred_flag) &&
+        pps->pps_wp_info_in_ph_flag) {
+      int num_active_ref_idx[2] = {0, 0};
+      ParsePredWeightTable(*sps, *pps, ph->ref_pic_lists, num_active_ref_idx,
+                           &ph->pred_weight_table);
+    }
+  }  // ph_inter_slice_allowed_flag
+
+  if (pps->pps_qp_delta_info_in_ph_flag) {
+    READ_SE_OR_RETURN(&ph->ph_qp_delta);
+    // Equation 86
+    ph->slice_qp_y = 26 + pps->pps_init_qp_minus26 + ph->ph_qp_delta;
+    IN_RANGE_OR_RETURN(ph->slice_qp_y, -sps->qp_bd_offset, 63);
+  }
+
+  if (sps->sps_joint_cbcr_enabled_flag) {
+    READ_BOOL_OR_RETURN(&ph->ph_joint_cbcr_sign_flag);
+  }
+
+  if (sps->sps_sao_enabled_flag && pps->pps_sao_info_in_ph_flag) {
+    READ_BOOL_OR_RETURN(&ph->ph_sao_luma_enabled_flag);
+    if (sps->sps_chroma_format_idc != 0) {
+      READ_BOOL_OR_RETURN(&ph->ph_sao_chroma_enabled_flag);
+    } else {
+      ph->ph_sao_chroma_enabled_flag = 0;
+    }
+  } else {
+    ph->ph_sao_luma_enabled_flag = 0;
+    ph->ph_sao_chroma_enabled_flag = 0;
+  }
+
+  if (pps->pps_dbf_info_in_ph_flag) {
+    READ_BOOL_OR_RETURN(&ph->ph_deblocking_params_present_flag);
+    if (ph->ph_deblocking_params_present_flag) {
+      if (!pps->pps_deblocking_filter_disabled_flag) {
+        READ_BOOL_OR_RETURN(&ph->ph_deblocking_filter_disabled_flag);
+      } else {
+        if (pps->pps_deblocking_filter_disabled_flag &&
+            ph->ph_deblocking_params_present_flag) {
+          ph->ph_deblocking_filter_disabled_flag = 0;
+        } else {
+          ph->ph_deblocking_filter_disabled_flag =
+              pps->pps_deblocking_filter_disabled_flag;
+        }
+      }
+    }
+    if (!ph->ph_deblocking_filter_disabled_flag) {
+      READ_SE_OR_RETURN(&ph->ph_luma_beta_offset_div2);
+      READ_SE_OR_RETURN(&ph->ph_luma_tc_offset_div2);
+      IN_RANGE_OR_RETURN(ph->ph_luma_beta_offset_div2, -12, 12);
+      IN_RANGE_OR_RETURN(ph->ph_luma_tc_offset_div2, -12, 12);
+
+      if (pps->pps_chroma_tool_offsets_present_flag) {
+        READ_SE_OR_RETURN(&ph->ph_cb_beta_offset_div2);
+        READ_SE_OR_RETURN(&ph->ph_cb_tc_offset_div2);
+        READ_SE_OR_RETURN(&ph->ph_cr_beta_offset_div2);
+        READ_SE_OR_RETURN(&ph->ph_cr_tc_offset_div2);
+        IN_RANGE_OR_RETURN(ph->ph_cb_beta_offset_div2, -12, 12);
+        IN_RANGE_OR_RETURN(ph->ph_cb_tc_offset_div2, -12, 12);
+        IN_RANGE_OR_RETURN(ph->ph_cr_beta_offset_div2, -12, 12);
+        IN_RANGE_OR_RETURN(ph->ph_cr_tc_offset_div2, -12, 12);
+      } else {
+        if (pps->pps_chroma_tool_offsets_present_flag) {
+          ph->ph_cb_beta_offset_div2 = pps->pps_cb_beta_offset_div2;
+          ph->ph_cb_tc_offset_div2 = pps->pps_cb_tc_offset_div2;
+          ph->ph_cr_beta_offset_div2 = pps->pps_cr_beta_offset_div2;
+          ph->ph_cr_tc_offset_div2 = pps->pps_cr_tc_offset_div2;
+        } else {
+          ph->ph_cb_beta_offset_div2 = ph->ph_luma_beta_offset_div2;
+          ph->ph_cb_tc_offset_div2 = ph->ph_luma_tc_offset_div2;
+          ph->ph_cr_beta_offset_div2 = ph->ph_luma_beta_offset_div2;
+          ph->ph_cr_tc_offset_div2 = ph->ph_luma_tc_offset_div2;
+        }
+      }
+    } else {
+      ph->ph_luma_beta_offset_div2 = pps->pps_luma_beta_offset_div2;
+      ph->ph_luma_tc_offset_div2 = pps->pps_luma_tc_offset_div2;
+      if (pps->pps_chroma_tool_offsets_present_flag) {
+        ph->ph_cb_beta_offset_div2 = pps->pps_cb_beta_offset_div2;
+        ph->ph_cb_tc_offset_div2 = pps->pps_cb_tc_offset_div2;
+        ph->ph_cr_beta_offset_div2 = pps->pps_cr_beta_offset_div2;
+        ph->ph_cr_tc_offset_div2 = pps->pps_cr_tc_offset_div2;
+      } else {
+        ph->ph_cb_beta_offset_div2 = ph->ph_luma_beta_offset_div2;
+        ph->ph_cb_tc_offset_div2 = ph->ph_luma_tc_offset_div2;
+        ph->ph_cr_beta_offset_div2 = ph->ph_luma_beta_offset_div2;
+        ph->ph_cr_tc_offset_div2 = ph->ph_luma_tc_offset_div2;
+      }
+    }
+  } else {
+    ph->ph_deblocking_params_present_flag = 0;
+  }
+
+  // We stop here and do not parse ph extension when
+  // pps_picture_header_extension_present_flag is 1.
 
   return kOk;
 }

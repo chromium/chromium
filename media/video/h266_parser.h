@@ -714,6 +714,126 @@ struct MEDIA_EXPORT H266APS {
   std::variant<H266AlfData, H266LmcsData, H266ScalingListData> data;
 };
 
+// 7.3.8. PredWeightTable could exist in picture header or slice header.
+struct MEDIA_EXPORT H266PredWeightTable {
+  H266PredWeightTable();
+
+  // Syntax elements.
+  int luma_log2_weight_denom;
+  int delta_chroma_log2_weight_denom;
+  int num_l0_weights;
+  bool luma_weight_l0_flag[15];
+  bool chroma_weight_l0_flag[15];
+  int delta_luma_weight_l0[15];
+  int luma_offset_l0[15];
+  int delta_chroma_weight_l0[2][15];
+  int delta_chroma_offset_l0[2][15];
+  int num_l1_weights;
+  bool luma_weight_l1_flag[15];
+  bool chroma_weight_l1_flag[15];
+  int delta_luma_weight_l1[15];
+  int luma_offset_l1[15];
+  int delta_chroma_weight_l1[2][15];
+  int delta_chroma_offset_l1[2][15];
+
+  // Calculated values.
+  int chroma_log2_weight_denom;
+  int num_weights_l0;
+  int num_weights_l1;
+};
+
+// 7.3.2.8
+struct MEDIA_EXPORT H266PictureHeader {
+  H266PictureHeader();
+
+  // Implies whether the picture header structure
+  // is within PH_NUT or slice header.
+  int nal_unit_type;
+
+  // Syntax elements.
+  bool ph_gdr_or_irap_pic_flag;
+  bool ph_non_ref_pic_flag;
+  bool ph_gdr_pic_flag;
+  bool ph_inter_slice_allowed_flag;
+  bool ph_intra_slice_allowed_flag;
+  int ph_pic_parameter_set_id;
+  int ph_pic_order_cnt_lsb;
+  int ph_recovery_poc_cnt;
+  bool ph_poc_msb_cycle_present_flag;
+  int ph_poc_msb_cycle_val;
+  bool ph_alf_enabled_flag;
+  int ph_num_alf_aps_ids_luma;
+  int ph_alf_aps_id_luma[7];
+  bool ph_alf_cb_enabled_flag;
+  bool ph_alf_cr_enabled_flag;
+  int ph_alf_aps_id_chroma;
+  bool ph_alf_cc_cb_enabled_flag;
+  int ph_alf_cc_cb_aps_id;
+  bool ph_alf_cc_cr_enabled_flag;
+  int ph_alf_cc_cr_aps_id;
+  bool ph_lmcs_enabled_flag;
+  int ph_lmcs_aps_id;
+  bool ph_chroma_residual_scale_flag;
+  bool ph_explicit_scaling_list_enabled_flag;
+  int ph_scaling_list_aps_id;
+  bool ph_virtual_boundaries_present_flag;
+  int ph_num_ver_virtual_boundaries;
+  int ph_virtual_boundary_pos_x_minus1[3];
+  int ph_num_hor_virtual_boundaries;
+  int ph_virtual_boundary_pos_y_minus1[3];
+  bool ph_pic_output_flag;
+  H266RefPicLists ref_pic_lists;
+  bool ph_partition_constraints_override_flag;
+  int ph_log2_diff_min_qt_min_cb_intra_slice_luma;
+  int ph_max_mtt_hierarchy_depth_intra_slice_luma;
+  int ph_log2_diff_max_bt_min_qt_intra_slice_luma;
+  int ph_log2_diff_max_tt_min_qt_intra_slice_luma;
+  int ph_log2_diff_min_qt_min_cb_intra_slice_chroma;
+  int ph_max_mtt_hierarchy_depth_intra_slice_chroma;
+  int ph_log2_diff_max_bt_min_qt_intra_slice_chroma;
+  int ph_log2_diff_max_tt_min_qt_intra_slice_chroma;
+  int ph_cu_qp_delta_subdiv_intra_slice;
+  int ph_cu_chroma_qp_offset_subdiv_intra_slice;
+  int ph_log2_diff_min_qt_min_cb_inter_slice;
+  int ph_max_mtt_hierarchy_depth_inter_slice;
+  int ph_log2_diff_max_bt_min_qt_inter_slice;
+  int ph_log2_diff_max_tt_min_qt_inter_slice;
+  int ph_cu_qp_delta_subdiv_inter_slice;
+  int ph_cu_chroma_qp_offset_subdiv_inter_slice;
+  bool ph_temporal_mvp_enabled_flag;
+  bool ph_collocated_from_l0_flag;
+  int ph_collocated_ref_idx;
+  bool ph_mmvd_fullpel_only_flag;
+  bool ph_mvd_l1_zero_flag;
+  bool ph_bdof_disabled_flag;
+  bool ph_dmvr_disabled_flag;
+  bool ph_prof_disabled_flag;
+  H266PredWeightTable pred_weight_table;
+  int ph_qp_delta;
+  bool ph_joint_cbcr_sign_flag;
+  bool ph_sao_luma_enabled_flag;
+  bool ph_sao_chroma_enabled_flag;
+  bool ph_deblocking_params_present_flag;
+  bool ph_deblocking_filter_disabled_flag;
+  int ph_luma_beta_offset_div2;
+  int ph_luma_tc_offset_div2;
+  int ph_cb_beta_offset_div2;
+  int ph_cb_tc_offset_div2;
+  int ph_cr_beta_offset_div2;
+  int ph_cr_tc_offset_div2;
+  int ph_extension_length;
+  // Skip any possible extension bytes.
+
+  // Calculated values.
+  bool virtual_boundaries_present_flag;
+  int num_ver_virtual_boundaries;
+  int num_hor_virtual_boundaries;
+  int min_qt_log2_size_intra_y;
+  int min_qt_log2_size_intra_c;
+  int min_qt_log2_size_inter_y;
+  int slice_qp_y;
+};
+
 // Class to parse an Annex-B H.266 stream.
 class MEDIA_EXPORT H266Parser : public H266NaluParser {
  public:
@@ -751,6 +871,10 @@ class MEDIA_EXPORT H266Parser : public H266NaluParser {
   // pointer to a given APS structure, use GetAPS(), passing the returned
   // |*aps_id| and |*type| as parameter.
   Result ParseAPS(const H266NALU& nalu, int* pps_id, H266APS::ParamType* type);
+
+  // Parse a picture header(PH) NALU and return the parsed structure
+  // in |*ph|.
+  Result ParsePHNut(const H266NALU& nalu, H266PictureHeader* ph);
 
   // Return a pointer to VPS with given |vps_id| or
   // null if not present.
@@ -799,6 +923,24 @@ class MEDIA_EXPORT H266Parser : public H266NaluParser {
   Result ParseVuiPayload(int payload_size,
                          const H266SPS& sps,
                          H266VUIParameters* vui);
+
+  Result ParseRefPicLists(const H266SPS& sps,
+                          const H266PPS& pps,
+                          H266RefPicLists* ref_pic_lists);
+
+  Result ParsePredWeightTable(const H266SPS& sps,
+                              const H266PPS& pps,
+                              const H266RefPicLists& ref_pic_lists,
+                              int num_ref_idx_active[2],
+                              H266PredWeightTable* pred_weight_table);
+
+  // Called when picture header structure is in slice header.
+  Result ParsePHInSlice(const H266NALU& nalu, H266PictureHeader* ph);
+
+  // Shared picture header structure parser for PH structure in PH_NUT and slice
+  // header.
+  Result ParsePictureHeaderStructure(const H266NALU& nalu,
+                                     H266PictureHeader* ph);
 
   // VPSes/SPSes/PPSes stored for future reference.
   base::flat_map<int, std::unique_ptr<H266VPS>> active_vps_;
