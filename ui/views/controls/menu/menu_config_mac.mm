@@ -18,7 +18,6 @@ void InitMaterialMenuConfig(views::MenuConfig* config) {
   config->submenu_horizontal_inset = 0;
   config->minimum_text_item_height = 28;
   config->minimum_container_item_height = 40;
-  config->minimum_menu_width = 320;
   config->label_to_arrow_padding = 0;
   config->arrow_to_edge_padding = 16;
   config->check_width = 16;
