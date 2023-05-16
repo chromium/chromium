@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/animation/css_default_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_display_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_filter_list_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_font_size_adjust_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_font_size_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_font_stretch_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_font_style_interpolation_type.h"
@@ -213,7 +214,6 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kFlexShrink:
       case CSSPropertyID::kFillOpacity:
       case CSSPropertyID::kFloodOpacity:
-      case CSSPropertyID::kFontSizeAdjust:
       case CSSPropertyID::kOpacity:
       case CSSPropertyID::kOrder:
       case CSSPropertyID::kOrphans:
@@ -374,6 +374,11 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kFontSize:
         applicable_types->push_back(
             std::make_unique<CSSFontSizeInterpolationType>(used_property));
+        break;
+      case CSSPropertyID::kFontSizeAdjust:
+        applicable_types->push_back(
+            std::make_unique<CSSFontSizeAdjustInterpolationType>(
+                used_property));
         break;
       case CSSPropertyID::kTextIndent:
         applicable_types->push_back(

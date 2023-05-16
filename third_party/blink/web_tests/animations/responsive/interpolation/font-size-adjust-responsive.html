@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<title>font-size-adjust interpolation responds to changes in inherited value</title>
+<link rel="help" href="https://www.w3.org/TR/css-fonts-5/#font-size-adjust-prop">
+<script src="resources/responsive-test.js"></script>
+<script>
+assertCSSResponsive({
+  property: 'font-size-adjust',
+  from: 'inherit',
+  to: '1.0',
+  configurations: [{
+    state: {inherited: '0.0'},
+    expect: [
+      {at: 0.25, is: '0.25'},
+      {at: 0.75, is: '0.75'},
+    ],
+  }, {
+    state: {inherited: '0.5'},
+    expect: [
+      {at: 0.25, is: '0.625'},
+      {at: 0.75, is: '0.875'},
+    ],
+  }, {
+    state: {inherited: '2.0'},
+    expect: [
+      {at: 0.25, is: '1.75'},
+      {at: 0.75, is: '1.25'},
+    ],
+  }],
+});
+
+assertCSSResponsive({
+  property: 'font-size-adjust',
+  from: '1.0',
+  to: 'inherit',
+  configurations: [{
+    state: {inherited: '0.0'},
+    expect: [
+      {at: 0.25, is: '0.75'},
+      {at: 0.75, is: '0.25'},
+    ],
+  }, {
+    state: {inherited: '0.5'},
+    expect: [
+      {at: 0.25, is: '0.875'},
+      {at: 0.75, is: '0.625'},
+    ],
+  }, {
+    state: {inherited: '2.0'},
+    expect: [
+      {at: 0.25, is: '1.25'},
+      {at: 0.75, is: '1.75'},
+    ],
+  }],
+});
+
+assertCSSResponsive({
+  property: 'font-size-adjust',
+  from: 'inherit',
+  to: 'ex-height 1.0',
+  configurations: [{
+    state: {inherited: 'ex-height 0.0'},
+    expect: [
+      {at: 0.25, is: '0.25'},
+      {at: 0.75, is: '0.75'},
+    ],
+  }, {
+    state: {inherited: 'ex-height 0.5'},
+    expect: [
+      {at: 0.25, is: '0.625'},
+      {at: 0.75, is: '0.875'},
+    ],
+  }, {
+    state: {inherited: 'ex-height 2.0'},
+    expect: [
+      {at: 0.25, is: '1.75'},
+      {at: 0.75, is: '1.25'},
+    ],
+  }],
+});
+
+assertCSSResponsive({
+  property: 'font-size-adjust',
+  from: 'ex-height 1.0',
+  to: 'inherit',
+  configurations: [{
+    state: {inherited: 'ex-height 0.0'},
+    expect: [
+      {at: 0.25, is: '0.75'},
+      {at: 0.75, is: '0.25'},
+    ],
+  }, {
+    state: {inherited: 'ex-height 0.5'},
+    expect: [
+      {at: 0.25, is: '0.875'},
+      {at: 0.75, is: '0.625'},
+    ],
+  }, {
+    state: {inherited: 'ex-height 2.0'},
+    expect: [
+      {at: 0.25, is: '1.25'},
+      {at: 0.75, is: '1.75'},
+    ],
+  }],
+});
+
+assertCSSResponsive({
+  property: 'font-size-adjust',
+  from: 'inherit',
+  to: 'cap-height 1.0',
+  configurations: [{
+    state: {inherited: 'cap-height 0.0'},
+    expect: [
+      {at: 0.25, is: 'cap-height 0.25'},
+      {at: 0.75, is: 'cap-height 0.75'},
+    ],
+  }, {
+    state: {inherited: 'cap-height 0.5'},
+    expect: [
+      {at: 0.25, is: 'cap-height 0.625'},
+      {at: 0.75, is: 'cap-height 0.875'},
+    ],
+  }, {
+    state: {inherited: 'cap-height 2.0'},
+    expect: [
+      {at: 0.25, is: 'cap-height 1.75'},
+      {at: 0.75, is: 'cap-height 1.25'},
+    ],
+  }],
+});
+
+assertCSSResponsive({
+  property: 'font-size-adjust',
+  from: 'cap-height 1.0',
+  to: 'inherit',
+  configurations: [{
+    state: {inherited: 'cap-height 0.0'},
+    expect: [
+      {at: 0.25, is: 'cap-height 0.75'},
+      {at: 0.75, is: 'cap-height 0.25'},
+    ],
+  }, {
+    state: {inherited: 'cap-height 0.5'},
+    expect: [
+      {at: 0.25, is: 'cap-height 0.875'},
+      {at: 0.75, is: 'cap-height 0.625'},
+    ],
+  }, {
+    state: {inherited: 'cap-height 2.0'},
+    expect: [
+      {at: 0.25, is: 'cap-height 1.25'},
+      {at: 0.75, is: 'cap-height 1.75'},
+    ],
+  }],
+});
+
+assertCSSResponsive({
+  property: 'font-size-adjust',
+  from: 'inherit',
+  to: 'ch-width 1.0',
+  configurations: [{
+    state: {inherited: 'ch-width 0.0'},
+    expect: [
+      {at: 0.25, is: 'ch-width 0.25'},
+      {at: 0.75, is: 'ch-width 0.75'},
+    ],
+  }, {
+    state: {inherited: 'ch-width 0.5'},
+    expect: [
+      {at: 0.25, is: 'ch-width 0.625'},
+      {at: 0.75, is: 'ch-width 0.875'},
+    ],
+  }, {
+    state: {inherited: 'ch-width 2.0'},
+    expect: [
+      {at: 0.25, is: 'ch-width 1.75'},
+      {at: 0.75, is: 'ch-width 1.25'},
+    ],
+  }],
+});
+
+assertCSSResponsive({
+  property: 'font-size-adjust',
+  from: 'ch-width 1.0',
+  to: 'inherit',
+  configurations: [{
+    state: {inherited: 'ch-width 0.0'},
+    expect: [
+      {at: 0.25, is: 'ch-width 0.75'},
+      {at: 0.75, is: 'ch-width 0.25'},
+    ],
+  }, {
+    state: {inherited: 'ch-width 0.5'},
+    expect: [
+      {at: 0.25, is: 'ch-width 0.875'},
+      {at: 0.75, is: 'ch-width 0.625'},
+    ],
+  }, {
+    state: {inherited: 'ch-width 2.0'},
+    expect: [
+      {at: 0.25, is: 'ch-width 1.25'},
+      {at: 0.75, is: 'ch-width 1.75'},
+    ],
+  }],
+});
+
+assertCSSResponsive({
+  property: 'font-size-adjust',
+  from: 'inherit',
+  to: 'ic-width 1.0',
+  configurations: [{
+    state: {inherited: 'ic-width 0.0'},
+    expect: [
+      {at: 0.25, is: 'ic-width 0.25'},
+      {at: 0.75, is: 'ic-width 0.75'},
+    ],
+  }, {
+    state: {inherited: 'ic-width 0.5'},
+    expect: [
+      {at: 0.25, is: 'ic-width 0.625'},
+      {at: 0.75, is: 'ic-width 0.875'},
+    ],
+  }, {
+    state: {inherited: 'ic-width 2.0'},
+    expect: [
+      {at: 0.25, is: 'ic-width 1.75'},
+      {at: 0.75, is: 'ic-width 1.25'},
+    ],
+  }],
+});
+
+assertCSSResponsive({
+  property: 'font-size-adjust',
+  from: 'ic-width 1.0',
+  to: 'inherit',
+  configurations: [{
+    state: {inherited: 'ic-width 0.0'},
+    expect: [
+      {at: 0.25, is: 'ic-width 0.75'},
+      {at: 0.75, is: 'ic-width 0.25'},
+    ],
+  }, {
+    state: {inherited: 'ic-width 0.5'},
+    expect: [
+      {at: 0.25, is: 'ic-width 0.875'},
+      {at: 0.75, is: 'ic-width 0.625'},
+    ],
+  }, {
+    state: {inherited: 'ic-width 2.0'},
+    expect: [
+      {at: 0.25, is: 'ic-width 1.25'},
+      {at: 0.75, is: 'ic-width 1.75'},
+    ],
+  }],
+});
+
+assertCSSResponsive({
+  property: 'font-size-adjust',
+  from: 'inherit',
+  to: 'ic-height 1.0',
+  configurations: [{
+    state: {inherited: 'ic-height 0.0'},
+    expect: [
+      {at: 0.25, is: 'ic-height 0.25'},
+      {at: 0.75, is: 'ic-height 0.75'},
+    ],
+  }, {
+    state: {inherited: 'ic-height 0.5'},
+    expect: [
+      {at: 0.25, is: 'ic-height 0.625'},
+      {at: 0.75, is: 'ic-height 0.875'},
+    ],
+  }, {
+    state: {inherited: 'ic-height 2.0'},
+    expect: [
+      {at: 0.25, is: 'ic-height 1.75'},
+      {at: 0.75, is: 'ic-height 1.25'},
+    ],
+  }],
+});
+
+assertCSSResponsive({
+  property: 'font-size-adjust',
+  from: 'ic-height 1.0',
+  to: 'inherit',
+  configurations: [{
+    state: {inherited: 'ic-height 0.0'},
+    expect: [
+      {at: 0.25, is: 'ic-height 0.75'},
+      {at: 0.75, is: 'ic-height 0.25'},
+    ],
+  }, {
+    state: {inherited: 'ic-height 0.5'},
+    expect: [
+      {at: 0.25, is: 'ic-height 0.875'},
+      {at: 0.75, is: 'ic-height 0.625'},
+    ],
+  }, {
+    state: {inherited: 'ic-height 2.0'},
+    expect: [
+      {at: 0.25, is: 'ic-height 1.25'},
+      {at: 0.75, is: 'ic-height 1.75'},
+    ],
+  }],
+});
+
+</script>

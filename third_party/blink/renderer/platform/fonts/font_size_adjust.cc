@@ -11,7 +11,7 @@ namespace blink {
 unsigned FontSizeAdjust::GetHash() const {
   unsigned computed_hash = 0;
   // Normalize negative zero.
-  WTF::AddFloatToHash(computed_hash, value_);
+  WTF::AddFloatToHash(computed_hash, value_ == 0.0 ? 0.0 : value_);
   WTF::AddIntToHash(computed_hash, static_cast<const unsigned>(metric_));
   return computed_hash;
 }
