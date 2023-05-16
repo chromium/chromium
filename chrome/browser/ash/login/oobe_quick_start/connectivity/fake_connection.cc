@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_connection.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 
 namespace ash::quick_start {
 
@@ -41,6 +42,18 @@ void FakeConnection::InitiateHandshake(const std::string& authentication_token,
                                        HandshakeSuccessCallback callback) {
   handshake_initiated_ = true;
   handshake_success_callback_ = std::move(callback);
+}
+
+void FakeConnection::RequestWifiCredentials(
+    int32_t session_id,
+    RequestWifiCredentialsCallback callback) {
+  wifi_credentials_callback_ = std::move(callback);
+}
+
+void FakeConnection::SendWifiCredentials(
+    absl::optional<mojom::WifiCredentials> credentials) {
+  CHECK(wifi_credentials_callback_);
+  std::move(wifi_credentials_callback_).Run(credentials);
 }
 
 bool FakeConnection::WasHandshakeInitiated() {

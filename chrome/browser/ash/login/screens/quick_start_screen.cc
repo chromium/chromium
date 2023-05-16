@@ -90,6 +90,8 @@ void QuickStartScreen::OnStatusChanged(
     case Step::ERROR:
     case Step::ADVERTISING:
     case Step::CONNECTED:
+    case Step::CONNECTING_TO_WIFI:
+    case Step::CONNECTED_TO_WIFI:
       NOTIMPLEMENTED();
   }
 }

@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
 #include "chrome/browser/browser_process.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/qr_code_generator/qr_code_generator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -178,8 +179,9 @@ void TargetDeviceBootstrapController::NotifyObservers() {
 
 void TargetDeviceBootstrapController::OnStartAdvertisingResult(bool success) {
   DCHECK_EQ(status_.step, Step::ADVERTISING);
-  if (success)
+  if (success) {
     return;
+  }
   status_.step = Step::ERROR;
   status_.payload = ErrorCode::START_ADVERTISING_FAILED;
   NotifyObservers();
@@ -207,6 +209,34 @@ void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
   authenticated_connection_->Close(
       TargetDeviceConnectionBroker::ConnectionClosedReason::
           kTargetDeviceUpdate);
+}
+
+void TargetDeviceBootstrapController::AttemptWifiCredentialTransfer() {
+  status_.step = Step::CONNECTING_TO_WIFI;
+  status_.payload.emplace<absl::monostate>();
+
+  authenticated_connection_->RequestWifiCredentials(
+      session_id_,
+      base::BindOnce(
+          &TargetDeviceBootstrapController::OnWifiCredentialsReceived,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  NotifyObservers();
+}
+
+void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
+    absl::optional<mojom::WifiCredentials> credentials) {
+  CHECK_EQ(status_.step, Step::CONNECTING_TO_WIFI);
+  if (!credentials.has_value()) {
+    status_.step = Step::ERROR;
+    status_.payload = ErrorCode::WIFI_CREDENTIALS_NOT_RECEIVED;
+    NotifyObservers();
+    return;
+  }
+
+  status_.step = Step::CONNECTED_TO_WIFI;
+  status_.payload.emplace<absl::monostate>();
+  NotifyObservers();
 }
 
 }  // namespace ash::quick_start

@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_FAKE_CONNECTION_H_
 #define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_FAKE_CONNECTION_H_
 
+#include <cstdint>
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 
 namespace ash::quick_start {
 
@@ -39,12 +41,16 @@ class FakeConnection : public Connection {
   // Connection:
   void InitiateHandshake(const std::string& authentication_token,
                          HandshakeSuccessCallback callback) override;
+  void RequestWifiCredentials(int32_t session_id,
+                              RequestWifiCredentialsCallback callback) override;
 
   bool WasHandshakeInitiated();
+  void SendWifiCredentials(absl::optional<mojom::WifiCredentials> credentials);
 
  private:
   bool handshake_initiated_ = false;
   HandshakeSuccessCallback handshake_success_callback_;
+  RequestWifiCredentialsCallback wifi_credentials_callback_;
 
   base::WeakPtrFactory<FakeConnection> weak_ptr_factory_{this};
 };

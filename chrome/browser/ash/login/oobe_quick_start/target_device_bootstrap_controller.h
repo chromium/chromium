@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash::quick_start {
@@ -35,12 +36,15 @@ class TargetDeviceBootstrapController
     PIN_VERIFICATION,
     CONNECTED,
     GAIA_CREDENTIALS,
+    CONNECTING_TO_WIFI,
+    CONNECTED_TO_WIFI
   };
 
   enum class ErrorCode {
     START_ADVERTISING_FAILED,
     CONNECTION_REJECTED,
     CONNECTION_CLOSED,
+    WIFI_CREDENTIALS_NOT_RECEIVED,
   };
 
   using QRCodePixelData = std::vector<uint8_t>;
@@ -96,6 +100,8 @@ class TargetDeviceBootstrapController
   void OnConnectionClosed(
       TargetDeviceConnectionBroker::ConnectionClosedReason reason) override;
 
+  void AttemptWifiCredentialTransfer();
+
  private:
   friend class TargetDeviceBootstrapControllerTest;
 
@@ -109,6 +115,9 @@ class TargetDeviceBootstrapController
   // closes the connection without preparing to automatically resume Quick Start
   // after the update.
   void OnNotifySourceOfUpdateResponse(bool ack_successful);
+
+  void OnWifiCredentialsReceived(
+      absl::optional<mojom::WifiCredentials> credentials);
 
   std::unique_ptr<TargetDeviceConnectionBroker> connection_broker_;
 

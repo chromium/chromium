@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
@@ -50,7 +51,25 @@ FakeTargetDeviceConnectionBroker::Factory::CreateInstance(
   return std::move(connection_broker);
 }
 
-FakeTargetDeviceConnectionBroker::FakeTargetDeviceConnectionBroker() = default;
+FakeTargetDeviceConnectionBroker::FakeTargetDeviceConnectionBroker() {
+  fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
+  NearbyConnection* nearby_connection = fake_nearby_connection_.get();
+  mojo::PendingRemote<mojom::QuickStartDecoder> remote;
+  fake_quick_start_decoder_ = std::make_unique<FakeQuickStartDecoder>();
+  Connection::SessionContext session_context = {
+      .session_id = RandomSessionId(),
+      .shared_secret = kSharedSecret,
+      .secondary_shared_secret = kSecondarySharedSecret};
+  connection_ = std::make_unique<FakeConnection>(
+      nearby_connection, session_context,
+      mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
+          fake_quick_start_decoder_->GetRemote()),
+      base::BindOnce(&FakeTargetDeviceConnectionBroker::OnConnectionClosed,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(
+          &FakeTargetDeviceConnectionBroker::OnConnectionAuthenticated,
+          weak_ptr_factory_.GetWeakPtr()));
+}
 
 FakeTargetDeviceConnectionBroker::~FakeTargetDeviceConnectionBroker() = default;
 
@@ -94,24 +113,6 @@ void FakeTargetDeviceConnectionBroker::InitiateConnection(
 
 void FakeTargetDeviceConnectionBroker::AuthenticateConnection(
     const std::string& source_device_id) {
-  fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
-  NearbyConnection* nearby_connection = fake_nearby_connection_.get();
-  mojo::PendingRemote<mojom::QuickStartDecoder> remote;
-  fake_quick_start_decoder_ = std::make_unique<FakeQuickStartDecoder>();
-  Connection::SessionContext session_context = {
-      .session_id = RandomSessionId(),
-      .shared_secret = kSharedSecret,
-      .secondary_shared_secret = kSecondarySharedSecret};
-  connection_factory_ = std::make_unique<Connection::Factory>();
-  connection_ = connection_factory_->Create(
-      nearby_connection, session_context,
-      mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
-          fake_quick_start_decoder_->GetRemote()),
-      base::BindOnce(&FakeTargetDeviceConnectionBroker::OnConnectionClosed,
-                     weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(
-          &FakeTargetDeviceConnectionBroker::OnConnectionAuthenticated,
-          weak_ptr_factory_.GetWeakPtr()));
   connection_->MarkConnectionAuthenticated();
 }
 
@@ -122,6 +123,10 @@ void FakeTargetDeviceConnectionBroker::RejectConnection() {
 void FakeTargetDeviceConnectionBroker::CloseConnection(
     ConnectionClosedReason reason) {
   connection_lifecycle_listener_->OnConnectionClosed(reason);
+}
+
+FakeConnection* FakeTargetDeviceConnectionBroker::GetFakeConnection() {
+  return connection_.get();
 }
 
 }  // namespace ash::quick_start

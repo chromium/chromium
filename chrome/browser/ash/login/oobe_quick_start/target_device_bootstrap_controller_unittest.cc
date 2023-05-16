@@ -15,6 +15,7 @@
 #include "chrome/browser/nearby_sharing/fake_nearby_connections_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -295,6 +296,48 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   EXPECT_TRUE(GetLocalState()
                   ->GetDict(prefs::kResumeQuickStartAfterRebootInfo)
                   .empty());
+}
+
+TEST_F(TargetDeviceBootstrapControllerTest, RequestWifiCredentials) {
+  bootstrap_controller_->StartAdvertising();
+  fake_target_device_connection_broker_->on_start_advertising_callback().Run(
+      /*success=*/true);
+  fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
+  fake_target_device_connection_broker_->AuthenticateConnection(
+      kSourceDeviceId);
+
+  bootstrap_controller_->AttemptWifiCredentialTransfer();
+  EXPECT_EQ(fake_observer_->last_status.step, Step::CONNECTING_TO_WIFI);
+  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+      fake_observer_->last_status.payload));
+
+  fake_target_device_connection_broker_->GetFakeConnection()
+      ->SendWifiCredentials(
+          mojom::WifiCredentials("ssid", mojom::WifiSecurityType::kWEP,
+                                 /*is_hidden=*/true, "password"));
+
+  EXPECT_EQ(fake_observer_->last_status.step, Step::CONNECTED_TO_WIFI);
+  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+      fake_observer_->last_status.payload));
+}
+
+TEST_F(TargetDeviceBootstrapControllerTest,
+       RequestWifiCredentials_FailsIfNoResult) {
+  bootstrap_controller_->StartAdvertising();
+  fake_target_device_connection_broker_->on_start_advertising_callback().Run(
+      /*success=*/true);
+  fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
+  fake_target_device_connection_broker_->AuthenticateConnection(
+      kSourceDeviceId);
+
+  bootstrap_controller_->AttemptWifiCredentialTransfer();
+
+  fake_target_device_connection_broker_->GetFakeConnection()
+      ->SendWifiCredentials(absl::nullopt);
+
+  EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
+  EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
+            ErrorCode::WIFI_CREDENTIALS_NOT_RECEIVED);
 }
 
 }  // namespace ash::quick_start
