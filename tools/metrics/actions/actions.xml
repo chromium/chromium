@@ -11855,6 +11855,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.OpenIn.Presented" not_user_triggered="true">
+  <obsolete>
+    This flag no longer exists. OpenIn toolbar been removed in M113.
+  </obsolete>
   <owner>mrefaat@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <description>
@@ -11864,6 +11867,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.OpenIn.Tapped">
+  <obsolete>
+    This flag no longer exists. OpenIn toolbar been removed in M113.
+  </obsolete>
   <owner>mrefaat@chromium.org</owner>
   <owner>ewannpv@chromium.org</owner>
   <description>

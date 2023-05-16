@@ -42,10 +42,10 @@ using base::test::ios::kWaitForDownloadTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
 // Tests Open in Feature.
-@interface OpenInManagerTestCase : ChromeTestCase
+@interface ShareFileDownloadTestCase : ChromeTestCase
 @end
 
-@implementation OpenInManagerTestCase
+@implementation ShareFileDownloadTestCase
 
 - (void)setUp {
   [super setUp];
@@ -95,21 +95,11 @@ using base::test::ios::WaitUntilConditionOrTimeout;
              @"Waiting for the open in dialog to disappear");
 }
 
-- (BOOL)shouldRunTests {
-  if (@available(iOS 14.5, *)) {
-    return YES;
-  }
-  return NO;
-}
-
 #pragma mark - Tests
 
 // Tests that open in button appears when opening a PDF, and that tapping on it
 // will open the activity view.
 - (void)testOpenInPDF {
-  if (![self shouldRunTests]) {
-    EARL_GREY_TEST_SKIPPED(@"Do not run the test.");
-  }
   // Open the activity menu.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPDFPath)];
   [self openActivityMenu];
@@ -120,19 +110,11 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   // the open in toolbar.
   [self closeActivityMenu];
   [self assertActivityMenuDismissed];
-  // TODO(crbug.com/1357553): Remove when Open In download experiment is
-  // finished.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
-      assertWithMatcher:grey_notVisible()];
 }
 
 // Tests that open in button appears when opening a PNG, and that tapping on it
 // will open the activity view.
 - (void)testOpenInPNG {
-  if (![self shouldRunTests]) {
-    EARL_GREY_TEST_SKIPPED(@"Do not run the test.");
-  }
-
   // Open the activity menu.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPNGPath)];
   [self openActivityMenu];
@@ -142,17 +124,10 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   // the open in toolbar.
   [self closeActivityMenu];
   [self assertActivityMenuDismissed];
-  // TODO(crbug.com/1357553): Remove when Open In download experiment is
-  // finished.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
-      assertWithMatcher:grey_notVisible()];
 }
 
 // Tests that open in button do not appears when opening a MOV file.
 - (void)testOpenInMOV {
-  if (![self shouldRunTests]) {
-    EARL_GREY_TEST_SKIPPED(@"Do not run the test.");
-  }
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kMOVPath)];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
       assertWithMatcher:grey_nil()];
@@ -161,9 +136,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 // Tests that open in button appears when opening a PNG and when shutting down
 // the test server, the appropriate error message is displayed.
 - (void)testOpenInOfflineServer {
-  if (![self shouldRunTests]) {
-    EARL_GREY_TEST_SKIPPED(@"Do not run the test.");
-  }
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPNGPath)];
   // Shutdown the test server.
   GREYAssertTrue(self.testServer->ShutdownAndWaitUntilComplete(),

@@ -130,8 +130,6 @@
 #import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
-#import "ios/chrome/browser/ui/open_in/features.h"
-#import "ios/chrome/browser/ui/open_in/open_in_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_container_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/requirements/page_info_presentation.h"
@@ -265,9 +263,6 @@ enum class ToolbarKind {
 // The coordinator managing the container view controller.
 @property(nonatomic, strong)
     BrowserContainerCoordinator* browserContainerCoordinator;
-
-// Coordinator between OpenIn TabHelper and OpenIn UI.
-@property(nonatomic, strong) OpenInCoordinator* openInCoordinator;
 
 // Mediator for incognito reauth.
 @property(nonatomic, strong) IncognitoReauthMediator* incognitoAuthMediator;
@@ -582,8 +577,6 @@ enum class ToolbarKind {
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox {
   [self.passKitCoordinator stop];
-
-  [self.openInCoordinator dismissAll];
 
   [self.printController dismissAnimated:YES];
 
@@ -1151,12 +1144,6 @@ enum class ToolbarKind {
         _promosManagerCoordinator;
     [_credentialProviderPromoCoordinator start];
   }
-  if (!IsOpenInActivitiesInShareButtonEnabled()) {
-    self.openInCoordinator = [[OpenInCoordinator alloc]
-        initWithBaseViewController:self.viewController
-                           browser:self.browser];
-    [self.openInCoordinator start];
-  }
 }
 
 // Stops child coordinators.
@@ -1277,11 +1264,6 @@ enum class ToolbarKind {
 
   [_credentialProviderPromoCoordinator stop];
   _credentialProviderPromoCoordinator = nil;
-
-  if (!IsOpenInActivitiesInShareButtonEnabled()) {
-    [self.openInCoordinator stop];
-    self.openInCoordinator = nil;
-  }
 
   [self.defaultBrowserPromoManager stop];
   self.defaultBrowserPromoManager = nil;

@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OPEN_IN_OPEN_IN_TAB_HELPER_H_
-#define IOS_CHROME_BROWSER_OPEN_IN_OPEN_IN_TAB_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_SHARING_SHARE_FILE_DOWNLOAD_TAB_HELPER_H_
+#define IOS_CHROME_BROWSER_SHARING_SHARE_FILE_DOWNLOAD_TAB_HELPER_H_
 
 #include <string>
 
-#import "ios/chrome/browser/open_in/open_in_tab_helper_delegate.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -54,7 +53,7 @@ extern const char kMimeTypeMicrosoftExcel[];
 
 // Enum used to determine the MIME type of a previewed file. Entries should
 // always keep synced with the IOS.OpenIn.MimeType UMA histogram.
-enum class OpenInMimeType {
+enum class ShareFileDownloadMimeType {
   kMimeTypeNotHandled = 0,
   kMimeTypePDF = 1,
   kMimeTypeMicrosoftWord = 2,
@@ -70,21 +69,17 @@ enum class OpenInMimeType {
   kMaxValue = kMimeTypeMicrosoftExcelOpenXML,
 };
 
-@class OpenInController;
-
 // A tab helper that observes WebState and shows open in button for PDF
 // documents.
-class OpenInTabHelper : public web::WebStateObserver,
-                        public web::WebStateUserData<OpenInTabHelper> {
+class ShareFileDownloadTabHelper
+    : public web::WebStateObserver,
+      public web::WebStateUserData<ShareFileDownloadTabHelper> {
  public:
-  OpenInTabHelper(const OpenInTabHelper&) = delete;
-  OpenInTabHelper& operator=(const OpenInTabHelper&) = delete;
+  ShareFileDownloadTabHelper(const ShareFileDownloadTabHelper&) = delete;
+  ShareFileDownloadTabHelper& operator=(const ShareFileDownloadTabHelper&) =
+      delete;
 
-  ~OpenInTabHelper() override;
-
-  // Sets the OpenInTabHelper delegate. `delegate` will be in charge of enabling
-  // the openIn view. `delegate` is not retained by TabHelper.
-  void SetDelegate(id<OpenInTabHelperDelegate> delegate);
+  ~ShareFileDownloadTabHelper() override;
 
   // Returns true if the displayed content should be downloaded.
   static bool ShouldDownload(web::WebState* web_state);
@@ -93,24 +88,22 @@ class OpenInTabHelper : public web::WebStateObserver,
   std::u16string GetFileNameSuggestion();
 
  private:
-  friend class web::WebStateUserData<OpenInTabHelper>;
+  friend class web::WebStateUserData<ShareFileDownloadTabHelper>;
 
-  explicit OpenInTabHelper(web::WebState* web_state);
+  explicit ShareFileDownloadTabHelper(web::WebState* web_state);
 
   // Handles exportable files and shows open in button if content mime type is
   // PDF.
   void HandleExportableFile();
 
   // Tests that files are exportable and returns their MIME type.
-  OpenInMimeType GetUmaResult(const std::string& mime_type) const;
+  ShareFileDownloadMimeType GetUmaResult(const std::string& mime_type) const;
 
   // WebStateObserver implementation.
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
   void WebStateDestroyed(web::WebState* web_state) override;
-  void DidStartNavigation(web::WebState* web_state,
-                          web::NavigationContext* navigation_context) override;
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
 
@@ -121,10 +114,7 @@ class OpenInTabHelper : public web::WebStateObserver,
   // Headers of the last response received for the current navigation.
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
 
-  // Used to enable/disable openIn UI.
-  __weak id<OpenInTabHelperDelegate> delegate_ = nil;
-
   WEB_STATE_USER_DATA_KEY_DECL();
 };
 
-#endif  // IOS_CHROME_BROWSER_OPEN_IN_OPEN_IN_TAB_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_SHARING_SHARE_FILE_DOWNLOAD_TAB_HELPER_H_

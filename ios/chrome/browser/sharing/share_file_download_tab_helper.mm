@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/open_in/open_in_tab_helper.h"
+#import "ios/chrome/browser/sharing/share_file_download_tab_helper.h"
 
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_functions.h"
@@ -53,72 +53,65 @@ const char kMimeTypeMicrosoftExcel[] = "application/vnd.ms-excel";
 
 }  // namespace content_type
 
-void OpenInTabHelper::SetDelegate(id<OpenInTabHelperDelegate> delegate) {
-  delegate_ = delegate;
-}
-
-OpenInTabHelper::~OpenInTabHelper() {
+ShareFileDownloadTabHelper::~ShareFileDownloadTabHelper() {
   // In case that the destructor is called before WebStateDestroyed. stop
   // observing the WebState.
   if (web_state_) {
-    [delegate_ destroyOpenInForWebState:web_state_];
     web_state_->RemoveObserver(this);
     web_state_ = nullptr;
   }
 }
 
-OpenInMimeType OpenInTabHelper::GetUmaResult(
+ShareFileDownloadMimeType ShareFileDownloadTabHelper::GetUmaResult(
     const std::string& mime_type) const {
-  if (mime_type == content_type::kMimeTypePDF)
-    return OpenInMimeType::kMimeTypePDF;
-  if (mime_type == content_type::kMimeTypeMicrosoftWord)
-    return OpenInMimeType::kMimeTypeMicrosoftWord;
-  if (mime_type == content_type::kMimeTypeMicrosoftWordOpenXML)
-    return OpenInMimeType::kMimeTypeMicrosoftWordOpenXML;
-  if (mime_type == content_type::kMimeTypeJPEG)
-    return OpenInMimeType::kMimeTypeJPEG;
-  if (mime_type == content_type::kMimeTypePNG)
-    return OpenInMimeType::kMimeTypePNG;
-  if (mime_type == content_type::kMimeTypeMicrosoftPowerPoint)
-    return OpenInMimeType::kMimeTypeMicrosoftPowerPoint;
-  if (mime_type == content_type::kMimeTypeMicrosoftPowerPointOpenXML)
-    return OpenInMimeType::kMimeTypeMicrosoftPowerPointOpenXML;
-  if (mime_type == content_type::kMimeTypeRTF)
-    return OpenInMimeType::kMimeTypeRTF;
-  if (mime_type == content_type::kMimeTypeSVG)
-    return OpenInMimeType::kMimeTypeSVG;
-  if (mime_type == content_type::kMimeTypeMicrosoftExcel)
-    return OpenInMimeType::kMimeTypeMicrosoftExcel;
-  if (mime_type == content_type::kMimeTypeMicrosoftExcelOpenXML)
-    return OpenInMimeType::kMimeTypeMicrosoftExcelOpenXML;
-  return OpenInMimeType::kMimeTypeNotHandled;
+  if (mime_type == content_type::kMimeTypePDF) {
+    return ShareFileDownloadMimeType::kMimeTypePDF;
+  }
+  if (mime_type == content_type::kMimeTypeMicrosoftWord) {
+    return ShareFileDownloadMimeType::kMimeTypeMicrosoftWord;
+  }
+  if (mime_type == content_type::kMimeTypeMicrosoftWordOpenXML) {
+    return ShareFileDownloadMimeType::kMimeTypeMicrosoftWordOpenXML;
+  }
+  if (mime_type == content_type::kMimeTypeJPEG) {
+    return ShareFileDownloadMimeType::kMimeTypeJPEG;
+  }
+  if (mime_type == content_type::kMimeTypePNG) {
+    return ShareFileDownloadMimeType::kMimeTypePNG;
+  }
+  if (mime_type == content_type::kMimeTypeMicrosoftPowerPoint) {
+    return ShareFileDownloadMimeType::kMimeTypeMicrosoftPowerPoint;
+  }
+  if (mime_type == content_type::kMimeTypeMicrosoftPowerPointOpenXML) {
+    return ShareFileDownloadMimeType::kMimeTypeMicrosoftPowerPointOpenXML;
+  }
+  if (mime_type == content_type::kMimeTypeRTF) {
+    return ShareFileDownloadMimeType::kMimeTypeRTF;
+  }
+  if (mime_type == content_type::kMimeTypeSVG) {
+    return ShareFileDownloadMimeType::kMimeTypeSVG;
+  }
+  if (mime_type == content_type::kMimeTypeMicrosoftExcel) {
+    return ShareFileDownloadMimeType::kMimeTypeMicrosoftExcel;
+  }
+  if (mime_type == content_type::kMimeTypeMicrosoftExcelOpenXML) {
+    return ShareFileDownloadMimeType::kMimeTypeMicrosoftExcelOpenXML;
+  }
+  return ShareFileDownloadMimeType::kMimeTypeNotHandled;
 }
 
-void OpenInTabHelper::HandleExportableFile() {
-  OpenInMimeType mime_type = GetUmaResult(web_state_->GetContentsMimeType());
-  if (mime_type == OpenInMimeType::kMimeTypeNotHandled)
+void ShareFileDownloadTabHelper::HandleExportableFile() {
+  ShareFileDownloadMimeType mime_type =
+      GetUmaResult(web_state_->GetContentsMimeType());
+  if (mime_type == ShareFileDownloadMimeType::kMimeTypeNotHandled) {
     return;
+  }
 
-  DCHECK_NE(mime_type, OpenInMimeType::kMimeTypeNotHandled);
+  CHECK_NE(mime_type, ShareFileDownloadMimeType::kMimeTypeNotHandled);
   base::UmaHistogramEnumeration("IOS.OpenIn.MimeType", mime_type);
-  base::RecordAction(base::UserMetricsAction("IOS.OpenIn.Presented"));
-
-  web::NavigationItem* item =
-      web_state_->GetNavigationManager()->GetLastCommittedItem();
-  const GURL& last_committed_url = item ? item->GetURL() : GURL::EmptyGURL();
-  std::u16string file_name = GetFileNameSuggestion();
-  [delegate_ enableOpenInForWebState:web_state_
-                     withDocumentURL:last_committed_url
-                   suggestedFileName:base::SysUTF16ToNSString(file_name)];
 }
 
-void OpenInTabHelper::DidStartNavigation(
-    web::WebState* web_state,
-    web::NavigationContext* navigation_context) {
-  [delegate_ disableOpenInForWebState:web_state];
-}
-
-void OpenInTabHelper::DidFinishNavigation(
+void ShareFileDownloadTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   // Retrieve the response headers to be used in case the Page loaded
@@ -128,36 +121,36 @@ void OpenInTabHelper::DidFinishNavigation(
       navigation_context->GetResponseHeaders());
 }
 
-OpenInTabHelper::OpenInTabHelper(web::WebState* web_state)
+ShareFileDownloadTabHelper::ShareFileDownloadTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   web_state_->AddObserver(this);
 }
 
-void OpenInTabHelper::PageLoaded(
+void ShareFileDownloadTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
-  if (load_completion_status == web::PageLoadCompletionStatus::SUCCESS)
+  if (load_completion_status == web::PageLoadCompletionStatus::SUCCESS) {
     HandleExportableFile();
+  }
 }
 
-void OpenInTabHelper::WebStateDestroyed(web::WebState* web_state) {
+void ShareFileDownloadTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
-  [delegate_ destroyOpenInForWebState:web_state];
-  delegate_ = nil;
   // The call to RemoveUserData cause the destruction of the current instance,
   // so nothing should be done after that point (this is like "delete this;").
   // Unregistration as an observer happens in the destructor.
   web_state_->RemoveUserData(UserDataKey());
 }
 
-std::u16string OpenInTabHelper::GetFileNameSuggestion() {
+std::u16string ShareFileDownloadTabHelper::GetFileNameSuggestion() {
   // Try to generate a filename by first looking at `content_disposition`, then
   // at the last component of WebState's last committed URL and if both of these
   // fail use the default filename "document".
   std::string content_disposition;
-  if (response_headers_)
+  if (response_headers_) {
     response_headers_->GetNormalizedHeader("content-disposition",
                                            &content_disposition);
+  }
   std::string default_file_name =
       l10n_util::GetStringUTF8(IDS_IOS_OPEN_IN_FILE_DEFAULT_TITLE);
   web::NavigationItem* item =
@@ -173,7 +166,7 @@ std::u16string OpenInTabHelper::GetFileNameSuggestion() {
 }
 
 // static
-bool OpenInTabHelper::ShouldDownload(web::WebState* web_state) {
+bool ShareFileDownloadTabHelper::ShouldDownload(web::WebState* web_state) {
   if (!web_state) {
     return false;
   }
@@ -192,4 +185,4 @@ bool OpenInTabHelper::ShouldDownload(web::WebState* web_state) {
           mime_type == content_type::kMimeTypeMicrosoftExcelOpenXML);
 }
 
-WEB_STATE_USER_DATA_KEY_IMPL(OpenInTabHelper)
+WEB_STATE_USER_DATA_KEY_IMPL(ShareFileDownloadTabHelper)
