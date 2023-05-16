@@ -228,7 +228,7 @@ void AmbientBadgeManager::MaybeShowAmbientBadgeSmart(
       base::MakeRefCounted<segmentation_platform::InputContext>();
   input_context->metadata_args.emplace("url", validated_url_);
   input_context->metadata_args.emplace("maskable_icon",
-                                       a2hs_params_->HasMaskablePrimaryIcon());
+                                       a2hs_params_->has_maskable_primary_icon);
   segmentation_platform_service_->GetClassificationResult(
       segmentation_platform::kWebAppInstallationPromoKey, prediction_options,
       input_context,
@@ -312,11 +312,11 @@ void AmbientBadgeManager::ShowAmbientBadge() {
           messages::kMessagesForAndroidInfrastructure)) {
     message_controller_.EnqueueMessage(
         web_contents_.get(), app_name_, a2hs_params_->primary_icon,
-        a2hs_params_->HasMaskablePrimaryIcon(), url);
+        a2hs_params_->has_maskable_primary_icon, url);
   } else {
     InstallableAmbientBadgeInfoBarDelegate::Create(
         web_contents_.get(), weak_factory_.GetWeakPtr(), app_name_,
-        a2hs_params_->primary_icon, a2hs_params_->HasMaskablePrimaryIcon(),
+        a2hs_params_->primary_icon, a2hs_params_->has_maskable_primary_icon,
         url);
   }
 }

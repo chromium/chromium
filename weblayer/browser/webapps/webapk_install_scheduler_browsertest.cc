@@ -45,9 +45,11 @@ class TestWebApkInstallScheduler : public WebApkInstallScheduler {
  public:
   TestWebApkInstallScheduler(const webapps::ShortcutInfo& shortcut_info,
                              const SkBitmap& primary_icon,
+                             bool is_primary_icon_maskable,
                              WebApkInstallFinishedCallback callback)
       : WebApkInstallScheduler(shortcut_info,
                                primary_icon,
+                               is_primary_icon_maskable,
                                std::move(callback)) {}
 
   TestWebApkInstallScheduler(const TestWebApkInstallScheduler&) = delete;
@@ -157,7 +159,7 @@ class WebApkInstallSchedulerTest : public WebLayerBrowserTest {
       webapps::ShortcutInfo info) {
     std::unique_ptr<TestWebApkInstallScheduler> scheduler_bridge(
         new TestWebApkInstallScheduler(
-            info, SkBitmap(),
+            info, SkBitmap(), false,
             base::BindOnce(&WebApkInstallSchedulerTest::OnInstallFinished,
                            base::Unretained(this))));
     return scheduler_bridge;

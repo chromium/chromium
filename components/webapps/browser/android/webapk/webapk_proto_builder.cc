@@ -95,6 +95,7 @@ std::unique_ptr<std::string> BuildProtoInBackground(
     const webapps::ShortcutInfo& shortcut_info,
     const GURL& app_key,
     const std::string& primary_icon_data,
+    bool is_primary_icon_maskable,
     const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
@@ -175,7 +176,7 @@ std::unique_ptr<std::string> BuildProtoInBackground(
     webapk::Image* best_primary_icon_image = web_app_manifest->add_icons();
     best_primary_icon_image->set_image_data(primary_icon_data);
     best_primary_icon_image->add_usages(webapk::Image::PRIMARY_ICON);
-    if (shortcut_info.is_primary_icon_maskable) {
+    if (is_primary_icon_maskable) {
       best_primary_icon_image->add_purposes(webapk::Image::MASKABLE);
     } else {
       best_primary_icon_image->add_purposes(webapk::Image::ANY);
@@ -210,7 +211,7 @@ std::unique_ptr<std::string> BuildProtoInBackground(
         image->set_image_data(it->second.unsafe_data);
       }
       image->add_usages(webapk::Image::PRIMARY_ICON);
-      if (shortcut_info.is_primary_icon_maskable) {
+      if (is_primary_icon_maskable) {
         image->add_purposes(webapk::Image::MASKABLE);
       } else {
         image->add_purposes(webapk::Image::ANY);
@@ -279,6 +280,7 @@ void BuildProto(
     const webapps::ShortcutInfo& shortcut_info,
     const GURL& app_key,
     const std::string& primary_icon_data,
+    bool is_primary_icon_maskable,
     const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
@@ -290,7 +292,8 @@ void BuildProto(
   GetBackgroundTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&webapps::BuildProtoInBackground, shortcut_info, app_key,
-                     primary_icon_data, splash_icon_data, package_name, version,
+                     primary_icon_data, is_primary_icon_maskable,
+                     splash_icon_data, package_name, version,
                      std::move(icon_url_to_murmur2_hash), is_manifest_stale,
                      is_app_identity_update_supported,
                      std::vector<webapps::WebApkUpdateReason>()),
@@ -305,6 +308,7 @@ bool StoreUpdateRequestToFileInBackground(
     const webapps::ShortcutInfo& shortcut_info,
     const GURL& app_key,
     const std::string& primary_icon_data,
+    bool is_primary_icon_maskable,
     const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
@@ -316,8 +320,9 @@ bool StoreUpdateRequestToFileInBackground(
                                                 base::BlockingType::MAY_BLOCK);
 
   std::unique_ptr<std::string> proto = BuildProtoInBackground(
-      shortcut_info, app_key, primary_icon_data, splash_icon_data, package_name,
-      version, std::move(icon_url_to_murmur2_hash), is_manifest_stale,
+      shortcut_info, app_key, primary_icon_data, is_primary_icon_maskable,
+      splash_icon_data, package_name, version,
+      std::move(icon_url_to_murmur2_hash), is_manifest_stale,
       is_app_identity_update_supported, std::move(update_reasons));
 
   // Create directory if it does not exist.

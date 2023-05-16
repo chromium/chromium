@@ -31,6 +31,7 @@ struct AddToHomescreenParams {
 
   AppType app_type;
   SkBitmap primary_icon;
+  bool has_maskable_primary_icon = false;
   std::unique_ptr<ShortcutInfo> shortcut_info;
   WebappInstallSource install_source;
   InstallableStatusCode installable_status;
@@ -41,7 +42,6 @@ struct AddToHomescreenParams {
   ~AddToHomescreenParams();
 
   std::string GetAppIdentifier();
-  bool HasMaskablePrimaryIcon();
 };
 
 }  // namespace webapps

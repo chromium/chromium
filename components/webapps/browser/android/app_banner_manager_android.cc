@@ -190,9 +190,9 @@ AppBannerManagerAndroid::CreateAddToHomescreenParams(
   if (native_app_data_.is_null()) {
     a2hs_params->app_type = AddToHomescreenParams::AppType::WEBAPK;
     a2hs_params->shortcut_info = ShortcutInfo::CreateShortcutInfo(
-        manifest_url_, manifest(), primary_icon_url_,
-        has_maskable_primary_icon_);
+        manifest_url_, manifest(), primary_icon_url_);
     a2hs_params->install_source = install_source;
+    a2hs_params->has_maskable_primary_icon = has_maskable_primary_icon_;
   } else {
     a2hs_params->app_type = AddToHomescreenParams::AppType::NATIVE;
     a2hs_params->native_app_data = native_app_data_;

@@ -47,6 +47,7 @@ class WebApkInstallScheduler {
       content::WebContents* web_contents,
       const webapps::ShortcutInfo& shortcut_info,
       const SkBitmap& primary_icon,
+      bool is_primary_icon_maskable,
       WebApkInstallFinishedCallback callback);
 
   void FetchProtoAndScheduleInstallForTesting(
@@ -57,6 +58,7 @@ class WebApkInstallScheduler {
  private:
   WebApkInstallScheduler(const webapps::ShortcutInfo& shortcut_info,
                          const SkBitmap& primary_icon,
+                         bool is_primary_icon_maskable,
                          WebApkInstallFinishedCallback callback);
 
   friend class TestWebApkInstallScheduler;
@@ -75,6 +77,7 @@ class WebApkInstallScheduler {
   WebApkInstallFinishedCallback webapps_client_callback_;
   std::unique_ptr<webapps::ShortcutInfo> shortcut_info_;
   const SkBitmap primary_icon_;
+  bool is_primary_icon_maskable_;
 
   // Used to get |weak_ptr_|.
   base::WeakPtrFactory<WebApkInstallScheduler> weak_ptr_factory_{this};
