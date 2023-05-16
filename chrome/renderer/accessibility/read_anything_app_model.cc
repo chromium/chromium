@@ -436,7 +436,9 @@ double ReadAnythingAppModel::GetLineSpacingValue(
     case read_anything::mojom::LineSpacing::kTightDeprecated:
       return 1.0;
     case read_anything::mojom::LineSpacing::kStandard:
-      return 1.15;
+      // This value needs to be at least 1.35 to avoid cutting off descenders
+      // with the highlight with larger fonts such as Poppins.
+      return 1.35;
     case read_anything::mojom::LineSpacing::kLoose:
       return 1.5;
     case read_anything::mojom::LineSpacing::kVeryLoose:
