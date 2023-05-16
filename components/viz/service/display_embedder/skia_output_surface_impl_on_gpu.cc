@@ -1971,11 +1971,12 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
           GetDidSwapBuffersCompleteCallback());
     }
 #elif BUILDFLAG(IS_WIN)
-    output_device_ = std::make_unique<SkiaOutputDeviceDawn>(
-        dawn_context_provider_, gfx::SurfaceOrigin::kTopLeft,
+    auto output_device = std::make_unique<SkiaOutputDeviceDawn>(
+        context_state_, gfx::SurfaceOrigin::kTopLeft,
         shared_gpu_deps_->memory_tracker(),
         GetDidSwapBuffersCompleteCallback());
-    AddChildWindowToBrowser(output_device_->GetChildSurfaceHandle());
+    AddChildWindowToBrowser(output_device->GetChildSurfaceHandle());
+    output_device_ = std::move(output_device);
 #elif BUILDFLAG(IS_MAC)
     presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr(),
                                               gl::GLSurfaceFormat());
