@@ -91,7 +91,9 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
     public boolean onPreferenceTreeClick(Preference preference) {
         if (preference instanceof WebsiteRowPreference) {
             // Handle a click on one of the sites in this group.
-            ((WebsiteRowPreference) preference).handleClick(getArguments());
+            // Save the current activity, so it's accessible from the SingleWebsiteSettings.
+            GroupedWebsitesActivityHolder.getInstance().setActivity(getActivity());
+            ((WebsiteRowPreference) preference).handleClick(getArguments(), /*fromGrouped=*/true);
         }
         return super.onPreferenceTreeClick(preference);
     }

@@ -78,6 +78,9 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     // A boolean to configure whether the sound setting should be shown. Defaults to true.
     public static final String EXTRA_SHOW_SOUND = "org.chromium.chrome.preferences.show_sound";
 
+    // A boolean that indicates whether these settings were opened from GroupedWebsiteSettings.
+    public static final String EXTRA_FROM_GROUPED = "org.chromium.chrome.preferences.from_grouped";
+
     // Used to store mPreviousNotificationPermission when the activity is paused.
     private static final String PREVIOUS_NOTIFICATION_PERMISSION_KEY =
             "previous_notification_permission";
@@ -195,6 +198,9 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
 
     // The website this page is displaying details about.
     private Website mSite;
+
+    // Whether these settings were opened from GroupedWebsitesSettings.
+    private boolean mFromGrouped;
 
     // The Preference key for chooser object permissions.
     private static final String CHOOSER_PERMISSION_PREFERENCE_KEY = "chooser_permission_list";
@@ -327,6 +333,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         } else {
             assert false : "Exactly one of EXTRA_SITE or EXTRA_SITE_ADDRESS must be provided.";
         }
+
+        mFromGrouped = getArguments().getBoolean(EXTRA_FROM_GROUPED, false);
 
         // Disable animations of preference changes.
         getListView().setItemAnimator(null);
@@ -1131,6 +1139,10 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     private void popBackIfNoSettings() {
         if (!hasPermissionsPreferences() && !hasUsagePreferences() && getActivity() != null) {
             getActivity().finish();
+            if (mFromGrouped) {
+                Activity groupActivity = GroupedWebsitesActivityHolder.getInstance().getActivity();
+                if (groupActivity != null) groupActivity.finish();
+            }
         }
     }
 
@@ -1213,6 +1225,10 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                 DeleteBrowsingDataAction.SITES_SETTINGS_PAGE, DeleteBrowsingDataAction.MAX_VALUE);
         if (finishActivityImmediately) {
             getActivity().finish();
+            if (mFromGrouped) {
+                Activity groupActivity = GroupedWebsitesActivityHolder.getInstance().getActivity();
+                if (groupActivity != null) groupActivity.finish();
+            }
         }
     }
 

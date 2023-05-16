@@ -301,7 +301,7 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
             website.putSiteIntoExtras(SingleWebsiteSettings.EXTRA_SITE);
             website.getExtras().putInt(extraKey, getNavigationSource());
         } else if (preference instanceof WebsiteRowPreference) {
-            ((WebsiteRowPreference) preference).handleClick(getArguments());
+            ((WebsiteRowPreference) preference).handleClick(getArguments(), /*fromGrouped=*/false);
         }
 
         return super.onPreferenceTreeClick(preference);
