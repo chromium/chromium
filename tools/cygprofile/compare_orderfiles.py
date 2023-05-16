@@ -123,7 +123,7 @@ def CheckOrderfileCommit(commit_hash, clank_path):
   """
   output = subprocess.check_output(['git', 'show', r'--format=%s', commit_hash],
                                    cwd=clank_path)
-  first_line = output.split('\n')[0]
+  first_line = output.decode().split('\n')[0]
   # Capitalization changed at some point. Not checking the bot name because it
   # changed too.
   assert first_line.upper().endswith(
@@ -144,11 +144,11 @@ def GetBeforeAfterOrderfileHashes(commit_hash, clank_path):
   before_output = subprocess.check_output(
       ['git', 'show', '%s^:%s' % (commit_hash, orderfile_hash_relative_path)],
       cwd=clank_path)
-  before_hash = before_output.split('\n')[0]
+  before_hash = before_output.decode().split('\n')[0]
   after_output = subprocess.check_output(
       ['git', 'show', '%s:%s' % (commit_hash, orderfile_hash_relative_path)],
       cwd=clank_path)
-  after_hash = after_output.split('\n')[0]
+  after_hash = after_output.decode().split('\n')[0]
   assert before_hash != after_hash
   return (before_hash, after_hash)
 
