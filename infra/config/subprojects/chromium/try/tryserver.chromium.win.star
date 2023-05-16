@@ -72,9 +72,8 @@ try_.orchestrator_builder(
     mirrors = [
         "ci/Win x64 Builder",
         "ci/Win10 Tests x64",
-        # TODO(guterman): Re-enable when https://crbug.com/1445991 is fixed
-        # "ci/GPU Win x64 Builder",
-        # "ci/Win10 x64 Release (NVIDIA)",
+        "ci/GPU Win x64 Builder",
+        "ci/Win10 x64 Release (NVIDIA)",
     ],
     try_settings = builder_config.try_settings(
         rts_config = builder_config.rts_config(

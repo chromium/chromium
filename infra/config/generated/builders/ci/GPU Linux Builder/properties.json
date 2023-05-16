@@ -80,6 +80,30 @@
         {
           "builder": "gpu-try-linux-nvidia-rel",
           "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "linux-dcheck-off-rel",
+          "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "linux-inverse-fieldtrials-fyi-rel",
+          "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "linux-mbi-mode-per-render-process-host-rel",
+          "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "linux-mbi-mode-per-site-instance-rel",
+          "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "linux-rel",
+          "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "linux-rel-ml",
+          "group": "tryserver.chromium.linux"
         }
       ]
     }
