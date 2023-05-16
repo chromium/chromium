@@ -73,6 +73,9 @@ BASE_DECLARE_FEATURE(kPermissionStorageAccessAPI);
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kWindowManagementPermissionAlias);
 
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+BASE_DECLARE_FEATURE(kBlockMidiByDefault);
+
 }  // namespace features
 namespace feature_params {
 

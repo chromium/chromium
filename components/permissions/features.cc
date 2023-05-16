@@ -142,6 +142,11 @@ BASE_FEATURE(kWindowManagementPermissionAlias,
              "WindowManagementPermissionAlias",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables disallowing MIDI permission by default.
+BASE_FEATURE(kBlockMidiByDefault,
+             "BlockMidiByDefault",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 namespace feature_params {
 
