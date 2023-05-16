@@ -4046,6 +4046,11 @@ be describing additional metrics about the same event.
       A bitmask (0xMMmm) representing the Angular version
     </summary>
   </metric>
+  <metric name="DrupalVersion">
+    <summary>
+      A bitmask (0xMMmm) representing the Drupal version
+    </summary>
+  </metric>
   <metric name="NextJSVersion">
     <summary>
       A bitmask (0xMMmm) representing the NextJS version
@@ -4059,6 +4064,11 @@ be describing additional metrics about the same event.
   <metric name="VueVersion">
     <summary>
       A bitmask (0xMMmm) representing the Vue version
+    </summary>
+  </metric>
+  <metric name="WordPressVersion">
+    <summary>
+      A bitmask (0xMMmm) representing the WordPress version
     </summary>
   </metric>
 </event>
@@ -11926,10 +11936,20 @@ be describing additional metrics about the same event.
       framework.
     </summary>
   </metric>
+  <metric name="DrupalPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the Drupal CMS.
+    </summary>
+  </metric>
   <metric name="GatsbyPageLoad" enum="Boolean">
     <summary>
       True if the page loaded in the main frame uses the Gatsby JavaScript
       framework.
+    </summary>
+  </metric>
+  <metric name="JoomlaPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the Joomloa CMS.
     </summary>
   </metric>
   <metric name="NextJSPageLoad" enum="Boolean">
@@ -11962,6 +11982,16 @@ be describing additional metrics about the same event.
       framework.
     </summary>
   </metric>
+  <metric name="ShopifyPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the Shopify CMS.
+    </summary>
+  </metric>
+  <metric name="SquarespacePageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the Squarespace CMS.
+    </summary>
+  </metric>
   <metric name="SveltePageLoad" enum="Boolean">
     <summary>
       True if the page loaded in the main frame uses the Svelte JavaScript
@@ -11978,6 +12008,16 @@ be describing additional metrics about the same event.
     <summary>
       True if the page loaded in the main frame uses the VuePress JavaScript
       framework.
+    </summary>
+  </metric>
+  <metric name="WixPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the Wix CMS.
+    </summary>
+  </metric>
+  <metric name="WordPressPageLoad" enum="Boolean">
+    <summary>
+      True if the page loaded in the main frame uses the WordPress CMS.
     </summary>
   </metric>
 </event>

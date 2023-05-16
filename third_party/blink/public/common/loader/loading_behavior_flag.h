@@ -72,6 +72,18 @@ enum LoadingBehaviorFlag {
   // Indicates that the main resource fetch for the page controlled by
   // a service worker at the navigation time fallback to network.
   kLoadingBehaviorServiceWorkerMainResourceFetchFallback = 1 << 21,
+  // Indicates that the page uses the Drupal CMS.
+  kLoadingBehaviorDrupalCMSUsed = 1 << 22,
+  // Indicates that the page uses the Joomla CMS.
+  kLoadingBehaviorJoomlaCMSUsed = 1 << 23,
+  // Indicates that the page uses the Shopify CMS.
+  kLoadingBehaviorShopifyCMSUsed = 1 << 24,
+  // Indicates that the page uses the Squarespace CMS.
+  kLoadingBehaviorSquarespaceCMSUsed = 1 << 25,
+  // Indicates that the page uses the Wix CMS.
+  kLoadingBehaviorWixCMSUsed = 1 << 26,
+  // Indicates that the page uses the WordPress CMS.
+  kLoadingBehaviorWordPressCMSUsed = 1 << 27,
 };
 
 }  // namespace blink
