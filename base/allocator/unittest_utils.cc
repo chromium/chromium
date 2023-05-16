@@ -9,11 +9,10 @@
 #include <stddef.h>
 
 inline int snprintf(char* buffer, size_t count, const char* format, ...) {
-    int result;
-    va_list args;
-    va_start(args, format);
-    result = _vsnprintf(buffer, count, format, args);
-    va_end(args);
-    return result;
+  int result;
+  va_list args;
+  va_start(args, format);
+  result = _vsnprintf(buffer, count, format, args);
+  va_end(args);
+  return result;
 }
-
