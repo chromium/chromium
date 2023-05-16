@@ -87,12 +87,12 @@ RUST_BOTS = \
 Cq-Include-Trybots: chromium/try:android-rust-arm64-dbg
 Cq-Include-Trybots: chromium/try:android-rust-arm64-rel
 Cq-Include-Trybots: chromium/try:linux-rust-x64-dbg
-Cq-Include-Trybots: chromium/try:linux-rust-x64-rel'''
+Cq-Include-Trybots: chromium/try:linux-rust-x64-rel
+Cq-Include-Trybots: chromium/try:win-rust-x64-dbg
+Cq-Include-Trybots: chromium/try:win-rust-x64-rel'''
 
 # These do not pass yet:
 #Cq-Include-Trybots: chromium/try:mac-rust-x64-rel
-#Cq-Include-Trybots: chromium/try:win-rust-x64-dbg
-#Cq-Include-Trybots: chromium/try:win-rust-x64-rel
 
 is_win = sys.platform.startswith('win32')
 
