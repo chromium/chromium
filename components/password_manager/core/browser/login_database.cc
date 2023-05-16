@@ -200,14 +200,13 @@ enum class LoginDatabaseEncryptionStatus {
   kMaxValue = kEncryptionUnavailable,
 };
 
-// Struct to hold table builder for "logins", "insecure_credentials",
-// "sync_entities_metadata", and "sync_model_metadata" tables.
+// Struct to hold table builder for different tables in the LoginDatabase.
 struct SQLTableBuilders {
   raw_ptr<SQLTableBuilder> logins;
   raw_ptr<SQLTableBuilder> insecure_credentials;
   raw_ptr<SQLTableBuilder> password_notes;
-  raw_ptr<SQLTableBuilder> sync_entities_metadata;
-  raw_ptr<SQLTableBuilder> sync_model_metadata;
+  raw_ptr<SQLTableBuilder> passwords_sync_entities_metadata;
+  raw_ptr<SQLTableBuilder> passwords_sync_model_metadata;
 };
 
 base::span<const uint8_t> PickleToSpan(const base::Pickle& pickle) {
@@ -302,17 +301,18 @@ void LogDatabaseInitError(DatabaseInitError error) {
                             DATABASE_INIT_ERROR_COUNT);
 }
 
-constexpr char kSyncModelMetadataTableName[] = "sync_model_metadata";
-constexpr char kSyncEntitiesMetadataTableName[] = "sync_entities_metadata";
+constexpr char kPasswordsSyncModelMetadataTableName[] = "sync_model_metadata";
+constexpr char kPasswordsSyncEntitiesMetadataTableName[] =
+    "sync_entities_metadata";
 
 const char* SyncModelMetadataTableName(syncer::ModelType model_type) {
   CHECK_EQ(model_type, syncer::PASSWORDS);
-  return kSyncModelMetadataTableName;
+  return kPasswordsSyncModelMetadataTableName;
 }
 
 const char* SyncEntitiesMetadataTableName(syncer::ModelType model_type) {
   CHECK_EQ(model_type, syncer::PASSWORDS);
-  return kSyncEntitiesMetadataTableName;
+  return kPasswordsSyncEntitiesMetadataTableName;
 }
 
 bool ClearAllSyncMetadata(sql::Database* db, syncer::ModelType model_type) {
@@ -345,13 +345,13 @@ void SealVersion(SQLTableBuilders builders, unsigned expected_version) {
   unsigned notes_version = builders.password_notes->SealVersion();
   DCHECK_EQ(expected_version, notes_version);
 
-  unsigned sync_entities_metadata_version =
-      builders.sync_entities_metadata->SealVersion();
-  DCHECK_EQ(expected_version, sync_entities_metadata_version);
+  unsigned passwords_sync_entities_metadata_version =
+      builders.passwords_sync_entities_metadata->SealVersion();
+  DCHECK_EQ(expected_version, passwords_sync_entities_metadata_version);
 
-  unsigned sync_model_metadata_version =
-      builders.sync_model_metadata->SealVersion();
-  DCHECK_EQ(expected_version, sync_model_metadata_version);
+  unsigned passwords_sync_model_metadata_version =
+      builders.passwords_sync_model_metadata->SealVersion();
+  DCHECK_EQ(expected_version, passwords_sync_model_metadata_version);
 }
 
 // Teaches |builders| about the different DB schemes in different versions.
@@ -445,10 +445,12 @@ void InitializeBuilders(SQLTableBuilders builders) {
   SealVersion(builders, /*expected_version=*/20u);
 
   // Version 21.
-  builders.sync_entities_metadata->AddPrimaryKeyColumn("storage_key");
-  builders.sync_entities_metadata->AddColumn("metadata", "VARCHAR NOT NULL");
-  builders.sync_model_metadata->AddPrimaryKeyColumn("id");
-  builders.sync_model_metadata->AddColumn("model_metadata", "VARCHAR NOT NULL");
+  builders.passwords_sync_entities_metadata->AddPrimaryKeyColumn("storage_key");
+  builders.passwords_sync_entities_metadata->AddColumn("metadata",
+                                                       "VARCHAR NOT NULL");
+  builders.passwords_sync_model_metadata->AddPrimaryKeyColumn("id");
+  builders.passwords_sync_model_metadata->AddColumn("model_metadata",
+                                                    "VARCHAR NOT NULL");
   SealVersion(builders, /*expected_version=*/21u);
 
   // Version 22. Changes in Sync metadata encryption.
@@ -679,11 +681,13 @@ bool MigrateDatabase(unsigned current_version,
     return false;
   }
 
-  if (!builders.sync_entities_metadata->MigrateFrom(current_version, db)) {
+  if (!builders.passwords_sync_entities_metadata->MigrateFrom(current_version,
+                                                              db)) {
     return false;
   }
 
-  if (!builders.sync_model_metadata->MigrateFrom(current_version, db)) {
+  if (!builders.passwords_sync_model_metadata->MigrateFrom(current_version,
+                                                           db)) {
     return false;
   }
 
@@ -708,10 +712,11 @@ bool MigrateDatabase(unsigned current_version,
     }
   }
 
-  // Sync Metadata tables have been introduced in version 21. It is enough to
-  // drop all data because Sync would populate the tables properly at startup.
+  // Passwords Sync Metadata tables have been introduced in version 21. It is
+  // enough to drop all data because Sync would populate the tables properly at
+  // startup.
   if (current_version >= 21 && current_version < 26) {
-    if (!ClearAllSyncMetadata(db, syncer::ModelType::PASSWORDS)) {
+    if (!ClearAllSyncMetadata(db, syncer::PASSWORDS)) {
       return false;
     }
   }
@@ -879,11 +884,14 @@ bool LoginDatabase::Init() {
   SQLTableBuilder insecure_credentials_builder(
       InsecureCredentialsTable::kTableName);
   SQLTableBuilder password_notes_builder(PasswordNotesTable::kTableName);
-  SQLTableBuilder sync_entities_metadata_builder("sync_entities_metadata");
-  SQLTableBuilder sync_model_metadata_builder("sync_model_metadata");
-  SQLTableBuilders builders = {
-      &logins_builder, &insecure_credentials_builder, &password_notes_builder,
-      &sync_entities_metadata_builder, &sync_model_metadata_builder};
+  SQLTableBuilder passwords_sync_entities_metadata_builder(
+      kPasswordsSyncEntitiesMetadataTableName);
+  SQLTableBuilder passwords_sync_model_metadata_builder(
+      kPasswordsSyncModelMetadataTableName);
+  SQLTableBuilders builders = {&logins_builder, &insecure_credentials_builder,
+                               &password_notes_builder,
+                               &passwords_sync_entities_metadata_builder,
+                               &passwords_sync_model_metadata_builder};
   InitializeBuilders(builders);
   InitializeStatementStrings(logins_builder);
 
@@ -894,14 +902,14 @@ bool LoginDatabase::Init() {
     return false;
   }
 
-  if (!sync_entities_metadata_builder.CreateTable(&db_)) {
+  if (!passwords_sync_entities_metadata_builder.CreateTable(&db_)) {
     LOG(ERROR) << "Failed to create the 'sync_entities_metadata' table";
     transaction.Rollback();
     db_.Close();
     return false;
   }
 
-  if (!sync_model_metadata_builder.CreateTable(&db_)) {
+  if (!passwords_sync_model_metadata_builder.CreateTable(&db_)) {
     LOG(ERROR) << "Failed to create the 'sync_model_metadata' table";
     transaction.Rollback();
     db_.Close();
@@ -1798,9 +1806,10 @@ void LoginDatabase::SyncMetadataStore::DeleteAllSyncMetadata(
     syncer::ModelType model_type) {
   TRACE_EVENT0("passwords", "SyncMetadataStore::DeleteAllSyncMetadata");
   CHECK_EQ(model_type, syncer::PASSWORDS);
-  bool had_unsynced_deletions = HasUnsyncedPasswordDeletions();
+  bool had_unsynced_password_deletions = HasUnsyncedPasswordDeletions();
   ClearAllSyncMetadata(db_, model_type);
-  if (had_unsynced_deletions && password_deletions_have_synced_callback_) {
+  if (had_unsynced_password_deletions &&
+      password_deletions_have_synced_callback_) {
     // Note: At this point we can't be fully sure whether the deletions actually
     // reached the server yet. We might have sent a commit, but haven't received
     // the commit confirmation. Let's be conservative and assume they haven't
