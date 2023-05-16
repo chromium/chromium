@@ -3063,21 +3063,26 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- Strings for the Device Lock. -->
-      <!-- TODO(crbug.com/1431577): Finalize strings and set to translateable -->
-      <message name="IDS_DEVICE_LOCK_TITLE" translateable="false" desc="">
-        Keep your data secure with profile lock
+      <message name="IDS_DEVICE_LOCK_TITLE" desc="Title shown on the profile lock page prompting the user to set a profile lock.">
+        Create a profile lock for your car
       </message>
-      <message name="IDS_DEVICE_LOCK_DESCRIPTION" translateable="false" desc="">
-        For your data security in the car, profile lock is required to sync and save your passwords, payments, and more.
+      <message name="IDS_DEVICE_LOCK_EXISTING_LOCK_TITLE" desc="Title shown on the profile lock page if there is a pre-existing profile lock.">
+        Your info is secured with a profile lock
       </message>
-      <message name="IDS_DEVICE_LOCK_HIGHLIGHTED_NOTICE" translateable="false" desc="">
-        Your saved data will be erased if profile lock is removed later
+      <message name="IDS_DEVICE_LOCK_DESCRIPTION" desc="Text description explaining that a profile lock is required for automotive devices to protect data privacy. 'Sync' is short for synchronization.">
+        To sync your info and keep your data secure in the car, you must create a profile lock. You’ll use a code or password every time you enter the car.
       </message>
-      <message name="IDS_DEVICE_LOCK_CREATE_LOCK_BUTTON" translateable="false" desc="">
-        Set up a profile lock
+      <message name="IDS_DEVICE_LOCK_THROUGH_SETTINGS_DESCRIPTION" desc="Text description explaining that a profile lock is required for automotive devices to protect data privacy, and that such a lock can be created in the device's security settings. 'Sync' is short for synchronization.">
+        To sync your info and keep your data secure in the car, you must create a profile lock in your security settings. You’ll use a code or password every time you enter the car.
       </message>
-      <message name="IDS_DEVICE_LOCK_USER_UNDERSTANDS_BUTTON" translateable="false" desc="">
-        I understand
+      <message name="IDS_DEVICE_LOCK_EXISTING_LOCK_DESCRIPTION" desc="Text description explaining to users who have already set an existing lock that a profile lock is required for automotive devices to protect data privacy. 'Sync' is short for synchronization.">
+        Your profile lock keeps your info secure in the car, including synced passwords, payments and more.
+      </message>
+      <message name="IDS_DEVICE_LOCK_NOTICE" desc="Notice appearing on the profile lock page informing users that data saved on Chrome will be erased if they remove the profile lock from the device.">
+        Your saved info will be erased if you remove profile lock later.
+      </message>
+      <message name="IDS_DEVICE_LOCK_CREATE_LOCK_BUTTON" desc="Text for the button that navigates the user to create a profile lock on the device.">
+        Create a profile lock
       </message>
 
       <!-- Strings for Streamlined Signin and Unified Consent. -->
