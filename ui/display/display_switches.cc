@@ -67,9 +67,6 @@ const char kDisplayProperties[] = "display-properties";
 
 // Enables unified desktop mode.
 const char kEnableUnifiedDesktop[] = "ash-enable-unified-desktop";
-
-// Used to find the test that uses square display.
-const char kRejectSquareDisplay[] = "reject-square-display";
 #endif
 
 }  // namespace switches
