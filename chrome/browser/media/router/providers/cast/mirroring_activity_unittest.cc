@@ -728,4 +728,48 @@ TEST_F(MirroringActivityTest, GetTargetPlayoutDelay) {
             switch_playout_delay);
 }
 
+TEST_F(MirroringActivityTest, MultipleMediaControllersNotified) {
+  MakeActivity();
+
+  // Set up the first media controller and observer.
+  mojo::PendingRemote<mojom::MediaStatusObserver> observer_pending_remote_1;
+  NiceMock<MockMediaStatusObserver> media_status_observer_1 =
+      NiceMock<MockMediaStatusObserver>(
+          observer_pending_remote_1.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<mojom::MediaController> media_controller_1;
+  activity_->CreateMediaController(
+      media_controller_1.BindNewPipeAndPassReceiver(),
+      std::move(observer_pending_remote_1));
+
+  // Set up the second media controller and observer.
+  mojo::PendingRemote<mojom::MediaStatusObserver> observer_pending_remote_2;
+  NiceMock<MockMediaStatusObserver> media_status_observer_2 =
+      NiceMock<MockMediaStatusObserver>(
+          observer_pending_remote_2.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<mojom::MediaController> media_controller_2;
+  activity_->CreateMediaController(
+      media_controller_2.BindNewPipeAndPassReceiver(),
+      std::move(observer_pending_remote_2));
+
+  // Pause the route, and expect both observers to be notified.
+  mojom::MediaStatusPtr expected_status = mojom::MediaStatus::New();
+  expected_status->play_state = mojom::MediaStatus::PlayState::PAUSED;
+  auto cb = [&](base::OnceClosure callback) { std::move(callback).Run(); };
+  EXPECT_CALL(*mirroring_service_, Pause(_)).WillOnce(testing::Invoke(cb));
+  EXPECT_CALL(media_status_observer_1, OnMediaStatusUpdated(_))
+      .WillOnce([&](mojom::MediaStatusPtr status) {
+        EXPECT_EQ(expected_status->play_state, status->play_state);
+      });
+  EXPECT_CALL(media_status_observer_2, OnMediaStatusUpdated(_))
+      .WillOnce([&](mojom::MediaStatusPtr status) {
+        EXPECT_EQ(expected_status->play_state, status->play_state);
+      });
+  activity_->Pause();
+
+  // Ensure the mojom receivers have processed all calls, since we are expecting
+  // them to have been called.
+  media_status_observer_1.FlushForTesting();
+  media_status_observer_2.FlushForTesting();
+}
+
 }  // namespace media_router

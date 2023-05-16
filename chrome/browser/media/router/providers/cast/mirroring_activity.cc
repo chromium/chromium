@@ -383,7 +383,7 @@ void MirroringActivity::OnSourceChanged() {
   // now sending frames. Ensure the state is now PLAYING.
   media_status_->play_state = mojom::MediaStatus::PlayState::PLAYING;
   OnMirroringResumed();
-  NotifyMediaStatusObserver();
+  NotifyMediaStatusObservers();
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -396,7 +396,7 @@ void MirroringActivity::OnRemotingStateChanged(bool is_remoting) {
   // playing.
   media_status_->play_state = mojom::MediaStatus::PlayState::PLAYING;
   OnMirroringResumed();
-  NotifyMediaStatusObserver();
+  NotifyMediaStatusObservers();
 }
 
 void MirroringActivity::OnMessage(mirroring::mojom::CastMessagePtr message) {
@@ -489,10 +489,8 @@ void MirroringActivity::CreateMediaController(
     mojo::PendingReceiver<mojom::MediaController> media_controller,
     mojo::PendingRemote<mojom::MediaStatusObserver> observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
-  media_controller_receiver_.reset();
-  media_controller_receiver_.Bind(std::move(media_controller));
-  media_status_observer_.reset();
-  media_status_observer_.Bind(std::move(observer));
+  media_controller_receivers_.Add(this, std::move(media_controller));
+  media_status_observers_.Add(std::move(observer));
 }
 
 std::string MirroringActivity::GetRouteDescription(
@@ -759,12 +757,13 @@ void MirroringActivity::SetPlayState(mojom::MediaStatus::PlayState play_state) {
   } else if (play_state == mojom::MediaStatus::PlayState::PAUSED) {
     OnMirroringPaused();
   }
-  NotifyMediaStatusObserver();
+  NotifyMediaStatusObservers();
 }
 
-void MirroringActivity::NotifyMediaStatusObserver() {
-  if (media_status_observer_) {
-    media_status_observer_->OnMediaStatusUpdated(media_status_.Clone());
+void MirroringActivity::NotifyMediaStatusObservers() {
+  for (const mojo::Remote<mojom::MediaStatusObserver>& observer :
+       media_status_observers_) {
+    observer->OnMediaStatusUpdated(media_status_.Clone());
   }
 }
 

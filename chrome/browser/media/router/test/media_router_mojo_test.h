@@ -151,6 +151,10 @@ class MockMediaStatusObserver : public mojom::MediaStatusObserver {
 
   MOCK_METHOD1(OnMediaStatusUpdated, void(mojom::MediaStatusPtr status));
 
+  // Use this instead of RunUntilIdle to explicitly show what we are waiting
+  // for in a test.
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
  private:
   mojo::Receiver<mojom::MediaStatusObserver> receiver_;
 };

@@ -29,7 +29,9 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
@@ -129,6 +131,8 @@ class MirroringActivity : public CastActivity,
   FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, Play);
   FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, OnRemotingStateChanged);
   FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, GetTargetPlayoutDelay);
+  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest,
+                           MultipleMediaControllersNotified);
 
   void HandleParseJsonResult(const std::string& route_id,
                              data_decoder::DataDecoder::ValueOrError result);
@@ -142,7 +146,7 @@ class MirroringActivity : public CastActivity,
 
   void SetPlayState(mojom::MediaStatus::PlayState play_state);
 
-  void NotifyMediaStatusObserver();
+  void NotifyMediaStatusObservers();
 
   // Invoked when mirroring is paused / resumed, for metrics.
   void OnMirroringPaused();
@@ -199,13 +203,11 @@ class MirroringActivity : public CastActivity,
   // receiver.
   mojo::Receiver<mirroring::mojom::CastMessageChannel> channel_receiver_{this};
 
-  // To handle freeze and unfreeze requests from the mirroring media controller
-  // host to the mirroring service host.
-  mojo::Receiver<mojom::MediaController> media_controller_receiver_{this};
+  // To handle freeze and unfreeze requests from media controllers.
+  mojo::ReceiverSet<mojom::MediaController> media_controller_receivers_;
 
-  // Sends media status updates with mirroring information needed for freezing
-  // the session.
-  mojo::Remote<mojom::MediaStatusObserver> media_status_observer_;
+  // Sends media status updates with mirroring information to observers.
+  mojo::RemoteSet<mojom::MediaStatusObserver> media_status_observers_;
 
   // Info for mirroring state transitions like pause / resume.
   mojom::MediaStatusPtr media_status_;
