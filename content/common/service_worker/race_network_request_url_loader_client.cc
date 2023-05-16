@@ -51,23 +51,21 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse(
       ServiceWorkerResourceLoader::FetchResponseFrom::kServiceWorker) {
     return;
   }
-
-  head_ = std::move(head);
-
-  // If the fetch handler result is a fallback, commit the RaceNetworkRequest
-  // response. If the result is not a fallback and the response is not 200, use
-  // the other response from the fetch handler instead because it may have a
-  // response from the cache.
+  // If the response is not 200, use the other response from the fetch handler
+  // instead because it may have a response from the cache.
   // TODO(crbug.com/1420517): More comprehensive error handling may be needed,
   // especially the case when HTTP cache hit or redirect happened.
-  if (!is_fetch_handler_response_fallback_ &&
-      head_->headers->response_code() != net::HttpStatusCode::HTTP_OK) {
+  if (head->headers->response_code() != net::HttpStatusCode::HTTP_OK) {
     return;
   }
 
   owner_->SetFetchResponseFrom(
       ServiceWorkerResourceLoader::FetchResponseFrom::kWithoutServiceWorker);
-  CommitResponse(std::move(body), std::move(cached_metadata));
+
+  head_ = std::move(head);
+  owner_->CommitResponseHeaders(head_);
+  owner_->CommitResponseBody(head_, std::move(body),
+                             std::move(cached_metadata));
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
@@ -90,33 +88,13 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
-  request_completed_ = true;
   if (!owner_) {
     return;
   }
-  // If the fetch handler result is a fallback, complete the commit of the
-  // RaceNetworkRequest response.
-  if (is_fetch_handler_response_fallback_) {
-    // If there is a network error, OnComplete can be directly called, in that
-    // case |fetch_response_from| is not set yet.
-    if (owner_->fetch_response_from() ==
-        ServiceWorkerResourceLoader::FetchResponseFrom::kNoResponseYet) {
-      owner_->SetFetchResponseFrom(
-          ServiceWorkerResourceLoader::FetchResponseFrom::
-              kWithoutServiceWorker);
-    }
-    owner_->CommitCompleted(status.error_code,
-                            "RaceNetworkRequest has completed due to the fetch "
-                            "handler result is a fallback");
-    return;
-  }
-
   // If the fetch handler wins or there is a network error in
   // RaceNetworkRequest, do nothing. Defer the handling to the owner.
   if (owner_->fetch_response_from() !=
-          ServiceWorkerResourceLoader::FetchResponseFrom::
-              kWithoutServiceWorker ||
-      status.error_code != net::OK) {
+      ServiceWorkerResourceLoader::FetchResponseFrom::kWithoutServiceWorker) {
     return;
   }
 
@@ -127,19 +105,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnComplete(
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::Bind(
     mojo::PendingRemote<network::mojom::URLLoaderClient>* remote) {
   receiver_.Bind(remote->InitWithNewPipeAndPassReceiver());
-}
-
-void ServiceWorkerRaceNetworkRequestURLLoaderClient::
-    NotifyFetchHandlerFallback() {
-  is_fetch_handler_response_fallback_ = true;
-}
-
-void ServiceWorkerRaceNetworkRequestURLLoaderClient::CommitResponse(
-    mojo::ScopedDataPipeConsumerHandle response_body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
-  owner_->CommitResponseHeaders(head_);
-  owner_->CommitResponseBody(head_, std::move(response_body),
-                             std::move(cached_metadata));
 }
 
 net::NetworkTrafficAnnotationTag

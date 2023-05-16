@@ -412,26 +412,8 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
       blink::ServiceWorkerStatusToString(status), "result",
       ComposeFetchEventResultString(fetch_result, *response));
 
-  // If the response of RaceNetworkRequest is already handled, discard the
-  // fetch handler result.
   if (fetch_response_from() == FetchResponseFrom::kWithoutServiceWorker) {
     return;
-  }
-  // If the RaceNetworkRequest is triggered but the response is not handled
-  // yet, and the fetch handler result is FetchEventResult::kShouldFallback, ask
-  // RaceNetworkRequestURLLoaderClient to handle the response regardless of the
-  // response status not to dispatch additional network request for fallback.
-  if (dispatched_preload_type_ == DispatchedPreloadType::kRaceNetworkRequest &&
-      fetch_result ==
-          ServiceWorkerFetchDispatcher::FetchEventResult::kShouldFallback) {
-    DCHECK(race_network_request_loader_client_);
-    // Don't ask RaceNetworkRequestURLLoaderClient to handle the response if the
-    // RaceNetworkRequest has already completed because the response from
-    // RaceNetworkRequest is already discarded.
-    if (!race_network_request_loader_client_->request_completed()) {
-      race_network_request_loader_client_->NotifyFetchHandlerFallback();
-      return;
-    }
   }
   // Use the response from ServiceWorker fetch handler, and cancel the
   // connection for RaceNetworkRequest.
