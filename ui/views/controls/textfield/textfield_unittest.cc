@@ -4417,42 +4417,29 @@ TEST_F(TextfieldTest, MoveRangeSelectionExtentExpandByWord) {
       /*disabled_features=*/{});
 
   InitTextfield();
-  textfield_->SetText(u"hello world");
+  textfield_->SetText(u"some textfield text");
   const int cursor_y = GetCursorYForTesting();
-  gfx::Range range;
-
   textfield_->SelectBetweenCoordinates(
       gfx::Point(GetCursorPositionX(2), cursor_y),
       gfx::Point(GetCursorPositionX(3), cursor_y));
-  textfield_->MoveRangeSelectionExtent(
-      gfx::Point(GetCursorPositionX(9), cursor_y));
-  textfield_->GetEditableSelectionRange(&range);
-  EXPECT_EQ(range, gfx::Range(2, 11));
-  EXPECT_EQ(textfield_->GetSelectedText(), u"llo world");
 
+  // Expand the selection. The end of the selection should move to the nearest
+  // word boundary.
   textfield_->MoveRangeSelectionExtent(
-      gfx::Point(GetCursorPositionX(10), cursor_y));
+      gfx::Point(GetCursorPositionX(11), cursor_y));
+  gfx::Range range;
   textfield_->GetEditableSelectionRange(&range);
-  EXPECT_EQ(range, gfx::Range(2, 11));
-  EXPECT_EQ(textfield_->GetSelectedText(), u"llo world");
+  EXPECT_EQ(range, gfx::Range(2, 14));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"me textfield");
 
+  // Shrink then expand the selection again.
   textfield_->MoveRangeSelectionExtent(
-      gfx::Point(GetCursorPositionX(5), cursor_y));
-  textfield_->GetEditableSelectionRange(&range);
-  EXPECT_EQ(range, gfx::Range(2, 5));
-  EXPECT_EQ(textfield_->GetSelectedText(), u"llo");
-
+      gfx::Point(GetCursorPositionX(8), cursor_y));
   textfield_->MoveRangeSelectionExtent(
-      gfx::Point(GetCursorPositionX(7), cursor_y));
+      gfx::Point(GetCursorPositionX(18), cursor_y));
   textfield_->GetEditableSelectionRange(&range);
-  EXPECT_EQ(range, gfx::Range(2, 6));
-  EXPECT_EQ(textfield_->GetSelectedText(), u"llo ");
-
-  textfield_->MoveRangeSelectionExtent(
-      gfx::Point(GetCursorPositionX(9), cursor_y));
-  textfield_->GetEditableSelectionRange(&range);
-  EXPECT_EQ(range, gfx::Range(2, 11));
-  EXPECT_EQ(textfield_->GetSelectedText(), u"llo world");
+  EXPECT_EQ(range, gfx::Range(2, 19));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"me textfield text");
 }
 
 TEST_F(TextfieldTest, MoveRangeSelectionExtentShrinkByCharacter) {
@@ -4462,32 +4449,59 @@ TEST_F(TextfieldTest, MoveRangeSelectionExtentShrinkByCharacter) {
       /*disabled_features=*/{});
 
   InitTextfield();
-  textfield_->SetText(u"hello world");
+  textfield_->SetText(u"some textfield text");
   const int cursor_y = GetCursorYForTesting();
-  gfx::Range range;
+  textfield_->SelectBetweenCoordinates(
+      gfx::Point(GetCursorPositionX(2), cursor_y),
+      gfx::Point(GetCursorPositionX(12), cursor_y));
 
+  // Shrink the selection.
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(11), cursor_y));
+  gfx::Range range;
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 11));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"me textfi");
+}
+
+TEST_F(TextfieldTest, MoveRangeSelectionExtentOffset) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
+  InitTextfield();
+  textfield_->SetText(u"some textfield text");
+  const int cursor_y = GetCursorYForTesting();
   textfield_->SelectBetweenCoordinates(
       gfx::Point(GetCursorPositionX(2), cursor_y),
       gfx::Point(GetCursorPositionX(3), cursor_y));
+
+  // Expand the selection. The end of the selection should move to the nearest
+  // word boundary.
   textfield_->MoveRangeSelectionExtent(
       gfx::Point(GetCursorPositionX(11), cursor_y));
+  gfx::Range range;
   textfield_->GetEditableSelectionRange(&range);
-  EXPECT_EQ(range, gfx::Range(2, 11));
-  EXPECT_EQ(textfield_->GetSelectedText(), u"llo world");
+  EXPECT_EQ(range, gfx::Range(2, 14));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"me textfield");
 
+  // Shrink the selection. The offset between the selection extent and the end
+  // of the selection should be preserved.
+  const int offset = GetCursorPositionX(14) - GetCursorPositionX(11);
   textfield_->MoveRangeSelectionExtent(
-      gfx::Point(GetCursorPositionX(9), cursor_y));
+      gfx::Point(GetCursorPositionX(12) - offset, cursor_y));
   textfield_->GetEditableSelectionRange(&range);
-  EXPECT_EQ(range, gfx::Range(2, 9));
-  EXPECT_EQ(textfield_->GetSelectedText(), u"llo wor");
+  EXPECT_EQ(range, gfx::Range(2, 12));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"me textfie");
 
-  // Check that selection can be adjusted by character within a word after the
-  // selection has shrunk.
+  // Move the extent past the end of the selection. The offset should be reset
+  // and the selection should expand.
   textfield_->MoveRangeSelectionExtent(
-      gfx::Point(GetCursorPositionX(10), cursor_y));
+      gfx::Point(GetCursorPositionX(13), cursor_y));
   textfield_->GetEditableSelectionRange(&range);
-  EXPECT_EQ(range, gfx::Range(2, 10));
-  EXPECT_EQ(textfield_->GetSelectedText(), u"llo worl");
+  EXPECT_EQ(range, gfx::Range(2, 13));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"me textfiel");
 }
 
 TEST_F(TextfieldTest, SelectBetweenCoordinates) {
