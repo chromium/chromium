@@ -98,6 +98,22 @@ class TestAdapterObserver : public FlossAdapterClient::Observer {
     passkey_ = passkey;
   }
 
+  void AdapterPinDisplay(const FlossDeviceId& remote_device,
+                         std::string pincode) override {
+    pin_display_count_++;
+
+    pin_display_device_ = remote_device;
+    pincode_ = pincode;
+  }
+
+  void AdapterPinRequest(const FlossDeviceId& remote_device,
+                         uint32_t cod,
+                         bool min_16_digit) override {
+    pin_request_count_++;
+
+    pin_request_device_ = remote_device;
+  }
+
   std::string address_;
   bool discoverable_;
   bool discovering_state_ = false;
@@ -109,6 +125,9 @@ class TestAdapterObserver : public FlossAdapterClient::Observer {
   FlossAdapterClient::BluetoothSspVariant variant_ =
       FlossAdapterClient::BluetoothSspVariant::kPasskeyConfirmation;
   uint32_t passkey_ = 0;
+  FlossDeviceId pin_display_device_;
+  FlossDeviceId pin_request_device_;
+  std::string pincode_;
 
   int address_changed_count_ = 0;
   int discoverable_changed_count_ = 0;
@@ -116,6 +135,8 @@ class TestAdapterObserver : public FlossAdapterClient::Observer {
   int found_device_count_ = 0;
   int cleared_device_count_ = 0;
   int ssp_request_count_ = 0;
+  int pin_display_count_ = 0;
+  int pin_request_count_ = 0;
 
  private:
   raw_ptr<FlossAdapterClient> client_ = nullptr;
@@ -143,7 +164,7 @@ class FlossAdapterClientTest : public testing::Test {
     // Exported callback methods that we don't need to invoke.  This will need
     // to be updated once new callbacks are added.
     // TODO(b/233124093): Reduce this count by 2 when SDP tests are added.
-    EXPECT_CALL(*exported_callbacks_.get(), ExportMethod).Times(10);
+    EXPECT_CALL(*exported_callbacks_.get(), ExportMethod).Times(12);
 
     // Save the method handlers of exported callbacks that we need to invoke in
     // test.
