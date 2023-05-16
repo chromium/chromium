@@ -595,15 +595,16 @@ public class TabSwitcherCoordinator
 
     @Override
     @NonNull
-    public Rect getThumbnailLocationOfCurrentTab() {
+    public Rect getThumbnailLocationOfCurrentTab(boolean forceUpdate) {
         if (mTabGridDialogCoordinator != null && mTabGridDialogCoordinator.isVisible()) {
+            assert forceUpdate;
             Rect thumbnail = mTabGridDialogCoordinator.getGlobalLocationOfCurrentThumbnail();
             // Adjust to the relative coordinate.
             Rect root = mTabListCoordinator.getRecyclerViewLocation();
             thumbnail.offset(-root.left, -root.top);
             return thumbnail;
         }
-        mTabListCoordinator.updateThumbnailLocation();
+        if (forceUpdate) mTabListCoordinator.updateThumbnailLocation();
         return mTabListCoordinator.getThumbnailLocationOfCurrentTab();
     }
 

@@ -107,7 +107,6 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
     private boolean mIsInitialized;
 
     private float mBackgroundAlpha;
-    private int mTabListTopOffset;
 
     private int mFrameCount;
     private long mStartTime;
@@ -303,7 +302,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
                 // until the next layout pass.
                 mDeferredAnimationRunnable = () -> {
                     showOverviewWithTabShrink(shouldAnimate, () -> {
-                        return getGridTabListDelegate().getThumbnailLocationOfCurrentTab();
+                        return getGridTabListDelegate().getThumbnailLocationOfCurrentTab(false);
                     }, isShowingStartSurfaceHomepage, quick);
                 };
                 getGridTabListDelegate().runAnimationOnNextLayout(() -> {
@@ -510,8 +509,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
             showShrinkingAnimation &= quick;
         }
 
-        final Rect targetRect = target.get();
-        if (!showShrinkingAnimation || targetRect == null) {
+        if (!showShrinkingAnimation || target.get() == null) {
             mStartSurface.showOverview(animate);
             return;
         }
@@ -533,13 +531,13 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
 
         // Step 1: zoom out the source tab
         Supplier<Float> scaleStartValueSupplier = () -> 1.0f;
-        Supplier<Float> scaleEndValueSupplier = () -> targetRect.width() / (getWidth() * mDpToPx);
+        Supplier<Float> scaleEndValueSupplier = () -> target.get().width() / (getWidth() * mDpToPx);
 
         Supplier<Float> xStartValueSupplier = () -> 0f;
-        Supplier<Float> xEndValueSupplier = () -> targetRect.left / mDpToPx;
+        Supplier<Float> xEndValueSupplier = () -> target.get().left / mDpToPx;
 
         Supplier<Float> yStartValueSupplier = () -> 0f;
-        Supplier<Float> yEndValueSupplier = () -> targetRect.top / mDpToPx;
+        Supplier<Float> yEndValueSupplier = () -> target.get().top / mDpToPx;
 
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.SCALE, scaleStartValueSupplier, scaleEndValueSupplier, ZOOMING_DURATION,
@@ -560,7 +558,6 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
                         : getWidth(),
                 ZOOMING_DURATION, Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
 
-        mTabListTopOffset = getLastUsedTabListDelegate().getTabListTopOffset();
         CompositorAnimator backgroundAlpha =
                 CompositorAnimator.ofFloat(handler, 0f, 1f, BACKGROUND_FADING_DURATION_MS,
                         animator -> mBackgroundAlpha = animator.getAnimatedValue());
@@ -626,7 +623,6 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
                 sourceLayoutTab.getUnclampedOriginalContentHeight(), ZOOMING_DURATION,
                 Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
 
-        mTabListTopOffset = getLastUsedTabListDelegate().getTabListTopOffset();
         CompositorAnimator backgroundAlpha =
                 CompositorAnimator.ofFloat(handler, 1f, 0f, BACKGROUND_FADING_DURATION_MS,
                         animator -> mBackgroundAlpha = animator.getAnimatedValue());
@@ -732,9 +728,9 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
 
     private Rect getThumbnailLocationOfCurrentTab() {
         if (isHidingStartSurfaceHomepage()) {
-            return getCarouselOrSingleTabListDelegate().getThumbnailLocationOfCurrentTab();
+            return getCarouselOrSingleTabListDelegate().getThumbnailLocationOfCurrentTab(true);
         } else {
-            return getGridTabListDelegate().getThumbnailLocationOfCurrentTab();
+            return getGridTabListDelegate().getThumbnailLocationOfCurrentTab(true);
         }
     }
 
@@ -852,7 +848,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         mSceneLayer.pushLayers(getContext(), contentViewport, contentViewport, this,
                 tabContentManager, resourceManager, browserControls,
                 isTabGtsAnimationEnabled() ? currentTabListDelegate.getResourceId() : 0,
-                mBackgroundAlpha, mTabListTopOffset);
+                mBackgroundAlpha, currentTabListDelegate.getTabListTopOffset());
         mFrameCount++;
         if (mLastFrameTime != 0) {
             long elapsed = SystemClock.elapsedRealtime() - mLastFrameTime;

@@ -137,7 +137,7 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
             public void postHiding() {}
 
             @Override
-            public Rect getThumbnailLocationOfCurrentTab() {
+            public Rect getThumbnailLocationOfCurrentTab(boolean forceUpdate) {
                 assert false : "should not reach here";
                 return null;
             }

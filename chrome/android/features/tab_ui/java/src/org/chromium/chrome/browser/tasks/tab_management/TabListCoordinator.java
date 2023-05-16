@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 
 import androidx.annotation.IntDef;
@@ -92,6 +93,7 @@ public class TabListCoordinator
     private final ViewGroup mRootView;
 
     private boolean mIsInitialized;
+    private ViewTreeObserver.OnGlobalLayoutListener mGlobalLayoutListener;
     private OnLayoutChangeListener mListLayoutListener;
     private boolean mLayoutListenerRegistered;
     private @Nullable TabStripSnapshotter mTabStripSnapshotter;
@@ -261,6 +263,7 @@ public class TabListCoordinator
         }
 
         if (mMode == TabListMode.GRID) {
+            mGlobalLayoutListener = this::updateThumbnailLocation;
             mListLayoutListener = (view, left, top, right, bottom, oldLeft, oldTop, oldRight,
                     oldBottom) -> updateGridCardLayout(right - left);
         } else if (mMode == TabListMode.STRIP) {
@@ -379,7 +382,6 @@ public class TabListCoordinator
             }
         }
     }
-
     /**
      * Update the location of the selected thumbnail.
      * @return Whether a valid {@link Rect} is obtained.
@@ -505,6 +507,9 @@ public class TabListCoordinator
     }
 
     void prepareTabSwitcherView() {
+        if (mGlobalLayoutListener != null) {
+            mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
+        }
         registerLayoutChangeListener();
         mRecyclerView.prepareTabSwitcherView();
         mMediator.prepareTabSwitcherView();
@@ -520,6 +525,9 @@ public class TabListCoordinator
     }
 
     void postHiding() {
+        if (mGlobalLayoutListener != null) {
+            mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(mGlobalLayoutListener);
+        }
         unregisterLayoutChangeListener();
         mRecyclerView.postHiding();
         mMediator.postHiding();
@@ -531,6 +539,9 @@ public class TabListCoordinator
     @Override
     public void onDestroy() {
         mMediator.destroy();
+        if (mGlobalLayoutListener != null) {
+            mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(mGlobalLayoutListener);
+        }
         if (mListLayoutListener != null) {
             mRecyclerView.removeOnLayoutChangeListener(mListLayoutListener);
             mLayoutListenerRegistered = false;
