@@ -9,6 +9,14 @@
 
 #include "base/mac/scoped_typeref.h"
 
+#if __OBJC__
+// In Objective-C ARC, dispatch types are Objective-C types, and must be managed
+// as such with __strong, etc. This header file must not be included in
+// Objective-C code, nor may it be allowed to be recursively included. Use the
+// pimpl pattern to isolate its use in a pure C++ file if needed.
+#error Do not use this file, or allow it to be included, in Objective-C code.
+#endif
+
 namespace base {
 
 namespace internal {
