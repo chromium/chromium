@@ -813,7 +813,8 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
       DLOG(ERROR) << "BeginPaintRenderPass: invalid Graphite TextureInfo";
       return nullptr;
     }
-    current_paint_.emplace(graphite_recorder_, image_info, texture_info);
+    current_paint_.emplace(graphite_recorder_, image_info, texture_info,
+                           mailbox);
   } else {
     SkSurfaceCharacterization characterization =
       CreateSkSurfaceCharacterizationRenderPass(

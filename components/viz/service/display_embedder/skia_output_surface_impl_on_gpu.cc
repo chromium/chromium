@@ -187,10 +187,10 @@ void SkiaOutputSurfaceImplOnGpu::PromiseImageAccessHelper::BeginAccess(
     std::vector<ImageContextImpl*> image_contexts,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores) {
-  // GL doesn't need semaphores.
-  if (!impl_on_gpu_->context_state_->GrContextIsGL()) {
-    DCHECK(begin_semaphores);
-    DCHECK(end_semaphores);
+  // Only Vulkan needs semaphores.
+  if (impl_on_gpu_->context_state_->GrContextIsVulkan()) {
+    CHECK(begin_semaphores);
+    CHECK(end_semaphores);
     begin_semaphores->reserve(image_contexts.size());
     // We may need one more space for the swap buffer semaphore.
     end_semaphores->reserve(image_contexts.size() + 1);
@@ -492,6 +492,9 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
 
   if (graphite_recording) {
     CHECK(return_release_fence_cb.is_null());
+    promise_image_access_helper_.BeginAccess(std::move(image_contexts),
+                                             /*begin_semaphores=*/nullptr,
+                                             /*end_semaphores=*/nullptr);
     if (!scoped_output_device_paint_->Draw(std::move(graphite_recording),
                                            std::move(on_finished))) {
       FailedSkiaFlush("Graphite insertRecording failed.");
@@ -633,7 +636,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     bool is_overlay) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(ddl);
 
   if (context_is_lost_)
     return;
@@ -652,10 +654,16 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
 
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
-  const auto& characterization = ddl->characterization();
+
+  int sample_count = 0;
+  SkSurfaceProps surface_props;
+  if (ddl) {
+    sample_count = ddl->characterization().sampleCount();
+    surface_props = ddl->characterization().surfaceProps();
+  }
   auto local_scoped_access = skia_representation->BeginScopedWriteAccess(
-      characterization.sampleCount(), characterization.surfaceProps(),
-      update_rect, &begin_semaphores, &end_semaphores,
+      sample_count, surface_props, update_rect, &begin_semaphores,
+      &end_semaphores,
       gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
   if (!local_scoped_access) {
     MarkContextLost(CONTEXT_LOST_UNKNOWN);
