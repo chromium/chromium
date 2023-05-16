@@ -379,9 +379,6 @@ void UnlockManagerImpl::OnDecryptResponse(const std::string& decrypted_bytes) {
 
   if (decrypted_bytes.empty()) {
     PA_LOG(WARNING) << "Failed to decrypt sign-in challenge.";
-    FinalizeAuthAttempt(
-        SmartLockMetricsRecorder::SmartLockAuthResultFailureReason::
-            kFailedToDecryptSignInChallenge);
   } else {
     sign_in_secret_ = std::make_unique<std::string>(decrypted_bytes);
     if (GetMessenger())

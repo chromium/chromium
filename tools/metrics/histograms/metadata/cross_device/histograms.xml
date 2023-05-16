@@ -2116,6 +2116,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SmartLock.AuthMethodChoice.Unlock"
     enum="SmartLockAuthMethodChoice" expires_after="2023-12-31">
+  <obsolete>
+    SmartLock.AuthResult.* is sufficient to determine engaged user count.
+  </obsolete>
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>Records the user's unlock method choice.</summary>

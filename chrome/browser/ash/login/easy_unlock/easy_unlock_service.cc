@@ -460,18 +460,12 @@ void EasyUnlockService::OnScreenDidUnlock(
     RecordEasyUnlockScreenUnlockEvent(event);
 
     if (will_authenticate_using_easy_unlock()) {
-      // TODO(crbug.com/1171972): Deprecate the AuthMethodChoice metric.
-      SmartLockMetricsRecorder::RecordSmartLockUnlockAuthMethodChoice(
-          SmartLockMetricsRecorder::SmartLockAuthMethodChoice::kSmartLock);
       RecordAuthResult(/*failure_reason=*/absl::nullopt);
       RecordEasyUnlockScreenUnlockDuration(base::TimeTicks::Now() -
                                            lock_screen_last_shown_timestamp_);
     } else {
       SmartLockMetricsRecorder::RecordAuthMethodChoiceUnlockPasswordState(
           GetSmartUnlockPasswordAuthEvent());
-      // TODO(crbug.com/1171972): Deprecate the AuthMethodChoice metric.
-      SmartLockMetricsRecorder::RecordSmartLockUnlockAuthMethodChoice(
-          SmartLockMetricsRecorder::SmartLockAuthMethodChoice::kOther);
       OnUserEnteredPassword();
     }
   }

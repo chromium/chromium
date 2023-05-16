@@ -97055,9 +97055,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 
 <enum name="SmartLockAuthEventPasswordState">
   <int value="0" label="Unknown state"/>
-  <int value="1" label="No pairing"/>
-  <int value="2" label="Pairing changed"/>
-  <int value="3" label="User hardlock"/>
+  <int value="1" label="(obsolete) No pairing"/>
+  <int value="2" label="(obsolete) Pairing changed"/>
+  <int value="3" label="(obsolete) User hardlock"/>
   <int value="4" label="Service not active"/>
   <int value="5" label="No Bluetooth"/>
   <int value="6" label="Bluetooth connecting"/>
@@ -97066,37 +97066,40 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="9" label="Phone locked"/>
   <int value="10" label="RSSI too low"/>
   <int value="11" label="Phone authenticated"/>
-  <int value="12" label="Sign-in failed"/>
-  <int value="13" label="Pairing added"/>
-  <int value="14" label="No screenlock state handler"/>
+  <int value="12" label="(obsolete) Sign-in failed"/>
+  <int value="13" label="(obsolete) Pairing added"/>
+  <int value="14" label="(obsolete) No screenlock state handler"/>
   <int value="15" label="Phone locked and RSSI too low"/>
   <int value="16" label="(obsolete) Forced Reauthentication"/>
-  <int value="17" label="Sign-in with Smart Lock disabled"/>
+  <int value="17" label="(obsolete) Sign-in with Smart Lock disabled"/>
   <int value="18" label="Phone not lockable"/>
   <int value="19" label="Primary user absent"/>
 </enum>
 
 <enum name="SmartLockAuthMethodChoice">
+  <obsolete>
+    Deprecated on 05/2023.
+  </obsolete>
   <int value="0" label="Smart Lock"/>
   <int value="1" label="Other"/>
 </enum>
 
 <enum name="SmartLockAuthResultFailureReason">
   <int value="0" label="Unlock not allowed"/>
-  <int value="1" label="Already attempting auth (deprecated)"/>
+  <int value="1" label="(obsolete) Already attempting auth"/>
   <int value="2" label="Empty user account"/>
   <int value="3" label="Invalid account id"/>
   <int value="4" label="Auth attempt cannot start"/>
   <int value="5" label="No pending or active host"/>
   <int value="6" label="Authentication channel dropped"/>
   <int value="7" label="Failed to send unlock request"/>
-  <int value="8" label="Failed to decrypt sign-in"/>
+  <int value="8" label="(obsolete) Failed to decrypt sign-in"/>
   <int value="9" label="Failed to notify host device that Smart Lock was used"/>
   <int value="10" label="Authentication attempt timed out"/>
   <int value="11" label="Unlock event sent but not attempting auth"/>
   <int value="12" label="Unlock request sent but not attempting auth"/>
-  <int value="13" label="Login display host does not exist"/>
-  <int value="14" label="User controller sign in failure"/>
+  <int value="13" label="(obsolete) Login display host does not exist"/>
+  <int value="14" label="(obsolete) User controller sign in failure"/>
 </enum>
 
 <enum name="SmartLockEnabledState">
