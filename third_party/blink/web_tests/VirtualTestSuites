@@ -2036,23 +2036,5 @@
     "bases": ["external/wpt/longtask-timing"],
     "args": ["--enable-blink-features=LongTaskFromLongAnimationFrame"],
     "expires": "Aug 1, 2023"
-  },
-  {
-    "prefix": "compression-dictionary-transport-backend",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [ "wpt_internal/compression-dictionary" ],
-    "args": [
-      "--enable-features=CompressionDictionaryTransportBackend"
-    ],
-    "expires": "Dec 1, 2023"
-  },
-  {
-    "prefix": "compression-dictionary-fully-enabled",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [ "wpt_internal/compression-dictionary" ],
-    "args": [
-      "--enable-features=CompressionDictionaryTransportBackend,CompressionDictionaryTransport"
-    ],
-    "expires": "Dec 1, 2023"
   }
 ]
