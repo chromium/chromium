@@ -1208,7 +1208,7 @@ ProtocolObjectPreview.prototype = {
             // entry should be string -> Look it up in results
             const cdpEntry = cdpProperties.result.find(prop => prop.name === entry);
             if (cdpEntry) {
-              const rrpEntry = buildRrpObjectFromCdpObject(cdpEntry);
+              const rrpEntry = buildRrpObjectFromCdpObject(cdpEntry.value);
               this.setGetterValue(entry, rrpEntry);
             }
           }
