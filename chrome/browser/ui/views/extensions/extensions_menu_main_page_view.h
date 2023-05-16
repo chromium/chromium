@@ -16,10 +16,6 @@ namespace content {
 class WebContents;
 }
 
-namespace ui {
-class ImageModel;
-}  // namespace ui
-
 namespace views {
 class Label;
 class ToggleButton;
@@ -30,7 +26,6 @@ class ExtensionsMenuHandler;
 class ToolbarActionsModel;
 class ExtensionMenuItemView;
 class ExtensionActionViewController;
-class RequestsAccessSection;
 
 // The main view of the extensions menu.
 class ExtensionsMenuMainPageView : public views::View {
@@ -63,25 +58,11 @@ class ExtensionsMenuMainPageView : public views::View {
   // Returns the menu items.
   std::vector<ExtensionMenuItemView*> GetMenuItems() const;
 
-  // Updates the subheader with the given parameters. Does not update the menu
-  // items (menu item updates are handled directly in such view).
-  void UpdateSubheader(const std::u16string& current_site,
-                       bool is_site_settings_toggle_visible,
-                       bool is_site_settings_toggle_on);
-
-  // Adds or updates the extension entry in the `requests_access_section_` with
-  // the given information.
-  void AddOrUpdateExtensionRequestingAccess(const extensions::ExtensionId& id,
-                                            const std::u16string& name,
-                                            const ui::ImageModel& icon,
-                                            int index);
-
-  // Remove the entry in the `requests_access_section_` corresponding to `id`,
-  // if existent.
-  void RemoveExtensionRequestingAccess(const extensions::ExtensionId& id);
-
-  // Clears all the entries in the `requests_access_section_`.
-  void ClearExtensionsRequestingAccess();
+  // Updates the page with the given parameters. Does not update the menu items
+  // (menu item updates are handled directly in such view).
+  void Update(std::u16string current_site,
+              bool is_site_settings_toggle_visible,
+              bool is_site_settings_toggle_on);
 
   void OnToggleButtonPressed();
 
@@ -90,8 +71,6 @@ class ExtensionsMenuMainPageView : public views::View {
   views::ToggleButton* GetSiteSettingsToggleForTesting() {
     return site_settings_toggle_;
   }
-  std::vector<extensions::ExtensionId>
-  GetExtensionsRequestingAccessForTesting();
 
  private:
   content::WebContents* GetActiveWebContents() const;
@@ -102,9 +81,6 @@ class ExtensionsMenuMainPageView : public views::View {
   // Subheader section.
   raw_ptr<views::Label> subheader_subtitle_;
   raw_ptr<views::ToggleButton> site_settings_toggle_;
-
-  // Requests access section.
-  raw_ptr<RequestsAccessSection> requests_access_section_;
 
   // Menu items section.
   // The view containing the menu items. This is separated for easy insertion
