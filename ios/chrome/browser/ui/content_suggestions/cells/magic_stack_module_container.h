@@ -21,8 +21,8 @@ enum class ContentSuggestionsModuleType;
 + (CGFloat)moduleWidthForHorizontalTraitCollection:
     (UITraitCollection*)traitCollection;
 
-// Returns the title string for the module.
-- (NSString*)titleString;
+// Returns the title string for the module `type`.
++ (NSString*)titleStringForModule:(ContentSuggestionsModuleType)type;
 
 @end
 

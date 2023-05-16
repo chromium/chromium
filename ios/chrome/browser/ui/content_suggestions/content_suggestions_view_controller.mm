@@ -56,13 +56,17 @@ const float kBottomStackViewPadding = 6.0f;
 // Stack.
 const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
 
+// The spacing between modules in the Magic Stack.
+const float kMagicStackSpacing = 10.0f;
+
 }  // namespace
 
 @interface ContentSuggestionsViewController () <
     UIGestureRecognizerDelegate,
     ContentSuggestionsSelectionActions,
     URLDropDelegate,
-    UIScrollViewDelegate>
+    UIScrollViewDelegate,
+    UIScrollViewAccessibilityDelegate>
 
 @property(nonatomic, strong) URLDragDropHandler* dragDropHandler;
 
@@ -133,9 +137,6 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
   // height/width configurations for each row.
   self.verticalStackView.distribution = UIStackViewDistributionFill;
   [self.view addSubview:self.verticalStackView];
-  // Add bottom spacing to last module by applying it after
-  // `_verticalStackView`. If ShouldMinimizeSpacingForModuleRefresh() is YES,
-  // then no space is added after the last module.
 
   // Add bottom spacing to the last module by applying it after
   // `_verticalStackView`. If `IsContentSuggestionsUIModuleRefreshEnabled()` is
@@ -489,6 +490,22 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
                               velocity:velocity.x];
 }
 
+#pragma mark - UIScrollViewAccessibilityDelegate
+
+// This reads out the new page whenever the user scrolls in VoiceOver.
+- (NSString*)accessibilityScrollStatusForScrollView:(UIScrollView*)scrollView {
+  CGFloat moduleWidth = [MagicStackModuleContainer
+      moduleWidthForHorizontalTraitCollection:self.traitCollection];
+  NSUInteger moduleCount = [_magicStackModuleOrder count];
+
+  NSUInteger closestPage = roundf(scrollView.contentOffset.x / moduleWidth);
+  closestPage = fminf(closestPage, moduleCount);
+
+  ContentSuggestionsModuleType type = (ContentSuggestionsModuleType)
+      [_magicStackModuleOrder[closestPage] intValue];
+  return [MagicStackModuleContainer titleStringForModule:type];
+}
+
 #pragma mark - Private
 
 - (void)addUIElement:(UIView*)view withCustomBottomSpacing:(CGFloat)spacing {
@@ -602,7 +619,7 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
   _magicStack.translatesAutoresizingMaskIntoConstraints = NO;
   _magicStack.axis = UILayoutConstraintAxisHorizontal;
   _magicStack.distribution = UIStackViewDistributionEqualSpacing;
-  _magicStack.spacing = 10;
+  _magicStack.spacing = kMagicStackSpacing;
   _magicStack.alignment = UIStackViewAlignmentCenter;
   [_magicStackScrollView addSubview:_magicStack];
 
@@ -673,12 +690,14 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
   closestPage = fminf(closestPage, moduleCount);
 
   if (fabs(velocity) < kMagicStackMinimumPaginationScrollVelocity) {
-    return closestPage * moduleWidth;
+    return closestPage * moduleWidth + (closestPage * 10);
   }
   if (velocity < 0) {
-    return (closestPage - 1) * moduleWidth;
+    return (closestPage - 1) * moduleWidth +
+           ((closestPage - 1) * kMagicStackSpacing);
   }
-  return (closestPage + 1) * moduleWidth;
+  return (closestPage + 1) * moduleWidth +
+         ((closestPage + 1) * kMagicStackSpacing);
 }
 
 @end

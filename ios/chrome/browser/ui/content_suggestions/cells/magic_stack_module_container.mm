@@ -52,8 +52,8 @@ const int kModuleWidthRegular = 382;
              : kModuleWidthCompact;
 }
 
-- (NSString*)titleString {
-  switch (self.type) {
++ (NSString*)titleStringForModule:(ContentSuggestionsModuleType)type {
+  switch (type) {
     case ContentSuggestionsModuleType::kShortcuts:
       return l10n_util::GetNSString(
           IDS_IOS_CONTENT_SUGGESTIONS_SHORTCUTS_MODULE_TITLE);
