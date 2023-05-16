@@ -310,4 +310,76 @@ TEST_F(ScreensaverImageDownloaderTest,
   EXPECT_FALSE(base::PathExists(GetExpectedFilePath(kImageUrl3)));
 }
 
+TEST_F(ScreensaverImageDownloaderTest, ClearImagesAfterUpdateTest) {
+  {
+    // Add two image to the policy list and confirm that are indeed downloaded.
+    base::Value::List image_urls;
+    image_urls.Append(kImageUrl1);
+    screensaver_image_downloader()->UpdateImageUrlList(image_urls);
+
+    url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
+
+    std::vector<std::pair<base::FilePath, std::string>> expected_images;
+    expected_images.emplace_back(GetExpectedFilePath(kImageUrl1),
+                                 std::string(kFileContents));
+    VerifySucessfulImageRequest(expected_images);
+
+    image_urls.Append(kImageUrl2);
+    screensaver_image_downloader()->UpdateImageUrlList(image_urls);
+
+    url_loader_factory()->AddResponse(kImageUrl2, kFileContents);
+
+    VerifySucessfulImageRequest(expected_images);
+    expected_images.emplace_back(GetExpectedFilePath(kImageUrl2),
+                                 std::string(kFileContents));
+    VerifySucessfulImageRequest(expected_images);
+  }
+
+  {
+    // Case: Verify that when the first file is removed from policy image list
+    // and only the second file remains, the first file is indeed cleaned-up
+    // from the disk and the second file is still present on the disk.
+    base::Value::List image_urls;
+    image_urls.Append(kImageUrl2);
+    screensaver_image_downloader()->UpdateImageUrlList(image_urls);
+
+    // Verify the update callback from clearing the first image.
+    std::vector<std::pair<base::FilePath, std::string>> expected_images;
+    expected_images.emplace_back(GetExpectedFilePath(kImageUrl2),
+                                 std::string(kFileContents));
+    VerifySucessfulImageRequest(expected_images);
+
+    // Expect another callback from the second image found in cache.
+    VerifySucessfulImageRequest(expected_images);
+
+    // Verify files in disk.
+    base::RunLoop().RunUntilIdle();
+    EXPECT_FALSE(base::PathExists(GetExpectedFilePath(kImageUrl1)));
+    EXPECT_TRUE(base::PathExists(GetExpectedFilePath(kImageUrl2)));
+  }
+
+  {
+    // Case: Verify that old unreferenced files are cleaned up from the disk.
+    // This can happen if the chromebook restarted, but the policy was updated
+    // while the chromebook was offline and it only receives the new policy
+    // values and is unaware of the old policy values.
+    std::string filename = "test";
+    base::FilePath orphan_cache_file =
+        test_download_folder().AppendASCII(filename + kCacheFileExt);
+    base::WriteFile(orphan_cache_file, "test_data");
+    EXPECT_TRUE(base::PathExists(orphan_cache_file));
+
+    base::Value::List image_urls;
+    image_urls.Append(kImageUrl2);
+    screensaver_image_downloader()->UpdateImageUrlList(image_urls);
+    VerifySucessfulImageRequest(
+        {{GetExpectedFilePath(kImageUrl2), std::string(kFileContents)}});
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(base::PathExists(GetExpectedFilePath(kImageUrl2)));
+    // Confirm that after the update the orphan file was successfully cleaned
+    // up.
+    EXPECT_FALSE(base::PathExists(orphan_cache_file));
+  }
+}
+
 }  // namespace ash
