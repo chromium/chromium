@@ -11,6 +11,7 @@
 
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_browser_main_parts.h"
+#include "android_webview/browser/aw_client_hints_controller_delegate.h"
 #include "android_webview/browser/aw_contents.h"
 #include "android_webview/browser/aw_contents_client_bridge.h"
 #include "android_webview/browser/aw_contents_io_thread_client.h"
@@ -1026,7 +1027,7 @@ std::string AwContentBrowserClient::GetUserAgent() {
 }
 
 blink::UserAgentMetadata AwContentBrowserClient::GetUserAgentMetadata() {
-  return embedder_support::GetUserAgentMetadata(
+  return AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand(
       browser_context_->GetPrefService());
 }
 

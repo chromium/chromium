@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/values.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -22,6 +23,9 @@
 
 namespace android_webview {
 
+// Android WebView product name for building the default user agent string.
+const char kAndroidWebViewProductName[] = "Android WebView";
+
 namespace prefs {
 const char kClientHintsCachedPerOriginMap[] =
     "aw_client_hints_cached_per_origin_map";
@@ -32,6 +36,32 @@ AwClientHintsControllerDelegate::AwClientHintsControllerDelegate(
     : pref_service_(pref_service) {}
 
 AwClientHintsControllerDelegate::~AwClientHintsControllerDelegate() = default;
+
+blink::UserAgentMetadata
+AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand(
+    const PrefService* pref_service) {
+  auto metadata = embedder_support::GetUserAgentMetadata(pref_service);
+  std::string major_version = version_info::GetMajorVersionNumber();
+
+  // Use the major version number as a greasing seed
+  int major_version_number;
+  bool parse_result = base::StringToInt(major_version, &major_version_number);
+  DCHECK(parse_result);
+
+  // The old grease brand algorithm will removed soon, we should always use the
+  // updated algorithm.
+  bool enable_updated_grease_by_policy = true;
+  // Regenerate the brand version lists with Android WebView product name.
+  metadata.brand_version_list = embedder_support::GenerateBrandVersionList(
+      major_version_number, kAndroidWebViewProductName, major_version,
+      absl::nullopt, absl::nullopt, enable_updated_grease_by_policy,
+      blink::UserAgentBrandVersionType::kMajorVersion);
+  metadata.brand_full_version_list = embedder_support::GenerateBrandVersionList(
+      major_version_number, kAndroidWebViewProductName, metadata.full_version,
+      absl::nullopt, absl::nullopt, enable_updated_grease_by_policy,
+      blink::UserAgentBrandVersionType::kFullVersion);
+  return metadata;
+}
 
 network::NetworkQualityTracker*
 AwClientHintsControllerDelegate::GetNetworkQualityTracker() {
@@ -104,7 +134,7 @@ bool AwClientHintsControllerDelegate::AreThirdPartyCookiesBlocked(
 
 blink::UserAgentMetadata
 AwClientHintsControllerDelegate::GetUserAgentMetadata() {
-  return embedder_support::GetUserAgentMetadata(pref_service_);
+  return GetUserAgentMetadataOverrideBrand(pref_service_);
 }
 
 void AwClientHintsControllerDelegate::PersistClientHints(
