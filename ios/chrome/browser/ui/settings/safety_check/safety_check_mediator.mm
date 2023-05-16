@@ -703,7 +703,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 
 // Computes whether user is capable to run password check in Google Account.
 - (BOOL)canUseAccountPasswordCheckup {
-  return self.syncService->CanSyncFeatureStart() &&
+  return self.syncService->IsSyncFeatureEnabled() &&
          !self.syncService->IsEncryptEverythingEnabled();
 }
 

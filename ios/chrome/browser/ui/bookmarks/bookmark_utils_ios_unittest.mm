@@ -369,7 +369,7 @@ TEST_P(BookmarkIOSUtilsUnitTest, ShouldDisplayCloudSlashIconForProfileModel) {
 
   // If sync-the-feature is on, including bookmarks, the icon should not be
   // displayed.
-  ON_CALL(sync_setup_service, CanSyncFeatureStart)
+  ON_CALL(sync_setup_service, IsSyncFeatureEnabled)
       .WillByDefault(testing::Return(true));
   ON_CALL(sync_setup_service, IsDataTypePreferred)
       .WillByDefault(testing::Return(true));
@@ -386,7 +386,7 @@ TEST_P(BookmarkIOSUtilsUnitTest, ShouldDisplayCloudSlashIconForProfileModel) {
 
   // If sync-the-feature is off, same thing: the icon should be displayed, but
   // only if the feature is enabled (IsAccountStorageEnabled()).
-  ON_CALL(sync_setup_service, CanSyncFeatureStart)
+  ON_CALL(sync_setup_service, IsSyncFeatureEnabled)
       .WillByDefault(testing::Return(true));
   EXPECT_EQ(IsAccountStorageEnabled(),
             bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(

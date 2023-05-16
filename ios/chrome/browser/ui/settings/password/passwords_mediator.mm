@@ -377,7 +377,7 @@ using password_manager::features::IsPasswordCheckupEnabled;
 
 // Compute whether user is capable to run password check in Google Account.
 - (BOOL)canUseAccountPasswordCheckup {
-  return _syncSetupService->CanSyncFeatureStart() &&
+  return _syncSetupService->IsSyncFeatureEnabled() &&
          !_syncSetupService->IsEncryptEverythingEnabled();
 }
 

@@ -43,7 +43,7 @@ void SyncSetupService::SetDataTypeEnabled(syncer::UserSelectableType datatype,
 }
 
 bool SyncSetupService::UserActionIsRequiredToHaveTabSyncWork() {
-  if (!CanSyncFeatureStart() ||
+  if (!IsSyncFeatureEnabled() ||
       !IsDataTypePreferred(syncer::UserSelectableType::kTabs)) {
     return true;
   }
@@ -88,8 +88,8 @@ void SyncSetupService::SetSyncEverythingEnabled(bool sync_all) {
       sync_all, sync_service_->GetUserSettings()->GetSelectedTypes());
 }
 
-bool SyncSetupService::CanSyncFeatureStart() const {
-  return sync_service_->CanSyncFeatureStart();
+bool SyncSetupService::IsSyncFeatureEnabled() const {
+  return sync_service_->IsSyncFeatureEnabled();
 }
 
 bool SyncSetupService::IsEncryptEverythingEnabled() const {

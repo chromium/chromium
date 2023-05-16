@@ -201,7 +201,7 @@ bool ShouldDisplayCloudSlashIconForProfileModel(
           bookmarks::kEnableBookmarksAccountStorage)) {
     return false;
   }
-  if (!sync_setup_service->CanSyncFeatureStart()) {
+  if (!sync_setup_service->IsSyncFeatureEnabled()) {
     // In transport-only mode, any node stored in the profile model needs the
     // icon. Note that this includes sync-disabled cases like enterprise
     // policies.

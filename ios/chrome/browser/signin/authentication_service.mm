@@ -234,7 +234,7 @@ AuthenticationService::ServiceStatus AuthenticationService::GetServiceStatus() {
 
 void AuthenticationService::OnApplicationWillEnterForeground() {
   if (HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    bool can_sync_start = sync_setup_service_->CanSyncFeatureStart();
+    bool can_sync_start = sync_setup_service_->IsSyncFeatureEnabled();
     LoginMethodAndSyncState loginMethodAndSyncState =
         can_sync_start ? SHARED_AUTHENTICATION_SYNC_ON
                        : SHARED_AUTHENTICATION_SYNC_OFF;

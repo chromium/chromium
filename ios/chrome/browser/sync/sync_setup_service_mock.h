@@ -23,7 +23,7 @@ class SyncSetupServiceMock : public SyncSetupService {
   SyncSetupServiceMock(syncer::SyncService* sync_service);
   ~SyncSetupServiceMock() override;
   MOCK_METHOD(bool, IsEncryptEverythingEnabled, (), (const override));
-  MOCK_METHOD(bool, CanSyncFeatureStart, (), (const override));
+  MOCK_METHOD(bool, IsSyncFeatureEnabled, (), (const override));
   MOCK_METHOD(bool, IsSyncEverythingEnabled, (), (const override));
   MOCK_METHOD(bool,
               IsDataTypePreferred,
