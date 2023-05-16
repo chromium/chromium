@@ -1027,28 +1027,6 @@ test("ui_base_unittests") {
     "test/run_all_unittests.cc",
     "webui/i18n_source_stream_unittest.cc",
   ]
-  if (is_mac) {
-    sources += [
-      "cocoa/defaults_utils_unittest.mm",
-      "cocoa/nsmenu_additions_unittest.mm",
-      "cocoa/nsmenuitem_additions_unittest.mm",
-      "interaction/element_tracker_mac_unittest.mm",
-      "l10n/l10n_util_mac_unittest.mm",
-    ]
-  }
-  if (is_chromeos_lacros) {
-    sources += [ "resource/data_pack_with_resource_sharing_lacros_unittest.cc" ]
-  }
-  if (!is_ios) {
-    sources += [
-      "themed_vector_icon_unittest.cc",
-      "user_activity/user_activity_detector_unittest.cc",
-    ]
-
-    if (is_mac) {
-      sources += [ "test/view_tree_validator_unittest.mm" ]
-    }
-  }
 
   data = []
   data_deps = [ "//testing/buildbot/filters:ui_base_unittests_filters" ]
@@ -1089,8 +1067,31 @@ test("ui_base_unittests") {
     "//url",
   ]
 
-  if (is_android) {
-    sources -= [ "user_activity/user_activity_detector_unittest.cc" ]
+  if (!is_android && !is_ios) {
+    sources += [ "user_activity/user_activity_detector_unittest.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "accelerators/platform_accelerator_cocoa_unittest.mm",
+      "cocoa/base_view_unittest.mm",
+      "cocoa/bubble_closer_unittest.mm",
+      "cocoa/cocoa_base_utils_unittest.mm",
+      "cocoa/constrained_window/constrained_window_animation_unittest.mm",
+      "cocoa/defaults_utils_unittest.mm",
+      "cocoa/menu_controller_unittest.mm",
+      "cocoa/nsmenu_additions_unittest.mm",
+      "cocoa/nsmenuitem_additions_unittest.mm",
+      "cocoa/touch_bar_util_unittest.mm",
+      "cocoa/tracking_area_unittest.mm",
+      "interaction/element_tracker_mac_unittest.mm",
+      "l10n/l10n_util_mac_unittest.mm",
+      "test/view_tree_validator_unittest.mm",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    sources += [ "resource/data_pack_with_resource_sharing_lacros_unittest.cc" ]
   }
 
   if (is_ios) {
@@ -1118,26 +1119,13 @@ test("ui_base_unittests") {
       "models/list_selection_model_unittest.cc",
       "models/tree_node_model_unittest.cc",
       "text/bytes_formatting_unittest.cc",
+      "themed_vector_icon_unittest.cc",
       "webui/web_ui_util_unittest.cc",
     ]
+  }
 
-    if (is_linux || is_chromeos) {
-      sources +=
-          [ "accelerators/menu_label_accelerator_util_linux_unittest.cc" ]
-    }
-
-    if (is_mac) {
-      sources += [
-        "accelerators/platform_accelerator_cocoa_unittest.mm",
-        "cocoa/base_view_unittest.mm",
-        "cocoa/bubble_closer_unittest.mm",
-        "cocoa/cocoa_base_utils_unittest.mm",
-        "cocoa/constrained_window/constrained_window_animation_unittest.mm",
-        "cocoa/menu_controller_unittest.mm",
-        "cocoa/touch_bar_util_unittest.mm",
-        "cocoa/tracking_area_unittest.mm",
-      ]
-    }
+  if (is_linux || is_chromeos) {
+    sources += [ "accelerators/menu_label_accelerator_util_linux_unittest.cc" ]
   }
 
   # TODO(crbug.com/1091985): Support CrOS.
@@ -1156,6 +1144,10 @@ test("ui_base_unittests") {
       "ime/input_method_base_unittest.cc",
       "ime/mojom/ime_mojom_traits_unittest.cc",
       "ime/surrounding_text_tracker_unittest.cc",
+    ]
+    deps += [
+      "//ui/base/ime",
+      "//ui/base/ime/mojom:test_interfaces",
     ]
     if (is_win) {
       sources += [
@@ -1211,13 +1203,6 @@ test("ui_base_unittests") {
   } else {
     data += [ "$root_out_dir/ui_base_test_resources.pak" ]
     data_deps += [ ":ui_base_test_resources_pak" ]
-  }
-
-  if (build_ime) {
-    deps += [
-      "//ui/base/ime",
-      "//ui/base/ime/mojom:test_interfaces",
-    ]
   }
 
   if (is_ios) {
