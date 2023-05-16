@@ -179,6 +179,11 @@ PermissionPromptBubbleBaseView::PermissionPromptBubbleBaseView(
 PermissionPromptBubbleBaseView::~PermissionPromptBubbleBaseView() = default;
 
 void PermissionPromptBubbleBaseView::Show() {
+  CreateWidget();
+  ShowWidget();
+}
+
+void PermissionPromptBubbleBaseView::CreateWidget() {
   DCHECK(browser_->window());
 
   UpdateAnchorPosition();
@@ -193,13 +198,15 @@ void PermissionPromptBubbleBaseView::Show() {
   if (base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
     widget->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelSecurity);
   }
+}
 
+void PermissionPromptBubbleBaseView::ShowWidget() {
   // If a browser window (or popup) other than the bubble parent has focus,
   // don't take focus.
   if (browser_->window()->IsActive()) {
-    widget->Show();
+    GetWidget()->Show();
   } else {
-    widget->ShowInactive();
+    GetWidget()->ShowInactive();
   }
 
   SizeToContents();
