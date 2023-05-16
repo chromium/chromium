@@ -244,6 +244,26 @@ export async function testNudgeDismissButton(done: () => void) {
 }
 
 /**
+ * Tests the nudge is dismissed by clicking on the anchor.
+ */
+export async function testNudgeDismissAnchor(done: () => void) {
+  nudgeInfo[NudgeType.TEST_NUDGE].selfDismiss = true;
+  await createAndShowTestNudge();
+
+  // Click and wait it to dismiss.
+  const anchor = nudgeInfo[NudgeType.TEST_NUDGE].anchor();
+  anchor!.dispatchEvent(new PointerEvent('pointerdown'));
+
+  // Reposition to hidden.
+  await waitUntilRepositionsUninitialised();
+  assertTrue(
+      await nudgeContainer!.checkSeen(NudgeType.TEST_NUDGE),
+      'check nudge has been seen');
+
+  done();
+}
+
+/**
  * Tests the nudge using the dismissOnKeyDown().
  */
 export async function testNudgeDismissKeyDown(done: () => void) {
