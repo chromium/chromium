@@ -105271,6 +105271,12 @@ Full version information for the fingerprint enum values:
   <int value="2" label="ULP Empty"/>
 </enum>
 
+<enum name="UmaChildPingStatus">
+  <int value="0" label="BROWSER_SENT_IPC"/>
+  <int value="1" label="CHILD_RECEIVED_IPC"/>
+  <int value="2" label="BROWSER_REPLY_CALLBACK"/>
+</enum>
+
 <enum name="UmaCleanExitConsistency">
   <obsolete>
     Deprecated 07/2021 in favor of UmaCleanExitConsistency2. Version 2 re-orders

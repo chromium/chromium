@@ -115,6 +115,44 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.ChildProcess.Ping.{Source}" enum="UmaChildPingStatus"
+    expires_after="2023-11-01">
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The current status of a ping sent by the browser process to a child process.
+    Emitted in 3 steps: 1. When the browser process sends a ping IPC to the
+    child process (BROWSER_SENT_IPC), 2. When the child process receives said
+    IPC (CHILD_RECEIVED_IPC), and 3. When the browser process receives a reply
+    from the child process after the IPC was processed (BROWSER_REPLY_CALLBACK).
+
+    Because a child process may exit early and never receive the IPC (even in
+    normal scenarios), 1 may not match 2 and 3 in total count. However, 2 and 3
+    should be equivalent, and that them not matching should be an indication of
+    loss of child process histograms. Note that 1 and 3 are emitted from the
+    browser process, while 2 is emitted from the child process.
+
+    {Source}
+
+    Caveat: Because this histogram is emitted from the child process after the
+    shared memory is set up, the histogram will live on it (except if there were
+    failures in creating it), so this histogram quantifies lost histograms from
+    the shared memory. In particular, histograms that are emitted very early on
+    in a child process do not live on the shared memory, and are passed to the
+    browser process through IPCs. This histogram, mostly, does not quantify the
+    loss of those histograms.
+  </summary>
+  <token key="Source">
+    <variant name="Periodic"
+        summary="This ping process occurs every 5 minutes with ~10% of all
+                 child processes (chosen at random every time)."/>
+    <variant name="SharedMemorySetUp"
+        summary="This ping process occurs when a child process has just
+                 launched and processed the IPC to set up the shared memory
+                 segment for histograms."/>
+  </token>
+</histogram>
+
 <histogram name="UMA.CleanExitBeaconConsistency3"
     enum="UmaCleanExitConsistency3" expires_after="2023-10-01">
   <owner>caitlinfischer@google.com</owner>
