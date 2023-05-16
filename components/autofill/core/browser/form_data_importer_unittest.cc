@@ -570,6 +570,14 @@ class FormDataImporterTestBase {
     }
   }
 
+  // Set server credit cards to `autofill_table_` and wait to make sure
+  // everything is set up correctly.
+  void SetServerCreditCardAndWait(const std::vector<CreditCard>& server_cards) {
+    test::SetServerCreditCards(autofill_table_, server_cards);
+    personal_data_manager_->Refresh();
+    WaitForOnPersonalDataChanged();
+  }
+
   FormDataImporter& form_data_importer() {
     return *autofill_client_->GetFormDataImporter();
   }
@@ -1975,11 +1983,7 @@ TEST_P(FormDataImporterTest,
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "1111" /* Visa */, "01", "2999", "");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
-  test::SetServerCreditCards(autofill_table_, server_cards);
-
-  // Make sure everything is set up correctly.
-  personal_data_manager_->Refresh();
-  WaitForOnPersonalDataChanged();
+  SetServerCreditCardAndWait(server_cards);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // Type the same data as the masked card into a form.
@@ -2007,11 +2011,7 @@ TEST_P(FormDataImporterTest,
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "378282246310005" /* American Express */, "04",
                           "2999", "");  // Imported cards have no billing info.
-  test::SetServerCreditCards(autofill_table_, server_cards);
-
-  // Make sure everything is set up correctly.
-  personal_data_manager_->Refresh();
-  WaitForOnPersonalDataChanged();
+  SetServerCreditCardAndWait(server_cards);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // Type the same data as the unmasked card into a form.
@@ -2523,11 +2523,7 @@ TEST_P(FormDataImporterTest,
   test::SetCreditCardInfo(&server_cards.back(), "Biggie Smalls",
                           "1111" /* Visa */, "01", "2999", "");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
-  test::SetServerCreditCards(autofill_table_, server_cards);
-
-  // Make sure everything is set up correctly.
-  personal_data_manager_->Refresh();
-  WaitForOnPersonalDataChanged();
+  SetServerCreditCardAndWait(server_cards);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // Simulate a form submission with the same masked server card.
@@ -2556,11 +2552,7 @@ TEST_P(FormDataImporterTest,
   test::SetCreditCardInfo(&server_cards.back(), "Biggie Smalls",
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
-  test::SetServerCreditCards(autofill_table_, server_cards);
-
-  // Make sure everything is set up correctly.
-  personal_data_manager_->Refresh();
-  WaitForOnPersonalDataChanged();
+  SetServerCreditCardAndWait(server_cards);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // Simulate a form submission with the same full server card.
@@ -2697,11 +2689,7 @@ TEST_P(FormDataImporterTest,
   server_cards.emplace_back(CreditCard::FULL_SERVER_CARD, "a123");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
-  test::SetServerCreditCards(autofill_table_, server_cards);
-
-  // Make sure everything is set up correctly.
-  personal_data_manager_->Refresh();
-  WaitForOnPersonalDataChanged();
+  SetServerCreditCardAndWait(server_cards);
   ASSERT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // Simulate a form submission with the same card number but different
@@ -2734,11 +2722,7 @@ TEST_P(
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "1111" /* Visa */, "01", "2999", "");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
-  test::SetServerCreditCards(autofill_table_, server_cards);
-
-  // Make sure everything is set up correctly.
-  personal_data_manager_->Refresh();
-  WaitForOnPersonalDataChanged();
+  SetServerCreditCardAndWait(server_cards);
   ASSERT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // Simulate a form submission with the card with same last four but different
@@ -2786,11 +2770,7 @@ TEST_P(
                           "1111" /* Visa */, "02", "2112", "");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
 
-  test::SetServerCreditCards(autofill_table_, server_cards);
-
-  // Make sure everything is set up correctly.
-  personal_data_manager_->Refresh();
-  WaitForOnPersonalDataChanged();
+  SetServerCreditCardAndWait(server_cards);
   EXPECT_EQ(2U, personal_data_manager_->GetCreditCards().size());
 
   {
@@ -2857,17 +2837,12 @@ TEST_P(
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "1111" /* Visa */, "01", "2999", "");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
-  test::SetServerCreditCards(autofill_table_, server_cards);
 
   server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "a123");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "1111" /* Visa */, "04", "2999", "");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
-  test::SetServerCreditCards(autofill_table_, server_cards);
-
-  // Make sure everything is set up correctly.
-  personal_data_manager_->Refresh();
-  WaitForOnPersonalDataChanged();
+  SetServerCreditCardAndWait(server_cards);
   ASSERT_EQ(2U, personal_data_manager_->GetCreditCards().size());
 
   // Simulate a form submission with the card with same last four but different
@@ -3183,11 +3158,7 @@ TEST_P(FormDataImporterTest, DuplicateMaskedServerCard) {
                           "378282246310005" /* American Express */, "04",
                           "2999", "");
 
-  test::SetServerCreditCards(autofill_table_, server_cards);
-
-  // Make sure everything is set up correctly.
-  personal_data_manager_->Refresh();
-  WaitForOnPersonalDataChanged();
+  SetServerCreditCardAndWait(server_cards);
   EXPECT_EQ(2U, personal_data_manager_->GetCreditCards().size());
 
   // A valid credit card form. A user re-enters one of their masked cards.
@@ -3290,7 +3261,7 @@ TEST_P(FormDataImporterTest,
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
 
-  test::SetServerCreditCards(autofill_table_, server_cards);
+  SetServerCreditCardAndWait(server_cards);
 
   // Add two local cards to the credit cards to ensure that in the case where we
   // have separate copies of a server card and a local card, we still only set
@@ -3306,7 +3277,6 @@ TEST_P(FormDataImporterTest,
     personal_data_manager_->AddCreditCard(local_card);
   }
 
-  // Make sure everything is set up correctly.
   personal_data_manager_->Refresh();
   WaitForOnPersonalDataChanged();
   EXPECT_EQ(4U, personal_data_manager_->GetCreditCards().size());
@@ -3358,11 +3328,7 @@ TEST_P(FormDataImporterTest,
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "4444333322221111" /* Visa */, "04", "2111", "1");
 
-  test::SetServerCreditCards(autofill_table_, server_cards);
-
-  // Make sure everything is set up correctly.
-  personal_data_manager_->Refresh();
-  WaitForOnPersonalDataChanged();
+  SetServerCreditCardAndWait(server_cards);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form.  Ensure that
@@ -3403,11 +3369,7 @@ TEST_P(FormDataImporterTest,
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "4444333322221111" /* Visa */, "04", "2111", "1");
 
-  test::SetServerCreditCards(autofill_table_, server_cards);
-
-  // Make sure everything is set up correctly.
-  personal_data_manager_->Refresh();
-  WaitForOnPersonalDataChanged();
+  SetServerCreditCardAndWait(server_cards);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form with an empty
@@ -3444,11 +3406,7 @@ TEST_P(FormDataImporterTest,
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "4444333322221111" /* Visa */, "04", "2111", "1");
 
-  test::SetServerCreditCards(autofill_table_, server_cards);
-
-  // Make sure everything is set up correctly.
-  personal_data_manager_->Refresh();
-  WaitForOnPersonalDataChanged();
+  SetServerCreditCardAndWait(server_cards);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form with an empty
@@ -3486,11 +3444,7 @@ TEST_P(
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "4111111111111111" /* Visa */, "04", "2111", "1");
 
-  test::SetServerCreditCards(autofill_table_, server_cards);
-
-  // Make sure everything is set up correctly.
-  personal_data_manager_->Refresh();
-  WaitForOnPersonalDataChanged();
+  SetServerCreditCardAndWait(server_cards);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form with an empty
@@ -3525,11 +3479,7 @@ TEST_P(FormDataImporterTest,
   test::SetCreditCardInfo(&server_cards.back(), "Clyde Barrow",
                           "4444333322221111" /* Visa */, "04", "2111", "1");
 
-  test::SetServerCreditCards(autofill_table_, server_cards);
-
-  // Make sure everything is set up correctly.
-  personal_data_manager_->Refresh();
-  WaitForOnPersonalDataChanged();
+  SetServerCreditCardAndWait(server_cards);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form but changes
@@ -3570,11 +3520,7 @@ TEST_P(FormDataImporterTest,
                           "1111" /* Visa */, "01", "2111", "");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
 
-  test::SetServerCreditCards(autofill_table_, server_cards);
-
-  // Make sure everything is set up correctly.
-  personal_data_manager_->Refresh();
-  WaitForOnPersonalDataChanged();
+  SetServerCreditCardAndWait(server_cards);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form.  Ensure that
@@ -3614,11 +3560,7 @@ TEST_P(FormDataImporterTest,
                           "1111" /* Visa */, "01", "2111", "");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
 
-  test::SetServerCreditCards(autofill_table_, server_cards);
-
-  // Make sure everything is set up correctly.
-  personal_data_manager_->Refresh();
-  WaitForOnPersonalDataChanged();
+  SetServerCreditCardAndWait(server_cards);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form but changes
