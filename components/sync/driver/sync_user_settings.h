@@ -39,7 +39,7 @@ class SyncUserSettings {
   // Whether the initial Sync Feature setup has been completed, meaning the
   // user has turned on Sync-the-Feature.
   // NOTE: On ChromeOS, this gets set automatically, so it doesn't really mean
-  // anything. See |browser_defaults::kSyncAutoStarts|.
+  // anything.
   virtual bool IsInitialSyncFeatureSetupComplete() const = 0;
   virtual void SetInitialSyncFeatureSetupComplete(
       SyncFirstSetupCompleteSource source) = 0;

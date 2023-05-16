@@ -1188,13 +1188,12 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmLater) {
   // transport mode.
   ON_CALL(*mock_sync_service_, GetTransportState())
       .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
-  // On some platforms (e.g. ChromeOS), the first-setup-complete bit gets set
-  // automatically during engine startup.
-  if (browser_defaults::kSyncAutoStarts) {
-    ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-            IsInitialSyncFeatureSetupComplete())
-        .WillByDefault(Return(true));
-  }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // The first-setup-complete bit gets set automatically during engine startup.
+  ON_CALL(*mock_sync_service_->GetMockUserSettings(),
+          IsInitialSyncFeatureSetupComplete())
+      .WillByDefault(Return(true));
+#endif
   NotifySyncStateChanged();
 
   // Now the user confirms sync again. This should set the sync-requested bit
@@ -1207,18 +1206,17 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmLater) {
                 Return(syncer::SyncService::TransportState::INITIALIZING));
         NotifySyncStateChanged();
       });
-  if (!browser_defaults::kSyncAutoStarts) {
-    EXPECT_CALL(
-        *mock_sync_service_->GetMockUserSettings(),
-        SetInitialSyncFeatureSetupComplete(
-            syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM))
-        .WillOnce([&](syncer::SyncFirstSetupCompleteSource) {
-          ON_CALL(*mock_sync_service_->GetMockUserSettings(),
-                  IsInitialSyncFeatureSetupComplete())
-              .WillByDefault(Return(true));
-          NotifySyncStateChanged();
-        });
-  }
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),
+              SetInitialSyncFeatureSetupComplete(
+                  syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM))
+      .WillOnce([&](syncer::SyncFirstSetupCompleteSource) {
+        ON_CALL(*mock_sync_service_->GetMockUserSettings(),
+                IsInitialSyncFeatureSetupComplete())
+            .WillByDefault(Return(true));
+        NotifySyncStateChanged();
+      });
+#endif
 
   base::Value::List did_abort;
   did_abort.Append(false);

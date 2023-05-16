@@ -160,16 +160,11 @@ std::unique_ptr<KeyedService> BuildSyncService(
     init_params.identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
 
-    // TODO(tim): Currently, AUTO/MANUAL settings refer to the *first* time sync
-    // is set up and *not* a browser restart for a manual-start platform (where
-    // sync has already been set up, and should be able to start without user
-    // intervention). We can get rid of the browser_default eventually, but
-    // need to take care that SyncServiceImpl doesn't get tripped up between
-    // those two cases. Bug 88109.
-    bool is_auto_start = browser_defaults::kSyncAutoStarts;
-    init_params.start_behavior = is_auto_start
-                                     ? syncer::SyncServiceImpl::AUTO_START
-                                     : syncer::SyncServiceImpl::MANUAL_START;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    init_params.start_behavior = syncer::SyncServiceImpl::AUTO_START;
+#else
+    init_params.start_behavior = syncer::SyncServiceImpl::MANUAL_START;
+#endif
   }
 
   auto sync_service =

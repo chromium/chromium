@@ -87,10 +87,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
   EXPECT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
 
-  ASSERT_EQ(browser_defaults::kSyncAutoStarts,
-            GetSyncService(0)
-                ->GetUserSettings()
-                ->IsInitialSyncFeatureSetupComplete());
+  ASSERT_FALSE(GetSyncService(0)
+                   ->GetUserSettings()
+                   ->IsInitialSyncFeatureSetupComplete());
 
   EXPECT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
   EXPECT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
