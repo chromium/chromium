@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Dim fideos diweddar</translation>
 <translation id="3634507049637220048">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Rheolwyd gan eich Gweinyddwr, Manylion</translation>
 <translation id="3645233063072417428">Cafodd <ph name="NUMBER_OF_ITEMS" /> eitem eu symud.</translation>
+<translation id="3658269352872031728">Mae <ph name="SELECTED_FILE_COUNT" /> ffeil wedi'u dewis</translation>
 <translation id="3685122418104378273">Mae cysoni Google Drive wedi'i analluogi yn ddiofyn, wrth ddefnyddio data symudol.</translation>
 <translation id="3689865792480713551">Canslo <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Heb ei weithredu <ph name="CONNECTION_STATUS" />, Cryfer Signal <ph name="SIGNAL_STRENGTH" />%, Manylion</translation>
@@ -576,6 +577,7 @@
 <translation id="5533102081734025921">Llun <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Wrthi'n cyfrifo maint</translation>
 <translation id="554153475311314364">Trawslythrennu Groeg</translation>
+<translation id="5554171655917412781">Mae <ph name="SELECTED_FOLDERS_COUNT" /> ffolder wedi'u dewis</translation>
 <translation id="5580591966435005537">peiriant rhithwir</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Mae lled yr atalnod yn Llawn</translation>
@@ -598,6 +600,7 @@
 <translation id="5724172041621205163">Thai gyda bysellfwrdd Pattachote</translation>
 <translation id="57383366388012121">Y mis diwethaf</translation>
 <translation id="5756666464756035725">QWERTY Hwngareg</translation>
+<translation id="5760252553414789727">Mae <ph name="SELECTED_FILES_COUNT" /> eitem wedi'u dewis</translation>
 <translation id="5763377084591234761">Almaeneg (Y Swistir)</translation>
 <translation id="5769519078756170258">Gwesteiwr neu barth i'w eithrio</translation>
 <translation id="5775750595919327203">Wrdw</translation>

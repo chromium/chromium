@@ -1089,6 +1089,7 @@
 <translation id="3658742229777143148">Versiya</translation>
 <translation id="3664782872746246217">Açar sözlər:</translation>
 <translation id="3667704023705708645">Vençur kapitalı</translation>
+<translation id="3671117652518853176">Deaktiv edildikdə təhlükəsizlik məqsədilə hərdən yoxlama tələb edilə bilər</translation>
 <translation id="3671540257457995106">Ölçünü dəyişməyə icazə verilsin?</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> xətası: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Üçüncü Rulon</translation>
@@ -1123,6 +1124,7 @@
 <translation id="3736520371357197498">Güvənliyinizin üzləşdiyi riskləri anlayırsınızsa, təhlükəli proqramlar silinmədən öncə <ph name="BEGIN_LINK" />güvənsiz sayta daxil ola bilərsiniz<ph name="END_LINK" />.</translation>
 <translation id="3738166223076830879">Brauzeriniz administratorunuz tərəfindən idarə edilir.</translation>
 <translation id="3740319564441798148">Uzun məsafəli avtobus və dəmir yolu</translation>
+<translation id="3743765582345153106">Avto doldurma zamanı yoxlansın</translation>
 <translation id="3744111561329211289">Arxa fon sinx</translation>
 <translation id="3744286742364977428">Endirdiyiniz fayllar təhlil üçün Google Cloud'a və ya üçüncü tərəflərə göndərilir. Məsələn, onlar həssas data və ya zərərli proqrama görə skanlana və şirkət siyasətlərinə əsasən saxlana bilər.</translation>
 <translation id="3744899669254331632">Sayt güvənsiz kredensiallar göndərdiyi üçün <ph name="SITE" /> ünvanına girə bilməzsiniz.</translation>
@@ -1725,6 +1727,7 @@
 <translation id="5171045022955879922">Linki axtarın və ya yazın</translation>
 <translation id="5172758083709347301">Maşın</translation>
 <translation id="5177076414499237632">Bu səhifənin mənbəyi və mövzusu haqqında məlumat əldə edin</translation>
+<translation id="5179490652562926740">Ödəniş yoxlaması ayarları yadda saxlandı</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> deyil? Bu xətanı xəbər verin</translation>
 <translation id="518639307526414276">Heyvan yemi və ev heyvanlarına qulluq ləvazimatları</translation>
 <translation id="5190072300954988691">Kamera və mikrofona icazə verilmir</translation>
@@ -3217,7 +3220,6 @@
 <translation id="8870494189203302833">Eyni sıra ilə üzü aşağı</translation>
 <translation id="8870700989640064057">Məxfi fayl çap edilsin?</translation>
 <translation id="8871553383647848643">Brauzerinizin görünüşünü fərdiləşdirin</translation>
-<translation id="8871603420762394026">Chrome reklamın göstərildiyi vaxt kimi məhdud sayda məlumatı saytlar arasında paylaşır ki, saytlar reklam performansını ölçsün.</translation>
 <translation id="8874824191258364635">Düzgün kart nömrəsi daxil edin</translation>
 <translation id="8876033571432926051">Əyləncə oyunları</translation>
 <translation id="8877780815363510165">Balıqçılıq</translation>

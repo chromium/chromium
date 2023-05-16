@@ -21,6 +21,9 @@
 <translation id="1103523840287552314">ترجمة اللغة <ph name="LANGUAGE" /> دائمًا</translation>
 <translation id="110724200315609752">التبديل إلى نافذة مفتوحة</translation>
 <translation id="1112015203684611006">تعذّرت الطباعة.</translation>
+<translation id="1113057722807951993">‏عند استخدام عبارة مرور، لا يتم تشفير طُرق الدفع والعناوين من Google Pay.
+
+لتغيير هذه الإعدادات، يُرجى <ph name="BEGIN_LINK" />محو بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
 <translation id="1125564390852150847">إنشاء علامة تبويب جديدة.</translation>
 <translation id="1126809382673880764">‏لا يوفّر لك هذا الوضع حماية من الإضافات أو عمليات التنزيل أو المواقع الإلكترونية الضارة. وستظل تستفيد من ميزة "التصفّح الآمن" عند توفّرها في خدمات Google الأخرى، مثل Gmail و"بحث Google".</translation>
 <translation id="1145536944570833626">يمكنك حذف البيانات الحالية.</translation>
@@ -114,6 +117,7 @@
 <translation id="1657011748321897393">تعذّرت المشاركة بسبب عدم اتصالك بالشبكة.</translation>
 <translation id="1657641691196698092">ملفات تعريف الارتباط المحظورة</translation>
 <translation id="165877110639533037">لا توجد علامات تبويب مفتوحة</translation>
+<translation id="166310177317698233">يمكنك العثور على علامات التبويب المثبَّتة بالنقر على زر "إظهار علامات التبويب".</translation>
 <translation id="1674504678466460478">من <ph name="SOURCE_LANGUAGE" /> إلى <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">طلب عرض الموقع الإلكتروني المتوافق مع الأجهزة الجوّالة</translation>
 <translation id="168715261339224929">للحصول على الإشارات المرجعية على جميع أجهزتك، يُرجى تفعيل المزامنة.</translation>
@@ -159,6 +163,7 @@
 <translation id="1989112275319619282">تصفّح</translation>
 <translation id="1990820278544963435">بحث</translation>
 <translation id="199425419756152024">عرض كلمة المرور</translation>
+<translation id="2008357574463816229">‏في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />محو بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
 <translation id="2010008505735295285">إعادة التحميل</translation>
 <translation id="2015722694326466240">للاطلاع على كلمات المرور، يجب عليك أولاً تعيين رمز مرور على جهازك.</translation>
 <translation id="2021670401941426298">اطّلِع على تعليمات محرك البحث بشأن حذف سجلّ البحث، إن أمكن.</translation>
@@ -536,6 +541,7 @@
 <translation id="4592368184551360546">لوحة المفاتيح</translation>
 <translation id="4606247758155004938">تتولّى مؤسستك إدارة متصفِّحك.</translation>
 <translation id="461440297010471931">‏البحث من خلال Google</translation>
+<translation id="4616391354457235490">تراجُع</translation>
 <translation id="4619564267100705184">إثبات هويّتك</translation>
 <translation id="4619615317237390068">علامات التبويب من الأجهزة الأخرى</translation>
 <translation id="4620246317052452550">الصفحات التي قرأتها</translation>
@@ -707,6 +713,9 @@
 <translation id="5745916533876677730">الانتقال إلى علامة التبويب السابقة</translation>
 <translation id="5755162682436943950">تم تسجيل الخروج. يفتح هذا الزر مربّع حوار لتسجيل الدخول وتفعيل المزامنة.</translation>
 <translation id="5758631781033351321">ستظهر لك "قائمة القراءة" هنا</translation>
+<translation id="5762370665605786758">‏عند استخدام عبارة مرور، لا يتم تشفير طُرق الدفع والعناوين من Google Pay.
+
+لا يمكن لأحد الوصول إلى بياناتك المشفّرة بدون استخدام عبارة المرور التي حدَّدتها. ولا تحصل Google على عبارة المرور هذه أو تخزّنها. في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />محو بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
 <translation id="5765456154762864099">القائمة ← الإعدادات ← المتصفِّح التلقائي</translation>
 <translation id="5777888488419460501">الحفظ في الحساب</translation>
 <translation id="5782227691023083829">جارٍ ترجمة...</translation>
@@ -848,10 +857,14 @@
 <translation id="6476800141292307438">ترجمة صفحة إلى <ph name="LANGUAGE" />. وتتوفّر الخيارات بالقرب من أسفل الشاشة.</translation>
 <translation id="648164694371393720">خطأ في المصادقة</translation>
 <translation id="6482629121755362506">تم حذف <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> من العناصر</translation>
+<translation id="6484712497741564393">‏تم تسجيل الدخول باستخدام حساب "<ph name="EMAIL" />".
+
+وتم تشفير بياناتك باستخدام عبارة المرور. عليك إدخال عبارة المرور لاستخدام بيانات Chrome وحفظها في حسابك على Google.</translation>
 <translation id="6497772452874122664">إذا كنت تثِق بالنطاق <ph name="TIME" />، يمكنك استخدام كلمة المرور نفسها المحفوظة من موقع إلكتروني آخر.
 
 حاوِل استخدام كلمة مرور فريدة لكل موقع إلكتروني.</translation>
 <translation id="650279896687777322">مزيد من المعلومات...</translation>
+<translation id="6507973708545996744">سجِّل الدخول لعرض قائمة القراءة على جميع أجهزتك.</translation>
 <translation id="6510072653668207258">تذكيري لاحقًا</translation>
 <translation id="651505212789431520">هل تريد إلغاء المزامنة؟ يمكنك تفعيل المزامنة في أي وقت في "الإعدادات".</translation>
 <translation id="6518133107902771759">تحقق</translation>
@@ -894,6 +907,7 @@
 <translation id="6730682669179532099">يتعذّر تصدير كلمات المرور</translation>
 <translation id="6732087373923685049">الكاميرا</translation>
 <translation id="6748108480210050150">من</translation>
+<translation id="6753469262000681876">‏وضع التأمين (Lockdown Mode)</translation>
 <translation id="6760509555861141183">العودة إلى أحدث علامة تبويب</translation>
 <translation id="6762812039470893796">إلغاء اختيار الكل</translation>
 <translation id="6780034285637185932">الرمز البريدي</translation>
@@ -1120,6 +1134,9 @@
 <translation id="8299417921174340354">لاستخدام كلمات المرور، عليك أولاً إعداد رمز مرور على جهازك.</translation>
 <translation id="8299613349954694191">يمكنك فتح علامة تبويب في وضع التصفُّح المتخفي لتصفُّح المواقع الإلكترونية بخصوصية تامّة.</translation>
 <translation id="8316944564970119719">أدخِل الموقع الإلكتروني وكلمة المرور ثم احفظ التغييرات.</translation>
+<translation id="8317835149433843300">‏لن يتم تشفير طُرق الدفع والعناوين من Google Pay. ولن يتم حفظ سجلّ التصفّح من Chrome في حسابك على Google.
+
+لا يمكن لأحد الوصول إلى بياناتك المشفّرة بدون استخدام عبارة المرور التي حدَّدتها. ولا تحصل Google على عبارة المرور هذه أو تخزّنها. في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />محو بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">بحث جديد</translation>
 <translation id="8323906514956095947">النقر مع الاستمرار لعرض المزيد من خيارات علامات التبويب</translation>
 <translation id="8328777765163860529">إغلاق الكل</translation>
@@ -1142,6 +1159,9 @@
 <translation id="8487700953926739672">التوفر بلا إنترنت</translation>
 <translation id="8488923644885757471">نافذة جديدة</translation>
 <translation id="8490978609246021741">حفظ التغييرات</translation>
+<translation id="8491300088149538575">‏تم تسجيل الدخول باستخدام حساب "<ph name="EMAIL" />".
+
+تم تشفير بياناتك باستخدام عبارة المرور في ‎<ph name="TIME" />. عليك إدخال عبارة المرور لاستخدام بيانات Chrome وحفظها في حسابك على Google.</translation>
 <translation id="8503813439785031346">اسم المستخدم</translation>
 <translation id="850600235656508448">فتح في وضع التصفح المتخفي</translation>
 <translation id="8517375800490286174">تراخيص البرامج المفتوحة المصدر</translation>

@@ -426,6 +426,7 @@
 <translation id="455835558791489930">Bateria de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM desbloqueado</translation>
 <translation id="4562494484721939086">Sem serviço</translation>
+<translation id="4573777384450697571">Falha – Certificado expirado</translation>
 <translation id="458794348635939462">Falha ao resolver todos os anfitriões.</translation>
 <translation id="4593212453765072419">Autenticação proxy necessária</translation>
 <translation id="4609350030397390689">Diminuir o brilho do teclado</translation>
@@ -539,7 +540,6 @@
 <translation id="5423849171846380976">Activado</translation>
 <translation id="5430931332414098647">Ligação via telemóvel instantânea</translation>
 <translation id="5431318178759467895">Cor</translation>
-<translation id="5456936324019847994">Não é possível ligar a APNs (Nomes de Pontos de Acesso) personalizados ativados. Contacte o seu operador móvel para obter mais informações.</translation>
 <translation id="5457599981699367932">Navegar como convidado</translation>
 <translation id="54609108002486618">Geridos</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentativa restante.}other{{0} tentativas restantes.}}</translation>
@@ -710,7 +710,6 @@
 <translation id="6798678288485555829">Navegação em texto</translation>
 <translation id="680983167891198932">Chave</translation>
 <translation id="6816797338148849397">Informações disponíveis relacionadas com a sua seleção. Utilize a tecla da seta para cima para aceder.</translation>
-<translation id="6838167112108853532">Não é possível desativar nem remover este APN (Nome do Ponto de Acesso). Certifique-se de que os APNs anexados ativados foram desativados ou removidos.</translation>
 <translation id="6853312040151791195">Velocidade de descarregamento</translation>
 <translation id="6889786074662672253">Enquanto reiniciar, não desligue este dispositivo externo nem encerre o computador. Pode minimizar esta janela. Esta operação pode demorar alguns minutos e o seu dispositivo externo pode não funcionar durante este período.</translation>
 <translation id="6900701049656042631">Este álbum não tem fotos. Para adicionar fotos, aceda a <ph name="LINK" /></translation>
@@ -740,6 +739,7 @@
 <translation id="7130438335435247835">Nome do Ponto de Acesso (APN)</translation>
 <translation id="7131634559772719176">Confirme a predefinição</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}other{Servidores de nomes}}</translation>
+<translation id="7135814714616751706">Pesquise atalhos</translation>
 <translation id="7143207342074048698">A ligar</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="714876143603641390">Conetividade de LAN</translation>
@@ -770,6 +770,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; prima Pesquisar e a tecla de espaço para ver o resultado na Pesquisa Google.</translation>
 <translation id="7343649194310845056">Dispositivos de rede</translation>
+<translation id="7353413232959255829">Resultado da pesquisa <ph name="LIST_POSITION" /> de <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Prima Enter para navegar para o atalho.</translation>
 <translation id="7359657277149375382">Tipo de ficheiro</translation>
 <translation id="73631062356239394">Partilhar dados de diagnóstico</translation>
 <translation id="7375053625150546623">EAP</translation>

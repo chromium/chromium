@@ -402,7 +402,6 @@
 <translation id="1341871421050612057"><ph name="USERNAME" /> 계정과 동기화할 수 없음</translation>
 <translation id="1343865611738742294">Linux 앱에 USB 기기 액세스 권한을 부여합니다. Linux는 삭제된 USB 기기를 기억하지 않습니다.</translation>
 <translation id="1343920184519992513">중단한 위치에서 계속하고 특정 페이지 모음 열기</translation>
-<translation id="134589511016534552">미디어 탭이 열린 탭 섹션에도 표시됩니다.</translation>
 <translation id="1346630054604077329">확인 후 다시 시작</translation>
 <translation id="1346748346194534595">오른쪽</translation>
 <translation id="1347256498747320987">업데이트 및 앱을 설치합니다. 계속하면 이 기기에서 Google, 이동통신사, 기기 제조업체로부터 업데이트와 앱을 자동으로 다운로드하고 설치하는 데에도 동의하는 것으로 간주됩니다(이때 모바일 데이터가 사용될 수 있음). 일부 앱에서는 인앱 구매가 제공될 수도 있습니다. <ph name="BEGIN_LINK1" />자세히 알아보기<ph name="END_LINK1" /></translation>
@@ -2073,7 +2072,6 @@
 <translation id="2739191690716947896">디버그</translation>
 <translation id="2739240477418971307">접근성 설정 변경</translation>
 <translation id="274029851662193272">음각</translation>
-<translation id="2740363334137520315">오디오 또는 동영상을 재생 중인 탭을 쉽게 찾을 수 있도록 '탭 검색'에 새 섹션이 추가됩니다. 브라우저 상단에 있는 버튼을 사용하여 액세스하세요.</translation>
 <translation id="2740531572673183784">확인</translation>
 <translation id="2740876196999178364">이 패스키는 이 기기에만 저장됩니다. Google 계정에는 저장되지 않습니다.</translation>
 <translation id="2741713322780029189">복구 터미널 열기</translation>
@@ -2345,7 +2343,6 @@
 <translation id="2967926928600500959">이 규칙과 일치하는 URL은 강제로 특정 브라우저에서 열립니다.</translation>
 <translation id="2972581237482394796">다시 실행(&amp;R)</translation>
 <translation id="2973324205039581528">사이트 음소거</translation>
-<translation id="2973537811036309675">측면 패널</translation>
 <translation id="2975761176769946178">URL을 입력해야 합니다.</translation>
 <translation id="2976557544729462544">일부 기기의 경우 정상 작동 또는 최적의 성능을 위해 데이터 액세스 보호를 사용 중지해야 합니다.</translation>
 <translation id="2976756276046118477">적록 필터(녹색약, 제이색약)</translation>
@@ -2788,7 +2785,6 @@
 <translation id="3393554941209044235">Chrome 문서 분석</translation>
 <translation id="3393582007140394275">화면을 전송할 수 없습니다</translation>
 <translation id="3394850431319394743">보호된 콘텐츠를 재생하기 위해 식별자를 사용하도록 허용됨</translation>
-<translation id="3396744558790608201">마우스 오른쪽 버튼으로 클릭한 다음 ‘Google 렌즈로 이미지 검색’을 선택하여 사이트의 원하는 부분을 검색하세요. 웹 탐색 및 쇼핑 중에 보게 되는 시각 콘텐츠에 관해 자세히 알아볼 수 있습니다.</translation>
 <translation id="3396800784455899911">'동의 및 계속' 버튼을 클릭하면 이러한 Google 서비스와 관련하여 위에 설명된 처리 방식에 동의하는 것으로 간주됩니다.</translation>
 <translation id="339722927132407568">정지됨</translation>
 <translation id="3399432415385675819">알림이 사용 중지됩니다.</translation>
@@ -4831,7 +4827,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" />에서 내가 사용 중인 ChromeOS 기기가 적합한지 확인하려고 합니다.</translation>
 <translation id="5208926629108082192">기기 모바일 네트워크 정보</translation>
 <translation id="5208988882104884956">반각</translation>
-<translation id="520902706163766447">Chrome 상단의 UI에서 말풍선 팝업을 사용 설정하여 현재 열려 있는 탭을 검색합니다.</translation>
 <translation id="5209320130288484488">기기를 찾을 수 없음</translation>
 <translation id="5209513429611499188">사용량 페이지 <ph name="USAGE_PAGE" />의 사용량이 있는 HID 기기</translation>
 <translation id="5210365745912300556">탭 닫기</translation>
@@ -6333,7 +6328,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6561726789132298588">입력</translation>
 <translation id="6562117348069327379">시스템 로그를 다운로드 디렉터리에 저장합니다.</translation>
 <translation id="656293578423618167">파일 경로 또는 이름이 너무 깁니다. 짧은 이름으로 변경하거나 다른 위치에 저장하세요.</translation>
-<translation id="6568283005472142698">탭 검색</translation>
 <translation id="6570622975915850879">다른 기기 사용</translation>
 <translation id="65711204837946324">다운로드 권한 필요</translation>
 <translation id="6571533309669248172">텍스트 서식 지정</translation>
@@ -7673,7 +7667,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7737948071472253612">카메라 사용이 허용되지 않음</translation>
 <translation id="77381465218432215">악센트 표시 및 특수문자 표시</translation>
 <translation id="7740996059027112821">표준</translation>
-<translation id="7741307896921365578">읽기 목록과 북마크에 항상 유용하게 액세스할 수 있도록 브라우저 수준의 측면 패널을 사용 설정합니다.</translation>
 <translation id="7742558784808143689"><ph name="SITE_NAME" /> 및 모든 하위 사이트, 설치된 앱의 사이트 데이터와 권한을 삭제하시겠습니까?</translation>
 <translation id="7742706086992565332">특정 웹사이트를 얼마나 확대 또는 축소할지 설정할 수 있습니다.</translation>
 <translation id="7742879569460013116">링크 공유</translation>
@@ -7875,7 +7868,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7909986151924474987">이 프로필을 다시 설치하지 못할 수도 있습니다.</translation>
 <translation id="7910768399700579500">새 폴더(&amp;N)</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="79113168483292735">탭 검색의 미디어 탭 섹션</translation>
 <translation id="7912080627461681647">서버에서 비밀번호가 변경되었습니다. 로그아웃한 다음 다시 로그인해 주세요.</translation>
 <translation id="7912974581251770345">번역</translation>
 <translation id="7915457674565721553">자녀 보호 기능을 설정하려면 인터넷에 연결하세요.</translation>
@@ -8657,7 +8649,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8599681327221583254">1개 이상의 정책이 올바로 구성되지 않았습니다. 관리자에게 문의해 주세요.</translation>
 <translation id="8599864823732014237">엔터프라이즈 등록을 건너뛰시겠습니까?</translation>
 <translation id="8601206103050338563">TLS WWW 클라이언트 인증</translation>
-<translation id="8601611099293226919">Google 렌즈로 화면 검색</translation>
 <translation id="8602674530529411098">앱(베타)</translation>
 <translation id="8602851771975208551">컴퓨터의 다른 프로그램에서 Chrome 작동에 영향을 줄 수 있는 앱을 추가했습니다.</translation>
 <translation id="8605428685123651449">SQLite 메모리</translation>

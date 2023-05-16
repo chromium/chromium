@@ -217,6 +217,7 @@
 <translation id="2638662041295312666">Εικόνα σύνδεσης</translation>
 <translation id="2640549051766135490">Επιλέχθηκε το λεύκωμα <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="267442004702508783">ανανέωση</translation>
+<translation id="268270014981824665">χαμηλότερη φωτεινότητα πληκτρολογίου</translation>
 <translation id="2712812801627182647">Κλειδί ελέγχου ταυτότητας TLS</translation>
 <translation id="2713444072780614174">Λευκό</translation>
 <translation id="2717139507051041123">Ενεργοποίηση λειτουργίας σκοτεινού χρώματος</translation>
@@ -224,6 +225,7 @@
 <translation id="2744221223678373668">Κοινόχρηστο</translation>
 <translation id="2751739896257479635">2η φάση ελέγχου ταυτότητας EAP:</translation>
 <translation id="2783010256799387990">ΕΠΙΤΥΧΗΣ ΟΛΟΚΛΗΡΩΣΗ</translation>
+<translation id="2787435249130282949">πιο φωτεινό πληκτρολόγιο</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Εφαρμογές </translation>
 <translation id="28232023175184696">Δεν είναι δυνατή η σύνδεση στο διαδίκτυο. Κάντε κλικ για να δοκιμάσετε ξανά.</translation>
@@ -327,11 +329,13 @@
 <translation id="3749289110408117711">Όνομα αρχείου</translation>
 <translation id="3771294271822695279">Αρχεία βίντεο </translation>
 <translation id="3784455785234192852">Κλείδωμα</translation>
+<translation id="380097101658023925">στοιχεία ελέγχου RGB</translation>
 <translation id="38114475217616659">Εκκαθάριση όλου του ιστορικού</translation>
 <translation id="3820172043799983114">Μη έγκυρο PIN.</translation>
 <translation id="3824259034819781947">Επισύναψη αρχείων</translation>
 <translation id="3838338534323494292">Νέος κωδικός πρόσβασης</translation>
 <translation id="3845880861638660475">Πατήστε <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> και <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> για να κλείσετε το παράθυρο διαλόγου.</translation>
+<translation id="3848280697030027394">μείωση φωτισμού πληκτρολογίου</translation>
 <translation id="385051799172605136">Πίσω</translation>
 <translation id="3858860766373142691">Όνομα</translation>
 <translation id="3862598938296403232">Η περιγραφή απαιτείται</translation>
@@ -403,6 +407,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Απενεργοποίηση</translation>
 <translation id="439429847087949098">Επανεκκίνηση <ph name="DEVICE_NAME" /></translation>
+<translation id="4395835743215824109">προσαρμογή πληκτρολογίου</translation>
 <translation id="4415951057168511744">Τρέχον avatar</translation>
 <translation id="4422041425070339732">κάτω βέλος</translation>
 <translation id="4425149324548788773">Το Drive μου</translation>
@@ -426,6 +431,7 @@
 <translation id="455835558791489930">Μπαταρία <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">Ξεκλείδωτη SIM</translation>
 <translation id="4562494484721939086">Εκτός υπηρεσίας</translation>
+<translation id="4573777384450697571">Αποτυχία - Το πιστοποιητικό έληξε</translation>
 <translation id="458794348635939462">Αποτυχία επίλυσης όλων των κεντρικών υπολογιστών.</translation>
 <translation id="4593212453765072419">Απαιτείται έλεγχος ταυτότητας του διακομιστή μεσολάβησης</translation>
 <translation id="4609350030397390689">Μείωση φωτεινότητας πληκτρολογίου</translation>
@@ -442,6 +448,7 @@
 <translation id="4731797938093519117">Γονική πρόσβαση</translation>
 <translation id="473775607612524610">Ενημέρωση</translation>
 <translation id="4744944742468440486">Πληροφορίες που σχετίζονται με την επιλογή σας</translation>
+<translation id="4771607256327216405">αύξηση φωτεινότητας πληκτρολογίου</translation>
 <translation id="4773299976671772492">Διακόπηκε</translation>
 <translation id="4782311465517282004">Λάβετε ορισμούς, μεταφράσεις ή μετατροπές μονάδων κάνοντας δεξί κλικ ή αγγίζοντας παρατεταμένα κείμενο.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> φωτογραφία</translation>
@@ -490,6 +497,7 @@
 <translation id="500920857929044050">Διακοπή δοκιμής</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Όταν η οθόνη είναι αδρανής, να εμφανίζονται φωτογραφίες, η ώρα καθώς και πληροφορίες καιρού και μέσων.</translation>
+<translation id="5038292761217083259">πολύχρωμο πληκτρολόγιο</translation>
 <translation id="5039804452771397117">Επιτρέπεται</translation>
 <translation id="5049856988445523908">Κλειδωμένη SIM (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Όνομα ομάδας</translation>
@@ -539,7 +547,6 @@
 <translation id="5423849171846380976">Ενεργοποιημένο</translation>
 <translation id="5430931332414098647">Άμεση σύνδεση</translation>
 <translation id="5431318178759467895">Χρώμα</translation>
-<translation id="5456936324019847994">Δεν είναι δυνατή η σύνδεση σε κάποιο ενεργό προσαρμοσμένο APN. Επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας για περισσότερες πληροφορίες.</translation>
 <translation id="5457599981699367932">Περιήγηση ως επισκέπτης</translation>
 <translation id="54609108002486618">Διαχειριζόμενη</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Απομένει {0} προσπάθεια}other{Απομένουν {0} προσπάθειες}}</translation>
@@ -639,6 +646,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Ενεργοποίηση σκούρου θέματος</translation>
 <translation id="6285899124799306373">άνοιγμα λειτουργίας εκκίνησης εφαρμογών</translation>
+<translation id="629550705077076970">μείωση φωτεινότητας πληκτρολογίου</translation>
 <translation id="6302401976930124515">Η δοκιμή <ph name="TEST_NAME" /> ακυρώθηκε</translation>
 <translation id="631063167932043783">Εφαρμογή Εξερεύνηση</translation>
 <translation id="6319207335391420837">Ενημέρωση υλικολογισμικού στη συσκευή <ph name="DEVICE_NAME" /></translation>
@@ -657,6 +665,7 @@
 <translation id="6401427872449207797">αναζήτηση προγράμματος περιήγησης</translation>
 <translation id="6410257289063177456">Αρχεία εικόνας</translation>
 <translation id="641081527798843608">Αντιστοιχία θέματος</translation>
+<translation id="6411934471898487866">φωτεινότητα πληκτρολογίου</translation>
 <translation id="6412715219990689313">Ενσωματωμένο πληκτρολόγιο</translation>
 <translation id="6417265370957905582">Βοηθός Google</translation>
 <translation id="6423239382391657905">Άνοιγμα VPN</translation>
@@ -710,7 +719,6 @@
 <translation id="6798678288485555829">Πλοήγηση σε κείμενο</translation>
 <translation id="680983167891198932">Κλειδί</translation>
 <translation id="6816797338148849397">Πληροφορίες που σχετίζονται με τη διαθέσιμη επιλογή σας. Χρησιμοποιήστε το πλήκτρο πάνω βέλους για πρόσβαση.</translation>
-<translation id="6838167112108853532">Δεν είναι δυνατή η απενεργοποίηση ή η κατάργηση αυτού του APN. Βεβαιωθείτε ότι τα ενεργοποιημένα APN που είναι συνημμένα έχουν απενεργοποιηθεί ή καταργηθεί.</translation>
 <translation id="6853312040151791195">Ρυθμός εκφόρτισης</translation>
 <translation id="6889786074662672253">Κατά την επανεκκίνηση, μην αποσυνδέσετε αυτήν την εξωτερική συσκευή και μην τερματίσετε τη λειτουργία του υπολογιστή. Μπορείτε να ελαχιστοποιήσετε αυτό το παράθυρο. Μπορεί να χρειαστούν λίγα λεπτά και η εξωτερική συσκευή σας μπορεί να μην λειτουργεί αυτό το διάστημα.</translation>
 <translation id="6900701049656042631">Αυτό το λεύκωμα δεν περιέχει φωτογραφίες. Για να προσθέσετε φωτογραφίες, μεταβείτε στη διεύθυνση <ph name="LINK" /></translation>
@@ -808,10 +816,12 @@
 <translation id="7656388927906093505">Η συσκευή είναι ποντίκι.</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7665800271478495366">Αλλαγή avatar</translation>
+<translation id="7683228889864052081">απόχρωση πληκτρολογίου</translation>
 <translation id="7690294790491645610">Επιβεβαίωση νέου κωδικού πρόσβασης</translation>
 <translation id="7701040980221191251">Καμία</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">φωτισμός πληκτρολογίου</translation>
 <translation id="773153675489693198">Πλήθος φορτίσεων-εξαντλήσεων μπαταρίας</translation>
 <translation id="7747039790905080783">Ήδη κοινόχρηστο κλειδί</translation>
 <translation id="7762130827864645708">Η αλλαγή του κωδικού πρόσβασής σας ήταν επιτυχής. Χρησιμοποιείτε στο εξής τον νέο κωδικό πρόσβασης.</translation>
@@ -855,6 +865,7 @@
 <translation id="8075838845814659848">Υπόλοιπο φόρτισης</translation>
 <translation id="8076492880354921740">Καρτέλες</translation>
 <translation id="8082366717211101304">Δεν είναι δυνατή η επίλυση DNS από εφαρμογές Android.</translation>
+<translation id="8082644724189923105">ζώνη πληκτρολογίου</translation>
 <translation id="808894953321890993">Αλλαγή κωδικού πρόσβασης</translation>
 <translation id="8094062939584182041">Επιτρέψτε στην Google να σας στέλνει μηνύματα ηλεκτρονικού ταχυδρομείου σχετικά με αυτό το ζήτημα</translation>
 <translation id="8104083085214006426">Χρησιμοποιείτε ένα ανοιχτό και μη ασφαλές δίκτυο.</translation>
@@ -903,6 +914,7 @@
 <translation id="8456761643544401578">Αυτόματη λειτουργία χαμηλού φωτισμού</translation>
 <translation id="8461329675984532579">Όνομα παρόχου αρχικής σελίδας</translation>
 <translation id="8475690821716466388">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε ένα αδύναμο πρωτόκολλο WEP PSK.</translation>
+<translation id="8476242415522716722">φωτισμός κάτω από το πληκτρολόγιο</translation>
 <translation id="8477551185774834963">Ο λανθάνων χρόνος DNS έχει υπερβεί ελαφρώς το επιτρεπόμενο ελάχιστο όριο.</translation>
 <translation id="8483248364096924578">Διεύθυνση IP</translation>
 <translation id="8491311378305535241">Δεν είναι δυνατή η σύνδεση μέσω τείχους προστασίας σε ιστοτόπους HTTP μέσω εφαρμογών Android</translation>
@@ -946,6 +958,7 @@
 <translation id="8845001906332463065">Λήψη βοήθειας</translation>
 <translation id="8855781559874488009">Δεν είναι δυνατή η σύνδεση μέσω τείχους προστασίας σε ιστοτόπους HTTP.</translation>
 <translation id="885701979325669005">Αποθήκευση</translation>
+<translation id="885704831271383379">λιγότερο φωτεινό πληκτρολόγιο</translation>
 <translation id="8863170912498892583">Ενεργοποίηση σκούρου θέματος</translation>
 <translation id="8863888432376731307">Αποκτήστε το <ph name="INTENT" /> για "<ph name="QUERY" />" και περισσότερα</translation>
 <translation id="8864415976656252616">Δεν υπάρχει προτεινόμενο περιεχόμενο. Ανατρέξτε στο κορυφαίο περιεχόμενο βοήθειας.</translation>

@@ -7403,22 +7403,6 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
 
           El valor de la política debe especificarse en milisegundos. Los valores deben ser menores o iguales que la demora de pantalla apagada (si está configurada) y la demora por inactividad.</translation>
 <translation id="7680437377926096177">No mostrar el diálogo de salida cuando se cierra la última ventana</translation>
-<translation id="7682459947751785310">Esta política se puede usar de manera temporal para habilitar la compatibilidad con la
-API de PPB_VideoDecoder(Dev) de forma automática.
-
-Si no la estableces o la inhabilitas, el navegador decidirá
-si la API es compatible.
-Si la habilitas, se admitirá la API.
-
-Esta política se puede usar en caso de que la eliminación continua de la compatibilidad con esta API
-muestre problemas. Si tienes que utilizar la política, informa un error en crbug.com
-en el que expliques tu caso de uso y agrega a {blundell, vasilyt}@chromium.org en el campo CC. La política está
-programada para estar vigente hasta la versión 114 de <ph name="PRODUCT_NAME" />,
-después de lo cual se planea quitar la compatibilidad con esta API
-de forma incondicional.
-
-NOTA: Solo los procesos del renderizado recién iniciados reflejarán los cambios de esta
-política mientras se esté ejecutando el navegador.</translation>
 <translation id="7683777542468165012">Actualizar política dinámica</translation>
 <translation id="7687943045976362719">Si se configura esta política, <ph name="PRODUCT_FRAME_NAME" /> determinará los tipos de contenido especificados.
 

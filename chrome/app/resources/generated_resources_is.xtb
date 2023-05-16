@@ -401,7 +401,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1341871421050612057">Ekki er hægt að samstilla við <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Veita Linux-forritum heimild til að opna USB-tæki. Linux man ekki eftir USB-tæki þegar það hefur verið fjarlægt.</translation>
 <translation id="1343920184519992513">Haltu áfram þar sem frá var horfið og opnaðu ákveðinn hóp síðna</translation>
-<translation id="134589511016534552">Efnisflipar birtast einnig í hlutanum „Opnir flipar“</translation>
 <translation id="1346630054604077329">Staðfesta og endurræsa</translation>
 <translation id="1346748346194534595">Réttsælis</translation>
 <translation id="1347256498747320987">Setja upp uppfærslur og forrit. Með því að halda áfram samþykkirðu að þetta tæki geti einnig sjálfkrafa sótt og sett upp uppfærslur og forrit frá Google, símafyrirtækinu þínu og framleiðanda tækisins, mögulega með því að nota farsímagögn. Einhver þessara forrita kunna að bjóða upp á innkaup í forriti. <ph name="BEGIN_LINK1" />Frekari upplýsingar<ph name="END_LINK1" /></translation>
@@ -2067,7 +2066,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2739191690716947896">Villuleit</translation>
 <translation id="2739240477418971307">Breyta aðgengisstillingum</translation>
 <translation id="274029851662193272">Þrykkt</translation>
-<translation id="2740363334137520315">Bætir við nýjum hluta í „Flipaleit“ svo að auðvelt sé að finna flipa sem spila hljóð og myndskeið. Ýttu á hnappinn efst í horni vafrans til að opna þetta.</translation>
 <translation id="2740531572673183784">Í lagi</translation>
 <translation id="2740876196999178364">Þessir aðgangslyklar eru aðeins vistaðir í þessu tæki. Þeir eru ekki vistaðir á Google-reikningnum þínum.</translation>
 <translation id="2741713322780029189">Opna endurheimtarstöð</translation>
@@ -2335,7 +2333,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2967926928600500959">Vefslóðir sem passa við þessar reglur verða þvingaðar til að opnast í tilteknum vafra.</translation>
 <translation id="2972581237482394796">Endurge&amp;ra</translation>
 <translation id="2973324205039581528">Slökkva á hljóði svæðis</translation>
-<translation id="2973537811036309675">Hliðargluggi</translation>
 <translation id="2975761176769946178">Vefslóð er áskilin</translation>
 <translation id="2976557544729462544">Í tilteknum tækjum verður að slökkva á gagnaaðgangsvörn til að þau virki sem skyldi eða skili fullum afköstum.</translation>
 <translation id="2976756276046118477">Rauðgræn sía (lítið grænt, deuteranomaly-litblinda)</translation>
@@ -2776,7 +2773,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3393554941209044235">Skjalagreining Chrome</translation>
 <translation id="3393582007140394275">Ekki er hægt að senda út skjá.</translation>
 <translation id="3394850431319394743">Heimilt að nota auðkenni til að spila varið efni</translation>
-<translation id="3396744558790608201">Hægrismelltu og veldu „Leita í myndum með Google linsu“ til að leita hvar sem er á vefsvæðinu til að fá frekari upplýsingar um myndefnið sem þú sérð á meðan þú vafrar og verslar á netinu.</translation>
 <translation id="3396800784455899911">Með því að smella á hnappinn „Samþykkja og halda áfram“ samþykkir þú þá úrvinnslu sem lýst er hér að ofan fyrir þessa Google þjónustu.</translation>
 <translation id="339722927132407568">Frýs</translation>
 <translation id="3399432415385675819">Tilkynningar verða gerðar óvirkar</translation>
@@ -4803,7 +4799,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> vill kanna hvort þú sért að nota gjaldgengt ChromeOS tæki.</translation>
 <translation id="5208926629108082192">Upplýsingar um farsímakerfi tækis</translation>
 <translation id="5208988882104884956">Hálf breidd</translation>
-<translation id="520902706163766447">Kveikja á sprettiblöðru efst í notandaviðmóti Chrome til að leita yfir opnum flipum.</translation>
 <translation id="5209320130288484488">Engin tæki fundust</translation>
 <translation id="5209513429611499188">HID-tæki með notkun frá notkunarsíðu <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">Loka flipa</translation>
@@ -6301,7 +6296,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Vista kerfisannála á niðurhalslista.</translation>
 <translation id="656293578423618167">Slóð eða heiti skráarinnar er of langt. Vistaðu undir styttra heiti eða á öðrum stað.</translation>
-<translation id="6568283005472142698">Flipaleit</translation>
 <translation id="6570622975915850879">Nota annað tæki</translation>
 <translation id="65711204837946324">Þarf heimild til að sækja</translation>
 <translation id="6571533309669248172">Textasnið</translation>
@@ -7634,7 +7628,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7737948071472253612">Mega ekki nota myndavélina</translation>
 <translation id="77381465218432215">Sýna áherslumerki og sérstafi</translation>
 <translation id="7740996059027112821">Venjulegt</translation>
-<translation id="7741307896921365578">Kveikir á hliðarglugga í vafra svo þú hafir alltaf aðgang að leslistanum þínum og bókamerkjunum.</translation>
 <translation id="7742558784808143689">Hreinsa vefsvæðisgögn og heimildir fyrir <ph name="SITE_NAME" />, allar undirsíður og uppsett forrit?</translation>
 <translation id="7742706086992565332">Þú getur stillt hver aðdrátturinn er á tilteknum vefsvæðum</translation>
 <translation id="7742879569460013116">Deila tengli í</translation>
@@ -7835,7 +7828,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7909986151924474987">Þú getur e.t.v. ekki sett prófílinn aftur upp</translation>
 <translation id="7910768399700579500">&amp;Ný mappa</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="79113168483292735">Hluti efnisflipa í flipaleit</translation>
 <translation id="7912080627461681647">Aðgangsorðinu þínu hefur verið breytt á netþjóni. Skráðu þig út og aftur inn.</translation>
 <translation id="7912974581251770345">Þýðing</translation>
 <translation id="7915457674565721553">Tengstu við internetið til að setja upp barnalæsingu</translation>
@@ -8607,7 +8599,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8599681327221583254">Ein eða fleiri reglur eru rangt stilltar. Hafðu samband við kerfisstjórann</translation>
 <translation id="8599864823732014237">Sleppa fyrirtækjaskráningu?</translation>
 <translation id="8601206103050338563">Auðkenning TLS WWW-biðlara</translation>
-<translation id="8601611099293226919">Leitaðu á skjánum með Google linsu</translation>
 <translation id="8602674530529411098">Forrit (beta)</translation>
 <translation id="8602851771975208551">Annað forrit í tölvunni þinni bætti við forriti sem gæti breytt því hvernig Chrome virkar.</translation>
 <translation id="8605428685123651449">SQLite-minni</translation>

@@ -400,7 +400,6 @@
 <translation id="1341871421050612057">Synkronointi ei onnistu: <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Anna Linux-sovelluksille USB-laitteiden käyttöoikeus. Linux ei muista USB-laitetta, kun se on poistettu.</translation>
 <translation id="1343920184519992513">Jatka siitä, mihin jäit, ja avaa tietyt sivut</translation>
-<translation id="134589511016534552">Mediavälilehdet näkyvät myös Avoimet välilehdet ‑kohdassa</translation>
 <translation id="1346630054604077329">Vahvista ja käynnistä uudelleen</translation>
 <translation id="1346748346194534595">Oikealla</translation>
 <translation id="1347256498747320987">Asenna päivityksiä ja sovelluksia. Jatkamalla hyväksyt, että laite voi automaattisesti ladata ja asentaa Googlen, operaattorisi tai laitevalmistajan päivityksiä ja sovelluksia, mahdollisesti mobiilidatayhteyden välityksellä. Osa näistä sovelluksista voi tarjota sovelluksen sisäisiä ostoksia. <ph name="BEGIN_LINK1" />Lue lisää<ph name="END_LINK1" /></translation>
@@ -2065,7 +2064,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2739191690716947896">Vianetsintä</translation>
 <translation id="2739240477418971307">Muokata esteettömyysasetuksia</translation>
 <translation id="274029851662193272">Laskettu</translation>
-<translation id="2740363334137520315">Lisää välilehtihakuun uuden osion, jonka kautta voit helposti löytää välilehtiä, joilla toistetaan audiota tai videota. Pääset siihen selaimen yläkulmassa olevalla painikkeella.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Avainkoodit tallennetaan vain tälle laitteelle. Niitä ei tallenneta Google-tilillesi.</translation>
 <translation id="2741713322780029189">Avaa palautusterminaali</translation>
@@ -2333,7 +2331,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2967926928600500959">Näitä sääntöjä vastaavat URL-osoitteet pakotetaan avautumaan tietyssä selaimessa.</translation>
 <translation id="2972581237482394796">&amp;Tee uudelleen</translation>
 <translation id="2973324205039581528">Mykistä sivusto</translation>
-<translation id="2973537811036309675">Sivupaneeli</translation>
 <translation id="2975761176769946178">URL-osoite vaaditaan</translation>
 <translation id="2976557544729462544">Jotkin laitteet edellyttävät datan käyttösuojan poistamista käytöstä, jotta ne toimivat oikein tai täydellä teholla.</translation>
 <translation id="2976756276046118477">Punavihreä suodatin (heikko vihreä, deuteranomalia)</translation>
@@ -2774,7 +2771,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3393554941209044235">Chromen dokumenttianalyysi</translation>
 <translation id="3393582007140394275">Näyttöä ei voi striimata.</translation>
 <translation id="3394850431319394743">Tunnisteiden käyttö on sallittua suojatun sisällön toistamisessa</translation>
-<translation id="3396744558790608201">Hae miltä tahansa sivuston alueelta klikkaamalla kakkospainikkeella ja valitsemalla "Hae kuvia Google Lensilla". Näin saat lisätietoja kuvasisällöstä, jota näet selatessasi ja shoppaillessasi internetissä.</translation>
 <translation id="3396800784455899911">Kun valitset Hyväksy ja jatka, hyväksyt käsittelyn näissä Google-palveluissa edellä kuvatuilla tavoilla.</translation>
 <translation id="339722927132407568">Jumiutuu</translation>
 <translation id="3399432415385675819">Ilmoitukset poistetaan käytöstä.</translation>
@@ -4798,7 +4794,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> haluaa tarkistaa, että käytät yhteensopivaa Chrome-käyttöjärjestelmää käyttävää laitetta.</translation>
 <translation id="5208926629108082192">Laitteen mobiiliverkon tiedot</translation>
 <translation id="5208988882104884956">Kapea</translation>
-<translation id="520902706163766447">Ota ponnahdusikkunakupla käyttöön Chrome-käyttöliittymän yläosassa ja hae avoinna olevista välilehdistä.</translation>
 <translation id="5209320130288484488">Laitteita ei löytynyt</translation>
 <translation id="5209513429611499188">HID-laitteet, joilla on käyttöä sivulta <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">Sulje välilehti</translation>
@@ -6296,7 +6291,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Tallenna järjestelmälokit Lataukset-hakemistoon.</translation>
 <translation id="656293578423618167">Tiedostonimi tai -polku on liian pitkä. Lyhennä nimeä tai tallenna muuhun sijaintiin.</translation>
-<translation id="6568283005472142698">Välilehtihaku</translation>
 <translation id="6570622975915850879">Käytä toista laitetta</translation>
 <translation id="65711204837946324">Tarvitsee luvan lataukseen</translation>
 <translation id="6571533309669248172">Tekstin muotoilu</translation>
@@ -7627,7 +7621,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7737948071472253612">Kameran käyttö kielletty</translation>
 <translation id="77381465218432215">Näytä aksenttimerkit ja erikoismerkit</translation>
 <translation id="7740996059027112821">Vakio</translation>
-<translation id="7741307896921365578">Sallii selaintason sivupaneelille pääsyn lukulistallesi ja kirjanmerkkeihisi hyödyllisellä ja pysyvällä tavalla.</translation>
 <translation id="7742558784808143689">Tyhjennetäänkö sivuston <ph name="SITE_NAME" />, kaikkien sen alla olevien sivustojen ja asennettujen sovellusten sivustodata ja luvat?</translation>
 <translation id="7742706086992565332">Voit valita, paljonko lähennät tai loitonnat näkymää tietyillä sivustoilla</translation>
 <translation id="7742879569460013116">Jaa linkki:</translation>
@@ -7827,7 +7820,6 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7909986151924474987">Et välttämättä voi asentaa profiilia uudelleen</translation>
 <translation id="7910768399700579500">&amp;Uusi kansio</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="79113168483292735">Välilehtihaun Mediavälilehdet-osio</translation>
 <translation id="7912080627461681647">Salasana vaihdettiin palvelimella. Kirjaudu ulos ja sitten uudelleen sisään.</translation>
 <translation id="7912974581251770345">Käännös</translation>
 <translation id="7915457674565721553">Muodosta yhteys internetiin, niin voit määrittää lapsilukon</translation>
@@ -8600,7 +8592,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8599681327221583254">Ainakin yksi käytäntö on määritetty väärin. Ota yhteyttä järjestelmänvalvojaasi.</translation>
 <translation id="8599864823732014237">Ohitetaanko yritysrekisteröinti?</translation>
 <translation id="8601206103050338563">TLS WWW -palvelimen todennus</translation>
-<translation id="8601611099293226919">Hae näytöltä Google Lensilla</translation>
 <translation id="8602674530529411098">Sovellukset (beta)</translation>
 <translation id="8602851771975208551">Toinen tietokoneellasi oleva ohjelma lisäsi sovelluksen, joka voi muuttaa Chromen toimintaa.</translation>
 <translation id="8605428685123651449">SQLiten käyttämä muisti</translation>

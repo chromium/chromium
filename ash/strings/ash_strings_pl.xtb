@@ -183,6 +183,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1774796056689732716">Kalendarz, <ph name="CURRENT_MONTH_YEAR" />, obecnie wybrana jest data <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Wyłączono</translation>
 <translation id="181103072419391116">Siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
+<translation id="1815245884418711390">Przełącz hotspota. Hotspot jest wyłączony.</translation>
 <translation id="1816896987747843206">Spowoduje to przyznanie dostępu do aparatu wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z niego</translation>
 <translation id="1823280932251546115">Pasek stanu, godzina <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -241,6 +242,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2023558322300866873">Przechwytywanie pakietów możesz zatrzymać w dowolnym momencie</translation>
 <translation id="2034971124472263449">Zapisz mimo to</translation>
 <translation id="2049240716062114887">Nazwa biurka została zmieniona na <ph name="DESK_NAME" /></translation>
+<translation id="206377500836174974">Pełne</translation>
 <translation id="2064048859448024834">Podgląd z aparatu jest włączony</translation>
 <translation id="2067602449040652523">Jasność klawiatury</translation>
 <translation id="2075520525463668108">Przełącz: <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> – <ph name="CAPTURE_STATE" /></translation>
@@ -293,6 +295,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2339073806695260576">Kliknij przycisk rysika na półce, by zrobić notatkę lub zrzut ekranu albo użyć wskaźnika laserowego bądź lupy.</translation>
 <translation id="2341729377289034582">Zablokowano w orientacji pionowej</translation>
 <translation id="2345226652884463045">Aby wybrać tekst do edycji, naciśnij Enter lub klawisz wyszukiwania i spację.</translation>
+<translation id="2349785431103945039">Pokaż szczegóły hotspota. Aby go używać, połącz się z siecią komórkową.</translation>
 <translation id="2350794187831162545">Mowa w języku: <ph name="LANGUAGE" /> jest teraz przetwarzana lokalnie i działa offline. Jeśli chcesz zmienić język dyktowania, otwórz Ustawienia &gt; Ułatwienia dostępu.</translation>
 <translation id="2352467521400612932">Ustawienia rysika</translation>
 <translation id="2354174487190027830">Aktywuję <ph name="NAME" /></translation>
@@ -336,6 +339,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2531025035050312891">wolne urządzenie</translation>
 <translation id="2542089167727451762">Kliknij swoje zdjęcie profilowe</translation>
 <translation id="254900897760075745">Skopiuj wybraną treść do schowka</translation>
+<translation id="2549711466868162843">Polepsz oświetlenie</translation>
 <translation id="2549985041256363841">Zacznij nagrywanie</translation>
 <translation id="255671100581129685">Asystent Google jest niedostępny w sesji publicznej.</translation>
 <translation id="256712445991462162">Lupa zadokowana</translation>
@@ -429,6 +433,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3009178788565917040">Urządzenie wyjściowe</translation>
 <translation id="3009958530611748826">Wybierz folder zapisu</translation>
 <translation id="301282384882049174">Udostępnia administrator</translation>
+<translation id="301584155502740476">Pokaż szczegóły hotspota. Hotspot jest wyłączony.</translation>
 <translation id="3018135054368884502">Przewiń do przodu</translation>
 <translation id="3033545621352269033">Włączono</translation>
 <translation id="3033912566804961911">Połącz z: <ph name="DESK_NAME" /></translation>
@@ -489,6 +494,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3291862315280588024">Przejdź do początku poprzedniego słowa</translation>
 <translation id="3294437725009624529">Gość</translation>
 <translation id="3298690094479023523">Nadal nie udało się zweryfikować Twojego hasła ani kodu PIN. Spróbuj ponownie.</translation>
+<translation id="3300193645498960160">Powiadomimy Cię, gdy będziesz mówić, a mikrofon będzie wyciszony. Dźwięk nigdy nie jest wysyłany poza Twoje urządzenie.</translation>
 <translation id="3307642347673023554">Przełączono na tryb laptopa</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> nadal może się później zalogować.</translation>
 <translation id="3321628682574733415">Nieprawidłowy kod rodzica</translation>
@@ -572,6 +578,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3621202678540785336">Urządzenie wejściowe</translation>
 <translation id="3621712662352432595">Ustawienia audio</translation>
 <translation id="3626281679859535460">Jasność</translation>
+<translation id="3629640897379005903">Pokaż szczegóły hotspota. Hotspot się wyłącza.</translation>
 <translation id="3630697955794050612">wyłączono</translation>
 <translation id="3631369015426612114">Zezwalaj na powiadomienia z tych źródeł</translation>
 <translation id="3633097874324966332">Otwórz ustawienia Bluetooth, aby sparować urządzenie</translation>
@@ -703,6 +710,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="423685346499232137">W tej chwili nie można kopiować ani wklejać treści</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Tryb przeglądu</translation>
+<translation id="4240756737570479726">Wyłączam…</translation>
 <translation id="4242533952199664413">Otwórz ustawienia</translation>
 <translation id="4247123849143712100">Zaktualizuj i wyłącz</translation>
 <translation id="4250229828105606438">Zrzut ekranu</translation>
@@ -841,6 +849,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4864369630010738180">Loguję...</translation>
 <translation id="4864648187878336334">Biurko 15</translation>
 <translation id="4868492592575313542">aktywna</translation>
+<translation id="4871905435473761992">Pokaż szczegóły hotspota. Twoja sieć komórkowa go nie obsługuje.</translation>
 <translation id="4872237917498892622">Alt+Szukaj lub Shift</translation>
 <translation id="4872852897273142380">Przenieś zaznaczenie na pasek zakładek (jeśli jest widoczny)</translation>
 <translation id="4881695831933465202">Otwórz</translation>
@@ -900,6 +909,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5104236669533825617">Nie udało się utworzyć screencasta</translation>
 <translation id="5107522548814527560">Internet</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">Rozmycie tła</translation>
 <translation id="5117590920725113268">Pokaż przyszły miesiąc</translation>
 <translation id="5121628974188116412">Przejdź na dół strony</translation>
 <translation id="5136175204352732067">Podłączono inną klawiaturę</translation>
@@ -912,6 +922,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5168181903108465623">Dostępne są urządzenia przesyłające</translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
 <translation id="5176318573511391780">Nagraj fragment ekranu</translation>
+<translation id="5187627942836026988">Pokaż szczegóły hotspota. Jest on zablokowany przez administratora.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, zdarzenia: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718">Aplikacja <ph name="MOVED_APP_NAME" /> została połączona z aplikacją <ph name="IN_PLACE_APP" />, by utworzyć nowy folder.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1084,6 +1095,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="595202126637698455">Śledzenie wydajności jest włączone</translation>
 <translation id="5955304353782037793">aplikacja</translation>
 <translation id="5958529069007801266">Użytkownik nadzorowany</translation>
+<translation id="5961960957587052807">Oświetlenie</translation>
 <translation id="5965524703725988602">Przełącz ciemny motyw. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Aby nagrać okno, naciśnij Enter</translation>
 <translation id="5978382165065462689">Udostępnianie sterowania ekranem przy użyciu pomocy zdalnej.</translation>
@@ -1255,6 +1267,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6752912906630585008">Biurko <ph name="REMOVED_DESK" /> zostało usunięte i połączone z biurkiem <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">karty</translation>
 <translation id="6757237461819837179">Multimedia nie są odtwarzane</translation>
+<translation id="6759628406555734414">Pokaż szczegóły hotspota. Hotspot się włącza.</translation>
 <translation id="6768043681523654438">miejsce na dane</translation>
 <translation id="6777216307882431711">Zasilanie podłączonych urządzeń USB-C</translation>
 <translation id="6781002679438061620">Biurko 9</translation>
@@ -1279,6 +1292,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Pozostała 1 cyfra}few{Pozostały # cyfry}many{Pozostało # cyfr}other{Pozostało # cyfry}}</translation>
 <translation id="6867938213751067702">Pobieranie wstrzymane: <ph name="FILENAME" /></translation>
+<translation id="6874854809828346832">Pokaż szczegóły hotspota. Hotspot jest włączony.</translation>
 <translation id="6878400149835617132">Skrót wyłączony</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplikacja}few{# aplikacje}many{# aplikacji}other{# aplikacji}}</translation>
 <translation id="6884665277231944629">Wróć do dzisiaj</translation>
@@ -1288,6 +1302,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6896758677409633944">Kopiuj</translation>
 <translation id="6901883536534621389">Poruszaj się za pomocą gestów</translation>
 <translation id="6919251195245069855">Nie udało się rozpoznać karty elektronicznej. Spróbuj ponownie.</translation>
+<translation id="6920245099716267363">Przełącz hotspota. Hotspot jest włączony. Jedno urządzenie jest połączone.</translation>
 <translation id="6931576957638141829">Zapisz w</translation>
 <translation id="6941333068993625698">Prześlij opinię</translation>
 <translation id="6942518653766415536">Menu formatu nagrywania</translation>
@@ -1377,6 +1392,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7378203170292176219">Przeciągnij, by wybrać obszar, który chcesz nagrać</translation>
 <translation id="7378594059915113390">Sterowanie multimediami</translation>
 <translation id="7378889811480108604">Oszczędzanie baterii jest wyłączone.</translation>
+<translation id="7382640522316003298">Przełącz hotspota. Hotspot jest włączony. Połączono z urządzeniami (<ph name="DEVICECOUNT" />).</translation>
 <translation id="7382680553121047388">Wł.</translation>
 <translation id="7384028040782072252">Kliknij prawym przyciskiem w dowolnym miejscu, aby zmienić kolejność aplikacji</translation>
 <translation id="7386767620098596324">Przełącz połączenie sieciowe. <ph name="STATE_TEXT" />.</translation>
@@ -1427,6 +1443,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7579778809502851308">Zrzut ekranu</translation>
 <translation id="7593891976182323525">Szukaj lub Shift</translation>
 <translation id="7600875258240007829">Zobacz wszystkie powiadomienia</translation>
+<translation id="7601417191446344542">Włączyć przypomnienie o wyciszeniu?</translation>
 <translation id="7607002721634913082">Wstrzymano</translation>
 <translation id="7609951632080598826">Widok kalendarza, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera została ponownie połączona.</translation>
@@ -1550,6 +1567,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8131740175452115882">Potwierdź</translation>
 <translation id="8131994907636310308">Komunikat Zamknij sortowanie</translation>
 <translation id="8132793192354020517">Połączono z <ph name="NAME" /></translation>
+<translation id="8135163608236671037">Przełącz hotspota. Hotspot jest włączony. Żadne urządzenie nie jest połączone.</translation>
 <translation id="8138705869659070104">Aktywuj po konfiguracji urządzenia</translation>
 <translation id="813913629614996137">Inicjuję…</translation>
 <translation id="8142441511840089262">Dwukrotne kliknięcie</translation>
@@ -1730,6 +1748,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8990809378771970590">W użyciu jest <ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">Tryb odwrócenia kolorów został włączony. Aby go wyłączyć, naciśnij ponownie Ctrl+Search+H.</translation>
 <translation id="899350903320462459">Odblokuj urządzenie jako <ph name="LOGIN_ID" />, by zareagować na powiadomienie</translation>
+<translation id="8993733019280019776">Mówisz coś? Twój mikrofon jest wyłączony. Wybierz mikrofon, który chcesz włączyć.</translation>
 <translation id="9000771174482730261">ZARZĄDZAJ MIEJSCEM NA DANE</translation>
 <translation id="9005984960510803406">Otwórz okno terminala Crosh</translation>
 <translation id="9017320285115481645">Wpisz kod dostępu rodzica w Family Link.</translation>

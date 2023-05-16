@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> používal(a) Chromium a zanechal(a) záložky, heslá a ďalšie nastavenia v tomto zariadení.</translation>
 <translation id="372658070733623520">Ak chcete vo svojom účte Google používať a ukladať údaje prehliadača Chromium, overte svoju totožnosť.</translation>
 <translation id="3805899903892079518">Chromium nemá prístup k vašim fotkám ani videám. Prístup povoľte v časti Nastavenia systému iOS &gt; Súkromie &gt; Fotky.</translation>
+<translation id="3955621079070267756">Otvárajte Chromium z ľubovoľnej aplikácie</translation>
 <translation id="4043291146360695975">Heslá sa ukladajú do správcu hesiel iba v tomto zariadení.</translation>
 <translation id="4099085513035183040">Nepodporované vo verzii Chromium Beta</translation>
 <translation id="4432744876818348753">Prihláste sa, aby ste mohli Chromium využívať naplno.</translation>
@@ -142,5 +143,6 @@
 <translation id="9089354809943900324">Prehliadač Chromium je zastaraný</translation>
 <translation id="9110075932708282655">Predvolene používať Chromium</translation>
 <translation id="921174536258924340">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra alebo <ph name="BEGIN_LINK" />skontrolujte heslá vo svojom účte Google<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">Automaticky používajte Chromium, keď klepnete na odkazy v správach, dokumentoch a aplikáciách.</translation>
 <translation id="985602178874221306">Autori prehliadača Chromium</translation>
 </translationbundle>

@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351937230027495976">摺埋選單</translation>
 <translation id="1360220746312242196">搜尋頁面時，前往上一個符合搜尋的項目</translation>
+<translation id="1360788414852622716">正在停用設定檔，請稍候片刻。</translation>
 <translation id="1364382257761975320">如要解鎖 Chromebook，請使用指紋</translation>
 <translation id="1365866993922957110">取得自動更新</translation>
 <translation id="1372545819342940910">儲存桌面以便日後使用</translation>
@@ -183,6 +184,7 @@
 <translation id="1774796056689732716">日曆，<ph name="CURRENT_MONTH_YEAR" />，目前揀咗 <ph name="DATE" />。</translation>
 <translation id="1787955149152357925">關閉</translation>
 <translation id="181103072419391116">訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
+<translation id="1815245884418711390">切換熱點。熱點已關閉。</translation>
 <translation id="1816896987747843206">此操作會允許具備相機權限的所有應用程式和網站存取相機</translation>
 <translation id="1823280932251546115">狀態列，時間 <ph name="TIME" />，
         <ph name="BATTERY" />
@@ -241,6 +243,7 @@
 <translation id="2023558322300866873">您可隨時停止擷取封包</translation>
 <translation id="2034971124472263449">仍要儲存</translation>
 <translation id="2049240716062114887">已將桌面名稱變更為「<ph name="DESK_NAME" />」</translation>
+<translation id="206377500836174974">100%</translation>
 <translation id="2064048859448024834">開咗攝錄機預覽</translation>
 <translation id="2067602449040652523">鍵盤亮度</translation>
 <translation id="2075520525463668108">切換<ph name="CAPTURE_MEDIUM" />。<ph name="CAPTURE_MEDIUM" /><ph name="CAPTURE_STATE" /></translation>
@@ -293,6 +296,7 @@
 <translation id="2339073806695260576">輕按捷徑列的觸控按鈕即可寫筆記、擷取螢幕畫面，並使用雷射筆或放大鏡。</translation>
 <translation id="2341729377289034582">已鎖定為垂直</translation>
 <translation id="2345226652884463045">㩒 Enter 掣或者搜尋 + 空格掣就可以揀要修改嘅文字。</translation>
+<translation id="2349785431103945039">顯示熱點詳情。連線至流動網絡即可使用熱點。</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" />語音處理程序已在本機執行，相關內容會離線運作。您可在 [設定] &gt; [無障礙中心] 變更語音聽寫語言。</translation>
 <translation id="2352467521400612932">觸控筆設定</translation>
 <translation id="2354174487190027830">正在啟用 <ph name="NAME" /></translation>
@@ -336,6 +340,7 @@
 <translation id="2531025035050312891">裝置緩慢</translation>
 <translation id="2542089167727451762">輕按您的個人檔案圖片</translation>
 <translation id="254900897760075745">將選取的內容複製至剪貼簿</translation>
+<translation id="2549711466868162843">提高亮度</translation>
 <translation id="2549985041256363841">開始錄影</translation>
 <translation id="255671100581129685">「Google 助理」不適用於公開工作階段。</translation>
 <translation id="256712445991462162">固定的放大鏡</translation>
@@ -429,6 +434,7 @@
 <translation id="3009178788565917040">輸出</translation>
 <translation id="3009958530611748826">選取儲存的資料夾</translation>
 <translation id="301282384882049174">已由管理員分享</translation>
+<translation id="301584155502740476">顯示熱點詳情。熱點已關閉。</translation>
 <translation id="3018135054368884502">向前快轉媒體</translation>
 <translation id="3033545621352269033">已開啟</translation>
 <translation id="3033912566804961911">與「<ph name="DESK_NAME" />」合併</translation>
@@ -489,6 +495,7 @@
 <translation id="3291862315280588024">移至前一個字詞的開頭</translation>
 <translation id="3294437725009624529">訪客</translation>
 <translation id="3298690094479023523">系統仍然無法驗證您的 PIN 或密碼。請再試一次。</translation>
+<translation id="3300193645498960160">如果在靜音狀態下說話，系統會傳送通知給您。音訊資料只會儲存在裝置上。</translation>
 <translation id="3307642347673023554">已切換至手提電腦模式</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> 稍後仍可登入。</translation>
 <translation id="3321628682574733415">家長存取碼錯誤</translation>
@@ -539,6 +546,7 @@
 <translation id="3510164367642747937">突顯滑鼠遊標</translation>
 <translation id="3513798432020909783">帳戶由 <ph name="MANAGER_EMAIL" /> 管理</translation>
 <translation id="352245152354538528">{0,plural, =1{請在 1 分鐘內更新裝置}other{請在 # 分鐘內更新裝置}}</translation>
+<translation id="3522979239100719575">正在尋找可用的設定檔，請稍候片刻。</translation>
 <translation id="3526440770046466733">在新分頁中開啟連結並停留在目前的分頁中</translation>
 <translation id="353086728817903341">已連接 <ph name="NUM_DEVICES" /> 部裝置</translation>
 <translation id="3533126039236445965">捷徑列中的應用程式</translation>
@@ -572,6 +580,7 @@
 <translation id="3621202678540785336">輸入</translation>
 <translation id="3621712662352432595">音效檔案設定</translation>
 <translation id="3626281679859535460">亮度</translation>
+<translation id="3629640897379005903">顯示熱點詳情。正在停用熱點。</translation>
 <translation id="3630697955794050612">關閉</translation>
 <translation id="3631369015426612114">允許顯示來自以下來源的通知</translation>
 <translation id="3633097874324966332">開啟「藍牙設定」以配對裝置</translation>
@@ -703,6 +712,7 @@
 <translation id="423685346499232137">現在無法複製或貼上內容</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">概覽模式</translation>
+<translation id="4240756737570479726">正在停用…</translation>
 <translation id="4242533952199664413">開啟設定</translation>
 <translation id="4247123849143712100">更新並關機</translation>
 <translation id="4250229828105606438">螢幕截圖</translation>
@@ -841,6 +851,7 @@
 <translation id="4864369630010738180">正在登入…</translation>
 <translation id="4864648187878336334">桌面 15</translation>
 <translation id="4868492592575313542">已啟用</translation>
+<translation id="4871905435473761992">顯示熱點詳情。您的流動網絡不支援熱點。</translation>
 <translation id="4872237917498892622">Alt + 搜尋鍵或 Shift 鍵</translation>
 <translation id="4872852897273142380">將焦點移至書籤列或突顯書籤列 (如有顯示)</translation>
 <translation id="4881695831933465202">開啟</translation>
@@ -899,6 +910,7 @@
 <translation id="5104236669533825617">無法建立螢幕截圖工作階段</translation>
 <translation id="5107522548814527560">網絡</translation>
 <translation id="5111318697104479778"><ph name="DESC" />，<ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">背景模糊效果</translation>
 <translation id="5117590920725113268">顯示下個月</translation>
 <translation id="5121628974188116412">前往頁面底部</translation>
 <translation id="5136175204352732067">已連接不同的鍵盤</translation>
@@ -911,6 +923,7 @@
 <translation id="5168181903108465623">有可用投放裝置</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5176318573511391780">錄影部分螢幕</translation>
+<translation id="5187627942836026988">顯示熱點詳情。管理員已封鎖熱點。</translation>
 <translation id="5198413532174090167"><ph name="DATE" />，<ph name="NUMBER" /> 個活動</translation>
 <translation id="5198715732953550718">結合「<ph name="MOVED_APP_NAME" />」同「<ph name="IN_PLACE_APP" />」就可以建立新資料夾。</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />，<ph name="NOTIFICATION_TITLE" />：<ph name="MESSAGE" />，<ph name="PHONE_NAME" /></translation>
@@ -1083,6 +1096,7 @@
 <translation id="595202126637698455">效能追蹤已啟用</translation>
 <translation id="5955304353782037793">應用程式</translation>
 <translation id="5958529069007801266">受管使用者</translation>
+<translation id="5961960957587052807">亮度</translation>
 <translation id="5965524703725988602">切換深色主題背景。<ph name="STATE_TEXT" />。</translation>
 <translation id="5976112937189445008">㩒 Enter 掣就可以錄視窗畫面</translation>
 <translation id="5978382165065462689">透過「遠端協助」共用螢幕控制權。</translation>
@@ -1254,6 +1268,7 @@
 <translation id="6752912906630585008">已移除桌面 <ph name="REMOVED_DESK" />，並與桌面 <ph name="RECEIVE_DESK" /> 合併</translation>
 <translation id="6753390234084146956">分頁</translation>
 <translation id="6757237461819837179">目前沒有播放任何媒體</translation>
+<translation id="6759628406555734414">顯示熱點詳情。熱點正在啟用。</translation>
 <translation id="6768043681523654438">儲存空間</translation>
 <translation id="6777216307882431711">正在為已連接的 USB-C 裝置充電</translation>
 <translation id="6781002679438061620">桌面 9</translation>
@@ -1278,6 +1293,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{淨返 1 個數字}other{淨返 # 個數字}}</translation>
 <translation id="6867938213751067702">暫停咗下載 <ph name="FILENAME" /></translation>
+<translation id="6874854809828346832">顯示熱點詳情。熱點已開啟。</translation>
 <translation id="6878400149835617132">已關閉快速鍵功能</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 個應用程式}other{# 個應用程式}}</translation>
 <translation id="6884665277231944629">返回今天</translation>
@@ -1287,6 +1303,7 @@
 <translation id="6896758677409633944">複製</translation>
 <translation id="6901883536534621389">試用手勢瀏覽功能</translation>
 <translation id="6919251195245069855">無法辨識智能卡，請再試一次。</translation>
+<translation id="6920245099716267363">切換熱點。熱點已開啟，並連接 1 部裝置。</translation>
 <translation id="6931576957638141829">儲存至</translation>
 <translation id="6941333068993625698">提交意見</translation>
 <translation id="6942518653766415536">錄製內容格式選單</translation>
@@ -1376,6 +1393,7 @@
 <translation id="7378203170292176219">拖曳以選取要錄影的範圍</translation>
 <translation id="7378594059915113390">媒體控制項</translation>
 <translation id="7378889811480108604">「慳電模式」已關閉</translation>
+<translation id="7382640522316003298">切換熱點。熱點已開啟，並連接 <ph name="DEVICECOUNT" /> 部裝置。</translation>
 <translation id="7382680553121047388">開啟</translation>
 <translation id="7384028040782072252">在任何地方按一下右鍵，即可將應用程式重新排序</translation>
 <translation id="7386767620098596324">切換網絡連線。<ph name="STATE_TEXT" />。</translation>
@@ -1426,6 +1444,7 @@
 <translation id="7579778809502851308">擷取螢幕畫面</translation>
 <translation id="7593891976182323525">搜尋鍵或 Shift 鍵</translation>
 <translation id="7600875258240007829">查看所有通知</translation>
+<translation id="7601417191446344542">要開啟靜音狀態的自動提醒嗎？</translation>
 <translation id="7607002721634913082">已暫停</translation>
 <translation id="7609951632080598826">日曆檢視，<ph name="DATE" />，<ph name="TIME" /></translation>
 <translation id="7611213136657090146">攝錄機已經重新連線。</translation>
@@ -1538,6 +1557,7 @@
 <translation id="8083540854303889870">已儲存以供日後使用</translation>
 <translation id="8091153018031979607">開始時間：<ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">自動更新</translation>
+<translation id="8092380135549145188">捲動控制選項</translation>
 <translation id="8098591350844501178">停止將畫面投放到「<ph name="RECEIVER_NAME" />」</translation>
 <translation id="810637681351706236">取消將應用程式固定至捷徑列</translation>
 <translation id="8113423164597455979">已在所有應用程式上啟用通知</translation>
@@ -1549,6 +1569,7 @@
 <translation id="8131740175452115882">確定</translation>
 <translation id="8131994907636310308">閂排序資訊框</translation>
 <translation id="8132793192354020517">已連線至 <ph name="NAME" /></translation>
+<translation id="8135163608236671037">切換熱點。熱點已開啟，目前沒有任何裝置連線。</translation>
 <translation id="8138705869659070104">在裝置完成設定後啟用</translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8142441511840089262">連按兩下</translation>
@@ -1729,6 +1750,7 @@
 <translation id="8990809378771970590">正在使用<ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">已啟用「色彩反轉模式」。再次按下 Ctrl+Search+H 鍵便可停用。</translation>
 <translation id="899350903320462459">以 <ph name="LOGIN_ID" /> 身份解鎖裝置即可執行有關通知的動作</translation>
+<translation id="8993733019280019776">您在說話嗎？麥克風已關閉，只要選取麥克風即可開啟。</translation>
 <translation id="9000771174482730261">管理儲存空間</translation>
 <translation id="9005984960510803406">開啟 Crosh Window</translation>
 <translation id="9017320285115481645">請輸入 Family Link 家長存取碼。</translation>

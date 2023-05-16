@@ -1093,6 +1093,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3658742229777143148">Wersja</translation>
 <translation id="3664782872746246217">Słowa kluczowe:</translation>
 <translation id="3667704023705708645">Kapitał podwyższonego ryzyka</translation>
+<translation id="3671117652518853176">Gdy to ustawienie jest wyłączone, ze względów bezpieczeństwa czasami może pojawiać się prośba o weryfikację</translation>
 <translation id="3671540257457995106">Zezwolić na zmianę rozmiaru?</translation>
 <translation id="3672568546897166916">Błąd w ścieżce <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Rolka 3</translation>
@@ -1127,6 +1128,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3736520371357197498">Jeśli rozumiesz zagrożenie, możesz <ph name="BEGIN_LINK" />odwiedzić tę niebezpieczną stronę<ph name="END_LINK" />, zanim niebezpieczne programy zostaną usunięte.</translation>
 <translation id="3738166223076830879">Przeglądarką zarządza administrator.</translation>
 <translation id="3740319564441798148">Międzymiastowe połączenia autobusowe i kolejowe</translation>
+<translation id="3743765582345153106">Zawsze sprawdzaj, jeśli używasz autouzupełniania</translation>
 <translation id="3744111561329211289">Synchronizacja w tle</translation>
 <translation id="3744286742364977428">Pobierane pliki są wysyłane do Google Cloud lub innych firm w celu przeanalizowania. Na przykład mogą być skanowane pod kątem danych wrażliwych lub złośliwego oprogramowania i przechowywane zgodnie z zasadami firmy.</translation>
 <translation id="3744899669254331632">Nie możesz teraz odwiedzić strony <ph name="SITE" />, ponieważ wysłała ona zaszyfrowane dane logowania, których Chromium nie może przetworzyć. Błędy sieciowe i ataki są zazwyczaj tymczasowe, więc prawdopodobnie strona będzie dostępna później.</translation>
@@ -1729,6 +1731,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5171045022955879922">Wyszukaj lub wpisz URL</translation>
 <translation id="5172758083709347301">Komputer</translation>
 <translation id="5177076414499237632">Więcej informacji o źródle i temacie tej strony</translation>
+<translation id="5179490652562926740">Ustawienia weryfikacji płatności zostały zapisane</translation>
 <translation id="5179510805599951267">Jeśli to nie jest język <ph name="ORIGINAL_LANGUAGE" />, zgłoś błąd</translation>
 <translation id="518639307526414276">Karma i artykuły dla zwierząt</translation>
 <translation id="5190072300954988691">Kamera i mikrofon są niedozwolone</translation>
@@ -3221,7 +3224,6 @@ Dodatkowe informacje:
 <translation id="8870494189203302833">Ta sama kolejność, strona do drukowania skierowana w dół</translation>
 <translation id="8870700989640064057">Wydrukować poufny plik?</translation>
 <translation id="8871553383647848643">Dostosuj wygląd przeglądarki</translation>
-<translation id="8871603420762394026">Obecnie Chrome udostępnia witrynom bardzo ograniczone informacje (np. o tym, kiedy reklama się wyświetliła), aby ułatwiać im ocenę skuteczności reklam.</translation>
 <translation id="8874824191258364635">Wpisz prawidłowy numer karty</translation>
 <translation id="8876033571432926051">Gry rekreacyjne</translation>
 <translation id="8877780815363510165">Wędkarstwo</translation>

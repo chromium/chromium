@@ -426,6 +426,7 @@
 <translation id="455835558791489930">Baterija od <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM je otključan</translation>
 <translation id="4562494484721939086">Mobilna mreža nije dostupna</translation>
+<translation id="4573777384450697571">Nije uspelo – sertifikat je istekao</translation>
 <translation id="458794348635939462">Razrešenje svih hostova nije uspelo</translation>
 <translation id="4593212453765072419">Potrebna je potvrda autentičnosti proksija</translation>
 <translation id="4609350030397390689">Smanjite osvetljenost tastature</translation>
@@ -539,7 +540,6 @@
 <translation id="5423849171846380976">Aktivirano</translation>
 <translation id="5430931332414098647">Trenutno privezivanje</translation>
 <translation id="5431318178759467895">U boji</translation>
-<translation id="5456936324019847994">Povezivanje sa omogućenim prilagođenim nazivima pristupnih tačaka nije uspelo. Zatražite više informacija od mobilnog operatera.</translation>
 <translation id="5457599981699367932">Pregledajte kao gost</translation>
 <translation id="54609108002486618">Upravljani</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Preostaje {0} pokušaj}one{Preostaje {0} pokušaj}few{Preostaju {0} pokušaja}other{Preostaje {0} pokušaja}}</translation>
@@ -710,7 +710,6 @@
 <translation id="6798678288485555829">Kretanje kroz tekst</translation>
 <translation id="680983167891198932">Ključ</translation>
 <translation id="6816797338148849397">Dostupne su informacije vezane za vaš izbor. Koristite taster sa strelicom nagore da biste im pristupili.</translation>
-<translation id="6838167112108853532">Ne možete da onemogućite ni uklonite ovaj naziv pristupne tačke. Uverite se da su omogućeni priloženi nazivi pristupnih tačaka onemogućeni ili uklonjeni.</translation>
 <translation id="6853312040151791195">Brzina pražnjenja</translation>
 <translation id="6889786074662672253">Ne isključujte spoljni uređaj ni računar tokom restartovanja. Možete da umanjite ovaj prozor. Ovo može da potraje nekoliko minuta, a spoljni uređaj možda neće raditi tokom tog perioda.</translation>
 <translation id="6900701049656042631">Ovaj album ne sadrži nijednu sliku. Da biste dodali slike, idite na <ph name="LINK" /></translation>

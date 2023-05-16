@@ -183,6 +183,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1774796056689732716">Agenda, <ph name="CURRENT_MONTH_YEAR" />, momenteel is <ph name="DATE" /> geselecteerd.</translation>
 <translation id="1787955149152357925">Uit</translation>
 <translation id="181103072419391116">Signaalsterkte <ph name="SIGNAL_STRENGTH" />, beheerd door je beheerder</translation>
+<translation id="1815245884418711390">Zet de hotspot aan/uit. Hotspot staat uit.</translation>
 <translation id="1816896987747843206">Hiermee geef je alle apps en websites met camerarechten toegang tot de camera</translation>
 <translation id="1823280932251546115">Statusvak, tijd <ph name="TIME" />,
 <ph name="BATTERY" />
@@ -241,6 +242,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2023558322300866873">Je kunt het opnemen van packets op elk moment stoppen</translation>
 <translation id="2034971124472263449">Toch opslaan</translation>
 <translation id="2049240716062114887">Bureaunaam is veranderd in <ph name="DESK_NAME" /></translation>
+<translation id="206377500836174974">Volledig</translation>
 <translation id="2064048859448024834">Het cameravoorbeeld staat aan</translation>
 <translation id="2067602449040652523">Toetsenbordhelderheid</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> schakelen. <ph name="CAPTURE_MEDIUM" /> is <ph name="CAPTURE_STATE" /></translation>
@@ -293,6 +295,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2339073806695260576">Tik op de stylusknop op de plank om een notitie of screenshot te maken, of om de Assistent, de laserpen of het vergrootglas te gebruiken.</translation>
 <translation id="2341729377289034582">Vergrendeld in verticale stand</translation>
 <translation id="2345226652884463045">Druk op Enter of de zoektoets + spatiebalk om de tekst te selecteren die je wilt bewerken.</translation>
+<translation id="2349785431103945039">Toon de hotspotdetails. Maak verbinding met mobiele data om een hotspot te gebruiken.</translation>
 <translation id="2350794187831162545">Spraak in het <ph name="LANGUAGE" /> wordt nu lokaal verwerkt en werkt offline. Je kunt je dicteertaal wijzigen via Instellingen &gt; Toegankelijkheid.</translation>
 <translation id="2352467521400612932">Stylusinstellingen</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> activeren</translation>
@@ -336,6 +339,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2531025035050312891">apparaat langzaam</translation>
 <translation id="2542089167727451762">Tik op je profielafbeelding</translation>
 <translation id="254900897760075745">Geselecteerde content kopiëren naar klembord</translation>
+<translation id="2549711466868162843">Belichting verbeteren</translation>
 <translation id="2549985041256363841">Opname starten</translation>
 <translation id="255671100581129685">De Google Assistent is niet beschikbaar in een openbare sessie.</translation>
 <translation id="256712445991462162">het vastgezette vergrootglas</translation>
@@ -429,6 +433,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3009178788565917040">Uitgang</translation>
 <translation id="3009958530611748826">Selecteer een map voor opslaan</translation>
 <translation id="301282384882049174">Gedeeld door je beheerder</translation>
+<translation id="301584155502740476">Toon de hotspotdetails. Hotspot staat uit.</translation>
 <translation id="3018135054368884502">Media vooruitspoelen</translation>
 <translation id="3033545621352269033">Aan</translation>
 <translation id="3033912566804961911">Combineren met <ph name="DESK_NAME" /></translation>
@@ -489,6 +494,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3291862315280588024">Naar begin van het vorige woord</translation>
 <translation id="3294437725009624529">Gast</translation>
 <translation id="3298690094479023523">Je pincode of wachtwoord kan nog steeds niet worden geverifieerd. Probeer het opnieuw.</translation>
+<translation id="3300193645498960160">Je krijgt een melding als je praat terwijl het geluid uitstaat. De audio verlaat je apparaat nooit.</translation>
 <translation id="3307642347673023554">Overgeschakeld naar laptopmodus</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan later nog inloggen.</translation>
 <translation id="3321628682574733415">Onjuiste oudercode</translation>
@@ -572,6 +578,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3621202678540785336">Ingang</translation>
 <translation id="3621712662352432595">Audio-instellingen</translation>
 <translation id="3626281679859535460">Helderheid</translation>
+<translation id="3629640897379005903">Toon de hotspotdetails. Hotspot wordt uitgezet.</translation>
 <translation id="3630697955794050612">uit</translation>
 <translation id="3631369015426612114">Meldingen toestaan van het volgende</translation>
 <translation id="3633097874324966332">Open de bluetooth-instellingen om je apparaat te koppelen</translation>
@@ -703,6 +710,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="423685346499232137">Kan momenteel geen content kopiëren of plakken</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Overzichtsmodus</translation>
+<translation id="4240756737570479726">Uitzetten…</translation>
 <translation id="4242533952199664413">Instellingen openen</translation>
 <translation id="4247123849143712100">Updaten en uitzetten</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -841,6 +849,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4864369630010738180">Inloggen...</translation>
 <translation id="4864648187878336334">Bureau 15</translation>
 <translation id="4868492592575313542">geactiveerd</translation>
+<translation id="4871905435473761992">Toon de hotspotdetails. Je mobiele netwerk ondersteunt geen hotspots.</translation>
 <translation id="4872237917498892622">Alt+Zoeken of Shift</translation>
 <translation id="4872852897273142380">De focus op de bookmarkbalk plaatsen of de bookmarkbalk markeren (indien getoond)</translation>
 <translation id="4881695831933465202">Openen</translation>
@@ -900,6 +909,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5104236669533825617">Kan screencast niet maken</translation>
 <translation id="5107522548814527560">Internet</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">Achtergrondvervaging</translation>
 <translation id="5117590920725113268">Volgende maand bekijken</translation>
 <translation id="5121628974188116412">Naar onderkant van pagina gaan</translation>
 <translation id="5136175204352732067">Ander toetsenbord aangesloten</translation>
@@ -912,6 +922,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5168181903108465623">Cast-apparaten beschikbaar</translation>
 <translation id="5170568018924773124">Tonen in map</translation>
 <translation id="5176318573511391780">Opname van gedeeltelijk scherm maken</translation>
+<translation id="5187627942836026988">Toon de hotspotdetails. Hotspot wordt geblokkeerd door je beheerder.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> afspraken</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> is gecombineerd met <ph name="IN_PLACE_APP" /> om een nieuwe map te maken.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1084,6 +1095,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="595202126637698455">Bijhouden van prestaties staat aan</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Gelimiteerde gebruiker</translation>
+<translation id="5961960957587052807">Licht</translation>
 <translation id="5965524703725988602">Donker thema aan- of uitzetten. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Druk op Enter om het venster op te nemen</translation>
 <translation id="5978382165065462689">De controle over je scherm delen via externe support.</translation>
@@ -1256,6 +1268,7 @@ Nieuwe installatie</translation>
 <translation id="6752912906630585008">Bureaublad <ph name="REMOVED_DESK" /> verwijderd en samengevoegd met bureaublad <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">tabbladen</translation>
 <translation id="6757237461819837179">Er wordt geen media afgespeeld</translation>
+<translation id="6759628406555734414">Toon de hotspotdetails. Hotspot wordt aangezet.</translation>
 <translation id="6768043681523654438">opslag</translation>
 <translation id="6777216307882431711">De aangesloten USB-C-apparaten worden van stroom voorzien</translation>
 <translation id="6781002679438061620">Bureau 9</translation>
@@ -1280,6 +1293,7 @@ Nieuwe installatie</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Nog 1 cijfer nodig}other{Nog # cijfers nodig}}</translation>
 <translation id="6867938213751067702">Download van <ph name="FILENAME" /> is onderbroken</translation>
+<translation id="6874854809828346832">Toon de hotspotdetails. Hotspot staat aan.</translation>
 <translation id="6878400149835617132">Snelkoppeling staat uit</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 app}other{# apps}}</translation>
 <translation id="6884665277231944629">Terug naar vandaag</translation>
@@ -1289,6 +1303,7 @@ Nieuwe installatie</translation>
 <translation id="6896758677409633944">Kopiëren</translation>
 <translation id="6901883536534621389">Gebaren gebruiken om te navigeren</translation>
 <translation id="6919251195245069855">Je smartkaart wordt niet herkend. Probeer het opnieuw.</translation>
+<translation id="6920245099716267363">Zet de hotspot aan/uit. Hotspot staat aan: 1 apparaat verbonden.</translation>
 <translation id="6931576957638141829">Opslaan in</translation>
 <translation id="6941333068993625698">Feedback sturen</translation>
 <translation id="6942518653766415536">Menu voor opname-indelingen</translation>
@@ -1375,6 +1390,7 @@ Nieuwe installatie</translation>
 <translation id="7378203170292176219">Sleep om het gedeelte te selecteren dat je wilt opnemen</translation>
 <translation id="7378594059915113390">Mediabediening</translation>
 <translation id="7378889811480108604">Batterijbesparing staat uit</translation>
+<translation id="7382640522316003298">Zet de hotspot aan/uit. Hotspot staat aan: <ph name="DEVICECOUNT" /> apparaten verbonden.</translation>
 <translation id="7382680553121047388">Aan</translation>
 <translation id="7384028040782072252">Klik ergens met de rechtermuisknop om je apps opnieuw te ordenen</translation>
 <translation id="7386767620098596324">Netwerkverbinding aan- of uitzetten. <ph name="STATE_TEXT" />.</translation>
@@ -1425,6 +1441,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7579778809502851308">Schermopname</translation>
 <translation id="7593891976182323525">Zoeken of Shift</translation>
 <translation id="7600875258240007829">Alle meldingen bekijken</translation>
+<translation id="7601417191446344542">Porren voor dempen aanzetten?</translation>
 <translation id="7607002721634913082">Onderbroken</translation>
 <translation id="7609951632080598826">Agendaweergave, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Camera opnieuw verbonden.</translation>
@@ -1548,6 +1565,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8131740175452115882">Bevestigen</translation>
 <translation id="8131994907636310308">Sorteertoast sluiten</translation>
 <translation id="8132793192354020517">Verbonden met <ph name="NAME" /></translation>
+<translation id="8135163608236671037">Zet de hotspot aan/uit. Hotspot staat aan: geen apparaat verbonden.</translation>
 <translation id="8138705869659070104">Activeren na apparaatinstelling</translation>
 <translation id="813913629614996137">Starten...</translation>
 <translation id="8142441511840089262">Dubbelklik</translation>
@@ -1728,6 +1746,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8990809378771970590"><ph name="IME_NAME" /> gebruiken</translation>
 <translation id="8991617137207906966">Modus voor kleurinversie aangezet. Druk nogmaals op Ctrl+Zoeken+H om dit uit te zetten.</translation>
 <translation id="899350903320462459">Ontgrendel het apparaat als <ph name="LOGIN_ID" /> om de meldingsactie uit te voeren</translation>
+<translation id="8993733019280019776">Ben je aan het praten? Je microfoon staat uit. Selecteer de microfoon om deze aan te zetten.</translation>
 <translation id="9000771174482730261">OPSLAG BEHEREN</translation>
 <translation id="9005984960510803406">Crosh-venster openen</translation>
 <translation id="9017320285115481645">Geef de Family Link-toegangscode voor ouders op.</translation>

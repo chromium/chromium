@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> was using Chromium and left bookmarks, passwords and other settings on this device.</translation>
 <translation id="372658070733623520">To use and save Chromium data in your Google Account, verify that it's you.</translation>
 <translation id="3805899903892079518">Chromium does not have access to your photos or videos. Enable access in iOS Settings &gt; Privacy &gt; Photos.</translation>
+<translation id="3955621079070267756">Open Chromium from any app</translation>
 <translation id="4043291146360695975">Passwords are saved to Password Manager on this device only.</translation>
 <translation id="4099085513035183040">Not supported on Chromium beta</translation>
 <translation id="4432744876818348753">Sign in to get the most out of Chromium.</translation>
@@ -143,5 +144,6 @@ Things to consider:
 <translation id="9089354809943900324">Chromium is out of date</translation>
 <translation id="9110075932708282655">Use Chromium by default</translation>
 <translation id="921174536258924340">Chromium couldn't check all passwords. Try again tomorrow or <ph name="BEGIN_LINK" />check passwords in your Google Account.<ph name="END_LINK" /></translation>
+<translation id="971488683725792095">Automatically use Chromium when you tap links in messages, documents and other apps.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

@@ -2939,6 +2939,11 @@ Từ phiên bản 114 trở lên, bạn không bắt buộc phải đặt <ph na
           Đây là một chính sách tạm thời và dự kiến sẽ bị loại bỏ trong <ph name="PRODUCT_NAME" /> 107. Chúng tôi có thể lùi thời hạn này nếu các doanh nghiệp có nhu cầu.
           </translation>
 <translation id="3678069907945250643">Cho phép truy cập vào Google Photos từ ứng dụng cá nhân hoá</translation>
+<translation id="3683696721696720186">Thiết lập danh sách các loại dữ liệu duyệt web cần xoá khi người dùng đóng tất cả cửa sổ trình duyệt. Dữ liệu duyệt web gồm có các loại sau đây: nhật ký duyệt web (<ph name="DATA_TYPE_BROWSING_HISTORY" />), nhật ký tải xuống (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), bộ nhớ đệm (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), dữ liệu tự động điền (<ph name="DATA_TYPE_AUTOFILL" />), mật khẩu (<ph name="DATA_TYPE_PASSWORD" />), các chế độ cài đặt trang web (<ph name="DATA_TYPE_SITE_SETTINGS" />) và dữ liệu ứng dụng đã lưu trữ (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Chính sách này không được ưu tiên hơn <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+Chính sách này yêu cầu bạn phải đặt chính sách <ph name="SYNC_DISABLED_POLICY_NAME" /> thành true (đúng). Nếu không, chính sách này sẽ bị bỏ qua. Nếu đặt chính sách này ở cấp nền tảng, bạn nên tắt tính năng Đồng bộ hoá ở cấp này. Nếu đặt chính sách này ở cấp người dùng, bạn nên tắt tính năng Đồng bộ hoá cho người dùng đó để chính sách này có hiệu lực.
+
+      Nếu <ph name="PRODUCT_NAME" /> không thoát đúng cách (ví dụ: nếu trình duyệt hoặc hệ điều hành gặp sự cố), thì dữ liệu duyệt web sẽ bị xoá vào lần tiếp theo tải hồ sơ.</translation>
 <translation id="3685979383016152590">Việc đặt chính sách này sẽ chỉ định chính sách truy cập nào áp dụng cho cấu hình máy in số lượng lớn, kiểm soát máy in nào từ <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> là dành cho người dùng.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (giá trị 0) sử dụng <ph name="PRINTERS_BULK_BLOCKLIST" /> để hạn chế quyền truy cập vào các máy in đã chỉ định
@@ -7329,21 +7334,6 @@ Nếu đặt chính sách này, thì bạn cần đặt chính sách <ph name="P
 
           Bạn phải chỉ định giá trị của chính sách bằng mili giây. Các giá trị được giới hạn ở mức nhỏ hơn hoặc bằng thời gian chờ tắt màn hình (nếu có đặt thời gian này) và thời gian chờ khi ở chế độ tạm vắng.</translation>
 <translation id="7680437377926096177">Ngăn hiện hộp thoại đăng xuất khi cửa sổ cuối cùng đóng lại.</translation>
-<translation id="7682459947751785310">Chính sách này có thể tạm thời được dùng để buộc bật chế độ hỗ trợ cho
-API PPB_VideoDecoder(Dev).
-
-Khi bạn không đặt hoặc đặt chính sách này thành Tắt, trình duyệt sẽ quyết định liệu
-API này có được hỗ trợ hay không.
-Khi bạn đặt chính sách thành Bật, API này sẽ được hỗ trợ.
-
-Bạn có thể sử dụng chính sách này trong trường hợp quyết định đang diễn ra của chúng tôi về việc loại bỏ chế độ hỗ trợ cho API này
-gặp vấn đề. Nếu bạn phải sử dụng chính sách này, vui lòng báo cáo lỗi trên crbug.com,
-giải thích trường hợp sử dụng của bạn và CC {blundell, vasilyt}@chromium.org. Theo lịch, chính sách này
-sẽ hoạt động đến hết <ph name="PRODUCT_NAME" />
-phiên bản 114, sau đó, chế độ hỗ trợ cho API này dự kiến sẽ bị loại bỏ
-vô điều kiện.
-
-LƯU Ý: Chỉ các quy trình kết xuất đồ hoạ mới bắt đầu mới thể hiện các thay đổi đối với chính sách này trong khi trình duyệt đang chạy.</translation>
 <translation id="7683777542468165012">Làm mới chính sách động</translation>
 <translation id="7687943045976362719">Nếu bạn đặt chính sách này, <ph name="PRODUCT_FRAME_NAME" /> sẽ xử lý các loại nội dung được chỉ định.
 

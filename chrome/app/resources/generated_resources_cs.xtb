@@ -400,7 +400,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1341871421050612057">Účet <ph name="USERNAME" /> nelze synchronizovat</translation>
 <translation id="1343865611738742294">Udělte linuxovým aplikacím oprávnění k používání zařízení USB. Po odebrání si Linux nebude zařízení USB pamatovat.</translation>
 <translation id="1343920184519992513">Pokračujte, kde jste skončili, a otevírejte vybrané stránky</translation>
-<translation id="134589511016534552">V sekci Otevřené karty se zobrazují i mediální karty</translation>
 <translation id="1346630054604077329">Potvrdit a restartovat</translation>
 <translation id="1346748346194534595">Doprava</translation>
 <translation id="1347256498747320987">Instalace aktualizací a aplikací. Pokračováním vyjadřujete souhlas s tím, že toto zařízení může také automaticky stahovat a instalovat aktualizace a aplikace od společnosti Google, operátora a výrobce zařízení, a v případě potřeby k tomu smí používat mobilní datové připojení. Některé z těchto aplikací mohou nabízet nákupy v aplikaci. <ph name="BEGIN_LINK1" />Další informace<ph name="END_LINK1" /></translation>
@@ -2053,7 +2052,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2739191690716947896">Ladit</translation>
 <translation id="2739240477418971307">Změnit nastavení přístupnosti</translation>
 <translation id="274029851662193272">Ryté</translation>
-<translation id="2740363334137520315">Do Vyhledávání v kartách přidává novou sekci, která umožňuje snadno najít karty, kde se přehrává zvuk nebo video. K přístupu použijte tlačítko v horním rohu prohlížeče.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Tyto přístupové klíče jsou uloženy pouze do tohoto zařízení. Neukládají se do vašeho účtu Google.</translation>
 <translation id="2741713322780029189">Otevřít terminál pro obnovení</translation>
@@ -2321,7 +2319,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2967926928600500959">Adresy URL odpovídající těmto pravidlům bude nutné otevřít v konkrétním prohlížeči.</translation>
 <translation id="2972581237482394796">&amp;Opakovat</translation>
 <translation id="2973324205039581528">Ztlumit web</translation>
-<translation id="2973537811036309675">Boční panel</translation>
 <translation id="2975761176769946178">Adresa URL je povinná</translation>
 <translation id="2976557544729462544">Některá zařízení vyžadují deaktivaci ochrany přístupu k datům, aby mohla fungovat správně nebo s plným výkonem.</translation>
 <translation id="2976756276046118477">Červeno-zelený filtr (zelená slabá, deuteranomálie)</translation>
@@ -2762,7 +2759,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3393554941209044235">Analýza dokumentů Chrome</translation>
 <translation id="3393582007140394275">Obrazovku nelze odeslat.</translation>
 <translation id="3394850431319394743">Povolení používat identifikátory k přehrávání chráněného obsahu</translation>
-<translation id="3396744558790608201">Kliknutím pravým tlačítkem myši a výběrem možnosti Vyhledat obrázky pomocí Google Lens můžete vyhledat libovolnou část webu a získat tak další informace o vizuálním obsahu, který vidíte při procházení a nakupování na webu.</translation>
 <translation id="3396800784455899911">Kliknutím na tlačítko Přijmout a pokračovat vyjadřujete souhlas se zpracováním popsaným výše pro tyto služby Google.</translation>
 <translation id="339722927132407568">Zamrzá</translation>
 <translation id="3399432415385675819">Oznámení budou zakázána</translation>
@@ -4787,7 +4783,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="520840839826327499">Služba <ph name="SERVICE_NAME" /> chce ověřit, zda používáte vhodné zařízení se systémem ChromeOS.</translation>
 <translation id="5208926629108082192">Informace o mobilní síti zařízení</translation>
 <translation id="5208988882104884956">Poloviční šířka</translation>
-<translation id="520902706163766447">Povolit vyskakovací bublinu na svrchním uživatelském rozhraní Chromu k vyhledávání na aktuálně otevřených kartách.</translation>
 <translation id="5209320130288484488">Nebyla nalezena žádná zařízení</translation>
 <translation id="5209513429611499188">Zařízení HID s využitím ze stránky využití <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">Zavřít kartu</translation>
@@ -6282,7 +6277,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Ukládat systémové protokoly do složky Stažené soubory.</translation>
 <translation id="656293578423618167">Cesta nebo název souboru jsou příliš dlouhé. Použijte kratší název nebo vyberte jiné umístění.</translation>
-<translation id="6568283005472142698">Vyhledávání v kartách</translation>
 <translation id="6570622975915850879">Použít jiné zařízení</translation>
 <translation id="65711204837946324">Ke stažení je potřeba oprávnění</translation>
 <translation id="6571533309669248172">Formátování textu</translation>
@@ -7616,7 +7610,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7737948071472253612">Zákaz používat kameru</translation>
 <translation id="77381465218432215">Zobrazit diakritiku a speciální znaky</translation>
 <translation id="7740996059027112821">Standardně</translation>
-<translation id="7741307896921365578">Aktivuje boční panel prohlížeče, který umožňuje snadný a trvalý přístup k seznamu četby a záložkám.</translation>
 <translation id="7742558784808143689">Vymazat data a oprávnění webu <ph name="SITE_NAME" />, všech jeho podřízených webů a nainstalovaných aplikací?</translation>
 <translation id="7742706086992565332">Můžete nastavit míru přiblížení nebo oddálení konkrétních webů</translation>
 <translation id="7742879569460013116">Sdílet odkaz do</translation>
@@ -7817,7 +7810,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7909986151924474987">Je možné, že tento profil již nebudete moci nainstalovat znovu</translation>
 <translation id="7910768399700579500">Nová složka</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="79113168483292735">Sekce Karty médií ve Vyhledávání v kartách</translation>
 <translation id="7912080627461681647">Vaše heslo bylo na serveru změněno. Odhlaste se a poté se znovu přihlaste.</translation>
 <translation id="7912974581251770345">Překlad</translation>
 <translation id="7915457674565721553">Chcete-li nastavit rodičovskou kontrolu, připojte se k internetu</translation>
@@ -8590,7 +8582,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8599681327221583254">Nejméně jedna zásada není nakonfigurována správně. Obraťte se na administrátora.</translation>
 <translation id="8599864823732014237">Přeskočit podnikovou registraci?</translation>
 <translation id="8601206103050338563">Ověření TLS webového klienta</translation>
-<translation id="8601611099293226919">Vyhledávat na obrazovce pomocí Google Lens</translation>
 <translation id="8602674530529411098">Aplikace (beta)</translation>
 <translation id="8602851771975208551">Jiný program ve vašem počítači nainstaloval aplikaci, která může měnit funkce Chromu.</translation>
 <translation id="8605428685123651449">Paměť SQLite</translation>

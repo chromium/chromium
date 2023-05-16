@@ -398,7 +398,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1341871421050612057">Synchronisierung mit <ph name="USERNAME" /> nicht möglich</translation>
 <translation id="1343865611738742294">Linux-Apps erlauben, auf USB-Geräte zuzugreifen. Linux merkt sich keine USB-Geräte, nachdem diese entfernt wurden.</translation>
 <translation id="1343920184519992513">Da weitermachen, wo du aufgehört hast, und bestimmte Seiten öffnen</translation>
-<translation id="134589511016534552">Medien-Tabs werden auch im Bereich „Geöffnete Tabs“ angezeigt</translation>
 <translation id="1346630054604077329">Bestätigen und neu starten</translation>
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1347256498747320987">Updates und Apps installieren. Wenn du fortfährst, stimmst du zu, dass dieses Gerät automatisch Updates und Apps von Google, deinem Mobilfunkanbieter und dem Hersteller deines Geräts herunterladen und installieren darf, möglicherweise über eine mobile Datenverbindung. Einige dieser Apps bieten eventuell In-App-Käufe an. <ph name="BEGIN_LINK1" />Weitere Informationen<ph name="END_LINK1" /></translation>
@@ -2048,7 +2047,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2739191690716947896">Fehlerbehebung</translation>
 <translation id="2739240477418971307">Einstellungen für Bedienungshilfen ändern</translation>
 <translation id="274029851662193272">Vertieft</translation>
-<translation id="2740363334137520315">Dadurch wird ein neuer Bereich zu „Tabs suchen“ hinzugefügt, damit du Tabs, auf denen Audio oder Video abgespielt wird, ganz einfach finden kannst. Du kannst über die Schaltfläche in der oberen Ecke des Browsers darauf zugreifen.</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2740876196999178364">Diese Passkeys sind nur auf diesem Gerät gespeichert. Sie sind nicht in deinem Google-Konto gespeichert.</translation>
 <translation id="2741713322780029189">Terminal zur Wiederherstellung öffnen</translation>
@@ -2316,7 +2314,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2967926928600500959">Für URLs, die mit diesen Regeln übereinstimmen, wird beim Öffnen ein bestimmter Browser erzwungen.</translation>
 <translation id="2972581237482394796">&amp;Wiederholen</translation>
 <translation id="2973324205039581528">Website stummschalten</translation>
-<translation id="2973537811036309675">Seitenleiste</translation>
 <translation id="2975761176769946178">Es ist eine URL erforderlich</translation>
 <translation id="2976557544729462544">Bei einigen Geräten musst du den Schutz vor Datenzugriff deaktivieren, damit sie problemlos und mit voller Leistung funktionieren.</translation>
 <translation id="2976756276046118477">Rot-Grün-Filter (Grün-Sehschwäche, Deuteranomalie)</translation>
@@ -2757,7 +2754,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3393554941209044235">Chrome-Dokumentenanalyse</translation>
 <translation id="3393582007140394275">Bildschirm kann nicht gestreamt werden.</translation>
 <translation id="3394850431319394743">Darf Kennungen verwenden, um geschützte Inhalte wiederzugeben</translation>
-<translation id="3396744558790608201">Klicke mit der rechten Maustaste und wähle „Bilder an Google Lens senden“ aus, um in einem beliebigen Bereich der Website zu suchen und mehr über die visuellen Inhalte zu erfahren, die du beim Surfen und Einkaufen im Internet siehst.</translation>
 <translation id="3396800784455899911">Wenn du auf die Schaltfläche „Akzeptieren und fortfahren“ klickst, willigst du damit in die oben für diese Google-Dienste beschriebene Verarbeitung deiner Daten ein.</translation>
 <translation id="339722927132407568">Hängenbleiben</translation>
 <translation id="3399432415385675819">Benachrichtigungen werden deaktiviert</translation>
@@ -4783,7 +4779,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> möchte überprüfen, ob du ein unterstütztes Chrome OS-Gerät verwendest.</translation>
 <translation id="5208926629108082192">Informationen zum Mobilfunknetz des Geräts</translation>
 <translation id="5208988882104884956">Halbe Breite</translation>
-<translation id="520902706163766447">Hiermit kann ein Pop-up-Infofeld zum Suchen in offenen Tabs auf der oberen Leiste der Chrome-Benutzeroberfläche aktiviert werden.</translation>
 <translation id="5209320130288484488">Keine Geräte gefunden</translation>
 <translation id="5209513429611499188">HID-Geräte mit Nutzungen von der Nutzungsseite „<ph name="USAGE_PAGE" />“</translation>
 <translation id="5210365745912300556">Schließen</translation>
@@ -6278,7 +6273,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6561726789132298588">Eingabe</translation>
 <translation id="6562117348069327379">Systemprotokolle im Downloadverzeichnis speichern.</translation>
 <translation id="656293578423618167">Der Dateipfad oder Dateiname ist zu lang. Verwende bitte einen kürzeren Namen oder einen anderen Speicherort.</translation>
-<translation id="6568283005472142698">Tab-Suche</translation>
 <translation id="6570622975915850879">Anderes Gerät verwenden</translation>
 <translation id="65711204837946324">Du musst die Berechtigung haben, die Datei herunterzuladen</translation>
 <translation id="6571533309669248172">Textformatierung</translation>
@@ -7609,7 +7603,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7737948071472253612">Dürfen meine Kamera nicht verwenden</translation>
 <translation id="77381465218432215">Akzente und Sonderzeichen anzeigen</translation>
 <translation id="7740996059027112821">Standard</translation>
-<translation id="7741307896921365578">Blendet eine Seitenleiste auf Browserebene ein, über die du jederzeit bequem auf deine Leseliste und Lesezeichen zugreifen kannst.</translation>
 <translation id="7742558784808143689">Websitedaten und Berechtigungen für <ph name="SITE_NAME" />, alle ihr untergeordneten Websites und auf ihr installierten Apps löschen?</translation>
 <translation id="7742706086992565332">Du kannst bei bestimmten Websites die maximale oder minimale Vergrößerungsstufe für die Websitedarstellung festlegen</translation>
 <translation id="7742879569460013116">Link teilen über</translation>
@@ -7810,7 +7803,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7909986151924474987">Du kannst dieses Profil möglicherweise nicht neu installieren</translation>
 <translation id="7910768399700579500">&amp;Neuer Ordner</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="79113168483292735">Abschnitt „Medien-Tabs“ in der Tab-Suche</translation>
 <translation id="7912080627461681647">Dein Passwort wurde auf dem Server geändert. Bitte melde dich ab und dann wieder an.</translation>
 <translation id="7912974581251770345">Übersetzung</translation>
 <translation id="7915457674565721553">Es ist eine Internetverbindung notwendig, um Jugendschutzeinstellungen einzurichten</translation>
@@ -8583,7 +8575,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8599681327221583254">Mindestens eine Richtlinie wurde nicht korrekt konfiguriert. Bitte wende dich an deinen Administrator.</translation>
 <translation id="8599864823732014237">Unternehmensregistrierung überspringen?</translation>
 <translation id="8601206103050338563">TLS-WWW-Client-Authentifizierung</translation>
-<translation id="8601611099293226919">Mit Google Lens auf dem Bildschirm suchen</translation>
 <translation id="8602674530529411098">Apps (Beta)</translation>
 <translation id="8602851771975208551">Ein anderes Programm auf deinem Computer hat eine App hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.</translation>
 <translation id="8605428685123651449">SQLite-Speicher</translation>

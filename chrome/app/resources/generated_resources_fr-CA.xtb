@@ -399,7 +399,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1341871421050612057">Impossible de synchroniser avec <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Accordez aux applications Linux l'autorisation d'accéder à des appareils USB. Le système Linux ne se souviendra pas d'un appareil USB une fois celui-ci retiré.</translation>
 <translation id="1343920184519992513">Reprenez le cours de vos activités et ouvrez un ensemble défini de pages</translation>
-<translation id="134589511016534552">Les onglets multimédias sont également affichés dans la section Onglets ouverts</translation>
 <translation id="1346630054604077329">Confirmer et redémarrer</translation>
 <translation id="1346748346194534595">À droite</translation>
 <translation id="1347256498747320987">Installer des mises à jour et des applications. En continuant, vous acceptez que cet appareil puisse également télécharger et installer automatiquement des mises à jour et des applications de Google, de votre fournisseur de services sans fil et du fabricant de votre appareil, éventuellement en utilisant les réseaux de données cellulaires. Certaines de ces applications peuvent aussi offrir des achats au moyen de l'application. <ph name="BEGIN_LINK1" />En savoir plus<ph name="END_LINK1" /></translation>
@@ -2053,7 +2052,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2739191690716947896">Débogage</translation>
 <translation id="2739240477418971307">Modifier vos paramètres d'accessibilité</translation>
 <translation id="274029851662193272">Surbaissé</translation>
-<translation id="2740363334137520315">Ajoute une nouvelle section dans « recherche d'onglets » pour permettre de facilement trouver vos onglets où du contenu audio ou vidéo est en cours de lecture. Accédez-y au moyen du bouton dans le coin supérieur de votre navigateur.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Ces clés d'accès sont enregistrées sur cet appareil uniquement. Elles ne sont pas enregistrées dans votre compte Google.</translation>
 <translation id="2741713322780029189">Ouvrir le terminal de récupération</translation>
@@ -2320,7 +2318,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2967926928600500959">Les URL correspondant à ces règles s'ouvriront obligatoirement dans un navigateur particulier.</translation>
 <translation id="2972581237482394796">&amp;Rétablir</translation>
 <translation id="2973324205039581528">Désactiver le son sur le site</translation>
-<translation id="2973537811036309675">Panneau latéral</translation>
 <translation id="2975761176769946178">Veuillez entrer une URL</translation>
 <translation id="2976557544729462544">Certains appareils nécessitent la désactivation de la protection d'accès aux données pour fonctionner correctement ou à plein rendement.</translation>
 <translation id="2976756276046118477">Filtre rouge-vert (vert faible, deutéranomalie)</translation>
@@ -2761,7 +2758,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3393554941209044235">Analyse de document par Chrome</translation>
 <translation id="3393582007140394275">Impossible de diffuser l'écran.</translation>
 <translation id="3394850431319394743">Autorisé à utiliser des identifiants pour faire jouer du contenu protégé</translation>
-<translation id="3396744558790608201">Faites un clic droit et sélectionnez « Rechercher des images au moyen de Lentille Google » pour effectuer une recherche dans n'importe quelle partie du site afin d'en apprendre plus sur le contenu visuel que vous voyez lorsque vous naviguez et magasinez sur le Web.</translation>
 <translation id="3396800784455899911">En cliquant sur le bouton « Accepter et continuer », vous acceptez le traitement décrit ci-dessus pour ces services Google.</translation>
 <translation id="339722927132407568">Fige</translation>
 <translation id="3399432415385675819">Les notifications seront désactivées</translation>
@@ -4787,7 +4783,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> veut vérifier si vous utilisez un appareil Chrome OS admissible.</translation>
 <translation id="5208926629108082192">Informations sur le réseau mobile de l'appareil</translation>
 <translation id="5208988882104884956">Demi-largeur</translation>
-<translation id="520902706163766447">Activer une bulle contextuelle dans le haut de l'IU de Chrome pour faire une recherche dans les onglets actuellement ouverts.</translation>
 <translation id="5209320130288484488">Aucun appareil trouvé</translation>
 <translation id="5209513429611499188">Appareils HID avec des valeurs d'utilisation provenant de la page d'utilisation <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">Fermer l'onglet</translation>
@@ -6285,7 +6280,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6561726789132298588">entrée</translation>
 <translation id="6562117348069327379">Stocker les journaux système dans le répertoire Téléchargements.</translation>
 <translation id="656293578423618167">Le chemin d'accès ou le nom du fichier est trop long. Veuillez raccourcir le nom ou enregistrer le fichier à un autre endroit.</translation>
-<translation id="6568283005472142698">Recherche d'onglet</translation>
 <translation id="6570622975915850879">Utiliser un autre appareil</translation>
 <translation id="65711204837946324">Le téléchargement exige une autorisation</translation>
 <translation id="6571533309669248172">Formatage du texte</translation>
@@ -7618,7 +7612,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7737948071472253612">Non autorisés à utiliser votre caméra</translation>
 <translation id="77381465218432215">Afficher les accents et les caractères spéciaux</translation>
 <translation id="7740996059027112821">Standard</translation>
-<translation id="7741307896921365578">Active un panneau latéral propre au navigateur pour offrir un accès utile et permanent à votre liste de lecture ainsi qu'à vos favoris.</translation>
 <translation id="7742558784808143689">Effacer les données et les autorisations relatives aux sites pour le site <ph name="SITE_NAME" />, tous les sites qui y sont subordonnés ainsi que les applications installées?</translation>
 <translation id="7742706086992565332">Vous pouvez définir le niveau de zoom à appliquer à certains sites Web</translation>
 <translation id="7742879569460013116">Partager le lien vers</translation>
@@ -7819,7 +7812,6 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7909986151924474987">Vous ne pourrez peut-être pas réinstaller ce profil</translation>
 <translation id="7910768399700579500">&amp;Nouveau dossier</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="79113168483292735">Section des onglets multimédias dans la recherche d'onglets</translation>
 <translation id="7912080627461681647">Votre mot de passe a été modifié sur le serveur. Veuillez vous déconnecter, puis vous reconnecter.</translation>
 <translation id="7912974581251770345">Traduction</translation>
 <translation id="7915457674565721553">Connectez-vous à Internet pour configurer les contrôles parentaux</translation>
@@ -8591,7 +8583,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8599681327221583254">Une ou plusieurs des politiques ne sont pas configurées correctement. Veuillez communiquer avec votre administrateur.</translation>
 <translation id="8599864823732014237">Ignorer l'inscription d'entreprise?</translation>
 <translation id="8601206103050338563">Authentification du client WWW TLS</translation>
-<translation id="8601611099293226919">Effectuez une recherche dans votre écran avec Lentille Google</translation>
 <translation id="8602674530529411098">Applications (bêta)</translation>
 <translation id="8602851771975208551">Un autre programme sur votre ordinateur a ajouté une application qui risque de modifier le fonctionnement de Google Chrome.</translation>
 <translation id="8605428685123651449">Mémoire utilisée par SQLite</translation>

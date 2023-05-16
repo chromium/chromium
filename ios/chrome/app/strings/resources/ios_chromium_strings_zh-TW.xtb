@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> 原本使用 Chromium，並將書籤、密碼和其他設定儲存在裝置上。</translation>
 <translation id="372658070733623520">如要將 Chromium 的資料儲存到 Google 帳戶及使用這類資料，請驗證身分。</translation>
 <translation id="3805899903892079518">Chromium 無法存取您的相片或影片，請前往「iOS 設定」中的 [隱私權] &gt; [相片] 啟用存取權。</translation>
+<translation id="3955621079070267756">從任何應用程式開啟 Chromium</translation>
 <translation id="4043291146360695975">密碼只會儲存至這部裝置上的密碼管理員。</translation>
 <translation id="4099085513035183040">Chromium Beta 版不支援這項功能</translation>
 <translation id="4432744876818348753">登入以充分運用 Chromium 的各項功能。</translation>
@@ -143,5 +144,6 @@
 <translation id="9089354809943900324">Chromium 版本過舊</translation>
 <translation id="9110075932708282655">預設為使用 Chromium</translation>
 <translation id="921174536258924340">Chromium 無法檢查所有密碼，請明天再試，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼。<ph name="END_LINK" /></translation>
+<translation id="971488683725792095">當你輕觸訊息、文件和其他應用程式中的連結時，自動使用 Chromium 開啟網頁。</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

@@ -539,7 +539,6 @@
 <translation id="5423849171846380976">Activado</translation>
 <translation id="5430931332414098647">Conexión compartida instantánea</translation>
 <translation id="5431318178759467895">Color</translation>
-<translation id="5456936324019847994">No se puede conectar a ningún APN personalizado habilitado. Ponte en contacto con tu operador móvil para obtener más información.</translation>
 <translation id="5457599981699367932">Navegar como invitado</translation>
 <translation id="54609108002486618">Administrado</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Queda {0} intento.}other{Quedan {0} intentos.}}</translation>
@@ -710,7 +709,6 @@
 <translation id="6798678288485555829">Navegación por el texto</translation>
 <translation id="680983167891198932">Clave</translation>
 <translation id="6816797338148849397">Hay disponible información relacionada con tu selección. Utiliza la flecha hacia arriba para consultarla.</translation>
-<translation id="6838167112108853532">Este APN no se puede inhabilitar ni eliminar. Comprueba que los APNs adjuntos y habilitados se inhabiliten o eliminen.</translation>
 <translation id="6853312040151791195">Velocidad de descarga</translation>
 <translation id="6889786074662672253">Mientras se reinicia, no desconectes este dispositivo externo ni apagues el ordenador. Puedes minimizar esta ventana. Este proceso puede tardar unos minutos y es posible que tu dispositivo externo no funcione durante ese tiempo.</translation>
 <translation id="6900701049656042631">Este álbum no tiene ninguna foto. Para añadir fotos, visita <ph name="LINK" /></translation>

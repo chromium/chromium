@@ -196,6 +196,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="2100273922101894616">Automatisk pålogging</translation>
 <translation id="2100314319871056947">Prøv å dele teksten i mindre deler</translation>
 <translation id="2111511281910874386">Gå til side</translation>
+<translation id="2119609734654412418">Her finner du bokmerkene dine</translation>
 <translation id="2122601567107267586">Kunne ikke åpne appen</translation>
 <translation id="2132122640199389833">Fjern alle tilknyttede enheter</translation>
 <translation id="213279576345780926">Lukket <ph name="TAB_TITLE" /></translation>
@@ -296,7 +297,6 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="265156376773362237">Standard forhåndslasting</translation>
 <translation id="2656405586795711023">Nettprogrammer</translation>
 <translation id="2669454659051515572">Alle som bruker denne enheten, kan se nedlastede filer</translation>
-<translation id="2688382350024736268">Chrome deler nå bare svært begrenset informasjon mellom nettsteder og apper, for eksempel når det vises annonser, for å hjelpe nettsteder med å måle annonseresultatene.</translation>
 <translation id="2702516483241149200">Ny: del en link som ruller til denne teksten</translation>
 <translation id="2707726405694321444">Last inn siden på nytt</translation>
 <translation id="271033894570825754">Ny</translation>
@@ -599,6 +599,7 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="433213510553688132">Følger …</translation>
 <translation id="4335835283689002019">Safe Browsing er av</translation>
 <translation id="4351244548802238354">Lukk dialogboks</translation>
+<translation id="4355272626458588338">Du kan komme tilbake til sider som er viktige for deg, ved å legge til bokmerker</translation>
 <translation id="4369735607080757018">Begrensede datatyper deles mellom nettsteder for å måle resultatene for annonsene, for eksempel når på dagen en annonse ble vist for deg</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="438319986296050901">Del kun kort</translation>
@@ -951,6 +952,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="6232535412751077445">Hvis du slår på «Deaktivering av sporing», blir det sendt en forespørsel sammen med nettrafikken din. Hvilke virkninger dette eventuelt får, avhenger av om det aktuelle nettstedet svarer på forespørselen eller ikke, samt hvordan forespørselen tolkes.
 
 Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg annonser som ikke er basert på andre nettsteder du har besøkt. Mange nettsteder samler likevel inn og bruker nettlesingsdataene dine – for eksempel for å forbedre sikkerheten, for å levere innhold, annonser og anbefalinger og for å generere rapporteringsstatistikk.</translation>
+<translation id="6255794742848779505">Vi endrer måten passord lagres på denne enheten på</translation>
 <translation id="6264376385120300461">Last ned likevel</translation>
 <translation id="6277522088822131679">Det oppsto et problem med å skrive ut siden. Prøv på nytt.</translation>
 <translation id="6277722725779679269">Kunne ikke oppdatere Spor pris</translation>
@@ -1200,7 +1202,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7482656565088326534">Fane for forhåndsvisning</translation>
 <translation id="7484997419527351112">Discover – av</translation>
 <translation id="7485033510383818941">For å oppdatere innholdet i strømmen, trekk ned siden</translation>
-<translation id="7486953194485875763">Følgende data fra de siste 15 minuttene blir slettet:</translation>
 <translation id="749294055653435199">Google Lens er ikke tilgjengelig på denne enheten</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (oppdatert <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7497755084107113646">Emnet er lagt tilbake til potensielle emner</translation>

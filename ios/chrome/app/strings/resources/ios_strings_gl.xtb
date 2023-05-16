@@ -21,6 +21,9 @@
 <translation id="1103523840287552314">Traducir sempre o <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Ir á ventá aberta</translation>
 <translation id="1112015203684611006">Erro impresión</translation>
+<translation id="1113057722807951993">A encriptación mediante frase de acceso non inclúe os métodos de pago nin os enderezos de Google Pay.
+
+Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="1125564390852150847">Crear pestana nova</translation>
 <translation id="1126809382673880764">Non te protexe contra sitios web, descargas e extensións perigosos. Continuarás dispoñendo da protección da función Navegación segura, sempre que estea dispoñible, noutros servizos de Google (como Gmail e a Busca).</translation>
 <translation id="1145536944570833626">Elimina os datos existentes.</translation>
@@ -158,6 +161,7 @@
 <translation id="1989112275319619282">Examinar</translation>
 <translation id="1990820278544963435">Buscar</translation>
 <translation id="199425419756152024">Ver contrasinal</translation>
+<translation id="2008357574463816229">Se esqueces a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="2010008505735295285">Volver cargar</translation>
 <translation id="2015722694326466240">Para ver os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
 <translation id="2021670401941426298">En caso aplicable, consulta as instrucións do teu motor de busca para eliminar o historial de busca.</translation>
@@ -706,6 +710,9 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5745916533876677730">Ir á pestana anterior</translation>
 <translation id="5755162682436943950">Pechouse sesión. Abre un cadro de diálogo para iniciar sesión e activar a sincronización.</translation>
 <translation id="5758631781033351321">Aquí atoparás a túa lista de lecturas</translation>
+<translation id="5762370665605786758">A encriptación mediante frase de acceso non inclúe os métodos de pago nin os enderezos de Google Pay.
+
+Só poderán ler os teus datos encriptados as persoas que teñan a túa frase de acceso (Google non a recibirá nin a almacenará). Se esqueces a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="5765456154762864099">Menú → Configuración → Navegador predeterminado</translation>
 <translation id="5777888488419460501">Gardar na conta</translation>
 <translation id="5782227691023083829">Traducindo…</translation>
@@ -847,6 +854,9 @@ Non poden utilizalas para ver a túa actividade de navegación en distintos siti
 <translation id="6476800141292307438">Traducindo a páxina ao <ph name="LANGUAGE" />. Hai opcións dispoñibles na parte inferior da pantalla.</translation>
 <translation id="648164694371393720">Produciuse un erro de autenticación</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos eliminados</translation>
+<translation id="6484712497741564393">Tes a sesión iniciada como <ph name="EMAIL" />.
+
+Os teus datos están encriptados coa túa frase de acceso. Introdúcea para usar e gardar os datos de Chrome na túa Conta de Google.</translation>
 <translation id="6497772452874122664">Se confías en <ph name="TIME" />, podes usar un contrasinal gardado doutro sitio.
 
 Tenta usar un contrasinal distinto para cada sitio.</translation>
@@ -893,6 +903,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6730682669179532099">Non se puideron exportar os contrasinais</translation>
 <translation id="6732087373923685049">cámara</translation>
 <translation id="6748108480210050150">De</translation>
+<translation id="6753469262000681876">Modo de bloqueo</translation>
 <translation id="6760509555861141183">Volver á pestana recente</translation>
 <translation id="6762812039470893796">Anular toda a selección</translation>
 <translation id="6780034285637185932">Código postal</translation>
@@ -1119,6 +1130,9 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8299417921174340354">Para usar os contrasinais, en primeiro lugar debes definir un contrasinal no teu dispositivo.</translation>
 <translation id="8299613349954694191">Abre unha pestana do modo de incógnito para navegar pola Web de forma privada.</translation>
 <translation id="8316944564970119719">Indica o sitio e o contrasinal, e despois preme Save (Gardar)</translation>
+<translation id="8317835149433843300">Non se encriptarán os métodos de pago nin os enderezos de Google Pay. Non se gardará o historial de navegación de Chrome na túa Conta de Google.
+
+Só poderán ler os teus datos encriptados as persoas que teñan a túa frase de acceso (Google non a recibirá nin a almacenará). Se esqueces a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Nova busca</translation>
 <translation id="8323906514956095947">Mantén premido o botón para ver máis opcións da pestana</translation>
 <translation id="8328777765163860529">Pechar todo</translation>
@@ -1141,6 +1155,9 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8487700953926739672">Dispoñible sen conexión</translation>
 <translation id="8488923644885757471">Abrir nova ventá</translation>
 <translation id="8490978609246021741">Gardar cambios</translation>
+<translation id="8491300088149538575">Tes a sesión iniciada como <ph name="EMAIL" />.
+
+Os teus datos encriptáronse coa túa frase de acceso o <ph name="TIME" />. Introdúcea para usar e gardar os datos de Chrome na túa Conta de Google.</translation>
 <translation id="8503813439785031346">Nome de usuario</translation>
 <translation id="850600235656508448">Abrir marcador no modo de incógnito</translation>
 <translation id="8517375800490286174">Licenzas de código aberto</translation>

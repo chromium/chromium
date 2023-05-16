@@ -49,6 +49,7 @@
 <translation id="3650632991272923014">Korisnik <ph name="USER_EMAIL1" /> je koristio Chromium i ostavio je oznake, lozinke i ostale postavke na ovom uređaju.</translation>
 <translation id="372658070733623520">Da koristite i sačuvate podatke Chromiuma na Google računu, potvrdite identitet.</translation>
 <translation id="3805899903892079518">Chromium nema pristup vašim fotografijama ili videozapisima. Omogućite pristup u meniju iOS postavke &gt; Privatnost &gt; Fotografije.</translation>
+<translation id="3955621079070267756">Otvaranje Chromiuma iz bilo koje aplikacije</translation>
 <translation id="4043291146360695975">Lozinke se pohranjuju u Upravitelju lozinki samo na ovom uređaju.</translation>
 <translation id="4099085513035183040">Nije podržano u Beta verziji Chromiuma</translation>
 <translation id="4432744876818348753">Prijavite se da iskoristite prednosti Chromiuma.</translation>
@@ -141,5 +142,6 @@ Stvari za razmatranje:
 <translation id="9089354809943900324">Chromium nije ažuriran</translation>
 <translation id="9110075932708282655">Koristite Chromium kao zadanu opciju</translation>
 <translation id="921174536258924340">Chromium nije mogao provjeriti sve lozinke. Pokušajte ponovo sutra ili <ph name="BEGIN_LINK" />provjerite lozinke na Google računu.<ph name="END_LINK" /></translation>
+<translation id="971488683725792095">Automatski koristite Chromium kada dodirnete veze u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="985602178874221306">Autori Chromiuma</translation>
 </translationbundle>

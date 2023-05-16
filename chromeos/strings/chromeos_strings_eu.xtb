@@ -539,7 +539,6 @@
 <translation id="5423849171846380976">Aktibatuta</translation>
 <translation id="5430931332414098647">Konexioa bizkor partekatzea</translation>
 <translation id="5431318178759467895">Kolorez</translation>
-<translation id="5456936324019847994">Ezin da konektatu gaitutako APN pertsonalizatuetara. Informazio gehiago lortzeko, jarri telefonia mugikorreko operadorearekin harremanetan.</translation>
 <translation id="5457599981699367932">Arakatu gonbidatu gisa</translation>
 <translation id="54609108002486618">Kudeatua</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} saiaketa gelditzen da}other{{0} saiakera gelditzen dira}}</translation>
@@ -710,7 +709,6 @@
 <translation id="6798678288485555829">Testuetako nabigazioa</translation>
 <translation id="680983167891198932">Gakoa</translation>
 <translation id="6816797338148849397">Eskuragarri dago zure hautapenari buruzko informazioa. Erabili gora egiteko gezi-tekla informazioa atzitzeko.</translation>
-<translation id="6838167112108853532">APN hau ezin da desgaitu edo kendu. Ziurtatu gaituta dauden APN erantsiak desgaitu edo kendu direla.</translation>
 <translation id="6853312040151791195">Bateriaren deskargatze-abiadura</translation>
 <translation id="6889786074662672253">Gailua eguneratu bitartean, ez deskonektatu kanpoko gailua edo ez itzali ordenagailua. Leihoa minimiza dezakezu. Agian minutu batzuk beharko dira eguneratzea instalatzeko, eta baliteke kanpoko gailuak denbora tarte horretan ez funtzionatzea.</translation>
 <translation id="6900701049656042631">Ez dago argazkirik albumean. Argazkiak gehitzeko, joan <ph name="LINK" /> helbidera.</translation>

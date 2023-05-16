@@ -539,6 +539,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4592368184551360546">Klaviatuur</translation>
 <translation id="4606247758155004938">Teie brauserit haldab teie organisatsioon.</translation>
 <translation id="461440297010471931">Otsimine Google'iga</translation>
+<translation id="4616391354457235490">Võta tagasi</translation>
 <translation id="4619564267100705184">Kinnitage, et see olete teie</translation>
 <translation id="4619615317237390068">Muudest seadmetest pärinevad vahelehed</translation>
 <translation id="4620246317052452550">Teie loetud lehed</translation>
@@ -861,6 +862,7 @@ Teie andmed on krüpteeritud teie parooliga. Chrome’i andmete kasutamiseks ja 
 
 Üritage iga saidi puhul kasutada kordumatut parooli.</translation>
 <translation id="650279896687777322">Lisateave …</translation>
+<translation id="6507973708545996744">Logige sisse, et hankida lugemisloend kõigisse oma seadmetesse.</translation>
 <translation id="6510072653668207258">Tuleta hiljem meelde</translation>
 <translation id="651505212789431520">Kas tühistada sünkroonimine? Saate sünkroonimise seadetes alati sisse lülitada.</translation>
 <translation id="6518133107902771759">Kinnita</translation>
@@ -1116,6 +1118,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8197543752516192074">Tõlgi leht</translation>
 <translation id="8205564605687841303">Tühista</translation>
 <translation id="8206354486702514201">Selle seade jõustas teie administraator.</translation>
+<translation id="8214293972734702249">Kinnitatud, <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">Vahem. salv. kujut. ja failid</translation>
 <translation id="8237382152611443140">Avage funktsiooni AutoFill Password menüü Settings</translation>
 <translation id="8248969482078657578">Inaktiivsed vahelehed aitavad teil keskenduda</translation>

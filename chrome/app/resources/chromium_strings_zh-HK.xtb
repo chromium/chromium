@@ -94,6 +94,7 @@
 <translation id="3179665906251668410">在 Chromium 無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="3185330573522821672">自訂您的新 Chromium 設定檔</translation>
 <translation id="3190315855212034486">Chromium 當機了，要立即重新啟動嗎？</translation>
+<translation id="3255926992597692024">Chromium 正嘗試修改填入付款方式的設定。</translation>
 <translation id="3258596308407688501">Chromium 無法讀取及寫入數據目錄：
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -199,6 +200,7 @@
 <translation id="5653831366781983928">請立即重新啟動 Chromium</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">以此語言顯示 Chromium</translation>
+<translation id="585620188971323280">修改填入付款方式的設定。</translation>
 <translation id="5862307444128926510">歡迎使用 Chromium</translation>
 <translation id="5883558403894052917">Chromium 發現以下項目含有惡意軟件：</translation>
 <translation id="5895138241574237353">重新啟動</translation>

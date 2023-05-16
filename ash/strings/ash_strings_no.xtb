@@ -94,6 +94,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1346748346194534595">Høyre</translation>
 <translation id="1351937230027495976">Skjul menyen</translation>
 <translation id="1360220746312242196">Gå til forrige søketreff når du søker på en side</translation>
+<translation id="1360788414852622716">Deaktiverer profilen. Dette kan ta noen minutter.</translation>
 <translation id="1364382257761975320">For å låse opp Chromebooken, bruk fingeravtrykket</translation>
 <translation id="1365866993922957110">Få automatiske oppdateringer</translation>
 <translation id="1372545819342940910">Lagre skrivebordet til senere</translation>
@@ -545,6 +546,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3510164367642747937">Fremhev musemarkøren</translation>
 <translation id="3513798432020909783">Kontoen er administrert av <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Oppdater enheten innen 1 minutt}other{Oppdater enheten innen # minutter}}</translation>
+<translation id="3522979239100719575">Ser etter tilgjengelige profiler. Dette kan ta noen minutter.</translation>
 <translation id="3526440770046466733">Åpne link i en ny fane, og bli værende på den gjeldende fanen</translation>
 <translation id="353086728817903341">Koblet til <ph name="NUM_DEVICES" /> enheter</translation>
 <translation id="3533126039236445965">Apper på hyllen</translation>
@@ -1557,6 +1559,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8083540854303889870">Lagret for senere bruk</translation>
 <translation id="8091153018031979607">Starter kl. <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatiske oppdateringer</translation>
+<translation id="8092380135549145188">Rullekontroller</translation>
 <translation id="8098591350844501178">Slutt å caste skjermen til <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Løsne appen fra hyllen</translation>
 <translation id="8113423164597455979">På, alle apper</translation>

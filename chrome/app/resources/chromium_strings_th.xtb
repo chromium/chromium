@@ -92,6 +92,7 @@
 <translation id="3179665906251668410">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตนของ Chromium</translation>
 <translation id="3185330573522821672">ปรับแต่งโปรไฟล์ Chromium ใหม่</translation>
 <translation id="3190315855212034486">อ้าว! Chromium ขัดข้อง เปิดใหม่ตอนนี้หรือไม่</translation>
+<translation id="3255926992597692024">Chromium กำลังพยายามแก้ไขการตั้งค่าสำหรับการกรอกวิธีการชำระเงิน</translation>
 <translation id="3258596308407688501">Google Chrome ไม่สามารถอ่านและเขียนข้อมูลในไดเรกทอรีข้อมูล:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -197,6 +198,7 @@
 <translation id="5653831366781983928">โปรดรีสตาร์ท Chromium ตอนนี้เลย</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">แสดง Chromium ในภาษานี้</translation>
+<translation id="585620188971323280">แก้ไขการตั้งค่าสำหรับการกรอกวิธีการชำระเงิน</translation>
 <translation id="5862307444128926510">ยินดีต้อนรับสู่ Chromium</translation>
 <translation id="5883558403894052917">Chromium พบว่ารายการเหล่านี้มีมัลแวร์</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>

@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Nėra naujausių vaizdo įrašų</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="CONNECTION_STATUS" />, tvarko administratorius, išsami informacija</translation>
 <translation id="3645233063072417428">Perkelta elementų: <ph name="NUMBER_OF_ITEMS" />.</translation>
+<translation id="3658269352872031728">Pasirinkta failų: <ph name="SELECTED_FILE_COUNT" /></translation>
 <translation id="3685122418104378273">„Google“ disko sinchronizavimas pagal numatytuosius nustatymus yra išjungtas, kai naudojami mobiliojo ryšio duomenys.</translation>
 <translation id="3689865792480713551">Atšaukti <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, nesuaktyvintas, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> proc., išsami informacija</translation>
@@ -577,6 +578,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> vaizdas</translation>
 <translation id="5534520101572674276">Apskaičiuojamas dydis</translation>
 <translation id="554153475311314364">Graikų k. transliteracija</translation>
+<translation id="5554171655917412781">Pasirinkta aplankų: <ph name="SELECTED_FOLDERS_COUNT" /></translation>
 <translation id="5580591966435005537">virtualusis įrenginys</translation>
 <translation id="5583640892426849032">Grįžties klavišas</translation>
 <translation id="5583664733673201137">Skyrybos ženklo plotis yra viso dydžio</translation>
@@ -599,6 +601,7 @@
 <translation id="5724172041621205163">Tajų k. su „Pattachote“ klaviatūra</translation>
 <translation id="57383366388012121">Pastarasis mėnuo</translation>
 <translation id="5756666464756035725">Vengriška QWERTY</translation>
+<translation id="5760252553414789727">Pasirinkta elementų: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">Vokiečių k. (Šveicarija)</translation>
 <translation id="5769519078756170258">Norima išskirti priegloba arba domenas</translation>
 <translation id="5775750595919327203">Urdų k.</translation>

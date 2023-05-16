@@ -21,6 +21,9 @@
 <translation id="1103523840287552314">Siempre traducir <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Cambiar a otra ventana abierta</translation>
 <translation id="1112015203684611006">Se produjo un error en la impresión.</translation>
+<translation id="1113057722807951993">La encriptación con la frase de contraseña no incluye formas de pago ni direcciones de Google Pay.
+
+Para cambiar esta configuración, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="1125564390852150847">Crea una pestaña nueva.</translation>
 <translation id="1126809382673880764">No te protege contra descargas, extensiones ni sitios web peligrosos. Seguirás teniendo la protección (donde esté disponible) de la Navegación segura en otros servicios de Google, como Gmail y la Búsqueda.</translation>
 <translation id="1145536944570833626">Borra los datos existentes.</translation>
@@ -158,6 +161,7 @@
 <translation id="1989112275319619282">Navegar</translation>
 <translation id="1990820278544963435">Buscar</translation>
 <translation id="199425419756152024">Ver contraseña</translation>
+<translation id="2008357574463816229">Si olvidas tu frase de contraseña o quieres cambiar este parámetro, <ph name="BEGIN_LINK" />borra los datos de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2010008505735295285">Volver a cargar</translation>
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes establecer una en tu dispositivo.</translation>
 <translation id="2021670401941426298">Consulta las instrucciones de tu motor de búsqueda para borrar el historial de búsqueda (si corresponde).</translation>
@@ -706,6 +710,9 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5745916533876677730">Ir a la pestaña anterior</translation>
 <translation id="5755162682436943950">Has cerrado sesión. Abre el cuadro de diálogo para acceder y activar la sincronización.</translation>
 <translation id="5758631781033351321">Aquí encontrarás tu lista de lectura</translation>
+<translation id="5762370665605786758">La encriptación con la frase de contraseña no incluye formas de pago ni direcciones de Google Pay.
+
+Solo alguien con tu frase de contraseña puede leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si olvidas tu frase de contraseña o quieres cambiar este parámetro, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="5765456154762864099">Menú → Configuración → Navegador predeterminado</translation>
 <translation id="5777888488419460501">Guardar en la cuenta</translation>
 <translation id="5782227691023083829">Traduciendo...</translation>
@@ -847,6 +854,9 @@ Sin embargo, no pueden usar cookies para ver la actividad de navegación en dife
 <translation id="6476800141292307438">Se está traduciendo la página al <ph name="LANGUAGE" />. Las opciones disponibles se encuentran cerca de la parte inferior de la pantalla.</translation>
 <translation id="648164694371393720">Error de autenticación</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementos eliminados</translation>
+<translation id="6484712497741564393">Accediste como <ph name="EMAIL" />.
+
+Tus datos se encriptan con tu frase de contraseña. Ingrésala para usar y guardar datos de Chrome en tu Cuenta de Google.</translation>
 <translation id="6497772452874122664">Si confías en <ph name="TIME" />, puedes usar una contraseña guardada de otro sitio.
 
 Intenta usar una contraseña única para cada sitio.</translation>
@@ -893,6 +903,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6730682669179532099">No se pueden exportar las contraseñas</translation>
 <translation id="6732087373923685049">cámara</translation>
 <translation id="6748108480210050150">De</translation>
+<translation id="6753469262000681876">Modo de bloqueo</translation>
 <translation id="6760509555861141183">Regresa a la pestaña reciente</translation>
 <translation id="6762812039470893796">Desmarcar todo</translation>
 <translation id="6780034285637185932">Código postal</translation>
@@ -1119,6 +1130,9 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8299417921174340354">Para usar contraseñas, primero debes establecer una en tu dispositivo.</translation>
 <translation id="8299613349954694191">Abre una pestaña de incógnito para navegar por la Web de forma privada.</translation>
 <translation id="8316944564970119719">Ingresa el sitio y la contraseña y, luego, guarda los cambios.</translation>
+<translation id="8317835149433843300">No se encriptarán las formas de pago ni las direcciones de Google Pay. El historial de navegación de Chrome no se guardará en tu Cuenta de Google.
+
+Solo alguien con tu frase de contraseña puede leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si olvidas tu frase de contraseña o quieres cambiar este parámetro, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Nueva búsqueda</translation>
 <translation id="8323906514956095947">Mantén presionado el botón para ver más opciones de pestañas</translation>
 <translation id="8328777765163860529">Cerrar todas</translation>
@@ -1141,6 +1155,9 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8487700953926739672">Disponible sin conexión</translation>
 <translation id="8488923644885757471">Nueva ventana</translation>
 <translation id="8490978609246021741">Guardar cambios</translation>
+<translation id="8491300088149538575">Accediste como <ph name="EMAIL" />.
+
+Tus datos se encriptaron con tu frase de contraseña el <ph name="TIME" />. Ingrésala para usar y guardar datos de Chrome en tu Cuenta de Google.</translation>
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="850600235656508448">Abrir en incógnito</translation>
 <translation id="8517375800490286174">Licencias de código abierto</translation>

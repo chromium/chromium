@@ -1093,6 +1093,7 @@
 <translation id="3658742229777143148">変更履歴</translation>
 <translation id="3664782872746246217">キーワード:</translation>
 <translation id="3667704023705708645">ベンチャー キャピタル</translation>
+<translation id="3671117652518853176">オフにした場合、セキュリティを確保するため、時々確認が求められることがあります</translation>
 <translation id="3671540257457995106">サイズ変更を許可しますか？</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> でエラーが発生しました: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">ロール 3</translation>
@@ -1127,6 +1128,7 @@
 <translation id="3736520371357197498">危険なプログラムが削除されるより前に<ph name="BEGIN_LINK" />この安全でないサイトにアクセスする<ph name="END_LINK" />場合は、セキュリティ上のリスクについてご承知おきください。</translation>
 <translation id="3738166223076830879">お使いのブラウザは管理者によって管理されています。</translation>
 <translation id="3740319564441798148">長距離バス、列車</translation>
+<translation id="3743765582345153106">自動入力を使用するときは常に確認する</translation>
 <translation id="3744111561329211289">バックグラウンド同期</translation>
 <translation id="3744286742364977428">ダウンロードしたファイルは分析のため Google Cloud または第三者に送信されます。たとえば、機密データやマルウェアがないかスキャンされ、会社のポリシーに基づいて保存される場合があります。</translation>
 <translation id="3744899669254331632"><ph name="SITE" /> から送信された暗号化済みの認証情報を Chromium で処理できないため、現在このウェブサイトにアクセスできません。通常、ネットワーク エラーやネットワークへの攻撃は一時的なものです。しばらくするとページにアクセスできるようになります。</translation>
@@ -1729,6 +1731,7 @@
 <translation id="5171045022955879922">検索または URL を入力</translation>
 <translation id="5172758083709347301">マシン</translation>
 <translation id="5177076414499237632">このページのソースとトピックについて</translation>
+<translation id="5179490652562926740">お支払いの確認の設定を保存しました</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />でない場合はこのエラーを報告する</translation>
 <translation id="518639307526414276">ペットフード、ペットケア用品</translation>
 <translation id="5190072300954988691">カメラとマイクは許可されていません</translation>
@@ -2623,7 +2626,7 @@
       &lt;li&gt;このソフトウェアをパソコンから完全に削除する方法については、&lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Chrome ヘルプセンター&lt;/a&gt;をご覧ください。
       &lt;/ol&gt;</translation>
 <translation id="7410471291937727359">ラブリー</translation>
-<translation id="741204030948306876">有効にする</translation>
+<translation id="741204030948306876">ON にする</translation>
 <translation id="7416351320495623771">パスワードを管理…</translation>
 <translation id="7418620734632363981">プログラミング</translation>
 <translation id="7419106976560586862">プロフィール パス</translation>
@@ -3222,7 +3225,6 @@
 <translation id="8870494189203302833">同じ順序（下向き）</translation>
 <translation id="8870700989640064057">機密ファイルを印刷しますか？</translation>
 <translation id="8871553383647848643">ブラウザのデザインをカスタマイズします</translation>
-<translation id="8871603420762394026">Chrome では現在、サイトによる広告の効果測定に役立てるため、広告が表示されたときに、ごく少量の限定的な情報のみがサイト間で共有されます。</translation>
 <translation id="8874824191258364635">有効なクレジット カード番号を入力してください</translation>
 <translation id="8876033571432926051">カジュアル ゲーム</translation>
 <translation id="8877780815363510165">釣り</translation>

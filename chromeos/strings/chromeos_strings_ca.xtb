@@ -539,7 +539,6 @@
 <translation id="5423849171846380976">Activat</translation>
 <translation id="5430931332414098647">Compartició de xarxa instantània</translation>
 <translation id="5431318178759467895">Color</translation>
-<translation id="5456936324019847994">No es pot connectar a cap APN personalitzat que estigui activat. Contacta amb el teu operador de telefonia mòbil per obtenir més informació.</translation>
 <translation id="5457599981699367932">Navega com a convidat</translation>
 <translation id="54609108002486618">Gestionat</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Queda {0} intent}other{Queden {0} intents}}</translation>
@@ -710,7 +709,6 @@
 <translation id="6798678288485555829">Navegació pel text</translation>
 <translation id="680983167891198932">Clau</translation>
 <translation id="6816797338148849397">Hi ha disponible informació relacionada amb la teva selecció. Utilitza la tecla de fletxa amunt per accedir-hi.</translation>
-<translation id="6838167112108853532">No es pot desactivar ni suprimir aquest APN. Assegura't que els APN adjunts i activats estiguin desactivats o suprimits.</translation>
 <translation id="6853312040151791195">Percentatge de descàrrega</translation>
 <translation id="6889786074662672253">Mentre es reinicia, no desconnectis el dispositiu extern ni apaguis l'ordinador. Pots minimitzar aquesta finestra. Aquest procés pot tardar uns quants minuts i és possible que, durant aquest temps, el dispositiu extern no funcioni.</translation>
 <translation id="6900701049656042631">Aquest àlbum no té cap foto. Per afegir-ne, ves a <ph name="LINK" />.</translation>
@@ -740,6 +738,7 @@
 <translation id="7130438335435247835">Nom del punt d'accés (APN)</translation>
 <translation id="7131634559772719176">Confirma el valor predefinit</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de noms}other{Servidors de noms}}</translation>
+<translation id="7135814714616751706">Cerca dreceres</translation>
 <translation id="7143207342074048698">Connectant</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
 <translation id="714876143603641390">Connectivitat de la LAN</translation>
@@ -770,6 +769,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Prem Cerca+Espai per veure el resultat a la Cerca de Google.</translation>
 <translation id="7343649194310845056">Dispositius de xarxa</translation>
+<translation id="7353413232959255829">Resultat de cerca <ph name="LIST_POSITION" /> de <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Prem Retorn per navegar fins a la drecera.</translation>
 <translation id="7359657277149375382">Tipus de fitxer</translation>
 <translation id="73631062356239394">Comparteix les dades de diagnòstic</translation>
 <translation id="7375053625150546623">EAP</translation>

@@ -539,7 +539,6 @@
 <translation id="5423849171846380976">Activé</translation>
 <translation id="5430931332414098647">Partage de connexion instantané</translation>
 <translation id="5431318178759467895">Couleur</translation>
-<translation id="5456936324019847994">Impossible de se connecter à un APN personnalisé activé. Pour en savoir plus, contactez votre opérateur mobile.</translation>
 <translation id="5457599981699367932">Naviguer en tant qu'invité</translation>
 <translation id="54609108002486618">Géré</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentative restante}one{{0} tentative restante}other{{0} tentatives restantes}}</translation>
@@ -710,7 +709,6 @@
 <translation id="6798678288485555829">Parcourir du texte</translation>
 <translation id="680983167891198932">Clé</translation>
 <translation id="6816797338148849397">Informations sur le texte sélectionné disponibles. Pour y accéder, utilisez la flèche vers le haut.</translation>
-<translation id="6838167112108853532">Impossible de désactiver ou de supprimer cet APN. Assurez-vous que les APN connectés sont désactivés ou supprimés.</translation>
 <translation id="6853312040151791195">Vitesse de décharge</translation>
 <translation id="6889786074662672253">Vous ne devez pas débrancher cet appareil externe ni éteindre votre ordinateur pendant le redémarrage. Vous pouvez réduire cette fenêtre. Le redémarrage peut prendre quelques minutes, durant lesquelles le fonctionnement de l'appareil externe est compromis.</translation>
 <translation id="6900701049656042631">Cet album ne contient aucune photo. Pour en ajouter, accédez à <ph name="LINK" />.</translation>

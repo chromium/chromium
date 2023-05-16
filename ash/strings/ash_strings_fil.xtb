@@ -94,6 +94,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1351937230027495976">I-collapse ang menu</translation>
 <translation id="1360220746312242196">Kapag naghahanap sa isang page, pumunta sa nakaraang tugma para sa paghahanap</translation>
+<translation id="1360788414852622716">Dini-disable ang profile. Puwede itong tumagal nang ilang minuto.</translation>
 <translation id="1364382257761975320">Para i-unlock ang iyong Chromebook, gamitin ang fingerprint mo</translation>
 <translation id="1365866993922957110">Makatanggap ng mga awtomatikong update</translation>
 <translation id="1372545819342940910">I-save ang desk para sa ibang pagkakataon</translation>
@@ -183,6 +184,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1774796056689732716">Kalendaryo, <ph name="CURRENT_MONTH_YEAR" />, kasalukuyang pinili ang <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Naka-off</translation>
 <translation id="181103072419391116">Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Pinapamahalaan ng iyong Administrator</translation>
+<translation id="1815245884418711390">I-toggle ang Hotspot. Naka-off ang Hotspot.</translation>
 <translation id="1816896987747843206">Pinapayagan nito ang access sa camera para sa lahat ng app at website na may pahintulot sa camera</translation>
 <translation id="1823280932251546115">Status tray, oras <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -241,6 +243,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2023558322300866873">Puwede mong ihinto ang packet capture anumang oras</translation>
 <translation id="2034971124472263449">I-save pa rin</translation>
 <translation id="2049240716062114887">Ginawang <ph name="DESK_NAME" /> ang pangalan ng desk</translation>
+<translation id="206377500836174974">Buo</translation>
 <translation id="2064048859448024834">Naka-on ang preview ng camera</translation>
 <translation id="2067602449040652523">Liwanag ng keyboard</translation>
 <translation id="2075520525463668108">I-toggle ang <ph name="CAPTURE_MEDIUM" />. Ang <ph name="CAPTURE_MEDIUM" /> ay <ph name="CAPTURE_STATE" /></translation>
@@ -293,6 +296,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2339073806695260576">I-tap ang button na stylus sa shelf para magsulat ng tala, mag-screenshot, gamitin ang laser pointer, o magnifying glass.</translation>
 <translation id="2341729377289034582">Naka-lock sa vertical</translation>
 <translation id="2345226652884463045">Pindutin ang enter o hanapin + space para piliin ang text na ie-edit.</translation>
+<translation id="2349785431103945039">Ipakita ang mga detalye ng hotspot. Kumonekta sa mobile network para magamit ang hotspot.</translation>
 <translation id="2350794187831162545">Lokal nang ipinoproseso ang <ph name="LANGUAGE" /> at gumagana ito offline. Puwede mong palitan ang wika ng iyong Dictation sa Mga Setting &gt; Pagiging Accessible.</translation>
 <translation id="2352467521400612932">Mga setting ng stylus</translation>
 <translation id="2354174487190027830">Ina-activate ang <ph name="NAME" /></translation>
@@ -336,6 +340,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2531025035050312891">mabagal ang device</translation>
 <translation id="2542089167727451762">I-tap ang iyong larawan sa profile</translation>
 <translation id="254900897760075745">Kopyahin ang napiling content sa clipboard</translation>
+<translation id="2549711466868162843">Pahusayin ang liwanag</translation>
 <translation id="2549985041256363841">Simulang mag-record</translation>
 <translation id="255671100581129685">Hindi available ang Google Assistant sa isang pampublikong session.</translation>
 <translation id="256712445991462162">ang naka-dock na magnifier</translation>
@@ -429,6 +434,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3009178788565917040">Output</translation>
 <translation id="3009958530611748826">Pumili ng folder kung saan magse-save</translation>
 <translation id="301282384882049174">Ibinahagi ng iyong administrator</translation>
+<translation id="301584155502740476">Ipakita ang mga detalye ng hotspot. Naka-off ang Hotspot.</translation>
 <translation id="3018135054368884502">Mag-fast forward ng media</translation>
 <translation id="3033545621352269033">Naka-on</translation>
 <translation id="3033912566804961911">Isama sa <ph name="DESK_NAME" /></translation>
@@ -489,6 +495,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3291862315280588024">Pumunta sa simula ng nakaraang salita</translation>
 <translation id="3294437725009624529">Bisita</translation>
 <translation id="3298690094479023523">Hindi pa rin ma-verify ang iyong PIN o password. Subukan ulit.</translation>
+<translation id="3300193645498960160">Aabisuhan ka kapag nagsasalita ka habang naka-mute. Hindi naipapadala ang audio mula sa iyong device.</translation>
 <translation id="3307642347673023554">Lumipat sa laptop mode</translation>
 <translation id="3308453408813785101">Maaari pa ring mag-sign in si <ph name="USER_EMAIL_ADDRESS" /> sa ibang pagkakataon.</translation>
 <translation id="3321628682574733415">Maling code ng magulang</translation>
@@ -539,6 +546,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3510164367642747937">I-highlight ang cursor ng mouse</translation>
 <translation id="3513798432020909783">Pinamamahalaan ni <ph name="MANAGER_EMAIL" /> ang account</translation>
 <translation id="352245152354538528">{0,plural, =1{I-update ang device sa loob ng 1 minuto}one{I-update ang device sa loob ng # minuto}other{I-update ang device sa loob ng # na minuto}}</translation>
+<translation id="3522979239100719575">Naghahanap ng mga available na profile. Puwede itong tumagal nang ilang minuto.</translation>
 <translation id="3526440770046466733">Buksan ang link sa bagong tab at manatili sa kasalukuyang tab</translation>
 <translation id="353086728817903341">Nakakonekta sa <ph name="NUM_DEVICES" /> (na) device</translation>
 <translation id="3533126039236445965">Mga app sa shelf</translation>
@@ -572,6 +580,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3621202678540785336">Input</translation>
 <translation id="3621712662352432595">Mga Setting ng Audio</translation>
 <translation id="3626281679859535460">Brightness</translation>
+<translation id="3629640897379005903">Ipakita ang mga detalye ng hotspot. Dini-disable ang hotspot.</translation>
 <translation id="3630697955794050612">naka-off</translation>
 <translation id="3631369015426612114">Payagan ang mga notification mula sa mga sumusunod</translation>
 <translation id="3633097874324966332">Buksan ang mga setting ng Bluetooth para ipares ang iyong device</translation>
@@ -703,6 +712,7 @@ Isaksak ang iyong device.</translation>
 <translation id="423685346499232137">Hindi makopya o ma-paste ang content sa ngayon</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Overview mode</translation>
+<translation id="4240756737570479726">Dini-disable...</translation>
 <translation id="4242533952199664413">Buksan ang mga setting</translation>
 <translation id="4247123849143712100">I-update at i-shut down</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -841,6 +851,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4864369630010738180">Nagsa-sign in...</translation>
 <translation id="4864648187878336334">Desk 15</translation>
 <translation id="4868492592575313542">na-activate</translation>
+<translation id="4871905435473761992">Ipakita ang mga detalye ng hotspot. Hindi sinusuportahan ng iyong mobile network ang hotspot.</translation>
 <translation id="4872237917498892622">Alt+Search o Shift</translation>
 <translation id="4872852897273142380">Mag-focus sa o i-highlight ang bookmarks bar (kung ipinapakita)</translation>
 <translation id="4881695831933465202">Buksan</translation>
@@ -900,6 +911,7 @@ Isaksak ang iyong device.</translation>
 <translation id="5104236669533825617">Hindi makagawa ng screencast</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">Pag-blur ng background</translation>
 <translation id="5117590920725113268">Ipakita ang susunod na buwan</translation>
 <translation id="5121628974188116412">Pumunta sa pinakababa ng page</translation>
 <translation id="5136175204352732067">Ibang keyboard ang nakakonekta</translation>
@@ -912,6 +924,7 @@ Isaksak ang iyong device.</translation>
 <translation id="5168181903108465623">I-cast ang mga available na device</translation>
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
 <translation id="5176318573511391780">I-record ang hindi buong screen</translation>
+<translation id="5187627942836026988">Ipakita ang mga detalye ng hotspot. Na-block ng iyong administrator ang hotspot.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> (na) event</translation>
 <translation id="5198715732953550718">Ipinagsama ang <ph name="MOVED_APP_NAME" /> at <ph name="IN_PLACE_APP" /> para gumawa ng bagong folder.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1084,6 +1097,7 @@ Isaksak ang iyong device.</translation>
 <translation id="595202126637698455">Naka-enable ang pagte-trace sa pagganap</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Pinangangasiwaang user</translation>
+<translation id="5961960957587052807">Liwanag</translation>
 <translation id="5965524703725988602">I-toggle ang Madilim na tema. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Pindutin ang enter para i-record ang window</translation>
 <translation id="5978382165065462689">Pagbabahagi ng kontrol sa iyong screen sa pamamagitan ng Remote Assistance.</translation>
@@ -1256,6 +1270,7 @@ Kaka-install lang</translation>
 <translation id="6752912906630585008">Inalis ang Desk na <ph name="REMOVED_DESK" /> at isinama sa Desk na <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">mga tab</translation>
 <translation id="6757237461819837179">Walang nagpe-play na media</translation>
+<translation id="6759628406555734414">Ipakita ang mga detalye ng hotspot. Ine-enable ang hotspot.</translation>
 <translation id="6768043681523654438">storage</translation>
 <translation id="6777216307882431711">Pinapagana ang mga nakakonektang USB-C device</translation>
 <translation id="6781002679438061620">Desk 9</translation>
@@ -1280,6 +1295,7 @@ Kaka-install lang</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> seg</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Isang digit na lang ang natitira}one{# digit na lang ang natitira}other{# na digit na lang ang natitira}}</translation>
 <translation id="6867938213751067702">Na-pause ang pag-download ng <ph name="FILENAME" /></translation>
+<translation id="6874854809828346832">Ipakita ang mga detalye ng hotspot. Naka-on ang hotspot.</translation>
 <translation id="6878400149835617132">Naka-off ang shortcut</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 app}one{# app}other{# na app}}</translation>
 <translation id="6884665277231944629">Bumalik sa ngayong araw</translation>
@@ -1289,6 +1305,7 @@ Kaka-install lang</translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6901883536534621389">Sumubok ng mga galaw para mag-navigate</translation>
 <translation id="6919251195245069855">Hindi makilala ang iyong smart card. Subukan ulit.</translation>
+<translation id="6920245099716267363">I-toggle ang Hotspot. Naka-on ang Hotspot, 1 device ang nakakonekta.</translation>
 <translation id="6931576957638141829">I-save sa</translation>
 <translation id="6941333068993625698">Magsumite ng feedback</translation>
 <translation id="6942518653766415536">Menu ng format ng recording</translation>
@@ -1378,6 +1395,7 @@ Kaka-install lang</translation>
 <translation id="7378203170292176219">Mag-drag para pumili ng bahaging ire-record</translation>
 <translation id="7378594059915113390">Mga Kontrol ng Media</translation>
 <translation id="7378889811480108604">Naka-off ang battery saver mode</translation>
+<translation id="7382640522316003298">I-toggle ang Hotspot. Naka-on ang Hotspot, <ph name="DEVICECOUNT" /> (na) device ang nakakonekta.</translation>
 <translation id="7382680553121047388">I-on</translation>
 <translation id="7384028040782072252">Mag-right click kahit saan para baguhin ang pagkakaayos ng iyong mga app</translation>
 <translation id="7386767620098596324">I-toggle ang koneksyon ng network. <ph name="STATE_TEXT" />.</translation>
@@ -1428,6 +1446,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7579778809502851308">Screen capture</translation>
 <translation id="7593891976182323525">Search or Shift</translation>
 <translation id="7600875258240007829">Tingnan ang lahat ng notification</translation>
+<translation id="7601417191446344542">I-on ang nudge sa pag-mute?</translation>
 <translation id="7607002721634913082">I-pause</translation>
 <translation id="7609951632080598826">View ng kalendaryo, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Nakakonekta ulit ang camera.</translation>
@@ -1540,6 +1559,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8083540854303889870">Naka-save para sa ibang pagkakataon</translation>
 <translation id="8091153018031979607">Magsisimula nang <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Mga awtomatikong update</translation>
+<translation id="8092380135549145188">Mga kontrol sa pag-scroll</translation>
 <translation id="8098591350844501178">Ihinto ang pag-cast ng screen sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">I-unpin ang app sa shelf</translation>
 <translation id="8113423164597455979">Naka-on lahat</translation>
@@ -1551,6 +1571,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8131740175452115882">Kumpirmahin</translation>
 <translation id="8131994907636310308">Isara ang pagbubukod-bukod ng toast</translation>
 <translation id="8132793192354020517">Kumukonekta sa <ph name="NAME" /></translation>
+<translation id="8135163608236671037">I-toggle ang Hotspot. Naka-on ang Hotspot, walang nakakonektang device.</translation>
 <translation id="8138705869659070104">I-activate matapos ang setup</translation>
 <translation id="813913629614996137">Sinisimulan...</translation>
 <translation id="8142441511840089262">I-double click</translation>
@@ -1730,6 +1751,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8990809378771970590">Gamit ang <ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">Naka-enable ang Color Inversion Mode. Pindutin ulit ang Ctrl+Search+H para i-off ito.</translation>
 <translation id="899350903320462459">I-unlock ang device bilang <ph name="LOGIN_ID" /> para maisagawa ang pagkilos sa notification</translation>
+<translation id="8993733019280019776">Nagsasalita ka ba? Naka-off ang iyong mikropono. Piliin ang mikropono para i-on ito.</translation>
 <translation id="9000771174482730261">PAMAHALAAN ANG STORAGE</translation>
 <translation id="9005984960510803406">Buksan ang window ng Crosh</translation>
 <translation id="9017320285115481645">Ilagay ang access code ng magulang sa Family Link.</translation>

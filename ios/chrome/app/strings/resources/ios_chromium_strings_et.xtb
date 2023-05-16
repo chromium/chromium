@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> kasutas Chromiumi ning jättis järjehoidjad, paroolid ja muud seaded sellesse seadmesse.</translation>
 <translation id="372658070733623520">Chromiumi andmete kasutamiseks ja salvestamiseks oma Google’i kontole kinnitage, et see olete teie.</translation>
 <translation id="3805899903892079518">Chromiumil pole juurdepääsu fotodele ega videotele. Lubage iOS-is juurdepääs valikutega Seaded &gt; Privaatsus &gt; Fotod.</translation>
+<translation id="3955621079070267756">Avage Chromium mis tahes rakendusest</translation>
 <translation id="4043291146360695975">Paroolid salvestatakse rakendusse Paroolihaldur ainult selles seadmes.</translation>
 <translation id="4099085513035183040">Ei toetata Chromiumi beetaversioonis</translation>
 <translation id="4432744876818348753">Chromiumi parimal moel kasutamiseks logige sisse.</translation>
@@ -143,5 +144,6 @@ Olulised aspektid
 <translation id="9089354809943900324">Chromium on aegunud</translation>
 <translation id="9110075932708282655">Kasutage Chromiumi vaikimisi</translation>
 <translation id="921174536258924340">Chromiumil ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti või <ph name="BEGIN_LINK" />kontrollige oma Google'i kontol paroole<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">Kasutage automaatselt Chromiumi, kui avate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

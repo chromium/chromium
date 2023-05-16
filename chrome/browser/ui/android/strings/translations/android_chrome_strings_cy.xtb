@@ -56,6 +56,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263231323834454256">Rhestr ddarllen</translation>
 <translation id="1266864766717917324">Ni ellid rhannu <ph name="CONTENT_TYPE" /></translation>
+<translation id="1269129608791067105">Byddwch yn gweld eich hanes yma</translation>
 <translation id="1273937721055267968">Rhwystro <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">Tapiwch i ehangu</translation>
 <translation id="1291207594882862231">Clirio hanes, cwcis, data gwefan, storfa…</translation>
@@ -295,7 +296,6 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="265156376773362237">Rhaglwytho safonol</translation>
 <translation id="2656405586795711023">Apiau gwe</translation>
 <translation id="2669454659051515572">Gall unrhyw un sy'n defnyddio'r ddyfais hon weld ffeiliau sydd wedi'u lawrlwytho</translation>
-<translation id="2688382350024736268">Mae Chrome bellach yn rhannu gwybodaeth gyfyngedig iawn ymhlith gwefannau ac apiau, megis pan ddangoswyd hysbyseb i chi, i helpu gwefannau i fesur perfformiad hysbysebion.</translation>
 <translation id="2702516483241149200">Newydd: gallwch rannu dolen sy'n sgrolio i'r testun hwn</translation>
 <translation id="2707726405694321444">Ail-lwytho'r dudalen</translation>
 <translation id="271033894570825754">Newydd</translation>
@@ -845,6 +845,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5665379678064389456">Creu digwyddiad yn <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Ni all Chrome wirio am ddiweddariadau</translation>
 <translation id="5686790454216892815">Mae enw'r ffeil yn rhy hir</translation>
+<translation id="569435661099256888">Gallwch weld y tudalennau rydych wedi ymweld â nhw neu gallwch eu clirio o'ch hanes</translation>
 <translation id="569536719314091526">Cyfieithu'r dudalen hon i unrhyw iaith o'r botwm Rhagor o ddewisiadau</translation>
 <translation id="5696597120588531049">Gall Chrome helpu i'ch cadw'n ddiogel rhag toriadau data, gwefannau anniogel a rhagor.</translation>
 <translation id="570347048394355941">Newid i'r Tab</translation>
@@ -1198,7 +1199,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7482656565088326534">Tab rhagolwg</translation>
 <translation id="7484997419527351112">Discover - wedi'i ddiffodd</translation>
 <translation id="7485033510383818941">I ail-lwytho cynnwys y ffrwd, tynnwch y dudalen i lawr</translation>
-<translation id="7486953194485875763">Bydd y data canlynol o'r 15 munud diwethaf yn cael eu dileu:</translation>
 <translation id="749294055653435199">Nid yw Google Lens ar gael ar y ddyfais hon</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Diweddarwyd <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7497755084107113646">Ychwanegwyd pwnc yn ôl at bynciau posib</translation>

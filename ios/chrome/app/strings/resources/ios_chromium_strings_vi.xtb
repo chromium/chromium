@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> đã dùng Chromium và lưu lại dấu trang, mật khẩu cũng như các chế độ cài đặt khác trên thiết bị này.</translation>
 <translation id="372658070733623520">Để sử dụng và lưu dữ liệu Chromium trong Tài khoản Google, hãy xác minh danh tính của bạn.</translation>
 <translation id="3805899903892079518">Chromium không có quyền truy cập ảnh hoặc video của bạn. Hãy cho phép truy cập Cài đặt iOS &gt; Bảo mật &gt; Ảnh.</translation>
+<translation id="3955621079070267756">Mở Chromium từ ứng dụng bất kỳ</translation>
 <translation id="4043291146360695975">Chỉ lưu mật khẩu vào Trình quản lý mật khẩu trên thiết bị này.</translation>
 <translation id="4099085513035183040">Chưa hỗ trợ trên Chromium phiên bản thử nghiệm</translation>
 <translation id="4432744876818348753">Đăng nhập để khai thác tối đa Chromium.</translation>
@@ -140,5 +141,6 @@ Những yếu tố cần xem xét:
 <translation id="9089354809943900324">Chromium đã lỗi thời</translation>
 <translation id="9110075932708282655">Sử dụng Chromium theo Mặc định</translation>
 <translation id="921174536258924340">Chromium không thể kiểm tra một số mật khẩu. Hãy thử lại vào ngày mai hoặc <ph name="BEGIN_LINK" />kiểm tra các mật khẩu trong Tài khoản Google của bạn.<ph name="END_LINK" /></translation>
+<translation id="971488683725792095">Tự động sử dụng Chromium khi bạn nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
 <translation id="985602178874221306">Tác giả Chromium</translation>
 </translationbundle>

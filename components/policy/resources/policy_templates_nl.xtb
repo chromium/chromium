@@ -1792,6 +1792,7 @@ Voor een URL-patroon wordt deze indeling gehanteerd (https://support.google.com/
 <translation id="2669157090883237118">De aanbevolen <ph name="PRODUCT_OS_NAME" />-configuratie niet wijzigen.</translation>
 <translation id="2672012807430078509">Bepaalt of NTLM is aangezet als verificatieprotocol voor SMB-activeringen</translation>
 <translation id="2673363037046384711">De eindgebruiker kan de modus voor hoge efficiëntie aan- of uitzetten.</translation>
+<translation id="2673968385134502798">Games</translation>
 <translation id="2678503605767349615">Vereiste clientcertificaten voor het hele apparaat</translation>
 <translation id="268134026533587276">Screensaver voor het vergrendelscherm aangezet.</translation>
 <translation id="268577405881275241">Proxyfunctie voor comprimeren van gegevens aanzetten</translation>
@@ -2175,6 +2176,10 @@ Zie https://www.chromestatus.com/feature/4664843055398912.</translation>
           Als dit beleid niet is ingesteld, staat de grote muisaanwijzer in eerste instantie uit op het inlogscherm, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
 <translation id="3027837632741099453">De batterijbesparingsmodus wordt aangezet als het apparaat op de batterij werkt.</translation>
 <translation id="3030000825273123558">Rapportage van statistieken aanzetten</translation>
+<translation id="30300807616984726">Rapporteert app-voorraadgegevens voor aangesloten gebruikers.
+
+      Als je dit beleid instelt, beheert deze instelling de rapportage over app-installatie-, app-lancering- en app-verwijderingsgebeurtenissen voor de opgegeven app-typen.
+      Als je het beleid niet instelt, worden er geen app-gebeurtenissen gerapporteerd.</translation>
 <translation id="3030232909811556512">Als dit beleid niet is toegepast, kan de <ph name="PRODUCT_OS_NAME" />-avatarafbeelding van de gebruiker niet worden ingesteld via lokale bestanden, de camera van het apparaat of de Google-profielafbeelding van de gebruiker.
 
 De gebruiker kan de avatarafbeelding instellen via een van deze opties als dit beleid is toegepast of niet is ingesteld.</translation>
@@ -2638,6 +2643,7 @@ Als een in dit beleid opgegeven extensie niet is geïnstalleerd, wordt incognito
 <translation id="3420141485959154417">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> instelt, wordt de URL gespecificeerd van de zoekmachine die wordt gebruikt voor afbeeldingszoekopdrachten. (Als <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> is ingesteld, wordt in plaats daarvan de POST-methode gebruikt voor afbeeldingszoekopdrachten.)
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> niet instelt, worden er geen afbeeldingszoekopdrachten gebruikt.</translation>
+<translation id="3423703250826790403">Android-apps</translation>
 <translation id="3426434797050451264">Dit beleid kan ook worden gebruikt om Android-apps op te geven als standaard bestandshandlers.</translation>
 <translation id="3428247105888806363">Netwerkvoorspelling aanzetten</translation>
 <translation id="3432863169147125747">Beheert afdrukinstellingen.</translation>
@@ -3483,6 +3489,7 @@ Opmerking: Als je interne URL's met chrome://* en chrome-untrusted://* blokkeert
       In kiosksessies is er geen respijtperiode en zijn er geen meldingen over opnieuw opstarten.
 </translation>
 <translation id="4187576366596772431">De WebHID API op deze sites blokkeren</translation>
+<translation id="4189872355465413041">Systeem-apps</translation>
 <translation id="4190316993598857632">Bewerken van bookmarks aanzetten</translation>
 <translation id="4192388905594723944">URL voor het valideren van verificatietoken voor client voor externe toegang</translation>
 <translation id="4195698007674066525">Standaard een numeriek toetsenbord tonen voor wachtwoordinvoer</translation>
@@ -3586,6 +3593,7 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
 
 Als dit beleid is ingesteld, staat <ph name="PRODUCT_OS_NAME" /> gebruikers alleen toe verbinding te maken met de opgegeven bluetooth-services, met een uitzondering wanneer de lijst leeg is, wat betekent dat elke service mag worden gebruikt. UUID's die zijn gereserveerd door de Bluetooth SIG kunnen worden getoond als <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> of <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. Aangepaste UUID's kunnen worden getoond als <ph name="BLUETOOTH_CUSTOM_UUID" />. UUID's zijn hoofdlettergevoelig. Als je het beleid niet instelt, kunnen gebruikers verbinding maken met elke bluetooth-service.</translation>
 <translation id="4332177773549877617">Gebeurtenissen registreren voor installatie van Android-apps</translation>
+<translation id="4333940819293342439">Snelheid voor verzameling van app-telemetrie in milliseconden.</translation>
 <translation id="4341199399451274159">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> instelt, worden de tekencoderingen gespecificeerd die worden ondersteund door de zoekprovider. Deze coderingen zijn codepaginanamen zoals UTF-8, GB2312 en ISO-8859-1. Ze worden getest in de volgorde waarin ze worden opgegeven.
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> niet instelt, wordt UTF-8 gebruikt.</translation>
@@ -4084,6 +4092,7 @@ Dit beleid is tijdelijk en wordt verwijderd zodra de opheffing van systeemaudio-
 
   Als je dit beleid instelt op False of niet instelt, kan opheffing van systeemaudio-echo nog steeds worden aangezet op basis van het bijbehorende lanceringsplan maar wordt het niet afgedwongen door dit beleid.</translation>
 <translation id="4801512016965057443">Mobiele dataroaming toestaan</translation>
+<translation id="4801647366128872782">Definieert URL's die rapportage over verouderde technologie toestaan</translation>
 <translation id="4802744647065138872">Beperkt het aantal momentopnamen van gebruikersgegevens dat wordt bewaard voor gebruik bij een noodrollback.</translation>
 <translation id="4802905909524200151">Updategedrag voor <ph name="TPM_FIRMWARE_UPDATE_TPM" />-firmware configureren</translation>
 <translation id="4804828344300125154">Altijd opnieuw opstarten na uitloggen gebruiker.</translation>
@@ -5237,6 +5246,10 @@ Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgezet (door het beleid
 
       Als je het beleid niet toepast, wordt externe toegang niet uitgezet, maar zijn alleen verbindingen vanuit hetzelfde netwerk toegestaan (geen NAT-traversal of -relay).</translation>
 <translation id="5895569286536062756">Toegankelijkheidsfunctie 'Selecteer om voor te lezen' op het inlogscherm aanzetten</translation>
+<translation id="5895861015839311441">Rapporteert telemetriegegevens over app-gebruik voor aangesloten gebruikers.
+
+      Als je dit beleid instelt, wordt de telemetrie over app-gebruik gerapporteerd voor de opgegeven app-typen.
+      Als je het beleid niet instelt, wordt er geen telemetrie over het app-gebruik gerapporteerd.</translation>
 <translation id="5897234314586602143">Kop- en voetteksten tonen in afdrukvoorbeeld</translation>
 <translation id="5897913798715600338">Batterij snel opladen.</translation>
 <translation id="5898486742390981550">Wanneer meerdere gebruikers zijn ingelogd, kunnen Android-apps alleen worden gebruikt door de primaire gebruiker.</translation>
@@ -5474,6 +5487,7 @@ Als dit beleid niet is ingesteld of de lijst geen geldige verwijzingen naar afbe
       Als het beleid niet is ingesteld, worden rapporten elke 24 uur geüpload.
       Als het beleid is ingesteld, wordt het aantal uren tussen 2 opeenvolgende rapportuploads gedefinieerd door dit beleid.
       </translation>
+<translation id="614551633868957694">Chrome-apps en -extensies</translation>
 <translation id="614616930188030377">Patronen in deze lijst worden vergeleken met de beveiligingsoorsprong van de aanvragende URL.
       Als een overeenkomst wordt gevonden of als chrome://flags/#enable-webrtc-hide-local-ips-with-mdns is Uitgezet, worden de lokale IP-adressen getoond in WebRTC ICE-kandidaten.
       Anders worden lokale IP-adressen verborgen met mDNS-hostnamen.
@@ -5784,6 +5798,20 @@ Zie https://developer.chrome.com/blog/immutable-document-domain/ voor meer infor
 <translation id="6404064917675764807">CRD-sessiegebeurtenissen niet rapporteren</translation>
 <translation id="6404360891305375004">Bestanden delen via netwerk toestaan</translation>
 <translation id="6407093060083181305">Blokkeringslijst voor installatie van extensies configureren</translation>
+<translation id="6407792833351198330">Bepaalt of een pagina die verouderde technologieën gebruikt, wordt gerapporteerd op basis van de URL.
+
+Als je dit beleid instelt, worden de URL's met een voorvoegsel dat overeenkomt met de toelatingslijst, gebruikt om een rapport te maken en te uploaden. Niet-overeenkomende URL's worden genegeerd.
+Als je het beleid niet instelt of instelt op een lege lijst, wordt er geen rapport gemaakt.
+
+De patronen voor overeenkomende URL's gebruiken een vergelijkbare indeling als die voor het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" /> (deze staan op https://support.google.com/chrome/a?p=url_blocklist_filter_format). Op een paar uitzonderingen na:
+* Geen ondersteuning van jokertekens (*).
+ * Schema, poort en query worden genegeerd.
+ * Het subdomein moet altijd worden opgegeven en overeenkomen.
+ * Er kunnen maximaal 100 URL's op de toelatingslijst worden gezet.
+
+Voor <ph name="PRODUCT_NAME" /> is dit beleid alleen van kracht als de machine is ingeschreven met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
+
+Meer informatie over verouderde technologieën vind je op https://chromestatus.com/features.</translation>
 <translation id="640827304541402854">Firewallpassage vanaf host voor externe toegang uitzetten</translation>
 <translation id="6412352702230183710">Alleen hosts voor native berichten op systeemniveau toestaan</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
@@ -5945,6 +5973,7 @@ De time-out voor inactiviteit waarna de screensaver wordt gestart en het interva
 <translation id="6556586932263358975">Schermvergrendeling toestaan</translation>
 <translation id="6557178935482719861">Safe Browsing-bescherming tegen phishing aan de clientzijde uitzetten</translation>
 <translation id="6558013557780651644">Vertraging voordat acties bij inactiviteit worden uitgevoerd</translation>
+<translation id="6558812160831988140">Rapportage over app-gebruik</translation>
 <translation id="6559057113164934677">Niet toestaan dat sites toegang krijgen tot de camera en microfoon</translation>
 <translation id="65591220958874949">De ingebouwde DNS-client gebruiken in Windows, macOS, Android en ChromeOS</translation>
 <translation id="6559221564468029245">Als je dit beleid toepast of niet instelt, worden gebruikers niet als inactief gezien als er audio wordt afgespeeld. Hierdoor wordt voorkomen dat de time-out voor inactiviteit wordt bereikt en dat de actie bij inactiviteit wordt ondernomen. Het dimmen, uitzetten of vergrendelen van het scherm wordt nog wel uitgevoerd na de ingestelde periode, ongeacht of er audio wordt afgespeeld.
@@ -7192,14 +7221,6 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 
           De beleidswaarde moet worden gespecificeerd in milliseconden. De opgegeven waarden moeten kleiner dan of gelijk zijn aan de vertraging van de uitschakeling van het scherm (indien ingesteld) en van de inactieve vertraging.</translation>
 <translation id="7680437377926096177">Dialoogvenster voor uitloggen niet tonen als het laatste venster wordt gesloten.</translation>
-<translation id="7682459947751785310">Dit beleid kan tijdelijk worden gebruikt om ondersteuning voor de PPB_VideoDecoder(Dev) API gedwongen aan te zetten.
-
-Als je het beleid niet instelt of niet toepast, bepaalt de browser of de API wordt ondersteund.
-Als je het beleid aanzet, wordt de API ondersteund.
-
-Dit beleid kan worden gebruikt als de lopende beëindiging van ondersteuning voor deze API problemen aan het licht brengt. Als je het beleid moet gebruiken, dien je een bug in op crbug.com, met een cc naar {blundell, vasilyt}@chromium.org, waarin je je use case uitlegt. Volgens de planning wordt het beleid voortgezet tot en met versie 114 van <ph name="PRODUCT_NAME" />, waarna de ondersteuning voor deze API onvoorwaardelijk wordt beëindigd.
-
-OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestarte weergaveprocessen terwijl de browser actief is.</translation>
 <translation id="7683777542468165012">Beleid dynamisch vernieuwen</translation>
 <translation id="7687943045976362719">Als dit beleid is ingesteld, worden de opgegeven contenttypen verwerkt door <ph name="PRODUCT_FRAME_NAME" />.
 
@@ -7345,6 +7366,9 @@ OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestar
 <translation id="7832225468415136704">Chrome Cleanup niet toestaan om het systeem periodiek te scannen, en handmatige scans uitzetten</translation>
 <translation id="7833148823006528332">Android-app-ID, bijvoorbeeld 'com.google.android.gm' voor Gmail</translation>
 <translation id="7835218570504220753">Automatisch klikken uitzetten</translation>
+<translation id="7839124608155212387">Snelheid waarmee telemetrie over app-gebruik wordt verzameld op ingeschreven apparaten voor aangesloten gebruikers. Het toegestane minimum is 5 minuten.
+
+      Als je dit beleid niet instelt, is de standaardsnelheid van 15 minuten van toepassing.</translation>
 <translation id="7839180815400079700">Als je <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> aanzet en <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> instelt, wordt de dagconfiguratie voor stroom voor piekuren ingesteld.
 
       Als je het beleid niet instelt, blijft stroom voor piekuren uit.
@@ -7825,6 +7849,7 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="8269238942896230153">Een beheerd account moet een primair account zijn en bij het maken van een profiel mogen geen bestaande browsegegevens worden geïmporteerd</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Verbindingsgerelateerde UI aanzetten op hostdesktop bij een actieve verbinding</translation>
+<translation id="8273183018575414926">Progressive web-apps</translation>
 <translation id="8274603902181597201">De eCryptfs-hoofdmap van de gebruiker wissen en beginnen met een nieuwe hoofdmap die is versleuteld met ext4</translation>
 <translation id="8274926413890711289">Opties voor gedetailleerde rapportage aanzetten</translation>
 <translation id="8275103737670730746">Toestaan dat API's voor bestands- of directorykiezers worden aangeroepen zonder eerder gebruikersgebaar</translation>
@@ -8175,6 +8200,7 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 <translation id="8597758693275075382">OEM-tekenreeksen voor SMBIOS om tijdens de installatie aan de VM door te geven. Standaard wordt de lege lijst ingesteld.</translation>
 <translation id="8598786284856179541">Rapportage van versie-informatie aanzetten</translation>
 <translation id="859937827887158048">Downloads van automatische peer-to-peer-updates niet toestaan</translation>
+<translation id="8600280933078435582">Linux-apps</translation>
 <translation id="8603454805657060638">Als je het beleid instelt, kan de beheerder het MAC-adres (Media Access Control) wijzigen als een apparaat wordt aangesloten op het dock. Bij sommige apparaatmodellen die op een dock zijn aangesloten, kan het MAC-adres van het toegewezen dock van het apparaat standaard worden gebruikt om het apparaat op ethernet te herkennen.
 
       Als DeviceDockMacAddress is geselecteerd of het beleid niet is ingesteld, wordt het toegewezen dock-MAC-adres van het apparaat gebruikt.
@@ -8448,6 +8474,7 @@ Als je het beleid niet instelt of niet toepast, worden de gegevens van deze zoek
 <translation id="8860342862142842017">Handhaving van Certificaattransparantie voor een lijst met subjectPublicKeyInfo-hashes</translation>
 <translation id="8860894781631833477">Gebruikers kunnen het releasekanaal voor <ph name="PRODUCT_OS_NAME" /> instellen</translation>
 <translation id="8864975621965365890">Hiermee onderdruk je de prompt die je ziet als een site wordt weergegeven door <ph name="PRODUCT_FRAME_NAME" />.</translation>
+<translation id="8866430022832109569">Rapportage van app-voorraad</translation>
 <translation id="886645881209114007">Gebruikers toestaan een <ph name="PLUGIN_VM_NAME" /> te gebruiken op <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8867894831390233044">Bepaalt of gebruikers foutopsporing op afstand mogen toevoegen.
 

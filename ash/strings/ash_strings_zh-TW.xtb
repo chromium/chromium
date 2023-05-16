@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351937230027495976">收合選單</translation>
 <translation id="1360220746312242196">搜尋網頁時，前往上一個符合搜尋的項目</translation>
+<translation id="1360788414852622716">正在停用設定檔，請稍候片刻。</translation>
 <translation id="1364382257761975320">如要解鎖 Chromebook，請使用指紋</translation>
 <translation id="1365866993922957110">取得自動更新</translation>
 <translation id="1372545819342940910">儲存桌面以供日後使用</translation>
@@ -539,6 +540,7 @@
 <translation id="3510164367642747937">醒目顯示滑鼠游標</translation>
 <translation id="3513798432020909783">這個帳戶是由 <ph name="MANAGER_EMAIL" /> 管理</translation>
 <translation id="352245152354538528">{0,plural, =1{請在 1 分鐘內更新裝置}other{請在 # 分鐘內更新裝置}}</translation>
+<translation id="3522979239100719575">正在尋找可用的設定檔，請稍候片刻。</translation>
 <translation id="3526440770046466733">在新分頁中開啟連結並停留在目前的分頁中</translation>
 <translation id="353086728817903341">已連線至 <ph name="NUM_DEVICES" /> 部裝置</translation>
 <translation id="3533126039236445965">檔案櫃中的應用程式</translation>
@@ -1536,6 +1538,7 @@
 <translation id="8083540854303889870">已儲存待稍後使用</translation>
 <translation id="8091153018031979607">開始時間：<ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">自動更新</translation>
+<translation id="8092380135549145188">捲動控制選項</translation>
 <translation id="8098591350844501178">停止將畫面投放到「<ph name="RECEIVER_NAME" />」</translation>
 <translation id="810637681351706236">不再讓應用程式顯示在檔案櫃中</translation>
 <translation id="8113423164597455979">開啟，所有應用程式</translation>

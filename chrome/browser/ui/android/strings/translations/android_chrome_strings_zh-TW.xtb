@@ -196,6 +196,7 @@
 <translation id="2100273922101894616">自動登入</translation>
 <translation id="2100314319871056947">請嘗試將要分享的文字分成多個片段</translation>
 <translation id="2111511281910874386">前往指定頁面</translation>
+<translation id="2119609734654412418">這裡會顯示你的書籤</translation>
 <translation id="2122601567107267586">無法開啟應用程式</translation>
 <translation id="2132122640199389833">移除所有連結的裝置</translation>
 <translation id="213279576345780926">已關閉「<ph name="TAB_TITLE" />」</translation>
@@ -296,7 +297,6 @@
 <translation id="265156376773362237">標準預先載入模式</translation>
 <translation id="2656405586795711023">網頁應用程式</translation>
 <translation id="2669454659051515572">這部裝置的任何使用者都可以看到已下載的檔案</translation>
-<translation id="2688382350024736268">Chrome 現在只會在網站和應用程式間分享有限的資訊 (例如向使用者放送廣告的時段)，讓網站評估廣告成效。</translation>
 <translation id="2702516483241149200">新功能：分享可跳至這段文字的連結</translation>
 <translation id="2707726405694321444">重新整理頁面</translation>
 <translation id="271033894570825754">全新</translation>
@@ -597,6 +597,7 @@
 <translation id="433213510553688132">正在設為追蹤…</translation>
 <translation id="4335835283689002019">安全瀏覽功能已關閉</translation>
 <translation id="4351244548802238354">關閉對話方塊</translation>
+<translation id="4355272626458588338">你可以將重要網頁加入書籤，方便日後查看</translation>
 <translation id="4369735607080757018">在網站間分享少數類型的資料，以評估廣告成效，例如你在哪個時段看到廣告</translation>
 <translation id="4378154925671717803">電話</translation>
 <translation id="438319986296050901">僅分享資訊卡</translation>
@@ -948,6 +949,7 @@
 <translation id="6232535412751077445">啟用「不追蹤」選項後，您的瀏覽流量會置入一項特定的要求，其作用則視網站是否回應要求，以及網站解讀要求的方式而定。
 
 舉例來說，部分網站可能會以顯示廣告的方式回應這類要求，而這些廣告並非根據您所造訪的其他網站記錄而產生。許多網站仍會收集您的瀏覽資料，並將這些資料用於下列目的：提高網站安全性、在網站上提供更相關的內容、廣告和推薦項目，以及產生報告統計資料。</translation>
+<translation id="6255794742848779505">我們正在變更密碼儲存在這部裝置上的方式</translation>
 <translation id="6264376385120300461">仍要下載</translation>
 <translation id="6277522088822131679">列印網頁時發生問題，請再試一次。</translation>
 <translation id="6277722725779679269">無法更新追蹤價格</translation>
@@ -1197,7 +1199,6 @@
 <translation id="7482656565088326534">預覽分頁</translation>
 <translation id="7484997419527351112">探索 - 關閉</translation>
 <translation id="7485033510383818941">如要重新整理動態提醒內容，請將頁面往下拉</translation>
-<translation id="7486953194485875763">系統將刪除過去 15 分鐘的瀏覽資料，如下所示：</translation>
 <translation id="749294055653435199">這部裝置不支援 Google 智慧鏡頭</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (上次更新時間：<ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7497755084107113646">已將主題加回主題候選清單</translation>

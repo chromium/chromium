@@ -7272,15 +7272,6 @@ Bu politikanın ayarlanması için <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLI
 
           Politika değeri milisaniye olarak belirtilmelidir. Değerler ekran kapanma gecikmesinden (ayarlanmışsa) ve boşta kalma gecikmesinden küçük veya ona eşit olacak şekilde bir aralığa sıkıştırılır.</translation>
 <translation id="7680437377926096177">Son kapatılan pencerede oturum kapatma iletişiminin gösterilmesini engelle.</translation>
-<translation id="7682459947751785310">Bu politika, PPB_VideoDecoder(Dev) API desteğinin zorla etkinleştirilmesi için geçici olarak kullanılabilir.
-
-Politika ayarlanmadan bırakılırsa veya Devre Dışı değerine ayarlanırsa API'nin desteklenip desteklenmeyeceğine tarayıcı karar verir.
-Politika, Etkin değerine ayarlanırsa API desteklenir.
-
-Bu politika, bu API'ye yönelik desteğin kaldırılma sürecinin sorun yaratması halinde kullanılabilir. Bu politikayı kullanmanız gerekirse lütfen crbug.com adresinden hata bildiriminde bulunun. Bildiriminizde, kullanım alanınızı açıklamayı ve CC bölümüne {blundell, vasilyt}@chromium.org adresini eklemeyi unutmayın. Bu politikanın en son <ph name="PRODUCT_NAME" /> 114 sürümüyle kullanılması planlanmıştır. Bu API'ye yönelik destek, 114 sürümünden sonra koşulsuz olarak kaldırılacaktır.
-
-NOT: Tarayıcı çalışırken bu politikada yapılan değişiklikleri yalnızca
-yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 <translation id="7683777542468165012">Dinamik Politika Yenileme</translation>
 <translation id="7687943045976362719">Bu politika ayarlanırsa, belirtilen içerik türleri <ph name="PRODUCT_FRAME_NAME" /> tarafından işlenir.
 

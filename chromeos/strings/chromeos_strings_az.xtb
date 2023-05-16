@@ -539,7 +539,6 @@
 <translation id="5423849171846380976">Aktivləşdirildi</translation>
 <translation id="5430931332414098647">Cəld modem rejimi</translation>
 <translation id="5431318178759467895">Rəng</translation>
-<translation id="5456936324019847994">Aktivləşdirilmiş fərdi APN-ə qoşulmaq olmur. Ətraflı məlumat üçün mobil operator ilə əlaqə saxlayın.</translation>
 <translation id="5457599981699367932">Qonaq kimi gözdən keçirin</translation>
 <translation id="54609108002486618">İdarə edilən</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} cəhd qalıb}other{{0} cəhd qalıb}}</translation>
@@ -710,7 +709,6 @@
 <translation id="6798678288485555829">Mətn naviqasiyası</translation>
 <translation id="680983167891198932">Açar</translation>
 <translation id="6816797338148849397">Seçiminizlə əlaqəli məlumat əlçatandır. Giriş üçün Yuxarı ox düyməsini istifadə edin.</translation>
-<translation id="6838167112108853532">Bu APN'i deaktiv etmək və ya silmək mümkün deyil. Əlavə edilmiş aktiv APN'lərin deaktiv edildiyinə və ya silindiyinə əmin olun.</translation>
 <translation id="6853312040151791195">Deşarj faizi</translation>
 <translation id="6889786074662672253">Yenidən başlatma zamanı bu xarici cihazı ayırmayın və ya kompüterinizi söndürməyin. Bu pəncərəni kiçildə bilərsiniz. Bu, bir neçə dəqiqə çəkə bilər və xarici cihazınız bu müddət ərzində işləməyə bilər.</translation>
 <translation id="6900701049656042631">Albomda foto yoxdur. Foto əlavə etmək üçün <ph name="LINK" /> ünvanına keçin</translation>
@@ -740,6 +738,7 @@
 <translation id="7130438335435247835">Giriş nöqtəsi adı (APN)</translation>
 <translation id="7131634559772719176">Hazır ayarı təsdiqləyin</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ad serveri}other{Ad serverləri}}</translation>
+<translation id="7135814714616751706">Qısayol axtarın</translation>
 <translation id="7143207342074048698">Qoşulur</translation>
 <translation id="7144878232160441200">Yenidən cəhd edin</translation>
 <translation id="714876143603641390">Lan Bağlantısı</translation>
@@ -770,6 +769,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Axtarışda nəticəni görmək üçün Axtarış və Boşluq düyməsinə basın.</translation>
 <translation id="7343649194310845056">Şəbəkə Cihazları</translation>
+<translation id="7353413232959255829">Axtarış nəticəsi <ph name="LIST_POSITION" />/<ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Qısayola keçmək üçün Enter basın.</translation>
 <translation id="7359657277149375382">Fayl növü</translation>
 <translation id="73631062356239394">Diaqnostika datasını paylaşın</translation>
 <translation id="7375053625150546623">EAP</translation>

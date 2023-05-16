@@ -539,7 +539,6 @@
 <translation id="5423849171846380976">Suaktyvinta</translation>
 <translation id="5430931332414098647">Momentinis įrenginio kaip modemo naudojimas</translation>
 <translation id="5431318178759467895">Spalva</translation>
-<translation id="5456936324019847994">Nepavyksta prisijungti prie jokių įgalintų tinkintų APN. Susisiekite su mobiliojo ryšio operatoriumi, kad gautumėte daugiau informacijos.</translation>
 <translation id="5457599981699367932">Naršyti kaip svečiui</translation>
 <translation id="54609108002486618">Valdoma</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Liko {0} bandymas}one{Liko {0} bandymas}few{Liko {0} bandymai}many{Liko {0} bandymo}other{Liko {0} bandymų}}</translation>
@@ -710,7 +709,6 @@
 <translation id="6798678288485555829">Teksto naršymas</translation>
 <translation id="680983167891198932">Raktas</translation>
 <translation id="6816797338148849397">Pasiekiama su pasirinkimu susijusi informacija Norėdami pasiekti, spustelėkite rodyklės aukštyn klavišą.</translation>
-<translation id="6838167112108853532">Šio APN išjungti arba pašalinti negalima. Įsitikinkite, kad įgalinti pridėti APN yra išjungti ar pašalinti.</translation>
 <translation id="6853312040151791195">Išsikrovimo rodiklis</translation>
 <translation id="6889786074662672253">Kol paleidžiama iš naujo, neatjunkite šio išorinio įrenginio ir neišjunkite kompiuterio. Galite sumažinti šį langą. Tai gali užtrukti kelias minutes ir tuo metu išorinis įrenginys gali neveikti.</translation>
 <translation id="6900701049656042631">Šiame albume nėra nuotraukų. Jei norite pridėti nuotraukų, eikite adresu <ph name="LINK" /></translation>
@@ -740,6 +738,7 @@
 <translation id="7130438335435247835">Prieigos taško pavadinimas (APN)</translation>
 <translation id="7131634559772719176">Išankstinio nustatymo patvirtinimas</translation>
 <translation id="7134436342991564651">{0,plural, =1{Pavadinimų serveris}one{Pavadinimų serveriai}few{Pavadinimų serveriai}many{Pavadinimų serveriai}other{Pavadinimų serveriai}}</translation>
+<translation id="7135814714616751706">Ieškoti sparčiųjų klavišų</translation>
 <translation id="7143207342074048698">Jungiama</translation>
 <translation id="7144878232160441200">Kartoti</translation>
 <translation id="714876143603641390">LAN ryšys</translation>
@@ -770,6 +769,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; paspauskite paieškos ir tarpo klavišus, kad rezultatą galėtumėte peržiūrėti naudodami „Google“ paiešką.</translation>
 <translation id="7343649194310845056">Tinklo įrenginiai</translation>
+<translation id="7353413232959255829"><ph name="LIST_POSITION" /> paieškos rezultatas iš <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Norėdami pereiti prie sparčiojo klavišo, paspauskite „Enter“.</translation>
 <translation id="7359657277149375382">Failo tipas</translation>
 <translation id="73631062356239394">Diagnostikos duomenų bendrinimas</translation>
 <translation id="7375053625150546623">EAP</translation>

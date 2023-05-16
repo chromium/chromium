@@ -1093,6 +1093,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3658742229777143148">Revisão</translation>
 <translation id="3664782872746246217">Palavras-chave:</translation>
 <translation id="3667704023705708645">Capital de risco</translation>
+<translation id="3671117652518853176">Quando a opção está desativada, pode ser-lhe pedida ocasionalmente uma validação por motivos de segurança</translation>
 <translation id="3671540257457995106">Permitir o redimensionamento?</translation>
 <translation id="3672568546897166916">Erro em <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Terceiro rolo</translation>
@@ -1127,6 +1128,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3736520371357197498">Se compreende os riscos para a sua segurança, pode <ph name="BEGIN_LINK" />visitar este site não seguro<ph name="END_LINK" /> antes de os programas perigosos terem sido removidos.</translation>
 <translation id="3738166223076830879">O seu navegador é gerido pelo seu administrador.</translation>
 <translation id="3740319564441798148">Transportes terrestres de longo curso</translation>
+<translation id="3743765582345153106">Validar sempre quando usar o preenchimento automático</translation>
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
 <translation id="3744286742364977428">Os ficheiros que transfere são enviados para o Google Cloud ou para terceiros para análise. Por exemplo, podem ser analisados quanto a dados confidenciais ou software malicioso e podem ser armazenados com base nas políticas da empresa.</translation>
 <translation id="3744899669254331632">Não pode visitar <ph name="SITE" /> neste momento, porque o Website enviou credenciais baralhadas que o Chromium não consegue processar. Os erros de rede e os ataques são geralmente temporários, pelo que esta página deverá funcionar mais tarde.</translation>
@@ -1729,6 +1731,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5171045022955879922">Pesquise ou escreva URL</translation>
 <translation id="5172758083709347301">Equipamento</translation>
 <translation id="5177076414499237632">Saiba mais sobre a origem e o tópico desta página</translation>
+<translation id="5179490652562926740">Definições de validação de pagamentos guardadas</translation>
 <translation id="5179510805599951267">Não está em <ph name="ORIGINAL_LANGUAGE" />? Comunicar este erro</translation>
 <translation id="518639307526414276">Alimentação e artigos para animais de estimação</translation>
 <translation id="5190072300954988691">Acesso à câmara e ao microfone não permitido</translation>
@@ -3221,7 +3224,6 @@ Detalhes adicionais:
 <translation id="8870494189203302833">Na mesma ordem, com orientação para baixo</translation>
 <translation id="8870700989640064057">Imprimir o ficheiro confidencial?</translation>
 <translation id="8871553383647848643">Personalize o aspeto do seu navegador</translation>
-<translation id="8871603420762394026">O Chrome partilha agora apenas informações muito limitadas entre sites, como quando um anúncio lhe foi apresentado, para ajudar os sites a medirem o desempenho dos anúncios.</translation>
 <translation id="8874824191258364635">Introduza um número de cartão válido</translation>
 <translation id="8876033571432926051">Jogos casuais</translation>
 <translation id="8877780815363510165">Pesca</translation>

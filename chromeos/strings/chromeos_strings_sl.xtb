@@ -539,7 +539,6 @@
 <translation id="5423849171846380976">Aktivirano</translation>
 <translation id="5430931332414098647">Takojšnji internet prek mobilnega telefona</translation>
 <translation id="5431318178759467895">Barvno</translation>
-<translation id="5456936324019847994">Povezave z omogočenimi APN-ji po meri ni mogoče vzpostaviti. Če želite več informacij, se obrnite na mobilnega operaterja.</translation>
 <translation id="5457599981699367932">Brskajte kot gost</translation>
 <translation id="54609108002486618">Upravljan</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Na voljo imate še {0} poskus}one{Na voljo imate še {0} poskus}two{Na voljo imate še {0} poskusa}few{Na voljo imate še {0} poskuse}other{Na voljo imate še {0} poskusov}}</translation>
@@ -710,7 +709,6 @@
 <translation id="6798678288485555829">Premikanje po besedilu</translation>
 <translation id="680983167891198932">Ključ</translation>
 <translation id="6816797338148849397">Podatki, ki so na voljo v zvezi z vašim izborom. Za dostop uporabite tipko s puščico gor.</translation>
-<translation id="6838167112108853532">Tega APN-ja ni mogoče onemogočiti ali odstraniti. Omogočeni povezani APN-ji morajo biti onemogočeni ali odstranjeni.</translation>
 <translation id="6853312040151791195">Hitrost praznjenja</translation>
 <translation id="6889786074662672253">Med posodabljanjem ne odklopite zunanje naprave ali izklopite računalnika. To okno lahko pomanjšate. Ta posodobitev bo morda trajala nekaj minut in zunanja naprava v tem času morda ne bo delovala.</translation>
 <translation id="6900701049656042631">V tem albumu ni fotografij. Fotografije lahko dodate na <ph name="LINK" />.</translation>
@@ -740,6 +738,7 @@
 <translation id="7130438335435247835">Ime dostopne točke (APN)</translation>
 <translation id="7131634559772719176">Potrditev prednastavitev</translation>
 <translation id="7134436342991564651">{0,plural, =1{Imenski strežnik}one{Imenski strežniki}two{Imenski strežniki}few{Imenski strežniki}other{Imenski strežniki}}</translation>
+<translation id="7135814714616751706">Iskanje bližnjic</translation>
 <translation id="7143207342074048698">Povezovanje</translation>
 <translation id="7144878232160441200">Poskusi ponovno</translation>
 <translation id="714876143603641390">Povezava z omrežjem LAN</translation>
@@ -770,6 +769,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pritisnite tipko za iskanje in preslednico, če si želite rezultat ogledati v Iskanju Google.</translation>
 <translation id="7343649194310845056">Omrežne naprave</translation>
+<translation id="7353413232959255829">Rezultat iskanja <ph name="LIST_POSITION" /> od <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Pritisnite Enter, če se želite pomakniti do bližnjice.</translation>
 <translation id="7359657277149375382">Vrsta datoteke</translation>
 <translation id="73631062356239394">Deljenje diagnostičnih podatkov</translation>
 <translation id="7375053625150546623">EAP</translation>

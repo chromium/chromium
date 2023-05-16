@@ -21,6 +21,9 @@
 <translation id="1103523840287552314">Vždy překládat jazyk <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Přepnout na otevřené okno</translation>
 <translation id="1112015203684611006">Tisk se nezdařil.</translation>
+<translation id="1113057722807951993">Šifrování pomocí heslové fráze se nevztahuje na platební metody a adresy z Google Pay.
+
+Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="1125564390852150847">Vytvořit novou kartu</translation>
 <translation id="1126809382673880764">Nebudete chráněni před nebezpečnými weby, soubory ke stažení a rozšířeními. V jiných službách Google, v nichž je ochrana pomocí Bezpečného prohlížení k dispozici (např. Gmail a Vyhledávání), ji budete mít i nadále.</translation>
 <translation id="1145536944570833626">Smazat existující data.</translation>
@@ -158,6 +161,7 @@
 <translation id="1989112275319619282">Procházet</translation>
 <translation id="1990820278544963435">Najít</translation>
 <translation id="199425419756152024">Zobrazit heslo</translation>
+<translation id="2008357574463816229">Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="2010008505735295285">Načíst znovu</translation>
 <translation id="2015722694326466240">Chcete-li zobrazit hesla, musíte nejdříve na zařízení nastavit heslo.</translation>
 <translation id="2021670401941426298">Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud je k dispozici).</translation>
@@ -706,6 +710,9 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5745916533876677730">Přejít na předchozí kartu</translation>
 <translation id="5755162682436943950">Byli jste odhlášeni. Otevře dialogové okno k přihlášení a zapnutí synchronizace.</translation>
 <translation id="5758631781033351321">Zde najdete svůj seznam četby</translation>
+<translation id="5762370665605786758">Šifrování pomocí heslové fráze se nevztahuje na platební metody a adresy z Google Pay.
+
+Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslovou frázi. Heslová fráze se neodesílá do Googlu a není na Googlu uložena. Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="5765456154762864099">Nabídka → Nastavení → Výchozí prohlížeč</translation>
 <translation id="5777888488419460501">Uložit do účtu</translation>
 <translation id="5782227691023083829">Překládání...</translation>
@@ -847,6 +854,9 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="6476800141292307438">Stránka se překládá do jazyka <ph name="LANGUAGE" />. Možnosti jsou k dispozici u dolního okraje obrazovky.</translation>
 <translation id="648164694371393720">Chyba ověření</translation>
 <translation id="6482629121755362506">Počet smazaných položek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="6484712497741564393">Jste přihlášeni jako <ph name="EMAIL" />.
+
+Vaše data jsou šifrována pomocí heslové fráze. Pokud chcete používat a ukládat data prohlížeče Chrome ve svém účtu Google, zadejte ji.</translation>
 <translation id="6497772452874122664">Pokud webu <ph name="TIME" /> důvěřujete, můžete použít uložené heslo k jinému webu.
 
 Pro každý web se pokuste použít jedinečné heslo.</translation>
@@ -893,6 +903,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="6730682669179532099">Hesla se nepodařilo exportovat</translation>
 <translation id="6732087373923685049">fotoaparát</translation>
 <translation id="6748108480210050150">Od</translation>
+<translation id="6753469262000681876">Režim blokování</translation>
 <translation id="6760509555861141183">Zpět na kartu Nedávné</translation>
 <translation id="6762812039470893796">Zrušit výběr všech</translation>
 <translation id="6780034285637185932">PSČ</translation>
@@ -1119,6 +1130,9 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8299417921174340354">Chcete-li použít hesla, musíte nejdříve na zařízení nastavit heslo.</translation>
 <translation id="8299613349954694191">Pokud web chcete prohlížet v soukromí, otevřete anonymní kartu.</translation>
 <translation id="8316944564970119719">Zadejte web a heslo a pak klikněte na Uložit</translation>
+<translation id="8317835149433843300">Platební metody a adresy z Google Pay nebudou šifrovány. Historie procházení z Chromu se nebude ukládat do vašeho účtu Google.
+
+Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslovou frázi. Heslová fráze se neodesílá do Googlu a není na Googlu uložena. Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Nové vyhledávání</translation>
 <translation id="8323906514956095947">Přidržením zobrazíte další možnosti karet</translation>
 <translation id="8328777765163860529">Zavřít vše</translation>
@@ -1141,6 +1155,9 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8487700953926739672">Dostupné offline</translation>
 <translation id="8488923644885757471">Nové okno</translation>
 <translation id="8490978609246021741">Uložit změny</translation>
+<translation id="8491300088149538575">Jste přihlášeni jako <ph name="EMAIL" />.
+
+Vaše data byla <ph name="TIME" /> zašifrována pomocí heslové fráze. Pokud chcete používat a ukládat data prohlížeče Chrome ve svém účtu Google, zadejte ji.</translation>
 <translation id="8503813439785031346">Uživatelské jméno</translation>
 <translation id="850600235656508448">Otevřít v anonymním okně</translation>
 <translation id="8517375800490286174">Licence open source</translation>

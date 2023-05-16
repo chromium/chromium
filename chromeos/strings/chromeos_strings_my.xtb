@@ -540,7 +540,6 @@
 <translation id="5423849171846380976">အသက်သွင်းပြီး</translation>
 <translation id="5430931332414098647">အလိုအလျောက် ချိတ်ဆက်မျှဝေခြင်း</translation>
 <translation id="5431318178759467895">အရောင်</translation>
-<translation id="5456936324019847994">ဖွင့်ထားသော မည်သည့် စိတ်ကြိုက် APN ကိုမျှ ချိတ်ဆက်၍မရပါ။ နောက်ထပ်အချက်အလက်အတွက် သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီကို ဆက်သွယ်ပါ။</translation>
 <translation id="5457599981699367932">ဧည့်သည့် အဖြစ် ရှာကြည့်ရန်</translation>
 <translation id="54609108002486618">ကြီးကြပ်ထားသည်</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ကြိမ် ကြိုးပမ်းနိုင်သည်}other{{0} ကြိမ် ကြိုးပမ်းနိုင်သည်}}</translation>
@@ -711,7 +710,6 @@
 <translation id="6798678288485555829">စာသား လမ်းညွှန်မှု</translation>
 <translation id="680983167891198932">ကီး</translation>
 <translation id="6816797338148849397">သင်ရွေးထားသည့်အရာနှင့် သက်ဆိုင်သည့် အချက်အလက်များ ရနိုင်သည်။ ဝင်ကြည့်ရန် အပေါ်ညွှန်မြား အသုံးပြုပါ။</translation>
-<translation id="6838167112108853532">ဤ APN ကို ပိတ်၍မရပါ (သို့) ဖယ်ရှား၍မရပါ။ ဖွင့်ထားသော ပူးတွဲပါ APN များကို ပိတ်ထားကြောင်း (သို့) ဖယ်ရှားထားကြောင်း သေချာပါစေ။</translation>
 <translation id="6853312040151791195">အားလျော့နှုန်း</translation>
 <translation id="6889786074662672253">ပြန်စနေစဉ် ဤပြင်ပစက်ပစ္စည်းကို ပလတ်မဖြုတ်ပါနှင့် (သို့) သင့်ကွန်ပျူတာကို အပြီးမပိတ်ပါနှင့်။ ဤဝင်းဒိုးကို ချုံ့နိုင်သည်။ မိနစ်အနည်းငယ်ကြာနိုင်ပြီး ဤအချိန်အတွင်း သင်၏ပြင်ပစက်ပစ္စည်း အလုပ်လုပ်နိုင်မည်မဟုတ်ပါ။</translation>
 <translation id="6900701049656042631">ဤအယ်လ်ဘမ်တွင် ဓာတ်ပုံများမရှိပါ။ ဓာတ်ပုံများ ထည့်ရန် <ph name="LINK" /> သို့သွားပါ</translation>
@@ -741,6 +739,7 @@
 <translation id="7130438335435247835">APN အချိတ်အဆက် (APN)</translation>
 <translation id="7131634559772719176">အသင့်သုံး အတည်ပြုရန်</translation>
 <translation id="7134436342991564651">{0,plural, =1{ဆာဗာအမည်}other{ဆာဗာများအမည်}}</translation>
+<translation id="7135814714616751706">ဖြတ်လမ်းလင့်ခ်များ ရှာရန်</translation>
 <translation id="7143207342074048698">ချိတ်ဆက်နေသည်</translation>
 <translation id="7144878232160441200">ထပ်စမ်းရန်</translation>
 <translation id="714876143603641390">Lan ချိတ်ဆက်မှု</translation>
@@ -771,6 +770,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />။ <ph name="RESULT_TEXT" />။ Google Search တွင် ရလဒ်ကိုကြည့်ရန် ‘ရှာဖွေရန်’ နှင့် Space ကိုနှိပ်ပါ။</translation>
 <translation id="7343649194310845056">ကွန်ရက်ရှိ စက်များ</translation>
+<translation id="7353413232959255829">ရှာဖွေမှု ရလဒ် <ph name="LIST_SIZE" /> ခုအနက် <ph name="LIST_POSITION" />- <ph name="SEARCH_RESULT_TEXT" />။ ဖြတ်လမ်းလင့်ခ်သို့သွားရန် ‘Enter ခလုတ်’ နှိပ်ပါ။</translation>
 <translation id="7359657277149375382">ဖိုင်အမျိုးအစား</translation>
 <translation id="73631062356239394">အမှားရှာဖွေမှုဒေတာ မျှဝေရန်</translation>
 <translation id="7375053625150546623">EAP</translation>

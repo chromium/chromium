@@ -94,6 +94,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1346748346194534595">Right</translation>
 <translation id="1351937230027495976">Collapse menu</translation>
 <translation id="1360220746312242196">When searching a page, go to previous match for search</translation>
+<translation id="1360788414852622716">Disabling profile. This may take a few minutes.</translation>
 <translation id="1364382257761975320">To unlock your Chromebook, use your fingerprint</translation>
 <translation id="1365866993922957110">Get automatic updates</translation>
 <translation id="1372545819342940910">Save desk for later</translation>
@@ -183,6 +184,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1774796056689732716">Calendar, <ph name="CURRENT_MONTH_YEAR" />, currently <ph name="DATE" /> is selected.</translation>
 <translation id="1787955149152357925">Off</translation>
 <translation id="181103072419391116">Signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
+<translation id="1815245884418711390">Toggle hotspot. Hotspot is off.</translation>
 <translation id="1816896987747843206">This allows camera access for all apps and websites with the camera permission</translation>
 <translation id="1823280932251546115">Status tray, time <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -241,6 +243,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2023558322300866873">You can stop packet capture at any time</translation>
 <translation id="2034971124472263449">Save anyway</translation>
 <translation id="2049240716062114887">Desk name was changed to <ph name="DESK_NAME" /></translation>
+<translation id="206377500836174974">Full</translation>
 <translation id="2064048859448024834">Camera preview on</translation>
 <translation id="2067602449040652523">Keyboard brightness</translation>
 <translation id="2075520525463668108">Toggle <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> is <ph name="CAPTURE_STATE" /></translation>
@@ -293,6 +296,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2339073806695260576">Tap the stylus button on the shelf to take a note, screenshot, use the laser pointer or magnifying glass.</translation>
 <translation id="2341729377289034582">Locked to vertical</translation>
 <translation id="2345226652884463045">Press enter or search + space to select the text for editing.</translation>
+<translation id="2349785431103945039">Show hotspot details. Connect to mobile network to use hotspot.</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" /> speech is now processed locally and works offline. You can change your dictation language in Settings &gt; Accessibility.</translation>
 <translation id="2352467521400612932">Stylus settings</translation>
 <translation id="2354174487190027830">Activating <ph name="NAME" /></translation>
@@ -336,6 +340,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2531025035050312891">device slow</translation>
 <translation id="2542089167727451762">Tap your profile image</translation>
 <translation id="254900897760075745">Copy selected content to clipboard</translation>
+<translation id="2549711466868162843">Improve lighting</translation>
 <translation id="2549985041256363841">Start recording</translation>
 <translation id="255671100581129685">The Google Assistant is not available in a public session.</translation>
 <translation id="256712445991462162">the docked magnifier</translation>
@@ -429,6 +434,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3009178788565917040">Output</translation>
 <translation id="3009958530611748826">Select a folder to save to</translation>
 <translation id="301282384882049174">Shared by your administrator</translation>
+<translation id="301584155502740476">Show hotspot details. Hotspot is off.</translation>
 <translation id="3018135054368884502">Fast forward media</translation>
 <translation id="3033545621352269033">On</translation>
 <translation id="3033912566804961911">Combine with <ph name="DESK_NAME" /></translation>
@@ -489,6 +495,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3291862315280588024">Move to start of previous word</translation>
 <translation id="3294437725009624529">Guest</translation>
 <translation id="3298690094479023523">Your PIN or password still couldn't be verified. Try again.</translation>
+<translation id="3300193645498960160">You’ll be notified if you talk while muted. Audio never leaves your device.</translation>
 <translation id="3307642347673023554">Switched to laptop mode</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> can still sign in later.</translation>
 <translation id="3321628682574733415">Incorrect parent code</translation>
@@ -539,6 +546,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3510164367642747937">Highlight mouse cursor</translation>
 <translation id="3513798432020909783">Account managed by <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Update device within 1 minute}other{Update device within # minutes}}</translation>
+<translation id="3522979239100719575">Looking for available profiles. This may take a few minutes.</translation>
 <translation id="3526440770046466733">Open link in new tab and stay in current tab</translation>
 <translation id="353086728817903341">Connected to <ph name="NUM_DEVICES" /> devices</translation>
 <translation id="3533126039236445965">Apps in shelf</translation>
@@ -572,6 +580,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3621202678540785336">Input</translation>
 <translation id="3621712662352432595">Audio settings</translation>
 <translation id="3626281679859535460">Brightness</translation>
+<translation id="3629640897379005903">Show hotspot details. Hotspot is disabling.</translation>
 <translation id="3630697955794050612">off</translation>
 <translation id="3631369015426612114">Allow notifications from the following</translation>
 <translation id="3633097874324966332">Open Bluetooth settings to pair your device</translation>
@@ -703,6 +712,7 @@ Connect your device to power.</translation>
 <translation id="423685346499232137">Can't copy or paste content at this time</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Overview mode</translation>
+<translation id="4240756737570479726">Disabling...</translation>
 <translation id="4242533952199664413">Open settings</translation>
 <translation id="4247123849143712100">Update and shut down</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -841,6 +851,7 @@ Connect your device to power.</translation>
 <translation id="4864369630010738180">Signing in...</translation>
 <translation id="4864648187878336334">Desk 15</translation>
 <translation id="4868492592575313542">activated</translation>
+<translation id="4871905435473761992">Show hotspot details. Your mobile network doesn't support hotspot.</translation>
 <translation id="4872237917498892622">Alt+Search or Shift</translation>
 <translation id="4872852897273142380">Focus on or highlight bookmarks bar (if shown)</translation>
 <translation id="4881695831933465202">Open</translation>
@@ -900,6 +911,7 @@ Connect your device to power.</translation>
 <translation id="5104236669533825617">Can’t create screencast</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">Background blur</translation>
 <translation id="5117590920725113268">Show next month</translation>
 <translation id="5121628974188116412">Go to bottom of page</translation>
 <translation id="5136175204352732067">Different keyboard connected</translation>
@@ -912,6 +924,7 @@ Connect your device to power.</translation>
 <translation id="5168181903108465623">Cast devices available</translation>
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="5176318573511391780">Record partial screen</translation>
+<translation id="5187627942836026988">Show hotspot details. Hotspot is blocked by your administrator.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> events</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combined with <ph name="IN_PLACE_APP" /> to create new folder.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1084,6 +1097,7 @@ Connect your device to power.</translation>
 <translation id="595202126637698455">Performance tracing enabled</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Supervised user</translation>
+<translation id="5961960957587052807">Light</translation>
 <translation id="5965524703725988602">Toggle Dark theme. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Press enter to record window</translation>
 <translation id="5978382165065462689">Sharing control of your screen via Remote Assistance.</translation>
@@ -1256,6 +1270,7 @@ New install</translation>
 <translation id="6752912906630585008">Desk <ph name="REMOVED_DESK" /> removed and merged with Desk <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">tabs</translation>
 <translation id="6757237461819837179">No media playing</translation>
+<translation id="6759628406555734414">Show hotspot details. Hotspot is enabling.</translation>
 <translation id="6768043681523654438">storage</translation>
 <translation id="6777216307882431711">Powering connected USB-C devices</translation>
 <translation id="6781002679438061620">Desk 9</translation>
@@ -1280,6 +1295,7 @@ New install</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{One digit remaining}other{# digits remaining}}</translation>
 <translation id="6867938213751067702">Download paused <ph name="FILENAME" /></translation>
+<translation id="6874854809828346832">Show hotspot details. Hotspot is on.</translation>
 <translation id="6878400149835617132">Shortcut turned off</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 app}other{# apps}}</translation>
 <translation id="6884665277231944629">Go back to today</translation>
@@ -1289,6 +1305,7 @@ New install</translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6901883536534621389">Try gestures to navigate</translation>
 <translation id="6919251195245069855">Couldn’t recognise your smart card. Try again.</translation>
+<translation id="6920245099716267363">Toggle hotspot. Hotspot is on, 1 device connected.</translation>
 <translation id="6931576957638141829">Save to</translation>
 <translation id="6941333068993625698">Submit feedback</translation>
 <translation id="6942518653766415536">Recording format menu</translation>
@@ -1378,6 +1395,7 @@ New install</translation>
 <translation id="7378203170292176219">Drag to select an area to record</translation>
 <translation id="7378594059915113390">Media controls</translation>
 <translation id="7378889811480108604">Battery saver mode is off</translation>
+<translation id="7382640522316003298">Toggle hotspot. Hotspot is on, <ph name="DEVICECOUNT" /> devices connected.</translation>
 <translation id="7382680553121047388">On</translation>
 <translation id="7384028040782072252">Right-click anywhere to reorder your apps</translation>
 <translation id="7386767620098596324">Toggle network connection. <ph name="STATE_TEXT" />.</translation>
@@ -1428,6 +1446,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7579778809502851308">Screen capture</translation>
 <translation id="7593891976182323525">Search or Shift</translation>
 <translation id="7600875258240007829">See all notifications</translation>
+<translation id="7601417191446344542">Turn on mute nudge?</translation>
 <translation id="7607002721634913082">Paused</translation>
 <translation id="7609951632080598826">Calendar view, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Camera reconnected.</translation>
@@ -1540,6 +1559,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8083540854303889870">Saved for later</translation>
 <translation id="8091153018031979607">Starts at <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatic updates</translation>
+<translation id="8092380135549145188">Scroll controls</translation>
 <translation id="8098591350844501178">Stop casting screen to <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Unpin app from shelf</translation>
 <translation id="8113423164597455979">On, all apps</translation>
@@ -1551,6 +1571,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8131740175452115882">Confirm</translation>
 <translation id="8131994907636310308">Close sort toast</translation>
 <translation id="8132793192354020517">Connected to <ph name="NAME" /></translation>
+<translation id="8135163608236671037">Toggle hotspot. Hotspot is on, no device connected.</translation>
 <translation id="8138705869659070104">Activate after device setup</translation>
 <translation id="813913629614996137">Initialising...</translation>
 <translation id="8142441511840089262">Double click</translation>
@@ -1731,6 +1752,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8990809378771970590">Using <ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">Colour inversion mode enabled. Press Ctrl+Search+H again to toggle it off.</translation>
 <translation id="899350903320462459">Unlock device as <ph name="LOGIN_ID" /> to perform the notification action</translation>
+<translation id="8993733019280019776">Are you talking? Your mic is off. Select the mic to turn it on.</translation>
 <translation id="9000771174482730261">MANAGE STORAGE</translation>
 <translation id="9005984960510803406">Open Crosh window</translation>
 <translation id="9017320285115481645">Enter Family Link parent access code.</translation>

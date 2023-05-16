@@ -402,7 +402,6 @@
 <translation id="1341871421050612057">לא ניתן לסנכרן עם <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">‏הענקת הרשאה לאפליקציות Linux לגשת להתקני USB. אחרי שמוציאים התקן USB, הוא לא נשמר בזיכרון של Linux.</translation>
 <translation id="1343920184519992513">להמשיך מהמקום שבו הפסקת ולפתוח קבוצת דפים מסוימת</translation>
-<translation id="134589511016534552">כרטיסיות מדיה שמוצגות גם בקטע 'כרטיסיות פתוחות'</translation>
 <translation id="1346630054604077329">אישור והפעלה מחדש</translation>
 <translation id="1346748346194534595">ימינה</translation>
 <translation id="1347256498747320987">‏התקנת עדכונים ואפליקציות. המשך משמעו שהסכמת לכך שהמכשיר גם יוריד ויתקין באופן אוטומטי עדכונים ואפליקציות מ-Google, מהספק ומיצרן המכשיר. ייתכן שההורדה תיעשה באמצעות חבילת הגלישה. חלק מהאפליקציות האלה עשויות לכלול אפשרות לרכישות מהאפליקציה. <ph name="BEGIN_LINK1" />מידע נוסף<ph name="END_LINK1" /></translation>
@@ -2066,7 +2065,6 @@
 <translation id="2739191690716947896">ניפוי באגים</translation>
 <translation id="2739240477418971307">שינוי הגדרות הנגישות שלך</translation>
 <translation id="274029851662193272">שקוע</translation>
-<translation id="2740363334137520315">הוספת קטע חדש אל 'חיפוש בכרטיסיות' שבו קל יהיה לזהות את הכרטיסיות שהופעלו בהן אודיו או וידאו. ניגשים אליו דרך הלחצן בפינה העליונה של הדפדפן.</translation>
 <translation id="2740531572673183784">אישור</translation>
 <translation id="2740876196999178364">‏מפתחות הגישה האלה נשמרים רק במכשיר הזה. הם לא נשמרים בחשבון Google.</translation>
 <translation id="2741713322780029189">פתיחת טרמינל שחזור</translation>
@@ -2334,7 +2332,6 @@
 <translation id="2967926928600500959">‏כתובות ה‑URL שמתאימות לכללים האלה יאולצו להיפתח בדפדפן מסוים.</translation>
 <translation id="2972581237482394796">&amp;ביצוע חוזר</translation>
 <translation id="2973324205039581528">השתקת האודיו באתר</translation>
-<translation id="2973537811036309675">חלונית צדדית</translation>
 <translation id="2975761176769946178">‏נדרשת כתובת URL</translation>
 <translation id="2976557544729462544">יש מכשירים שיפעלו בצורה נכונה או מיטבית רק אם הגנת הגישה לנתונים תושבת.</translation>
 <translation id="2976756276046118477">פילטר אדום-ירוק (ירוק חלש, דוטרנומליה)</translation>
@@ -2775,7 +2772,6 @@
 <translation id="3393554941209044235">‏ניתוח מסמכים ב-Chrome</translation>
 <translation id="3393582007140394275">‏לא ניתן להעביר (cast) את המסך.</translation>
 <translation id="3394850431319394743">אתרים שמורשים להשתמש במזהים כדי להפעיל תוכן מוגן</translation>
-<translation id="3396744558790608201">‏כדי לחפש באזור כלשהו באתר ולעיין במידע נוסף על התוכן החזותי שרואים כשמעיינים וקונים באינטרנט, צריך ללחוץ לחיצה ימנית ולבחור באפשרות “חיפוש תמונות באמצעות Google Lens”.</translation>
 <translation id="3396800784455899911">‏לחיצה על הלחצן "קבלה והמשך" מבטאת את הסכמתך לעיבוד שתואר קודם לכן לגבי השירותים האלה של Google.</translation>
 <translation id="339722927132407568">קופא</translation>
 <translation id="3399432415385675819">הודעות יושבתו</translation>
@@ -4802,7 +4798,6 @@
 <translation id="520840839826327499">‏<ph name="SERVICE_NAME" /> רוצה לוודא שמכשיר ה-ChromeOS שלך כשיר.</translation>
 <translation id="5208926629108082192">פרטי הרשת הסלולרית של המכשיר</translation>
 <translation id="5208988882104884956">חצי רוחב</translation>
-<translation id="520902706163766447">‏ניתן להתיר הצגה של בועה קופצת בממשק העליון של Chrome כדי לחפש בכרטיסיות הפתוחות.</translation>
 <translation id="5209320130288484488">לא נמצאו מכשירים</translation>
 <translation id="5209513429611499188">‏מכשירי HID עם ערכי שימוש מדף השימוש <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">סגירת כרטיסייה</translation>
@@ -6300,7 +6295,6 @@
 <translation id="6561726789132298588">Enter</translation>
 <translation id="6562117348069327379">אחסון יומני מערכת בספרייה 'הורדות'.</translation>
 <translation id="656293578423618167">הנתיב או שם הקובץ ארוך מדי. יש לשמור אותו בשם קצר יותר או במיקום אחר.</translation>
-<translation id="6568283005472142698">חיפוש בכרטיסיות</translation>
 <translation id="6570622975915850879">שימוש במכשיר אחר</translation>
 <translation id="65711204837946324">נדרשת הרשאה כדי להוריד</translation>
 <translation id="6571533309669248172">עיצוב טקסט</translation>
@@ -7635,7 +7629,6 @@
 <translation id="7737948071472253612">לא מורשים להשתמש במצלמה</translation>
 <translation id="77381465218432215">הצגת סימנים דיאקריטיים ותווים מיוחדים</translation>
 <translation id="7740996059027112821">רגילה</translation>
-<translation id="7741307896921365578">הפעלת חלונית צדדית בדפדפן לצורך גישה נוחה ועקבית לרשימת הקריאה ולסימניות.</translation>
 <translation id="7742558784808143689">לנקות את הנתונים ואת ההרשאות לאתר <ph name="SITE_NAME" />, לכל האתרים שתחתיו ולאפליקציות המותקנות?</translation>
 <translation id="7742706086992565332">ניתן להגדיר את המרחק מהתצוגה באתרים מסוימים</translation>
 <translation id="7742879569460013116">שיתוף הקישור עם</translation>
@@ -7835,7 +7828,6 @@
 <translation id="7909986151924474987">ייתכן שלא ניתן יהיה להתקין מחדש את הפרופיל</translation>
 <translation id="7910768399700579500">&amp;תיקייה חדשה</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="79113168483292735">הקטע של כרטיסיות המדיה בחיפוש בכרטיסיות</translation>
 <translation id="7912080627461681647">הסיסמה שלך שונתה בשרת. יש לצאת ולאחר מכן להיכנס מחדש.</translation>
 <translation id="7912974581251770345">תרגום</translation>
 <translation id="7915457674565721553">יש להתחבר לאינטרנט כדי להגדיר בקרת הורים</translation>
@@ -8610,7 +8602,6 @@
 <translation id="8599681327221583254">לפחות מדיניות אחת לא מוגדרת כראוי. יש לפנות למנהל המערכת</translation>
 <translation id="8599864823732014237">לדלג על ההרשמה לארגון?</translation>
 <translation id="8601206103050338563">‏אימות לקוח TLS WWW</translation>
-<translation id="8601611099293226919">‏חיפוש במסך באמצעות Google Lens</translation>
 <translation id="8602674530529411098">אפליקציות (בטא)</translation>
 <translation id="8602851771975208551">‏תוכנית אחרת במחשב שלך הוסיפה אפליקציה שעשויה לשנות את אופן הפעולה של Chrome.</translation>
 <translation id="8605428685123651449">‏זיכרון SQLite</translation>

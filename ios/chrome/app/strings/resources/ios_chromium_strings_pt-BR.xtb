@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> estava usando o Chromium e deixou favoritos, senhas e outras configurações neste dispositivo.</translation>
 <translation id="372658070733623520">Confirme sua identidade para usar e salvar dados do Chromium na sua Conta do Google.</translation>
 <translation id="3805899903892079518">O Chromium não têm acesso às suas fotos ou seus vídeos. Permita o acesso em "Configurações do iOS" &gt; "Privacidade" &gt; "Fotos".</translation>
+<translation id="3955621079070267756">Abrir o Chromium por qualquer app</translation>
 <translation id="4043291146360695975">As senhas são salvas no Gerenciador de senhas somente neste dispositivo.</translation>
 <translation id="4099085513035183040">Indisponível no Chromium Beta</translation>
 <translation id="4432744876818348753">Faça login para aproveitar o Chromium ao máximo.</translation>
@@ -143,5 +144,6 @@ Considerações:
 <translation id="9089354809943900324">O Chromium está desatualizado</translation>
 <translation id="9110075932708282655">Usar o Chromium por padrão</translation>
 <translation id="921174536258924340">Não foi possível verificar todas as senhas com o Chromium. Tente novamente amanhã ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">Use o Chromium automaticamente ao tocar em links de mensagens, documentos e outros apps.</translation>
 <translation id="985602178874221306">Autores do Chromium</translation>
 </translationbundle>

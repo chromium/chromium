@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">‏تعذَّر التحويل باستخدام نظام أسماء النطاقات (DNS).</translation>
 <translation id="1018656279737460067">تم الإلغاء</translation>
 <translation id="1022433422498218992">عناصر التحكّم العامة</translation>
+<translation id="1022628058306505708">انسياب أرضي</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> عملية، <ph name="CPU_MAX_CLOCK_SPEED" /> غيغاهرتز)</translation>
 <translation id="1047773237499189053">تتوفر ميزات جديدة. يمكنك استخدام مفتاح السهم المتجه للأعلى للاطّلاع على مزيد من المعلومات.</translation>
 <translation id="1059913517121127803">تعذَّر إجراء عملية المسح الضوئي.</translation>
@@ -216,6 +217,7 @@
 <translation id="2638662041295312666">صورة الملف الشخصي</translation>
 <translation id="2640549051766135490">تمّ اختيار ألبوم <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="267442004702508783">تحديث</translation>
+<translation id="268270014981824665">تعتيم لوحة المفاتيح</translation>
 <translation id="2712812801627182647">‏مفتاح مصادقة بروتوكول أمان طبقة النقل (TLS)</translation>
 <translation id="2713444072780614174">أبيض</translation>
 <translation id="2717139507051041123">تفعيل وضع الألوان الداكنة</translation>
@@ -223,6 +225,7 @@
 <translation id="2744221223678373668">مشتركة</translation>
 <translation id="2751739896257479635">‏مصادقة المرحلة الثانية عبر EAP</translation>
 <translation id="2783010256799387990">تم الاجتياز</translation>
+<translation id="2787435249130282949">إضاءة ساطعة للوحة المفاتيح</translation>
 <translation id="2789486458103222910">حسنًا</translation>
 <translation id="2805756323405976993">التطبيقات</translation>
 <translation id="28232023175184696">تعذَّر الاتصال بالإنترنت. يُرجى النقر لإعادة المحاولة.</translation>
@@ -235,6 +238,7 @@
 <translation id="2902312830803030883">مزيد من الإجراءات</translation>
 <translation id="2926057806159140518">أدخِل اسم المستخدم وكلمة المرور أو امسَح رمز الاستجابة السريعة ضوئيًا.</translation>
 <translation id="2940811910881150316">يتعذّر اختبار لوحة المفاتيح الخاصة بالجهاز. أعِد فتح غطاء الجهاز لاختبار لوحة المفاتيح.</translation>
+<translation id="2981143481017883351">‏مواد العرض الحصرية لأجهزة Chromebook متاحة الآن</translation>
 <translation id="3008341117444806826">إعادة التحميل</translation>
 <translation id="3009958530611748826">اختيار مجلّد لحفظ عمليات المسح الضوئي فيه</translation>
 <translation id="3017079585324758401">الخلفية</translation>
@@ -280,6 +284,7 @@
 <translation id="3360306038446926262">‏نظام التشغيل Windows</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369013195428705271">هل تريد فعلاً محو سجلّ الطباعة بالكامل؟ لن يتم محو مهام الطباعة الجارية.</translation>
+<translation id="3386675685417744672">‏حصري لأجهزة Chromebook</translation>
 <translation id="3404249063913988450">تفعيل شاشة التوقف</translation>
 <translation id="3413935475507503304">لمواصلة عملية التحديث، انقر على "التالي".</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -324,11 +329,13 @@
 <translation id="3749289110408117711">اسم الملف</translation>
 <translation id="3771294271822695279">ملفات فيديو</translation>
 <translation id="3784455785234192852">قفل</translation>
+<translation id="380097101658023925">‏عناصر التحكُّم في ألوان الأحمر والأخضر والأزرق (RGB) للإضاءة الخلفية</translation>
 <translation id="38114475217616659">محو السجلّ بأكمله</translation>
 <translation id="3820172043799983114">رقم التعريف الشخصي غير صالح.</translation>
 <translation id="3824259034819781947">إرفاق ملفات</translation>
 <translation id="3838338534323494292">كلمة المرور الجديدة</translation>
 <translation id="3845880861638660475">‏اضغط على <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />مفتاح الخروج (Esc)<ph name="ESC_SHORTCUT_END" /> لإغلاق مربع الحوار.</translation>
+<translation id="3848280697030027394">جعل إضاءة لوحة المفاتيح داكنة</translation>
 <translation id="385051799172605136">رجوع</translation>
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="3862598938296403232">يجب إدخال وصف.</translation>
@@ -358,6 +365,7 @@
 <translation id="404928562651467259">تحذير</translation>
 <translation id="4054683689023980771">جارٍ تنزيل الصورة</translation>
 <translation id="4060260348856573701">اسم نقطة وصول جديد</translation>
+<translation id="4079743696465895866">‏يمكنك اختيار عمل فني لعرضه حصريًا على جهاز Chromebook.</translation>
 <translation id="4093865285251893588">صورة الملف الشخصي</translation>
 <translation id="409427325554347132">حفظ تفاصيل الاختبار</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -399,6 +407,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">إيقاف</translation>
 <translation id="439429847087949098">جارٍ إعادة تشغيل <ph name="DEVICE_NAME" />.</translation>
+<translation id="4395835743215824109">تخصيص لوحة المفاتيح</translation>
 <translation id="4415951057168511744">الصورة الرمزية الحالية</translation>
 <translation id="4422041425070339732">سهم متّجه للأسفل</translation>
 <translation id="4425149324548788773">ملفاتي</translation>
@@ -422,6 +431,7 @@
 <translation id="455835558791489930">بطارية بسعة <ph name="CHARGE_VALUE" /> ملّي أمبير في الساعة</translation>
 <translation id="4561801978359312462">‏تم فتح قفل شريحة SIM.</translation>
 <translation id="4562494484721939086">لا تتوفر أي خدمة.</translation>
+<translation id="4573777384450697571">تعذَّر تنفيذ المهمة لانتهاء صلاحية الشهادة</translation>
 <translation id="458794348635939462">تعذَّرت مطابقة جميع الأجهزة المضيفة.</translation>
 <translation id="4593212453765072419">مطلوب مصادقة الخادم الوكيل</translation>
 <translation id="4609350030397390689">تقليل سطوع لوحة المفاتيح</translation>
@@ -438,6 +448,7 @@
 <translation id="4731797938093519117">وصول أحد الوالدين</translation>
 <translation id="473775607612524610">تحديث</translation>
 <translation id="4744944742468440486">معلومات ذات صلة باختيارك</translation>
+<translation id="4771607256327216405">زيادة سطوع لوحة المفاتيح</translation>
 <translation id="4773299976671772492">متوقفة</translation>
 <translation id="4782311465517282004">يمكنك الحصول على تعريفات أو ترجمات للنصوص أو تحويل الوحدات من خلال النقر بزر الماوس الأيمن على النص أو النقر عليه مع الاستمرار.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> صورة</translation>
@@ -486,6 +497,7 @@
 <translation id="500920857929044050">إيقاف الاختبار</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">عندما تكون الشاشة غير نشطة لفترة، يمكن أن تعرض الصور والوقت وحالة الطقس ومعلومات الوسائط.</translation>
+<translation id="5038292761217083259">لوحة مفاتيح متعددة الألوان</translation>
 <translation id="5039804452771397117">سماح</translation>
 <translation id="5049856988445523908">‏تم قفل شريحة SIM (باستخدام <ph name="LOCK_TYPE" />).</translation>
 <translation id="5050042263972837708">اسم المجموعة</translation>
@@ -535,7 +547,6 @@
 <translation id="5423849171846380976">نشطة</translation>
 <translation id="5430931332414098647">التوصيل الفوري</translation>
 <translation id="5431318178759467895">بالألوان</translation>
-<translation id="5456936324019847994">‏لا يمكن الاتصال بأي أسماء نقاط وصول (APN) مخصَّصة ومفعَّلة. يُرجى التواصل مع مشغِّل شبكة الجوّال للحصول على مزيد من المعلومات.</translation>
 <translation id="5457599981699367932">التصفّح كضيف</translation>
 <translation id="54609108002486618">تتم إدارته</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{تتبقّى محاولة واحدة ({0}).}zero{تتبقّى {0} محاولة.}two{تتبقّى محاولتان ({0}).}few{تتبقّى {0} محاولات.}many{تتبقّى {0} محاولة.}other{تتبقّى {0} محاولة.}}</translation>
@@ -623,6 +634,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">تقلّ قدرة البطارية مع الاستخدام.</translation>
 <translation id="6191293864534840972">خوادم الأسماء غير صالحة.</translation>
+<translation id="6205145102504628069">منظر انسيابي للسُحب</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">الخروج من وضع ملء الشاشة</translation>
 <translation id="6223752125779001553">لا يتوفّر ماسح ضوئي.</translation>
@@ -634,6 +646,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">تفعيل المظهر الداكن</translation>
 <translation id="6285899124799306373">فتح مشغّل التطبيقات</translation>
+<translation id="629550705077076970">تعتيم لوحة المفاتيح</translation>
 <translation id="6302401976930124515">تم إلغاء اختبار <ph name="TEST_NAME" />.</translation>
 <translation id="631063167932043783">تطبيق "استكشاف"</translation>
 <translation id="6319207335391420837">تحديث البرامج الثابتة على <ph name="DEVICE_NAME" /></translation>
@@ -652,6 +665,7 @@
 <translation id="6401427872449207797">البحث في المتصفِّح</translation>
 <translation id="6410257289063177456">ملفات الصور</translation>
 <translation id="641081527798843608">مطابقة الموضوع</translation>
+<translation id="6411934471898487866">سطوع لوحة المفاتيح</translation>
 <translation id="6412715219990689313">لوحة مفاتيح مُدمَجة</translation>
 <translation id="6417265370957905582">‏مساعد Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -665,6 +679,7 @@
 <translation id="6494974875566443634">إعدادات التخصيص</translation>
 <translation id="6500818810472529210">‏عرض النتيجة في "بحث Google"</translation>
 <translation id="650266656685499220">‏لإنشاء ألبومات، انتقِل إلى "صور Google".</translation>
+<translation id="6505750420152840539">مناظر من الفجر إلى الليل</translation>
 <translation id="6516990319416533844">لاختبار معدّل شحن البطارية، عليك استهلاك نسبة من طاقتها في فترة قصيرة.</translation>
 <translation id="6517239166834772319">استكشاف</translation>
 <translation id="6526200165918397681">مطابقة درجات لون الخلفية</translation>
@@ -704,7 +719,6 @@
 <translation id="6798678288485555829">التنقّل بين أجزاء النص</translation>
 <translation id="680983167891198932">المفتاح</translation>
 <translation id="6816797338148849397">تتوفّر معلومات ذات صلة باختيارك. يمكنك استخدام مفتاح السهم المتجه للأعلى للوصول إلى هذه المعلومات.</translation>
-<translation id="6838167112108853532">لا يمكن إيقاف اسم نقطة الوصول هذا أو إزالته. يُرجى التأكُّد من إيقاف أو إزالة أسماء نقاط الوصول المرفقة المفعَّلة.</translation>
 <translation id="6853312040151791195">معدّل تفريغ الشحن</translation>
 <translation id="6889786074662672253">عند إعادة تشغيل الجهاز، لا تفصل هذا الجهاز الخارجي أو توقِف تشغيل الكمبيوتر، لكن يمكنك تصغير هذه النافذة. قد تستغرق هذه العملية بضع دقائق وقد يتوقف الجهاز الخارجي عن العمل حتى اكتمالها.</translation>
 <translation id="6900701049656042631">لا يتضمّن هذا الألبوم أي صور. لإضافة صور إليه، انتقِل إلى <ph name="LINK" />.</translation>
@@ -800,10 +814,12 @@
 <translation id="7656388927906093505">الجهاز هو ماوس.</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7665800271478495366">تغيير الصورة الرمزية</translation>
+<translation id="7683228889864052081">التدرّج اللوني في إضاءة لوحة المفاتيح</translation>
 <translation id="7690294790491645610">تأكيد كلمة المرور الجديدة</translation>
 <translation id="7701040980221191251">لا يوجد</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">إضاءة لوحة المفاتيح</translation>
 <translation id="773153675489693198">عدد مرات تفريغ البطارية وشحنها</translation>
 <translation id="7747039790905080783">المفتاح المشترَك مسبقًا</translation>
 <translation id="7762130827864645708">تم تغيير كلمة المرور بنجاح. يُرجى استخدام كلمة المرور الجديدة من الآن فصاعدًا.</translation>
@@ -847,6 +863,7 @@
 <translation id="8075838845814659848">شحن البطارية المتبقي</translation>
 <translation id="8076492880354921740">علامات التبويب</translation>
 <translation id="8082366717211101304">‏تعذَّر التحويل باستخدام نظام أسماء النطاقات (DNS) من تطبيقات Android.</translation>
+<translation id="8082644724189923105">منطقة لوحة المفاتيح</translation>
 <translation id="808894953321890993">تغيير كلمة المرور</translation>
 <translation id="8094062939584182041">‏السماح بتلقّي رسائل إلكترونية من Google حول هذه المشكلة</translation>
 <translation id="8104083085214006426">أنت تستخدم شبكةً مفتوحة وغير آمنة.</translation>
@@ -895,6 +912,7 @@
 <translation id="8456761643544401578">الوضع المُعتِم التلقائي</translation>
 <translation id="8461329675984532579">اسم مقدم الخدمة الرئيسي</translation>
 <translation id="8475690821716466388">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP PSK ضعيف.</translation>
+<translation id="8476242415522716722">الإضاءة الخلفية للوحة المفاتيح</translation>
 <translation id="8477551185774834963">وقت استجابة "نظام أسماء النطاقات" أعلى بقليل من الحدّ الأقصى المسموح به.</translation>
 <translation id="8483248364096924578">‏عنوان IP</translation>
 <translation id="8491311378305535241">‏تعذَّر اجتياز الجدار الناري للاتصال بالمواقع الإلكترونية التي تستخدم بروتوكول HTTP من خلال تطبيقات Android.</translation>
@@ -938,6 +956,7 @@
 <translation id="8845001906332463065">الحصول على مساعدة</translation>
 <translation id="8855781559874488009">‏تعذَّر اجتياز الجدار الناري للاتصال بالمواقع الإلكترونية التي تستخدم بروتوكول HTTP.</translation>
 <translation id="885701979325669005">التخزين</translation>
+<translation id="885704831271383379">إضاءة داكنة للوحة المفاتيح</translation>
 <translation id="8863170912498892583">تفعيل المظهر الداكن</translation>
 <translation id="8863888432376731307">الحصول على <ph name="INTENT" /> للطلب المتعلّق بـ "<ph name="QUERY" />" وغير ذلك</translation>
 <translation id="8864415976656252616">ما مِن محتوًى مقترَح. يمكنك الاطّلاع على أهم مقالات المحتوى المساعِد ذات الصلة.</translation>

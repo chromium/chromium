@@ -94,6 +94,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="3179665906251668410">Otvori link u anonimnom prozoru Chromiuma</translation>
 <translation id="3185330573522821672">Prilagodite novi Chromium profil</translation>
 <translation id="3190315855212034486">Ups! Došlo je do pada Chromiuma. Ponovo pokrenuti sada?</translation>
+<translation id="3255926992597692024">Chromium pokušava izmijeniti postavke za popunjavanje načina plaćanja.</translation>
 <translation id="3258596308407688501">Chromium ne može čitati iz svog direktorija podataka niti u njega pisati:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -199,6 +200,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5653831366781983928">Ponovo pokrenite Chromium sada</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Prikaži Chromium na ovom jeziku.</translation>
+<translation id="585620188971323280">izmjena postavki za popunjavanje načina plaćanja.</translation>
 <translation id="5862307444128926510">Dobro došli u Chromium</translation>
 <translation id="5883558403894052917">Chromium je otkrio da ove stavke sadržavaju zlonamjerni softver:</translation>
 <translation id="5895138241574237353">Ponovo pokreni</translation>

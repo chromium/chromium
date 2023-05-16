@@ -1092,6 +1092,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3658742229777143148">Pārskatīšana</translation>
 <translation id="3664782872746246217">Atslēgvārdi:</translation>
 <translation id="3667704023705708645">Riska kapitāls</translation>
+<translation id="3671117652518853176">Ja šī funkcija būs izslēgta, dažkārt drošības apsvērumu dēļ jums būs jāsniedz apstiprinājums</translation>
 <translation id="3671540257457995106">Vai atļaut mainīt lielumu?</translation>
 <translation id="3672568546897166916">Kļūda: <ph name="ERROR_PATH" />. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Trešais rullis</translation>
@@ -1126,6 +1127,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3736520371357197498">Ja apzināties drošības risku, varat <ph name="BEGIN_LINK" />apmeklēt šo nedrošo vietni<ph name="END_LINK" />, pirms ir noņemtas bīstamās programmas.</translation>
 <translation id="3738166223076830879">Jūsu pārlūku pārvalda administrators.</translation>
 <translation id="3740319564441798148">Tālsatiksmes autobusi un vilcieni</translation>
+<translation id="3743765582345153106">Vienmēr pieprasīt apstiprināšanu, kad tiek izmantota automātiskā aizpilde</translation>
 <translation id="3744111561329211289">Sinhronizācija fonā</translation>
 <translation id="3744286742364977428">Jūsu lejupielādētie faili tiek nosūtīti uz Google mākoni vai trešajām pusēm, lai veiktu analīzi. Piemēram, saturs var tikt pārmeklēts, lai konstatētu, vai tajā nav ietverti sensitīvi dati vai ļaunprātīga programmatūra, un tas var tikt saglabāts saskaņā ar uzņēmuma politikām.</translation>
 <translation id="3744899669254331632">Pašlaik jūs nevarat apmeklēt vietni <ph name="SITE" />, jo šī vietne nosūtīja kodētus akreditācijas datus, kurus Chromium nevar apstrādāt. Tā kā tīkla kļūdas un uzbrukumi parasti ir īslaicīga problēma, iespējams, vēlāk šī lapa atkal darbosies.</translation>
@@ -1728,6 +1730,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5171045022955879922">Meklējiet vai ievadiet URL.</translation>
 <translation id="5172758083709347301">Ierīce</translation>
 <translation id="5177076414499237632">Skatīt informāciju par šīs lapas avotu un tēmu</translation>
+<translation id="5179490652562926740">Maksājumu verifikācijas iestatījumi saglabāti</translation>
 <translation id="5179510805599951267">Vai nav valodā: <ph name="ORIGINAL_LANGUAGE" />? Ziņot par šo kļūdu</translation>
 <translation id="518639307526414276">Mājdzīvnieku barība un preces mājdzīvnieku aprūpei</translation>
 <translation id="5190072300954988691">Piekļuve kamerai un mikrofonam nav atļauta</translation>
@@ -3221,7 +3224,6 @@ Papildu informācija:
 <translation id="8870494189203302833">Tāda pati secība, virspuse uz leju</translation>
 <translation id="8870700989640064057">Vai drukāt konfidenciālu failu?</translation>
 <translation id="8871553383647848643">Pielāgot pārlūka izskatu</translation>
-<translation id="8871603420762394026">Lai palīdzētu vietnēm novērtēt reklāmu veiktspēju, Chrome tagad starp dažādām vietnēm kopīgo tikai ļoti ierobežotu informāciju, piemēram, par laiku, kad jums tika parādīta noteikta reklāma.</translation>
 <translation id="8874824191258364635">Ievadiet derīgu kartes numuru</translation>
 <translation id="8876033571432926051">Vienkāršas spēles</translation>
 <translation id="8877780815363510165">Makšķerēšana</translation>

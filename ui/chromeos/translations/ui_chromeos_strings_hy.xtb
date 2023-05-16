@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Վերջերս դիտված տեսանյութեր չկան</translation>
 <translation id="3634507049637220048">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, կառավարվում է ձեր ադմինիստրատորի կողմից, մանրամասներ</translation>
 <translation id="3645233063072417428">Տեղափոխվեց <ph name="NUMBER_OF_ITEMS" /> տարր։</translation>
+<translation id="3658269352872031728">Ընտրված է <ph name="SELECTED_FILE_COUNT" /> ֆայլ</translation>
 <translation id="3685122418104378273">Շարժական տվյալներն օգտագործելիս Google Drive համաժամացումը ըստ կանխադրման անջատվում է:</translation>
 <translation id="3689865792480713551">Չեղարկել՝ <ph name="ACTIVITY_DESCRIPTION" />։</translation>
 <translation id="3690128548376345212">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, ակտիվացված չէ, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" /> տոկոս, մանրամասներ</translation>
@@ -576,6 +577,7 @@
 <translation id="5533102081734025921">Պատկեր (<ph name="IMAGE_TYPE" />)</translation>
 <translation id="5534520101572674276">Չափի հաշվարկում</translation>
 <translation id="554153475311314364">հունարեն (տառադարձություն)</translation>
+<translation id="5554171655917412781">Ընտրված է <ph name="SELECTED_FOLDERS_COUNT" /> պանակ</translation>
 <translation id="5580591966435005537">վիրտուալ մեքենա</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Կետադրական նշանների լայնությունը՝ լիալայնք</translation>
@@ -598,6 +600,7 @@
 <translation id="5724172041621205163">թայերեն (Pattachote ստեղնաշար)</translation>
 <translation id="57383366388012121">Անցած ամիս</translation>
 <translation id="5756666464756035725">Հունգարական QWERTY</translation>
+<translation id="5760252553414789727">Ընտրված է <ph name="SELECTED_FILES_COUNT" /> տարր</translation>
 <translation id="5763377084591234761">գերմաներեն (Շվեյցարիա)</translation>
 <translation id="5769519078756170258">Հանգույցը կամ տիրույթը, որը ուզում եք բացառել</translation>
 <translation id="5775750595919327203">ուրդու</translation>

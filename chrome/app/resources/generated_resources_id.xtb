@@ -400,7 +400,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1341871421050612057">Sinkronisasi tidak dapat digunakan dengan <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Berikan izin aplikasi ke Linux untuk mengakses perangkat USB. Linux tidak akan mengingat perangkat USB setelah perangkat tersebut dilepas.</translation>
 <translation id="1343920184519992513">Lanjutkan dari halaman terakhir yang dibuka dan buka rangkaian halaman tertentu</translation>
-<translation id="134589511016534552">Tab media juga ditampilkan di bagian Tab Terbuka</translation>
 <translation id="1346630054604077329">Konfirmasi dan mulai ulang</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1347256498747320987">Instal update &amp; aplikasi. Dengan melanjutkan, artinya Anda menyetujui bahwa perangkat ini juga dapat mendownload serta menginstal update dan aplikasi secara otomatis dari Google, operator, dan produsen perangkat, yang kemungkinan menggunakan kuota. Sebagian aplikasi ini mungkin menawarkan pembelian dalam aplikasi. <ph name="BEGIN_LINK1" />Pelajari Lebih Lanjut<ph name="END_LINK1" /></translation>
@@ -2066,7 +2065,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2739191690716947896">Debug</translation>
 <translation id="2739240477418971307">Mengubah setelan aksesibilitas Anda</translation>
 <translation id="274029851662193272">Diturunkan</translation>
-<translation id="2740363334137520315">Menambahkan bagian baru di 'Penelusuran Tab' untuk dengan mudah menemukan tab yang memutar audio atau video. Akses melalui tombol di pojok atas browser Anda.</translation>
 <translation id="2740531572673183784">Oke</translation>
 <translation id="2740876196999178364">Kunci sandi ini hanya disimpan di perangkat ini. Kunci sandi tidak disimpan ke Akun Google Anda.</translation>
 <translation id="2741713322780029189">Buka terminal pemulihan</translation>
@@ -2334,7 +2332,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2967926928600500959">URL yang sesuai dengan aturan ini akan dipaksa dibuka di browser tertentu.</translation>
 <translation id="2972581237482394796">&amp;Ulang</translation>
 <translation id="2973324205039581528">Bisukan Audio Situs</translation>
-<translation id="2973537811036309675">Panel Samping</translation>
 <translation id="2975761176769946178">URL wajib diisi</translation>
 <translation id="2976557544729462544">Beberapa perangkat mengharuskan Anda menonaktifkan perlindungan akses data agar dapat berfungsi dengan benar atau dalam performa penuh.</translation>
 <translation id="2976756276046118477">Filter merah-hijau (hijau lemah, deuteranomali)</translation>
@@ -2775,7 +2772,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3393554941209044235">Analisis Dokumen Chrome</translation>
 <translation id="3393582007140394275">Tidak dapat mentransmisikan layar.</translation>
 <translation id="3394850431319394743">Diizinkan menggunakan ID untuk memutar konten yang dilindungi</translation>
-<translation id="3396744558790608201">Klik kanan dan pilih "Telusuri gambar dengan Google Lens" untuk menelusuri bagian mana pun di situs guna mempelajari lebih lanjut konten visual yang Anda lihat saat menjelajahi dan berbelanja di web.</translation>
 <translation id="3396800784455899911">Dengan mengklik tombol "Setuju dan lanjutkan", Anda menyetujui pemrosesan yang dijelaskan di atas terkait layanan Google ini.</translation>
 <translation id="339722927132407568">Berhenti berputar</translation>
 <translation id="3399432415385675819">Notifikasi akan dinonaktifkan</translation>
@@ -4802,7 +4798,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> ingin memeriksa apakah Anda menggunakan perangkat ChromeOS yang memenuhi syarat.</translation>
 <translation id="5208926629108082192">Info jaringan seluler perangkat</translation>
 <translation id="5208988882104884956">Lebar separuh</translation>
-<translation id="520902706163766447">Mengaktifkan balon pop-up di UI Top Chrome untuk menelusuri tab yang sedang terbuka.</translation>
 <translation id="5209320130288484488">Perangkat tidak ditemukan</translation>
 <translation id="5209513429611499188">Perangkat HID dengan penggunaan dari halaman penggunaan <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">Tutup tab</translation>
@@ -6300,7 +6295,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6561726789132298588">masuk</translation>
 <translation id="6562117348069327379">Simpan log sistem ke direktori Download.</translation>
 <translation id="656293578423618167">Jalur atau nama file terlalu panjang. Simpan dengan nama yang lebih pendek atau ke lokasi lain.</translation>
-<translation id="6568283005472142698">Penelusuran Tab</translation>
 <translation id="6570622975915850879">Gunakan perangkat lain</translation>
 <translation id="65711204837946324">Memerlukan izin untuk mendownload</translation>
 <translation id="6571533309669248172">Pemformatan teks</translation>
@@ -7630,7 +7624,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7737948071472253612">Tidak diizinkan menggunakan kamera Anda</translation>
 <translation id="77381465218432215">Tampilkan tanda aksen dan karakter khusus</translation>
 <translation id="7740996059027112821">Standar</translation>
-<translation id="7741307896921365578">Mengaktifkan panel samping tingkat browser untuk cara akses Daftar Bacaan dan Bookmark yang berguna dan persisten.</translation>
 <translation id="7742558784808143689">Hapus data situs dan izin untuk <ph name="SITE_NAME" />, semua situs di bawahnya, dan aplikasi terinstal?</translation>
 <translation id="7742706086992565332">Fungsi perbesar atau perkecil pada situs tertentu dapat disetel</translation>
 <translation id="7742879569460013116">Bagikan link ke</translation>
@@ -7831,7 +7824,6 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7909986151924474987">Anda mungkin tidak dapat menginstal ulang profil ini</translation>
 <translation id="7910768399700579500">&amp;Map baru</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="79113168483292735">Bagian Tab Media di Penelusuran Tab</translation>
 <translation id="7912080627461681647">Sandi Anda telah diubah di server. Harap logout, lalu login kembali.</translation>
 <translation id="7912974581251770345">Terjemahan</translation>
 <translation id="7915457674565721553">Sambungkan ke internet untuk menyiapkan kontrol orang tua</translation>
@@ -8604,7 +8596,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8599681327221583254">Satu atau beberapa kebijakan tidak dikonfigurasi dengan benar. Harap hubungi administrator Anda</translation>
 <translation id="8599864823732014237">Lewati pendaftaran perusahaan?</translation>
 <translation id="8601206103050338563">Autentikasi klien TLS WWW</translation>
-<translation id="8601611099293226919">Telusuri layar Anda dengan Google Lens</translation>
 <translation id="8602674530529411098">Aplikasi (Beta)</translation>
 <translation id="8602851771975208551">Program lain di komputer Anda menambahkan aplikasi yang dapat mengubah cara kerja Chrome.</translation>
 <translation id="8605428685123651449">Memori SQLite</translation>

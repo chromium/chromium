@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Son videolar yoxdur</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Administratorunuz tərəfindən idarə olunur, Detallar</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> element köçürüldü</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> fayl seçilib</translation>
 <translation id="3685122418104378273">Mobil data istifadə edərkən Google Disk sinxronizasiyası defolt olaraq deaktiv edilib.</translation>
 <translation id="3689865792480713551">Ləğv edin: <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Deaktivdir, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Detallar</translation>
@@ -576,6 +577,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> şəkli</translation>
 <translation id="5534520101572674276">Ölçü hesablanılır</translation>
 <translation id="554153475311314364">Yunan dilində Transliterasiya</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> qovluq seçilib</translation>
 <translation id="5580591966435005537">virtual cihaz</translation>
 <translation id="5583640892426849032">Geri silmə</translation>
 <translation id="5583664733673201137">Durğu işarələrinin eni Tamdır</translation>
@@ -598,6 +600,7 @@
 <translation id="5724172041621205163">Pattachote klaviaturası ilə Tay dili</translation>
 <translation id="57383366388012121">Keçən ay</translation>
 <translation id="5756666464756035725">Macar QWERTY</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> element seçilib</translation>
 <translation id="5763377084591234761">Alman (İsveçrə)</translation>
 <translation id="5769519078756170258">İstisna ediləcək host və ya domen</translation>
 <translation id="5775750595919327203">Urdu dili</translation>

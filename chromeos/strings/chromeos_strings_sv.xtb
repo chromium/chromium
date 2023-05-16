@@ -546,7 +546,6 @@
 <translation id="5423849171846380976">Aktiverat</translation>
 <translation id="5430931332414098647">Direktinternetdelning</translation>
 <translation id="5431318178759467895">Färg</translation>
-<translation id="5456936324019847994">Det gick inte att ansluta till några aktiverade anpassade APN:er. Kontakta mobiloperatören för mer information.</translation>
 <translation id="5457599981699367932">Använd som gäst</translation>
 <translation id="54609108002486618">Hanterade</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} försök kvar}other{{0} försök kvar}}</translation>
@@ -719,7 +718,6 @@
 <translation id="6798678288485555829">Textnavigering</translation>
 <translation id="680983167891198932">Nyckel</translation>
 <translation id="6816797338148849397">Det finns information om det som är markerat. Tryck på uppåtpilen för att komma åt den.</translation>
-<translation id="6838167112108853532">Det gick inte att inaktivera eller ta bort detta APN. Se till att aktiverade anslutna APN:er är inaktiverade eller borttagna.</translation>
 <translation id="6853312040151791195">Urladdningshastighet</translation>
 <translation id="6889786074662672253">Koppla inte från den externa enheten och stäng inte av datorn medan enheten startas om. Du kan minimera fönstret. Detta kan ta en stund och den externa enheten kanske inte fungerar under tiden.</translation>
 <translation id="6900701049656042631">Det här albumet innehåller inga foton. Du kan lägga till foton via <ph name="LINK" /></translation>

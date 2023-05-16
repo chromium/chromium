@@ -94,6 +94,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1346748346194534595">Doprava</translation>
 <translation id="1351937230027495976">Zbaliť ponuku</translation>
 <translation id="1360220746312242196">Prechod na predchádzajúcu zhodu vyhľadávania pri vyhľadávaní na stránke</translation>
+<translation id="1360788414852622716">Profil sa deaktivuje. Môže to niekoľko minút trvať.</translation>
 <translation id="1364382257761975320">Ak chcete Chromebook odomknúť, použite odtlačok prsta</translation>
 <translation id="1365866993922957110">Získavať automatické aktualizácie</translation>
 <translation id="1372545819342940910">Uložiť plochu na neskôr</translation>
@@ -545,6 +546,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3510164367642747937">Zvýrazniť ukazovateľ myši</translation>
 <translation id="3513798432020909783">Správca účtu: <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Aktualizujte zariadenie do 1 minúty}few{Aktualizujte zariadenie do # minút}many{Aktualizujte zariadenie do # minúty}other{Aktualizujte zariadenie do # minút}}</translation>
+<translation id="3522979239100719575">Hľadajú sa dostupné profily. Môže to niekoľko minút trvať.</translation>
 <translation id="3526440770046466733">Otvorenie odkazu na novej karte a zotrvanie na aktuálnej karte</translation>
 <translation id="353086728817903341">Pripojené k <ph name="NUM_DEVICES" /> zariadeniam</translation>
 <translation id="3533126039236445965">Aplikácie na poličke</translation>
@@ -1557,6 +1559,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8083540854303889870">Uložené na neskôr</translation>
 <translation id="8091153018031979607">Začína sa o <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatické aktualizácie</translation>
+<translation id="8092380135549145188">Ovládanie posúvania</translation>
 <translation id="8098591350844501178">Zastaviť prenos obrazovky do zariadenia <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Odopnutie aplikácie z poličky</translation>
 <translation id="8113423164597455979">Zap., vš. apl.</translation>

@@ -546,7 +546,6 @@
 <translation id="5423849171846380976">Attivato</translation>
 <translation id="5430931332414098647">Tethering istantaneo</translation>
 <translation id="5431318178759467895">A colori</translation>
-<translation id="5456936324019847994">Impossibile connettersi agli APN personalizzati attivi. Per ulteriori informazioni, contatta il tuo operatore di telefonia mobile.</translation>
 <translation id="5457599981699367932">Naviga come ospite</translation>
 <translation id="54609108002486618">Gestito</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentativo rimanente}other{{0} tentativi rimanenti}}</translation>
@@ -719,7 +718,6 @@
 <translation id="6798678288485555829">Navigazione nel testo</translation>
 <translation id="680983167891198932">Chiave</translation>
 <translation id="6816797338148849397">Sono disponibili informazioni relative al testo selezionato. Per accedere, utilizza il tasto Freccia su.</translation>
-<translation id="6838167112108853532">Impossibile disattivare o rimuovere questo APN. Assicurati che gli APN collegati abilitati siano disattivati o rimossi.</translation>
 <translation id="6853312040151791195">Velocità di riduzione della carica</translation>
 <translation id="6889786074662672253">Durante il riavvio, non scollegare questo dispositivo esterno o non arrestare il computer. Puoi ridurre a icona questa finestra. Questa operazione potrebbe richiedere qualche minuto e nel frattempo il dispositivo esterno potrebbe non funzionare.</translation>
 <translation id="6900701049656042631">Questo album non contiene foto. Per aggiungere foto, visita la pagina <ph name="LINK" />.</translation>
@@ -749,6 +747,7 @@
 <translation id="7130438335435247835">Nome punto di accesso (APN)</translation>
 <translation id="7131634559772719176">Conferma preimpostazione</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server dei nomi}other{Server dei nomi}}</translation>
+<translation id="7135814714616751706">Cerca scorciatoie</translation>
 <translation id="7143207342074048698">Connessione</translation>
 <translation id="7144878232160441200">Riprova</translation>
 <translation id="714876143603641390">Connettività LAN</translation>
@@ -779,6 +778,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; premi Tasto per la ricerca e Barra spaziatrice per vedere il risultato nella Ricerca Google.</translation>
 <translation id="7343649194310845056">Dispositivi di rete</translation>
+<translation id="7353413232959255829">Risultato di ricerca <ph name="LIST_POSITION" /> di <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Premi Invio per navigare alla scorciatoia.</translation>
 <translation id="7359657277149375382">Tipo di file</translation>
 <translation id="73631062356239394">Condividi dati diagnostici</translation>
 <translation id="7375053625150546623">EAP</translation>

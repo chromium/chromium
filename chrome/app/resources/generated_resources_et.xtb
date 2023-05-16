@@ -78,6 +78,7 @@
 <translation id="1061904396131502319">Pausiaeg on peagi käes</translation>
 <translation id="1062407476771304334">Asenda</translation>
 <translation id="1062628064301375934">Aidake meil luua privaatsem veeb</translation>
+<translation id="1066964438793906105">Otsige pahavara</translation>
 <translation id="1067048845568873861">Loodud</translation>
 <translation id="1067661089446014701">Turvalisuse suurendamiseks võite oma seadmes paroolid krüpteerida enne, kui need teie Google'i kontole salvestatakse</translation>
 <translation id="1067922213147265141">Muud Google'i teenused</translation>
@@ -144,6 +145,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1116639326869298217">Teie identiteeti ei õnnestunud kinnitada</translation>
 <translation id="1116694919640316211">Teave</translation>
 <translation id="1116779635164066733">Selle seade jõustab laiendus „<ph name="NAME" />”.</translation>
+<translation id="1118428905044642028">Paroolid ja &amp;automaattäide</translation>
 <translation id="1118738876271697201">Süsteemil ei õnnestunud seadme mudelit või seerianumbrit tuvastada.</translation>
 <translation id="1119447706177454957">Sisemine viga</translation>
 <translation id="1122068467107743258">Töö</translation>
@@ -218,6 +220,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1176471985365269981">Pole lubatud muuta teie seadmes olevaid faile ega kaustu</translation>
 <translation id="1177863135347784049">Kohandatud</translation>
 <translation id="1178581264944972037">Peata</translation>
+<translation id="1178601482396475810">Seadme sünkroonimise haldamine</translation>
 <translation id="117916940443676133">Teie turvavõti pole PIN-koodiga kaitstud. Sisselogimisandmete haldamiseks looge esmalt PIN-kood.</translation>
 <translation id="1181037720776840403">Eemalda</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
@@ -354,6 +357,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="130097046531636712">See pikendab aku tööiga, piirates taustal toimuvaid tegevusi ja visuaalseid efekte, nagu sujuv kerimine</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> saab muuta järgmisi faile</translation>
 <translation id="1302227299132585524">Luba JavaScript Apple'i sündmustest</translation>
+<translation id="1302654693270046655">Grupp <ph name="GROUP_NAME" /> – <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">Järjehoidjate HTML-fail</translation>
 <translation id="1303671224831497365">Bluetooth-seadmeid ei leitud</translation>
 <translation id="130491383855577612">Linuxi rakenduste ja failide asendamine õnnestus</translation>
@@ -400,7 +404,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1341871421050612057">Ei saa kasutajaga <ph name="USERNAME" /> sünkroonida</translation>
 <translation id="1343865611738742294">Andke Linuxi rakendustele luba USB-seadmetele juurde pääseda. Linux ei mäleta USB-seadet pärast selle eemaldamist.</translation>
 <translation id="1343920184519992513">Jätka sealt, kus pooleli jäin, ja ava konkreetne lehtede kogum</translation>
-<translation id="134589511016534552">Meedia vahelehed kuvatakse ka jaotises Avatud vahelehed</translation>
 <translation id="1346630054604077329">Kinnita ja taaskäivita</translation>
 <translation id="1346748346194534595">Paremale</translation>
 <translation id="1347256498747320987">Installige rakendusi ja värskendusi. Jätkamisel nõustute, et see seade võib Google'i, teie operaatori ja seadme tootja värskendusi ning rakendusi automaatselt alla laadida ja installida, kasutades selleks võib-olla teie mobiilset andmesidet. Mõned rakendused võivad pakkuda rakendusesiseseid oste. <ph name="BEGIN_LINK1" />Lisateave<ph name="END_LINK1" /></translation>
@@ -1043,6 +1046,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1877520246462554164">Autentimismärgi hankimine ebaõnnestus. Uuesti proovimiseks logige välja ja seejärel uuesti sisse.</translation>
 <translation id="1877860345998737529">Lüliti toimingu määramine</translation>
 <translation id="1878155070920054810">Paistab, et teie Chromebooki aku saab tühjaks enne, kui värskendamine lõpetatakse. Veenduge, et seda laetakse korralikult, et vältida katkestust.</translation>
+<translation id="1878477879455105085">Avatud</translation>
 <translation id="1878885068166344708">Üksus tõstetakse esile, kui fookust teisaldate. Fookuse muutmiseks vajutage tabulaatorit või valige üksus.</translation>
 <translation id="1879000426787380528">Logi sisse kasutajanimega</translation>
 <translation id="18802377548000045">Vahelehed kahanevad laiaks üksuseks</translation>
@@ -1295,6 +1299,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
       <ph name="BEGIN_BOLD" />Märkus.<ph name="END_BOLD" /> Protsessi käigus süsteem taaskäivitatakse.</translation>
 <translation id="2095774564753225041">Toetatud failitüübid</translation>
 <translation id="2097616539631531348">Ajal, mil see vaheleht oli inaktiivne, vabastas mälusäästja mälu muude toimingute jaoks.</translation>
+<translation id="2097950021134740304">Tühista tellimuse unustamine</translation>
 <translation id="2098805196501063469">Ülejäänud paroolide kontrollimine</translation>
 <translation id="2099686503067610784">Kustutada serveri sertifikaat „<ph name="CERTIFICATE_NAME" />”</translation>
 <translation id="2100273922101894616">Automaatne sisselogimine</translation>
@@ -1427,6 +1432,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2204034823255629767">Sisestatava teksti lugemine ja muutmine</translation>
 <translation id="2204387456724731099">Seda valikut ei õnnestunud tõlkida</translation>
 <translation id="2210462644007531147">Installimise lõpetamine ei õnnestunud</translation>
+<translation id="2211245494465528624">Halda sünkroonimisvalikuid</translation>
 <translation id="2212565012507486665">Luba küpsisefailid</translation>
 <translation id="2214018885812055163">Jagatud kaustad</translation>
 <translation id="2214884991347062907">Vale parool, proovige uuesti</translation>
@@ -1525,6 +1531,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2296218178174497398">Seadme tuvastamine</translation>
 <translation id="2297705863329999812">Printerite otsimine</translation>
 <translation id="2297822946037605517">Jaga seda lehte</translation>
+<translation id="229871422646860597">Vabasta tööriistaribalt</translation>
 <translation id="2299734369537008228">Liugur: <ph name="MIN_LABEL" /> kuni <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Kõik logifailid, mille debugd kogus, kaasatakse eraldi arhiivina.</translation>
 <translation id="2300214399009193026">PCIe</translation>
@@ -2057,7 +2064,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2739191690716947896">Silu</translation>
 <translation id="2739240477418971307">Juurdepääsetavuse seadete muutmine</translation>
 <translation id="274029851662193272">Lohkus</translation>
-<translation id="2740363334137520315">Lisab jaotisesse Otsing vahelehtedelt uue alajaotise, mis võimaldab teil hõlpsasti leida vahelehti, millel esitatakse heli või videot. Pääsete sellele juurde brauseri ülemises nurgas oleva nupu kaudu.</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2740876196999178364">Need pääsukoodid salvestatakse ainult sellesse seadmesse. Neid ei salvestata teie Google'i kontole.</translation>
 <translation id="2741713322780029189">Ava taasteterminal</translation>
@@ -2154,6 +2160,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2811205483104563968">Kontod</translation>
 <translation id="2811564570599779918">Rämpssisu ja pettuste vähendamine</translation>
 <translation id="2812049959647166806">Thunderbolti ei toetata</translation>
+<translation id="2812171980080389735">Võrkude ja paroolide salvestamine, et saaksite kiiresti ühenduse luua</translation>
 <translation id="2813094189969465044">Vanemlik järelevalve</translation>
 <translation id="281390819046738856">Taotlust ei saanud allkirjastada.</translation>
 <translation id="2814489978934728345">Peata selle lehekülje laadimine</translation>
@@ -2193,6 +2200,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">Teie PIN-kood lisati</translation>
 <translation id="2849936225196189499">Kriitiline</translation>
+<translation id="285033512555869047">Suletud</translation>
 <translation id="2850541429955027218">Lisa teema</translation>
 <translation id="2850672011315104382">Kirjavahemärkide stiil</translation>
 <translation id="2852385257476173980">Siin võidakse kuvada loend saitidest, mida veebi sirvides külastate</translation>
@@ -2236,6 +2244,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="288734198558082692"><ph name="DEVICE" /> ja veel <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="2889043468805635730">Probleeme ei leitud</translation>
 <translation id="2889064240420137087">Lingi avamine rakendusega ...</translation>
+<translation id="2890206081124517553">Töölaua tausta meeldejätmine seadmetes</translation>
 <translation id="2891566119238851894">Avage külgpaneelil otsing. Otsing ei ole külgpaneelil avatud.</translation>
 <translation id="2891922230654533301">Kas soovite rakendusse <ph name="APP_NAME" /> sisselogimiseks kasutada oma seadet?</translation>
 <translation id="2893013536106749396">Valige kaardid, mis hoiavad teid teie jaoks olulisega kursis</translation>
@@ -2257,6 +2266,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2907619724991574506">Käivitus-URL-id</translation>
 <translation id="2907798539022650680">Võrguga „<ph name="NAME" />” ühenduse loomine ebaõnnestus: <ph name="DETAILS" />
         Serveri teade: <ph name="SERVER_MSG" /></translation>
+<translation id="2908005622251445419">Jaga signaale</translation>
 <translation id="2908162660801918428">Meediagalerii lisamine kataloogiga</translation>
 <translation id="2908358077082926882">Selleks, et määratud toiming kinnitada ja <ph name="RESPONSE" />, vajutage uuesti klahvi <ph name="CURRENTKEY" />.</translation>
 <translation id="2909506265808101667">Google'i teenustega ei õnnestunud ühendust luua. Kontrollige võrguühendust ja proovige uuesti. Veakood: <ph name="ERROR_CODE" />.</translation>
@@ -2325,7 +2335,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2967926928600500959">Nendele reeglitele vastavad URL-id sundavatakse kindlas brauseris.</translation>
 <translation id="2972581237482394796">&amp;Tee uuesti</translation>
 <translation id="2973324205039581528">Vaigista sait</translation>
-<translation id="2973537811036309675">Külgpaneel</translation>
 <translation id="2975761176769946178">URL on nõutav</translation>
 <translation id="2976557544729462544">Mõni seade nõuab õigesti töötamiseks või maksimaalse jõudluse pakkumiseks, et keelaksite andmetele juurdepääsu kaitse.</translation>
 <translation id="2976756276046118477">Puna-roheline filter (roheline nõrk, deuteranomaalia)</translation>
@@ -2361,6 +2370,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3003828226041301643">Seadet ei saa domeeniga liita. Kontrollige oma kontot ja veenduge, et teil oleks õigus seadmeid lisada.</translation>
 <translation id="3003967365858406397">Teie telefon <ph name="PHONE_NAME" /> loob privaatse WiFi-ühenduse.</translation>
 <translation id="3004385386820284928">Klaviatuuriklahvide kohandamine</translation>
+<translation id="3005376701115952939">Süsteemi seadetes määratakse rakenduste sünkroonimine</translation>
 <translation id="3005574332301273731">Ära kuva</translation>
 <translation id="3006881078666935414">Kasutusandmed puuduvad</translation>
 <translation id="3007410324195400631">Selle lehe kohta märgete lisamine</translation>
@@ -2742,6 +2752,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3369624026883419694">Hosti lahendamine...</translation>
 <translation id="3370260763947406229">Automaatparandus</translation>
 <translation id="3371140690572404006">C-tüüpi USB-seade (eesmine parempoolne port)</translation>
+<translation id="3371351218553893534">Rida on liiga pikk: <ph name="ERROR_LINE" /></translation>
 <translation id="337286756654493126">Lugege kaustu, mille rakenduses avate</translation>
 <translation id="3373059063088819384">Ava lugemisrežiimis</translation>
 <translation id="3373701465337594448">Kui see on sisse lülitatud, kuvatakse siin need külastatavad saidid, mis prognoosivad teie huvisid.</translation>
@@ -2766,7 +2777,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3393554941209044235">Chrome'i dokumendi analüüs</translation>
 <translation id="3393582007140394275">Ekraanikuva ei õnnestu üle kanda.</translation>
 <translation id="3394850431319394743">Lubatud identifikaatorite alusel kaitstud sisu esitada</translation>
-<translation id="3396744558790608201">Tehke paremklikk ning valige käsk „Otsi Google Lensiga pilte“, et otsida saidi konkreetset piirkonda ja saada lisateavet visuaalse sisu kohta, mida sirvimisel ja veebis osteldes näete.</translation>
 <translation id="3396800784455899911">Kui klõpsate nupul „Nõustu ja jätka”, nõustute nende Google'i teenuste puhul andmete ülalkirjeldatud töötlemisega.</translation>
 <translation id="339722927132407568">Hangub</translation>
 <translation id="3399432415385675819">Märguanded keelatakse</translation>
@@ -2812,6 +2822,9 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3434272557872943250">Kui täiendavad veebi- ja rakendustegevused on teie lapse jaoks sisse lülitatud, võidakse need andmed salvestada tema Google'i kontole. Seadete ja nende kohandamise kohta leiate lisateavet saidilt families.google.com.</translation>
 <translation id="3434475275396485144">Seda seadet haldab teie telefoni administraator</translation>
 <translation id="3434512374684753970">Heli ja video</translation>
+<translation id="343517373502662180"><ph name="BEGIN_PARAGRAPH1" />Logige järgmisel kuval sisse oma Google’i kontoga.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />See on sama konto, mida kasutate Gmaili, YouTube’i, Chrome’i ja muude Google’i teenuste jaoks. Kasutage oma kontot, et saada isikupärastatud kasutuskogemus ja pääseda hõlpsalt juurde kogu oma teabele.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Kui teil Google’i kontot pole, saate selle luua järgmisel kuval.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3435688026795609344">„<ph name="EXTENSION_NAME" />” taotleb koodi <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Turvalisus</translation>
 <translation id="343578350365773421">Paber on otsas</translation>
@@ -2858,6 +2871,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="346546413339447252">Hankige kaupmeeste <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> ja teiste juures allahindlusi</translation>
 <translation id="3468298837301810372">Silt</translation>
 <translation id="3468999815377931311">Android-telefon</translation>
+<translation id="3469345458390352459">Kui see on sisse lülitatud, on teie rakendused Google’i kontoga sisselogimise korral saadaval mis tahes ChromeOS-i seadmes.  Veebirakendused sünkroonitakse Chrome’i kaudu ka siis, kui muud brauseri sünkroonimisfunktsioonid on välja lülitatud.</translation>
 <translation id="3469583217479686109">Valikutööriist</translation>
 <translation id="3470392222765168737">Jälgi saiti</translation>
 <translation id="3471876058939596279">HDMI- ja C-tüüpi USB-porte ei saa video jaoks samaaegselt kasutada. Kasutage mõnda teist videoporti.</translation>
@@ -2880,6 +2894,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3484869148456018791">Hangi uus sertifikaat</translation>
 <translation id="3486950712960783074">Teie reis</translation>
 <translation id="3487007233252413104">anonüümne funktsioon</translation>
+<translation id="3487649228420469005">Kontroll on tehtud</translation>
 <translation id="3490695139702884919">Allalaadimine … <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Teie lapse kontol pole Family Linki vanemlikku järelevalvet seadistatud. Saate vanemliku järelevalve lisada pärast seadistuse lõpuleviimist. Teavet vanemliku järelevalve kohta leiate rakendusest Avastamine.</translation>
 <translation id="3491678231052507920">Saidid kasutavad teie VR-seadmeid ja -andmeid tavaliselt VR-seansi käivitamiseks</translation>
@@ -3318,6 +3333,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3855441664322950881">Paki laiendus</translation>
 <translation id="3855676282923585394">Impordi järjehoidjad ja seaded...</translation>
 <translation id="3856096718352044181">Veenduge, et tegemist oleks kehtiva teenusepakkujaga, või proovige hiljem uuesti</translation>
+<translation id="3856470183388031602">Google’i konto kasutamine seadmes <ph name="DEVICE_TYPE" /></translation>
 <translation id="3856800405688283469">Ajavööndi valimine</translation>
 <translation id="3857807444929313943">Tõstke sõrm andurilt ja seejärel puudutage uuesti</translation>
 <translation id="3858860766373142691">Nimi</translation>
@@ -3357,6 +3373,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3894123633473837029">Assistendi hiljutise ajaloo kaasamine Sherlogi kaudu. See võib hõlmata teie identiteeti, asukohta ja silumisteavet. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">Kausta lisamine</translation>
 <translation id="3894770151966614831">Kas teisaldada Google'i kontole?</translation>
+<translation id="3894983081771074056">Klaviatuuri ja hiire käitumine, keele-eelistused ja muu</translation>
 <translation id="3895076768659607631">&amp;Otsingumootorite haldamine …</translation>
 <translation id="3895090224522145010">Kerberose kasutajanimi</translation>
 <translation id="389521680295183045">Saidid võivad küsida luba selle teadmiseks, millal seadet aktiivselt kasutate</translation>
@@ -3438,6 +3455,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="3957844511978444971">Puudutage valikut „Nõustun”, et kinnitada Google'i teenuste jaoks valitud seaded.</translation>
 <translation id="3958088479270651626">Järjehoidjate ja seadete importimine</translation>
 <translation id="3958110062351175311">Lubatud tööriistaribal taotlusi kuvada</translation>
+<translation id="3959747296451923142">Kinnita tellimuse eemaldamine</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Rohkem toiminguid: <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962119236270174787">Standardne kaitse teadaolevalt ohtlike veebisaitide, allalaadimiste ja laienduste vastu</translation>
@@ -3492,6 +3510,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="3994878504415702912">&amp;Suumi</translation>
 <translation id="3995138139523574647">C-tüüpi USB-seade (tagumine parempoolne port)</translation>
 <translation id="3995963973192100066">Esita animatsioon</translation>
+<translation id="399788104667917863">Kinnita tööriistaribale</translation>
 <translation id="4001540981461989979">Hiirekursori esiletõstmine liigutamisel</translation>
 <translation id="4002440992267487163">PIN-koodi seadistamine</translation>
 <translation id="4005817994523282006">Ajavööndi tuvastamismeetod</translation>
@@ -3650,12 +3669,16 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4147911968024186208">Proovige uuesti. Kui viga ilmub siiski, võtke ühendust tugiteenuse esindajaga.</translation>
 <translation id="4150201353443180367">Kuva</translation>
 <translation id="4150569944729499860">Ekraanikuva kontekst</translation>
+<translation id="4151843924968445052">Kas soovite seadme signaale jagada?</translation>
 <translation id="4152011295694446843">Oma järjehoidjad leiate siit</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 vaheleht}other{# vahelehte}}</translation>
 <translation id="4154664944169082762">Sõrmejäljed</translation>
 <translation id="4157869833395312646">Microsofti Server Gated Cryptography</translation>
 <translation id="4158315983204257156">Veebisaitide teksti suurus ja font</translation>
 <translation id="4158364720893025815">Õnnestus</translation>
+<translation id="4159501637165962616"><ph name="BEGIN_PARAGRAPH1" />Kui lubate oma Chrome OS-i seadmetel meile saata automaatseid aruandeid, aitab see meil prioriseerida, mida Chrome OS-is parandada ja täiustada. Need aruanded hõlmavad näiteks teavet selle kohta, millal Chrome OS kokku jookseb, milliseid funktsioone ja kui palju mälumahtu te tavaliselt kasutate, ning Androidi rakenduste diagnostika- ja kasutusandmeid. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Kui rakenduste sünkroonimine on samuti sisse lülitatud, kogutakse muid rakenduste diagnostika- ja kasutusandmeid, sealhulgas Androidi ja veebirakenduste kohta.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Need aruanded saate Chrome OS-i seadme seadetes igal ajal lubada või keelata. Kui olete domeeni administraator, saate seda seadet muuta administraatorikonsoolil.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Kui veebi- ja rakendustegevused on teie Google’i kontol sisse lülitatud, võidakse teie Androidi andmed salvestada teie Google’i kontole. Saidil account.google.com saate oma andmeid vaadata, neid kustutada ja konto seadeid muuta.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4161601078867475601">Google'i paroolihaldur</translation>
 <translation id="4163560723127662357">Tundmatu klaviatuur</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> ei kuulu kehtivale organisatsioonile. Võtke ühendust administraatoriga. Kui olete administraator, saate oma organisatsiooni seadistada, kui külastate saiti g.co/ChromeEnterpriseAccount</translation>
@@ -3923,6 +3946,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4408599188496843485">A&amp;bi</translation>
 <translation id="4409271659088619928">Teie otsingumootor on <ph name="DSE" />. Vaadake selle juhiseid otsinguajaloo kustutamise kohta, kui see on asjakohane.</translation>
 <translation id="4409697491990005945">Veerised</translation>
+<translation id="4409779593816003679">Paroolid ja &amp;automaattäide</translation>
 <translation id="4410545552906060960">Kasutage seadme avamiseks parooli asemel numbrit (PIN-kood). Hiljem PIN-koodi seadistamiseks avage jaotis Seaded.</translation>
 <translation id="4411578466613447185">Koodi allkirjastaja</translation>
 <translation id="4411719918614785832">Need pääsukoodid salvestatakse selles arvutis rakendusse Windows Hello. Neid ei salvestata teie Google'i kontole.</translation>
@@ -3979,6 +4003,9 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4452898361839215358">või valige PPD. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">Puudutage klaviatuuri paremas ülanurgas olevat sõrmejäljeandurit. Teie sõrmejäljeandmed talletatakse turvaliselt ja neid ei edastata seadmest <ph name="DEVICE_TYPE" /> väljapoole.</translation>
 <translation id="4453946976636652378">Otsige teenusega <ph name="SEARCH_ENGINE_NAME" /> või sisestage URL</translation>
+<translation id="4454537120672169656"><ph name="BEGIN_PARAGRAPH1" />Kui lubate Chrome OS-i seadmetel meile saata automaatseid aruandeid, aitab see meil prioriseerida, mida Chrome OS-is parandada ja täiustada. Need aruanded hõlmavad näiteks teavet selle kohta, millal Chrome OS kokku jookseb, milliseid funktsioone kasutati ja kui palju mälumahtu tavaliselt kasutati, ning Androidi rakenduste diagnostika- ja kasutusandmeid. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Kui rakenduste sünkroonimine on samuti sisse lülitatud, kogutakse muid rakenduste diagnostika- ja kasutusandmeid, sealhulgas Androidi ja veebirakenduste kohta.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Võite oma lapse Chrome OS-i seadme seadetes need aruanded igal ajal lubada või keelata. Kui olete domeeni administraator, saate seda seadet muuta administraatorikonsoolil.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH4" />Kui teie lapse Google'i kontol on veebi- ja rakendustegevuste seade sisse lülitatud, võidakse teie lapse andmed salvestada tema Google'i kontole. Seadete ja nende kohandamise kohta leiate lisateavet saidilt families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="4457472090507035117">Valige praegune hääl:</translation>
 <translation id="4459169140545916303">Aktiivne <ph name="DEVICE_LAST_ACTIVATED_TIME" /> päeva tagasi</translation>
 <translation id="4460014764210899310">Tühista grupeerimine</translation>
@@ -4261,6 +4288,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="470644585772471629">Värvide ümberpööramine</translation>
 <translation id="4707337002099455863">Alati kõigil saitidel</translation>
 <translation id="4708849949179781599">Välju rakendusest <ph name="PRODUCT_NAME" /></translation>
+<translation id="4708892882822652439">Luba ka vahelehe heli</translation>
 <translation id="4711638718396952945">Taasta seaded</translation>
 <translation id="4713409221649555176">Kustutatakse, kui kõik aknad sulgete</translation>
 <translation id="4715631922189108923">Kasutajanime muutmine</translation>
@@ -4288,6 +4316,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4735506354605317060">Hiirekursori rõngas</translation>
 <translation id="4735793370946506039">Vaadake lisateavet täiustatud ohutu sirvimise kohta.</translation>
 <translation id="4735803855089279419">Süsteemil ei õnnestunud määrata sellele seadmele seadme tuvastajaid.</translation>
+<translation id="4735846817388402006">Klõpsake laienduse „<ph name="EXTENSIONS_REQUESTING_ACCESS" />“ saidil <ph name="ORIGIN" /> lubamiseks</translation>
 <translation id="473775607612524610">Värskenda</translation>
 <translation id="473936925429402449">Valitud, lisasisu üksus <ph name="CURRENT_ELEMENT" /> <ph name="TOTAL_ELEMENTS" />-st</translation>
 <translation id="4739639199548674512">Piletid</translation>
@@ -4357,6 +4386,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4806457879608775995">Vaadake need tingimused üle ja juhtige oma andmeid</translation>
 <translation id="4807098396393229769">Kaardil olev nimi</translation>
 <translation id="4808667324955055115">Hüpikaknad on blokeeritud</translation>
+<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{Vaadake üle <ph name="BEGIN_BOLD" />1 laiendus<ph name="END_BOLD" />, mis eemaldati Chrome’i veebipoest.}other{Vaadake üle <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} laiendust<ph name="END_BOLD" />, mis eemaldati Chrome’i veebipoest.}}</translation>
 <translation id="4809079943450490359">Juhised seadme administraatorilt:</translation>
 <translation id="4809447465126035330">Kustuta</translation>
 <translation id="480990236307250886">Ava avaleht</translation>
@@ -4680,6 +4710,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5101839224773798795">Automaatne klõpsamine kursori peatumisel</translation>
 <translation id="5106350808162641062">Eemalda</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> on Family Linki järelevalve all. Vanemliku järelevalve all saad lisada kooli kontosid, et pääseda juurde kooli ressurssidele.</translation>
+<translation id="5107093668001980925">Ära kunagi näita kaupmeest <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Laiendus lülitas Google'i ohutu sirvimise välja</translation>
 <translation id="5108967062857032718">Seaded – Androidi rakenduste eemaldamine</translation>
 <translation id="5109044022078737958">Mia</translation>
@@ -4690,6 +4721,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5111794652433847656">Selles seadmes pole saidi <ph name="APP_NAME" /> jaoks ühtegi pääsuvõtit</translation>
 <translation id="5112577000029535889">Arenda&amp;ja tööriistad</translation>
 <translation id="511313294362309725">Lülita kiirsidumine sisse</translation>
+<translation id="5113384440341086023">Play poest installitud rakendused ja veebirakendused Chrome’i brauserist</translation>
 <translation id="51143538739122961">Sisestage oma turvavõti ja puudutage seda</translation>
 <translation id="5115309401544567011">Ühendage seade <ph name="DEVICE_TYPE" /> toiteallikaga.</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -4735,6 +4767,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5154702632169343078">Teema</translation>
 <translation id="5155327081870541046">Sisestage aadressiribale selle saidi otsetee, millel soovite otsida, näiteks „@järjehoidjad“. Seejärel vajutage valitud klaviatuuriotseteed ja sisestage otsingutermin.</translation>
 <translation id="5156638757840305347">Kursor tõstetakse esile, kui see kuvatakse või seda liigutatakse</translation>
+<translation id="5157250307065481244">Kuva saidi üksikasjad</translation>
 <translation id="5157635116769074044">Kinnita leht avakuvale ...</translation>
 <translation id="5158206172605340248">Rõhumärkide menüü suleti.</translation>
 <translation id="5159094275429367735">Crostini seadistamine</translation>
@@ -4792,7 +4825,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="520840839826327499">Teenus <ph name="SERVICE_NAME" /> soovib kontrollida, kas kasutate sobilikku Chrome OS-i seadet.</translation>
 <translation id="5208926629108082192">Seadme mobiilsidevõrgu teave</translation>
 <translation id="5208988882104884956">Poolaius</translation>
-<translation id="520902706163766447">Praegu avatud vahelehtedelt otsimiseks lubage Chrome'i ülemises kasutajaliideses hüpikakna mull.</translation>
 <translation id="5209320130288484488">Seadmeid ei leitud</translation>
 <translation id="5209513429611499188">HID-seadmed kasutustega kasutuse lehelt <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">Sule vaheleht</translation>
@@ -5282,6 +5314,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5648166631817621825">Viimased seitse päeva</translation>
 <translation id="5651308944918885595">Läheduses jagamine – leitavus</translation>
 <translation id="5653154844073528838">Teil on <ph name="PRINTER_COUNT" /> salvestatud printerit.</translation>
+<translation id="565515993087783098">Selle võrgu unustamisel eemaldate ka Passpointi tellimuse ja sellega seotud võrgud.</translation>
 <translation id="5655296450510165335">Seadme registreerimine</translation>
 <translation id="5656845498778518563">Google’ile tagasiside saatmine</translation>
 <translation id="5657156137487675418">Luba kõik küpsised</translation>
@@ -5794,6 +5827,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6104068876731806426">Google'i kontod</translation>
 <translation id="6104311680260824317">Seadet ei saa domeeniga ühendada. Server ei toeta määratud Kerberose krüpteerimistüüpe. Krüpteerimisseaded leiate jaotisest „Rohkem valikuid”.</translation>
 <translation id="6104796831253957966">Printeri järjekord on täis</translation>
+<translation id="6106167152849320869">Kui valisite eelmise sammu käigus diagnostika- ja kasutusandmete saatmise, kogutakse installitud rakenduste puhul neid andmeid.</translation>
 <translation id="6111972606040028426">Google'i assistendi lubamine</translation>
 <translation id="6112294629795967147">Puudutage suuruse muutmiseks</translation>
 <translation id="6112727384379533756">Lisa pilet</translation>
@@ -5924,6 +5958,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6226777517901268232">Privaatvõtme fail (valikuline)</translation>
 <translation id="6227002569366039565">Vajutage selle mulli esiletõstmiseks klahvi |<ph name="ACCELERATOR" />|, seejärel vajutage seda uuesti, et esile tõsta element, millele see viitab.</translation>
 <translation id="6227280783235722609">laiendus</translation>
+<translation id="6229062790325126537">Lähtesta ApnMigrator</translation>
 <translation id="6229849828796482487">WiFi-võrgu ühenduse katkestamine</translation>
 <translation id="6231782223312638214">Soovitatud</translation>
 <translation id="6231881193380278751">Lehe automaatseks värskendamiseks lisage päringu parameeter URL-i: chrome://device-log/?refresh=&lt;sec&gt;</translation>
@@ -6201,6 +6236,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6478248366783946499">Kas soovite ohtliku faili säilitada?</translation>
 <translation id="6479881432656947268">Chrome'i veebipoodi külastamine</translation>
 <translation id="6480327114083866287">Haldab <ph name="MANAGER" /></translation>
+<translation id="6481978993812487794">Kui see on sisse lülitatud, on teie rakendused Google’i kontoga sisselogimise korral saadaval mis tahes ChromeOS-i seadmes. Veebirakendused sünkroonitakse Chrome’i kaudu ka siis, kui muud brauseri sünkroonimisfunktsioonid on välja lülitatud.</translation>
 <translation id="6482559668224714696">Täisekraani luup</translation>
 <translation id="6483485061007832714">Allalaadimise avamine</translation>
 <translation id="6483805311199035658">Avatakse <ph name="FILE" />...</translation>
@@ -6215,6 +6251,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6497784818439587832">Muutke kuvamissuurust, et ekraanil kuvatud üksused väiksemaks või suuremaks teha</translation>
 <translation id="6497789971060331894">Hiirega tagurpidi kerimine</translation>
 <translation id="6498249116389603658">&amp;Kõik teie keeled</translation>
+<translation id="6498583202177273322">Tutvuge selle lehega ja hankige kasulikku lisateavet</translation>
 <translation id="6499143127267478107">Hosti lahendamine puhverserveri skriptis ...</translation>
 <translation id="6499764981457476645">Lähedusest ei leitud seadmeid</translation>
 <translation id="6501957628055559556">Kõik konteinerid</translation>
@@ -6290,7 +6327,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6561726789132298588">sisestusklahv</translation>
 <translation id="6562117348069327379">Süsteemilogid salvestatakse kataloogi Allalaadimised.</translation>
 <translation id="656293578423618167">Faili tee või nimi on liiga pikk. Salvestage lühema nimega või muusse asukohta.</translation>
-<translation id="6568283005472142698">Otsing vahelehtedelt</translation>
 <translation id="6570622975915850879">Kasuta teist seadet</translation>
 <translation id="65711204837946324">Allalaadimiseks on vaja luba</translation>
 <translation id="6571533309669248172">Teksti vormindamine</translation>
@@ -6520,6 +6556,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6776589734354015877">Hankige lisafunktsioonid</translation>
 <translation id="6776729248872343918">Luba kiirsidumine</translation>
 <translation id="6777817260680419853">Ümbersuunamine blokeeriti</translation>
+<translation id="6777845730143344223">Lisateave Passpointi tellimuste kohta</translation>
 <translation id="6779092717724412415">Sellega sarnase esiletõstu loomiseks valige mis tahes tekst ja tehke paremklikk.</translation>
 <translation id="6779447100905857289">teie ostukorvid</translation>
 <translation id="677965093459947883">Väga väike</translation>
@@ -6661,6 +6698,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="688312408602122936">Seadmest eemaldatakse ka Steami kaudu installitud mängud ja rakendused</translation>
 <translation id="6883319974225028188">Vabandust! Süsteemil ei õnnestunud seadme seadistust salvestada.</translation>
 <translation id="6884474387073389421">Kas olete kindel, et soovite valitud sisselogimisandmed kustutada?</translation>
+<translation id="6885122019363983153">Töölaua taustad on seadmetes ühesugused</translation>
 <translation id="6885771755599377173">Süsteemiteabe eelvaade</translation>
 <translation id="6886380424988777998">Linuxi versiooni ei õnnestunud uuendada</translation>
 <translation id="6886871292305414135">Ava link uuel &amp;vahelehel</translation>
@@ -6732,6 +6770,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6949434160682548041">Parool (valikuline)</translation>
 <translation id="6950627417367801484">Rakenduste taastamine</translation>
 <translation id="6952242901357037157">Saate siin kuvada ka oma <ph name="BEGIN_LINK" />Google'i kontol<ph name="END_LINK" /> olevad paroolid</translation>
+<translation id="6954910832698269894">Lülitage sisse seadme sünkroonimine, et taastada eelmisest Chromebookist oma rakendused, seaded, WiFi-võrgud ja taustapilt. Muudatusi saate igal ajal teha menüüs Seaded &gt; Kontod.</translation>
 <translation id="6954936693361896459">Kanna üle hoopis seda vahelehte</translation>
 <translation id="6955446738988643816">Uuri hüpikut</translation>
 <translation id="6955535239952325894">See seade on hallatud brauserites keelatud</translation>
@@ -6890,6 +6929,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7075513071073410194">PKCS 1 MD5 koos RSA krüpteerimisega</translation>
 <translation id="7075625805486468288">HTTPS-/SSL-sertifikaatide ja seadete haldamine</translation>
 <translation id="7076875098323397992">Ei saa versiooniuuendust alustada</translation>
+<translation id="7077751457066325012">Klaviatuuri otseteede kuvamine ja kohandamine</translation>
 <translation id="7077829361966535409">Sisselogimislehte ei saanud praeguste puhverserveri seadetega laadida. <ph name="GAIA_RELOAD_LINK_START" />Proovige uuesti sisse logida<ph name="GAIA_RELOAD_LINK_END" /> või kasutage teisi <ph name="PROXY_SETTINGS_LINK_START" />puhverserveri seadeid<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
 <translation id="7078120482318506217">Kõik võrgud</translation>
 <translation id="708060913198414444">K&amp;opeeri heli aadress</translation>
@@ -6919,6 +6959,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7108933416628942903">Lukusta kohe</translation>
 <translation id="7109543803214225826">Otsetee on eemaldatud</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Vahelehe lisamine gruppi}other{Vahelehtede lisamine gruppi}}</translation>
+<translation id="7110684627876015299">Nimetu grupp – <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">Määrake aknale nimi</translation>
 <translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> üksus</translation>
 <translation id="7113502843173351041">Teave teie e-posti aadressi kohta</translation>
@@ -7133,6 +7174,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7328867076235380839">Sobimatu kombinatsioon</translation>
 <translation id="7329154610228416156">Sisselogimine ebaõnnestus, sest see oli konfigureeritud kasutama ebaturvalist URL-i (<ph name="BLOCKED_URL" />). Võtke ühendust administraatoriga.</translation>
 <translation id="7332053360324989309">Spetsiaalne töötaja: <ph name="SCRIPT_URL" /></translation>
+<translation id="7333669215417470379">Rakenduste ja seadete varundamine ja taastamine</translation>
 <translation id="7335974957018254119">Kasuta õigekirjakontrolli:</translation>
 <translation id="7336799713063880535">Märguanded on blokeeritud.</translation>
 <translation id="7338630283264858612">Seadme seerianumber on kehtetu.</translation>
@@ -7155,6 +7197,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7348093485538360975">Ekraanil kuvatav klaviatuur</translation>
 <translation id="7349010927677336670">Video sujuvus</translation>
 <translation id="7352651011704765696">Midagi läks valesti</translation>
+<translation id="7352664183151911163">Kõigis rakendustes ja Chrome’i brauseris</translation>
 <translation id="7353261921908507769">Teie kontaktid saavad läheduses olles teiega jagada. Ülekandeid ei alustata enne, kui nõusoleku annate.</translation>
 <translation id="735361434055555355">Linuxi installimine …</translation>
 <translation id="7354120289251608189">Saate nüüd igal ajal oma brauseri väljanägemist muuta.</translation>
@@ -7197,6 +7240,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7380622428988553498">Seadme nimi sisaldab sobimatuid tähemärke</translation>
 <translation id="7380768571499464492">Printerit <ph name="PRINTER_NAME" /> värskendati</translation>
 <translation id="7382085868019811559">Pärandbrauserite tugi (LBS) võimaldab teatud URL-ide mustreid avada alternatiivses brauseris, mis toetab nende saitide õigeks käitamiseks vajalikke pärandfunktsioone.</translation>
+<translation id="7382980704744807223">Kahtlane</translation>
 <translation id="738322632977123193">Seda faili ei saa üles laadida. Kasutage ühes järgmises vormingus pilti: .jpg, .gif, .png, .bmp, .tif või .webp.</translation>
 <translation id="73843634555824551">Sisendid ja klaviatuurid</translation>
 <translation id="7384687527486377545">Klaviatuuri automaatne kordus</translation>
@@ -7294,6 +7338,8 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7458168200501453431">Kasutab sama õigekirjakontrolli, mida kasutatakse Google'i otsingus. Brauseris sisestatav tekst saadetakse Google'ile.</translation>
 <translation id="7458715171471938198">Kas taastada rakendused?</translation>
 <translation id="7458933488302148148">Turvalisuse ja veebiohutuse suurendamiseks kontrollige oma salvestatud paroole</translation>
+<translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />Kui lubate oma Chrome OS-i seadmetel meile saata automaatseid aruandeid, aitab see meil prioriseerida, mida Chrome OS-is parandada ja täiustada. Need aruanded hõlmavad näiteks teavet selle kohta, millal Chrome OS kokku jookseb ning milliseid funktsioone ja kui palju mälumahtu te tavaliselt kasutate. Kui rakenduste sünkroonimine on samuti sisse lülitatud, kogutakse muid rakenduste diagnostika- ja kasutusandmeid, sealhulgas Androidi ja veebirakenduste kohta.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Need aruanded saate Chrome'i seadme seadetes igal ajal lubada või keelata. Kui olete domeeni administraator, saate seda seadet muuta administraatorikonsoolil.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7460045493116006516">Teie installitud praegune teema</translation>
 <translation id="7461924472993315131">Kinnita</translation>
 <translation id="746216226901520237">Järgmisel korral avab seadme <ph name="DEVICE_TYPE" /> teie telefon. Funktsiooni Smart Lock saab välja lülitada menüüs Seaded.</translation>
@@ -7454,6 +7500,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7607002721634913082">Peatatud</translation>
 <translation id="7608810328871051088">Androidi eelistused</translation>
 <translation id="7609148976235050828">Ühendage Internetiga ja proovige uuesti.</translation>
+<translation id="7611713099524036757">meta</translation>
 <translation id="7612401678989660900">Luba juurdepääs mikrofonile rakenduste ja veebisaitide puhul, millel on mikrofonile juurdepääsemise luba</translation>
 <translation id="7612655942094160088">Ühendatud telefoni funktsioonide lubamine.</translation>
 <translation id="7612989789287281429">Sisselogimine …</translation>
@@ -7527,6 +7574,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7663719505383602579">Saaja: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">Saadaval on klaviatuuri otsetee</translation>
 <translation id="7663859337051362114">eSIM-i profiili lisamine</translation>
+<translation id="76641554187607347">Klaviatuur pole ühendatud</translation>
 <translation id="7665082356120621510">Säilita maht</translation>
 <translation id="7665369617277396874">Konto lisamine</translation>
 <translation id="766560638707011986">Domeenide kuvamine</translation>
@@ -7574,6 +7622,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="769824636077131955">See dokument on turvakontrolli jaoks liiga suur. Saate printida kuni 50 MB dokumente.</translation>
 <translation id="7698507637739331665">Mõned üksused on blokeeritud</translation>
 <translation id="7701040980221191251">Pole</translation>
+<translation id="7701265686005869308">Profiili sulgemine</translation>
 <translation id="7701869757853594372">KASUTAJA pidemed</translation>
 <translation id="7702574632857388784">Eemalda <ph name="FILE_NAME" /> loendist</translation>
 <translation id="7702907602086592255">Domeen</translation>
@@ -7621,7 +7670,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7737948071472253612">Pole lubatud kasutada teie kaamerat</translation>
 <translation id="77381465218432215">Kuva rõhu- ja erimärgid</translation>
 <translation id="7740996059027112821">Tavapärane</translation>
-<translation id="7741307896921365578">Lubab brauseri tasemel külgpaneeli, mis pakub kasuliku ja püsiva juurdepääsu teie lugemisloendile ning järjehoidjatele.</translation>
 <translation id="7742558784808143689">Kas kustutada saidi <ph name="SITE_NAME" />, kõigi selle alamsaitide ning installitud rakenduste andmed ja load?</translation>
 <translation id="7742706086992565332">Saate määrata, kui palju soovite teatud veebisaitidel sisse või välja suumida</translation>
 <translation id="7742879569460013116">Jaga linki:</translation>
@@ -7822,7 +7870,6 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7909986151924474987">Selle profiili uuesti installimine ei pruugi olla võimalik</translation>
 <translation id="7910768399700579500">&amp;Uus kaust</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="79113168483292735">Meedia vahelehtede jaotis otsingus vahelehelt</translation>
 <translation id="7912080627461681647">Teie parool serveris on muutunud. Logige välja ja seejärel uuesti sisse.</translation>
 <translation id="7912974581251770345">Tõlge</translation>
 <translation id="7915457674565721553">Vanemliku järelevalve seadistamiseks looge Interneti-ühendus</translation>
@@ -7995,6 +8042,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8050191834453426339">Kinnitage uuesti</translation>
 <translation id="8051193500142930381">Kaamerat vajavad funktsioonid ei tööta</translation>
 <translation id="8051390370038326517">Luba hosti <ph name="HOST" /> jaoks alati MIDI-seadmete täielik juhtimine</translation>
+<translation id="8052218774860457016">Brauseri sünkroonimise haldamine</translation>
 <translation id="8053278772142718589">PKCS #12 failid</translation>
 <translation id="8053390638574070785">Laadi see leht uuesti</translation>
 <translation id="8054517699425078995">Seda tüüpi fail võib teie seadet kahjustada. Kas soovite faili <ph name="FILE_NAME" /> siiski alles jätta?</translation>
@@ -8364,6 +8412,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8376137163494131156">Andke meile teada, mis Google Castiga toimub.</translation>
 <translation id="8376384591331888629">Sh sellel saidil olevad kolmanda osapoole küpsisefailid</translation>
 <translation id="8376451933628734023">Kui see veebirakendus üritab jätta muljet, et tegemist on teise rakendusega, desinstallige see.</translation>
+<translation id="8376752431516546391">Google’i otsingu külgpaneel</translation>
 <translation id="8377625247046155446">See pääsuvõti salvestatakse ainult sellesse seadmesse. Pärast kõigi inkognito akende sulgemist jääb see sellesse seadmesse.</translation>
 <translation id="8378714024927312812">Haldab teie organisatsioon</translation>
 <translation id="8379878387931047019">See seade ei toeta seda tüüpi turvavõtit, mida see veebisait nõuab</translation>
@@ -8431,6 +8480,11 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8428628598981198790">Teie turvavõtit ei saa sellel saidil kasutada</translation>
 <translation id="84297032718407999">Teid logitakse välja <ph name="LOGOUT_TIME_LEFT" /> pärast</translation>
 <translation id="8431190899827883166">Puudutuste kuvamine</translation>
+<translation id="8431496281632382473">Seda profiili haldab <ph name="DOMAIN" />. Selle hallatud profiili kasutamise jätkamiseks nõuab teie organisatsioon teilt seadme signaalide jagamist.
+
+Seadme signaalid võivad sisaldada teavet teie brauseri, OS-i, seadme, installitud tarkvara ja failide kohta.
+
+Kui otsustate signaale mitte jagada, see profiil suletakse.</translation>
 <translation id="8434480141477525001">NaCl silumisport</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8438328416656800239">Minge üle nutikale brauserile</translation>
@@ -8515,6 +8569,8 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="851263357009351303">Luba alati saidil <ph name="HOST" /> pilte kuvada</translation>
 <translation id="8513108775083588393">Aut. pööramine</translation>
 <translation id="8513357934662532537">Paroolide importimiseks teenusesse <ph name="BRAND" /> kasutaja <ph name="USER_EMAIL" /> jaoks valige CSV-fail.</translation>
+<translation id="8513683386591916542"><ph name="BEGIN_PARAGRAPH1" />Kui lubate Chrome OS-i seadmetel meile saata automaatseid aruandeid, aitab see meil prioriseerida, mida Chrome OS-is parandada ja täiustada. Need aruanded sisaldavad näiteks Chrome OS-i kokkujooksmiste, kasutatud funktsioonide ja seadme mälukasutuse andmeid. Kui rakenduste sünkroonimine on samuti sisse lülitatud, kogutakse muid rakenduste diagnostika- ja kasutusandmeid, sealhulgas Androidi ja veebirakenduste kohta.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Võite oma lapse Chrome OS-i seadme seadetes need aruanded igal ajal lubada või keelata. Kui olete domeeni administraator, saate seda seadet muuta administraatorikonsoolil.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8514746246728959655">Proovige muud turvavõtit</translation>
 <translation id="8514955299594277296">Saitidel ei lubata teie seadmesse andmeid salvestada (pole soovitatav)</translation>
 <translation id="8517759303731677493">Muuda …</translation>
@@ -8595,7 +8651,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8599681327221583254">Vähemalt üks reegel pole õigesti seadistatud. Võtke ühendust administraatoriga.</translation>
 <translation id="8599864823732014237">Kas jätta ettevõtte registreerimine vahele?</translation>
 <translation id="8601206103050338563">TLS WWW kliendi autentimine</translation>
-<translation id="8601611099293226919">Otsige Google Lensi abil ekraanikuvalt</translation>
 <translation id="8602674530529411098">Rakendused (beetaversioon)</translation>
 <translation id="8602851771975208551">Teine programm teie arvutis lisas rakenduse, mis võib muuta Chrome'i toimimist.</translation>
 <translation id="8605428685123651449">SQLite'i mälu</translation>
@@ -8875,6 +8930,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="883062543841130884">Asendused</translation>
 <translation id="8830779999439981481">Taaskäivitatakse värskenduste rakendamiseks</translation>
 <translation id="8830796635868321089">Värskenduste kontrollimine puhverserveri praeguste seadetega ebaõnnestus. Korrigeerige <ph name="PROXY_SETTINGS_LINK_START" />puhverserveri seadeid<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8830863983385452402">Sait näeb selle vahelehe sisu</translation>
 <translation id="8831769650322069887">Ava <ph name="FILE_NAME" /></translation>
 <translation id="8832781841902333794">Teie profiilid</translation>
 <translation id="8834039744648160717">Võrguseadistust juhib <ph name="USER_EMAIL" />.</translation>
@@ -9006,6 +9062,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="8946359700442089734">Silumisfunktsioone ei lubatud täielikult selles toote <ph name="IDS_SHORT_PRODUCT_NAME" /> seadmes.</translation>
 <translation id="894763922177556086">Hea</translation>
 <translation id="8948939328578167195"><ph name="WEBSITE" /> soovib näha teie turvavõtme tootjat ja mudelit</translation>
+<translation id="8949304443659090542">Chrome’i brauseri sünkroonimise haldamine</translation>
 <translation id="895054485242522631">Saidid saavad kasutada liikumisandureid</translation>
 <translation id="8951256747718668828">Taastamist ei saanud vea tõttu lõpule viia</translation>
 <translation id="8951465597020890363">Kas väljuda siiski külalisrežiimist?</translation>
@@ -9111,6 +9168,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="9032097289595078011">Keela kiirsidumine</translation>
 <translation id="9033765790910064284">Jätka ikkagi</translation>
 <translation id="9033857511263905942">&amp;Kleebi</translation>
+<translation id="9034408118624208974">Kas olete uus Chromebooki kasutaja? Lülitage sünkroonimine sisse, et teie eelistused varundataks.</translation>
 <translation id="903480517321259405">Sisestage PIN-kood uuesti</translation>
 <translation id="9037054491984310631">Ühendatud Bluetooth-seadmega <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Seade ei ole lubatud</translation>
@@ -9154,6 +9212,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="9068298336633421551">Lubage asukohale juurdepääsu loaga Androidi rakendustel ja teenustel kasutada selle seadme asukohta. Google võib aeg-ajalt koguda asukohaandmeid ja kasutada neid anonüümselt asukohatäpsuse ning asukohapõhiste teenuste parendamiseks.</translation>
 <translation id="9068598199622656904">Vajutage klaviatuuri otseteede jaoks korraga ühte klahvi, mitte mitut klahvi</translation>
 <translation id="9068878141610261315">Toetamata failitüüp</translation>
+<translation id="9069665781180028115">Valitud üksused on selles Chromebookis saadaval. Kui olete uus Chromebooki kasutaja, sünkroonige kõik üksused, et teie eelistused varundataks. Muudatusi saate igal ajal teha menüüs Seaded &gt; Kontod.</translation>
 <translation id="9070342919388027491">Vaheleht teisaldati vasakule</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB-hiir on ühendatud</translation>
@@ -9327,6 +9386,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="930268624053534560">Üksikasjalikud ajatemplid</translation>
 <translation id="930551443325541578">Klahvikordus ja rõhumärgid</translation>
 <translation id="930893132043726269">Praegu toimub rändlus</translation>
+<translation id="930991362911221750">Kas lubate rakendusel <ph name="APP_NAME" /> seda vahelehte näha?</translation>
 <translation id="93140074055951850">Androidi rakendused peatati</translation>
 <translation id="932327136139879170">Kodu</translation>
 <translation id="932508678520956232">Printimist ei saanud alustada.</translation>

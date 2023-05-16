@@ -539,7 +539,6 @@
 <translation id="5423849171846380976">Virkjuð</translation>
 <translation id="5430931332414098647">Skynditjóðrun</translation>
 <translation id="5431318178759467895">Í lit</translation>
-<translation id="5456936324019847994">Ekki er hægt að tengjast neinum virkum, sérsniðnum aðgangsstöðum. Hafðu samband við símafyrirtækið þitt til að fá frekari upplýsingar.</translation>
 <translation id="5457599981699367932">Vafra sem gestur</translation>
 <translation id="54609108002486618">Stjórnað</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tilraun eftir}one{{0} tilraun eftir}other{{0} tilraunir eftir}}</translation>
@@ -710,7 +709,6 @@
 <translation id="6798678288485555829">Fletting í texta</translation>
 <translation id="680983167891198932">Lykill</translation>
 <translation id="6816797338148849397">Tiltækar upplýsingar sem tengjast vali þínu. Notaðu ör upp-lykilinn til að opna.</translation>
-<translation id="6838167112108853532">Hvorki er hægt að slökkva á né fjarlægja þennan aðgangsstað. Gakktu úr skugga um að slökkt sé á tengdum aðgangsstöðum sem er kveikt á eða þeir fjarlægðir.</translation>
 <translation id="6853312040151791195">Afhleðsluhraði</translation>
 <translation id="6889786074662672253">Ekki skal taka þetta ytra tæki úr sambandi eða slökkva á tölvunni meðan á endurræsingu stendur. Þú getur minnkað þennan glugga. Þetta gæti tekið nokkrar mínútur og óvíst er að ytra tækið virki á meðan.</translation>
 <translation id="6900701049656042631">Engar myndir eru í þessu albúmi. Opnaðu <ph name="LINK" /> til að bæta við myndum</translation>

@@ -49,6 +49,7 @@
 <translation id="3650632991272923014">Ginamit ni <ph name="USER_EMAIL1" /> ang Chromium at nag-iwan siya ng mga bookmark, password, at iba pang mga setting sa device na ito.</translation>
 <translation id="372658070733623520">Para magamit at ma-save ang data ng Chromium sa iyong Google Account, i-verify na ikaw ito.</translation>
 <translation id="3805899903892079518">Walang access ang Chromium sa mga larawan o video mo. I-enable ang access sa Mga Setting ng iOS &gt; Privacy &gt; Mga Larawan.</translation>
+<translation id="3955621079070267756">Buksan ang Chromium Mula sa Anumang App</translation>
 <translation id="4043291146360695975">Sine-save ang mga password sa Password Manager sa device lang na ito.</translation>
 <translation id="4099085513035183040">Hindi sinusuportahan sa Chromium Beta</translation>
 <translation id="4432744876818348753">Mag-sign in para masulit ang Chromium.</translation>
@@ -143,5 +144,6 @@ Mga bagay na dapat isaalang-alang:
 <translation id="9089354809943900324">Luma na ang Chromium</translation>
 <translation id="9110075932708282655">Gamitin ang Chromium bilang Default</translation>
 <translation id="921174536258924340">Hindi masuri ng Chromium ang lahat ng password. Subukan ulit bukas o <ph name="BEGIN_LINK" />suriin ang mga password sa iyong Google Account.<ph name="END_LINK" /></translation>
+<translation id="971488683725792095">Awtomatikong gamitin ang Chromium kapag nag-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="985602178874221306">Ang Mga May-akda ng Chromium</translation>
 </translationbundle>

@@ -402,7 +402,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1341871421050612057">Det gick inte att synkronisera med <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Ge Linux-appar åtkomstbehörighet till USB-enheter. När en USB-enhet tas bort sparas ingen information om den i Linux.</translation>
 <translation id="1343920184519992513">Fortsätt där du slutade och öppna en viss uppsättning sidor</translation>
-<translation id="134589511016534552">Mediaflikar visas också i Öppna flikar</translation>
 <translation id="1346630054604077329">Bekräfta och starta om</translation>
 <translation id="1346748346194534595">Höger</translation>
 <translation id="1347256498747320987">Installera uppdateringar och appar. Genom att fortsätta godkänner du att enheten får ladda ned och installera uppdateringar och appar automatiskt från Google, operatören och enhetstillverkaren, eventuellt genom att använda mobildata. Det kan hända att några av apparna erbjuder köp i appen. <ph name="BEGIN_LINK1" />Läs mer<ph name="END_LINK1" /></translation>
@@ -2069,7 +2068,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2739191690716947896">Felsökning</translation>
 <translation id="2739240477418971307">Ändra tillgänglighetsinställningarna</translation>
 <translation id="274029851662193272">Nedsänkt</translation>
-<translation id="2740363334137520315">Lägger till en ny sektion i Sök bland flikar för att du lätt ska kunna hitta flikar som spelar upp ljud eller videor. Åtkomst via knappen i webbläsarens övre hörn.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">De här nycklarna sparas bara på den här enheten. De sparas inte i Google-kontot.</translation>
 <translation id="2741713322780029189">Öppna återställningsterminalen</translation>
@@ -2337,7 +2335,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2967926928600500959">Webbadresser som matchar dessa regler tvingas att öppnas i en viss webbläsare.</translation>
 <translation id="2972581237482394796">&amp;Upprepa</translation>
 <translation id="2973324205039581528">Stäng av webbplatsens ljud</translation>
-<translation id="2973537811036309675">Sidopanel</translation>
 <translation id="2975761176769946178">En webbadress krävs</translation>
 <translation id="2976557544729462544">Du måste inaktivera dataåtkomstskyddet för att vissa enheter ska fungera ordentligt eller med full prestanda.</translation>
 <translation id="2976756276046118477">Rödgrönt filter (grönsvaghet, deuteranomali)</translation>
@@ -2778,7 +2775,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3393554941209044235">Dokumentanalys i Chrome</translation>
 <translation id="3393582007140394275">Det gick inte att casta skärmen.</translation>
 <translation id="3394850431319394743">Tillåts att använda identifierare för att spela upp skyddat innehåll</translation>
-<translation id="3396744558790608201">Högerklicka och välj Sök efter bilder med Google Lens, om du vill söka efter valfritt område på webbplatsen för att ta reda på mer om det visuella innehåll du ser när du surfar och handlar på webben.</translation>
 <translation id="3396800784455899911">När du klickar på Godkänn och fortsätt samtycker du till att dessa tjänster från Google får bearbeta data enligt beskrivningen ovan.</translation>
 <translation id="339722927132407568">Den låser sig</translation>
 <translation id="3399432415385675819">Aviseringar inaktiveras</translation>
@@ -4810,7 +4806,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> vill kontrollera om du använder en Chrome OS-enhet som uppfyller villkoren.</translation>
 <translation id="5208926629108082192">Information om enhetens mobilnätverk</translation>
 <translation id="5208988882104884956">Halvbreda</translation>
-<translation id="520902706163766447">Aktivera en popup-bubbla i användargränssnittet högst upp i webbläsaren för att söka i flikar som är öppna just nu.</translation>
 <translation id="5209320130288484488">Det gick inte att hitta några enheter</translation>
 <translation id="5209513429611499188">HID-enheter med användning från användningssidan <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">Stäng flik</translation>
@@ -6309,7 +6304,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6561726789132298588">retur</translation>
 <translation id="6562117348069327379">Spara systemloggar i katalogen Nedladdningar.</translation>
 <translation id="656293578423618167">För lång sökväg eller för långt filnamn. Spara med ett kortare namn eller på en annan plats.</translation>
-<translation id="6568283005472142698">Sök bland flikar</translation>
 <translation id="6570622975915850879">Använd en annan enhet</translation>
 <translation id="65711204837946324">Behörighet krävs för nedladdning</translation>
 <translation id="6571533309669248172">Textformatering</translation>
@@ -7643,7 +7637,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7737948071472253612">Får inte använda kameran</translation>
 <translation id="77381465218432215">Visa accenttecken och specialtecken</translation>
 <translation id="7740996059027112821">Standard</translation>
-<translation id="7741307896921365578">Aktiverar en sidopanel på webbläsarnivå för ett användbart och beständigt sätt att få åtkomst till läslistan och bokmärken.</translation>
 <translation id="7742558784808143689">Vill du rensa webbplatsdata och behörigheter för <ph name="SITE_NAME" />, alla underordnade webbplatser och installerade appar?</translation>
 <translation id="7742706086992565332">Du kan ange hur mycket du vill zooma in eller ut på vissa webbplatser</translation>
 <translation id="7742879569460013116">Dela länk med</translation>
@@ -7844,7 +7837,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7909986151924474987">Du kanske inte kan ominstallera den här profilen</translation>
 <translation id="7910768399700579500">&amp;Ny mapp</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="79113168483292735">Avsnittet Medieflikar i Sök bland flikar</translation>
 <translation id="7912080627461681647">Lösenordet har ändrats på servern. Logga ut och logga sedan in igen.</translation>
 <translation id="7912974581251770345">Översättning</translation>
 <translation id="7915457674565721553">Anslut till internet om du vill ställa in föräldrakontroller</translation>
@@ -8617,7 +8609,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8599681327221583254">Minst en princip har inte konfigurerats korrekt. Kontakta administratören</translation>
 <translation id="8599864823732014237">Vill du hoppa över företagsregistrering?</translation>
 <translation id="8601206103050338563">TLS WWW-klientautentisering</translation>
-<translation id="8601611099293226919">Sök på skärmen med Google Lens</translation>
 <translation id="8602674530529411098">Appar (beta)</translation>
 <translation id="8602851771975208551">Ett annat program i datorn har lagt till en app som kan ändra hur Chrome fungerar.</translation>
 <translation id="8605428685123651449">SQLite-minne</translation>

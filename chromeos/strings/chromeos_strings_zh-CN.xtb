@@ -539,7 +539,6 @@
 <translation id="5423849171846380976">已激活</translation>
 <translation id="5430931332414098647">即时网络共享</translation>
 <translation id="5431318178759467895">彩色</translation>
-<translation id="5456936324019847994">无法连接到任何已启用的自定义 APN。如需了解详情，请与您的移动运营商联系。</translation>
 <translation id="5457599981699367932">以访客身份浏览</translation>
 <translation id="54609108002486618">受管理</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{剩余尝试次数：{0}}other{剩余尝试次数：{0}}}</translation>
@@ -710,7 +709,6 @@
 <translation id="6798678288485555829">文字导航</translation>
 <translation id="680983167891198932">密钥</translation>
 <translation id="6816797338148849397">有与您所选内容相关的信息。使用向上键即可获取这些信息。</translation>
-<translation id="6838167112108853532">无法停用或移除此 APN。请务必停用或移除已启用的附接 APN。</translation>
 <translation id="6853312040151791195">放电速率</translation>
 <translation id="6889786074662672253">重启期间，请不要拔掉此外部设备的电源插头或关闭您的计算机。您可以最小化此窗口。这可能需要几分钟时间，在此期间，您的外部设备可能无法正常使用。</translation>
 <translation id="6900701049656042631">此影集内尚无任何照片。若要添加照片，请前往 <ph name="LINK" /></translation>

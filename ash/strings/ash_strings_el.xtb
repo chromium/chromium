@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">Δεξιά</translation>
 <translation id="1351937230027495976">Σύμπτυξη μενού</translation>
 <translation id="1360220746312242196">Κατά την αναζήτηση μιας σελίδας, μεταβείτε στην προηγούμενη αντιστοίχιση για αναζήτηση</translation>
+<translation id="1360788414852622716">Απενεργοποίηση προφίλ. Ενδέχεται να χρειαστούν μερικά λεπτά.</translation>
 <translation id="1364382257761975320">Για να ξεκλειδώσετε το Chromebook, χρησιμοποιήστε το δακτυλικό αποτύπωμά σας</translation>
 <translation id="1365866993922957110">Λήψη αυτόματων ενημερώσεων</translation>
 <translation id="1372545819342940910">Αποθήκευση γραφείου για αργότερα</translation>
@@ -545,6 +546,7 @@
 <translation id="3510164367642747937">Επισήμανση δείκτη ποντικιού</translation>
 <translation id="3513798432020909783">Ο λογαριασμός είναι διαχειριζόμενος από τον χρήστη <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Ενημέρωση συσκευής εντός 1 λεπτού}other{Ενημέρωση συσκευής εντός # λεπτών}}</translation>
+<translation id="3522979239100719575">Αναζήτηση για διαθέσιμα προφίλ. Ενδέχεται να χρειαστούν μερικά λεπτά.</translation>
 <translation id="3526440770046466733">Άνοιγμα συνδέσμου σε νέα καρτέλα και παραμονή στην τρέχουσα καρτέλα</translation>
 <translation id="353086728817903341">Πραγματοποιήθηκε σύνδεση σε <ph name="NUM_DEVICES" /> συσκευές</translation>
 <translation id="3533126039236445965">Εφαρμογές στο ράφι</translation>
@@ -1557,6 +1559,7 @@
 <translation id="8083540854303889870">Αποθηκεύτηκε για αργότερα</translation>
 <translation id="8091153018031979607">Αρχίζει στις <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Αυτόματες ενημερώσεις</translation>
+<translation id="8092380135549145188">Στοιχεία ελέγχου κύλισης</translation>
 <translation id="8098591350844501178">Διακοπή μετάδοσης οθόνης σε <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Ξεκαρφίτσωμα εφαρμογής από το ράφι</translation>
 <translation id="8113423164597455979">Ενεργές, όλες οι εφαρμογές</translation>

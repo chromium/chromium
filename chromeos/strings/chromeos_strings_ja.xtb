@@ -539,7 +539,6 @@
 <translation id="5423849171846380976">有効</translation>
 <translation id="5430931332414098647">インスタント テザリング</translation>
 <translation id="5431318178759467895">カラー</translation>
-<translation id="5456936324019847994">有効なカスタム APN に接続できません。詳しくは、ご利用の携帯通信会社にお問い合わせください。</translation>
 <translation id="5457599981699367932">ゲストとしてブラウジング</translation>
 <translation id="54609108002486618">管理対象</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{あと {0} 回試行できます}other{あと {0} 回試行できます}}</translation>
@@ -710,7 +709,6 @@
 <translation id="6798678288485555829">テキスト内の移動</translation>
 <translation id="680983167891198932">キー</translation>
 <translation id="6816797338148849397">選択した項目に関連する情報があります。上矢印キーでアクセスできます。</translation>
-<translation id="6838167112108853532">この APN を無効化または削除できません。有効になっている接続済みの APN を無効化または削除しようとしていることを確認します。</translation>
 <translation id="6853312040151791195">放電率</translation>
 <translation id="6889786074662672253">再起動中、この外部デバイスを電源から外したり、パソコンをシャットダウンしたりしないでください。このウィンドウは最小化できます。この処理には数分かかることがあります。その間、外部デバイスは動作しない可能性があります。</translation>
 <translation id="6900701049656042631">このアルバムには写真がありません。写真を追加するには、<ph name="LINK" /> にアクセスしてください</translation>
@@ -740,6 +738,7 @@
 <translation id="7130438335435247835">アクセス ポイント名（APN）</translation>
 <translation id="7131634559772719176">プリセットの確認</translation>
 <translation id="7134436342991564651">{0,plural, =1{ネームサーバー}other{ネームサーバー}}</translation>
+<translation id="7135814714616751706">ショートカットの検索</translation>
 <translation id="7143207342074048698">接続中</translation>
 <translation id="7144878232160441200">再読み込み</translation>
 <translation id="714876143603641390">LAN 接続</translation>
@@ -770,6 +769,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google 検索で結果を確認するには [検索]+Space キーを押してください。</translation>
 <translation id="7343649194310845056">ネットワーク デバイス</translation>
+<translation id="7353413232959255829"><ph name="SEARCH_RESULT_TEXT" /> の検索結果 <ph name="LIST_SIZE" /> 件中 <ph name="LIST_POSITION" /> 件目です。ショートカットに移動するには、Enter キーを押してください。</translation>
 <translation id="7359657277149375382">ファイル形式</translation>
 <translation id="73631062356239394">診断データを共有</translation>
 <translation id="7375053625150546623">EAP</translation>

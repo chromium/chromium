@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">ਕੋਈ ਹਾਲੀਆ ਵੀਡੀਓ ਨਹੀਂ</translation>
 <translation id="3634507049637220048">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਵੇਰਵੇ</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਲਿਜਾਈਆਂ ਗਈਆਂ।</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> ਫ਼ਾਈਲਾਂ ਚੁਣੀਆਂ ਗਈਆਂ</translation>
 <translation id="3685122418104378273">Google Drive ਸਿੰਕ ਮੋਬਾਈਲ ਡਾਟਾ ਵਰਤਦੇ ਸਮੇਂ, ਬਾਇ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਅਸਮਰਥਿਤ ਹੁੰਦਾ ਹੈ।</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ਨੂੰ ਰੱਦ ਕਰੋ।</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" /> ਨੈੱਟਵਰਕ, <ph name="NETWORK_NAME" />, ਅਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ ਗਿਆ, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਵੇਰਵੇ</translation>
@@ -576,6 +577,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> ਚਿੱਤਰ</translation>
 <translation id="5534520101572674276">ਆਕਾਰ ਦਾ ਅਨੁਮਾਨ ਲਗਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="554153475311314364">ਯੂਨਾਨੀ ਲਿਪੀਅੰਤਰਨ</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> ਫੋਲਡਰ ਚੁਣੇ ਗਏ</translation>
 <translation id="5580591966435005537">ਆਭਾਸੀ ਮਸ਼ੀਨ</translation>
 <translation id="5583640892426849032">ਬੈਕਸਪੇਸ</translation>
 <translation id="5583664733673201137">ਵਿਸ਼ਰਾਮ-ਚਿੰਨ੍ਹ ਚੌੜਾਈ ਪੂਰੀ ਹੈ</translation>
@@ -598,6 +600,7 @@
 <translation id="5724172041621205163">ਪੈਟਾਸ਼ੋਟੇ ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਥਾਈ</translation>
 <translation id="57383366388012121">ਪਿਛਲਾ ਮਹੀਨਾ</translation>
 <translation id="5756666464756035725">ਹੰਗਰੀਆਈ QWERTY</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> ਆਈਟਮਾਂ ਚੁਣੀ ਗਈ</translation>
 <translation id="5763377084591234761">ਜਰਮਨ (ਸਵਿਟਜ਼ਰਲੈਂਡ)</translation>
 <translation id="5769519078756170258">ਬਾਹਰ ਰੱਖਣ ਲਈ ਹੋਸਟ ਜਾਂ ਡੋਮੇਨ</translation>
 <translation id="5775750595919327203">ਉਰਦੂ</translation>

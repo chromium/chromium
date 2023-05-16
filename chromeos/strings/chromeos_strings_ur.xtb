@@ -217,6 +217,7 @@
 <translation id="2638662041295312666">سائن ان کی تصویر</translation>
 <translation id="2640549051766135490">البم <ph name="TITLE" /> <ph name="DESC" /> منتخب کیا گیا</translation>
 <translation id="267442004702508783">ریفریش کریں</translation>
+<translation id="268270014981824665">کی بورڈ کو مدھم کرنا</translation>
 <translation id="2712812801627182647">‏TLS تصدیقی کلید</translation>
 <translation id="2713444072780614174">سفید</translation>
 <translation id="2717139507051041123">گہرے رنگ کے موڈ کو فعال کریں</translation>
@@ -224,6 +225,7 @@
 <translation id="2744221223678373668">اشتراک کردہ</translation>
 <translation id="2751739896257479635">‏EAP مرحلہ 2 توثیق</translation>
 <translation id="2783010256799387990">پاس ہو گیا</translation>
+<translation id="2787435249130282949">زیادہ روشن کی بورڈ</translation>
 <translation id="2789486458103222910">ٹھیک ہے</translation>
 <translation id="2805756323405976993">اطلاقات</translation>
 <translation id="28232023175184696">انٹرنیٹ سے منسلک نہیں کر سکتے۔ دوبارہ کوشش کرنے کے لیے کلک کریں۔</translation>
@@ -327,11 +329,13 @@
 <translation id="3749289110408117711">فائل کا نام</translation>
 <translation id="3771294271822695279">ویڈیو فائلیں</translation>
 <translation id="3784455785234192852">مقفل کریں</translation>
+<translation id="380097101658023925">‏RGB کنٹرولز</translation>
 <translation id="38114475217616659">تمام سرگزشت صاف کریں</translation>
 <translation id="3820172043799983114">‏غلط PIN۔</translation>
 <translation id="3824259034819781947">فائلز منسلک کریں</translation>
 <translation id="3838338534323494292">نیا پاس ورڈ</translation>
 <translation id="3845880861638660475">‏ڈائیلاگ کو بند کرنے کے لیے <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + ‏<ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> دبائیں۔</translation>
+<translation id="3848280697030027394">کی بورڈ کو گہرا بنانا</translation>
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="3862598938296403232">تفصیل درکار ہے</translation>
@@ -403,6 +407,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">غیر فعال کریں</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ری اسٹارٹ ہو رہا ہے</translation>
+<translation id="4395835743215824109">کی بورڈ کو حسب ضرورت بنانا</translation>
 <translation id="4415951057168511744">موجودہ اوتار</translation>
 <translation id="4422041425070339732">نیچے کی طرف تیر کا نشان</translation>
 <translation id="4425149324548788773">میری ڈرائیو</translation>
@@ -426,6 +431,7 @@
 <translation id="455835558791489930">‏mAh<ph name="CHARGE_VALUE" /> بیٹری</translation>
 <translation id="4561801978359312462">‏SIM غیر مقفل ہے</translation>
 <translation id="4562494484721939086">کوئی سروس نہیں</translation>
+<translation id="4573777384450697571">ناکام - سرٹیفیکیٹ کی میعاد ختم ہو گئی</translation>
 <translation id="458794348635939462">تمام میزبانوں کو حل کرنے میں ناکام</translation>
 <translation id="4593212453765072419">پراکسی کی تصدیق درکار ہے</translation>
 <translation id="4609350030397390689">کی بورڈ کی چمک کم کرنے کی کلید</translation>
@@ -442,6 +448,7 @@
 <translation id="4731797938093519117">والدین کی رسائی</translation>
 <translation id="473775607612524610">اپ ڈيٹ کریں</translation>
 <translation id="4744944742468440486">آپ کے انتخاب سے متعلقہ معلومات</translation>
+<translation id="4771607256327216405">کی بورڈ کو روشن کرنا</translation>
 <translation id="4773299976671772492">روک دیا گیا</translation>
 <translation id="4782311465517282004">جب آپ دائیں طرف کلک کرنے یا ٹیکسٹ کو ٹچ کریں اور دبائے رکھیں تو تعریفیں، ترجمے یونٹ کی تبدیلیاں حاصل کریں</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> تصویر</translation>
@@ -490,6 +497,7 @@
 <translation id="500920857929044050">ٹیسٹ روکیں</translation>
 <translation id="5017508259293544172">لیپ</translation>
 <translation id="5019310272469539976">آپ کی اسکرین کے معطل ہونے پر، تصاویر، وقت، موسم اور میڈیا کی معلومات دکھائیں۔</translation>
+<translation id="5038292761217083259">متعدد رنگوں والا کی بورڈ</translation>
 <translation id="5039804452771397117">اجازت دیں</translation>
 <translation id="5049856988445523908">‏SIM مقفل ہو گیا (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">گروپ کا نام</translation>
@@ -539,7 +547,6 @@
 <translation id="5423849171846380976">فعال</translation>
 <translation id="5430931332414098647">فوری ٹیدرنگ</translation>
 <translation id="5431318178759467895">رنگ</translation>
-<translation id="5456936324019847994">‏کسی بھی فعال کردہ حسب ضرورت APNs سے منسلک نہیں ہو سکتا۔ مزید معلومات کے لیے اپنے موبائل کیریئر سے رابطہ کریں۔</translation>
 <translation id="5457599981699367932">مہمان کے بطور براؤز کریں</translation>
 <translation id="54609108002486618">نظم کردہ</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} کوشش باقی ہے}other{{0} کوششیں باقی ہیں}}</translation>
@@ -639,6 +646,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">گہری تھیم آن کریں</translation>
 <translation id="6285899124799306373">لانچر کھولیں</translation>
+<translation id="629550705077076970">مدھم کی بورڈ</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> ٹیسٹ منسوخ کر دیا گیا ہے</translation>
 <translation id="631063167932043783">ایکسپلور ایپ</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> پر فرم ویئر اپ ڈیٹ کریں</translation>
@@ -657,6 +665,7 @@
 <translation id="6401427872449207797">براؤزر کی تلاش</translation>
 <translation id="6410257289063177456">تصویری فائلیں</translation>
 <translation id="641081527798843608">موضوع کی مماثلت</translation>
+<translation id="6411934471898487866">کی بورڈ کی چمک</translation>
 <translation id="6412715219990689313">پہلے سے شامل کی بورڈ</translation>
 <translation id="6417265370957905582">‏Google اسسٹنٹ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -710,7 +719,6 @@
 <translation id="6798678288485555829">ٹیکسٹ نیویگیشن</translation>
 <translation id="680983167891198932">کلید</translation>
 <translation id="6816797338148849397">آپ کے انتخاب سے متعلقہ معلومات دستیاب ہے۔ رسائی حاصل کرنے کے لئے اوپر تیر کے نشان کی کلید کا استعمال کریں۔</translation>
-<translation id="6838167112108853532">‏اس APN کو غیر فعال یا ہٹا نہیں سکتے۔ یقینی بنائیں کہ فعال کردہ منسلکہ APNs کو غیر فعال یا ہٹا دیا گیا ہے۔</translation>
 <translation id="6853312040151791195">ڈسچارج ہونے کی شرح</translation>
 <translation id="6889786074662672253">ری سٹارٹ کرنے کے دوران، اس خارجی آلے کو ان پلگ نہ کریں یا اپنے کمپیوٹر کو شٹ ڈاؤن نہ کریں۔ آپ اس ونڈو کو چھوٹا کر سکتے ہیں۔ اس اپ ڈیٹ میں کچھ منٹ لگ سکتے ہیں اور ہو سکتا ہے کہ آپ کا خارجی آلہ اس دوران کام نہ کرے۔</translation>
 <translation id="6900701049656042631">اس البم میں کوئی تصویر نہیں ہے۔ تصاویر شامل کرنے کے لیے، <ph name="LINK" /> پر جائیں</translation>
@@ -808,10 +816,12 @@
 <translation id="7656388927906093505">آلہ ایک ماؤس ہے۔</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7665800271478495366">اوتار تبدیل کریں</translation>
+<translation id="7683228889864052081">کی بورڈ کا رنگ</translation>
 <translation id="7690294790491645610">نئے پاس ورڈ کی توثیق کریں</translation>
 <translation id="7701040980221191251">کوئی نہیں</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">کی بورڈ کی لائٹ</translation>
 <translation id="773153675489693198">دورانیے کی تعداد</translation>
 <translation id="7747039790905080783">پہلے سے اشتراک کردہ کلید</translation>
 <translation id="7762130827864645708">آپ کا پاس ورڈ کامیابی سے تبدیل کر دیا گیا۔ براہ کرم اب سے نیا پاس ورڈ استعمال کریں۔</translation>
@@ -855,6 +865,7 @@
 <translation id="8075838845814659848">باقی چارج</translation>
 <translation id="8076492880354921740">ٹیبز</translation>
 <translation id="8082366717211101304">‏Android ایپس سے DNS کو حل نہیں کیا جا سکتا</translation>
+<translation id="8082644724189923105">کی بورڈ زون</translation>
 <translation id="808894953321890993">پاس ورڈ تبدیل کریں</translation>
 <translation id="8094062939584182041">‏Google کو اس مسئلے کے بارے میں آپ کو ای میل کرنے کی اجازت دیں</translation>
 <translation id="8104083085214006426">آپ ایک اوپن اور غیر محفوظ نیٹ ورک استعمال کر رہے ہیں</translation>
@@ -903,6 +914,7 @@
 <translation id="8456761643544401578">خودکار تاریک وضع</translation>
 <translation id="8461329675984532579">گھر فراہم کرنے والے کا نام</translation>
 <translation id="8475690821716466388">‏WiFi نیٹ ورک کمزور پروٹوکول WEP PSK کے ساتھ محفوظ ہے</translation>
+<translation id="8476242415522716722">کم روشنی والا کی بورڈ</translation>
 <translation id="8477551185774834963">‏DNS تاخیر قابل اجازت حد سے تھوڑی سی زیادہ ہے</translation>
 <translation id="8483248364096924578">‏IP پتہ</translation>
 <translation id="8491311378305535241">‏Android ایپس سے فائر وال کے ذریعے HTTP ویب سائٹس سے رابطہ منسلک نہیں کیا جا سکتا</translation>
@@ -946,6 +958,7 @@
 <translation id="8845001906332463065">مدد حاصل کریں</translation>
 <translation id="8855781559874488009">‏فائر وال کے ذریعے HTTP ویب سائٹس سے رابطہ منسلک نہیں کیا جا سکتا</translation>
 <translation id="885701979325669005">اسٹوریج</translation>
+<translation id="885704831271383379">زیادہ گہرا کی بورڈ</translation>
 <translation id="8863170912498892583">گہری تھیم فعال کریں</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" اور مزید کے لیے <ph name="INTENT" /> حاصل کریں</translation>
 <translation id="8864415976656252616">کوئی تجویز کردہ مواد نہیں ہے۔ سرفہرست مددگار مواد دیکھیں۔</translation>

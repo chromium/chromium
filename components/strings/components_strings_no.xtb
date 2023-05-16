@@ -598,6 +598,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Gi tilgjengelighetsverktøyene dine personlig preg i Chrome-innstillingene</translation>
 <translation id="2384307209577226199">Bedriftsstandard</translation>
+<translation id="238459632961158867">Nettsted</translation>
 <translation id="2385809941344967209">Oppdater Chrome fra Chrome-innstillingene</translation>
 <translation id="2386255080630008482">Tjenerens sertifikat er tilbakekalt.</translation>
 <translation id="239293030466334554">Kabrioleter</translation>
@@ -1047,6 +1048,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3566336457819493938">215 x 315 mm</translation>
 <translation id="3567778190852720481">Kan ikke registrere med bedriftskontoen (bedriftskontoen er ikke kvalifisert).</translation>
 <translation id="3567901620846335314">100 x 150 mm</translation>
+<translation id="3568886473829759308">Gå til nettstedet for å se informasjon, ressurser eller tjenester som bedriften tilbyr.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" />, <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Tillat for dette nettstedet</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1367,6 +1369,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4300675098767811073">Flere hull høyre</translation>
 <translation id="4302514097724775343">Trykk på dinosauren for å spille</translation>
 <translation id="4304049446746819918">{0,plural, =1{Administratorreglene anbefaler ikke at du flytter denne filen til <ph name="DESTINATION_NAME" />}other{Administratorreglene anbefaler ikke at du flytter disse filene til <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="4304485328308299773">Med anmeldelser kan du lese kundevurderinger av produkter, tjenester eller opplevelser for å gjøre det lettere å ta beslutninger.</translation>
 <translation id="4305666528087210886">Kunne ikke åpne filen</translation>
 <translation id="4306529830550717874">Vil du lagre adressen?</translation>
 <translation id="4306812610847412719">utklippstavle</translation>
@@ -1531,6 +1534,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4724144314178270921">Kan be om å få se tekst og bilder på utklippstavlen din</translation>
 <translation id="4726672564094551039">Last inn reglene på nytt</translation>
 <translation id="4728558894243024398">Plattform</translation>
+<translation id="4730977633786878901">Anmeldelser</translation>
 <translation id="4731638775147756694">Dette programmet er blokkert av administratoren din</translation>
 <translation id="4733082559415072992"><ph name="URL" /> ber om å bruke posisjonen til enheten din</translation>
 <translation id="4736491186715342415">Motorkjøretøy</translation>
@@ -2162,6 +2166,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6284292079994426700">26 x 38 tommer</translation>
 <translation id="6284517535531159884">Typer frøvarianter</translation>
 <translation id="6285507000506177184">Knappen «Administrer nedlastinger i Chrome» – trykk på Enter for å administrere filer du har lastet ned i Chrome</translation>
+<translation id="6287197303017372967">Bruk navigasjonsfunksjonen for å få veibeskrivelser til destinasjonen med trinnvis veiledning.</translation>
 <translation id="6289939620939689042">Sidefarge</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
@@ -2185,6 +2190,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" />-verdien er ugyldig og blir ikke brukt.</translation>
 <translation id="6340739886198108203">Administratorreglene anbefaler ikke at du tar skjermdumper eller gjør opptak når konfidensielt innhold er synlig:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Administratorreglene anbefaler ikke at du laster opp denne filen til <ph name="DESTINATION_NAME" />}other{Administratorreglene anbefaler ikke at du laster opp disse filene til <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="634500758737709758">Veibeskrivelser</translation>
 <translation id="6348220984832452017">Aktive variasjoner</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ingen}=1{1 passord (for <ph name="DOMAIN_LIST" /> – synkronisert)}=2{2 passord (for <ph name="DOMAIN_LIST" /> – synkronisert)}other{# passord (for <ph name="DOMAIN_LIST" /> – synkronisert)}}</translation>
@@ -2372,6 +2378,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6823746213313229853">Prateradio</translation>
 <translation id="6825578344716086703">Du prøvde å gå til <ph name="DOMAIN" />, men tjeneren presenterte et sertifikat som er signert med en svak signaturalgoritme (for eksempel SHA-1). Dette betyr at sikkerhetslegitimasjonen tjeneren presenterte, kan være forfalsket. Tjeneren kan med andre ord være en annen tjener enn du tror (og du kommuniserer kanskje med en angriper).</translation>
 <translation id="6826993739343257035">Vil du tillate AR?</translation>
+<translation id="6828150717884939426">Ring</translation>
 <translation id="6828866289116430505">Genetikk</translation>
 <translation id="6831043979455480757">Oversett</translation>
 <translation id="683108308100148227">Skjul element</translation>
@@ -3096,6 +3103,7 @@ Mer informasjon:
 <translation id="8539500321752640291">Vil du gi 2 tillatelser?</translation>
 <translation id="8541158209346794904">Bluetooth-enhet</translation>
 <translation id="8541410041357371550">Dette nettstedet henter annonseemnene dine fra Chrome for å kunne vise deg mer relevante annonser</translation>
+<translation id="8541579497401304453">Kom i kontakt med en bedrift ved å starte en telefonsamtale.</translation>
 <translation id="8542014550340843547">Tre stifter bunn</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Du kan <ph name="BEGIN_ERROR_LINK" />rapportere et påvisningsproblem<ph name="END_ERROR_LINK" /> eller, hvis du forstår sikkerhetsrisikoen, <ph name="BEGIN_LINK" />gå til dette usikre nettstedet<ph name="END_LINK" />.</translation>
@@ -3223,7 +3231,6 @@ Mer informasjon:
 <translation id="8870494189203302833">Samme rekkefølge – forsiden ned</translation>
 <translation id="8870700989640064057">Vil du skrive ut den konfidensielle filen?</translation>
 <translation id="8871553383647848643">Tilpass nettleserens utseende</translation>
-<translation id="8871603420762394026">Chrome deler nå bare svært begrenset informasjon mellom nettsteder, for eksempel når du ble vist annonser, for å hjelpe nettsteder med å måle annonseresultatene.</translation>
 <translation id="8874824191258364635">Angi et gyldig kortnummer</translation>
 <translation id="8876033571432926051">Enkle spill</translation>
 <translation id="8877780815363510165">Fiske</translation>

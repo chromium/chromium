@@ -11,5 +11,6 @@
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{開啟 <ph name="TABS_COUNT_ONE" /> 個分頁}other{開啟 <ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="4811934403802581334">系統將會喺目前所揀嘅裝置度還原所有揀咗嘅分頁。</translation>
 <translation id="5336031759968328813">查看所有分頁</translation>
+<translation id="8019269305087157499">選擇裝置</translation>
 <translation id="8725404154479306799">取得您在舊裝置上開啟的分頁</translation>
 </translationbundle>

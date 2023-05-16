@@ -7411,22 +7411,6 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
 
           Nilai kebijakan harus ditentukan dalam milidetik. Nilai dikunci agar kurang dari atau sama dengan penundaan penonaktifan layar (jika ditetapkan) dan penundaan waktu tidak ada aktivitas.</translation>
 <translation id="7680437377926096177">Sembunyikan dialog logout saat jendela terakhir ditutup.</translation>
-<translation id="7682459947751785310">Kebijakan ini dapat digunakan sementara waktu untuk otomatis mengaktifkan dukungan bagi
-PPB_VideoDecoder(Dev) API.
-
-Jika kebijakan tidak disetel atau disetel ke Nonaktif, browser akan menentukan apakah
-API didukung atau tidak.
-Jika kebijakan disetel ke Aktif, API akan didukung.
-
-Kebijakan ini dapat digunakan jika penghapusan dukungan yang sedang berlangsung untuk API ini
-menyebabkan masalah. Jika Anda harus menggunakan kebijakan ini, laporkan bug di crbug.com
-yang menjelaskan kasus penggunaan Anda dan CC {blundell, vasilyt}@chromium.org. Kebijakan ini
-dijadwalkan untuk tersedia hingga <ph name="PRODUCT_NAME" />
-versi 114, setelah itu dukungan untuk API ini direncanakan akan dihapus
-tanpa syarat.
-
-CATATAN: Hanya proses perender yang baru dimulai yang akan menunjukkan perubahan pada
-kebijakan ini saat browser berjalan.</translation>
 <translation id="7683777542468165012">Penyegaran Kebijakan Dinamis</translation>
 <translation id="7687943045976362719">Jika kebijakan ini ditetapkan, jenis konten yang ditentukan akan ditangani oleh <ph name="PRODUCT_FRAME_NAME" />.
 

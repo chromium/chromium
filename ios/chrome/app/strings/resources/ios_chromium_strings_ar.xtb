@@ -49,6 +49,7 @@
 <translation id="3650632991272923014">‏كان <ph name="USER_EMAIL1" /> يستخدم Chromium وتركَ إشارات مرجعية وكلمات مرور وغيرها من الإعدادات مُسجَّلة على هذا الجهاز.</translation>
 <translation id="372658070733623520">‏عليك إثبات هويتك لاستخدام بيانات Chromium وحفظها في حسابك على Google.</translation>
 <translation id="3805899903892079518">‏لا تتوفر لدى Chromium إمكانية الدخول إلى الصور أو الفيديوهات. تستطيع تفعيل الدخول في إعدادات نظام التشغيل iOS &gt; الخصوصية &gt; الصور.</translation>
+<translation id="3955621079070267756">‏فتح Chromium من أي تطبيق</translation>
 <translation id="4043291146360695975">يتم حفظ كلمات المرور في "مدير كلمات المرور" على هذا الجهاز فقط.</translation>
 <translation id="4099085513035183040">‏غير متاح على الإصدار التجريبي من Chromium</translation>
 <translation id="4432744876818348753">‏يمكنك تسجيل الدخول للاستفادة إلى أقصى حدّ من Chromium</translation>
@@ -143,5 +144,6 @@
 <translation id="9089354809943900324">‏إصدار Chromium قديم</translation>
 <translation id="9110075932708282655">‏استخدام Chromium بشكل تلقائي</translation>
 <translation id="921174536258924340">‏تعذّر على متصفِّح Chromium التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا أو <ph name="BEGIN_LINK" />التحقُّق من كلمات المرور في حسابك على Google<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">‏يمكنك استخدام Chromium تلقائيًا عند النقر على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

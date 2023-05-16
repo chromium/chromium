@@ -403,7 +403,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1341871421050612057">Synkroniseringen med <ph name="USERNAME" /> mislykkedes</translation>
 <translation id="1343865611738742294">Giv Linux-apps adgang til USB-enheder. Linux husker ikke en USB-enhed, når den er fjernet.</translation>
 <translation id="1343920184519992513">Fortsæt, hvor du slap, og åbn en bestemt række sider</translation>
-<translation id="134589511016534552">Mediefaner vises også i sektionen Åbne faner</translation>
 <translation id="1346630054604077329">Bekræft og genstart</translation>
 <translation id="1346748346194534595">Højre</translation>
 <translation id="1347256498747320987">Installer opdateringer og apps. Hvis du fortsætter, accepterer du, at denne enhed også kan downloade og installere opdateringer og apps automatisk fra Google, dit mobilselskab og producenten af din enhed. Dette kan ske ved hjælp af mobildata. Nogle af disse apps tilbyder muligvis køb i appen. <ph name="BEGIN_LINK1" />Få flere oplysninger<ph name="END_LINK1" /></translation>
@@ -2072,7 +2071,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2739191690716947896">Fejlretning</translation>
 <translation id="2739240477418971307">Skift dine tilgængelighedsindstillinger</translation>
 <translation id="274029851662193272">Sænket</translation>
-<translation id="2740363334137520315">Tilføjer en ny sektion i "Søg i faner" for let at finde de faner, hvor lyd eller video kan afspilles. Få adgang via knappen øverst i hjørnet i din browser.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Disse adgangsnøgler gemmes kun på denne enhed. De gemmes ikke på din Google-konto.</translation>
 <translation id="2741713322780029189">Åbn terminal til gendannelse</translation>
@@ -2344,7 +2342,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2967926928600500959">De webadresser, der matcher disse regler, tvinges til at åbne i en bestemt browser.</translation>
 <translation id="2972581237482394796">&amp;Annuller fortryd</translation>
 <translation id="2973324205039581528">Slå lyden fra på dette website</translation>
-<translation id="2973537811036309675">Sidepanel</translation>
 <translation id="2975761176769946178">En webadresse er påkrævet</translation>
 <translation id="2976557544729462544">For at fungere korrekt og optimalt kræver nogle enheder, at du deaktiverer indstillingen for beskyttelse af dataadgang.</translation>
 <translation id="2976756276046118477">Rød-grønt filter (grøn svag, deuteranomali)</translation>
@@ -2787,7 +2784,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3393554941209044235">Chrome Document Analysis</translation>
 <translation id="3393582007140394275">Skærmen kan ikke castes.</translation>
 <translation id="3394850431319394743">Har tilladelse til at bruge id'er til at afspille beskyttet indhold</translation>
-<translation id="3396744558790608201">Højreklik, og vælg "Søg på billeder med Google Lens" for at søge ethvert sted på websitet, så du kan få mere at vide om det visuelle indhold, du ser, mens du browser og shopper på nettet.</translation>
 <translation id="3396800784455899911">Når du klikker på knappen "Acceptér og fortsæt", accepterer du den behandling, der er beskrevet ovenfor, for disse Google-tjenester.</translation>
 <translation id="339722927132407568">Fryser</translation>
 <translation id="3399432415385675819">Notifikationer deaktiveres</translation>
@@ -4832,7 +4828,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> vil gerne tjekke, om du bruger en kvalificeret ChromeOS-enhed.</translation>
 <translation id="5208926629108082192">Oplysninger om enhedens mobilnetværk</translation>
 <translation id="5208988882104884956">Halv bredde</translation>
-<translation id="520902706163766447">Aktivér en pop op-boble i den øverste Chrome-brugerflade for at søge oven på de åbne faner.</translation>
 <translation id="5209320130288484488">Der blev ikke fundet nogen enheder</translation>
 <translation id="5209513429611499188">HID-enheder med anvendelser fra brugssiden <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">Luk fanen</translation>
@@ -6334,7 +6329,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Gem systemlogs i mappen Downloads.</translation>
 <translation id="656293578423618167">Filstien eller -navnet er for langt. Gem med et kortere navn eller på en anden placering.</translation>
-<translation id="6568283005472142698">Fanesøgning</translation>
 <translation id="6570622975915850879">Brug en anden enhed</translation>
 <translation id="65711204837946324">Kræver tilladelse til at downloade</translation>
 <translation id="6571533309669248172">Tekstformatering</translation>
@@ -7677,7 +7671,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7737948071472253612">Har ikke tilladelse til at bruge dit kamera</translation>
 <translation id="77381465218432215">Vis accenttegn og specialtegn</translation>
 <translation id="7740996059027112821">Standard</translation>
-<translation id="7741307896921365578">Viser et sidepanel i browseren, så du altid nemt kan finde din læseliste og dine bogmærker.</translation>
 <translation id="7742558784808143689">Vil du rydde websitedata og tilladelser for <ph name="SITE_NAME" />, alle websites under det samt installerede apps?</translation>
 <translation id="7742706086992565332">Du kan angive, hvor meget der skal zoomes ind eller ud på bestemte websites</translation>
 <translation id="7742879569460013116">Del link med</translation>
@@ -7877,7 +7870,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7909986151924474987">Du kan muligvis ikke geninstallere denne profil</translation>
 <translation id="7910768399700579500">&amp;Ny mappe</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="79113168483292735">Sektion med mediefaner i Fanesøgning</translation>
 <translation id="7912080627461681647">Din adgangskode er blevet ændret på serveren. Log ud, og log derefter ind igen.</translation>
 <translation id="7912974581251770345">Oversættelse</translation>
 <translation id="7915457674565721553">Opret forbindelse til internettet for at konfigurere børnesikring</translation>
@@ -8659,7 +8651,6 @@ Hvis du vælger ikke at dele signaler, lukkes denne profil.</translation>
 <translation id="8599681327221583254">En eller flere politikker er ikke konfigureret korrekt. Kontakt din administrator</translation>
 <translation id="8599864823732014237">Vil du springe virksomhedstilmeldingen over?</translation>
 <translation id="8601206103050338563">TLS WWW-klientgodkendelse</translation>
-<translation id="8601611099293226919">Søg på din skærm med Google Lens</translation>
 <translation id="8602674530529411098">Apps (beta)</translation>
 <translation id="8602851771975208551">Et andet program på din computer tilføjede en app, der kan ændre den måde, hvorpå Chrome fungerer.</translation>
 <translation id="8605428685123651449">SQLite-hukommelse</translation>

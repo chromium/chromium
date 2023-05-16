@@ -426,6 +426,7 @@
 <translation id="455835558791489930">Baterie de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">Card SIM deblocat</translation>
 <translation id="4562494484721939086">Fără semnal</translation>
+<translation id="4573777384450697571">Nu a reușit – Certificatul a expirat</translation>
 <translation id="458794348635939462">Nu s-au putut rezolva toate gazdele</translation>
 <translation id="4593212453765072419">Este necesară autentificarea la serverul proxy</translation>
 <translation id="4609350030397390689">Reducerea luminozității tastaturii</translation>
@@ -539,7 +540,6 @@
 <translation id="5423849171846380976">Activat</translation>
 <translation id="5430931332414098647">Tethering instantaneu</translation>
 <translation id="5431318178759467895">Color</translation>
-<translation id="5456936324019847994">Nu se poate conecta la niciun APN personalizat activat. Contactează operatorul de telefonie mobilă pentru informații suplimentare.</translation>
 <translation id="5457599981699367932">Navighează ca invitat</translation>
 <translation id="54609108002486618">Gestionat</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} încercare rămasă}few{{0} încercări rămase}other{{0} de încercări rămase}}</translation>
@@ -710,7 +710,6 @@
 <translation id="6798678288485555829">Navigare în text</translation>
 <translation id="680983167891198932">Cheie</translation>
 <translation id="6816797338148849397">Sunt disponibile informații despre selecția ta. Folosește tasta săgeată în sus pentru a le accesa.</translation>
-<translation id="6838167112108853532">Nu se poate dezactiva sau elimina acest APN. Asigură-te că APN-urile atașate sunt dezactivate sau eliminate.</translation>
 <translation id="6853312040151791195">Rata de descărcare</translation>
 <translation id="6889786074662672253">Nu deconecta dispozitivul extern și nu închide computerul în timpul repornirii. Poți să minimizezi fereastra. Actualizarea poate să dureze câteva minute și este posibil ca dispozitivul extern să nu funcționeze în această perioadă.</translation>
 <translation id="6900701049656042631">Acest album nu conține nicio fotografie. Pentru a adăuga fotografii, accesează <ph name="LINK" /></translation>

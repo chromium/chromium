@@ -183,6 +183,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1774796056689732716">Kalendārs, <ph name="CURRENT_MONTH_YEAR" />, pašlaik atlasītais datums ir <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Izslēgts</translation>
 <translation id="181103072419391116">Signāla stiprums: <ph name="SIGNAL_STRENGTH" />, pārvalda jūsu administrators</translation>
+<translation id="1815245884418711390">Tīklāja pārslēgšana. Tīklājs ir izslēgts.</translation>
 <translation id="1816896987747843206">Atļauj piekļuvi kamerai visām lietotnēm un vietnēm, kurām ir kameras atļauja.</translation>
 <translation id="1823280932251546115">Statusa josla, plkst. <ph name="TIME" />.
         <ph name="BATTERY" />
@@ -241,6 +242,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2023558322300866873">Varat jebkurā brīdī apturēt pakešu tveršanu</translation>
 <translation id="2034971124472263449">Tik un tā saglabāt</translation>
 <translation id="2049240716062114887">Darbvietas nosaukums tika mainīts uz “<ph name="DESK_NAME" />”.</translation>
+<translation id="206377500836174974">Pilnīgi</translation>
 <translation id="2064048859448024834">Kameras priekšskatījums tiek rādīts</translation>
 <translation id="2067602449040652523">Tastatūras spilgtums</translation>
 <translation id="2075520525463668108">Pārslēgt funkciju “<ph name="CAPTURE_MEDIUM" />”. Funkcija “<ph name="CAPTURE_MEDIUM" />” ir <ph name="CAPTURE_STATE" />.</translation>
@@ -293,6 +295,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2339073806695260576">Pieskarieties skārienekrāna pildspalvas pogai plauktā, lai veiktu piezīmes, uzņemtu ekrānuzņēmumus, izmantotu lāzera rādītāju vai lupu.</translation>
 <translation id="2341729377289034582">Bloķēts vertikāli</translation>
 <translation id="2345226652884463045">Vienlaikus nospiediet taustiņu Enter vai meklēšanas taustiņu un atstarpes taustiņu, lai atlasītu rediģējamo tekstu.</translation>
+<translation id="2349785431103945039">Tīklāja informācijas rādīšana. Lai izmantotu tīklāju, izveidojiet savienojumu ar mobilo tīklu.</translation>
 <translation id="2350794187831162545">Runa (šādā valodā: <ph name="LANGUAGE" />) tiek apstrādāta lokāli un darbojas bezsaistē. Varat mainīt savu diktēšanas valodu sadaļā Iestatījumi &gt; Pieejamība.</translation>
 <translation id="2352467521400612932">Skārienekrāna pildspalvas iestatījumi</translation>
 <translation id="2354174487190027830">Notiek <ph name="NAME" /> aktivizēšana.</translation>
@@ -336,6 +339,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2531025035050312891">lēna ierīces darbība</translation>
 <translation id="2542089167727451762">Pieskarieties profila attēlam</translation>
 <translation id="254900897760075745">Kopēt atlasīto saturu starpliktuvē</translation>
+<translation id="2549711466868162843">Uzlabot apgaismojumu</translation>
 <translation id="2549985041256363841">Sākt ierakstīšanu</translation>
 <translation id="255671100581129685">Google asistents nav pieejams publiskā sesijā.</translation>
 <translation id="256712445991462162">dokota lupa</translation>
@@ -429,6 +433,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3009178788565917040">Izvade</translation>
 <translation id="3009958530611748826">Atlasiet mapi, kurā saglabāt failus</translation>
 <translation id="301282384882049174">Kopīgoja jūsu administrators</translation>
+<translation id="301584155502740476">Tīklāja informācijas rādīšana. Tīklājs ir izslēgts.</translation>
 <translation id="3018135054368884502">Pārtīt multivides saturu uz priekšu</translation>
 <translation id="3033545621352269033">Ieslēgts</translation>
 <translation id="3033912566804961911">Apvienot ar darbvietu <ph name="DESK_NAME" /></translation>
@@ -489,6 +494,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3291862315280588024">Pārvietot uz iepriekšējā vārda sākumu</translation>
 <translation id="3294437725009624529">Viesis</translation>
 <translation id="3298690094479023523">Joprojām nevarēja verificēt jūsu PIN vai paroli. Mēģiniet vēlreiz.</translation>
+<translation id="3300193645498960160">Ja runāsiet, kad ir izslēgta skaņa, saņemsiet paziņojumu. Jūsu audio vienmēr atrodas tikai jūsu ierīcē.</translation>
 <translation id="3307642347673023554">Ieslēgts klēpjdatora režīms</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> joprojām varēs pierakstīties vēlāk.</translation>
 <translation id="3321628682574733415">Nepareizs vecāku kods</translation>
@@ -572,6 +578,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3621202678540785336">Ievade</translation>
 <translation id="3621712662352432595">Audio iestatījumi</translation>
 <translation id="3626281679859535460">Spilgtums</translation>
+<translation id="3629640897379005903">Tīklāja informācijas rādīšana. Tīklājs tiek atspējots.</translation>
 <translation id="3630697955794050612">izslēgts</translation>
 <translation id="3631369015426612114">Atļaut paziņojumu saņemšanu no:</translation>
 <translation id="3633097874324966332">Atveriet Bluetooth iestatījumus, lai savienotu pārī savu ierīci.</translation>
@@ -703,6 +710,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="423685346499232137">Pašlaik nevar kopēt vai ielīmēt saturu.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Pārskata režīms</translation>
+<translation id="4240756737570479726">Notiek atspējošana…</translation>
 <translation id="4242533952199664413">Atvērt iestatījumus</translation>
 <translation id="4247123849143712100">Atjaunināt un izslēgt</translation>
 <translation id="4250229828105606438">Ekrānuzņēmums</translation>
@@ -841,6 +849,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4864369630010738180">Pierakstīšanās...</translation>
 <translation id="4864648187878336334">15. darbvieta</translation>
 <translation id="4868492592575313542">aktivizēts</translation>
+<translation id="4871905435473761992">Tīklāja informācijas rādīšana. Jūsu mobilais tīkls neatbalsta tīklāju.</translation>
 <translation id="4872237917498892622">Alt+Meklēt vai Shift</translation>
 <translation id="4872852897273142380">Novietot fokusu uz grāmatzīmju joslas vai izcelt to (ja tā tiek rādīta)</translation>
 <translation id="4881695831933465202">Atvērt</translation>
@@ -900,6 +909,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5104236669533825617">Nevar izveidot ekrānierakstu</translation>
 <translation id="5107522548814527560">Tīmeklis</translation>
 <translation id="5111318697104479778"><ph name="DESC" />. <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">Fona aizmiglojums</translation>
 <translation id="5117590920725113268">Rādīt nākamo mēnesi</translation>
 <translation id="5121628974188116412">Pāriet uz lapas beigām</translation>
 <translation id="5136175204352732067">Ir pievienota cita tastatūra</translation>
@@ -912,6 +922,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5168181903108465623">Pieejamas apraides ierīces</translation>
 <translation id="5170568018924773124">Rādīt mapē</translation>
 <translation id="5176318573511391780">Ierakstīt daļu ekrāna</translation>
+<translation id="5187627942836026988">Tīklāja informācijas rādīšana. Tīklāju bloķēja jūsu administrators.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> pasākumi</translation>
 <translation id="5198715732953550718">Lietotne <ph name="MOVED_APP_NAME" /> kombinēta ar lietotni <ph name="IN_PLACE_APP" />, lai izveidotu jaunu mapi.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1084,6 +1095,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="595202126637698455">Veiktspējas izsekošana ir iespējota</translation>
 <translation id="5955304353782037793">lietojumprogramma</translation>
 <translation id="5958529069007801266">Uzraudzīts lietotājs</translation>
+<translation id="5961960957587052807">Gaišs</translation>
 <translation id="5965524703725988602">Pārslēgt tumšo motīvu. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Lai ierakstītu loga saturu, nospiediet taustiņu Enter</translation>
 <translation id="5978382165065462689">Ekrāna pārvaldības koplietošana, izmantojot attālo palīdzību.</translation>
@@ -1256,6 +1268,7 @@ Jauna instalācija</translation>
 <translation id="6752912906630585008">Darbvirsma <ph name="REMOVED_DESK" /> ir noņemta un apvienota ar darbvirsmu <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">cilnes</translation>
 <translation id="6757237461819837179">Netiek atskaņots nekāds multivides saturs</translation>
+<translation id="6759628406555734414">Tīklāja informācijas rādīšana. Tīklājs tiek iespējots.</translation>
 <translation id="6768043681523654438">krātuve</translation>
 <translation id="6777216307882431711">Ar USB-C savienojumu notiek vairāku ierīču darbināšana</translation>
 <translation id="6781002679438061620">9. darbvieta</translation>
@@ -1280,6 +1293,7 @@ Jauna instalācija</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Vēl viens cipars}zero{Vēl # ciparu}one{Vēl # cipars}other{Vēl # cipari}}</translation>
 <translation id="6867938213751067702">Faila <ph name="FILENAME" /> lejupielāde ir pārtraukta</translation>
+<translation id="6874854809828346832">Tīklāja informācijas rādīšana. Tīklājs ir ieslēgts.</translation>
 <translation id="6878400149835617132">Īsinājumtaustiņš izslēgts</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 lietotne}zero{# lietotņu}one{# lietotne}other{# lietotnes}}</translation>
 <translation id="6884665277231944629">Atgriezties uz šodienu</translation>
@@ -1289,6 +1303,7 @@ Jauna instalācija</translation>
 <translation id="6896758677409633944">Kopēt</translation>
 <translation id="6901883536534621389">Pārvietošanās žestu izmēģināšana</translation>
 <translation id="6919251195245069855">Nevarēja atpazīt jūsu viedkarti. Mēģiniet vēlreiz.</translation>
+<translation id="6920245099716267363">Tīklāja pārslēgšana. Tīklājs ir ieslēgts. Savienojums izveidots ar vienu ierīci.</translation>
 <translation id="6931576957638141829">Saglabāt šeit:</translation>
 <translation id="6941333068993625698">Iesniegt atsauksmes</translation>
 <translation id="6942518653766415536">Ierakstīšanas formāta izvēlne</translation>
@@ -1378,6 +1393,7 @@ Jauna instalācija</translation>
 <translation id="7378203170292176219">Velciet, lai atlasītu apgabalu, kura saturs jāieraksta</translation>
 <translation id="7378594059915113390">Multivides vadīklas</translation>
 <translation id="7378889811480108604">Akumulatora enerģijas taupīšanas režīms ir izslēgts</translation>
+<translation id="7382640522316003298">Tīklāja pārslēgšana. Tīklājs ir ieslēgts, savienojums izveidots ar <ph name="DEVICECOUNT" /> ierīcēm.</translation>
 <translation id="7382680553121047388">Ieslēgta</translation>
 <translation id="7384028040782072252">Noklikšķiniet ar labo pogu jebkurā vietā, lai pārkārtotu lietotnes</translation>
 <translation id="7386767620098596324">Pārslēgt tīkla savienojumu. <ph name="STATE_TEXT" />.</translation>
@@ -1428,6 +1444,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7579778809502851308">Veidot ekrānuzņēmumu</translation>
 <translation id="7593891976182323525">Meklēt vai Shift</translation>
 <translation id="7600875258240007829">Skatīt visus paziņojumus</translation>
+<translation id="7601417191446344542">Vai izslēgt paziņojuma skaņu?</translation>
 <translation id="7607002721634913082">Apturēta</translation>
 <translation id="7609951632080598826">Kalendāra skats, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera atkal pievienota.</translation>
@@ -1551,6 +1568,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8131740175452115882">Apstiprināt</translation>
 <translation id="8131994907636310308">Aizvērt kārtošanas paziņojuma logu</translation>
 <translation id="8132793192354020517">Savienots ar <ph name="NAME" /></translation>
+<translation id="8135163608236671037">Tīklāja pārslēgšana. Tīklājs ir ieslēgts, ne ar vienu ierīci nav izveidots savienojums.</translation>
 <translation id="8138705869659070104">Aktivizēt pēc iestatīšanas</translation>
 <translation id="813913629614996137">Notiek inicializēšana...</translation>
 <translation id="8142441511840089262">Veikt dubultklikšķi</translation>
@@ -1731,6 +1749,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8990809378771970590">Izmantojot <ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">Krāsu inversijas režīms ir iespējots. Lai to izslēgtu, vēlreiz nospiediet taustiņu kombināciju Ctrl+Search+H.</translation>
 <translation id="899350903320462459">Atbloķēt ierīci kā <ph name="LOGIN_ID" />, lai veiktu paziņojuma darbību</translation>
+<translation id="8993733019280019776">Vai jūs runājat? Jūsu mikrofons ir izslēgts. Atlasiet mikrofonu, lai to ieslēgtu.</translation>
 <translation id="9000771174482730261">PĀRVALDĪT KRĀTUVI</translation>
 <translation id="9005984960510803406">Atvērt Crosh logu</translation>
 <translation id="9017320285115481645">Ievadiet Family Link vecāku piekļuves kodu.</translation>

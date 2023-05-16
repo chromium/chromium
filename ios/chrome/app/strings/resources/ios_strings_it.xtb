@@ -21,6 +21,9 @@
 <translation id="1103523840287552314">Traduci sempre <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Passa alla finestra aperta</translation>
 <translation id="1112015203684611006">Stampa non riuscita.</translation>
+<translation id="1113057722807951993">La crittografia delle passphrase non include metodi di pagamento e indirizzi di Google Pay.
+
+Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="1125564390852150847">Crea una nuova scheda.</translation>
 <translation id="1126809382673880764">Non ti protegge da estensioni, download e siti web pericolosi. La protezione di Navigazione sicura, se disponibile, sarà ancora attiva in altri servizi Google, come Gmail e Ricerca.</translation>
 <translation id="1145536944570833626">Elimina i dati esistenti.</translation>
@@ -158,6 +161,7 @@
 <translation id="1989112275319619282">Esplora</translation>
 <translation id="1990820278544963435">Trova</translation>
 <translation id="199425419756152024">Visualizza password</translation>
+<translation id="2008357574463816229">Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="2010008505735295285">Ricarica</translation>
 <translation id="2015722694326466240">Per visualizzare le password, per prima cosa imposta un passcode sul tuo dispositivo.</translation>
 <translation id="2021670401941426298">Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia delle ricerche, se applicabile.</translation>
@@ -707,6 +711,9 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5745916533876677730">Passa alla scheda precedente</translation>
 <translation id="5755162682436943950">Account disconnesso. Apre la finestra di dialogo per accedere e attivare la sincronizzazione.</translation>
 <translation id="5758631781033351321">Qui troverai il tuo elenco di lettura</translation>
+<translation id="5762370665605786758">La crittografia delle passphrase non include metodi di pagamento e indirizzi di Google Pay.
+
+Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphrase non viene inviata a Google o memorizzata da Google. Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="5765456154762864099">Menu → Impostazioni → Browser predefinito</translation>
 <translation id="5777888488419460501">Salva nell'account</translation>
 <translation id="5782227691023083829">Traduzione in corso...</translation>
@@ -848,6 +855,9 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="6476800141292307438">Traduzione della pagina in <ph name="LANGUAGE" />. Opzioni disponibili nella parte inferiore dello schermo.</translation>
 <translation id="648164694371393720">Errore di autenticazione</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elementi eliminati</translation>
+<translation id="6484712497741564393">Accesso eseguito come <ph name="EMAIL" />.
+
+I dati sono criptati con la tua passphrase. Inseriscila per utilizzare e salvare i dati di Chrome nel tuo Account Google.</translation>
 <translation id="6497772452874122664">Se ritieni attendibile il sito <ph name="TIME" />, puoi usare una password salvata da un altro sito.
 
 Cerca di usare una password univoca per ogni sito.</translation>
@@ -895,6 +905,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="6730682669179532099">Impossibile esportare le password</translation>
 <translation id="6732087373923685049">fotocamera</translation>
 <translation id="6748108480210050150">Da</translation>
+<translation id="6753469262000681876">Modalità di blocco</translation>
 <translation id="6760509555861141183">Torna alla scheda recente</translation>
 <translation id="6762812039470893796">Deseleziona tutto</translation>
 <translation id="6780034285637185932">Codice postale</translation>
@@ -1107,6 +1118,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8197543752516192074">Traduci la pagina</translation>
 <translation id="8205564605687841303">Annulla</translation>
 <translation id="8206354486702514201">Questa impostazione è stata applicata dall'amministratore.</translation>
+<translation id="8214293972734702249">Scheda bloccata: <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">Immagini e file memorizzati nella cache</translation>
 <translation id="8237382152611443140">Apri le Impostazioni Riempimento automatico password</translation>
 <translation id="8248969482078657578">La funzionalità Schede non attive ti aiuta a mantenere la concentrazione</translation>
@@ -1121,6 +1133,9 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8299417921174340354">Per utilizzare le password, devi prima impostare un passcode sul dispositivo.</translation>
 <translation id="8299613349954694191">Apri una scheda di navigazione in incognito per navigare sul Web in privato.</translation>
 <translation id="8316944564970119719">Inserisci sito e password, quindi salva</translation>
+<translation id="8317835149433843300">I metodi di pagamento e gli indirizzi memorizzati su Google Pay non verranno criptati. La cronologia di navigazione di Chrome non verrà salvata nel tuo Account Google.
+
+Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphrase non viene inviata a Google o memorizzata da Google. Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Nuova ricerca</translation>
 <translation id="8323906514956095947">Tocca e tieni premuto per vedere maggiori opzioni sulla scheda</translation>
 <translation id="8328777765163860529">Chiudi tutte</translation>
@@ -1143,6 +1158,9 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8487700953926739672">Disponibile offline</translation>
 <translation id="8488923644885757471">Nuova finestra</translation>
 <translation id="8490978609246021741">Salva modifiche</translation>
+<translation id="8491300088149538575">Accesso eseguito come <ph name="EMAIL" />.
+
+I tuoi dati sono stati criptati con la tua passphrase il giorno <ph name="TIME" />. Inseriscila per utilizzare e salvare i dati di Chrome nel tuo Account Google.</translation>
 <translation id="8503813439785031346">Nome utente</translation>
 <translation id="850600235656508448">Apri in modalità di navigazione in incognito</translation>
 <translation id="8517375800490286174">Licenze open source</translation>

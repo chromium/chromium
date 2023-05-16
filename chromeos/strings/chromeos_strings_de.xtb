@@ -539,7 +539,6 @@
 <translation id="5423849171846380976">Aktiviert</translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Farbe</translation>
-<translation id="5456936324019847994">Es kann keine Verbindung zu aktivierten benutzerdefinierten APNs hergestellt werden. Wende dich für weitere Informationen an deinen Mobilfunkanbieter.</translation>
 <translation id="5457599981699367932">Als Gast nutzen</translation>
 <translation id="54609108002486618">Verwaltet</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Noch {0} Versuch}other{Noch {0} Versuche}}</translation>
@@ -710,7 +709,6 @@
 <translation id="6798678288485555829">Textnavigation</translation>
 <translation id="680983167891198932">Schlüssel</translation>
 <translation id="6816797338148849397">Informationen in Bezug auf deine Auswahl sind verfügbar. Verwende für Zugriff den Aufwärtspfeil.</translation>
-<translation id="6838167112108853532">Dieser APN kann nicht deaktiviert oder entfernt werden. Achte darauf, dass die angehängten aktivierten APNs deaktiviert oder entfernt werden.</translation>
 <translation id="6853312040151791195">Entladestrom</translation>
 <translation id="6889786074662672253">Während des Neustarts darf dieses externe Gerät nicht getrennt oder der Computer heruntergefahren werden. Du kannst das Fenster aber minimieren. Der Vorgang kann einige Minuten dauern. Unter Umständen funktioniert dein externes Gerät während dieser Zeit nicht.</translation>
 <translation id="6900701049656042631">Dieses Album enthält keine Fotos. Du kannst Fotos unter <ph name="LINK" /> hinzufügen.</translation>

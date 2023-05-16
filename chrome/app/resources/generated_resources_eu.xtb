@@ -398,7 +398,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1341871421050612057">Ezin da sinkronizatu <ph name="USERNAME" /> kontuarekin</translation>
 <translation id="1343865611738742294">Eman USB bidezko gailua erabiltzeko baimena Linux-eko aplikazioei. USB bidezko gailu bat kendu ondoren, Linux-ek ez du gogoratuko.</translation>
 <translation id="1343920184519992513">Jarraitu utzi zenuen tokitik eta ireki orri sorta jakin bat</translation>
-<translation id="134589511016534552">Multimedia-edukiaren fitxak Irekitako fitxak atalean ere ikus daitezke</translation>
 <translation id="1346630054604077329">Berretsi eta berrezarri</translation>
 <translation id="1346748346194534595">Eskuinera</translation>
 <translation id="1347256498747320987">Instalatu eguneratzeak eta aplikazioak. Aurrera eginez gero, onartu egingo duzu agian gailuak automatikoki deskargatu eta instalatuko dituela Google-ren, operadorearen edo fabrikatzailearen eguneratzeak eta aplikazioak ere, beharbada datu-konexioa erabilita. Baliteke aplikazio horietako batzuetan erosketak egin ahal izatea. <ph name="BEGIN_LINK1" />Lortu informazio gehiago<ph name="END_LINK1" /></translation>
@@ -2051,7 +2050,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2739191690716947896">Araztu</translation>
 <translation id="2739240477418971307">Aldatu erabilerraztasun-ezarpenak</translation>
 <translation id="274029851662193272">Beheratua</translation>
-<translation id="2740363334137520315">Beste atal bat gehitzen du Fitxa-bilaketa atalean, audioa edo bideoa erreproduzitzen dituzten fitxak erraz bilatzeko. Arakatzaileko goiko izkinan dagoen botoiaren bidez atzitzen da.</translation>
 <translation id="2740531572673183784">Ados</translation>
 <translation id="2740876196999178364">Pasakode hauek gailu honetan soilik gordetzen dira. Ez daude Google-ko kontuan gordeta.</translation>
 <translation id="2741713322780029189">Ireki berreskuratzeko terminala</translation>
@@ -2319,7 +2317,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="2967926928600500959">Arau hauekin bat datozen URLak arakatzaile jakin batean irekitzera behartuko dira.</translation>
 <translation id="2972581237482394796">&amp;Berregin</translation>
 <translation id="2973324205039581528">Desaktibatu webguneko audioa</translation>
-<translation id="2973537811036309675">Alboko panela</translation>
 <translation id="2975761176769946178">URL bat behar da</translation>
 <translation id="2976557544729462544">Zenbait gailuk datuetarako sarbidearen babesa desgaitzeko eskatzen dute, behar bezala edo ahalik eta errendimendu handienarekin funtzionatu ahal izateko.</translation>
 <translation id="2976756276046118477">Iragazki gorri-berdea (berdea gaizki ikusten da, deuteranomalia)</translation>
@@ -2760,7 +2757,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3393554941209044235">Chrome-ko dokumentuen analisia</translation>
 <translation id="3393582007140394275">Ezin da igorri pantaila.</translation>
 <translation id="3394850431319394743">Identifikatzaileak erabiltzeko baimena eman zaie eduki babestua erreproduzi dezaten</translation>
-<translation id="3396744558790608201">Webguneko edozein eremutan bilatzeko nabigatu bitartean ikusten duzun ikusizko edukiari buruzko informazio gehiago lortze aldera, egin klik eskuineko botoiarekin eta hautatu "Bilatu irudiak Google Lens-ekin".</translation>
 <translation id="3396800784455899911">"Onartu eta egin aurrera" botoia sakatuta, onartu egingo duzu Google-ren zerbitzuok prozesatzeko modua, arestian aipatu bezala.</translation>
 <translation id="339722927132407568">Gelditu egiten da</translation>
 <translation id="3399432415385675819">Desgaitu egingo dira jakinarazpenak</translation>
@@ -4786,7 +4782,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> zerbitzuak Chrome OS-ko gailu egoki bat erabiltzen ari zarela egiaztatu nahi du.</translation>
 <translation id="5208926629108082192">Gailuaren sare mugikorraren informazioa</translation>
 <translation id="5208988882104884956">Zabalera erdiko karaktere-bihurketa</translation>
-<translation id="520902706163766447">Gaitu Chrome-ren goiko erabiltzaile-interfazean burbuila gainerakor bat agertzeko aukera, irekita dauden fitxen gainean bilaketak egin ahal izateko.</translation>
 <translation id="5209320130288484488">Ez da aurkitu gailurik</translation>
 <translation id="5209513429611499188"><ph name="USAGE_PAGE" /> erabilera-orriko erabilerak dituzten HID bidezko gailuak</translation>
 <translation id="5210365745912300556">Itxi fitxa</translation>
@@ -6281,7 +6276,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6561726789132298588">sartu</translation>
 <translation id="6562117348069327379">Gorde sistemaren erregistroak Deskargak direktorioan.</translation>
 <translation id="656293578423618167">Fitxategi-bidea edo -izena luzeegia da. Gorde izen laburrago batekin edo beste kokapen batean.</translation>
-<translation id="6568283005472142698">Fitxa-bilaketa</translation>
 <translation id="6570622975915850879">Erabili beste gailu bat</translation>
 <translation id="65711204837946324">Deskargatzeko baimena behar da</translation>
 <translation id="6571533309669248172">Testuaren formatua</translation>
@@ -7611,7 +7605,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7737948071472253612">Ezin dute erabili kamera</translation>
 <translation id="77381465218432215">Erakutsi azentu-markak eta karaktere bereziak</translation>
 <translation id="7740996059027112821">Estandarra</translation>
-<translation id="7741307896921365578">Alboko panel bat gaitzen du arakatzailean, irakurketa-zerrenda eta laster-markak eskura izan ditzazun beti.</translation>
 <translation id="7742558784808143689"><ph name="SITE_NAME" /> webguneko, haren mende dauden webgune guztietako eta harekin erlazionatuta instalatu dituzun aplikazioetako datuak eta baimenak garbitu nahi dituzu?</translation>
 <translation id="7742706086992565332">Webgune jakin batzuetan webgunea zenbat handitzen edo txikitzen duzun ezartzeko aukera duzu</translation>
 <translation id="7742879569460013116">Partekatu esteka honekin:</translation>
@@ -7812,7 +7805,6 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7909986151924474987">Baliteke profila berriro instalatu ezin izatea</translation>
 <translation id="7910768399700579500">&amp;Karpeta berria</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="79113168483292735">Multimedia-edukiaren fitxak atala fitxa-bilaketan</translation>
 <translation id="7912080627461681647">Pasahitza aldatu egin da zerbitzarian. Amaitu saioa eta has ezazu berriro.</translation>
 <translation id="7912974581251770345">Itzulpena</translation>
 <translation id="7915457674565721553">Konektatu Internetera guraso-murriztapenak konfiguratzeko</translation>
@@ -8584,7 +8576,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8599681327221583254">Gidalerro bat edo gehiago ez dira behar bezala konfiguratu. Jarri administratzailearekin harremanetan.</translation>
 <translation id="8599864823732014237">Enpresen erregistratze-prozesua saltatu nahi duzu?</translation>
 <translation id="8601206103050338563">TLS WWW bezero-autentifikazioa</translation>
-<translation id="8601611099293226919">Bilatu pantailako edukia Google Lens bidez</translation>
 <translation id="8602674530529411098">Aplikazioak (beta-bertsioa)</translation>
 <translation id="8602851771975208551">Ordenagailuko beste programa batek Chrome-ren funtzionamenduari eragin diezaiokeen aplikazio bat gehitu du.</translation>
 <translation id="8605428685123651449">SQLite memoria</translation>

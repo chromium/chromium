@@ -539,7 +539,6 @@
 <translation id="5423849171846380976">Diaktifkan</translation>
 <translation id="5430931332414098647">Tethering Instan</translation>
 <translation id="5431318178759467895">Warna</translation>
-<translation id="5456936324019847994">Tidak dapat terhubung ke APN khusus yang diaktifkan. Hubungi operator seluler Anda untuk mengetahui informasi selengkapnya.</translation>
 <translation id="5457599981699367932">Login sebagai Tamu</translation>
 <translation id="54609108002486618">Terkelola</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} kesempatan lagi}other{{0} kesempatan lagi}}</translation>
@@ -710,7 +709,6 @@
 <translation id="6798678288485555829">Navigasi teks</translation>
 <translation id="680983167891198932">Kunci</translation>
 <translation id="6816797338148849397">Info terkait pilihan Anda tersedia. Gunakan tombol Panah atas untuk mengakses.</translation>
-<translation id="6838167112108853532">Tidak dapat menonaktifkan atau menghapus APN ini. Pastikan aktifkan APN terlampir dinonaktifkan atau dihapus.</translation>
 <translation id="6853312040151791195">Kecepatan pemakaian daya</translation>
 <translation id="6889786074662672253">Saat memulai ulang, jangan mencabut perangkat eksternal ini atau mematikan komputer. Anda dapat meminimalkan jendela ini. Proses ini mungkin perlu waktu beberapa menit dan perangkat eksternal mungkin tidak berfungsi selama proses berlangsung.</translation>
 <translation id="6900701049656042631">Album ini tidak memiliki foto. Untuk menambahkan foto, buka <ph name="LINK" /></translation>

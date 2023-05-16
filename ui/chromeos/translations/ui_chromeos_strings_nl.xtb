@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Geen recente video's</translation>
 <translation id="3634507049637220048">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, beheerd door je beheerder, details</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> items verplaatst.</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> bestanden geselecteerd</translation>
 <translation id="3685122418104378273">De synchronisatie van Google Drive is bij het gebruik van mobiele data standaard uitgezet.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> annuleren.</translation>
 <translation id="3690128548376345212">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, niet geactiveerd, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
@@ -578,6 +579,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-afbeelding</translation>
 <translation id="5534520101572674276">Grootte berekenen</translation>
 <translation id="554153475311314364">Grieks (transliteratie)</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> mappen geselecteerd</translation>
 <translation id="5580591966435005537">virtuele machine</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Interpunctiebreedte: volledig (vol)</translation>
@@ -600,6 +602,7 @@
 <translation id="5724172041621205163">Thai met Pattachote-toetsenbord</translation>
 <translation id="57383366388012121">Vorige maand</translation>
 <translation id="5756666464756035725">Hongaars QWERTY</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> items geselecteerd</translation>
 <translation id="5763377084591234761">Duits (Zwitserland)</translation>
 <translation id="5769519078756170258">Host of domein om uit te sluiten</translation>
 <translation id="5775750595919327203">Urdu</translation>

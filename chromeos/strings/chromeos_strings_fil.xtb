@@ -217,6 +217,7 @@
 <translation id="2638662041295312666">Larawan sa pag-sign in</translation>
 <translation id="2640549051766135490">Pinili ang album na <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="267442004702508783">i-refresh</translation>
+<translation id="268270014981824665">i-dim ang keyboard</translation>
 <translation id="2712812801627182647">TLS authentication key</translation>
 <translation id="2713444072780614174">Puti</translation>
 <translation id="2717139507051041123">I-enable ang dark color mode</translation>
@@ -224,6 +225,7 @@
 <translation id="2744221223678373668">Nakabahagi</translation>
 <translation id="2751739896257479635">EAP Phase 2 na pag-authenticate</translation>
 <translation id="2783010256799387990">NAKAPASA</translation>
+<translation id="2787435249130282949">mas maliwanag na keyboard</translation>
 <translation id="2789486458103222910">Okay</translation>
 <translation id="2805756323405976993">Mga App</translation>
 <translation id="28232023175184696">Hindi makakonekta sa internet. I-click para subukan ulit.</translation>
@@ -327,11 +329,13 @@
 <translation id="3749289110408117711">File name</translation>
 <translation id="3771294271822695279">Mga Video File</translation>
 <translation id="3784455785234192852">I-lock</translation>
+<translation id="380097101658023925">mga kontrol sa rgb</translation>
 <translation id="38114475217616659">I-clear ang lahat ng history</translation>
 <translation id="3820172043799983114">Di-wasto ang PIN.</translation>
 <translation id="3824259034819781947">Mag-attach ng mga file</translation>
 <translation id="3838338534323494292">Bagong password</translation>
 <translation id="3845880861638660475">Pindutin ang <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> para isara ang dialog.</translation>
+<translation id="3848280697030027394">pagpapadilim ng keyboard</translation>
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="3858860766373142691">Pangalan</translation>
 <translation id="3862598938296403232">Kinakailangan ang paglalarawan</translation>
@@ -403,6 +407,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Huwag paganahin</translation>
 <translation id="439429847087949098">Nire-restart ang <ph name="DEVICE_NAME" /></translation>
+<translation id="4395835743215824109">pag-customize ng keyboard</translation>
 <translation id="4415951057168511744">Kasalukuyang Avatar</translation>
 <translation id="4422041425070339732">pababang arrow</translation>
 <translation id="4425149324548788773">Aking Drive</translation>
@@ -426,6 +431,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ba Baterya</translation>
 <translation id="4561801978359312462">Na-unlock ang SIM</translation>
 <translation id="4562494484721939086">Walang serbisyo</translation>
+<translation id="4573777384450697571">Nabigo - Nag-expire na ang Certificate</translation>
 <translation id="458794348635939462">Hindi nalutas ang lahat ng host</translation>
 <translation id="4593212453765072419">Kinakailangan ang pagpapatunay ng proxy</translation>
 <translation id="4609350030397390689">Babaan ang liwanag ng keyboard</translation>
@@ -442,6 +448,7 @@
 <translation id="4731797938093519117">Pangunahing access</translation>
 <translation id="473775607612524610">I-update</translation>
 <translation id="4744944742468440486">Impormasyong nauugnay sa iyong pinili</translation>
+<translation id="4771607256327216405">pagliliwanag ng keyboard</translation>
 <translation id="4773299976671772492">Inihinto</translation>
 <translation id="4782311465517282004">Makakuha ng mga kahulugan, pagsasalin, o conversion ng unit kapag nag-right click ka sa o pinindot mo nang matagal ang text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> larawan</translation>
@@ -490,6 +497,7 @@
 <translation id="500920857929044050">Ihinto ang pagsusuri</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Kapag idle ang iyong screen, magpakita ng mga larawan, oras, lagay ng panahon, at impormasyon ng media.</translation>
+<translation id="5038292761217083259">multicolor na keyboard</translation>
 <translation id="5039804452771397117">Payagan</translation>
 <translation id="5049856988445523908">Na-lock ang SIM (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Pangalan ng grupo</translation>
@@ -539,7 +547,6 @@
 <translation id="5423849171846380976">Na-activate</translation>
 <translation id="5430931332414098647">Instant na Pag-tether</translation>
 <translation id="5431318178759467895">Kulay</translation>
-<translation id="5456936324019847994">Hindi makakonekta sa kahit anong naka-enable na custom na APN. Makipag-ugnayan sa iyong mobile carrier para sa higit pang impormasyon.</translation>
 <translation id="5457599981699367932">Mag-browse bilang Bisita</translation>
 <translation id="54609108002486618">Pinamamahalaan</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} pagsubok na lang ang natitira}one{{0} pagsubok na lang ang natitira}other{{0} na pagsubok na lang ang natitira}}</translation>
@@ -639,6 +646,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">I-on ang madilim na tema</translation>
 <translation id="6285899124799306373">buksan ang launcher</translation>
+<translation id="629550705077076970">pag-dim ng keyboard</translation>
 <translation id="6302401976930124515">Nakansela ang pagsubok na <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Explore app</translation>
 <translation id="6319207335391420837">I-update ang firmware sa <ph name="DEVICE_NAME" /></translation>
@@ -657,6 +665,7 @@
 <translation id="6401427872449207797">paghahanap sa browser</translation>
 <translation id="6410257289063177456">Mga File ng Larawan</translation>
 <translation id="641081527798843608">Pagtugma ng paksa</translation>
+<translation id="6411934471898487866">brightness ng keyboard</translation>
 <translation id="6412715219990689313">Built-in na keyboard</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -710,7 +719,6 @@
 <translation id="6798678288485555829">Pag-navigate sa text</translation>
 <translation id="680983167891198932">Key</translation>
 <translation id="6816797338148849397">Available ang impormasyong nauugnay sa iyong pinili. Gamitin ang Pataas na arrow key para ma-access.</translation>
-<translation id="6838167112108853532">Hindi ma-disable o maalis ang APN na ito. Tiyaking naka-disable o inalis ang mga naka-enable na naka-attach na APN.</translation>
 <translation id="6853312040151791195">Rate ng Pag-discharge</translation>
 <translation id="6889786074662672253">Habang nagre-restart, huwag alisin sa pagkakasaksak ang external device na ito o i-shut down ang iyong computer. Puwede mong i-minimize ang window na ito. Posible itong abutin nang ilang minuto at posibleng hindi gumana ang iyong external device sa panahong ito.</translation>
 <translation id="6900701049656042631">Walang anumang larawan ang album na ito. Para magdagdag ng mga larawan, pumunta sa <ph name="LINK" /></translation>
@@ -740,6 +748,7 @@
 <translation id="7130438335435247835">Access point name (APN)</translation>
 <translation id="7131634559772719176">Kumpirmahin ang preset</translation>
 <translation id="7134436342991564651">{0,plural, =1{Name server}one{Mga name server}other{Mga name server}}</translation>
+<translation id="7135814714616751706">Maghanap ng mga shortcut</translation>
 <translation id="7143207342074048698">Kumokonekta</translation>
 <translation id="7144878232160441200">Subukang muli</translation>
 <translation id="714876143603641390">Pagkakonekta sa Lan</translation>
@@ -770,6 +779,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pindutin ang Search at Space para tingnan ang resulta sa Google Search.</translation>
 <translation id="7343649194310845056">Mga Device sa Network</translation>
+<translation id="7353413232959255829">Resulta ng paghahanap sa <ph name="LIST_POSITION" /> sa <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Pindutin ang Enter para mag-navigate sa shortcut.</translation>
 <translation id="7359657277149375382">Uri ng file</translation>
 <translation id="73631062356239394">Ibahagi ang diagnostic na data</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -806,10 +816,12 @@
 <translation id="7656388927906093505">Mouse ang device.</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7665800271478495366">Palitan ang avatar</translation>
+<translation id="7683228889864052081">hue ng keyboard</translation>
 <translation id="7690294790491645610">Kumpirmahin ang bagong password</translation>
 <translation id="7701040980221191251">Wala</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">liwanag ng keyboard</translation>
 <translation id="773153675489693198">Bilang ng cycke</translation>
 <translation id="7747039790905080783">Preshared key</translation>
 <translation id="7762130827864645708">Matagumpay ang iyong pagpapalit ng password. Pakigamit ang bagong password mula ngayon.</translation>
@@ -853,6 +865,7 @@
 <translation id="8075838845814659848">Natitirang pag-charge</translation>
 <translation id="8076492880354921740">Mga Tab</translation>
 <translation id="8082366717211101304">Hindi ma-resolve ang DNS mula sa mga Android app</translation>
+<translation id="8082644724189923105">zone ng keyboard</translation>
 <translation id="808894953321890993">Palitan ang password</translation>
 <translation id="8094062939584182041">Payagan ang Google na mag-email sa iyo tungkol sa isyung ito</translation>
 <translation id="8104083085214006426">Gumagamit ka ng bukas at hindi secure na network</translation>
@@ -901,6 +914,7 @@
 <translation id="8456761643544401578">Awtomatikong dark mode</translation>
 <translation id="8461329675984532579">Pangalan ng home provider</translation>
 <translation id="8475690821716466388">Naka-secure ang WiFi network gamit ang mahinang protocol na WEP PSK</translation>
+<translation id="8476242415522716722">underglow ng keyboard</translation>
 <translation id="8477551185774834963">Medyo mas mataas sa pinapayagang limitasyon ang latency ng DNS</translation>
 <translation id="8483248364096924578">IP address</translation>
 <translation id="8491311378305535241">Hindi makakonekta sa pamamagitan ng firewall sa mga HTTP na website mula sa mga Android app</translation>
@@ -944,6 +958,7 @@
 <translation id="8845001906332463065">Humingi ng tulong</translation>
 <translation id="8855781559874488009">Hindi makakonekta sa pamamagitan ng firewall sa mga HTTP na website</translation>
 <translation id="885701979325669005">Storage</translation>
+<translation id="885704831271383379">mas madilim na keyboard</translation>
 <translation id="8863170912498892583">I-enable ng madilim na tema</translation>
 <translation id="8863888432376731307">Kunin ang <ph name="INTENT" /> para sa "<ph name="QUERY" />" at higit pa</translation>
 <translation id="8864415976656252616">Walang iminumungkahing content. Tingnan ang nangungunang content ng tulong.</translation>

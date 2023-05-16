@@ -539,7 +539,6 @@
 <translation id="5423849171846380976">Etkin</translation>
 <translation id="5430931332414098647">Hızlı Tethering</translation>
 <translation id="5431318178759467895">Renk</translation>
-<translation id="5456936324019847994">Etkinleştirilmiş özel APN'lere bağlanılamıyor. Daha fazla bilgi için mobil operatörünüzle iletişime geçin.</translation>
 <translation id="5457599981699367932">Misafir olarak Göz At</translation>
 <translation id="54609108002486618">Yönetilen</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} deneme hakkınız kaldı}other{{0} deneme hakkınız kaldı}}</translation>
@@ -710,7 +709,6 @@
 <translation id="6798678288485555829">Metinde gezinme</translation>
 <translation id="680983167891198932">Anahtar</translation>
 <translation id="6816797338148849397">Seçiminizle ilgili bilgi mevcut. Erişmek için yukarı ok tuşunu kullanın.</translation>
-<translation id="6838167112108853532">Bu APN devre dışı bırakılamaz veya kaldırılamaz. Etkin durumdaki eklenmiş APN'lerin devre dışı bırakıldığından veya kaldırıldığından emin olun.</translation>
 <translation id="6853312040151791195">Şarjın boşalma hızı</translation>
 <translation id="6889786074662672253">Yeniden başlatılırken bu harici cihazı çıkarmayın ya da bilgisayarınızı kapatmayın. Bu pencereyi simge durumuna küçültebilirsiniz. Güncelleme birkaç dakika sürebilir ve bu süre boyunca harici cihazınız çalışmayabilir.</translation>
 <translation id="6900701049656042631">Bu albümde fotoğraf yok. Fotoğraf eklemek için <ph name="LINK" /> adresine gidin</translation>

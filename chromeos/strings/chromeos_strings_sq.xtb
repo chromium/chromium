@@ -539,7 +539,6 @@
 <translation id="5423849171846380976">U aktivizua</translation>
 <translation id="5430931332414098647">Ndarja e internetit në çast</translation>
 <translation id="5431318178759467895">Ngjyra</translation>
-<translation id="5456936324019847994">Nuk mund të lidhet me asnjë APN të personalizuar të aktivizuar. Kontakto me operatorin tënd celular për më shumë informacione.</translation>
 <translation id="5457599981699367932">Shfleto si vizitor</translation>
 <translation id="54609108002486618">E menaxhuar</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} përpjekje e mbetur}other{{0} përpjekje të mbetura}}</translation>
@@ -710,7 +709,6 @@
 <translation id="6798678288485555829">Navigimi në tekst</translation>
 <translation id="680983167891198932">Çelësi</translation>
 <translation id="6816797338148849397">Ka informacion në lidhje me zgjedhjen tënde. Përdor tastin "Shigjeta lart" për ta hapur.</translation>
-<translation id="6838167112108853532">Kjo APN nuk mund të çaktivizohet apo të hiqet. Sigurohu që të çaktivizohen ose të hiqen APN-të e bashkëngjitura të aktivizuara.</translation>
 <translation id="6853312040151791195">Shpejtësia e shkarkimit</translation>
 <translation id="6889786074662672253">Gjatë rinisjes, mos e hiq nga priza pajisjen e jashtme dhe mos e fik kompjuterin. Mund ta minimizosh këtë dritare. Kjo mund të zgjasë disa minuta dhe pajisja jote e jashtme mund të mos funksionojë gjatë kësaj kohe.</translation>
 <translation id="6900701049656042631">Ky album nuk ka asnjë fotografi. Për të shtuar fotografi, shko te <ph name="LINK" /></translation>

@@ -1088,6 +1088,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3658742229777143148">Revisie</translation>
 <translation id="3664782872746246217">Zoekwoorden:</translation>
 <translation id="3667704023705708645">Durfkapitaal</translation>
+<translation id="3671117652518853176">Als je dit uitzet, kan je af en toe worden gevraagd om verificatie uit veiligheidsoverwegingen</translation>
 <translation id="3671540257457995106">Formaat aanpassen toestaan?</translation>
 <translation id="3672568546897166916">Fout op <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">3e rol</translation>
@@ -1122,6 +1123,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3736520371357197498">Als je de beveiligingsrisico's begrijpt, kun je <ph name="BEGIN_LINK" />deze onveilige site bezoeken<ph name="END_LINK" /> voordat de gevaarlijke programma's zijn verwijderd.</translation>
 <translation id="3738166223076830879">Je browser wordt beheerd door je beheerder.</translation>
 <translation id="3740319564441798148">Lange afstand bus- en treinvervoer</translation>
+<translation id="3743765582345153106">Altijd laten verifiëren bij gebruik van automatisch invullen</translation>
 <translation id="3744111561329211289">Synchronisatie op de achtergrond</translation>
 <translation id="3744286742364977428">Bestanden die je downloadt, worden voor analyse naar Google Cloud of naar derden gestuurd. Ze kunnen bijvoorbeeld worden gescand op gevoelige gegevens of malware en worden opgeslagen volgens het bedrijfsbeleid.</translation>
 <translation id="3744899669254331632">Je kunt <ph name="SITE" /> op dit moment niet bezoeken, omdat de website gecodeerde inloggegevens heeft verstuurd die niet door Chromium kunnen worden verwerkt. Aangezien netwerkfouten en aanvallen doorgaans van tijdelijke aard zijn, zal deze pagina later waarschijnlijk wel werken.</translation>
@@ -1724,6 +1726,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5171045022955879922">Zoek of typ een URL</translation>
 <translation id="5172758083709347301">Computer</translation>
 <translation id="5177076414499237632">Meer informatie over de bron en het onderwerp van deze pagina</translation>
+<translation id="5179490652562926740">Instellingen voor betalingsverificatie opgeslagen</translation>
 <translation id="5179510805599951267">Niet in het <ph name="ORIGINAL_LANGUAGE" />? Deze fout melden</translation>
 <translation id="518639307526414276">Voeding en benodigdheden voor huisdieren</translation>
 <translation id="5190072300954988691">Camera en microfoon niet toegestaan</translation>
@@ -3215,7 +3218,6 @@ Aanvullende informatie:
 <translation id="8870494189203302833">Dezelfde volgorde met de bedrukte zijde omlaag</translation>
 <translation id="8870700989640064057">Vertrouwelijk bestand afdrukken?</translation>
 <translation id="8871553383647848643">Pas de vormgeving van je browser aan</translation>
-<translation id="8871603420762394026">Chrome deelt nu alleen zeer beperkte informatie tussen sites, zoals wanneer een advertentie aan jou is getoond, zodat sites de prestaties van advertenties kunnen meten.</translation>
 <translation id="8874824191258364635">Geef een geldig kaartnummer op</translation>
 <translation id="8876033571432926051">Casual games</translation>
 <translation id="8877780815363510165">Vissen</translation>

@@ -21,6 +21,9 @@
 <translation id="1103523840287552314">永遠翻譯<ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">切換至已開啟的視窗</translation>
 <translation id="1112015203684611006">無法列印。</translation>
+<translation id="1113057722807951993">密碼短語加密的資料不包括 Google Pay 的付款方法和地址。
+
+如要變更此設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="1125564390852150847">新增分頁。</translation>
 <translation id="1126809382673880764">無法防範危險網站、下載檔案和擴充程式。您仍可在其他 Google 服務 (例如 Gmail 和搜尋) 中使用「安全瀏覽」功能 (如有)。</translation>
 <translation id="1145536944570833626">刪除現有資料。</translation>
@@ -158,6 +161,7 @@
 <translation id="1989112275319619282">瀏覽</translation>
 <translation id="1990820278544963435">尋找</translation>
 <translation id="199425419756152024">查看密碼</translation>
+<translation id="2008357574463816229">如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="2010008505735295285">重新載入</translation>
 <translation id="2015722694326466240">如要查看密碼，您必須先在裝置上設定密碼。</translation>
 <translation id="2021670401941426298">建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
@@ -535,6 +539,7 @@
 <translation id="4592368184551360546">鍵盤</translation>
 <translation id="4606247758155004938">您的瀏覽器由機構管理。</translation>
 <translation id="461440297010471931">目前嘅搜尋引擎係 Google</translation>
+<translation id="4616391354457235490">復原</translation>
 <translation id="4619564267100705184">驗證身分</translation>
 <translation id="4619615317237390068">在其他裝置上開啟的分頁</translation>
 <translation id="4620246317052452550">您已閱讀的網頁</translation>
@@ -706,6 +711,9 @@
 <translation id="5745916533876677730">前往上一個分頁</translation>
 <translation id="5755162682436943950">已登出。開啟對話框即可登入並開啟同步功能。</translation>
 <translation id="5758631781033351321">您可在此查看閱讀清單</translation>
+<translation id="5762370665605786758">密碼短語加密的資料不包括 Google Pay 的付款方法和地址。
+
+只有知道密碼短語的的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 亦不會儲存密碼短語。如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="5765456154762864099">「選單」→「設定」→「預設瀏覽器」</translation>
 <translation id="5777888488419460501">儲存在帳戶中</translation>
 <translation id="5782227691023083829">正在翻譯…</translation>
@@ -847,8 +855,12 @@
 <translation id="6476800141292307438">將網頁翻譯成<ph name="LANGUAGE" />。翻譯選項喺喺接近畫面底部附近。</translation>
 <translation id="648164694371393720">驗證錯誤</translation>
 <translation id="6482629121755362506">已刪除 <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> 個項目</translation>
+<translation id="6484712497741564393">已使用 <ph name="EMAIL" /> 的身分登入。
+
+您已使用密碼短語加密資料。如要在 Google 帳戶中使用及儲存 Chrome 資料，請輸入密碼短語。</translation>
 <translation id="6497772452874122664">如果您信任 <ph name="TIME" />，可使用已儲存的其他網站密碼。請嘗試在每個網站使用不重複的密碼。</translation>
 <translation id="650279896687777322">瞭解詳情…</translation>
+<translation id="6507973708545996744">只要登入帳戶，即可在所有裝置上取用自己的閱讀清單。</translation>
 <translation id="6510072653668207258">稍後提醒我</translation>
 <translation id="651505212789431520">要取消同步處理嗎？您可隨時在「設定」中開啟同步功能。</translation>
 <translation id="6518133107902771759">驗證</translation>
@@ -891,6 +903,7 @@
 <translation id="6730682669179532099">無法匯出密碼</translation>
 <translation id="6732087373923685049">攝錄機</translation>
 <translation id="6748108480210050150">來源</translation>
+<translation id="6753469262000681876">鎖定模式</translation>
 <translation id="6760509555861141183">返回「最近」分頁</translation>
 <translation id="6762812039470893796">全部取消選取</translation>
 <translation id="6780034285637185932">郵遞區號</translation>
@@ -1103,6 +1116,7 @@
 <translation id="8197543752516192074">翻譯網頁</translation>
 <translation id="8205564605687841303">取消</translation>
 <translation id="8206354486702514201">這項設定由管理員執行。</translation>
+<translation id="8214293972734702249">固定咗 <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">快取圖片和檔案</translation>
 <translation id="8237382152611443140">開啟「自動填入密碼」設定</translation>
 <translation id="8248969482078657578">「閒置分頁」可助您保持專注</translation>
@@ -1117,6 +1131,9 @@
 <translation id="8299417921174340354">如要使用密碼，您必須先在裝置上設定密碼。</translation>
 <translation id="8299613349954694191">開啟無痕式分頁就能以私密模式瀏覽網頁。</translation>
 <translation id="8316944564970119719">輸入網站和密碼，然後儲存</translation>
+<translation id="8317835149433843300">系統將不會加密您在 Google Pay 中的付款方法和地址，亦不會將 Chrome 的瀏覽記錄儲存在 Google 帳戶中。
+
+只有知道密碼短語的的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 亦不會儲存密碼短語。如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="8319076807703933069">新搜尋</translation>
 <translation id="8323906514956095947">輕觸並按住即可查看更多標籤選項</translation>
 <translation id="8328777765163860529">全部關閉</translation>
@@ -1139,6 +1156,9 @@
 <translation id="8487700953926739672">可離線使用</translation>
 <translation id="8488923644885757471">開啟新視窗</translation>
 <translation id="8490978609246021741">儲存變更</translation>
+<translation id="8491300088149538575">已使用 <ph name="EMAIL" /> 的身分登入。
+
+您已在 <ph name="TIME" />使用密碼短語加密資料。如要在 Google 帳戶中使用及儲存 Chrome 資料，請輸入密碼短語。</translation>
 <translation id="8503813439785031346">用戶名稱</translation>
 <translation id="850600235656508448">以無痕模式開啟</translation>
 <translation id="8517375800490286174">開放原始碼授權</translation>

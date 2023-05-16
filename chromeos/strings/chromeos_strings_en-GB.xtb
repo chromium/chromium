@@ -217,6 +217,7 @@
 <translation id="2638662041295312666">Sign-in image</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> selected</translation>
 <translation id="267442004702508783">refresh</translation>
+<translation id="268270014981824665">keyboard dim</translation>
 <translation id="2712812801627182647">TLS authentication key</translation>
 <translation id="2713444072780614174">White</translation>
 <translation id="2717139507051041123">Enable dark colour mode</translation>
@@ -224,6 +225,7 @@
 <translation id="2744221223678373668">Shared</translation>
 <translation id="2751739896257479635">EAP Phase 2 authentication</translation>
 <translation id="2783010256799387990">PASSED</translation>
+<translation id="2787435249130282949">keyboard brighter</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="28232023175184696">Cannot connect to the Internet. Click to try again.</translation>
@@ -327,11 +329,13 @@
 <translation id="3749289110408117711">File name</translation>
 <translation id="3771294271822695279">Video Files</translation>
 <translation id="3784455785234192852">Lock</translation>
+<translation id="380097101658023925">rgb controls</translation>
 <translation id="38114475217616659">Clear all history</translation>
 <translation id="3820172043799983114">Invalid PIN.</translation>
 <translation id="3824259034819781947">Attach files</translation>
 <translation id="3838338534323494292">New password</translation>
 <translation id="3845880861638660475">Press <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> to close the dialogue.</translation>
+<translation id="3848280697030027394">keyboard darken</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3862598938296403232">Description is required</translation>
@@ -403,6 +407,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Disable</translation>
 <translation id="439429847087949098">Restarting <ph name="DEVICE_NAME" /></translation>
+<translation id="4395835743215824109">keyboard customise</translation>
 <translation id="4415951057168511744">Current avatar</translation>
 <translation id="4422041425070339732">arrow down</translation>
 <translation id="4425149324548788773">My Drive</translation>
@@ -442,6 +447,7 @@
 <translation id="4731797938093519117">Parent access</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="4744944742468440486">Info related to your selection</translation>
+<translation id="4771607256327216405">keyboard brighten</translation>
 <translation id="4773299976671772492">Stopped</translation>
 <translation id="4782311465517282004">Get definitions, translations or unit conversions when you right-click or touch &amp; hold text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> photo</translation>
@@ -490,6 +496,7 @@
 <translation id="500920857929044050">Stop test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">When your screen is idle, show photos, time, weather and media info.</translation>
+<translation id="5038292761217083259">keyboard multicolour</translation>
 <translation id="5039804452771397117">Allow</translation>
 <translation id="5049856988445523908">SIM locked (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Group name</translation>
@@ -539,7 +546,6 @@
 <translation id="5423849171846380976">Activated</translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Colour</translation>
-<translation id="5456936324019847994">Can't connect to any enabled custom APNs. Contact your mobile operator for more information.</translation>
 <translation id="5457599981699367932">Browse as Guest</translation>
 <translation id="54609108002486618">Managed</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} attempt left}other{{0} attempts left}}</translation>
@@ -639,6 +645,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Turn Dark theme on</translation>
 <translation id="6285899124799306373">open Launcher</translation>
+<translation id="629550705077076970">keyboard dimming</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> test has been cancelled</translation>
 <translation id="631063167932043783">Explore app</translation>
 <translation id="6319207335391420837">Update firmware on <ph name="DEVICE_NAME" /></translation>
@@ -657,6 +664,7 @@
 <translation id="6401427872449207797">browser search</translation>
 <translation id="6410257289063177456">Image Files</translation>
 <translation id="641081527798843608">Subject match</translation>
+<translation id="6411934471898487866">keyboard brightness</translation>
 <translation id="6412715219990689313">Built-in keyboard</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">Open VPN</translation>
@@ -710,7 +718,6 @@
 <translation id="6798678288485555829">Text navigation</translation>
 <translation id="680983167891198932">Key</translation>
 <translation id="6816797338148849397">Info related to your selection available. Use the up arrow key to access.</translation>
-<translation id="6838167112108853532">Can't disable or remove this APN. Make sure that enabled attached APNs are disabled or removed.</translation>
 <translation id="6853312040151791195">Discharging rate</translation>
 <translation id="6889786074662672253">While restarting, do not unplug this external device or shut down your computer. You can minimise this window. This may take a few minutes and your external device may not work during this time.</translation>
 <translation id="6900701049656042631">This album doesn't have any photos. To add photos, go to <ph name="LINK" /></translation>
@@ -740,6 +747,7 @@
 <translation id="7130438335435247835">Access Point Name (APN)</translation>
 <translation id="7131634559772719176">Confirm preset</translation>
 <translation id="7134436342991564651">{0,plural, =1{Name server}other{Name servers}}</translation>
+<translation id="7135814714616751706">Search shortcuts</translation>
 <translation id="7143207342074048698">Connecting</translation>
 <translation id="7144878232160441200">Retry</translation>
 <translation id="714876143603641390">LAN connectivity</translation>
@@ -770,6 +778,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; press Search plus Space to see the result in Google Search.</translation>
 <translation id="7343649194310845056">Network devices</translation>
+<translation id="7353413232959255829">Search result <ph name="LIST_POSITION" /> of <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Press Enter to navigate to shortcut.</translation>
 <translation id="7359657277149375382">File type</translation>
 <translation id="73631062356239394">Share diagnostic data</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -806,10 +815,12 @@
 <translation id="7656388927906093505">Device is a mouse.</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7665800271478495366">Change avatar</translation>
+<translation id="7683228889864052081">keyboard hue</translation>
 <translation id="7690294790491645610">Confirm new password</translation>
 <translation id="7701040980221191251">None</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">keyboard light</translation>
 <translation id="773153675489693198">Cycle count</translation>
 <translation id="7747039790905080783">Pre-shared key</translation>
 <translation id="7762130827864645708">Your password change was successful. Please use the new password from now on.</translation>
@@ -853,6 +864,7 @@
 <translation id="8075838845814659848">Remaining charge</translation>
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8082366717211101304">Can't resolve DNS from Android apps</translation>
+<translation id="8082644724189923105">keyboard zone</translation>
 <translation id="808894953321890993">Change password</translation>
 <translation id="8094062939584182041">Allow Google to email you about this issue</translation>
 <translation id="8104083085214006426">You are using an open and unsecure network</translation>
@@ -901,6 +913,7 @@
 <translation id="8456761643544401578">Automatic dark mode</translation>
 <translation id="8461329675984532579">Home provider name</translation>
 <translation id="8475690821716466388">Wi-Fi network is secured with weak protocol WEP PSK</translation>
+<translation id="8476242415522716722">keyboard underglow</translation>
 <translation id="8477551185774834963">DNS latency slightly above allowable threshold</translation>
 <translation id="8483248364096924578">IP address</translation>
 <translation id="8491311378305535241">Can't connect through firewall to HTTP websites from Android apps</translation>
@@ -944,6 +957,7 @@
 <translation id="8845001906332463065">Get help</translation>
 <translation id="8855781559874488009">Can't connect through firewall to HTTP websites</translation>
 <translation id="885701979325669005">Storage</translation>
+<translation id="885704831271383379">keyboard darker</translation>
 <translation id="8863170912498892583">Enable Dark theme</translation>
 <translation id="8863888432376731307">Get the <ph name="INTENT" /> for '<ph name="QUERY" />' and more</translation>
 <translation id="8864415976656252616">No suggested content. See top help content.</translation>

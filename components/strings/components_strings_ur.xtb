@@ -599,6 +599,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">‏Chrome کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنائیں</translation>
 <translation id="2384307209577226199">انٹرپرائز ڈیفالٹ</translation>
+<translation id="238459632961158867">ویب سائٹ</translation>
 <translation id="2385809941344967209">‏اپنے Chrome کی ترتیبات سے Chrome کو اپ ڈیٹ کریں</translation>
 <translation id="2386255080630008482">سرور کا سرٹیفکیٹ کالعدم کر دیا گیا ہے۔</translation>
 <translation id="239293030466334554">کنورٹیبلز</translation>
@@ -1049,6 +1050,7 @@
 <translation id="3566336457819493938">‏‎215 x 315 ملی میٹر</translation>
 <translation id="3567778190852720481">انٹرپرائز اکاؤنٹ کے ساتھ اندراج نہیں ہوسکتا (انٹرپرائز اکاؤنٹ اہل نہیں ہے)۔</translation>
 <translation id="3567901620846335314">‏‎100 x 150 ملی میٹر</translation>
+<translation id="3568886473829759308">معلومات، وسائل یا کاروبار کی فراہم کردہ سروسز دیکھنے کے لیے ویب سائٹ تک رسائی حاصل کریں۔</translation>
 <translation id="3574305903863751447"><ph name="CITY" />، <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">اس سائٹ کے لیے اجازت دیں</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1369,6 +1371,7 @@
 <translation id="4300675098767811073">دائیں طرف متعدد سوراخ</translation>
 <translation id="4302514097724775343">کھیلنے کے لیے ڈائنوسار گیم کھیلنے پر تھپتھپائیں</translation>
 <translation id="4304049446746819918">{0,plural, =1{منتظم کی پالیسی اس فائل کو <ph name="DESTINATION_NAME" /> میں منتقل کرنے کی تجویز نہیں کرتی ہے}other{منتظم کی پالیسی ان فائلز کو <ph name="DESTINATION_NAME" /> میں منتقل کرنے کی تجویز نہیں کرتی ہے}}</translation>
+<translation id="4304485328308299773">کسٹمر کے پروڈکٹس، سروسز یا تجربوں کے تجزیے پڑھیں تاکہ تجزیوں کے ساتھ اپنے فیصلوں کو مطلع کرنے میں مدد مل سکے۔</translation>
 <translation id="4305666528087210886">آپ کی فائل تک رسائی نہیں ہو سکی</translation>
 <translation id="4306529830550717874">پتہ محفوظ کریں؟</translation>
 <translation id="4306812610847412719">کلپ بورڈ</translation>
@@ -1533,6 +1536,7 @@
 <translation id="4724144314178270921">سائٹ آپ کے کلپ بورڈ پر ٹیکسٹ اور تصاویر دیکھنے کیلئے پوچھ سکتی ہے</translation>
 <translation id="4726672564094551039">پالیسیاں دوبارہ لوڈ کریں</translation>
 <translation id="4728558894243024398">پلیٹ فارم</translation>
+<translation id="4730977633786878901">جائزے</translation>
 <translation id="4731638775147756694">اس ایپلیکیشن کو آپ کے منتظم کے ذریعے مسدود کر دیا گیا ہے</translation>
 <translation id="4733082559415072992"><ph name="URL" /> آپ کے آلے کا مقام استعمال کرنا چاہتا ہے</translation>
 <translation id="4736491186715342415">موٹر گاڑیاں</translation>
@@ -2165,6 +2169,7 @@
 <translation id="6284292079994426700">‏‎26 x 38 انچ</translation>
 <translation id="6284517535531159884">تغیرات سیڈ کی قسم</translation>
 <translation id="6285507000506177184">‏Chrome بٹن میں ڈاؤن لوڈز کا نظم کریں، Chrome میں ڈاؤن لوڈ کردہ اپنی فائلز کا نظم کرنے کے لیے اینٹر دبائیں</translation>
+<translation id="6287197303017372967">نیویگیشن خصوصیت کا استعمال کرتے ہوئے موڈ در موڈ ڈائریکشنز رہنمائی کے ساتھ اپنی منزل کی ڈائریکشنز حاصل کریں۔</translation>
 <translation id="6289939620939689042">صفحے کا رنگ</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
@@ -2188,6 +2193,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> قدر غلط ہے اور استعمال نہیں کی جائے گی۔</translation>
 <translation id="6340739886198108203">منتظم کی پالیسی رازدارانہ مواد کے مرئی ہونے پر اسکرین شاٹس یا ریکارڈنگز لینے کی تجویز نہیں کرتی ہے:</translation>
 <translation id="6341434961864773665">{0,plural, =1{منتظم کی پالیسی اس فائل کو <ph name="DESTINATION_NAME" /> میں اپ لوڈ کرنے کی تجویز نہیں کرتی ہے}other{منتظم کی پالیسی ان فائلز کو <ph name="DESTINATION_NAME" /> میں اپ لوڈ کرنے کی تجویز نہیں کرتی ہے}}</translation>
+<translation id="634500758737709758">ڈائریکشنز</translation>
 <translation id="6348220984832452017">فعال تغیرات</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> انسٹال کریں</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{کوئی نہیں}=1{1 پاس ورڈ (برائے <ph name="DOMAIN_LIST" />، مطابقت پذیر ہے)}=2{2 پاس ورڈز (برائے <ph name="DOMAIN_LIST" />، مطابقت پذیر ہیں)}other{# پاس ورڈز (برائے <ph name="DOMAIN_LIST" />، مطابقت پذیر ہیں)}}</translation>
@@ -2375,6 +2381,7 @@
 <translation id="6823746213313229853">ٹاک ریڈیو</translation>
 <translation id="6825578344716086703">‏آپ نے <ph name="DOMAIN" /> تک پہنچنے کی کوشش کی، لیکن سرور نے ایک کمزور دستخط الگورتھم (جیسے SHA-1) استعمال کرتے ہوئے دستخط کردہ سرٹیفیکیٹ پیش کیا۔ اس کا مطلب یہ ہے کہ شاید سرور کی پیش کردہ سیکیورٹی اسناد میں جعل سازی کی گئی ہے اور ممکن ہے کہ سرور آپ کا متوقع سرور نہ ہو (ممکن ہے آپ کسی حملہ آور کے ساتھ مواصلت کر رہے ہوں)۔</translation>
 <translation id="6826993739343257035">‏AR کی اجازت دیں؟</translation>
+<translation id="6828150717884939426">کال کریں</translation>
 <translation id="6828866289116430505">جینیات</translation>
 <translation id="6831043979455480757">ترجمہ کریں</translation>
 <translation id="683108308100148227">آئٹم چھپائیں</translation>
@@ -3100,6 +3107,7 @@
 <translation id="8539500321752640291">2 اجازتیں دیں؟</translation>
 <translation id="8541158209346794904">بلوٹوتھ آلہ</translation>
 <translation id="8541410041357371550">‏یہ سائٹ آپ کو مزید متعلقہ اشتہارات دکھانے کے لیے Chrome سے آپ کے اشتہار کے موضوعات موصول کرتی ہے</translation>
+<translation id="8541579497401304453">فون کال شروع کر کے کاروبار سے منسلک ہوں۔</translation>
 <translation id="8542014550340843547">نیچے تین سٹیپل</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">آپ <ph name="BEGIN_ERROR_LINK" />پتا لگانے کے مسئلہ کی اطلاع<ph name="END_ERROR_LINK" /> دے سکتے ہیں یا اگر آپ اپنی سیکیورٹی کے خطروں کو سمجھتے ہيں تو آپ <ph name="BEGIN_LINK" />یہ غیر محفوظ سائٹ ملاحظہ<ph name="END_LINK" /> کر سکتے ہیں۔</translation>
@@ -3227,7 +3235,6 @@
 <translation id="8870494189203302833">اسی ترتیب میں، صفحات کا رُخ نیچے کی جانب</translation>
 <translation id="8870700989640064057">رازدارانہ فائل پرنٹ کریں؟</translation>
 <translation id="8871553383647848643">اپنے براؤزر کی شکل کو حسب ضرورت بنائیں</translation>
-<translation id="8871603420762394026">‏Chrome اب صرف سائٹس کے درمیان بہت محدود معلومات کا اشتراک کرتا ہے، جیسے کہ کس وقت آپ کو کوئی اشتہار دکھایا گیا، تاکہ اشتہارات کی کارکردگی کی پیمائش کرنے میں سائٹس کی مدد کی جا سکے۔</translation>
 <translation id="8874824191258364635">ایک درست کارڈ نمبر درج کریں</translation>
 <translation id="8876033571432926051">آرام دہ گیمز</translation>
 <translation id="8877780815363510165">ماہی گیری</translation>

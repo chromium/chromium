@@ -398,7 +398,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1341871421050612057">Nuk mund të sinkronizohet me <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Jepu autorizim aplikacioneve të Linux që të kenë qasje në pajisjet USB. Linux nuk do ta kujtojë një pajisje USB pasi ajo të hiqet.</translation>
 <translation id="1343920184519992513">Vazhdo aty ku e ke lënë dhe hap një grup specifik faqesh</translation>
-<translation id="134589511016534552">Skedat e medias shfaqen gjithashtu në seksionin "Skedat e hapura"</translation>
 <translation id="1346630054604077329">Konfirmo dhe rinis</translation>
 <translation id="1346748346194534595">Djathtas</translation>
 <translation id="1347256498747320987">Instalo përditësimet dhe aplikacionet. Duke vazhduar, ti pranon që kjo pajisje mund të shkarkojë dhe instalojë po ashtu automatikisht përditësime dhe aplikacione nga Google, operatori yt celular dhe prodhuesi i pajisjes, mundësisht duke përdorur të dhënat celulare. Disa prej këtyre aplikacioneve mund të ofrojnë blerje përmes aplikacionit. <ph name="BEGIN_LINK1" />Mëso më shumë<ph name="END_LINK1" /></translation>
@@ -2049,7 +2048,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2739191690716947896">Korrigjo</translation>
 <translation id="2739240477418971307">Ndrysho cilësimet e qasjes</translation>
 <translation id="274029851662193272">I ulur</translation>
-<translation id="2740363334137520315">Shto një seksion të ri te "Kërko skedat" për të gjetur me lehtësi skedat që po luajnë audio ose video. Qasu përmes butonit në këndin lart të shfletuesit tënd.</translation>
 <translation id="2740531572673183784">Në rregull</translation>
 <translation id="2740876196999178364">Këta çelësa kalimi ruhen vetëm në këtë pajisje. Ata nuk ruhen në "Llogarinë tënde të Google".</translation>
 <translation id="2741713322780029189">Hap terminalin e rikuperimit</translation>
@@ -2317,7 +2315,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2967926928600500959">URL-të që përputhen me këto rregulla do të hapen me forcë në një shfletues specifik.</translation>
 <translation id="2972581237482394796">&amp;Ribëje</translation>
 <translation id="2973324205039581528">Hiq zërin e sajtit</translation>
-<translation id="2973537811036309675">Paneli anësor</translation>
 <translation id="2975761176769946178">Kërkohet një URL</translation>
 <translation id="2976557544729462544">Disa pajisje kërkojnë që të çaktivizosh mbrojtjen e qasjes te të dhënat për të funksionuar siç duhet ose me cilësi funksionimi të plotë.</translation>
 <translation id="2976756276046118477">Filtri i ngjyrës së kuqe - jeshile (dobësi me ngjyrën jeshile, deuteranomali)</translation>
@@ -2758,7 +2755,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3393554941209044235">Analiza e dokumentit e Chrome</translation>
 <translation id="3393582007140394275">Ekrani nuk mund të transmetohej.</translation>
 <translation id="3394850431319394743">Lejohen të përdorin identifikuesit për të luajtur përmbajtjet e mbrojtura</translation>
-<translation id="3396744558790608201">Kliko me butonin djathtas dhe zgjidh “Kërko imazhe me 'Lenten e Google'" për të bërë kërkime në çfarëdo pjese të sajtit për të mësuar më shumë për përmbajtjen vizuale që shikon kur shfleton dhe blen në ueb.</translation>
 <translation id="3396800784455899911">Duke klikuar butonin "Prano dhe vazhdo", bie njëherësh dakord me përpunimin e përshkruar më lart për këto shërbime të Google.</translation>
 <translation id="339722927132407568">Ngrin</translation>
 <translation id="3399432415385675819">Njoftimet do të çaktivizohen</translation>
@@ -4784,7 +4780,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> dëshiron të kontrollojë nëse po përdor një pajisje të përshtatshme me ChromeOS.</translation>
 <translation id="5208926629108082192">Informacionet e rrjetit celular të pajisjes</translation>
 <translation id="5208988882104884956">Me gjysmë gjerësie</translation>
-<translation id="520902706163766447">Aktivizo një flluskë kërcyese në ndërfaqen e përdoruesit të Top Chrome për të kërkuar mbi skedat e hapura aktualisht.</translation>
 <translation id="5209320130288484488">Nuk u gjet asnjë pajisje</translation>
 <translation id="5209513429611499188">Pajisjet HID me përdorime nga faqja e përdorimeve <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">Mbyll skedën</translation>
@@ -6282,7 +6277,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Ruaji evidencat e sistemit te direktoria "Shkarkimet".</translation>
 <translation id="656293578423618167">Shtegu ose emri i skedarit është tepër i gjatë. Ruaje me një emër më të shkurtër ose në një vendndodhje tjetër.</translation>
-<translation id="6568283005472142698">Kërkimi në skeda</translation>
 <translation id="6570622975915850879">Përdor një pajisje tjetër</translation>
 <translation id="65711204837946324">Ka nevojë për leje për ta shkarkuar</translation>
 <translation id="6571533309669248172">Formatimi i tekstit</translation>
@@ -7613,7 +7607,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7737948071472253612">Nuk lejohen të përdorin kamerën tënde</translation>
 <translation id="77381465218432215">Shfaq shenjat e theksimit dhe karakteret e veçanta</translation>
 <translation id="7740996059027112821">Standard</translation>
-<translation id="7741307896921365578">Aktivizon një panel anësor në nivelin e shfletuesit për një mënyrë të dobishme të vazhdueshme për t'u qasur te "Lista e leximit" dhe "Faqeshënuesit".</translation>
 <translation id="7742558784808143689">Të pastrohen të gjitha të dhënat e sajtit dhe lejet për <ph name="SITE_NAME" />, çdo sajt në të dhe të gjitha aplikacionet e instaluara?</translation>
 <translation id="7742706086992565332">Mund të caktosh nivelin e zmadhimit ose zvogëlimit në sajte të caktuara uebi</translation>
 <translation id="7742879569460013116">Shpërndaje lidhjen te</translation>
@@ -7813,7 +7806,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7909986151924474987">Mund të mos jesh në gjendje ta riinstalosh këtë profil</translation>
 <translation id="7910768399700579500">&amp;Dosje e re</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="79113168483292735">Seksioni "Skedat e medias" te "Kërkimi i skedës"</translation>
 <translation id="7912080627461681647">Fjalëkalimi yt është ndryshuar në server. Dil dhe më pas identifikohu përsëri.</translation>
 <translation id="7912974581251770345">Përkthimi</translation>
 <translation id="7915457674565721553">Lidhu në internet për të konfiguruar kontrollet prindërore</translation>
@@ -8585,7 +8577,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8599681327221583254">Një apo më shumë politika nuk janë konfiguruar saktë. Kontakto me administratorin tënd.</translation>
 <translation id="8599864823732014237">Të kapërcehet regjistrimi i ndërmarrjes?</translation>
 <translation id="8601206103050338563">Vërtetimi i klientit TLS WWW</translation>
-<translation id="8601611099293226919">Kërko në ekranin tënd me "Lenten e Google"</translation>
 <translation id="8602674530529411098">Aplikacionet (beta)</translation>
 <translation id="8602851771975208551">Një program tjetër në kompjuterin tënd shtoi një aplikacion, që mund të ndryshojë mënyrën e funksionimit të Chrome.</translation>
 <translation id="8605428685123651449">Memoria e SQLite</translation>

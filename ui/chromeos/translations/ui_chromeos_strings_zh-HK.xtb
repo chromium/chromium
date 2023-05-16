@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">最近沒有任何影片</translation>
 <translation id="3634507049637220048">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，由管理員管理，詳情</translation>
 <translation id="3645233063072417428">已移動 <ph name="NUMBER_OF_ITEMS" /> 個項目。</translation>
+<translation id="3658269352872031728">已選取 <ph name="SELECTED_FILE_COUNT" /> 個檔案</translation>
 <translation id="3685122418104378273">使用流動數據時，系統根據預設停用「Google 雲端硬碟」同步功能。</translation>
 <translation id="3689865792480713551">取消 <ph name="ACTIVITY_DESCRIPTION" />。</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> 個網絡之中嘅第 <ph name="NETWORK_INDEX" /> 個網絡，<ph name="NETWORK_NAME" />，未啟用，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，詳細資料</translation>
@@ -577,6 +578,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> 圖片</translation>
 <translation id="5534520101572674276">正在計算大小</translation>
 <translation id="554153475311314364">希臘文 (音譯)</translation>
+<translation id="5554171655917412781">已選取 <ph name="SELECTED_FOLDERS_COUNT" /> 個資料夾</translation>
 <translation id="5580591966435005537">虛擬機器</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">標點符號寬度為全形</translation>
@@ -599,6 +601,7 @@
 <translation id="5724172041621205163">泰文 (Pattachote 鍵盤)</translation>
 <translation id="57383366388012121">上個月</translation>
 <translation id="5756666464756035725">匈牙利文 QWERTY</translation>
+<translation id="5760252553414789727">已選取 <ph name="SELECTED_FILES_COUNT" /> 個項目</translation>
 <translation id="5763377084591234761">德文 (瑞士)</translation>
 <translation id="5769519078756170258">要排除的主機或網域</translation>
 <translation id="5775750595919327203">烏都文</translation>
@@ -917,6 +920,7 @@
 <translation id="8264024885325823677">此設定由管理員管理。</translation>
 <translation id="8269755669432358899">收合檔案意見面板</translation>
 <translation id="8280151743281770066">亞美尼亞文 (拼音)</translation>
+<translation id="8285791779547722821">已加密的<ph name="ORIGINAL_MIME_TYPE" /></translation>
 <translation id="8294431847097064396">來源</translation>
 <translation id="8297012244086013755">韓文 3 Set (No Shift)</translation>
 <translation id="8299269255470343364">日文</translation>

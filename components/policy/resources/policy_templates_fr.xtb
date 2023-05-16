@@ -7224,14 +7224,6 @@ Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRI
 
           La valeur de la règle doit être indiquée en millisecondes. Elle doit également être inférieure ou égale au délai d'arrêt de l'écran (le cas échéant) et au délai d'inactivité.</translation>
 <translation id="7680437377926096177">Ne plus afficher la boîte de dialogue de déconnexion sur la dernière fenêtre fermée.</translation>
-<translation id="7682459947751785310">Cette règle peut être utilisée temporairement pour forcer l'activation de la prise en charge de l'API PPB_VideoDecoder(Dev).
-
-Si elle n'est pas configurée ou si elle est désactivée, le navigateur décide si l'API est prise en charge.
-Si elle est activée, l'API est prise en charge.
-
-Cette règle peut être utilisée si l'élimination de la prise en charge de l'API entraîne des problèmes. Si vous devez utiliser cette règle, veuillez signaler un bug sur crbug.com en expliquant votre cas d'utilisation et mettez en copie {blundell, vasilyt}@chromium.org. Cette règle sera appliquée jusqu'à la version 114 de <ph name="PRODUCT_NAME" />, après quoi la prise en charge de cette API sera éliminée sans conditions.
-
-REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les modifications apportées à cette règle lorsque le navigateur sera en cours d'exécution.</translation>
 <translation id="7683777542468165012">Actualisation dynamique des stratégies</translation>
 <translation id="7687943045976362719">Si cette règle est configurée, les types de contenus spécifiés sont traités par <ph name="PRODUCT_FRAME_NAME" />.
 

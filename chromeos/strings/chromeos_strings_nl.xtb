@@ -539,7 +539,6 @@
 <translation id="5423849171846380976">Geactiveerd</translation>
 <translation id="5430931332414098647">Instant-tethering</translation>
 <translation id="5431318178759467895">Kleur</translation>
-<translation id="5456936324019847994">Kan geen verbinding maken met aangezette aangepaste APN's. Neem contact op met je mobiele provider voor meer informatie.</translation>
 <translation id="5457599981699367932">Gebruiken als gast</translation>
 <translation id="54609108002486618">Beheerd</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Nog {0} poging}other{Nog {0} pogingen}}</translation>
@@ -710,7 +709,6 @@
 <translation id="6798678288485555829">Tekstnavigatie</translation>
 <translation id="680983167891198932">Sleutel</translation>
 <translation id="6816797338148849397">Er is informatie met betrekking tot je selectie beschikbaar. Gebruik de pijl-omhoog om deze te openen.</translation>
-<translation id="6838167112108853532">Kan deze APN niet uitzetten of verwijderen. Zorg dat aangezette gekoppelde APN's uitstaan of worden verwijderd.</translation>
 <translation id="6853312040151791195">Ontlaadsnelheid</translation>
 <translation id="6889786074662672253">Koppel dit externe apparaat niet los en zet je computer niet uit tijdens het opnieuw opstarten. Je kunt dit venster minimaliseren. Dit kan een paar minuten duren en je externe apparaat werkt misschien niet tijdens dit proces.</translation>
 <translation id="6900701049656042631">Dit album bevat geen foto's. Ga naar <ph name="LINK" /> als je foto's wilt toevoegen.</translation>
@@ -740,6 +738,7 @@
 <translation id="7130438335435247835">Toegangspuntnaam (APN)</translation>
 <translation id="7131634559772719176">Voorinstelling bevestigen</translation>
 <translation id="7134436342991564651">{0,plural, =1{Naamserver}other{Naamservers}}</translation>
+<translation id="7135814714616751706">Sneltoetsen zoeken</translation>
 <translation id="7143207342074048698">Verbinden</translation>
 <translation id="7144878232160441200">Opnieuw proberen</translation>
 <translation id="714876143603641390">LAN-connectiviteit</translation>
@@ -770,6 +769,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; druk op de knop Zoeken en de spatiebalk om het resultaat te bekijken in Google Zoeken</translation>
 <translation id="7343649194310845056">Netwerkapparaten</translation>
+<translation id="7353413232959255829">Zoekresultaat <ph name="LIST_POSITION" /> van <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Druk op Enter om naar de snelkoppeling te gaan.</translation>
 <translation id="7359657277149375382">Bestandstype</translation>
 <translation id="73631062356239394">Diagnostische gegevens delen</translation>
 <translation id="7375053625150546623">EAP</translation>

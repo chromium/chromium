@@ -399,7 +399,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1341871421050612057">Synchronisation avec <ph name="USERNAME" /> impossible</translation>
 <translation id="1343865611738742294">Autoriser les applications Linux à accéder aux périphériques USB. Dès qu'un périphérique est déconnecté, il est effacé de la mémoire de Linux.</translation>
 <translation id="1343920184519992513">Reprendre là où vous en étiez et ouvrir un ensemble de pages spécifiques</translation>
-<translation id="134589511016534552">Onglets multimédias aussi affichés dans la section "Onglets ouverts"</translation>
 <translation id="1346630054604077329">Confirmer et redémarrer</translation>
 <translation id="1346748346194534595">À droite</translation>
 <translation id="1347256498747320987">Installer des mises à jour et des applications. En continuant, vous acceptez que cet appareil télécharge et installe automatiquement des mises à jour et des applications de Google, de votre opérateur et du fabricant de votre appareil, en utilisant si besoin des données mobiles. Certaines applications peuvent proposer des achats intégrés. <ph name="BEGIN_LINK1" />En savoir plus<ph name="END_LINK1" /></translation>
@@ -2052,7 +2051,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2739191690716947896">Déboguer</translation>
 <translation id="2739240477418971307">Modifier vos paramètres d'accessibilité</translation>
 <translation id="274029851662193272">Bord en retrait</translation>
-<translation id="2740363334137520315">Ajoutez une section dans "Rechercher dans les onglets" pour trouver facilement les onglets où sont lus des contenus audio ou vidéo. Pour y accéder, utilisez le bouton dans l'angle supérieur de votre navigateur.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Ces clés d'accès ne sont enregistrées que sur cet appareil. Elles ne sont pas enregistrées dans votre compte Google.</translation>
 <translation id="2741713322780029189">Ouvrir le terminal de récupération</translation>
@@ -2320,7 +2318,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2967926928600500959">Les URL qui suivent ces règles seront ouvertes de force dans un navigateur spécifique.</translation>
 <translation id="2972581237482394796">&amp;Rétablir</translation>
 <translation id="2973324205039581528">Couper le son du site</translation>
-<translation id="2973537811036309675">Panneau latéral</translation>
 <translation id="2975761176769946178">Veuillez saisir une URL</translation>
 <translation id="2976557544729462544">Désactivez la protection de l'accès aux données pour que certains appareils puissent fonctionner correctement ou de manière optimale.</translation>
 <translation id="2976756276046118477">Filtre rouge-vert (vert faible, deutéranomalie)</translation>
@@ -2761,7 +2758,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3393554941209044235">Analyse de documents Chrome</translation>
 <translation id="3393582007140394275">Impossible de caster l'écran.</translation>
 <translation id="3394850431319394743">Sites autorisés à utiliser des ID pour lire du contenu protégé</translation>
-<translation id="3396744558790608201">Effectuez un clic droit et sélectionnez "Rechercher à l'aide d'images avec Google Lens" pour faire une recherche sur une zone du site afin d'en savoir plus sur le contenu visuel qui s'affiche lorsque vous surfez ou faites des achats sur le Web.</translation>
 <translation id="3396800784455899911">En cliquant sur le bouton "Accepter et continuer", vous acceptez le processus décrit ci-dessus pour ces services Google.</translation>
 <translation id="339722927132407568">Se fige</translation>
 <translation id="3399432415385675819">Les notifications seront désactivées</translation>
@@ -4787,7 +4783,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> veut vérifier si vous utilisez un appareil Chrome OS éligible.</translation>
 <translation id="5208926629108082192">Infos sur le réseau mobile de l'appareil</translation>
 <translation id="5208988882104884956">Demi-largeur</translation>
-<translation id="520902706163766447">Active une bulle pop-up dans la partie supérieure de l'UI de Chrome pour rechercher dans les onglets ouverts.</translation>
 <translation id="5209320130288484488">Aucun appareil trouvé.</translation>
 <translation id="5209513429611499188">Appareils HID associés à des utilisations (sur la page <ph name="USAGE_PAGE" />)</translation>
 <translation id="5210365745912300556">Fermer l'onglet</translation>
@@ -6286,7 +6281,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6561726789132298588">entrée</translation>
 <translation id="6562117348069327379">Stockez les journaux système dans le répertoire des téléchargements.</translation>
 <translation id="656293578423618167">Le chemin d'accès ou le nom du fichier est trop long. Veuillez le raccourcir ou changer d'emplacement.</translation>
-<translation id="6568283005472142698">Recherche dans les onglets</translation>
 <translation id="6570622975915850879">Utiliser un autre appareil</translation>
 <translation id="65711204837946324">Autorisation de téléchargement nécessaire</translation>
 <translation id="6571533309669248172">Mise en forme du texte</translation>
@@ -7619,7 +7613,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7737948071472253612">Non autorisé à utiliser votre caméra</translation>
 <translation id="77381465218432215">Afficher les accents et les caractères spéciaux</translation>
 <translation id="7740996059027112821">Standard</translation>
-<translation id="7741307896921365578">Activer un panneau latéral dans le navigateur pour accéder facilement et en permanence à votre liste de lecture et à vos favoris.</translation>
 <translation id="7742558784808143689">Effacer les données et autorisations de "<ph name="SITE_NAME" />", de tous les sites qui en dépendent et des applis installées ?</translation>
 <translation id="7742706086992565332">Vous pouvez définir le niveau de zoom à appliquer à certains sites Web</translation>
 <translation id="7742879569460013116">Partager le lien vers</translation>
@@ -7820,7 +7813,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7909986151924474987">Vous ne pourrez peut-être pas réinstaller ce profil</translation>
 <translation id="7910768399700579500">&amp;Nouveau dossier</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="79113168483292735">Section "Onglets multimédias" de la recherche dans les onglets</translation>
 <translation id="7912080627461681647">Votre mot de passe a été modifié sur le serveur. Veuillez vous déconnecter, puis vous reconnecter.</translation>
 <translation id="7912974581251770345">Traduction</translation>
 <translation id="7915457674565721553">Connectez-vous à Internet pour configurer le contrôle parental</translation>
@@ -8593,7 +8585,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8599681327221583254">Au moins une règle est mal configurée. Veuillez contacter votre administrateur.</translation>
 <translation id="8599864823732014237">Ignorer l'enregistrement auprès de l'entreprise ?</translation>
 <translation id="8601206103050338563">Authentification du client WWW TLS</translation>
-<translation id="8601611099293226919">Rechercher sur l'écran avec Google Lens</translation>
 <translation id="8602674530529411098">Applis (bêta)</translation>
 <translation id="8602851771975208551">Un autre programme sur votre ordinateur a ajouté une application qui risque de modifier le fonctionnement de Google Chrome.</translation>
 <translation id="8605428685123651449">Mémoire SQLite</translation>

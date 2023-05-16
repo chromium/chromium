@@ -183,6 +183,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1774796056689732716">Calendari, <ph name="CURRENT_MONTH_YEAR" />, actualment està seleccionat el dia <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Desactivat</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, xarxa gestionada per l'administrador</translation>
+<translation id="1815245884418711390">Commuta el punt d'accés Wi‐Fi. Està desactivat.</translation>
 <translation id="1816896987747843206">Permet l'accés a la càmera a totes les aplicacions i llocs web amb permís per accedir a la càmera</translation>
 <translation id="1823280932251546115">Safata d'estat, hora <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -241,6 +242,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2023558322300866873">Pots aturar la captura de paquets en qualsevol moment</translation>
 <translation id="2034971124472263449">Desa igualment</translation>
 <translation id="2049240716062114887">El nom de l'escriptori s'ha canviat a <ph name="DESK_NAME" /></translation>
+<translation id="206377500836174974">Complet</translation>
 <translation id="2064048859448024834">La previsualització de la càmera està activada</translation>
 <translation id="2067602449040652523">Brillantor del teclat</translation>
 <translation id="2075520525463668108">Commuta <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> està <ph name="CAPTURE_STATE" />.</translation>
@@ -293,6 +295,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2339073806695260576">Toca el botó del llapis òptic al prestatge per escriure una nota, fer una captura de pantalla o bé utilitzar-lo com a punter làser o lupa.</translation>
 <translation id="2341729377289034582">Bloquejada en vertical</translation>
 <translation id="2345226652884463045">Prem Retorn o Cerca+barra espaiadora per seleccionar el text que vols editar.</translation>
+<translation id="2349785431103945039">Mostra els detalls del punt d'accés Wi‐Fi. Connecta't a la xarxa mòbil per utilitzar-lo.</translation>
 <translation id="2350794187831162545">La parla en <ph name="LANGUAGE" /> ara es processa localment i funciona sense connexió. Pots canviar l'idioma de dictat a Configuració &gt; Accessibilitat.</translation>
 <translation id="2352467521400612932">Configuració del llapis òptic</translation>
 <translation id="2354174487190027830">S'està activant <ph name="NAME" /></translation>
@@ -336,6 +339,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2531025035050312891">dispositiu lent</translation>
 <translation id="2542089167727451762">Toca la teva imatge de perfil</translation>
 <translation id="254900897760075745">Copia el contingut seleccionat al porta-retalls</translation>
+<translation id="2549711466868162843">Millora la il·luminació</translation>
 <translation id="2549985041256363841">Inicia la gravació</translation>
 <translation id="255671100581129685">L'Assistent de Google no està disponible a les sessions públiques.</translation>
 <translation id="256712445991462162">la lupa acoblada</translation>
@@ -429,6 +433,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3009178788565917040">Sortida</translation>
 <translation id="3009958530611748826">Selecciona en quina carpeta vols que es desi</translation>
 <translation id="301282384882049174">Compartida per l'administrador</translation>
+<translation id="301584155502740476">Mostra els detalls del punt d'accés Wi‐Fi. Està desactivat.</translation>
 <translation id="3018135054368884502">Avança ràpidament el contingut multimèdia</translation>
 <translation id="3033545621352269033">Activada</translation>
 <translation id="3033912566804961911">Combina amb l'escriptori <ph name="DESK_NAME" /></translation>
@@ -489,6 +494,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3291862315280588024">Ves al començament de la paraula anterior</translation>
 <translation id="3294437725009624529">Convidat</translation>
 <translation id="3298690094479023523">El PIN o la contrasenya continuen sense poder-se verificar. Torna-ho a provar.</translation>
+<translation id="3300193645498960160">Si parles mentre el micròfon està silenciat, rebràs una notificació. No s'emetrà àudio des del dispositiu.</translation>
 <translation id="3307642347673023554">S'ha canviat a mode de portàtil</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> pot iniciar la sessió més tard.</translation>
 <translation id="3321628682574733415">Codi parental incorrecte</translation>
@@ -572,6 +578,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3621712662352432595">Configuració d'àudio</translation>
 <translation id="3626281679859535460">Brillantor</translation>
+<translation id="3629640897379005903">Mostra els detalls del punt d'accés Wi‐Fi. S'està desactivant.</translation>
 <translation id="3630697955794050612">desactivat</translation>
 <translation id="3631369015426612114">Permet notificacions de les fonts següents:</translation>
 <translation id="3633097874324966332">Obre la configuració del Bluetooth per vincular el dispositiu</translation>
@@ -703,6 +710,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="423685346499232137">En aquests moments no es pot copiar ni enganxar contingut</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Mode de visió general</translation>
+<translation id="4240756737570479726">S'està desactivant...</translation>
 <translation id="4242533952199664413">Obre la configuració</translation>
 <translation id="4247123849143712100">Actualitza i apaga</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
@@ -841,6 +849,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4864369630010738180">S'està iniciant la sessió...</translation>
 <translation id="4864648187878336334">Escriptori 15</translation>
 <translation id="4868492592575313542">activada</translation>
+<translation id="4871905435473761992">Mostra els detalls del punt d'accés Wi‐Fi. La teva xarxa mòbil no l'admet.</translation>
 <translation id="4872237917498892622">Alt+Cerca o Maj</translation>
 <translation id="4872852897273142380">Situa el focus a la barra d'adreces d'interès o la marca (si es mostra)</translation>
 <translation id="4881695831933465202">Obre</translation>
@@ -900,6 +909,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5104236669533825617">No es pot crear la captura de pantalla de vídeo</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">Desenfocament del fons</translation>
 <translation id="5117590920725113268">Mostra el mes següent</translation>
 <translation id="5121628974188116412">Ves a la part inferior de la pàgina</translation>
 <translation id="5136175204352732067">S'ha connectat un altre teclat</translation>
@@ -912,6 +922,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5168181903108465623">Dispositius d'emissió disponibles</translation>
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="5176318573511391780">Grava una part de la pantalla</translation>
+<translation id="5187627942836026988">Mostra els detalls del punt d'accés Wi‐Fi. El teu administrador l'ha bloquejat.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> esdeveniments</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> i <ph name="IN_PLACE_APP" /> s'han combinat per crear una carpeta nova.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1084,6 +1095,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="595202126637698455">Traça del rendiment activada</translation>
 <translation id="5955304353782037793">aplicació</translation>
 <translation id="5958529069007801266">Usuari supervisat</translation>
+<translation id="5961960957587052807">Lleuger</translation>
 <translation id="5965524703725988602">Commuta el tema fosc. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Prem Retorn per gravar la finestra</translation>
 <translation id="5978382165065462689">Es comparteix el control de la pantalla mitjançant l'Assistència remota.</translation>
@@ -1256,6 +1268,7 @@ Instal·lació nova</translation>
 <translation id="6752912906630585008">L'escriptori <ph name="REMOVED_DESK" /> s'ha suprimit i s'ha fusionat amb l'escriptori <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">pestanyes</translation>
 <translation id="6757237461819837179">No s'està reproduint res</translation>
+<translation id="6759628406555734414">Mostra els detalls del punt d'accés Wi‐Fi. S'està activant.</translation>
 <translation id="6768043681523654438">emmagatzematge</translation>
 <translation id="6777216307882431711">S'estan alimentant els dispositius USB-C connectats</translation>
 <translation id="6781002679438061620">Escriptori 9</translation>
@@ -1280,6 +1293,7 @@ Instal·lació nova</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un dígit}other{Falten # dígits}}</translation>
 <translation id="6867938213751067702">La baixada del fitxer <ph name="FILENAME" /> s'ha posat en pausa</translation>
+<translation id="6874854809828346832">Mostra els detalls del punt d'accés Wi‐Fi. Està activat</translation>
 <translation id="6878400149835617132">S'ha desactivat la drecera</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplicació}other{# aplicacions}}</translation>
 <translation id="6884665277231944629">Torna a avui</translation>
@@ -1289,6 +1303,7 @@ Instal·lació nova</translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6901883536534621389">Prova els gestos per navegar</translation>
 <translation id="6919251195245069855">No s'ha reconegut la targeta intel·ligent. Torna-ho a provar.</translation>
+<translation id="6920245099716267363">Commuta el punt d'accés Wi‐Fi. Està activat i hi ha 1 dispositiu connectat.</translation>
 <translation id="6931576957638141829">Desa a</translation>
 <translation id="6941333068993625698">Envia suggeriments</translation>
 <translation id="6942518653766415536">Menú de format de gravació</translation>
@@ -1375,6 +1390,7 @@ Instal·lació nova</translation>
 <translation id="7378203170292176219">Arrossega per seleccionar l'àrea que vols gravar</translation>
 <translation id="7378594059915113390">Controls multimèdia</translation>
 <translation id="7378889811480108604">El mode d'estalvi de bateria està desactivat</translation>
+<translation id="7382640522316003298">Commuta el punt d'accés Wi‐Fi. Està activat i hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="7382680553121047388">Activat</translation>
 <translation id="7384028040782072252">Fes clic amb el botó dret en qualsevol lloc per tornar a ordenar les aplicacions</translation>
 <translation id="7386767620098596324">Commuta la connexió a la xarxa. <ph name="STATE_TEXT" />.</translation>
@@ -1425,6 +1441,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7579778809502851308">Captura de pantalla</translation>
 <translation id="7593891976182323525">Cerca o Maj</translation>
 <translation id="7600875258240007829">Mostra totes les notificacions</translation>
+<translation id="7601417191446344542">Vols activar el toc per avisar de micròfon silenciat?</translation>
 <translation id="7607002721634913082">En pausa</translation>
 <translation id="7609951632080598826">Visualització de calendari, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">S'ha tornat a connectar la càmera.</translation>
@@ -1548,6 +1565,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8131740175452115882">Confirma</translation>
 <translation id="8131994907636310308">Tanca la notificació del sistema d'ordenació</translation>
 <translation id="8132793192354020517">Connectat a <ph name="NAME" /></translation>
+<translation id="8135163608236671037">Commuta el punt d'accés Wi‐Fi. Està activat i no hi ha cap dispositiu connectat.</translation>
 <translation id="8138705869659070104">Activa després de configurar</translation>
 <translation id="813913629614996137">S'està inicialitzant…</translation>
 <translation id="8142441511840089262">Fes doble clic</translation>
@@ -1728,6 +1746,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8990809378771970590">S'està utilitzant <ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">Mode d'inversió de colors activat. Torna a prémer Ctrl+Cerca+H per desactivar-lo.</translation>
 <translation id="899350903320462459">Desbloqueja el dispositiu com a <ph name="LOGIN_ID" /> per dur a terme l'acció que indica la notificació</translation>
+<translation id="8993733019280019776">Estàs parlant? El teu micròfon està desactivat. Selecciona'l per activar-lo.</translation>
 <translation id="9000771174482730261">GESTIONA L'EMMAGATZEMATGE</translation>
 <translation id="9005984960510803406">Obre la finestra de Crosh</translation>
 <translation id="9017320285115481645">Introdueix el codi d'accés parental de Family Link.</translation>

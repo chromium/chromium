@@ -598,6 +598,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">在 Chrome 設定中個人化您的無障礙工具</translation>
 <translation id="2384307209577226199">企業預設</translation>
+<translation id="238459632961158867">前往網站</translation>
 <translation id="2385809941344967209">從 Chrome 設定更新 Chrome</translation>
 <translation id="2386255080630008482">伺服器憑證已被撤銷。</translation>
 <translation id="239293030466334554">開篷車</translation>
@@ -1046,6 +1047,7 @@
 <translation id="3566336457819493938">215 x 315 毫米</translation>
 <translation id="3567778190852720481">無法使用企業帳戶註冊 (企業賬戶不符合資格)。</translation>
 <translation id="3567901620846335314">100 x 150 毫米</translation>
+<translation id="3568886473829759308">前往網站查看商家提供的資訊、資源或服務。</translation>
 <translation id="3574305903863751447"><ph name="CITY" />，<ph name="STATE" />，<ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">允許此網站的通知</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1092,6 +1094,7 @@
 <translation id="3658742229777143148">修訂</translation>
 <translation id="3664782872746246217">關鍵字：</translation>
 <translation id="3667704023705708645">創業資金</translation>
+<translation id="3671117652518853176">在關閉狀態下，系統基於安全考慮，可能會間中要求您進行驗證</translation>
 <translation id="3671540257457995106">要允許調整大小嗎？</translation>
 <translation id="3672568546897166916"><ph name="ERROR_PATH" /> 發生錯誤：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">第三卷</translation>
@@ -1126,6 +1129,7 @@
 <translation id="3736520371357197498">如果您瞭解安全性風險，也可以選擇在危險程式尚未被移除的狀態下<ph name="BEGIN_LINK" />瀏覽這個不安全的網站<ph name="END_LINK" />。</translation>
 <translation id="3738166223076830879">您的瀏覽器由管理員管理。</translation>
 <translation id="3740319564441798148">長途巴士和鐵路</translation>
+<translation id="3743765582345153106">使用自動填入功能時一律驗證</translation>
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3744286742364977428">您下載的檔案將會傳送給 Google Cloud 或第三方進行分析。例如，Google Cloud 或第三方可能會掃瞄檔案，檢查是否含有敏感資料或惡意軟件，並可能會根據公司政策儲存這些檔案。</translation>
 <translation id="3744899669254331632">您目前無法瀏覽 <ph name="SITE" />，因為該網站傳送了 Chromium 無法處理的干擾憑證。網絡錯誤及攻擊行為通常是短暫性問題，因此這個網頁稍後應可正常運作。</translation>
@@ -1364,6 +1368,7 @@
 <translation id="4300675098767811073">多孔 (右側)</translation>
 <translation id="4302514097724775343">輕按恐龍即可開始遊戲</translation>
 <translation id="4304049446746819918">{0,plural, =1{管理員政策不建議將此檔案移至<ph name="DESTINATION_NAME" />}other{管理員政策不建議將這些檔案移至<ph name="DESTINATION_NAME" />}}</translation>
+<translation id="4304485328308299773">閱讀消費者的產品和服務評價或體驗，再根據評論做決定。</translation>
 <translation id="4305666528087210886">無法存取您的檔案</translation>
 <translation id="4306529830550717874">要儲存地址嗎？</translation>
 <translation id="4306812610847412719">剪貼簿</translation>
@@ -1528,6 +1533,7 @@
 <translation id="4724144314178270921">可要求查看剪貼簿上的文字和圖片</translation>
 <translation id="4726672564094551039">重新載入政策</translation>
 <translation id="4728558894243024398">平台</translation>
+<translation id="4730977633786878901">查看評論</translation>
 <translation id="4731638775147756694">您的管理員已封鎖此應用程式</translation>
 <translation id="4733082559415072992"><ph name="URL" /> 要求使用裝置的位置資料</translation>
 <translation id="4736491186715342415">汽車</translation>
@@ -1728,6 +1734,7 @@
 <translation id="5171045022955879922">搜尋或輸入網址</translation>
 <translation id="5172758083709347301">本機</translation>
 <translation id="5177076414499237632">進一步瞭解此頁面的來源和主題</translation>
+<translation id="5179490652562926740">已儲存付款驗證設定</translation>
 <translation id="5179510805599951267">網頁內容不是<ph name="ORIGINAL_LANGUAGE" />嗎？請報告此錯誤</translation>
 <translation id="518639307526414276">寵物食品和護理用品</translation>
 <translation id="5190072300954988691">唔批准用攝錄機同咪</translation>
@@ -2158,6 +2165,7 @@
 <translation id="6284292079994426700">26 x 38 吋</translation>
 <translation id="6284517535531159884">種子類型變化版本</translation>
 <translation id="6285507000506177184">管理 Chrome 嘅下載項目按鈕，㩒一下 Enter 鍵就可以管理您喺 Chrome 度下載嘅檔案</translation>
+<translation id="6287197303017372967">使用導航功能即時規劃前往目的地的路線。</translation>
 <translation id="6289939620939689042">頁面顏色</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC：</translation>
@@ -2181,6 +2189,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> 的值無效，系統將不會使用該值。</translation>
 <translation id="6340739886198108203">當螢幕上出現機密內容時，管理員政策不建議擷取螢幕截圖或錄製內容：</translation>
 <translation id="6341434961864773665">{0,plural, =1{管理員政策不建議上載此檔案到<ph name="DESTINATION_NAME" />}other{管理員政策不建議上載這些檔案到<ph name="DESTINATION_NAME" />}}</translation>
+<translation id="634500758737709758">規劃路線</translation>
 <translation id="6348220984832452017">使用中的變化版本</translation>
 <translation id="6349101878882523185">安裝「<ph name="APP_NAME" />」</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{無}=1{有 1 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}=2{有 2 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}other{有 # 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}}</translation>
@@ -2368,6 +2377,7 @@
 <translation id="6823746213313229853">清談電台節目</translation>
 <translation id="6825578344716086703">您曾嘗試連接至 <ph name="DOMAIN" />，但伺服器的憑證使用了防護力較弱的簽名演算法 (例如 SHA-1)。這代表伺服器提供的安全憑證可能是偽造的憑證，而此伺服器亦可能並非您的目標伺服器 (您可能正在與攻擊者通訊)。</translation>
 <translation id="6826993739343257035">要允許 VR 嗎？</translation>
+<translation id="6828150717884939426">撥號</translation>
 <translation id="6828866289116430505">遺傳學</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="683108308100148227">隱藏項目</translation>
@@ -3093,6 +3103,7 @@
 <translation id="8539500321752640291">要允許 2 項權限嗎？</translation>
 <translation id="8541158209346794904">藍牙裝置</translation>
 <translation id="8541410041357371550">此網站會從 Chrome 中取得您的廣告主題，向您顯示更相關的廣告</translation>
+<translation id="8541579497401304453">撥打電話聯絡商家。</translation>
 <translation id="8542014550340843547">三釘 (底部)</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">您可以<ph name="BEGIN_ERROR_LINK" />報告偵測問題<ph name="END_ERROR_LINK" />；或如果您瞭解安全性風險，也可以<ph name="BEGIN_LINK" />瀏覽這個不安全的網站<ph name="END_LINK" />。</translation>
@@ -3220,7 +3231,6 @@
 <translation id="8870494189203302833">相同順序 (正面朝下)</translation>
 <translation id="8870700989640064057">要列印機密檔案嗎？</translation>
 <translation id="8871553383647848643">自訂瀏覽器外觀</translation>
-<translation id="8871603420762394026">Chrome 現在只會在網站間分享非常有限的資料 (例如向使用者放送廣告的時段)，讓網站評估廣告成效。</translation>
 <translation id="8874824191258364635">請輸入有效的信用卡號碼</translation>
 <translation id="8876033571432926051">休閒遊戲</translation>
 <translation id="8877780815363510165">釣魚</translation>

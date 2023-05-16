@@ -21,6 +21,9 @@
 <translation id="1103523840287552314">Toujours traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Retourner à la fenêtre ouverte</translation>
 <translation id="1112015203684611006">Échec impr.</translation>
+<translation id="1113057722807951993">Le chiffrement de la phrase de passe n'inclut pas les modes de paiement et les adresses de Google Pay.
+
+Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="1125564390852150847">Créer un onglet.</translation>
 <translation id="1126809382673880764">Ce mode ne vous protège pas contre les téléchargements, les extensions ni les sites Web dangereux. Vous profitez toujours de la protection de navigation sécurisée, lorsqu'elle est offerte, dans d'autres services Google, comme Gmail et la recherche.</translation>
 <translation id="1145536944570833626">Supprimer toutes les données existantes.</translation>
@@ -158,6 +161,7 @@
 <translation id="1989112275319619282">Parcourir</translation>
 <translation id="1990820278544963435">Trouver</translation>
 <translation id="199425419756152024">Afficher le mot de passe</translation>
+<translation id="2008357574463816229">Si vous oubliez votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="2010008505735295285">Actualiser</translation>
 <translation id="2015722694326466240">Pour afficher vos mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
 <translation id="2021670401941426298">Consultez les instructions de votre moteur de recherche pour supprimer votre historique de recherche, le cas échéant.</translation>
@@ -706,6 +710,9 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5745916533876677730">Accéder à l'onglet précédent</translation>
 <translation id="5755162682436943950">Déconnecté. Ouvre une boîte de dialogue pour se connecter et activer la synchronisation.</translation>
 <translation id="5758631781033351321">Vous trouverez votre liste de lecture ici</translation>
+<translation id="5762370665605786758">Le chiffrement de la phrase de passe n'inclut pas les modes de paiement et les adresses de Google Pay.
+
+Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. La phrase de passe n'est ni envoyée à Google, ni stockée par Google. Si vous oubliez votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="5765456154762864099">Menu → Paramètres → Navigateur par défaut</translation>
 <translation id="5777888488419460501">Enregistrer dans le compte</translation>
 <translation id="5782227691023083829">Traduction en cours…</translation>
@@ -847,6 +854,9 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="6476800141292307438">Traduction de la page en <ph name="LANGUAGE" /> en cours… Les options sont affichées dans le bas de l'écran.</translation>
 <translation id="648164694371393720">Erreur d'authentification</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> éléments supprimés</translation>
+<translation id="6484712497741564393">Connecté en tant que <ph name="EMAIL" />.
+
+Vos données sont chiffrées avec votre phrase de passe. Saisissez-la pour utiliser et enregistrer les données Chrome dans votre compte Google.</translation>
 <translation id="6497772452874122664">Si vous faites confiance à <ph name="TIME" />, vous pouvez utiliser un mot de passe enregistré pour un autre site.
 
 Tâchez d'utiliser un mot de passe différent pour chaque site.</translation>
@@ -893,6 +903,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6730682669179532099">Impossible d'exporter les mots de passe</translation>
 <translation id="6732087373923685049">Appareil photo</translation>
 <translation id="6748108480210050150">De</translation>
+<translation id="6753469262000681876">Mode de verrouillage</translation>
 <translation id="6760509555861141183">Revenir au dernier onglet</translation>
 <translation id="6762812039470893796">Tout désélectionner</translation>
 <translation id="6780034285637185932">Code postal</translation>
@@ -1119,6 +1130,9 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8299417921174340354">Pour utiliser les mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
 <translation id="8299613349954694191">Ouvrez un onglet de navigation privée pour naviguer sur le Web de manière incognito.</translation>
 <translation id="8316944564970119719">Saisir le site et le mot de passe, puis enregistrer</translation>
+<translation id="8317835149433843300">Les modes de paiement et les adresses de Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne sera pas enregistré dans votre compte Google.
+
+Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. La phrase de passe n'est ni envoyée à Google, ni stockée par Google. Si vous oubliez votre phrase de passe ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Nouvelle recherche</translation>
 <translation id="8323906514956095947">Maintenez le doigt sur le bouton pour afficher plus d'options d'onglets</translation>
 <translation id="8328777765163860529">Tout fermer</translation>
@@ -1141,6 +1155,9 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8487700953926739672">Offert en ligne</translation>
 <translation id="8488923644885757471">Nouvelle fenêtre</translation>
 <translation id="8490978609246021741">Enregistrer les modifications</translation>
+<translation id="8491300088149538575">Connecté en tant que <ph name="EMAIL" />.
+
+Vos données ont été chiffrées avec votre phrase de passe sur <ph name="TIME" />. Saisissez-la pour utiliser et enregistrer les données Chrome dans votre compte Google.</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="850600235656508448">Ouvrir en mode de navigation privée</translation>
 <translation id="8517375800490286174">Licences de logiciels libres</translation>

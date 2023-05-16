@@ -539,7 +539,6 @@
 <translation id="5423849171846380976">Aktiválva</translation>
 <translation id="5430931332414098647">Azonnali internetmegosztás</translation>
 <translation id="5431318178759467895">Színes</translation>
-<translation id="5456936324019847994">Nem lehet csatlakozni egyetlen engedélyezett egyéni APN-hez sem. A szolgáltatótól kérhet további információt.</translation>
 <translation id="5457599981699367932">Böngészés vendégként</translation>
 <translation id="54609108002486618">Kezelt</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} próbálkozás maradt.}other{{0} próbálkozás maradt.}}</translation>
@@ -710,7 +709,6 @@
 <translation id="6798678288485555829">Szöveges navigáció</translation>
 <translation id="680983167891198932">Kulcs</translation>
 <translation id="6816797338148849397">Rendelkezésre áll információ a kiválasztott elemmel kapcsolatban. A felfelé nyíllal érheti el.</translation>
-<translation id="6838167112108853532">Nem lehet letiltani vagy eltávolítani ezt az APN-t. Győződjön meg arról, hogy az engedélyezett csatlakoztatott APN-ek le vannak tiltva vagy el vannak távolítva.</translation>
 <translation id="6853312040151791195">Lemerítési sebesség</translation>
 <translation id="6889786074662672253">Az újraindítás közben ne húzza ki a külső eszközt, és ne kapcsolja ki számítógépét. Ezt az ablakot kis méretre állíthatja. A folyamat eltarthat néhány percig, és előfordulhat, hogy közben nem működik a külső eszköz.</translation>
 <translation id="6900701049656042631">Ebben az albumban nincsenek fotók. Fotók hozzáadásához lépjen ide: <ph name="LINK" />.</translation>
@@ -740,6 +738,7 @@
 <translation id="7130438335435247835">Hozzáférési pont neve (APN)</translation>
 <translation id="7131634559772719176">Beállításkészlet megerősítése</translation>
 <translation id="7134436342991564651">{0,plural, =1{Névszerver}other{Névszerverek}}</translation>
+<translation id="7135814714616751706">Billentyűparancs keresése</translation>
 <translation id="7143207342074048698">Csatlakozás</translation>
 <translation id="7144878232160441200">Újra</translation>
 <translation id="714876143603641390">LAN-csatlakozás</translation>
@@ -770,6 +769,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; A Keresés és a szóköz billentyűkombináció lenyomásával megtekintheti a találatot a Google Keresőben.</translation>
 <translation id="7343649194310845056">Hálózati eszközök</translation>
+<translation id="7353413232959255829"><ph name="LIST_POSITION" />/<ph name="LIST_SIZE" />. keresési találat: <ph name="SEARCH_RESULT_TEXT" />. Az Enter billentyűt lenyomva navigálhat a billentyűparancshoz.</translation>
 <translation id="7359657277149375382">Fájltípus</translation>
 <translation id="73631062356239394">Diagnosztikai adatok megosztása</translation>
 <translation id="7375053625150546623">EAP</translation>

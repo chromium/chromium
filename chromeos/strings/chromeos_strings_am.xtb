@@ -539,7 +539,6 @@
 <translation id="5423849171846380976">ገብሯል</translation>
 <translation id="5430931332414098647">ቅጽበታዊ እንደ ሞደም መሰካት</translation>
 <translation id="5431318178759467895">ቀለም</translation>
-<translation id="5456936324019847994">ከማናቸውም የነቁ ብጁ ኤፒኤኖች ጋር መገናኘት አይቻልም። ለተጨማሪ መረጃ የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢዎን ያነጋግሩ።</translation>
 <translation id="5457599981699367932">እንደ እንግዳ ያስሱ</translation>
 <translation id="54609108002486618">የተቀናበረ</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ሙከራ ቀርቷል}one{{0} ሙከራዎች ቀርተዋል}other{{0} ሙከራዎች ቀርተዋል}}</translation>
@@ -710,7 +709,6 @@
 <translation id="6798678288485555829">የጽሁፍ አሰሳ</translation>
 <translation id="680983167891198932">ቁልፍ</translation>
 <translation id="6816797338148849397">ከሚገኘው የእርስዎ ምርጫ ጋር የተገናኘ መረጃ ለመድረስ የላይ ቀስት ቁልፍን ይጠቀሙ።</translation>
-<translation id="6838167112108853532">ይህን ኤፒኤን ማሰናከል ወይም ማስወገድ አልተቻለም። የነቁ የተያያዙ ኤፒኤኖች መሰናከላቸውን እና መወገዳቸውን ያረጋግጡ።</translation>
 <translation id="6853312040151791195">የኃይል ማለቂያ ፍጥነት</translation>
 <translation id="6889786074662672253">ዳግም በሚነሳበት ጊዜ ይህን ውጫዊ መሣሪያ ይንቀሉ ወይም ኮምፒውተርዎን አይዝጉት። ይህን መስኮት መቀነስ ይችላሉ። ይህ ጥቂት ደቂቃዎች ሊወስድ ይችላል እና በዚህ ጊዜ የእርስዎ ውጫዊ መሣሪያ ላይሰራ ይችላል።</translation>
 <translation id="6900701049656042631">ይህ አልበም ምንም ፎቶዎች የሉትም። ፎቶዎችን ለማከል ወደ <ph name="LINK" /> ይሂዱ</translation>

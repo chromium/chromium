@@ -7180,14 +7180,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
           指定的政策值应以毫秒为单位，且不得大于屏幕关闭延迟时间（若已设置）和闲置延迟时间。</translation>
 <translation id="7680437377926096177">在用户关闭最后一个窗口时不显示让用户确认退出登录的对话框。</translation>
-<translation id="7682459947751785310">此政策可暂时用于强制启用对 PPB_VideoDecoder(Dev) API 的支持。
-
-如果此政策未设置或已停用，浏览器将决定是否支持该 API。
-如果此政策已启用，系统会支持该 API。
-
-我们正在取消对该 API 的支持，如果在这个过程中遇到问题，可以使用此政策。如果您必须使用此政策，请在 crbug.com 上提交 bug 以说明您的使用情形并抄送 {blundell, vasilyt}@chromium.org。此政策的预定有效期会一直持续到 <ph name="PRODUCT_NAME" /> 114 版，之后我们将按计划无条件地取消对该 API 的支持。
-
-注意：在浏览器运行期间，只有新启动的渲染程序进程才会反映对此政策的更改。</translation>
 <translation id="7683777542468165012">动态政策刷新</translation>
 <translation id="7687943045976362719">如果设置了此政策，则指定的内容类型由 <ph name="PRODUCT_FRAME_NAME" />处理。
 

@@ -400,7 +400,6 @@
 <translation id="1341871421050612057">Синхронизирането с(ъс) <ph name="USERNAME" /> не е възможно</translation>
 <translation id="1343865611738742294">Разрешаване на приложенията за Linux да осъществяват достъп до USB устройства. Linux няма да запомни дадено USB устройство, след като бъде премахнато.</translation>
 <translation id="1343920184519992513">Продължаване оттам, откъдето сте прекъснали, и отваряне на определен набор от страници</translation>
-<translation id="134589511016534552">Разделите с мултимедия също се показват в секцията с отворени раздели</translation>
 <translation id="1346630054604077329">Потвърждаване и рестартиране</translation>
 <translation id="1346748346194534595">Надясно</translation>
 <translation id="1347256498747320987">Инсталиране на актуализации и приложения. С продължаването си приемате, че това устройство може също автоматично да изтегля и инсталира актуализации и приложения от Google, оператора ви и производителя си, при което е възможно да използва мобилни данни. В някои от тези приложения може да се предлагат покупки. <ph name="BEGIN_LINK1" />Научете повече<ph name="END_LINK1" /></translation>
@@ -2062,7 +2061,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2739191690716947896">Отстраняване на грешки</translation>
 <translation id="2739240477418971307">Промяна на настройките ви за достъпност</translation>
 <translation id="274029851662193272">Снижена</translation>
-<translation id="2740363334137520315">Добавя нова секция в „Търсене на раздели“, така че лесно да намирате разделите, в които се възпроизвежда аудио- или видеосъдържание. Осъществявайте достъп до нея посредством бутона в горния ъгъл на браузъра.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2740876196999178364">Тези кодове за достъп се запазват само на това устройство. Те не се запазват в профила ви в Google.</translation>
 <translation id="2741713322780029189">Отваряне на терминален прозорец за възстановяване</translation>
@@ -2330,7 +2328,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2967926928600500959">URL адресите, съответстващи на тези правила, задължително ще се отварят в конкретен браузър.</translation>
 <translation id="2972581237482394796">&amp;Възстановяване</translation>
 <translation id="2973324205039581528">Спиране на звука на сайта</translation>
-<translation id="2973537811036309675">Страничен панел</translation>
 <translation id="2975761176769946178">Изисква се URL адрес</translation>
 <translation id="2976557544729462544">Някои устройства изискват да деактивирате защитата на достъпа до данните, в противен случай не работят нормално или с пълна скорост.</translation>
 <translation id="2976756276046118477">Червено-зелен филтър (нарушено възприемане на зелено, деутераномалия)</translation>
@@ -2771,7 +2768,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3393554941209044235">Анализ на документа в Chrome</translation>
 <translation id="3393582007140394275">Предаването на екрана не е възможно.</translation>
 <translation id="3394850431319394743">Разрешено е използването на идентификатори с цел възпроизвеждане на защитено съдържание</translation>
-<translation id="3396744558790608201">Кликнете с десния бутон на мишката и изберете опцията за търсене на изображения с Google Обектив, за да търсите в която и да е област на сайта и така да научите повече за визуалното съдържание, което виждате, докато сърфирате и пазарувате в мрежата.</translation>
 <translation id="3396800784455899911">С кликването си върху бутона „Приемам и продължавам“ приемате описаното по-горе обработване за тези услуги на Google.</translation>
 <translation id="339722927132407568">Блокира</translation>
 <translation id="3399432415385675819">Известията ще бъдат деактивирани</translation>
@@ -4799,7 +4795,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> иска да провери дали използвате отговарящо на условията устройство с Chrome OS.</translation>
 <translation id="5208926629108082192">Информация за мобилната мрежа на устройството</translation>
 <translation id="5208988882104884956">С половин ширина</translation>
-<translation id="520902706163766447">Активиране на изскачащо балонче за търсене на отворени в момента раздели в горната част на потребителския интерфейс на Chrome.</translation>
 <translation id="5209320130288484488">Няма намерени устройства</translation>
 <translation id="5209513429611499188">HID устройство с предназначение от страница <ph name="USAGE_PAGE" /> с предназначения</translation>
 <translation id="5210365745912300556">Затваряне на раздела</translation>
@@ -6298,7 +6293,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Запазване на системните регистрационни файлове в директорията „Изтегляния“.</translation>
 <translation id="656293578423618167">Пътят или името на файла са твърде дълги.  Моля, запазете файла с по-кратко име или на друго място.</translation>
-<translation id="6568283005472142698">Търсене на раздели</translation>
 <translation id="6570622975915850879">Използване на друго устройство</translation>
 <translation id="65711204837946324">Необходимо е разрешение за изтегляне</translation>
 <translation id="6571533309669248172">Форматиране на текста</translation>
@@ -7631,7 +7625,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7737948071472253612">Сайтове без разрешение за използване на камерата ви</translation>
 <translation id="77381465218432215">Показване на ударения и специални знаци</translation>
 <translation id="7740996059027112821">Стандартна</translation>
-<translation id="7741307896921365578">Активира полезен страничен панел на ниво браузър, чрез който винаги имате достъп до списъка за четене и отметките си.</translation>
 <translation id="7742558784808143689">Да се изчистят ли данните за сайтовете и разрешенията за <ph name="SITE_NAME" />, всички сайтове под него и инсталираните приложения?</translation>
 <translation id="7742706086992565332">Можете да зададете колко да се увеличава или намалява мащабът за определени уебсайтове</translation>
 <translation id="7742879569460013116">Споделяне на връзката към</translation>
@@ -7832,7 +7825,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7909986151924474987">Възможно е да не можете да инсталирате повторно този потребителски профил</translation>
 <translation id="7910768399700579500">&amp;Нова папка</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="79113168483292735">Секция за разделите с мултимедия във функцията за търсене на раздели</translation>
 <translation id="7912080627461681647">Паролата ви е променена в сървъра. Моля, излезте от профила си и влезте отново в него.</translation>
 <translation id="7912974581251770345">Превод</translation>
 <translation id="7915457674565721553">Свържете се с интернет, за да настроите родителските контроли</translation>
@@ -8605,7 +8597,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8599681327221583254">Едно или повече правила не са конфигурирани правилно. Моля, обърнете се към администратора си</translation>
 <translation id="8599864823732014237">Искате ли да пропуснете корпоративното регистриране?</translation>
 <translation id="8601206103050338563">Удостоверяване на TLS WWW клиент</translation>
-<translation id="8601611099293226919">Търсете в екрана си с Google Обектив</translation>
 <translation id="8602674530529411098">Приложения (бета)</translation>
 <translation id="8602851771975208551">Друга програма на компютъра ви добави приложение, което може да промени начина на работа на Chrome.</translation>
 <translation id="8605428685123651449">Памет за SQLite</translation>

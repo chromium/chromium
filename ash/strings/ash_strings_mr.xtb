@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">उजवे</translation>
 <translation id="1351937230027495976">मेनू कोलॅप्स करा</translation>
 <translation id="1360220746312242196">पेज शोधत असताना, शोधासाठी मागील जुळणीवर जा</translation>
+<translation id="1360788414852622716">प्रोफाइल बंद करत आहे. यासाठी काही मिनिटे लागू शकतात.</translation>
 <translation id="1364382257761975320">तुमचे Chromebook अनलॉक करण्यासाठी, तुमचे फिंगरप्रिंट वापरा</translation>
 <translation id="1365866993922957110">ऑटोमॅटिक अपडेट मिळवा</translation>
 <translation id="1372545819342940910">नंतरसाठी डेस्क सेव्ह करा</translation>
@@ -539,6 +540,7 @@
 <translation id="3510164367642747937">माउसचा कर्सर हायलाइट करा</translation>
 <translation id="3513798432020909783">खाते <ph name="MANAGER_EMAIL" /> ने व्‍यवस्‍थापित केले आहे</translation>
 <translation id="352245152354538528">{0,plural, =1{डिव्हाइस एका मिनिटाच्या आत अपडेट करा}other{डिव्हाइस # मिनिटांच्या आत अपडेट करा}}</translation>
+<translation id="3522979239100719575">उपलब्ध प्रोफाइल शोधत आहे. यासाठी काही मिनिटे लागू शकतात.</translation>
 <translation id="3526440770046466733">नवीन टॅबमध्ये लिंक उघडा आणि सध्याच्या टॅबमध्ये रहा</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> डिव्हाइसशी कनेक्ट केले</translation>
 <translation id="3533126039236445965">शेल्फमधील अ‍ॅप्स</translation>
@@ -1540,6 +1542,7 @@
 <translation id="8083540854303889870">नंतरसाठी सेव्ह केले</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> वाजता सुरू होईल</translation>
 <translation id="8091387634532529612">ऑटोमॅटिक अपडेट</translation>
+<translation id="8092380135549145188">स्क्रोल नियंत्रणे</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> वर स्क्रीन कास्ट करणे थांबवा</translation>
 <translation id="810637681351706236">शेल्फमधून अ‍ॅप अनपिन करा</translation>
 <translation id="8113423164597455979">सुरू, सर्व ॲप</translation>

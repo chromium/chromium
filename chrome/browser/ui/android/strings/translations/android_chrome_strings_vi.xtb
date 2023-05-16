@@ -195,6 +195,7 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="2100273922101894616">Tự động đăng nhập</translation>
 <translation id="2100314319871056947">Hãy thử chia sẻ văn bản theo các đoạn nhỏ hơn</translation>
 <translation id="2111511281910874386">Chuyển đến trang</translation>
+<translation id="2119609734654412418">Dấu trang của bạn sẽ xuất hiện ở thẻ này</translation>
 <translation id="2122601567107267586">Không thể mở ứng dụng</translation>
 <translation id="2132122640199389833">Xoá mọi thiết bị đã liên kết</translation>
 <translation id="213279576345780926">Đã đóng <ph name="TAB_TITLE" /></translation>
@@ -295,7 +296,6 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="265156376773362237">Tải trước ở chế độ chuẩn</translation>
 <translation id="2656405586795711023">Ứng dụng web</translation>
 <translation id="2669454659051515572">Bất cứ ai sử dụng thiết bị này đều có thể xem các tệp đã tải xuống</translation>
-<translation id="2688382350024736268">Hiện tại, Chrome chỉ chia sẻ thông tin rất hạn chế giữa các trang web và ứng dụng, chẳng hạn như thời điểm quảng cáo hiển thị với bạn, để giúp các trang web đo lường hiệu suất của quảng cáo.</translation>
 <translation id="2702516483241149200">Mới: chia sẻ một đường liên kết dẫn tới văn bản này</translation>
 <translation id="2707726405694321444">Làm mới trang</translation>
 <translation id="271033894570825754">Mới</translation>
@@ -598,6 +598,7 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="433213510553688132">Đang theo dõi...</translation>
 <translation id="4335835283689002019">Tính năng Duyệt web an toàn đang tắt</translation>
 <translation id="4351244548802238354">Đóng hộp thoại</translation>
+<translation id="4355272626458588338">Bạn có thể thêm dấu trang để truy cập lại một trang mà bạn thấy quan trọng</translation>
 <translation id="4369735607080757018">Các trang web chỉ chia sẻ với nhau một số loại dữ liệu để đo lường hiệu suất quảng cáo, chẳng hạn như thời gian trong ngày mà bạn thấy quảng cáo</translation>
 <translation id="4378154925671717803">Điện thoại</translation>
 <translation id="438319986296050901">Chỉ chia sẻ thẻ</translation>
@@ -949,6 +950,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="6232535412751077445">Bật tính năng “Không theo dõi” nghĩa là một yêu cầu sẽ được đi kèm với lưu lượng duyệt web của bạn. Mọi ảnh hưởng đều phụ thuộc vào việc trang web có phản hồi yêu cầu không và cách thức diễn giải yêu cầu.
 
 Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cách hiển thị cho bạn các quảng cáo không dựa trên các trang web khác mà bạn đã truy cập. Nhiều trang web sẽ vẫn thu thập và sử dụng dữ liệu duyệt web của bạn — ví dụ: để tăng cường bảo mật, cung cấp nội dung, quảng cáo và đề xuất, đồng thời tạo số liệu thống kê báo cáo.</translation>
+<translation id="6255794742848779505">Chúng tôi sẽ thay đổi cách lưu mật khẩu trên thiết bị này</translation>
 <translation id="6264376385120300461">Vẫn tải xuống</translation>
 <translation id="6277522088822131679">Đã xảy ra sự cố khi in trang này. Vui lòng thử lại.</translation>
 <translation id="6277722725779679269">Không thể cập nhật tính năng Theo dõi giá</translation>
@@ -1198,7 +1200,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7482656565088326534">Thẻ xem trước</translation>
 <translation id="7484997419527351112">Khám phá – đang tắt</translation>
 <translation id="7485033510383818941">Để làm mới nội dung nguồn cấp dữ liệu, hãy kéo trang xuống</translation>
-<translation id="7486953194485875763">Chúng tôi sẽ xoá dữ liệu trong 15 phút vừa qua sau đây:</translation>
 <translation id="749294055653435199">Không dùng được tính năng Google Ống kính trên thiết bị này</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Đã cập nhật <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7497755084107113646">Đã thêm lại chủ đề vào danh sách các chủ đề tiềm năng</translation>

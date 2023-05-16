@@ -183,6 +183,7 @@
 <translation id="1774796056689732716">Naptár, <ph name="CURRENT_MONTH_YEAR" />, jelenleg kijelölt dátum: <ph name="DATE" /></translation>
 <translation id="1787955149152357925">Ki</translation>
 <translation id="181103072419391116">Jelerősség: <ph name="SIGNAL_STRENGTH" />, a rendszergazdája kezeli</translation>
+<translation id="1815245884418711390">Hotspot be-/kikapcsolása. A hotspot ki van kapcsolva.</translation>
 <translation id="1816896987747843206">Ezzel engedélyezi a kamerához való hozzáférést a kamerahasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>
 <translation id="1823280932251546115">Állapottálca, idő <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -241,6 +242,7 @@
 <translation id="2023558322300866873">A csomagok elfogását bármikor leállíthatja</translation>
 <translation id="2034971124472263449">Mentés mindenképp</translation>
 <translation id="2049240716062114887">Az asztal neve a következőre változott: <ph name="DESK_NAME" /></translation>
+<translation id="206377500836174974">Tele</translation>
 <translation id="2064048859448024834">Kamera-előnézet bekapcsolva</translation>
 <translation id="2067602449040652523">Billentyűzet világossága</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> be-/kikapcsolása. A <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> van.</translation>
@@ -293,6 +295,7 @@
 <translation id="2339073806695260576">Koppintson a polcon az érintőceruza gombra, ha jegyzetet vagy képernyőképet szeretne készíteni, illetve ha a lézermutatót vagy a nagyítót kívánja használni.</translation>
 <translation id="2341729377289034582">Függőleges helyzetben zárolva</translation>
 <translation id="2345226652884463045">Az Enter vagy a Keresés + Szóköz billentyűkombinációval kiválaszthatja a szerkeszteni kívánt szöveget.</translation>
+<translation id="2349785431103945039">Hotspotadatok megjelenítése. Hotspot használatához csatlakozzon mobilhálózathoz.</translation>
 <translation id="2350794187831162545">A(z) <ph name="LANGUAGE" /> nyelvű beszéd feldolgozása helyben, offline történik. A diktálás nyelvét a Beállítások &gt; Kisegítő lehetőségek pontban módosíthatja.</translation>
 <translation id="2352467521400612932">Az érintőceruza beállításai</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> aktiválása</translation>
@@ -336,6 +339,7 @@
 <translation id="2531025035050312891">eszköz lassú</translation>
 <translation id="2542089167727451762">Koppintson a profilképre</translation>
 <translation id="254900897760075745">Kijelölt tartalom másolása a vágólapra</translation>
+<translation id="2549711466868162843">Megvilágítsás javítása</translation>
 <translation id="2549985041256363841">Felvétel megkezdése</translation>
 <translation id="255671100581129685">A Google Segéd nem áll rendelkezésre nyilvános munkamenetben.</translation>
 <translation id="256712445991462162">dokkolt nagyító</translation>
@@ -429,6 +433,7 @@
 <translation id="3009178788565917040">Kimenet</translation>
 <translation id="3009958530611748826">Válassza ki a mentés helyét</translation>
 <translation id="301282384882049174">Adminisztrátor által megosztva</translation>
+<translation id="301584155502740476">Hotspotadatok megjelenítése. A hotspot ki van kapcsolva.</translation>
 <translation id="3018135054368884502">Médiatartalom előretekerése</translation>
 <translation id="3033545621352269033">Be</translation>
 <translation id="3033912566804961911">Összevonás a következővel: <ph name="DESK_NAME" /></translation>
@@ -489,6 +494,7 @@
 <translation id="3291862315280588024">Ugrás az előző szó elejére</translation>
 <translation id="3294437725009624529">Vendég</translation>
 <translation id="3298690094479023523">PIN-kódjának vagy jelszavának ellenőrzése még mindig nem sikerült. Próbálja újra.</translation>
+<translation id="3300193645498960160">Értesítést kap, ha némított állapotban beszél. A hanganyag sosem kerül ki az eszközről.</translation>
 <translation id="3307642347673023554">Visszaváltott laptop módra</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> később be tud jelentkezni.</translation>
 <translation id="3321628682574733415">Érvénytelen szülői kód</translation>
@@ -572,6 +578,7 @@
 <translation id="3621202678540785336">Bemenet</translation>
 <translation id="3621712662352432595">Hangbeállítások</translation>
 <translation id="3626281679859535460">Fényerő</translation>
+<translation id="3629640897379005903">Hotspotadatok megjelenítése. A hotspot le van tiltva.</translation>
 <translation id="3630697955794050612">ki</translation>
 <translation id="3631369015426612114">Értesítések engedélyezése a következőktől:</translation>
 <translation id="3633097874324966332">Eszköze párosításához nyissa meg a Bluetooth beállításait</translation>
@@ -704,6 +711,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="423685346499232137">Jelenleg nem lehet vágólapra másolni vagy beilleszteni tartalmakat</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Áttekintési mód</translation>
+<translation id="4240756737570479726">Kikapcsolás…</translation>
 <translation id="4242533952199664413">Beállítások megnyitása</translation>
 <translation id="4247123849143712100">Frissítés és leállítás</translation>
 <translation id="4250229828105606438">Képernyőkép</translation>
@@ -842,6 +850,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4864369630010738180">Bejelentkezés...</translation>
 <translation id="4864648187878336334">15. asztal</translation>
 <translation id="4868492592575313542">aktiválva</translation>
+<translation id="4871905435473761992">Hotspotadatok megjelenítése. Mobilhálózata nem támogatja a hotspot lehetőséget.</translation>
 <translation id="4872237917498892622">Alt + Keresés vagy Shift</translation>
 <translation id="4872852897273142380">A könyvjelzősáv kiemelése, illetve fókuszálás rá (ha megjelenik)</translation>
 <translation id="4881695831933465202">Megnyitás</translation>
@@ -901,6 +910,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5104236669533825617">Nem sikerült létrehozni a képernyőfelvételt</translation>
 <translation id="5107522548814527560">Internet</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">Háttér homályosítása</translation>
 <translation id="5117590920725113268">A következő hónap megjelenítése</translation>
 <translation id="5121628974188116412">Ugrás az oldal aljára</translation>
 <translation id="5136175204352732067">Új billentyűzet lett csatlakoztatva</translation>
@@ -913,6 +923,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5168181903108465623">Cast-eszközök állnak rendelkezésre</translation>
 <translation id="5170568018924773124">Megjelenítés mappában</translation>
 <translation id="5176318573511391780">Részleges képernyő rögzítése</translation>
+<translation id="5187627942836026988">Hotspotadatok megjelenítése. A rendszergazda letiltotta a hotspotot.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> esemény</translation>
 <translation id="5198715732953550718">A következő alkalmazások össze lettek vonva egy új mappába: <ph name="MOVED_APP_NAME" /> és <ph name="IN_PLACE_APP" />.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1085,6 +1096,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="595202126637698455">Teljesítménykövetés engedélyezve</translation>
 <translation id="5955304353782037793">alk</translation>
 <translation id="5958529069007801266">Felügyelt felhasználó</translation>
+<translation id="5961960957587052807">Enyhe</translation>
 <translation id="5965524703725988602">Sötét téma be-/kikapcsolása. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Nyomja le az Entert az ablak tartalmának rögzítéséhez</translation>
 <translation id="5978382165065462689">A képernyő irányításának megosztása a Távsegítség szolgáltatás keretein belül.</translation>
@@ -1257,6 +1269,7 @@ Frissen telepítve</translation>
 <translation id="6752912906630585008">A(z) „<ph name="REMOVED_DESK" />” asztal el lett távolítva, és össze lett vonva a(z) „<ph name="RECEIVE_DESK" />” asztallal</translation>
 <translation id="6753390234084146956">lapok</translation>
 <translation id="6757237461819837179">Nincs lejátszott médiatartalom</translation>
+<translation id="6759628406555734414">Hotspotadatok megjelenítése. A hotspot bekapcsol.</translation>
 <translation id="6768043681523654438">tárhely</translation>
 <translation id="6777216307882431711">Csatlakoztatott USB-C-eszközök töltése…</translation>
 <translation id="6781002679438061620">9. asztal</translation>
@@ -1281,6 +1294,7 @@ Frissen telepítve</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> mp</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 számjegy maradt}other{# számjegy maradt}}</translation>
 <translation id="6867938213751067702">A következő letöltése szünetel: <ph name="FILENAME" /></translation>
+<translation id="6874854809828346832">Hotspotadatok megjelenítése. A hotspot be van kapcsolva.</translation>
 <translation id="6878400149835617132">A billentyűparancs ki van kapcsolva</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 alkalmazás}other{# alkalmazás}}</translation>
 <translation id="6884665277231944629">Vissza a mai napra</translation>
@@ -1290,6 +1304,7 @@ Frissen telepítve</translation>
 <translation id="6896758677409633944">Másolás</translation>
 <translation id="6901883536534621389">Kézmozdulatok kipróbálása a navigáláshoz</translation>
 <translation id="6919251195245069855">A rendszer nem ismerte fel az intelligens kártyáját. Próbálja újra.</translation>
+<translation id="6920245099716267363">Hotspot be-/kikapcsolása. A hotspot be van kapcsolva, 1 eszköz csatlakozik.</translation>
 <translation id="6931576957638141829">Mentés ide</translation>
 <translation id="6941333068993625698">Visszajelzés küldése</translation>
 <translation id="6942518653766415536">Rögzítési formátum menüje</translation>
@@ -1379,6 +1394,7 @@ Frissen telepítve</translation>
 <translation id="7378203170292176219">Húzással jelöljön ki egy területet a videó készítéséhez</translation>
 <translation id="7378594059915113390">Médiavezérlők</translation>
 <translation id="7378889811480108604">Az Akkumulátorkímélő mód ki van kapcsolva</translation>
+<translation id="7382640522316003298">Hotspot be-/kikapcsolása. A hotspot be van kapcsolva, <ph name="DEVICECOUNT" /> eszköz csatlakoztatva.</translation>
 <translation id="7382680553121047388">Be</translation>
 <translation id="7384028040782072252">Az alkalmazások átrendezéséhez kattintson jobb egérgombbal bárhol</translation>
 <translation id="7386767620098596324">Hálózati kapcsolat be-/kikapcsolása. <ph name="STATE_TEXT" />.</translation>
@@ -1429,6 +1445,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7579778809502851308">Képernyőfelvétel</translation>
 <translation id="7593891976182323525">Keresés vagy Shift</translation>
 <translation id="7600875258240007829">Összes értesítés megtekintése</translation>
+<translation id="7601417191446344542">Bekapcsolja a némítás megbökését?</translation>
 <translation id="7607002721634913082">Szünet</translation>
 <translation id="7609951632080598826">Naptárnézet, <ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Helyreállt a kapcsolat a kamerával.</translation>
@@ -1552,6 +1569,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8131740175452115882">Megerősítés</translation>
 <translation id="8131994907636310308">Rendezés bezárása üzenet</translation>
 <translation id="8132793192354020517">Csatlakozás a következőhöz megtörtént: <ph name="NAME" /></translation>
+<translation id="8135163608236671037">Hotspot be-/kikapcsolása. A hotspot be van kapcsolva; nincs csatlakoztatott eszköz.</translation>
 <translation id="8138705869659070104">Aktiválás eszközbeállítás után</translation>
 <translation id="813913629614996137">Indítás…</translation>
 <translation id="8142441511840089262">Dupla kattintás</translation>
@@ -1732,6 +1750,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8990809378771970590"><ph name="IME_NAME" /> használata</translation>
 <translation id="8991617137207906966">Színinvertálás mód engedélyezve. A funkció kikapcsolásához nyomja meg újra a Ctrl + Keresés + H billentyűparancsot.</translation>
 <translation id="899350903320462459">Az eszköz zárolásának feloldása az értesítési művelet végrehajtásához a következő felhasználó által: <ph name="LOGIN_ID" />.</translation>
+<translation id="8993733019280019776">Most beszél? A mikrofon ki van kapcsolva. Válassza ki a mikrofont a bekapcsolásához.</translation>
 <translation id="9000771174482730261">TÁRHELY KEZELÉSE</translation>
 <translation id="9005984960510803406">Crosh-ablak megnyitása</translation>
 <translation id="9017320285115481645">Adja meg a Family Link szülői hozzáférési kódját.</translation>

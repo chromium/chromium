@@ -21,6 +21,9 @@
 <translation id="1103523840287552314">Tradueix sempre el text en <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Canvia a la finestra oberta</translation>
 <translation id="1112015203684611006">Error en imprimir</translation>
+<translation id="1113057722807951993">L'encriptació de frases de contrasenya no inclou les formes de pagament ni les adreces de Google Pay.
+
+Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="1125564390852150847">Crea una pestanya nova.</translation>
 <translation id="1126809382673880764">No et protegeix contra baixades, extensions ni llocs web perillosos. Continuaràs obtenint protecció mitjançant Navegació segura, sempre que estigui disponible, en altres serveis de Google, com ara Gmail i la Cerca.</translation>
 <translation id="1145536944570833626">Suprimeix les dades existents.</translation>
@@ -158,6 +161,7 @@
 <translation id="1989112275319619282">Examina</translation>
 <translation id="1990820278544963435">Cerca</translation>
 <translation id="199425419756152024">Mostra la contrasenya</translation>
+<translation id="2008357574463816229">Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="2010008505735295285">Torna a carregar</translation>
 <translation id="2015722694326466240">Per veure les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="2021670401941426298">Consulta les instruccions del teu motor de cerca per suprimir l'historial de cerques, si escau.</translation>
@@ -706,6 +710,9 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5745916533876677730">Ves a la pestanya anterior</translation>
 <translation id="5755162682436943950">Has tancat la sessió. Obre el quadre de diàleg per iniciar la sessió i activar la sincronització.</translation>
 <translation id="5758631781033351321">Trobaràs la llista de lectura aquí</translation>
+<translation id="5762370665605786758">L'encriptació de frases de contrasenya no inclou les formes de pagament ni les adreces de Google Pay.
+
+Només qui sàpiga la teva frase de contrasenya pot llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="5765456154762864099">Menú → Configuració → Navegador predeterminat</translation>
 <translation id="5777888488419460501">Desa al compte</translation>
 <translation id="5782227691023083829">S'està traduint...</translation>
@@ -847,6 +854,9 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="6476800141292307438">La pàgina s'està traduint a <ph name="LANGUAGE" />. Tens opcions disponibles a la part inferior de la pantalla.</translation>
 <translation id="648164694371393720">Error d’autenticació</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> elements suprimits</translation>
+<translation id="6484712497741564393">Has iniciat la sessió com a <ph name="EMAIL" />.
+
+Les teves dades s'encripten amb la teva frase de contrasenya. Per utilitzar i desar les dades de Chrome al teu Compte de Google, introdueix la frase de contrasenya.</translation>
 <translation id="6497772452874122664">Si confies en <ph name="TIME" />, pots utilitzar una contrasenya desada d'un altre lloc web.
 
 Prova d'utilitzar una contrasenya única per a cada lloc web.</translation>
@@ -893,6 +903,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="6730682669179532099">No es poden exportar les contrasenyes</translation>
 <translation id="6732087373923685049">càmera</translation>
 <translation id="6748108480210050150">De</translation>
+<translation id="6753469262000681876">Mode de bloqueig</translation>
 <translation id="6760509555861141183">Torna a la pestanya Recents</translation>
 <translation id="6762812039470893796">Desselecciona-ho tot</translation>
 <translation id="6780034285637185932">Codi postal</translation>
@@ -1105,6 +1116,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8197543752516192074">Tradueix la pàgina</translation>
 <translation id="8205564605687841303">Cancel·la</translation>
 <translation id="8206354486702514201">L'administrador aplica aquesta opció de configuració.</translation>
+<translation id="8214293972734702249">Fixada, <ph name="TAB_TITLE" /></translation>
 <translation id="8225985093977202398">Fitxers i imatges a memòria cau</translation>
 <translation id="8237382152611443140">Obre la configuració de l'emplenament automàtic de contrasenyes.</translation>
 <translation id="8248969482078657578">Les pestanyes inactives t'ajuden a concentrar-te</translation>
@@ -1119,6 +1131,9 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8299417921174340354">Per utilitzar les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="8299613349954694191">Obre una pestanya d'incògnit per navegar pel web de manera privada.</translation>
 <translation id="8316944564970119719">Introdueix el lloc web i la contrasenya i, a continuació, desa els canvis</translation>
+<translation id="8317835149433843300">Les formes de pagament i les adreces de Google Pay no s'encriptaran. L'historial de navegació de Chrome no es desarà al teu Compte de Google.
+
+Només qui sàpiga la teva frase de contrasenya pot llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Cerca nova</translation>
 <translation id="8323906514956095947">Mantén premut el botó per veure més opcions de pestanyes</translation>
 <translation id="8328777765163860529">Tanca-ho tot</translation>
@@ -1141,6 +1156,9 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8487700953926739672">Disponible sense connexió</translation>
 <translation id="8488923644885757471">Finestra nova</translation>
 <translation id="8490978609246021741">Desa els canvis</translation>
+<translation id="8491300088149538575">Has iniciat la sessió com a <ph name="EMAIL" />.
+
+Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME" />. Per utilitzar i desar les dades de Chrome al teu Compte de Google, introdueix la frase de contrasenya.</translation>
 <translation id="8503813439785031346">Nom d'usuari</translation>
 <translation id="850600235656508448">Obre en mode d'incògnit</translation>
 <translation id="8517375800490286174">Llicències de programari lliure</translation>

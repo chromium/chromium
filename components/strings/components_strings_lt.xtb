@@ -438,6 +438,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2003709556000175978">Nustatykite slaptažodį iš naujo dabar</translation>
 <translation id="2003775180883135320">Keturios skylės viršuje</translation>
 <translation id="201174227998721785">Tvarkykite leidimus ir svetainėse saugomus duomenis „Chrome“ nustatymuose</translation>
+<translation id="2012276282211112603">Šiuo metu nėra rodytinų temų</translation>
 <translation id="2019607688127825327">Mygtukas „Tvarkyti pritaikomumo nustatymus“; paspauskite „Enter“, jei norite suasmeninti pritaikomumo įrankius „Chrome“ nustatymuose</translation>
 <translation id="2021333772895814435">Ši politika automatiškai išjungia sinchronizavimą įrenginiuose: <ph name="ACTION_LIST" />.</translation>
 <translation id="202224654587969958">12 x 19 col.</translation>
@@ -1093,6 +1094,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3658742229777143148">Peržiūrėtas ir pataisytas leidimas</translation>
 <translation id="3664782872746246217">Raktiniai žodžiai:</translation>
 <translation id="3667704023705708645">Rizikos kapitalas</translation>
+<translation id="3671117652518853176">Kai išjungta, retkarčiais gali būti paprašyta patvirtinti saugos tikslais</translation>
 <translation id="3671540257457995106">Leisti keisti dydį?</translation>
 <translation id="3672568546897166916">Klaida (<ph name="ERROR_PATH" />): <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Trečias ritinėlis</translation>
@@ -1127,6 +1129,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3736520371357197498">Jei suprantate, kokia rizika gali kilti jūsų saugai, galite <ph name="BEGIN_LINK" />apsilankyti šioje nesaugioje svetainėje<ph name="END_LINK" />, kol iš jos dar nepašalintos pavojingos programos.</translation>
 <translation id="3738166223076830879">Jūsų naršyklę tvarko jūsų administratorius.</translation>
 <translation id="3740319564441798148">Tarpmiestiniai autobusai ir traukiniai</translation>
+<translation id="3743765582345153106">Visada patvirtinti, kai naudojamas automatinis pildymas</translation>
 <translation id="3744111561329211289">Fono sinchronizavimas</translation>
 <translation id="3744286742364977428">Failai, kuriuos atsisiunčiate, siunčiami „Google Cloud“ arba trečiosioms šalims, kad būtų atlikta analizė. Pavyzdžiui, jie gali būti nuskaityti tikrinant, ar juose nėra neskelbtinų duomenų arba kenkėjiškų programų, ir saugomi laikantis įmonės politikos nuostatų.</translation>
 <translation id="3744899669254331632">Negalite dabar apsilankyti svetainėje <ph name="SITE" />, nes ji atsiuntė užšifruotus prisijungimo duomenis, kurių „Chromium“ negali apdoroti. Tinklo klaidos ir užpuolimai dažniausiai yra laikini, todėl šis puslapis vėliau tikriausiai veiks.</translation>
@@ -1729,6 +1732,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5171045022955879922">Ieškokite ar įveskite URL</translation>
 <translation id="5172758083709347301">Įrenginys</translation>
 <translation id="5177076414499237632">Sužinokite apie šio puslapio šaltinį ir temą</translation>
+<translation id="5179490652562926740">Mokėjimo patvirtinimo nustatymai išsaugoti</translation>
 <translation id="5179510805599951267">Ne <ph name="ORIGINAL_LANGUAGE" /> k.? Pranešti apie šią klaidą</translation>
 <translation id="518639307526414276">Gyvūnų maistas ir priežiūros priemonės</translation>
 <translation id="5190072300954988691">Fotoaparatas ir mikrofonas neleidžiami</translation>
@@ -3222,7 +3226,6 @@ Papildoma išsami informacija:
 <translation id="8870494189203302833">Ta pačia tvarka, gerąja puse į apačią</translation>
 <translation id="8870700989640064057">Spausdinti konfidencialų failą?</translation>
 <translation id="8871553383647848643">Tinkinti naršyklės išvaizdą</translation>
-<translation id="8871603420762394026">Dabar „Chrome“ bendrina tik labai ribotą informaciją svetainėse, pvz., kada skelbimas buvo rodomas, kad padėtų svetainėms įvertinti skelbimų našumą.</translation>
 <translation id="8874824191258364635">Įveskite tinkamą kortelės numerį</translation>
 <translation id="8876033571432926051">Paprasti žaidimai</translation>
 <translation id="8877780815363510165">Žvejyba</translation>

@@ -56,6 +56,7 @@
 <translation id="1258753120186372309">Google doodle՝ <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263231323834454256">Ընթերցանության ցանկ</translation>
 <translation id="1266864766717917324">Չհաջողվեց ուղարկել բովանդակությունը (<ph name="CONTENT_TYPE" />)</translation>
+<translation id="1269129608791067105">Պատմությունը կգտնեք այստեղ</translation>
 <translation id="1273937721055267968">Արգելափակել <ph name="DOMAIN" /> տիրույթը</translation>
 <translation id="1283039547216852943">Հպեք՝ ընդարձակելու համար</translation>
 <translation id="1291207594882862231">Մաքրել պատմությունը, քուքիները, կայքի տվյալները, քեշը…</translation>
@@ -295,7 +296,6 @@
 <translation id="265156376773362237">Սովորական նախաբեռնում</translation>
 <translation id="2656405586795711023">Վեբ հավելվածներ</translation>
 <translation id="2669454659051515572">Այս սարքն օգտագործող ցանկացած օգտատեր կարող է տեսնել ներբեռնված ֆայլերը</translation>
-<translation id="2688382350024736268">Chrome-ն այժմ կայքերին և հավելվածներին շատ սահմանափակ տեղեկություններ է տրամադրում, օրինակ, երբ գովազդ է ցուցադրվում ձեզ՝ դրա արդյունավետությունը չափելու համար։</translation>
 <translation id="2702516483241149200">Նորույթ․ կիսվեք հղումով, որն ուղղորդում է դեպի այս տեքստ</translation>
 <translation id="2707726405694321444">Թարմացնել էջը</translation>
 <translation id="271033894570825754">New</translation>
@@ -845,6 +845,7 @@
 <translation id="5665379678064389456">Ստեղծեք միջոցառում <ph name="APP_NAME" /> հավելվածում</translation>
 <translation id="5683547024293500885">Chrome-ը չի կարող ստուգել թարմացումների առկայությունը</translation>
 <translation id="5686790454216892815">Ֆայլի անունը չափազանց երկար է</translation>
+<translation id="569435661099256888">Դուք կարող եք տեսնել ձեր այցելած էջերը կամ ջնջել դրանք պատմությունից</translation>
 <translation id="569536719314091526">Թարգմանեք այս կայքը «Այլ ընտրանքներ» կոճակի միջոցով</translation>
 <translation id="5696597120588531049">Chrome-ը կարող է պաշտպանել տվյալների արտահոսքից, վտանգավոր կայքերից և այլ խնդիրներից</translation>
 <translation id="570347048394355941">Անցնել ներդիր</translation>
@@ -1198,7 +1199,6 @@
 <translation id="7482656565088326534">Նախադիտման ներդիր</translation>
 <translation id="7484997419527351112">Discover – անջատված է</translation>
 <translation id="7485033510383818941">Ֆիդի բովանդակությունը թարմացնելու համար էջը ներքև քաշեք</translation>
-<translation id="7486953194485875763">Վերջին 15 րոպեի հետևյալ տվյալները կջնջվեն՝</translation>
 <translation id="749294055653435199">Google Տեսապակին հասանելի չէ այս սարքում</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Թարմացվել է <ph name="TIME_SINCE_UPDATE" />-ին)</translation>
 <translation id="7497755084107113646">Թեման նորից ավելացվեց հավանական թեմաների ցանկում</translation>

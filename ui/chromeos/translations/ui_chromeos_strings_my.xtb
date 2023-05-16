@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">လတ်တလောဗီဒီယိုများ မရှိပါ</translation>
 <translation id="3634507049637220048">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်၊ အသေးစိတ်များ</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ခု ရွှေ့ပြီးပြီ။</translation>
+<translation id="3658269352872031728">ဖိုင် <ph name="SELECTED_FILE_COUNT" /> ခု ရွေးလိုက်သည်</translation>
 <translation id="3685122418104378273">မိုဘိုင်း ဒေတာကို အသုံးပြုချိန်မှာ ပုံသေအားဖြင့် Google ဒရိုက်ဗ် စင့်ကို ပိတ်ထားသည်။</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ကို ပယ်ဖျက်မည်။</translation>
 <translation id="3690128548376345212">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" />၊<ph name="NETWORK_NAME" />၊ ဖွင့်မထားပါ၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ အသေးစိတ်</translation>
@@ -576,6 +577,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> ပုံ</translation>
 <translation id="5534520101572674276">ဆိုက</translation>
 <translation id="554153475311314364">ဂရိ အက္ခရာဖလှယ်ခြင်း</translation>
+<translation id="5554171655917412781">ဖိုင်တွဲ <ph name="SELECTED_FOLDERS_COUNT" /> ခု ရွေးလိုက်သည်</translation>
 <translation id="5580591966435005537">ပကတိအသွင်စက်</translation>
 <translation id="5583640892426849032">နောက်ပြန်</translation>
 <translation id="5583664733673201137">ပုဒ်ဖြတ်ပုဒ်ရပ်အကျယ် ပြည့်သွားပြီ</translation>
@@ -598,6 +600,7 @@
 <translation id="5724172041621205163">Pattachote ကီးဘုတ်ဖြင့် ထိုင်း</translation>
 <translation id="57383366388012121">ယခင်လ</translation>
 <translation id="5756666464756035725">ဟန်ဂေရီ QWERTY</translation>
+<translation id="5760252553414789727">ဖိုင် <ph name="SELECTED_FILES_COUNT" /> ခု ရွေးလိုက်သည်</translation>
 <translation id="5763377084591234761">ဂျာမန် (ဆွစ်ဇာလန်)</translation>
 <translation id="5769519078756170258">ပယ်ရန် ဆာဗာပင်ရင်း သို့မဟုတ် ဒိုမိန်း</translation>
 <translation id="5775750595919327203">အူရ်ဒူ</translation>

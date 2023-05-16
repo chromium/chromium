@@ -431,6 +431,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh Batareya</translation>
 <translation id="4561801978359312462">Qulflanmagan SIM</translation>
 <translation id="4562494484721939086">Tarmoq topilmadi</translation>
+<translation id="4573777384450697571">Amalga oshmadi – Sertifikati muddati tugagan</translation>
 <translation id="458794348635939462">Hech qaysi host aniqlanmadi</translation>
 <translation id="4593212453765072419">Proksi hisob tekshiruvini talab qiladi</translation>
 <translation id="4609350030397390689">Klaviatura yorqinligi pasaytirish</translation>
@@ -546,7 +547,6 @@
 <translation id="5423849171846380976">Faol</translation>
 <translation id="5430931332414098647">Tezkor modem rejimi</translation>
 <translation id="5431318178759467895">Rang</translation>
-<translation id="5456936324019847994">Yoqilgan maxsus APN nuqtasiga ulana olmadi Batafsil axborot olish uchun mobil aloqa operatoriga bogʻlaning.</translation>
 <translation id="5457599981699367932">Mehmon sifatida kezish</translation>
 <translation id="54609108002486618">Boshqariladigan</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ta urinish qoldi}other{{0} ta urinish qoldi}}</translation>
@@ -719,7 +719,6 @@
 <translation id="6798678288485555829">Matn navigatsiyasi</translation>
 <translation id="680983167891198932">Kalit</translation>
 <translation id="6816797338148849397">Tanlovga aloqador axborot mavjud. Uni ochish uchun tepaga strelkani bosing.</translation>
-<translation id="6838167112108853532">Bu APN faoliszlantirilmadi yoki olib tashlanmadi. Unga ulangan APN nuqtalari faolsizlantirilishi yoki olib tashlanishi kerak</translation>
 <translation id="6853312040151791195">Quvvat sarflanishi tezligi</translation>
 <translation id="6889786074662672253">Oʻchib yonayotganda tashqi qurilmani uzmay va kompyuterni oʻchirmay turing. Bu oynani yigʻish mumkin. Bu bir necha daqiqa vaqt oladi va bu vaqtda tashqi qurilma ishlamay turishi mumkin.</translation>
 <translation id="6900701049656042631">Bu albomda hech qanday rasm mavjud emas. Suratlar kiritish uchun <ph name="LINK" /> sahifasini oching.</translation>

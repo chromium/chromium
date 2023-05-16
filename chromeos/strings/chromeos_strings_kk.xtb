@@ -426,6 +426,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> мАсағ батарея</translation>
 <translation id="4561801978359312462">SIM құлпы ашық</translation>
 <translation id="4562494484721939086">Қызмет жоқ</translation>
+<translation id="4573777384450697571">Сәтсіз болды – сертификат мерзімі біткен</translation>
 <translation id="458794348635939462">Барлық хост атаулары түрлендірілмеді.</translation>
 <translation id="4593212453765072419">Прокси растауы талап етіледі.</translation>
 <translation id="4609350030397390689">Пернетақта жарықтығын азайту</translation>
@@ -539,7 +540,6 @@
 <translation id="5423849171846380976">Белсендірілген</translation>
 <translation id="5430931332414098647">Жылдам тетеринг</translation>
 <translation id="5431318178759467895">Түс</translation>
-<translation id="5456936324019847994">Кез келген қосулы реттелетін APN аттарына қосылу мүмкін емес. Қосымша ақпарат алу үшін мобильдік операторыңызға хабарласыңыз.</translation>
 <translation id="5457599981699367932">Қонақ ретінде шолу</translation>
 <translation id="54609108002486618">Басқарылады</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} әрекет қалды.}other{{0} мүмкіндік қалды}}</translation>
@@ -710,7 +710,6 @@
 <translation id="6798678288485555829">Мәтін навигациясы</translation>
 <translation id="680983167891198932">Кілт</translation>
 <translation id="6816797338148849397">Таңдауға қатысты ақпарат қолжетімді. Оны пайдалану үшін жоғарыға бағыттауыш пернені қолданыңыз.</translation>
-<translation id="6838167112108853532">Бұл APN атын өшіру немесе жою мүмкін емес. Қосылған, тіркелген APN аттары өшірілгеніне немесе жойылғанына көз жеткізіңіз.</translation>
 <translation id="6853312040151791195">Заряд азаюының жылдамдығы</translation>
 <translation id="6889786074662672253">Қайта қосу кезінде сыртқы құрылғыны ажыратпаңыз немесе компьютерді өшірмеңіз. Бұл терезені кішірейте аласыз. Бұл бірнеше минутқа созылуы және осы уақытта сыртқы құрылғы жұмыс істемей қалуы мүмкін.</translation>
 <translation id="6900701049656042631">Альбомда фотосуреттер жоқ. Суреттер қосу үшін <ph name="LINK" /> сайтына өтіңіз.</translation>
@@ -740,6 +739,7 @@
 <translation id="7130438335435247835">Кіру нүктесінің атауы (APN)</translation>
 <translation id="7131634559772719176">Параметрлер жинағын растау</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер атауы}other{Сервер атаулары}}</translation>
+<translation id="7135814714616751706">Таңбашаларды іздеу</translation>
 <translation id="7143207342074048698">Қосылып жатыр</translation>
 <translation id="7144878232160441200">Қайталау</translation>
 <translation id="714876143603641390">LAN қосылу мүмкіндігі</translation>
@@ -770,6 +770,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Нәтижені Google Search-тен көру үшін іздеу және бос орын пернелерін бірге басыңыз.</translation>
 <translation id="7343649194310845056">Желілік құрылғылар</translation>
+<translation id="7353413232959255829"><ph name="LIST_POSITION" />/<ph name="LIST_SIZE" /> іздеу нәтижесі: <ph name="SEARCH_RESULT_TEXT" />. Таңбашаға өту үшін Enter пернесін басыңыз.</translation>
 <translation id="7359657277149375382">Файл түрі</translation>
 <translation id="73631062356239394">Диагностика деректерін бөлісу</translation>
 <translation id="7375053625150546623">EAP</translation>

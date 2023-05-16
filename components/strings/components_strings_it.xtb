@@ -1092,6 +1092,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3658742229777143148">Revisione</translation>
 <translation id="3664782872746246217">Parole chiave:</translation>
 <translation id="3667704023705708645">Venture capital</translation>
+<translation id="3671117652518853176">Se l'impostazione è disattivata, di tanto in tanto ti potrebbe essere chiesto di effettuare la verifica per motivi di sicurezza</translation>
 <translation id="3671540257457995106">Consentire ridimensionamento?</translation>
 <translation id="3672568546897166916">Errore in <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Terzo rullo</translation>
@@ -1126,6 +1127,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3736520371357197498">Se sei consapevole dei rischi per la tua sicurezza, potresti <ph name="BEGIN_LINK" />visitare questo sito non sicuro<ph name="END_LINK" /> senza aspettare che vengano rimossi i programmi pericolosi.</translation>
 <translation id="3738166223076830879">Il tuo browser è gestito dal tuo amministratore.</translation>
 <translation id="3740319564441798148">Autobus e treni a lunga percorrenza</translation>
+<translation id="3743765582345153106">Verifica sempre quando è in uso la compilazione automatica</translation>
 <translation id="3744111561329211289">Sincronizzazione in background</translation>
 <translation id="3744286742364977428">I file che scarichi vengono inviati a Google Cloud o a terze parti per l'analisi. Ad esempio, potrebbero essere sottoposti a scansione per rilevare dati sensibili o malware e archiviati in base ai criteri aziendali.</translation>
 <translation id="3744899669254331632">Al momento non puoi visitare il sito <ph name="SITE" /> perché tale sito web ha inviato credenziali criptate che Chromium non è riuscito a elaborare. Gli attacchi e gli errori di rete in genere sono temporanei, pertanto è possibile che questa pagina funzioni più tardi.</translation>
@@ -1730,6 +1732,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5171045022955879922">Cerca o digita un URL</translation>
 <translation id="5172758083709347301">Computer</translation>
 <translation id="5177076414499237632">Scopri di più sulla fonte e sull'argomento di questa pagina</translation>
+<translation id="5179490652562926740">Impostazioni di verifica del pagamento salvate</translation>
 <translation id="5179510805599951267">Non in <ph name="ORIGINAL_LANGUAGE" />? Segnala questo errore</translation>
 <translation id="518639307526414276">Cibo e articoli per animali domestici</translation>
 <translation id="5190072300954988691">Fotocamera e microfono non consentiti</translation>
@@ -3226,7 +3229,6 @@ Ulteriori dettagli:
 <translation id="8870494189203302833">Stesso ordine a faccia in giù</translation>
 <translation id="8870700989640064057">Vuoi stampare il file riservato?</translation>
 <translation id="8871553383647848643">Personalizza l'aspetto del browser</translation>
-<translation id="8871603420762394026">Ora Chrome condivide soltanto informazioni molto limitate tra siti, ad esempio quando ti è stato mostrato un annuncio, per aiutare i siti a misurare il rendimento degli annunci.</translation>
 <translation id="8874824191258364635">Inserisci un numero di carta di credito valido</translation>
 <translation id="8876033571432926051">Casual game</translation>
 <translation id="8877780815363510165">Pesca</translation>

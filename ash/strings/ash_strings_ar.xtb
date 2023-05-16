@@ -56,6 +56,7 @@
 <translation id="121097972571826261">نقل للأمام بمقدار كلمة واحدة</translation>
 <translation id="1217633719248931900">الانتقال إلى التطبيق</translation>
 <translation id="1218444235442067213">‏<ph name="APP_NAME" />، تطبيق من "متجر Play"</translation>
+<translation id="1219309685806246869">انقر للعودة إلى "<ph name="APP_TITLE" />".</translation>
 <translation id="1225748608451425081">‏تم قفل جهاز Chromebook بسبب مشكلة معروفة. ستتمكّن من تسجيل الدخول بعد: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">إيقاف التحديد</translation>
 <translation id="1235458158152011030">الشبكات المعروفة</translation>
@@ -93,6 +94,7 @@
 <translation id="1346748346194534595">يمين</translation>
 <translation id="1351937230027495976">تصغير القائمة</translation>
 <translation id="1360220746312242196">الانتقال إلى النتيجة المطابِقة السابقة عند البحث في صفحة</translation>
+<translation id="1360788414852622716">جارٍ إيقاف الملف الشخصي. قد يستغرق ذلك بضع دقائق.</translation>
 <translation id="1364382257761975320">‏لفتح قفل جهاز Chromebook، استخدِم بصمة إصبعك.</translation>
 <translation id="1365866993922957110">الحصول على تحديثات تلقائية</translation>
 <translation id="1372545819342940910">حفظ سطح المكتب لوقت لاحق</translation>
@@ -539,6 +541,7 @@
 <translation id="3510164367642747937">تمييز مؤشر الماوس</translation>
 <translation id="3513798432020909783">يُدير <ph name="MANAGER_EMAIL" /> الحساب.</translation>
 <translation id="352245152354538528">{0,plural, =1{تحديث الجهاز خلال دقيقة واحدة}zero{تحديث الجهاز خلال # دقيقة}two{تحديث الجهاز خلال دقيقتين}few{تحديث الجهاز خلال # دقائق}many{تحديث الجهاز خلال # دقيقة}other{تحديث الجهاز خلال # دقيقة}}</translation>
+<translation id="3522979239100719575">جارٍ البحث عن الملفات التعريفية المتوفّرة. قد يستغرق ذلك بضع دقائق.</translation>
 <translation id="3526440770046466733">فتح الرابط في علامة تبويب جديدة والبقاء في علامة التبويب الحالية</translation>
 <translation id="353086728817903341">تم الربط بـ <ph name="NUM_DEVICES" /> جهاز.</translation>
 <translation id="3533126039236445965">التطبيقات المثبَّتة في الرف</translation>
@@ -1541,6 +1544,7 @@
 <translation id="8083540854303889870">محفوظة لوقت لاحق</translation>
 <translation id="8091153018031979607">يبدأ الحدث في <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" />.</translation>
 <translation id="8091387634532529612">التحديثات التلقائية</translation>
+<translation id="8092380135549145188">عناصر التحكّم في الانتقال</translation>
 <translation id="8098591350844501178">إيقاف إرسال الشاشة إلى <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">إزالة تثبيت التطبيق من الرف</translation>
 <translation id="8113423164597455979">مفعلة، كل التطبيقات</translation>
@@ -1597,6 +1601,7 @@
 <translation id="8349964124165471584">فتح الرابط في نافذة جديدة</translation>
 <translation id="8351131234907093545">إنشاء ملاحظة</translation>
 <translation id="8364673525741149932">‏تبديل الوضع Shelf Party <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152">يتم حاليًا استخدام <ph name="CAPTURE_MEDIUM" />.</translation>
 <translation id="8369166482916924789">سطح المكتب المحفوظ <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">نقل للأمام بمقدار حرف واحد</translation>
 <translation id="8371991222807690464">قد يكون أداء الجهاز الملحق محدودًا في وضع الضيف.</translation>

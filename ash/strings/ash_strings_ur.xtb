@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">دائیں</translation>
 <translation id="1351937230027495976">مینیو کو سکیڑیں</translation>
 <translation id="1360220746312242196">صفحہ تلاش کرتے وقت، تلاش کے لیے پچھلی مماثلت پر جائیں</translation>
+<translation id="1360788414852622716">پروفائل کو غیر فعال کیا جا رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="1364382257761975320">‏اپنے Chromebook کو غیر مقفل کرنے کے لیے، اپنے فنگر پرنٹ کا استعمال کریں</translation>
 <translation id="1365866993922957110">خودکار اپ ڈیٹس حاصل کریں</translation>
 <translation id="1372545819342940910">بعد کے لیے ڈیسک کو محفوظ کریں</translation>
@@ -545,6 +546,7 @@
 <translation id="3510164367642747937">ماؤس کا کرسر نمایاں کریں</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> کے زیر نظم اکاؤنٹ</translation>
 <translation id="352245152354538528">{0,plural, =1{1 منٹ کے اندر آلہ کو اپ ڈیٹ کریں}other{# منٹس کے اندر آلہ اپ ڈیٹ کریں}}</translation>
+<translation id="3522979239100719575">دستیاب پروفائلز کو تلاش کیا جا رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="3526440770046466733">نئے ٹیب میں لنک کھولیں اور موجودہ ٹیب میں رہیں</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> آلات سے منسلک ہیں</translation>
 <translation id="3533126039236445965">شیلف میں ایپس</translation>
@@ -1556,6 +1558,7 @@
 <translation id="8083540854303889870">بعد کیلئے محفوظ کردہ</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> کو شروع ہوگا</translation>
 <translation id="8091387634532529612">خودکار اپ ڈیٹس</translation>
+<translation id="8092380135549145188">اسکرول کنٹرولز</translation>
 <translation id="8098591350844501178">اسکرین کو <ph name="RECEIVER_NAME" /> پر کاسٹ کرنا بند کریں</translation>
 <translation id="810637681351706236">ایپ کا پن شیلف سے ہٹائیں</translation>
 <translation id="8113423164597455979">آن، سبھی ایپس</translation>

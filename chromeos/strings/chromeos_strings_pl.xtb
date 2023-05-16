@@ -539,7 +539,6 @@
 <translation id="5423849171846380976">Aktywowano</translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Kolor</translation>
-<translation id="5456936324019847994">Nie można się połączyć z żadnym włączonym niestandardowym punktem APN. Aby dowiedzieć się więcej, skontaktuj się z operatorem komórkowym.</translation>
 <translation id="5457599981699367932">Przeglądaj jako gość</translation>
 <translation id="54609108002486618">Zarządzany</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Pozostała {0} próba}few{Pozostały {0} próby}many{Pozostało {0} prób}other{Pozostało {0} próby}}</translation>
@@ -710,7 +709,6 @@
 <translation id="6798678288485555829">Nawigacja po tekście</translation>
 <translation id="680983167891198932">Klucz</translation>
 <translation id="6816797338148849397">Dostępne są informacje związane z zaznaczoną treścią. Aby je otworzyć, naciśnij klawisz strzałki w górę.</translation>
-<translation id="6838167112108853532">Tego punktu APN nie można wyłączyć ani usunąć. Upewnij się, że dołączone punkty APN, które były włączone, zostały wyłączone lub usunięte.</translation>
 <translation id="6853312040151791195">Szybkość rozładowywania</translation>
 <translation id="6889786074662672253">Podczas ponownego uruchamiania nie odłączaj tego urządzenia zewnętrznego ani nie wyłączaj komputera. To okno możesz zminimalizować. Ponowne uruchamianie potrwa kilka minut – w tym czasie urządzenie zewnętrzne może nie działać.</translation>
 <translation id="6900701049656042631">Ten album nie zawiera zdjęć. Aby je dodać, wejdź na <ph name="LINK" /></translation>
@@ -740,6 +738,7 @@
 <translation id="7130438335435247835">Nazwa punktu dostępu (APN)</translation>
 <translation id="7131634559772719176">Potwierdź gotowe ustawienia</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serwer nazw}few{Serwery nazw}many{Serwery nazw}other{Serwery nazw}}</translation>
+<translation id="7135814714616751706">Szukaj skrótów</translation>
 <translation id="7143207342074048698">Łączenie</translation>
 <translation id="7144878232160441200">Spróbuj jeszcze raz</translation>
 <translation id="714876143603641390">Łączność LAN</translation>
@@ -770,6 +769,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />. Naciśnij Wyszukaj i spację, aby zobaczyć wynik w wyszukiwarce Google.</translation>
 <translation id="7343649194310845056">Urządzenia sieciowe</translation>
+<translation id="7353413232959255829">Wynik wyszukiwania <ph name="LIST_POSITION" /> z <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Aby przejść do skrótu, naciśnij Enter.</translation>
 <translation id="7359657277149375382">Typ pliku</translation>
 <translation id="73631062356239394">Udostępnianie danych diagnostycznych</translation>
 <translation id="7375053625150546623">EAP</translation>

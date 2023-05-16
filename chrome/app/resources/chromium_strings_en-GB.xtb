@@ -94,6 +94,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="3179665906251668410">Open Link in Chromium Inco&amp;gnito Window</translation>
 <translation id="3185330573522821672">Customise your new Chromium profile</translation>
 <translation id="3190315855212034486">Whoa! Chromium has crashed. Relaunch now?</translation>
+<translation id="3255926992597692024">Chromium is trying to modify settings for filling payment methods.</translation>
 <translation id="3258596308407688501">Chromium cannot read and write to its data directory:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -199,6 +200,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5653831366781983928">Please restart Chromium now</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Display Chromium in this language</translation>
+<translation id="585620188971323280">modify settings for filling payment methods.</translation>
 <translation id="5862307444128926510">Welcome to Chromium</translation>
 <translation id="5883558403894052917">Chromium found that these items contain malware:</translation>
 <translation id="5895138241574237353">Restart</translation>

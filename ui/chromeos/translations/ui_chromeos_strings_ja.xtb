@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">最近視聴した動画はありません</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、管理者によって管理、詳細</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> 件のアイテムを移動しました。</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> 個のファイルが選択されています</translation>
 <translation id="3685122418104378273">Google ドライブの同期は既定で無効になっています（モバイルデータを使用する場合）。</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> をキャンセルします。</translation>
 <translation id="3690128548376345212">ネットワーク <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />、<ph name="NETWORK_NAME" />、未有効化、<ph name="CONNECTION_STATUS" />、電波強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
@@ -577,6 +578,7 @@
 <translation id="5533102081734025921">画像（<ph name="IMAGE_TYPE" />）</translation>
 <translation id="5534520101572674276">サイズを計算しています</translation>
 <translation id="554153475311314364">ギリシア語（文字変換）</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> 個のフォルダが選択されています</translation>
 <translation id="5580591966435005537">仮想マシン</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">句読点幅は全角です</translation>
@@ -599,6 +601,7 @@
 <translation id="5724172041621205163">タイ語（Pattachote）キーボード</translation>
 <translation id="57383366388012121">先月</translation>
 <translation id="5756666464756035725">ハンガリー語 QWERTY</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> 個のアイテムが選択されています</translation>
 <translation id="5763377084591234761">ドイツ語（スイス）</translation>
 <translation id="5769519078756170258">除外するホストまたはドメイン</translation>
 <translation id="5775750595919327203">ウルドゥ語</translation>

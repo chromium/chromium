@@ -539,7 +539,6 @@
 <translation id="5423849171846380976">Wedi gweithredu</translation>
 <translation id="5430931332414098647">Rhannu Cysylltiad Sydyn</translation>
 <translation id="5431318178759467895">Lliw</translation>
-<translation id="5456936324019847994">Methu â chysylltu ag unrhyw APN personol sydd wedi'u galluogi. Cysylltwch â'ch cludydd gwasanaethau symudol am ragor o wybodaeth.</translation>
 <translation id="5457599981699367932">Pori fel Gwestai</translation>
 <translation id="54609108002486618">Rheolir</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ymgais ar ôl}zero{{0} ymgais ar ôl}two{{0} ymgais ar ôl}few{{0} ymgais ar ôl}many{{0} ymgais ar ôl}other{{0} ymgais ar ôl}}</translation>
@@ -710,7 +709,6 @@
 <translation id="6798678288485555829">Llywio testun</translation>
 <translation id="680983167891198932">Allwedd</translation>
 <translation id="6816797338148849397">Mae gwybodaeth sy'n ymwneud â'ch dewis ar gael. Defnyddiwch y fysell Saeth i fyny i gael mynediad.</translation>
-<translation id="6838167112108853532">Methu ag analluogi na thynnu'r APN hwn. Sicrhewch fod APN atodedig sydd wedi'u galluogi wedi'u hanalluogi neu eu tynnu.</translation>
 <translation id="6853312040151791195">Cyfradd dadwefru</translation>
 <translation id="6889786074662672253">Tra ailgychwyn, peidiwch â dadblygio'r ddyfais allanol hon na diffodd eich cyfrifiadur. Gallwch leihau'r ffenestr hon. Gall hyn gymryd ychydig funudau ac mae'n bosib na fydd eich dyfais allanol yn gweithio yn ystod y cyfnod hwn.</translation>
 <translation id="6900701049656042631">Nid oes gan yr albwm hwn unrhyw luniau. I ychwanegu lluniau, ewch i <ph name="LINK" /></translation>
@@ -740,6 +738,7 @@
 <translation id="7130438335435247835">Enw Pwynt Mynediad (APN)</translation>
 <translation id="7131634559772719176">Cadarnhau rhagosodiad</translation>
 <translation id="7134436342991564651">{0,plural, =1{Gweinydd enwau}zero{Gweinyddion enwau}two{Gweinyddion enwau}few{Gweinyddion enwau}many{Gweinyddion enwau}other{Gweinyddion enwau}}</translation>
+<translation id="7135814714616751706">Chwilio llwybrau byr</translation>
 <translation id="7143207342074048698">Wrthi'n cysylltu</translation>
 <translation id="7144878232160441200">Ceisio eto</translation>
 <translation id="714876143603641390">Cysylltedd LAN</translation>
@@ -770,6 +769,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Pwyswch Search a Space i weld y canlyniad yn Google Search.</translation>
 <translation id="7343649194310845056">Dyfeisiau Rhwydwaith</translation>
+<translation id="7353413232959255829">Canlyniad chwilio <ph name="LIST_POSITION" /> o <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Pwyswch Enter i lywio i'r llwybr byr.</translation>
 <translation id="7359657277149375382">Math ffeil</translation>
 <translation id="73631062356239394">Rhannu data diagnosteg</translation>
 <translation id="7375053625150546623">EAP</translation>

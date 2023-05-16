@@ -217,6 +217,7 @@
 <translation id="2638662041295312666">Hình ảnh đăng nhập</translation>
 <translation id="2640549051766135490">Đã chọn album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="267442004702508783">làm mới</translation>
+<translation id="268270014981824665">giảm ánh sáng bàn phím</translation>
 <translation id="2712812801627182647">Khoá xác thực TLS</translation>
 <translation id="2713444072780614174">Trắng</translation>
 <translation id="2717139507051041123">Bật chế độ màu tối</translation>
@@ -224,6 +225,7 @@
 <translation id="2744221223678373668">Được chia sẻ</translation>
 <translation id="2751739896257479635">Xác thực EAP giai đoạn 2</translation>
 <translation id="2783010256799387990">ĐÃ ĐẠT</translation>
+<translation id="2787435249130282949">bàn phím sáng hơn</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
 <translation id="28232023175184696">Không thể kết nối Internet. Hãy nhấp để thử lại.</translation>
@@ -327,11 +329,13 @@
 <translation id="3749289110408117711">Tên tệp</translation>
 <translation id="3771294271822695279">Tệp video</translation>
 <translation id="3784455785234192852">Khóa</translation>
+<translation id="380097101658023925">chế độ điều khiển rgb</translation>
 <translation id="38114475217616659">Xóa toàn bộ lịch sử</translation>
 <translation id="3820172043799983114">Mã PIN không hợp lệ.</translation>
 <translation id="3824259034819781947">Đính kèm tệp</translation>
 <translation id="3838338534323494292">Mật khẩu mới</translation>
 <translation id="3845880861638660475">Nhấn tổ hợp <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> để đóng hộp thoại.</translation>
+<translation id="3848280697030027394">làm tối bàn phím</translation>
 <translation id="385051799172605136">Quay lại</translation>
 <translation id="3858860766373142691">Tên</translation>
 <translation id="3862598938296403232">Bạn phải nhập nội dung mô tả</translation>
@@ -403,6 +407,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Vô hiệu hóa</translation>
 <translation id="439429847087949098">Đang khởi động lại <ph name="DEVICE_NAME" /></translation>
+<translation id="4395835743215824109">tuỳ chỉnh bàn phím</translation>
 <translation id="4415951057168511744">Hình đại diện hiện tại</translation>
 <translation id="4422041425070339732">mũi tên xuống</translation>
 <translation id="4425149324548788773">Drive của tôi</translation>
@@ -426,6 +431,7 @@
 <translation id="455835558791489930">Pin <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">Đã mở khóa SIM</translation>
 <translation id="4562494484721939086">Không có dịch vụ</translation>
+<translation id="4573777384450697571">Không thành công – Chứng chỉ đã hết hạn</translation>
 <translation id="458794348635939462">Không phân giải được một số máy chủ</translation>
 <translation id="4593212453765072419">Yêu cầu xác thực proxy</translation>
 <translation id="4609350030397390689">Giảm độ sáng đèn bàn phím</translation>
@@ -442,6 +448,7 @@
 <translation id="4731797938093519117">Quyền truy cập của cha mẹ</translation>
 <translation id="473775607612524610">Cập nhật</translation>
 <translation id="4744944742468440486">Thông tin liên quan đến nội dung bạn chọn</translation>
+<translation id="4771607256327216405">làm sáng bàn phím</translation>
 <translation id="4773299976671772492">Đã dừng</translation>
 <translation id="4782311465517282004">Xem định nghĩa, bản dịch hoặc kết quả chuyển đổi đơn vị bằng cách nhấp chuột phải hoặc chạm và giữ văn bản</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ảnh</translation>
@@ -490,6 +497,7 @@
 <translation id="500920857929044050">Dừng kiểm tra</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Hiện ảnh, thời gian, thông tin thời tiết và nội dung phương tiện khi màn hình ở trạng thái rảnh</translation>
+<translation id="5038292761217083259">bàn phím nhiều màu</translation>
 <translation id="5039804452771397117">Cho phép</translation>
 <translation id="5049856988445523908">Đã khóa SIM (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Tên nhóm</translation>
@@ -539,7 +547,6 @@
 <translation id="5423849171846380976">Đã kích hoạt</translation>
 <translation id="5430931332414098647">Chia sẻ Internet tức thì</translation>
 <translation id="5431318178759467895">Màu</translation>
-<translation id="5456936324019847994">Không thể kết nối với các APN tuỳ chỉnh đã bật. Hãy liên hệ với nhà mạng di động để biết thêm thông tin.</translation>
 <translation id="5457599981699367932">Duyệt với tư cách Khách</translation>
 <translation id="54609108002486618">Được quản lý</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Bạn còn {0} lần thử}other{Bạn còn {0} lần thử}}</translation>
@@ -639,6 +646,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Bật giao diện tối</translation>
 <translation id="6285899124799306373">mở trình chạy</translation>
+<translation id="629550705077076970">giảm độ sáng bàn phím</translation>
 <translation id="6302401976930124515">Đã hủy quá trình kiểm tra <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Ứng dụng Explore</translation>
 <translation id="6319207335391420837">Cập nhật chương trình cơ sở cho <ph name="DEVICE_NAME" /></translation>
@@ -657,6 +665,7 @@
 <translation id="6401427872449207797">tìm kiếm trình duyệt</translation>
 <translation id="6410257289063177456">Tệp hình ảnh</translation>
 <translation id="641081527798843608">Khớp với chủ đề</translation>
+<translation id="6411934471898487866">độ sáng bàn phím</translation>
 <translation id="6412715219990689313">Bàn phím tích hợp sẵn</translation>
 <translation id="6417265370957905582">Trợ lý Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -710,7 +719,6 @@
 <translation id="6798678288485555829">Điều hướng văn bản</translation>
 <translation id="680983167891198932">Khóa</translation>
 <translation id="6816797338148849397">Có thông tin liên quan đến nội dung bạn chọn. Sử dụng phím Mũi tên lên để truy cập.</translation>
-<translation id="6838167112108853532">Không thể tắt hoặc xoá APN này. Hãy nhớ tắt hoặc xoá các APN đính kèm đã bật.</translation>
 <translation id="6853312040151791195">Tốc độ xả pin</translation>
 <translation id="6889786074662672253">Khi đang khởi động lại, đừng rút thiết bị bên ngoài này ra hay tắt máy tính. Bạn có thể thu nhỏ cửa sổ này. Quá trình này có thể mất vài phút và thiết bị bên ngoài của bạn có thể không hoạt động được trong thời gian này.</translation>
 <translation id="6900701049656042631">Album này không có ảnh nào. Để thêm ảnh, hãy truy cập <ph name="LINK" /></translation>
@@ -806,10 +814,12 @@
 <translation id="7656388927906093505">Thiết bị là chuột.</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7665800271478495366">Thay đổi hình đại diện</translation>
+<translation id="7683228889864052081">màu bàn phím</translation>
 <translation id="7690294790491645610">Xác nhận mật khẩu mới</translation>
 <translation id="7701040980221191251">Không có</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">đèn bàn phím</translation>
 <translation id="773153675489693198">Số chu kỳ</translation>
 <translation id="7747039790905080783">Khóa được chia sẻ trước</translation>
 <translation id="7762130827864645708">Bạn đã thay đổi mật khẩu thành công. Hãy sử dụng mật khẩu mới từ giờ trở đi.</translation>
@@ -853,6 +863,7 @@
 <translation id="8075838845814659848">Mức pin còn lại</translation>
 <translation id="8076492880354921740">Thẻ</translation>
 <translation id="8082366717211101304">Không thể phân giải DNS từ các ứng dụng Android</translation>
+<translation id="8082644724189923105">vùng bàn phím</translation>
 <translation id="808894953321890993">Đổi mật khẩu</translation>
 <translation id="8094062939584182041">Cho phép Google gửi email về vấn đề này cho bạn</translation>
 <translation id="8104083085214006426">Bạn đang dùng mạng mở và không an toàn</translation>
@@ -901,6 +912,7 @@
 <translation id="8456761643544401578">Chế độ tối tự động</translation>
 <translation id="8461329675984532579">Tên nhà mạng nội hạt</translation>
 <translation id="8475690821716466388">Mạng Wi-Fi được bảo mật bằng giao thức yếu WEP PSK</translation>
+<translation id="8476242415522716722">đèn nền bàn phím</translation>
 <translation id="8477551185774834963">Độ trễ của Hệ thống tên miền (DNS) vượt ngưỡng cho phép đôi chút</translation>
 <translation id="8483248364096924578">Địa chỉ IP</translation>
 <translation id="8491311378305535241">Không thể kết nối với các trang web HTTP qua tường lửa từ các ứng dụng Android</translation>
@@ -944,6 +956,7 @@
 <translation id="8845001906332463065">Nhận trợ giúp</translation>
 <translation id="8855781559874488009">Không thể kết nối với các trang web HTTP qua tường lửa</translation>
 <translation id="885701979325669005">Bộ nhớ</translation>
+<translation id="885704831271383379">bàn phím tối hơn</translation>
 <translation id="8863170912498892583">Bật giao diện tối</translation>
 <translation id="8863888432376731307">Nhận <ph name="INTENT" /> cho "<ph name="QUERY" />" và nhiều thông tin khác</translation>
 <translation id="8864415976656252616">Không có nội dung đề xuất. Xem nội dung trợ giúp hàng đầu.</translation>

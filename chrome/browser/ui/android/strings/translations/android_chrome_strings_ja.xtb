@@ -43,7 +43,7 @@
 <translation id="1206892813135768548">リンクテキストをコピー</translation>
 <translation id="1209206284964581585">今は表示しない</translation>
 <translation id="1227058898775614466">ナビゲーション履歴</translation>
-<translation id="1231733316453485619">同期を有効にしますか？</translation>
+<translation id="1231733316453485619">同期を ON にしますか？</translation>
 <translation id="123724288017357924">キャッシュ コンテンツを無視して現在のページを再読み込みする</translation>
 <translation id="1239792311949352652">このページをすばやく共有します。このショートカットは [設定] で編集できます。</translation>
 <translation id="1240190568154816272">Chrome を使いこなすヒント</translation>
@@ -56,6 +56,7 @@
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263231323834454256">リーディング リスト</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> を共有できませんでした</translation>
+<translation id="1269129608791067105">履歴はここに表示されます</translation>
 <translation id="1273937721055267968"><ph name="DOMAIN" /> をブロック</translation>
 <translation id="1283039547216852943">タップして展開</translation>
 <translation id="1291207594882862231">履歴、Cookie、サイトデータ、キャッシュを削除…</translation>
@@ -295,7 +296,6 @@
 <translation id="265156376773362237">標準プリロード</translation>
 <translation id="2656405586795711023">ウェブアプリ</translation>
 <translation id="2669454659051515572">ダウンロードしたファイルは、このデバイスを使用するすべてのユーザーが確認できます</translation>
-<translation id="2688382350024736268">Chrome では現在、サイトによる広告の効果測定に役立てるため、広告が表示されたときに、ごく少量の限定的な情報のみがサイトやアプリと共有されます。</translation>
 <translation id="2702516483241149200">新規: このテキストにスクロールするリンクを共有できます</translation>
 <translation id="2707726405694321444">ページを更新</translation>
 <translation id="271033894570825754">New</translation>
@@ -845,6 +845,7 @@
 <translation id="5665379678064389456"><ph name="APP_NAME" /> で予定を作成</translation>
 <translation id="5683547024293500885">Chrome がアップデートを確認できません</translation>
 <translation id="5686790454216892815">ファイル名が長すぎます</translation>
+<translation id="569435661099256888">アクセスしたページを確認したり履歴から消去したりできます</translation>
 <translation id="569536719314091526">[その他のオプション] から、このページを任意の言語に翻訳できます</translation>
 <translation id="5696597120588531049">Chrome でデータ侵害や安全でないウェブサイトなどの脅威から保護されているか確認します</translation>
 <translation id="570347048394355941">タブを切り替え</translation>
@@ -1178,7 +1179,7 @@
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome 初回起動時の操作</translation>
 <translation id="7411224099004328643">Google アカウント ユーザー</translation>
-<translation id="741204030948306876">有効にする</translation>
+<translation id="741204030948306876">ON にする</translation>
 <translation id="7419565702166471774">常に安全な接続を使用する</translation>
 <translation id="7431991332293347422">検索などのカスタマイズを目的とした閲覧履歴の使用方法を設定</translation>
 <translation id="7435356471928173109">管理者によってオフにされています</translation>
@@ -1198,7 +1199,6 @@
 <translation id="7482656565088326534">[プレビュー] タブ</translation>
 <translation id="7484997419527351112">Discover - オフ</translation>
 <translation id="7485033510383818941">フィード コンテンツを更新するには、ページを下にプルダウンします</translation>
-<translation id="7486953194485875763">過去 15 分の次のデータが削除されます:</translation>
 <translation id="749294055653435199">Google レンズはこのデバイスではご利用いただけません</translation>
 <translation id="7493994139787901920"><ph name="VERSION" />（<ph name="TIME_SINCE_UPDATE" />に更新）</translation>
 <translation id="7497755084107113646">使用を許可するトピックに再度追加しました</translation>

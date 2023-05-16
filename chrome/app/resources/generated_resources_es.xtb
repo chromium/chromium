@@ -398,7 +398,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1341871421050612057">No se puede sincronizar con <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Da permiso a las aplicaciones de Linux para acceder a los dispositivos USB. Linux no recordará el dispositivo USB después de retirarlo.</translation>
 <translation id="1343920184519992513">Seguir por donde lo dejaste y abrir un conjunto concreto de páginas</translation>
-<translation id="134589511016534552">Las pestañas multimedia también se muestran en la sección Pestañas abiertas</translation>
 <translation id="1346630054604077329">Confirmar y reiniciar</translation>
 <translation id="1346748346194534595">Derecha</translation>
 <translation id="1347256498747320987">Instalar actualizaciones y aplicaciones. Si continúas, aceptas que este dispositivo pueda descargar e instalar actualizaciones y aplicaciones de Google, de tu operador y del fabricante de forma automática, y que pueda usar datos móviles para ello. Es posible que algunas de estas aplicaciones ofrezcan compras en la aplicación. <ph name="BEGIN_LINK1" />Más información<ph name="END_LINK1" /></translation>
@@ -2052,7 +2051,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2739191690716947896">Depurar</translation>
 <translation id="2739240477418971307">Cambiar tu configuración de accesibilidad</translation>
 <translation id="274029851662193272">Hundida</translation>
-<translation id="2740363334137520315">Añade una nueva sección en Buscar pestañas para encontrar fácilmente las pestañas que estén reproduciendo audio o vídeo. Accede mediante el botón que está en la esquina superior de tu navegador.</translation>
 <translation id="2740531572673183784">Aceptar</translation>
 <translation id="2740876196999178364">Estas llaves de acceso solo se guardan en este dispositivo. No se guardan en tu cuenta de Google.</translation>
 <translation id="2741713322780029189">Abrir terminal en modo de recuperación</translation>
@@ -2320,7 +2318,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2967926928600500959">Las URLs que se correspondan con estas reglas serán forzadas a abrirse en un navegador concreto.</translation>
 <translation id="2972581237482394796">&amp;Rehacer</translation>
 <translation id="2973324205039581528">Silenciar sitio</translation>
-<translation id="2973537811036309675">Panel lateral</translation>
 <translation id="2975761176769946178">Debes introducir una URL</translation>
 <translation id="2976557544729462544">Algunos dispositivos necesitan que inhabilites la protección de acceso a datos para funcionar adecuadamente o al máximo rendimiento.</translation>
 <translation id="2976756276046118477">Filtro rojo‑verde (verde débil, deuteranomalía)</translation>
@@ -2761,7 +2758,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3393554941209044235">Análisis de documentos de Chrome</translation>
 <translation id="3393582007140394275">No se puede enviar la pantalla.</translation>
 <translation id="3394850431319394743">Sitios que pueden usar identificadores para reproducir contenido protegido</translation>
-<translation id="3396744558790608201">Haz clic con el botón derecho y selecciona "Buscar imágenes con Google Lens" para buscar cualquier parte del sitio y consultar más información sobre el contenido visual que ves mientras navegas y compras en la Web.</translation>
 <translation id="3396800784455899911">Al hacer clic en el botón "Aceptar y continuar", declaras que estás conforme con el proceso descrito anteriormente de estos servicios de Google.</translation>
 <translation id="339722927132407568">Se bloquea</translation>
 <translation id="3399432415385675819">Se inhabilitarán las notificaciones</translation>
@@ -4786,7 +4782,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> quiere comprobar si estás utilizando un dispositivo ChromeOS apto.</translation>
 <translation id="5208926629108082192">Información de redes móviles del dispositivo</translation>
 <translation id="5208988882104884956">Ancho medio</translation>
-<translation id="520902706163766447">Habilita un cuadro emergente en la interfaz de Chrome para realizar búsquedas en pestañas abiertas.</translation>
 <translation id="5209320130288484488">No se ha encontrado ningún dispositivo.</translation>
 <translation id="5209513429611499188">Los dispositivos HID con usos de la página de uso <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">Cerrar pestaña</translation>
@@ -6284,7 +6279,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6561726789132298588">intro</translation>
 <translation id="6562117348069327379">Almacena registros del sistema en el directorio Descargas.</translation>
 <translation id="656293578423618167">La ruta o el nombre del archivo es demasiado largo. Especifica un nombre más corto o guarda el archivo en otra ubicación.</translation>
-<translation id="6568283005472142698">Búsqueda en pestañas</translation>
 <translation id="6570622975915850879">Usar otro dispositivo</translation>
 <translation id="65711204837946324">Necesita permiso para descargarse</translation>
 <translation id="6571533309669248172">Formato del texto</translation>
@@ -7615,7 +7609,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7737948071472253612">No puede usar tu cámara</translation>
 <translation id="77381465218432215">Mostrar tildes y caracteres especiales</translation>
 <translation id="7740996059027112821">Estándar</translation>
-<translation id="7741307896921365578">Habilita un panel lateral en el navegador para acceder a tu lista de lectura y a tus marcadores fácilmente siempre que quieras.</translation>
 <translation id="7742558784808143689">¿Borrar datos del sitio y permisos de <ph name="SITE_NAME" />, todos los sitios que incluya y sus aplicaciones instaladas?</translation>
 <translation id="7742706086992565332">Puedes configurar cuánto quieres ampliar o reducir determinados sitios web.</translation>
 <translation id="7742879569460013116">Compartir enlace con</translation>
@@ -7816,7 +7809,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7909986151924474987">Es posible que no puedas reinstalar este perfil.</translation>
 <translation id="7910768399700579500">&amp;Nueva carpeta</translation>
 <translation id="7911118814695487383">Linux</translation>
-<translation id="79113168483292735">Sección de pestañas multimedia en la búsqueda en pestañas</translation>
 <translation id="7912080627461681647">Tu contraseña se ha cambiado en el servidor. Cierra la sesión y vuelve a iniciarla.</translation>
 <translation id="7912974581251770345">Traducción</translation>
 <translation id="7915457674565721553">Conéctate a Internet para configurar el control parental</translation>
@@ -8589,7 +8581,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8599681327221583254">Una o más políticas no se han configurado correctamente. Ponte en contacto con tu administrador.</translation>
 <translation id="8599864823732014237">¿Saltar registro de empresa?</translation>
 <translation id="8601206103050338563">Autenticación de cliente WWW TLS</translation>
-<translation id="8601611099293226919">Hacer búsquedas en la pantalla con Google Lens</translation>
 <translation id="8602674530529411098">Aplicaciones (beta)</translation>
 <translation id="8602851771975208551">Otro programa de tu ordenador ha añadido una aplicación que puede cambiar el funcionamiento de Chrome.</translation>
 <translation id="8605428685123651449">Memoria SQLite</translation>

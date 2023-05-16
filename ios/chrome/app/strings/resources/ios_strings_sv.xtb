@@ -21,6 +21,9 @@
 <translation id="1103523840287552314">Översätt alltid <ph name="LANGUAGE" /></translation>
 <translation id="110724200315609752">Byt till Öppet fönster</translation>
 <translation id="1112015203684611006">Utskriftsfel.</translation>
+<translation id="1113057722807951993">Betalningsmetoder och adresser från Google Pay omfattas inte av lösenfraskryptering.
+
+Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="1125564390852150847">Skapa en ny flik.</translation>
 <translation id="1126809382673880764">Skyddar inte mot farliga webbplatser, nedladdningar och tillägg. Där funktionen är tillgänglig får du fortfarande skydd med Säker webbsökning i andra tjänster från Google, till exempel Gmail och Sök.</translation>
 <translation id="1145536944570833626">Radera befintlig data.</translation>
@@ -158,6 +161,7 @@
 <translation id="1989112275319619282">Bläddra</translation>
 <translation id="1990820278544963435">Sök</translation>
 <translation id="199425419756152024">Visa lösenord</translation>
+<translation id="2008357574463816229">Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="2010008505735295285">Läs in igen</translation>
 <translation id="2015722694326466240">Du måste ställa in ett lösenord på enheten om du vill kunna se lösenorden.</translation>
 <translation id="2021670401941426298">Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</translation>
@@ -707,6 +711,9 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5745916533876677730">Öppna föregående flik</translation>
 <translation id="5755162682436943950">Utloggad. Öppnar dialogrutan för att logga in och aktivera synkronisering.</translation>
 <translation id="5758631781033351321">Du hittar läslistan här</translation>
+<translation id="5762370665605786758">Betalningsmetoder och adresser från Google Pay omfattas inte av lösenfraskryptering.
+
+Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="5765456154762864099">Menyn → Inställningar → Standardwebbläsare</translation>
 <translation id="5777888488419460501">Spara i kontot</translation>
 <translation id="5782227691023083829">Översätter...</translation>
@@ -848,6 +855,9 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="6476800141292307438">Översätter sidan till <ph name="LANGUAGE" />. Alternativ finns längst ned på skärmen.</translation>
 <translation id="648164694371393720">Autentiseringsfel</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> objekt har tagits bort</translation>
+<translation id="6484712497741564393">Inloggad som <ph name="EMAIL" />.
+
+Din data krypteras med lösenfrasen. Ange den om du vill använda och spara Chrome-data i ditt Google-konto.</translation>
 <translation id="6497772452874122664">Om du litar på <ph name="TIME" /> kan du använda ett lösenord du sparat för en annan webbplats.
 
 Sträva efter att använda ett unikt lösenord för varje webbplats.</translation>
@@ -895,6 +905,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6730682669179532099">Det gick inte att exportera lösenord</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6748108480210050150">Från</translation>
+<translation id="6753469262000681876">Låsningsläge</translation>
 <translation id="6760509555861141183">Återgå till den senaste fliken</translation>
 <translation id="6762812039470893796">Avmarkera alla</translation>
 <translation id="6780034285637185932">Postnummer</translation>
@@ -1121,6 +1132,9 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8299417921174340354">Du måste ställa in ett lösenord på enheten innan du kan använda lösenord här.</translation>
 <translation id="8299613349954694191">Öppna en inkognitoflik om du vill surfa privat på webben.</translation>
 <translation id="8316944564970119719">Ange webbplats och lösenord och spara sedan</translation>
+<translation id="8317835149433843300">Betalningsmetoder och adresser från Google Pay krypteras inte. Webbhistorik från Chrome sparas inte i Google-kontot.
+
+Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="8319076807703933069">Ny sökning</translation>
 <translation id="8323906514956095947">Tryck länge för fler flikalternatv</translation>
 <translation id="8328777765163860529">Stäng alla</translation>
@@ -1143,6 +1157,9 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8487700953926739672">Tillgänglig offline</translation>
 <translation id="8488923644885757471">Nytt fönster</translation>
 <translation id="8490978609246021741">Spara ändringar</translation>
+<translation id="8491300088149538575">Inloggad som <ph name="EMAIL" />.
+
+Din data krypterades med lösenfrasen den <ph name="TIME" />. Ange den om du vill använda och spara Chrome-data i ditt Google-konto.</translation>
 <translation id="8503813439785031346">Användarnamn</translation>
 <translation id="850600235656508448">Öppna i inkognitoläge</translation>
 <translation id="8517375800490286174">Licenser för öppen källkod</translation>

@@ -11,5 +11,6 @@
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Άνοιγμα <ph name="TABS_COUNT_ONE" /> καρτέλας}other{Άνοιγμα <ph name="TABS_COUNT_MANY" /> καρτελών}}</translation>
 <translation id="4811934403802581334">Θα γίνει επαναφορά όλων των επιλεγμένων καρτελών από τη συσκευή που έχετε επιλέξει.</translation>
 <translation id="5336031759968328813">Έλεγχος όλων των καρτελών</translation>
+<translation id="8019269305087157499">Άνοιγμα από</translation>
 <translation id="8725404154479306799">Λάβετε καρτέλες που έχετε αφήσει σε παλιές συσκευές</translation>
 </translationbundle>

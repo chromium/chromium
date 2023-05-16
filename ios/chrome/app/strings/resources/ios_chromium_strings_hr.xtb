@@ -49,6 +49,7 @@
 <translation id="3650632991272923014">Korisnik <ph name="USER_EMAIL1" /> upotrebljavao je Chromium i ostavio oznake, zaporke i druge postavke na ovom uređaju.</translation>
 <translation id="372658070733623520">Da biste upotrebljavali i spremali podatke Chromiuma na svoj Google račun, potvrdite da ste to vi.</translation>
 <translation id="3805899903892079518">Chromium nema pristup fotografijama ni videozapisima. Omogućite pristup u Postavkama iOS-a &gt; Privatnost &gt; Fotografije.</translation>
+<translation id="3955621079070267756">Otvaranje Chromiuma iz bilo koje aplikacije</translation>
 <translation id="4043291146360695975">Zaporke se spremaju u Upravitelj zaporki samo na ovom uređaju.</translation>
 <translation id="4099085513035183040">Nije podržano u beta verziji Chromiuma</translation>
 <translation id="4432744876818348753">Prijavite se da biste iskoristili sve prednosti Chromiuma.</translation>
@@ -143,5 +144,6 @@ Važne napomene:
 <translation id="9089354809943900324">Chromium je zastario</translation>
 <translation id="9110075932708282655">Koristi Chromium prema zadanim postavkama</translation>
 <translation id="921174536258924340">Chromium nije uspio provjeriti sve zaporke. Pokušajte ponovno sutra ili <ph name="BEGIN_LINK" />provjerite zaporke na svojem Google računu<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">Automatski koristite Chromium kada dodirnete veze u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="985602178874221306">Autori Chromiuma</translation>
 </translationbundle>

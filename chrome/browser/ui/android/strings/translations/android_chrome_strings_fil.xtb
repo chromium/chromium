@@ -56,6 +56,7 @@ Ang sinumang may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na d
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1263231323834454256">Listahan ng babasahin</translation>
 <translation id="1266864766717917324">Hindi maibahagi ang <ph name="CONTENT_TYPE" /></translation>
+<translation id="1269129608791067105">Makikita mo rito ang iyong history</translation>
 <translation id="1273937721055267968">I-block ang <ph name="DOMAIN" /></translation>
 <translation id="1283039547216852943">I-tap upang palawakin</translation>
 <translation id="1291207594882862231">I-clear ang history, cookies, site data, cache…</translation>
@@ -195,6 +196,7 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="2100273922101894616">Awtomatikong Mag-sign in</translation>
 <translation id="2100314319871056947">Subukang ibahagi ang text sa mas maliliit na bahagi</translation>
 <translation id="2111511281910874386">Pumunta sa page</translation>
+<translation id="2119609734654412418">Makikita mo rito ang iyong mga bookmark</translation>
 <translation id="2122601567107267586">Hindi mabuksan ang app</translation>
 <translation id="2132122640199389833">Alisin ang lahat ng naka-link na device</translation>
 <translation id="213279576345780926">Isinarang <ph name="TAB_TITLE" /></translation>
@@ -295,7 +297,6 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="265156376773362237">Karaniwang pag-preload</translation>
 <translation id="2656405586795711023">Mga web app</translation>
 <translation id="2669454659051515572">Makikita ng sinumang gumagamit ng device na ito ang mga na-download na file</translation>
-<translation id="2688382350024736268">Napakalimitadong impormasyon lang ang ishe-share ngayon ng Chrome sa mga site at app, gaya ng kapag may ipinakitang ad sa iyo, para matulungan ang mga site na sukatin ang performance ng mga ad.</translation>
 <translation id="2702516483241149200">Bago: magbahagi ng link na nagso-scroll papunta sa text na ito</translation>
 <translation id="2707726405694321444">I-refresh ang page</translation>
 <translation id="271033894570825754">Bago</translation>
@@ -598,6 +599,7 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="433213510553688132">Sinusubaybayan…</translation>
 <translation id="4335835283689002019">Naka-off ang Ligtas na Pag-browse</translation>
 <translation id="4351244548802238354">Isara ang dialog</translation>
+<translation id="4355272626458588338">Mababalikan mo ang isang page na mahalaga sa iyo sa pamamagitan ng pagdaragdag ng bookmark</translation>
 <translation id="4369735607080757018">Mga limitadong uri ng data ang sine-share sa pagitan ng mga site para masukat ang performance ng kanilang mga ad, gaya ng oras ng araw kung kailan ipinakita sa iyo ang isang ad</translation>
 <translation id="4378154925671717803">Telepono</translation>
 <translation id="438319986296050901">Ibahagi lang ang card</translation>
@@ -845,6 +847,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5665379678064389456">Gumawa ng event sa <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Hindi matingnan ng Chrome kung may mga update</translation>
 <translation id="5686790454216892815">Masyadong mahaba ang pangalan ng file</translation>
+<translation id="569435661099256888">Makikita mo ang mga page na binisita mo o maki-clear mo ang mga ito sa iyong history</translation>
 <translation id="569536719314091526">Isalin ang page na ito sa anumang wika mula sa button na Higit pang opsyon</translation>
 <translation id="5696597120588531049">Makakatulong ang Chrome na panatilihin kang ligtas laban sa mga paglabag sa data, hindi ligtas na website, at higit pa</translation>
 <translation id="570347048394355941">Lumipat Sa Tab</translation>
@@ -949,6 +952,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="6232535412751077445">Kapag na-enable mo ang “Huwag Subaybayan,” magsasama ng isang kahilingan sa trapiko ng iyong pagba-browse. Ang anumang magiging epekto ay dedepende sa pagtugon at pagbibigay-kahulugan ng website sa nabanggit na kahilingan.
 
 Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan ng pagpapakita sa iyo ng mga ad na hindi ibinatay sa iba pang nabisita mo nang website. Kokolektahin at gagamitin pa rin ng maraming website ang iyong data sa pag-browse - halimbawa, para mapahusay ang seguridad, makapagpakita ng content, mga ad, at rekomendasyon, at makabuo ng mga istatistika sa pag-uulat.</translation>
+<translation id="6255794742848779505">Babaguhin na namin kung paano sine-save ang mga password sa device na ito</translation>
 <translation id="6264376385120300461">I-download pa rin</translation>
 <translation id="6277522088822131679">Nagkaproblema sa pag-print sa pahina. Pakisubukang muli.</translation>
 <translation id="6277722725779679269">Hindi ma-update ang Subaybayan ang presyo</translation>
@@ -1198,7 +1202,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7482656565088326534">Tab na preview</translation>
 <translation id="7484997419527351112">Discover - naka-off</translation>
 <translation id="7485033510383818941">Para i-refresh ang content ng feed, hilahin pababa ang page</translation>
-<translation id="7486953194485875763">Made-delete ang sumusunod na data mula sa huling 15 minuto:</translation>
 <translation id="749294055653435199">Hindi available ang Google Lens sa device na ito</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Na-update <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7497755084107113646">Idinagdag muli ang paksa sa mga potensyal na paksa</translation>

@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Nessun video recente</translation>
 <translation id="3634507049637220048">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, gestita dall'amministratore, dettagli</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementi spostati.</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> file selezionati</translation>
 <translation id="3685122418104378273">La sincronizzazione con Google Drive è disattivata per impostazione predefinita quando vengono utilizzati i dati mobili.</translation>
 <translation id="3689865792480713551">Annulla <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Non attivato, <ph name="CONNECTION_STATUS" />, Intensità del segnale <ph name="SIGNAL_STRENGTH" />%, Dettagli</translation>
@@ -576,6 +577,7 @@
 <translation id="5533102081734025921">Immagine <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Calcolo dimensioni</translation>
 <translation id="554153475311314364">Traslitterazione greco</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> cartelle selezionate</translation>
 <translation id="5580591966435005537">macchina virtuale</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">La larghezza della punteggiatura è piena</translation>
@@ -598,6 +600,7 @@
 <translation id="5724172041621205163">Thai con tastiera Pattachote</translation>
 <translation id="57383366388012121">Mese scorso</translation>
 <translation id="5756666464756035725">Ungherese QWERTY</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> elementi selezionati</translation>
 <translation id="5763377084591234761">Tedesco (Svizzera)</translation>
 <translation id="5769519078756170258">Host o dominio da escludere</translation>
 <translation id="5775750595919327203">Urdu</translation>

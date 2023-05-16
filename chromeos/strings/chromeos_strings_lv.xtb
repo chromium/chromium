@@ -539,7 +539,6 @@
 <translation id="5423849171846380976">Aktivizēts</translation>
 <translation id="5430931332414098647">Tūlītēja piesaiste</translation>
 <translation id="5431318178759467895">Krāsās</translation>
-<translation id="5456936324019847994">Nevar izveidot savienojumu ne ar vienu iespējoto pielāgoto APN. Lai iegūtu plašāku informāciju, sazinieties ar savu mobilo sakaru operatoru.</translation>
 <translation id="5457599981699367932">Pārlūkot kā viesim</translation>
 <translation id="54609108002486618">Pārvaldītais</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Atlicis {0} mēģinājums.}zero{Atlikuši {0} mēģinājumi.}one{Atlicis {0} mēģinājums.}other{Atlikuši {0} mēģinājumi.}}</translation>
@@ -710,7 +709,6 @@
 <translation id="6798678288485555829">Navigācija tekstā</translation>
 <translation id="680983167891198932">Atslēga</translation>
 <translation id="6816797338148849397">Ir pieejama informācija, kas saistīta ar jūsu atlasīto saturu. Lai piekļūtu informācijai, nospiediet augšupvērsto bulttaustiņu.</translation>
-<translation id="6838167112108853532">Nevar atspējot vai noņemt šo APN. Iespējotie pievienotie APN ir jāatspējo vai jānoņem.</translation>
 <translation id="6853312040151791195">Izlādes ātrums</translation>
 <translation id="6889786074662672253">Kamēr notiek restartēšana, neatvienojiet šo ārējo ierīci un neizslēdziet datoru. Varat minimizēt šo logu. Restartēšana var ilgt dažas minūtes, un jūsu ārējā ierīce šajā laikā var nedarboties.</translation>
 <translation id="6900701049656042631">Šajā albumā nav fotoattēlu. Lai pievienotu fotoattēlus, pārejiet uz vietni <ph name="LINK" />.</translation>
@@ -740,6 +738,7 @@
 <translation id="7130438335435247835">Piekļuves punkta nosaukums (APN)</translation>
 <translation id="7131634559772719176">Pirmsiestatījuma apstiprināšana</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nosaukumu serveris}zero{Nosaukumu serveri}one{Nosaukumu serveri}other{Nosaukumu serveri}}</translation>
+<translation id="7135814714616751706">Meklēt īsinājumtaustiņus</translation>
 <translation id="7143207342074048698">Notiek savienojuma izveide</translation>
 <translation id="7144878232160441200">Mēģināt vēlreiz</translation>
 <translation id="714876143603641390">LAN savienojamība</translation>
@@ -770,6 +769,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; lai skatītu rezultātu Google meklēšanā, nospiediet meklēšanas taustiņu un atstarpes taustiņu.</translation>
 <translation id="7343649194310845056">Tīkla ierīces</translation>
+<translation id="7353413232959255829"><ph name="LIST_POSITION" />. meklēšanas rezultāts no <ph name="LIST_SIZE" /> rezultātiem vaicājumam <ph name="SEARCH_RESULT_TEXT" />. Lai pārietu uz saīsni, nospiediet taustiņu Enter.</translation>
 <translation id="7359657277149375382">Faila tips</translation>
 <translation id="73631062356239394">Diagnostikas datu kopīgošana</translation>
 <translation id="7375053625150546623">EAP</translation>

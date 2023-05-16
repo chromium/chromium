@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> telah menggunakan Chromium dan membiarkan penanda halaman, kata laluan dan tetapan lain pada peranti ini.</translation>
 <translation id="372658070733623520">Untuk menggunakan dan menyimpan data Chromium dalam Google Account anda, sahkan identiti anda.</translation>
 <translation id="3805899903892079518">Chromium tidak mempunyai akses kepada foto atau video anda. Dayakan akses dalam Tetapan iOS &gt; Privasi &gt; Foto.</translation>
+<translation id="3955621079070267756">Buka Chromium Daripada Mana-mana Apl</translation>
 <translation id="4043291146360695975">Kata laluan disimpan pada Pengurus Kata Laluan pada peranti ini sahaja.</translation>
 <translation id="4099085513035183040">Tidak disokong pada Chromium Beta</translation>
 <translation id="4432744876818348753">Log masuk untuk memanfaatkan Chromium sepenuhnya</translation>
@@ -143,5 +144,6 @@ Perkara yang perlu dipertimbangkan:
 <translation id="9089354809943900324">Chromium sudah usang</translation>
 <translation id="9110075932708282655">Gunakan Chromium secara Lalai</translation>
 <translation id="921174536258924340">Chromium tidak dapat menyemak semua kata laluan. Cuba lagi esok atau <ph name="BEGIN_LINK" />semak kata laluan dalam Akaun Google anda.<ph name="END_LINK" /></translation>
+<translation id="971488683725792095">Gunakan Chromium secara automatik apabila anda mengetik pautan dalam mesej, dokumen dan apl lain.</translation>
 <translation id="985602178874221306">Pengarang Chromium</translation>
 </translationbundle>

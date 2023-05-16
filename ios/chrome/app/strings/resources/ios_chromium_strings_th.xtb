@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> ได้ใช้ Chromium และเก็บบุ๊กมาร์ก รหัสผ่าน รวมถึงการตั้งค่าอื่นๆ ไว้ในอุปกรณ์นี้</translation>
 <translation id="372658070733623520">โปรดยืนยันว่าเป็นคุณเพื่อใช้และบันทึกข้อมูล Chromium</translation>
 <translation id="3805899903892079518">Chromium ไม่มีสิทธิ์เข้าถึงรูปภาพหรือวิดีโอของคุณ เปิดใช้การเข้าถึงได้ในการตั้งค่า iOS &gt; ความเป็นส่วนตัว &gt; รูปภาพ</translation>
+<translation id="3955621079070267756">เปิด Chromium จากแอปใดก็ได้</translation>
 <translation id="4043291146360695975">รหัสผ่านจะบันทึกอยู่ในเครื่องมือจัดการรหัสผ่านในอุปกรณ์นี้เท่านั้น</translation>
 <translation id="4099085513035183040">ไม่รองรับใน Chromium เบต้า</translation>
 <translation id="4432744876818348753">ลงชื่อเข้าใช้เพื่อรับประโยชน์สูงสุดจาก Chromium</translation>
@@ -143,5 +144,6 @@
 <translation id="9089354809943900324">Chromium ล้าสมัย</translation>
 <translation id="9110075932708282655">ใช้ Chromium โดยค่าเริ่มต้น</translation>
 <translation id="921174536258924340">Chromium ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้หรือ<ph name="BEGIN_LINK" />ตรวจสอบรหัสผ่านในบัญชี Google<ph name="END_LINK" /></translation>
+<translation id="971488683725792095">ใช้ Chromium โดยอัตโนมัติเมื่อคุณแตะลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

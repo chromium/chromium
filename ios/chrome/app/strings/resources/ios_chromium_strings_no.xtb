@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> har brukt Chromium og etterlatt seg bokmerker, passord og andre innstillinger på denne enheten.</translation>
 <translation id="372658070733623520">For å bruke og lagre Chromium-data i Google-kontoen din, bekreft at det er deg.</translation>
 <translation id="3805899903892079518">Chromium har ikke tilgang til bildene eller videoene dine. Slå på tilgangen i iOS-innstillingene &gt; Personvern &gt; Bilder.</translation>
+<translation id="3955621079070267756">Åpne Chromium fra hvilken som helst app</translation>
 <translation id="4043291146360695975">Passord lagres i Passordlagring kun på denne enheten.</translation>
 <translation id="4099085513035183040">Støttes ikke i Chromium Beta</translation>
 <translation id="4432744876818348753">Logg på for å få mest mulig ut av Chromium.</translation>
@@ -143,5 +144,6 @@ Dette bør du tenke over:
 <translation id="9089354809943900324">Chromium er utdatert</translation>
 <translation id="9110075932708282655">Bruk Chromium som standard</translation>
 <translation id="921174536258924340">Chromium kunne ikke sjekke alle passordene. Prøv på nytt i morgen, eller <ph name="BEGIN_LINK" />sjekk passordene i Google-kontoen din<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">Bruk Chromium automatisk når du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

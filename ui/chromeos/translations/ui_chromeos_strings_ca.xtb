@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">No hi ha cap vídeo recent</translation>
 <translation id="3634507049637220048">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, gestionada per l'administrador, detalls</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elements moguts.</translation>
+<translation id="3658269352872031728">S'han seleccionat <ph name="SELECTED_FILE_COUNT" /> fitxers</translation>
 <translation id="3685122418104378273">La sincronització amb Google Drive està desactivada de manera predeterminada en utilitzar les dades mòbils.</translation>
 <translation id="3689865792480713551">Cancel·la <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, desactivada, <ph name="CONNECTION_STATUS" />, intensitat del senyal <ph name="SIGNAL_STRENGTH" />%, detalls</translation>
@@ -577,6 +578,7 @@
 <translation id="5533102081734025921">Imatge <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">S'està calculant la mida</translation>
 <translation id="554153475311314364">Grec (transliteració)</translation>
+<translation id="5554171655917412781">S'han seleccionat <ph name="SELECTED_FOLDERS_COUNT" /> carpetes</translation>
 <translation id="5580591966435005537">màquina virtual</translation>
 <translation id="5583640892426849032">Retrocés</translation>
 <translation id="5583664733673201137">L'amplada de la puntuació és completa</translation>
@@ -599,6 +601,7 @@
 <translation id="5724172041621205163">Tai amb teclat pattachote</translation>
 <translation id="57383366388012121">Darrer mes</translation>
 <translation id="5756666464756035725">QWERTY hongarès</translation>
+<translation id="5760252553414789727">S'han seleccionat <ph name="SELECTED_FILES_COUNT" /> elements</translation>
 <translation id="5763377084591234761">Alemany (Suïssa)</translation>
 <translation id="5769519078756170258">Amfitrió o domini que vols excloure</translation>
 <translation id="5775750595919327203">Urdú</translation>

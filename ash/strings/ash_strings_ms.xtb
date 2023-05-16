@@ -94,6 +94,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1351937230027495976">Runtuhkan menu</translation>
 <translation id="1360220746312242196">Apabila membuat carian pada halaman, akses padanan sebelumnya untuk membuat carian</translation>
+<translation id="1360788414852622716">Lumpuhkan profil. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="1364382257761975320">Untuk membuka kunci Chromebook anda, gunakan cap jari anda</translation>
 <translation id="1365866993922957110">Dapatkan kemaskinian automatik</translation>
 <translation id="1372545819342940910">Simpan meja untuk dirujuk lagi</translation>
@@ -545,6 +546,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3510164367642747937">Serlahkan kursor tetikus</translation>
 <translation id="3513798432020909783">Akaun diurus oleh <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Kemas kini peranti dalam masa 1 minit}other{Kemas kini peranti dalam masa # minit}}</translation>
+<translation id="3522979239100719575">Mencari profil yang tersedia. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="3526440770046466733">Buka pautan dalam tab baharu dan kekal pada tab semasa</translation>
 <translation id="353086728817903341">Disambungkan kepada <ph name="NUM_DEVICES" /> peranti</translation>
 <translation id="3533126039236445965">Apl dalam rak</translation>
@@ -1558,6 +1560,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8083540854303889870">Disimpan untuk kemudian</translation>
 <translation id="8091153018031979607">Bermula jam <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Kemaskinian automatik</translation>
+<translation id="8092380135549145188">Kawalan penatalan</translation>
 <translation id="8098591350844501178">Berhenti menghantar skrin ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Nyahsematkan apl daripada rak</translation>
 <translation id="8113423164597455979">Hidup, semua</translation>

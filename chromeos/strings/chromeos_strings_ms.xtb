@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> mengurus peranti ini dan mungkin dapat memantau aktiviti anda.</translation>
 <translation id="1478594628797167447">Pengimbas</translation>
 <translation id="1483493594462132177">Hantar</translation>
+<translation id="1488850966314959671">Tidak dapat menyambung kepada rangkaian ini menggunakan mana-mana APN tersuai yang didayakan. Hubungi pembawa mudah alih anda untuk mendapatkan maklumat lanjut.</translation>
 <translation id="1491076385728777984">Mengemas kini perisian tegar pada <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">tambahkan kelantangan</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> mengurus pengguna ini dan mungkin mengurus tetapan dan memantau aktiviti pengguna dari jauh.</translation>
@@ -217,6 +218,7 @@
 <translation id="2638662041295312666">Imej log masuk</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> dipilih</translation>
 <translation id="267442004702508783">muatkan semula</translation>
+<translation id="268270014981824665">malap papan kekunci</translation>
 <translation id="2712812801627182647">Kunci pengesahan TLS</translation>
 <translation id="2713444072780614174">Putih</translation>
 <translation id="2717139507051041123">Dayakan mod warna gelap</translation>
@@ -224,6 +226,7 @@
 <translation id="2744221223678373668">Dikongsi</translation>
 <translation id="2751739896257479635">Pengesahan Fasa 2 EAP</translation>
 <translation id="2783010256799387990">LULUS</translation>
+<translation id="2787435249130282949">semakin cerah papan kekunci</translation>
 <translation id="2789486458103222910">Okey</translation>
 <translation id="2805756323405976993">Apl</translation>
 <translation id="28232023175184696">Tidak dapat menyambung kepada Internet. Klik untuk mencuba lagi.</translation>
@@ -327,11 +330,13 @@
 <translation id="3749289110408117711">Nama fail</translation>
 <translation id="3771294271822695279">Fail Video</translation>
 <translation id="3784455785234192852">Kunci</translation>
+<translation id="380097101658023925">kawalan rgb</translation>
 <translation id="38114475217616659">Kosongkan semua sejarah</translation>
 <translation id="3820172043799983114">PIN tidak sah.</translation>
 <translation id="3824259034819781947">Lampirkan fail</translation>
 <translation id="3838338534323494292">Kata laluan baharu</translation>
 <translation id="3845880861638660475">Tekan <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> untuk menutup dialog.</translation>
+<translation id="3848280697030027394">menggelapkan papan kekunci</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3862598938296403232">Perihalan diperlukan</translation>
@@ -403,6 +408,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Lumpuhkan</translation>
 <translation id="439429847087949098">Memulakan semula <ph name="DEVICE_NAME" /></translation>
+<translation id="4395835743215824109">penyesuaian papan kekunci</translation>
 <translation id="4415951057168511744">Avatar Semasa</translation>
 <translation id="4422041425070339732">anak panah ke bawah</translation>
 <translation id="4425149324548788773">Drive Saya</translation>
@@ -426,6 +432,7 @@
 <translation id="455835558791489930">Bateri <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM Dibuka Kunci</translation>
 <translation id="4562494484721939086">Tiada perkhidmatan</translation>
+<translation id="4573777384450697571">Gagal - Sijil Tamat Tempoh</translation>
 <translation id="458794348635939462">Gagal untuk menyelesaikan semua hos</translation>
 <translation id="4593212453765072419">Pengesahan proksi diperlukan</translation>
 <translation id="4609350030397390689">Mengurangkan kecerahan papan kekunci</translation>
@@ -442,6 +449,7 @@
 <translation id="4731797938093519117">Akses ibu bapa</translation>
 <translation id="473775607612524610">Kemas kini</translation>
 <translation id="4744944742468440486">Maklumat yang berkaitan dengan pilihan anda</translation>
+<translation id="4771607256327216405">cerahkan papan kekunci</translation>
 <translation id="4773299976671772492">Dihentikan</translation>
 <translation id="4782311465517282004">Dapatkan takrif, terjemahan atau penukaran unit apabila anda mengklik kanan atau menyentuh &amp; menahan teks</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
@@ -490,6 +498,7 @@
 <translation id="500920857929044050">Hentikan ujian</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Apabila skrin anda melahu, tunjukkan foto, masa, cuaca dan maklumat media.</translation>
+<translation id="5038292761217083259">berbilang warna papan kekunci</translation>
 <translation id="5039804452771397117">Benarkan</translation>
 <translation id="5049856988445523908">SIM Dikunci (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nama kumpulan</translation>
@@ -539,7 +548,6 @@
 <translation id="5423849171846380976">Diaktifkan</translation>
 <translation id="5430931332414098647">Penambatan Segera</translation>
 <translation id="5431318178759467895">Warna</translation>
-<translation id="5456936324019847994">Tidak dapat bersambung pada mana-mana APN tersuai yang didayakan. Hubungi pembawa mudah alih anda untuk mendapatkan maklumat lanjut.</translation>
 <translation id="5457599981699367932">Semak Imbas sebagai Tetamu</translation>
 <translation id="54609108002486618">Diuruskan</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} percubaan lagi}other{{0} percubaan lagi}}</translation>
@@ -555,6 +563,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Imbas semula</translation>
 <translation id="5583640892426849032">Undur ruang</translation>
+<translation id="5584044598279886848">Tidak boleh melumpuhkan atau mengalih keluar APN ini. Pastikan APN didayakan dan dilampirkan ini dilumpuhkan atau dialih keluar.</translation>
 <translation id="5600027863942488546">Kekunci <ph name="KEY_NAME" /> diuji</translation>
 <translation id="5620281292257375798">Dalaman sahaja</translation>
 <translation id="5649768706273821470">Dengar</translation>
@@ -639,6 +648,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Hidupkan tema gelap</translation>
 <translation id="6285899124799306373">buka pelancar</translation>
+<translation id="629550705077076970">pemalapan papan kekunci</translation>
 <translation id="6302401976930124515">Ujian <ph name="TEST_NAME" /> telah dibatalkan</translation>
 <translation id="631063167932043783">Teroka apl</translation>
 <translation id="6319207335391420837">Kemas kini perisian tegar pada <ph name="DEVICE_NAME" /></translation>
@@ -657,6 +667,7 @@
 <translation id="6401427872449207797">carian penyemak imbas</translation>
 <translation id="6410257289063177456">Fail Imej</translation>
 <translation id="641081527798843608">Padanan subjek</translation>
+<translation id="6411934471898487866">kecerahan papan kekunci</translation>
 <translation id="6412715219990689313">Papan kekunci terbina dalam</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -710,7 +721,6 @@
 <translation id="6798678288485555829">Navigasi teks</translation>
 <translation id="680983167891198932">Kunci</translation>
 <translation id="6816797338148849397">Maklumat yang berkaitan dengan pilihan anda tersedia. Gunakan kekunci Anak panah ke atas untuk mengakses.</translation>
-<translation id="6838167112108853532">Tidak boleh melumpuhkan atau mengalih keluar APN ini. Pastikan APN didayakan yang dilampirkan ini dilumpuhkan atau dialih keluar.</translation>
 <translation id="6853312040151791195">Kadar penyahcasan</translation>
 <translation id="6889786074662672253">Semasa memulakan semula, jangan cabut palam peranti luaran ini atau matikan komputer anda. Anda boleh meminimumkan tetingkap ini. Proses ini mungkin mengambil masa beberapa minit dan peranti luaran anda mungkin tidak berfungsi pada masa ini.</translation>
 <translation id="6900701049656042631">Album ini tidak mengandungi sebarang foto. Untuk menambahkan foto, akses <ph name="LINK" /></translation>
@@ -808,10 +818,12 @@
 <translation id="7656388927906093505">Peranti ialah tetikus.</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7665800271478495366">Tukar avatar</translation>
+<translation id="7683228889864052081">rona papan kekunci</translation>
 <translation id="7690294790491645610">Sahkan kata laluan baharu</translation>
 <translation id="7701040980221191251">Tiada</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">cahaya papan kekunci</translation>
 <translation id="773153675489693198">Kiraan kitaran</translation>
 <translation id="7747039790905080783">Kunci prakongsi</translation>
 <translation id="7762130827864645708">Penukaran kata laluan anda berjaya. Sila gunakan kata laluan baharu mulai sekarang.</translation>
@@ -855,6 +867,7 @@
 <translation id="8075838845814659848">Baki cas</translation>
 <translation id="8076492880354921740">Tab</translation>
 <translation id="8082366717211101304">Tidak dapat menyelesaikan DNS daripada apl Android</translation>
+<translation id="8082644724189923105">zon papan kekunci</translation>
 <translation id="808894953321890993">Tukar kata laluan</translation>
 <translation id="8094062939584182041">Benarkan Google menghantar e-mel tentang isu ini kepada anda</translation>
 <translation id="8104083085214006426">Anda sedang menggunakan rangkaian terbuka dan tidak selamat</translation>
@@ -903,6 +916,7 @@
 <translation id="8456761643544401578">Mod gelap automatik</translation>
 <translation id="8461329675984532579">Nama pembekal tempatan</translation>
 <translation id="8475690821716466388">Rangkaian Wi-Fi selamat dengan protokol lemah WEP PSK</translation>
+<translation id="8476242415522716722">cahaya bawah papan kekunci</translation>
 <translation id="8477551185774834963">Kependaman DNS sedikit melebihi ambang yang dibenarkan</translation>
 <translation id="8483248364096924578">Alamat IP</translation>
 <translation id="8491311378305535241">Tidak dapat menyambung melalui tembok api ke laman web HTTP daripada apl Android</translation>
@@ -946,6 +960,7 @@
 <translation id="8845001906332463065">Dapatkan bantuan</translation>
 <translation id="8855781559874488009">Tidak dapat menyambung melalui tembok api ke laman web HTTP</translation>
 <translation id="885701979325669005">Storan</translation>
+<translation id="885704831271383379">semakin gelap papan kekunci</translation>
 <translation id="8863170912498892583">Dayakan tema gelap</translation>
 <translation id="8863888432376731307">Dapatkan <ph name="INTENT" /> untuk "<ph name="QUERY" />" dan pelbagai lagi</translation>
 <translation id="8864415976656252616">Tiada kandungan yang dicadangkan. Lihat kandungan bantuan paling popular.</translation>
@@ -998,6 +1013,7 @@
 <translation id="9173638680043580060">Kurang seminit lagi</translation>
 <translation id="917720651393141712">Ujian</translation>
 <translation id="9188992814426075118">Papan kekunci anda dapat memadankan kertas dinding anda secara automatik</translation>
+<translation id="9189000703457422362">Tidak dapat menyambung kepada rangkaian ini menggunakan APN yang dikesan secara automatik. Hubungi pembawa mudah alih anda untuk mendapatkan maklumat lanjut.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Tidak dapat menghubungi get laluan daripada apl Android</translation>
 <translation id="9211490828691860325">Semua meja</translation>

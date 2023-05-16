@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Жаңа бейнелер жоқ</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, әкімшіңіз басқарады, мәліметтер</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> элемент жылжытылды.</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> файл таңдалған</translation>
 <translation id="3685122418104378273">Ұялы деректерді пайдалану кезінде әдепкі бойынша Google Drive синхрондауы өшіріледі.</translation>
 <translation id="3689865792480713551">Келесі әрекеттен бас тарту: <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, өшірілді, <ph name="CONNECTION_STATUS" />, сигнал күші <ph name="SIGNAL_STRENGTH" />%, мәліметтер</translation>
@@ -576,6 +577,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> суреті</translation>
 <translation id="5534520101572674276">Көлемін есептеу</translation>
 <translation id="554153475311314364">Грек (транслитерация)</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> қалта таңдалған</translation>
 <translation id="5580591966435005537">виртуалдық машина</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Тыныс белгілерінің ені – толық</translation>
@@ -598,6 +600,7 @@
 <translation id="5724172041621205163">Тай (Pattachote пернетақтасымен)</translation>
 <translation id="57383366388012121">Соңғы ай</translation>
 <translation id="5756666464756035725">Венгр QWERTY пернетақтасы</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> элемент таңдалған</translation>
 <translation id="5763377084591234761">Неміс (Швейцария)</translation>
 <translation id="5769519078756170258">Қамтылмайтын хост не домен</translation>
 <translation id="5775750595919327203">Урду</translation>

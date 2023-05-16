@@ -1794,6 +1794,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2669157090883237118">Non modificare la configurazione di <ph name="PRODUCT_OS_NAME" /> consigliata.</translation>
 <translation id="2672012807430078509">Controlla l'attivazione del protocollo di autenticazione NTLM per i montaggi SMB</translation>
 <translation id="2673363037046384711">L'utente finale può attivare o disattivare la modalità ad alta efficienza.</translation>
+<translation id="2673968385134502798">Giochi</translation>
 <translation id="2678503605767349615">Certificati client a livello di dispositivo richiesti</translation>
 <translation id="268134026533587276">Schermata di blocco salvaschermo attivata.</translation>
 <translation id="268577405881275241">Attiva la funzione proxy di compressione dei dati</translation>
@@ -2177,6 +2178,10 @@ Il criterio <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> potrebbe eseguire l'
           Se questo criterio non viene impostato, inizialmente il puntatore grande è disattivato nella schermata di accesso, ma l'utente può attivarlo in qualsiasi momento.</translation>
 <translation id="3027837632741099453">La modalità Risparmio energetico viene attivata quando il dispositivo è alimentato a batteria.</translation>
 <translation id="3030000825273123558">Attiva rapporti sulle metriche</translation>
+<translation id="30300807616984726">Consente di generare report sui dati dell'inventario per app per gli utenti affiliati.
+
+      La configurazione del criterio consente di controllare la generazione di report sugli eventi relativi a installazione, avvio e disinstallazione delle app per i tipi di app specificati.
+      Se il criterio non viene configurato, non verranno generati report sugli eventi delle app.</translation>
 <translation id="3030232909811556512">Se questo criterio è disattivato, non è possibile impostare l'immagine dell'avatar di <ph name="PRODUCT_OS_NAME" /> utilizzando file locali, la fotocamera del dispositivo o l'immagine del profilo Google dell'utente.
 
 L'utente può impostare l'immagine avatar da una di queste opzioni se questo criterio viene attivato o se non viene configurato.</translation>
@@ -2645,6 +2650,7 @@ Se un'estensione specificata in questo criterio non viene installata, la navigaz
 <translation id="3420141485959154417">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> consente di specificare l'URL del motore di ricerca utilizzato per le immagini. Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME" /> viene configurato, la ricerca di immagini richiede invece l'utilizzo del metodo POST.
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POLICY_NAME" /> non viene configurato, non viene utilizzata alcuna ricerca di immagini.</translation>
+<translation id="3423703250826790403">App per Android</translation>
 <translation id="3426434797050451264">Questo criterio può essere utilizzato anche per specificare le app Android come gestori di file predefiniti.</translation>
 <translation id="3428247105888806363">Attiva previsione di rete</translation>
 <translation id="3432863169147125747">Consente di gestire le impostazioni di stampa.</translation>
@@ -2937,6 +2943,11 @@ Dalla versione 114 in poi, il criterio <ph name="DOH_SALT_POLICY_NAME" /> è fac
           Si tratta di un criterio temporaneo di cui è prevista la rimozione in <ph name="PRODUCT_NAME" /> 107. Questo termine ultimo potrebbe essere esteso nel caso in cui le aziende dovessero averne bisogno.
           </translation>
 <translation id="3678069907945250643">Consenti l'accesso a Google Foto dall'app di personalizzazione</translation>
+<translation id="3683696721696720186">Consente di configurare un elenco dei tipi di dati di navigazione che dovrebbero essere eliminati alla chiusura di tutte le finestre del browser da parte dell'utente. Tra i tipi di dati disponibili ci sono: cronologia di navigazione (<ph name="DATA_TYPE_BROWSING_HISTORY" />), cronologia dei download (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cache <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, compilazione automatica (<ph name="DATA_TYPE_AUTOFILL" />), password (<ph name="DATA_TYPE_PASSWORD" />), impostazioni sito (<ph name="DATA_TYPE_SITE_SETTINGS" />) e dati di app ospitate (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Questo criterio non ha la precedenza su <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+Questo criterio richiede l'impostazione del criterio <ph name="SYNC_DISABLED_POLICY_NAME" /> su true, altrimenti verrà ignorato. Se questo criterio viene impostato a livello di piattaforma, la sincronizzazione dovrebbe essere disattivata a livello di piattaforma. Se questo criterio viene impostato a livello di utente, la sincronizzazione dovrebbe essere disattivata per quell'utente affinché il criterio venga applicato.
+
+      Se <ph name="PRODUCT_NAME" /> non si chiude correttamente (ad esempio, in caso di arresto anomalo del browser o del sistema operativo), i dati di navigazione verranno cancellati al successivo caricamento del profilo.</translation>
 <translation id="3685979383016152590">La configurazione del criterio consente di determinare quale criterio di accesso applicare per la configurazione collettiva delle stampanti, al fine di stabilire quali stampanti del criterio <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> mettere a disposizione degli utenti.
 
       * Per l'opzione <ph name="PRINTERS_BLOCKLIST" /> (valore 0) viene usato il valore <ph name="PRINTERS_BULK_BLOCKLIST" /> per limitare l'accesso alle stampanti specificate.
@@ -3501,6 +3512,7 @@ Nota: il blocco degli URL interni chrome://* e chrome-untrusted://* può causare
       Nelle sessioni kiosk non sono previsti periodi di tolleranza e non vengono inviate notifiche relative al riavvio.
 </translation>
 <translation id="4187576366596772431">Blocca l'API WebHID su questi siti</translation>
+<translation id="4189872355465413041">Applicazioni di sistema</translation>
 <translation id="4190316993598857632">Abilita la modifica dei preferiti</translation>
 <translation id="4192388905594723944">URL per la convalida del token di autenticazione del client di accesso remoto</translation>
 <translation id="4195698007674066525">Imposta una tastiera numerica come predefinita per l'inserimento delle password</translation>
@@ -3604,6 +3616,7 @@ Nota: il blocco degli URL interni chrome://* e chrome-untrusted://* può causare
 
 Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agli utenti di connettersi esclusivamente ai servizi Bluetooth specificati, a meno che l'elenco non sia vuoto, nel qual caso è possibile utilizzare tutti i servizi. Gli ID univoci universali prenotati da Bluetooth SIG possono essere rappresentati come <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> o <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. Gli ID univoci universali personalizzati possono essere rappresentati come <ph name="BLUETOOTH_CUSTOM_UUID" />. Gli ID univoci universali non distinguono tra maiuscole e minuscole. Se questo criterio non viene configurato, gli utenti possono connettersi a qualsiasi servizio Bluetooth.</translation>
 <translation id="4332177773549877617">Registra eventi per le installazioni di app Android</translation>
+<translation id="4333940819293342439">Frequenza di raccolta della telemetria di utilizzo delle app in millisecondi.</translation>
 <translation id="4341199399451274159">Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attivo, l'assegnazione di un valore al criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> consente di specificare le codifiche dei caratteri supportate dal provider di ricerca. Le codifiche sono nomi di pagine codificati come UTF-8, GB2312 e ISO-8859-1. Vengono provate nell'ordine indicato.
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> non viene configurato, viene utilizzato il valore UTF-8.</translation>
@@ -4112,6 +4125,7 @@ Questo criterio è temporaneo e verrà rimosso non appena verrà lanciata la fun
 
   Se questo criterio viene impostato su false o se non viene configurato, la cancellazione dell'eco per l'audio di sistema potrebbe comunque essere attivata in base al relativo piano di lancio, ma non verrà applicata in modo forzato da questo criterio.</translation>
 <translation id="4801512016965057443">Consenti roaming dati mobile</translation>
+<translation id="4801647366128872782">Specifica gli URL che consentono la generazione di report sulla tecnologia precedente</translation>
 <translation id="4802744647065138872">Limita il numero di istantanee di dati utente conservate per essere utilizzate in caso di rollback di emergenza</translation>
 <translation id="4802905909524200151">Configura il comportamento di aggiornamento del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" /></translation>
 <translation id="4804828344300125154">Riavvia sempre all'uscita dell'utente.</translation>
@@ -5279,6 +5293,10 @@ Se questo criterio viene disattivato, la protezione delle estensioni di <ph name
 
       Se il criterio viene impostato su Disattivato, non viene disattivato l'accesso remoto, ma sono consentite soltanto connessioni dalla stessa rete (non da NAT Traversal o relay).</translation>
 <translation id="5895569286536062756">Attiva Seleziona per ascoltare nella schermata di accesso</translation>
+<translation id="5895861015839311441">Consente di generare report sui dati di telemetria di utilizzo delle app per gli utenti affiliati.
+
+      La configurazione del criterio consente di controllare i report sulla telemetria di utilizzo delle app per i tipi di app specificati.
+      Se il criterio non viene configurato, non verranno generati report sulla telemetria di utilizzo delle app.</translation>
 <translation id="5897234314586602143">Mostra intestazioni e piè di pagina nell'anteprima di stampa</translation>
 <translation id="5897913798715600338">Carica la batteria con la tecnologia di ricarica veloce.</translation>
 <translation id="5898486742390981550">Quando più utenti eseguono l'accesso, solo l'utente principale può utilizzare le app Android.</translation>
@@ -5516,6 +5534,7 @@ Se questo criterio non viene configurato o se l'elenco non contiene riferimenti 
       Quando il criterio non è configurato, i report vengono caricati ogni 24 ore.
       Quando il criterio è configurato, il numero di ore tra due caricamenti di report consecutivi viene definito da questo criterio.
       </translation>
+<translation id="614551633868957694">App ed estensioni di Chrome</translation>
 <translation id="614616930188030377">I pattern di questo elenco verranno confrontati con l'origine di sicurezza dell'URL richiedente.
       Se viene trovata una corrispondenza o se chrome://flags/#enable-webrtc-hide-local-ips-with-mdns è disattivato, gli indirizzi IP locali vengono mostrati nei candidati ICE WebRTC.
       In caso contrario, gli indirizzi IP locali vengono nascosti tramite nomi host mDNS.
@@ -5832,6 +5851,20 @@ Per maggiori informazioni, visita la pagina https://developer.chrome.com/blog/im
 <translation id="6404064917675764807">Non segnalare eventi di sessioni CRD</translation>
 <translation id="6404360891305375004">Consenti condivisioni file di rete</translation>
 <translation id="6407093060083181305">Configura la lista bloccata di installazione delle estensioni</translation>
+<translation id="6407792833351198330">Consente di controllare se una pagina che utilizza tecnologie precedenti verrà inclusa nel report in base al relativo URL.
+
+Se il criterio viene configurato, gli URL il cui prefisso corrisponde a una voce della lista consentita verranno utilizzati per generare il report e caricarlo. Gli URL senza corrispondenza verranno ignorati.
+Se il criterio non viene configurato o se viene impostato su un elenco vuoto, non verrà generato alcun report.
+
+Per i pattern corrispondenti viene usato un formato simile a quello utilizzato per i pattern del criterio "<ph name="URL_BLOCKLIST_POLICY_NAME" />", documentati all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. Con alcune eccezioni riportate di seguito:
+ * Nessun supporto del carattere jolly "*".
+ * Schema, porta e query vengono ignorati.
+ * Per poter trovare una corrispondenza, il sottodominio deve sempre essere specificato.
+ * Puoi aggiungere al massimo 100 URL nella lista consentita.
+
+Per <ph name="PRODUCT_NAME" />, questo criterio viene applicato soltanto se la macchina viene registrata con il token <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
+
+Per maggiori informazioni sulle tecnologie precedenti, visita la pagina all'indirizzo https://chromestatus.com/features.</translation>
 <translation id="640827304541402854">Viene disattivato l'attraversamento firewall da host di accesso remoto</translation>
 <translation id="6412352702230183710">Consenti solo host di messaggi nativi a livello di sistema</translation>
 <translation id="6417265370957905582">Assistente Google</translation>
@@ -5994,6 +6027,7 @@ Il salvaschermo dell'utente mostra le immagini a cui fa riferimento il criterio 
 <translation id="6556586932263358975">Consenti il blocco dello schermo</translation>
 <translation id="6557178935482719861">Disattiva protezione contro il phishing lato client di Navigazione sicura</translation>
 <translation id="6558013557780651644">Ritardo prima dell'esecuzione di azioni in caso di inattività</translation>
+<translation id="6558812160831988140">Generazione di report sull'utilizzo delle app</translation>
 <translation id="6559057113164934677">Non consentire ad alcun sito di accedere alla fotocamera e al microfono</translation>
 <translation id="65591220958874949">Utilizza il client DNS integrato su Windows, macOS, Android e ChromeOS</translation>
 <translation id="6559221564468029245">Se il criterio viene impostato su Attivato o se non viene configurato, l'utente non viene considerato inattivo durante la riproduzione di audio. In questo modo non viene raggiunto il timeout di inattività e non viene compiuta l'azione per l'inattività. Tuttavia, lo schermo viene ancora oscurato, spento e bloccato dopo i timeout configurati, nonostante l'attività audio.
@@ -7243,14 +7277,6 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di disattivazione dello schermo (se impostato) e al ritardo di inattività.</translation>
 <translation id="7680437377926096177">Impedisci la visualizzazione della finestra di dialogo di disconnessione nell'ultima finestra chiusa.</translation>
-<translation id="7682459947751785310">Questo criterio può essere usato temporaneamente per forzare l'attivazione del supporto dell'API PPB_VideoDecoder(Dev).
-
-Se il criterio non viene configurato o se viene impostato su Disabled, il browser deciderà se l'API è supportata o meno.
-Se il criterio viene impostato su Enabled, l'API sarà supportata.
-
-Questo criterio può essere usato qualora la nostra procedura in corso di eliminazione del supporto di questa API presenti problemi. Se devi usare il criterio, invia una segnalazione di bug su crbug.com spiegando il tuo caso d'uso e aggiungendo in copia per conoscenza {blundell, vasilyt}@chromium.org. Il criterio sarà valido fino alla versione 114 di <ph name="PRODUCT_NAME" />, dopodiché il supporto di questa API dovrebbe essere eliminato senza condizioni.
-
-NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai processi del renderer appena avviati mentre il browser è in esecuzione.</translation>
 <translation id="7683777542468165012">Aggiornamento dinamico delle norme</translation>
 <translation id="7687943045976362719">Se questa norma viene impostata, i tipi di contenuto specificati vengono gestiti da <ph name="PRODUCT_FRAME_NAME" />.
 
@@ -7396,6 +7422,9 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7832225468415136704">Impedisci a Chrome Software Cleaner di eseguire scansioni periodiche del sistema e disattiva le scansioni manuali</translation>
 <translation id="7833148823006528332">Identificatore dell'app Android, ad esempio "com.google.android.gm" per Gmail.</translation>
 <translation id="7835218570504220753">Disattiva i clic automatici</translation>
+<translation id="7839124608155212387">La frequenza di raccolta della telemetria di utilizzo delle app sui dispositivi registrati per gli utenti affiliati. Il valore minimo consentito è 5 minuti.
+
+      Se il criterio non viene configurato, viene applicata la frequenza predefinita di 15 minuti.</translation>
 <translation id="7839180815400079700">Se il criterio <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> viene impostato su Attivato, la configurazione di <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> consente di impostare la variazione giornaliera dei picchi energetici.
 
       Se il criterio non viene configurato, la variazione dei picchi energetici rimane disabilitata.
@@ -7871,6 +7900,7 @@ Se è configurato uno dei seguenti criteri, è necessario impostare questo crite
 <translation id="8269238942896230153">Un account gestito deve essere un account principale. L'importazione dei dati di navigazione esistenti è consentita al momento della creazione del profilo</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Attiva l'interfaccia utente relativa alla connessione sul computer desktop host quando è attiva una connessione</translation>
+<translation id="8273183018575414926">App web progressive</translation>
 <translation id="8274603902181597201">Cancella la home directory ecryptfs dell'utente e inizia con una nuova home directory criptata tramite ext4</translation>
 <translation id="8274926413890711289">Attiva i controlli di reporting granulare</translation>
 <translation id="8275103737670730746">Consenti di chiamare le API del selettore file o della directory senza un gesto precedente dell'utente.</translation>
@@ -8221,6 +8251,7 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 <translation id="8597758693275075382">Le stringhe OEM SMBIOS da passare alla VM durante l'installazione. Il valore predefinito è l'elenco vuoto.</translation>
 <translation id="8598786284856179541">Attiva la generazione di report sulle informazioni di versione</translation>
 <translation id="859937827887158048">Non consentire i download di aggiornamento automatico peer-to-peer</translation>
+<translation id="8600280933078435582">Applicazioni per Linux</translation>
 <translation id="8603454805657060638">La configurazione del criterio consente all'amministratore di modificare l'indirizzo MAC (Media Access Control) quando un dispositivo viene inserito nel dock. Quando alcuni modelli di dispositivi vengono inseriti nel dock, per impostazione predefinita l'indirizzo MAC del dock designato per il dispositivo viene utilizzato per identificare il dispositivo su Ethernet.
 
       Se "DeviceDockMacAddress" viene selezionato o se il criterio non viene configurato, viene utilizzato l'indirizzo MAC del dock designato per il dispositivo.
@@ -8495,6 +8526,7 @@ Se il criterio non viene configurato o se viene disattivato, i dati dell'utente 
 <translation id="8860342862142842017">Disattiva l'applicazione di Certificate Transparency per un elenco di hash subjectPublicKeyInfo</translation>
 <translation id="8860894781631833477">Gli utenti possono configurare il canale di rilascio di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8864975621965365890">Consente di eliminare il messaggio di richiesta di turndown che compare quando un sito viene visualizzato da <ph name="PRODUCT_FRAME_NAME" />.</translation>
+<translation id="8866430022832109569">Generazione di report sull'inventario per app</translation>
 <translation id="886645881209114007">Consenti agli utenti di usare un <ph name="PLUGIN_VM_NAME" /> su <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="8867894831390233044">Consente di stabilire se gli utenti possono o meno usare il debug remoto.
 

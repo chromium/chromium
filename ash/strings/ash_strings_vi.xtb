@@ -94,6 +94,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1346748346194534595">Phải</translation>
 <translation id="1351937230027495976">Thu gọn menu</translation>
 <translation id="1360220746312242196">Khi tìm kiếm trên trang, hãy chuyển về kết quả phù hợp trước cho nội dung tìm kiếm</translation>
+<translation id="1360788414852622716">Đang vô hiệu hoá hồ sơ. Quá trình này có thể mất vài phút.</translation>
 <translation id="1364382257761975320">Hãy dùng vân tay của bạn để mở khóa Chromebook</translation>
 <translation id="1365866993922957110">Nhận bản cập nhật tự động</translation>
 <translation id="1372545819342940910">Lưu không gian làm việc để dùng sau</translation>
@@ -539,6 +540,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3510164367642747937">Đánh dấu con trỏ chuột</translation>
 <translation id="3513798432020909783">Người quản lý tài khoản: <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Cập nhật thiết bị trong vòng 1 phút}other{Cập nhật thiết bị trong vòng # phút}}</translation>
+<translation id="3522979239100719575">Đang tìm hồ sơ có sẵn. Quá trình này có thể mất vài phút.</translation>
 <translation id="3526440770046466733">Mở đường liên kết trong thẻ mới và tiếp tục sử dụng thẻ hiện tại</translation>
 <translation id="353086728817903341">Đã kết nối với <ph name="NUM_DEVICES" /> thiết bị</translation>
 <translation id="3533126039236445965">Ứng dụng trong kệ</translation>
@@ -1540,6 +1542,7 @@ Mới cài đặt</translation>
 <translation id="8083540854303889870">Lưu để dùng sau</translation>
 <translation id="8091153018031979607">Bắt đầu lúc <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Cập nhật tự động</translation>
+<translation id="8092380135549145188">Chế độ điều khiển cuộn</translation>
 <translation id="8098591350844501178">Dừng truyền màn hình tới <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Bỏ ghim ứng dụng khỏi kệ</translation>
 <translation id="8113423164597455979">Bật, tất cả</translation>

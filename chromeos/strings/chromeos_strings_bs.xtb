@@ -217,6 +217,7 @@
 <translation id="2638662041295312666">Slika prilikom prijave</translation>
 <translation id="2640549051766135490">Odabran je album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="267442004702508783">osvježavanje</translation>
+<translation id="268270014981824665">zatamnjena tipkovnica</translation>
 <translation id="2712812801627182647">Ključ za TLS autentifikaciju</translation>
 <translation id="2713444072780614174">Bijela</translation>
 <translation id="2717139507051041123">Omogućavanje načina rada u tamnoj boji</translation>
@@ -224,6 +225,7 @@
 <translation id="2744221223678373668">Dijeljeno</translation>
 <translation id="2751739896257479635">EAP faza 2 autentifikacije</translation>
 <translation id="2783010256799387990">USPJEŠNO</translation>
+<translation id="2787435249130282949">svjetlija tipkovnica</translation>
 <translation id="2789486458103222910">Uredu</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="28232023175184696">Nije moguće povezivanje na internet. Kliknite da pokušate ponovo.</translation>
@@ -327,11 +329,13 @@
 <translation id="3749289110408117711">Naziv fajla</translation>
 <translation id="3771294271822695279">Video fajlovi</translation>
 <translation id="3784455785234192852">Zaključano</translation>
+<translation id="380097101658023925">kontrole rgb</translation>
 <translation id="38114475217616659">Obriši svu historiju</translation>
 <translation id="3820172043799983114">Nevažeći PIN.</translation>
 <translation id="3824259034819781947">Prilaganje fajlova</translation>
 <translation id="3838338534323494292">Nova lozinka</translation>
 <translation id="3845880861638660475">Pritisnite <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> i <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> da zatvorite dijaloški okvir.</translation>
+<translation id="3848280697030027394">tamna tipkovnica</translation>
 <translation id="385051799172605136">Nazad</translation>
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="3862598938296403232">Potreban je opis</translation>
@@ -403,6 +407,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Onemogući</translation>
 <translation id="439429847087949098">Ponovno pokretanje uređaja <ph name="DEVICE_NAME" /></translation>
+<translation id="4395835743215824109">prilagodba tipkovnice</translation>
 <translation id="4415951057168511744">Trenutni avatar</translation>
 <translation id="4422041425070339732">strelica nadolje</translation>
 <translation id="4425149324548788773">Moj disk</translation>
@@ -426,6 +431,7 @@
 <translation id="455835558791489930">Baterija: <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM je otključan</translation>
 <translation id="4562494484721939086">Nema usluge</translation>
+<translation id="4573777384450697571">Nije uspjelo – certifikat je istekao</translation>
 <translation id="458794348635939462">Rješavanje svih hostova nije uspjelo</translation>
 <translation id="4593212453765072419">Potrebna je autentifikacija proksi servera</translation>
 <translation id="4609350030397390689">Smanjivanje osvjetljenja tastature</translation>
@@ -442,6 +448,7 @@
 <translation id="4731797938093519117">Pristup roditelja</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4744944742468440486">Informacije u vezi s vašim odabirom</translation>
+<translation id="4771607256327216405">posvjetljivanje tipkovnice</translation>
 <translation id="4773299976671772492">Zaustavljeno</translation>
 <translation id="4782311465517282004">Dobijte definicije, prijevode ili pretvaranje jedinica kada kliknete desnim klikom na tekst ili ga dodirnete i zadržite</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotografija</translation>
@@ -490,6 +497,7 @@
 <translation id="500920857929044050">Zaustavi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Kada je ekran neaktivan, prikazuju se fotografije, sat, vrijeme i medijske informacije.</translation>
+<translation id="5038292761217083259">višebojna tipkovnica</translation>
 <translation id="5039804452771397117">Dozvoli</translation>
 <translation id="5049856988445523908">SIM je zaključan (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Naziv grupe</translation>
@@ -539,7 +547,6 @@
 <translation id="5423849171846380976">Aktivirano</translation>
 <translation id="5430931332414098647">Trenutno dijeljenje internetske veze</translation>
 <translation id="5431318178759467895">Boja</translation>
-<translation id="5456936324019847994">Nije se moguće povezati ni s jednim omogućenim prilagođenim APN-om. Kontaktirajte mobilnog operatera za više informacija.</translation>
 <translation id="5457599981699367932">Pregledajte kao gost</translation>
 <translation id="54609108002486618">Upravljani</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Preostao je još {0} pokušaj}one{Preostao je još {0} pokušaj}few{Preostala su još {0} pokušaja}other{Preostalo je još {0} pokušaja}}</translation>
@@ -639,6 +646,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Uključi tamnu temu</translation>
 <translation id="6285899124799306373">otvaranje pokretača</translation>
+<translation id="629550705077076970">zatamnjenje tipkovnice</translation>
 <translation id="6302401976930124515">Test "<ph name="TEST_NAME" />" je otkazan</translation>
 <translation id="631063167932043783">Aplikacija Istraži</translation>
 <translation id="6319207335391420837">Ažurirajte firmver na uređaju <ph name="DEVICE_NAME" /></translation>
@@ -657,6 +665,7 @@
 <translation id="6401427872449207797">pretraživanje u pregledniku</translation>
 <translation id="6410257289063177456">Fajlovi slike</translation>
 <translation id="641081527798843608">Podudarnost predmeta</translation>
+<translation id="6411934471898487866">svjetlina tipkovnice</translation>
 <translation id="6412715219990689313">Ugrađena tastatura</translation>
 <translation id="6417265370957905582">Google Asistent</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -710,7 +719,6 @@
 <translation id="6798678288485555829">Kretanje kroz tekst</translation>
 <translation id="680983167891198932">Ključ</translation>
 <translation id="6816797338148849397">Dostupne su informacije u vezi s vašim odabirom. Pristupite tipkom strelice nagore.</translation>
-<translation id="6838167112108853532">Nije moguće onemogućiti ili ukloniti APN. Provjerite jesu li omogućeni priloženi APN-ovi onemogućeni ili uklonjeni.</translation>
 <translation id="6853312040151791195">Brzina pražnjenja</translation>
 <translation id="6889786074662672253">Dok traje ponovno pokretanje, nemojte iskopčati ovaj vanjski uređaj ili isključiti računar. Ovaj prozor možete minimizirati. Ovo može potrajati nekoliko minuta. Moguće je da za to vrijeme vanjski uređaj neće funkcionirati.</translation>
 <translation id="6900701049656042631">Album ne sadrži nijednu fotografiju. Da dodate fotografije, idite na <ph name="LINK" /></translation>
@@ -740,6 +748,7 @@
 <translation id="7130438335435247835">Naziv pristupne tačke (APN)</translation>
 <translation id="7131634559772719176">Potvrdite zadane postavke</translation>
 <translation id="7134436342991564651">{0,plural, =1{Postavite naziv servera}one{Postavite naziv servera}few{Postavite naziv servera}other{Postavite naziv servera}}</translation>
+<translation id="7135814714616751706">Pretražite prečace</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
 <translation id="7144878232160441200">Pokušajte ponovo.</translation>
 <translation id="714876143603641390">Povezivost LAN-a</translation>
@@ -770,6 +779,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; pritisnite tipku za pretraživanje i tipku za razmak da vidite rezultat u Google Pretraživanju.</translation>
 <translation id="7343649194310845056">Mrežni uređaji</translation>
+<translation id="7353413232959255829">Rezultat pretraživanja <ph name="LIST_POSITION" /> od <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Pritisnite Enter da biste otvorili prečac.</translation>
 <translation id="7359657277149375382">Vrsta fajla</translation>
 <translation id="73631062356239394">Dijeljenje dijagnostičkih podataka</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -806,10 +816,12 @@
 <translation id="7656388927906093505">Uređaj je miš.</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7665800271478495366">Promjena avatara</translation>
+<translation id="7683228889864052081">nijansa tipkovnice</translation>
 <translation id="7690294790491645610">Potvrdite novu lozinku</translation>
 <translation id="7701040980221191251">Nema</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">svjetlo tipkovnice</translation>
 <translation id="773153675489693198">Broj ciklusa</translation>
 <translation id="7747039790905080783">Unaprijed dijeljeni ključ</translation>
 <translation id="7762130827864645708">Uspješno ste promijenili lozinku. Od sada koristite novu lozinku.</translation>
@@ -853,6 +865,7 @@
 <translation id="8075838845814659848">Preostali nivo napunjenosti</translation>
 <translation id="8076492880354921740">Kartice</translation>
 <translation id="8082366717211101304">Nije moguće razriješiti DNS iz Android aplikacija</translation>
+<translation id="8082644724189923105">zona tipkovnice</translation>
 <translation id="808894953321890993">Promijeni lozinku</translation>
 <translation id="8094062939584182041">Dozvolite Googleu da vam šalje e-poruke o ovom problemu</translation>
 <translation id="8104083085214006426">Koristite otvorenu i nezaštićenu mrežu</translation>
@@ -901,6 +914,7 @@
 <translation id="8456761643544401578">Automatski tamni način rada</translation>
 <translation id="8461329675984532579">Naziv mobilnog operatera</translation>
 <translation id="8475690821716466388">WiFi mreža je zaštićena slabim protokolom WEP PSK</translation>
+<translation id="8476242415522716722">pozadinsko osvjetljenje tipkovnice</translation>
 <translation id="8477551185774834963">Latentnost DNS-a je malo iznad dozvoljenog praga</translation>
 <translation id="8483248364096924578">IP adresa</translation>
 <translation id="8491311378305535241">Nije se moguće povezati putem zaštitnog zida s HTTP web lokacijama iz Android aplikacija</translation>
@@ -944,6 +958,7 @@
 <translation id="8845001906332463065">Potražite pomoć</translation>
 <translation id="8855781559874488009">Nije se moguće povezati putem zaštitnog zida s HTTP web lokacijama</translation>
 <translation id="885701979325669005">Pohrana</translation>
+<translation id="885704831271383379">tamnija tipkovnica</translation>
 <translation id="8863170912498892583">Omogući tamnu temu</translation>
 <translation id="8863888432376731307"><ph name="INTENT" /> za upit "<ph name="QUERY" />" i drugo</translation>
 <translation id="8864415976656252616">Nema predloženih sadržaja. Pogledajte najpopularniji sadržaj za pomoć.</translation>
