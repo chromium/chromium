@@ -30,8 +30,10 @@
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_ukm.h"
 #include "ui/base/ime/ash/text_input_target.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 namespace ash::input_method {
@@ -160,6 +162,24 @@ bool IsLongpressEnabledControlV(const ui::KeyEvent& event) {
 
   return event.key_code() == ui::VKEY_V &&
          (event.flags() & kModifierKeysMask) == ui::EF_CONTROL_DOWN;
+}
+
+// Returns the location to which the clipboard history menu should anchor. When
+// possible, this anchor is where a clipboard history item would be pasted if
+// the user made a selection; otherwise, this function returns a point at (0,0).
+gfx::Rect GetClipboardHistoryMenuAnchor() {
+  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
+  if (!input_context) {
+    return gfx::Rect();
+  }
+
+  ui::TextInputClient* input_client =
+      input_context->GetInputMethod()->GetTextInputClient();
+  if (!input_client) {
+    return gfx::Rect();
+  }
+
+  return input_client->GetCaretBounds();
 }
 
 void RecordMultiWordTextInputState(
@@ -464,10 +484,9 @@ void AssistiveSuggester::OnLongpressDetected() {
   }
 
   if (IsLongpressEnabledControlV(current_longpress_keydown_.value())) {
-    const auto anchor_rect =
-        IMEBridge::Get()->GetInputContextHandler()->GetTextFieldBounds();
     if (Shell::Get()->clipboard_history_controller()->ShowMenu(
-            anchor_rect, ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
+            GetClipboardHistoryMenuAnchor(),
+            ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
             crosapi::mojom::ClipboardHistoryControllerShowSource::
                 kControlVLongpress,
             base::BindOnce(&AssistiveSuggester::OnClipboardHistoryMenuClosing,
