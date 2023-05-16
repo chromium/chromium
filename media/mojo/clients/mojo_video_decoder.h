@@ -130,7 +130,7 @@ class MojoVideoDecoder final : public VideoDecoder,
   OutputCB output_cb_;
   WaitingCB waiting_cb_;
   uint64_t decode_counter_ = 0;
-  std::map<uint64_t, DecodeCB> pending_decodes_;
+  base::flat_map<uint64_t, DecodeCB> pending_decodes_;
   base::OnceClosure reset_cb_;
 
   // DecodeBuffer/VideoFrame timestamps for histogram/tracing purposes. Must be

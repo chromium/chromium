@@ -328,6 +328,7 @@ void MojoVideoDecoder::Reset(base::OnceClosure reset_cb) {
 void MojoVideoDecoder::OnResetDone() {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(pending_decodes_.empty());
   can_read_without_stalling_ = true;
   std::move(reset_cb_).Run();
 }
