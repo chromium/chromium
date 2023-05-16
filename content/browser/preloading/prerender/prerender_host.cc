@@ -956,10 +956,12 @@ void PrerenderHost::SetInitialNavigation(NavigationRequest* navigation) {
 
 void PrerenderHost::SetTriggeringOutcome(PreloadingTriggeringOutcome outcome) {
   if (initiator_devtools_navigation_token().has_value()) {
+    // Report the current preloading outcome. Regarding prerender_status, it's
+    // not finalized yet and will be reported on failure.
     devtools_instrumentation::DidUpdatePrerenderStatus(
         initiator_frame_tree_node_id(),
         initiator_devtools_navigation_token().value(), prerendering_url(),
-        outcome);
+        outcome, /*prerender_status=*/absl::nullopt);
   }
 
   if (!attempt_)
@@ -1049,7 +1051,7 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
         devtools_instrumentation::DidUpdatePrerenderStatus(
             initiator_frame_tree_node_id(),
             initiator_devtools_navigation_token().value(), prerendering_url(),
-            PreloadingTriggeringOutcome::kFailure);
+            PreloadingTriggeringOutcome::kFailure, status);
       }
 
       if (attempt_) {

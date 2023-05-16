@@ -466,7 +466,8 @@ void DidUpdatePrerenderStatus(
     int initiator_frame_tree_node_id,
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prerender_url,
-    PreloadingTriggeringOutcome status) {
+    PreloadingTriggeringOutcome status,
+    absl::optional<PrerenderFinalStatus> prerender_status) {
   auto* ftn = FrameTreeNode::GloballyFindByID(initiator_frame_tree_node_id);
   // ftn will be null if this is browser-initiated, which has no initiator.
   if (ftn) {
@@ -474,7 +475,7 @@ void DidUpdatePrerenderStatus(
         ftn->current_frame_host()->devtools_frame_token().ToString();
     DispatchToAgents(ftn, &protocol::PreloadHandler::DidUpdatePrerenderStatus,
                      initiator_devtools_navigation_token, initiating_frame_id,
-                     prerender_url, status);
+                     prerender_url, status, prerender_status);
   }
 }
 

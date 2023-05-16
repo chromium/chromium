@@ -36,6 +36,7 @@ Test that prerender navigations receives the failure status updates
             loaderId : <string>
             url : http://127.0.0.1:8000/echo?status=204
         }
+        prerenderStatus : NavigationBadHttpStatus
         prerenderingUrl : http://127.0.0.1:8000/echo?status=204
         status : Failure
     }

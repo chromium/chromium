@@ -389,7 +389,8 @@ void PreloadHandler::DidUpdatePrerenderStatus(
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const std::string& initiating_frame_id,
     const GURL& prerender_url,
-    PreloadingTriggeringOutcome status) {
+    PreloadingTriggeringOutcome status,
+    absl::optional<PrerenderFinalStatus> prerender_status) {
   if (!enabled_) {
     return;
   }
@@ -400,10 +401,15 @@ void PreloadHandler::DidUpdatePrerenderStatus(
           .SetAction(Preload::SpeculationActionEnum::Prerender)
           .SetUrl(prerender_url.spec())
           .Build();
+  Maybe<Preload::PrerenderFinalStatus> protocol_prerender_status =
+      prerender_status.has_value()
+          ? PrerenderFinalStatusToProtocol(prerender_status.value())
+          : Maybe<Preload::PrerenderFinalStatus>();
   if (PreloadingTriggeringOutcomeSupportedByPrerender(status)) {
     frontend_->PrerenderStatusUpdated(
         std::move(preloading_attempt_key), initiating_frame_id,
-        prerender_url.spec(), PreloadingTriggeringOutcomeToProtocol(status));
+        prerender_url.spec(), PreloadingTriggeringOutcomeToProtocol(status),
+        std::move(protocol_prerender_status));
   }
 }
 

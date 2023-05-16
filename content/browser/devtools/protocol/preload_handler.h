@@ -54,7 +54,8 @@ class PreloadHandler : public DevToolsDomainHandler, public Preload::Backend {
       const base::UnguessableToken& initiator_devtools_navigation_token,
       const std::string& initiating_frame_id,
       const GURL& prerender_url,
-      PreloadingTriggeringOutcome status);
+      PreloadingTriggeringOutcome status,
+      absl::optional<PrerenderFinalStatus> prerender_status);
 
  private:
   Response Enable() override;

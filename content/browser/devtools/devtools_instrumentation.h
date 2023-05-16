@@ -214,7 +214,8 @@ void DidUpdatePrerenderStatus(
     int initiator_frame_tree_node_id,
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prerender_url,
-    PreloadingTriggeringOutcome status);
+    PreloadingTriggeringOutcome status,
+    absl::optional<PrerenderFinalStatus> prerender_status);
 
 void OnSignedExchangeReceived(
     FrameTreeNode* frame_tree_node,
