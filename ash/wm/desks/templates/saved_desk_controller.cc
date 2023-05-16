@@ -7,7 +7,7 @@
 #include "ash/public/cpp/desk_template.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/templates/admin_template_launch_tracker.h"
-#include "base/check.h"
+#include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -89,6 +89,8 @@ bool SavedDeskController::LaunchAdminTemplate(const base::Uuid& template_uuid,
     return false;
   }
 
+  RecordAdminTemplateWindowAndTabCountHistogram(*admin_template);
+
   auto& tracker = admin_template_launch_trackers_[template_uuid];
   // Note: if there is an existing launch tracker for this template, this will
   // implicitly destroy it - no more updates will be received from the previous
@@ -104,6 +106,7 @@ bool SavedDeskController::LaunchAdminTemplate(const base::Uuid& template_uuid,
   // TODO(dandersson): Remove the launch tracker when all its windows have been
   // closed.
 
+  RecordLaunchAdminTemplateHistogram();
   return true;
 }
 

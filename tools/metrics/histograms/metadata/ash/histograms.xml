@@ -2519,6 +2519,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.DeskTamplate.LaunchAdminTemplate" enum="BooleanHit"
+    expires_after="2024-05-08">
+  <owner>hongyulong@google.com</owner>
+  <owner>dandersson@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>Emitted when an admin template is launched.</summary>
+</histogram>
+
 <histogram name="Ash.DeskTemplate.AddOrUpdateTemplateStatus"
     enum="DeskModelAddOrUpdateEntryStatus" expires_after="2023-10-15">
   <owner>yzd@google.com</owner>
@@ -2527,6 +2535,26 @@ chromium-metrics-reviews@google.com.
     Emitted when a desk template is added or updated to indicate result of this
     operation. i.e. whether this operation is successful or failed with any
     particular reason.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.AdminTemplateTabCount" units="count"
+    expires_after="2024-05-08">
+  <owner>hongyulong@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Records the number of tabs in an admin template when it is launched.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.AdminTemplateWindowCount" units="count"
+    expires_after="2024-05-08">
+  <owner>hongyulong@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Records the number of windows in an admin template when it is launched.
   </summary>
 </histogram>
 

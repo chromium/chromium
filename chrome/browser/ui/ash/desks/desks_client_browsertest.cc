@@ -2160,14 +2160,12 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   ash::WaitForOverviewEnterAnimation();
   ClickSaveDeskAsTemplateButton();
 
-  constexpr char kWindowCountHistogramName[] = "Ash.DeskTemplate.WindowCount";
-  constexpr char kTabCountHistogramName[] = "Ash.DeskTemplate.TabCount";
-  constexpr char kWindowAndTabCountHistogramName[] =
-      "Ash.DeskTemplate.WindowAndTabCount";
   // NOTE: there is an existing browser with 1 tab created by BrowserMain().
-  histogram_tester.ExpectBucketCount(kWindowCountHistogramName, 4, 1);
-  histogram_tester.ExpectBucketCount(kTabCountHistogramName, 6, 1);
-  histogram_tester.ExpectBucketCount(kWindowAndTabCountHistogramName, 7, 1);
+  histogram_tester.ExpectBucketCount(ash::kTemplateWindowCountHistogramName, 4,
+                                     1);
+  histogram_tester.ExpectBucketCount(ash::kTemplateTabCountHistogramName, 6, 1);
+  histogram_tester.ExpectBucketCount(
+      ash::kTemplateWindowAndTabCountHistogramName, 7, 1);
 }
 
 // Tests that the template count histogram is recorded properly.
@@ -2226,11 +2224,12 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   ClickSaveDeskAsTemplateButton();
 
   // Verify that all template saves and deletes are captured by the histogram.
-  constexpr char kUserTemplateCountHistogramName[] =
-      "Ash.DeskTemplate.UserTemplateCount";
-  histogram_tester.ExpectBucketCount(kUserTemplateCountHistogramName, 1, 1);
-  histogram_tester.ExpectBucketCount(kUserTemplateCountHistogramName, 2, 2);
-  histogram_tester.ExpectBucketCount(kUserTemplateCountHistogramName, 3, 2);
+  histogram_tester.ExpectBucketCount(ash::kUserTemplateCountHistogramName, 1,
+                                     1);
+  histogram_tester.ExpectBucketCount(ash::kUserTemplateCountHistogramName, 2,
+                                     2);
+  histogram_tester.ExpectBucketCount(ash::kUserTemplateCountHistogramName, 3,
+                                     2);
 }
 
 // Tests that browser session restore isn't triggered when we launch a template
@@ -3509,4 +3508,30 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateWindowUpdate) {
   data2 = ash::QueryRestoreData(*updated_template, {}, /*window_id=*/2);
   ASSERT_TRUE(data2);
   EXPECT_THAT(data2->current_bounds, Optional(window2_set_bounds));
+}
+
+IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateHistograms) {
+  base::HistogramTester histogram_tester;
+
+  // Create an admin template two windows, which will have one tab or two tabs
+  // respectively.
+  auto admin_template = CreateAdminTemplate(
+      {.windows = {{.urls = {kExampleUrl1}},
+                   {.urls = {kExampleUrl2, kExampleUrl3}}}});
+  ASSERT_NE(admin_template, nullptr);
+
+  base::Uuid template_uuid = admin_template->uuid();
+
+  auto* saved_desk_controller = ash::Shell::Get()->saved_desk_controller();
+  ash::SavedDeskControllerTestApi(saved_desk_controller)
+      .SetAdminTemplate(std::move(admin_template));
+
+  saved_desk_controller->LaunchAdminTemplate(
+      template_uuid, display::Screen::GetScreen()->GetPrimaryDisplay().id());
+
+  histogram_tester.ExpectBucketCount(
+      ash::kAdminTemplateWindowCountHistogramName, 2, 1);
+  histogram_tester.ExpectBucketCount(ash::kAdminTemplateTabCountHistogramName,
+                                     3, 1);
+  histogram_tester.ExpectTotalCount(ash::kLaunchAdminTemplateHistogramName, 1);
 }
