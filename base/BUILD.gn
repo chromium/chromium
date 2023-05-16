@@ -429,6 +429,7 @@ component("base") {
     "memory/raw_ptr_asan_hooks.h",
     "memory/raw_ptr_asan_service.cc",
     "memory/raw_ptr_asan_service.h",
+    "memory/raw_ptr_cast.h",
     "memory/raw_ptr_exclusion.h",
     "memory/raw_ref.h",
     "memory/raw_scoped_refptr_mismatch_checker.h",

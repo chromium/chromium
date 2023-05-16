@@ -370,6 +370,7 @@ source_set("raw_ptr") {
   check_includes = use_partition_alloc
   public = [
     "pointers/raw_ptr.h",
+    "pointers/raw_ptr_cast.h",
     "pointers/raw_ptr_exclusion.h",
     "pointers/raw_ref.h",
   ]
