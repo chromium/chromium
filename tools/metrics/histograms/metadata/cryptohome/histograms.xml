@@ -309,7 +309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.HomedirEncryptionType" enum="HomedirEncryptionType"
-    expires_after="2023-08-27">
+    expires_after="2023-11-12">
   <owner>dspaid@chromium.org</owner>
   <summary>
     The encryption type used for a user's cryptohome directory. This is logged
@@ -795,7 +795,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.UssExperiment.FetchUssExperimentConfigStatus"
-    enum="CryptohomeFetchUssExperimentConfigStatus" expires_after="2023-09-03">
+    enum="CryptohomeFetchUssExperimentConfigStatus" expires_after="2023-11-12">
   <owner>hcyang@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -808,7 +808,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.UssExperiment.UssExperimentFlag"
-    enum="CryptohomeUssExperimentFlag" expires_after="2023-09-03">
+    enum="CryptohomeUssExperimentFlag" expires_after="2023-11-12">
   <owner>hcyang@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -877,7 +877,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.WrappingKeyDerivation.Mount"
-    enum="WrappingKeyDerivation" expires_after="2023-09-03">
+    enum="WrappingKeyDerivation" expires_after="2023-11-12">
   <owner>tnagel@chromium.org</owner>
   <owner>zauri@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>

@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OfflinePages.CachedOfflineStatusValid" enum="BooleanMatched"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>pnoland@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>
@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OfflinePages.DidNavigationThrottleCancelNavigation"
-    enum="Boolean" expires_after="2023-09-03">
+    enum="Boolean" expires_after="2023-11-12">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>

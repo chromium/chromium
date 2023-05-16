@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.FindInPage.DurationBetweenKeystrokes" units="ms"
-    expires_after="2023-09-10">
+    expires_after="2023-11-12">
   <owner>jarhar@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <summary>
@@ -339,7 +339,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDB.OpenTime" units="ms"
-    expires_after="2023-08-27">
+    expires_after="2023-11-12">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -432,7 +432,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBWriteErrors" enum="LevelDBErrorTypes"
-    expires_after="2023-08-27">
+    expires_after="2023-11-12">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -441,7 +441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBWriteErrors.BFE"
-    enum="PlatformFileError" expires_after="2023-09-03">
+    enum="PlatformFileError" expires_after="2023-11-12">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -451,7 +451,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBWriteErrors.Corruption"
-    enum="LevelDBCorruptionTypes" expires_after="2023-08-27">
+    enum="LevelDBCorruptionTypes" expires_after="2023-11-12">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -690,7 +690,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.TransactionAbortReason" enum="IDBException"
-    expires_after="2023-08-27">
+    expires_after="2023-11-12">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -748,7 +748,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Scripts.InlineStreamerTimedOut" enum="BooleanTimedOut"
-    expires_after="2023-08-08">
+    expires_after="2023-11-12">
   <owner>cduvall@chromium.org</owner>
   <owner>leszeks@chromium.org</owner>
   <summary>

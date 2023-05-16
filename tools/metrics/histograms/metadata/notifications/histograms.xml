@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.Build" enum="BooleanSuccess"
-    expires_after="2023-08-27">
+    expires_after="2023-11-12">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Blocker.ScreenCapture.ClosedCount"
-    units="notifications" expires_after="2023-09-10">
+    units="notifications" expires_after="2023-11-12">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -230,7 +230,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Blocker.ScreenCapture.SessionDuration"
-    units="ms" expires_after="2023-09-10">
+    units="ms" expires_after="2023-11-12">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -508,7 +508,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.NonPersistentNotificationThirdPartyCount"
-    enum="Boolean" expires_after="2023-09-01">
+    enum="Boolean" expires_after="2023-11-12">
   <owner>awillia@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -520,7 +520,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.NotificationHelper.ComServerModuleStatus"
-    enum="NotificationHelperComServerModuleStatus" expires_after="2023-09-01">
+    enum="NotificationHelperComServerModuleStatus" expires_after="2023-11-12">
   <owner>finnur@chromium.org</owner>
   <summary>
     The execute status of a ComServerModule class instance. Logged whenever a
@@ -569,7 +569,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.NotifierType" enum="NotifierType"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>tbarzic@chromium.org</owner>
   <owner>tengs@chromium.org</owner>
   <owner>gzadina@google.com</owner>
@@ -664,7 +664,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.PersistentNotificationThirdPartyCount"
-    enum="Boolean" expires_after="2023-09-01">
+    enum="Boolean" expires_after="2023-11-12">
   <owner>awillia@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -960,7 +960,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Windows.ActivationStatus"
-    enum="WindowsNotificationActivationStatus" expires_after="2023-09-01">
+    enum="WindowsNotificationActivationStatus" expires_after="2023-11-12">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>chengx@chromium.org</owner>
@@ -1006,7 +1006,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Windows.DisplayStatus"
-    enum="WindowsNotificationDisplayStatus" expires_after="2023-09-01">
+    enum="WindowsNotificationDisplayStatus" expires_after="2023-11-12">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

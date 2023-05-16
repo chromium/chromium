@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.BuildAndStoreLogIsEmpty" enum="Boolean"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>rkaplow@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.ConsentObserver.Purge" enum="Boolean"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>rkaplow@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.Entries.Dropped.ByEntryHash" enum="UkmEventNameHash"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>jwd@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
@@ -103,7 +103,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.Entries.Dropped.MaxHit.ByEntryHash"
-    enum="UkmEventNameHash" expires_after="2023-09-10">
+    enum="UkmEventNameHash" expires_after="2023-11-12">
   <owner>lucnguyen@google.com</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
@@ -128,7 +128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.Entries.Dropped.SampledOut.ByEntryHash"
-    enum="UkmEventNameHash" expires_after="2023-09-10">
+    enum="UkmEventNameHash" expires_after="2023-11-12">
   <owner>lucnguyen@google.com</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
@@ -159,7 +159,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.Entries.SerializedCountFCP" units="entries"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>rkaplow@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
@@ -170,7 +170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.InitSequence" enum="UmaInitSequence"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>rkaplow@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>

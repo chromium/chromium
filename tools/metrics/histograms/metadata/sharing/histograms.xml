@@ -106,7 +106,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.ClickToCallSelectedDeviceIndex" units="index"
-    expires_after="2023-09-10">
+    expires_after="2023-11-12">
 <!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->
 
   <owner>mvanouwerkerk@chromium.org</owner>
@@ -194,7 +194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.QRCodeGeneration.Duration" units="ms"
-    expires_after="M117">
+    expires_after="2023-11-12">
   <owner>danakj@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <owner>petewil@chromium.org</owner>
@@ -213,7 +213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.QRCodeGeneration.Duration.BytesToQrPixels" units="ms"
-    expires_after="M117">
+    expires_after="2023-11-12">
   <owner>danakj@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <owner>petewil@chromium.org</owner>
@@ -228,7 +228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.QRCodeGeneration.Duration.QrPixelsToQrImage"
-    units="ms" expires_after="M117">
+    units="ms" expires_after="2023-11-12">
   <owner>danakj@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <owner>petewil@chromium.org</owner>
@@ -427,7 +427,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendTabToSelf.NotificationStatus"
-    enum="SendTabToSelfNotificationStatus" expires_after="2023-09-03">
+    enum="SendTabToSelfNotificationStatus" expires_after="2023-11-12">
   <owner>ellyjones@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -509,7 +509,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.Opened" enum="ShareOrigin"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -588,7 +588,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubDesktop.CrOSSharesheetResult"
-    enum="SharingHubSharesheetResult" expires_after="2023-09-03">
+    enum="SharingHubSharesheetResult" expires_after="2023-11-12">
   <owner>kristipark@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>

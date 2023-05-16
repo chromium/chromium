@@ -738,7 +738,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.AmbientLightOnResume" units="lux"
-    expires_after="2023-08-27">
+    expires_after="2023-11-12">
   <owner>bkersten@chromium.org</owner>
   <owner>slangley@chromium.org</owner>
   <summary>
@@ -1112,7 +1112,7 @@ chromium-metrics-reviews@google.com.
   <token key="BatteryCapacityType" variants="BatteryCapacityType"/>
 </histogram>
 
-<histogram name="Power.BatteryPercentDrop" units="%" expires_after="2023-08-27">
+<histogram name="Power.BatteryPercentDrop" units="%" expires_after="2023-11-12">
   <owner>ryansturm@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -1294,7 +1294,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerProcessType" enum="ProcessType2"
-    expires_after="2023-10-22">
+    expires_after="2023-11-12">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -1700,7 +1700,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.ForegroundRadio.Wakeups.Cell.30Seconds"
-    enum="RadioSignalLevel" expires_after="2023-08-27">
+    enum="RadioSignalLevel" expires_after="2023-11-12">
   <owner>eseckler@chromium.org</owner>
   <owner>khokhlov@google.com</owner>
   <owner>skyostil@chromium.org</owner>
@@ -1974,7 +1974,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.IOPMPowerSource.SamplingEventDelta.MediumTimes"
-    units="ms" expires_after="2023-08-08">
+    units="ms" expires_after="2023-11-12">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -2138,7 +2138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PC10inS0ixRuntimeResidencyRate" units="%"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>skardach@google.com</owner>
   <owner>svenva@google.com</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -2157,7 +2157,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PC10RuntimeResidencyRate" units="%"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>skardach@google.com</owner>
   <owner>svenva@google.com</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -2477,7 +2477,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerML.ModelNoDim.Result" enum="PowerMLFinalResult"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>napper@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>

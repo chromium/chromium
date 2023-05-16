@@ -228,7 +228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.DiskType" enum="CrostiniDiskImageType"
-    expires_after="2023-08-27">
+    expires_after="2023-11-12">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -333,7 +333,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.Restarter.Started" enum="BooleanAttempted"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -354,7 +354,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.RestarterResult.Installer" enum="CrostiniResult"
-    expires_after="2023-09-03">
+    expires_after="2023-11-12">
   <owner>timloh@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -418,7 +418,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.Setup.Started" enum="BooleanAttempted"
-    expires_after="2023-09-10">
+    expires_after="2023-11-12">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -533,7 +533,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.TimeFromDeviceSetupToInstall" units="ms"
-    expires_after="2023-07-16">
+    expires_after="2023-11-12">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -613,7 +613,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Crostini.UnsupportedNotification.Reason"
-    enum="CrostiniUnsupportedNotificationReason" expires_after="2023-08-27">
+    enum="CrostiniUnsupportedNotificationReason" expires_after="2023-11-12">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
