@@ -35,6 +35,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/system/accessibility/autoclick_menu_bubble_controller.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -4494,10 +4495,19 @@ TEST_F(NoSessionCaptureModeCameraTest, RequestCameraInfoAfterUserLogsIn) {
   EXPECT_EQ(camera_controller->available_cameras().size(), 1u);
 }
 
-class CaptureModePrivacyIndicatorsTest : public CaptureModeCameraTest {
+class CaptureModePrivacyIndicatorsTest
+    : public CaptureModeCameraTest,
+      public testing::WithParamInterface<bool> {
  public:
-  CaptureModePrivacyIndicatorsTest()
-      : scoped_feature_list_(features::kPrivacyIndicators) {}
+  CaptureModePrivacyIndicatorsTest() {
+    if (IsQsRevampEnabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kPrivacyIndicators, features::kQsRevamp}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures({features::kPrivacyIndicators},
+                                            {features::kQsRevamp});
+    }
+  }
   CaptureModePrivacyIndicatorsTest(const CaptureModePrivacyIndicatorsTest&) =
       delete;
   CaptureModePrivacyIndicatorsTest& operator=(
@@ -4520,17 +4530,28 @@ class CaptureModePrivacyIndicatorsTest : public CaptureModeCameraTest {
 
   PrivacyIndicatorsTrayItemView* GetPrimaryDisplayPrivacyIndicatorsView()
       const {
-    return Shell::GetPrimaryRootWindowController()
-        ->GetStatusAreaWidget()
-        ->unified_system_tray()
-        ->privacy_indicators_view();
+    return features::IsQsRevampEnabled()
+               ? Shell::GetPrimaryRootWindowController()
+                     ->GetStatusAreaWidget()
+                     ->notification_center_tray()
+                     ->privacy_indicators_view()
+               : Shell::GetPrimaryRootWindowController()
+                     ->GetStatusAreaWidget()
+                     ->unified_system_tray()
+                     ->privacy_indicators_view();
   }
+
+  bool IsQsRevampEnabled() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(CaptureModePrivacyIndicatorsTest, CameraPrivacyIndicators) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         CaptureModePrivacyIndicatorsTest,
+                         testing::Bool());
+
+TEST_P(CaptureModePrivacyIndicatorsTest, CameraPrivacyIndicators) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
@@ -4578,7 +4599,7 @@ TEST_F(CaptureModePrivacyIndicatorsTest, CameraPrivacyIndicators) {
       capture_mode_privacy_notification_id));
 }
 
-TEST_F(CaptureModePrivacyIndicatorsTest, DuringRecordingPrivacyIndicators) {
+TEST_P(CaptureModePrivacyIndicatorsTest, DuringRecordingPrivacyIndicators) {
   ui::ScopedAnimationDurationScaleMode animation_scale(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
