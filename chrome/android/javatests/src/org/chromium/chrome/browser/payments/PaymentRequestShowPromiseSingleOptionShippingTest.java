@@ -39,12 +39,28 @@ public class PaymentRequestShowPromiseSingleOptionShippingTest {
     @Before
     public void setUp() throws TimeoutException {
         AutofillTestHelper autofillTestHelper = new AutofillTestHelper();
-        autofillTestHelper.setProfile(new AutofillProfile("", "https://example.test", true,
-                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "California",
-                "Los Angeles", "", "90291", "", "US", "555-222-2222", "", "en-US"));
-        autofillTestHelper.setProfile(new AutofillProfile("", "https://example.test", true,
-                "" /* honorific prefix */, "Jane Smith", "Google", "340 Main St", "California",
-                "Los Angeles", "", "90291", "", "US", "555-111-1111", "", "en-US"));
+        autofillTestHelper.setProfile(AutofillProfile.builder()
+                                              .setFullName("Jon Doe")
+                                              .setCompanyName("Google")
+                                              .setStreetAddress("340 Main St")
+                                              .setRegion("California")
+                                              .setLocality("Los Angeles")
+                                              .setPostalCode("90291")
+                                              .setCountryCode("US")
+                                              .setPhoneNumber("555-222-2222")
+                                              .setLanguageCode("en-US")
+                                              .build());
+        autofillTestHelper.setProfile(AutofillProfile.builder()
+                                              .setFullName("Jane Smith")
+                                              .setCompanyName("Google")
+                                              .setStreetAddress("340 Main St")
+                                              .setRegion("California")
+                                              .setLocality("Los Angeles")
+                                              .setPostalCode("90291")
+                                              .setCountryCode("US")
+                                              .setPhoneNumber("555-111-1111")
+                                              .setLanguageCode("en-US")
+                                              .build());
     }
 
     @Test

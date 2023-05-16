@@ -41,10 +41,18 @@ public class PaymentRequestIncompleteContactDetailsAndFreeShippingTest {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a shipping address with a valid email address on disk. However the phone
         // number is invalid.
-        helper.setProfile(
-                new AutofillProfile("", "https://example.test", true, "" /* honorific prefix */,
-                        "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
-                        "US", "" /* invalid phone number */, "jon.doe@google.com", "en-US"));
+        helper.setProfile(AutofillProfile.builder()
+                                  .setFullName("Jon Doe")
+                                  .setCompanyName("Google")
+                                  .setStreetAddress("340 Main St")
+                                  .setRegion("CA")
+                                  .setLocality("Los Angeles")
+                                  .setPostalCode("90291")
+                                  .setCountryCode("US")
+                                  .setPhoneNumber("" /* invalid phone number */)
+                                  .setEmailAddress("jon.doe@google.com")
+                                  .setLanguageCode("en-US")
+                                  .build());
 
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);

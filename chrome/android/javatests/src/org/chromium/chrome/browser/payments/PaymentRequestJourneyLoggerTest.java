@@ -42,14 +42,29 @@ public class PaymentRequestJourneyLoggerTest {
     public void setUp() throws TimeoutException {
         AutofillTestHelper mHelper = new AutofillTestHelper();
         // The user has a shipping address.
-        String mBillingAddressId = mHelper.setProfile(
-                new AutofillProfile("", "https://example.test", true, "" /* honorific prefix */,
-                        "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
-                        "US", "650-253-0000", "jondoe@email.com", "en-US"));
+        String mBillingAddressId = mHelper.setProfile(AutofillProfile.builder()
+                                                              .setFullName("Jon Doe")
+                                                              .setCompanyName("Google")
+                                                              .setStreetAddress("340 Main St")
+                                                              .setRegion("CA")
+                                                              .setLocality("Los Angeles")
+                                                              .setPostalCode("90291")
+                                                              .setCountryCode("US")
+                                                              .setPhoneNumber("650-253-0000")
+                                                              .setEmailAddress("jondoe@email.com")
+                                                              .setLanguageCode("en-US")
+                                                              .build());
         // The user also has an incomplete address.
-        String mIncompleteAddressId = mHelper.setProfile(new AutofillProfile("",
-                "https://example.test", true, "" /* honorific prefix */, "In Complete", "Google",
-                "344 Main St", "CA", "", "", "90291", "", "US", "650-253-0000", "", "en-US"));
+        String mIncompleteAddressId = mHelper.setProfile(AutofillProfile.builder()
+                                                                 .setFullName("In Complete")
+                                                                 .setCompanyName("Google")
+                                                                 .setStreetAddress("344 Main St")
+                                                                 .setRegion("CA")
+                                                                 .setPostalCode("90291")
+                                                                 .setCountryCode("US")
+                                                                 .setPhoneNumber("650-253-0000")
+                                                                 .setLanguageCode("en-US")
+                                                                 .build());
     }
 
     /**
@@ -266,10 +281,16 @@ public class PaymentRequestJourneyLoggerTest {
             throws TimeoutException {
         // Add a card and an incomplete address (no region).
         AutofillTestHelper mHelper = new AutofillTestHelper();
-        String mBillingAddressId = mHelper.setProfile(
-                new AutofillProfile("", "https://example.test", true, "" /* honorific prefix */,
-                        "Jon Doe", "Google", "340 Main St", /*region=*/"", "Los Angeles", "",
-                        "90291", "", "US", "650-253-0000", "", "en-US"));
+        String mBillingAddressId = mHelper.setProfile(AutofillProfile.builder()
+                                                              .setFullName("Jon Doe")
+                                                              .setCompanyName("Google")
+                                                              .setStreetAddress("340 Main St")
+                                                              .setLocality("Los Angeles")
+                                                              .setPostalCode("90291")
+                                                              .setCountryCode("US")
+                                                              .setPhoneNumber("650-253-0000")
+                                                              .setLanguageCode("en-US")
+                                                              .build());
 
         // Cancel the payment request.
         mPaymentRequestTestRule.triggerUIAndWait(
@@ -302,10 +323,17 @@ public class PaymentRequestJourneyLoggerTest {
             throws TimeoutException {
         // Add an incomplete card (no exp date) and an complete address.
         AutofillTestHelper mHelper = new AutofillTestHelper();
-        String mBillingAddressId =
-                mHelper.setProfile(new AutofillProfile("", "https://example.test", true,
-                        "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA",
-                        "Los Angeles", "", "90291", "", "US", "650-253-0000", "", "en-US"));
+        String mBillingAddressId = mHelper.setProfile(AutofillProfile.builder()
+                                                              .setFullName("Jon Doe")
+                                                              .setCompanyName("Google")
+                                                              .setStreetAddress("340 Main St")
+                                                              .setRegion("CA")
+                                                              .setLocality("Los Angeles")
+                                                              .setPostalCode("90291")
+                                                              .setCountryCode("US")
+                                                              .setPhoneNumber("650-253-0000")
+                                                              .setLanguageCode("en-US")
+                                                              .build());
 
         // Cancel the payment request.
         mPaymentRequestTestRule.triggerUIAndWait(
@@ -336,9 +364,17 @@ public class PaymentRequestJourneyLoggerTest {
             throws TimeoutException {
         // Add a complete address and a working payment app.
         AutofillTestHelper mHelper = new AutofillTestHelper();
-        mHelper.setProfile(new AutofillProfile("", "https://example.test", true,
-                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
-                "", "90291", "", "US", "650-253-0000", "", "en-US"));
+        mHelper.setProfile(AutofillProfile.builder()
+                                   .setFullName("Jon Doe")
+                                   .setCompanyName("Google")
+                                   .setStreetAddress("340 Main St")
+                                   .setRegion("CA")
+                                   .setLocality("Los Angeles")
+                                   .setPostalCode("90291")
+                                   .setCountryCode("US")
+                                   .setPhoneNumber("650-253-0000")
+                                   .setLanguageCode("en-US")
+                                   .build());
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
@@ -401,10 +437,16 @@ public class PaymentRequestJourneyLoggerTest {
             throws TimeoutException {
         // Add a card and an incomplete address (no region).
         AutofillTestHelper mHelper = new AutofillTestHelper();
-        String mBillingAddressId = mHelper.setProfile(
-                new AutofillProfile("", "https://example.test", true, "" /* honorific prefix */,
-                        "Jon Doe", "Google", "340 Main St", /*region=*/"", "Los Angeles", "",
-                        "90291", "", "US", "650-253-0000", "", "en-US"));
+        String mBillingAddressId = mHelper.setProfile(AutofillProfile.builder()
+                                                              .setFullName("Jon Doe")
+                                                              .setCompanyName("Google")
+                                                              .setStreetAddress("340 Main St")
+                                                              .setLocality("Los Angeles")
+                                                              .setPostalCode("90291")
+                                                              .setCountryCode("US")
+                                                              .setPhoneNumber("650-253-0000")
+                                                              .setLanguageCode("en-US")
+                                                              .build());
 
         // Cancel the payment request.
         mPaymentRequestTestRule.triggerUIAndWait(

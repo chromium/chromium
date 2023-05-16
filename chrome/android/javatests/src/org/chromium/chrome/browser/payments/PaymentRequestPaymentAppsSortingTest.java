@@ -38,10 +38,18 @@ public class PaymentRequestPaymentAppsSortingTest {
     @Before
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
-        String billingAddressId = helper.setProfile(
-                new AutofillProfile("", "https://example.test", true, "" /* honorific prefix */,
-                        "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
-                        "US", "310-310-6000", "jon.doe@gmail.com", "en-US"));
+        String billingAddressId = helper.setProfile(AutofillProfile.builder()
+                                                            .setFullName("Jon Doe")
+                                                            .setCompanyName("Google")
+                                                            .setStreetAddress("340 Main St")
+                                                            .setRegion("CA")
+                                                            .setLocality("Los Angeles")
+                                                            .setPostalCode("90291")
+                                                            .setCountryCode("US")
+                                                            .setPhoneNumber("310-310-6000")
+                                                            .setEmailAddress("jon.doe@gmail.com")
+                                                            .setLanguageCode("en-US")
+                                                            .build());
     }
 
     @Test
