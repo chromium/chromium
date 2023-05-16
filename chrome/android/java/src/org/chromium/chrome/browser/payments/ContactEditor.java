@@ -182,8 +182,8 @@ public class ContactEditor extends EditorBase<AutofillContact> {
         final EditorFieldModel nameField = mRequestPayerName
                 ? EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_PERSON_NAME,
                         mContext.getString(R.string.payments_name_field_in_contact_details),
-                        mPayerNames, null /* suggestions */, null /* formatter */,
-                        null /* validator */,
+                        mPayerNames, /*suggestions=*/null, /*formatter=*/null,
+                        /*validator=*/null,
                         mContext.getString(
                                 R.string.pref_edit_dialog_field_required_validation_message),
                         null, EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, contact.getPayerName())
