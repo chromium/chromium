@@ -5,9 +5,11 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
 
 #include "base/command_line.h"
+#include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_media_sink_util.h"
 #include "chrome/browser/media/router/discovery/mdns/media_sink_util.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
@@ -66,11 +68,64 @@ MockAccessCodeCastSinkService::MockAccessCodeCastSinkService(
     MediaRouter* media_router,
     CastMediaSinkServiceImpl* cast_media_sink_service_impl,
     DiscoveryNetworkMonitor* network_monitor)
-    : AccessCodeCastSinkService(profile,
-                                media_router,
-                                cast_media_sink_service_impl,
-                                network_monitor,
-                                profile->GetPrefs()) {}
+    : AccessCodeCastSinkService(
+          profile,
+          media_router,
+          cast_media_sink_service_impl,
+          network_monitor,
+          profile->GetPrefs(),
+          std::make_unique<MockAccessCodeCastPrefUpdater>()) {}
+
+MockAccessCodeCastSinkService::~MockAccessCodeCastSinkService() = default;
+
+MockAccessCodeCastPrefUpdater::MockAccessCodeCastPrefUpdater() = default;
+MockAccessCodeCastPrefUpdater::~MockAccessCodeCastPrefUpdater() = default;
+
+void MockAccessCodeCastPrefUpdater::UpdateDevicesDict(
+    const MediaSinkInternal& sink) {
+  devices_dict_.Set(sink.id(), CreateValueDictFromMediaSinkInternal(sink));
+}
+
+void MockAccessCodeCastPrefUpdater::UpdateDeviceAddedTimeDict(
+    const MediaSink::Id sink_id) {
+  device_added_time_dict_.Set(sink_id, base::TimeToValue(base::Time::Now()));
+}
+
+const base::Value::Dict& MockAccessCodeCastPrefUpdater::GetDevicesDict() {
+  return devices_dict_;
+}
+
+const base::Value::Dict&
+MockAccessCodeCastPrefUpdater::GetDeviceAddedTimeDict() {
+  return device_added_time_dict_;
+}
+
+void MockAccessCodeCastPrefUpdater::RemoveSinkIdFromDevicesDict(
+    const MediaSink::Id sink_id) {
+  devices_dict_.Remove(sink_id);
+}
+
+void MockAccessCodeCastPrefUpdater::RemoveSinkIdFromDeviceAddedTimeDict(
+    const MediaSink::Id sink_id) {
+  device_added_time_dict_.Remove(sink_id);
+}
+
+void MockAccessCodeCastPrefUpdater::ClearDevicesDict() {
+  devices_dict_.clear();
+}
+
+void MockAccessCodeCastPrefUpdater::ClearDeviceAddedTimeDict() {
+  device_added_time_dict_.clear();
+}
+
+void MockAccessCodeCastPrefUpdater::set_devices_dict(base::Value::Dict dict) {
+  devices_dict_ = std::move(dict);
+}
+
+void MockAccessCodeCastPrefUpdater::set_device_added_time_dict(
+    base::Value::Dict dict) {
+  device_added_time_dict_ = std::move(dict);
+}
 
 MediaRoute CreateRouteForTesting(const MediaSink::Id& sink_id) {
   std::string route_id =
@@ -78,7 +133,5 @@ MediaRoute CreateRouteForTesting(const MediaSink::Id& sink_id) {
   return MediaRoute(route_id, MediaSource("access_code"), sink_id,
                     "access_sink", true);
 }
-
-MockAccessCodeCastSinkService::~MockAccessCodeCastSinkService() = default;
 
 }  // namespace media_router

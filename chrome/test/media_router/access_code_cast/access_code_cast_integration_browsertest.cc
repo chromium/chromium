@@ -392,7 +392,8 @@ AccessCodeCastIntegrationBrowserTest::CreateAccessCodeCastSinkService(
   Profile* profile = Profile::FromBrowserContext(context);
   return base::WrapUnique(new AccessCodeCastSinkService(
       profile, media_router_, mock_cast_media_sink_service_impl(),
-      DiscoveryNetworkMonitor::GetInstance(), profile->GetPrefs()));
+      DiscoveryNetworkMonitor::GetInstance(), profile->GetPrefs(),
+      std::make_unique<AccessCodeCastPrefUpdaterImpl>(profile->GetPrefs())));
 }
 
 MockCastMediaSinkServiceImpl*

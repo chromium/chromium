@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_discovery_interface.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
@@ -28,8 +29,6 @@ namespace media_router {
 
 using ChannelOpenedCallback = base::OnceCallback<void(bool)>;
 using AddSinkResultCode = access_code_cast::mojom::AddSinkResultCode;
-
-class AccessCodeCastPrefUpdater;
 
 bool IsAccessCodeCastEnabled();
 
@@ -104,26 +103,11 @@ class AccessCodeCastSinkService : public KeyedService,
     ~AccessCodeMediaRoutesObserver() override;
 
    private:
+    friend class AccessCodeCastSinkServiceTest;
+
     FRIEND_TEST_ALL_PREFIXES(
         AccessCodeCastSinkServiceTest,
         AccessCodeCastDeviceRemovedAfterRouteEndsExpirationEnabled);
-    FRIEND_TEST_ALL_PREFIXES(
-        AccessCodeCastSinkServiceTest,
-        AccessCodeCastDeviceRemovedAfterRouteEndsExpirationDisabled);
-    FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                             AddExistingSinkToMediaRouterWithRoute);
-    FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                             TestChangeNetworkWithRouteActive);
-    FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                             TestChangeNetworkWithRouteActiveExpiration);
-    FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                             TestCheckMediaSinkForExpirationAfterDelay);
-    FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                             RecordRouteDuration);
-    FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                             RecordRouteDurationNonAccessCodeDevice);
-    FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                             AddRouteCallsHandleMediaRoute);
 
     // media_router::MediaRoutesObserver:
     void OnRoutesUpdated(const std::vector<MediaRoute>& routes) override;
@@ -150,10 +134,6 @@ class AccessCodeCastSinkService : public KeyedService,
       AccessCodeCastSinkServiceTest,
       AccessCodeCastDeviceRemovedAfterRouteEndsExpirationDisabled);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           AddExistingSinkToMediaRouter);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           AddNewSinkToMediaRouter);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            DiscoveryDeviceMissingWithOk);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            ValidDiscoveryDeviceAndCode);
@@ -165,8 +145,6 @@ class AccessCodeCastSinkService : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            OnChannelOpenedFailure);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           SinkDoesntExistForPrefs);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            TestFetchAndAddStoredDevices);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            TestChangeNetworksNoExpiration);
@@ -175,46 +153,19 @@ class AccessCodeCastSinkService : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            TestAddInvalidDevicesNoMediaSinkInternal);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           TestFetchAndAddStoredDevicesNoNetwork);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            TestCalculateDurationTillExpiration);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           TestSetExpirationTimer);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           TestResetExpirationTimersNetworkChange);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            TestResetExpirationTimersShutdown);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           TestChangeEnabledPref);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            TestChangeDurationPref);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           TestChangeNetworkWithRouteActive);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           TestChangeNetworkWithRouteActiveExpiration);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            DiscoverSinkWithNoMediaRouter);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           TestCheckMediaSinkForExpirationNoExpiration);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           TestCheckMediaSinkForExpirationBeforeDelay);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           TestCheckMediaSinkForExpirationAfterDelay);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           RefreshStoredDeviceInfo);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           RefreshExistingDeviceName);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            RefreshStoredDeviceTimer);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            HandleMediaRouteAdded);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest, RecordRouteDuration);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           RecordRouteDurationNonAccessCodeDevice);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            RestartExpirationTimerDoesntResetTimer);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
-                           AddRouteCallsHandleMediaRoute);
 
   // Use |AccessCodeCastSinkServiceFactory::GetForProfile(..)| to get
   // an instance of this service.
@@ -226,7 +177,8 @@ class AccessCodeCastSinkService : public KeyedService,
       MediaRouter* media_router,
       CastMediaSinkServiceImpl* cast_media_sink_service_impl,
       DiscoveryNetworkMonitor* network_monitor,
-      PrefService* prefs);
+      PrefService* prefs,
+      std::unique_ptr<AccessCodeCastPrefUpdater> pref_updater);
 
   void OnAccessCodeValidated(AddSinkResultCallback add_sink_callback,
                              absl::optional<DiscoveryDevice> discovery_device,
@@ -371,9 +323,9 @@ class AccessCodeCastSinkService : public KeyedService,
   // and manages network change notifications.
   const raw_ptr<DiscoveryNetworkMonitor> network_monitor_;
 
-  std::unique_ptr<AccessCodeCastPrefUpdater> pref_updater_;
-
   raw_ptr<PrefService, DanglingUntriaged> prefs_;
+
+  std::unique_ptr<AccessCodeCastPrefUpdater> pref_updater_;
 
   raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_ =
       nullptr;

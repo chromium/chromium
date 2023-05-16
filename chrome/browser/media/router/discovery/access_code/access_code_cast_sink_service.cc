@@ -67,22 +67,13 @@ void AddRememberedSinkMetricsCallback(AddSinkResultCode result,
       true, AddSinkResultMetricsHelper(result));
 }
 
-AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::
-    AccessCodeMediaRoutesObserver(
-        MediaRouter* media_router,
-        AccessCodeCastSinkService* access_code_sink_service)
-    : MediaRoutesObserver(media_router),
-      access_code_sink_service_(access_code_sink_service) {}
-
-AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::
-    ~AccessCodeMediaRoutesObserver() = default;
-
 AccessCodeCastSinkService::AccessCodeCastSinkService(
     Profile* profile,
     MediaRouter* media_router,
     CastMediaSinkServiceImpl* cast_media_sink_service_impl,
     DiscoveryNetworkMonitor* network_monitor,
-    PrefService* prefs)
+    PrefService* prefs,
+    std::unique_ptr<AccessCodeCastPrefUpdater> pref_updater)
     : profile_(profile),
       media_router_(media_router),
       media_routes_observer_(
@@ -91,10 +82,12 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       network_monitor_(network_monitor),
       prefs_(prefs),
+      pref_updater_(std::move(pref_updater)),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile_)) {
   DCHECK(profile_) << "The profile does not exist.";
   DCHECK(prefs_)
       << "Prefs could not be fetched from the profile for some reason.";
+  DCHECK(pref_updater_) << "The PrefUpdater is not properly instantiated.";
   DCHECK(media_router_) << "The media router does not exist.";
   backoff_policy_ = {
       // Number of initial errors (in sequence) to ignore before going into
@@ -128,9 +121,6 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(
   // We don't need to post this task per the DiscoveryNetworkMonitor's
   // promise: "All observers will be notified of network changes on the thread
   // from which they registered."
-
-  pref_updater_ = std::make_unique<AccessCodeCastPrefUpdaterImpl>(prefs_);
-
   network_monitor_->AddObserver(this);
   InitAllStoredDevices();
   user_prefs_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -152,7 +142,9 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(Profile* profile)
           media_router::DualMediaSinkService::GetInstance()
               ->GetCastMediaSinkServiceImpl(),
           DiscoveryNetworkMonitor::GetInstance(),
-          profile->GetPrefs()) {}
+          profile->GetPrefs(),
+          std::make_unique<AccessCodeCastPrefUpdaterImpl>(
+              profile->GetPrefs())) {}
 
 AccessCodeCastSinkService::~AccessCodeCastSinkService() = default;
 
@@ -160,6 +152,16 @@ base::WeakPtr<AccessCodeCastSinkService>
 AccessCodeCastSinkService::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
+
+AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::
+    AccessCodeMediaRoutesObserver(
+        MediaRouter* media_router,
+        AccessCodeCastSinkService* access_code_sink_service)
+    : MediaRoutesObserver(media_router),
+      access_code_sink_service_(access_code_sink_service) {}
+
+AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::
+    ~AccessCodeMediaRoutesObserver() = default;
 
 void AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::OnRoutesUpdated(
     const std::vector<MediaRoute>& routes) {
@@ -272,7 +274,7 @@ void AccessCodeCastSinkService::HandleMediaRouteRemovedByAccessCode(
   task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AccessCodeCastSinkService::OnAccessCodeRouteRemoved,
-                     weak_ptr_factory_.GetWeakPtr(), sink),
+                     GetWeakPtr(), sink),
       kExpirationDelay);
 }
 
@@ -344,7 +346,7 @@ void AccessCodeCastSinkService::DiscoverSink(const std::string& access_code,
           profile_, access_code, media_router_->GetLogger(), identity_manager_);
   discovery_server_interface_->ValidateDiscoveryAccessCode(
       base::BindOnce(&AccessCodeCastSinkService::OnAccessCodeValidated,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     GetWeakPtr(), std::move(callback)));
 }
 
 void AccessCodeCastSinkService::AddSinkToMediaRouter(
@@ -360,8 +362,7 @@ void AccessCodeCastSinkService::AddSinkToMediaRouter(
                      base::Unretained(cast_media_sink_service_impl_),
                      sink.id()),
       base::BindOnce(&AccessCodeCastSinkService::OpenChannelIfNecessary,
-                     weak_ptr_factory_.GetWeakPtr(), sink,
-                     std::move(add_sink_callback)));
+                     GetWeakPtr(), sink, std::move(add_sink_callback)));
 }
 
 void AccessCodeCastSinkService::OnAccessCodeValidated(
@@ -416,7 +417,7 @@ void AccessCodeCastSinkService::OpenChannelIfNecessary(
                          base::Unretained(cast_media_sink_service_impl_),
                          sink.id()),
           base::BindOnce(&AccessCodeCastSinkService::UpdateExistingSink,
-                         weak_ptr_factory_.GetWeakPtr(), sink));
+                         GetWeakPtr(), sink));
     }
 
     std::move(add_sink_callback).Run(AddSinkResultCode::OK, sink.id());
@@ -426,9 +427,9 @@ void AccessCodeCastSinkService::OpenChannelIfNecessary(
   // The OnChannelOpenedResult() callback needs to be be bound with
   // BindPostTask() to ensure that the callback is invoked on this specific task
   // runner.
-  auto channel_cb = base::BindOnce(
-      &AccessCodeCastSinkService::OnChannelOpenedResult,
-      weak_ptr_factory_.GetWeakPtr(), std::move(add_sink_callback), sink);
+  auto channel_cb =
+      base::BindOnce(&AccessCodeCastSinkService::OnChannelOpenedResult,
+                     GetWeakPtr(), std::move(add_sink_callback), sink);
 
   auto returned_channel_cb =
       base::BindPostTask(task_runner_, std::move(channel_cb));
@@ -454,7 +455,7 @@ void AccessCodeCastSinkService::OpenChannelIfNecessary(
           base::BindOnce(&CastMediaSinkServiceImpl::CreateCastSocketOpenParams,
                          base::Unretained(cast_media_sink_service_impl_), sink),
           base::BindOnce(&AccessCodeCastSinkService::OpenChannelWithParams,
-                         weak_ptr_factory_.GetWeakPtr(), nullptr, sink,
+                         GetWeakPtr(), nullptr, sink,
                          std::move(returned_channel_cb)));
     }
   }
@@ -559,7 +560,7 @@ void AccessCodeCastSinkService::StoreSinkInPrefsById(
       base::BindOnce(&CastMediaSinkServiceImpl::GetSinkById,
                      base::Unretained(cast_media_sink_service_impl_), sink_id),
       base::BindOnce(&AccessCodeCastSinkService::StoreSinkInPrefs,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     GetWeakPtr()));
 }
 
 void AccessCodeCastSinkService::StoreSinkInPrefs(
@@ -575,12 +576,6 @@ void AccessCodeCastSinkService::StoreSinkInPrefs(
   }
   pref_updater_->UpdateDevicesDict(*sink);
   pref_updater_->UpdateDeviceAddedTimeDict(sink->id());
-}
-
-void AccessCodeCastSinkService::SetIdentityManagerForTesting(
-    signin::IdentityManager* identity_manager) {
-  DCHECK(identity_manager);
-  identity_manager_ = identity_manager;
 }
 
 void AccessCodeCastSinkService::InitAllStoredDevices() {
@@ -618,7 +613,7 @@ void AccessCodeCastSinkService::SetExpirationTimerById(
       base::BindOnce(&CastMediaSinkServiceImpl::GetSinkById,
                      base::Unretained(cast_media_sink_service_impl_), sink_id),
       base::BindOnce(&AccessCodeCastSinkService::SetExpirationTimer,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     GetWeakPtr()));
 }
 
 void AccessCodeCastSinkService::SetExpirationTimer(
@@ -648,8 +643,8 @@ void AccessCodeCastSinkService::SetExpirationTimer(
       FROM_HERE,
       CalculateDurationTillExpiration(sink->id()) +
           AccessCodeCastSinkService::kExpirationTimerDelay,
-      base::BindOnce(&AccessCodeCastSinkService::OnExpiration,
-                     weak_ptr_factory_.GetWeakPtr(), *sink));
+      base::BindOnce(&AccessCodeCastSinkService::OnExpiration, GetWeakPtr(),
+                     *sink));
 
   current_session_expiration_timers_[sink->id()] = std::move(expiration_timer);
 }
@@ -771,7 +766,7 @@ void AccessCodeCastSinkService::ExpireSink(const MediaSink::Id& sink_id) {
                      base::Unretained(cast_media_sink_service_impl_), sink_id),
       base::BindOnce(
           &AccessCodeCastSinkService::RemoveAndDisconnectMediaSinkFromRouter,
-          weak_ptr_factory_.GetWeakPtr()));
+          GetWeakPtr()));
 }
 
 void AccessCodeCastSinkService::RemoveAndDisconnectMediaSinkFromRouter(
@@ -877,7 +872,7 @@ void AccessCodeCastSinkService::RemoveAndDisconnectExistingSinksOnNetwork() {
                        sink_id),
         base::BindOnce(
             &AccessCodeCastSinkService::RemoveAndDisconnectMediaSinkFromRouter,
-            weak_ptr_factory_.GetWeakPtr()));
+            GetWeakPtr()));
   }
 }
 
@@ -941,6 +936,12 @@ void AccessCodeCastSinkService::Shutdown() {
   user_prefs_registrar_.reset();
   media_router_ = nullptr;
   ResetExpirationTimers();
+}
+
+void AccessCodeCastSinkService::SetIdentityManagerForTesting(
+    signin::IdentityManager* identity_manager) {
+  DCHECK(identity_manager);
+  identity_manager_ = identity_manager;
 }
 
 }  // namespace media_router
