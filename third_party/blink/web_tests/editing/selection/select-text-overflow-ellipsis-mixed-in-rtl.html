@@ -13,6 +13,11 @@ dd {
     text-decoration: inherit;
     direction: rtl;
 }
+::selection,
+::selection:window-inactive {
+  background-color: rgb(176, 176, 176);
+  color: black;
+}
 </style>
 <p>crbug.com/634445: Select all text in mixed ltr-rtl in rtl flow.</p>
 <dl>
