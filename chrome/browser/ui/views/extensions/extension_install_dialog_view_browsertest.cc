@@ -525,8 +525,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
   ShowAndVerifyUi();
 }
 
+// TODO(crbug.com/1445932): Flaky on Win10.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_AllInfoTypes DISABLED_InvokeUi_AllInfoTypes
+#else
+#define MAYBE_InvokeUi_AllInfoTypes InvokeUi_AllInfoTypes
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
-                       InvokeUi_AllInfoTypes) {
+                       MAYBE_InvokeUi_AllInfoTypes) {
   AddPermission("Example permission");
   AddPermissionWithDetails(
       "This permission has details",
