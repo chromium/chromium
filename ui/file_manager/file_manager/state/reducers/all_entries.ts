@@ -381,6 +381,8 @@ function getEntryType(entry: Entry|FilesAppEntry): EntryType {
       return EntryType.PLACEHOLDER;
     case 'GuestOsPlaceholder':
       return EntryType.PLACEHOLDER;
+    case 'TrashEntry':
+      return EntryType.TRASH;
     default:
       console.warn(`Invalid entry.type_name='${entry.type_name}`);
       return EntryType.FS_API;
