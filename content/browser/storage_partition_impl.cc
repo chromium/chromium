@@ -59,7 +59,6 @@
 #include "content/browser/browsing_data/clear_site_data_handler.h"
 #include "content/browser/browsing_data/storage_partition_code_cache_data_remover.h"
 #include "content/browser/browsing_topics/browsing_topics_site_data_manager_impl.h"
-#include "content/browser/browsing_topics/browsing_topics_url_loader_service.h"
 #include "content/browser/buckets/bucket_manager.h"
 #include "content/browser/cache_storage/cache_storage_control_wrapper.h"
 #include "content/browser/code_cache/generated_code_cache.h"
@@ -76,8 +75,8 @@
 #include "content/browser/indexed_db/indexed_db_control_wrapper.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/loader/keep_alive_url_loader_service.h"
-#include "content/browser/loader/prefetch_url_loader_service.h"
 #include "content/browser/loader/resource_cache_manager.h"
+#include "content/browser/loader/subresource_proxying_url_loader_service.h"
 #include "content/browser/locks/lock_manager.h"
 #include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/network_context_client_base_impl.h"
@@ -1408,13 +1407,8 @@ void StoragePartitionImpl::Initialize(
         blob_context, blob_url_registry_->AsWeakPtr());
   }
 
-  prefetch_url_loader_service_ =
-      std::make_unique<PrefetchURLLoaderService>(browser_context_);
-
-  if (base::FeatureList::IsEnabled(blink::features::kBrowsingTopics)) {
-    browsing_topics_url_loader_service_ =
-        std::make_unique<BrowsingTopicsURLLoaderService>();
-  }
+  subresource_proxying_url_loader_service_ =
+      std::make_unique<SubresourceProxyingURLLoaderService>(browser_context_);
 
   if (base::FeatureList::IsEnabled(
           blink::features::kKeepAliveInBrowserMigration)) {
@@ -1744,15 +1738,10 @@ storage::BlobUrlRegistry* StoragePartitionImpl::GetBlobUrlRegistry() {
   return blob_url_registry_.get();
 }
 
-PrefetchURLLoaderService* StoragePartitionImpl::GetPrefetchURLLoaderService() {
+SubresourceProxyingURLLoaderService*
+StoragePartitionImpl::GetSubresourceProxyingURLLoaderService() {
   DCHECK(initialized_);
-  return prefetch_url_loader_service_.get();
-}
-
-BrowsingTopicsURLLoaderService*
-StoragePartitionImpl::GetBrowsingTopicsURLLoaderService() {
-  DCHECK(initialized_);
-  return browsing_topics_url_loader_service_.get();
+  return subresource_proxying_url_loader_service_.get();
 }
 
 KeepAliveURLLoaderService*

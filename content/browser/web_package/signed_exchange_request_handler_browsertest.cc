@@ -19,7 +19,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/browser/loader/prefetch_url_loader_service.h"
+#include "content/browser/loader/prefetch_url_loader_service_context.h"
+#include "content/browser/loader/subresource_proxying_url_loader_service.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -239,7 +240,9 @@ class SignedExchangeRequestHandlerBrowserTestBase
                                                ->web_contents()
                                                ->GetBrowserContext()
                                                ->GetDefaultStoragePartition());
-    partition->GetPrefetchURLLoaderService()->SetAcceptLanguages(langs);
+    partition->GetSubresourceProxyingURLLoaderService()
+        ->prefetch_url_loader_service_context_for_testing()
+        .SetAcceptLanguages(langs);
   }
 
   std::unique_ptr<InactiveRenderFrameHostDeletionObserver>

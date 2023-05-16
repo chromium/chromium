@@ -7,7 +7,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/browser/loader/prefetch_url_loader_service.h"
+#include "content/browser/loader/prefetch_url_loader_service_context.h"
+#include "content/browser/loader/subresource_proxying_url_loader_service.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_package/signed_exchange_handler.h"
 #include "content/browser/web_package/signed_exchange_loader.h"
@@ -62,8 +63,9 @@ void PrefetchBrowserTestBase::SetUpOnMainThread() {
                                              ->web_contents()
                                              ->GetBrowserContext()
                                              ->GetDefaultStoragePartition());
-  partition->GetPrefetchURLLoaderService()
-      ->RegisterPrefetchLoaderCallbackForTest(base::BindRepeating(
+  partition->GetSubresourceProxyingURLLoaderService()
+      ->prefetch_url_loader_service_context_for_testing()
+      .RegisterPrefetchLoaderCallbackForTest(base::BindRepeating(
           &PrefetchBrowserTestBase::OnPrefetchURLLoaderCalled,
           base::Unretained(this)));
 }

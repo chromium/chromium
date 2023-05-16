@@ -21,9 +21,9 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "content/browser/browsing_topics/browsing_topics_url_loader_service.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/loader/navigation_url_loader_delegate.h"
+#include "content/browser/loader/subresource_proxying_url_loader_service.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/renderer_host/browsing_context_group_swap.h"
 #include "content/browser/renderer_host/commit_deferring_condition_runner.h"
@@ -1066,10 +1066,11 @@ class CONTENT_EXPORT NavigationRequest
   // Empties this instance's vector.
   std::vector<blink::mojom::WebFeature> TakeWebFeaturesToLog();
 
-  void set_topics_url_loader_service_bind_context(
-      base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context) {
-    DCHECK(!topics_url_loader_service_bind_context_);
-    topics_url_loader_service_bind_context_ = bind_context;
+  void set_subresource_proxying_url_loader_service_bind_context(
+      base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext>
+          bind_context) {
+    DCHECK(!subresource_proxying_url_loader_service_bind_context_);
+    subresource_proxying_url_loader_service_bind_context_ = bind_context;
   }
 
   // Helper for logging crash keys related to a NavigationRequest (e.g.
@@ -2505,13 +2506,14 @@ class CONTENT_EXPORT NavigationRequest
   // contain "Observe-Browsing-Topics: ?1", a topic observation will be stored.
   bool topics_eligible_ = false;
 
-  // A WeakPtr for the BindContext associated with topics loader factory for the
-  // committing document. This will be set in `CommitNavigation()`, and can
-  // become null if the corresponding factory is destroyed. Upon
-  // `DidCommitNavigation()`, `topics_url_loader_service_bind_context_` will
-  // be notified with the committed document.
-  base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext>
-      topics_url_loader_service_bind_context_;
+  // A WeakPtr for the BindContext associated with the browser routing loader
+  // factory for the committing document. This will be set in
+  // `CommitNavigation()`, and can become null if the corresponding factory is
+  // destroyed. Upon `DidCommitNavigation()`,
+  // `subresource_proxying_url_loader_service_bind_context_` will be notified
+  // with the committed document.
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext>
+      subresource_proxying_url_loader_service_bind_context_;
 
   scoped_refptr<NavigationOrDocumentHandle> navigation_or_document_handle_;
 

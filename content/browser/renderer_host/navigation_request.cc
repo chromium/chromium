@@ -7121,11 +7121,11 @@ void NavigationRequest::DidCommitNavigation(
 
   // TODO(https://crbug.com/1399499): consider using NavigationOrDocumentHandle
   // instead once we can get a WeakDocumentPtr from NavigationOrDocumentHandle.
-  if (topics_url_loader_service_bind_context_) {
+  if (subresource_proxying_url_loader_service_bind_context_) {
     DCHECK(!IsSameDocument());
 
-    topics_url_loader_service_bind_context_->OnDidCommitNavigation(
-        GetRenderFrameHost()->GetWeakDocumentPtr());
+    subresource_proxying_url_loader_service_bind_context_
+        ->OnDidCommitNavigation(GetRenderFrameHost()->GetWeakDocumentPtr());
   }
 }
 

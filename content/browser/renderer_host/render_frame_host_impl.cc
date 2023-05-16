@@ -55,7 +55,6 @@
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/browser/browser_main_loop.h"
-#include "content/browser/browsing_topics/browsing_topics_url_loader_service.h"
 #include "content/browser/can_commit_status.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
@@ -79,8 +78,8 @@
 #include "content/browser/loader/file_url_loader_factory.h"
 #include "content/browser/loader/keep_alive_url_loader_service.h"
 #include "content/browser/loader/navigation_early_hints_manager.h"
-#include "content/browser/loader/prefetch_url_loader_service.h"
 #include "content/browser/loader/resource_cache_manager.h"
+#include "content/browser/loader/subresource_proxying_url_loader_service.h"
 #include "content/browser/log_console_message.h"
 #include "content/browser/media/media_interface_proxy.h"
 #include "content/browser/media/webaudio/audio_context_manager_impl.h"
@@ -9937,9 +9936,11 @@ void RenderFrameHostImpl::CommitNavigation(
           network::SharedURLLoaderFactory::Create(CloneFactoryBundle(bundle));
     }
 
-    // Set up prefetch loader factory.
+    // Set up the subresource loader factory to be passed to the renderer. It is
+    // used to proxy relevant subresoruce requests (e.g. prefetch, topics)
+    // through the browser process.
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
-        prefetch_loader_factory;
+        subresource_proxying_loader_factory_for_renderer;
     if (subresource_proxying_factory_bundle) {
       if (prefetched_signed_exchange_cache_) {
         prefetched_signed_exchange_cache_->RecordHistograms();
@@ -9949,47 +9950,37 @@ void RenderFrameHostImpl::CommitNavigation(
       }
 
       // Also set-up URLLoaderFactory for prefetch using the same loader
-      // factories. TODO(kinuko): Consider setting this up only when prefetch
-      // is used. Currently we have this here to make sure we have non-racy
-      // situation (https://crbug.com/849929).
-      auto* storage_partition = GetStoragePartition();
-      storage_partition->GetPrefetchURLLoaderService()->GetFactory(
-          prefetch_loader_factory.InitWithNewPipeAndPassReceiver(),
-          navigation_request->frame_tree_node()->frame_tree_node_id(),
-          subresource_proxying_factory_bundle, weak_ptr_factory_.GetWeakPtr(),
-          EnsurePrefetchedSignedExchangeCache());
+      // factories. TODO(kinuko): Consider setting this up only when relevant
+      // requests are encountered. Currently we have this here to make sure we
+      // have non-racy situation (https://crbug.com/849929).
+      base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext>
+          bind_context =
+              GetStoragePartition()
+                  ->GetSubresourceProxyingURLLoaderService()
+                  ->GetFactory(subresource_proxying_loader_factory_for_renderer
+                                   .InitWithNewPipeAndPassReceiver(),
+                               navigation_request->frame_tree_node()
+                                   ->frame_tree_node_id(),
+                               subresource_proxying_factory_bundle,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               EnsurePrefetchedSignedExchangeCache());
+
+      navigation_request
+          ->set_subresource_proxying_url_loader_service_bind_context(
+              bind_context);
     }
 
-    // Set up the topics loader factory. It is used to proxy the topics
-    // subresource request via the browser process. The topics loader factory
-    // does not depend on the prefetch loader factory (or vice versa), as they
-    // are intended for disjoint request types (i.e.
-    // fetch(<url>, {browsingTopics: true}) v.s. <link rel="prefetch">).
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> topics_loader_factory;
-    if (base::FeatureList::IsEnabled(blink::features::kBrowsingTopics) &&
-        subresource_proxying_factory_bundle) {
-      // Also set-up URLLoaderFactory for topics using the same loader
-      // factories.
-      base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context =
-          GetStoragePartition()
-              ->GetBrowsingTopicsURLLoaderService()
-              ->GetFactory(
-                  topics_loader_factory.InitWithNewPipeAndPassReceiver(),
-                  subresource_proxying_factory_bundle);
-
-      navigation_request->set_topics_url_loader_service_bind_context(
-          bind_context);
-    }
-
-    // Set up keepalive loader factory. It is used to proxy the keepalive
+    // Set up the keepalive loader factory. It is used to proxy the keepalive
     // requests, i.e. fetch(..., {keepalive: true}), via the browser process.
     // See
     // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY/edit
-    // Note that this loader does not depend on `prefetch_loader_factory` nor
-    // `topics_loader_factory`.
+    // Note that this loader does not depend on
+    // `subresource_proxying_loader_factory_for_renderer`.
     //
-    // TODO(https://crbug.com/1441113): we should allow both keepalive and
-    // browsing_topics.
+    // TODO(https://crbug.com/1441113): consolidate with
+    // `subresource_proxying_loader_factory_for_renderer` so that requests can
+    // be properly handled when both keepalive and browsing_topics are
+    // specified.
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         keep_alive_loader_factory;
     if (base::FeatureList::IsEnabled(
@@ -10064,10 +10055,10 @@ void RenderFrameHostImpl::CommitNavigation(
         std::move(url_loader_client_endpoints),
         std::move(subresource_loader_factories),
         std::move(subresource_overrides), std::move(controller),
-        std::move(container_info), std::move(prefetch_loader_factory),
-        std::move(topics_loader_factory), std::move(keep_alive_loader_factory),
-        std::move(resource_cache_remote), manifest_policy,
-        std::move(policy_container), *document_token,
+        std::move(container_info),
+        std::move(subresource_proxying_loader_factory_for_renderer),
+        std::move(keep_alive_loader_factory), std::move(resource_cache_remote),
+        manifest_policy, std::move(policy_container), *document_token,
         devtools_navigation_token);
     navigation_request->frame_tree_node()
         ->navigator()
@@ -13026,8 +13017,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
     blink::mojom::ControllerServiceWorkerInfoPtr controller,
     blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
-        prefetch_loader_factory,
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> topics_loader_factory,
+        subresource_proxying_loader_factory,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         keep_alive_loader_factory,
     mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache_remote,
@@ -13131,7 +13121,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
       std::move(url_loader_client_endpoints),
       std::move(subresource_loader_factories), std::move(subresource_overrides),
       std::move(controller), std::move(container_info),
-      std::move(prefetch_loader_factory), std::move(topics_loader_factory),
+      std::move(subresource_proxying_loader_factory),
       std::move(keep_alive_loader_factory), document_token,
       devtools_navigation_token, permissions_policy,
       std::move(policy_container), std::move(code_cache_host),

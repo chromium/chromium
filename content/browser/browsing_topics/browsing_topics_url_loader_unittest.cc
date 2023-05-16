@@ -1,11 +1,11 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/browsing_topics/browsing_topics_url_loader_service.h"
-
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/loader/subresource_proxying_url_loader_service.h"
+#include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/navigation_simulator.h"
@@ -90,9 +90,9 @@ class TopicsInterceptingContentBrowserClient : public ContentBrowserClient {
 
 }  // namespace
 
-class BrowsingTopicsURLLoaderServiceTest : public RenderViewHostTestHarness {
+class BrowsingTopicsURLLoaderTest : public RenderViewHostTestHarness {
  public:
-  BrowsingTopicsURLLoaderServiceTest() {
+  BrowsingTopicsURLLoaderTest() {
     scoped_feature_list_.InitAndEnableFeature(blink::features::kBrowsingTopics);
   }
 
@@ -112,13 +112,14 @@ class BrowsingTopicsURLLoaderServiceTest : public RenderViewHostTestHarness {
     return browser_client_;
   }
 
-  base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> CreateFactory(
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> CreateFactory(
       network::TestURLLoaderFactory& proxied_url_loader_factory,
       mojo::Remote<network::mojom::URLLoaderFactory>&
           remote_url_loader_factory) {
-    if (!browsing_topics_url_loader_service_) {
-      browsing_topics_url_loader_service_ =
-          std::make_unique<BrowsingTopicsURLLoaderService>();
+    if (!subresource_proxying_url_loader_service_) {
+      subresource_proxying_url_loader_service_ =
+          std::make_unique<SubresourceProxyingURLLoaderService>(
+              browser_context());
     }
 
     mojo::Remote<network::mojom::URLLoaderFactory> factory;
@@ -127,9 +128,12 @@ class BrowsingTopicsURLLoaderServiceTest : public RenderViewHostTestHarness {
         std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
             factory.Unbind());
 
-    return browsing_topics_url_loader_service_->GetFactory(
+    return subresource_proxying_url_loader_service_->GetFactory(
         remote_url_loader_factory.BindNewPipeAndPassReceiver(),
-        network::SharedURLLoaderFactory::Create(std::move(pending_factory)));
+        /*frame_tree_node_id=*/0,
+        network::SharedURLLoaderFactory::Create(std::move(pending_factory)),
+        /*render_frame_host=*/nullptr,
+        /*prefetched_signed_exchange_cache=*/nullptr);
   }
 
   network::mojom::URLResponseHeadPtr CreateResponseHead(
@@ -187,11 +191,11 @@ class BrowsingTopicsURLLoaderServiceTest : public RenderViewHostTestHarness {
   TopicsInterceptingContentBrowserClient browser_client_;
   raw_ptr<ContentBrowserClient> original_client_ = nullptr;
 
-  std::unique_ptr<BrowsingTopicsURLLoaderService>
-      browsing_topics_url_loader_service_;
+  std::unique_ptr<SubresourceProxyingURLLoaderService>
+      subresource_proxying_url_loader_service_;
 };
 
-TEST_F(BrowsingTopicsURLLoaderServiceTest, RequestArrivedBeforeCommit) {
+TEST_F(BrowsingTopicsURLLoaderTest, RequestArrivedBeforeCommit) {
   NavigatePage(GURL("https://google.com"));
 
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
@@ -226,7 +230,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, RequestArrivedBeforeCommit) {
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
 }
 
-TEST_F(BrowsingTopicsURLLoaderServiceTest, RequestArrivedAfterCommit) {
+TEST_F(BrowsingTopicsURLLoaderTest, RequestArrivedAfterCommit) {
   NavigatePage(GURL("https://google.com"));
 
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
@@ -234,7 +238,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, RequestArrivedAfterCommit) {
   mojo::Remote<network::mojom::URLLoader> remote_loader;
   mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
 
-  base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context =
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
       CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
   bind_context->OnDidCommitNavigation(
       web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
@@ -272,8 +276,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, RequestArrivedAfterCommit) {
   EXPECT_TRUE(browser_client().last_observe_param());
 }
 
-TEST_F(BrowsingTopicsURLLoaderServiceTest,
-       RequestArrivedAfterDocumentDestroyed) {
+TEST_F(BrowsingTopicsURLLoaderTest, RequestArrivedAfterDocumentDestroyed) {
   NavigatePage(GURL("https://google.com"));
 
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
@@ -281,7 +284,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest,
   mojo::Remote<network::mojom::URLLoader> remote_loader;
   mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
 
-  base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context =
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
       CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
   bind_context->OnDidCommitNavigation(
       web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
@@ -316,7 +319,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest,
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
 }
 
-TEST_F(BrowsingTopicsURLLoaderServiceTest, RequestFromSubframe) {
+TEST_F(BrowsingTopicsURLLoaderTest, RequestFromSubframe) {
   NavigatePage(GURL("https://google.com"));
 
   TestRenderFrameHost* initial_subframe = static_cast<TestRenderFrameHost*>(
@@ -336,7 +339,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, RequestFromSubframe) {
   mojo::Remote<network::mojom::URLLoader> remote_loader;
   mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
 
-  base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context =
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
       CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
   bind_context->OnDidCommitNavigation(final_subframe->GetWeakDocumentPtr());
 
@@ -373,7 +376,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, RequestFromSubframe) {
   EXPECT_TRUE(browser_client().last_observe_param());
 }
 
-TEST_F(BrowsingTopicsURLLoaderServiceTest, HasFalseValueObserveResponseHeader) {
+TEST_F(BrowsingTopicsURLLoaderTest, HasFalseValueObserveResponseHeader) {
   NavigatePage(GURL("https://google.com"));
 
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
@@ -381,7 +384,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, HasFalseValueObserveResponseHeader) {
   mojo::Remote<network::mojom::URLLoader> remote_loader;
   mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
 
-  base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context =
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
       CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
   bind_context->OnDidCommitNavigation(
       web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
@@ -415,7 +418,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, HasFalseValueObserveResponseHeader) {
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 }
 
-TEST_F(BrowsingTopicsURLLoaderServiceTest, EmptyTopics) {
+TEST_F(BrowsingTopicsURLLoaderTest, EmptyTopics) {
   NavigatePage(GURL("https://google.com"));
 
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
@@ -423,7 +426,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, EmptyTopics) {
   mojo::Remote<network::mojom::URLLoader> remote_loader;
   mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
 
-  base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context =
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
       CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
   bind_context->OnDidCommitNavigation(
       web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
@@ -461,8 +464,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, EmptyTopics) {
   EXPECT_TRUE(browser_client().last_observe_param());
 }
 
-TEST_F(BrowsingTopicsURLLoaderServiceTest,
-       TopicsNotEligibleDueToInactiveFrame) {
+TEST_F(BrowsingTopicsURLLoaderTest, TopicsNotEligibleDueToInactiveFrame) {
   NavigatePage(GURL("https://google.com"));
 
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
@@ -470,7 +472,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest,
   mojo::Remote<network::mojom::URLLoader> remote_loader;
   mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
 
-  base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context =
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
       CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
   bind_context->OnDidCommitNavigation(
       web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
@@ -506,8 +508,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest,
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
 }
 
-TEST_F(BrowsingTopicsURLLoaderServiceTest,
-       TopicsNotEligibleDueToPermissionsPolicy) {
+TEST_F(BrowsingTopicsURLLoaderTest, TopicsNotEligibleDueToPermissionsPolicy) {
   NavigatePage(GURL("https://google.com"));
 
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
@@ -515,7 +516,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest,
   mojo::Remote<network::mojom::URLLoader> remote_loader;
   mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
 
-  base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context =
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
       CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
   bind_context->OnDidCommitNavigation(
       web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
@@ -546,7 +547,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest,
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
 }
 
-TEST_F(BrowsingTopicsURLLoaderServiceTest, RedirectTopicsUpdated) {
+TEST_F(BrowsingTopicsURLLoaderTest, RedirectTopicsUpdated) {
   NavigatePage(GURL("https://google.com"));
 
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
@@ -555,7 +556,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, RedirectTopicsUpdated) {
   mojo::Remote<network::mojom::URLLoader> remote_loader;
   mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
 
-  base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context =
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
       CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
   bind_context->OnDidCommitNavigation(
       web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
@@ -630,7 +631,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, RedirectTopicsUpdated) {
   EXPECT_TRUE(browser_client().last_observe_param());
 }
 
-TEST_F(BrowsingTopicsURLLoaderServiceTest, RedirectNotEligibleForTopics) {
+TEST_F(BrowsingTopicsURLLoaderTest, RedirectNotEligibleForTopics) {
   NavigatePage(GURL("https://google.com"));
 
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
@@ -639,7 +640,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, RedirectNotEligibleForTopics) {
   mojo::Remote<network::mojom::URLLoader> remote_loader;
   mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
 
-  base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context =
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
       CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
   bind_context->OnDidCommitNavigation(
       web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
@@ -707,7 +708,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, RedirectNotEligibleForTopics) {
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
 }
 
-TEST_F(BrowsingTopicsURLLoaderServiceTest, TwoRequests) {
+TEST_F(BrowsingTopicsURLLoaderTest, TwoRequests) {
   NavigatePage(GURL("https://google.com"));
 
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
@@ -719,7 +720,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, TwoRequests) {
   mojo::Remote<network::mojom::URLLoader> remote_loader2;
   mojo::PendingReceiver<network::mojom::URLLoaderClient> client2;
 
-  base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context =
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
       CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
   bind_context->OnDidCommitNavigation(
       web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
@@ -786,7 +787,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, TwoRequests) {
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
 }
 
-TEST_F(BrowsingTopicsURLLoaderServiceTest, TwoFactories) {
+TEST_F(BrowsingTopicsURLLoaderTest, TwoFactories) {
   NavigatePage(GURL("https://google.com"));
 
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory1;
@@ -799,13 +800,15 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, TwoFactories) {
   mojo::Remote<network::mojom::URLLoader> remote_loader2;
   mojo::PendingReceiver<network::mojom::URLLoaderClient> client2;
 
-  base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context1 =
-      CreateFactory(proxied_url_loader_factory1, remote_url_loader_factory1);
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext>
+      bind_context1 = CreateFactory(proxied_url_loader_factory1,
+                                    remote_url_loader_factory1);
   bind_context1->OnDidCommitNavigation(
       web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
 
-  base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context2 =
-      CreateFactory(proxied_url_loader_factory2, remote_url_loader_factory2);
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext>
+      bind_context2 = CreateFactory(proxied_url_loader_factory2,
+                                    remote_url_loader_factory2);
   bind_context2->OnDidCommitNavigation(
       web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
 
@@ -871,10 +874,10 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, TwoFactories) {
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
 }
 
-TEST_F(BrowsingTopicsURLLoaderServiceTest, BindContextClearedDueToDisconnect) {
+TEST_F(BrowsingTopicsURLLoaderTest, BindContextClearedDueToDisconnect) {
   NavigatePage(GURL("https://google.com"));
 
-  base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context;
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context;
 
   {
     mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
@@ -891,7 +894,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, BindContextClearedDueToDisconnect) {
   EXPECT_FALSE(bind_context);
 }
 
-TEST_F(BrowsingTopicsURLLoaderServiceTest, ReportBadMessageOnInvalidRequest) {
+TEST_F(BrowsingTopicsURLLoaderTest, ReportBadMessageOnInvalidRequest) {
   NavigatePage(GURL("https://google.com"));
 
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
@@ -899,7 +902,7 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, ReportBadMessageOnInvalidRequest) {
   mojo::Remote<network::mojom::URLLoader> remote_loader;
   mojo::PendingReceiver<network::mojom::URLLoaderClient> client;
 
-  base::WeakPtr<BrowsingTopicsURLLoaderService::BindContext> bind_context =
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
       CreateFactory(proxied_url_loader_factory, remote_url_loader_factory);
   bind_context->OnDidCommitNavigation(
       web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr());
@@ -922,9 +925,9 @@ TEST_F(BrowsingTopicsURLLoaderServiceTest, ReportBadMessageOnInvalidRequest) {
   EXPECT_FALSE(remote_url_loader_factory.is_connected());
   EXPECT_EQ(0, proxied_url_loader_factory.NumPending());
   EXPECT_EQ(
-      "Unexpected `resource_request` in "
-      "BrowsingTopicsURLLoaderService::CreateLoaderAndStart(): no "
-      "resource_request.browsing_topics",
+      "Unexpected `resource_request_in` in "
+      "SubresourceProxyingURLLoaderService::CreateLoaderAndStart(): it's not a "
+      "prefetch or browsing_topics request.",
       received_error);
 
   mojo::SetDefaultProcessErrorHandler(base::NullCallback());
