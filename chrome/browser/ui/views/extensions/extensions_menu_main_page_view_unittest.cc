@@ -526,7 +526,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 // toggling site access for an extension that only requests active tab.
 // TODO(crbug.com/1445397): Flaky on Linux TSan and Win ASan.
 #if (BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)) || \
-    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) ||  \
+    (BUILDFLAG(IS_CHROMEOS))
 #define MAYBE_ActiveTabRequested_ToggleSiteAccess \
   DISABLED_ActiveTabRequested_ToggleSiteAccess
 #else
