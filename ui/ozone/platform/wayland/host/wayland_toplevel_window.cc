@@ -589,8 +589,19 @@ void WaylandToplevelWindow::SetWindowGeometry(gfx::Size size_dip) {
   gfx::Rect geometry_dip(size_dip);
 
   const auto insets = GetDecorationInsetsInDIP();
-  if (state_ == PlatformWindowState::kNormal && !insets.IsEmpty())
+  if (state_ == PlatformWindowState::kNormal && !insets.IsEmpty()) {
     geometry_dip.Inset(insets);
+
+    // Shrinking the bounds by the decoration insets might result in empty
+    // bounds. For the reasons already explained in WaylandWindow::Initialize(),
+    // we mustn't request an empty window geometry.
+    if (geometry_dip.width() == 0) {
+      geometry_dip.set_width(1);
+    }
+    if (geometry_dip.height() == 0) {
+      geometry_dip.set_height(1);
+    }
+  }
   shell_toplevel_->SetWindowGeometry(geometry_dip);
 }
 

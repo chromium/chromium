@@ -677,6 +677,18 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
 
   PlatformWindowDelegate::State state;
   state.bounds_dip = properties.bounds;
+
+  // Make sure we don't store empty bounds, or else later on we might send an
+  // xdg_toplevel.set_window_geometry() request with zero width and height,
+  // which will result in a protocol error:
+  // "The width and height of the effective window geometry must be greater than
+  // zero. Setting an invalid size will raise an invalid_size error."
+  // This can happen when a test doesn't set `properties.bounds`, but there have
+  // also been crashes in production because of this (crbug.com/1435478).
+  if (state.bounds_dip.IsEmpty()) {
+    state.bounds_dip = gfx::Rect(0, 0, 1, 1);
+  }
+
   // Properties contain DIP bounds but the buffer scale is initially 1 so it's
   // OK to assign.  The bounds will be recalculated when the buffer scale
   // changes.
