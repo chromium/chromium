@@ -109042,6 +109042,19 @@ This is true even if the type has been removed from the mojom file.
   <int value="3" label="Transferred WebContents"/>
 </enum>
 
+<enum name="WebDatabaseInitResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kCouldNotOpen"/>
+  <int value="2" label="kDatabaseLocked"/>
+  <int value="3" label="kCouldNotRazeIncompatibleVersion"/>
+  <int value="4" label="kFailedToBeginInitTransaction"/>
+  <int value="5" label="kMetaTableInitFailed"/>
+  <int value="6" label="kCurrentVersionTooNew"/>
+  <int value="7" label="kMigrationError"/>
+  <int value="8" label="kFailedToCreateTable"/>
+  <int value="9" label="kFailedToCommitInitTransaction"/>
+</enum>
+
 <enum name="WebFeedChangeReason">
   <int value="0" label="Unspecified">Unknown change reason</int>
   <int value="1" label="Web page menu">
