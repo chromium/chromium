@@ -7,6 +7,7 @@
 #import <AppKit/AppKit.h>
 
 #include "base/mac/mac_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/platform_font_mac.h"
 
 namespace {
@@ -50,7 +51,9 @@ void MenuConfig::Init() {
   use_mnemonics = false;
   show_context_menu_accelerators = false;
   all_menus_use_prefix_selection = true;
-  InitMaterialMenuConfig(this);
+  if (!features::IsChromeRefresh2023()) {
+    InitMaterialMenuConfig(this);
+  }
 }
 
 }  // namespace views

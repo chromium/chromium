@@ -55,10 +55,6 @@ void MenuConfig::Init() {
   if (use_bubble_border && !is_refresh) {
     corner_radius = 8;
   }
-  // Set Windows specific metrics for CR2023
-  if (is_refresh) {
-    item_horizontal_border_padding = 12;
-  }
 }
 
 }  // namespace views
