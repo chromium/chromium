@@ -95,7 +95,7 @@ config("compiler") {
     cflags += [ "/D__WRL_ENABLE_FUNCTION_STATICS__" ]
 
     # Tell clang which version of MSVC to emulate.
-    cflags += [ "-fmsc-version=1916" ]
+    cflags += [ "-fmsc-version=1934" ]
 
     if (is_component_build) {
       cflags += [
