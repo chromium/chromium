@@ -14,6 +14,8 @@ namespace arc::input_overlay {
 // UI specs.
 constexpr int kActionMoveMinRadius = 99;
 
+class TouchInjector;
+
 // ActionMoveKey transforms key/mouse events to touch events with touch
 // move involved.
 class ActionMove : public Action {

@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "components/exo/test/exo_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/lottie/resource.h"

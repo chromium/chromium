@@ -10,6 +10,9 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 
 namespace arc::input_overlay {
+
+class TouchInjector;
+
 // ActionTap transform key/mouse events to touch events.
 class ActionTap : public Action {
  public:
