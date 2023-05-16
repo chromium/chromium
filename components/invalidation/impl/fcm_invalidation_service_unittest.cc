@@ -161,16 +161,15 @@ class FCMInvalidationServiceTestDelegate {
   }
 
   void InitializeInvalidationService() {
-    fake_listener_ = new FakeFCMInvalidationListener(
+    auto fake_listener = std::make_unique<FakeFCMInvalidationListener>(
         std::make_unique<TestFCMSyncNetworkChannel>());
-    invalidation_service_->InitForTest(base::WrapUnique(fake_listener_.get()));
+    fake_listener_ = fake_listener.get();
+    invalidation_service_->InitForTest(std::move(fake_listener));
   }
 
   FCMInvalidationService* GetInvalidationService() {
     return invalidation_service_.get();
   }
-
-  void DestroyInvalidationService() { invalidation_service_.reset(); }
 
   void TriggerOnInvalidatorStateChange(InvalidatorState state) {
     fake_listener_->EmitStateChangeForTest(state);
@@ -188,13 +187,13 @@ class FCMInvalidationServiceTestDelegate {
   std::unique_ptr<MockInstanceID> mock_instance_id_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<IdentityProvider> identity_provider_;
-  raw_ptr<FCMInvalidationListener> fake_listener_;  // Owned by the service.
   network::TestURLLoaderFactory url_loader_factory_;
   TestingPrefServiceSimple pref_service_;
 
   // The service has to be below the provider since the service keeps
   // a non-owned pointer to the provider.
   std::unique_ptr<FCMInvalidationService> invalidation_service_;
+  raw_ptr<FCMInvalidationListener> fake_listener_;  // Owned by the service.
 };
 
 INSTANTIATE_TYPED_TEST_SUITE_P(FCMInvalidationServiceTest,
