@@ -12,7 +12,10 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/util/affiliation.h"
+#include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -348,7 +351,19 @@ bool IncludeDeviceInfo(Profile* profile, bool per_profile) {
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return policy::PolicyLoaderLacros::IsMainUserAffiliated();
 #else
-  return !per_profile;
+  // A browser managed through the device can send device info.
+  if (!per_profile) {
+    return true;
+  }
+
+  // An unmanaged browser shouldn't share its device info for privacy reasons.
+  if (!policy::GetDMToken(profile).is_valid()) {
+    return false;
+  }
+
+  // A managed device can share its info with the profile if they are
+  // affiliated.
+  return chrome::enterprise_util::IsProfileAffiliated(profile);
 #endif
 }
 

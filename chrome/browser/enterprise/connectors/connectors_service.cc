@@ -170,8 +170,7 @@ absl::optional<ReportingSettings> ConnectorsService::GetReportingSettings(
 
 #if BUILDFLAG(IS_CHROMEOS)
   Profile* profile = Profile::FromBrowserContext(context_);
-  if (enterprise_connectors::IncludeDeviceInfo(profile,
-                                               /*per_profile=*/false)) {
+  if (IncludeDeviceInfo(profile, /*per_profile=*/false)) {
     // The device dm token includes additional information like a device id,
     // which is relevant for reporting and should only be used for
     // IncludeDeviceInfo==true.
@@ -546,9 +545,9 @@ std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
 
   // Device info is only useful for cloud service providers since local
   // provider can already determine all this info themselves.
-  const bool include_device_info =
-      is_cloud && enterprise_connectors::IncludeDeviceInfo(
-                      profile, reporting_settings.value().per_profile);
+  bool include_device_info =
+      is_cloud &&
+      IncludeDeviceInfo(profile, reporting_settings.value().per_profile);
 
   // Always include browser metadata for local service providers, but include
   // it for cloud service providers only if device info is included.
