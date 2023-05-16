@@ -531,10 +531,6 @@ enum HeaderBehaviour {
 
 #pragma mark - Private Properties
 
-- (BOOL)canShowTabStrip {
-  return IsRegularXRegularSizeClass(self);
-}
-
 - (void)setVisible:(BOOL)visible {
   if (_visible == visible)
     return;
@@ -608,7 +604,7 @@ enum HeaderBehaviour {
   if (![self isViewLoaded])
     return results;
 
-  if (![self canShowTabStrip]) {
+  if (!IsRegularXRegularSizeClass(self)) {
     if (self.primaryToolbarCoordinator.viewController.view) {
       [results addObject:[HeaderDefinition
                              definitionWithView:self.primaryToolbarCoordinator
@@ -655,7 +651,7 @@ enum HeaderBehaviour {
 
 - (CGFloat)headerOffset {
   CGFloat headerOffset = self.rootSafeAreaInsets.top;
-  return [self canShowTabStrip] ? headerOffset : 0.0;
+  return IsRegularXRegularSizeClass(self) ? headerOffset : 0.0;
 }
 
 - (CGFloat)headerHeight {
@@ -867,7 +863,8 @@ enum HeaderBehaviour {
 
 - (void)animateOpenBackgroundTabFromOriginPoint:(CGPoint)originPoint
                                      completion:(void (^)())completion {
-  if ([self canShowTabStrip] || CGPointEqualToPoint(originPoint, CGPointZero)) {
+  if (IsRegularXRegularSizeClass(self) ||
+      CGPointEqualToPoint(originPoint, CGPointZero)) {
     completion();
   } else {
     self.inNewTabAnimation = YES;
@@ -1171,12 +1168,13 @@ enum HeaderBehaviour {
   if (self.tabStripView) {
     [self showTabStripView:self.tabStripView];
     [self.tabStripView layoutSubviews];
+    const bool canShowTabStrip = IsRegularXRegularSizeClass(self);
     if (base::FeatureList::IsEnabled(kModernTabStrip)) {
-      [self.tabStripCoordinator hideTabStrip:![self canShowTabStrip]];
+      [self.tabStripCoordinator hideTabStrip:!canShowTabStrip];
     } else {
-      [self.legacyTabStripCoordinator hideTabStrip:![self canShowTabStrip]];
+      [self.legacyTabStripCoordinator hideTabStrip:!canShowTabStrip];
     }
-    _fakeStatusBarView.hidden = ![self canShowTabStrip];
+    _fakeStatusBarView.hidden = !canShowTabStrip;
     [self addConstraintsToPrimaryToolbar];
     // If tabstrip is coming back due to a window resize or screen rotation,
     // reset the full screen controller to adjust the tabstrip position.
@@ -1371,7 +1369,7 @@ enum HeaderBehaviour {
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
-  if ([self canShowTabStrip] && !_isOffTheRecord &&
+  if (IsRegularXRegularSizeClass(self) && !_isOffTheRecord &&
       !base::FeatureList::IsEnabled(kModernTabStrip)) {
     return self.tabStripView.frame.origin.y < kTabStripAppearanceOffset
                ? UIStatusBarStyleDefault
@@ -1519,7 +1517,7 @@ enum HeaderBehaviour {
   // screen.
   // - if the window is regular, it is underneath the tab strip.
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE ||
-      ![self canShowTabStrip]) {
+      !IsRegularXRegularSizeClass(self)) {
     topAnchor = self.view.topAnchor;
   } else {
     topAnchor = self.tabStripView.bottomAnchor;
@@ -1855,7 +1853,7 @@ enum HeaderBehaviour {
     // toolbar_view manages it's alpha changes would also need to be updated.
     // TODO(crbug.com/778822): This can be cleaned up when the new fullscreen
     // is enabled.
-    if (isPrimaryToolbar && ![self canShowTabStrip]) {
+    if (isPrimaryToolbar && !IsRegularXRegularSizeClass(self)) {
       self.primaryToolbarOffsetConstraint.constant = yOrigin;
     }
     CGRect frame = [header.view frame];
@@ -2208,7 +2206,7 @@ enum HeaderBehaviour {
     // If the NTP is active, then it's used as the base view for snapshotting.
     // When the tab strip is visible, or for the incognito NTP, the NTP is laid
     // out between the toolbars, so it should not be inset while snapshotting.
-    if ([self canShowTabStrip] || _isOffTheRecord) {
+    if (IsRegularXRegularSizeClass(self) || _isOffTheRecord) {
       return UIEdgeInsetsZero;
     }
 
@@ -2316,7 +2314,8 @@ enum HeaderBehaviour {
 - (BOOL)shouldAllowOverscrollActionsForOverscrollActionsController:
     (OverscrollActionsController*)controller {
   // When screeen size is not regular, overscroll actions should be enabled.
-  return !self.toolbarAccessoryPresenter.presenting && !self.canShowTabStrip;
+  return !self.toolbarAccessoryPresenter.presenting &&
+         !IsRegularXRegularSizeClass(self);
 }
 
 - (UIView*)headerViewForOverscrollActionsController:
@@ -2433,7 +2432,8 @@ enum HeaderBehaviour {
 // area.
 - (CGFloat)expandedTopToolbarHeight {
   return [self primaryToolbarHeightWithInset] +
-         ([self canShowTabStrip] ? self.tabStripView.frame.size.height : 0.0) +
+         (IsRegularXRegularSizeClass(self) ? self.tabStripView.frame.size.height
+                                           : 0.0) +
          self.headerOffset;
 }
 
@@ -2624,7 +2624,7 @@ enum HeaderBehaviour {
 
 - (void)initiateNewTabForegroundAnimationForWebState:(web::WebState*)webState {
   // Initiates the new tab foreground animation, which is phone-specific.
-  if ([self canShowTabStrip]) {
+  if (IsRegularXRegularSizeClass(self)) {
     if (self.foregroundTabWasAddedCompletionBlock) {
       // This callback is called before webState is activated. Dispatch the
       // callback asynchronously to be sure the activation is complete.
@@ -2670,7 +2670,7 @@ enum HeaderBehaviour {
 }
 
 - (void)switchtoTabWithNewWebStateIndex:(NSInteger)newWebStateIndex {
-  if ([self canShowTabStrip]) {
+  if (IsRegularXRegularSizeClass(self)) {
     return;
   }
 
@@ -2768,7 +2768,7 @@ enum HeaderBehaviour {
   UIView* toolbarSnapshot;
 
   if (tabURL == kChromeUINewTabURL && !_isOffTheRecord &&
-      ![self canShowTabStrip]) {
+      !IsRegularXRegularSizeClass(self)) {
     // Add a snapshot of the primary toolbar to the background as the
     // animation runs.
     UIViewController* toolbarViewController =
@@ -2920,7 +2920,7 @@ enum HeaderBehaviour {
 #pragma mark - SideSwipeControllerDelegate
 
 - (void)sideSwipeViewDismissAnimationDidEnd:(UIView*)sideSwipeView {
-  DCHECK(![self canShowTabStrip]);
+  DCHECK(!IsRegularXRegularSizeClass(self));
   // TODO(crbug.com/1329087): Signal to the toolbar coordinator to perform this
   // update. Longer-term, make SideSwipeControllerDelegate observable instead of
   // delegating.
