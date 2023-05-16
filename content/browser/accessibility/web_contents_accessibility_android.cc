@@ -1551,9 +1551,9 @@ void JNI_WebContentsAccessibilityImpl_SetBrowserAXMode(
   BrowserAccessibilityStateImpl* accessibility_state =
       BrowserAccessibilityStateImpl::GetInstance();
 
-  // The AXMode flags will be set according to enabled feature flags and what is
+  // The AXMode flags will be set according to enabled feature flag and what is
   // needed by the current system as indicated by the parameters.
-  if (!features::IsAccessibilityAXModesEnabled()) {
+  if (!features::IsAccessibilityPerformanceFilteringEnabled()) {
     // When the browser is not yet accessible, then set the AXMode to
     // |ui::kAXModeComplete| for all web contents.
     if (!accessibility_state->IsAccessibleBrowser()) {
@@ -1562,8 +1562,8 @@ void JNI_WebContentsAccessibilityImpl_SetBrowserAXMode(
     return;
   }
 
-  // If the AccessibilityAXModes feature flag has been enabled, then set
-  // |ui::kAXModeComplete| if a screen reader is present,
+  // If the AccessibilityPerformanceFiltering feature flag has been enabled,
+  // then set |ui::kAXModeComplete| if a screen reader is present,
   // |ui::kAXModeFormControls| if form controls mode is enabled, and
   // |ui::kAXModeBasic| otherwise.
   if (is_screen_reader_enabled) {

@@ -775,14 +775,15 @@ the Dispatcher simply drops/ignores the request. Preliminary data shows that thi
 has created a noticeable improvement for accessibility services that do not require
 the entire suite to function.
 
-### AccessibilityAXModes
+### AccessibilityPerformanceFiltering
 
-Loosely related to the OnDemand feature above, the "AccessibilityAXModes" feature is also
+Loosely related to the OnDemand feature above, the "AccessibilityPerformanceFiltering" feature is also
 a recent addition to improve overall performance. This feature uses the same
 mechanism as OnDemand to query the currently enabled services and the information
-they are interested in. AccessibilityAXModes then takes this information and uses a different
+they are interested in. AccessibilityPerformanceFiltering then takes this information and uses a different
 [AXMode](https://source.chromium.org/chromium/chromium/src/+/main:ui/accessibility/ax_mode.h)
-based on the situation. This effectively does the same thing as
+based on the situation. Each AXMode filters out a different level of information
+to improve performance while preserving necessary functionality. This effectively does the same thing as
 OnDemand, but further left/up-the-chain, giving a more significant performance
 improvement. This feature is still rolling out, and it currently only has three
 AXModes (basic, form controls only, and complete). As it rolls out and we gather more data

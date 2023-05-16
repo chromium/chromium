@@ -5169,14 +5169,15 @@ const FeatureEntry kFeatureEntries[] = {
                                     "ForceDarkVariations")},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_ANDROID)
-    {"enable-accessibility-ax-modes",
-     flag_descriptions::kAccessibilityAXModesName,
-     flag_descriptions::kAccessibilityAXModesDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kAccessibilityAXModes)},
     {"enable-accessibility-page-zoom",
      flag_descriptions::kAccessibilityPageZoomName,
      flag_descriptions::kAccessibilityPageZoomDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kAccessibilityPageZoom)},
+    {"enable-accessibility-performance-filtering",
+     flag_descriptions::kAccessibilityPerformanceFilteringName,
+     flag_descriptions::kAccessibilityPerformanceFilteringDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAccessibilityPerformanceFiltering)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"enable-experimental-accessibility-language-detection",
      flag_descriptions::kExperimentalAccessibilityLanguageDetectionName,

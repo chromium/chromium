@@ -211,10 +211,11 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks the number of AccessibilityEvents dropped when the OnDemand
-    accessibility services feature is enabled, and the AccessibilityAXModes
-    feature is enabled, and the number of events dropped is 100%. Tracks for
-    when the AXMode is set to {AXMode}. Recorded at the end of a session.
-    Updated in M114 to add FormControls variant.
+    accessibility services feature is enabled, and the
+    AccessibilityPerformanceFiltering feature is enabled, and the number of
+    events dropped is 100%. Tracks for when the AXMode is set to {AXMode}.
+    Recorded at the end of a session. Updated in M114 to add FormControls
+    variant.
   </summary>
   <token key="AXMode">
     <variant name="Basic"
@@ -246,9 +247,10 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks the percentage of AccessibilityEvents dropped when the OnDemand
-    accessibility services feature is enabled, and the AccessibilityAXModes
-    feature is enabled. Tracks for when the AXMode is set to {AXMode}. Recorded
-    at the end of a session. Updated in M114 to add FormControls variant.
+    accessibility services feature is enabled, and the
+    AccessibilityPerformanceFiltering feature is enabled. Tracks for when the
+    AXMode is set to {AXMode}. Recorded at the end of a session. Updated in M114
+    to add FormControls variant.
   </summary>
   <token key="AXMode">
     <variant name="Basic"
@@ -1028,6 +1030,9 @@ chromium-metrics-reviews@google.com.
     AXMode. Tracked when the experimental form controls mode flag is flipped to
     true. This flag is flipped automatically when software communicates with
     Chrome via accessibility APIs.
+
+    As of M115, this flag should only be flipped on when the
+    AccessibilityPerformanceFiltering feature is enabled.
 
     This is currently only used on Android OS.
   </summary>

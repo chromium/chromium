@@ -2053,11 +2053,10 @@ extern const char kEnableVariationsGoogleGroupFilteringDescription[];
 
 #if BUILDFLAG(IS_ANDROID)
 
-extern const char kAccessibilityAXModesName[];
-extern const char kAccessibilityAXModesDescription[];
-
 extern const char kAccessibilityPageZoomName[];
 extern const char kAccessibilityPageZoomDescription[];
+extern const char kAccessibilityPerformanceFilteringName[];
+extern const char kAccessibilityPerformanceFilteringDescription[];
 
 extern const char kAdaptiveButtonInTopToolbarName[];
 extern const char kAdaptiveButtonInTopToolbarDescription[];
