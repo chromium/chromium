@@ -20,8 +20,11 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Features.JUnitProcessor;
+import org.chromium.components.payments.test_support.DefaultPaymentFeatureConfig;
 import org.chromium.components.payments.test_support.PaymentRequestServiceBuilder;
-import org.chromium.components.payments.test_support.ShadowPaymentFeatureList;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.payments.mojom.PayerDetail;
@@ -41,7 +44,8 @@ import java.util.Set;
 
 /** A test for PaymentRequestService. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowPaymentFeatureList.class})
+@Config(manifest = Config.NONE)
+@DisableFeatures(PaymentFeatureList.WEB_PAYMENTS_EXPERIMENTAL_FEATURES)
 public class PaymentRequestServiceTest implements PaymentRequestClient {
     private static final int NO_PAYMENT_ERROR = PaymentErrorReason.MIN_VALUE;
     private final BrowserPaymentRequest mBrowserPaymentRequest;
@@ -49,6 +53,8 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
+    @Rule
+    public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
 
     private boolean mIsOnCloseListenerInvoked;
     private String mSentMethodName;
@@ -127,15 +133,12 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Before
     public void setUp() {
         PaymentRequestService.resetShowingPaymentRequestForTest();
-        ShadowPaymentFeatureList.setDefaultStatuses();
-        ShadowPaymentFeatureList.setFeatureEnabled(
-                PaymentFeatureList.WEB_PAYMENTS_EXPERIMENTAL_FEATURES, false);
+        DefaultPaymentFeatureConfig.setDefaultFlagConfigurationForTesting();
     }
 
     @After
     public void tearDown() {
         PaymentRequestService.resetShowingPaymentRequestForTest();
-        ShadowPaymentFeatureList.reset();
     }
 
     @Override
@@ -681,17 +684,15 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     @Test
     @Feature({"Payments"})
+    @EnableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
     public void testSpcCanOnlyBeRequestedAlone_success() {
-        ShadowPaymentFeatureList.setFeatureEnabled(
-                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
         Assert.assertNotNull(defaultBuilder().setOnlySpcMethodWithoutPaymentOptions().build());
     }
 
     @Test
     @Feature({"Payments"})
+    @EnableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
     public void testSpcCanOnlyBeRequestedAlone_failedForHavingOptions() {
-        ShadowPaymentFeatureList.setFeatureEnabled(
-                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
         PaymentOptions options = new PaymentOptions();
         options.requestShipping = true;
         Assert.assertNull(defaultBuilder()
@@ -704,9 +705,8 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     @Test
     @Feature({"Payments"})
+    @EnableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
     public void testSpcCanOnlyBeRequestedAlone_failedForNullPayeeNameAndOrigin() {
-        ShadowPaymentFeatureList.setFeatureEnabled(
-                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
         Assert.assertNull(defaultBuilder()
                                   .setPayeeName(null)
                                   .setPayeeOrigin(null)
@@ -718,9 +718,8 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     @Test
     @Feature({"Payments"})
+    @EnableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
     public void testSpcCanOnlyBeRequestedAlone_allowsNullPayeeOrigin() {
-        ShadowPaymentFeatureList.setFeatureEnabled(
-                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
         // If a valid payeeName is passed, then payeeOrigin is not needed.
         Assert.assertNotNull(defaultBuilder()
                                      .setOnlySpcMethodWithoutPaymentOptions()
@@ -731,9 +730,8 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     @Test
     @Feature({"Payments"})
+    @EnableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
     public void testSpcCanOnlyBeRequestedAlone_failedForEmptyPayeeName() {
-        ShadowPaymentFeatureList.setFeatureEnabled(
-                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
         Assert.assertNull(
                 defaultBuilder().setPayeeName("").setOnlySpcMethodWithoutPaymentOptions().build());
         assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
@@ -742,9 +740,8 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     @Test
     @Feature({"Payments"})
+    @EnableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
     public void testSpcCanOnlyBeRequestedAlone_failedForHttpPayeeOrigin() {
-        ShadowPaymentFeatureList.setFeatureEnabled(
-                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
         org.chromium.url.internal.mojom.Origin payeeOrigin =
                 new org.chromium.url.internal.mojom.Origin();
         payeeOrigin.scheme = "http";
@@ -761,9 +758,8 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     // The restriction is imposed only when the SPC flag is enabled.
     @Test
     @Feature({"Payments"})
+    @DisableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
     public void testSpcCanOnlyBeRequestedAlone_notApplicableWhenSpcDisabled() {
-        ShadowPaymentFeatureList.setFeatureEnabled(
-                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, false);
         PaymentOptions options = new PaymentOptions();
         options.requestShipping = true;
         Assert.assertNotNull(defaultBuilder()

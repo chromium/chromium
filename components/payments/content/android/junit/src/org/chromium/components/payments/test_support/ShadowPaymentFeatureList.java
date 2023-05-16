@@ -20,7 +20,11 @@ import java.util.Map;
  *   @RunWith(BaseRobolectricTestRunner.class)
  *   @Config(manifest = Config.NONE, shadows = {ShadowPaymentFeatureList.class})
  *   public class MyTest {}
+ *
+ * @deprecated use {@link DefaultPaymentFeatureConfig} with @Enable/DisableFeatures and
+ * JUnitProcessor instead.
  */
+@Deprecated
 @Implements(PaymentFeatureList.class)
 public class ShadowPaymentFeatureList {
     private static final Map<String, Boolean> sFeatureStatuses = new HashMap<>();

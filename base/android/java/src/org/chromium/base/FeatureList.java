@@ -6,6 +6,7 @@ package org.chromium.base;
 
 import android.util.ArrayMap;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -118,6 +119,7 @@ public class FeatureList {
     @VisibleForTesting
     public static void setTestCanUseDefaultsForTesting() {
         sTestCanUseDefaults = true;
+        ResettersForTesting.register(() -> sTestCanUseDefaults = false);
     }
 
     /**
@@ -151,6 +153,49 @@ public class FeatureList {
     public static void setTestValues(TestValues testFeatures) {
         sTestFeatures = testFeatures;
         ResettersForTesting.register(() -> sTestFeatures = null);
+    }
+
+    /**
+     * Adds overrides to feature flags and field trial parameters in addition to existing ones.
+     *
+     * @param testValuesToMerge the TestValues to merge into existing ones
+     * @param replace if true, replaces existing values (e.g. from @EnableFeatures annotations)
+     */
+    public static void mergeTestValues(@NonNull TestValues testValuesToMerge, boolean replace) {
+        TestValues newTestValues;
+        if (sTestFeatures == null) {
+            newTestValues = new TestValues();
+        } else {
+            newTestValues = sTestFeatures;
+        }
+
+        if (replace) {
+            newTestValues.mFeatureFlags.putAll(testValuesToMerge.mFeatureFlags);
+        } else {
+            for (Map.Entry<String, Boolean> toMerge : testValuesToMerge.mFeatureFlags.entrySet()) {
+                newTestValues.mFeatureFlags.putIfAbsent(toMerge.getKey(), toMerge.getValue());
+            }
+        }
+
+        for (Map.Entry<String, Map<String, String>> e :
+                testValuesToMerge.mFieldTrialParams.entrySet()) {
+            String featureName = e.getKey();
+            var fieldTrialParamsForFeature = newTestValues.mFieldTrialParams.get(featureName);
+            if (fieldTrialParamsForFeature == null) {
+                fieldTrialParamsForFeature = new ArrayMap<>();
+                newTestValues.mFieldTrialParams.put(featureName, fieldTrialParamsForFeature);
+            }
+
+            if (replace) {
+                fieldTrialParamsForFeature.putAll(e.getValue());
+            } else {
+                for (Map.Entry<String, String> toMerge : e.getValue().entrySet()) {
+                    fieldTrialParamsForFeature.putIfAbsent(toMerge.getKey(), toMerge.getValue());
+                }
+            }
+        }
+
+        setTestValues(newTestValues);
     }
 
     /**
