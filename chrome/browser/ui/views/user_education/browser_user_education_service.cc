@@ -485,7 +485,7 @@ void MaybeRegisterChromeFeaturePromos(
                     kBackButtonElementId, IDS_BACK_NAVIGATION_MENU_PROMO,
                     IDS_BACK_NAVIGATION_MENU_PROMO_ACCESSIBLE_TEXT,
                     FeaturePromoSpecification::AcceleratorInfo())
-                    .SetBubbleArrow(HelpBubbleArrow::kLeftTop)));
+                    .SetBubbleArrow(HelpBubbleArrow::kTopLeft)));
 
   // kIPHPriceTrackingChipFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
