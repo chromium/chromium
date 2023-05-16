@@ -9,7 +9,6 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.RectF;
 
-import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -19,8 +18,6 @@ import org.chromium.ui.modelutil.PropertyModel;
  * draw itself onto the GL canvas at the desired Y Offset.
  */
 public class LayoutTab extends PropertyModel {
-    public static final float ALPHA_THRESHOLD = 1.0f / 255.0f;
-
     // TODO(crbug.com/1070284): Make the following properties be part of the PropertyModel.
     // Begin section --------------
     // Public Layout constants.
@@ -84,22 +81,7 @@ public class LayoutTab extends PropertyModel {
     public static final WritableBooleanPropertyKey ANONYMIZE_TOOLBAR =
             new WritableBooleanPropertyKey();
 
-    public static final WritableFloatPropertyKey TOOLBAR_ALPHA = new WritableFloatPropertyKey();
-
-    public static final WritableBooleanPropertyKey INSET_BORDER_VERTICAL =
-            new WritableBooleanPropertyKey();
-
-    public static final WritableFloatPropertyKey TOOLBAR_Y_OFFSET = new WritableFloatPropertyKey();
-
-    public static final WritableFloatPropertyKey SIDE_BORDER_SCALE = new WritableFloatPropertyKey();
-
-    public static final WritableBooleanPropertyKey CLOSE_BUTTON_IS_ON_RIGHT =
-            new WritableBooleanPropertyKey();
-
     public static final WritableObjectPropertyKey<RectF> BOUNDS = new WritableObjectPropertyKey<>();
-
-    public static final WritableObjectPropertyKey<RectF> CLOSE_PLACEMENT =
-            new WritableObjectPropertyKey<>();
 
     /** Whether we need to draw the decoration (border, shadow, ..) at all. */
     public static final WritableFloatPropertyKey DECORATION_ALPHA = new WritableFloatPropertyKey();
@@ -129,9 +111,6 @@ public class LayoutTab extends PropertyModel {
 
     public static final WritableIntPropertyKey TEXT_BOX_BACKGROUND_COLOR =
             new WritableIntPropertyKey();
-
-    public static final WritableFloatPropertyKey TEXT_BOX_ALPHA = new WritableFloatPropertyKey();
-
     // End section --------------
 
     public static final PropertyModel.WritableFloatPropertyKey CONTENT_OFFSET =
@@ -141,11 +120,9 @@ public class LayoutTab extends PropertyModel {
             Y, RENDER_X, RENDER_Y, CLIPPED_WIDTH, CLIPPED_HEIGHT, ALPHA, SATURATION, BORDER_ALPHA,
             BORDER_SCALE, ORIGINAL_CONTENT_WIDTH_IN_DP, ORIGINAL_CONTENT_HEIGHT_IN_DP,
             MAX_CONTENT_WIDTH, MAX_CONTENT_HEIGHT, STATIC_TO_VIEW_BLEND, SHOULD_STALL,
-            CAN_USE_LIVE_TEXTURE, SHOW_TOOLBAR, ANONYMIZE_TOOLBAR, TOOLBAR_ALPHA,
-            INSET_BORDER_VERTICAL, TOOLBAR_Y_OFFSET, SIDE_BORDER_SCALE, CLOSE_BUTTON_IS_ON_RIGHT,
-            BOUNDS, CLOSE_PLACEMENT, DECORATION_ALPHA, IS_TITLE_NEEDED, INIT_FROM_HOST_CALLED,
-            BACKGROUND_COLOR, TOOLBAR_BACKGROUND_COLOR, TEXT_BOX_BACKGROUND_COLOR, TEXT_BOX_ALPHA,
-            CONTENT_OFFSET};
+            CAN_USE_LIVE_TEXTURE, SHOW_TOOLBAR, ANONYMIZE_TOOLBAR, BOUNDS, DECORATION_ALPHA,
+            IS_TITLE_NEEDED, INIT_FROM_HOST_CALLED, BACKGROUND_COLOR, TOOLBAR_BACKGROUND_COLOR,
+            TEXT_BOX_BACKGROUND_COLOR, CONTENT_OFFSET};
 
     /**
      * Default constructor for a {@link LayoutTab}.
@@ -162,11 +139,9 @@ public class LayoutTab extends PropertyModel {
         set(TAB_ID, tabId);
         set(IS_INCOGNITO, isIncognito);
         set(BOUNDS, new RectF());
-        set(CLOSE_PLACEMENT, new RectF());
         set(BACKGROUND_COLOR, Color.WHITE);
         set(TOOLBAR_BACKGROUND_COLOR, 0xfff2f2f2);
         set(TEXT_BOX_BACKGROUND_COLOR, Color.WHITE);
-        set(TEXT_BOX_ALPHA, 1.0f);
 
         init(maxContentTextureWidth, maxContentTextureHeight);
     }
@@ -194,10 +169,6 @@ public class LayoutTab extends PropertyModel {
         set(CAN_USE_LIVE_TEXTURE, true);
         set(SHOW_TOOLBAR, false);
         set(ANONYMIZE_TOOLBAR, false);
-        set(TOOLBAR_ALPHA, 1.0f);
-        set(INSET_BORDER_VERTICAL, false);
-        set(TOOLBAR_Y_OFFSET, 0.f);
-        set(SIDE_BORDER_SCALE, 1.f);
         set(ORIGINAL_CONTENT_WIDTH_IN_DP, maxContentTextureWidth * sPxToDp);
         set(ORIGINAL_CONTENT_HEIGHT_IN_DP, maxContentTextureHeight * sPxToDp);
         set(MAX_CONTENT_WIDTH, maxContentTextureWidth * sPxToDp);
@@ -218,11 +189,10 @@ public class LayoutTab extends PropertyModel {
      * @param canUseLiveTexture     Whether the tab can use a live texture when being displayed.
      */
     public void initFromHost(int backgroundColor, boolean shouldStall, boolean canUseLiveTexture,
-            int toolbarBackgroundColor, int textBoxBackgroundColor, float textBoxAlpha) {
+            int toolbarBackgroundColor, int textBoxBackgroundColor) {
         set(BACKGROUND_COLOR, backgroundColor);
         set(TOOLBAR_BACKGROUND_COLOR, toolbarBackgroundColor);
         set(TEXT_BOX_BACKGROUND_COLOR, textBoxBackgroundColor);
-        set(TEXT_BOX_ALPHA, textBoxAlpha);
         set(SHOULD_STALL, shouldStall);
         set(CAN_USE_LIVE_TEXTURE, canUseLiveTexture);
         set(INIT_FROM_HOST_CALLED, true);
@@ -455,7 +425,7 @@ public class LayoutTab extends PropertyModel {
      * @return The current alpha value at which the tab border inner shadow is drawn.
      */
     public float getBorderInnerShadowAlpha() {
-        return Math.min(get(BORDER_ALPHA) * (1.0f - get(TOOLBAR_ALPHA)), get(ALPHA));
+        return Math.min(0, get(ALPHA));
     }
 
     /**
@@ -485,34 +455,6 @@ public class LayoutTab extends PropertyModel {
      */
     public float getDecorationAlpha() {
         return get(DECORATION_ALPHA);
-    }
-
-    /**
-     * @param toolbarYOffset The y offset of the toolbar.
-     */
-    public void setToolbarYOffset(float toolbarYOffset) {
-        set(TOOLBAR_Y_OFFSET, toolbarYOffset);
-    }
-
-    /**
-     * @return The y offset of the toolbar.
-     */
-    public float getToolbarYOffset() {
-        return get(TOOLBAR_Y_OFFSET);
-    }
-
-    /**
-     * @param scale The scale of the side border (from 0 to 1).
-     */
-    public void setSideBorderScale(float scale) {
-        set(SIDE_BORDER_SCALE, MathUtils.clamp(scale, 0.f, 1.f));
-    }
-
-    /**
-     * @return The scale of the side border (from 0 to 1).
-     */
-    public float getSideBorderScale() {
-        return get(SIDE_BORDER_SCALE);
     }
 
     /**
@@ -604,42 +546,6 @@ public class LayoutTab extends PropertyModel {
     }
 
     /**
-     * @param alpha The alpha of the toolbar.
-     */
-    public void setToolbarAlpha(float alpha) {
-        set(TOOLBAR_ALPHA, alpha);
-    }
-
-    /**
-     * @return The alpha of the toolbar.
-     */
-    public float getToolbarAlpha() {
-        return get(TOOLBAR_ALPHA);
-    }
-
-    /**
-     * @param inset Whether or not to inset the top vertical component of the tab border or not.
-     */
-    public void setInsetBorderVertical(boolean inset) {
-        set(INSET_BORDER_VERTICAL, inset);
-    }
-
-    /**
-     * @return Whether or not to inset the top vertical component of the tab border or not.
-     */
-    public boolean insetBorderVertical() {
-        return get(INSET_BORDER_VERTICAL);
-    }
-
-    public void setCloseButtonIsOnRight(boolean closeButtonIsOnRight) {
-        set(CLOSE_BUTTON_IS_ON_RIGHT, closeButtonIsOnRight);
-    }
-
-    public boolean isCloseButtonOnRight() {
-        return get(CLOSE_BUTTON_IS_ON_RIGHT);
-    }
-
-    /**
      * @return The color of the background of the tab. Used as the best approximation to fill in.
      */
     public int getBackgroundColor() {
@@ -658,12 +564,5 @@ public class LayoutTab extends PropertyModel {
      */
     public int getTextBoxBackgroundColor() {
         return get(TEXT_BOX_BACKGROUND_COLOR);
-    }
-
-    /**
-     * @return The alpha value of the textbox in the toolbar.
-     */
-    public float getTextBoxAlpha() {
-        return get(TEXT_BOX_ALPHA);
     }
 }

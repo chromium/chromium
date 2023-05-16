@@ -950,11 +950,6 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     }
 
     @Override
-    public float getToolbarTextBoxAlpha(float defaultAlpha) {
-        return isLocationBarShownInNTP() ? 0.f : defaultAlpha;
-    }
-
-    @Override
     public boolean needsToolbarShadow() {
         return !mSearchProviderHasLogo;
     }

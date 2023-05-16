@@ -105,7 +105,6 @@ public class StaticLayout extends Layout {
     private boolean mIsActive;
 
     private static Integer sToolbarTextBoxBackgroundColorForTesting;
-    private static Float sToolbarTextBoxAlphaForTesting;
 
     private float mPxToDp;
 
@@ -366,7 +365,6 @@ public class StaticLayout extends Layout {
         TopUiThemeColorProvider topUiTheme = mTopUiThemeColorProvider.get();
         mModel.set(LayoutTab.BACKGROUND_COLOR, topUiTheme.getBackgroundColor(tab));
         mModel.set(LayoutTab.TOOLBAR_BACKGROUND_COLOR, topUiTheme.getSceneLayerBackground(tab));
-        mModel.set(LayoutTab.TEXT_BOX_ALPHA, getTextBoxAlphaForToolbarBackground(tab));
         mModel.set(LayoutTab.SHOULD_STALL, shouldStall(tab));
         mModel.set(LayoutTab.TEXT_BOX_BACKGROUND_COLOR, getToolbarTextBoxBackgroundColor(tab));
 
@@ -400,16 +398,6 @@ public class StaticLayout extends Layout {
     @VisibleForTesting
     void setTextBoxBackgroundColorForTesting(Integer color) {
         sToolbarTextBoxBackgroundColorForTesting = color;
-    }
-
-    private float getTextBoxAlphaForToolbarBackground(Tab tab) {
-        if (sToolbarTextBoxAlphaForTesting != null) return sToolbarTextBoxAlphaForTesting;
-        return mTopUiThemeColorProvider.get().getTextBoxBackgroundAlpha(tab);
-    }
-
-    @VisibleForTesting
-    void setToolbarTextBoxAlphaForTesting(Float alpha) {
-        sToolbarTextBoxAlphaForTesting = alpha;
     }
 
     // Whether the tab is ready to display or it should be faded in as it loads.

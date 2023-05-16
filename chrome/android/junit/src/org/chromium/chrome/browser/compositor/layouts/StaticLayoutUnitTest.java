@@ -72,7 +72,6 @@ public class StaticLayoutUnitTest {
     private static final int BACKGROUND_COLOR = Color.WHITE;
     private static final int TOOLBAR_BACKGROUND_COLOR = Color.BLUE;
     private static final int TEXT_BOX_BACKGROUND_COLOR = Color.BLACK;
-    private static final float TEXT_BOX_ALPHA = 1.0f;
     private static final int WIDTH = 9;
     private static final int HEIGHT = 16;
 
@@ -172,7 +171,6 @@ public class StaticLayoutUnitTest {
                 .when(mTopUiThemeColorProvider)
                 .getSceneLayerBackground(any());
         mStaticLayout.setTextBoxBackgroundColorForTesting(TEXT_BOX_BACKGROUND_COLOR);
-        mStaticLayout.setToolbarTextBoxAlphaForTesting(TEXT_BOX_ALPHA);
 
         initAndAssertAllDependencies();
 
@@ -186,7 +184,6 @@ public class StaticLayoutUnitTest {
     public void tearDown() {
         CompositorAnimationHandler.setTestingMode(false);
         mStaticLayout.setTextBoxBackgroundColorForTesting(null);
-        mStaticLayout.setToolbarTextBoxAlphaForTesting(null);
         mStaticLayout.destroy();
     }
 
@@ -207,7 +204,6 @@ public class StaticLayoutUnitTest {
         assertEquals(HEIGHT, mModel.get(LayoutTab.MAX_CONTENT_HEIGHT), 0);
         assertEquals(BACKGROUND_COLOR, mModel.get(LayoutTab.BACKGROUND_COLOR));
         assertEquals(TOOLBAR_BACKGROUND_COLOR, mModel.get(LayoutTab.TOOLBAR_BACKGROUND_COLOR));
-        assertEquals(TEXT_BOX_ALPHA, mModel.get(LayoutTab.TEXT_BOX_ALPHA), 0);
         assertEquals(TEXT_BOX_BACKGROUND_COLOR, mModel.get(LayoutTab.TEXT_BOX_BACKGROUND_COLOR));
 
         assertFalse(mModel.get(LayoutTab.IS_INCOGNITO));

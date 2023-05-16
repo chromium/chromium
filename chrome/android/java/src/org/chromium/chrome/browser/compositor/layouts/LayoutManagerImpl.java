@@ -834,8 +834,7 @@ public class LayoutManagerImpl
         layoutTab.initFromHost(topUiTheme.getBackgroundColor(tab), shouldStall(tab),
                 canUseLiveTexture, topUiTheme.getSceneLayerBackground(tab),
                 ThemeUtils.getTextBoxColorForToolbarBackground(
-                        mContext, tab, topUiTheme.calculateColor(tab, tab.getThemeColor())),
-                topUiTheme.getTextBoxBackgroundAlpha(tab));
+                        mContext, tab, topUiTheme.calculateColor(tab, tab.getThemeColor())));
 
         mHost.requestRender();
     }

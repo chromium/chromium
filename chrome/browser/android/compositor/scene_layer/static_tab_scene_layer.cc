@@ -24,7 +24,6 @@ StaticTabSceneLayer::StaticTabSceneLayer(JNIEnv* env,
                                          const JavaRef<jobject>& jobj)
     : SceneLayer(env, jobj),
       tab_content_manager_(nullptr),
-      last_set_tab_id_(-1),
       background_color_(SK_ColorWHITE) {}
 
 StaticTabSceneLayer::~StaticTabSceneLayer() = default;
@@ -56,16 +55,8 @@ void StaticTabSceneLayer::UpdateTabLayer(JNIEnv* env,
     layer_->AddChild(content_layer_->layer());
   }
 
-  // Only override the alpha of content layers when the static tab is first
-  // assigned to the layer tree.
-  float content_alpha_override = 1.f;
-  bool should_override_content_alpha = last_set_tab_id_ != id;
-  last_set_tab_id_ = id;
-
   content_layer_->SetProperties(id, can_use_live_layer, static_to_view_blend,
-                                should_override_content_alpha,
-                                content_alpha_override, saturation, false,
-                                gfx::Rect());
+                                false, 1.f, saturation, false, gfx::Rect());
 
   content_layer_->layer()->SetPosition(gfx::PointF(x, y));
   content_layer_->layer()->SetIsDrawable(true);
