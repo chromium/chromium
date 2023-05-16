@@ -76,7 +76,7 @@ import java.util.stream.Collectors;
         ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES})
 public class AddressEditorTest {
     private static final String USER_EMAIL = "example@gmail.com";
-    private static final Locale DEFAULT_LOCALTE = Locale.getDefault();
+    private static final Locale DEFAULT_LOCALE = Locale.getDefault();
     private static final List<AddressUiComponent> SUPPORTED_ADDRESS_FIELDS = List.of(
             new AddressUiComponent(AddressField.RECIPIENT, "full name label", true, true),
             new AddressUiComponent(AddressField.ADMIN_AREA, "admin area label", false, true),
@@ -178,16 +178,16 @@ public class AddressEditorTest {
     @After
     public void tearDown() {
         // Reset default locale to avoid changing it for other tests.
-        Locale.setDefault(DEFAULT_LOCALTE);
+        Locale.setDefault(DEFAULT_LOCALE);
         PersonalDataManager.setInstanceForTesting(null);
     }
 
-    private void setUpSupportedCountries(List<DropdownKeyValue> supportedContries) {
+    private void setUpSupportedCountries(List<DropdownKeyValue> supportedCountries) {
         doAnswer(invocation -> {
             List<String> contryCodes = (List<String>) invocation.getArguments()[0];
             List<String> contryNames = (List<String>) invocation.getArguments()[1];
 
-            for (DropdownKeyValue keyValue : supportedContries) {
+            for (DropdownKeyValue keyValue : supportedCountries) {
                 contryCodes.add(keyValue.getKey());
                 contryNames.add(keyValue.getValue().toString());
             }
