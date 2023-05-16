@@ -550,7 +550,12 @@ BASE_FEATURE(kMemoryPressureBasedSourceBufferGC,
 // hardware video decoders.
 BASE_FEATURE(kUseMultiPlaneFormatForHardwareVideo,
              "UseMultiPlaneFormatForHardwareVideo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // Enables creating single shared image and mailbox for multi-planar formats for
 // software video decoders.
