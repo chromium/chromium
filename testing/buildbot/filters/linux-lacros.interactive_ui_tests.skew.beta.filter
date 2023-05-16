@@ -3,10 +3,7 @@
 # If you want to disable a test only for version skew testing,
 # you should add the test here, not in the source code.
 
-# Can be enabled once this version skew variant uses Ash >= 114.
--BookmarkBarViewTest10.KeyEvents
--BookmarkBarViewTest20.ContextMenuExitTest
--BookmarkBarViewTest27.MiddleClickOnFolderOpensAllBookmarks
+# Can be enabled once this version skew variant uses Ash >= 114.0.5735.19.
 -MenuItemViewTestRemoveWithSubmenu0.RemoveItemWithSubmenu0
 -TabDragging/DetachToBrowserTabDragControllerTest.CancelOnNewTabWhenDragging/0
 -TabDragging/DetachToBrowserTabDragControllerTest.CancelOnNewTabWhenDragging/2
