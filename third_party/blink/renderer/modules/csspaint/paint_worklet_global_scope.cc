@@ -198,10 +198,11 @@ void PaintWorkletGlobalScope::registerPaint(const ScriptState* script_state,
       ExecutionContext::From(script_state);
 
   if (!V8ObjectParser::ParseCSSPropertyList(
-          context, execution_context, v8_paint_ctor, "inputProperties",
-          &native_invalidation_properties, &custom_invalidation_properties,
-          &exception_state))
+          context, execution_context, v8_paint_ctor,
+          AtomicString("inputProperties"), &native_invalidation_properties,
+          &custom_invalidation_properties, &exception_state)) {
     return;
+  }
 
   // Get input argument types. Parse the argument type values only when
   // cssPaintAPIArguments is enabled.

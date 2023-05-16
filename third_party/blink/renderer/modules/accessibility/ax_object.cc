@@ -2220,7 +2220,7 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
                                   GetValueForControl());
 
     if (IsA<HTMLInputElement>(element)) {
-      String type = element->getAttribute("type");
+      String type = element->getAttribute(html_names::kTypeAttr);
       if (type.empty()) {
         type = "text";
       }
@@ -4613,23 +4613,23 @@ bool DoesUndoRolePresentation(const AtomicString& name) {
   DEFINE_STATIC_LOCAL(
       HashSet<AtomicString>, aria_global_properties,
       ({
-        "ARIA-ATOMIC",
-        "ARIA-BRAILLEROLEDESCRIPTION",
-        "ARIA-BUSY",
-        "ARIA-CONTROLS",
-        "ARIA-CURRENT",
-        "ARIA-DESCRIBEDBY",
-        "ARIA-DESCRIPTION",
-        "ARIA-DETAILS",
-        "ARIA-DROPEFFECT",
-        "ARIA-FLOWTO",
-        "ARIA-GRABBED",
-        "ARIA-HIDDEN",  // For aria-hidden=false.
-        "ARIA-KEYSHORTCUTS",
-        "ARIA-LIVE",
-        "ARIA-OWNS",
-        "ARIA-RELEVANT",
-        "ARIA-ROLEDESCRIPTION"
+        AtomicString("ARIA-ATOMIC"),
+        AtomicString("ARIA-BRAILLEROLEDESCRIPTION"),
+        AtomicString("ARIA-BUSY"),
+        AtomicString("ARIA-CONTROLS"),
+        AtomicString("ARIA-CURRENT"),
+        AtomicString("ARIA-DESCRIBEDBY"),
+        AtomicString("ARIA-DESCRIPTION"),
+        AtomicString("ARIA-DETAILS"),
+        AtomicString("ARIA-DROPEFFECT"),
+        AtomicString("ARIA-FLOWTO"),
+        AtomicString("ARIA-GRABBED"),
+        AtomicString("ARIA-HIDDEN"),  // For aria-hidden=false.
+        AtomicString("ARIA-KEYSHORTCUTS"),
+        AtomicString("ARIA-LIVE"),
+        AtomicString("ARIA-OWNS"),
+        AtomicString("ARIA-RELEVANT"),
+        AtomicString("ARIA-ROLEDESCRIPTION")
       }));
   // clang-format on
 

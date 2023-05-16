@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_elements_helper.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_overflow_menu_button_element.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
@@ -202,7 +203,7 @@ void MediaControlPopupMenuElement::Trace(Visitor* visitor) const {
 MediaControlPopupMenuElement::MediaControlPopupMenuElement(
     MediaControlsImpl& media_controls)
     : MediaControlDivElement(media_controls) {
-  setAttribute(html_names::kPopoverAttr, kPopoverTypeValueAuto);
+  setAttribute(html_names::kPopoverAttr, keywords::kAuto);
   SetElementAttribute(html_names::kAnchorAttr, PopupAnchor());
   SetIsWanted(false);
 }

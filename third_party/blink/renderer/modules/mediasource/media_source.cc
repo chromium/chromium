@@ -66,13 +66,13 @@ static AtomicString ReadyStateToString(MediaSource::ReadyState state) {
   AtomicString result;
   switch (state) {
     case MediaSource::ReadyState::kOpen:
-      result = "open";
+      result = AtomicString("open");
       break;
     case MediaSource::ReadyState::kClosed:
-      result = "closed";
+      result = AtomicString("closed");
       break;
     case MediaSource::ReadyState::kEnded:
-      result = "ended";
+      result = AtomicString("ended");
       break;
   }
 
@@ -1100,7 +1100,7 @@ void MediaSource::endOfStream(const AtomicString& error,
 }
 
 void MediaSource::endOfStream(ExceptionState& exception_state) {
-  endOfStream("", exception_state);
+  endOfStream(g_empty_atom, exception_state);
 }
 
 void MediaSource::setLiveSeekableRange(double start,

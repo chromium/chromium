@@ -36,16 +36,18 @@ void MediaControlScrubbingMessageElement::PopulateChildren() {
       MediaControlsResourceLoader::GetScrubbingMessageStyleSheet());
   shadow_root->ParserAppendChild(style);
 
-  HTMLDivElement* arrow_left_div1 =
-      MediaControlElementsHelper::CreateDivWithId("arrow-left1", shadow_root);
-  HTMLDivElement* arrow_left_div2 =
-      MediaControlElementsHelper::CreateDivWithId("arrow-left2", shadow_root);
-  HTMLDivElement* message_div =
-      MediaControlElementsHelper::CreateDivWithId("message", shadow_root);
+  HTMLDivElement* arrow_left_div1 = MediaControlElementsHelper::CreateDivWithId(
+      AtomicString("arrow-left1"), shadow_root);
+  HTMLDivElement* arrow_left_div2 = MediaControlElementsHelper::CreateDivWithId(
+      AtomicString("arrow-left2"), shadow_root);
+  HTMLDivElement* message_div = MediaControlElementsHelper::CreateDivWithId(
+      AtomicString("message"), shadow_root);
   HTMLDivElement* arrow_right_div1 =
-      MediaControlElementsHelper::CreateDivWithId("arrow-right1", shadow_root);
+      MediaControlElementsHelper::CreateDivWithId(AtomicString("arrow-right1"),
+                                                  shadow_root);
   HTMLDivElement* arrow_right_div2 =
-      MediaControlElementsHelper::CreateDivWithId("arrow-right2", shadow_root);
+      MediaControlElementsHelper::CreateDivWithId(AtomicString("arrow-right2"),
+                                                  shadow_root);
 
   arrow_left_div1->setInnerHTML(
       MediaControlsResourceLoader::GetArrowLeftSVGImage());

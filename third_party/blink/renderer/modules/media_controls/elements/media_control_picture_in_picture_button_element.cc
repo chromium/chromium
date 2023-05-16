@@ -20,7 +20,7 @@ MediaControlPictureInPictureButtonElement::
     MediaControlPictureInPictureButtonElement(MediaControlsImpl& media_controls)
     : MediaControlInputElement(media_controls) {
   setType(input_type_names::kButton);
-  setAttribute(html_names::kRoleAttr, "button");
+  setAttribute(html_names::kRoleAttr, AtomicString("button"));
 
   bool isInPictureInPicture =
       PictureInPictureController::IsElementInPictureInPicture(

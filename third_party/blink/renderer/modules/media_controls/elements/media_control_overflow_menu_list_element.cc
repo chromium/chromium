@@ -20,16 +20,16 @@ MediaControlOverflowMenuListElement::MediaControlOverflowMenuListElement(
     : MediaControlPopupMenuElement(media_controls) {
   SetShadowPseudoId(
       AtomicString("-internal-media-controls-overflow-menu-list"));
-  setAttribute(html_names::kRoleAttr, "menu");
+  setAttribute(html_names::kRoleAttr, AtomicString("menu"));
   CloseOverflowMenu();
 }
 
 void MediaControlOverflowMenuListElement::OpenOverflowMenu() {
-  classList().Remove(kClosedCSSClass);
+  classList().Remove(AtomicString(kClosedCSSClass));
 }
 
 void MediaControlOverflowMenuListElement::CloseOverflowMenu() {
-  classList().Add(kClosedCSSClass);
+  classList().Add(AtomicString(kClosedCSSClass));
 }
 
 void MediaControlOverflowMenuListElement::DefaultEventHandler(Event& event) {

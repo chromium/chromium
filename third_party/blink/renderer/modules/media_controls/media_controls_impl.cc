@@ -660,7 +660,7 @@ void MediaControlsImpl::PopulatePanel() {
 
   if (ShouldShowVideoControls()) {
     MediaControlElementsHelper::CreateDiv(
-        "-internal-media-controls-button-spacer", button_panel);
+        AtomicString("-internal-media-controls-button-spacer"), button_panel);
   }
 
   panel_->ParserAppendChild(timeline_);
@@ -681,7 +681,7 @@ void MediaControlsImpl::PopulatePanel() {
 
 void MediaControlsImpl::AttachHoverBackground(Element* element) {
   MediaControlElementsHelper::CreateDiv(
-      "-internal-media-controls-button-hover-background",
+      AtomicString("-internal-media-controls-button-hover-background"),
       element->GetShadowRoot());
 }
 
@@ -773,13 +773,13 @@ void MediaControlsImpl::UpdateCSSClassFromState() {
       // Check if the play button or overflow menu has the "disabled" attribute
       // set so we avoid unnecessarily resetting it.
       if (!play_button_->FastHasAttribute(html_names::kDisabledAttr)) {
-        play_button_->setAttribute(html_names::kDisabledAttr, "");
+        play_button_->setAttribute(html_names::kDisabledAttr, g_empty_atom);
         updated = true;
       }
 
       if (ShouldShowVideoControls() &&
           !overflow_menu_->FastHasAttribute(html_names::kDisabledAttr)) {
-        overflow_menu_->setAttribute(html_names::kDisabledAttr, "");
+        overflow_menu_->setAttribute(html_names::kDisabledAttr, g_empty_atom);
         updated = true;
       }
     } else {
@@ -796,7 +796,7 @@ void MediaControlsImpl::UpdateCSSClassFromState() {
 
     if (state == kNoSource || state == kNotLoaded) {
       if (!timeline_->FastHasAttribute(html_names::kDisabledAttr)) {
-        timeline_->setAttribute(html_names::kDisabledAttr, "");
+        timeline_->setAttribute(html_names::kDisabledAttr, g_empty_atom);
         updated = true;
       }
     } else {
@@ -811,12 +811,14 @@ void MediaControlsImpl::UpdateCSSClassFromState() {
   }
 }
 
-void MediaControlsImpl::SetClass(const AtomicString& class_name,
+void MediaControlsImpl::SetClass(const String& class_name,
                                  bool should_have_class) {
-  if (should_have_class && !classList().contains(class_name))
-    classList().Add(class_name);
-  else if (!should_have_class && classList().contains(class_name))
-    classList().Remove(class_name);
+  AtomicString atomic_class = AtomicString(class_name);
+  if (should_have_class && !classList().contains(atomic_class)) {
+    classList().Add(atomic_class);
+  } else if (!should_have_class && classList().contains(atomic_class)) {
+    classList().Remove(atomic_class);
+  }
 }
 
 MediaControlsImpl::ControlsState MediaControlsImpl::State() const {
@@ -1135,8 +1137,10 @@ void MediaControlsImpl::BeginScrubbing(bool is_touch_event) {
 
   if (scrubbing_message_ && is_touch_event) {
     scrubbing_message_->SetIsWanted(true);
-    if (scrubbing_message_->DoesFit())
-      panel_->setAttribute("class", AtomicString(kScrubbingMessageCSSClass));
+    if (scrubbing_message_->DoesFit()) {
+      panel_->setAttribute(html_names::kClassAttr,
+                           AtomicString(kScrubbingMessageCSSClass));
+    }
   }
 
   is_scrubbing_ = true;
@@ -1152,7 +1156,7 @@ void MediaControlsImpl::EndScrubbing() {
 
   if (scrubbing_message_) {
     scrubbing_message_->SetIsWanted(false);
-    panel_->removeAttribute("class");
+    panel_->removeAttribute(html_names::kClassAttr);
   }
 
   is_scrubbing_ = false;

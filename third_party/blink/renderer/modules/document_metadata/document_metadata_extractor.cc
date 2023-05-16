@@ -55,13 +55,18 @@ constexpr wtf_size_t kMaxRepeatedSize = 100;
 constexpr char kJSONLDKeyType[] = "@type";
 constexpr char kJSONLDKeyGraph[] = "@graph";
 bool IsSupportedType(AtomicString type) {
-  DEFINE_STATIC_LOCAL(HashSet<AtomicString>, elements,
-                      ({// Common types that include addresses.
-                        "AutoDealer", "Hotel", "LocalBusiness", "Organization",
-                        "Person", "Place", "PostalAddress", "Product",
-                        "Residence", "Restaurant", "SingleFamilyResidence",
-                        // Common types including phone numbers
-                        "Store", "ContactPoint", "LodgingBusiness"}));
+  DEFINE_STATIC_LOCAL(
+      HashSet<AtomicString>, elements,
+      ({// Common types that include addresses.
+        AtomicString("AutoDealer"), AtomicString("Hotel"),
+        AtomicString("LocalBusiness"), AtomicString("Organization"),
+        AtomicString("Person"), AtomicString("Place"),
+        AtomicString("PostalAddress"), AtomicString("Product"),
+        AtomicString("Residence"), AtomicString("Restaurant"),
+        AtomicString("SingleFamilyResidence"),
+        // Common types including phone numbers
+        AtomicString("Store"), AtomicString("ContactPoint"),
+        AtomicString("LodgingBusiness")}));
   return type && elements.Contains(type);
 }
 

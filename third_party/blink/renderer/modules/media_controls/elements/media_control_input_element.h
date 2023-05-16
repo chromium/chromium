@@ -69,7 +69,7 @@ class MODULES_EXPORT MediaControlInputElement : public HTMLInputElement,
   bool IsOverflowElement() const;
 
   // Sets/removes a CSS class from this element based on |should_have_class|.
-  void SetClass(const AtomicString& class_name, bool should_have_class);
+  void SetClass(const String& class_name, bool should_have_class);
 
   virtual void UpdateDisplayType();
 

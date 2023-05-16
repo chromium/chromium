@@ -41,7 +41,7 @@
 #endif
 
 // TODO(crbug.com/1444094): AtomicString constructors should be explicit.
-#if BLINK_PLATFORM_IMPLEMENTATION
+#if BLINK_PLATFORM_IMPLEMENTATION || BLINK_MODULES_IMPLEMENTATION
 #define MAYBE_EXPLICIT explicit
 #else
 #define MAYBE_EXPLICIT

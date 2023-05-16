@@ -14,15 +14,15 @@
 namespace blink {
 
 AtomicString TrackDefault::AudioKeyword() {
-  return "audio";
+  return AtomicString("audio");
 }
 
 AtomicString TrackDefault::VideoKeyword() {
-  return "video";
+  return AtomicString("video");
 }
 
 AtomicString TrackDefault::TextKeyword() {
-  return "text";
+  return AtomicString("text");
 }
 
 ScriptValue TrackDefault::kinds(ScriptState* script_state) const {

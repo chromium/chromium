@@ -15,13 +15,10 @@
 namespace blink {
 
 // static
-const char BlockingAttribute::kRenderToken[] = "render";
-
-// static
 HashSet<AtomicString>& BlockingAttribute::SupportedTokens() {
   DEFINE_STATIC_LOCAL(HashSet<AtomicString>, tokens,
                       ({
-                          kRenderToken,
+                          keywords::kRender,
                       }));
 
   return tokens;
@@ -33,7 +30,8 @@ bool BlockingAttribute::HasRenderToken(const String& attribute_value) {
     return false;
   if (attribute_value.empty())
     return false;
-  return SpaceSplitString(AtomicString(attribute_value)).Contains(kRenderToken);
+  return SpaceSplitString(AtomicString(attribute_value))
+      .Contains(keywords::kRender);
 }
 
 bool BlockingAttribute::ValidateTokenValue(const AtomicString& token_value,
@@ -43,7 +41,7 @@ bool BlockingAttribute::ValidateTokenValue(const AtomicString& token_value,
 }
 
 void BlockingAttribute::CountTokenUsage() {
-  if (contains(kRenderToken)) {
+  if (contains(keywords::kRender)) {
     GetElement().GetDocument().CountUse(
         WebFeature::kBlockingAttributeRenderToken);
   }

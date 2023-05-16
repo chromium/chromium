@@ -3257,7 +3257,7 @@
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/list_style_type_data.h"],
       wrapper_pointer_name: "Persistent",
-      default_value: "ListStyleTypeData::CreateCounterStyle(\"disc\", nullptr)",
+      default_value: "ListStyleTypeData::CreateCounterStyle(AtomicString(\"disc\"), nullptr)",
       type_name: "ListStyleTypeData",
       keywords: [
         "disc", "circle", "square", "disclosure-open", "disclosure-closed",

@@ -222,7 +222,7 @@ void FetchEvent::OnNavigationPreloadComplete(
   info->response_end = completion_time;
   info->allow_negative_values = true;
   WorkerGlobalScopePerformance::performance(*worker_global_scope)
-      ->AddResourceTiming(std::move(info), "navigation");
+      ->AddResourceTiming(std::move(info), AtomicString("navigation"));
 }
 
 void FetchEvent::Trace(Visitor* visitor) const {
