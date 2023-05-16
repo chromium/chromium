@@ -177,7 +177,6 @@ void PasswordStoreProxyBackend::AddLoginAsync(
     const PasswordForm& form,
     PasswordChangesOrErrorReply callback) {
   PasswordChangesOrErrorReply result_callback;
-
   if (UsesAndroidBackendAsMainBackend()) {
     auto execute_on_built_in_backend =
         base::BindOnce(&PasswordStoreBackend::AddLoginAsync,
@@ -340,9 +339,9 @@ bool PasswordStoreProxyBackend::UsesAndroidBackendAsMainBackend() {
     return false;
   }
 
-  if (!IsPasswordSyncEnabled(sync_service_))
+  if (!IsPasswordSyncEnabled(sync_service_)) {
     return false;
-
+  }
   return true;
 }
 
