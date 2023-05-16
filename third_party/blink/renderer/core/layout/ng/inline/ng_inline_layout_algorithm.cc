@@ -1321,7 +1321,6 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
               Node(), ConstraintSpace(), line_opportunity));
     }
 
-    absl::optional<NGLineLayoutOpportunity> saved_line_opportunity;
     bool is_line_info_cached = false;
     NGLineInfo& line_info =
         context_->GetLineInfo(break_token, is_line_info_cached);
@@ -1330,17 +1329,14 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
       // `line_info` was cached.
       line_info.SetBfcBlockOffset(line_opportunity.bfc_block_offset);
     } else {
-      if (const absl::optional<LayoutUnit>& balanced_available_width =
-              context_->BalancedAvailableWidth()) {
-        saved_line_opportunity = line_opportunity;
-        NGParagraphLineBreaker::PrepareForNextLine(*balanced_available_width,
-                                                   &line_opportunity);
-      }
-
       NGLineBreaker line_breaker(
           Node(), NGLineBreakerMode::kContent, ConstraintSpace(),
           line_opportunity, leading_floats, handled_leading_floats_index,
           break_token, column_spanner_path_, &ExclusionSpace());
+      if (const absl::optional<LayoutUnit>& balanced_available_width =
+              context_->BalancedAvailableWidth()) {
+        line_breaker.OverrideAvailableWidth(*balanced_available_width);
+      }
       line_breaker.NextLine(&line_info);
     }
 
@@ -1423,12 +1419,6 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
       // Normally the last opportunity should fit the line, but arithmetic
       // overflow can lead to failures for all opportunities. Just let the line
       // to overflow in that case.
-    }
-
-    if (saved_line_opportunity) {
-      // Restore `line_opportunity` if `NGParagraphLineBreaker` updated it.
-      line_opportunity = *saved_line_opportunity;
-      line_info.SetAvailableWidth(line_opportunity.AvailableInlineSize());
     }
 
     PrepareBoxStates(line_info, break_token);

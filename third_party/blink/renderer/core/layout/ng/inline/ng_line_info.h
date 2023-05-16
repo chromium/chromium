@@ -150,9 +150,6 @@ class CORE_EXPORT NGLineInfo {
   void SetBfcBlockOffset(LayoutUnit block_offset) {
     bfc_offset_.block_offset = block_offset;
   }
-  void SetAvailableWidth(LayoutUnit available_width) {
-    available_width_ = available_width;
-  }
   void SetWidth(LayoutUnit available_width, LayoutUnit width) {
     available_width_ = available_width;
     width_ = width;

@@ -61,6 +61,10 @@ class CORE_EXPORT NGLineBreaker {
 
   bool IsFinished() const { return current_.item_index >= Items().size(); }
 
+  // Override the available width to compute line breaks. This is reset after
+  // each `NextLine`.
+  void OverrideAvailableWidth(LayoutUnit available_width);
+
   // Computing |NGLineBreakerMode::kMinContent| with |MaxSizeCache| caches
   // information that can help computing |kMaxContent|. It is recommended to set
   // this when computing both |kMinContent| and |kMaxContent|.
@@ -216,10 +220,7 @@ class CORE_EXPORT NGLineBreaker {
   void ComputeBaseDirection();
   void RecalcClonedBoxDecorations();
 
-  LayoutUnit AvailableWidth() const {
-    DCHECK_EQ(available_width_, ComputeAvailableWidth());
-    return available_width_;
-  }
+  LayoutUnit AvailableWidth() const { return available_width_; }
   LayoutUnit AvailableWidthToFit() const {
     return AvailableWidth().AddEpsilon();
   }
@@ -227,7 +228,7 @@ class CORE_EXPORT NGLineBreaker {
     return AvailableWidthToFit() - position_;
   }
   bool CanFitOnLine() const { return position_ <= AvailableWidthToFit(); }
-  LayoutUnit ComputeAvailableWidth() const;
+  void UpdateAvailableWidth();
 
   // True if the current line is hyphenated.
   bool HasHyphen() const { return hyphen_index_.has_value(); }
@@ -348,6 +349,8 @@ class CORE_EXPORT NGLineBreaker {
     scoped_refptr<const ShapeResultView> collapsed_shape_result;
   };
   absl::optional<TrailingCollapsibleSpace> trailing_collapsible_space_;
+
+  LayoutUnit override_available_width_;
 
   // Keep track of handled float items. See HandleFloat().
   const NGPositionedFloatVector& leading_floats_;

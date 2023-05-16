@@ -328,8 +328,13 @@ inline bool NGLineBreaker::ShouldAutoWrap(const ComputedStyle& style) const {
   return style.ShouldWrapLine();
 }
 
-LayoutUnit NGLineBreaker::ComputeAvailableWidth() const {
-  LayoutUnit available_width = line_opportunity_.AvailableInlineSize();
+void NGLineBreaker::UpdateAvailableWidth() {
+  LayoutUnit available_width;
+  if (UNLIKELY(override_available_width_)) {
+    available_width = override_available_width_;
+  } else {
+    available_width = line_opportunity_.AvailableInlineSize();
+  }
   // Make sure it's at least the initial size, which is usually 0 but not so
   // when `box-decoration-break: clone`.
   available_width =
@@ -337,7 +342,7 @@ LayoutUnit NGLineBreaker::ComputeAvailableWidth() const {
   // Available width must be smaller than |LayoutUnit::Max()| so that the
   // position can be larger.
   available_width = std::min(available_width, LayoutUnit::NearlyMax());
-  return available_width;
+  available_width_ = available_width;
 }
 
 NGLineBreaker::NGLineBreaker(NGInlineNode node,
@@ -377,7 +382,7 @@ NGLineBreaker::NGLineBreaker(NGInlineNode node,
       leading_floats_(leading_floats),
       handled_leading_floats_index_(handled_leading_floats_index),
       base_direction_(node_.BaseDirection()) {
-  available_width_ = ComputeAvailableWidth();
+  UpdateAvailableWidth();
   break_iterator_.SetBreakSpace(BreakSpaceType::kAfterSpaceRun);
   if (is_svg_text_) {
     const auto& char_data_list = node_.SvgCharacterDataList();
@@ -420,6 +425,12 @@ NGLineBreaker::NGLineBreaker(NGInlineNode node,
 }
 
 NGLineBreaker::~NGLineBreaker() = default;
+
+void NGLineBreaker::OverrideAvailableWidth(LayoutUnit available_width) {
+  DCHECK(available_width);
+  override_available_width_ = available_width;
+  UpdateAvailableWidth();
+}
 
 inline NGInlineItemResult* NGLineBreaker::AddItem(const NGInlineItem& item,
                                                   unsigned end_offset,
@@ -545,7 +556,7 @@ void NGLineBreaker::RecalcClonedBoxDecorations() {
   // accommodate cloned box decorations.
   position_ += cloned_box_decorations_initial_size_;
   // |cloned_box_decorations_initial_size_| may affect available width.
-  available_width_ = ComputeAvailableWidth();
+  UpdateAvailableWidth();
   DCHECK_GE(available_width_, cloned_box_decorations_initial_size_);
 }
 
@@ -721,6 +732,12 @@ void NGLineBreaker::NextLine(NGLineInfo* line_info) {
   if (trailing_whitespace_ == WhitespaceState::kPreserved)
     line_info->SetHasTrailingSpaces();
 
+  if (UNLIKELY(override_available_width_)) {
+    // Clear the overridden available width so that `line_info` has the original
+    // available width for aligning.
+    override_available_width_ = LayoutUnit();
+    UpdateAvailableWidth();
+  }
   ComputeLineLocation(line_info);
   if (mode_ == NGLineBreakerMode::kContent) {
     line_info->SetBreakToken(CreateBreakToken(*line_info));
@@ -2701,7 +2718,7 @@ void NGLineBreaker::HandleFloat(const NGInlineItem& item,
 
   line_opportunity_ = opportunity.ComputeLineLayoutOpportunity(
       constraint_space_, line_opportunity_.line_block_size, LayoutUnit());
-  available_width_ = ComputeAvailableWidth();
+  UpdateAvailableWidth();
 
   DCHECK_GE(AvailableWidth(), LayoutUnit());
 }
