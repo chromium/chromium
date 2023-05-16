@@ -5,6 +5,8 @@
 #include "chromeos/ash/components/language/language_packs/language_packs_util.h"
 
 #include "base/logging.h"
+#include "base/strings/string_util.h"
+#include "components/language/core/common/locale_util.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
 namespace ash::language_packs {
@@ -95,6 +97,26 @@ PackResult ConvertDlcStateToPackResult(const dlcservice::DlcState& dlc_state) {
   }
 
   return result;
+}
+
+const std::string ResolveLocaleForHandwriting(const std::string& input_locale) {
+  // Chinese HongKong is an exception.
+  if (base::EqualsCaseInsensitiveASCII(input_locale, "zh-hk")) {
+    return "zh-HK";
+  }
+  return std::string(language::ExtractBaseLanguage(input_locale));
+}
+
+const std::string ResolveLocaleForTts(const std::string& input_locale) {
+  // Consider exceptions first.
+  if (base::EqualsCaseInsensitiveASCII(input_locale, "en-au") ||
+      base::EqualsCaseInsensitiveASCII(input_locale, "en-gb") ||
+      base::EqualsCaseInsensitiveASCII(input_locale, "en-us") ||
+      base::EqualsCaseInsensitiveASCII(input_locale, "es-es") ||
+      base::EqualsCaseInsensitiveASCII(input_locale, "es-us")) {
+    return base::ToLowerASCII(input_locale);
+  }
+  return std::string(language::ExtractBaseLanguage(input_locale));
 }
 
 }  // namespace ash::language_packs

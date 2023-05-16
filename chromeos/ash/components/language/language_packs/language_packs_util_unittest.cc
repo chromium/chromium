@@ -71,4 +71,37 @@ TEST(LanguagePacksUtil, ConvertDlcState_MalformedProto) {
   EXPECT_TRUE(output.path.empty());
 }
 
+// For Handwriting we only keep the language part, not the country/region.
+TEST(LanguagePacksUtil, ResolveLocaleHandwriting) {
+  EXPECT_EQ(ResolveLocaleForHandwriting("en-US"), "en");
+  EXPECT_EQ(ResolveLocaleForHandwriting("en-us"), "en");
+  EXPECT_EQ(ResolveLocaleForHandwriting("fr"), "fr");
+  EXPECT_EQ(ResolveLocaleForHandwriting("it-IT"), "it");
+  EXPECT_EQ(ResolveLocaleForHandwriting("zh"), "zh");
+  EXPECT_EQ(ResolveLocaleForHandwriting("zh-TW"), "zh");
+
+  // Chinese HongKong is an exception.
+  EXPECT_EQ(ResolveLocaleForHandwriting("zh-HK"), "zh-HK");
+}
+
+TEST(LanguagePacksUtil, ResolveLocaleTts) {
+  // For these locales we keep the region.
+  EXPECT_EQ(ResolveLocaleForTts("en-AU"), "en-au");
+  EXPECT_EQ(ResolveLocaleForTts("en-au"), "en-au");
+  EXPECT_EQ(ResolveLocaleForTts("en-GB"), "en-gb");
+  EXPECT_EQ(ResolveLocaleForTts("en-gb"), "en-gb");
+  EXPECT_EQ(ResolveLocaleForTts("en-US"), "en-us");
+  EXPECT_EQ(ResolveLocaleForTts("en-us"), "en-us");
+  EXPECT_EQ(ResolveLocaleForTts("es-ES"), "es-es");
+  EXPECT_EQ(ResolveLocaleForTts("es-es"), "es-es");
+  EXPECT_EQ(ResolveLocaleForTts("es-US"), "es-us");
+  EXPECT_EQ(ResolveLocaleForTts("es-us"), "es-us");
+
+  // For all other locales we only keep the language.
+  EXPECT_EQ(ResolveLocaleForTts("bn-bd"), "bn");
+  EXPECT_EQ(ResolveLocaleForTts("fil-ph"), "fil");
+  EXPECT_EQ(ResolveLocaleForTts("it-it"), "it");
+  EXPECT_EQ(ResolveLocaleForTts("ja-jp"), "ja");
+}
+
 }  // namespace ash::language_packs

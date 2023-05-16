@@ -20,6 +20,7 @@ static_library("language_packs") {
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
     "//chromeos/ash/components/language/public/mojom",
+    "//components/language/core/common",
   ]
 }
 

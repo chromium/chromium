@@ -31,6 +31,11 @@ PackResult CreateInvalidDlcPackResult();
 // Converts the state defined by the DLC Service into our own PackResult proto.
 PackResult ConvertDlcStateToPackResult(const dlcservice::DlcState& dlc_state);
 
+// Resolves the received locale to a canonical one that we keep in our mapping
+// from locales to DLC IDs.
+const std::string ResolveLocaleForHandwriting(const std::string& input_locale);
+const std::string ResolveLocaleForTts(const std::string& input_locale);
+
 }  // namespace ash::language_packs
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LANGUAGE_LANGUAGE_PACKS_LANGUAGE_PACKS_UTIL_H_
