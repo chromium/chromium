@@ -127,10 +127,6 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
               ShouldShowScanCreditCard,
               (const FormData& form, const FormFieldData& field),
               (override));
-  MOCK_METHOD(bool,
-              ShouldShowCreditCardSigninPromo,
-              (const FormData& form, const FormFieldData& field),
-              (override));
   MOCK_METHOD(void,
               OnUserHideSuggestions,
               (const FormData& form, const FormFieldData& field),
@@ -271,84 +267,6 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
   // This should trigger a call to hide the popup since we've selected an
   // option.
   external_delegate_->DidAcceptSuggestion(autofill_item[0], 0);
-}
-
-// Test that our external delegate does not add the signin promo and its
-// separator in the popup items when there are suggestions.
-TEST_F(AutofillExternalDelegateUnitTest,
-       TestSigninPromoIsNotAdded_WithSuggestions) {
-  EXPECT_CALL(*browser_autofill_manager_, ShouldShowCreditCardSigninPromo(_, _))
-      .WillOnce(testing::Return(true));
-
-  IssueOnQuery();
-
-  AutofillClient::PopupOpenArgs open_args;
-  EXPECT_CALL(autofill_client_, ShowAutofillPopup)
-      .WillOnce(testing::SaveArg<0>(&open_args));
-
-  base::UserActionTester user_action_tester;
-
-  // This should call ShowAutofillPopup.
-  std::vector<Suggestion> autofill_item;
-  autofill_item.emplace_back();
-  autofill_item[0].frontend_id = kAutofillProfileId;
-  external_delegate_->OnSuggestionsReturned(field_id_, autofill_item,
-                                            AutoselectFirstSuggestion(false));
-  EXPECT_EQ(0, user_action_tester.GetActionCount(
-                   "Signin_Impression_FromAutofillDropdown"));
-  EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorIdsAre(kAutofillProfileId,
-#if !BUILDFLAG(IS_ANDROID)
-                                     PopupItemId::kSeparator,
-#endif
-                                     PopupItemId::kAutofillOptions));
-  EXPECT_FALSE(open_args.autoselect_first_suggestion);
-
-  EXPECT_CALL(
-      *browser_autofill_manager_,
-      FillOrPreviewForm(mojom::RendererFormDataAction::kFill, _, _, _, _));
-  EXPECT_CALL(autofill_client_,
-              HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
-
-  // This should trigger a call to hide the popup since we've selected an
-  // option.
-  external_delegate_->DidAcceptSuggestion(autofill_item[0], 0);
-}
-
-// Test that our external delegate properly adds the signin promo and no
-// separator in the dropdown, when there are no suggestions.
-TEST_F(AutofillExternalDelegateUnitTest,
-       TestSigninPromoIsAdded_WithNoSuggestions) {
-  EXPECT_CALL(*browser_autofill_manager_, ShouldShowCreditCardSigninPromo(_, _))
-      .WillOnce(testing::Return(true));
-
-  IssueOnQuery();
-
-  AutofillClient::PopupOpenArgs open_args;
-  EXPECT_CALL(autofill_client_, ShowAutofillPopup)
-      .WillOnce(testing::SaveArg<0>(&open_args));
-
-  base::UserActionTester user_action_tester;
-
-  // This should call ShowAutofillPopup.
-  std::vector<Suggestion> items;
-  external_delegate_->OnSuggestionsReturned(field_id_, items,
-                                            AutoselectFirstSuggestion(false));
-  EXPECT_EQ(1, user_action_tester.GetActionCount(
-                   "Signin_Impression_FromAutofillDropdown"));
-  EXPECT_THAT(open_args.suggestions,
-              SuggestionVectorIdsAre(PopupItemId::kCreditCardSigninPromo));
-  EXPECT_FALSE(open_args.autoselect_first_suggestion);
-
-  EXPECT_CALL(autofill_client_, ExecuteCommand(Suggestion::FrontendId(
-                                    PopupItemId::kCreditCardSigninPromo)));
-  EXPECT_CALL(autofill_client_,
-              HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
-
-  // This should trigger a call to start the signin flow and hide the popup
-  // since we've selected the sign-in promo option.
-  external_delegate_->DidAcceptSuggestion(
-      Suggestion(PopupItemId::kCreditCardSigninPromo), 0);
 }
 
 // Test that data list elements for a node will appear in the Autofill popup.

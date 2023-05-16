@@ -73,8 +73,6 @@ void AutofillExternalDelegate::OnQuery(const FormData& form,
   should_show_scan_credit_card_ =
       manager_->ShouldShowScanCreditCard(query_form_, query_field_);
   popup_type_ = manager_->GetPopupType(query_form_, query_field_);
-  should_show_cc_signin_promo_ =
-      manager_->ShouldShowCreditCardSigninPromo(query_form_, query_field_);
   should_show_cards_from_account_option_ =
       manager_->ShouldShowCardsFromAccountOption(query_form_, query_field_);
 }
@@ -123,17 +121,6 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
 
   if (has_autofill_suggestions_)
     ApplyAutofillOptions(&suggestions, is_all_server_suggestions);
-
-  // Append the credit card signin promo, if appropriate (there are no other
-  // suggestions).
-  if (suggestions.empty() && should_show_cc_signin_promo_) {
-    Suggestion signin_promo_suggestion(
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_CREDIT_CARD_SIGNIN_PROMO));
-    signin_promo_suggestion.frontend_id = PopupItemId::kCreditCardSigninPromo;
-    suggestions.push_back(signin_promo_suggestion);
-    signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
-        signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN);
-  }
 
   // If anything else is added to modify the values after inserting the data
   // list, AutofillPopupControllerImpl::UpdateDataListValues will need to be

@@ -645,14 +645,6 @@ PopupType BrowserAutofillManager::GetPopupType(const FormData& form,
   }
 }
 
-// TODO(crbug/1346550): Remove ShouldShowCreditCardSigninPromo() as it only
-// returns false.
-bool BrowserAutofillManager::ShouldShowCreditCardSigninPromo(
-    const FormData& form,
-    const FormFieldData& field) {
-  return false;
-}
-
 bool BrowserAutofillManager::ShouldShowCardsFromAccountOption(
     const FormData& form,
     const FormFieldData& field) {
@@ -1159,11 +1151,10 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   }
 
   auto ShouldOfferSingleFieldFormFill = [&] {
-    // Do not offer single field form fill if one of the following is true:
-    //  * There are already suggestions.
-    //  * Credit card sign-in promo is offered.
-    if (!suggestions.empty() || ShouldShowCreditCardSigninPromo(form, field))
+    // Do not offer single field form fill if there are already suggestions.
+    if (!suggestions.empty()) {
       return false;
+    }
 
     // Do not offer single field form fill suggestions for credit card number,
     // cvc, and expiration date related fields. Standalone cvc fields (used to

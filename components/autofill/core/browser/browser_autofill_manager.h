@@ -118,11 +118,6 @@ class BrowserAutofillManager : public AutofillManager,
   virtual PopupType GetPopupType(const FormData& form,
                                  const FormFieldData& field);
 
-  // Whether we should show the signin promo, based on the triggered |field|
-  // inside the |form|.
-  virtual bool ShouldShowCreditCardSigninPromo(const FormData& form,
-                                               const FormFieldData& field);
-
   // Handlers for the "Show Cards From Account" row. This row should be shown to
   // users who have cards in their account and can use Sync Transport. Clicking
   // the row records the user's consent to see these cards on this device, and
