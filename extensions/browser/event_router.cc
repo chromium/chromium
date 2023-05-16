@@ -46,6 +46,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/origin.h"
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -1059,10 +1060,19 @@ void EventRouter::DispatchEventToProcess(
       process_map->GetMostLikelyContextType(extension, process->GetID(), url);
 
   // We shouldn't be dispatching an event to a webpage, since all such events
-  // (e.g.  messaging) don't go through EventRouter.
-  DCHECK_NE(Feature::WEB_PAGE_CONTEXT, target_context)
-      << "Trying to dispatch event " << event.event_name << " to a webpage,"
-      << " but this shouldn't be possible";
+  // (e.g.  messaging) don't go through EventRouter. The one exception to this
+  // is the new chrome webstore domain, which has permission to receive
+  // extension events.
+  if (target_context == Feature::WEB_PAGE_CONTEXT) {
+    // |url| can only be null for service workers, so should never be null here.
+    CHECK(url);
+    bool is_new_webstore_origin =
+        url::Origin::Create(extension_urls::GetNewWebstoreLaunchURL())
+            .IsSameOriginWith(*url);
+    CHECK(is_new_webstore_origin)
+        << "Trying to dispatch event " << event.event_name << " to a webpage,"
+        << " but this shouldn't be possible";
+  }
 
   Feature::Availability availability =
       ExtensionAPI::GetSharedInstance()->IsAvailable(
