@@ -50,6 +50,7 @@
 #include "services/network/public/mojom/supports_loading_mode.mojom-blink.h"
 #include "services/network/public/mojom/timing_allow_origin.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/header_field_tokenizer.h"
@@ -523,6 +524,31 @@ AtomicString ExtractMIMETypeFromMediaType(const AtomicString& media_type) {
 
   return AtomicString(
       media_type.GetString().Substring(type_start, type_end - type_start));
+}
+
+// https://mimesniff.spec.whatwg.org/#minimize-a-supported-mime-type
+AtomicString MinimizedMIMEType(const AtomicString& mime_type) {
+  if (blink::IsSupportedJavascriptMimeType(mime_type.GetString().Utf8())) {
+    return AtomicString("text/javascript");
+  }
+
+  if (blink::IsJSONMimeType(mime_type.GetString().Utf8())) {
+    return AtomicString("application/json");
+  }
+
+  if (blink::IsSVGMimeType(mime_type.GetString().Utf8())) {
+    return AtomicString("image/svg+xml");
+  }
+
+  if (blink::IsXMLMimeType(mime_type.GetString().Utf8())) {
+    return AtomicString("application/xml");
+  }
+
+  if (blink::IsSupportedMimeType(mime_type.GetString().Utf8())) {
+    return mime_type;
+  }
+
+  return AtomicString("");
 }
 
 ContentTypeOptionsDisposition ParseContentTypeOptionsHeader(
