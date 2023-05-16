@@ -48,6 +48,10 @@ std::string SignDataWithTestKey(const std::string& data,
 // FetchCommands() can be called from any thread.
 // Note that test author is responsible for ensuring that FetchCommands() is not
 // called from another thread after |this| has been destroyed.
+//
+// Note: Do not use this for browser tests to test your remote command
+// functionality. Instead, use the `RemoteCommandServiceMixin` since that
+// requires less mocks and stubs and thus results in a more realistic test.
 class TestingRemoteCommandsServer {
  public:
   TestingRemoteCommandsServer();

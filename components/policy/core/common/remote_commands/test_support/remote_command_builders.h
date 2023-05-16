@@ -14,7 +14,7 @@ namespace policy {
 // Builder class to construct `enterprise_management::RemoteCommand`.
 //
 // It also auto-assigns a unique command id to the `RemoteCommand` that is
-// one higher than the last command id it prevously assigned. You can of course
+// one higher than the last command id it previously assigned. You can of course
 // assign your own command id if more control is needed.
 class RemoteCommandBuilder {
  public:
