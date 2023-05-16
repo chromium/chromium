@@ -2697,6 +2697,13 @@
       name: "PointerEventDeviceId",
       status: "test",
     },
+    // PopoverDialogDontThrow makes popover and dialog elements stop throwing
+    // exceptions when calling their show and hide methods when they are
+    // already in their requested state. See https://github.com/whatwg/html/pull/9142
+    {
+      name: "PopoverDialogDontThrow",
+      status: "stable",
+    },
     {
       name: "Portals",
       // Portals must be enabled by blink::features::kPortals as we require the

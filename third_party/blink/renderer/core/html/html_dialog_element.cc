@@ -188,8 +188,21 @@ void HTMLDialogElement::ScheduleCloseEvent() {
 }
 
 void HTMLDialogElement::show(ExceptionState& exception_state) {
-  if (FastHasAttribute(html_names::kOpenAttr))
-    return;
+  if (RuntimeEnabledFeatures::PopoverDialogDontThrowEnabled()) {
+    if (FastHasAttribute(html_names::kOpenAttr)) {
+      if (is_modal_) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kInvalidStateError,
+            "The dialog is already open as a modal dialog, and therefore "
+            "cannot be opened as a non-modal dialog.");
+      }
+      return;
+    }
+  } else {
+    if (FastHasAttribute(html_names::kOpenAttr)) {
+      return;
+    }
+  }
 
   if (RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
           GetDocument().GetExecutionContext()) &&
@@ -247,12 +260,24 @@ class DialogCloseWatcherEventListener : public NativeEventListener {
 };
 
 void HTMLDialogElement::showModal(ExceptionState& exception_state) {
-  if (FastHasAttribute(html_names::kOpenAttr)) {
-    return exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "The element already has an 'open' "
-        "attribute, and therefore cannot be "
-        "opened modally.");
+  if (RuntimeEnabledFeatures::PopoverDialogDontThrowEnabled()) {
+    if (FastHasAttribute(html_names::kOpenAttr)) {
+      if (!is_modal_) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kInvalidStateError,
+            "The dialog is already open as a non-modal dialog, and therefore "
+            "cannot be opened as a modal dialog.");
+      }
+      return;
+    }
+  } else {
+    if (FastHasAttribute(html_names::kOpenAttr)) {
+      return exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "The element already has an 'open' "
+          "attribute, and therefore cannot be "
+          "opened modally.");
+    }
   }
   if (!isConnected()) {
     return exception_state.ThrowDOMException(

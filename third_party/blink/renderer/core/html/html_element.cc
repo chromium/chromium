@@ -1330,6 +1330,26 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
                           "value for the 'popover' attribute.");
     return false;
   }
+  if (action == PopoverTriggerAction::kShow &&
+      GetPopoverData()->visibilityState() != PopoverVisibilityState::kHidden) {
+    if (!RuntimeEnabledFeatures::PopoverDialogDontThrowEnabled()) {
+      maybe_throw_exception(DOMExceptionCode::kInvalidStateError,
+                            "Invalid on popover elements which aren't hidden.");
+    }
+    return false;
+  }
+  if (action == PopoverTriggerAction::kHide &&
+      GetPopoverData()->visibilityState() != PopoverVisibilityState::kShowing) {
+    // Important to check that visibility is not kShowing (rather than
+    // popoverOpen()), because a hide transition might have been started on this
+    // popover already, and we don't want to allow a double-hide.
+    if (!RuntimeEnabledFeatures::PopoverDialogDontThrowEnabled()) {
+      maybe_throw_exception(
+          DOMExceptionCode::kInvalidStateError,
+          "Invalid on popover elements that aren't already showing.");
+    }
+    return false;
+  }
   if (!isConnected()) {
     maybe_throw_exception(DOMExceptionCode::kInvalidStateError,
                           "Invalid on disconnected popover elements.");
@@ -1339,22 +1359,6 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
     maybe_throw_exception(DOMExceptionCode::kInvalidStateError,
                           "Invalid when the document changes while showing or "
                           "hiding a popover element.");
-    return false;
-  }
-  if (action == PopoverTriggerAction::kShow &&
-      GetPopoverData()->visibilityState() != PopoverVisibilityState::kHidden) {
-    maybe_throw_exception(DOMExceptionCode::kInvalidStateError,
-                          "Invalid on popover elements which aren't hidden.");
-    return false;
-  }
-  if (action == PopoverTriggerAction::kHide &&
-      GetPopoverData()->visibilityState() != PopoverVisibilityState::kShowing) {
-    // Important to check that visibility is not kShowing (rather than
-    // popoverOpen()), because a hide transition might have been started on this
-    // popover already, and we don't want to allow a double-hide.
-    maybe_throw_exception(
-        DOMExceptionCode::kInvalidStateError,
-        "Invalid on popover elements that aren't already showing.");
     return false;
   }
   if (action == PopoverTriggerAction::kShow && IsA<HTMLDialogElement>(this) &&
