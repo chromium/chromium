@@ -104,6 +104,11 @@
   wallpaper-grid-item[data-is-time-of-day-collection] {
     --personalization-app-grid-item-border-radius: 80px;
   }
+
+  wallpaper-grid-item[data-is-time-of-day-collection]::part(info-icon) {
+    right: 20px;
+    top: 20px;
+  }
 </style>
 <template is="dom-if" if="[[hasError_]]">
   <wallpaper-error></wallpaper-error>
