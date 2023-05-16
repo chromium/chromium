@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.31"
 name = "proc-macro2"
-version = "1.0.43"
+version = "1.0.56"
 authors = [
     "David Tolnay <dtolnay@gmail.com>",
     "Alex Crichton <alex@alexcrichton.com>",
@@ -46,12 +46,18 @@ targets = ["x86_64-unknown-linux-gnu"]
 [package.metadata.playground]
 features = ["span-locations"]
 
+[lib]
+doc-scrape-examples = false
+
 [dependencies.unicode-ident]
 version = "1.0"
 
 [dev-dependencies.quote]
 version = "1.0"
 default_features = false
+
+[dev-dependencies.rustversion]
+version = "1"
 
 [features]
 default = ["proc-macro"]

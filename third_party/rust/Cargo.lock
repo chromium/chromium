@@ -27,6 +27,10 @@ name = "autocfg"
 version = "1.1.0"
 
 [[package]]
+name = "base64"
+version = "0.13.1"
+
+[[package]]
 name = "bitflags"
 version = "1.3.2"
 
@@ -72,13 +76,19 @@ dependencies = [
  "cxx",
  "cxxbridge-cmd",
  "env_logger",
+ "hex",
+ "hex-literal",
  "lazy_static",
  "log",
  "memoffset",
  "once_cell",
  "proc-macro2",
  "quote",
+ "rand",
+ "rand_pcg",
+ "regex",
  "rstest",
+ "rstest_reuse",
  "rustversion",
  "semver",
  "serde",
@@ -90,6 +100,7 @@ dependencies = [
  "tempfile",
  "toml",
  "unicode-linebreak",
+ "wycheproof",
 ]
 
 [[package]]
@@ -163,6 +174,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "getrandom"
+version = "0.2.9"
+dependencies = [
+ "cfg-if",
+ "libc",
+ "wasi",
+]
+
+[[package]]
 name = "hashbrown"
 version = "0.11.2"
 
@@ -174,6 +194,14 @@ checksum = "62b467343b94ba476dcb2500d242dadbb39557df889310ac77c5d99100aaac33"
 dependencies = [
  "libc",
 ]
+
+[[package]]
+name = "hex"
+version = "0.4.3"
+
+[[package]]
+name = "hex-literal"
+version = "0.4.1"
 
 [[package]]
 name = "indexmap"
@@ -206,7 +234,7 @@ version = "1.4.0"
 
 [[package]]
 name = "libc"
-version = "0.2.142"
+version = "0.2.144"
 
 [[package]]
 name = "link-cplusplus"
@@ -239,17 +267,52 @@ name = "os_str_bytes"
 version = "6.0.0"
 
 [[package]]
+name = "ppv-lite86"
+version = "0.2.17"
+
+[[package]]
 name = "proc-macro2"
-version = "1.0.43"
+version = "1.0.56"
 dependencies = [
  "unicode-ident",
 ]
 
 [[package]]
 name = "quote"
-version = "1.0.10"
+version = "1.0.27"
 dependencies = [
  "proc-macro2",
+]
+
+[[package]]
+name = "rand"
+version = "0.8.5"
+dependencies = [
+ "libc",
+ "rand_chacha",
+ "rand_core",
+]
+
+[[package]]
+name = "rand_chacha"
+version = "0.3.1"
+dependencies = [
+ "ppv-lite86",
+ "rand_core",
+]
+
+[[package]]
+name = "rand_core"
+version = "0.6.4"
+dependencies = [
+ "getrandom",
+]
+
+[[package]]
+name = "rand_pcg"
+version = "0.3.1"
+dependencies = [
+ "rand_core",
 ]
 
 [[package]]
@@ -283,11 +346,30 @@ dependencies = [
 
 [[package]]
 name = "rstest"
-version = "0.12.0"
+version = "0.17.0"
+dependencies = [
+ "rstest_macros",
+ "rustc_version",
+]
+
+[[package]]
+name = "rstest_macros"
+version = "0.17.0"
 dependencies = [
  "cfg-if",
  "proc-macro2",
  "quote",
+ "rustc_version",
+ "syn",
+ "unicode-ident",
+]
+
+[[package]]
+name = "rstest_reuse"
+version = "0.5.0"
+dependencies = [
+ "quote",
+ "rand",
  "rustc_version",
  "syn",
 ]
@@ -412,6 +494,12 @@ name = "unicode-width"
 version = "0.1.9"
 
 [[package]]
+name = "wasi"
+version = "0.11.0+wasi-snapshot-preview1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
+
+[[package]]
 name = "winapi"
 version = "0.3.9"
 dependencies = [
@@ -437,3 +525,13 @@ name = "winapi-x86_64-pc-windows-gnu"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
+
+[[package]]
+name = "wycheproof"
+version = "0.4.0"
+dependencies = [
+ "base64",
+ "hex",
+ "serde",
+ "serde_json",
+]

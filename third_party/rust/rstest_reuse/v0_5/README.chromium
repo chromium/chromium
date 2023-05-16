@@ -1,0 +1,9 @@
+Name: rstest_reuse
+URL: https://crates.io/crates/rstest_reuse
+Description: Reuse rstest attributes: create a set of tests and apply it 
+to every scenario you want to test.
+
+Version: 0.5.0
+Security Critical: no
+License: Apache 2.0
+Revision: b12f16cfe4e714805fdb00de6f15ecfc986ecfd8

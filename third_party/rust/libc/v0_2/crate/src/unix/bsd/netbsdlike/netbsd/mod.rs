@@ -1464,7 +1464,15 @@ pub const ENOATTR: ::c_int = 93;
 pub const EMULTIHOP: ::c_int = 94;
 pub const ENOLINK: ::c_int = 95;
 pub const EPROTO: ::c_int = 96;
-pub const ELAST: ::c_int = 96;
+pub const EOWNERDEAD: ::c_int = 97;
+pub const ENOTRECOVERABLE: ::c_int = 98;
+#[deprecated(
+    since = "0.2.143",
+    note = "This value will always match the highest defined error number \
+            and thus is not stable. \
+            See #3040 for more info."
+)]
+pub const ELAST: ::c_int = 98;
 
 pub const F_DUPFD_CLOEXEC: ::c_int = 12;
 pub const F_CLOSEM: ::c_int = 10;
@@ -2414,7 +2422,7 @@ f! {
             .offset(_ALIGN(::mem::size_of::<::cmsghdr>()) as isize)
     }
 
-    pub fn CMSG_LEN(length: ::c_uint) -> ::c_uint {
+    pub {const} fn CMSG_LEN(length: ::c_uint) -> ::c_uint {
         _ALIGN(::mem::size_of::<::cmsghdr>()) as ::c_uint + length
     }
 
@@ -2464,6 +2472,17 @@ f! {
     pub fn PROT_MPROTECT_EXTRACT(x: ::c_int) -> ::c_int {
         (x >> 3) & 0x7
     }
+
+    pub fn major(dev: ::dev_t) -> ::c_int {
+        (((dev as u32) & 0x000fff00) >>  8) as ::c_int
+    }
+
+    pub fn minor(dev: ::dev_t) -> ::c_int {
+        let mut res = 0;
+        res |= ((dev as u32) & 0xfff00000) >> 12;
+        res |= (dev as u32) & 0x000000ff;
+        res as ::c_int
+    }
 }
 
 safe_f! {
@@ -2505,31 +2524,7 @@ extern "C" {
     ) -> ::c_int;
 
     pub fn reallocarr(ptr: *mut ::c_void, number: ::size_t, size: ::size_t) -> ::c_int;
-}
 
-#[link(name = "rt")]
-extern "C" {
-    pub fn aio_read(aiocbp: *mut aiocb) -> ::c_int;
-    pub fn aio_write(aiocbp: *mut aiocb) -> ::c_int;
-    pub fn aio_fsync(op: ::c_int, aiocbp: *mut aiocb) -> ::c_int;
-    pub fn aio_error(aiocbp: *const aiocb) -> ::c_int;
-    pub fn aio_return(aiocbp: *mut aiocb) -> ::ssize_t;
-    #[link_name = "__aio_suspend50"]
-    pub fn aio_suspend(
-        aiocb_list: *const *const aiocb,
-        nitems: ::c_int,
-        timeout: *const ::timespec,
-    ) -> ::c_int;
-    pub fn aio_cancel(fd: ::c_int, aiocbp: *mut aiocb) -> ::c_int;
-    pub fn lio_listio(
-        mode: ::c_int,
-        aiocb_list: *const *mut aiocb,
-        nitems: ::c_int,
-        sevp: *mut sigevent,
-    ) -> ::c_int;
-}
-
-extern "C" {
     pub fn chflags(path: *const ::c_char, flags: ::c_ulong) -> ::c_int;
     pub fn fchflags(fd: ::c_int, flags: ::c_ulong) -> ::c_int;
     pub fn lchflags(path: *const ::c_char, flags: ::c_ulong) -> ::c_int;
@@ -2957,6 +2952,28 @@ extern "C" {
         newfd: ::c_int,
     ) -> ::c_int;
     pub fn getrandom(buf: *mut ::c_void, buflen: ::size_t, flags: ::c_uint) -> ::ssize_t;
+}
+
+#[link(name = "rt")]
+extern "C" {
+    pub fn aio_read(aiocbp: *mut aiocb) -> ::c_int;
+    pub fn aio_write(aiocbp: *mut aiocb) -> ::c_int;
+    pub fn aio_fsync(op: ::c_int, aiocbp: *mut aiocb) -> ::c_int;
+    pub fn aio_error(aiocbp: *const aiocb) -> ::c_int;
+    pub fn aio_return(aiocbp: *mut aiocb) -> ::ssize_t;
+    #[link_name = "__aio_suspend50"]
+    pub fn aio_suspend(
+        aiocb_list: *const *const aiocb,
+        nitems: ::c_int,
+        timeout: *const ::timespec,
+    ) -> ::c_int;
+    pub fn aio_cancel(fd: ::c_int, aiocbp: *mut aiocb) -> ::c_int;
+    pub fn lio_listio(
+        mode: ::c_int,
+        aiocb_list: *const *mut aiocb,
+        nitems: ::c_int,
+        sevp: *mut sigevent,
+    ) -> ::c_int;
 }
 
 #[link(name = "util")]

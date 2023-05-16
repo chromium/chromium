@@ -1,5 +1,6 @@
 use core::mem;
 use core::slice;
+use std::panic::RefUnwindSafe;
 use std::rc::Rc;
 use std::vec;
 
@@ -140,3 +141,5 @@ impl<T> Iterator for RcVecIntoIter<T> {
         self.inner.size_hint()
     }
 }
+
+impl<T> RefUnwindSafe for RcVec<T> where T: RefUnwindSafe {}

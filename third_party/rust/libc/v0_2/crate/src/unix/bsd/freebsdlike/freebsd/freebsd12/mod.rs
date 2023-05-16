@@ -462,6 +462,16 @@ safe_f! {
     }
 }
 
+f! {
+    pub fn major(dev: ::dev_t) -> ::c_int {
+        (((dev >> 32) & 0xffffff00) | ((dev >> 8) & 0xff)) as ::c_int
+    }
+
+    pub fn minor(dev: ::dev_t) -> ::c_int {
+        (((dev >> 24) & 0xff00) | (dev & 0xffff00ff)) as ::c_int
+    }
+}
+
 extern "C" {
     pub fn setgrent();
     pub fn mprotect(addr: *mut ::c_void, len: ::size_t, prot: ::c_int) -> ::c_int;

@@ -1,0 +1,31 @@
+[package]
+name = "base64"
+version = "0.13.1"
+authors = ["Alice Maz <alice@alicemaz.com>", "Marshall Pierce <marshall@mpierce.org>"]
+description = "encodes and decodes base64 as bytes or utf8"
+repository = "https://github.com/marshallpierce/rust-base64"
+documentation = "https://docs.rs/base64"
+readme = "README.md"
+keywords = ["base64", "utf8", "encode", "decode", "no_std"]
+categories = ["encoding"]
+license = "MIT/Apache-2.0"
+edition = "2018"
+
+[[bench]]
+name = "benchmarks"
+harness = false
+
+[dev-dependencies]
+# 0.3.3 requires rust 1.36.0 for stable copied()
+criterion = "=0.3.2"
+rand = "0.6.1"
+structopt = "0.3"
+
+[features]
+default = ["std"]
+alloc = []
+std = []
+
+[profile.bench]
+# Useful for better disassembly when using `perf record` and `perf annotate`
+debug = true

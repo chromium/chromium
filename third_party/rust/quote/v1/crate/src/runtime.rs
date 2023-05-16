@@ -1,8 +1,13 @@
+use self::get_span::{GetSpan, GetSpanBase, GetSpanInner};
 use crate::{IdentFragment, ToTokens, TokenStreamExt};
-use std::fmt;
-use std::ops::BitOr;
+use core::fmt;
+use core::iter;
+use core::ops::BitOr;
+use proc_macro2::{Group, Ident, Punct, Spacing, TokenTree};
 
-pub use proc_macro2::*;
+pub use core::option::Option;
+pub use proc_macro2::{Delimiter, Span, TokenStream};
+pub use std::format;
 
 pub struct HasIterator; // True
 pub struct ThereIsNoIteratorInRepetition; // False
@@ -45,8 +50,8 @@ pub mod ext {
     use super::RepInterp;
     use super::{HasIterator as HasIter, ThereIsNoIteratorInRepetition as DoesNotHaveIter};
     use crate::ToTokens;
+    use core::slice;
     use std::collections::btree_set::{self, BTreeSet};
-    use std::slice;
 
     /// Extension trait providing the `quote_into_iter` method on iterators.
     pub trait RepIteratorExt: Iterator + Sized {
@@ -161,6 +166,62 @@ impl<T: ToTokens> ToTokens for RepInterp<T> {
     }
 }
 
+#[inline]
+pub fn get_span<T>(span: T) -> GetSpan<T> {
+    GetSpan(GetSpanInner(GetSpanBase(span)))
+}
+
+mod get_span {
+    use core::ops::Deref;
+    use proc_macro2::extra::DelimSpan;
+    use proc_macro2::Span;
+
+    pub struct GetSpan<T>(pub(crate) GetSpanInner<T>);
+
+    pub struct GetSpanInner<T>(pub(crate) GetSpanBase<T>);
+
+    pub struct GetSpanBase<T>(pub(crate) T);
+
+    impl GetSpan<Span> {
+        #[inline]
+        pub fn __into_span(self) -> Span {
+            ((self.0).0).0
+        }
+    }
+
+    impl GetSpanInner<DelimSpan> {
+        #[inline]
+        pub fn __into_span(&self) -> Span {
+            (self.0).0.join()
+        }
+    }
+
+    impl<T> GetSpanBase<T> {
+        #[allow(clippy::unused_self)]
+        pub fn __into_span(&self) -> T {
+            unreachable!()
+        }
+    }
+
+    impl<T> Deref for GetSpan<T> {
+        type Target = GetSpanInner<T>;
+
+        #[inline]
+        fn deref(&self) -> &Self::Target {
+            &self.0
+        }
+    }
+
+    impl<T> Deref for GetSpanInner<T> {
+        type Target = GetSpanBase<T>;
+
+        #[inline]
+        fn deref(&self) -> &Self::Target {
+            &self.0
+        }
+    }
+}
+
 pub fn push_group(tokens: &mut TokenStream, delimiter: Delimiter, inner: TokenStream) {
     tokens.append(Group::new(delimiter, inner));
 }
@@ -178,39 +239,102 @@ pub fn push_group_spanned(
 
 pub fn parse(tokens: &mut TokenStream, s: &str) {
     let s: TokenStream = s.parse().expect("invalid token stream");
-    tokens.extend(s);
+    tokens.extend(iter::once(s));
 }
 
 pub fn parse_spanned(tokens: &mut TokenStream, span: Span, s: &str) {
     let s: TokenStream = s.parse().expect("invalid token stream");
-    tokens.extend(s.into_iter().map(|mut t| {
-        t.set_span(span);
-        t
-    }));
+    tokens.extend(s.into_iter().map(|t| respan_token_tree(t, span)));
+}
+
+// Token tree with every span replaced by the given one.
+fn respan_token_tree(mut token: TokenTree, span: Span) -> TokenTree {
+    match &mut token {
+        TokenTree::Group(g) => {
+            let stream = g
+                .stream()
+                .into_iter()
+                .map(|token| respan_token_tree(token, span))
+                .collect();
+            *g = Group::new(g.delimiter(), stream);
+            g.set_span(span);
+        }
+        other => other.set_span(span),
+    }
+    token
 }
 
 pub fn push_ident(tokens: &mut TokenStream, s: &str) {
-    // Optimization over `mk_ident`, as `s` is guaranteed to be a valid ident.
-    //
-    // FIXME: When `Ident::new_raw` becomes stable, this method should be
-    // updated to call it when available.
-    if s.starts_with("r#") {
-        parse(tokens, s);
-    } else {
-        tokens.append(Ident::new(s, Span::call_site()));
-    }
+    let span = Span::call_site();
+    push_ident_spanned(tokens, span, s);
 }
 
 pub fn push_ident_spanned(tokens: &mut TokenStream, span: Span, s: &str) {
-    // Optimization over `mk_ident`, as `s` is guaranteed to be a valid ident.
-    //
-    // FIXME: When `Ident::new_raw` becomes stable, this method should be
-    // updated to call it when available.
-    if s.starts_with("r#") {
-        parse_spanned(tokens, span, s);
-    } else {
-        tokens.append(Ident::new(s, span));
+    tokens.append(ident_maybe_raw(s, span));
+}
+
+pub fn push_lifetime(tokens: &mut TokenStream, lifetime: &str) {
+    struct Lifetime<'a> {
+        name: &'a str,
+        state: u8,
     }
+
+    impl<'a> Iterator for Lifetime<'a> {
+        type Item = TokenTree;
+
+        fn next(&mut self) -> Option<Self::Item> {
+            match self.state {
+                0 => {
+                    self.state = 1;
+                    Some(TokenTree::Punct(Punct::new('\'', Spacing::Joint)))
+                }
+                1 => {
+                    self.state = 2;
+                    Some(TokenTree::Ident(Ident::new(self.name, Span::call_site())))
+                }
+                _ => None,
+            }
+        }
+    }
+
+    tokens.extend(Lifetime {
+        name: &lifetime[1..],
+        state: 0,
+    });
+}
+
+pub fn push_lifetime_spanned(tokens: &mut TokenStream, span: Span, lifetime: &str) {
+    struct Lifetime<'a> {
+        name: &'a str,
+        span: Span,
+        state: u8,
+    }
+
+    impl<'a> Iterator for Lifetime<'a> {
+        type Item = TokenTree;
+
+        fn next(&mut self) -> Option<Self::Item> {
+            match self.state {
+                0 => {
+                    self.state = 1;
+                    let mut apostrophe = Punct::new('\'', Spacing::Joint);
+                    apostrophe.set_span(self.span);
+                    Some(TokenTree::Punct(apostrophe))
+                }
+                1 => {
+                    self.state = 2;
+                    Some(TokenTree::Ident(Ident::new(self.name, self.span)))
+                }
+                _ => None,
+            }
+        }
+    }
+
+    tokens.extend(Lifetime {
+        name: &lifetime[1..],
+        span,
+        state: 0,
+    });
 }
 
 macro_rules! push_punct {
@@ -303,38 +427,27 @@ push_punct!(push_star push_star_spanned '*');
 push_punct!(push_sub push_sub_spanned '-');
 push_punct!(push_sub_eq push_sub_eq_spanned '-' '=');
 
+pub fn push_underscore(tokens: &mut TokenStream) {
+    push_underscore_spanned(tokens, Span::call_site());
+}
+
+pub fn push_underscore_spanned(tokens: &mut TokenStream, span: Span) {
+    tokens.append(Ident::new("_", span));
+}
+
 // Helper method for constructing identifiers from the `format_ident!` macro,
 // handling `r#` prefixes.
-//
-// Directly parsing the input string may produce a valid identifier,
-// although the input string was invalid, due to ignored characters such as
-// whitespace and comments. Instead, we always create a non-raw identifier
-// to validate that the string is OK, and only parse again if needed.
 pub fn mk_ident(id: &str, span: Option<Span>) -> Ident {
     let span = span.unwrap_or_else(Span::call_site);
+    ident_maybe_raw(id, span)
+}
 
-    let is_raw = id.starts_with("r#");
-    let unraw = Ident::new(if is_raw { &id[2..] } else { id }, span);
-    if !is_raw {
-        return unraw;
+fn ident_maybe_raw(id: &str, span: Span) -> Ident {
+    if id.starts_with("r#") {
+        Ident::new_raw(&id[2..], span)
+    } else {
+        Ident::new(id, span)
     }
-
-    // At this point, the identifier is raw, and the unraw-ed version of it was
-    // successfully converted into an identifier. Try to produce a valid raw
-    // identifier by running the `TokenStream` parser, and unwrapping the first
-    // token as an `Ident`.
-    //
-    // FIXME: When `Ident::new_raw` becomes stable, this method should be
-    // updated to call it when available.
-    if let Ok(ts) = id.parse::<TokenStream>() {
-        let mut iter = ts.into_iter();
-        if let (Some(TokenTree::Ident(mut id)), None) = (iter.next(), iter.next()) {
-            id.set_span(span);
-            return id;
-        }
-    }
-
-    panic!("not allowed as a raw identifier: `{}`", id);
 }
 
 // Adapts from `IdentFragment` to `fmt::Display` for use by the `format_ident!`

@@ -3,19 +3,29 @@ name: CI
 on:
   push:
   pull_request:
+  workflow_dispatch:
   schedule: [cron: "40 1 * * *"]
+
+permissions:
+  contents: read
 
 env:
   RUSTFLAGS: -Dwarnings
 
 jobs:
+  pre_ci:
+    uses: dtolnay/.github/.github/workflows/pre_ci.yml@master
+
   test:
     name: Rust ${{matrix.rust}}
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         rust: [1.31.0, stable, beta]
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@master
@@ -35,13 +45,18 @@ jobs:
 
   nightly:
     name: Rust nightly
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@nightly
+      - name: Enable type layout randomization
+        run: echo RUSTFLAGS=${RUSTFLAGS}\ -Zrandomize-layout >> $GITHUB_ENV
       - run: cargo test
       - run: cargo test --no-default-features
-      - run: cargo test --no-default-features -- --ignored # run the ignored test to make sure the `proc-macro` feature is disabled
+      - run: cargo test --no-default-features --test features -- --ignored make_sure_no_proc_macro # run the ignored test to make sure the `proc-macro` feature is disabled
       - run: cargo test --features span-locations
       - run: cargo test --manifest-path tests/ui/Cargo.toml
       - name: RUSTFLAGS='--cfg procmacro2_semver_exempt' cargo test
@@ -60,7 +75,10 @@ jobs:
 
   webassembly:
     name: WebAssembly
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@nightly
@@ -68,10 +86,29 @@ jobs:
           target: wasm32-unknown-unknown
       - run: cargo test --target wasm32-unknown-unknown --no-run
 
+  fuzz:
+    name: Fuzz
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@nightly
+      - uses: dtolnay/install@cargo-fuzz
+      - run: cargo fuzz check
+      - run: cargo check --no-default-features --features afl
+        working-directory: fuzz
+      - uses: dtolnay/install@honggfuzz
+      - run: sudo apt-get install binutils-dev libunwind-dev
+      - run: cargo hfuzz build --no-default-features --features honggfuzz
+        working-directory: fuzz
+
   clippy:
     name: Clippy
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@clippy
@@ -80,7 +117,10 @@ jobs:
 
   miri:
     name: Miri
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@miri
@@ -92,7 +132,9 @@ jobs:
     name: Outdated
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request'
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v3
       - uses: dtolnay/install@cargo-outdated
       - run: cargo outdated --workspace --exit-code 1
+      - run: cargo outdated --manifest-path fuzz/Cargo.toml --exit-code 1

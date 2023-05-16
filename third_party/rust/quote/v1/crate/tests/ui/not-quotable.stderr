@@ -1,15 +1,20 @@
 error[E0277]: the trait bound `Ipv4Addr: ToTokens` is not satisfied
-  --> $DIR/not-quotable.rs:6:13
-   |
-6  |     let _ = quote! { #ip };
-   |             ^^^^^^^^^^^^^^
-   |             |
-   |             the trait `ToTokens` is not implemented for `Ipv4Addr`
-   |             required by a bound introduced by this call
-   |
-note: required by `to_tokens`
-  --> $DIR/to_tokens.rs:55:5
-   |
-55 |     fn to_tokens(&self, tokens: &mut TokenStream);
-   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-   = note: this error originates in the macro `$crate::quote_token_with_context` (in Nightly builds, run with -Z macro-backtrace for more info)
+ --> tests/ui/not-quotable.rs:6:13
+  |
+6 |     let _ = quote! { #ip };
+  |             ^^^^^^^^^^^^^^
+  |             |
+  |             the trait `ToTokens` is not implemented for `Ipv4Addr`
+  |             required by a bound introduced by this call
+  |
+  = help: the following other types implement trait `ToTokens`:
+            &'a T
+            &'a mut T
+            Box<T>
+            Cow<'a, T>
+            Option<T>
+            Rc<T>
+            RepInterp<T>
+            String
+          and 23 others
+  = note: this error originates in the macro `quote` (in Nightly builds, run with -Z macro-backtrace for more info)

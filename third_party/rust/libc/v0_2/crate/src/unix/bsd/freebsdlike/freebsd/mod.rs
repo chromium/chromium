@@ -2997,6 +2997,10 @@ pub const MNT_SNAPSHOT: ::c_int = 0x01000000;
 pub const MNT_UNION: ::c_int = 0x00000020;
 pub const MNT_NONBUSY: ::c_int = 0x04000000;
 
+pub const SCM_BINTIME: ::c_int = 0x04;
+pub const SCM_REALTIME: ::c_int = 0x05;
+pub const SCM_MONOTONIC: ::c_int = 0x06;
+pub const SCM_TIME_INFO: ::c_int = 0x07;
 pub const SCM_CREDS2: ::c_int = 0x08;
 
 pub const SO_BINTIME: ::c_int = 0x2000;
@@ -3696,6 +3700,7 @@ pub const MSG_NBIO: ::c_int = 0x00004000;
 pub const MSG_COMPAT: ::c_int = 0x00008000;
 pub const MSG_CMSG_CLOEXEC: ::c_int = 0x00040000;
 pub const MSG_NOSIGNAL: ::c_int = 0x20000;
+pub const MSG_WAITFORONE: ::c_int = 0x00080000;
 
 // utmpx entry types
 pub const EMPTY: ::c_short = 0;
@@ -3767,6 +3772,15 @@ pub const AT_EUID: ::c_int = 12;
 pub const AT_GID: ::c_int = 13;
 pub const AT_EGID: ::c_int = 14;
 pub const AT_EXECPATH: ::c_int = 15;
+pub const AT_CANARY: ::c_int = 16;
+pub const AT_OSRELDATE: ::c_int = 18;
+pub const AT_NCPUS: ::c_int = 19;
+pub const AT_PAGESIZES: ::c_int = 20;
+pub const AT_TIMEKEEP: ::c_int = 22;
+pub const AT_HWCAP: ::c_int = 25;
+pub const AT_HWCAP2: ::c_int = 26;
+pub const AT_USRSTACKBASE: ::c_int = 35;
+pub const AT_USRSTACKLIM: ::c_int = 36;
 
 pub const TABDLY: ::tcflag_t = 0x00000004;
 pub const TAB0: ::tcflag_t = 0x00000000;
@@ -4670,6 +4684,15 @@ pub const SCTP_ASSOC_RESET_FAILED: ::c_int = 0x0008;
 pub const SCTP_STREAM_CHANGE_DENIED: ::c_int = 0x0004;
 pub const SCTP_STREAM_CHANGE_FAILED: ::c_int = 0x0008;
 
+pub const KENV_DUMP_LOADER: ::c_int = 4;
+pub const KENV_DUMP_STATIC: ::c_int = 5;
+
+pub const RB_PAUSE: ::c_int = 0x100000;
+pub const RB_REROOT: ::c_int = 0x200000;
+pub const RB_POWERCYCLE: ::c_int = 0x400000;
+pub const RB_PROBE: ::c_int = 0x10000000;
+pub const RB_MULTIPLE: ::c_int = 0x20000000;
+
 cfg_if! {
     if #[cfg(libc_const_extern_fn)] {
         pub const fn MAP_ALIGNED(a: ::c_int) -> ::c_int {
@@ -4694,7 +4717,7 @@ f! {
             .offset(_ALIGN(::mem::size_of::<::cmsghdr>()) as isize)
     }
 
-    pub fn CMSG_LEN(length: ::c_uint) -> ::c_uint {
+    pub {const} fn CMSG_LEN(length: ::c_uint) -> ::c_uint {
         _ALIGN(::mem::size_of::<::cmsghdr>()) as ::c_uint + length
     }
 

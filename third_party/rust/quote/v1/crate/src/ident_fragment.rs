@@ -1,6 +1,6 @@
+use core::fmt;
 use proc_macro2::{Ident, Span};
 use std::borrow::Cow;
-use std::fmt;
 
 /// Specialized formatting trait used by `format_ident!`.
 ///
@@ -8,6 +8,8 @@ use std::fmt;
 /// stripped, if present.
 ///
 /// See [`format_ident!`] for more information.
+///
+/// [`format_ident!`]: crate::format_ident
 pub trait IdentFragment {
     /// Format this value as an identifier fragment.
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result;

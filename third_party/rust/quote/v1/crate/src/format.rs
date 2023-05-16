@@ -11,10 +11,10 @@
 /// of format types to traits is:
 ///
 /// * `{}` ⇒ [`IdentFragment`]
-/// * `{:o}` ⇒ [`Octal`](`std::fmt::Octal`)
-/// * `{:x}` ⇒ [`LowerHex`](`std::fmt::LowerHex`)
-/// * `{:X}` ⇒ [`UpperHex`](`std::fmt::UpperHex`)
-/// * `{:b}` ⇒ [`Binary`](`std::fmt::Binary`)
+/// * `{:o}` ⇒ [`Octal`](std::fmt::Octal)
+/// * `{:x}` ⇒ [`LowerHex`](std::fmt::LowerHex)
+/// * `{:X}` ⇒ [`UpperHex`](std::fmt::UpperHex)
+/// * `{:b}` ⇒ [`Binary`](std::fmt::Binary)
 ///
 /// See [`std::fmt`] for more information.
 ///
@@ -29,7 +29,8 @@
 ///    unsigned integers and strings.
 /// * [`Ident`] arguments will have their `r#` prefixes stripped, if present.
 ///
-/// [`Ident`]: `proc_macro2::Ident`
+/// [`IdentFragment`]: crate::IdentFragment
+/// [`Ident`]: proc_macro2::Ident
 ///
 /// <br>
 ///
@@ -59,8 +60,8 @@
 /// format_ident!("MyIdent", span = my_span);
 /// ```
 ///
-/// [`Span`]: `proc_macro2::Span`
-/// [`Span::call_site`]: `proc_macro2::Span::call_site`
+/// [`Span`]: proc_macro2::Span
+/// [`Span::call_site`]: proc_macro2::Span::call_site
 ///
 /// <p><br></p>
 ///
@@ -110,14 +111,14 @@
 macro_rules! format_ident {
     ($fmt:expr) => {
         $crate::format_ident_impl!([
-            ::std::option::Option::None,
+            $crate::__private::Option::None,
             $fmt
         ])
     };
 
     ($fmt:expr, $($rest:tt)*) => {
         $crate::format_ident_impl!([
-            ::std::option::Option::None,
+            $crate::__private::Option::None,
             $fmt
         ] $($rest)*)
     };
@@ -128,7 +129,10 @@ macro_rules! format_ident {
 macro_rules! format_ident_impl {
     // Final state
     ([$span:expr, $($fmt:tt)*]) => {
-        $crate::__private::mk_ident(&format!($($fmt)*), $span)
+        $crate::__private::mk_ident(
+            &$crate::__private::format!($($fmt)*),
+            $span,
+        )
     };
 
     // Span argument
@@ -137,7 +141,7 @@ macro_rules! format_ident_impl {
     };
     ([$old:expr, $($fmt:tt)*] span = $span:expr, $($rest:tt)*) => {
         $crate::format_ident_impl!([
-            ::std::option::Option::Some::<$crate::__private::Span>($span),
+            $crate::__private::Option::Some::<$crate::__private::Span>($span),
             $($fmt)*
         ] $($rest)*)
     };

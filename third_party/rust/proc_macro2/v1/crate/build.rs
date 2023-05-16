@@ -72,6 +72,10 @@ fn main() {
         println!("cargo:rustc-cfg=no_libprocmacro_unwind_safe");
     }
 
+    if version.minor < 34 {
+        println!("cargo:rustc-cfg=no_try_from");
+    }
+
     if version.minor < 39 {
         println!("cargo:rustc-cfg=no_bind_by_move_pattern_guard");
     }
@@ -100,6 +104,10 @@ fn main() {
         println!("cargo:rustc-cfg=no_is_available");
     }
 
+    if version.minor < 66 {
+        println!("cargo:rustc-cfg=no_source_text");
+    }
+
     let target = env::var("TARGET").unwrap();
     if !enable_use_proc_macro(&target) {
         return;
@@ -111,7 +119,10 @@ fn main() {
         println!("cargo:rustc-cfg=wrap_proc_macro");
     }
 
-    if version.nightly && feature_allowed("proc_macro_span") {
+    if version.nightly
+        && feature_allowed("proc_macro_span")
+        && feature_allowed("proc_macro_span_shrink")
+    {
         println!("cargo:rustc-cfg=proc_macro_span");
     }
 

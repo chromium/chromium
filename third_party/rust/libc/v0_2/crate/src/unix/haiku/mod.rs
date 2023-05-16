@@ -1504,7 +1504,7 @@ f! {
             as ::c_uint
     }
 
-    pub fn CMSG_LEN(length: ::c_uint) -> ::c_uint {
+    pub {const} fn CMSG_LEN(length: ::c_uint) -> ::c_uint {
         CMSG_ALIGN(::mem::size_of::<cmsghdr>()) as ::c_uint + length
     }
 
@@ -2055,7 +2055,7 @@ extern "C" {
     ) -> ::c_int;
 }
 
-#[link(name = "unix")]
+#[link(name = "gnu")]
 extern "C" {
     pub fn memmem(
         source: *const ::c_void,

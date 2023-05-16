@@ -442,6 +442,16 @@ safe_f! {
     }
 }
 
+f! {
+    pub fn major(dev: ::dev_t) -> ::c_int {
+         ((dev >> 8) & 0xff) as ::c_int
+    }
+
+    pub fn minor(dev: ::dev_t) -> ::c_int {
+        (dev & 0xffff00ff) as ::c_int
+    }
+}
+
 extern "C" {
     // Return type ::c_int was removed in FreeBSD 12
     pub fn setgrent() -> ::c_int;

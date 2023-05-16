@@ -1,0 +1,9 @@
+Name: rstest_macros
+URL: https://crates.io/crates/rstest_macros
+Description: Rust fixture based test framework. It use procedural macro
+to implement fixtures and table based tests.
+
+Version: 0.17.0
+Security Critical: no
+License: Apache 2.0
+Revision: 7ac624c3a54de3d7a1506441863562371c5a2359

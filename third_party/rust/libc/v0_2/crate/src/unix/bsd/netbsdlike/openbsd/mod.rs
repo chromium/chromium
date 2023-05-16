@@ -1073,6 +1073,8 @@ pub const IP_RECVIF: ::c_int = 30;
 pub const TCP_MD5SIG: ::c_int = 0x04;
 pub const TCP_NOPUSH: ::c_int = 0x10;
 
+pub const MSG_WAITFORONE: ::c_int = 0x1000;
+
 pub const AF_ECMA: ::c_int = 8;
 pub const AF_ROUTE: ::c_int = 17;
 pub const AF_ENCAP: ::c_int = 28;
@@ -1703,7 +1705,7 @@ f! {
             .offset(_ALIGN(::mem::size_of::<::cmsghdr>()) as isize)
     }
 
-    pub fn CMSG_LEN(length: ::c_uint) -> ::c_uint {
+    pub {const} fn CMSG_LEN(length: ::c_uint) -> ::c_uint {
         _ALIGN(::mem::size_of::<::cmsghdr>()) as ::c_uint + length
     }
 
@@ -1728,6 +1730,19 @@ f! {
     pub {const} fn CMSG_SPACE(length: ::c_uint) -> ::c_uint {
         (_ALIGN(::mem::size_of::<::cmsghdr>()) + _ALIGN(length as usize))
             as ::c_uint
+    }
+
+    pub fn major(dev: ::dev_t) -> ::c_uint{
+        ((dev as ::c_uint) >> 8) & 0xff
+    }
+
+    pub fn minor(dev: ::dev_t) -> ::c_uint {
+        let dev = dev as ::c_uint;
+        let mut res = 0;
+        res |= (dev) & 0xff;
+        res |= ((dev) & 0xffff0000) >> 8;
+
+        res
     }
 }
 

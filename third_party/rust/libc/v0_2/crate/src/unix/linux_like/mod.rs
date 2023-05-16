@@ -662,7 +662,18 @@ pub const MADV_HUGEPAGE: ::c_int = 14;
 pub const MADV_NOHUGEPAGE: ::c_int = 15;
 pub const MADV_DONTDUMP: ::c_int = 16;
 pub const MADV_DODUMP: ::c_int = 17;
+pub const MADV_WIPEONFORK: ::c_int = 18;
+pub const MADV_KEEPONFORK: ::c_int = 19;
+pub const MADV_COLD: ::c_int = 20;
+pub const MADV_PAGEOUT: ::c_int = 21;
 pub const MADV_HWPOISON: ::c_int = 100;
+cfg_if! {
+    if #[cfg(not(target_os = "emscripten"))] {
+        pub const MADV_POPULATE_READ: ::c_int = 22;
+        pub const MADV_POPULATE_WRITE: ::c_int = 23;
+        pub const MADV_DONTNEED_LOCKED: ::c_int = 24;
+    }
+}
 
 pub const IFF_UP: ::c_int = 0x1;
 pub const IFF_BROADCAST: ::c_int = 0x2;
@@ -905,6 +916,8 @@ pub const IPPROTO_UDPLITE: ::c_int = 136;
 pub const IPPROTO_RAW: ::c_int = 255;
 pub const IPPROTO_BEETPH: ::c_int = 94;
 pub const IPPROTO_MPLS: ::c_int = 137;
+/// Multipath TCP
+pub const IPPROTO_MPTCP: ::c_int = 262;
 
 pub const MCAST_EXCLUDE: ::c_int = 0;
 pub const MCAST_INCLUDE: ::c_int = 1;
@@ -1544,7 +1557,7 @@ f! {
             as ::c_uint
     }
 
-    pub fn CMSG_LEN(length: ::c_uint) -> ::c_uint {
+    pub {const} fn CMSG_LEN(length: ::c_uint) -> ::c_uint {
         CMSG_ALIGN(::mem::size_of::<cmsghdr>()) as ::c_uint + length
     }
 

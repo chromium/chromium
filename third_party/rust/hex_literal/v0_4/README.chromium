@@ -1,0 +1,7 @@
+Name: hex-literal
+URL: https://crates.io/crates/hex-literal
+Description: Macro for converting hexadecimal string to a byte array at compile time
+Version: 0.4.1
+Security Critical: no
+License: Apache 2.0
+Revision: b8bd42f441f8e2987ded60fbaa809e7bf9d17a8e
