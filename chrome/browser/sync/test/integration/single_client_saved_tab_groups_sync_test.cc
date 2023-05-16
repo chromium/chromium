@@ -49,6 +49,25 @@ class SingleClientSavedTabGroupsSyncTest : public SyncTest {
             /*last_modified_time=*/update_time));
   }
 
+  void RemoveDataFromFakeServer(base::GUID guid) {
+    std::vector<sync_pb::SyncEntity> server_tabs_and_groups =
+        GetFakeServer()->GetSyncEntitiesByModelType(syncer::SAVED_TAB_GROUP);
+
+    // Remove the entity with a matching `guid`.
+    for (const sync_pb::SyncEntity& tab_or_group : server_tabs_and_groups) {
+      const sync_pb::SavedTabGroupSpecifics actual_specifics =
+          tab_or_group.specifics().saved_tab_group();
+      if (base::GUID::ParseCaseInsensitive(actual_specifics.guid()) == guid) {
+        // Replace it with a tombstone to remove it from sync.
+        GetFakeServer()->InjectEntity(
+            syncer::PersistentTombstoneEntity::CreateFromEntity(tab_or_group));
+        return;
+      }
+    }
+
+    NOTREACHED();
+  }
+
  private:
   base::test::ScopedFeatureList features_;
 };
@@ -143,6 +162,138 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
 
   EXPECT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
                   service, tab1.saved_tab_guid())
+                  .Wait());
+}
+
+// Add a tab to an existing group.
+IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, AddToExistingGroup) {
+  SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {});
+  SavedTabGroupTab tab1(GURL("about:blank"), u"about:blank",
+                        group1.saved_guid());
+  SavedTabGroupTab tab2(GURL("about:blank"), u"about:blank",
+                        group1.saved_guid());
+
+  // Add a group with two tabs to sync.
+  AddDataToFakeServer(*group1.ToSpecifics());
+  AddDataToFakeServer(*tab1.ToSpecifics());
+  AddDataToFakeServer(*tab2.ToSpecifics());
+
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::SAVED_TAB_GROUP));
+
+  SavedTabGroupKeyedService* const service =
+      SavedTabGroupServiceFactory::GetForProfile(GetProfile(0));
+
+  // Verify they are added to the model.
+  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
+                  service, group1.saved_guid())
+                  .Wait());
+  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
+                  service, tab1.saved_tab_guid())
+                  .Wait());
+  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
+                  service, tab2.saved_tab_guid())
+                  .Wait());
+
+  // Add another tab to `group1`.
+  SavedTabGroupTab tab3(GURL("about:blank"), u"about:blank",
+                        group1.saved_guid());
+  AddDataToFakeServer(*tab3.ToSpecifics());
+
+  // Verify the group is updated with the additional tab.
+  EXPECT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
+                  service, tab3.saved_tab_guid())
+                  .Wait());
+}
+
+// Remove one tab from a group with two tabs.
+IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, RemoveTabFromGroup) {
+  SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {});
+  SavedTabGroupTab tab1(GURL("about:blank"), u"about:blank",
+                        group1.saved_guid());
+  SavedTabGroupTab tab2(GURL("about:blank"), u"about:blank",
+                        group1.saved_guid());
+
+  // Add a group with two tabs to sync.
+  AddDataToFakeServer(*group1.ToSpecifics());
+  AddDataToFakeServer(*tab1.ToSpecifics());
+  AddDataToFakeServer(*tab2.ToSpecifics());
+
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::SAVED_TAB_GROUP));
+
+  SavedTabGroupKeyedService* const service =
+      SavedTabGroupServiceFactory::GetForProfile(GetProfile(0));
+
+  // Verify they are added to the model.
+  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
+                  service, group1.saved_guid())
+                  .Wait());
+
+  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
+                  service, tab1.saved_tab_guid())
+                  .Wait());
+
+  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
+                  service, tab2.saved_tab_guid())
+                  .Wait());
+
+  // Remove tab2.
+  RemoveDataFromFakeServer(tab2.saved_tab_guid());
+
+  // Verify it was removed from the model.
+  EXPECT_TRUE(saved_tab_groups_helper::SavedTabOrGroupDoesNotExistChecker(
+                  service, tab2.saved_tab_guid())
+                  .Wait());
+}
+
+// Remove a saved group from the model.
+IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, RemoveGroup) {
+  SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {});
+  SavedTabGroupTab tab1(GURL("about:blank"), u"about:blank",
+                        group1.saved_guid());
+  SavedTabGroupTab tab2(GURL("about:blank"), u"about:blank",
+                        group1.saved_guid());
+
+  // Add a group with two tabs to sync.
+  AddDataToFakeServer(*group1.ToSpecifics());
+  AddDataToFakeServer(*tab1.ToSpecifics());
+  AddDataToFakeServer(*tab2.ToSpecifics());
+
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::SAVED_TAB_GROUP));
+
+  SavedTabGroupKeyedService* const service =
+      SavedTabGroupServiceFactory::GetForProfile(GetProfile(0));
+
+  // Verify they are added to the model.
+  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
+                  service, group1.saved_guid())
+                  .Wait());
+  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
+                  service, tab1.saved_tab_guid())
+                  .Wait());
+  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
+                  service, tab2.saved_tab_guid())
+                  .Wait());
+
+  // Remove group1 and its tabs.
+  RemoveDataFromFakeServer(group1.saved_guid());
+  RemoveDataFromFakeServer(tab1.saved_tab_guid());
+  RemoveDataFromFakeServer(tab2.saved_tab_guid());
+
+  // Verify the group and its tabs were removed from the model.
+  EXPECT_TRUE(saved_tab_groups_helper::SavedTabOrGroupDoesNotExistChecker(
+                  service, group1.saved_guid())
+                  .Wait());
+  EXPECT_TRUE(saved_tab_groups_helper::SavedTabOrGroupDoesNotExistChecker(
+                  service, tab1.saved_tab_guid())
+                  .Wait());
+  EXPECT_TRUE(saved_tab_groups_helper::SavedTabOrGroupDoesNotExistChecker(
+                  service, tab2.saved_tab_guid())
                   .Wait());
 }
 
