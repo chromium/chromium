@@ -1327,6 +1327,11 @@ void NGFlexLayoutAlgorithm::PlaceFlexItems(
                !flex_item.layout_result_)
             << "If we already have a 'measure' result from "
                "ConstructAndAppendFlexItems, we don't want to evict it.";
+        absl::optional<NGDisableSideEffectsScope> disable_side_effects;
+        if (is_computing_multiline_column_intrinsic_size &&
+            !flex_item.ng_input_node_.GetLayoutBox()->NeedsLayout()) {
+          disable_side_effects.emplace();
+        }
         flex_item.layout_result_ = flex_item.ng_input_node_.Layout(
             child_space, nullptr /*break token*/);
         // TODO(layout-dev): Handle abortions caused by block fragmentation.
