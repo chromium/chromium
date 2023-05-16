@@ -832,11 +832,19 @@ void PrefetchService::StartSinglePrefetch(
 
   TakeOwnershipOfPrefetch(prefetch_container);
 
-  // If prefetch attempts exceed the limit per page, rejects new attempts.
-  if (prefetch_container->GetPrefetchDocumentManager()
-          ->GetNumberOfPrefetchRequestAttempted() >=
-      PrefetchServiceMaximumNumberOfPrefetchesPerPage().value_or(
-          std::numeric_limits<int>::max())) {
+  const bool is_above_limit =
+      (PrefetchNewLimitsEnabled() &&
+       !prefetch_container->GetPrefetchDocumentManager()->CanPrefetchNow(
+           prefetch_container.get())) ||
+      (!PrefetchNewLimitsEnabled() &&
+       prefetch_container->GetPrefetchDocumentManager()
+               ->GetNumberOfPrefetchRequestAttempted() >=
+           PrefetchServiceMaximumNumberOfPrefetchesPerPage().value_or(
+               std::numeric_limits<int>::max()));
+  if (is_above_limit) {
+    // TODO(crbug.com/1445086): We shouldn't be cancelling this and should
+    // just keep it in the queue when PrefetchNewLimits is enabled (move this
+    // check to PopNextPrefetchContainer()).
     prefetch_container->SetPrefetchStatus(
         PrefetchStatus::kPrefetchFailedPerPageLimitExceeded);
     ResetPrefetch(prefetch_container);
@@ -1200,7 +1208,8 @@ void PrefetchService::OnPrefetchResponseCompleted(
       PrefetchDocumentManager* prefetch_document_manager =
           prefetch_container->GetPrefetchDocumentManager();
       if (prefetch_document_manager) {
-        prefetch_document_manager->OnPrefetchSuccessful();
+        prefetch_document_manager->OnPrefetchSuccessful(
+            prefetch_container.get());
       }
     }
   }

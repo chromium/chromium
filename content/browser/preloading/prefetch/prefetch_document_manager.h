@@ -90,7 +90,7 @@ class CONTENT_EXPORT PrefetchDocumentManager
 
   // Updates metrics when the response for a prefetch requested by this page
   // load is received.
-  void OnPrefetchSuccessful();
+  void OnPrefetchSuccessful(PrefetchContainer* prefetch);
 
   // Whether the prefetch attempt for target |url| failed or discarded
   bool IsPrefetchAttemptFailedOrDiscarded(const GURL& url);
@@ -99,6 +99,13 @@ class CONTENT_EXPORT PrefetchDocumentManager
   const NoVarySearchHelper& GetNoVarySearchHelper() const;
 
   void EnableNoVarySearchSupport();
+
+  // Returns true if we can prefetch |next_prefetch| based on the number of
+  // existing completed prefetches. The eagerness of |next_prefetch| is taken
+  // into account when making the decision.
+  // TODO(crbug.com/1445086): Change this method to evict completed candidates
+  // (if possible) when we're at the limit.
+  bool CanPrefetchNow(PrefetchContainer* next_prefetch);
 
   base::WeakPtr<PrefetchDocumentManager> GetWeakPtr() {
     return weak_method_factory_.GetWeakPtr();
@@ -129,6 +136,12 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // The number of prefetch requests that have been attempted for prefetches
   // requested by this page.
   int number_prefetch_request_attempted_{0};
+
+  // The number of prefetch requests (from this page) that have completed, with
+  // a separate count for 'eager' and 'non-eager' prefetches. An 'eager'
+  // prefetch is a prefetch whose eagerness is kEager.
+  size_t number_eager_prefetches_completed_{0};
+  size_t number_non_eager_prefetches_completed_{0};
 
   // Metrics related to the prefetches requested by this page load.
   PrefetchReferringPageMetrics referring_page_metrics_;

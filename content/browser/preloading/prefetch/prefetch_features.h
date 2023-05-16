@@ -18,6 +18,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchUseContentRefactor);
 // IF enabled, then redirects will be followed when prefetching.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchRedirects);
 
+// If enabled, then an updated prefetch request limit policy will be used that
+// separates eager and non-eager prefetches, and allows for evictions.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchNewLimits);
+
 }  // namespace content::features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_

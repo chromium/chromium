@@ -4606,5 +4606,95 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(blink::mojom::SpeculationEagerness::kModerate,
                     blink::mojom::SpeculationEagerness::kConservative));
 
+class PrefetchServiceNewLimitsTest : public PrefetchServiceTest {
+ public:
+  void InitScopedFeatureList() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPrefetchUseContentRefactor,
+          {{"ineligible_decoy_request_probability", "0"},
+           {"prefetch_container_lifetime_s", "-1"}}},
+         {features::kPrefetchNewLimits,
+          {{"max_eager_prefetches", "2"}, {"max_non_eager_prefetches", "1"}}}},
+        {network::features::kPrefetchNoVarySearch,
+         ::features::kPreloadingConfig});
+  }
+};
+
+TEST_F(PrefetchServiceNewLimitsTest,
+       NonEagerPrefetchAllowedWhenEagerLimitIsReached) {
+  const GURL url_1 = GURL("https://example.com/one");
+  const GURL url_2 = GURL("https://example.com/two");
+  const GURL url_3 = GURL("https://example.com/three");
+  const GURL url_4 = GURL("https://example.com/four");
+  const GURL url_5 = GURL("https://example.com/five");
+
+  NavigateAndCommit(GURL("https://example.com"));
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/5));
+
+  MakePrefetchOnMainFrame(
+      url_1, PrefetchType(/*use_prefetch_proxy=*/false,
+                          blink::mojom::SpeculationEagerness::kEager));
+  base::RunLoop().RunUntilIdle();
+  MakePrefetchOnMainFrame(
+      url_2, PrefetchType(/*use_prefetch_proxy=*/false,
+                          blink::mojom::SpeculationEagerness::kEager));
+  base::RunLoop().RunUntilIdle();
+  MakePrefetchOnMainFrame(
+      url_3, PrefetchType(/*use_prefetch_proxy=*/false,
+                          blink::mojom::SpeculationEagerness::kEager));
+  base::RunLoop().RunUntilIdle();
+  MakePrefetchOnMainFrame(
+      url_4, PrefetchType(/*use_prefetch_proxy=*/false,
+                          blink::mojom::SpeculationEagerness::kConservative));
+  base::RunLoop().RunUntilIdle();
+  MakePrefetchOnMainFrame(
+      url_5, PrefetchType(/*use_prefetch_proxy=*/false,
+                          blink::mojom::SpeculationEagerness::kConservative));
+  base::RunLoop().RunUntilIdle();
+
+  VerifyCommonRequestState(url_1,
+                           /*use_prefetch_proxy=*/false);
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/false,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+  VerifyCommonRequestState(url_2,
+                           /*use_prefetch_proxy=*/false);
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/false,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+  // Note: |url_3| is not prefetched as the limit for eager prefetches has been
+  // reached. We can still prefetch |url_4| as it is a conservative prefetch.
+  VerifyCommonRequestState(url_4,
+                           /*use_prefetch_proxy=*/false);
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/false,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+  // Note: |url_5| is not prefetched as the limit for non-eager prefetches has
+  // been reached.
+  EXPECT_EQ(RequestCount(), 0);
+
+  absl::optional<PrefetchReferringPageMetrics> referring_page_metrics =
+      PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
+  EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 5);
+  EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 5);
+  EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 3);
+
+  Navigate(url_3, main_rfh()->GetGlobalId());
+  ASSERT_FALSE(GetPrefetchToServe(url_3));
+
+  Navigate(url_4, main_rfh()->GetGlobalId());
+  base::WeakPtr<PrefetchContainer> non_eager_prefetch =
+      GetPrefetchToServe(url_4);
+  ASSERT_TRUE(non_eager_prefetch);
+  EXPECT_EQ(non_eager_prefetch->GetPrefetchStatus(),
+            PrefetchStatus::kPrefetchSuccessful);
+
+  Navigate(url_5, main_rfh()->GetGlobalId());
+  ASSERT_FALSE(GetPrefetchToServe(url_5));
+}
+
 }  // namespace
 }  // namespace content

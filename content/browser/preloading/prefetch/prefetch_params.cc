@@ -68,6 +68,10 @@ bool PrefetchAllowAllDomainsForExtendedPreloading() {
 }
 
 size_t PrefetchServiceMaximumNumberOfConcurrentPrefetches() {
+  // kPrefetchNewLimits requires prefetches to be sequential.
+  if (PrefetchNewLimitsEnabled()) {
+    return 1;
+  }
   return base::GetFieldTrialParamByFeatureAsInt(
       features::kPrefetchUseContentRefactor, "max_concurrent_prefetches", 1);
 }
@@ -246,6 +250,22 @@ base::TimeDelta PrefetchMaximumRetryAfterDelta() {
       features::kPrefetchUseContentRefactor, "max_retry_after_duration_secs",
       1 * 60 * 60 * 24 * 7 /* 1 week */);
   return base::Seconds(max_seconds);
+}
+
+bool PrefetchNewLimitsEnabled() {
+  return base::FeatureList::IsEnabled(features::kPrefetchNewLimits);
+}
+
+size_t MaxNumberOfEagerPrefetchesPerPageForPrefetchNewLimits() {
+  int max = base::GetFieldTrialParamByFeatureAsInt(features::kPrefetchNewLimits,
+                                                   "max_eager_prefetches", 50);
+  return std::max(0, max);
+}
+
+size_t MaxNumberOfNonEagerPrefetchesPerPageForPrefetchNewLimits() {
+  int max = base::GetFieldTrialParamByFeatureAsInt(
+      features::kPrefetchNewLimits, "max_non_eager_prefetches", 2);
+  return std::max(0, max);
 }
 
 }  // namespace content

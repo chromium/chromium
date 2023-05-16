@@ -364,12 +364,32 @@ void PrefetchDocumentManager::OnPrefetchedHeadReceived(const GURL& url) {
   no_vary_search_helper_->AddUrl(url, *head);
 }
 
-void PrefetchDocumentManager::OnPrefetchSuccessful() {
+void PrefetchDocumentManager::OnPrefetchSuccessful(
+    PrefetchContainer* prefetch) {
   referring_page_metrics_.prefetch_successful_count++;
+  if (prefetch->GetPrefetchType().GetEagerness() ==
+      blink::mojom::SpeculationEagerness::kEager) {
+    number_eager_prefetches_completed_++;
+  } else {
+    number_non_eager_prefetches_completed_++;
+  }
 }
 
 void PrefetchDocumentManager::EnableNoVarySearchSupport() {
   no_vary_search_support_enabled_ = true;
+}
+
+bool PrefetchDocumentManager::CanPrefetchNow(PrefetchContainer* prefetch) {
+  // TODO(crbug.com/1445086): Implement eviction policies.
+  DCHECK(PrefetchNewLimitsEnabled());
+  if (prefetch->GetPrefetchType().GetEagerness() ==
+      blink::mojom::SpeculationEagerness::kEager) {
+    return number_eager_prefetches_completed_ <
+           MaxNumberOfEagerPrefetchesPerPageForPrefetchNewLimits();
+  } else {
+    return number_non_eager_prefetches_completed_ <
+           MaxNumberOfNonEagerPrefetchesPerPageForPrefetchNewLimits();
+  }
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PrefetchDocumentManager);
