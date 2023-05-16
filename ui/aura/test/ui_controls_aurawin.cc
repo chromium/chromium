@@ -5,14 +5,10 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
-#include "ui/aura/test/ui_controls_factory_aura.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/test/ui_controls_aura.h"
 #include "ui/base/test/ui_controls_internal_win.h"
-
-namespace aura {
-namespace test {
 
 namespace {
 
@@ -99,9 +95,10 @@ class UIControlsWin : public UIControlsAura {
 
 }  // namespace
 
-UIControlsAura* CreateUIControlsAura(WindowTreeHost* host) {
-  return new UIControlsWin();
+namespace aura::test {
+
+void EnableUIControlsAuraWin() {
+  InstallUIControlsAura(new UIControlsWin());
 }
 
-}  // namespace test
-}  // namespace aura
+}  // namespace aura::test

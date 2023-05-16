@@ -18,12 +18,10 @@
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ui_controls::UIControlsAura*)
 
-namespace ash {
-namespace test {
 namespace {
 
-using ui_controls::UIControlsAura;
 using ui_controls::MouseButton;
+using ui_controls::UIControlsAura;
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(UIControlsAura, kUIControlsKey, NULL)
 
@@ -45,10 +43,8 @@ UIControlsAura* GetUIControlsForRootWindow(aura::Window* root_window) {
 UIControlsAura* GetUIControlsAt(const gfx::Point& point_in_screen) {
   // TODO(mazda): Support the case passive grab is taken.
   return GetUIControlsForRootWindow(
-      window_util::GetRootWindowAt(point_in_screen));
+      ash::window_util::GetRootWindowAt(point_in_screen));
 }
-
-}  // namespace
 
 class UIControlsAsh : public UIControlsAura {
  public:
@@ -139,9 +135,12 @@ class UIControlsAsh : public UIControlsAura {
   }
 };
 
-ui_controls::UIControlsAura* CreateAshUIControls() {
-  return new ash::test::UIControlsAsh();
+}  // namespace
+
+namespace ash::test {
+
+void EnableUIControlsAsh() {
+  ui_controls::InstallUIControlsAura(new UIControlsAsh());
 }
 
-}  // namespace test
-}  // namespace ash
+}  // namespace ash::test

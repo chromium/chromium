@@ -16,18 +16,16 @@
 #include "gpu/ipc/service/image_transport_surface.h"
 #include "ui/base/test/ui_controls.h"
 
-#if defined(USE_AURA)
-#include "ui/aura/test/ui_controls_factory_aura.h"
-#include "ui/base/test/ui_controls_aura.h"
-#if BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/test/ui_controls_ash.h"
+#elif BUILDFLAG(IS_WIN)
+#include "ui/aura/test/ui_controls_aurawin.h"
+#endif
+
+#if defined(USE_AURA) && BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
-#endif  // BUILDFLAG(IS_OZONE)
-#endif  // defined(USE_AURA)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/test/ui_controls_factory_ash.h"
-#endif
+#endif  // defined(USE_AURA) && BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
@@ -46,11 +44,10 @@ class InteractiveUITestSuite : public ChromeTestSuite {
     ChromeTestSuite::Initialize();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    ui_controls::InstallUIControlsAura(ash::test::CreateAshUIControls());
+    ash::test::EnableUIControlsAsh();
 #elif BUILDFLAG(IS_WIN)
     com_initializer_ = std::make_unique<base::win::ScopedCOMInitializer>();
-    ui_controls::InstallUIControlsAura(
-        aura::test::CreateUIControlsAura(nullptr));
+    aura::test::EnableUIControlsAuraWin();
 #elif BUILDFLAG(IS_OZONE)
     // Notifies the platform that test config is needed. For Wayland, for
     // example, makes it possible to use emulated input.
