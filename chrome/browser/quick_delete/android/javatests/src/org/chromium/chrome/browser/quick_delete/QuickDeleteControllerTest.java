@@ -15,6 +15,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.os.Build;
+
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
 
@@ -27,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
@@ -55,6 +58,7 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.QUICK_DELETE_FOR_ANDROID})
 @Batch(Batch.PER_CLASS)
+@DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.O, message = "crbug.com/1446002")
 public class QuickDeleteControllerTest {
     private static final String TEST_FILE = "/content/test/data/browsing_data/site_data.html";
 
@@ -123,7 +127,7 @@ public class QuickDeleteControllerTest {
         openQuickDeleteDialog();
         onViewWaiting(withId(R.id.positive_button)).perform(click());
 
-        onView(withId(R.id.snackbar)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.snackbar)).check(matches(isDisplayed()));
         onView(withText(R.string.quick_delete_snackbar_message)).check(matches(isDisplayed()));
 
         mRenderTestRule.render(mActivityTestRule.getActivity().findViewById(R.id.snackbar),
