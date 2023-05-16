@@ -329,7 +329,7 @@ void GpuHostImpl::CloseChannel(int client_id) {
 }
 
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
-void GpuHostImpl::FilterVisualDebugStream(base::Value json) {
+void GpuHostImpl::FilterVisualDebugStream(base::Value::Dict json) {
   viz_main_->FilterDebugStream(std::move(json));
 }
 

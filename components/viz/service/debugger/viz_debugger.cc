@@ -434,25 +434,24 @@ void VizDebugger::AddFrame() {
   read_write_lock_.WriteUnLock();
 }
 
-void VizDebugger::FilterDebugStream(base::Value json) {
+void VizDebugger::FilterDebugStream(base::Value::Dict json) {
   read_write_lock_.WriteLock();
   DCHECK(gpu_thread_task_runner_->RunsTasksInCurrentSequence());
-  const base::Value* value = &(json);
-  const base::Value* filterlist = value->FindPath("filters");
+  const base::Value::List* filters = json.FindList("filters");
 
-  if (!filterlist || !filterlist->is_list()) {
+  if (!filters) {
     LOG(ERROR) << "Missing filter list in json: " << json;
     return;
   }
 
   new_filters_.clear();
 
-  for (const auto& filter : filterlist->GetList()) {
-    const base::Value* file = filter.FindPath("selector.file");
-    const base::Value* func = filter.FindPath("selector.func");
-    const base::Value* anno = filter.FindPath("selector.anno");
-    const base::Value* active = filter.FindPath("active");
-    const base::Value* enabled = filter.FindPath("enabled");
+  for (const auto& entry : *filters) {
+    const auto& filter = entry.GetDict();
+    const base::Value* file = filter.FindByDottedPath("selector.file");
+    const base::Value* func = filter.FindByDottedPath("selector.func");
+    const base::Value* anno = filter.FindByDottedPath("selector.anno");
+    const base::Value* active = filter.Find("active");
 
     if (!active) {
       LOG(ERROR) << "Missing filter props in json: " << json;
@@ -469,9 +468,9 @@ void VizDebugger::FilterDebugStream(base::Value json) {
       return (filter_str ? filter_str->GetString() : std::string());
     };
 
-    new_filters_.emplace_back(
-        check_str(file), check_str(func), check_str(anno), active->GetBool(),
-        (enabled && enabled->is_bool()) ? enabled->GetBool() : true);
+    absl::optional<bool> enabled = filter.FindBool("enabled");
+    new_filters_.emplace_back(check_str(file), check_str(func), check_str(anno),
+                              active->GetBool(), enabled.value_or(true));
   }
 
   apply_new_filters_next_frame_ = true;

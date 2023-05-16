@@ -74,7 +74,7 @@ interface VizMain {
   // Sends debug filtering information to the active Viz Debugger instance.
   // This is only called if the flag --enable-viz-devtools is used.
   [EnableIf=use_viz_debugger]
-  FilterDebugStream(mojo_base.mojom.Value filterData);
+  FilterDebugStream(mojo_base.mojom.DictionaryValue filterData);
 
   // Ends the Viz debugging session. This is only called if the flag
   // --enable-viz-devtools is used.

@@ -41,7 +41,7 @@ class VIZ_SERVICE_EXPORT VizDebugger {
  public:
   // These functions are called on a gpu thread that is not the
   // 'VizCompositorThread' and therefore have mulithreaded considerations.
-  void FilterDebugStream(base::Value json);
+  void FilterDebugStream(base::Value::Dict json);
   void StartDebugStream(
       mojo::PendingRemote<mojom::VizDebugOutput> pending_debug_output);
   void StopDebugStream();

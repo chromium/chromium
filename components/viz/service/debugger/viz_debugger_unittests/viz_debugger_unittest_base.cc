@@ -84,7 +84,7 @@ void VisualDebuggerTestBase::SetFilter(std::vector<TestFilter> filters) {
     filters_list.Append(std::move(full_filter));
   }
   filters_json.Set("filters", std::move(filters_list));
-  GetInternal()->FilterDebugStream(base::Value(std::move(filters_json)));
+  GetInternal()->FilterDebugStream(std::move(filters_json));
   GetInternal()->GetRWLock()->WriteLock();
   GetInternal()->UpdateFilters();
   GetInternal()->GetRWLock()->WriteUnLock();
