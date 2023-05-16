@@ -368,12 +368,17 @@ component("headless_non_renderer") {
     "public/util/user_agent.h",
   ]
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
   if (is_mac) {
     sources += [
       "lib/browser/headless_browser_impl_mac.mm",
       "lib/browser/headless_browser_main_parts_mac.mm",
       "lib/browser/headless_shell_application_mac.h",
       "lib/browser/headless_shell_application_mac.mm",
+      "lib/headless_content_main_delegate_mac.mm",
     ]
   }
 
@@ -511,10 +516,6 @@ component("headless_non_renderer") {
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
-  }
-
-  if (is_mac) {
-    sources += [ "lib/headless_content_main_delegate_mac.mm" ]
   }
 
   if (headless_use_prefs) {
