@@ -12,7 +12,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
-import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -80,13 +79,12 @@ public class AccountPickerBottomSheetCoordinator {
     public AccountPickerBottomSheetCoordinator(WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController,
             AccountPickerDelegate accountPickerDelegate,
-            AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
-            DeviceLockActivityLauncher deviceLockActivityLauncher) {
+            AccountPickerBottomSheetStrings accountPickerBottomSheetStrings) {
         SigninMetricsUtils.logAccountConsistencyPromoAction(AccountConsistencyPromoAction.SHOWN);
 
-        mAccountPickerBottomSheetMediator = new AccountPickerBottomSheetMediator(windowAndroid,
-                accountPickerDelegate, this::onDismissButtonClicked,
-                accountPickerBottomSheetStrings, deviceLockActivityLauncher);
+        mAccountPickerBottomSheetMediator =
+                new AccountPickerBottomSheetMediator(windowAndroid, accountPickerDelegate,
+                        this::onDismissButtonClicked, accountPickerBottomSheetStrings);
         mView = new AccountPickerBottomSheetView(
                 windowAndroid.getActivity().get(), mAccountPickerBottomSheetMediator);
         mAccountPickerCoordinator = new AccountPickerCoordinator(

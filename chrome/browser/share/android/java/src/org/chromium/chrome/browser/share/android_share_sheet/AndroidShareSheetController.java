@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
-import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -55,7 +54,6 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
     private final Callback<Tab> mPrintCallback;
 
     private @Nullable LinkToTextCoordinator mLinkToTextCoordinator;
-    private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
 
     /**
      * Construct the controller used to display Android share sheet, and show the share sheet.
@@ -68,15 +66,13 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
      * whether incognito mode is selected or not.
      * @param profileSupplier Supplier of the current profile of the User.
      * @param printCallback The callback used to trigger print action.
-     * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      */
     public static void showShareSheet(ShareParams params, ChromeShareExtras chromeShareExtras,
             BottomSheetController controller, Supplier<Tab> tabProvider,
             Supplier<TabModelSelector> tabModelSelectorSupplier, Supplier<Profile> profileSupplier,
-            Callback<Tab> printCallback, DeviceLockActivityLauncher deviceLockActivityLauncher) {
-        var newController =
-                new AndroidShareSheetController(controller, tabProvider, tabModelSelectorSupplier,
-                        profileSupplier, printCallback, deviceLockActivityLauncher);
+            Callback<Tab> printCallback) {
+        var newController = new AndroidShareSheetController(
+                controller, tabProvider, tabModelSelectorSupplier, profileSupplier, printCallback);
         // If the current share is delegated to, once the link generation is complete, the call will
         // routes back to #showShareSheet eventually.
         if (!newController.processShareWithLinkToText(params, chromeShareExtras)) {
@@ -93,18 +89,16 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
      * whether incognito mode is selected or not.
      * @param profileSupplier Supplier of the current profile of the User.
      * @param printCallback The callback used to trigger print action.
-     * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      */
     @VisibleForTesting
     AndroidShareSheetController(BottomSheetController controller, Supplier<Tab> tabProvider,
             Supplier<TabModelSelector> tabModelSelectorSupplier, Supplier<Profile> profileSupplier,
-            Callback<Tab> printCallback, DeviceLockActivityLauncher deviceLockActivityLauncher) {
+            Callback<Tab> printCallback) {
         mController = controller;
         mTabProvider = tabProvider;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mProfileSupplier = profileSupplier;
         mPrintCallback = printCallback;
-        mDeviceLockActivityLauncher = deviceLockActivityLauncher;
     }
 
     @Override
@@ -134,7 +128,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
                             params.getWindow(), mTabProvider, mController, params, mPrintCallback,
                             isIncognito, this, TrackerFactory.getTrackerForProfile(profile),
                             getUrlToShare(params, chromeShareExtras), profile, chromeShareExtras,
-                            isInMultiWindow, mLinkToTextCoordinator, mDeviceLockActivityLauncher);
+                            isInMultiWindow, mLinkToTextCoordinator);
             if (actionProvider.getCustomActions().size() > 0
                     || actionProvider.getModifyShareAction() != null) {
                 provider = actionProvider;

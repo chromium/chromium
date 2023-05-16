@@ -16,7 +16,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersTabHelper;
@@ -289,8 +288,7 @@ public class ShareDelegateImpl implements ShareDelegate {
                         new ShareSheetCoordinator(controller, lifecycleDispatcher, tabProvider,
                                 printCallback, new LargeIconBridge(profile), isIncognito,
                                 AppHooks.get().getImageEditorModuleProvider(),
-                                TrackerFactory.getTrackerForProfile(profile), profile,
-                                DeviceLockActivityLauncherImpl.get());
+                                TrackerFactory.getTrackerForProfile(profile), profile);
                 coordinator.showInitialShareSheet(params, chromeShareExtras, shareStartTime);
                 RecordHistogram.recordEnumeratedHistogram(
                         "Sharing.SharingHubAndroid.ShareContentType",
@@ -302,8 +300,7 @@ public class ShareDelegateImpl implements ShareDelegate {
                         "Sharing.DefaultSharesheetAndroid.ShareContentType",
                         getShareContentType(params, chromeShareExtras), ShareContentType.COUNT);
                 AndroidShareSheetController.showShareSheet(params, chromeShareExtras, controller,
-                        tabProvider, tabModelSelectorSupplier, profileSupplier, printCallback,
-                        DeviceLockActivityLauncherImpl.get());
+                        tabProvider, tabModelSelectorSupplier, profileSupplier, printCallback);
                 RecordHistogram.recordEnumeratedHistogram(
                         "Sharing.SharingHubAndroid.ShareContentType",
                         getShareContentType(params, chromeShareExtras), ShareContentType.COUNT);

@@ -622,11 +622,6 @@ by a child template that "extends" this file.
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
             android:exported="false">
         </activity>
-        <activity android:name="org.chromium.chrome.browser.device_lock.DeviceLockActivity"
-            android:theme="@style/Theme.Chromium.DialogWhenLarge"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
-            android:exported="false">
-        </activity>
         <activity android:name="org.chromium.chrome.browser.settings.SettingsActivity"
             android:theme="@style/Theme.Chromium.Settings"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"

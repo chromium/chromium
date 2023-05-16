@@ -209,12 +209,6 @@
         <category android:name="com.google.intent.category.DAYDREAM"/>
       </intent-filter>  # DIFF-ANCHOR: dea53031
     </activity>  # DIFF-ANCHOR: 4d923622
-    <activity  # DIFF-ANCHOR: 6ad7b5dd
-        android:name="org.chromium.chrome.browser.device_lock.DeviceLockActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
-        android:exported="false"
-        android:theme="@style/Theme.Chromium.DialogWhenLarge">
-    </activity>  # DIFF-ANCHOR: 6ad7b5dd
     <activity  # DIFF-ANCHOR: 1acdfd19
         android:name="org.chromium.chrome.browser.document.ChromeLauncherActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"

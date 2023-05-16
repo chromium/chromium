@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetCo
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -369,8 +368,7 @@ public class ShareDelegateImplUnitTest {
         public static void showShareSheet(ShareParams params, ChromeShareExtras chromeShareExtras,
                 BottomSheetController controller, Supplier<Tab> tabProvider,
                 Supplier<TabModelSelector> tabModelSelectorSupplier,
-                Supplier<Profile> profileSupplier, Callback<Tab> printCallback,
-                DeviceLockActivityLauncher deviceLockActivityLauncher) {
+                Supplier<Profile> profileSupplier, Callback<Tab> printCallback) {
             sShareWithSystemShareSheetUiCalled = true;
         }
 

@@ -130,7 +130,7 @@ public class SendTabToSelfCoordinatorTest {
             SendTabToSelfCoordinator coordinator =
                     new SendTabToSelfCoordinator(activity, windowAndroid, HTTP_URL, "Page",
                             BottomSheetControllerProvider.from(windowAndroid),
-                            Profile.getLastUsedRegularProfile(), null);
+                            Profile.getLastUsedRegularProfile());
             coordinator.show();
         });
     }
