@@ -401,7 +401,7 @@ void PasswordAccessoryControllerImpl::UpdateCredManReentryUi() {
   }
   if (WebAuthnCredManDelegate* delegate =
           WebAuthnCredManDelegate::GetRequestDelegate(&GetWebContents())) {
-    manual_filling_controller_->OnAccessoryActionAvailabilityChanged(
+    GetManualFillingController()->OnAccessoryActionAvailabilityChanged(
         ShouldShowAction(delegate->HasResults()),
         autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY);
   }
