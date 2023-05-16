@@ -67,11 +67,6 @@ FakeWebAppProvider* FakeWebAppProvider::Get(Profile* profile) {
   auto* test_provider = static_cast<FakeWebAppProvider*>(
       WebAppProvider::GetForLocalAppsUnchecked(profile));
   CHECK(test_provider);
-  CHECK(!test_provider->started_);
-
-  // Disconnect so that clients are forced to call Start() before accessing any
-  // subsystems.
-  test_provider->connected_ = false;
 
   return test_provider;
 }
@@ -83,80 +78,80 @@ FakeWebAppProvider::~FakeWebAppProvider() = default;
 
 void FakeWebAppProvider::SetRunSubsystemStartupTasks(
     bool run_subsystem_startup_tasks) {
-  CheckNotStarted();
+  CheckNotStartedAndDisconnect();
   run_subsystem_startup_tasks_ = run_subsystem_startup_tasks;
 }
 
 void FakeWebAppProvider::SetSynchronizePreinstalledAppsOnStartup(
     bool synchronize_on_startup) {
-  CheckNotStarted();
+  CheckNotStartedAndDisconnect();
   synchronize_preinstalled_app_on_startup_ = synchronize_on_startup;
 }
 
 void FakeWebAppProvider::SetRegistrar(
     std::unique_ptr<WebAppRegistrar> registrar) {
-  CheckNotStarted();
+  CheckNotStartedAndDisconnect();
   registrar_ = std::move(registrar);
 }
 
 void FakeWebAppProvider::SetDatabaseFactory(
     std::unique_ptr<AbstractWebAppDatabaseFactory> database_factory) {
-  CheckNotStarted();
+  CheckNotStartedAndDisconnect();
   database_factory_ = std::move(database_factory);
 }
 
 void FakeWebAppProvider::SetSyncBridge(
     std::unique_ptr<WebAppSyncBridge> sync_bridge) {
-  CheckNotStarted();
+  CheckNotStartedAndDisconnect();
   sync_bridge_ = std::move(sync_bridge);
 }
 
 void FakeWebAppProvider::SetIconManager(
     std::unique_ptr<WebAppIconManager> icon_manager) {
-  CheckNotStarted();
+  CheckNotStartedAndDisconnect();
   icon_manager_ = std::move(icon_manager);
 }
 
 void FakeWebAppProvider::SetTranslationManager(
     std::unique_ptr<WebAppTranslationManager> translation_manager) {
-  CheckNotStarted();
+  CheckNotStartedAndDisconnect();
   translation_manager_ = std::move(translation_manager);
 }
 
 void FakeWebAppProvider::SetOsIntegrationManager(
     std::unique_ptr<OsIntegrationManager> os_integration_manager) {
-  CheckNotStarted();
+  CheckNotStartedAndDisconnect();
   os_integration_manager_ = std::move(os_integration_manager);
 }
 
 void FakeWebAppProvider::SetInstallManager(
     std::unique_ptr<WebAppInstallManager> install_manager) {
-  CheckNotStarted();
+  CheckNotStartedAndDisconnect();
   install_manager_ = std::move(install_manager);
 }
 
 void FakeWebAppProvider::SetInstallFinalizer(
     std::unique_ptr<WebAppInstallFinalizer> install_finalizer) {
-  CheckNotStarted();
+  CheckNotStartedAndDisconnect();
   install_finalizer_ = std::move(install_finalizer);
 }
 
 void FakeWebAppProvider::SetExternallyManagedAppManager(
     std::unique_ptr<ExternallyManagedAppManager>
         externally_managed_app_manager) {
-  CheckNotStarted();
+  CheckNotStartedAndDisconnect();
   externally_managed_app_manager_ = std::move(externally_managed_app_manager);
 }
 
 void FakeWebAppProvider::SetWebAppUiManager(
     std::unique_ptr<WebAppUiManager> ui_manager) {
-  CheckNotStarted();
+  CheckNotStartedAndDisconnect();
   ui_manager_ = std::move(ui_manager);
 }
 
 void FakeWebAppProvider::SetWebAppPolicyManager(
     std::unique_ptr<WebAppPolicyManager> web_app_policy_manager) {
-  CheckNotStarted();
+  CheckNotStartedAndDisconnect();
   web_app_policy_manager_ = std::move(web_app_policy_manager);
 }
 
@@ -164,14 +159,14 @@ void FakeWebAppProvider::SetWebAppPolicyManager(
 void FakeWebAppProvider::SetWebAppRunOnOsLoginManager(
     std::unique_ptr<WebAppRunOnOsLoginManager>
         web_app_run_on_os_login_manager) {
-  CheckNotStarted();
+  CheckNotStartedAndDisconnect();
   web_app_run_on_os_login_manager_ = std::move(web_app_run_on_os_login_manager);
 }
 #endif
 
 void FakeWebAppProvider::SetCommandManager(
     std::unique_ptr<WebAppCommandManager> command_manager) {
-  CheckNotStarted();
+  CheckNotStartedAndDisconnect();
   if (command_manager_)
     command_manager_->Shutdown();
   command_manager_ = std::move(command_manager);
@@ -179,14 +174,14 @@ void FakeWebAppProvider::SetCommandManager(
 
 void FakeWebAppProvider::SetPreinstalledWebAppManager(
     std::unique_ptr<PreinstalledWebAppManager> preinstalled_web_app_manager) {
-  CheckNotStarted();
+  CheckNotStartedAndDisconnect();
   preinstalled_web_app_manager_ = std::move(preinstalled_web_app_manager);
 }
 
 void FakeWebAppProvider::SetOriginAssociationManager(
     std::unique_ptr<WebAppOriginAssociationManager>
         origin_association_manager) {
-  CheckNotStarted();
+  CheckNotStartedAndDisconnect();
   origin_association_manager_ = std::move(origin_association_manager);
 }
 
@@ -234,7 +229,7 @@ OsIntegrationManager& FakeWebAppProvider::GetOsIntegrationManager() const {
 }
 
 void FakeWebAppProvider::StartWithSubsystems() {
-  CheckNotStarted();
+  CheckNotStartedAndDisconnect();
   SetRunSubsystemStartupTasks(true);
   Start();
 }
@@ -313,9 +308,10 @@ void FakeWebAppProvider::Shutdown() {
   is_registry_ready_ = false;
 }
 
-void FakeWebAppProvider::CheckNotStarted() const {
+void FakeWebAppProvider::CheckNotStartedAndDisconnect() {
   CHECK(!started_) << "Attempted to set a WebAppProvider subsystem after "
                       "Start() was called.";
+  connected_ = false;
 }
 
 void FakeWebAppProvider::StartImpl() {
