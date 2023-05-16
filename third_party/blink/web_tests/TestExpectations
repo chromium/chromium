@@ -5934,9 +5934,6 @@ crbug.com/1159586 virtual/post-message-first-party-to-third-party-different-buck
 crbug.com/1159586 virtual/post-message-third-party-to-first-party-different-bucket-same-origin-blocked/external/wpt/html/browsers/windows/post-message/first-party-to-third-party-cross-partition-same-origin.sub.html [ Timeout ]
 crbug.com/1159586 virtual/post-message-third-party-to-third-party-different-bucket-same-origin-blocked/external/wpt/html/browsers/windows/post-message/third-party-to-third-party-cross-partition-same-origin.sub.html [ Timeout ]
 
-# Sheriff 2022-10-03
-crbug.com/1368767 wpt_internal/webmidi/requestmidiaccess-basic.https.html [ Failure Pass ]
-
 # /dev/snd/seq failed: Permission denied
 crbug.com/1441622 [ Linux ] external/wpt/webmidi/idlharness.https.window.html [ Failure ]
 
