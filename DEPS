@@ -1821,7 +1821,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/tools/swift-toolchain/mac-amd64',
-              'version': 'version:2@5.7-release',
+              'version': 'version:2@5.8-release',
           },
       ],
       'condition': 'host_os == mac',

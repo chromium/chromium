@@ -50,7 +50,7 @@ if (swift_toolchain_path == -1) {
     # the compiler is rolled to ensure that all outputs are regenerated. It must
     # be kept in sync with the `version` of `third_party/swift-toolchain` in
     # //DEPS.
-    swiftc_version = "swift-5.7-release"
+    swiftc_version = "swift-5.8-release"
 
     # Use the hermetic swift toolchain.
     swift_toolchain_path = "//third_party/swift-toolchain/"
