@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">‏تعذَّر التحويل باستخدام نظام أسماء النطاقات (DNS).</translation>
 <translation id="1018656279737460067">تم الإلغاء</translation>
 <translation id="1022433422498218992">عناصر التحكّم العامة</translation>
+<translation id="1022628058306505708">انسياب أرضي</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> عملية، <ph name="CPU_MAX_CLOCK_SPEED" /> غيغاهرتز)</translation>
 <translation id="1047773237499189053">تتوفر ميزات جديدة. يمكنك استخدام مفتاح السهم المتجه للأعلى للاطّلاع على مزيد من المعلومات.</translation>
 <translation id="1059913517121127803">تعذَّر إجراء عملية المسح الضوئي.</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">مزيد من الإجراءات</translation>
 <translation id="2926057806159140518">أدخِل اسم المستخدم وكلمة المرور أو امسَح رمز الاستجابة السريعة ضوئيًا.</translation>
 <translation id="2940811910881150316">يتعذّر اختبار لوحة المفاتيح الخاصة بالجهاز. أعِد فتح غطاء الجهاز لاختبار لوحة المفاتيح.</translation>
+<translation id="2981143481017883351">‏مواد العرض الحصرية لأجهزة Chromebook متاحة الآن</translation>
 <translation id="3008341117444806826">إعادة التحميل</translation>
 <translation id="3009958530611748826">اختيار مجلّد لحفظ عمليات المسح الضوئي فيه</translation>
 <translation id="3017079585324758401">الخلفية</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">‏نظام التشغيل Windows</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369013195428705271">هل تريد فعلاً محو سجلّ الطباعة بالكامل؟ لن يتم محو مهام الطباعة الجارية.</translation>
+<translation id="3386675685417744672">‏حصري لأجهزة Chromebook</translation>
 <translation id="3404249063913988450">تفعيل شاشة التوقف</translation>
 <translation id="3413935475507503304">لمواصلة عملية التحديث، انقر على "التالي".</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">تحذير</translation>
 <translation id="4054683689023980771">جارٍ تنزيل الصورة</translation>
 <translation id="4060260348856573701">اسم نقطة وصول جديد</translation>
+<translation id="4079743696465895866">‏يمكنك اختيار عمل فني لعرضه حصريًا على جهاز Chromebook.</translation>
 <translation id="4093865285251893588">صورة الملف الشخصي</translation>
 <translation id="409427325554347132">حفظ تفاصيل الاختبار</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">تقلّ قدرة البطارية مع الاستخدام.</translation>
 <translation id="6191293864534840972">خوادم الأسماء غير صالحة.</translation>
+<translation id="6205145102504628069">منظر انسيابي للسُحب</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">الخروج من وضع ملء الشاشة</translation>
 <translation id="6223752125779001553">لا يتوفّر ماسح ضوئي.</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">إعدادات التخصيص</translation>
 <translation id="6500818810472529210">‏عرض النتيجة في "بحث Google"</translation>
 <translation id="650266656685499220">‏لإنشاء ألبومات، انتقِل إلى "صور Google".</translation>
+<translation id="6505750420152840539">مناظر من الفجر إلى الليل</translation>
 <translation id="6516990319416533844">لاختبار معدّل شحن البطارية، عليك استهلاك نسبة من طاقتها في فترة قصيرة.</translation>
 <translation id="6517239166834772319">استكشاف</translation>
 <translation id="6526200165918397681">مطابقة درجات لون الخلفية</translation>
