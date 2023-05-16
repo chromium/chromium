@@ -37,6 +37,7 @@
 #include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chromeos/constants/chromeos_features.h"
 #else
 #include "chrome/browser/signin/signin_features.h"
@@ -176,6 +177,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
       enabled_features.push_back(welcome::kForceEnabled);
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    enabled_features.push_back(ash::features::kDriveFsMirroring);
     enabled_features.push_back(chromeos::features::kUploadOfficeToCloud);
 #else
     enabled_features.push_back(kForYouFre);
@@ -377,6 +379,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://family-link-user-internals",
     "chrome://help-app",
     "chrome://linux-proxy-config",
+    "chrome://manage-mirrorsync",
     "chrome://multidevice-internals",
     "chrome://nearby-internals",
     "chrome://network",
