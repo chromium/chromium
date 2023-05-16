@@ -3,7 +3,7 @@ include_rules = [
   "+components/signin/public",
   # TODO(crbug.com/1423343): Avoid dependencies to components/sync.
   "+components/sync/base",
-  "+components/sync/driver",
+  "+components/sync/service",
   "+components/sync/engine",
   "+crypto",
   "+google_apis",

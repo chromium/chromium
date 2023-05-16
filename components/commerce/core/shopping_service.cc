@@ -46,7 +46,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/search/ntp_features.h"
 #include "components/session_proto_db/session_proto_storage.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/resource/resource_bundle.h"
 

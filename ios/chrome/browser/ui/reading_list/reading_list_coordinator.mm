@@ -16,7 +16,7 @@
 #import "components/reading_list/features/reading_list_switches.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/user_selectable_type.h"
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"

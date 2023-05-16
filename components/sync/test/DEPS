@@ -1,5 +1,4 @@
 include_rules = [
-  "+ash/constants",
   "+chromeos/crosapi/mojom",
   "+components/bookmarks",
   "+components/pref_registry",

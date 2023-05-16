@@ -22,7 +22,7 @@
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/driver/sync_service_impl.h"
+#include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
 #include "crypto/ec_private_key.h"
 

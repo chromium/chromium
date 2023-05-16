@@ -17,7 +17,7 @@
 #include "chrome/browser/sharing/web_push/web_push_sender.h"
 #include "components/gcm_driver/crypto/gcm_encryption_result.h"
 #include "components/gcm_driver/gcm_driver.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 
 SharingFCMSender::SharingFCMSender(

@@ -28,8 +28,8 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/history/core/browser/web_history_service.h"
 #include "components/history/core/browser/web_history_service_observer.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_service_observer.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "url/gurl.h"
 
 FORWARD_DECLARE_TEST(BrowsingHistoryHandlerTest, ObservingWebHistoryDeletions);

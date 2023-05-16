@@ -6,8 +6,8 @@
 
 #include <vector>
 
-#include "components/sync/driver/sync_service.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"

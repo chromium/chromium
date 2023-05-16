@@ -16,7 +16,7 @@
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/features.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/buildflags/buildflags.h"

@@ -9,8 +9,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/sync/base/stop_source.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 
 SyncSetupService::SyncSetupService(syncer::SyncService* sync_service)
     : sync_service_(sync_service) {

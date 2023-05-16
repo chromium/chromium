@@ -10,9 +10,9 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
-#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_server.h"
 
 namespace {

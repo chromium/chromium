@@ -10,7 +10,7 @@ source_set("tangible_sync") {
   ]
   deps = [
     "//base:base",
-    "//components/sync/driver",
+    "//components/sync/service",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin",

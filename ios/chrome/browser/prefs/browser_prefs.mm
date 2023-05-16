@@ -48,7 +48,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_locale_settings.h"
 #import "components/sync/base/sync_prefs.h"
-#import "components/sync/driver/glue/sync_transport_data_prefs.h"
+#import "components/sync/service/glue/sync_transport_data_prefs.h"
 #import "components/sync_device_info/device_info_prefs.h"
 #import "components/sync_sessions/session_sync_prefs.h"
 #import "components/translate/core/browser/translate_pref_names.h"

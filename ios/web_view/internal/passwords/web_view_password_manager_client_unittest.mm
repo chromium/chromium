@@ -22,7 +22,7 @@
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/base/user_selectable_type.h"
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"

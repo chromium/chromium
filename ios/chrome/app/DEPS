@@ -29,7 +29,7 @@ include_rules = [
   "+components/signin/public/identity_manager/identity_manager.h",
   "+components/suggestions",
   "+components/sync/base",
-  "+components/sync/driver",
+  "+components/sync/service",
   "+components/ukm/ios",
   "+components/unified_consent",
   "+components/url_formatter",

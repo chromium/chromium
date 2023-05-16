@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/sync/sync_user_settings_client_ash.h"
 
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 
 namespace ash {
 

@@ -61,7 +61,7 @@ public final class SyncTestUtil {
     /**
      * Waits for sync-the-feature to become enabled.
      * WARNING: This is does not wait for the feature to be active, see the distinction in
-     * components/sync/driver/sync_service.h. If the FakeServer isn't running - e.g. because of
+     * components/sync/service/sync_service.h. If the FakeServer isn't running - e.g. because of
      * SyncTestRule - this is all you can hope for. For tests that don't rely on sync data this
      * might just be enough.
      */

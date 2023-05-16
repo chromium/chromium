@@ -17,7 +17,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/sync_encryption_keys_extension.mojom.h"
 #include "components/sync/base/features.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/bookmarks/synced_bookmarks_bridge.h"
 
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"

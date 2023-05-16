@@ -7,7 +7,7 @@
 #include "base/functional/bind.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 
 namespace history {
 

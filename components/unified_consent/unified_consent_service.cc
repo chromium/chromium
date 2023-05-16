@@ -10,8 +10,8 @@
 #include "build/build_config.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
 

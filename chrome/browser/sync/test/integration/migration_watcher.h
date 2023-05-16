@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/driver/backend_migrator.h"
+#include "components/sync/service/backend_migrator.h"
 
 class SyncServiceImplHarness;
 class MigrationWaiter;

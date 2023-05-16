@@ -9,8 +9,8 @@
 #include <string>
 
 #include "build/chromeos_buildflags.h"
-#include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace syncer {

@@ -16,7 +16,7 @@
 #import "components/omnibox/browser/shortcuts_backend.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 #import "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #import "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #import "ios/chrome/browser/autocomplete/in_memory_url_index_factory.h"

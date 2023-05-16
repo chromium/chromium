@@ -16,8 +16,8 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_service_observer.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "components/user_manager/user.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

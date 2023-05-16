@@ -14,7 +14,7 @@
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/driver/sync_service_observer.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "ios/chrome/common/credential_provider/memory_credential_store.h"
 
 class FaviconLoader;

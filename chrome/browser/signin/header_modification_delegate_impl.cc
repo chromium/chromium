@@ -21,7 +21,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/pref_names.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 

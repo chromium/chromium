@@ -48,7 +48,7 @@ source_set("flags") {
     "//components/signin/core/browser",
     "//components/signin/ios/browser",
     "//components/strings:components_strings",
-    "//components/sync/driver",
+    "//components/sync/service",
     "//components/translate/core/browser",
     "//components/translate/core/common",
     "//components/unified_consent",

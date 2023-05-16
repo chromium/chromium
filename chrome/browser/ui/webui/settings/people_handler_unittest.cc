@@ -48,7 +48,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/sync_user_settings_impl.h"
+#include "components/sync/service/sync_user_settings_impl.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "components/sync/test/sync_user_settings_mock.h"
 #include "content/public/browser/web_contents.h"

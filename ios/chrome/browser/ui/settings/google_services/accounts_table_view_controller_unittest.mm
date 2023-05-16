@@ -10,7 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/sync/base/features.h"
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "google_apis/gaia/core_account_id.h"

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_coordinator.h"
 
 #import "base/metrics/histogram_functions.h"
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/consent_auditor/consent_auditor_factory.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"

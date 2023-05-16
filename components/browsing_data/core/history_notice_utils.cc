@@ -9,8 +9,8 @@
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/history/core/browser/web_history_service.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/version_info/version_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 

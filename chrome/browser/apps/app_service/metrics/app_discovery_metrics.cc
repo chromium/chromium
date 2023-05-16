@@ -10,7 +10,7 @@
 #include "components/metrics/structured/structured_events.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 
 namespace apps {
 namespace {

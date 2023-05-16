@@ -22,7 +22,7 @@
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

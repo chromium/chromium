@@ -29,7 +29,7 @@ static_library("default_model") {
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
-    "//components/sync/driver",
+    "//components/sync/service",
     "//ui/base",
   ]
   if (is_android) {

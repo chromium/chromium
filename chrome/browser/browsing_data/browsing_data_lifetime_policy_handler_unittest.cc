@@ -16,7 +16,7 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/pref_names.h"
-#include "components/sync/driver/sync_policy_handler.h"
+#include "components/sync/service/sync_policy_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 

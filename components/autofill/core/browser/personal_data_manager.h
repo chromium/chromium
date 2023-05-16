@@ -49,7 +49,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/sync_service_observer.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

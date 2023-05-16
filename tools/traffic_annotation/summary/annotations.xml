@@ -232,7 +232,7 @@ Refer to README.md for content description and update process.
  <item id="stream_packet_socket" added_in_milestone="84" content_hash_code="034904c2" os_list="linux,windows,chromeos,android" file_path="remoting/protocol/stream_packet_socket.cc" />
  <item id="sync_file_system" added_in_milestone="62" content_hash_code="031bce6a" os_list="linux,windows,chromeos" file_path="chrome/browser/sync_file_system/drive_backend/sync_engine.cc" />
  <item id="sync_http_bridge" added_in_milestone="62" content_hash_code="01f587fa" os_list="linux,windows,chromeos,android" file_path="components/sync/engine/net/http_bridge.cc" />
- <item id="sync_stop_reporter" added_in_milestone="62" content_hash_code="036444c2" os_list="linux,windows,chromeos,android" file_path="components/sync/driver/sync_stopped_reporter.cc" />
+ <item id="sync_stop_reporter" added_in_milestone="62" content_hash_code="036444c2" os_list="linux,windows,chromeos,android" file_path="components/sync/service/sync_stopped_reporter.cc" />
  <item id="recipes_service" added_in_milestone="88" content_hash_code="0477ff55" os_list="linux,windows,chromeos" file_path="chrome/browser/new_tab_page/modules/recipes/recipes_service.cc" />
  <item id="test" added_in_milestone="62" reserved="1" os_list="linux,windows" file_path="" />
  <item id="test_partial" added_in_milestone="62" reserved="1" os_list="linux,windows" file_path="" />

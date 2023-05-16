@@ -22,7 +22,7 @@
 #include "components/search/search_provider_observer.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "components/signin/core/browser/account_reconcilor.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 
 namespace content {
 class WebUI;

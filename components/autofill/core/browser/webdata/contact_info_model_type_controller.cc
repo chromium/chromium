@@ -11,7 +11,7 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/service/sync_user_settings.h"
 
 namespace autofill {
 

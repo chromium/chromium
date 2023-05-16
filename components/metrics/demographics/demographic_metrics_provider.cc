@@ -7,7 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/chromeos_buildflags.h"
-#include "components/sync/driver/sync_service_utils.h"
+#include "components/sync/service/sync_service_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
 

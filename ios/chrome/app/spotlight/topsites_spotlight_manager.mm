@@ -13,7 +13,7 @@
 #import "components/history/core/browser/history_types.h"
 #import "components/history/core/browser/top_sites.h"
 #import "components/history/core/browser/top_sites_observer.h"
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 #import "ios/chrome/app/spotlight/spotlight_interface.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"

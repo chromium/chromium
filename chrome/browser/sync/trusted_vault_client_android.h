@@ -16,7 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/driver/trusted_vault_client.h"
+#include "components/sync/service/trusted_vault_client.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 // JNI bridge for a Java implementation of the TrustedVaultClient interface,

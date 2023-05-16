@@ -8,9 +8,9 @@
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_user_settings_impl.h"
 #include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings_impl.h"
 #include "components/sync/test/test_sync_service.h"
 
 namespace syncer {

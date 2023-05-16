@@ -8,9 +8,9 @@
 
 #include "base/values.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/driver/sync_token_status.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/model/type_entities_count.h"
+#include "components/sync/service/sync_token_status.h"
 
 namespace syncer {
 

@@ -13,8 +13,8 @@
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/chromeos/explicit_passphrase_mojo_utils.h"
-#include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

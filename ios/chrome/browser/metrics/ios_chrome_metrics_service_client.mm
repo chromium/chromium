@@ -56,7 +56,7 @@
 #import "components/omnibox/browser/omnibox_metrics_provider.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 #import "components/sync_device_info/device_count_metrics_provider.h"
 #import "components/ukm/ukm_service.h"
 #import "components/variations/variations_associated_data.h"

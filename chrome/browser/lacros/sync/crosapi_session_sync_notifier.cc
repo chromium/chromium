@@ -9,7 +9,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/lacros/sync/crosapi_session_sync_favicon_delegate.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/sync_sessions_client.h"

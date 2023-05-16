@@ -9,10 +9,10 @@
 #include <string>
 
 #include "components/sync/base/model_type.h"
-#include "components/sync/driver/data_type_controller.h"
-#include "components/sync/driver/data_type_manager.h"
-#include "components/sync/driver/sync_api_component_factory.h"
 #include "components/sync/engine/sync_engine.h"
+#include "components/sync/service/data_type_controller.h"
+#include "components/sync/service/data_type_manager.h"
+#include "components/sync/service/sync_api_component_factory.h"
 
 namespace syncer {
 

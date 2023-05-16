@@ -10,11 +10,11 @@
 #include "components/password_manager/core/browser/android_backend_error.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/driver/sync_service.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 #include "components/sync/model/type_entities_count.h"
+#include "components/sync/service/sync_service.h"
 
 namespace password_manager {
 

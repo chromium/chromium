@@ -9,10 +9,10 @@
 
 #include "base/functional/callback.h"
 #include "base/values.h"
-#include "components/sync/driver/configure_context.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/model/sync_error.h"
 #include "components/sync/model/type_entities_count.h"
+#include "components/sync/service/configure_context.h"
 
 namespace sync_sessions {
 

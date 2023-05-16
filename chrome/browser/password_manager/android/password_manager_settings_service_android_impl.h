@@ -15,7 +15,7 @@
 #include "chrome/browser/password_manager/android/password_settings_updater_android_receiver_bridge.h"
 #include "components/password_manager/core/browser/password_manager_settings_service.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 
 class PrefService;
 

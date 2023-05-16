@@ -10,7 +10,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/service/sync_user_settings.h"
 
 namespace syncer {
 class SyncService;

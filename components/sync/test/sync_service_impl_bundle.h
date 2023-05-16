@@ -9,7 +9,7 @@
 
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/driver/sync_service_impl.h"
+#include "components/sync/service/sync_service_impl.h"
 #include "components/sync/test/fake_sync_api_component_factory.h"
 #include "components/sync/test/mock_sync_invalidations_service.h"
 #include "components/sync/test/mock_trusted_vault_client.h"

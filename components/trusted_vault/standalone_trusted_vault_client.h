@@ -17,7 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/driver/trusted_vault_client.h"
+#include "components/sync/service/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher_frontend.h"
 
 struct CoreAccountInfo;

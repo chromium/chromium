@@ -13,5 +13,5 @@ handles queries to history servers providing overall history access (local and
 remote), potentially including from other devices synced to the same account.
 * [BrowsingHistoryService](/components/history/core/browser/browsing_history_service.h):
 is a layer on top of the two services above and
-[SyncService](/components/sync/driver/sync_service.h) that works transparently
+[SyncService](/components/sync/service/sync_service.h) that works transparently
 for both sync'ing and non-sync'ing users.

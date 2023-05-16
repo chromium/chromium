@@ -10,8 +10,8 @@
 
 #include "base/feature_list.h"
 #include "base/scoped_multi_source_observation.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_service_observer.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "components/ukm/ukm_consent_state.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "services/metrics/public/cpp/metrics_export.h"

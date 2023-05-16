@@ -9,7 +9,7 @@
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/driver/sync_service_observer.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/extension_registry_observer.h"

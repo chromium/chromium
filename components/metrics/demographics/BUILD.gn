@@ -21,7 +21,7 @@ static_library("demographics") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/sync/base",
-    "//components/sync/driver",
+    "//components/sync/service",
   ]
 }
 
@@ -39,7 +39,7 @@ source_set("unit_tests") {
     "//components/metrics",
     "//components/sync:test_support",
     "//components/sync/base",
-    "//components/sync/driver",
+    "//components/sync/service",
     "//components/sync_preferences:test_support",
     "//google_apis",
     "//testing/gmock",

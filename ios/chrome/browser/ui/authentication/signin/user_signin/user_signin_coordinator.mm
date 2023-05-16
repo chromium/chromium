@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_coordinator.h"
 
 #import "base/ios/block_types.h"
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/consent_auditor/consent_auditor_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"

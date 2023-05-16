@@ -17,7 +17,7 @@
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function_registry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

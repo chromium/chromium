@@ -30,7 +30,7 @@
 #import "components/search_engines/default_search_policy_handler.h"
 #import "components/security_interstitials/core/https_only_mode_policy_handler.h"
 #import "components/signin/public/base/signin_pref_names.h"
-#import "components/sync/driver/sync_policy_handler.h"
+#import "components/sync/service/sync_policy_handler.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/unified_consent/pref_names.h"
 #import "components/variations/pref_names.h"

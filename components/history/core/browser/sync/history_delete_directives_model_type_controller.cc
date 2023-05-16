@@ -8,9 +8,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/model/model_type_store_service.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 
 namespace history {
 

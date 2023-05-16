@@ -55,7 +55,7 @@ source_set("profile") {
     "//components/media_router/common",
     "//components/pref_registry",
     "//components/profile_metrics",
-    "//components/sync/driver",
+    "//components/sync/service",
     "//components/variations",
     "//content/public/browser",
     "//extensions/buildflags",

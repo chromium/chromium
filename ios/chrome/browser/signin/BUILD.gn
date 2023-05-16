@@ -269,7 +269,7 @@ source_set("trusted_vault") {
   deps = [
     "//base",
     "//components/keyed_service/core",
-    "//components/sync/driver",
+    "//components/sync/service",
     "//ios/public/provider/chrome/browser/signin:signin_sso_api",
   ]
   frameworks = [

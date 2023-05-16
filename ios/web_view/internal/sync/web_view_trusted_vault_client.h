@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_SYNC_WEB_VIEW_TRUSTED_VAULT_CLIENT_H_
 #define IOS_WEB_VIEW_INTERNAL_SYNC_WEB_VIEW_TRUSTED_VAULT_CLIENT_H_
 
-#include "components/sync/driver/trusted_vault_client.h"
+#include "components/sync/service/trusted_vault_client.h"
 
 namespace ios_web_view {
 

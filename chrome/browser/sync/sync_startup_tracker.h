@@ -10,8 +10,8 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_service_observer.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // `SyncStartupTracker` provides an easier way to wait for `SyncService` to be

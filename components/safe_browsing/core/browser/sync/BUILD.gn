@@ -21,7 +21,7 @@ source_set("sync") {
     "//components/safe_browsing/core/browser:sync_observer",
     "//components/safe_browsing/core/browser:token_fetcher",
     "//components/signin/public/identity_manager",
-    "//components/sync/driver",
+    "//components/sync/service",
     "//google_apis",
   ]
 }

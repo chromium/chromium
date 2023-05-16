@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/passwords/password_manager_util_ios.h"
 
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 
 namespace password_manager_util {
 

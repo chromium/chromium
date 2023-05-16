@@ -15,7 +15,7 @@ source_set("identity_error_util") {
   ]
   deps = [
     "//base",
-    "//components/sync/driver",
+    "//components/sync/service",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
     "//ui/base",

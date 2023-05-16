@@ -7,7 +7,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/sharing_sync_preference.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 #include "crypto/ec_private_key.h"
 
 VapidKeyManager::VapidKeyManager(SharingSyncPreference* sharing_sync_preference,

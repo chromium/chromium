@@ -6,7 +6,7 @@
 #define COMPONENTS_SYNC_TEST_SYNC_CLIENT_MOCK_H_
 
 #include "base/files/file_path.h"
-#include "components/sync/driver/sync_client.h"
+#include "components/sync/service/sync_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace syncer {

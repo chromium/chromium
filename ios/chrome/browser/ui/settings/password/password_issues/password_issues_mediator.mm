@@ -13,7 +13,7 @@
 #import "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/password_manager/core/common/password_manager_features.h"
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"

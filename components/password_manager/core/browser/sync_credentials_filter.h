@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 
 namespace password_manager {
 

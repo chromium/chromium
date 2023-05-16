@@ -12,7 +12,7 @@
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 #import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"

@@ -9,8 +9,8 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "components/sync/driver/sync_service_observer.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
+#include "components/sync/service/sync_service_observer.h"
 
 namespace syncer {
 class SyncService;

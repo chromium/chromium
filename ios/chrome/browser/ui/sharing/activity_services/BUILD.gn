@@ -68,7 +68,7 @@ source_set("unit_tests") {
     "//components/bookmarks/test",
     "//components/prefs:test_support",
     "//components/send_tab_to_self",
-    "//components/sync/driver:driver",
+    "//components/sync/service",
     "//components/ui_metrics",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/download",

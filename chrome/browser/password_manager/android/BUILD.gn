@@ -31,7 +31,7 @@ source_set("backend_public") {
     "//components/keyed_service/content:content",
     "//components/password_manager/core/browser:browser",
     "//components/prefs:prefs",
-    "//components/sync/driver:driver",
+    "//components/sync/service",
     "//content/public/browser",
   ]
 }

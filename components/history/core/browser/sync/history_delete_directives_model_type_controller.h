@@ -7,8 +7,8 @@
 
 #include "base/scoped_observation.h"
 #include "components/history/core/browser/sync/history_model_type_controller_helper.h"
-#include "components/sync/driver/sync_service_observer.h"
-#include "components/sync/driver/syncable_service_based_model_type_controller.h"
+#include "components/sync/service/sync_service_observer.h"
+#include "components/sync/service/syncable_service_based_model_type_controller.h"
 
 class PrefService;
 

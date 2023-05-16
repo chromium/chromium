@@ -7,8 +7,8 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 
 namespace syncer {
 

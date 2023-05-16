@@ -8,7 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/consent_auditor/consent_auditor.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 #import "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"

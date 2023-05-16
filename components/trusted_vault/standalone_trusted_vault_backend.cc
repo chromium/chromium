@@ -31,7 +31,7 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
-#include "components/sync/driver/trusted_vault_histograms.h"
+#include "components/sync/service/trusted_vault_histograms.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"

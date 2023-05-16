@@ -601,7 +601,7 @@ static_library("ui") {
     "//components/subresource_filter/core/browser",
     "//components/supervised_user/core/common:buildflags",
     "//components/sync",
-    "//components/sync/driver/resources",
+    "//components/sync/service/resources",
     "//components/sync_preferences",
     "//components/sync_sessions",
     "//components/tab_groups",

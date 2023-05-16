@@ -20,7 +20,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/base/features.h"
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/password_checkup_metrics.h"
 #import "ios/chrome/browser/passwords/password_checkup_utils.h"

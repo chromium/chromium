@@ -51,7 +51,7 @@
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager_client.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/form_input_accessory_view_handler.h"

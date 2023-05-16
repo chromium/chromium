@@ -14,8 +14,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
+#include "components/sync/service/sync_service_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;

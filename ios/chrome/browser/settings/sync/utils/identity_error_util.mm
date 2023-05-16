@@ -6,8 +6,8 @@
 
 #import "base/feature_list.h"
 #import "components/sync/base/features.h"
-#import "components/sync/driver/sync_service.h"
-#import "components/sync/driver/sync_user_settings.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/settings/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/settings/sync/utils/sync_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"

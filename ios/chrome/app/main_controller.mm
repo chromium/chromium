@@ -32,7 +32,7 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "components/sync/base/features.h"
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 #import "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/app/app_metrics_app_state_agent.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"

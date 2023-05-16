@@ -107,7 +107,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/sync/base/pref_names.h"
-#include "components/sync/driver/sync_policy_handler.h"
+#include "components/sync/service/sync_policy_handler.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/variations/pref_names.h"

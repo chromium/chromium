@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 #include "content/public/browser/browser_context.h"
 
 namespace metrics {

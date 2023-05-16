@@ -22,7 +22,7 @@ source_set("page_image_service") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/search_engines",
-    "//components/sync/driver",
+    "//components/sync/service",
     "//components/unified_consent",
     "//services/network/public/cpp",
     "//services/network/public/mojom",

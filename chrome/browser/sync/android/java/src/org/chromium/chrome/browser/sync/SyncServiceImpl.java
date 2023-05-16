@@ -31,7 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * This class mostly makes calls to native and contains a minimum of business logic. It is only
  * usable from the UI thread as the native SyncServiceImpl requires its access to be on the
- * UI thread. See components/sync/driver/sync_service_impl.h for more details.
+ * UI thread. See components/sync/service/sync_service_impl.h for more details.
  */
 public class SyncServiceImpl extends SyncService {
     // Can be null, i.e. 0, if no native sync service exists, e.g. when sync is disabled via CLI.

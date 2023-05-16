@@ -17,8 +17,8 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_store.h"
 #include "components/supervised_user/core/common/supervised_users.h"
-#include "components/sync/driver/sync_type_preference_provider.h"
 #include "components/sync/model/syncable_service.h"
+#include "components/sync/service/sync_type_preference_provider.h"
 #include "url/gurl.h"
 
 class PersistentPrefStore;

@@ -22,7 +22,7 @@
 #import "components/search_engines/template_url_service_observer.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/browsing_data/browsing_data_counter_wrapper.h"
 #import "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #import "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"

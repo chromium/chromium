@@ -12,7 +12,7 @@ include_rules = [
   "+components/safe_browsing/core/common/features.h",
   "+components/signin/public",
   "+components/sync/base",
-  "+components/sync/driver",
+  "+components/sync/service",
   "+components/sync/model",
   "+components/sync/test",
   "+components/sync_preferences",

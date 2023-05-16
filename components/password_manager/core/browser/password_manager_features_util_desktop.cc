@@ -16,7 +16,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/driver/sync_service.h"
+#include "components/sync/service/sync_service.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 using autofill::GaiaIdHash;

@@ -6,7 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "chromeos/crosapi/mojom/sync.mojom.h"
-#include "components/sync/driver/sync_user_settings.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

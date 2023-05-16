@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web_view/internal/passwords/web_view_password_feature_manager.h"
+#import "ios/web_view/internal/passwords/web_view_password_feature_manager.h"
 
-#include "base/notreached.h"
-#include "components/password_manager/core/browser/password_manager_features_util.h"
-#include "components/prefs/pref_service.h"
-#include "components/sync/driver/sync_service.h"
+#import "base/notreached.h"
+#import "components/password_manager/core/browser/password_manager_features_util.h"
+#import "components/prefs/pref_service.h"
+#import "components/sync/service/sync_service.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

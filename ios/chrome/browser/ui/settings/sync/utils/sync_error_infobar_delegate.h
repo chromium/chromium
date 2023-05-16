@@ -10,8 +10,8 @@
 #include <string>
 
 #include "components/infobars/core/confirm_infobar_delegate.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_service_observer.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_observer.h"
 #include "ui/gfx/image/image.h"
 
 class ChromeBrowserState;

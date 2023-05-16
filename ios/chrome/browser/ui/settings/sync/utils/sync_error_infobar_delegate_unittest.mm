@@ -7,7 +7,7 @@
 #import <memory>
 
 #import "base/test/scoped_feature_list.h"
-#import "components/sync/driver/sync_service_utils.h"
+#import "components/sync/service/sync_service_utils.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_utils.h"

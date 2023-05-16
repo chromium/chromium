@@ -8,7 +8,7 @@
 #import "base/ios/ios_util.h"
 #import "components/history/core/browser/browsing_history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/sync/driver/sync_service.h"
+#import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/history/web_history_service_factory.h"
 #import "ios/chrome/browser/policy/policy_util.h"

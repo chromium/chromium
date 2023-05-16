@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/sync/driver/model_type_controller.h"
+#include "components/sync/service/model_type_controller.h"
 
 namespace sync_bookmarks {
 

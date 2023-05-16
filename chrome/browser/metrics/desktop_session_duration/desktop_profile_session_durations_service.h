@@ -10,7 +10,7 @@
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/password_session_durations_metrics_recorder.h"
-#include "components/sync/driver/sync_session_durations_metrics_recorder.h"
+#include "components/sync/service/sync_session_durations_metrics_recorder.h"
 
 namespace signin {
 class IdentityManager;

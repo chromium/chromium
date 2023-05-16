@@ -11,9 +11,9 @@
 
 #include "base/observer_list.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/driver/sync_service.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/sync_status.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_user_settings.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "url/gurl.h"

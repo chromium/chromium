@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sync/test/integration/invalidations/invalidations_status_checker.h"
 
-#include "components/sync/driver/sync_service_impl.h"
+#include "components/sync/service/sync_service_impl.h"
 
 InvalidationsStatusChecker::InvalidationsStatusChecker(
     syncer::SyncServiceImpl* sync_service,

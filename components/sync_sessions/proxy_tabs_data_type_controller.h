@@ -10,7 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "components/history/core/browser/sync/history_model_type_controller_helper.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
-#include "components/sync/driver/data_type_controller.h"
+#include "components/sync/service/data_type_controller.h"
 
 class PrefService;
 
