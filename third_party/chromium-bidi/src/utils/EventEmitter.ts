@@ -25,11 +25,8 @@ export class EventEmitter<Events extends Record<EventType, unknown>> {
    * @param handler The function to be called when the event occurs.
    * @return `this` to enable chaining method calls.
    */
-  on(type: '*', handler: WildcardHandler<Events>): EventEmitter<Events>;
-  on<Key extends keyof Events>(
-    type: Key,
-    handler: Handler<Events[Key]>
-  ): EventEmitter<Events>;
+  on(type: '*', handler: WildcardHandler<Events>): this;
+  on<Key extends keyof Events>(type: Key, handler: Handler<Events[Key]>): this;
   on(type: any, handler: any): this {
     this.#emitter.on(type, handler);
     return this;
@@ -41,7 +38,7 @@ export class EventEmitter<Events extends Record<EventType, unknown>> {
    * @param handler The handler function to run when the event occurs
    * @return `this` to enable chaining method calls.
    */
-  once(event: EventType, handler: Handler): EventEmitter<Events> {
+  once(event: EventType, handler: Handler): this {
     const onceHandler: Handler = (eventData) => {
       handler(eventData);
       this.off(event, onceHandler);
@@ -55,7 +52,7 @@ export class EventEmitter<Events extends Record<EventType, unknown>> {
    * @param handler The function that should be removed.
    * @return `this` to enable chaining method calls.
    */
-  off(type: '*', handler: WildcardHandler<Events>): EventEmitter<Events>;
+  off(type: '*', handler: WildcardHandler<Events>): this;
   off<Key extends keyof Events>(
     type: Key,
     handler: Handler<Events[Key]>
