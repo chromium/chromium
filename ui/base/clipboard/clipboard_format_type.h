@@ -20,8 +20,6 @@
 #if BUILDFLAG(IS_APPLE)
 #ifdef __OBJC__
 @class NSString;
-#else
-class NSString;
 #endif
 #endif  // BUILDFLAG(IS_APPLE)
 
@@ -120,7 +118,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
 #if BUILDFLAG(IS_WIN)
   const FORMATETC& ToFormatEtc() const { return *ChromeToWindowsType(&data_); }
 #elif BUILDFLAG(IS_APPLE)
-  NSString* ToNSString() const { return uttype_; }
+#if __OBJC__
+  NSString* ToNSString() const;
+#endif  // __OBJC__
   // Custom copy and assignment constructor to handle NSString.
   ClipboardFormatType(const ClipboardFormatType& other);
   ClipboardFormatType& operator=(const ClipboardFormatType& other);
@@ -159,10 +159,11 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   explicit ClipboardFormatType(const std::string& native_format);
   std::string data_;
 #elif BUILDFLAG(IS_APPLE)
+#if __OBJC__
   explicit ClipboardFormatType(NSString* uttype);
-  // A Uniform Type identifier string. TODO(macOS 11): Change to a UTType
-  // object.
-  NSString* uttype_;
+#endif  // __OBJC__
+  struct ObjCStorage;
+  std::unique_ptr<ObjCStorage> objc_storage_;
 #else
 #error No ClipboardFormatType definition.
 #endif

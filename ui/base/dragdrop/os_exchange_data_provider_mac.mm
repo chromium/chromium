@@ -210,12 +210,12 @@ bool OSExchangeDataProviderMac::GetURLAndTitle(FilenameToURLPolicy policy,
   DCHECK(url);
   DCHECK(title);
 
-  NSArray<NSString*>* urls;
-  NSArray<NSString*>* titles;
-  if (clipboard_util::URLsAndTitlesFromPasteboard(
-          GetPasteboard(), /*include_files=*/false, &urls, &titles)) {
-    *url = GURL(base::SysNSStringToUTF8(urls.firstObject));
-    *title = base::SysNSStringToUTF16(titles.firstObject);
+  NSArray<URLAndTitle*>* urls_and_titles =
+      clipboard_util::URLsAndTitlesFromPasteboard(GetPasteboard(),
+                                                  /*include_files=*/false);
+  if (urls_and_titles.count) {
+    *url = GURL(base::SysNSStringToUTF8(urls_and_titles.firstObject.URL));
+    *title = base::SysNSStringToUTF16(urls_and_titles.firstObject.title);
     return true;
   }
 

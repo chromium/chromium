@@ -161,11 +161,12 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
       gfx::PointF(screenPoint.x, screenFrame.size.height - screenPoint.y);
 
   NSPasteboard* pboard = [nsInfo draggingPasteboard];
-  NSArray<NSString*>* urls;
-  NSArray<NSString*>* titles;
-  if (ui::clipboard_util::URLsAndTitlesFromPasteboard(
-          pboard, /*include_files=*/true, &urls, &titles)) {
-    info->url = GURL(base::SysNSStringToUTF8(urls.firstObject));
+  NSArray<URLAndTitle*>* urls_and_titles =
+      ui::clipboard_util::URLsAndTitlesFromPasteboard(pboard,
+                                                      /*include_files=*/true);
+
+  if (urls_and_titles.count) {
+    info->url = GURL(base::SysNSStringToUTF8(urls_and_titles.firstObject.URL));
   }
   info->operation_mask = ui::DragDropTypes::NSDragOperationToDragOperation(
       [nsInfo draggingSourceOperationMask]);

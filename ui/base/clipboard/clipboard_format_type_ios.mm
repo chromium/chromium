@@ -14,36 +14,51 @@
 #include "base/strings/sys_string_conversions.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace ui {
 
+struct ClipboardFormatType::ObjCStorage {
+  // A Uniform Type identifier string.
+  NSString* uttype;
+};
+
 // ClipboardFormatType implementation.
-ClipboardFormatType::ClipboardFormatType() : uttype_(nil) {}
+ClipboardFormatType::ClipboardFormatType()
+    : objc_storage_(std::make_unique<ObjCStorage>()) {}
 
 ClipboardFormatType::ClipboardFormatType(NSString* native_format)
-    : uttype_([native_format retain]) {}
+    : ClipboardFormatType() {
+  objc_storage_->uttype = native_format;
+}
 
 ClipboardFormatType::ClipboardFormatType(const ClipboardFormatType& other)
-    : uttype_([other.uttype_ retain]) {}
+    : ClipboardFormatType() {
+  objc_storage_->uttype = other.objc_storage_->uttype;
+}
 
 ClipboardFormatType& ClipboardFormatType::operator=(
     const ClipboardFormatType& other) {
   if (this != &other) {
-    [uttype_ release];
-    uttype_ = [other.uttype_ retain];
+    objc_storage_->uttype = other.objc_storage_->uttype;
   }
   return *this;
 }
 
 bool ClipboardFormatType::operator==(const ClipboardFormatType& other) const {
-  return [uttype_ isEqualToString:other.uttype_];
+  return [objc_storage_->uttype isEqualToString:other.objc_storage_->uttype];
 }
 
-ClipboardFormatType::~ClipboardFormatType() {
-  [uttype_ release];
-}
+ClipboardFormatType::~ClipboardFormatType() = default;
 
 std::string ClipboardFormatType::Serialize() const {
-  return base::SysNSStringToUTF8(uttype_);
+  return base::SysNSStringToUTF8(objc_storage_->uttype);
+}
+
+NSString* ClipboardFormatType::ToNSString() const {
+  return objc_storage_->uttype;
 }
 
 // static
@@ -57,7 +72,8 @@ std::string ClipboardFormatType::GetName() const {
 }
 
 bool ClipboardFormatType::operator<(const ClipboardFormatType& other) const {
-  return [uttype_ compare:other.uttype_] == NSOrderedAscending;
+  return [objc_storage_->uttype compare:other.objc_storage_->uttype] ==
+         NSOrderedAscending;
 }
 
 std::string ClipboardFormatType::WebCustomFormatName(int index) {

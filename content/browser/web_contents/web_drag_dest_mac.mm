@@ -409,12 +409,14 @@ DropData PopulateDropDataFromPasteboard(NSPasteboard* pboard) {
 
   // Get URL if possible. To avoid exposing file system paths to web content,
   // filenames in the drag are not converted to file URLs.
-  NSArray<NSString*>* urls;
-  NSArray<NSString*>* titles;
-  if (ui::clipboard_util::URLsAndTitlesFromPasteboard(
-          pboard, /*include_files=*/false, &urls, &titles)) {
-    drop_data.url = GURL(base::SysNSStringToUTF8(urls.firstObject));
-    drop_data.url_title = base::SysNSStringToUTF16(titles.firstObject);
+  NSArray<URLAndTitle*>* urls_and_titles =
+      ui::clipboard_util::URLsAndTitlesFromPasteboard(pboard,
+                                                      /*include_files=*/false);
+  if (urls_and_titles.count) {
+    drop_data.url =
+        GURL(base::SysNSStringToUTF8(urls_and_titles.firstObject.URL));
+    drop_data.url_title =
+        base::SysNSStringToUTF16(urls_and_titles.firstObject.title);
   }
 
   // Get plain text.

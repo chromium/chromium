@@ -143,16 +143,17 @@ bool ReadChromiumBookmarks(NSPasteboard* pb,
 
 bool ReadStandardBookmarks(NSPasteboard* pb,
                            std::vector<BookmarkNodeData::Element>* elements) {
-  NSArray* urls = nil;
-  NSArray* titles = nil;
-  if (!ui::clipboard_util::URLsAndTitlesFromPasteboard(
-          pb, /*include_files=*/false, &urls, &titles)) {
+  NSArray<URLAndTitle*>* urls_and_titles =
+      ui::clipboard_util::URLsAndTitlesFromPasteboard(pb,
+                                                      /*include_files=*/false);
+
+  if (!urls_and_titles.count) {
     return false;
   }
 
-  for (NSUInteger i = 0; i < titles.count; ++i) {
-    std::u16string title = base::SysNSStringToUTF16(titles[i]);
-    std::string url = base::SysNSStringToUTF8(urls[i]);
+  for (URLAndTitle* url_and_title in urls_and_titles) {
+    std::string url = base::SysNSStringToUTF8(url_and_title.URL);
+    std::u16string title = base::SysNSStringToUTF16(url_and_title.title);
     if (!url.empty()) {
       BookmarkNodeData::Element element;
       element.is_url = true;
