@@ -77,6 +77,11 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
 
 @implementation PushNotificationDelegate
 
+- (instancetype)initWithAppState:(AppState*)appState {
+  [appState addObserver:self];
+  return self;
+}
+
 #pragma mark - UNUserNotificationCenterDelegate -
 
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center
@@ -176,13 +181,20 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
   });
 }
 
-- (void)browserDidBecomeReady {
+#pragma mark - AppStateObserver
+
+- (void)appState:(AppState*)appState
+    didTransitionFromInitStage:(InitStage)previousInitStage {
+  if (appState.initStage < InitStageFinal) {
+    return;
+  }
   PushNotificationClientManager* clientManager =
       GetApplicationContext()
           ->GetPushNotificationService()
           ->GetPushNotificationClientManager();
   DCHECK(clientManager);
   clientManager->OnBrowserReady();
+  [appState removeObserver:self];
 }
 
 @end
