@@ -463,9 +463,8 @@ void ReadAnythingAppController::Distill() {
 void ReadAnythingAppController::OnAXTreeDistilled(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXNodeID>& content_node_ids) {
-  // Reset state.
-  // TODO(accessibility): this call resets selection, so it's not completely
-  // clear what `PostProcessSelection` does below.
+  // Reset state, including the current side panel selection so we can update
+  // it based on the new main panel selection in PostProcessSelection below.
   model_.Reset(content_node_ids);
 
   // Return early if any of the following scenarios occurred while waiting for
@@ -488,7 +487,8 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     model_.ComputeDisplayNodeIdsForDistilledTree();
   }
 
-  // Draw selection (if one exists) and the content.
+  // Draw the selection in the side panel (if one exists in the main panel) and
+  // the content if the selection is not in the distilled content.
   PostProcessSelection();
 
   // TODO(crbug.com/1266555): If no content nodes were identified, the
