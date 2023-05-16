@@ -219,7 +219,7 @@ void PowerButtonMenuView::RecreateItems() {
       create_capture_mode, PowerButtonMenuActionType::kCaptureMode,
       base::BindRepeating(&CaptureModeController::Start,
                           base::Unretained(CaptureModeController::Get()),
-                          CaptureModeEntryType::kPowerMenu),
+                          CaptureModeEntryType::kPowerMenu, base::DoNothing()),
       kCaptureModeIcon,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAPTURE_MODE_BUTTON_LABEL),
       &capture_mode_item_);

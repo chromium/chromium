@@ -17,6 +17,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -52,6 +53,11 @@ class CaptureModeSession;
 using OnFileDeletedCallback =
     base::OnceCallback<void(const base::FilePath& path,
                             bool delete_successful)>;
+
+// Defines a callback type that will be invoked when the status of the capture
+// mode session initialization process is determined with the given status of
+// `success`.
+using OnSessionStartAttemptCallback = base::OnceCallback<void(bool success)>;
 
 // Controls starting and ending a Capture Mode session and its behavior. There
 // are various checks that are run when a capture session start is attempted,
@@ -147,9 +153,12 @@ class ASH_EXPORT CaptureModeController
   // behind the feature flag.
   void EnableDemoTools(bool enable) { enable_demo_tools_ = enable; }
 
-  // Starts a new capture session with the most-recently used |type_| and
-  // |source_|. Also records what |entry_type| that started capture mode.
-  void Start(CaptureModeEntryType entry_type);
+  // Starts a new capture session with the most-recently used `type_` and
+  // `source_`. Also records what `entry_type` that started capture mode. The
+  // `callback` will be invoked when the status of the capture mode session
+  // initialization process is determined.
+  void Start(CaptureModeEntryType entry_type,
+             OnSessionStartAttemptCallback callback = base::DoNothing());
 
   // Starts a new capture session with a pre-selected window which will be
   // observed throughout the session and can't be altered.
@@ -502,8 +511,10 @@ class ASH_EXPORT CaptureModeController
 
   // Bound to a callback that will be called by the DLP manager to let us know
   // whether a pending session initialization should `proceed` or abort due to
-  // some restricted contents on the screen.
+  // some restricted contents on the screen. `at_exit_closure` is passed from
+  // `Start()` and will be called on the exit of the function.
   void OnDlpRestrictionCheckedAtSessionInit(CaptureModeEntryType entry_type,
+                                            base::OnceClosure at_exit_closure,
                                             bool proceed);
 
   // At the end of a video recording, the DLP manager is checked to see if there

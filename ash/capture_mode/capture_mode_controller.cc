@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -605,7 +606,18 @@ void CaptureModeController::SetRecordingType(RecordingType recording_type) {
   }
 }
 
-void CaptureModeController::Start(CaptureModeEntryType entry_type) {
+void CaptureModeController::Start(CaptureModeEntryType entry_type,
+                                  OnSessionStartAttemptCallback callback) {
+  // To be invoked at the exit of this function or
+  // `OnDlpRestrictionCheckedAtSessionInit()`.
+  base::ScopedClosureRunner deferred_runner(base::BindOnce(
+      [](base::WeakPtr<CaptureModeController> controller,
+         OnSessionStartAttemptCallback callback, bool was_active) {
+        std::move(callback).Run(!was_active && controller &&
+                                controller->IsActive());
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback), IsActive()));
+
   if (capture_mode_session_ || pending_dlp_check_)
     return;
 
@@ -617,7 +629,7 @@ void CaptureModeController::Start(CaptureModeEntryType entry_type) {
   pending_dlp_check_ = true;
   delegate_->CheckCaptureModeInitRestrictionByDlp(base::BindOnce(
       &CaptureModeController::OnDlpRestrictionCheckedAtSessionInit,
-      weak_ptr_factory_.GetWeakPtr(), entry_type));
+      weak_ptr_factory_.GetWeakPtr(), entry_type, deferred_runner.Release()));
 }
 
 void CaptureModeController::StartForGameDashboard(aura::Window* game_window) {
@@ -1843,7 +1855,10 @@ void CaptureModeController::OnDlpRestrictionCheckedAtCountDownFinished(
 
 void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
     CaptureModeEntryType entry_type,
+    base::OnceClosure at_exit_closure,
     bool proceed) {
+  base::ScopedClosureRunner deferred_runner(std::move(at_exit_closure));
+
   pending_dlp_check_ = false;
 
   if (!proceed) {

@@ -160,6 +160,12 @@ class ASH_EXPORT ProjectorControllerImpl
   void MaybeStopSpeechRecognition();
   void ForceEndSpeechRecognition();
 
+  // Called when the projector-initiated capture mode session initialization is
+  // completed or returned to start the projector session with given
+  // `storage_dir` if `success` is true.
+  void OnSessionStartAttempted(const base::SafeBaseName& storage_dir,
+                               bool success);
+
   // Triggered when finish creating the screencast container folder. This method
   // caches the the container folder path in `ProjectorSession` and triggers the
   // `CreateScreencastContainerFolderCallback' with the screencast file path
