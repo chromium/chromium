@@ -21,15 +21,13 @@ OmniboxController::OmniboxController(
     OmniboxEditModelDelegate* edit_model_delegate,
     std::unique_ptr<OmniboxClient> client)
     : client_(std::move(client)),
+      edit_model_(std::make_unique<OmniboxEditModel>(
+          /*omnibox_controller=*/this,
+          view,
+          edit_model_delegate)),
       autocomplete_controller_(std::make_unique<AutocompleteController>(
           client_->CreateAutocompleteProviderClient(),
           AutocompleteClassifier::DefaultOmniboxProviders())) {
-  edit_model_ = std::make_unique<OmniboxEditModel>(view, edit_model_delegate,
-                                                   client_.get());
-  // TODO(crbug.com/1404748): Pass a reference to `OmniboxController` to the
-  //  constructor of `OmniboxEditModel` so this is no longer needed.
-  edit_model_->set_omnibox_controller(this);
-
   // Directly observe omnibox's `AutocompleteController` instance - i.e., when
   // `view` is provided in the constructor. In the case of realbox - i.e., when
   // `view` is not provided in the constructor - `RealboxHandler` indirectly
@@ -46,6 +44,12 @@ OmniboxController::OmniboxController(
 }
 
 OmniboxController::~OmniboxController() = default;
+
+void OmniboxController::set_edit_model(
+    std::unique_ptr<OmniboxEditModel> edit_model) {
+  CHECK_EQ(this, edit_model->omnibox_controller());
+  edit_model_ = std::move(edit_model);
+}
 
 void OmniboxController::StartAutocomplete(
     const AutocompleteInput& input) const {
@@ -102,14 +106,6 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
       result(), default_match_changed, /*should_preload=*/controller->done(),
       base::BindRepeating(&OmniboxController::SetRichSuggestionBitmap,
                           weak_ptr_factory_.GetWeakPtr()));
-}
-
-void OmniboxController::SetEditModel(
-    std::unique_ptr<OmniboxEditModel> edit_model) {
-  edit_model_ = std::move(edit_model);
-  // TODO(crbug.com/1404748): Pass a reference to `OmniboxController` to the
-  //  constructor of `OmniboxEditModel` so this is no longer needed.
-  edit_model_->set_omnibox_controller(this);
 }
 
 void OmniboxController::InvalidateCurrentMatch() {

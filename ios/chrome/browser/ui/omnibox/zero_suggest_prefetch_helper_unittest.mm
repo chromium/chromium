@@ -38,10 +38,10 @@ const char kTestSRPURL[] = "https://www.google.com/search?q=omnibox";
 
 class MockOmniboxEditModel : public OmniboxEditModel {
  public:
-  MockOmniboxEditModel(OmniboxView* view,
-                       OmniboxEditModelDelegate* edit_model_delegate,
-                       OmniboxClient* client)
-      : OmniboxEditModel(view, edit_model_delegate, client) {}
+  MockOmniboxEditModel(OmniboxController* omnibox_controller,
+                       OmniboxView* view,
+                       OmniboxEditModelDelegate* edit_model_delegate)
+      : OmniboxEditModel(omnibox_controller, view, edit_model_delegate) {}
 
   ~MockOmniboxEditModel() override = default;
   MockOmniboxEditModel(const MockOmniboxEditModel&) = delete;
@@ -64,12 +64,10 @@ class ZeroSuggestPrefetchHelperTest : public PlatformTest {
     web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
 
     edit_model_delegate_ = std::make_unique<TestOmniboxEditModelDelegate>();
-    auto omnibox_client = std::make_unique<TestOmniboxClient>();
-    auto* omnibox_client_ptr = omnibox_client.get();
-    view_ = std::make_unique<TestOmniboxView>(edit_model_delegate_.get(),
-                                              std::move(omnibox_client));
+    view_ = std::make_unique<TestOmniboxView>(
+        edit_model_delegate_.get(), std::make_unique<TestOmniboxClient>());
     model_ = std::make_unique<MockOmniboxEditModel>(
-        view_.get(), edit_model_delegate_.get(), omnibox_client_ptr);
+        view_->controller(), view_.get(), edit_model_delegate_.get());
   }
 
   void CreateHelper() {

@@ -37,14 +37,14 @@ class OmniboxController : public AutocompleteController::Observer {
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
 
-  OmniboxEditModel* edit_model() const { return edit_model_.get(); }
+  OmniboxClient* client() { return client_.get(); }
 
-  void SetEditModel(std::unique_ptr<OmniboxEditModel> edit_model);
+  OmniboxEditModel* edit_model() const { return edit_model_.get(); }
+  void set_edit_model(std::unique_ptr<OmniboxEditModel> edit_model);
 
   AutocompleteController* autocomplete_controller() {
     return autocomplete_controller_.get();
   }
-
   void set_autocomplete_controller(
       std::unique_ptr<AutocompleteController> autocomplete_controller) {
     autocomplete_controller_ = std::move(autocomplete_controller);
