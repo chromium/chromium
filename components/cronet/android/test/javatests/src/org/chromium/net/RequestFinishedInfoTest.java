@@ -281,6 +281,38 @@ public class RequestFinishedInfoTest {
     @Test
     @SmallTest
     @OnlyRunNativeCronet
+    public void testRequestFinishedListenerThrowInListener() throws Exception {
+        TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
+        requestFinishedListener.makeListenerThrow();
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        mTestFramework.mCronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor())
+                .setRequestFinishedListener(requestFinishedListener)
+                .build()
+                .start();
+        callback.blockForDone();
+        // We expect that the exception from the listener will not crash the test.
+        requestFinishedListener.blockUntilDone();
+    }
+
+    @Test
+    @SmallTest
+    @OnlyRunNativeCronet
+    public void testRequestFinishedListenerThrowInEngineListener() throws Exception {
+        TestRequestFinishedListener requestFinishedListener = new TestRequestFinishedListener();
+        requestFinishedListener.makeListenerThrow();
+        mTestFramework.mCronetEngine.addRequestFinishedListener(requestFinishedListener);
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        mTestFramework.mCronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor())
+                .build()
+                .start();
+        callback.blockForDone();
+        // We expect that the exception from the listener will not crash the test.
+        requestFinishedListener.blockUntilDone();
+    }
+
+    @Test
+    @SmallTest
+    @OnlyRunNativeCronet
     @SuppressWarnings("deprecation")
     public void testRequestFinishedListenerRemoved() throws Exception {
         TestExecutor testExecutor = new TestExecutor();

@@ -806,7 +806,13 @@ public class CronetUrlRequestContext extends CronetEngineBase {
 
     private static void postObservationTaskToExecutor(Executor executor, Runnable task) {
         try {
-            executor.execute(task);
+            executor.execute(() -> {
+                try {
+                    task.run();
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Exception thrown from observation task", e);
+                }
+            });
         } catch (RejectedExecutionException failException) {
             Log.e(CronetUrlRequestContext.LOG_TAG, "Exception posting task to executor",
                     failException);

@@ -980,7 +980,12 @@ public final class CronetUrlRequest extends UrlRequestBase {
                     mRequestFinishedListener.getExecutor().execute(new Runnable() {
                         @Override
                         public void run() {
-                            mRequestFinishedListener.onRequestFinished(requestInfo);
+                            try {
+                                mRequestFinishedListener.onRequestFinished(requestInfo);
+                            } catch (Exception e) {
+                                Log.e(CronetUrlRequestContext.LOG_TAG,
+                                        "Exception thrown from request finished listener", e);
+                            }
                         }
                     });
                 } catch (RejectedExecutionException failException) {
