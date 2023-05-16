@@ -21,8 +21,12 @@ test(() => {
 
     var fired = 0;
     function checkEvent(name, target) {
-      assert_equals(name, expected[fired].name);
-      assert_equals(target, expected[fired].target);
+      assert_equals(name, expected[fired].name, `Expected: 
+          "${expected[fired].name}" fired on "${expected[fired].target}". ` + 
+          `Actual: "${name}" fired on "${target}".`);
+      assert_equals(target, expected[fired].target, `Expected: 
+          "${expected[fired].name}" fired on "${expected[fired].target}". ` + 
+          `Actual: "${name}" fired on "${target}".`);
       ++fired;
     }
 
