@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
+#include "third_party/blink/renderer/core/animation/timing_calculations.h"
 #include "third_party/blink/renderer/core/animation/view_timeline.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
@@ -97,6 +98,16 @@ class TestScrollTimeline : public ScrollTimeline {
 
   // UpdateSnapshot has 'protected' visibility.
   void UpdateSnapshotForTesting() { UpdateSnapshot(); }
+
+  AnimationTimeDelta CalculateIntrinsicIterationDurationForTest(
+      const absl::optional<TimelineOffset>& range_start,
+      const absl::optional<TimelineOffset>& range_end) {
+    Timing timing;
+    timing.iteration_count = 1;
+    TimelineRange timeline_range = GetTimelineRange();
+    return CalculateIntrinsicIterationDuration(timeline_range, range_start,
+                                               range_end, timing);
+  }
 };
 
 class TestViewTimeline : public ViewTimeline {
@@ -997,6 +1008,73 @@ TEST_F(ScrollTimelineTest, ViewTimelineGetTimelineRange) {
   EXPECT_EQ(TimelineRange(TimelineRange::ScrollOffsets(100, 300),
                           /* subject_size */ 100),
             timeline->GetTimelineRange());
+}
+
+TEST_F(ScrollTimelineTest, ScrollTimelineCalculateIntrinsicIterationDuration) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #scroller {
+        overflow-y: auto;
+        width: 100px;
+        height: 100px;
+      }
+      .spacer {
+        height: 400px;
+      }
+    }
+    </style>
+    <div id='scroller'>
+      <div class='spacer'></div>
+    </div>
+  )HTML");
+
+  auto* timeline = MakeGarbageCollected<TestScrollTimeline>(
+      &GetDocument(), GetElementById("scroller"));
+
+  AnimationTimeDelta duration = timeline->GetDuration().value();
+
+  using NamedRange = TimelineOffset::NamedRange;
+
+  // [0, 300]
+  EXPECT_TRUE(IsWithinAnimationTimeTolerance(
+      duration, timeline->CalculateIntrinsicIterationDurationForTest(
+                    /* range_start */ absl::optional<TimelineOffset>(),
+                    /* range_end */ absl::optional<TimelineOffset>())));
+
+  // [0, 300] (explicit)
+  EXPECT_TRUE(IsWithinAnimationTimeTolerance(
+      duration,
+      timeline->CalculateIntrinsicIterationDurationForTest(
+          /* range_start */ TimelineOffset(NamedRange::kNone, Length::Fixed(0)),
+          /* range_end */ TimelineOffset(NamedRange::kNone,
+                                         Length::Fixed(300)))));
+
+  // [50, 200]
+  EXPECT_TRUE(IsWithinAnimationTimeTolerance(
+      duration / 2.0, timeline->CalculateIntrinsicIterationDurationForTest(
+                          /* range_start */
+                          TimelineOffset(NamedRange::kNone, Length::Fixed(50)),
+                          /* range_end */ TimelineOffset(NamedRange::kNone,
+                                                         Length::Fixed(200)))));
+
+  // [50, 200] (kEntry)
+  // The name part of the TimelineOffset is ignored.
+  EXPECT_TRUE(IsWithinAnimationTimeTolerance(
+      duration / 2.0,
+      timeline->CalculateIntrinsicIterationDurationForTest(
+          /* range_start */
+          TimelineOffset(NamedRange::kEntry, Length::Fixed(50)),
+          /* range_end */
+          TimelineOffset(NamedRange::kEntry, Length::Fixed(200)))));
+
+  // [50, 50]
+  EXPECT_TRUE(IsWithinAnimationTimeTolerance(
+      AnimationTimeDelta(),
+      timeline->CalculateIntrinsicIterationDurationForTest(
+          /* range_start */
+          TimelineOffset(NamedRange::kNone, Length::Fixed(50)),
+          /* range_end */ TimelineOffset(NamedRange::kNone,
+                                         Length::Fixed(50)))));
 }
 
 }  //  namespace blink

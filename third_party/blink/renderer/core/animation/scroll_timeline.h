@@ -77,18 +77,6 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   bool IsActive() const override;
 
   absl::optional<base::TimeDelta> InitialStartTimeForAnimations() override;
-  AnimationTimeDelta CalculateIntrinsicIterationDuration(
-      const Animation*,
-      const Timing&) override;
-
-  // TODO(kevers): Support range start and end for scroll-timelines that are not
-  // view timelines.
-  AnimationTimeDelta CalculateIntrinsicIterationDuration(
-      const absl::optional<TimelineOffset>& rangeStart,
-      const absl::optional<TimelineOffset>& rangeEnd,
-      const Timing& timing) override {
-    return CalculateIntrinsicIterationDuration(nullptr, timing);
-  }
 
   TimelineRange GetTimelineRange() const override;
 
@@ -172,6 +160,12 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   ScrollTimeline(Document*, TimelineAttachment, ScrollTimelineAttachment*);
 
   PhaseAndTime CurrentPhaseAndTime() override;
+
+  AnimationTimeDelta CalculateIntrinsicIterationDuration(
+      const TimelineRange&,
+      const absl::optional<TimelineOffset>& range_start,
+      const absl::optional<TimelineOffset>& range_end,
+      const Timing&) override;
 
   Node* ComputeResolvedSource() const;
   static bool ComputeIsResolved(Node* resolved_source);

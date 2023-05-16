@@ -237,46 +237,6 @@ ViewTimeline::ViewTimeline(Document* document,
                                                              axis,
                                                              inset)) {}
 
-AnimationTimeDelta ViewTimeline::CalculateIntrinsicIterationDuration(
-    const Animation* animation,
-    const Timing& timing) {
-  return CalculateIntrinsicIterationDuration(animation->GetRangeStartInternal(),
-                                             animation->GetRangeEndInternal(),
-                                             timing);
-}
-
-AnimationTimeDelta ViewTimeline::CalculateIntrinsicIterationDuration(
-    const absl::optional<TimelineOffset>& rangeStart,
-    const absl::optional<TimelineOffset>& rangeEnd,
-    const Timing& timing) {
-  absl::optional<AnimationTimeDelta> duration = GetDuration();
-
-  // Only run calculation for progress based scroll timelines
-  if (duration && timing.iteration_count > 0) {
-    double active_interval = 1;
-
-    double start = rangeStart ? ToFractionalOffset(rangeStart.value()) : 0;
-    double end = rangeEnd ? ToFractionalOffset(rangeEnd.value()) : 1;
-
-    active_interval -= start;
-    active_interval -= (1 - end);
-    active_interval = std::max(0., active_interval);
-
-    // Start and end delays are proportional to the active interval.
-    double start_delay = timing.start_delay.relative_delay.value_or(0);
-    double end_delay = timing.end_delay.relative_delay.value_or(0);
-    double delay = start_delay + end_delay;
-
-    if (delay >= 1) {
-      return AnimationTimeDelta();
-    }
-
-    active_interval *= (1 - delay);
-    return duration.value() * active_interval / timing.iteration_count;
-  }
-  return AnimationTimeDelta();
-}
-
 TimelineRange ViewTimeline::GetTimelineRange() const {
   absl::optional<ScrollOffsets> scroll_offsets = GetResolvedScrollOffsets();
   absl::optional<ScrollOffsets> view_offsets = GetResolvedViewOffsets();

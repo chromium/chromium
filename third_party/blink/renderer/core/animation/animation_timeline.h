@@ -74,17 +74,25 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   // consideration here: https://github.com/w3c/csswg-drafts/issues/2075.
   virtual absl::optional<base::TimeDelta> InitialStartTimeForAnimations() = 0;
 
-  virtual AnimationTimeDelta CalculateIntrinsicIterationDuration(
-      const absl::optional<TimelineOffset>& rangeStart,
-      const absl::optional<TimelineOffset>& rangeEnd,
-      const Timing&) {
-    return AnimationTimeDelta();
+  AnimationTimeDelta CalculateIntrinsicIterationDuration(
+      const Animation* animation,
+      const Timing& timing) {
+    return CalculateIntrinsicIterationDuration(
+        animation->GetRangeStartInternal(), animation->GetRangeEndInternal(),
+        timing);
   }
 
-  virtual AnimationTimeDelta CalculateIntrinsicIterationDuration(
-      const Animation*,
-      const Timing&) {
-    return AnimationTimeDelta();
+  AnimationTimeDelta CalculateIntrinsicIterationDuration(
+      const absl::optional<TimelineOffset>& range_start,
+      const absl::optional<TimelineOffset>& range_end,
+      const Timing& timing) {
+    // TODO(crbug.com/1441013): Support range start and end for scroll-timelines
+    // that are not view timelines.
+    return CalculateIntrinsicIterationDuration(
+        GetTimelineRange(),
+        IsViewTimeline() ? range_start : absl::optional<TimelineOffset>(),
+        IsViewTimeline() ? range_end : absl::optional<TimelineOffset>(),
+        timing);
   }
 
   // See class TimelineRange.
@@ -143,6 +151,14 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
 
  protected:
   virtual PhaseAndTime CurrentPhaseAndTime() = 0;
+
+  virtual AnimationTimeDelta CalculateIntrinsicIterationDuration(
+      const TimelineRange&,
+      const absl::optional<TimelineOffset>& range_start,
+      const absl::optional<TimelineOffset>& range_end,
+      const Timing&) {
+    return AnimationTimeDelta();
+  }
 
   Member<Document> document_;
   unsigned outdated_animation_count_;

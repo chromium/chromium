@@ -42,15 +42,6 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
 
   CSSNumericValue* getCurrentTime(const String& rangeName) override;
 
-  AnimationTimeDelta CalculateIntrinsicIterationDuration(
-      const Animation*,
-      const Timing&) override;
-
-  AnimationTimeDelta CalculateIntrinsicIterationDuration(
-      const absl::optional<TimelineOffset>& rangeStart,
-      const absl::optional<TimelineOffset>& rangeEnd,
-      const Timing&) override;
-
   TimelineRange GetTimelineRange() const override;
 
   // IDL API implementation.

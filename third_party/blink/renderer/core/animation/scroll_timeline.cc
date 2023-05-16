@@ -266,24 +266,37 @@ ScrollTimeline::InitialStartTimeForAnimations() {
 }
 
 AnimationTimeDelta ScrollTimeline::CalculateIntrinsicIterationDuration(
-    const Animation* animation,
+    const TimelineRange& timeline_range,
+    const absl::optional<TimelineOffset>& range_start,
+    const absl::optional<TimelineOffset>& range_end,
     const Timing& timing) {
   absl::optional<AnimationTimeDelta> duration = GetDuration();
 
   // Only run calculation for progress based scroll timelines
-  if (duration) {
-    if (timing.iteration_count > 0) {
-      // duration represents 100% so we subtract percentage delays and divide it
-      // by iteration count to calculate the iteration duration.
-      double start_delay = timing.start_delay.relative_delay.value_or(0);
-      double end_delay = timing.end_delay.relative_delay.value_or(0);
-      double scale = (1 - start_delay - end_delay);
-      if (scale <= 0) {
-        return AnimationTimeDelta();
-      }
+  if (duration && timing.iteration_count > 0) {
+    double active_interval = 1;
 
-      return scale * duration.value() / timing.iteration_count;
+    double start = range_start
+                       ? timeline_range.ToFractionalOffset(range_start.value())
+                       : 0;
+    double end =
+        range_end ? timeline_range.ToFractionalOffset(range_end.value()) : 1;
+
+    active_interval -= start;
+    active_interval -= (1 - end);
+    active_interval = std::max(0., active_interval);
+
+    // Start and end delays are proportional to the active interval.
+    double start_delay = timing.start_delay.relative_delay.value_or(0);
+    double end_delay = timing.end_delay.relative_delay.value_or(0);
+    double delay = start_delay + end_delay;
+
+    if (delay >= 1) {
+      return AnimationTimeDelta();
     }
+
+    active_interval *= (1 - delay);
+    return duration.value() * active_interval / timing.iteration_count;
   }
   return AnimationTimeDelta();
 }
