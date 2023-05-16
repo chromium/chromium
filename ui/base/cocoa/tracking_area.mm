@@ -99,15 +99,14 @@
 namespace ui {
 
 ScopedCrTrackingArea::ScopedCrTrackingArea(CrTrackingArea* tracking_area)
-    : tracking_area_(tracking_area) {
-}
+    : tracking_area_([tracking_area retain]) {}
 
 ScopedCrTrackingArea::~ScopedCrTrackingArea() {
   [tracking_area_ clearOwner];
 }
 
 void ScopedCrTrackingArea::reset(CrTrackingArea* tracking_area) {
-  tracking_area_.reset(tracking_area);
+  tracking_area_.reset([tracking_area retain]);
 }
 
 CrTrackingArea* ScopedCrTrackingArea::get() const {

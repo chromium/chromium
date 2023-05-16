@@ -6,6 +6,8 @@
 
 #include "base/check_op.h"
 #include "base/mac/mac_util.h"
+#include "base/mac/scoped_nsobject.h"
+#include "ui/base/cocoa/tracking_area.h"
 
 NSString* kViewDidBecomeFirstResponder =
     @"Chromium.kViewDidBecomeFirstResponder";
@@ -40,10 +42,12 @@ NSString* kSelectionDirection = @"Chromium.kSelectionDirection";
                                           NSTrackingMouseMoved |
                                           NSTrackingActiveAlways |
                                           NSTrackingInVisibleRect;
-  _trackingArea.reset([[CrTrackingArea alloc] initWithRect:NSZeroRect
-                                                   options:trackingOptions
-                                                     owner:self
-                                                  userInfo:nil]);
+  base::scoped_nsobject<CrTrackingArea> trackingArea([[CrTrackingArea alloc]
+      initWithRect:NSZeroRect
+           options:trackingOptions
+             owner:self
+          userInfo:nil]);
+  _trackingArea.reset(trackingArea.get());
   [self addTrackingArea:_trackingArea.get()];
 }
 
