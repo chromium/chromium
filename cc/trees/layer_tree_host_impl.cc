@@ -2211,13 +2211,12 @@ void LayerTreeHostImpl::ReclaimResources(
   }
 
   // If we're not visible, we likely released resources, so we want to
-  // aggressively flush here to make sure those DeleteTextures make it to the
-  // GPU process to free up the memory.
+  // aggressively flush here to make sure those DeleteSharedImage() calls make
+  // it to the GPU process to free up the memory.
   if (!visible_ && layer_tree_frame_sink_->context_provider()) {
-    auto* compositor_context = layer_tree_frame_sink_->context_provider();
-    compositor_context->ContextGL()->ShallowFlushCHROMIUM();
     if (base::FeatureList::IsEnabled(
             features::kReclaimResourcesFlushInBackground)) {
+      auto* compositor_context = layer_tree_frame_sink_->context_provider();
       compositor_context->ContextSupport()->FlushPendingWork();
     }
   }
