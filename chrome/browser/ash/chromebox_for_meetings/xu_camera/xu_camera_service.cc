@@ -153,6 +153,8 @@ void XuCameraService::GetUnitId(const mojom::WebcamIdPtr id,
   // TODO(b/260593636): Leverage WebRTC and GetDevicePath() once implemented
   auto unitId = guid_unitid_map_.find(guid);
   if (unitId != guid_unitid_map_.end()) {
+    VLOG(4) << __func__
+            << ": UnitId found: " << static_cast<char>(unitId->second);
     std::move(callback).Run(0, unitId->second);
     return;
   }
@@ -172,9 +174,6 @@ void XuCameraService::OnGetDevices(
     GetUnitIdCallback callback,
     std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
   for (const auto& device_info : devices) {
-    VLOG(4) << __func__ << ": VID:PID " << std::hex
-            << static_cast<int>(device_info->vendor_id) << ":" << std::hex
-            << static_cast<int>(device_info->product_id);
     for (const auto& config : device_info->configurations) {
       for (const auto& interface : config->interfaces) {
         for (const auto& alternate : interface->alternates) {
@@ -205,6 +204,8 @@ void XuCameraService::OnGetDevices(
 
   auto unitId = guid_unitid_map_.find(guid);
   if (unitId != guid_unitid_map_.end()) {
+    VLOG(4) << __func__
+            << ": UnitId found: " << static_cast<char>(unitId->second);
     std::move(callback).Run(0, unitId->second);
     return;
   }
