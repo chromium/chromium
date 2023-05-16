@@ -24,7 +24,6 @@ namespace content {
 class ServiceWorkerRaceNetworkRequestURLLoaderClient
     : public network::mojom::URLLoaderClient {
  public:
-  using FetchResponseFrom = ServiceWorkerResourceLoader::FetchResponseFrom;
   explicit ServiceWorkerRaceNetworkRequestURLLoaderClient(
       const network::ResourceRequest& request,
       base::WeakPtr<ServiceWorkerResourceLoader> owner);
@@ -38,6 +37,14 @@ class ServiceWorkerRaceNetworkRequestURLLoaderClient
   const net::LoadTimingInfo& GetLoadTimingInfo() { return head_->load_timing; }
 
   static net::NetworkTrafficAnnotationTag NetworkTrafficAnnotationTag();
+
+  // When the fetch handler result is fallback, the browser tries to use the
+  // RaceNetworkRequest response rather than dispatching another network
+  // request. This method tells the client to handle the response regardless of
+  // the result.
+  void NotifyFetchHandlerFallback();
+
+  bool request_completed() { return request_completed_; }
 
   // network::mojom::URLLoaderClient overrides:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
@@ -62,6 +69,11 @@ class ServiceWorkerRaceNetworkRequestURLLoaderClient
   const network::ResourceRequest request_;
   base::WeakPtr<ServiceWorkerResourceLoader> owner_;
   network::mojom::URLResponseHeadPtr head_;
+  bool is_fetch_handler_response_fallback_ = false;
+
+  // Indicates if the RaceNetworkRequest is completed or not. This is marked as
+  // completed regardless of whether the response is actually committed or not.
+  bool request_completed_ = false;
 };
 }  // namespace content
 

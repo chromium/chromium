@@ -34,12 +34,11 @@ class ServiceWorkerResourceLoader {
   ServiceWorkerResourceLoader();
   virtual ~ServiceWorkerResourceLoader();
 
-  void RecordFetchResponseFrom();
+  FetchResponseFrom fetch_response_from() { return fetch_response_from_; }
 
-  FetchResponseFrom commit_responsibility() { return commit_responsibility_; }
-  void SetCommitResponsibility(FetchResponseFrom fetch_response_from);
-  void reset_commit_responsibility() {
-    commit_responsibility_ = FetchResponseFrom::kNoResponseYet;
+  void SetFetchResponseFrom(FetchResponseFrom fetch_response_from);
+  void reset_fetch_response_from() {
+    fetch_response_from_ = FetchResponseFrom::kNoResponseYet;
   }
 
   // Tells if the class is main resource's class or not.
@@ -70,7 +69,7 @@ class ServiceWorkerResourceLoader {
       const network::mojom::URLResponseHeadPtr& response_head) = 0;
 
  private:
-  FetchResponseFrom commit_responsibility_ = FetchResponseFrom::kNoResponseYet;
+  FetchResponseFrom fetch_response_from_ = FetchResponseFrom::kNoResponseYet;
 };
 }  // namespace content
 
