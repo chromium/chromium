@@ -4,21 +4,21 @@
 
 package org.chromium.components.webapps.bottomsheet;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 
+import org.chromium.components.browser_ui.widget.FullscreenAlertDialog;
 import org.chromium.components.webapps.R;
 
 /**
  * UI for the zoomed image view used for screenshots in the bottom-sheet UI for PWA installs.
  */
-public class ImageZoomView extends AlertDialog {
+public class ImageZoomView extends FullscreenAlertDialog {
     public ImageZoomView(Context context, Bitmap bitmap) {
-        super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
+        super(context);
 
         View view = LayoutInflater.from(context).inflate(R.layout.image_zoom_view, null);
         view.setOnClickListener(v -> dismiss());

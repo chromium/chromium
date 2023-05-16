@@ -11,7 +11,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
@@ -19,6 +18,7 @@ import com.google.android.material.tabs.TabLayout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.qrcode.scan_tab.QrCodeScanCoordinator;
 import org.chromium.chrome.browser.share.qrcode.share_tab.QrCodeShareCoordinator;
+import org.chromium.components.browser_ui.widget.FullscreenAlertDialog;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -52,10 +52,7 @@ public class QrCodeDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         initTabs();
-        AlertDialog.Builder builder =
-                new AlertDialog.Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_Fullscreen);
-        builder.setView(getDialogView());
-        return builder.create();
+        return new FullscreenAlertDialog.Builder(getActivity()).setView(getDialogView()).create();
     }
 
     @Override

@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import androidx.recyclerview.widget.SnapHelper;
 
 import org.chromium.chrome.browser.content_creation.internal.R;
+import org.chromium.components.browser_ui.widget.FullscreenAlertDialog;
 import org.chromium.components.content_creation.notes.models.NoteTemplate;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -76,8 +77,7 @@ public class NoteCreationDialog extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder =
-                new AlertDialog.Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_Fullscreen);
+        AlertDialog.Builder builder = new FullscreenAlertDialog.Builder(getActivity());
         mContentView = getActivity().getLayoutInflater().inflate(R.layout.creation_dialog, null);
         builder.setView(mContentView);
 

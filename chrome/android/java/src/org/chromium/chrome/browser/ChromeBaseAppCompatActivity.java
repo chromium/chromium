@@ -65,6 +65,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
      * Activities that use the <merge> tag or delay layout inflation cannot use WITH_TOOLBAR_VIEW.
      * Activities that use their own action bar cannot use WITH_ACTION_BAR.
      * Activities that appear as Dialogs using themes do not have an automotive toolbar yet (NONE).
+     *
+     * Note that full screen dialogs display the automotive toolbar using FullscreenAlertDialog.
      */
     @IntDef({
             AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW,
