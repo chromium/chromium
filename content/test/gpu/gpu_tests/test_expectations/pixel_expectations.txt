@@ -301,14 +301,8 @@ crbug.com/974380 [ linux ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWor
 # Times out on Pixel 4s in webview.
 crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation renderer-skia-gl ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 
-# WebGL drawingBufferStorage does not work on Google Pixel devices, Samsung
-# devices or kevin yet.
-crbug.com/1230619 [ android android-nexus-5x passthrough ] Pixel_WebGLFloat [ Failure ]
-crbug.com/1230619 [ android android-pixel-2 ] Pixel_WebGLFloat [ Failure ]
-crbug.com/1230619 [ android android-pixel-4 angle-disabled no-passthrough ] Pixel_WebGLFloat [ Failure ]
-crbug.com/1230619 [ android android-pixel-6 angle-disabled no-passthrough ] Pixel_WebGLFloat [ Failure ]
-crbug.com/1230619 [ android android-SM-A135M ] Pixel_WebGLFloat [ Failure ]
-crbug.com/1230619 [ android android-SM-A235M ] Pixel_WebGLFloat [ Failure ]
+# WebGL drawingBufferStorage does not work on Android devices or on kevin yet.
+crbug.com/1230619 [ android ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ chromeos chromeos-board-kevin ] Pixel_WebGLFloat [ Failure ]
 
 
