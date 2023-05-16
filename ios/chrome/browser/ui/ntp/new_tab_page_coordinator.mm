@@ -512,6 +512,7 @@
 }
 
 - (void)didNavigateAwayFromNTP {
+  [self cancelOmniboxEdit];
   [self updateNTPIsVisible:NO];
   self.webState = nullptr;
 }
@@ -1653,13 +1654,6 @@
             recordNTPImpression:IOSNTPImpressionType::kFeedDisabled];
       }
     } else {
-      // Unfocus omnibox, to prevent it from lingering when it should be
-      // dismissed (for example, when navigating away or when changing feed
-      // visibility). Do this after the MVC classes are deallocated so no reset
-      // animations are fired in response to this cancel.
-      id<OmniboxCommands> omniboxCommandHandler = HandlerForProtocol(
-          self.browser->GetCommandDispatcher(), OmniboxCommands);
-      [omniboxCommandHandler cancelOmniboxEdit];
       if (!self.didAppearTime.is_null()) {
         [self.NTPMetricsRecorder
             recordTimeSpentInNTP:base::TimeTicks::Now() - self.didAppearTime];
@@ -1672,15 +1666,6 @@
     if ([self isFeedVisible]) {
       [self.feedMetricsRecorder recordNTPDidChangeVisibility:visible];
     }
-  }
-
-  if (!self.browser->GetBrowserState()->IsOffTheRecord() && !visible) {
-    // Unfocus omnibox, to prevent it from lingering when it should be
-    // dismissed (for example, when navigating away or when changing feed
-    // visibility).
-    // Do this after updating `visible` to prevent defocus animation from
-    // happening when already navigating away from NTP.
-    [self cancelOmniboxEdit];
   }
 }
 

@@ -116,12 +116,6 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 
   _started = YES;
 
-  // Make sure that the omnibox is unfocused to prevent having it visually
-  // focused while the NTP is just created (with the fakebox visible).
-  id<OmniboxCommands> omniboxCommandHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
-  [omniboxCommandHandler cancelOmniboxEdit];
-
   self.authService = AuthenticationServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState());
 
