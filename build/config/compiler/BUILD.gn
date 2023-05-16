@@ -2603,6 +2603,13 @@ config("minimal_symbols") {
     # Functions, files, and line tables only.
     cflags = []
 
+    if (is_clang) {
+      cflags += [
+        # Disable putting the compiler command line into the debug info to
+        # prevent some types of non-determinism.
+        "-gno-codeview-command-line",
+      ]
+    }
     if (is_clang && use_lld && use_ghash) {
       cflags += [ "-gcodeview-ghash" ]
       ldflags = [ "/DEBUG:GHASH" ]
