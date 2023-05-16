@@ -159,6 +159,7 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 }
 
 - (void)shutdown {
+  [self.suggestionsMediator disconnect];
   _searchEngineObserver.reset();
   if (_webState && _webStateObserver) {
     _webState->RemoveObserver(_webStateObserver.get());

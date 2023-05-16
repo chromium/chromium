@@ -199,6 +199,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 - (void)disconnect {
   _mostVisitedBridge.reset();
   _mostVisitedSites.reset();
+  _readingListModelBridge.reset();
 }
 
 - (void)refreshMostVisitedTiles {
