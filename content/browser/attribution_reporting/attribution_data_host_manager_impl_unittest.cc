@@ -1154,8 +1154,7 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource) {
       attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
-      network::AttributionReportingRuntimeFeatures(
-          network::AttributionReportingRuntimeFeature::kCrossAppWeb),
+      {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
       /*is_final_response=*/false);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -1183,8 +1182,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
-      network::AttributionReportingRuntimeFeatures(
-          network::AttributionReportingRuntimeFeature::kCrossAppWeb),
+      {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
       /*is_final_response=*/false);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -1227,8 +1225,7 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource_InOrder) {
         attribution_src_token, headers.get(), reporter, source_site,
         AttributionInputEvent(), AttributionNavigationType::kAnchor,
         /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
-        network::AttributionReportingRuntimeFeatures(
-            network::AttributionReportingRuntimeFeature::kCrossAppWeb),
+        {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
         /*is_final_response=*/false);
   }
 
@@ -1241,8 +1238,7 @@ TEST_F(AttributionDataHostManagerImplTest, NavigationRedirectOsSource_InOrder) {
         attribution_src_token, headers.get(), reporter, source_site,
         AttributionInputEvent(), AttributionNavigationType::kAnchor,
         /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
-        network::AttributionReportingRuntimeFeatures(
-            network::AttributionReportingRuntimeFeature::kCrossAppWeb),
+        {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
         /*is_final_response=*/false);
   }
 
@@ -1273,8 +1269,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       attribution_src_token, headers.get(), reporter, source_site,
       AttributionInputEvent(), AttributionNavigationType::kAnchor,
       /*is_within_fenced_frame=*/false, kFrameId, kNavigationId,
-      network::AttributionReportingRuntimeFeatures(
-          network::AttributionReportingRuntimeFeature::kCrossAppWeb),
+      {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
       /*is_final_response=*/false);
   // Wait for parsing to finish.
   task_environment_.FastForwardBy(base::TimeDelta());
@@ -2145,9 +2140,7 @@ TEST_F(AttributionDataHostManagerImplTest,
       /*is_within_fenced_frame=*/false, AttributionInputEvent(), kFrameId);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId,
-      network::AttributionReportingRuntimeFeatures(
-          network::AttributionReportingRuntimeFeature::kCrossAppWeb),
+      kBeaconId, {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
       reporting_origin, headers.get(),
       /*is_final_response=*/false);
 
@@ -2155,9 +2148,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   task_environment_.FastForwardBy(base::TimeDelta());
 
   data_host_manager_.NotifyFencedFrameReportingBeaconData(
-      kBeaconId,
-      network::AttributionReportingRuntimeFeatures(
-          network::AttributionReportingRuntimeFeature::kCrossAppWeb),
+      kBeaconId, {network::AttributionReportingRuntimeFeature::kCrossAppWeb},
       reporting_origin, headers.get(),
       /*is_final_response=*/true);
 

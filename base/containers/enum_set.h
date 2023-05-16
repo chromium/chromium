@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -165,8 +166,9 @@ class EnumSet {
     return bitstring << shift_amount;
   }
 
+#if BUILDFLAG(IS_IOS)
   // TODO(crbug/1444105): Deprecated. Use std::initializer_list version below.
-  // Remove once there are no usages.
+  // Remove once there are no usages on iOS.
   template <class... T>
   static constexpr uint64_t bitstring(T... values) {
     uint64_t converted[] = {single_val_bitstring(values)...};
@@ -177,11 +179,14 @@ class EnumSet {
   }
 
   // TODO(crbug/1444105): Deprecated. Use std::initializer_list version below.
-  // Remove once there are no usages.
+  // Remove once there are no usages on iOS.
   template <class... T>
   constexpr EnumSet(E head, T... tail)
       : EnumSet(EnumBitSet(bitstring(head, tail...))) {}
+#endif
 
+  // TODO(crbug/1444105): This should be private (not needed externally and
+  // dangerous to use).
   static constexpr uint64_t bitstring(const std::initializer_list<E>& values) {
     uint64_t result = 0;
     for (E value : values) {

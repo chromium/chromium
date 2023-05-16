@@ -474,7 +474,7 @@ TEST_F(SyncServiceImplStartupTest, HonorsExistingDatatypePrefs) {
   sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 
-  EXPECT_EQ(UserSelectableTypeSet(UserSelectableType::kBookmarks),
+  EXPECT_EQ(UserSelectableTypeSet({UserSelectableType::kBookmarks}),
             sync_service()->GetUserSettings()->GetSelectedTypes());
 }
 #endif
@@ -819,7 +819,7 @@ TEST_F(SyncServiceImplStartupTest,
   SimulateTestUserSigninAndEnableSyncFeature();
 
   CreateSyncService(SyncServiceImpl::MANUAL_START,
-                    /*registered_types=*/ModelTypeSet(BOOKMARKS, READING_LIST));
+                    /*registered_types=*/{BOOKMARKS, READING_LIST});
 
   sync_service()->Initialize();
 
@@ -836,7 +836,7 @@ TEST_F(SyncServiceImplStartupTest,
   SetSyncFeatureEnabledPrefs();
 
   CreateSyncService(SyncServiceImpl::MANUAL_START,
-                    /*registered_types=*/ModelTypeSet(BOOKMARKS, READING_LIST));
+                    /*registered_types=*/{BOOKMARKS, READING_LIST});
 
   component_factory()->AllowFakeEngineInitCompletion(false);
   sync_service()->Initialize();
@@ -867,7 +867,7 @@ TEST_F(SyncServiceImplStartupTest,
   SetSyncFeatureEnabledPrefs();
 
   CreateSyncService(SyncServiceImpl::MANUAL_START,
-                    /*registered_types=*/ModelTypeSet(BOOKMARKS, READING_LIST));
+                    /*registered_types=*/{BOOKMARKS, READING_LIST});
 
   component_factory()->AllowFakeEngineInitCompletion(false);
   sync_service()->Initialize();
