@@ -13,7 +13,10 @@
 
 #include "base/base_export.h"
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/win/windows_types.h"
+
+class ShellUtil;
 
 namespace base {
 namespace win {
@@ -27,21 +30,31 @@ namespace win {
 //    is not touched in case of failure.
 //  * Functions returning LONG indicate success as ERROR_SUCCESS or an
 //    error as a (non-zero) win32 error code.
-class BASE_EXPORT RegKey {
+//
+// Most developers should use base::win::RegKey subclass below.
+namespace internal {
+
+class Standard;
+class ExportDerived;
+template <typename T>
+class RegTestTraits;
+
+template <typename Reg>
+class GenericRegKey {
  public:
   // Called from the MessageLoop when the key changes.
   using ChangeCallback = OnceCallback<void()>;
 
-  RegKey();
-  explicit RegKey(HKEY key);
-  RegKey(HKEY rootkey, const wchar_t* subkey, REGSAM access);
-  RegKey(RegKey&& other) noexcept;
-  RegKey& operator=(RegKey&& other);
+  GenericRegKey();
+  explicit GenericRegKey(HKEY key);
+  GenericRegKey(HKEY rootkey, const wchar_t* subkey, REGSAM access);
+  GenericRegKey(GenericRegKey&& other) noexcept;
+  GenericRegKey& operator=(GenericRegKey&& other);
 
-  RegKey(const RegKey&) = delete;
-  RegKey& operator=(const RegKey&) = delete;
+  GenericRegKey(const GenericRegKey&) = delete;
+  GenericRegKey& operator=(const GenericRegKey&) = delete;
 
-  ~RegKey();
+  virtual ~GenericRegKey();
 
   LONG Create(HKEY rootkey, const wchar_t* subkey, REGSAM access);
 
@@ -139,8 +152,8 @@ class BASE_EXPORT RegKey {
   // Starts watching the key to see if any of its values have changed.
   // The key must have been opened with the KEY_NOTIFY access privilege.
   // Returns true on success.
-  // To stop watching, delete this RegKey object. To continue watching the
-  // object after the callback is invoked, call StartWatching again.
+  // To stop watching, delete this GenericRegKey object. To continue watching
+  // the object after the callback is invoked, call StartWatching again.
   bool StartWatching(ChangeCallback callback);
 
   HKEY Handle() const { return key_; }
@@ -154,6 +167,47 @@ class BASE_EXPORT RegKey {
   HKEY key_ = nullptr;  // The registry key being iterated.
   REGSAM wow64access_ = 0;
   std::unique_ptr<Watcher> key_watcher_;
+};
+
+}  // namespace internal
+
+// The Windows registry utility class most developers should use.
+class BASE_EXPORT RegKey : public internal::GenericRegKey<internal::Standard> {
+ public:
+  RegKey();
+  explicit RegKey(HKEY key);
+  RegKey(HKEY rootkey, const wchar_t* subkey, REGSAM access);
+  RegKey(RegKey&& other) noexcept;
+  RegKey& operator=(RegKey&& other);
+
+  RegKey(const RegKey&) = delete;
+  RegKey& operator=(const RegKey&) = delete;
+
+  ~RegKey() override;
+};
+
+// A Windows registry class that derives its calls directly from advapi32.dll.
+// Generally, you should use RegKey above. Note that use of this API will pin
+// advapi32.dll. If you need to use this class, please reach out to the
+// base/win/OWNERS first.
+class BASE_EXPORT ExportDerivedRegKey
+    : public internal::GenericRegKey<internal::ExportDerived> {
+ public:
+  ExportDerivedRegKey(ExportDerivedRegKey&& other) noexcept;
+  ExportDerivedRegKey& operator=(ExportDerivedRegKey&& other);
+
+  ExportDerivedRegKey(const ExportDerivedRegKey&) = delete;
+  ExportDerivedRegKey& operator=(const ExportDerivedRegKey&) = delete;
+
+  ~ExportDerivedRegKey() override;
+
+ private:
+  friend class ::ShellUtil;
+  friend class internal::RegTestTraits<ExportDerivedRegKey>;
+
+  ExportDerivedRegKey();
+  explicit ExportDerivedRegKey(HKEY key);
+  ExportDerivedRegKey(HKEY rootkey, const wchar_t* subkey, REGSAM access);
 };
 
 // Iterates the entries found in a particular folder on the registry.
