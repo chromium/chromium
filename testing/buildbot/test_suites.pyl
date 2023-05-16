@@ -4503,6 +4503,7 @@
       'browser_tests_network_sandbox': {
         'args': [
           '--enable-features=NetworkServiceSandbox',
+          '--enable-features=AsyncQuicSession',
         ],
         'swarming': {
           'shards': 10,
@@ -4512,12 +4513,14 @@
       'components_browsertests_network_sandbox': {
         'args': [
           '--enable-features=NetworkServiceSandbox',
+          '--enable-features=AsyncQuicSession',
         ],
         'test': 'components_browsertests',
       },
       'content_browsertests_network_sandbox': {
         'args': [
           '--enable-features=NetworkServiceSandbox',
+          '--enable-features=AsyncQuicSession',
         ],
         'swarming': {
           'shards': 10,
@@ -4527,6 +4530,7 @@
       'interactive_ui_tests_network_sandbox': {
         'args': [
           '--enable-features=NetworkServiceSandbox',
+          '--enable-features=AsyncQuicSession',
         ],
         'swarming': {
           'shards': 3,
@@ -4536,6 +4540,7 @@
       'sync_integration_tests_network_sandbox': {
         'args': [
           '--enable-features=NetworkServiceSandbox',
+          '--enable-features=AsyncQuicSession',
         ],
         'test': 'sync_integration_tests',
       },

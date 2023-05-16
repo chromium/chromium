@@ -43091,7 +43091,7 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-features=NetworkServiceSandbox"
+          "--enable-features=NetworkServiceSandbox,AsyncQuicSession"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -43112,7 +43112,7 @@
       },
       {
         "args": [
-          "--enable-features=NetworkServiceSandbox"
+          "--enable-features=NetworkServiceSandbox,AsyncQuicSession"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -43132,7 +43132,7 @@
       },
       {
         "args": [
-          "--enable-features=NetworkServiceSandbox"
+          "--enable-features=NetworkServiceSandbox,AsyncQuicSession"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -43153,7 +43153,7 @@
       },
       {
         "args": [
-          "--enable-features=NetworkServiceSandbox"
+          "--enable-features=NetworkServiceSandbox,AsyncQuicSession"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -43174,7 +43174,7 @@
       },
       {
         "args": [
-          "--enable-features=NetworkServiceSandbox"
+          "--enable-features=NetworkServiceSandbox,AsyncQuicSession"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -48366,7 +48366,7 @@
     "gtest_tests": [
       {
         "args": [
-          "--enable-features=NetworkServiceSandbox"
+          "--enable-features=NetworkServiceSandbox,AsyncQuicSession"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -48388,7 +48388,7 @@
       },
       {
         "args": [
-          "--enable-features=NetworkServiceSandbox"
+          "--enable-features=NetworkServiceSandbox,AsyncQuicSession"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -48409,7 +48409,7 @@
       },
       {
         "args": [
-          "--enable-features=NetworkServiceSandbox"
+          "--enable-features=NetworkServiceSandbox,AsyncQuicSession"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -48431,7 +48431,7 @@
       },
       {
         "args": [
-          "--enable-features=NetworkServiceSandbox"
+          "--enable-features=NetworkServiceSandbox,AsyncQuicSession"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -48453,7 +48453,7 @@
       },
       {
         "args": [
-          "--enable-features=NetworkServiceSandbox"
+          "--enable-features=NetworkServiceSandbox,AsyncQuicSession"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
