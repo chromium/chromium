@@ -87,7 +87,8 @@ const int kMainIntentCheckDelay = 1;
     _startupInformation = _mainController;
     _appState =
         [[AppState alloc] initWithStartupInformation:_startupInformation];
-    _pushNotificationDelegate = [[PushNotificationDelegate alloc] init];
+    _pushNotificationDelegate =
+        [[PushNotificationDelegate alloc] initWithAppState:_appState];
     [_mainController setAppState:_appState];
   }
   return self;
@@ -143,12 +144,6 @@ const int kMainIntentCheckDelay = 1;
       addObserver:self
          selector:@selector(firstSceneWillEnterForeground:)
              name:UIApplicationWillEnterForegroundNotification
-           object:nil];
-
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(applicationDidBecomeActive:)
-             name:UIApplicationDidBecomeActiveNotification
            object:nil];
 
   return YES;
@@ -365,10 +360,6 @@ const int kMainIntentCheckDelay = 1;
   [_appState applicationWillEnterForeground:UIApplication.sharedApplication
                             metricsMediator:_metricsMediator
                                memoryHelper:_memoryHelper];
-}
-
-- (void)applicationDidBecomeActive:(NSNotification*)notification {
-  [_pushNotificationDelegate browserDidBecomeReady];
 }
 
 #pragma mark - AppStateObserver methods

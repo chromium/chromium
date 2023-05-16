@@ -159,7 +159,7 @@ class CommercePushNotificationClientTest : public PlatformTest {
     browser_list_ =
         BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
-    foreground_inactive_browser_ =
+    background_browser_ =
         std::make_unique<TestBrowser>(chrome_browser_state_.get());
     browser_list_->AddBrowser(browser_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
@@ -182,13 +182,12 @@ class CommercePushNotificationClientTest : public PlatformTest {
         SceneActivationLevelForegroundActive;
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(),
                                              scene_state_foreground_);
-    scene_state_foreground_inactive_ =
+    scene_state_background_ =
         [[FakeSceneState alloc] initWithAppState:app_state_
                                     browserState:chrome_browser_state_.get()];
-    scene_state_foreground_inactive_.activationLevel =
-        SceneActivationLevelForegroundInactive;
-    SceneStateBrowserAgent::CreateForBrowser(foreground_inactive_browser_.get(),
-                                             scene_state_foreground_inactive_);
+    scene_state_background_.activationLevel = SceneActivationLevelBackground;
+    SceneStateBrowserAgent::CreateForBrowser(background_browser_.get(),
+                                             scene_state_background_);
   }
 
   CommercePushNotificationClient* GetCommercePushNotificationClient() {
@@ -197,9 +196,7 @@ class CommercePushNotificationClientTest : public PlatformTest {
 
   Browser* GetBrowser() { return browser_.get(); }
 
-  Browser* GetForegroundInactiveBrowser() {
-    return foreground_inactive_browser_.get();
-  }
+  Browser* GetBackgroundBrowser() { return background_browser_.get(); }
 
   void HandleNotificationInteraction(
       NSString* action_identifier,
@@ -223,13 +220,13 @@ class CommercePushNotificationClientTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   CommercePushNotificationClient commerce_push_notification_client_;
   std::unique_ptr<Browser> browser_;
-  std::unique_ptr<Browser> foreground_inactive_browser_;
+  std::unique_ptr<Browser> background_browser_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   BrowserList* browser_list_;
   bookmarks::BookmarkModel* bookmark_model_;
   commerce::MockShoppingService* shopping_service_;
   FakeSceneState* scene_state_foreground_;
-  FakeSceneState* scene_state_foreground_inactive_;
+  FakeSceneState* scene_state_background_;
   AppState* app_state_;
 };
 
@@ -336,7 +333,7 @@ TEST_F(CommercePushNotificationClientTest, TestBrowserInitialization) {
 
 TEST_F(CommercePushNotificationClientTest,
        TestBackgroundBrowserNotUsedWhenForegroundAvailable) {
-  browser_list_->AddBrowser(GetForegroundInactiveBrowser());
+  browser_list_->AddBrowser(GetBackgroundBrowser());
   Browser* browser = GetCommercePushClientActiveBrowser();
   // When active foregrounded and active backgrounded browser is availalbe,
   // should choose foregrounded browser.
@@ -346,14 +343,14 @@ TEST_F(CommercePushNotificationClientTest,
                 .activationLevel);
 }
 
-TEST_F(CommercePushNotificationClientTest, TestForegroundInactiveFallback) {
+TEST_F(CommercePushNotificationClientTest, TestBackgroundFallback) {
   // Remove foregrounded browser
   browser_list_->RemoveBrowser(GetBrowser());
   // Add backgrounded browser
-  browser_list_->AddBrowser(GetForegroundInactiveBrowser());
+  browser_list_->AddBrowser(GetBackgroundBrowser());
   Browser* browser = GetCommercePushClientActiveBrowser();
   // Only option is backgronuded browser
-  EXPECT_EQ(SceneActivationLevelForegroundInactive,
+  EXPECT_EQ(SceneActivationLevelBackground,
             SceneStateBrowserAgent::FromBrowser(browser)
                 ->GetSceneState()
                 .activationLevel);
