@@ -449,6 +449,10 @@ extern const char kSmbSharesLearnMoreURL[];
 // hub page.
 extern const char kSpeakOnMuteDetectionLearnMoreURL[];
 
+// The URL for the "Learn more" page for the geolocation toggle in the privacy
+// hub page.
+extern const char kGeolocationToggleLearnMoreURL[];
+
 // The URL for the "Learn more" page for Suggested Content in the privacy page.
 extern const char kSuggestedContentLearnMoreURL[];
 

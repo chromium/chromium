@@ -473,6 +473,9 @@ const char kSmbSharesLearnMoreURL[] =
 const char kSpeakOnMuteDetectionLearnMoreURL[] =
     "https://support.google.com/chromebook?p=mic-mute";
 
+const char kGeolocationToggleLearnMoreURL[] =
+    "https://support.google.com/chromebook/answer/142065";
+
 const char kSuggestedContentLearnMoreURL[] =
     "https://support.google.com/chromebook/?p=explorecontent";
 
