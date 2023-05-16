@@ -4,11 +4,13 @@
 
 #include "net/socket/socket_bio_adapter.h"
 
+#include <stdio.h>
 #include <string.h>
 
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/notreached.h"
@@ -284,9 +286,24 @@ void SocketBIOAdapter::SocketWrite() {
     int write_buffer_used_old = write_buffer_used_;
     int write_size =
         std::min(write_buffer_used_, write_buffer_->RemainingCapacity());
+
+    // TODO(crbug.com/1440692): Remove this once the crash is resolved.
+    char debug[128];
+    snprintf(debug, sizeof(debug),
+             "offset=%d;remaining=%d;used=%d;write_size=%d",
+             write_buffer_->offset(), write_buffer_->RemainingCapacity(),
+             write_buffer_used_, write_size);
+    base::debug::Alias(debug);
+
     write_error_ = ERR_IO_PENDING;
     int result = socket_->Write(write_buffer_.get(), write_size,
                                 write_callback_, kTrafficAnnotation);
+
+    // TODO(crbug.com/1440692): Remove this once the crash is resolved.
+    char debug2[32];
+    snprintf(debug2, sizeof(debug2), "result=%d", result);
+    base::debug::Alias(debug2);
+
     // If `write_buffer_used_` changed across a call to the underlying socket,
     // something went very wrong.
     //
