@@ -3,8 +3,14 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//components/update_client/buildflags.gni")
 import("//net/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "ENABLE_PUFFIN_PATCHES=$enable_puffin_patches" ]
+}
 
 source_set("network_impl") {
   sources = [
@@ -40,13 +46,16 @@ source_set("in_process_patcher") {
     "patch/in_process_patcher.h",
   ]
   deps = [
+    ":buildflags",
     ":update_client",
     "//base",
     "//courgette:bsdiff",
     "//courgette:courgette_lib",
-    "//third_party/puffin:libpuffpatch",
   ]
-  include_dirs = [ "//third_party/puffin/src/include" ]
+  if (enable_puffin_patches) {
+    include_dirs = [ "//third_party/puffin/src/include" ]
+    deps += [ "//third_party/puffin:libpuffpatch" ]
+  }
 }
 
 source_set("unzip_impl") {
@@ -66,6 +75,7 @@ source_set("patch_impl") {
     "patch/patch_impl.h",
   ]
   deps = [
+    ":buildflags",
     ":update_client",
     "//build:chromeos_buildflags",
     "//components/services/patch/public/cpp",
@@ -83,7 +93,6 @@ group("common_impl") {
 }
 
 static_library("update_client") {
-  include_dirs = [ "//third_party/puffin/src/include" ]
   sources = [
     "action_runner.cc",
     "action_runner.h",
@@ -99,15 +108,11 @@ static_library("update_client") {
     "component_unpacker.cc",
     "component_unpacker.h",
     "configurator.h",
-    "crx_cache.cc",
-    "crx_cache.h",
     "crx_downloader.cc",
     "crx_downloader.h",
     "crx_downloader_factory.cc",
     "crx_downloader_factory.h",
     "crx_update_item.h",
-    "features.cc",
-    "features.h",
     "network.cc",
     "network.h",
     "patcher.h",
@@ -127,10 +132,6 @@ static_library("update_client") {
     "protocol_serializer.h",
     "protocol_serializer_json.cc",
     "protocol_serializer_json.h",
-    "puffin_component_unpacker.cc",
-    "puffin_component_unpacker.h",
-    "puffin_patcher.cc",
-    "puffin_patcher.h",
     "request_sender.cc",
     "request_sender.h",
     "task.h",
@@ -161,6 +162,7 @@ static_library("update_client") {
   ]
 
   deps = [
+    ":buildflags",
     "//base",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
@@ -178,6 +180,20 @@ static_library("update_client") {
     sources += [
       "background_downloader_win.cc",
       "background_downloader_win.h",
+    ]
+  }
+
+  # TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+  # we should remove the enable_puffin_patches flag.
+  if (enable_puffin_patches) {
+    include_dirs = [ "//third_party/puffin/src/include" ]
+    sources += [
+      "crx_cache.cc",
+      "crx_cache.h",
+      "puffin_component_unpacker.cc",
+      "puffin_component_unpacker.h",
+      "puffin_patcher.cc",
+      "puffin_patcher.h",
     ]
   }
 }
@@ -205,6 +221,7 @@ source_set("test_support") {
   public_deps = [ ":update_client" ]
 
   deps = [
+    ":buildflags",
     ":network_impl",
     ":patch_impl",
     ":unzip_impl",
@@ -265,14 +282,11 @@ source_set("unit_tests") {
     "component_patcher_unittest.cc",
     "component_patcher_unittest.h",
     "component_unpacker_unittest.cc",
-    "crx_cache_unittest.cc",
     "persisted_data_unittest.cc",
     "ping_manager_unittest.cc",
     "protocol_parser_json_unittest.cc",
     "protocol_serializer_json_unittest.cc",
     "protocol_serializer_unittest.cc",
-    "puffin_component_unpacker_unittest.cc",
-    "puffin_patcher_unittest.cc",
     "request_sender_unittest.cc",
     "update_checker_unittest.cc",
     "update_client_unittest.cc",
@@ -285,6 +299,7 @@ source_set("unit_tests") {
   }
 
   deps = [
+    ":buildflags",
     ":network_impl",
     ":patch_impl",
     ":test_support",
@@ -305,11 +320,20 @@ source_set("unit_tests") {
     "//services/network/public/cpp:cpp_base",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/puffin:libpuffpatch",
     "//third_party/re2",
   ]
 
-  data_deps = [ "//components/test/data/update_client/puffin_patch_test:puffin_patch_test_files" ]
+  # TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+  # we should remove the enable_puffin_patches flag.
+  if (enable_puffin_patches) {
+    sources += [
+      "crx_cache_unittest.cc",
+      "puffin_component_unpacker_unittest.cc",
+      "puffin_patcher_unittest.cc",
+    ]
+    deps += [ "//third_party/puffin:libpuffpatch" ]
+    data_deps = [ "//components/test/data/update_client/puffin_patch_test:puffin_patch_test_files" ]
+  }
 }
 
 fuzzer_test("update_client_protocol_serializer_fuzzer") {

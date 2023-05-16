@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/activity_data_service.h"
+#include "components/update_client/buildflags.h"
 #include "components/update_client/component.h"
 #include "components/update_client/net/url_loader_post_interceptor.h"
 #include "components/update_client/persisted_data.h"
@@ -173,10 +174,20 @@ void UpdateCheckerTest::UpdateCheckComplete(
 }
 
 scoped_refptr<UpdateContext> UpdateCheckerTest::MakeMockUpdateContext() const {
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+  // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+  // we should remove this #if.
   CrxCache::Options options(temp_dir_.GetPath());
+#endif
   return base::MakeRefCounted<UpdateContext>(
-      config_, base::MakeRefCounted<CrxCache>(options), false, false,
-      std::vector<std::string>(), UpdateClient::CrxStateChangeCallback(),
+      config_,
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
+      // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+      // we should remove this #if.
+      base::MakeRefCounted<CrxCache>(options),
+#endif
+      false, false, std::vector<std::string>(),
+      UpdateClient::CrxStateChangeCallback(),
       UpdateEngine::NotifyObserversCallback(), UpdateEngine::Callback(),
       nullptr,
       /*is_update_check_only=*/false);
@@ -283,7 +294,11 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   ASSERT_TRUE(request->FindString("@updater"));
   EXPECT_EQ("fake_prodid", *request->FindString("@updater"));
   ASSERT_TRUE(request->FindString("acceptformat"));
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
   EXPECT_EQ("crx3,puff", *request->FindString("acceptformat"));
+#else
+  EXPECT_EQ("crx3", *request->FindString("acceptformat"));
+#endif
   EXPECT_TRUE(request->contains("arch"));
   ASSERT_TRUE(request->FindString("dedup"));
   EXPECT_EQ("cr", *request->FindString("dedup"));

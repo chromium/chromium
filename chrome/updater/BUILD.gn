@@ -150,6 +150,7 @@ if (is_win || is_mac || is_linux) {
       "//components/policy/proto",
       "//components/prefs",
       "//components/update_client",
+      "//components/update_client:buildflags",
       "//components/update_client:in_process_patcher",
       "//components/update_client:in_process_unzipper",
       "//components/version_info",

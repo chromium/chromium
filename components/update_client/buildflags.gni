@@ -1,0 +1,11 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # Whether to enable the Puffin PuffPatch feature which is currently still
+  # in development.
+  # TODO(crbug.com/1349060) once Puffin patches are fully implemented,
+  # we should remove this flag.
+  enable_puffin_patches = false
+}

@@ -2325,6 +2325,7 @@ static_library("browser") {
     "//components/ukm:observers",
     "//components/undo",
     "//components/update_client",
+    "//components/update_client:buildflags",
     "//components/update_client:common_impl",
     "//components/upload_list",
     "//components/url_formatter",

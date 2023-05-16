@@ -18,6 +18,7 @@
 #include "components/component_updater/configurator_impl.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/activity_data_service.h"
+#include "components/update_client/buildflags.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/network.h"
 #include "components/update_client/patch/in_process_patcher.h"
@@ -201,6 +202,7 @@ scoped_refptr<update_client::Configurator> MakeAwComponentUpdaterConfigurator(
                                                               pref_service);
 }
 
+#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
 absl::optional<base::FilePath> AwComponentUpdaterConfigurator::GetCrxCachePath()
     const {
   base::FilePath path;
@@ -209,5 +211,6 @@ absl::optional<base::FilePath> AwComponentUpdaterConfigurator::GetCrxCachePath()
                    path.AppendASCII(("webview_crx_cache")))
              : absl::nullopt;
 }
+#endif
 
 }  // namespace android_webview
