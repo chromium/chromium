@@ -488,20 +488,30 @@ TEST_F(ShelfWidgetTest, HiddenShelfHitTestTouch) {
   }
 }
 
-class LtrRtlShelfWidgetTest : public ShelfWidgetTest,
-                              public testing::WithParamInterface<bool> {
+class LtrRtlShelfWidgetTest
+    : public ShelfWidgetTest,
+      public testing::WithParamInterface</*IsRtl()=*/bool> {
  public:
-  LtrRtlShelfWidgetTest() : scoped_locale_(GetParam() ? "he" : "") {}
+  LtrRtlShelfWidgetTest() : scoped_locale_(IsRtl() ? "he" : "") {}
   LtrRtlShelfWidgetTest(const LtrRtlShelfWidgetTest&) = delete;
   LtrRtlShelfWidgetTest& operator=(const LtrRtlShelfWidgetTest&) = delete;
   ~LtrRtlShelfWidgetTest() override = default;
 
+  void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(features::kQsRevamp);
+    ShelfWidgetTest::SetUp();
+  }
+
+ protected:
+  bool IsRtl() { return GetParam(); }
+
  private:
   // Restores locale to the default when destructor is called.
   base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, LtrRtlShelfWidgetTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(IsRtl, LtrRtlShelfWidgetTest, testing::Bool());
 
 TEST_P(LtrRtlShelfWidgetTest, MessageCenterBounds) {
   // Add a notification to force the message center bubble to show with the

@@ -18,6 +18,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/message_center/message_center.h"
@@ -29,7 +30,10 @@ namespace ash {
 
 class UnifiedMessageCenterBubbleTest : public AshTestBase {
  public:
-  UnifiedMessageCenterBubbleTest() = default;
+  UnifiedMessageCenterBubbleTest() {
+    // `UnifiedMessageCenterBubble` is only used when the QS revamp is disabled.
+    scoped_feature_list_.InitAndDisableFeature(features::kQsRevamp);
+  }
 
   UnifiedMessageCenterBubbleTest(const UnifiedMessageCenterBubbleTest&) =
       delete;
@@ -149,6 +153,7 @@ class UnifiedMessageCenterBubbleTest : public AshTestBase {
 
  private:
   int id_ = 0;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(UnifiedMessageCenterBubbleTest, PositionedAboveSystemTray) {

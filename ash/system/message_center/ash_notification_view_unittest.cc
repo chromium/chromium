@@ -4,6 +4,7 @@
 
 #include "ash/system/message_center/ash_notification_view.h"
 
+#include <memory>
 #include <string>
 
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -24,6 +25,7 @@
 #include "ash/system/message_center/metrics_utils.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/notification_center/notification_list_view.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -199,6 +201,10 @@ class AshNotificationViewTestBase : public AshTestBase,
   void SetUp() override {
     AshTestBase::SetUp();
     delegate_ = new NotificationTestDelegate();
+    notification_center_test_api_ = std::make_unique<NotificationCenterTestApi>(
+        /*tray=*/features::IsQsRevampEnabled()
+            ? GetPrimaryNotificationCenterTray()
+            : nullptr);
   }
 
   // Create a test notification that is used in the view.
@@ -275,11 +281,7 @@ class AshNotificationViewTestBase : public AshTestBase,
   // which we don't have in the customed made `notification_view_`.
   AshNotificationView* GetNotificationViewFromMessageCenter(std::string id) {
     return static_cast<AshNotificationView*>(
-        GetPrimaryUnifiedSystemTray()
-            ->message_center_bubble()
-            ->notification_center_view()
-            ->notification_list_view()
-            ->GetMessageViewForNotificationId(std::string(id)));
+        notification_center_test_api_->GetNotificationViewForId(id));
   }
 
   void UpdateTimestampForNotification(AshNotificationView* notification_view,
@@ -425,8 +427,13 @@ class AshNotificationViewTestBase : public AshTestBase,
 
   scoped_refptr<NotificationTestDelegate> delegate() { return delegate_; }
 
+  NotificationCenterTestApi* notification_center_test_api() {
+    return notification_center_test_api_.get();
+  }
+
  private:
   scoped_refptr<NotificationTestDelegate> delegate_;
+  std::unique_ptr<NotificationCenterTestApi> notification_center_test_api_;
 
   // Used to create test notification. This represents the current available
   // number that we can use to create the next test notification. This id will
@@ -830,7 +837,7 @@ TEST_F(AshNotificationViewTest, ExpandCollapseAnimationsRecordSmoothness) {
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
   auto notification =
       CreateTestNotification(/*has_image=*/true, /*show_snooze_button=*/true);
-  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  notification_center_test_api()->ToggleBubble();
   auto* notification_view =
       GetNotificationViewFromMessageCenter(notification->id());
 
@@ -890,7 +897,7 @@ TEST_F(AshNotificationViewTest, ImageExpandCollapseAnimationsRecordSmoothness) {
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
   auto notification = CreateTestNotification(/*has_image=*/true,
                                              /*show_snooze_button=*/true);
-  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  notification_center_test_api()->ToggleBubble();
   auto* notification_view =
       GetNotificationViewFromMessageCenter(notification->id());
 
@@ -956,7 +963,7 @@ TEST_F(AshNotificationViewTest, GroupExpandCollapseAnimationsRecordSmoothness) {
   message_center::MessageCenter::Get()->RemoveAllNotifications(
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
   auto notification = CreateTestNotification();
-  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  notification_center_test_api()->ToggleBubble();
   auto* notification_view =
       GetNotificationViewFromMessageCenter(notification->id());
   MakeNotificationGroupParent(
@@ -1020,7 +1027,7 @@ TEST_F(AshNotificationViewTest, SingleToGroupAnimationsRecordSmoothness) {
 
   message_center::MessageCenter::Get()->RemoveAllNotifications(
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
-  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  notification_center_test_api()->ToggleBubble();
 
   auto notification1 = CreateTestNotificationInAGroup();
 
@@ -1055,7 +1062,7 @@ TEST_F(AshNotificationViewTest, InlineReplyAnimationsRecordSmoothness) {
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
   auto notification =
       CreateTestNotification(/*has_image=*/true, /*show_snooze_button=*/true);
-  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  notification_center_test_api()->ToggleBubble();
   auto* notification_view =
       GetNotificationViewFromMessageCenter(notification->id());
 
@@ -1097,7 +1104,7 @@ TEST_F(AshNotificationViewTest, InlineSettingsAnimationsRecordSmoothness) {
       /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
   auto notification =
       CreateTestNotification(/*has_image=*/true, /*show_snooze_button=*/true);
-  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  notification_center_test_api()->ToggleBubble();
   auto* notification_view =
       GetNotificationViewFromMessageCenter(notification->id());
 
@@ -1146,7 +1153,7 @@ TEST_F(AshNotificationViewTest,
 
   auto notification = CreateTestNotification();
 
-  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  notification_center_test_api()->ToggleBubble();
   auto* notification_view =
       GetNotificationViewFromMessageCenter(notification->id());
   MakeNotificationGroupParent(
@@ -1228,7 +1235,7 @@ TEST_F(AshNotificationViewTest, DuplicateGroupChildRemovalWithAnimation) {
 
   auto notification = CreateTestNotification();
 
-  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  notification_center_test_api()->ToggleBubble();
   auto* notification_view =
       GetNotificationViewFromMessageCenter(notification->id());
   MakeNotificationGroupParent(
@@ -1261,7 +1268,7 @@ TEST_F(AshNotificationViewTest, CollapseProgressNotificationWithImage) {
 
 TEST_F(AshNotificationViewTest, ButtonStateUpdated) {
   auto notification = CreateTestNotification();
-  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  notification_center_test_api()->ToggleBubble();
 
   notification_view()->UpdateWithNotification(*notification);
 

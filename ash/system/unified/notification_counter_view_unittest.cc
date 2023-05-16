@@ -50,9 +50,8 @@ class NotificationCounterViewTest : public AshTestBase,
 
   void SetUp() override {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    if (IsQsRevampEnabled()) {
-      scoped_feature_list_->InitAndEnableFeature(features::kQsRevamp);
-    }
+    scoped_feature_list_->InitWithFeatureState(features::kQsRevamp,
+                                               /*enabled=*/IsQsRevampEnabled());
 
     AshTestBase::SetUp();
   }

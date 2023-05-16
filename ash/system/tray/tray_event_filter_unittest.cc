@@ -4,6 +4,7 @@
 
 #include "ash/system/tray/tray_event_filter.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -12,6 +13,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -24,7 +26,8 @@ namespace ash {
 
 namespace {
 
-class TrayEventFilterTest : public AshTestBase {
+class TrayEventFilterTest : public AshTestBase,
+                            public testing::WithParamInterface<bool> {
  public:
   TrayEventFilterTest() = default;
 
@@ -35,6 +38,8 @@ class TrayEventFilterTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(features::kQsRevamp,
+                                              /*enabled=*/IsQsRevampEnabed());
     AshTestBase::SetUp();
   }
 
@@ -60,6 +65,8 @@ class TrayEventFilterTest : public AshTestBase {
   }
 
  protected:
+  bool IsQsRevampEnabed() { return GetParam(); }
+
   std::string AddNotification() {
     std::string notification_id = base::NumberToString(notification_id_++);
     MessageCenter::Get()->AddNotification(std::make_unique<Notification>(
@@ -102,9 +109,14 @@ class TrayEventFilterTest : public AshTestBase {
 
  private:
   int notification_id_ = 0;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(TrayEventFilterTest, ClickingOutsideCloseBubble) {
+INSTANTIATE_TEST_SUITE_P(IsQsRevampEnabled,
+                         TrayEventFilterTest,
+                         testing::Bool());
+
+TEST_P(TrayEventFilterTest, ClickingOutsideCloseBubble) {
   ShowSystemTrayMainView();
   EXPECT_TRUE(IsBubbleShown());
 
@@ -114,7 +126,7 @@ TEST_F(TrayEventFilterTest, ClickingOutsideCloseBubble) {
   EXPECT_FALSE(IsBubbleShown());
 }
 
-TEST_F(TrayEventFilterTest, ClickingInsideDoesNotCloseBubble) {
+TEST_P(TrayEventFilterTest, ClickingInsideDoesNotCloseBubble) {
   ShowSystemTrayMainView();
   EXPECT_TRUE(IsBubbleShown());
 
@@ -124,7 +136,7 @@ TEST_F(TrayEventFilterTest, ClickingInsideDoesNotCloseBubble) {
   EXPECT_TRUE(IsBubbleShown());
 }
 
-TEST_F(TrayEventFilterTest, DraggingInsideDoesNotCloseBubble) {
+TEST_P(TrayEventFilterTest, DraggingInsideDoesNotCloseBubble) {
   ShowSystemTrayMainView();
   EXPECT_TRUE(IsBubbleShown());
 
@@ -144,7 +156,7 @@ TEST_F(TrayEventFilterTest, DraggingInsideDoesNotCloseBubble) {
   EXPECT_TRUE(IsBubbleShown());
 }
 
-TEST_F(TrayEventFilterTest, ClickingOnMenuContainerDoesNotCloseBubble) {
+TEST_P(TrayEventFilterTest, ClickingOnMenuContainerDoesNotCloseBubble) {
   // Create a menu window and place it in the menu container window.
   std::unique_ptr<aura::Window> menu_window = CreateTestWindow();
   menu_window->set_owned_by_parent(false);
@@ -162,7 +174,7 @@ TEST_F(TrayEventFilterTest, ClickingOnMenuContainerDoesNotCloseBubble) {
   EXPECT_TRUE(IsBubbleShown());
 }
 
-TEST_F(TrayEventFilterTest, ClickingOnPopupClosesBubble) {
+TEST_P(TrayEventFilterTest, ClickingOnPopupClosesBubble) {
   // Set up a popup window.
   auto popup_widget = std::make_unique<views::Widget>();
   views::Widget::InitParams popup_params;
@@ -190,7 +202,7 @@ TEST_F(TrayEventFilterTest, ClickingOnPopupClosesBubble) {
   EXPECT_FALSE(IsBubbleShown());
 }
 
-TEST_F(TrayEventFilterTest, ClickingOnKeyboardContainerDoesNotCloseBubble) {
+TEST_P(TrayEventFilterTest, ClickingOnKeyboardContainerDoesNotCloseBubble) {
   // Simulate the virtual keyboard being open. In production the virtual
   // keyboard container only exists while the keyboard is open.
   std::unique_ptr<aura::Window> keyboard_container =
@@ -210,7 +222,7 @@ TEST_F(TrayEventFilterTest, ClickingOnKeyboardContainerDoesNotCloseBubble) {
   EXPECT_TRUE(IsBubbleShown());
 }
 
-TEST_F(TrayEventFilterTest, DraggingOnTrayClosesBubble) {
+TEST_P(TrayEventFilterTest, DraggingOnTrayClosesBubble) {
   ShowSystemTrayMainView();
   EXPECT_TRUE(IsBubbleShown());
 
@@ -224,7 +236,14 @@ TEST_F(TrayEventFilterTest, DraggingOnTrayClosesBubble) {
   EXPECT_FALSE(IsBubbleShown());
 }
 
-TEST_F(TrayEventFilterTest, MessageCenterAndSystemTrayStayOpenTogether) {
+using TrayEventFilterQsRevampDisabledTest = TrayEventFilterTest;
+
+INSTANTIATE_TEST_SUITE_P(QsRevampDisabled,
+                         TrayEventFilterQsRevampDisabledTest,
+                         testing::Values(false));
+
+TEST_P(TrayEventFilterQsRevampDisabledTest,
+       MessageCenterAndSystemTrayStayOpenTogether) {
   AddNotification();
 
   ShowSystemTrayMainView();
@@ -244,7 +263,8 @@ TEST_F(TrayEventFilterTest, MessageCenterAndSystemTrayStayOpenTogether) {
   EXPECT_TRUE(IsBubbleShown());
 }
 
-TEST_F(TrayEventFilterTest, MessageCenterAndSystemTrayCloseTogether) {
+TEST_P(TrayEventFilterQsRevampDisabledTest,
+       MessageCenterAndSystemTrayCloseTogether) {
   AddNotification();
 
   ShowSystemTrayMainView();
