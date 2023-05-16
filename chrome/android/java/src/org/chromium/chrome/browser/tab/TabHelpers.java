@@ -8,7 +8,6 @@ import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.accessibility.AccessibilityTabHelper;
 import org.chromium.chrome.browser.complex_tasks.TaskTabHelper;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchTabHelper;
-import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
@@ -48,9 +47,6 @@ public final class TabHelpers {
                 && ShoppingPersistedTabData.isPriceTrackingWithOptimizationGuideEnabled()) {
             ShoppingPersistedTabData.initialize(tab);
         }
-
-        // TODO(jinsukkim): Do this by having something observe new tab creation.
-        if (tab.isIncognito()) CipherFactory.getInstance().triggerKeyGeneration();
     }
 
     /**
