@@ -21,6 +21,29 @@ using bookmarks::BookmarkNode;
 
 namespace {
 
+// TestBookmarkClient that supports undoing removals.
+class TestBookmarkClientWithUndo : public bookmarks::TestBookmarkClient {
+ public:
+  explicit TestBookmarkClientWithUndo(BookmarkUndoService* undo_service)
+      : undo_service_(undo_service) {}
+
+  ~TestBookmarkClientWithUndo() override = default;
+
+  // BookmarkClient overrides.
+  void OnBookmarkNodeRemovedUndoable(
+      BookmarkModel* model,
+      bookmarks::BookmarkUndoProvider* undo_provider,
+      const BookmarkNode* parent,
+      size_t index,
+      std::unique_ptr<BookmarkNode> node) override {
+    undo_service_->AddUndoEntryForRemovedNode(model, undo_provider, parent,
+                                              index, std::move(node));
+  }
+
+ private:
+  const raw_ptr<BookmarkUndoService> undo_service_;
+};
+
 class BookmarkUndoServiceTest : public testing::Test {
  public:
   BookmarkUndoServiceTest();
@@ -35,8 +58,8 @@ class BookmarkUndoServiceTest : public testing::Test {
   BookmarkUndoService* GetUndoService();
 
  private:
-  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<BookmarkUndoService> bookmark_undo_service_;
+  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
 
 BookmarkUndoServiceTest::BookmarkUndoServiceTest() {}
@@ -44,8 +67,10 @@ BookmarkUndoServiceTest::BookmarkUndoServiceTest() {}
 void BookmarkUndoServiceTest::SetUp() {
   DCHECK(!bookmark_model_);
   DCHECK(!bookmark_undo_service_);
-  bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
   bookmark_undo_service_ = std::make_unique<BookmarkUndoService>();
+  bookmark_model_ = bookmarks::TestBookmarkClient::CreateModelWithClient(
+      std::make_unique<TestBookmarkClientWithUndo>(
+          bookmark_undo_service_.get()));
   bookmark_undo_service_->StartObservingBookmarkModel(bookmark_model_.get());
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_.get());
 }

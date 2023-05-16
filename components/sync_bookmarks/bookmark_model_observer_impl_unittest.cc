@@ -67,6 +67,29 @@ gfx::Image CreateTestImage(SkColor color) {
   return gfx::Image::CreateFrom1xBitmap(bitmap);
 }
 
+// TestBookmarkClient that supports undoing removals.
+class TestBookmarkClientWithUndo : public bookmarks::TestBookmarkClient {
+ public:
+  explicit TestBookmarkClientWithUndo(BookmarkUndoService* undo_service)
+      : undo_service_(undo_service) {}
+
+  ~TestBookmarkClientWithUndo() override = default;
+
+  // BookmarkClient overrides.
+  void OnBookmarkNodeRemovedUndoable(
+      bookmarks::BookmarkModel* model,
+      bookmarks::BookmarkUndoProvider* undo_provider,
+      const bookmarks::BookmarkNode* parent,
+      size_t index,
+      std::unique_ptr<bookmarks::BookmarkNode> node) override {
+    undo_service_->AddUndoEntryForRemovedNode(model, undo_provider, parent,
+                                              index, std::move(node));
+  }
+
+ private:
+  const raw_ptr<BookmarkUndoService> undo_service_;
+};
+
 class BookmarkModelObserverImplTest : public testing::Test {
  public:
   BookmarkModelObserverImplTest()
@@ -75,7 +98,9 @@ class BookmarkModelObserverImplTest : public testing::Test {
         observer_(nudge_for_commit_closure_.Get(),
                   /*on_bookmark_model_being_deleted_closure=*/base::DoNothing(),
                   bookmark_tracker_.get()),
-        bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()) {
+        bookmark_model_(bookmarks::TestBookmarkClient::CreateModelWithClient(
+            std::make_unique<TestBookmarkClientWithUndo>(&undo_service_))) {
+    undo_service_.StartObservingBookmarkModel(bookmark_model_.get());
     bookmark_model_->AddObserver(&observer_);
     sync_pb::EntitySpecifics specifics;
     specifics.mutable_bookmark()->set_legacy_canonicalized_title(
@@ -100,6 +125,8 @@ class BookmarkModelObserverImplTest : public testing::Test {
 
   ~BookmarkModelObserverImplTest() override {
     bookmark_model_->RemoveObserver(&observer_);
+    bookmark_model_->Shutdown();
+    undo_service_.Shutdown();
   }
 
   void SimulateCommitResponseForAllLocalChanges() {
@@ -158,12 +185,14 @@ class BookmarkModelObserverImplTest : public testing::Test {
     return static_cast<bookmarks::TestBookmarkClient*>(
         bookmark_model_->client());
   }
+  UndoManager* undo_manager() { return undo_service_.undo_manager(); }
 
  private:
   NiceMock<base::MockCallback<base::RepeatingClosure>>
       nudge_for_commit_closure_;
   std::unique_ptr<SyncedBookmarkTracker> bookmark_tracker_;
   BookmarkModelObserverImpl observer_;
+  BookmarkUndoService undo_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
 
@@ -917,13 +946,11 @@ TEST_F(BookmarkModelObserverImplTest,
   ASSERT_FALSE(folder_entity->IsUnsynced());
 
   // Now delete the entity and restore it with the same bookmark node.
-  BookmarkUndoService undo_service;
-  undo_service.StartObservingBookmarkModel(bookmark_model());
   bookmark_model()->Remove(folder,
                            bookmarks::metrics::BookmarkEditSource::kOther);
 
   // The removed bookmark must be saved in the undo service.
-  ASSERT_EQ(undo_service.undo_manager()->undo_count(), 1u);
+  ASSERT_GE(undo_manager()->undo_count(), 1u);
   ASSERT_THAT(bookmark_tracker()->GetEntityForBookmarkNode(folder), IsNull());
 
   // Check that the entity is a tombstone now.
@@ -936,8 +963,7 @@ TEST_F(BookmarkModelObserverImplTest,
       folder_entity);
 
   // Restore the removed bookmark.
-  undo_service.undo_manager()->Undo();
-  undo_service.Shutdown();
+  undo_manager()->Undo();
 
   EXPECT_EQ(folder_entity,
             bookmark_tracker()->GetEntityForBookmarkNode(folder));

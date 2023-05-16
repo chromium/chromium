@@ -26,6 +26,7 @@ namespace bookmarks {
 
 class BookmarkModel;
 class BookmarkPermanentNode;
+class BookmarkUndoProvider;
 
 // A callback that generates a std::unique_ptr<BookmarkPermanentNode>, given a
 // max ID to use. The max ID argument will be updated after if a new node has
@@ -101,6 +102,15 @@ class BookmarkClient {
   virtual void DecodeBookmarkSyncMetadata(
       const std::string& metadata_str,
       const base::RepeatingClosure& schedule_save_closure) = 0;
+
+  // Similar to BookmarkModelObserver::BookmarkNodeRemoved(), but transfers
+  // ownership of BookmarkNode, which allows undoing the operation.
+  virtual void OnBookmarkNodeRemovedUndoable(
+      BookmarkModel* model,
+      BookmarkUndoProvider* undo_provider,
+      const BookmarkNode* parent,
+      size_t index,
+      std::unique_ptr<BookmarkNode> node) = 0;
 };
 
 }  // namespace bookmarks

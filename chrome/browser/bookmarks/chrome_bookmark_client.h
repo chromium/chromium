@@ -16,6 +16,7 @@
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 
+class BookmarkUndoService;
 class GURL;
 class Profile;
 
@@ -23,16 +24,16 @@ namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
 class ManagedBookmarkService;
-}
+}  // namespace bookmarks
 
 namespace sync_bookmarks {
 class BookmarkSyncService;
-}
+}  // namespace sync_bookmarks
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
 namespace offline_pages {
 class OfflinePageBookmarkObserver;
-}
+}  // namespace offline_pages
 #endif
 
 class ChromeBookmarkClient : public bookmarks::BookmarkClient {
@@ -40,7 +41,8 @@ class ChromeBookmarkClient : public bookmarks::BookmarkClient {
   ChromeBookmarkClient(
       Profile* profile,
       bookmarks::ManagedBookmarkService* managed_bookmark_service,
-      sync_bookmarks::BookmarkSyncService* bookmark_sync_service);
+      sync_bookmarks::BookmarkSyncService* bookmark_sync_service,
+      BookmarkUndoService* bookmark_undo_service);
 
   ChromeBookmarkClient(const ChromeBookmarkClient&) = delete;
   ChromeBookmarkClient& operator=(const ChromeBookmarkClient&) = delete;
@@ -67,20 +69,29 @@ class ChromeBookmarkClient : public bookmarks::BookmarkClient {
   void DecodeBookmarkSyncMetadata(
       const std::string& metadata_str,
       const base::RepeatingClosure& schedule_save_closure) override;
+  void OnBookmarkNodeRemovedUndoable(
+      bookmarks::BookmarkModel* model,
+      bookmarks::BookmarkUndoProvider* undo_provider,
+      const bookmarks::BookmarkNode* parent,
+      size_t index,
+      std::unique_ptr<bookmarks::BookmarkNode> node) override;
 
  private:
   // Pointer to the associated Profile. Must outlive ChromeBookmarkClient.
-  raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
 
   // Pointer to the ManagedBookmarkService responsible for bookmark policy. May
   // be null during testing.
-  raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
-
-  raw_ptr<bookmarks::BookmarkModel> model_;
+  const raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
 
   // Pointer to the BookmarkSyncService responsible for encoding and decoding
   // sync metadata persisted together with the bookmarks model.
-  raw_ptr<sync_bookmarks::BookmarkSyncService> bookmark_sync_service_;
+  const raw_ptr<sync_bookmarks::BookmarkSyncService> bookmark_sync_service_;
+
+  // Pointer to BookmarkUndoService, responsible for making operations undoable.
+  const raw_ptr<BookmarkUndoService> bookmark_undo_service_;
+
+  raw_ptr<bookmarks::BookmarkModel> model_ = nullptr;
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   // Owns the observer used by Offline Page listening to Bookmark Model events.

@@ -14,7 +14,6 @@
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
-#include "components/bookmarks/browser/bookmark_undo_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/undo/undo_manager.h"
 
@@ -23,7 +22,6 @@
 // BookmarkUndoService is owned by the profile, and is responsible for observing
 // BookmarkModel changes in order to provide an undo for those changes.
 class BookmarkUndoService : public bookmarks::BaseBookmarkModelObserver,
-                            public bookmarks::BookmarkUndoDelegate,
                             public KeyedService {
  public:
   BookmarkUndoService();
@@ -42,6 +40,17 @@ class BookmarkUndoService : public bookmarks::BaseBookmarkModelObserver,
 
   // KeyedService:
   void Shutdown() override;
+
+  // Pushes an undo operation to the stack that allows restoring a deleted
+  // bookmark. As opposed to other operations, which reach this service via
+  // BookmarkModelObserver, removals are special-cased to be able to transfer
+  // ownership of the removed node.
+  void AddUndoEntryForRemovedNode(
+      bookmarks::BookmarkModel* model,
+      bookmarks::BookmarkUndoProvider* undo_provider,
+      const bookmarks::BookmarkNode* parent,
+      size_t index,
+      std::unique_ptr<bookmarks::BookmarkNode> node);
 
  private:
   // bookmarks::BaseBookmarkModelObserver:
@@ -63,14 +72,6 @@ class BookmarkUndoService : public bookmarks::BaseBookmarkModelObserver,
   void GroupedBookmarkChangesBeginning(
       bookmarks::BookmarkModel* model) override;
   void GroupedBookmarkChangesEnded(bookmarks::BookmarkModel* model) override;
-
-  // bookmarks::BookmarkUndoDelegate:
-  void OnBookmarkNodeRemoved(
-      bookmarks::BookmarkModel* model,
-      bookmarks::BookmarkUndoProvider* undo_provider,
-      const bookmarks::BookmarkNode* parent,
-      size_t index,
-      std::unique_ptr<bookmarks::BookmarkNode> node) override;
 
   UndoManager undo_manager_;
   base::flat_set<raw_ptr<bookmarks::BookmarkModel>> observed_models_;

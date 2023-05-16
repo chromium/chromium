@@ -25,7 +25,6 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/browser/bookmark_storage.h"
-#include "components/bookmarks/browser/bookmark_undo_delegate.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/model_loader.h"
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
@@ -97,25 +96,6 @@ class SortComparator {
   raw_ptr<icu::Collator> collator_;
 };
 
-// Delegate that does nothing.
-class EmptyUndoDelegate : public BookmarkUndoDelegate {
- public:
-  EmptyUndoDelegate() = default;
-
-  EmptyUndoDelegate(const EmptyUndoDelegate&) = delete;
-  EmptyUndoDelegate& operator=(const EmptyUndoDelegate&) = delete;
-
-  ~EmptyUndoDelegate() override = default;
-
- private:
-  // BookmarkUndoDelegate:
-  void OnBookmarkNodeRemoved(BookmarkModel* model,
-                             BookmarkUndoProvider* undo_provider,
-                             const BookmarkNode* parent,
-                             size_t index,
-                             std::unique_ptr<BookmarkNode> node) override {}
-};
-
 // Builds the path of the bookmark file from the profile path.
 base::FilePath GetStorageFilePath(const base::FilePath& profile_path,
                                   StorageType storage_type) {
@@ -138,8 +118,7 @@ BookmarkModel::BookmarkModel(std::unique_ptr<BookmarkClient> client)
           base::Uuid::ParseLowercase(BookmarkNode::kRootNodeUuid),
           GURL())),
       root_(owned_root_.get()),
-      observers_(base::ObserverListPolicy::EXISTING_ONLY),
-      empty_undo_delegate_(std::make_unique<EmptyUndoDelegate>()) {
+      observers_(base::ObserverListPolicy::EXISTING_ONLY) {
   DCHECK(client_);
   client_->Init(this);
 }
@@ -256,7 +235,7 @@ void BookmarkModel::Remove(const BookmarkNode* node,
                                  removed_urls);
   }
 
-  undo_delegate()->OnBookmarkNodeRemoved(this, this, parent, index.value(),
+  client_->OnBookmarkNodeRemovedUndoable(this, this, parent, index.value(),
                                          std::move(owned_node));
 
   metrics::RecordBookmarkRemoved(source);
@@ -324,7 +303,7 @@ void BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
                                  removed_urls);
   }
 
-  undo_delegate()->OnBookmarkNodeRemoved(this, this, parent, index.value(),
+  client_->OnBookmarkNodeRemovedUndoable(this, this, parent, index.value(),
                                          std::move(owned_node));
   // TODO(https://crbug.com/1416567): Record metrics.
 }
@@ -395,7 +374,7 @@ void BookmarkModel::RemoveAllUserBookmarks() {
 
   BeginGroupedChanges();
   for (auto& removed_node_data : removed_node_data_list) {
-    undo_delegate()->OnBookmarkNodeRemoved(this, this, removed_node_data.parent,
+    client_->OnBookmarkNodeRemovedUndoable(this, this, removed_node_data.parent,
                                            removed_node_data.index,
                                            std::move(removed_node_data.node));
   }
@@ -1242,16 +1221,6 @@ int64_t BookmarkModel::generate_next_node_id() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
   return next_node_id_++;
-}
-
-void BookmarkModel::SetUndoDelegate(BookmarkUndoDelegate* undo_delegate) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  undo_delegate_ = undo_delegate;
-}
-
-BookmarkUndoDelegate* BookmarkModel::undo_delegate() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return undo_delegate_ ? undo_delegate_.get() : empty_undo_delegate_.get();
 }
 
 }  // namespace bookmarks

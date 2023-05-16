@@ -348,7 +348,6 @@ void BookmarkUndoService::StartObservingBookmarkModel(BookmarkModel* model) {
   DCHECK(!scoped_observations_.IsObservingSource(model));
   scoped_observations_.AddObservation(model);
   observed_models_.insert(model);
-  model->SetUndoDelegate(this);
 }
 
 void BookmarkUndoService::Shutdown() {
@@ -358,9 +357,6 @@ void BookmarkUndoService::Shutdown() {
   undo_manager_.RemoveAllOperations();
 
   scoped_observations_.RemoveAllObservations();
-  for (BookmarkModel* model : observed_models_) {
-    model->SetUndoDelegate(nullptr);
-  }
   observed_models_.clear();
 }
 
@@ -415,7 +411,7 @@ void BookmarkUndoService::GroupedBookmarkChangesEnded(BookmarkModel* model) {
   undo_manager()->EndGroupingActions();
 }
 
-void BookmarkUndoService::OnBookmarkNodeRemoved(
+void BookmarkUndoService::AddUndoEntryForRemovedNode(
     BookmarkModel* model,
     BookmarkUndoProvider* undo_provider,
     const BookmarkNode* parent,
