@@ -197,6 +197,9 @@ class Surface final : public ui::PropertyHandler {
   // commit.
   void SetBackgroundColor(absl::optional<SkColor4f> background_color);
 
+  // Sets that this surface uses trusted damage.
+  void SetTrustedDamage(bool trusted_damage);
+
   // This sets the surface viewport for scaling.
   void SetViewport(const gfx::SizeF& viewport);
 
@@ -613,6 +616,9 @@ class Surface final : public ui::PropertyHandler {
 
   // This true, if sub_surfaces_ has changes (order, position, etc).
   bool sub_surfaces_changed_ = false;
+
+  // This is true if damage reported by the client should be trusted.
+  bool trusted_damage_ = false;
 
   // This is the size of the last committed contents.
   gfx::SizeF content_size_;
