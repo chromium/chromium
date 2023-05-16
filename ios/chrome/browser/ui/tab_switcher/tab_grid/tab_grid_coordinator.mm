@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service.h"
 #import "ios/chrome/browser/bring_android_tabs/bring_android_tabs_to_ios_service_factory.h"
 #import "ios/chrome/browser/bring_android_tabs/features.h"
+#import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/main/browser_util.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
@@ -90,11 +91,38 @@
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/find_in_page/find_in_page_api.h"
 #import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// If Find in Page uses the system Find panel and if the Find UI is marked as
+// active in the current web state of `browser`, this returns true. Otherwise,
+// returns false.
+bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
+  if (!ios::provider::IsNativeFindInPageWithSystemFindPanel()) {
+    return false;
+  }
+
+  web::WebState* currentWebState =
+      browser->GetWebStateList()->GetActiveWebState();
+  if (!currentWebState) {
+    return false;
+  }
+
+  FindTabHelper* helper = FindTabHelper::FromWebState(currentWebState);
+  if (!helper) {
+    return false;
+  }
+
+  return helper->IsFindUIActive();
+}
+
+}  // namespace
 
 @interface TabGridCoordinator () <BringAndroidTabsCommands,
                                   RecentTabsPresentationDelegate,
@@ -563,8 +591,11 @@
       // complete, reset the tab grid mode.
       self.baseViewController.tabGridMode = TabGridModeNormal;
     }
+    Browser* browser = self.bvcContainer.incognito ? self.incognitoBrowser
+                                                   : self.regularBrowser;
     if (!GetFirstResponderInWindowScene(
-            self.baseViewController.view.window.windowScene)) {
+            self.baseViewController.view.window.windowScene) &&
+        !FindNavigatorShouldBePresentedInBrowser(browser)) {
       // It is possible to already have a first responder (for example the
       // omnibox). In that case, we don't want to mark BVC as first responder.
       [self.bvcContainer.currentBVC becomeFirstResponder];
