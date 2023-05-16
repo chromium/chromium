@@ -128,6 +128,15 @@ class SyncServiceImplStartupTest : public testing::Test {
             "access_token", base::Time::Max());
   }
 
+  // Must only be called before CreateSyncService(), because it bypasses
+  // SyncService/SyncUserSettings and uses SyncPrefs directly.
+  void SetSyncFeatureEnabledPrefs() {
+    CHECK(!sync_service_);
+
+    sync_prefs_.SetSyncRequested(true);
+    sync_prefs_.SetInitialSyncFeatureSetupComplete();
+  }
+
   SyncPrefs* sync_prefs() { return &sync_prefs_; }
 
   SyncServiceImpl* sync_service() { return sync_service_.get(); }
@@ -237,7 +246,7 @@ TEST_F(SyncServiceImplStartupTest, StartNoCredentials) {
   // We're already signed in, but don't have a refresh token.
   SimulateRefreshTokensNotLoadedYet();
   SimulateTestUserSigninAndEnableSyncFeatureWithoutRefreshToken();
-  sync_prefs()->SetInitialSyncFeatureSetupComplete();
+  SetSyncFeatureEnabledPrefs();
 
   CreateSyncService(SyncServiceImpl::MANUAL_START);
   sync_service()->Initialize();
@@ -257,7 +266,7 @@ TEST_F(SyncServiceImplStartupTest, WebSignoutBeforeInitialization) {
   // state.
   SimulateTestUserSigninAndEnableSyncFeature();
   SimulateWebSignout();
-  sync_prefs()->SetInitialSyncFeatureSetupComplete();
+  SetSyncFeatureEnabledPrefs();
 
   CreateSyncService(SyncServiceImpl::MANUAL_START);
 
@@ -274,7 +283,7 @@ TEST_F(SyncServiceImplStartupTest, WebSignoutDuringDeferredStartup) {
   // (because auth errors are not persisted).
   base::HistogramTester histogram_tester;
   SimulateTestUserSigninAndEnableSyncFeature();
-  sync_prefs()->SetInitialSyncFeatureSetupComplete();
+  SetSyncFeatureEnabledPrefs();
   CreateSyncService(SyncServiceImpl::MANUAL_START);
   sync_service()->Initialize();
 
@@ -314,7 +323,7 @@ TEST_F(SyncServiceImplStartupTest, WebSignoutAfterInitialization) {
   DisableAutomaticIssueOfAccessTokens();
 
   SimulateTestUserSigninAndEnableSyncFeature();
-  sync_prefs()->SetInitialSyncFeatureSetupComplete();
+  SetSyncFeatureEnabledPrefs();
 
   CreateSyncService(SyncServiceImpl::MANUAL_START);
   sync_service()->Initialize();
@@ -351,8 +360,7 @@ TEST_F(SyncServiceImplStartupTest, WebSignoutAfterInitialization) {
 
 TEST_F(SyncServiceImplStartupTest, StartInvalidCredentials) {
   SimulateTestUserSigninAndEnableSyncFeature();
-  sync_prefs()->SetSyncRequested(true);
-  sync_prefs()->SetInitialSyncFeatureSetupComplete();
+  SetSyncFeatureEnabledPrefs();
 
   CreateSyncService(SyncServiceImpl::MANUAL_START);
 
@@ -416,8 +424,7 @@ TEST_F(SyncServiceImplStartupTest, StartCrosFirstTime) {
 }
 
 TEST_F(SyncServiceImplStartupTest, DisableSync) {
-  sync_prefs()->SetSyncRequested(true);
-  sync_prefs()->SetInitialSyncFeatureSetupComplete();
+  SetSyncFeatureEnabledPrefs();
   SimulateTestUserSigninAndEnableSyncFeature();
   CreateSyncService(SyncServiceImpl::MANUAL_START);
 
@@ -449,28 +456,10 @@ TEST_F(SyncServiceImplStartupTest, DisableSync) {
             sync_service()->GetTransportState());
 }
 
-// Test that we can recover from a case where a bug in the code resulted in
-// OnUserChoseDatatypes not being properly called and datatype preferences
-// therefore being left unset.
-TEST_F(SyncServiceImplStartupTest, StartRecoverDatatypePrefs) {
-  // Clear the datatype preference fields (simulating bug 154940).
-  pref_service()->ClearPref(prefs::internal::kSyncKeepEverythingSynced);
-  for (UserSelectableType type : UserSelectableTypeSet::All()) {
-    pref_service()->ClearPref(SyncPrefs::GetPrefNameForTypeForTesting(type));
-  }
-
-  sync_prefs()->SetInitialSyncFeatureSetupComplete();
-  CreateSyncService(SyncServiceImpl::MANUAL_START);
-  SimulateTestUserSigninAndEnableSyncFeature();
-
-  sync_service()->Initialize();
-
-  EXPECT_TRUE(sync_prefs()->HasKeepEverythingSynced());
-}
-
-// Verify that the recovery of datatype preferences doesn't overwrite a valid
-// case where only bookmarks are enabled.
-TEST_F(SyncServiceImplStartupTest, StartDontRecoverDatatypePrefs) {
+// ChromeOS does not support sign-in after startup.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Verify that enabling sync honors existing values of data type preferences.
+TEST_F(SyncServiceImplStartupTest, HonorsExistingDatatypePrefs) {
   // Explicitly set Keep Everything Synced to false and have only bookmarks
   // enabled.
   sync_prefs()->SetSelectedTypes(
@@ -478,21 +467,23 @@ TEST_F(SyncServiceImplStartupTest, StartDontRecoverDatatypePrefs) {
       /*registered_types=*/UserSelectableTypeSet::All(),
       /*selected_types=*/{UserSelectableType::kBookmarks});
 
-  sync_prefs()->SetInitialSyncFeatureSetupComplete();
   CreateSyncService(SyncServiceImpl::MANUAL_START);
-  SimulateTestUserSigninAndEnableSyncFeature();
-
   sync_service()->Initialize();
+  SimulateTestUserSigninAndEnableSyncFeature();
+  sync_service()->SetSyncFeatureRequested();
+  sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
+      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 
-  EXPECT_FALSE(sync_prefs()->HasKeepEverythingSynced());
+  EXPECT_EQ(UserSelectableTypeSet(UserSelectableType::kBookmarks),
+            sync_service()->GetUserSettings()->GetSelectedTypes());
 }
+#endif
 
 TEST_F(SyncServiceImplStartupTest, ManagedStartup) {
   // Sync was previously enabled, but a policy was set while Chrome wasn't
   // running.
   pref_service()->SetBoolean(prefs::internal::kSyncManaged, true);
-  sync_prefs()->SetSyncRequested(true);
-  sync_prefs()->SetInitialSyncFeatureSetupComplete();
+  SetSyncFeatureEnabledPrefs();
 
   SimulateTestUserSigninAndEnableSyncFeature();
   CreateSyncService(SyncServiceImpl::MANUAL_START);
@@ -528,8 +519,7 @@ class SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature
 TEST_P(SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
        SwitchManaged) {
   // Sync starts out fully set up and enabled.
-  sync_prefs()->SetSyncRequested(true);
-  sync_prefs()->SetInitialSyncFeatureSetupComplete();
+  SetSyncFeatureEnabledPrefs();
   SimulateTestUserSigninAndEnableSyncFeature();
 
   // To make this test more realistic, the StartBehavior is chosen depending on
@@ -626,7 +616,7 @@ TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
             sync_service()->GetTransportState());
 }
 
-// ChromeOS does not support sign-in after startup
+// ChromeOS does not support sign-in after startup.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   // We've never completed startup.
@@ -713,8 +703,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
   // Prevent engine initialization, to test TransportState::START_DEFERRED.
   // Prevent one model initialization, to test TransportState::CONFIGURING.
   SimulateTestUserSigninAndEnableSyncFeature();
-  sync_prefs()->SetInitialSyncFeatureSetupComplete();
-  sync_prefs()->SetSyncRequested(true);
+  SetSyncFeatureEnabledPrefs();
   component_factory()->AllowFakeEngineInitCompletion(false);
   CreateSyncService(SyncServiceImpl::MANUAL_START, {SESSIONS});
   get_controller(SESSIONS)->model()->EnableManualModelStart();
@@ -763,7 +752,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
 
 TEST_F(SyncServiceImplStartupTest, DeferredStartInterruptedByDataType) {
   base::HistogramTester histogram_tester;
-  sync_prefs()->SetInitialSyncFeatureSetupComplete();
+  SetSyncFeatureEnabledPrefs();
   SimulateTestUserSigninAndEnableSyncFeature();
   CreateSyncService(SyncServiceImpl::MANUAL_START);
 
@@ -805,7 +794,9 @@ TEST_F(SyncServiceImplStartupTest, UserTriggeredStartIsNotDeferredStart) {
   // Sign-in quickly, before the usual delay of a deferred startup. This can
   // happen during FRE.
   SimulateTestUserSigninAndEnableSyncFeature();
-  sync_prefs()->SetInitialSyncFeatureSetupComplete();
+  sync_service()->SetSyncFeatureRequested();
+  sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
+      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
   FastForwardUntilNoTasksRemain();
 
   // This should not be recorded as a deferred startup.
@@ -817,14 +808,13 @@ TEST_F(SyncServiceImplStartupTest, UserTriggeredStartIsNotDeferredStart) {
 
 TEST_F(SyncServiceImplStartupTest,
        ShouldClearMetadataForAlreadyDisabledTypesBeforeConfigurationDone) {
-  sync_prefs()->SetInitialSyncFeatureSetupComplete();
+  SetSyncFeatureEnabledPrefs();
   // Simulate types disabled during previous run.
   sync_prefs()->SetSelectedTypes(
       /*keep_everything_synced=*/false,
       /*registered_types=*/
       {UserSelectableType::kBookmarks, UserSelectableType::kReadingList},
       /*selected_types=*/{UserSelectableType::kBookmarks});
-  sync_prefs()->SetSyncRequested(true);
 
   SimulateTestUserSigninAndEnableSyncFeature();
 
@@ -843,8 +833,7 @@ TEST_F(SyncServiceImplStartupTest,
 TEST_F(SyncServiceImplStartupTest,
        ShouldClearMetadataForTypesDisabledBeforeInitCompletion) {
   SimulateTestUserSigninAndEnableSyncFeature();
-  sync_prefs()->SetSyncRequested(true);
-  sync_prefs()->SetInitialSyncFeatureSetupComplete();
+  SetSyncFeatureEnabledPrefs();
 
   CreateSyncService(SyncServiceImpl::MANUAL_START,
                     /*registered_types=*/ModelTypeSet(BOOKMARKS, READING_LIST));
@@ -875,8 +864,7 @@ TEST_F(SyncServiceImplStartupTest,
 TEST_F(SyncServiceImplStartupTest,
        ShouldClearMetadataForTypesDisabledWhileInit) {
   SimulateTestUserSigninAndEnableSyncFeature();
-  sync_prefs()->SetSyncRequested(true);
-  sync_prefs()->SetInitialSyncFeatureSetupComplete();
+  SetSyncFeatureEnabledPrefs();
 
   CreateSyncService(SyncServiceImpl::MANUAL_START,
                     /*registered_types=*/ModelTypeSet(BOOKMARKS, READING_LIST));
