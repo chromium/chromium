@@ -683,20 +683,20 @@ base::WeakPtr<SharedWorkerHost> SharedWorkerHost::AsWeakPtr() {
 }
 
 net::NetworkIsolationKey SharedWorkerHost::GetNetworkIsolationKey() const {
-  // TODO(https://crbug.com/1147281): This is the NetworkIsolationKey of a
-  // top-level browsing context, which shouldn't be use for SharedWorkers used
-  // in iframes.
-  return net::NetworkIsolationKey::ToDoUseTopFrameOriginAsWell(
-      GetStorageKey().origin());
+  // Note: Since shared workers are partitioned by the storage key, we'll use
+  // the storage key to create a NIK that matches the current partitioning
+  // scheme. In other words, if storage partitioning is disabled, frames with
+  // different top-level sites will be able to share the same shared worker, so
+  // it doesn't make sense to incorporate the top-level site into the NIK in
+  // that case either.
+  return GetStorageKey().ToPartialNetIsolationInfo().network_isolation_key();
 }
 
 net::NetworkAnonymizationKey SharedWorkerHost::GetNetworkAnonymizationKey()
     const {
-  // TODO(https://crbug.com/1147281): This is the NetworkAnonymizationKey of a
-  // top-level browsing context, which shouldn't be use for SharedWorkers used
-  // in iframes.
-  return net::NetworkAnonymizationKey::ToDoUseTopFrameOriginAsWell(
-      GetStorageKey().origin());
+  return GetStorageKey()
+      .ToPartialNetIsolationInfo()
+      .network_anonymization_key();
 }
 
 const blink::StorageKey& SharedWorkerHost::GetStorageKey() const {

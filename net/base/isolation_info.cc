@@ -248,15 +248,6 @@ bool IsolationInfo::IsEqualForTesting(const IsolationInfo& other) const {
           party_context_ == other.party_context_);
 }
 
-IsolationInfo IsolationInfo::ToDoUseTopFrameOriginAsWell(
-    const url::Origin& incorrectly_used_frame_origin) {
-  return IsolationInfo(
-      RequestType::kOther, incorrectly_used_frame_origin,
-      incorrectly_used_frame_origin,
-      SiteForCookies::FromOrigin(incorrectly_used_frame_origin),
-      /*nonce=*/absl::nullopt, /*party_context=*/std::set<SchemefulSite>());
-}
-
 std::string IsolationInfo::Serialize() const {
   if (network_isolation_key().IsTransient())
     return "";
