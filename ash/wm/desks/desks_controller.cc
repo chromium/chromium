@@ -182,7 +182,7 @@ void RemoveAllWindowsFromOverview() {
       // overview transformation to the windows again when appending those
       // windows back to the overview grid regardless of whether those windows
       // were already in that transformation.
-      overview_item->RestoreWindow(/*reset_transform=*/true);
+      overview_item->RestoreWindow(/*reset_transform=*/true, /*animate=*/false);
       overview_session->RemoveItem(overview_item);
     }
   }

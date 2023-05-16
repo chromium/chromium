@@ -96,6 +96,7 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/display/display_layout.h"
@@ -3392,6 +3393,38 @@ TEST_P(OverviewSessionTest, FrameThrottlingArc) {
     grid->RemoveItem(item, /*item_destroying=*/false, /*reposition=*/false);
   }
   frame_throttling_controller->RemoveArcObserver(&observer);
+}
+
+// Tests that if we combine a desk in overview, the overview applied clipping is
+// removed properly (other portions of the window will not be visible on exiting
+// overview). Regression test for b/282010852.
+TEST_P(OverviewSessionTest, WindowClippingAfterCombiningDesks) {
+  // Need at least two desks to combine them.
+  auto* controller = DesksController::Get();
+  controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+
+  // Overview clip is used to apply an animation to remove the normal header and
+  // keep it hidden during overview. So we need a non-zero top inset to
+  // reproduce the bug.
+  auto normal_window = CreateAppWindow();
+  normal_window->SetProperty(aura::client::kTopViewInset, 32);
+  ASSERT_TRUE(normal_window->layer()->clip_rect().IsEmpty());
+
+  ui::ScopedAnimationDurationScaleMode scale_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  ToggleOverview();
+  WaitForOverviewEnterAnimation();
+  ASSERT_FALSE(normal_window->layer()->clip_rect().IsEmpty());
+
+  // Combine the two desks while inside overview.
+  RemoveDesk(controller->active_desk(), DeskCloseType::kCombineDesks);
+  ui::LayerAnimationStoppedWaiter().Wait(normal_window->layer());
+
+  // Tests that on exiting overview, the clip is removed.
+  ToggleOverview();
+  WaitForOverviewExitAnimation();
+  EXPECT_TRUE(normal_window->layer()->clip_rect().IsEmpty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, OverviewSessionTest, testing::Bool());

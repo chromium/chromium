@@ -61,17 +61,16 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   void OnMovingWindowToAnotherDesk();
 
   // Restores and animates the managed window to its non overview mode state.
-  // Doesn't animate if |was_saved_desk_library_showing| is true. If
-  // |reset_transform| equals false, the window's transform will not be reset to
-  // identity transform when exiting overview mode. It's needed when dragging an
-  // Arc app window in overview mode to put it in split screen. In this case the
-  // restore of its transform needs to be deferred until the Arc app window is
-  // snapped successfully, otherwise the animation will look very ugly (the Arc
-  // app window enlarges itself to maximized window bounds and then shrinks to
-  // its snapped window bounds). Note if the window's transform is not reset
-  // here, it must be reset by someone else at some point.
-  void RestoreWindow(bool reset_transform,
-                     bool was_saved_desk_library_showing = false);
+  // Doesn't animate if `animate` is true. If `reset_transform` equals false,
+  // the window's transform will not be reset to identity transform when exiting
+  // overview mode. It's needed when dragging an Arc app window in overview mode
+  // to put it in split screen. In this case the restore of its transform needs
+  // to be deferred until the Arc app window is snapped successfully, otherwise
+  // the animation will look very ugly (the Arc app window enlarges itself to
+  // maximized window bounds and then shrinks to its snapped window bounds).
+  // Note if the window's transform is not reset here, it must be reset by
+  // someone else at some point.
+  void RestoreWindow(bool reset_transform, bool animate);
 
   // Ensures that a possibly minimized window becomes visible after restore.
   void EnsureVisible();

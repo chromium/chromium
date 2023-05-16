@@ -258,11 +258,10 @@ void OverviewItem::OnMovingWindowToAnotherDesk() {
   is_moving_to_another_desk_ = true;
   // Restore the dragged item window, so that its transform is reset to
   // identity.
-  RestoreWindow(/*reset_transform=*/true);
+  RestoreWindow(/*reset_transform=*/true, /*animate=*/true);
 }
 
-void OverviewItem::RestoreWindow(bool reset_transform,
-                                 bool was_saved_desk_library_showing) {
+void OverviewItem::RestoreWindow(bool reset_transform, bool animate) {
   // TODO(oshima): SplitViewController has its own logic to adjust the
   // target state in |SplitViewController::OnOverviewModeEnding|.
   // Unify the mechanism to control it and remove ifs.
@@ -277,8 +276,7 @@ void OverviewItem::RestoreWindow(bool reset_transform,
     transient_child->ClearProperty(kForceVisibleInMiniViewKey);
 
   overview_item_view_->OnOverviewItemWindowRestoring();
-  transform_window_.RestoreWindow(reset_transform,
-                                  was_saved_desk_library_showing);
+  transform_window_.RestoreWindow(reset_transform, animate);
 
   if (!transform_window_.IsMinimized())
     return;
