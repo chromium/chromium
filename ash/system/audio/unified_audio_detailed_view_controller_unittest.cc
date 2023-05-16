@@ -142,6 +142,8 @@ class UnifiedAudioDetailedViewControllerTest
   void SetUp() override {
     if (IsQsRevampEnabled()) {
       scoped_feature_list_.InitAndEnableFeature(features::kQsRevamp);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(features::kQsRevamp);
     }
     AshTestBase::SetUp();
 
