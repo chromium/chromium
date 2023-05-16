@@ -201,6 +201,5 @@
     ]
   },
   "builder_group": "tryserver.chromium.mac",
-  "cq": "required",
   "recipe": "chromium/orchestrator"
 }
