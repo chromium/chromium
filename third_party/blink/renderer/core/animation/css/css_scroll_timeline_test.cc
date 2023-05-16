@@ -41,12 +41,17 @@ class CSSScrollTimelineTest : public PageTestBase,
 TEST_F(CSSScrollTimelineTest, SharedTimelines) {
   SetBodyInnerHTML(R"HTML(
     <style>
+      body {
+        scroll-timeline-attachment: defer;
+        scroll-timeline-name: timeline1, timeline2;
+      }
       @keyframes anim1 { to { top: 200px; } }
       @keyframes anim2 { to { left: 200px; } }
       @keyframes anim3 { to { right: 200px; } }
       .scroller {
         height: 100px;
         overflow: scroll;
+        scroll-timeline-attachment: ancestor;
       }
       .scroller > div {
         height: 200px;

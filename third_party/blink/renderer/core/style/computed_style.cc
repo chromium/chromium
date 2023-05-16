@@ -396,7 +396,7 @@ ComputedStyle::Difference ComputedStyle::ComputeDifference(
   }
   if (!old_style || !new_style) {
     if (AffectsScrollAnimations(old_style, new_style)) {
-      return Difference::kSiblingDescendantAffecting;
+      return Difference::kDescendantAffecting;
     }
     return Difference::kInherited;
   }
@@ -428,7 +428,7 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
     const ComputedStyle& new_style) {
   DCHECK_NE(&old_style, &new_style);
   if (DiffAffectsScrollAnimations(old_style, new_style)) {
-    return Difference::kSiblingDescendantAffecting;
+    return Difference::kDescendantAffecting;
   }
   if (old_style.Display() != new_style.Display() &&
       old_style.BlockifiesChildren() != new_style.BlockifiesChildren()) {

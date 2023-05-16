@@ -1302,12 +1302,12 @@ TimelineType* CSSAnimations::FindTimelineForElement(
   return matching_timeline;
 }
 
-// Find a ScrollTimeline in the inclusive sibling-ancestors.
+// Find a ScrollTimeline in inclusive ancestors.
 //
 // The reason `update` is provided from the outside rather than just fetching
 // it from ElementAnimations, is that for the current node we're resolving style
 // for, the update hasn't actually been stored on ElementAnimations yet.
-ScrollTimeline* CSSAnimations::FindPreviousSiblingAncestorTimeline(
+ScrollTimeline* CSSAnimations::FindAncestorTimeline(
     const ScopedCSSName& name,
     Node* node,
     const CSSAnimationUpdate* update) {
@@ -1316,17 +1316,6 @@ ScrollTimeline* CSSAnimations::FindPreviousSiblingAncestorTimeline(
   if (ScrollTimeline* timeline = FindTimelineForNode(name, node, update))
     return timeline;
 
-  // We use LayoutTreeBuilderTraversal to skip siblings which are not in the
-  // flat tree, because they don't have a ComputedStyle (and therefore can't
-  // provide any timelines).
-  for (Node* prev = LayoutTreeBuilderTraversal::PreviousSibling(*node); prev;
-       prev = LayoutTreeBuilderTraversal::PreviousSibling(*prev)) {
-    if (ScrollTimeline* timeline =
-            FindTimelineForNode(name, prev, GetPendingAnimationUpdate(*prev))) {
-      return timeline;
-    }
-  }
-
   Element* parent_element =
       RuntimeEnabledFeatures::CSSTreeScopedTimelinesEnabled()
           ? node->ParentOrShadowHostElement()
@@ -1334,8 +1323,8 @@ ScrollTimeline* CSSAnimations::FindPreviousSiblingAncestorTimeline(
   if (!parent_element) {
     return nullptr;
   }
-  return FindPreviousSiblingAncestorTimeline(
-      name, parent_element, GetPendingAnimationUpdate(*parent_element));
+  return FindAncestorTimeline(name, parent_element,
+                              GetPendingAnimationUpdate(*parent_element));
 }
 
 namespace {
@@ -1393,8 +1382,7 @@ AnimationTimeline* CSSAnimations::ComputeTimeline(
     return nullptr;
   }
   if (style_timeline.IsName()) {
-    return FindPreviousSiblingAncestorTimeline(style_timeline.GetName(),
-                                               element, &update);
+    return FindAncestorTimeline(style_timeline.GetName(), element, &update);
   }
   if (style_timeline.IsView()) {
     return ComputeViewFunctionTimeline(element, style_timeline.GetView(),

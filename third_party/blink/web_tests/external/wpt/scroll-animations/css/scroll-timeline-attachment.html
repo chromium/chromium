@@ -96,6 +96,25 @@
   }, 'Deferred timeline with no attachments');
 </script>
 
+<template id=scroll_timeline_defer_no_attach_to_prev_sibling>
+  <div class="timeline defer">
+    <div class="scroller timeline">
+      <div class=content></div>
+    </div>
+    <div class=target>Test</div>
+  </div>
+</template>
+<script>
+  promise_test(async (t) => {
+    inflate(t, scroll_timeline_defer_no_attach_to_prev_sibling);
+    let scroller = main.querySelector('.scroller');
+    let target = main.querySelector('.target');
+    await scrollTop(scroller, 350); // 50%
+    assert_equals(getComputedStyle(target).width, '0px');
+    assert_equals(getComputedStyle(target).getPropertyValue('--applied'), '');
+  }, 'Deferred timeline with no attachments to previous sibling');
+</script>
+
 <template id=scroll_timeline_local_ancestor>
   <div class="scroller timeline local">
     <div class=content>

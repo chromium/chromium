@@ -347,10 +347,9 @@ class CORE_EXPORT CSSAnimations final {
                                               const TimelineData*,
                                               const CSSAnimationUpdate*);
 
-  static ScrollTimeline* FindPreviousSiblingAncestorTimeline(
-      const ScopedCSSName& name,
-      Node*,
-      const CSSAnimationUpdate*);
+  static ScrollTimeline* FindAncestorTimeline(const ScopedCSSName& name,
+                                              Node*,
+                                              const CSSAnimationUpdate*);
 
   static AnimationTimeline* ComputeTimeline(
       Element*,

@@ -3444,9 +3444,6 @@ static const StyleRecalcChange ApplyComputedStyleDiff(
       diff < ComputedStyle::Difference::kPseudoElementStyle) {
     return change;
   }
-  if (diff == ComputedStyle::Difference::kSiblingDescendantAffecting) {
-    return change.EnsureAtLeast(StyleRecalcChange::kRecalcSiblingDescendants);
-  }
   if (diff == ComputedStyle::Difference::kDescendantAffecting) {
     return change.EnsureAtLeast(StyleRecalcChange::kRecalcDescendants);
   }
