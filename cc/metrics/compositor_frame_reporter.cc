@@ -1386,7 +1386,7 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
     }
   }
 
-  TRACE_EVENT("input", "PresentedFrameInformation",
+  TRACE_EVENT("input,input.scrolling", "PresentedFrameInformation",
               [events_metrics = std::cref(events_metrics_), fling_input_count,
                normal_input_count](perfetto::EventContext& ctx) {
                 TraceScrollJankMetrics(events_metrics, fling_input_count,

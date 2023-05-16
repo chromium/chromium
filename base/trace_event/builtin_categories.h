@@ -82,7 +82,6 @@
   X("DXVA_Decoding")                                                     \
   X("evdev")                                                             \
   X("event")                                                             \
-  X("event_latency")                                                     \
   X("exo")                                                               \
   X("extensions")                                                        \
   X("explore_sites")                                                     \
@@ -103,6 +102,7 @@
   X("ime")                                                               \
   X("IndexedDB")                                                         \
   X("input")                                                             \
+  X("input.scrolling")                                                   \
   X("io")                                                                \
   X("ipc")                                                               \
   X("Java")                                                              \
@@ -296,6 +296,7 @@
   X("base,toplevel")                                                          \
   X("benchmark,drm")                                                          \
   X("benchmark,latencyInfo,rail")                                             \
+  X("benchmark,latencyInfo,rail,input.scrolling")                             \
   X("benchmark,loading")                                                      \
   X("benchmark,rail")                                                         \
   X("benchmark,uma")                                                          \
@@ -316,7 +317,7 @@
   X("browser,startup")                                                        \
   X("category1,category2")                                                    \
   X("cc,benchmark")                                                           \
-  X("cc,benchmark,input,event_latency")                                       \
+  X("cc,benchmark,input,input.scrolling")                                     \
   X("cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"))     \
   X("cc,input")                                                               \
   X("cc,raf_investigation")                                                   \
@@ -341,6 +342,7 @@
   X("input,benchmark,latencyInfo")                                            \
   X("input,latency")                                                          \
   X("input,rail")                                                             \
+  X("input,input.scrolling")                                                  \
   X("input,views")                                                            \
   X("ipc,security")                                                           \
   X("ipc,toplevel")                                                           \
