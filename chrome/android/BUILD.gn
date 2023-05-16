@@ -2777,6 +2777,7 @@ if (current_toolchain == default_toolchain) {
     ]
     data = [ "javatests/src/org/chromium/chrome/test/smoke/test.html" ]
     deps = [
+      "//base:base_java",
       "//base:base_java_test_support",
       "//chrome/test/android:chrome_java_test_pagecontroller",
       "//content/public/test/android:content_java_test_support",
