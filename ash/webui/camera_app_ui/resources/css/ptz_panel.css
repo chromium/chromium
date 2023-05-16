@@ -48,9 +48,7 @@
 
 #ptz-reset-all>.text {
   color: var(--cros-sys-on_surface);
-  font-family: var(--default-font-family);
-  font-size: 13px;
-  font-weight: 500;
+  font: var(--cros-button-2-font);
 }
 
 #ptz-panel-container {

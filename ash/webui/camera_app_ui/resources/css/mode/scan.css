@@ -101,7 +101,7 @@ body.enable-scan-barcode .barcode-scan-box {
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.1), 0 4px 4px rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
   display: flex;
-  font: 400 13px Roboto;
+  font: var(--cros-body-2-font);
   height: var(--chip-height);
   justify-content: center;
   padding: 8px 16px;
@@ -157,7 +157,7 @@ body.enable-scan-barcode .barcode-scan-box {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  font: 400 15px Roboto;
+  font: var(--cros-body-2-font);
   padding: var(--text-padding-vertical) 16px;
 }
 
@@ -201,7 +201,7 @@ body.enable-scan-barcode .barcode-scan-box {
 .snackbar {
   align-items: center;
   background: var(--cros-sys-inverse_surface);
-  border-radius: 4px;
+  border-radius: 12px;
   /*
    * TODO(pihsun): Move the snackbar to the position as the design after jelly
    * is default on.
@@ -211,8 +211,7 @@ body.enable-scan-barcode .barcode-scan-box {
   box-sizing: border-box;
   color: var(--cros-sys-inverse_on_surface);
   display: flex;
-  font-family: Roboto;
-  font-size: 13px;
+  font: var(--cros-body-2-font);
   height: 48px;
   left: 4px;
   opacity: 0;
@@ -316,7 +315,7 @@ body.enable-scan-barcode .barcode-scan-box {
   border-radius: var(--border-radius-rounded-with-short-side);
   color: var(--cros-sys-on_surface);
   display: inline-block;
-  font: normal 400 14px/20px Roboto;
+  font: var(--cros-body-2-font);
   left: 50%;
   padding: 8px 16px;
   position: absolute;
@@ -339,7 +338,7 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
   align-items: center;
   color: var(--cros-sys-on_surface);
   display: flex;
-  font-size: 12px;
+  font: var(--cros-body-2-font);
   justify-content: center;
   visibility: hidden;
 }
@@ -391,7 +390,7 @@ body.doc-mode-reviewing :is(#back-to-review-document, #document-page-count) {
   color: var(--cros-sys-on_surface);
   content: counter(page-count);
   counter-increment: page-count;
-  font-size: 13px;
+  font: var(--cros-body-2-font);
   position: absolute;
 }
 

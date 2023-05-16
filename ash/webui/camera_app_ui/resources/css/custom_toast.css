@@ -123,7 +123,7 @@ Use these custom properties to control the feature toasts, for example:
 
 .custom-toast-text {
   color: var(--cros-sys-on_primary);
-  font: normal 400 13px/20px Roboto;
+  font: var(--cros-body-2-font);
 }
 
 #new-feature-toast svg-wrapper {

@@ -27,6 +27,14 @@
   --grey-900: rgb(var(--grey-900-rgb));
   --yellow-300: rgb(253, 214, 99);
 
+  --cros-annotation-1-font: 400 12px/18px var(--default-font-family);
+  --cros-body-0-font: 400 16px/24px var(--default-font-family);
+  --cros-body-1-font: 400 14px/20px var(--default-font-family);
+  --cros-body-2-font: 400 13px/20px var(--default-font-family);
+  --cros-button-1-font: 500 14px/20px var(--default-font-family);
+  --cros-button-2-font: 500 13px/20px var(--default-font-family);
+  --cros-title-1-font: 500 16px/24px var(--default-font-family);
+
   /* Note that in M2 blue-0 is lightest and blue-1000 is darkest, but in M3
    * blue0 is darkest and blue100 is lightest. */
   --cros-ref-blue40: var(--blue-600);

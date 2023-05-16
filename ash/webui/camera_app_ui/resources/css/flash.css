@@ -21,7 +21,7 @@ body.view-flash #view-flash {
 
 #processing-indicator .msg {
   color: var(--cros-sys-on_surface);
-  font: 14px/20px Roboto;
+  font: var(--cros-body-1-font);
   margin-top: 16px;
 }
 

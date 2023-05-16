@@ -9,7 +9,7 @@
   box-sizing: border-box;
   color: var(--cros-sys-on_surface);
   display: none;
-  font-size: 14px;
+  font: var(--cros-body-1-font);
   margin: 0;
   max-width: calc(100vw - 16px);
   padding-block: 8px;

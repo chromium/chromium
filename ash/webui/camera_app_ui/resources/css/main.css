@@ -311,9 +311,7 @@ div.mode-item>span {
   border-radius: 16px/50%;
   color: var(--cros-sys-on_surface);
   display: inline-block;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 16px;
+  font: var(--cros-button-1-font);
   padding: 8px 12px;
   position: relative;
   z-index: 0;
@@ -888,7 +886,7 @@ body.use-fake-camera #view-expert-settings label.require-chromeos-vcd {
 }
 
 #expert-controls {
-  font-size: 14px;
+  font: var(--cros-body-1-font);
   left: 60px;
   position: absolute;
   text-align: left;  /* csschecker-disable-line left-right */
@@ -1058,11 +1056,10 @@ body.grid.grid-4x4 #preview-grid-vertical::before {
   border-radius: var(--border-radius-rounded-with-short-side);
   box-sizing: border-box;
   display: flex;
-  font-size: 13px;
+  font: var(--cros-button-2-font);
   font-variant-numeric: tabular-nums;
   height: 32px;
   justify-content: flex-start;
-  line-height: 20px;
   padding: 6px 12px;
   pointer-events: none;
 }
@@ -1114,11 +1111,10 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
   background: var(--cros-sys-on_surface);
   border-radius: 2px;
   color: var(--cros-sys-inverse_on_surface);
-  font-size: 12px;
+  font: var(--cros-annotation-1-font);
   left: 0;
-  line-height: 22px;
   opacity: 0;
-  padding: 0 8px;
+  padding: 2px 8px;
   pointer-events: none;
   position: absolute;
   top: 0;
@@ -1136,8 +1132,7 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
   border-radius: 16px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.1), 0 4px 4px rgba(0, 0, 0, 0.2);
   color: var(--cros-sys-on_surface);
-  font-size: 16px;
-  line-height: 32px;
+  font: var(--cros-body-0-font);
   opacity: 0;
   padding: 8px 16px;
   pointer-events: none;
@@ -1183,9 +1178,12 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
   color: var(--cros-sys-on_surface);
   display: flex;
   flex-shrink: 0;
-  font-size: 13px;
   justify-content: flex-start;
   text-align: initial;
+}
+
+.menu-item {
+  font: var(--cros-body-2-font);
 }
 
 button.menu-item:hover,
@@ -1200,7 +1198,7 @@ label.menu-item:hover {
 .menu-header {
   color: var(--cros-sys-on_surface);
   cursor: default;
-  font-size: 20px;
+  font: var(--cros-title-1-font);
   height: 72px;
   padding-inline-start: 16px;
   user-select: none;
@@ -1284,8 +1282,7 @@ html[dir=rtl] .menu-header .icon {
 }
 
 #view-warning #error-msg {
-  font-size: 18px;
-  line-height: 32px;
+  font: var(--cros-body-0-font);
   text-align: center;
   white-space: pre-wrap;
 }
@@ -1345,18 +1342,16 @@ html[dir=rtl] .menu-header .icon {
   border-radius: 8px;
   display: flex;
   flex-direction: column;
-  padding: 8px;
+  padding: 8px 0;
   position: absolute;
   width: 225px;
 }
 
 #option-title {
   color: var(--cros-sys-secondary);
-  font-family: var(--default-font-family);
-  font-size: 13px;
-  font-weight: 400;
-  height: 28px;
-  padding: 8px 8px 0 8px;
+  font: var(--cros-button-2-font);
+  height: 20px;
+  padding: 8px 20px;
 }
 
 #options-container {
@@ -1385,7 +1380,7 @@ body:not(.video) #settings-video-resolution {
 
 .label-item {
   color: var(--cros-sys-secondary);
-  font: 500 13px/20px var(--default-font-family);
+  font: var(--cros-button-2-font);
   margin: 9px 0 3px 0;
   padding-inline-start: 26px;
 }
@@ -1400,7 +1395,7 @@ body:not(.video) #settings-video-resolution {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  font: 400 13px var(--default-font-family);
+  font: var(--cros-body-2-font);
   height: 64px;
   justify-content: center;
   padding-inline-end: 60px;
@@ -1466,7 +1461,7 @@ body:not(.video) #settings-video-resolution {
 
 #nudge .warning-msg {
   color: var(--cros-sys-on_surface);
-  font: 400 14px/20px Roboto;
+  font: var(--cros-body-2-font);
 }
 
 .low-storage-dialog-popup {
@@ -1481,12 +1476,12 @@ body:not(.video) #settings-video-resolution {
 
 .low-storage-dialog-popup .dialog-title {
   color: var(--cros-sys-on_surface);
-  font: 500 16px/24px var(--default-font-family);
+  font: var(--cros-title-1-font);
 }
 
 .low-storage-dialog-popup .dialog-description {
   color: var(--cros-sys-secondary);
-  font: 400 14px/20px var(--default-font-family);
+  font: var(--cros-body-2-font);
 }
 
 .low-storage-dialog-buttons {
