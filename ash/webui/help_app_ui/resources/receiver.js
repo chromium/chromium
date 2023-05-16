@@ -79,8 +79,9 @@ const DELEGATE = {
    * @override
    * @param {string} url
    */
-  async openUrlInBrowser(url) {
-    await parentMessagePipe.sendMessage(Message.OPEN_URL_IN_BROWSER, url);
+  async openUrlInBrowserAndTriggerInstallDialog(url) {
+    await parentMessagePipe.sendMessage(
+        Message.OPEN_URL_IN_BROWSER_AND_TRIGGER_INSTALL_DIALOG, url);
   },
 };
 

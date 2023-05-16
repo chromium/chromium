@@ -94,15 +94,18 @@ void ChromeHelpAppUIDelegate::GetDeviceInfo(
       base::BindOnce(&DeviceInfoCallback, std::move(callback)));
 }
 
-absl::optional<std::string> ChromeHelpAppUIDelegate::OpenUrlInBrowser(
+absl::optional<std::string>
+ChromeHelpAppUIDelegate::OpenUrlInBrowserAndTriggerInstallDialog(
     const GURL& url) {
   if (!url.is_valid()) {
     return base::StrCat(
-        {"ChromeHelpAppUIDelegate::OpenUrlInBrowser received invalid URL \"",
+        {"ChromeHelpAppUIDelegate::OpenUrlInBrowserAndTriggerInstallDialog "
+         "received invalid URL \"",
          url.spec(), "\""});
   } else if (!url.SchemeIs(url::kHttpsScheme)) {
     return base::StrCat(
-        {"ChromeHelpAppUIDelegate::OpenUrlInBrowser received non-HTTPS URL: \"",
+        {"ChromeHelpAppUIDelegate::OpenUrlInBrowserAndTriggerInstallDialog "
+         "received non-HTTPS URL: \"",
          url.spec(), "\""});
   }
 

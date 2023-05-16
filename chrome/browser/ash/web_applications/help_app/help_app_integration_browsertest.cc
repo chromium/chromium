@@ -41,7 +41,9 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -70,6 +72,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "url/url_constants.h"
 
 namespace ash {
@@ -85,12 +88,8 @@ class HelpAppIntegrationTest : public SystemWebAppIntegrationTest {
         {features::kHelpAppDiscoverTabNotificationAllChannels,
          features::kReleaseNotesNotificationAllChannels,
          features::kHelpAppLauncherSearch},
-        // TODO(b/279856318): Test auto trigger install dialog functionality.
-        {features::kHelpAppAutoTriggerInstallDialog});
-
-    https_server()->ServeFilesFromSourceDirectory(
-        base::FilePath(FILE_PATH_LITERAL("content/test/data")));
-    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+        {});
+    https_server()->AddDefaultHandlers(GetChromeTestDataDir());
   }
 
   // Setting up our own HTTPS `EmbeddedTestServer` because the superclass's
@@ -107,6 +106,18 @@ using HelpAppAllProfilesIntegrationTest = HelpAppIntegrationTest;
 content::WebContents* GetActiveWebContents() {
   return chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
 }
+
+class HelpAppIntegrationTestWithAutoTriggerDisabled
+    : public HelpAppIntegrationTest {
+ public:
+  HelpAppIntegrationTestWithAutoTriggerDisabled() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kHelpAppAutoTriggerInstallDialog);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 }  // namespace
 
@@ -534,8 +545,9 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ShowParentalControls) {
   EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
 }
 
-// Test that the Help App's `openUrlInBrowser` can open valid URLs.
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
+// Test that the Help App's `openUrlInBrowserAndTriggerInstallDialog` can open
+// valid URLs if the `kHelpAppAutoTriggerInstallDialog` feature is disabled.
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithAutoTriggerDisabled,
                        HelpAppV2CanOpenValidHttpsUrlsInBrowser) {
   ASSERT_TRUE(https_server()->Start());
   const GURL test_url = https_server()->GetURL("/title1.html");
@@ -556,11 +568,12 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   content::TestNavigationObserver navigation_observer(test_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  // Script that tells the Help App to call the openUrlInBrowser Mojo function.
+  // Script that tells the Help App to call the
+  // openUrlInBrowserAndTriggerInstallDialog Mojo function.
   constexpr char kScript[] = R"(
     (async () => {
       const delegate = window.customLaunchData.delegate;
-      await delegate.openUrlInBrowser($1);
+      await delegate.openUrlInBrowserAndTriggerInstallDialog($1);
     })();
   )";
   // Trigger the script, then wait for the URL to open in a new tab. Use
@@ -583,7 +596,71 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   EXPECT_EQ(test_url, GetActiveWebContents()->GetVisibleURL());
 }
 
-// Test that the Help App's `openUrlInBrowser` crashes for invalid URLs.
+// Test that the Help App's `openUrlInBrowserAndTriggerInstallDialog` navigates
+// and triggers the install dialog by default.
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
+                       HelpAppV2CanTriggerInstallDialogForValidHttpsUrls) {
+  if (web_app::IsWebAppsCrosapiEnabled()) {
+    // TODO(b/282099820): Test the interaction with the Lacros browser.
+    return;
+  }
+  ASSERT_TRUE(https_server()->Start());
+  const GURL test_url =
+      https_server()->GetURL("/banners/manifest_test_page.html");
+
+  ASSERT_TRUE(test_url.SchemeIs(url::kHttpsScheme));
+
+  // There should be only be one regular browser with one tab.
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+
+  WaitForTestSystemAppInstall();
+  content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
+
+  // There should be two browser windows, one regular and one for the newly
+  // opened help app.
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+
+  content::TestNavigationObserver navigation_observer(test_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  // Script that tells the Help App to call the
+  // OpenUrlInBrowserAndTriggerInstallDialog Mojo function.
+  constexpr char kScript[] = R"(
+    (async () => {
+      const delegate = window.customLaunchData.delegate;
+      await delegate.openUrlInBrowserAndTriggerInstallDialog($1);
+    })();
+  )";
+  // Trigger the script, then wait for the URL to open in a new tab. Use
+  // ExecJs instead of EvalJsInAppFrame because the script needs to run in the
+  // same world as the page's code.
+  EXPECT_TRUE(
+      content::ExecJs(SandboxedWebUiAppTestBase::GetAppFrame(web_contents),
+                      content::JsReplace(kScript, test_url)));
+  navigation_observer.Wait();
+
+  // There should still be two browser windows.
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  // The regular browser should only have 2 tabs.
+  EXPECT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+  // After opening the URL, the regular browser should be the most recently
+  // active browser.
+  EXPECT_EQ(browser(), chrome::FindLastActive());
+  // The active tab should be the `test_url` we opened.
+  EXPECT_EQ(test_url, GetActiveWebContents()->GetVisibleURL());
+
+  // Wait for the PWA install dialog to show up. Internally, this is called the
+  // PWAConfirmationBubbleView (Not to be confused with the omnibox icon).
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey(),
+                                       "PWAConfirmationBubbleView");
+  waiter.WaitIfNeededAndGet();
+
+  EXPECT_TRUE(PWAConfirmationBubbleView::IsShowing());
+}
+
+// Test that the Help App's `openUrlInBrowserAndTriggerInstallDialog` crashes
+// for invalid URLs.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                        HelpAppV2CrashesForInvalidUrlsInBrowser) {
   // There should be only be one regular browser with one tab.
@@ -595,11 +672,12 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 
   WaitForTestSystemAppInstall();
 
-  // Script that tells the Help App to call the openUrlInBrowser Mojo function.
+  // Script that tells the Help App to call the
+  // `OpenUrlInBrowserAndTriggerInstallDialog` Mojo function.
   constexpr char kScript[] = R"(
     (async () => {
       const delegate = window.customLaunchData.delegate;
-      await delegate.openUrlInBrowser($1);
+      await delegate.openUrlInBrowserAndTriggerInstallDialog($1);
     })();
   )";
   std::string invalid_urls[] = {"",
@@ -915,6 +993,9 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest,
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     HelpAppIntegrationTest);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    HelpAppIntegrationTestWithAutoTriggerDisabled);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
     HelpAppAllProfilesIntegrationTest);
