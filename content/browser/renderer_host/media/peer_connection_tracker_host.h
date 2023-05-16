@@ -67,6 +67,7 @@ class PeerConnectionTrackerHost
   void StopEventLog(int lid);
   void GetStandardStats();
   void GetLegacyStats();
+  void GetCurrentState();
 
   void BindReceiver(
       mojo::PendingReceiver<blink::mojom::PeerConnectionTrackerHost>

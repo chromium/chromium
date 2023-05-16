@@ -281,6 +281,7 @@ class MODULES_EXPORT PeerConnectionTracker
   void StopEventLog(int peer_connection_local_id) override;
   void GetStandardStats() override;
   void GetLegacyStats() override;
+  void GetCurrentState() override;
 
   // Called to deliver an update to the host (PeerConnectionTrackerHost).
   // |local_id| - The id of the registered RTCPeerConnectionHandler.

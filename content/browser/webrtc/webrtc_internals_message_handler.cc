@@ -145,6 +145,9 @@ void WebRTCInternalsMessageHandler::OnDOMLoadDone(
   params.Set("eventLogRecordingsToggleable",
              webrtc_internals_->CanToggleEventLogRecordings());
 
+  for (auto* host : PeerConnectionTrackerHost::GetAllHosts()) {
+    host->GetCurrentState();
+  }
   ResolveJavascriptCallback(base::Value(callback_id), params);
 }
 

@@ -107,9 +107,10 @@ export class PeerConnectionUpdateTable {
         update.type === 'createAnswerOnSuccess') {
       this.setLastOfferAnswer_(tableElement, update);
     } else if (update.type === 'setLocalDescription') {
+      const lastOfferAnswer = this.getLastOfferAnswer_(tableElement);
       if (update.value.startsWith('type: rollback')) {
         this.setLastOfferAnswer_(tableElement, {value: undefined})
-      } else if (update.value !== this.getLastOfferAnswer_(tableElement)) {
+      } else if (lastOfferAnswer && update.value !== lastOfferAnswer) {
         type += ' (munged)';
       }
     } else if (update.type === 'setConfiguration') {

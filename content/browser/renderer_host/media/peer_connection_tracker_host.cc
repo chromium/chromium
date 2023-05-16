@@ -281,6 +281,11 @@ void PeerConnectionTrackerHost::GetLegacyStats() {
   tracker_->GetLegacyStats();
 }
 
+void PeerConnectionTrackerHost::GetCurrentState() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  tracker_->GetCurrentState();
+}
+
 void PeerConnectionTrackerHost::BindReceiver(
     mojo::PendingReceiver<blink::mojom::PeerConnectionTrackerHost>
         pending_receiver) {
