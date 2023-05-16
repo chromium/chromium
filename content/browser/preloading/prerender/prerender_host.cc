@@ -983,9 +983,6 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kActivatedBeforeStarted:
     case PrerenderFinalStatus::kTabClosedByUserGesture:
     case PrerenderFinalStatus::kTabClosedWithoutUserGesture:
-    case PrerenderFinalStatus::kSpeculationRuleRemoved:
-    case PrerenderFinalStatus::kTriggerPageNavigated:
-    case PrerenderFinalStatus::kOtherPrerenderedPageActivated:
       return;
     case PrerenderFinalStatus::kDestroyed:
     case PrerenderFinalStatus::kLowEndDevice:

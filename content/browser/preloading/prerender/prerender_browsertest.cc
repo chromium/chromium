@@ -1395,8 +1395,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   host_observer.WaitForDestroyed();
   EXPECT_EQ(GetHostForUrl(kPrerenderingUrl),
             RenderFrameHost::kNoFrameTreeNodeId);
-  ExpectFinalStatusForSpeculationRule(
-      PrerenderFinalStatus::kSpeculationRuleRemoved);
+  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kTriggerDestroyed);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
@@ -5018,7 +5017,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
       PrerenderFinalStatus::kActivated, 1);
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderFinalStatus::kOtherPrerenderedPageActivated, 2);
+      PrerenderFinalStatus::kTriggerDestroyed, 2);
 }
 
 // Tests that a cancelled request in the pending queue is skipped and the next
@@ -5073,7 +5072,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   // The first prerender is destroyed by SpeculationHostImpl.
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderFinalStatus::kOtherPrerenderedPageActivated, 1);
+      PrerenderFinalStatus::kTriggerDestroyed, 1);
 
   // The second prerender is destroyed directly.
   histogram_tester().ExpectBucketCount(
@@ -5169,7 +5168,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   // The first prerender was destroyed by SpeculationHostImpl.
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderFinalStatus::kTriggerPageNavigated, 1);
+      PrerenderFinalStatus::kTriggerDestroyed, 1);
   // The second prerender is destroyed since activation navigation is requested
   // while it's still pending.
   histogram_tester().ExpectBucketCount(
@@ -5450,7 +5449,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   // The first prerender should be cancelled by the trigger.
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderFinalStatus::kSpeculationRuleRemoved, 1);
+      PrerenderFinalStatus::kTriggerDestroyed, 1);
   // The second prerender should be successfully activated.
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
@@ -7554,17 +7553,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
   // initial page was in the back/forward cache.
   prerender_observer.WaitForDestroyed();
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
-
-  switch (GetParam()) {
-    case BackForwardCacheType::kDisabled:
-      ExpectFinalStatusForSpeculationRule(
-          PrerenderFinalStatus::kTriggerDestroyed);
-      break;
-    case BackForwardCacheType::kEnabled:
-      ExpectFinalStatusForSpeculationRule(
-          PrerenderFinalStatus::kTriggerPageNavigated);
-      break;
-  }
+  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kTriggerDestroyed);
 }
 
 // Tests that a trigger page destroys a prerendered page when it navigates back
@@ -7611,17 +7600,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderWithBackForwardCacheBrowserTest,
   // next page was in the back/forward cache.
   prerender_observer.WaitForDestroyed();
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
-
-  switch (GetParam()) {
-    case BackForwardCacheType::kDisabled:
-      ExpectFinalStatusForSpeculationRule(
-          PrerenderFinalStatus::kTriggerDestroyed);
-      break;
-    case BackForwardCacheType::kEnabled:
-      ExpectFinalStatusForSpeculationRule(
-          PrerenderFinalStatus::kTriggerPageNavigated);
-      break;
-  }
+  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kTriggerDestroyed);
 }
 
 // Tests that PrerenderHostRegistry can hold up to two prerendering for the
@@ -8036,7 +8015,7 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersWithLimitedMemoryBrowserTest,
       PrerenderFinalStatus::kMemoryLimitExceeded, 0);
 
   // Activate one of the prerendered pages. This should cancel the other
-  // prerendered pages.
+  // prerendered as kTriggerDestroyed.
   NavigatePrimaryPage(urls[0]);
   ASSERT_EQ(web_contents()->GetLastCommittedURL(), urls[0]);
   histogram_tester().ExpectBucketCount(
@@ -8044,7 +8023,7 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersWithLimitedMemoryBrowserTest,
       PrerenderFinalStatus::kActivated, 1);
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderFinalStatus::kOtherPrerenderedPageActivated, 2);
+      PrerenderFinalStatus::kTriggerDestroyed, 2);
 }
 
 // Tests that cross-site urls cannot be prerendered.

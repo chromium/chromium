@@ -6,6 +6,7 @@
 
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
@@ -47,7 +48,7 @@ PrerendererImpl::PrerendererImpl(RenderFrameHost& render_frame_host)
 
 PrerendererImpl::~PrerendererImpl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CancelStartedPrerenders(PrerenderFinalStatus::kTriggerDestroyed);
+  CancelStartedPrerenders();
 }
 
 void PrerendererImpl::PrimaryPageChanged(Page& page) {
@@ -60,7 +61,7 @@ void PrerendererImpl::PrimaryPageChanged(Page& page) {
   // before the next primary page swaps in so that the next page can trigger a
   // new prerender without hitting the max number of running prerenders.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CancelStartedPrerenders(PrerenderFinalStatus::kTriggerPageNavigated);
+  CancelStartedPrerenders();
 }
 
 // TODO(isaboori) Part of the logic in |ProcessCandidatesForPrerender| method is
@@ -147,9 +148,9 @@ void PrerendererImpl::ProcessCandidatesForPrerender(
     started_it = equal_prerender_end;
   }
 
-  registry_->CancelHosts(removed_prerender_rules,
-                         PrerenderCancellationReason(
-                             PrerenderFinalStatus::kSpeculationRuleRemoved));
+  registry_->CancelHosts(
+      removed_prerender_rules,
+      PrerenderCancellationReason(PrerenderFinalStatus::kTriggerDestroyed));
   {
     base::flat_set<int> removed_prerender_rules_set(
         removed_prerender_rules.begin(), removed_prerender_rules.end());
@@ -281,15 +282,15 @@ bool PrerendererImpl::ShouldWaitForPrerenderResult(const GURL& url) {
   return begin != end;
 }
 
-void PrerendererImpl::CancelStartedPrerenders(
-    PrerenderFinalStatus final_status) {
+void PrerendererImpl::CancelStartedPrerenders() {
   if (registry_) {
     std::vector<int> started_prerender_ids;
     for (auto& prerender_info : started_prerenders_) {
       started_prerender_ids.push_back(prerender_info.prerender_host_id);
     }
-    registry_->CancelHosts(started_prerender_ids,
-                           PrerenderCancellationReason(final_status));
+    registry_->CancelHosts(
+        started_prerender_ids,
+        PrerenderCancellationReason(PrerenderFinalStatus::kTriggerDestroyed));
   }
 
   started_prerenders_.clear();
