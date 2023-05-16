@@ -218,6 +218,8 @@ const TestCardFillData kElvisCardFillData("Elvis Presley",
                                           "2999",
                                           /*use_month_type*/ false);
 
+constexpr char kElvisProfileGuid[] = "00000000-0000-0000-0000-000000000001";
+
 class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() {
@@ -1147,7 +1149,7 @@ class BrowserAutofillManagerTest : public testing::Test {
 
   void CreateTestAutofillProfiles() {
     AutofillProfile profile1 = FillDataToAutofillProfile(kElvisAddressFillData);
-    profile1.set_guid("00000000-0000-0000-0000-000000000001");
+    profile1.set_guid(kElvisProfileGuid);
     personal_data().AddProfile(profile1);
 
     AutofillProfile profile2;
@@ -6968,20 +6970,14 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDefaultValues) {
   test::CreateTestAddressFormData(&form);
   form.fields[3].value = u"Enter your address";
 
-  // Convert the state field to a <select> popup, to make sure that we only
-  // reject default values for text fields.
-  ASSERT_TRUE(form.fields[6].name == u"state");
-  form.fields[6].form_control_type = "select-one";
-  form.fields[6].value = u"Tennessee";
-
   FormsSeen({form});
 
   // Fill the form.
-  const char guid[] = "00000000-0000-0000-0000-000000000001";
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(form, form.fields[3],
-                                     MakeFrontendId({.profile_id = guid}),
-                                     &response_data);
+  FillAutofillFormDataAndSaveResults(
+      form, form.fields[3], MakeFrontendId({.profile_id = kElvisProfileGuid}),
+      &response_data);
+
   // Set the address field's value back to the default value.
   response_data.fields[3].value = u"Enter your address";
 
@@ -6989,6 +6985,34 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDefaultValues) {
   // the filled data, since the filled form is effectively missing an address.
   FormSubmitted(response_data);
   EXPECT_EQ(0, personal_data().num_times_save_imported_profile_called());
+}
+
+// Test that we save form data when a <select> in the form contains the
+// default value.
+TEST_F(BrowserAutofillManagerTest, FormSubmittedSelectWithDefaultValue) {
+  // Set up our form data.
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+
+  // Convert the state field to a <select> popup, to make sure that we only
+  // reject default values for text fields.
+  ASSERT_TRUE(form.fields[6].name == u"state");
+  form.fields[6].form_control_type = "select-one";
+  form.fields[6].value = base::UTF8ToUTF16(kElvisAddressFillData.state);
+
+  FormsSeen({form});
+
+  // Fill the form.
+  FormData response_data;
+  FillAutofillFormDataAndSaveResults(
+      form, form.fields[3], MakeFrontendId({.profile_id = kElvisProfileGuid}),
+      &response_data);
+
+  FormSubmitted(response_data);
+  ASSERT_EQ(1, personal_data().num_times_save_imported_profile_called());
+  EXPECT_EQ(u"Tennessee",
+            personal_data().last_save_imported_profile()->GetRawInfo(
+                ADDRESS_HOME_STATE));
 }
 
 struct ProfileMatchingTypesTestCase {
