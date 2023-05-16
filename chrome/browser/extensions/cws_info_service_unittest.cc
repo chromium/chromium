@@ -100,6 +100,9 @@ CWSInfoServiceTest::CWSInfoServiceTest()
   auto pref_service =
       std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
   RegisterUserProfilePrefs(pref_service->registry());
+  // TODO(anunoy): The following policy pref setting is currently required to
+  // enable CWS metadata fetches (see CWSInfoService::CanFetchInfo). Remove this
+  // pref setting after `kSafetyCheckExtensions` is enabled by default.
   pref_service->SetInteger(pref_names::kExtensionUnpublishedAvailability, 1);
 
   TestingProfile::Builder builder;

@@ -998,6 +998,11 @@ BASE_FEATURE(kRemoveSupervisedUsersOnStartup,
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+// Enables extensions module in Safety Check.
+BASE_FEATURE(kSafetyCheckExtensions,
+             "SafetyCheckExtensions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables notification permission module in Safety Check.
 BASE_FEATURE(kSafetyCheckNotificationPermissions,
              "SafetyCheckNotificationPermissions",

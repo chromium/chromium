@@ -21,6 +21,7 @@
 #include "chrome/browser/extensions/cws_item_service.pb.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -308,10 +309,12 @@ void CWSInfoService::CheckAndMaybeFetchInfo() {
 }
 
 bool CWSInfoService::CanFetchInfo() const {
-  // TODO(anunoy): Remove this check after policy is end-end tested with server
-  // endpoint and admin console UI.
+  // TODO(anunoy): These two checks are needed to support the enterprise policy
+  // and safety check extensions module respectively. Once safety check is
+  // launched, we can remove this method completely.
   return pref_service_->GetInteger(
-             pref_names::kExtensionUnpublishedAvailability) == 1;
+             pref_names::kExtensionUnpublishedAvailability) == 1 ||
+         base::FeatureList::IsEnabled(features::kSafetyCheckExtensions);
 }
 
 void CWSInfoService::ScheduleCheck(int seconds) {
