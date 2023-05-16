@@ -4,9 +4,12 @@
 
 import './info_view_table.js';
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
+import {AngleFeature, BrowserBridge, ClientInfo, FeatureStatus, Problem} from './browser_bridge.js';
 import {getTemplate} from './info_view.html.js';
+import {ArrayData, Data} from './info_view_table_row.js';
 import {VulkanInfo} from './vulkan_info.js';
 
 /**
@@ -15,11 +18,11 @@ import {VulkanInfo} from './vulkan_info.js';
  * their data in an easy to read format for bug reports.
  */
 export class InfoViewElement extends CustomElement {
-  static get template() {
+  static override get template() {
     return getTemplate();
   }
 
-  addBrowserBridgeListeners(browserBridge) {
+  addBrowserBridgeListeners(browserBridge: BrowserBridge) {
     browserBridge.addEventListener(
         'gpuInfoUpdate', this.refresh.bind(this, browserBridge));
     browserBridge.addEventListener(
@@ -31,28 +34,32 @@ export class InfoViewElement extends CustomElement {
 
   connectedCallback() {
     // Add handler to 'copy to clipboard' button
-    this.shadowRoot.querySelector('#copy-to-clipboard').onclick = (() => {
+    const copyButton =
+        this.shadowRoot!.querySelector<HTMLElement>('#copy-to-clipboard');
+    assert(copyButton);
+    copyButton.onclick = (() => {
       // Make sure nothing is selected
-      const s = window.getSelection();
+      const s = window.getSelection()!;
       s.removeAllRanges();
-      s.selectAllChildren(this.shadowRoot);
+      s.selectAllChildren(this.shadowRoot!);
       document.execCommand('copy');
 
       // And deselect everything at the end.
-      window.getSelection().removeAllRanges();
+      window.getSelection()!.removeAllRanges();
     });
   }
 
   /**
    * Updates the view based on its currently known data
    */
-  refresh(browserBridge) {
-    let clientInfo;
-    function createSourcePermalink(revisionIdentifier, filepath) {
+  refresh(browserBridge: BrowserBridge) {
+    let clientInfo: ClientInfo;
+    function createSourcePermalink(
+        revisionIdentifier: string, filepath: string): string {
       if (revisionIdentifier.length !== 40) {
         // If the revision id isn't a hash, just use the 0.0.0.0 version
         // from the Chrome version string "Chrome/0.0.0.0".
-        revisionIdentifier = clientInfo.version.split('/')[1];
+        revisionIdentifier = clientInfo.version.split('/')[1]!;
       }
       return `https://chromium.googlesource.com/chromium/src/+/${
           revisionIdentifier}/${filepath}`;
@@ -91,39 +98,35 @@ export class InfoViewElement extends CustomElement {
 
 
     // GPU info, basic
-    const diagnosticsDiv = this.shadowRoot.querySelector('.diagnostics');
+    const diagnosticsDiv = this.getRequiredElement('.diagnostics');
     const diagnosticsLoadingDiv =
-        this.shadowRoot.querySelector('.diagnostics-loading');
-    const featureStatusList =
-        this.shadowRoot.querySelector('.feature-status-list');
-    const problemsDiv = this.shadowRoot.querySelector('.problems-div');
-    const problemsList = this.shadowRoot.querySelector('.problems-list');
-    const workaroundsDiv = this.shadowRoot.querySelector('.workarounds-div');
-    const workaroundsList = this.shadowRoot.querySelector('.workarounds-list');
-    const ANGLEFeaturesDiv =
-        this.shadowRoot.querySelector('.angle-features-div');
-    const ANGLEFeaturesList =
-        this.shadowRoot.querySelector('.angle-features-list');
-    const DAWNInfoDiv = this.shadowRoot.querySelector('.dawn-info-div');
-    const DAWNInfoList = this.shadowRoot.querySelector('.dawn-info-list');
+        this.getRequiredElement('.diagnostics-loading');
+    const featureStatusList = this.getRequiredElement('.feature-status-list');
+    const problemsDiv = this.getRequiredElement('.problems-div');
+    const problemsList = this.getRequiredElement('.problems-list');
+    const workaroundsDiv = this.getRequiredElement('.workarounds-div');
+    const workaroundsList = this.getRequiredElement('.workarounds-list');
+    const angleFeaturesDiv = this.getRequiredElement('.angle-features-div');
+    const angleFeaturesList = this.getRequiredElement('.angle-features-list');
+    const dawnInfoDiv = this.getRequiredElement('.dawn-info-div');
+    const dawnInfoList = this.getRequiredElement('.dawn-info-list');
 
     const basicInfoForHardwareGpuDiv =
-        this.shadowRoot.querySelector('.basic-info-for-hardware-gpu-div');
+        this.getRequiredElement('.basic-info-for-hardware-gpu-div');
     const featureStatusForHardwareGpuDiv =
-        this.shadowRoot.querySelector('.feature-status-for-hardware-gpu-div');
+        this.getRequiredElement('.feature-status-for-hardware-gpu-div');
     const featureStatusForHardwareGpuList =
-        this.shadowRoot.querySelector('.feature-status-for-hardware-gpu-list');
+        this.getRequiredElement('.feature-status-for-hardware-gpu-list');
     const problemsForHardwareGpuDiv =
-        this.shadowRoot.querySelector('.problems-for-hardware-gpu-div');
+        this.getRequiredElement('.problems-for-hardware-gpu-div');
     const problemsForHardwareGpuList =
-        this.shadowRoot.querySelector('.problems-for-hardware-gpu-list');
+        this.getRequiredElement('.problems-for-hardware-gpu-list');
     const workaroundsForHardwareGpuDiv =
-        this.shadowRoot.querySelector('.workarounds-for-hardware-gpu-div');
+        this.getRequiredElement('.workarounds-for-hardware-gpu-div');
     const workaroundsForHardwareGpuList =
-        this.shadowRoot.querySelector('.workarounds-for-hardware-gpu-list');
+        this.getRequiredElement('.workarounds-for-hardware-gpu-list');
 
     const gpuInfo = browserBridge.gpuInfo;
-    let i;
     if (gpuInfo) {
       // Not using jstemplate here for blocklist status because we construct
       // href from data, which jstemplate can't seem to do.
@@ -193,36 +196,36 @@ export class InfoViewElement extends CustomElement {
 
       if (gpuInfo.ANGLEFeatures) {
         if (gpuInfo.ANGLEFeatures.length) {
-          ANGLEFeaturesDiv.hidden = false;
-          ANGLEFeaturesList.textContent = '';
-          for (const ANGLEFeature of gpuInfo.ANGLEFeatures) {
-            const ANGLEFeatureEl = this.createANGLEFeatureEl_(ANGLEFeature);
-            ANGLEFeaturesList.appendChild(ANGLEFeatureEl);
+          angleFeaturesDiv.hidden = false;
+          angleFeaturesList.textContent = '';
+          for (const angleFeature of gpuInfo.ANGLEFeatures) {
+            const angleFeatureEl = this.createAngleFeatureEl_(angleFeature);
+            angleFeaturesList.appendChild(angleFeatureEl);
           }
         } else {
-          ANGLEFeaturesDiv.hidden = true;
+          angleFeaturesDiv.hidden = true;
         }
       }
 
       if (gpuInfo.dawnInfo) {
         if (gpuInfo.dawnInfo.length) {
-          DAWNInfoDiv.hidden = false;
-          this.createDawnInfoEl_(DAWNInfoList, gpuInfo.dawnInfo);
+          dawnInfoDiv.hidden = false;
+          this.createDawnInfoEl_(dawnInfoList, gpuInfo.dawnInfo);
         } else {
-          DAWNInfoDiv.hidden = true;
+          dawnInfoDiv.hidden = true;
         }
       }
 
       if (gpuInfo.diagnostics) {
         diagnosticsDiv.hidden = false;
         diagnosticsLoadingDiv.hidden = true;
-        this.shadowRoot.querySelector('#diagnostics-table').hidden = false;
+        this.getRequiredElement('#diagnostics-table').hidden = false;
         this.setTable_('diagnostics-table', gpuInfo.diagnostics);
       } else if (gpuInfo.diagnostics === null) {
         // gpu_internals.cc sets diagnostics to null when it is being loaded
         diagnosticsDiv.hidden = false;
         diagnosticsLoadingDiv.hidden = false;
-        this.shadowRoot.querySelector('#diagnostics-table').hidden = true;
+        this.getRequiredElement('#diagnostics-table').hidden = true;
       } else {
         diagnosticsDiv.hidden = true;
       }
@@ -249,13 +252,12 @@ export class InfoViewElement extends CustomElement {
       diagnosticsDiv.hidden = true;
       featureStatusList.textContent = '';
       problemsDiv.hidden = true;
-      DAWNInfoDiv.hidden = true;
+      dawnInfoDiv.hidden = true;
     }
 
     // Log messages
-    const messageList = this.shadowRoot.querySelector('#log-messages > ul');
-    messageList.innerHTML =
-        window.trustedTypes ? window.trustedTypes.emptyHTML : '';
+    const messageList = this.getRequiredElement('#log-messages > ul');
+    messageList.innerHTML = window.trustedTypes!.emptyHTML;
     browserBridge.logMessages.forEach(messageObj => {
       const messageEl = document.createElement('span');
       messageEl.textContent = `${messageObj.header}: ${messageObj.message}`;
@@ -265,11 +267,12 @@ export class InfoViewElement extends CustomElement {
     });
   }
 
-  appendFeatureInfo_(
-      featureInfo, featureStatusList, problemsDiv, problemsList, workaroundsDiv,
-      workaroundsList) {
+  private appendFeatureInfo_(
+      featureInfo: FeatureStatus, featureStatusList: HTMLElement,
+      problemsDiv: HTMLElement, problemsList: HTMLElement,
+      workaroundsDiv: HTMLElement, workaroundsList: HTMLElement) {
     // Feature map
-    const featureLabelMap = {
+    const featureLabelMap: Record<string, string> = {
       '2d_canvas': 'Canvas',
       'gpu_compositing': 'Compositing',
       'webgl': 'WebGL',
@@ -295,7 +298,7 @@ export class InfoViewElement extends CustomElement {
       'skia_graphite': 'Skia Graphite',
     };
 
-    const statusMap = {
+    const statusMap: Record<string, {label: string, class: string}> = {
       'disabled_software': {
         'label': 'Software only. Hardware acceleration disabled',
         'class': 'feature-yellow',
@@ -324,7 +327,7 @@ export class InfoViewElement extends CustomElement {
     // feature status list
     featureStatusList.textContent = '';
     for (const featureName in featureInfo.featureStatus) {
-      const featureStatus = featureInfo.featureStatus[featureName];
+      const featureStatus = featureInfo.featureStatus[featureName]!;
       const featureEl = document.createElement('li');
 
       const nameEl = document.createElement('span');
@@ -375,7 +378,7 @@ export class InfoViewElement extends CustomElement {
     }
   }
 
-  createProblemEl_(problem) {
+  private createProblemEl_(problem: Problem): HTMLElement {
     const problemEl = document.createElement('li');
 
     // Description of issue
@@ -410,8 +413,8 @@ export class InfoViewElement extends CustomElement {
       }
 
       const link = document.createElement('a');
-      const bugid = parseInt(problem.crBugs[j]);
-      link.textContent = bugid;
+      const bugid = parseInt(problem.crBugs[j]!);
+      link.textContent = bugid.toString();
       link.href = 'http://crbug.com/' + bugid;
       problemEl.appendChild(link);
       nbugs++;
@@ -443,7 +446,7 @@ export class InfoViewElement extends CustomElement {
         } else {  // problem.tag === 'workarounds'
           nameNode.classList.add('feature-yellow');
         }
-        nameNode.textContent = problem.affectedGpuSettings[j];
+        nameNode.textContent = problem.affectedGpuSettings[j]!;
         iNode.appendChild(nameNode);
       }
     }
@@ -470,118 +473,117 @@ export class InfoViewElement extends CustomElement {
     return problemEl;
   }
 
-  createANGLEFeatureEl_(ANGLEFeature) {
-    const ANGLEFeatureEl = document.createElement('li');
+  private createAngleFeatureEl_(angleFeature: AngleFeature) {
+    const angleFeatureEl = document.createElement('li');
 
     // Name comes first, bolded
     const name = document.createElement('b');
-    name.textContent = ANGLEFeature.name;
-    ANGLEFeatureEl.appendChild(name);
+    name.textContent = angleFeature.name;
+    angleFeatureEl.appendChild(name);
 
     // If there's a category, it follows the name in parentheses
-    if (ANGLEFeature.category) {
+    if (angleFeature.category) {
       const separator = document.createElement('span');
       separator.textContent = ' ';
-      ANGLEFeatureEl.appendChild(separator);
+      angleFeatureEl.appendChild(separator);
 
       const category = document.createElement('span');
-      category.textContent = '(' + ANGLEFeature.category + ')';
-      ANGLEFeatureEl.appendChild(category);
+      category.textContent = '(' + angleFeature.category + ')';
+      angleFeatureEl.appendChild(category);
     }
 
     // If there's a bug link, try to parse the crbug/anglebug number
-    if (ANGLEFeature.bug) {
+    if (angleFeature.bug) {
       const separator = document.createElement('span');
       separator.textContent = ' ';
-      ANGLEFeatureEl.appendChild(separator);
+      angleFeatureEl.appendChild(separator);
 
       const bug = document.createElement('a');
-      if (ANGLEFeature.bug.includes('crbug.com/')) {
-        bug.textContent = ANGLEFeature.bug.match(/\d+/);
-      } else if (ANGLEFeature.bug.includes('anglebug.com/')) {
-        bug.textContent = 'anglebug:' + ANGLEFeature.bug.match(/\d+/);
+      if (angleFeature.bug.includes('crbug.com/')) {
+        bug.textContent = angleFeature.bug.match(/\d+/)!.toString();
+      } else if (angleFeature.bug.includes('anglebug.com/')) {
+        bug.textContent = 'anglebug:' + angleFeature.bug.match(/\d+/);
       } else {
-        bug.textContent = ANGLEFeature.bug;
+        bug.textContent = angleFeature.bug;
       }
-      bug.href = ANGLEFeature.bug;
-      ANGLEFeatureEl.appendChild(bug);
+      bug.href = angleFeature.bug;
+      angleFeatureEl.appendChild(bug);
     }
 
     // Follow with a colon, and the status (colored)
     const separator = document.createElement('span');
     separator.textContent = ': ';
-    ANGLEFeatureEl.appendChild(separator);
+    angleFeatureEl.appendChild(separator);
 
     const status = document.createElement('span');
-    if (ANGLEFeature.status === 'enabled') {
+    if (angleFeature.status === 'enabled') {
       status.textContent = 'Enabled';
       status.classList.add('feature-green');
     } else {
       status.textContent = 'Disabled';
       status.classList.add('feature-red');
     }
-    ANGLEFeatureEl.appendChild(status);
+    angleFeatureEl.appendChild(status);
 
-    if (ANGLEFeature.condition) {
+    if (angleFeature.condition) {
       const condition = document.createElement('span');
-      condition.textContent = ': ' + ANGLEFeature.condition;
+      condition.textContent = ': ' + angleFeature.condition;
       condition.classList.add('feature-gray');
-      ANGLEFeatureEl.appendChild(condition);
+      angleFeatureEl.appendChild(condition);
     }
 
     // if there's a description, put on new line, italicized
-    if (ANGLEFeature.description) {
+    if (angleFeature.description) {
       const brNode = document.createElement('br');
-      ANGLEFeatureEl.appendChild(brNode);
+      angleFeatureEl.appendChild(brNode);
 
       const iNode = document.createElement('i');
-      ANGLEFeatureEl.appendChild(iNode);
+      angleFeatureEl.appendChild(iNode);
 
       const description = document.createElement('span');
-      description.textContent = ANGLEFeature.description;
+      description.textContent = angleFeature.description;
       iNode.appendChild(description);
     }
 
-    return ANGLEFeatureEl;
+    return angleFeatureEl;
   }
 
-  setText_(outputElementId, text) {
-    const peg = this.shadowRoot.querySelector(`#${outputElementId}`);
-    peg.textContent = text;
+  private setText_(outputElementId: string, text: string) {
+    this.getRequiredElement(`#${outputElementId}`).textContent = text;
   }
 
-  setTable_(outputElementId, inputData) {
+  private setTable_(outputElementId: string, inputData: Data[]|ArrayData[]) {
     const table = document.createElement('info-view-table');
     table.setData(inputData);
 
-    const peg = this.shadowRoot.querySelector(`#${outputElementId}`);
+    const peg = this.$(`#${outputElementId}`);
     if (!peg) {
       throw new Error('Node ' + outputElementId + ' not found');
     }
 
-    peg.innerHTML = window.trustedTypes.emptyHTML;
+    peg.innerHTML = window.trustedTypes!.emptyHTML;
     peg.appendChild(table);
   }
 
-  createDawnInfoEl_(DAWNInfoList, gpuDawnInfo) {
-    DAWNInfoList.textContent = '';
+  private createDawnInfoEl_(dawnInfoList: HTMLElement, gpuDawnInfo: string[]) {
+    dawnInfoList.textContent = '';
     let inProcessingToggles = false;
 
     for (let i = 0; i < gpuDawnInfo.length; ++i) {
-      let infoString = gpuDawnInfo[i];
-      let infoEl;
+      let infoString = gpuDawnInfo[i]!;
+      let infoEl: HTMLElement;
 
       if (infoString.startsWith('<')) {
         // GPU type and backend type.
         // Add an empty line for the next adaptor.
         const separator = document.createElement('br');
         separator.textContent = '';
-        DAWNInfoList.appendChild(separator);
+        dawnInfoList.appendChild(separator);
 
         // e.g. <Discrete GPU> D3D12 backend
         infoEl = document.createElement('h3');
         infoEl.textContent = infoString;
-        DAWNInfoList.appendChild(infoEl);
+        dawnInfoList.appendChild(infoEl);
         inProcessingToggles = false;
       } else if (infoString.startsWith('[')) {
         // e.g. [Default Toggle Names]
@@ -605,14 +607,14 @@ export class InfoViewElement extends CustomElement {
         infoEl.appendChild(name);
 
         // URL
-        infoString = gpuDawnInfo[++i];
+        infoString = gpuDawnInfo[++i]!;
         const url = document.createElement('a');
         url.textContent = infoString;
         url.href = infoString;
         infoEl.appendChild(url);
 
         // Description, italicized
-        infoString = gpuDawnInfo[++i];
+        infoString = gpuDawnInfo[++i]!;
         const description = document.createElement('i');
         description.textContent = ':  ' + infoString;
         infoEl.appendChild(description);
@@ -622,8 +624,14 @@ export class InfoViewElement extends CustomElement {
         infoEl.textContent = infoString;
       }
 
-      DAWNInfoList.appendChild(infoEl);
+      dawnInfoList.appendChild(infoEl);
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'info-view': InfoViewElement;
   }
 }
 

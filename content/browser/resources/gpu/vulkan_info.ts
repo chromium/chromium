@@ -5,14 +5,16 @@
 import {VulkanInfo_Deserialize} from './vulkan_info.mojom-webui.js';
 
 export class VulkanInfo {
-  constructor(base64Data) {
+  private vulkanInfo_: Record<string, any>;
+
+  constructor(base64Data: string) {
     const array = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
     const dataView = new DataView(array.buffer);
     this.vulkanInfo_ = VulkanInfo_Deserialize(dataView);
     this.beautify(this.vulkanInfo_);
   }
 
-  beautify(obj) {
+  private beautify(obj: {[key: string]: any}) {
     for (const key of Object.keys(obj)) {
       const value = obj[key];
 
@@ -31,7 +33,7 @@ export class VulkanInfo {
       }
 
       if (key.endsWith('UUID')) {
-        obj[key] = this.beautifyUUID(value);
+        obj[key] = this.beautifyUuid(value);
         continue;
       }
 
@@ -48,18 +50,18 @@ export class VulkanInfo {
     }
   }
 
-  beautifyVersion(version) {
+  private beautifyVersion(version: number): string {
     const major = version >> 22;
     const minor = (version >> 12) & 0x3ff;
     const patch = version & 0xfff;
     return `${major}.${minor}.${patch}`;
   }
 
-  beautifyUUID(uuid) {
+  private beautifyUuid(uuid: number[]): string {
     // xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
     let result = '';
     for (let i = 0; i < 16; ++i) {
-      const value = uuid[i];
+      const value = uuid[i]!;
       if (i === 4 || i === 6 || i === 8 || i === 10) {
         result += '-';
       }
@@ -71,8 +73,10 @@ export class VulkanInfo {
     return result;
   }
 
-  beautifyExtensions(extensions) {
-    const result = {};
+  private beautifyExtensions(
+      extensions: Array<{extensionName: string, specVersion: string}>):
+      {[key: string]: any} {
+    const result: {[key: string]: any} = {};
     for (const extension of extensions) {
       const name = extension['extensionName'];
       const version = extension['specVersion'];
@@ -81,7 +85,7 @@ export class VulkanInfo {
     return result;
   }
 
-  toString() {
+  toString(): string {
     return JSON.stringify(this.vulkanInfo_, null, 2);
   }
 }

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from './assert_ts.js';
 
 /**
  * @fileoverview Base class for Web Components that don't use Polymer.
@@ -34,5 +35,12 @@ export class CustomElement extends HTMLElement {
 
   $all<E extends Element = Element>(query: string): NodeListOf<E> {
     return this.shadowRoot!.querySelectorAll<E>(query);
+  }
+
+  getRequiredElement<T extends HTMLElement = HTMLElement>(query: string): T {
+    const el = this.shadowRoot!.querySelector<T>(query);
+    assert(el);
+    assert(el instanceof HTMLElement);
+    return el;
   }
 }
