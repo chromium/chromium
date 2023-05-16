@@ -88,9 +88,6 @@ EXCLUDED_TESTS = [
     os.path.join('tests', 'ui', 'numeric', 'numeric-cast.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
-    # TODO(crbug.com/1442943): Re-enable when fixed.
-    os.path.join('tests', 'ui', 'native-library-link-flags',
-                 'msvc-non-utf8-output.rs'),
 ]
 
 CLANG_SCRIPTS_DIR = os.path.join(THIS_DIR, '..', 'clang', 'scripts')
