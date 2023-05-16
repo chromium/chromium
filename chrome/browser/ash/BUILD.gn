@@ -252,8 +252,6 @@ source_set("ash") {
     "arc/arc_ui_availability_reporter.h",
     "arc/arc_util.cc",
     "arc/arc_util.h",
-    "arc/auth/arc_active_directory_enrollment_token_fetcher.cc",
-    "arc/auth/arc_active_directory_enrollment_token_fetcher.h",
     "arc/auth/arc_auth_code_fetcher.h",
     "arc/auth/arc_auth_context.cc",
     "arc/auth/arc_auth_context.h",

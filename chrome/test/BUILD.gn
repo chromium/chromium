@@ -3840,7 +3840,6 @@ if (!is_android) {
         "../browser/ash/apps/apk_web_app_installer_browsertest.cc",
         "../browser/ash/apps/apk_web_app_service_lacros_browsertest.cc",
         "../browser/ash/arc/accessibility/arc_accessibility_helper_bridge_browsertest.cc",
-        "../browser/ash/arc/auth/arc_active_directory_enrollment_token_fetcher_browsertest.cc",
         "../browser/ash/arc/auth/arc_auth_service_browsertest.cc",
         "../browser/ash/arc/auth/arc_robot_auth_code_fetcher_browsertest.cc",
         "../browser/ash/arc/enterprise/cert_store/cert_store_service_browsertest.cc",

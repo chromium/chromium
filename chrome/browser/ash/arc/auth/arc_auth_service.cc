@@ -456,25 +456,6 @@ void ArcAuthService::FetchPrimaryAccountInfo(
     return;
   }
 
-  if (IsActiveDirectoryUserForProfile(profile_)) {
-    // For Active Directory enrolled devices, we get an enrollment token for a
-    // managed Google Play account from DMServer.
-    auto enrollment_token_fetcher =
-        std::make_unique<ArcActiveDirectoryEnrollmentTokenFetcher>(
-            ArcSessionManager::Get()->support_host());
-
-    // Add the request to |pending_token_requests_| first, before starting a
-    // token fetch. In case the callback is called immediately, we do not want
-    // to add an already completed request to |pending_token_requests_|.
-    auto* enrollment_token_fetcher_ptr = enrollment_token_fetcher.get();
-    pending_token_requests_.emplace_back(std::move(enrollment_token_fetcher));
-    enrollment_token_fetcher_ptr->Fetch(
-        base::BindOnce(&ArcAuthService::OnActiveDirectoryEnrollmentTokenFetched,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       enrollment_token_fetcher_ptr, std::move(callback)));
-    return;
-  }
-
   if (account_type == mojom::ChromeAccountType::OFFLINE_DEMO_ACCOUNT) {
     // Skip account auth code fetch for offline enrolled demo mode.
     std::move(callback).Run(
@@ -653,45 +634,6 @@ void ArcAuthService::RemoveAccountFromArc(const std::string& email) {
 
   DCHECK(!email.empty());
   instance->OnAccountUpdated(email, mojom::AccountUpdateType::REMOVAL);
-}
-
-void ArcAuthService::OnActiveDirectoryEnrollmentTokenFetched(
-    ArcActiveDirectoryEnrollmentTokenFetcher* fetcher,
-    RequestPrimaryAccountInfoCallback callback,
-    ArcActiveDirectoryEnrollmentTokenFetcher::Status status,
-    const std::string& enrollment_token,
-    const std::string& user_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // |fetcher| will be invalid after this.
-  DeletePendingTokenRequest(fetcher);
-
-  switch (status) {
-    case ArcActiveDirectoryEnrollmentTokenFetcher::Status::SUCCESS: {
-      // Save user_id to the user profile.
-      profile_->GetPrefs()->SetString(prefs::kArcActiveDirectoryPlayUserId,
-                                      user_id);
-
-      // Send enrollment token to ARC.
-      std::move(callback).Run(
-          mojom::ArcAuthCodeStatus::SUCCESS,
-          CreateAccountInfo(true /* is_enforced */, enrollment_token,
-                            std::string() /* account_name */,
-                            mojom::ChromeAccountType::ACTIVE_DIRECTORY_ACCOUNT,
-                            true /* is_managed */));
-      break;
-    }
-    case ArcActiveDirectoryEnrollmentTokenFetcher::Status::FAILURE: {
-      // Send error to ARC.
-      std::move(callback).Run(
-          mojom::ArcAuthCodeStatus::CHROME_SERVER_COMMUNICATION_ERROR, nullptr);
-      break;
-    }
-    case ArcActiveDirectoryEnrollmentTokenFetcher::Status::ARC_DISABLED: {
-      // Send error to ARC.
-      std::move(callback).Run(mojom::ArcAuthCodeStatus::ARC_DISABLED, nullptr);
-      break;
-    }
-  }
 }
 
 void ArcAuthService::OnPrimaryAccountAuthCodeFetched(
