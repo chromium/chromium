@@ -158,7 +158,7 @@
 <translation id="1136712381129578788">ತಪ್ಪಾದ ಪಿನ್ ಸಂಖ್ಯೆಯನ್ನು ಹಲವಾರು ಬಾರಿ ನಮೂದಿಸಿರುವ ಕಾರಣದಿಂದಾಗಿ, ಭದ್ರತೆ ಕೀ ಅನ್ನು ಲಾಕ್ ಮಾಡಲಾಗಿದೆ. ಅನ್‌ಲಾಕ್ ಮಾಡಲು, ಅದನ್ನು ತೆಗೆದು ಮರುಸೇರ್ಪಡಿಸಿ.</translation>
 <translation id="1137589305610962734">ತಾತ್ಕಾಲಿಕ ಡೇಟಾ</translation>
 <translation id="1137673463384776352">ಲಿಂಕ್‌ ಅನ್ನು <ph name="APP" /> ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
-<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ಹೊಸ ಅಧಿಸೂಚನೆ}one{# ಹೊಸ ಅಧಿಸೂಚನೆಗಳು}other{# ಹೊಸ ಅಧಿಸೂಚನೆಗಳು}}</translation>
+<translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ಹೊಸ ನೋಟಿಫಿಕೇಶನ್}one{# ಹೊಸ ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}other{# ಹೊಸ ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}}</translation>
 <translation id="1139923033416533844">ಮೆಮೊರಿ ಬಳಕೆ</translation>
 <translation id="1140351953533677694">ನಿಮ್ಮ ಬ್ಲೂಟೂತ್‌ ಮತ್ತು ಸರಣಿ ಸಾಧನಗಳನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="114036956334641753">ಆಡಿಯೋ ಮತ್ತು ಶೀರ್ಷಿಕೆಗಳು</translation>
@@ -4430,7 +4430,7 @@
 <translation id="4930714375720679147">ಆನ್ ಮಾಡಿ</translation>
 <translation id="4932733599132424254">ದಿನಾಂಕ</translation>
 <translation id="4933484234309072027"><ph name="URL" /> ನಲ್ಲಿ ಎಂಬೆಡ್ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="4936042273057045735">ಕೆಲಸದ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಫೋನ್‌ಗಳು ಅಧಿಸೂಚನೆ ಸಿಂಕ್ ಮಾಡುವಿಕೆಯನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
+<translation id="4936042273057045735">ಕೆಲಸದ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಫೋನ್‌ಗಳು ನೋಟಿಫಿಕೇಶನ್ ಸಿಂಕ್ ಮಾಡುವಿಕೆಯನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
 <translation id="4937676329899947885">ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಸ್ವೀಕರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4938788218358929252">ಈ ರೆಸಿಪಿ ಪರಿಕಲ್ಪನೆಗಳು</translation>
 <translation id="4939805055470675027"><ph name="CARRIER_NAME" /> ಗೆ ಸಂಪರ್ಕಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
@@ -6084,7 +6084,7 @@
 <translation id="6474884162850599008">Google ಡ್ರೈವ್ ಖಾತೆಗೆ ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಿ</translation>
 <translation id="6475294023568239942">ಡಿಸ್ಕ್ ಸ್ಥಳಾವಕಾಶವನ್ನು ತೆರವುಗೊಳಿಸಿ ಅಥವಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Linux ಡಿಸ್ಕ್ ಅನ್ನು ಮರುಗಾತ್ರಗೊಳಿಸಿ</translation>
 <translation id="6476482583633999078">ಧ್ವನಿಯ ವೇಗ</translation>
-<translation id="6477822444490674459">ಕೆಲಸದ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಫೋನ್‌ಗಳು ಅಧಿಸೂಚನೆ ಸಿಂಕ್ ಮಾಡುವಿಕೆಯನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
+<translation id="6477822444490674459">ಕೆಲಸದ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಫೋನ್‌ಗಳು ನೋಟಿಫಿಕೇಶನ್ ಸಿಂಕ್ ಮಾಡುವಿಕೆಯನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">ಅಪಾಯಕಾರಿ ಫೈಲ್ ಇರಿಸುವುದೇ?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="6482559668224714696">ಪೂರ್ಣಪರದೆ ವರ್ಧಕ</translation>
@@ -8011,7 +8011,7 @@
 <translation id="8207794858944505786">VM "<ph name="DEFAULT_VM_NAME" />" ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ, ಆದರೆ ಮಾನ್ಯ <ph name="VM_TYPE" /> VM ಎಂದು ತೋರುತ್ತಿಲ್ಲ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="8208188204689616705">ಈ ಸೈಟ್‌ಗಳು, <ph name="FPS_OWNER" /> ಮೂಲಕ ವ್ಯಾಖ್ಯಾನಿಸಲಾದ ಗುಂಪಿನಲ್ಲಿವೆ. ಗುಂಪಿನಲ್ಲಿರುವ ಸೈಟ್‌ಗಳು, ಗುಂಪಿನಲ್ಲಿ ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಬಹುದು.</translation>
 <translation id="8208216423136871611">ಉಳಿಸಬೇಡಿ</translation>
-<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ಹೊಸ ಅಧಿಸೂಚನೆ}one{# ಹೊಸ ಅಧಿಸೂಚನೆಗಳು}other{# ಹೊಸ ಅಧಿಸೂಚನೆಗಳು}}</translation>
+<translation id="8210398899759134986">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ಹೊಸ ನೋಟಿಫಿಕೇಶನ್}one{# ಹೊಸ ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}other{# ಹೊಸ ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}}</translation>
 <translation id="821119981794423735"><ph name="USER_EMAIL" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Google Password Manager ಗೆ ಆಮದು ಮಾಡಿಕೊಳ್ಳಲು, CSV ಫೈಲ್ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{ಡೌನ್‌ಲೋಡ್ ಪ್ರಗತಿಯಲ್ಲಿದೆ}one{ಡೌನ್‌ಲೋಡ್‌ಗಳು ಪ್ರಗತಿಯಲ್ಲಿವೆ}other{ಡೌನ್‌ಲೋಡ್‌ಗಳು ಪ್ರಗತಿಯಲ್ಲಿವೆ}}</translation>
 <translation id="8212601853154459483">ಈ ಪ್ರೊಫೈಲ್ ಅನ್ನು <ph name="PROFILE_MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ. ಹಾಗೂ <ph name="USER_EMAIL_ADDRESS" /> ಖಾತೆಗಾಗಿ ನೀವು ಪ್ರತ್ಯೇಕ ಪ್ರೊಫೈಲ್ ಅನ್ನು ರಚಿಸುವ ಅಗತ್ಯವಿದೆ</translation>

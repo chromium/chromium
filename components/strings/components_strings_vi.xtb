@@ -62,7 +62,7 @@
 <translation id="112840717907525620">Bộ nhớ đệm chính sách OK</translation>
 <translation id="1130564665089811311">Nút Dịch trang, nhấn phím Enter để dịch trang này bằng Google Dịch</translation>
 <translation id="1131264053432022307">Hình ảnh bạn đã sao chép</translation>
-<translation id="1142846828089312304">Chặn cookie của bên thứ ba ở Chế độ ẩn danh</translation>
+<translation id="1142846828089312304">Chặn cookie của bên thứ ba ở chế độ Ẩn danh</translation>
 <translation id="1147769322402934017">Thư viện ảnh trực tuyến</translation>
 <translation id="1150979032973867961">Máy chủ này không chứng minh được rằng đó là <ph name="DOMAIN" />; chứng chỉ bảo mật của máy chủ này không được hệ điều hành máy tính của bạn tin cậy. Điều này có thể do định cấu hình sai hoặc có kẻ tấn công chặn kết nối của bạn.</translation>
 <translation id="1151972924205500581">Mật khẩu bắt buộc</translation>
@@ -1465,7 +1465,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4607603470419975064">Nút xem các mẹo khi dùng Chrome, nhấn phím Enter để tìm hiểu về các tính năng của Chrome</translation>
 <translation id="4607608436550361748">Xem các mẹo khi dùng Chrome</translation>
 <translation id="460848736049414407">Bị quản trị viên chặn</translation>
-<translation id="4610279718074907952">Trang web này nằm trong nhóm do <ph name="SET_OWNER" /> xác định và người này có thể xem hoạt động của bạn</translation>
+<translation id="4610279718074907952">Trang web này nằm trong nhóm do <ph name="SET_OWNER" /> xác định và có thể xem hoạt động của bạn</translation>
 <translation id="4617273035598175554">Phần mềm hoạt hình và đồ hoạ</translation>
 <translation id="4622292761762557753">Vẫn chuyển</translation>
 <translation id="4627675673814409125">Bạn không thể đặt chính sách ở cấp hồ sơ trên Chrome và hệ thống sẽ bỏ qua chính sách này.</translation>

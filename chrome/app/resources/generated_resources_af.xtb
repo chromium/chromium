@@ -6755,7 +6755,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7055451306017383754">Kon nie ontdeel nie want 'n program gebruik tans hierdie vouer. Die vouer sal ontdeel word wanneer Parallels Dekstop weer afgeskakel word.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Incognito}other{# oop Incognito-vensters}}</translation>
 <translation id="7056526158851679338">Ondersoek toestelle</translation>
-<translation id="7057184853669165321">{NUM_MINS,plural, =1{Veiligheidskontrole het 1 minuut gelede plaasgevind}other{Veiligheidskontrole het {NUM_MINS} minute gelede plaasgevind}}</translation>
+<translation id="7057184853669165321">{NUM_MINS,plural, =1{Veiligheidsbevestiging het 1 minuut gelede plaasgevind}other{Veiligheidsbevestiging het {NUM_MINS} minute gelede plaasgevind}}</translation>
 <translation id="7057767408836081338">Kon nie programdata verkry nie; probeer steeds om die program te laat loop …</translation>
 <translation id="7058024590501568315">Versteekte netwerk</translation>
 <translation id="7059858479264779982">Stel na outo-begin</translation>
@@ -7096,7 +7096,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7401778920660465883">Maak hierdie boodskap toe</translation>
 <translation id="7403642243184989645">Laai tans hulpbronne af</translation>
 <translation id="7404065585741198296">Jou foon met 'n USB-kabel</translation>
-<translation id="7405938989981604410">{NUM_HOURS,plural, =1{Veiligheidskontrole het 1 uur gelede plaasgevind}other{Veiligheidskontrole het {NUM_HOURS} uur gelede plaasgevind}}</translation>
+<translation id="7405938989981604410">{NUM_HOURS,plural, =1{Veiligheidsbevestiging het 1 uur gelede plaasgevind}other{Veiligheidsbevestiginghet {NUM_HOURS} uur gelede plaasgevind}}</translation>
 <translation id="740624631517654988">Opspringer geblokkeer</translation>
 <translation id="7406912950279255498">Kleuromkeringmodus</translation>
 <translation id="7407430846095439694">Voer in en bind</translation>

@@ -296,7 +296,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1254593899333212300">Conexión directa a Internet</translation>
 <translation id="1257336506558170607">Exportar el certificado seleccionado</translation>
 <translation id="1258491128795710625">Novedades</translation>
-<translation id="1259152067760398571">Ayer se ejecutó la verificación de seguridad</translation>
+<translation id="1259152067760398571">Ayer se ejecutó la Verificación de seguridad</translation>
 <translation id="1260451001046713751">Siempre permitir ventanas emergentes y redireccionamientos de <ph name="HOST" /></translation>
 <translation id="1260810365552581339">Es posible que Linux no tenga suficiente espacio en el disco. Puedes aumentar el espacio del disco de Linux y volver a intentar restablecer la copia de seguridad en <ph name="LINK_START" />Configuración<ph name="LINK_END" />.</translation>
 <translation id="1261380933454402672">Moderada</translation>
@@ -804,7 +804,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1703666494654169921">No permitir que los sitios usen datos ni dispositivos de realidad virtual</translation>
 <translation id="1704097193565924901">Usar mayúsculas</translation>
 <translation id="1704230497453185209">No permitir que los sitios reproduzcan sonido</translation>
-<translation id="1704970325597567340">El <ph name="DATE" />, se ejecutó la verificación de seguridad</translation>
+<translation id="1704970325597567340">El <ph name="DATE" />, se ejecutó la Verificación de seguridad</translation>
 <translation id="1706586824377653884">Agregado por el administrador</translation>
 <translation id="170658918174941828">Se enviará la versión de Chrome y del sistema operativo, la configuración de Cast, las estadísticas de rendimiento de la duplicación y los registros de diagnóstico de canales de comunicación, así como la información que elijas incluir arriba. Estos comentarios se usan para diagnosticar problemas y mejorar la función. La información personal que envíes de forma explícita o accidental se protegerá de acuerdo con nuestras políticas de privacidad. Si envías estos comentarios, aceptas que Google pueda usarlos para mejorar sus productos o servicios.</translation>
 <translation id="1708291623166985230">Hotspot inhabilitado</translation>
@@ -1062,7 +1062,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="192494336144674234">Abrir con</translation>
 <translation id="1925017091976104802">Presiona <ph name="MODIFIER_KEY_DESCRIPTION" /> para copiar</translation>
 <translation id="1925021887439448749">Ingresa una dirección web personalizada</translation>
-<translation id="1925124445985510535">A las <ph name="TIME" />, se ejecutó la verificación de seguridad</translation>
+<translation id="1925124445985510535">A las <ph name="TIME" />, se ejecutó la Verificación de seguridad</translation>
 <translation id="192564025059434655">Las versiones anteriores de las Apps de Chrome dejarán de funcionar en dispositivos con Windows después de diciembre de 2022. Puedes comprobar si hay una nueva versión disponible.</translation>
 <translation id="1926339101652878330">Esta configuración se controla por medio de una política de la empresa. Ponte en contacto con tu administrador para obtener más información.</translation>
 <translation id="1927632033341042996">Dedo <ph name="NEW_FINGER_NUMBER" /></translation>
@@ -1327,7 +1327,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2154484045852737596">Editar tarjeta</translation>
 <translation id="2155772377859296191">Resolución: <ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
-<translation id="2156877321344104010">Volver a ejecutar la verificación de seguridad</translation>
+<translation id="2156877321344104010">Volver a ejecutar la Verificación de seguridad</translation>
 <translation id="2157474325782140681">Para obtener más funciones, usa una estación de conexión Dell diseñada para funcionar con esta Chromebook.</translation>
 <translation id="215753907730220065">Salir de pantalla completa</translation>
 <translation id="2157875535253991059">Esta página está en modo de pantalla completa.</translation>
@@ -2182,7 +2182,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2891922230654533301">¿Quieres usar tu dispositivo para acceder a <ph name="APP_NAME" />?</translation>
 <translation id="2893013536106749396">Elige las tarjetas que te mantienen al tanto de lo que te importa.</translation>
 <translation id="2893168226686371498">Navegador predeterminado</translation>
-<translation id="2893180576842394309">Es posible que Google use tu historial para personalizar la Búsqueda, los anuncios y otros servicios de Google.</translation>
+<translation id="2893180576842394309">Es posible que Google use tu historial para personalizar la Búsqueda y otros servicios de Google.</translation>
 <translation id="2894757982205307093">Nueva pestaña en el grupo</translation>
 <translation id="289695669188700754">ID de clave: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Se quitará esta configuración personalizada cuando cierres todas las ventanas de incógnito</translation>
@@ -2460,7 +2460,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3143754809889689516">Reproducir desde el principio</translation>
 <translation id="3144647712221361880">Abrir vínculo como</translation>
 <translation id="3149510190863420837">Aplicaciones de Chrome</translation>
-<translation id="3150693969729403281">Ejecuta la verificación de seguridad ahora</translation>
+<translation id="3150693969729403281">Ejecuta la Verificación de seguridad ahora</translation>
 <translation id="3150927491400159470">Volver a cargar de manera forzada</translation>
 <translation id="315116470104423982">Datos móviles</translation>
 <translation id="3151539355209957474">Hora de inicio</translation>
@@ -2565,7 +2565,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3264582393905923483">Contexto</translation>
 <translation id="3265459715026181080">Cerrar ventana</translation>
 <translation id="3266022278425892773">Entorno de desarrollo de Linux</translation>
-<translation id="3266274118485960573">Se está ejecutando la verificación de seguridad.</translation>
+<translation id="3266274118485960573">Se está ejecutando la Verificación de seguridad.</translation>
 <translation id="3267726687589094446">Seguir permitiendo las descargas automáticas de varios archivos</translation>
 <translation id="3268451620468152448">Pestañas abiertas</translation>
 <translation id="3269093882174072735">Cargar imagen</translation>
@@ -2654,7 +2654,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" desea quitar esta extensión.</translation>
 <translation id="3343046414300263892">Aumentar el tamaño de la fuente</translation>
 <translation id="3343977377045378693">Realizando la configuración</translation>
-<translation id="3345634917232014253">Hace un momento, se ejecutó la verificación de seguridad</translation>
+<translation id="3345634917232014253">Hace un momento, se ejecutó la Verificación de seguridad</translation>
 <translation id="3345886924813989455">No se ha encontrado el navegador compatible</translation>
 <translation id="3347086966102161372">Copiar dirección de la imagen</translation>
 <translation id="3348038390189153836">Se detectó un dispositivo removible.</translation>
@@ -5011,7 +5011,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5499476581866658341">Ahora puedes ver las fotos y el contenido multimedia recientes de tu teléfono</translation>
 <translation id="549957179819296104">Ícono nuevo</translation>
 <translation id="5500168250243071806">Es posible que el <ph name="BEGIN_LINK_SEARCH" />historial de búsqueda<ph name="END_LINK_SEARCH" /> y <ph name="BEGIN_LINK_GOOGLE" />otras formas de actividad<ph name="END_LINK_GOOGLE" /> se guarden en tu Cuenta de Google cuando accedes. Podrás borrarlas en cualquier momento.</translation>
-<translation id="5500709606820808700">Hoy se ejecutó la verificación de seguridad</translation>
+<translation id="5500709606820808700">Hoy se ejecutó la Verificación de seguridad</translation>
 <translation id="5501322521654567960">Panel lateral alineado a la izquierda</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{No fue posible recibir <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}other{No fue posible recibir <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502500733115278303">Importado desde Firefox</translation>
@@ -5896,7 +5896,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6310141306111263820">No fue posible instalar el perfil de eSIM. Para obtener ayuda, comunícate con el proveedor.</translation>
 <translation id="6311165245110979290">Tarjeta virtual disponible</translation>
 <translation id="6311220991371174222">No se puede iniciar Chrome porque se produjo un error al abrir tu perfil. Intenta reiniciar Chrome.</translation>
-<translation id="6312567056350025599">{NUM_DAYS,plural, =1{Se ejecutó hace 1 día la verificación de seguridad}other{Se ejecutó hace {NUM_DAYS} días la verificación de seguridad}}</translation>
+<translation id="6312567056350025599">{NUM_DAYS,plural, =1{Se ejecutó hace 1 día la Verificación de seguridad}other{Se ejecutó hace {NUM_DAYS} días la Verificación de seguridad}}</translation>
 <translation id="6312638141433622592">Ofrece mostrar artículos en el modo de lectura, cuando sea compatible</translation>
 <translation id="6313641880021325787">SALIR DE RV</translation>
 <translation id="6313950457058510656">Desactivar la Conexión instantánea mediante dispositivo móvil</translation>
@@ -6190,7 +6190,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6587958707401001932">Elegir la configuración predeterminada</translation>
 <translation id="6588043302623806746">Usar DNS seguro</translation>
 <translation id="6588047202935130957">Es posible que aparezca una lista de intereses aquí mientras navegas en la Web.</translation>
-<translation id="659005207229852190">Se completó la verificación de seguridad.</translation>
+<translation id="659005207229852190">Se completó la Verificación de seguridad.</translation>
 <translation id="6590458744723262880">Cambiar nombre de carpeta</translation>
 <translation id="6592267180249644460">Fecha y hora de captura de registro de WebRTC: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Se capturó tu huella dactilar</translation>
@@ -6735,7 +6735,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7055451306017383754">No se puede dejar de compartir esta carpeta porque una app la está usando. Dejará de compartirse la próxima vez que se cierre Parallels Desktop.</translation>
 <translation id="7056418393177503237">{0,plural, =1{Incógnito}other{# ventanas de incógnito abierta}}</translation>
 <translation id="7056526158851679338">&amp;Inspeccionar dispositivos</translation>
-<translation id="7057184853669165321">{NUM_MINS,plural, =1{La verificación de seguridad se ejecutó hace 1 minuto}other{La verificación de seguridad se ejecutó hace {NUM_MINS} minutos}}</translation>
+<translation id="7057184853669165321">{NUM_MINS,plural, =1{La Verificación de seguridad se ejecutó hace 1 minuto}other{La Verificación de seguridad se ejecutó hace {NUM_MINS} minutos}}</translation>
 <translation id="7057767408836081338">No se pudieron obtener los datos de la app. Se intenta ejecutar la app de todos modos…</translation>
 <translation id="7058024590501568315">Red oculta</translation>
 <translation id="7059858479264779982">Permitir inicio automático</translation>
@@ -7076,7 +7076,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7401778920660465883">Descartar este mensaje</translation>
 <translation id="7403642243184989645">Descarga de recursos</translation>
 <translation id="7404065585741198296">Tu teléfono con un cable USB</translation>
-<translation id="7405938989981604410">{NUM_HOURS,plural, =1{Se ejecutó hace 1 hora la verificación de seguridad}other{Se ejecutó hace {NUM_HOURS} horas la verificación de seguridad}}</translation>
+<translation id="7405938989981604410">{NUM_HOURS,plural, =1{Se ejecutó hace 1 hora la Verificación de seguridad}other{Se ejecutó hace {NUM_HOURS} horas la Verificación de seguridad}}</translation>
 <translation id="740624631517654988">Ventana emergente (pop-up) bloqueada</translation>
 <translation id="7406912950279255498">Modo de inversión de colores</translation>
 <translation id="7407430846095439694">Importar y vincular</translation>
