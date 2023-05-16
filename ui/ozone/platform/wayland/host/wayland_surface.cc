@@ -803,6 +803,14 @@ void WaylandSurface::ForceImmediateStateApplication() {
   apply_state_immediately_ = true;
 }
 
+void WaylandSurface::EnableTrustedDamageIfPossible() {
+  if (get_augmented_surface() &&
+      augmented_surface_get_version(get_augmented_surface()) >=
+          AUGMENTED_SURFACE_SET_TRUSTED_DAMAGE_SINCE_VERSION) {
+    augmented_surface_set_trusted_damage(get_augmented_surface(), true);
+  }
+}
+
 void WaylandSurface::ExplicitRelease(
     struct zwp_linux_buffer_release_v1* linux_buffer_release,
     base::ScopedFD fence) {

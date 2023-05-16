@@ -727,6 +727,7 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
 
   std::vector<gfx::Rect> region{gfx::Rect{latched_state().size_px}};
   root_surface_->set_opaque_region(&region);
+  root_surface_->EnableTrustedDamageIfPossible();
   root_surface_->ApplyPendingState();
 
   connection_->Flush();
