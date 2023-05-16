@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/modules/mediarecorder/fake_encoded_video_frame.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h"
+#include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_registry.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
@@ -128,7 +129,8 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
       : has_video_(has_video),
         has_audio_(has_audio),
         media_recorder_handler_(MakeGarbageCollected<MediaRecorderHandler>(
-            scheduler::GetSingleThreadTaskRunnerForTesting())),
+            scheduler::GetSingleThreadTaskRunnerForTesting(),
+            KeyFrameRequestProcessor::Configuration())),
         audio_source_(kTestAudioChannels,
                       440 /* freq */,
                       kTestAudioSampleRate) {
@@ -815,7 +817,8 @@ class MediaRecorderHandlerPassthroughTest
     video_source_ = registry_.AddVideoTrack(TestVideoTrackId());
     ON_CALL(*video_source_, SupportsEncodedOutput).WillByDefault(Return(true));
     media_recorder_handler_ = MakeGarbageCollected<MediaRecorderHandler>(
-        scheduler::GetSingleThreadTaskRunnerForTesting());
+        scheduler::GetSingleThreadTaskRunnerForTesting(),
+        KeyFrameRequestProcessor::Configuration());
     EXPECT_FALSE(media_recorder_handler_->recording_);
   }
 
@@ -824,7 +827,7 @@ class MediaRecorderHandlerPassthroughTest
   MediaRecorderHandlerPassthroughTest& operator=(
       const MediaRecorderHandlerPassthroughTest&) = delete;
 
-  ~MediaRecorderHandlerPassthroughTest() {
+  ~MediaRecorderHandlerPassthroughTest() override {
     registry_.reset();
     media_recorder_handler_ = nullptr;
     WebHeap::CollectAllGarbageForTesting();

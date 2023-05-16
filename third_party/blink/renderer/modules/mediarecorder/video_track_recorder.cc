@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
 #include <memory>
 
+#include "base/functional/bind.h"
+#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -13,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "media/base/video_frame.h"
@@ -56,6 +59,13 @@ template <>
 struct CrossThreadCopier<std::vector<scoped_refptr<media::VideoFrame>>>
     : public CrossThreadCopierPassThrough<
           std::vector<scoped_refptr<media::VideoFrame>>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <>
+struct CrossThreadCopier<blink::KeyFrameRequestProcessor::Configuration>
+    : public CrossThreadCopierPassThrough<
+          blink::KeyFrameRequestProcessor::Configuration> {
   STATIC_ONLY(CrossThreadCopier);
 };
 }  // namespace WTF
@@ -399,15 +409,39 @@ VideoTrackRecorderImpl::Encoder::Encoder(
 
 VideoTrackRecorderImpl::Encoder::~Encoder() = default;
 
+void VideoTrackRecorderImpl::Encoder::InitializeEncoder(
+    KeyFrameRequestProcessor::Configuration key_frame_config) {
+  key_frame_processor_.UpdateConfig(key_frame_config);
+  Initialize();
+}
+
 void VideoTrackRecorderImpl::Encoder::Initialize() {}
 
+void VideoTrackRecorderImpl::Encoder::StartFrameEncodeWithTimeTicksNow(
+    scoped_refptr<media::VideoFrame> video_frame,
+    std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
+    base::TimeTicks capture_timestamp) {
+  StartFrameEncode(CrossThreadBindRepeating(base::TimeTicks::Now),
+                   std::move(video_frame), std::move(scaled_video_frames),
+                   capture_timestamp);
+}
+
 void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
+    WTF::CrossThreadRepeatingFunction<base::TimeTicks()> time_now_callback,
     scoped_refptr<media::VideoFrame> video_frame,
     std::vector<scoped_refptr<media::VideoFrame>> /*scaled_video_frames*/,
     base::TimeTicks capture_timestamp) {
   DVLOG(3) << __func__;
   if (paused_)
     return;
+  auto now = std::move(time_now_callback).Run();
+  bool force_key_frame =
+      awaiting_first_frame_ ||
+      key_frame_processor_.OnFrameAndShouldRequestKeyFrame(now);
+  if (force_key_frame) {
+    key_frame_processor_.OnKeyFrame(now);
+  }
+  awaiting_first_frame_ = false;
 
   if (num_frames_in_encode_->count() > kMaxNumberOfFramesInEncode) {
     DLOG(WARNING) << "Too many frames are queued up. Dropping this one.";
@@ -444,7 +478,7 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
                     num_frames_in_encode_->GetWeakPtr())));
   num_frames_in_encode_->IncreaseCount();
   EncodeFrame(std::move(frame), capture_timestamp,
-              request_key_frame_for_testing_);
+              request_key_frame_for_testing_ || force_key_frame);
   request_key_frame_for_testing_ = false;
 }
 
@@ -683,11 +717,13 @@ VideoTrackRecorderImpl::VideoTrackRecorderImpl(
     OnEncodedVideoCB on_encoded_video_cb,
     base::OnceClosure on_track_source_ended_cb,
     base::OnceClosure on_error_cb,
-    uint32_t bits_per_second)
+    uint32_t bits_per_second,
+    KeyFrameRequestProcessor::Configuration key_frame_config)
     : VideoTrackRecorder(std::move(main_thread_task_runner),
                          std::move(on_track_source_ended_cb)),
       track_(track),
-      on_error_cb_(std::move(on_error_cb)) {
+      on_error_cb_(std::move(on_error_cb)),
+      key_frame_config_(key_frame_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(track_);
   DCHECK(track_->GetSourceType() == MediaStreamSource::kTypeVideo);
@@ -733,12 +769,13 @@ void VideoTrackRecorderImpl::OnVideoFrameForTesting(
                                timestamp);
   }
   encoder_.AsyncCall(&Encoder::StartFrameEncode)
-      .WithArgs(std::move(frame),
+      .WithArgs(WTF::CrossThreadBindRepeating(
+                    [](base::TimeTicks now) { return now; }, timestamp),
+                std::move(frame),
                 std::vector<scoped_refptr<media::VideoFrame>>(), timestamp);
 }
 
 void VideoTrackRecorderImpl::ForceKeyFrameForNextFrameForTesting() {
-  DVLOG(3) << __func__;
   encoder_.AsyncCall(&Encoder::ForceKeyFrameForNextFrameForTesting);
 }
 
@@ -887,7 +924,8 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
   }
 
   encoder_.emplace(encoding_task_runner, std::move(encoder));
-  encoder_.AsyncCall(&Encoder::Initialize);
+  encoder_.AsyncCall(&Encoder::InitializeEncoder).WithArgs(key_frame_config_);
+
   if (should_pause_encoder_on_initialization_)
     encoder_.AsyncCall(&Encoder::SetPaused).WithArgs(true);
 
@@ -895,7 +933,7 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
   ConnectToTrack(base::BindPostTask(
       encoding_task_runner,
       ConvertToBaseRepeatingCallback(WTF::CrossThreadBindRepeating(
-          &Encoder::StartFrameEncode, weak_encoder))));
+          &Encoder::StartFrameEncodeWithTimeTicksNow, weak_encoder))));
 }
 
 void VideoTrackRecorderImpl::OnHardwareEncoderError() {
@@ -927,12 +965,13 @@ VideoTrackRecorderPassthrough::VideoTrackRecorderPassthrough(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
     MediaStreamComponent* track,
     OnEncodedVideoCB on_encoded_video_cb,
-    base::OnceClosure on_track_source_ended_cb)
+    base::OnceClosure on_track_source_ended_cb,
+    KeyFrameRequestProcessor::Configuration key_frame_config)
     : VideoTrackRecorder(std::move(main_thread_task_runner),
                          std::move(on_track_source_ended_cb)),
       track_(track),
-      state_(KeyFrameState::kWaitingForKeyFrame),
-      callback_(std::move(on_encoded_video_cb)) {
+      callback_(std::move(on_encoded_video_cb)),
+      key_frame_processor_(key_frame_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   // HandleEncodedVideoFrame() will be called on Render Main thread.
   // Note: Adding an encoded sink internally generates a new key frame
@@ -943,7 +982,8 @@ VideoTrackRecorderPassthrough::VideoTrackRecorderPassthrough(
           main_thread_task_runner_,
           WTF::BindRepeating(
               &VideoTrackRecorderPassthrough::HandleEncodedVideoFrame,
-              weak_factory_.GetWeakPtr())));
+              weak_factory_.GetWeakPtr(),
+              WTF::BindRepeating(base::TimeTicks::Now))));
 }
 
 VideoTrackRecorderPassthrough::~VideoTrackRecorderPassthrough() {
@@ -963,9 +1003,12 @@ void VideoTrackRecorderPassthrough::Resume() {
 }
 
 void VideoTrackRecorderPassthrough::OnEncodedVideoFrameForTesting(
+    base::TimeTicks now,
     scoped_refptr<EncodedVideoFrame> frame,
     base::TimeTicks capture_time) {
-  HandleEncodedVideoFrame(frame, capture_time);
+  HandleEncodedVideoFrame(
+      WTF::BindRepeating([](base::TimeTicks now) { return now; }, now), frame,
+      capture_time);
 }
 
 void VideoTrackRecorderPassthrough::RequestRefreshFrame() {
@@ -983,6 +1026,7 @@ void VideoTrackRecorderPassthrough::DisconnectFromTrack() {
 }
 
 void VideoTrackRecorderPassthrough::HandleEncodedVideoFrame(
+    base::RepeatingCallback<base::TimeTicks()> time_now_callback,
     scoped_refptr<EncodedVideoFrame> encoded_frame,
     base::TimeTicks estimated_capture_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
@@ -995,6 +1039,14 @@ void VideoTrackRecorderPassthrough::HandleEncodedVideoFrame(
     return;
   }
   state_ = KeyFrameState::kKeyFrameReceivedOK;
+
+  auto now = std::move(time_now_callback).Run();
+  if (encoded_frame->IsKeyFrame()) {
+    key_frame_processor_.OnKeyFrame(now);
+  }
+  if (key_frame_processor_.OnFrameAndShouldRequestKeyFrame(now)) {
+    RequestRefreshFrame();
+  }
 
   absl::optional<gfx::ColorSpace> color_space;
   if (encoded_frame->ColorSpace())

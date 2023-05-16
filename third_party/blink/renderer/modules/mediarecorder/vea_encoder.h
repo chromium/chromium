@@ -125,12 +125,6 @@ class VEAEncoder final : public VideoTrackRecorder::Encoder,
   // TODO(crbug.com/960665): Replace with a WTF equivalent.
   base::queue<VideoParamsAndTimestamp> frames_in_encode_;
 
-  // Number of encoded frames produced consecutively without a keyframe.
-  uint32_t num_frames_after_keyframe_;
-
-  // Forces next frame to be a keyframe.
-  bool force_next_frame_to_be_keyframe_;
-
   const VideoTrackRecorder::OnErrorCB on_error_cb_;
   base::WeakPtrFactory<VEAEncoder> weak_factory_{this};
 };

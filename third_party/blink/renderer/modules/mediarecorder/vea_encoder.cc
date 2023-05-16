@@ -34,8 +34,6 @@ const int kVEADefaultBitratePerPixel = 2;
 // Number of output buffers used to copy the encoded data coming from HW
 // encoders.
 const int kVEAEncoderOutputBufferCount = 4;
-// Force a keyframe in regular intervals.
-const uint32_t kMaxKeyframeInterval = 100;
 
 }  // anonymous namespace
 
@@ -67,8 +65,6 @@ VEAEncoder::VEAEncoder(
       use_native_input_(use_native_input),
       is_screencast_(is_screencast),
       error_notified_(false),
-      num_frames_after_keyframe_(0),
-      force_next_frame_to_be_keyframe_(false),
       on_error_cb_(on_error_cb) {
   DCHECK(gpu_factories_);
 }
@@ -103,13 +99,6 @@ void VEAEncoder::BitstreamBufferReady(
     int32_t bitstream_buffer_id,
     const media::BitstreamBufferMetadata& metadata) {
   DVLOG(3) << __func__;
-
-  num_frames_after_keyframe_ =
-      metadata.key_frame ? 0 : num_frames_after_keyframe_ + 1;
-  if (num_frames_after_keyframe_ > kMaxKeyframeInterval) {
-    force_next_frame_to_be_keyframe_ = true;
-    num_frames_after_keyframe_ = 0;
-  }
 
   OutputBuffer* output_buffer = output_buffers_[bitstream_buffer_id].get();
   base::span<char> data_span =
@@ -263,9 +252,7 @@ void VEAEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
   frames_in_encode_.emplace(media::Muxer::VideoParameters(*frame),
                             capture_timestamp);
 
-  video_encoder_->Encode(video_frame,
-                         force_next_frame_to_be_keyframe_ || request_keyframe);
-  force_next_frame_to_be_keyframe_ = false;
+  video_encoder_->Encode(video_frame, request_keyframe);
 }
 
 void VEAEncoder::Initialize() {

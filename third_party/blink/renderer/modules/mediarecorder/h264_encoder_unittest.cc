@@ -71,6 +71,7 @@ class H264EncoderFixture : public ::testing::Test {
  protected:
   void EncodeFrame() {
     encoder_.StartFrameEncode(
+        CrossThreadBindRepeating(base::TimeTicks::Now),
         media::VideoFrame::CreateBlackFrame({kFrameWidth, kFrameHeight}),
         std::vector<scoped_refptr<media::VideoFrame>>(),
         base::TimeTicks::Now());
