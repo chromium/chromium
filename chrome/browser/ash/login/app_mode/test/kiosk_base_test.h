@@ -38,6 +38,12 @@ extern const char kTestEnterpriseKioskApp[];
 
 extern const char kTestEnterpriseAccountId[];
 
+// This is a simple test chrome app that does not have `kiosk_enabled` flag in
+// manifest. Webstore data json is in
+//   chrome/test/data/chromeos/app_mode/webstore/inlineinstall/
+//       detail/gbcgichpbeeimejckkpgnaighpndpped
+constexpr char kTestNonKioskEnabledApp[] = "gbcgichpbeeimejckkpgnaighpndpped";
+
 extern const test::UIPath kConfigNetwork;
 extern const char kSizeChangedMessage[];
 

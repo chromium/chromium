@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
+#include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -50,12 +51,6 @@ namespace ash {
 namespace {
 
 namespace em = ::enterprise_management;
-
-// This is a simple test that only sends an extension message when app launch is
-// requested. Webstore data json is in
-//   chrome/test/data/chromeos/app_mode/webstore/inlineinstall/
-//       detail/gbcgichpbeeimejckkpgnaighpndpped
-constexpr char kTestNonKioskEnabledApp[] = "gbcgichpbeeimejckkpgnaighpndpped";
 
 // Primary kiosk app that runs tests for chrome.management API.
 // The tests are run on the kiosk app launch event.
@@ -347,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(AutoLaunchedNonKioskEnabledAppTest, NotLaunched) {
 
   ExtensionTestMessageListener listener("launchRequested");
 
-  // App launch should be canceled, and user session stopped.
+  // App launch should be canceled, and kiosk session stopped.
   base::RunLoop run_loop;
   auto subscription =
       browser_shutdown::AddAppTerminatingCallback(run_loop.QuitClosure());
