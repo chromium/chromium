@@ -25,24 +25,20 @@
 
 namespace autofill {
 
-std::u16string AddressComponentWithRewriter::RewriteValue(
-    const std::u16string& value,
-    const std::u16string& country_code) const {
+namespace {
+// Applies the |country_code| specific rewriter to the normalized value. If
+// |country_code| is empty, it defaults to US.
+std::u16string RewriteValue(const std::u16string& value,
+                            const std::u16string& country_code) {
   return RewriterCache::Rewrite(country_code.empty() ? u"US" : country_code,
                                 value);
 }
+}  // namespace
 
 std::u16string AddressComponentWithRewriter::GetValueForComparison(
+    const std::u16string& value,
     const AddressComponent& other) const {
-  return RewriteValue(GetNormalizedValue(), GetCommonCountry(other));
-}
-
-std::u16string
-AddressComponentWithRewriter::GetValueForComparisonForOtherSupportedType(
-    ServerFieldType field_type,
-    const AddressComponent& other) const {
-  return RewriteValue(NormalizeValue(GetValueForOtherSupportedType(field_type)),
-                      GetCommonCountry(other));
+  return RewriteValue(NormalizeValue(value), GetCommonCountry(other));
 }
 
 StreetNameNode::StreetNameNode(AddressComponent* parent)
@@ -362,6 +358,13 @@ PostalCodeNode::~PostalCodeNode() = default;
 
 std::u16string PostalCodeNode::GetNormalizedValue() const {
   return NormalizeValue(GetValue(), /*keep_white_space=*/false);
+}
+
+std::u16string PostalCodeNode::GetValueForComparison(
+    const std::u16string& value,
+    const AddressComponent& other) const {
+  return RewriteValue(NormalizeValue(value, /*keep_white_space=*/false),
+                      GetCommonCountry(other));
 }
 
 SortingCodeNode::SortingCodeNode(AddressComponent* parent)

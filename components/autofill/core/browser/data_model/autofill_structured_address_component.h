@@ -398,8 +398,8 @@ class AddressComponent {
 
   // Method to parse |value_| into the values of |subcomponents_|. The
   // purpose of this method is to cover special cases. This method returns true
-  // on success and is allowed to fail. On failure, the |subcomponents_| are not
-  // altered.
+  // on success and is allowed to fail. On failure, the |subcomponents_| are
+  // not altered.
   virtual bool ParseValueAndAssignSubcomponentsByMethod();
 
   // This method parses |value_| to assign values to the subcomponents.
@@ -408,7 +408,8 @@ class AddressComponent {
   virtual void ParseValueAndAssignSubcomponentsByFallbackMethod();
 
   // This method is used to set the value given by a type different than the
-  // storage type. It must implement the conversion logic specific to each type.
+  // storage type. It must implement the conversion logic specific to each
+  // type.
   virtual void SetValueForOtherSupportedType(ServerFieldType field_type,
                                              const std::u16string& value,
                                              const VerificationStatus& status);
@@ -418,13 +419,6 @@ class AddressComponent {
   // specific to each type.
   virtual std::u16string GetValueForOtherSupportedType(
       ServerFieldType field_type) const;
-
-  // This method is used to retrieve the value for a supported field type
-  // different from the storage type, and rewrites it for comparison with
-  // `other`. It must implement the conversion logic specific to each type.
-  virtual std::u16string GetValueForComparisonForOtherSupportedType(
-      ServerFieldType field_type,
-      const AddressComponent& other) const;
 
   // Clears all parsed and formatted values.
   void ClearAllParsedAndFormattedValues();
@@ -465,7 +459,15 @@ class AddressComponent {
   // the normalized value.
   // |other| represents the component we are comparing with and is required
   // for consistent rewriting rules.
+  std::u16string GetValueForComparison(const AddressComponent& other) const;
+
+  // Formats `value` to be used for comparison.
+  // In the default implementation this is `value` normalized but this function
+  // can be overridden in subclasses to apply further operations on `value`.
+  // `other` represents the component we are comparing with and is required
+  // for consistent rewriting rules.
   virtual std::u16string GetValueForComparison(
+      const std::u16string& value,
       const AddressComponent& other) const;
 
   // Returns true if the merging of two token identical values should give
