@@ -783,6 +783,12 @@ class WebContents : public PageNavigator,
   // Returns the visibility of the WebContents' view.
   virtual Visibility GetVisibility() = 0;
 
+  // Sets the visibility of the WebContents' view and notifies the WebContents
+  // observers about Visibility change. Call UpdateWebContentsVisibility instead
+  // of WasShown() if you are setting Visibility to VISIBLE for the first time.
+  // TODO(crbug.com/1444248): Make updating Visibility more robust.
+  virtual void UpdateWebContentsVisibility(Visibility visibility) = 0;
+
   // This function checks *all* frames in this WebContents (not just the main
   // frame) and returns true if at least one frame has either a beforeunload or
   // an unload/pagehide/visibilitychange handler.
