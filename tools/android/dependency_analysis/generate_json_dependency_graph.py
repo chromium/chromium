@@ -24,32 +24,15 @@ _SRC_PATH = pathlib.Path(__file__).resolve().parents[3]
 sys.path.append(str(_SRC_PATH / 'build/android'))
 from pylib import constants
 
+sys.path.append(str(_SRC_PATH / 'build/android/gyp'))
+from util import jar_utils
+
 sys.path.append(str(_SRC_PATH / 'tools/android'))
 from python_utils import git_metadata_utils, subprocess_utils
-
-_IGNORED_JAR_PATHS = [
-    # This matches org_ow2_asm_asm_commons and org_ow2_asm_asm_analysis, both of
-    # which fail jdeps (not sure why).
-    'third_party/android_deps/libs/org_ow2_asm_asm',
-]
 
 
 def _relsrc(path: Union[str, pathlib.Path], src_path: pathlib.Path):
     return pathlib.Path(path).relative_to(src_path)
-
-
-def _is_relative_to(path: pathlib.Path, other_path: pathlib.Path):
-    """This replicates pathlib.Path.is_relative_to.
-
-    Since bots still run python3.8, they do not have access to is_relative_to,
-    which was introduced in python3.9.
-    """
-    try:
-        path.relative_to(other_path)
-        return True
-    except ValueError:
-        # This error is expected when path is not a subpath of other_path.
-        return False
 
 
 def class_is_interesting(name: str, prefixes: Tuple[str]):
@@ -121,75 +104,6 @@ class JavaClassJdepsParser:
             from_node.add_nested_class(nested_to)
 
 
-def _calculate_cache_path(filepath: pathlib.Path, src_path: pathlib.Path,
-                          build_output_dir: pathlib.Path) -> pathlib.Path:
-    """Return a cache path for jdeps that is always in the output dir.
-
-    Also ensures that the cache file's parent directories exist if the original
-    file was not already in the output dir.
-
-    Example:
-    - Given:
-      src_path = /cr/src
-      build_output_dir = /cr/src/out/Debug
-    - filepath = /cr/src/out/Debug/a/d/file.jar
-      Returns: /cr/src/out/Debug/a/d/file.jdeps_cache
-    - filepath = /cr/src/out/Debug/../../b/c/file.jar
-      Returns: /cr/src/out/Debug/jdeps_cache/b/c/file.jdeps_cache
-    """
-    filepath = filepath.resolve(strict=True)
-    if _is_relative_to(filepath, build_output_dir):
-        return filepath.with_suffix('.jdeps_cache')
-    assert src_path in filepath.parents, f'Jar file not under src: {filepath}'
-    jdeps_cache_dir = build_output_dir / 'jdeps_cache'
-    relpath = filepath.relative_to(src_path)
-    cache_path = jdeps_cache_dir / relpath.with_suffix('.jdeps_cache')
-    # The parent dirs may not exist since this path is re-parented from //src to
-    # //src/out/Dir.
-    cache_path.parent.mkdir(parents=True, exist_ok=True)
-    return cache_path
-
-
-def _run_jdeps(jdeps_path: pathlib.Path, src_path: pathlib.Path,
-               build_output_dir: pathlib.Path,
-               filepath: pathlib.Path) -> Optional[str]:
-    """Runs jdeps on the given filepath and returns the output.
-
-    Uses a simple file cache for the output of jdeps. If the jar file's mtime is
-    older than the jdeps cache then just use the cached content instead.
-    Otherwise jdeps is run again and the output used to update the file cache.
-
-    Tested Nov 2nd, 2022:
-    - With all cache hits, script takes 13 seconds.
-    - Without the cache, script takes 1 minute 14 seconds.
-    """
-    # Some __compile_java targets do not generate a .jar file, skipping these
-    # does not affect correctness.
-    if not filepath.exists():
-        return None
-
-    cache_path = _calculate_cache_path(filepath, src_path, build_output_dir)
-    if (cache_path.exists()
-            and cache_path.stat().st_mtime > filepath.stat().st_mtime):
-        with cache_path.open() as f:
-            return f.read()
-
-    # Cache either doesn't exist or is older than the jar file.
-    logging.debug(
-        f'Running jdeps and parsing output for {_relsrc(filepath, src_path)}')
-    output = subprocess_utils.run_command([
-        str(jdeps_path),
-        '-verbose:class',
-        '--multi-release',  # Some jars support multiple JDK releases.
-        'base',
-        str(filepath),
-    ])
-    logging.debug('Writing output to cache.')
-    with cache_path.open('w') as f:
-        f.write(output)
-    return output
-
-
 def _run_gn_desc_list_dependencies(build_output_dir: pathlib.Path, target: str,
                                    gn_path: str,
                                    src_path: pathlib.Path) -> str:
@@ -203,13 +117,6 @@ def _run_gn_desc_list_dependencies(build_output_dir: pathlib.Path, target: str,
 
 
 JarTargetDict = Dict[str, pathlib.Path]
-
-
-def _should_ignore(jar_path: str) -> bool:
-    for ignored_jar_path in _IGNORED_JAR_PATHS:
-        if ignored_jar_path in jar_path:
-            return True
-    return False
 
 
 def run_and_parse_list_java_targets(build_output_dir: pathlib.Path,
@@ -248,8 +155,6 @@ def run_and_parse_list_java_targets(build_output_dir: pathlib.Path,
     # pylint: enable=line-too-long
     for line in output.splitlines():
         target_name, jar_path = line.split(': ', 1)
-        if _should_ignore(jar_path):
-            continue
         jar_dict[target_name] = build_output_dir / jar_path
     return jar_dict
 
@@ -418,7 +323,7 @@ def main():
             ]
         if not args.show_ninja:
             logging.info(
-                f'Re-building {len(rel_jar_paths)} jars for up-to-date deps. '
+                f'Re-building {len(to_recompile)} jars for up-to-date deps. '
                 'This may take a while the first time through. Pass '
                 '--show-ninja to see ninja progress.')
         if args.j:
@@ -434,8 +339,11 @@ def main():
     jdeps_process_number = math.ceil(multiprocessing.cpu_count() / 2)
     with multiprocessing.Pool(jdeps_process_number) as pool:
         jdeps_outputs = pool.map(
-            functools.partial(_run_jdeps, jdeps_path, src_path,
-                              args.build_output_dir), target_jars.values())
+            functools.partial(jar_utils.run_jdeps,
+                              jdeps_path=jdeps_path,
+                              src_path=src_path,
+                              build_output_dir=args.build_output_dir),
+            target_jars.values())
 
     logging.info('Parsing jdeps output...')
     jdeps_parser = JavaClassJdepsParser()
