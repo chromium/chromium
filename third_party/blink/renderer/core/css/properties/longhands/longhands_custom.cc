@@ -2264,17 +2264,21 @@ const CSSValue* ContainerType::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   DCHECK_NE(style.ContainerType() & kContainerTypeSize,
             kContainerTypeBlockSize);
+
   if (style.ContainerType() == kContainerTypeNormal) {
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
   }
-  if (style.ContainerType() == kContainerTypeSize) {
-    return CSSIdentifierValue::Create(CSSValueID::kSize);
+  CSSValueList* values = CSSValueList::CreateSpaceSeparated();
+  if ((style.ContainerType() & kContainerTypeBlockSize) ==
+      kContainerTypeBlockSize) {
+    values->Append(*CSSIdentifierValue::Create(CSSValueID::kSize));
+  } else if (style.ContainerType() & kContainerTypeInlineSize) {
+    values->Append(*CSSIdentifierValue::Create(CSSValueID::kInlineSize));
   }
-  if (style.ContainerType() == kContainerTypeInlineSize) {
-    return CSSIdentifierValue::Create(CSSValueID::kInlineSize);
+  if (style.ContainerType() & kContainerTypeSticky) {
+    values->Append(*CSSIdentifierValue::Create(CSSValueID::kSticky));
   }
-  NOTREACHED();
-  return nullptr;
+  return values;
 }
 
 namespace {
