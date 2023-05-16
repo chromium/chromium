@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/core/html/html_element.h"
 
-#include "base/containers/enum_set.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -1895,63 +1894,44 @@ void HTMLElement::SetPopoverFocusOnShow() {
 
 namespace {
 
-// Remember to keep kMinValue and kMaxValue in sync.
-enum class PopoverAncestorOptions {
-  kExclusive,
-  kIncludeManualPopovers,
-
-  // For `PopoverAncestorOptionsSet`.
-  kMinValue = kExclusive,
-  kMaxValue = kIncludeManualPopovers,
-};
-using PopoverAncestorOptionsSet =
-    base::EnumSet<PopoverAncestorOptions,
-                  PopoverAncestorOptions::kMinValue,
-                  PopoverAncestorOptions::kMaxValue>;
-
 template <typename UnaryPredicate>
-const HTMLElement* NearestMatchingAncestor(
-    const Node* node,
-    const PopoverAncestorOptionsSet ancestor_options,
-    const UnaryPredicate get_candidate_popover) {
-  if (ancestor_options.Has(PopoverAncestorOptions::kExclusive) && node) {
+const HTMLElement* NearestMatchingAncestor(const Node* node,
+                                           bool inclusive,
+                                           UnaryPredicate predicate) {
+  if (!inclusive && node) {
     node = FlatTreeTraversal::Parent(*node);
   }
   for (; node; node = FlatTreeTraversal::Parent(*node)) {
-    auto* candidate_popover = get_candidate_popover(node);
-    if (!candidate_popover || !candidate_popover->popoverOpen()) {
-      continue;
-    }
-    if (!ancestor_options.Has(PopoverAncestorOptions::kIncludeManualPopovers) &&
-        candidate_popover->PopoverType() == PopoverValueType::kManual) {
-      continue;
-    }
-    return candidate_popover;
+    if (auto* value = predicate(node))
+      return value;
   }
   return nullptr;
 }
 
-const HTMLElement* NearestOpenPopover(
-    const Node* node,
-    const PopoverAncestorOptionsSet ancestor_options =
-        PopoverAncestorOptionsSet()) {
-  return NearestMatchingAncestor(
-      node, ancestor_options,
-      [](const Node* test_node) { return DynamicTo<HTMLElement>(test_node); });
+const HTMLElement* NearestOpenPopover(const Node* node, bool inclusive) {
+  return NearestMatchingAncestor(node, inclusive, [](const Node* test_node) {
+    auto* popover = DynamicTo<HTMLElement>(test_node);
+    return (popover && popover->popoverOpen() &&
+            popover->PopoverType() != PopoverValueType::kManual)
+               ? popover
+               : nullptr;
+  });
 }
 
-const HTMLElement* NearestTargetPopoverForInvoker(
-    const Node* node,
-    const PopoverAncestorOptionsSet ancestor_options =
-        PopoverAncestorOptionsSet()) {
-  return NearestMatchingAncestor(
-      node, ancestor_options, [](const Node* test_node) {
-        auto* form_element = DynamicTo<HTMLFormControlElement>(test_node);
-        return form_element ? const_cast<HTMLFormControlElement*>(form_element)
-                                  ->popoverTargetElement()
-                                  .popover.Get()
-                            : nullptr;
-      });
+const HTMLElement* NearestTargetPopoverForInvoker(const Node* node,
+                                                  bool inclusive) {
+  return NearestMatchingAncestor(node, inclusive, [](const Node* test_node) {
+    auto* form_element = DynamicTo<HTMLFormControlElement>(test_node);
+    auto target_popover =
+        form_element ? const_cast<HTMLFormControlElement*>(form_element)
+                           ->popoverTargetElement()
+                           .popover
+                     : nullptr;
+    return (target_popover && target_popover->popoverOpen() &&
+            target_popover->PopoverType() != PopoverValueType::kManual)
+               ? target_popover.Get()
+               : nullptr;
+  });
 }
 
 }  // namespace
@@ -2007,7 +1987,7 @@ const HTMLElement* HTMLElement::FindTopmostPopoverAncestor(
   const HTMLElement* topmost_popover_ancestor = nullptr;
   auto check_ancestor = [&topmost_popover_ancestor,
                          &popover_positions](const Element* to_check) {
-    auto* candidate_ancestor = NearestOpenPopover(to_check);
+    auto* candidate_ancestor = NearestOpenPopover(to_check, /*inclusive*/ true);
     if (!candidate_ancestor ||
         candidate_ancestor->PopoverType() != PopoverValueType::kAuto) {
       return;
@@ -2035,18 +2015,14 @@ namespace {
 // that is either a popover or the invoking element for a popover. It is
 // possible both exist, in which case the topmost one (highest on the popover
 // stack) is returned.
-const HTMLElement* FindTopmostRelatedPopover(
-    const Node& node,
-    const PopoverAncestorOptionsSet& ancestor_options =
-        PopoverAncestorOptionsSet()) {
+const HTMLElement* FindTopmostRelatedPopover(const Node& node, bool inclusive) {
   auto& document = node.GetDocument();
   CHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       document.GetExecutionContext()));
   // Check if we're in an invoking element or a popover, and choose
   // the higher popover on the stack.
-  auto* direct_popover_ancestor = NearestOpenPopover(&node, ancestor_options);
-  auto* invoker_popover_ancestor =
-      NearestTargetPopoverForInvoker(&node, ancestor_options);
+  auto* clicked_popover = NearestOpenPopover(&node, inclusive);
+  auto* invoker_popover = NearestTargetPopoverForInvoker(&node, inclusive);
   auto get_stack_position = [&document](const HTMLElement* popover) {
     if (popover && popover == document.PopoverHintShowing()) {
       return document.PopoverStack().size() + 1;
@@ -2054,12 +2030,9 @@ const HTMLElement* FindTopmostRelatedPopover(
     auto pos = document.PopoverStack().Find(popover);
     return pos == kNotFound ? 0 : (pos + 1);
   };
-  if (!invoker_popover_ancestor ||
-      get_stack_position(direct_popover_ancestor) >
-          get_stack_position(invoker_popover_ancestor)) {
-    return direct_popover_ancestor;
-  }
-  return invoker_popover_ancestor;
+  if (get_stack_position(clicked_popover) > get_stack_position(invoker_popover))
+    return clicked_popover;
+  return invoker_popover;
 }
 }  // namespace
 
@@ -2085,7 +2058,7 @@ void HTMLElement::HandlePopoverLightDismiss(const Event& event,
 
     if (event_type == event_type_names::kPointerdown) {
       document.SetPopoverPointerdownTarget(
-          FindTopmostRelatedPopover(target_node));
+          FindTopmostRelatedPopover(target_node, /*inclusive*/ true));
     } else if (event_type == event_type_names::kPointerup) {
       // Hide everything up to the clicked element. We do this on pointerup,
       // rather than pointerdown or click, primarily for accessibility concerns.
@@ -2097,7 +2070,8 @@ void HTMLElement::HandlePopoverLightDismiss(const Event& event,
       // a pointer-drag on a popover, and finishes off the popover (to highlight
       // text), the ancestral popover is stored in pointerdown and compared
       // here.
-      auto* ancestor_popover = FindTopmostRelatedPopover(target_node);
+      auto* ancestor_popover =
+          FindTopmostRelatedPopover(target_node, /*inclusive*/ true);
       bool same_target =
           ancestor_popover == document.PopoverPointerdownTarget();
       document.SetPopoverPointerdownTarget(nullptr);
@@ -2148,26 +2122,29 @@ void HTMLElement::setAnchorElement(Element* new_element) {
 // Must be called on an Element that is a popover. Returns true if |node| is a
 // descendant of this popover. This includes the case where |node| is contained
 // within another popover, and the container popover is a descendant of this
-// popover. This also includes "indirect" relationships that the popover API
-// provides, such as through invoking elements or via the anchor attribute.
-// Note that in the special case of popover=manual popovers, which do not
-// usually have ancestral relationships, this function *will* check for invoker
-// and anchor relationships to form descendant edges. This is important for the
-// `popover-hide-delay` CSS property, which works for all popover types, and
-// needs to keep popovers open when a descendant is hovered.
+// popover. For the special case of popover=manual popovers, which do not have
+// ancestral relationships, this function checks pure DOM tree descendants of
+// popover=manual popovers. This is important for the `popover-hide-delay` CSS
+// property, which works for all popover types, and needs to keep popovers open
+// when a descendant is hovered.
 bool HTMLElement::IsNodePopoverDescendant(const Node& node) const {
   CHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
   CHECK(HasPopoverAttribute());
-  const HTMLElement* ancestor = FindTopmostRelatedPopover(
-      node, PopoverAncestorOptions::kIncludeManualPopovers);
-  while (ancestor) {
-    if (ancestor == this) {
-      return true;
+  if (PopoverType() == PopoverValueType::kManual) {
+    for (const Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(node)) {
+      if (ancestor == this) {
+        return true;
+      }
     }
-    ancestor = FindTopmostRelatedPopover(
-        *ancestor, PopoverAncestorOptionsSet{
-                       PopoverAncestorOptions::kExclusive,
-                       PopoverAncestorOptions::kIncludeManualPopovers});
+  } else {
+    const HTMLElement* ancestor =
+        FindTopmostRelatedPopover(node, /*inclusive*/ true);
+    while (ancestor) {
+      if (ancestor == this) {
+        return true;
+      }
+      ancestor = FindTopmostRelatedPopover(*ancestor, /*inclusive*/ false);
+    }
   }
   return false;
 }

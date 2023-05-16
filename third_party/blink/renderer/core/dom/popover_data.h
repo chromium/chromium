@@ -20,9 +20,6 @@ enum class PopoverVisibilityState {
   kShowing,
 };
 
-using PopoverHoverShowMap =
-    HeapHashMap<WeakMember<const HTMLFormControlElement>, TaskHandle>;
-
 class PopoverData final : public GarbageCollected<PopoverData>,
                           public ElementRareDataField {
  public:
@@ -101,7 +98,10 @@ class PopoverData final : public GarbageCollected<PopoverData>,
     bool was_set_;
   };
 
-  PopoverHoverShowMap& hoverShowTasks() { return hover_show_tasks_; }
+  HeapHashMap<WeakMember<const HTMLFormControlElement>, TaskHandle>&
+  hoverShowTasks() {
+    return hover_show_tasks_;
+  }
 
   void setHoverHideTask(TaskHandle&& task) {
     if (hover_hide_task_.IsActive()) {
@@ -142,7 +142,8 @@ class PopoverData final : public GarbageCollected<PopoverData>,
   // Map from elements with the 'popovertarget' attribute and
   // `popovertargetaction=hover` to a task that will show the popover after a
   // delay.
-  PopoverHoverShowMap hover_show_tasks_;
+  HeapHashMap<WeakMember<const HTMLFormControlElement>, TaskHandle>
+      hover_show_tasks_;
   // A task that hides the popover after a delay.
   TaskHandle hover_hide_task_;
 

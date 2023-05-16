@@ -6006,6 +6006,7 @@ crbug.com/1434123 media/video-source-type.html [ Failure Pass ]
 crbug.com/1434123 media/video-source-type-params.html [ Failure Pass ]
 crbug.com/1266821 [ Mac10.14 ] compositing/reflections/reflection-in-composited.html [ Timeout ]
 crbug.com/1418393 [ Debug Linux ] external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-attributes.tentative.window.html [ Failure ]
+crbug.com/1445580 [ Mac ] virtual/popover-hint-disabled/external/wpt/html/semantics/popovers/light-dismiss-event-ordering.html [ Timeout ]
 crbug.com/1445674 [ Linux ] webaudio/internals/audioworkletprocessor-gc.https.html [ Timeout ]
 
 # Suppress http/tests/inspector-protocol/network/navigate-iframe-in2out.js test cluster

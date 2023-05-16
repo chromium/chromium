@@ -67,35 +67,20 @@ async function finishAnimations(popover) {
   popover.getAnimations({subtree: true}).forEach(animation => animation.finish());
   await waitForRender();
 }
-let mousemoveInfo;
+let mouseOverStarted;
 function mouseOver(element) {
-  mousemoveInfo?.controller?.abort();
-  const controller = new AbortController();
-  mousemoveInfo = {element, controller, moved: false, started: performance.now()};
+  mouseOverStarted = performance.now();
   return (new test_driver.Actions())
     .pointerMove(0, 0, {origin: element})
-    .send()
-    .then(() => {
-      document.addEventListener("mousemove", (e) => {mousemoveInfo.moved = true;}, {signal: controller.signal});
-    })
+    .send();
 }
 function msSinceMouseOver() {
-  return performance.now() - mousemoveInfo.started;
-}
-function assertMouseStillOver(element) {
-  assert_equals(mousemoveInfo.element, element, 'Broken test harness');
-  assert_false(mousemoveInfo.moved,'Broken test harness');
+  return performance.now() - mouseOverStarted;
 }
 async function waitForHoverTime(hoverWaitTimeMs) {
   await new Promise(resolve => step_timeout(resolve,hoverWaitTimeMs));
   await waitForRender();
 };
-async function mouseHover(element,hoverWaitTimeMs) {
-  await mouseOver(element);
-  await waitForHoverTime(hoverWaitTimeMs);
-  assertMouseStillOver(element);
-}
-
 async function blessTopLayer(visibleElement) {
   // The normal "bless" function doesn't work well when there are top layer
   // elements blocking clicks. Additionally, since the normal test_driver.bless
