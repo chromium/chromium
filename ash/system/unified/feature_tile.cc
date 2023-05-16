@@ -44,7 +44,6 @@ constexpr int kButtonRadius = 16;
 constexpr float kFocusRingPadding = 3.0f;
 
 // Primary tile constants
-constexpr int kPrimarySubtitleLineHeight = 18;
 constexpr gfx::Size kDefaultSize(180, kFeatureTileHeight);
 constexpr gfx::Size kIconButtonSize(36, 52);
 constexpr int kIconButtonCornerRadius = 12;
@@ -166,8 +165,6 @@ void FeatureTile::CreateChildViews() {
   label_->SetHorizontalAlignment(is_compact ? gfx::ALIGN_CENTER
                                             : gfx::ALIGN_LEFT);
   label_->SetAutoColorReadabilityEnabled(false);
-  label_->SetFontList(ash::TypographyProvider::Get()->ResolveTypographyToken(
-      ash::TypographyToken::kCrosButton2));
 
   if (is_compact) {
     label_->SetPreferredSize(kCompactTitleLabelSize);
@@ -175,28 +172,19 @@ void FeatureTile::CreateChildViews() {
     // clipping and center aligned.
     label_->SetMultiLine(true);
     label_->SetMaxLines(2);  // Elide after 2 lines.
+    // Compact labels use kCrosAnnotation2 with a shorter custom line height.
+    label_->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+        TypographyToken::kCrosAnnotation2));
     label_->SetLineHeight(kCompactTitleLineHeight);
-    label_->SetFontList(ash::TypographyProvider::Get()->ResolveTypographyToken(
-        ash::TypographyToken::kCrosAnnotation2));
   } else {
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                          *label_);
     sub_label_ =
         title_container->AddChildView(std::make_unique<views::Label>());
     sub_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     sub_label_->SetAutoColorReadabilityEnabled(false);
-    sub_label_->SetFontList(
-        ash::TypographyProvider::Get()->ResolveTypographyToken(
-            ash::TypographyToken::kCrosAnnotation1));
-    sub_label_->SetLineHeight(kPrimarySubtitleLineHeight);
-    if (chromeos::features::IsJellyEnabled()) {
-      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
-                                            *sub_label_);
-    }
-  }
-  if (chromeos::features::IsJellyEnabled()) {
-    TypographyProvider::Get()->StyleLabel(
-        is_compact ? TypographyToken::kCrosAnnotation2
-                   : TypographyToken::kCrosButton2,
-        *label_);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
+                                          *sub_label_);
   }
 }
 
