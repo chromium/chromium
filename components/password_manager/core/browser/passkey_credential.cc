@@ -7,9 +7,44 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 
 namespace password_manager {
+
+namespace {
+
+std::vector<uint8_t> ProtobufBytesToVector(const std::string& bytes) {
+  return std::vector<uint8_t>(bytes.begin(), bytes.end());
+}
+
+}  // namespace
+
+// static
+std::vector<PasskeyCredential> PasskeyCredential::FromCredentialSpecifics(
+    base::span<const sync_pb::WebauthnCredentialSpecifics> passkeys) {
+  base::flat_set<std::string> shadowed_credential_ids;
+  for (const sync_pb::WebauthnCredentialSpecifics& passkey : passkeys) {
+    for (const std::string& id : passkey.newly_shadowed_credential_ids()) {
+      shadowed_credential_ids.emplace(id);
+    }
+  }
+  std::vector<password_manager::PasskeyCredential> credentials;
+  for (const sync_pb::WebauthnCredentialSpecifics& passkey : passkeys) {
+    if (shadowed_credential_ids.contains(passkey.credential_id())) {
+      continue;
+    }
+    credentials.emplace_back(
+        password_manager::PasskeyCredential::Source::kAndroidPhone,
+        passkey.rp_id(), ProtobufBytesToVector(passkey.credential_id()),
+        ProtobufBytesToVector(passkey.user_id()),
+        passkey.has_user_name() ? passkey.user_name() : "",
+        passkey.has_user_display_name() ? passkey.user_display_name() : "");
+  }
+  return credentials;
+}
 
 PasskeyCredential::PasskeyCredential(Source source,
                                      std::string rp_id,
