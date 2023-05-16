@@ -3975,6 +3975,7 @@ if (!is_android) {
         "../browser/ash/login/screens/assistant_optin_flow_screen_browsertest.cc",
         "../browser/ash/login/screens/consolidated_consent_screen_browsertest.cc",
         "../browser/ash/login/screens/cryptohome_recovery_setup_screen_browsertest.cc",
+        "../browser/ash/login/screens/drive_pinning_screen_browsertest.cc",
         "../browser/ash/login/screens/edu_coexistence_login_browsertest.cc",
         "../browser/ash/login/screens/family_link_notice_browsertest.cc",
         "../browser/ash/login/screens/fingerprint_setup_browsertest.cc",

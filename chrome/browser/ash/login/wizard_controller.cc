@@ -2457,6 +2457,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowTouchpadScrollScreen();
   } else if (screen_id == GaiaInfoScreenView::kScreenId) {
     ShowGaiaInfoScreen();
+  } else if (screen_id == DrivePinningScreenView::kScreenId) {
+    ShowDrivePinningScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == GaiaPasswordChangedView::kScreenId ||
              screen_id == FamilyLinkNoticeView::kScreenId ||

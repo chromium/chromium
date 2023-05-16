@@ -36,7 +36,17 @@ class DrivePinningScreen : public BaseScreen,
 
   ~DrivePinningScreen() override;
 
+  void set_exit_callback_for_testing(const ScreenExitCallback& callback) {
+    exit_callback_ = callback;
+  }
+
+  const ScreenExitCallback& get_exit_callback_for_testing() {
+    return exit_callback_;
+  }
+
   void CalculateRequiredSpace();
+
+  void OnProgressForTest(const drivefs::pinning::Progress& progress);
 
  private:
   // BaseScreen:
