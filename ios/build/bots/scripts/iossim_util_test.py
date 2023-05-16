@@ -8,6 +8,7 @@ import mock
 import unittest
 
 import iossim_util
+import mac_util
 import os
 import subprocess
 import test_runner
@@ -326,6 +327,55 @@ class GetiOSSimUtil(test_runner_test.TestCase):
 
       mock_get_runtime_info.assert_called_with('13.1')
       mock_delete_runtime.assert_called_once_with('111111')
+
+  def test_disable_hardware_keyboard(self, _, _2):
+    """Ensures right commands are issued to disable hardware keyboard"""
+
+    self.mock(os.path, 'exists', lambda *args: False)
+    self.mock(os.path, 'expanduser', lambda *args: 'PATH')
+
+    check_call_mock = mock.Mock()
+    self.mock(subprocess, 'check_call', check_call_mock)
+    check_calls = [
+        mock.call(['plutil', '-create', 'binary1', 'PATH']),
+        mock.call(
+            ['plutil', '-insert', 'DevicePreferences', '-dictionary', 'PATH']),
+        mock.call([
+            'plutil', '-insert', 'DevicePreferences.UDID', '-dictionary', 'PATH'
+        ]),
+        mock.call([
+            'plutil', '-replace',
+            'DevicePreferences.UDID.ConnectHardwareKeyboard', '-bool', 'NO',
+            'PATH'
+        ])
+    ]
+
+    dict_mock = mock.Mock()
+    self.mock(mac_util, 'plist_as_dict', dict_mock)
+
+    # file does not exist
+    dict_mock.return_value = ({}, None)
+    iossim_util.disable_hardware_keyboard('UDID')
+    check_call_mock.assert_has_calls(check_calls)
+
+    # file exists but is empty
+    self.mock(os.path, 'exists', lambda *args: True)
+    check_call_mock.reset_mock()
+    dict_mock.return_value = ({}, None)
+    iossim_util.disable_hardware_keyboard('UDID')
+    check_call_mock.assert_has_calls(check_calls[1:])
+
+    #Device Prefs Dictionary Exists but not Prefs for UDID
+    check_call_mock.reset_mock()
+    dict_mock.return_value = ({'DevicePreferences': {}}, None)
+    iossim_util.disable_hardware_keyboard('UDID')
+    check_call_mock.assert_has_calls(check_calls[2:])
+
+    # Prefs for UDID exists
+    check_call_mock.reset_mock()
+    dict_mock.return_value = ({'DevicePreferences': {'UDID': {}}}, None)
+    iossim_util.disable_hardware_keyboard('UDID')
+    check_call_mock.assert_has_calls(check_calls[3:])
 
 
 if __name__ == '__main__':

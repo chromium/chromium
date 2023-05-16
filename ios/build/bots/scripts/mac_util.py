@@ -3,8 +3,10 @@
 # found in the LICENSE file.
 
 import distutils.version
+import json
 import logging
 import subprocess
+from typing import Union, Tuple
 
 LOGGER = logging.getLogger(__name__)
 
@@ -57,3 +59,26 @@ def run_codesign_check(dir_path):
     return False, e
 
   return True, None
+
+
+error_type = Union[subprocess.CalledProcessError, json.JSONDecodeError]
+plist_as_dict_return_type = Union[Tuple[dict, None], Tuple[None, error_type]]
+
+
+def plist_as_dict(abs_path: str) -> plist_as_dict_return_type:
+  """Converts plist to python dictionary.
+
+  Args:
+      abs_path (str) absolute path of the string to convert.
+
+  Returns:
+      Plist (dictionary),
+      error (subprocess.CalledProcessError, json.JSONDecodeError)
+  """
+  try:
+    plist = json.loads(
+        subprocess.check_output(
+            ['plutil', '-convert', 'json', '-o', '-', abs_path]))
+    return plist, None
+  except (subprocess.CalledProcessError, json.JSONDecodeError) as e:
+    return None, e

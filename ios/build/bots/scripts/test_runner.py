@@ -796,6 +796,10 @@ class SimulatorTestRunner(TestRunner):
     """Wipes the simulator."""
     iossim_util.wipe_simulator_by_udid(self.udid)
 
+  def disable_hw_keyboard(self):
+    """Disables hardware keyboard input."""
+    iossim_util.disable_hardware_keyboard(self.udid)
+
   def get_home_directory(self):
     """Returns the simulator's home directory."""
     return iossim_util.get_home_directory(self.platform, self.version)
@@ -806,6 +810,7 @@ class SimulatorTestRunner(TestRunner):
     self.kill_simulators()
     self.wipe_simulator()
     self.wipe_derived_data()
+    self.disable_hw_keyboard()
     self.homedir = self.get_home_directory()
     # Crash reports have a timestamp in their file name, formatted as
     # YYYY-MM-DD-HHMMSS. Save the current time in the same format so
