@@ -324,7 +324,8 @@ TEST_F(ExtensionServiceSyncTest, DisableExtensionFromSync) {
   // The user has enabled sync.
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile());
-  sync_service->GetUserSettings()->SetFirstSetupComplete(kSetSourceFromTest);
+  sync_service->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
+      kSetSourceFromTest);
 
   service()->Init();
   ASSERT_TRUE(extension_system()->is_ready());
@@ -359,7 +360,8 @@ TEST_F(ExtensionServiceSyncTest, ReenableDisabledExtensionFromSync) {
   // Enable sync.
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile());
-  sync_service->GetUserSettings()->SetFirstSetupComplete(kSetSourceFromTest);
+  sync_service->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
+      kSetSourceFromTest);
 
   service()->Init();
 
@@ -440,7 +442,8 @@ TEST_F(ExtensionServiceSyncTest,
   // Enable sync.
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile());
-  sync_service->GetUserSettings()->SetFirstSetupComplete(kSetSourceFromTest);
+  sync_service->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
+      kSetSourceFromTest);
 
   service()->Init();
 
@@ -503,7 +506,8 @@ TEST_F(ExtensionServiceSyncTest, IgnoreSyncChangesWhenLocalStateIsMoreRecent) {
   // The user has enabled sync.
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile());
-  sync_service->GetUserSettings()->SetFirstSetupComplete(kSetSourceFromTest);
+  sync_service->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
+      kSetSourceFromTest);
   // Make sure ExtensionSyncService is created, so it'll be notified of changes.
   extension_sync_service();
 
@@ -562,7 +566,7 @@ TEST_F(ExtensionServiceSyncTest, DontSelfNotify) {
   // The user has enabled sync.
   SyncServiceFactory::GetForProfile(profile())
       ->GetUserSettings()
-      ->SetFirstSetupComplete(kSetSourceFromTest);
+      ->SetInitialSyncFeatureSetupComplete(kSetSourceFromTest);
   // Make sure ExtensionSyncService is created, so it'll be notified of changes.
   extension_sync_service();
 
@@ -1670,7 +1674,7 @@ TEST_F(ExtensionServiceSyncTest, DontSyncThemes) {
   // The user has enabled sync.
   SyncServiceFactory::GetForProfile(profile())
       ->GetUserSettings()
-      ->SetFirstSetupComplete(kSetSourceFromTest);
+      ->SetInitialSyncFeatureSetupComplete(kSetSourceFromTest);
   // Make sure ExtensionSyncService is created, so it'll be notified of changes.
   extension_sync_service();
 
@@ -1804,7 +1808,8 @@ class BlocklistedExtensionSyncServiceTest : public ExtensionServiceSyncTest {
     // Enable sync.
     syncer::SyncService* sync_service =
         SyncServiceFactory::GetForProfile(profile());
-    sync_service->GetUserSettings()->SetFirstSetupComplete(kSetSourceFromTest);
+    sync_service->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
+        kSetSourceFromTest);
 
     test_blocklist_.Attach(service()->blocklist_);
     service()->Init();

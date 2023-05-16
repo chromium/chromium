@@ -41,7 +41,8 @@ class SyncUserSettings {
   // NOTE: On ChromeOS, this gets set automatically, so it doesn't really mean
   // anything. See |browser_defaults::kSyncAutoStarts|.
   virtual bool IsInitialSyncFeatureSetupComplete() const = 0;
-  virtual void SetFirstSetupComplete(SyncFirstSetupCompleteSource source) = 0;
+  virtual void SetInitialSyncFeatureSetupComplete(
+      SyncFirstSetupCompleteSource source) = 0;
 
   // The user's selected types. The "sync everything" flag means to sync all
   // current and future data types. If it is set, then GetSelectedTypes() will

@@ -46,12 +46,12 @@ TestSyncUserSettings::TestSyncUserSettings(TestSyncService* service)
 TestSyncUserSettings::~TestSyncUserSettings() = default;
 
 bool TestSyncUserSettings::IsInitialSyncFeatureSetupComplete() const {
-  return first_setup_complete_;
+  return initial_sync_feature_setup_complete_;
 }
 
-void TestSyncUserSettings::SetFirstSetupComplete(
+void TestSyncUserSettings::SetInitialSyncFeatureSetupComplete(
     SyncFirstSetupCompleteSource source) {
-  SetFirstSetupComplete();
+  SetInitialSyncFeatureSetupComplete();
 }
 
 bool TestSyncUserSettings::IsSyncEverythingEnabled() const {
@@ -231,12 +231,12 @@ std::unique_ptr<Nigori> TestSyncUserSettings::GetDecryptionNigoriKey() const {
   return nullptr;
 }
 
-void TestSyncUserSettings::SetFirstSetupComplete() {
-  first_setup_complete_ = true;
+void TestSyncUserSettings::SetInitialSyncFeatureSetupComplete() {
+  initial_sync_feature_setup_complete_ = true;
 }
 
-void TestSyncUserSettings::ClearFirstSetupComplete() {
-  first_setup_complete_ = false;
+void TestSyncUserSettings::ClearInitialSyncFeatureSetupComplete() {
+  initial_sync_feature_setup_complete_ = false;
 }
 
 void TestSyncUserSettings::SetTypeIsManaged(UserSelectableType type,

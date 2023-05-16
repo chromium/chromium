@@ -26,7 +26,8 @@ class TestSyncUserSettings : public SyncUserSettings {
   ~TestSyncUserSettings() override;
 
   bool IsInitialSyncFeatureSetupComplete() const override;
-  void SetFirstSetupComplete(SyncFirstSetupCompleteSource source) override;
+  void SetInitialSyncFeatureSetupComplete(
+      SyncFirstSetupCompleteSource source) override;
 
   bool IsSyncEverythingEnabled() const override;
   UserSelectableTypeSet GetSelectedTypes() const override;
@@ -72,8 +73,8 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) override;
   std::unique_ptr<Nigori> GetDecryptionNigoriKey() const override;
 
-  void SetFirstSetupComplete();
-  void ClearFirstSetupComplete();
+  void SetInitialSyncFeatureSetupComplete();
+  void ClearInitialSyncFeatureSetupComplete();
   void SetTypeIsManaged(UserSelectableType type, bool managed);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetOsTypeIsManaged(UserSelectableOsType type, bool managed);
@@ -95,7 +96,7 @@ class TestSyncUserSettings : public SyncUserSettings {
   UserSelectableTypeSet selected_types_;
   UserSelectableTypeSet managed_types_;
 
-  bool first_setup_complete_ = true;
+  bool initial_sync_feature_setup_complete_ = true;
   bool sync_everything_enabled_ = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool sync_all_os_types_enabled_ = true;

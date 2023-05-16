@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnDisableSync) {
   GetSyncService(0)->SetSyncFeatureRequested();
   // StopAndClear() also clears the "first setup complete" flag, so set it
   // again.
-  GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
+  GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       kSetSourceFromTest);
   // Wait until Sync restores the card and it arrives at PDM.
   WaitForNumberOfCards(1, pdm);
@@ -1292,7 +1292,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSecondaryAccountSyncTest,
   // complete.
   secondary_account_helper::GrantSyncConsent(profile(), "user@email.com");
   GetSyncService(0)->SetSyncFeatureRequested();
-  GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
+  GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       kSetSourceFromTest);
 
   // Wait for Sync to get reconfigured into feature mode.
@@ -1373,7 +1373,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(syncer::SyncService::TransportState::CONFIGURING,
             GetSyncService(0)->GetTransportState());
 
-  GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
+  GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       kSetSourceFromTest);
 
   // Wait for Sync to get reconfigured into feature mode.

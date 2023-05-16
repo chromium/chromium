@@ -442,7 +442,7 @@ void AuthenticationService::SignOut(
   const bool is_managed =
       HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
   // Get first setup complete value before to stop the sync service.
-  const bool is_first_setup_complete =
+  const bool is_initial_sync_feature_setup_complete =
       sync_setup_service_->IsInitialSyncFeatureSetupComplete();
 
   auto* account_mutator = identity_manager_->GetPrimaryAccountMutator();
@@ -456,7 +456,8 @@ void AuthenticationService::SignOut(
 
   // Browsing data for managed account needs to be cleared only if sync has
   // started at least once.
-  if (force_clear_browsing_data || (is_managed && is_first_setup_complete)) {
+  if (force_clear_browsing_data ||
+      (is_managed && is_initial_sync_feature_setup_complete)) {
     delegate_->ClearBrowsingData(completion);
   } else if (completion) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

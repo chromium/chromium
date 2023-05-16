@@ -135,8 +135,8 @@ class AuthenticationService : public KeyedService,
 
   // Grants signin::ConsentLevel::kSync to `identity` and records the event at
   // `access_point`. This starts setting up Sync-the-feature, but the setup will
-  // only complete once SyncUserSettings::SetFirstSetupComplete() is called.
-  // This method is used for testing. Virtual for testing.
+  // only complete once SyncUserSettings::SetInitialSyncFeatureSetupComplete()
+  // is called. This method is used for testing. Virtual for testing.
   virtual void GrantSyncConsent(id<SystemIdentity> identity,
                                 signin_metrics::AccessPoint access_point);
 

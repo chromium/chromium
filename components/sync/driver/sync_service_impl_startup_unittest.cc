@@ -221,7 +221,7 @@ TEST_F(SyncServiceImplStartupTest, StartFirstTime) {
 
   // Marking first setup complete will let SyncServiceImpl reconfigure the
   // DataTypeManager in full Sync-the-feature mode.
-  sync_service()->GetUserSettings()->SetFirstSetupComplete(
+  sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
   EXPECT_EQ(DataTypeManager::CONFIGURED, data_type_manager()->state());
 
@@ -237,7 +237,7 @@ TEST_F(SyncServiceImplStartupTest, StartNoCredentials) {
   // We're already signed in, but don't have a refresh token.
   SimulateRefreshTokensNotLoadedYet();
   SimulateTestUserSigninAndEnableSyncFeatureWithoutRefreshToken();
-  sync_prefs()->SetFirstSetupComplete();
+  sync_prefs()->SetInitialSyncFeatureSetupComplete();
 
   CreateSyncService(SyncServiceImpl::MANUAL_START);
   sync_service()->Initialize();
@@ -257,7 +257,7 @@ TEST_F(SyncServiceImplStartupTest, WebSignoutBeforeInitialization) {
   // state.
   SimulateTestUserSigninAndEnableSyncFeature();
   SimulateWebSignout();
-  sync_prefs()->SetFirstSetupComplete();
+  sync_prefs()->SetInitialSyncFeatureSetupComplete();
 
   CreateSyncService(SyncServiceImpl::MANUAL_START);
 
@@ -274,7 +274,7 @@ TEST_F(SyncServiceImplStartupTest, WebSignoutDuringDeferredStartup) {
   // (because auth errors are not persisted).
   base::HistogramTester histogram_tester;
   SimulateTestUserSigninAndEnableSyncFeature();
-  sync_prefs()->SetFirstSetupComplete();
+  sync_prefs()->SetInitialSyncFeatureSetupComplete();
   CreateSyncService(SyncServiceImpl::MANUAL_START);
   sync_service()->Initialize();
 
@@ -314,7 +314,7 @@ TEST_F(SyncServiceImplStartupTest, WebSignoutAfterInitialization) {
   DisableAutomaticIssueOfAccessTokens();
 
   SimulateTestUserSigninAndEnableSyncFeature();
-  sync_prefs()->SetFirstSetupComplete();
+  sync_prefs()->SetInitialSyncFeatureSetupComplete();
 
   CreateSyncService(SyncServiceImpl::MANUAL_START);
   sync_service()->Initialize();
@@ -352,7 +352,7 @@ TEST_F(SyncServiceImplStartupTest, WebSignoutAfterInitialization) {
 TEST_F(SyncServiceImplStartupTest, StartInvalidCredentials) {
   SimulateTestUserSigninAndEnableSyncFeature();
   sync_prefs()->SetSyncRequested(true);
-  sync_prefs()->SetFirstSetupComplete();
+  sync_prefs()->SetInitialSyncFeatureSetupComplete();
 
   CreateSyncService(SyncServiceImpl::MANUAL_START);
 
@@ -417,7 +417,7 @@ TEST_F(SyncServiceImplStartupTest, StartCrosFirstTime) {
 
 TEST_F(SyncServiceImplStartupTest, DisableSync) {
   sync_prefs()->SetSyncRequested(true);
-  sync_prefs()->SetFirstSetupComplete();
+  sync_prefs()->SetInitialSyncFeatureSetupComplete();
   SimulateTestUserSigninAndEnableSyncFeature();
   CreateSyncService(SyncServiceImpl::MANUAL_START);
 
@@ -459,7 +459,7 @@ TEST_F(SyncServiceImplStartupTest, StartRecoverDatatypePrefs) {
     pref_service()->ClearPref(SyncPrefs::GetPrefNameForTypeForTesting(type));
   }
 
-  sync_prefs()->SetFirstSetupComplete();
+  sync_prefs()->SetInitialSyncFeatureSetupComplete();
   CreateSyncService(SyncServiceImpl::MANUAL_START);
   SimulateTestUserSigninAndEnableSyncFeature();
 
@@ -478,7 +478,7 @@ TEST_F(SyncServiceImplStartupTest, StartDontRecoverDatatypePrefs) {
       /*registered_types=*/UserSelectableTypeSet::All(),
       /*selected_types=*/{UserSelectableType::kBookmarks});
 
-  sync_prefs()->SetFirstSetupComplete();
+  sync_prefs()->SetInitialSyncFeatureSetupComplete();
   CreateSyncService(SyncServiceImpl::MANUAL_START);
   SimulateTestUserSigninAndEnableSyncFeature();
 
@@ -492,7 +492,7 @@ TEST_F(SyncServiceImplStartupTest, ManagedStartup) {
   // running.
   pref_service()->SetBoolean(prefs::internal::kSyncManaged, true);
   sync_prefs()->SetSyncRequested(true);
-  sync_prefs()->SetFirstSetupComplete();
+  sync_prefs()->SetInitialSyncFeatureSetupComplete();
 
   SimulateTestUserSigninAndEnableSyncFeature();
   CreateSyncService(SyncServiceImpl::MANUAL_START);
@@ -529,7 +529,7 @@ TEST_P(SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
        SwitchManaged) {
   // Sync starts out fully set up and enabled.
   sync_prefs()->SetSyncRequested(true);
-  sync_prefs()->SetFirstSetupComplete();
+  sync_prefs()->SetInitialSyncFeatureSetupComplete();
   SimulateTestUserSigninAndEnableSyncFeature();
 
   // To make this test more realistic, the StartBehavior is chosen depending on
@@ -676,7 +676,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   // configuring the data types. Just marking the initial setup as complete
   // isn't enough though, because setup is still considered in progress (we
   // haven't released the setup-in-progress handle).
-  sync_service()->GetUserSettings()->SetFirstSetupComplete(
+  sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
   EXPECT_EQ(SyncService::TransportState::PENDING_DESIRED_CONFIGURATION,
             sync_service()->GetTransportState());
@@ -713,7 +713,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
   // Prevent engine initialization, to test TransportState::START_DEFERRED.
   // Prevent one model initialization, to test TransportState::CONFIGURING.
   SimulateTestUserSigninAndEnableSyncFeature();
-  sync_prefs()->SetFirstSetupComplete();
+  sync_prefs()->SetInitialSyncFeatureSetupComplete();
   sync_prefs()->SetSyncRequested(true);
   component_factory()->AllowFakeEngineInitCompletion(false);
   CreateSyncService(SyncServiceImpl::MANUAL_START, {SESSIONS});
@@ -763,7 +763,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
 
 TEST_F(SyncServiceImplStartupTest, DeferredStartInterruptedByDataType) {
   base::HistogramTester histogram_tester;
-  sync_prefs()->SetFirstSetupComplete();
+  sync_prefs()->SetInitialSyncFeatureSetupComplete();
   SimulateTestUserSigninAndEnableSyncFeature();
   CreateSyncService(SyncServiceImpl::MANUAL_START);
 
@@ -805,7 +805,7 @@ TEST_F(SyncServiceImplStartupTest, UserTriggeredStartIsNotDeferredStart) {
   // Sign-in quickly, before the usual delay of a deferred startup. This can
   // happen during FRE.
   SimulateTestUserSigninAndEnableSyncFeature();
-  sync_prefs()->SetFirstSetupComplete();
+  sync_prefs()->SetInitialSyncFeatureSetupComplete();
   FastForwardUntilNoTasksRemain();
 
   // This should not be recorded as a deferred startup.
@@ -817,7 +817,7 @@ TEST_F(SyncServiceImplStartupTest, UserTriggeredStartIsNotDeferredStart) {
 
 TEST_F(SyncServiceImplStartupTest,
        ShouldClearMetadataForAlreadyDisabledTypesBeforeConfigurationDone) {
-  sync_prefs()->SetFirstSetupComplete();
+  sync_prefs()->SetInitialSyncFeatureSetupComplete();
   // Simulate types disabled during previous run.
   sync_prefs()->SetSelectedTypes(
       /*keep_everything_synced=*/false,
@@ -844,7 +844,7 @@ TEST_F(SyncServiceImplStartupTest,
        ShouldClearMetadataForTypesDisabledBeforeInitCompletion) {
   SimulateTestUserSigninAndEnableSyncFeature();
   sync_prefs()->SetSyncRequested(true);
-  sync_prefs()->SetFirstSetupComplete();
+  sync_prefs()->SetInitialSyncFeatureSetupComplete();
 
   CreateSyncService(SyncServiceImpl::MANUAL_START,
                     /*registered_types=*/ModelTypeSet(BOOKMARKS, READING_LIST));
@@ -876,7 +876,7 @@ TEST_F(SyncServiceImplStartupTest,
        ShouldClearMetadataForTypesDisabledWhileInit) {
   SimulateTestUserSigninAndEnableSyncFeature();
   sync_prefs()->SetSyncRequested(true);
-  sync_prefs()->SetFirstSetupComplete();
+  sync_prefs()->SetInitialSyncFeatureSetupComplete();
 
   CreateSyncService(SyncServiceImpl::MANUAL_START,
                     /*registered_types=*/ModelTypeSet(BOOKMARKS, READING_LIST));

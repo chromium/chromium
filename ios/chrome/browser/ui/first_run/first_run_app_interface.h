@@ -22,7 +22,7 @@
 + (void)resetUMACollectionEnabledByDefault;
 
 // Returns whether sync has finished its first run setup.
-+ (BOOL)isSyncFirstSetupComplete;
++ (BOOL)isInitialSyncFeatureSetupComplete;
 
 @end
 

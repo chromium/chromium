@@ -104,13 +104,14 @@ class SyncSetupInProgressHandle {
 //   types until the user has finished setting up sync. There are two APIs
 //   that control the initial sync download:
 //
-//    * SyncUserSettings::SetFirstSetupComplete()
+//    * SyncUserSettings::SetInitialSyncFeatureSetupComplete()
 //    * GetSetupInProgressHandle()
 //
-//   SetFirstSetupComplete() should be called once the user has finished setting
-//   up sync at least once on their account. GetSetupInProgressHandle() should
-//   be called while the user is actively configuring their account. The handle
-//   should be deleted once configuration is complete.
+//   SetInitialSyncFeatureSetupComplete() should be called once the user has
+//   finished setting up sync at least once on their account.
+//   GetSetupInProgressHandle() should be called while the user is actively
+//   configuring their account. The handle should be deleted once configuration
+//   is complete.
 //
 //   Once first setup has completed and there are no outstanding
 //   setup-in-progress handles, datatype configuration will begin.

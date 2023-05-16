@@ -101,13 +101,14 @@ void SyncSetupService::PrepareForFirstSyncSetup() {
     sync_blocker_ = sync_service_->GetSetupInProgressHandle();
 }
 
-void SyncSetupService::SetFirstSetupComplete(
+void SyncSetupService::SetInitialSyncFeatureSetupComplete(
     syncer::SyncFirstSetupCompleteSource source) {
   CHECK(sync_blocker_);
   // Turn on the sync setup completed flag only if the user did not turn sync
   // off.
   if (sync_service_->CanSyncFeatureStart()) {
-    sync_service_->GetUserSettings()->SetFirstSetupComplete(source);
+    sync_service_->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
+        source);
   }
 }
 

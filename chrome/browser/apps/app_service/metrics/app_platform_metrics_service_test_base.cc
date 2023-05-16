@@ -211,7 +211,7 @@ void AppPlatformMetricsServiceTestBase::AddRegularUser(
   sync_service_ = static_cast<syncer::TestSyncService*>(
       SyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&TestingSyncFactoryFunction)));
-  sync_service_->SetFirstSetupComplete(true);
+  sync_service_->SetInitialSyncFeatureSetupComplete(true);
 }
 
 }  // namespace apps

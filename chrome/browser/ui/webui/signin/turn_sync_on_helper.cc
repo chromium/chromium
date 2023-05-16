@@ -639,7 +639,7 @@ void TurnSyncOnHelper::FinishSyncSetupAndDelete(
                                                  signin::ConsentLevel::kSync,
                                                  signin_access_point_);
       if (auto* sync_service = GetSyncService()) {
-        sync_service->GetUserSettings()->SetFirstSetupComplete(
+        sync_service->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
             syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
       }
       if (consent_service) {

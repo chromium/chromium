@@ -231,7 +231,7 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfInitialSetupIncomplete) {
             GetUploadToGoogleState(&service, syncer::BOOKMARKS));
 
   // Clear the first-setup-complete bit.
-  service.GetUserSettings()->ClearFirstSetupComplete();
+  service.GetUserSettings()->ClearInitialSyncFeatureSetupComplete();
 
   // This should make the upload state NOT active.
   EXPECT_EQ(UploadState::NOT_ACTIVE,

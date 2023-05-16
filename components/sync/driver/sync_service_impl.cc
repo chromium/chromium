@@ -74,7 +74,7 @@ enum SyncInitialState {
 
 void RecordSyncInitialState(SyncService::DisableReasonSet disable_reasons,
                             bool is_sync_feature_requested,
-                            bool first_setup_complete,
+                            bool initial_sync_feature_setup_complete,
                             bool is_regular_profile_for_uma) {
   SyncInitialState sync_state = CAN_START;
   if (disable_reasons.Has(SyncService::DISABLE_REASON_NOT_SIGNED_IN)) {
@@ -83,12 +83,12 @@ void RecordSyncInitialState(SyncService::DisableReasonSet disable_reasons,
                  SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
     sync_state = NOT_ALLOWED_BY_POLICY;
   } else if (!is_sync_feature_requested) {
-    if (first_setup_complete) {
+    if (initial_sync_feature_setup_complete) {
       sync_state = NOT_REQUESTED;
     } else {
       sync_state = NOT_REQUESTED_NOT_SETUP;
     }
-  } else if (!first_setup_complete) {
+  } else if (!initial_sync_feature_setup_complete) {
     sync_state = NEEDS_CONFIRMATION;
   }
   if (is_regular_profile_for_uma) {
@@ -887,7 +887,7 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
   if (start_behavior_ == AUTO_START &&
       !user_settings_->IsInitialSyncFeatureSetupComplete()) {
     // This will trigger a configure if it completes setup.
-    user_settings_->SetFirstSetupComplete(
+    user_settings_->SetInitialSyncFeatureSetupComplete(
         SyncFirstSetupCompleteSource::ENGINE_INITIALIZED_WITH_AUTO_START);
   } else if (CanConfigureDataTypes(/*bypass_setup_in_progress_check=*/false)) {
     // Datatype downloads on restart are generally due to newly supported
@@ -1661,7 +1661,7 @@ void SyncServiceImpl::OnSyncManagedPrefChange(bool is_sync_managed) {
 }
 
 void SyncServiceImpl::OnFirstSetupCompletePrefChange(
-    bool is_first_setup_complete) {
+    bool is_initial_sync_feature_setup_complete) {
   if (engine_ && engine_->IsInitialized()) {
     ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
     // IsSyncFeatureEnabled() likely changed, it might be time to record
@@ -1882,7 +1882,7 @@ void SyncServiceImpl::StopAndClear() {
   // that if the user ever chooses to enable Sync again, they start off with
   // their previous settings by default. We do however require going through
   // first-time setup again and set SyncRequested to false.
-  sync_prefs_.ClearFirstSetupComplete();
+  sync_prefs_.ClearInitialSyncFeatureSetupComplete();
   sync_prefs_.ClearPassphrasePromptMutedProductVersion();
   // For explicit passphrase users, clear the encryption key, such that they
   // will need to reenter it if sync gets re-enabled.

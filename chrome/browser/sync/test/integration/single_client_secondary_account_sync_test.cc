@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
   // complete.
   secondary_account_helper::GrantSyncConsent(profile(), "user@email.com");
   GetSyncService(0)->SetSyncFeatureRequested();
-  GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
+  GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 
   EXPECT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());

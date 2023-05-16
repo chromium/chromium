@@ -25,7 +25,8 @@ inline constexpr char kLocalSyncBackendDir[] = "sync.local_sync_backend_dir";
 // prefs from outside components/sync/.
 namespace internal {
 // Boolean specifying whether the user finished setting up sync at least once.
-inline constexpr char kSyncFirstSetupComplete[] = "sync.has_setup_completed";
+inline constexpr char kSyncInitialSyncFeatureSetupComplete[] =
+    "sync.has_setup_completed";
 
 // Boolean specifying whether to automatically sync all data types (including
 // future ones, as they're added).  If this is true, the following preferences
@@ -84,9 +85,10 @@ inline constexpr char kSyncManaged[] = "sync.managed";
 
 // Boolean whether has requested sync to be enabled. This is set early in the
 // sync setup flow, after the user has pressed "turn on sync" but before they
-// have accepted the confirmation dialog (that maps to kSyncFirstSetupComplete).
-// This is also set to false when sync is disabled by the user in sync settings,
-// or when sync was reset from the dashboard.
+// have accepted the confirmation dialog (that maps to
+// kSyncInitialSyncFeatureSetupComplete). This is also set to false when sync is
+// disabled by the user in sync settings, or when sync was reset from the
+// dashboard.
 inline constexpr char kSyncRequested[] = "sync.requested";
 
 // A string that can be used to restore sync encryption infrastructure on

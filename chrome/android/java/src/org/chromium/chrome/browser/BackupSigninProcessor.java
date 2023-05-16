@@ -83,7 +83,7 @@ public final class BackupSigninProcessor {
                                 UnifiedConsentServiceBridge
                                         .setUrlKeyedAnonymizedDataCollectionEnabled(
                                                 Profile.getLastUsedRegularProfile(), true);
-                                SyncService.get().setFirstSetupComplete(
+                                SyncService.get().setInitialSyncFeatureSetupComplete(
                                         SyncFirstSetupCompleteSource.ANDROID_BACKUP_RESTORE);
                                 setBackupFlowSigninComplete();
                             }

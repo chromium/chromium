@@ -55,7 +55,7 @@ void SetSyncStateFeatureActive(const CoreAccountInfo& account,
   sync_service->SetHasSyncConsent(true);
   sync_service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   sync_service->SetDisableReasons({});
-  sync_service->SetFirstSetupComplete(true);
+  sync_service->SetInitialSyncFeatureSetupComplete(true);
   ASSERT_TRUE(sync_service->IsSyncFeatureEnabled());
 }
 

@@ -76,11 +76,13 @@ void TestSyncService::ClearAuthError() {
   }
 }
 
-void TestSyncService::SetFirstSetupComplete(bool first_setup_complete) {
-  if (first_setup_complete)
-    user_settings_.SetFirstSetupComplete();
-  else
-    user_settings_.ClearFirstSetupComplete();
+void TestSyncService::SetInitialSyncFeatureSetupComplete(
+    bool initial_sync_feature_setup_complete) {
+  if (initial_sync_feature_setup_complete) {
+    user_settings_.SetInitialSyncFeatureSetupComplete();
+  } else {
+    user_settings_.ClearInitialSyncFeatureSetupComplete();
+  }
 }
 
 void TestSyncService::SetFailedDataTypes(const ModelTypeSet& types) {

@@ -44,7 +44,8 @@ class TestSyncService : public SyncService {
   void SetPersistentAuthError();
   void ClearAuthError();
 
-  void SetFirstSetupComplete(bool first_setup_complete);
+  void SetInitialSyncFeatureSetupComplete(
+      bool initial_sync_feature_setup_complete);
   void SetFailedDataTypes(const ModelTypeSet& types);
 
   void SetLastCycleSnapshot(const SyncCycleSnapshot& snapshot);

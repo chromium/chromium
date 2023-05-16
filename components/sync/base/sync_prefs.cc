@@ -33,8 +33,8 @@ SyncPrefs::SyncPrefs(PrefService* pref_service) : pref_service_(pref_service) {
       prefs::internal::kSyncManaged, pref_service_,
       base::BindRepeating(&SyncPrefs::OnSyncManagedPrefChanged,
                           base::Unretained(this)));
-  pref_first_setup_complete_.Init(
-      prefs::internal::kSyncFirstSetupComplete, pref_service_,
+  pref_initial_sync_feature_setup_complete_.Init(
+      prefs::internal::kSyncInitialSyncFeatureSetupComplete, pref_service_,
       base::BindRepeating(&SyncPrefs::OnFirstSetupCompletePrefChange,
                           base::Unretained(this)));
 
@@ -51,8 +51,8 @@ SyncPrefs::~SyncPrefs() {
 // static
 void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // Actual user-controlled preferences.
-  registry->RegisterBooleanPref(prefs::internal::kSyncFirstSetupComplete,
-                                false);
+  registry->RegisterBooleanPref(
+      prefs::internal::kSyncInitialSyncFeatureSetupComplete, false);
   registry->RegisterBooleanPref(prefs::internal::kSyncRequested, false);
   registry->RegisterBooleanPref(prefs::internal::kSyncKeepEverythingSynced,
                                 true);
@@ -96,17 +96,20 @@ void SyncPrefs::RemoveSyncPrefObserver(SyncPrefObserver* sync_pref_observer) {
 
 bool SyncPrefs::IsInitialSyncFeatureSetupComplete() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return pref_service_->GetBoolean(prefs::internal::kSyncFirstSetupComplete);
+  return pref_service_->GetBoolean(
+      prefs::internal::kSyncInitialSyncFeatureSetupComplete);
 }
 
-void SyncPrefs::SetFirstSetupComplete() {
+void SyncPrefs::SetInitialSyncFeatureSetupComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetBoolean(prefs::internal::kSyncFirstSetupComplete, true);
+  pref_service_->SetBoolean(
+      prefs::internal::kSyncInitialSyncFeatureSetupComplete, true);
 }
 
-void SyncPrefs::ClearFirstSetupComplete() {
+void SyncPrefs::ClearInitialSyncFeatureSetupComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->ClearPref(prefs::internal::kSyncFirstSetupComplete);
+  pref_service_->ClearPref(
+      prefs::internal::kSyncInitialSyncFeatureSetupComplete);
 }
 
 bool SyncPrefs::IsSyncRequested() const {
@@ -366,7 +369,8 @@ void SyncPrefs::OnSyncManagedPrefChanged() {
 void SyncPrefs::OnFirstSetupCompletePrefChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (SyncPrefObserver& observer : sync_pref_observers_)
-    observer.OnFirstSetupCompletePrefChange(*pref_first_setup_complete_);
+    observer.OnFirstSetupCompletePrefChange(
+        *pref_initial_sync_feature_setup_complete_);
 }
 
 // static
@@ -415,7 +419,8 @@ void SyncPrefs::MigrateSyncRequestedPrefPostMice(PrefService* pref_service) {
   // SyncRequested is true but all data types are off.
 
   if (pref_service->GetBoolean(prefs::internal::kSyncRequested) ||
-      !pref_service->GetBoolean(prefs::internal::kSyncFirstSetupComplete)) {
+      !pref_service->GetBoolean(
+          prefs::internal::kSyncInitialSyncFeatureSetupComplete)) {
     // Either SyncRequested is already true, or FirstSetupComplete is false
     // meaning Sync isn't enabled. Either way, there's nothing to be done here.
     return;

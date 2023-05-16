@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnDisableSync) {
   GetSyncService(0)->SetSyncFeatureRequested();
   // StopAndClear() also clears the "first setup complete" flag, so set it
   // again.
-  GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
+  GetSyncService(0)->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       kSetSourceFromTest);
   // Wait until Sync restores the card and it arrives at PDM.
   WaitForNumberOfOffers(1, pdm);

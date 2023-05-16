@@ -82,7 +82,7 @@ TEST_F(CWVSyncControllerTest, StartSyncWithIdentity) {
              gaiaID:base::SysUTF8ToNSString(account_info.gaia)];
 
   // Preconfigure TestSyncService as if it was enabled in transport mode.
-  sync_service_.SetFirstSetupComplete(false);
+  sync_service_.SetInitialSyncFeatureSetupComplete(false);
   sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   sync_service_.SetIsUsingExplicitPassphrase(false);
   sync_service_.SetAccountInfo(account_info);

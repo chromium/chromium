@@ -225,7 +225,7 @@
 
     // Turn on FirstSetupComplete flag after the authentication service has
     // granted user consent to start Sync.
-    _syncSetupService->SetFirstSetupComplete(
+    _syncSetupService->SetInitialSyncFeatureSetupComplete(
         syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 
     _syncSetupService->CommitSyncChanges();

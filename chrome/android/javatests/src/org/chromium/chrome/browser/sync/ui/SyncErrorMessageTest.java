@@ -118,7 +118,8 @@ public class SyncErrorMessageTest {
 
         // Resolving the error should dismiss the current message.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mFakeSyncServiceImpl.setFirstSetupComplete(SyncFirstSetupCompleteSource.BASIC_FLOW);
+            mFakeSyncServiceImpl.setInitialSyncFeatureSetupComplete(
+                    SyncFirstSetupCompleteSource.BASIC_FLOW);
         });
         verifyHasDismissedMessage();
     }
@@ -189,7 +190,8 @@ public class SyncErrorMessageTest {
 
         @SyncError
         int syncError = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            mFakeSyncServiceImpl.setFirstSetupComplete(SyncFirstSetupCompleteSource.BASIC_FLOW);
+            mFakeSyncServiceImpl.setInitialSyncFeatureSetupComplete(
+                    SyncFirstSetupCompleteSource.BASIC_FLOW);
             return SyncSettingsUtils.getSyncError();
         });
 

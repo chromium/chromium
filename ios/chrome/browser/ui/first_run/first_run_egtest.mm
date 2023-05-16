@@ -537,7 +537,7 @@ void DismissDefaultBrowserPromo() {
                  chrome_test_util::AdvancedSyncSettingsDoneButtonMatcher()]
       performAction:grey_tap()];
   // Check sync did not start yet.
-  GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
+  GREYAssertFalse([FirstRunAppInterface isInitialSyncFeatureSetupComplete],
                   @"Sync shouldn't start when discarding advanced settings.");
   // Accept sync.
   [[EarlGrey

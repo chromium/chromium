@@ -36,7 +36,8 @@ class SyncUserSettingsImpl : public SyncUserSettings {
 
   // SyncUserSettings implementation.
   bool IsInitialSyncFeatureSetupComplete() const override;
-  void SetFirstSetupComplete(SyncFirstSetupCompleteSource source) override;
+  void SetInitialSyncFeatureSetupComplete(
+      SyncFirstSetupCompleteSource source) override;
   bool IsSyncEverythingEnabled() const override;
   UserSelectableTypeSet GetSelectedTypes() const override;
   bool IsTypeManagedByPolicy(UserSelectableType type) const override;

@@ -292,7 +292,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
                                 UnifiedConsentServiceBridge
                                         .setUrlKeyedAnonymizedDataCollectionEnabled(
                                                 Profile.getLastUsedRegularProfile(), true);
-                                SyncService.get().setFirstSetupComplete(
+                                SyncService.get().setInitialSyncFeatureSetupComplete(
                                         SyncFirstSetupCompleteSource.BASIC_FLOW);
                             }
                             closeAndMaybeOpenSyncSettings(settingsClicked);

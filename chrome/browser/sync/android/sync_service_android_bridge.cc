@@ -163,9 +163,10 @@ jboolean SyncServiceAndroidBridge::IsInitialSyncFeatureSetupComplete(
       ->IsInitialSyncFeatureSetupComplete();
 }
 
-void SyncServiceAndroidBridge::SetFirstSetupComplete(JNIEnv* env, jint source) {
+void SyncServiceAndroidBridge::SetInitialSyncFeatureSetupComplete(JNIEnv* env,
+                                                                  jint source) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  native_sync_service_->GetUserSettings()->SetFirstSetupComplete(
+  native_sync_service_->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       static_cast<syncer::SyncFirstSetupCompleteSource>(source));
 }
 

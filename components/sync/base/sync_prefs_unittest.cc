@@ -70,9 +70,9 @@ TEST_F(SyncPrefsTest, ObservedPrefs) {
   pref_service_.SetBoolean(prefs::internal::kSyncManaged, false);
   EXPECT_FALSE(sync_prefs_->IsSyncClientDisabledByPolicy());
 
-  sync_prefs_->SetFirstSetupComplete();
+  sync_prefs_->SetInitialSyncFeatureSetupComplete();
   EXPECT_TRUE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
-  sync_prefs_->ClearFirstSetupComplete();
+  sync_prefs_->ClearInitialSyncFeatureSetupComplete();
   EXPECT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
 
   sync_prefs_->SetSyncRequested(true);
@@ -98,7 +98,7 @@ TEST_F(SyncPrefsTest, SetSelectedOsTypesTriggersPreferredDataTypesPrefChange) {
 
 TEST_F(SyncPrefsTest, Basic) {
   EXPECT_FALSE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
-  sync_prefs_->SetFirstSetupComplete();
+  sync_prefs_->SetInitialSyncFeatureSetupComplete();
   EXPECT_TRUE(sync_prefs_->IsInitialSyncFeatureSetupComplete());
 
   EXPECT_FALSE(sync_prefs_->IsSyncRequested());
@@ -438,8 +438,8 @@ class SyncPrefsMigrationTest : public testing::Test {
 TEST_F(SyncPrefsMigrationTest, SyncRequested_NothingSet) {
   // None of the prefs is set explicitly.
   ASSERT_FALSE(pref_service_.GetUserPrefValue(prefs::internal::kSyncRequested));
-  ASSERT_FALSE(
-      pref_service_.GetUserPrefValue(prefs::internal::kSyncFirstSetupComplete));
+  ASSERT_FALSE(pref_service_.GetUserPrefValue(
+      prefs::internal::kSyncInitialSyncFeatureSetupComplete));
   ASSERT_FALSE(pref_service_.GetUserPrefValue(
       prefs::internal::kSyncKeepEverythingSynced));
 
@@ -448,15 +448,16 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_NothingSet) {
 
   // The migration should have left all the prefs unset.
   EXPECT_FALSE(pref_service_.GetUserPrefValue(prefs::internal::kSyncRequested));
-  EXPECT_FALSE(
-      pref_service_.GetUserPrefValue(prefs::internal::kSyncFirstSetupComplete));
+  EXPECT_FALSE(pref_service_.GetUserPrefValue(
+      prefs::internal::kSyncInitialSyncFeatureSetupComplete));
   EXPECT_FALSE(pref_service_.GetUserPrefValue(
       prefs::internal::kSyncKeepEverythingSynced));
 }
 
 TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncRequestedWithAllTypes) {
   pref_service_.SetBoolean(prefs::internal::kSyncRequested, true);
-  pref_service_.SetBoolean(prefs::internal::kSyncFirstSetupComplete, true);
+  pref_service_.SetBoolean(
+      prefs::internal::kSyncInitialSyncFeatureSetupComplete, true);
   pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, true);
 
   // Run the migration.
@@ -473,7 +474,8 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncRequestedWithSomeTypes) {
   const UserSelectableTypeSet enabled_types = {
       UserSelectableType::kBookmarks, UserSelectableType::kPreferences};
   pref_service_.SetBoolean(prefs::internal::kSyncRequested, true);
-  pref_service_.SetBoolean(prefs::internal::kSyncFirstSetupComplete, true);
+  pref_service_.SetBoolean(
+      prefs::internal::kSyncInitialSyncFeatureSetupComplete, true);
   pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, false);
   for (UserSelectableType type : enabled_types) {
     const char* pref_name = SyncPrefs::GetPrefNameForTypeForTesting(type);
@@ -493,7 +495,8 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncRequestedWithSomeTypes) {
 
 TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncRequestedWithNoTypes) {
   pref_service_.SetBoolean(prefs::internal::kSyncRequested, true);
-  pref_service_.SetBoolean(prefs::internal::kSyncFirstSetupComplete, true);
+  pref_service_.SetBoolean(
+      prefs::internal::kSyncInitialSyncFeatureSetupComplete, true);
   pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, false);
   // All selectable types are false by default.
 
@@ -510,7 +513,8 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncRequestedWithNoTypes) {
 
 TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncNotRequestedWithNoTypes) {
   pref_service_.SetBoolean(prefs::internal::kSyncRequested, false);
-  pref_service_.SetBoolean(prefs::internal::kSyncFirstSetupComplete, true);
+  pref_service_.SetBoolean(
+      prefs::internal::kSyncInitialSyncFeatureSetupComplete, true);
   pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, false);
   // All selectable types are false by default.
 
@@ -530,7 +534,8 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncNotRequestedWithSomeTypes) {
   const UserSelectableTypeSet enabled_types = {
       UserSelectableType::kBookmarks, UserSelectableType::kPreferences};
   pref_service_.SetBoolean(prefs::internal::kSyncRequested, false);
-  pref_service_.SetBoolean(prefs::internal::kSyncFirstSetupComplete, true);
+  pref_service_.SetBoolean(
+      prefs::internal::kSyncInitialSyncFeatureSetupComplete, true);
   pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, false);
   for (UserSelectableType type : enabled_types) {
     const char* pref_name = SyncPrefs::GetPrefNameForTypeForTesting(type);
@@ -553,7 +558,8 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncNotRequestedWithAllTypes) {
   const UserSelectableTypeSet enabled_types = {
       UserSelectableType::kBookmarks, UserSelectableType::kPreferences};
   pref_service_.SetBoolean(prefs::internal::kSyncRequested, false);
-  pref_service_.SetBoolean(prefs::internal::kSyncFirstSetupComplete, true);
+  pref_service_.SetBoolean(
+      prefs::internal::kSyncInitialSyncFeatureSetupComplete, true);
   pref_service_.SetBoolean(prefs::internal::kSyncKeepEverythingSynced, true);
   // Even though "Sync everything" is enabled, also explicitly set some of the
   // individual data type prefs, to make sure the migration handles this case.
@@ -575,7 +581,7 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncNotRequestedWithAllTypes) {
 }
 
 // There are three boolean prefs which are relevant for the "SyncRequested"
-// migration: kSyncRequested, kSyncFirstSetupComplete, and
+// migration: kSyncRequested, kSyncInitialSyncFeatureSetupComplete, and
 // kSyncKeepEverythingSynced (and technically also all the data-type-specific
 // prefs, which are not covered by this test). Each can be explicitly true,
 // explicitly false, or unset. This class is parameterized to cover all possible
@@ -591,7 +597,7 @@ TEST_P(SyncPrefsSyncRequestedMigrationCombinationsTest, Idempotent) {
   // test params.
   SetBooleanUserPrefValue(prefs::internal::kSyncRequested,
                           testing::get<0>(GetParam()));
-  SetBooleanUserPrefValue(prefs::internal::kSyncFirstSetupComplete,
+  SetBooleanUserPrefValue(prefs::internal::kSyncInitialSyncFeatureSetupComplete,
                           testing::get<1>(GetParam()));
   SetBooleanUserPrefValue(prefs::internal::kSyncKeepEverythingSynced,
                           testing::get<2>(GetParam()));
@@ -602,8 +608,9 @@ TEST_P(SyncPrefsSyncRequestedMigrationCombinationsTest, Idempotent) {
   // Record the resulting pref values.
   BooleanPrefState expect_sync_requested =
       GetBooleanUserPrefValue(prefs::internal::kSyncRequested);
-  BooleanPrefState expect_first_setup_complete =
-      GetBooleanUserPrefValue(prefs::internal::kSyncFirstSetupComplete);
+  BooleanPrefState expect_initial_sync_feature_setup_complete =
+      GetBooleanUserPrefValue(
+          prefs::internal::kSyncInitialSyncFeatureSetupComplete);
   BooleanPrefState expect_sync_everything =
       GetBooleanUserPrefValue(prefs::internal::kSyncKeepEverythingSynced);
 
@@ -613,8 +620,9 @@ TEST_P(SyncPrefsSyncRequestedMigrationCombinationsTest, Idempotent) {
   // Verify that the pref values did not change.
   EXPECT_TRUE(BooleanUserPrefMatches(prefs::internal::kSyncRequested,
                                      expect_sync_requested));
-  EXPECT_TRUE(BooleanUserPrefMatches(prefs::internal::kSyncFirstSetupComplete,
-                                     expect_first_setup_complete));
+  EXPECT_TRUE(BooleanUserPrefMatches(
+      prefs::internal::kSyncInitialSyncFeatureSetupComplete,
+      expect_initial_sync_feature_setup_complete));
   EXPECT_TRUE(BooleanUserPrefMatches(prefs::internal::kSyncKeepEverythingSynced,
                                      expect_sync_everything));
 }

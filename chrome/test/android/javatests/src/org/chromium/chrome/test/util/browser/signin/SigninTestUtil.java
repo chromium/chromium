@@ -93,7 +93,7 @@ public final class SigninTestUtil {
                         @Override
                         public void onSignInComplete() {
                             if (syncService != null) {
-                                syncService.setFirstSetupComplete(
+                                syncService.setInitialSyncFeatureSetupComplete(
                                         SyncFirstSetupCompleteSource.BASIC_FLOW);
                             }
                             callbackHelper.notifyCalled();

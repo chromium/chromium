@@ -1146,7 +1146,7 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmSoon) {
         NotifySyncStateChanged();
       });
   EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),
-              SetFirstSetupComplete(
+              SetInitialSyncFeatureSetupComplete(
                   syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM))
       .WillOnce([&](syncer::SyncFirstSetupCompleteSource) {
         ON_CALL(*mock_sync_service_->GetMockUserSettings(),
@@ -1210,7 +1210,7 @@ TEST_F(PeopleHandlerTest, DashboardClearWhileSettingsOpen_ConfirmLater) {
   if (!browser_defaults::kSyncAutoStarts) {
     EXPECT_CALL(
         *mock_sync_service_->GetMockUserSettings(),
-        SetFirstSetupComplete(
+        SetInitialSyncFeatureSetupComplete(
             syncer::SyncFirstSetupCompleteSource::ADVANCED_FLOW_CONFIRM))
         .WillOnce([&](syncer::SyncFirstSetupCompleteSource) {
           ON_CALL(*mock_sync_service_->GetMockUserSettings(),

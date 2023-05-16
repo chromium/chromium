@@ -28,7 +28,8 @@ namespace syncer {
 class SyncPrefObserver {
  public:
   virtual void OnSyncManagedPrefChange(bool is_sync_managed) = 0;
-  virtual void OnFirstSetupCompletePrefChange(bool is_first_setup_complete) = 0;
+  virtual void OnFirstSetupCompletePrefChange(
+      bool is_initial_sync_feature_setup_complete) = 0;
   virtual void OnPreferredDataTypesPrefChange() = 0;
 
  protected:
@@ -57,8 +58,8 @@ class SyncPrefs {
   // First-Setup-Complete is conceptually similar to the user's consent to
   // enable sync-the-feature.
   bool IsInitialSyncFeatureSetupComplete() const;
-  void SetFirstSetupComplete();
-  void ClearFirstSetupComplete();
+  void SetInitialSyncFeatureSetupComplete();
+  void ClearInitialSyncFeatureSetupComplete();
 
   // Whether the user wants Sync to run. This is false by default, but gets set
   // to true early in the Sync setup flow, after the user has pressed "turn on
@@ -180,7 +181,7 @@ class SyncPrefs {
   // configuration management.
   BooleanPrefMember pref_sync_managed_;
 
-  BooleanPrefMember pref_first_setup_complete_;
+  BooleanPrefMember pref_initial_sync_feature_setup_complete_;
 
   bool local_sync_enabled_;
 

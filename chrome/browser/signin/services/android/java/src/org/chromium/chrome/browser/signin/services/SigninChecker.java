@@ -125,7 +125,7 @@ public class SigninChecker implements AccountTrackerService.Observer {
                         SigninAccessPoint.ACCOUNT_RENAMED, new SignInCallback() {
                             @Override
                             public void onSignInComplete() {
-                                SyncService.get().setFirstSetupComplete(
+                                SyncService.get().setInitialSyncFeatureSetupComplete(
                                         SyncFirstSetupCompleteSource.BASIC_FLOW);
                             }
 

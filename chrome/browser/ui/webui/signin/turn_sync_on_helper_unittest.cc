@@ -627,9 +627,9 @@ class TurnSyncOnHelperTest : public testing::Test {
   }
 
   void SetExpectationsForSyncAborted() {
-    EXPECT_CALL(
-        *GetMockSyncService()->GetMockUserSettings(),
-        SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW))
+    EXPECT_CALL(*GetMockSyncService()->GetMockUserSettings(),
+                SetInitialSyncFeatureSetupComplete(
+                    syncer::SyncFirstSetupCompleteSource::BASIC_FLOW))
         .Times(0);
   }
 
@@ -1640,9 +1640,9 @@ TEST_F(TurnSyncOnHelperTest, ConfigureSync) {
   expected_sync_confirmation_shown_ = true;
   expected_sync_settings_shown_ = true;
   SetExpectationsForSyncStartupCompleted(profile());
-  EXPECT_CALL(
-      *GetMockSyncService()->GetMockUserSettings(),
-      SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW))
+  EXPECT_CALL(*GetMockSyncService()->GetMockUserSettings(),
+              SetInitialSyncFeatureSetupComplete(
+                  syncer::SyncFirstSetupCompleteSource::BASIC_FLOW))
       .Times(0);
 
   // Configure the test.
@@ -1671,9 +1671,9 @@ TEST_F(TurnSyncOnHelperTest, StartSync) {
   // Set expectations.
   expected_sync_confirmation_shown_ = true;
   SetExpectationsForSyncStartupCompleted(profile());
-  EXPECT_CALL(
-      *GetMockSyncService()->GetMockUserSettings(),
-      SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
+  EXPECT_CALL(*GetMockSyncService()->GetMockUserSettings(),
+              SetInitialSyncFeatureSetupComplete(
+                  syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   // Configure the test.
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
@@ -1703,9 +1703,9 @@ TEST_F(TurnSyncOnHelperTest, ShowSyncDialogForEndConsumerAccount) {
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
   SetExpectationsForSyncStartupCompleted(profile());
-  EXPECT_CALL(
-      *GetMockSyncService()->GetMockUserSettings(),
-      SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
+  EXPECT_CALL(*GetMockSyncService()->GetMockUserSettings(),
+              SetInitialSyncFeatureSetupComplete(
+                  syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   PrefService* pref_service = profile()->GetPrefs();
   std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
       url_keyed_collection_helper =
@@ -1761,9 +1761,9 @@ TEST_F(TurnSyncOnHelperWithMockSigninManagerTest,
 
   // Simulate that sync startup has completed.
   expected_sync_confirmation_shown_ = true;
-  EXPECT_CALL(
-      *GetMockSyncService()->GetMockUserSettings(),
-      SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
+  EXPECT_CALL(*GetMockSyncService()->GetMockUserSettings(),
+              SetInitialSyncFeatureSetupComplete(
+                  syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
   sync_starter->OnSyncStartupStateChanged(
@@ -1807,9 +1807,9 @@ TEST_F(TurnSyncOnHelperWithMockSigninManagerTest,
 
   // Simulate that sync startup has completed.
   expected_sync_confirmation_shown_ = true;
-  EXPECT_CALL(
-      *GetMockSyncService()->GetMockUserSettings(),
-      SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
+  EXPECT_CALL(*GetMockSyncService()->GetMockUserSettings(),
+              SetInitialSyncFeatureSetupComplete(
+                  syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
   sync_starter->OnSyncStartupStateChanged(
@@ -1855,9 +1855,9 @@ TEST_F(TurnSyncOnHelperWithMockSigninManagerTest,
 
   // Simulate that sync startup has failed.
   expected_sync_confirmation_shown_ = true;
-  EXPECT_CALL(
-      *GetMockSyncService()->GetMockUserSettings(),
-      SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
+  EXPECT_CALL(*GetMockSyncService()->GetMockUserSettings(),
+              SetInitialSyncFeatureSetupComplete(
+                  syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
   sync_starter->OnSyncStartupStateChanged(
@@ -1899,9 +1899,9 @@ TEST_F(TurnSyncOnHelperTest,
 
   // Simulate that sync startup has failed.
   expected_sync_confirmation_shown_ = true;
-  EXPECT_CALL(
-      *GetMockSyncService()->GetMockUserSettings(),
-      SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
+  EXPECT_CALL(*GetMockSyncService()->GetMockUserSettings(),
+              SetInitialSyncFeatureSetupComplete(
+                  syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
   sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
       SYNC_WITH_DEFAULT_SETTINGS;
   sync_starter->OnSyncStartupStateChanged(

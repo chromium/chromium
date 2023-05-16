@@ -557,7 +557,7 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @DisableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
-    public void testClickingSettingsDoesNotSetFirstSetupComplete() {
+    public void testClickingSettingsDoesNotSetInitialSyncFeatureSetupComplete() {
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(
@@ -588,7 +588,7 @@ public class SyncConsentFragmentTest {
     @Test
     @LargeTest
     @EnableFeatures({ChromeFeatureList.TANGIBLE_SYNC})
-    public void testClickingSettingsDoesNotSetFirstSetupCompleteWithTangibleSync() {
+    public void testClickingSettingsDoesNotSetInitialSyncFeatureSetupCompleteWithTangibleSync() {
         CoreAccountInfo accountInfo =
                 mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mSyncConsentActivity = ActivityTestUtils.waitForActivity(

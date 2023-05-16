@@ -324,7 +324,7 @@ bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
 
 void SyncServiceImplHarness::FinishSyncSetup() {
   sync_blocker_.reset();
-  service()->GetUserSettings()->SetFirstSetupComplete(
+  service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 }
 
@@ -346,7 +346,7 @@ bool SyncServiceImplHarness::EnableSyncFeature() {
   DVLOG(1) << "Engine Initialized successfully.";
 
   blocker.reset();
-  service()->GetUserSettings()->SetFirstSetupComplete(
+  service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
 
   if (!AwaitSyncSetupCompletion()) {

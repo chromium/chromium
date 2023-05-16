@@ -199,7 +199,8 @@ class SyncServiceImpl : public SyncService,
 
   // SyncPrefObserver implementation.
   void OnSyncManagedPrefChange(bool is_sync_managed) override;
-  void OnFirstSetupCompletePrefChange(bool is_first_setup_complete) override;
+  void OnFirstSetupCompletePrefChange(
+      bool is_initial_sync_feature_setup_complete) override;
   void OnPreferredDataTypesPrefChange() override;
 
   // KeyedService implementation.  This must be called exactly

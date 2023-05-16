@@ -176,7 +176,7 @@ class SyncServiceImplTest : public ::testing::Test {
         /*keep_everything_synced=*/true,
         /*registered_types=*/UserSelectableTypeSet::All(),
         /*selected_types=*/UserSelectableTypeSet::All());
-    sync_prefs.SetFirstSetupComplete();
+    sync_prefs.SetInitialSyncFeatureSetupComplete();
   }
 
   void InitializeForNthSync(bool run_until_idle = true) {
@@ -420,7 +420,7 @@ TEST_P(SyncServiceImplTestWithIgnoreSyncRequestedFeature,
   ASSERT_FALSE(
       service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
   service()->SetSyncFeatureRequested();
-  service()->GetUserSettings()->SetFirstSetupComplete(
+  service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
   base::RunLoop().RunUntilIdle();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
