@@ -2113,8 +2113,6 @@ class CORE_EXPORT Document : public ContainerNode,
   }
   void AddMutationEventListenerTypeIfEnabled(ListenerType);
 
-  void DidAddOrRemoveFormRelatedElementsTimerFired(TimerBase*);
-
   void ClearFocusedElementTimerFired(TimerBase*);
 
   bool HaveScriptBlockingStylesheetsLoaded() const;
@@ -2533,8 +2531,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   Member<Document> template_document_;
   Member<Document> template_document_host_;
-
-  HeapTaskRunnerTimer<Document> did_add_or_remove_form_related_elements_timer_;
 
   HeapHashSet<Member<SVGUseElement>> use_elements_needing_update_;
 

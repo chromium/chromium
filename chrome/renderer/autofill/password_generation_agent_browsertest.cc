@@ -32,6 +32,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/renderer/render_frame.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -65,6 +66,83 @@ const FormFieldData* FindFieldById(const FormData& form, base::StringPiece id) {
                                &FormFieldData::id_attribute);
   return it != form.fields.end() ? &*it : nullptr;
 }
+
+class FakeContentAutofillDriver : public mojom::AutofillDriver {
+ public:
+  FakeContentAutofillDriver() = default;
+  ~FakeContentAutofillDriver() override = default;
+
+  void BindReceiver(
+      mojo::PendingAssociatedReceiver<mojom::AutofillDriver> receiver) {
+    receivers_.Add(this, std::move(receiver));
+  }
+
+  void WaitForFormsSeen() {
+    forms_seen_run_loop_->Run();
+    forms_seen_run_loop_ = std::make_unique<base::RunLoop>();
+  }
+
+ private:
+  // mojom::AutofillDriver:
+  void SetFormToBeProbablySubmitted(
+      const absl::optional<FormData>& form) override {}
+
+  void FormsSeen(const std::vector<FormData>& updated_forms,
+                 const std::vector<FormRendererId>& removed_forms) override {
+    forms_seen_run_loop_->Quit();
+  }
+
+  void FormSubmitted(const FormData& form,
+                     bool known_success,
+                     mojom::SubmissionSource source) override {}
+
+  void TextFieldDidChange(const FormData& form,
+                          const FormFieldData& field,
+                          const gfx::RectF& bounding_box,
+                          base::TimeTicks timestamp) override {}
+
+  void TextFieldDidScroll(const FormData& form,
+                          const FormFieldData& field,
+                          const gfx::RectF& bounding_box) override {}
+
+  void SelectControlDidChange(const FormData& form,
+                              const FormFieldData& field,
+                              const gfx::RectF& bounding_box) override {}
+
+  void JavaScriptChangedAutofilledValue(
+      const FormData& form,
+      const FormFieldData& field,
+      const std::u16string& old_value) override {}
+
+  void AskForValuesToFill(
+      const FormData& form,
+      const FormFieldData& field,
+      const gfx::RectF& bounding_box,
+      AutoselectFirstSuggestion autoselect_first_suggestion,
+      FormElementWasClicked form_element_was_clicked) override {}
+
+  void HidePopup() override {}
+
+  void FocusNoLongerOnForm(bool had_interacted_form) override {}
+
+  void FocusOnFormField(const FormData& form,
+                        const FormFieldData& field,
+                        const gfx::RectF& bounding_box) override {}
+
+  void DidFillAutofillFormData(const FormData& form,
+                               base::TimeTicks timestamp) override {}
+
+  void DidPreviewAutofillFormData() override {}
+
+  void DidEndTextFieldEditing() override {}
+
+  void SelectFieldOptionsDidChange(const autofill::FormData& form) override {}
+
+  std::unique_ptr<base::RunLoop> forms_seen_run_loop_ =
+      std::make_unique<base::RunLoop>();
+
+  mojo::AssociatedReceiverSet<mojom::AutofillDriver> receivers_;
+};
 
 }  // namespace
 
@@ -197,6 +275,7 @@ class PasswordGenerationAgentTest : public ChromeRenderViewTest {
                        base::StringPiece attribute,
                        base::StringPiece expected_value);
 
+  void BindAutofillDriver(mojo::ScopedInterfaceEndpointHandle handle);
   void BindPasswordManagerDriver(mojo::ScopedInterfaceEndpointHandle handle);
   void BindPasswordManagerClient(mojo::ScopedInterfaceEndpointHandle handle);
 
@@ -205,6 +284,7 @@ class PasswordGenerationAgentTest : public ChromeRenderViewTest {
                void(const absl::optional<
                     autofill::password_generation::PasswordGenerationUIData>&));
 
+  FakeContentAutofillDriver fake_autofill_driver_;
   FakeMojoPasswordManagerDriver fake_driver_;
   testing::StrictMock<FakePasswordGenerationDriver> fake_pw_client_;
 };
@@ -214,6 +294,10 @@ void PasswordGenerationAgentTest::RegisterMainFrameRemoteInterfaces() {
   // the fake password client is only used for the main frame.
   blink::AssociatedInterfaceProvider* remote_associated_interfaces =
       GetMainRenderFrame()->GetRemoteAssociatedInterfaces();
+  remote_associated_interfaces->OverrideBinderForTesting(
+      mojom::AutofillDriver::Name_,
+      base::BindRepeating(&PasswordGenerationAgentTest::BindAutofillDriver,
+                          base::Unretained(this)));
   remote_associated_interfaces->OverrideBinderForTesting(
       mojom::PasswordGenerationDriver::Name_,
       base::BindRepeating(
@@ -358,6 +442,13 @@ void PasswordGenerationAgentTest::ExpectAttribute(
       blink::WebString::FromUTF8(attribute.data(), attribute.size()));
   ASSERT_FALSE(actual_value.IsNull());
   EXPECT_EQ(expected_value, actual_value.Ascii());
+}
+
+void PasswordGenerationAgentTest::BindAutofillDriver(
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  fake_autofill_driver_.BindReceiver(
+      mojo::PendingAssociatedReceiver<mojom::AutofillDriver>(
+          std::move(handle)));
 }
 
 void PasswordGenerationAgentTest::BindPasswordManagerDriver(
@@ -802,6 +893,7 @@ TEST_F(PasswordGenerationAgentTest, MinimumLengthForEditedPassword) {
 
 TEST_F(PasswordGenerationAgentTest, DynamicFormTest) {
   LoadHTMLWithUserGesture(kSigninFormHTML);
+  fake_autofill_driver_.WaitForFormsSeen();
 
   ExecuteJavaScriptForTests(
       "var form = document.createElement('form');"
@@ -821,7 +913,7 @@ TEST_F(PasswordGenerationAgentTest, DynamicFormTest) {
       "form.appendChild(first_password);"
       "form.appendChild(second_password);"
       "document.body.appendChild(form);");
-  WaitForAutofillDidAddOrRemoveFormRelatedElements();
+  fake_autofill_driver_.WaitForFormsSeen();
 
   // This needs to come after the DOM has been modified.
   SetFoundFormEligibleForGeneration(

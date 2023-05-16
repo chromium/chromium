@@ -339,7 +339,7 @@ void AutofillAgent::DidCommitProvisionalLoad(ui::PageTransition transition) {
 }
 
 void AutofillAgent::DidDispatchDOMContentLoadedEvent() {
-  ProcessForms();
+  ProcessFormsUnthrottled(/*callback=*/{});
 }
 
 void AutofillAgent::DidChangeScrollOffset() {
@@ -1053,40 +1053,37 @@ void AutofillAgent::DoPreviewFieldWithValue(const std::u16string& value,
 }
 
 void AutofillAgent::TriggerReparse() {
-  if (!reparse_timer_.IsRunning()) {
-    reparse_timer_.Start(FROM_HERE, base::Milliseconds(100),
-                         base::BindOnce(&AutofillAgent::ProcessForms,
-                                        weak_ptr_factory_.GetWeakPtr()));
-  }
+  ProcessForms(process_forms_reparse_timer_, /*callback=*/{});
 }
 
 void AutofillAgent::TriggerReparseWithResponse(
     base::OnceCallback<void(bool)> callback) {
-  if (reparse_with_response_timer_.IsRunning()) {
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-  reparse_with_response_timer_.Start(
-      FROM_HERE, base::Milliseconds(100),
-      base::BindOnce(
-          [](base::WeakPtr<AutofillAgent> self,
-             base::OnceCallback<void(bool)> callback) {
-            if (!self) {
-              return;
-            }
-            self->ProcessForms();
-            std::move(callback).Run(/*success=*/true);
-          },
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  ProcessForms(process_forms_reparse_with_response_timer_, std::move(callback));
 }
 
 std::vector<blink::WebAutofillClient::FormIssue>
 AutofillAgent::ProccessFormsAndReturnIssues() {
-  ProcessForms();
+  // TODO(crbug.com/1399414,crbug.com/1444566): Throttle this call if possible.
+  ProcessFormsUnthrottled(/*callback=*/{});
   return {};
 }
 
-void AutofillAgent::ProcessForms() {
+void AutofillAgent::ProcessForms(base::OneShotTimer& timer,
+                                 base::OnceCallback<void(bool)> callback) {
+  static constexpr base::TimeDelta kThrottle = base::Milliseconds(100);
+  if (timer.IsRunning()) {
+    if (!callback.is_null()) {
+      std::move(callback).Run(/*success=*/false);
+    }
+    return;
+  }
+  timer.Start(FROM_HERE, kThrottle,
+              base::BindOnce(&AutofillAgent::ProcessFormsUnthrottled,
+                             base::Unretained(this), std::move(callback)));
+}
+
+void AutofillAgent::ProcessFormsUnthrottled(
+    base::OnceCallback<void(bool)> callback) {
   if (!form_cache_) {
     return;
   }
@@ -1097,6 +1094,9 @@ void AutofillAgent::ProcessForms() {
       autofill_driver->FormsSeen(cache.updated_forms,
                                  std::move(cache.removed_forms).extract());
     }
+  }
+  if (!callback.is_null()) {
+    std::move(callback).Run(/*success=*/true);
   }
 }
 
@@ -1119,8 +1119,15 @@ void AutofillAgent::HidePopup() {
 void AutofillAgent::DidAddOrRemoveFormRelatedElementsDynamically() {
   // If the control flow is here than the document was at least loaded. The
   // whole page doesn't have to be loaded.
-  ProcessForms();
-  password_autofill_agent_->OnDynamicFormsSeen();
+  ProcessForms(
+      process_forms_after_dynamic_change_timer_,
+      base::BindOnce(
+          [](PasswordAutofillAgent* password_autofill_agent, bool success) {
+            if (success) {
+              password_autofill_agent->OnDynamicFormsSeen();
+            }
+          },
+          base::Unretained(password_autofill_agent_)));
 }
 
 void AutofillAgent::DidCompleteFocusChangeInFrame() {

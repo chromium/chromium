@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
@@ -326,8 +327,20 @@ class AutofillAgent : public content::RenderFrameObserver,
   void DoPreviewFieldWithValue(const std::u16string& value,
                                blink::WebInputElement& node);
 
-  // Notifies browser of new fillable forms in |render_frame|.
-  void ProcessForms();
+  // Notifies the AutofillDriver in the browser process of new and/or removed
+  // forms, modulo throttling.
+  //
+  // Throttling means that the actual work -- that is, extracting the forms and
+  // invoking AutofillDriver::FormsSeen() -- is delayed by (at least) 100 ms.
+  // All subsequent calls within the next (at least) 100 ms return early.
+  //
+  // Calls `callback(true)` asynchronously after the timer is completed.
+  // Otherwise, calls `callback(false)` immediately.
+  void ProcessForms(base::OneShotTimer& timer,
+                    base::OnceCallback<void(bool)> callback);
+
+  // Extracts new and/or removed forms and triggers AutofillDriver::FormsSeen().
+  void ProcessFormsUnthrottled(base::OnceCallback<void(bool)> callback);
 
   // Hides any currently showing Autofill popup.
   void HidePopup();
@@ -440,8 +453,10 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Timers for throttling handling of frequent events.
   base::OneShotTimer select_option_change_batch_timer_;
   base::OneShotTimer datalist_option_change_batch_timer_;
-  base::OneShotTimer reparse_timer_;
-  base::OneShotTimer reparse_with_response_timer_;
+  // TODO(crbug.com/1444566): Merge some or all of these timers?
+  base::OneShotTimer process_forms_after_dynamic_change_timer_;
+  base::OneShotTimer process_forms_reparse_timer_;
+  base::OneShotTimer process_forms_reparse_with_response_timer_;
 
   // Will be set when accessibility mode changes, depending on what the new mode
   // is.
