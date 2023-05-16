@@ -589,8 +589,8 @@
   'CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM': {
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_chrome_version': '114.0.5707.0',
-      'cros_img': 'jacuzzi-release/R114-15419.0.0',
+      'cros_chrome_version': '115.0.5762.0',
+      'cros_img': 'jacuzzi-release/R115-15460.0.0',
       'tast_expr': '("group:mainline" && !informational)',
       'autotest_name': 'tast.chrome-from-tls',
       'shards': 10,
@@ -662,8 +662,8 @@
   'CROS_OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '114.0.5689.0',
-      'cros_img': 'octopus-release/R114-15408.0.0',
+      'cros_chrome_version': '115.0.5762.0',
+      'cros_img': 'octopus-release/R115-15460.0.0',
       'tast_expr': '("group:mainline" && !informational)',
       'autotest_name': 'tast.chrome-from-tls',
       'shards': 10,
