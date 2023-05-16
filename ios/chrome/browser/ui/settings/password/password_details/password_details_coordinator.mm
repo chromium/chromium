@@ -96,7 +96,6 @@
     _credential = credential;
     _reauthenticationModule = reauthModule;
     _context = context;
-    _shouldDismissOnAllPasswordsGone = YES;
   }
   return self;
 }
@@ -118,7 +117,6 @@
     _affiliatedGroup = affiliatedGroup;
     _reauthenticationModule = reauthModule;
     _context = context;
-    _shouldDismissOnAllPasswordsGone = YES;
   }
   return self;
 }
@@ -352,9 +350,7 @@
 - (void)onAllPasswordsDeleted {
   DCHECK_EQ(self.baseNavigationController.topViewController,
             self.viewController);
-  if (_shouldDismissOnAllPasswordsGone) {
-    [self.baseNavigationController popViewControllerAnimated:YES];
-  }
+  [self.baseNavigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark - PasswordDetailsMediatorDelegate

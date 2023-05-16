@@ -245,11 +245,6 @@ NSInteger GetDismissedWarningsCount(
   [self providePasswordsToConsumer];
 }
 
-- (BOOL)hasOneIssueLeft {
-  return _insecureCredentials.has_value() &&
-         _insecureCredentials->size() == 1 && _dismissedWarningsCount == 0;
-}
-
 #pragma mark - PasswordCheckObserver
 
 - (void)passwordCheckStateDidChange:(PasswordCheckState)state {
