@@ -83940,8 +83940,13 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="12" label="Request failed, net error, but served before error"/>
   <int value="13"
       label="Followed redirect, waiting to receive head of response"/>
-  <int value="14" label="Waiting for eligibility check for redirect"/>
+  <int value="14"
+      label="DEPRECATED Waiting for eligibility check for redirect"/>
   <int value="15" label="Request failed, invalid redirect"/>
+  <int value="16"
+      label="Request stopped, redirect required change in network context"/>
+  <int value="17"
+      label="Served redirect that required change in network context"/>
 </enum>
 
 <enum name="PrefHashStoreVersion">

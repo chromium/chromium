@@ -620,18 +620,7 @@ TEST_F(PrefetchContainerTest, EligibilityCheck) {
 
   // Add a redirect, register a callback for it, and then mark it as eligible.
   prefetch_container.AddRedirectHop(kTestUrl2);
-
-  base::RunLoop run_loop;
-  prefetch_container.SetOnEligibilityCheckCompleteCallback(
-      kTestUrl2, base::BindOnce(
-                     [](base::RunLoop* run_loop, bool is_eligible) {
-                       EXPECT_TRUE(is_eligible);
-                       run_loop->Quit();
-                     },
-                     &run_loop));
-
   prefetch_container.OnEligibilityCheckComplete(kTestUrl2, true, absl::nullopt);
-  run_loop.Run();
 
   // Referring page metrics is only incremented for the original prefetch URL
   // and not any redirects.
@@ -668,19 +657,8 @@ TEST_F(PrefetchContainerTest, IneligibleRedirect) {
 
   // Add a redirect, register a callback for it, and then mark it as ineligible.
   prefetch_container.AddRedirectHop(kTestUrl2);
-
-  base::RunLoop run_loop;
-  prefetch_container.SetOnEligibilityCheckCompleteCallback(
-      kTestUrl2, base::BindOnce(
-                     [](base::RunLoop* run_loop, bool is_eligible) {
-                       EXPECT_FALSE(is_eligible);
-                       run_loop->Quit();
-                     },
-                     &run_loop));
-
   prefetch_container.OnEligibilityCheckComplete(
       kTestUrl2, false, PrefetchStatus::kPrefetchNotEligibleUserHasCookies);
-  run_loop.Run();
 
   // Ineligible redirects are treated as failed prefetches, and not ineligible
   // prefetches.
@@ -873,6 +851,132 @@ TEST_F(PrefetchContainerTest, IsIsolatedNetworkRequired) {
   EXPECT_TRUE(
       prefetch_container.IsIsolatedNetworkContextRequiredForPreviousRedirectHop(
           GURL("https://other.com/redirect2")));
+}
+
+TEST_F(PrefetchContainerTest, MultipleStreamingURLLoaders) {
+  const GURL kTestUrl1 = GURL("https://test1.com");
+  const GURL kTestUrl2 = GURL("https://test2.com");
+
+  base::HistogramTester histogram_tester;
+
+  PrefetchContainer prefetch_container(
+      GlobalRenderFrameHostId(1234, 5678), kTestUrl1,
+      PrefetchType(/*use_prefetch_proxy=*/true,
+                   blink::mojom::SpeculationEagerness::kEager),
+      blink::mojom::Referrer(),
+      /*no_vary_search_expected=*/absl::nullopt,
+      blink::mojom::SpeculationInjectionWorld::kNone,
+      /*prefetch_document_manager=*/nullptr);
+
+  EXPECT_EQ(prefetch_container.GetFirstStreamingURLLoader(), nullptr);
+  EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(), nullptr);
+
+  EXPECT_FALSE(prefetch_container.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_FALSE(prefetch_container.GetHead());
+
+  std::vector<std::unique_ptr<PrefetchStreamingURLLoader>> streaming_loaders =
+      MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
+          kTestUrl1, kTestUrl2);
+  ASSERT_EQ(streaming_loaders.size(), 2U);
+
+  base::WeakPtr<PrefetchStreamingURLLoader> weak_first_streaming_loader =
+      streaming_loaders[0]->GetWeakPtr();
+  prefetch_container.TakeStreamingURLLoader(std::move(streaming_loaders[0]));
+
+  EXPECT_EQ(prefetch_container.GetFirstStreamingURLLoader(),
+            weak_first_streaming_loader.get());
+  EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(),
+            weak_first_streaming_loader.get());
+
+  EXPECT_FALSE(prefetch_container.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_FALSE(prefetch_container.GetHead());
+
+  base::WeakPtr<PrefetchStreamingURLLoader> weak_second_streaming_loader =
+      streaming_loaders[1]->GetWeakPtr();
+  prefetch_container.TakeStreamingURLLoader(std::move(streaming_loaders[1]));
+
+  EXPECT_EQ(prefetch_container.GetFirstStreamingURLLoader(),
+            weak_first_streaming_loader.get());
+  EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(),
+            weak_second_streaming_loader.get());
+
+  EXPECT_TRUE(prefetch_container.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_TRUE(prefetch_container.GetHead());
+
+  std::unique_ptr<PrefetchStreamingURLLoader> first_streaming_loader =
+      prefetch_container.ReleaseFirstStreamingURLLoader();
+
+  EXPECT_EQ(first_streaming_loader.get(), weak_first_streaming_loader.get());
+  EXPECT_EQ(prefetch_container.GetFirstStreamingURLLoader(),
+            weak_second_streaming_loader.get());
+  EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(),
+            weak_second_streaming_loader.get());
+
+  std::unique_ptr<PrefetchStreamingURLLoader> second_streaming_loader =
+      prefetch_container.ReleaseFirstStreamingURLLoader();
+
+  EXPECT_EQ(second_streaming_loader.get(), weak_second_streaming_loader.get());
+  EXPECT_EQ(prefetch_container.GetFirstStreamingURLLoader(), nullptr);
+  EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(), nullptr);
+
+  EXPECT_TRUE(weak_first_streaming_loader);
+  EXPECT_TRUE(weak_second_streaming_loader);
+
+  EXPECT_FALSE(prefetch_container.IsPrefetchServable(base::TimeDelta::Max()));
+  EXPECT_FALSE(prefetch_container.GetHead());
+}
+
+TEST_F(PrefetchContainerTest, ReleaseAllStreamingURLLoaders) {
+  const GURL kTestUrl1 = GURL("https://test1.com");
+  const GURL kTestUrl2 = GURL("https://test2.com");
+
+  base::HistogramTester histogram_tester;
+
+  PrefetchContainer prefetch_container(
+      GlobalRenderFrameHostId(1234, 5678), kTestUrl1,
+      PrefetchType(/*use_prefetch_proxy=*/true,
+                   blink::mojom::SpeculationEagerness::kEager),
+      blink::mojom::Referrer(),
+      /*no_vary_search_expected=*/absl::nullopt,
+      blink::mojom::SpeculationInjectionWorld::kNone,
+      /*prefetch_document_manager=*/nullptr);
+
+  EXPECT_EQ(prefetch_container.GetFirstStreamingURLLoader(), nullptr);
+  EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(), nullptr);
+
+  std::vector<std::unique_ptr<PrefetchStreamingURLLoader>> streaming_loaders =
+      MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
+          kTestUrl1, kTestUrl2);
+  ASSERT_EQ(streaming_loaders.size(), 2U);
+
+  base::WeakPtr<PrefetchStreamingURLLoader> weak_first_streaming_loader =
+      streaming_loaders[0]->GetWeakPtr();
+  prefetch_container.TakeStreamingURLLoader(std::move(streaming_loaders[0]));
+
+  EXPECT_EQ(prefetch_container.GetFirstStreamingURLLoader(),
+            weak_first_streaming_loader.get());
+  EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(),
+            weak_first_streaming_loader.get());
+
+  base::WeakPtr<PrefetchStreamingURLLoader> weak_second_streaming_loader =
+      streaming_loaders[1]->GetWeakPtr();
+  prefetch_container.TakeStreamingURLLoader(std::move(streaming_loaders[1]));
+
+  EXPECT_EQ(prefetch_container.GetFirstStreamingURLLoader(),
+            weak_first_streaming_loader.get());
+  EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(),
+            weak_second_streaming_loader.get());
+
+  prefetch_container.ResetAllStreamingURLLoaders();
+
+  EXPECT_EQ(prefetch_container.GetFirstStreamingURLLoader(), nullptr);
+  EXPECT_EQ(prefetch_container.GetLastStreamingURLLoader(), nullptr);
+
+  // The streaming loaders are released from |prefetch_container|, but are made
+  // self owned and scheduled to delete themselves.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(weak_first_streaming_loader);
+  EXPECT_FALSE(weak_second_streaming_loader);
 }
 
 }  // namespace content

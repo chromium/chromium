@@ -34,10 +34,15 @@ enum class PrefetchStreamingURLLoaderStatus {
 
   // Statuses related to redirects.
   kFollowRedirect = 13,
-  kPauseRedirectForEligibilityCheck = 14,
+  kPauseRedirectForEligibilityCheck_DEPRECATED = 14,
   kFailedInvalidRedirect = 15,
+  kStopSwitchInNetworkContextForRedirect = 16,
 
-  kMaxValue = kFailedInvalidRedirect,
+  // The streaming URL loader was previously stopped after a redirect required a
+  // change in network context, and is served.
+  kServedSwitchInNetworkContextForRedirect = 17,
+
+  kMaxValue = kServedSwitchInNetworkContextForRedirect,
 };
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_STREAMING_URL_LOADER_STATUS_H_
