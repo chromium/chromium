@@ -26,7 +26,7 @@
 #import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/autofill/autofill_tab_helper.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/commerce/price_alert_util.h"
 #import "ios/chrome/browser/commerce/price_notifications/price_notifications_tab_helper.h"
@@ -243,9 +243,10 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     ChromeIOSTranslateClient::CreateForWebState(web_state);
 
     PasswordTabHelper::CreateForWebState(web_state);
-    // TODO(crbug.com/1434606): PasswordTabHelper and BottomSheetTabHelper must
-    // share a password controller until the Butter notice is removed.
-    BottomSheetTabHelper::CreateForWebState(
+    // TODO(crbug.com/1434606): PasswordTabHelper and
+    // AutofillBottomSheetTabHelper must share a password controller until the
+    // Butter notice is removed.
+    AutofillBottomSheetTabHelper::CreateForWebState(
         web_state, PasswordTabHelper::FromWebState(web_state)
                        ->GetPasswordsAccountStorageNoticeHandler());
     AutofillTabHelper::CreateForWebState(

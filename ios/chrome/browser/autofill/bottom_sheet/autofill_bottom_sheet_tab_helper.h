@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTOFILL_BOTTOM_SHEET_BOTTOM_SHEET_TAB_HELPER_H_
-#define IOS_CHROME_BROWSER_AUTOFILL_BOTTOM_SHEET_BOTTOM_SHEET_TAB_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_AUTOFILL_BOTTOM_SHEET_AUTOFILL_BOTTOM_SHEET_TAB_HELPER_H_
+#define IOS_CHROME_BROWSER_AUTOFILL_BOTTOM_SHEET_AUTOFILL_BOTTOM_SHEET_TAB_HELPER_H_
 
 #import "components/autofill/core/common/unique_ids.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -17,18 +17,18 @@ class WebFrame;
 @protocol PasswordsAccountStorageNoticeHandler;
 @protocol PasswordBottomSheetCommands;
 
-// TODO(crbug.com/1422361): Rename this class to include the notion of autofill.
-class BottomSheetTabHelper
-    : public web::WebStateUserData<BottomSheetTabHelper> {
+class AutofillBottomSheetTabHelper
+    : public web::WebStateUserData<AutofillBottomSheetTabHelper> {
  public:
-  BottomSheetTabHelper(const BottomSheetTabHelper&) = delete;
-  BottomSheetTabHelper& operator=(const BottomSheetTabHelper&) = delete;
-
-  ~BottomSheetTabHelper() override;
-
-  // Returns the maximum number of times the password bottom sheet can be
+  // Maximum number of times the password bottom sheet can be
   // dismissed before it gets disabled.
-  static int PasswordBottomSheetMaxDismissCount();
+  static constexpr int kPasswordBottomSheetMaxDismissCount = 3;
+
+  AutofillBottomSheetTabHelper(const AutofillBottomSheetTabHelper&) = delete;
+  AutofillBottomSheetTabHelper& operator=(const AutofillBottomSheetTabHelper&) =
+      delete;
+
+  ~AutofillBottomSheetTabHelper() override;
 
   // Handler for JavaScript messages. Dispatch to more specific handler.
   void OnFormMessageReceived(const web::ScriptMessage& message);
@@ -38,7 +38,7 @@ class BottomSheetTabHelper
       id<PasswordBottomSheetCommands> password_bottom_sheet_commands_handler);
 
   // Prepare bottom sheet using data from the password form prediction.
-  void AttachListeners(
+  void AttachPasswordListeners(
       const std::vector<autofill::FieldRendererId>& renderer_ids,
       web::WebFrame* frame);
 
@@ -46,11 +46,12 @@ class BottomSheetTabHelper
   void DetachListenersAndRefocus(web::WebFrame* frame);
 
  private:
-  friend class web::WebStateUserData<BottomSheetTabHelper>;
+  friend class web::WebStateUserData<AutofillBottomSheetTabHelper>;
 
-  explicit BottomSheetTabHelper(web::WebState* web_state,
-                                id<PasswordsAccountStorageNoticeHandler>
-                                    password_account_storage_notice_handler);
+  explicit AutofillBottomSheetTabHelper(
+      web::WebState* web_state,
+      id<PasswordsAccountStorageNoticeHandler>
+          password_account_storage_notice_handler);
 
   // Check whether the password bottom sheet has been dismissed too many times
   // by the user.
@@ -72,4 +73,4 @@ class BottomSheetTabHelper
   WEB_STATE_USER_DATA_KEY_DECL();
 };
 
-#endif  // IOS_CHROME_BROWSER_AUTOFILL_BOTTOM_SHEET_BOTTOM_SHEET_TAB_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_AUTOFILL_BOTTOM_SHEET_AUTOFILL_BOTTOM_SHEET_TAB_HELPER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
@@ -10,7 +10,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_account_storage_notice_handler.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_java_script_feature.h"
+#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -22,9 +22,9 @@
 #error "This file requires ARC support."
 #endif
 
-BottomSheetTabHelper::~BottomSheetTabHelper() = default;
+AutofillBottomSheetTabHelper::~AutofillBottomSheetTabHelper() = default;
 
-BottomSheetTabHelper::BottomSheetTabHelper(
+AutofillBottomSheetTabHelper::AutofillBottomSheetTabHelper(
     web::WebState* web_state,
     id<PasswordsAccountStorageNoticeHandler>
         password_account_storage_notice_handler)
@@ -34,19 +34,13 @@ BottomSheetTabHelper::BottomSheetTabHelper(
 
 // Public methods
 
-int BottomSheetTabHelper::PasswordBottomSheetMaxDismissCount() {
-  // The maximum number of times the password bottom sheet can be dismissed
-  // before it gets disabled.
-  return 3;
-}
-
-void BottomSheetTabHelper::SetPasswordBottomSheetHandler(
+void AutofillBottomSheetTabHelper::SetPasswordBottomSheetHandler(
     id<PasswordBottomSheetCommands> password_bottom_sheet_commands_handler) {
   password_bottom_sheet_commands_handler_ =
       password_bottom_sheet_commands_handler;
 }
 
-void BottomSheetTabHelper::OnFormMessageReceived(
+void AutofillBottomSheetTabHelper::OnFormMessageReceived(
     const web::ScriptMessage& message) {
   autofill::FormActivityParams params;
   if (!password_bottom_sheet_commands_handler_ ||
@@ -70,7 +64,7 @@ void BottomSheetTabHelper::OnFormMessageReceived(
   }];
 }
 
-void BottomSheetTabHelper::AttachListeners(
+void AutofillBottomSheetTabHelper::AttachPasswordListeners(
     const std::vector<autofill::FieldRendererId>& renderer_ids,
     web::WebFrame* frame) {
   // Verify that the password bottom sheet feature is enabled and that it hasn't
@@ -82,26 +76,28 @@ void BottomSheetTabHelper::AttachListeners(
   }
 
   // Enable the password bottom sheet.
-  BottomSheetJavaScriptFeature::GetInstance()->AttachListeners(renderer_ids,
-                                                               frame);
+  AutofillBottomSheetJavaScriptFeature::GetInstance()->AttachListeners(
+      renderer_ids, frame);
 }
 
-void BottomSheetTabHelper::DetachListenersAndRefocus(web::WebFrame* frame) {
-  BottomSheetJavaScriptFeature::GetInstance()->DetachListenersAndRefocus(frame);
+void AutofillBottomSheetTabHelper::DetachListenersAndRefocus(
+    web::WebFrame* frame) {
+  AutofillBottomSheetJavaScriptFeature::GetInstance()
+      ->DetachListenersAndRefocus(frame);
 }
 
 // Private methods
 
-bool BottomSheetTabHelper::HasReachedDismissLimit() {
+bool AutofillBottomSheetTabHelper::HasReachedDismissLimit() {
   PrefService* const pref_service =
       ChromeBrowserState ::FromBrowserState(web_state_->GetBrowserState())
           ->GetPrefs();
   bool dimissLimitReached =
       pref_service->GetInteger(prefs::kIosPasswordBottomSheetDismissCount) >=
-      PasswordBottomSheetMaxDismissCount();
+      kPasswordBottomSheetMaxDismissCount;
   base::UmaHistogramBoolean("IOS.IsEnabled.Password.BottomSheet",
                             !dimissLimitReached);
   return dimissLimitReached;
 }
 
-WEB_STATE_USER_DATA_KEY_IMPL(BottomSheetTabHelper)
+WEB_STATE_USER_DATA_KEY_IMPL(AutofillBottomSheetTabHelper)

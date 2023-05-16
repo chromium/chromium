@@ -13,7 +13,7 @@
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
@@ -269,7 +269,7 @@ using ReauthenticationEvent::kSuccess;
         password_manager::PasswordManagerJavaScriptFeature::GetInstance();
     web::WebFrame* frame =
         feature->GetWebFramesManager(activeWebState)->GetFrameWithId(_frameId);
-    BottomSheetTabHelper::FromWebState(activeWebState)
+    AutofillBottomSheetTabHelper::FromWebState(activeWebState)
         ->DetachListenersAndRefocus(frame);
   }
 }
@@ -372,7 +372,7 @@ using ReauthenticationEvent::kSuccess;
         _prefService->GetInteger(prefs::kIosPasswordBottomSheetDismissCount) +
         1;
     CHECK(newDismissCount <=
-          BottomSheetTabHelper::PasswordBottomSheetMaxDismissCount());
+          AutofillBottomSheetTabHelper::kPasswordBottomSheetMaxDismissCount);
     _prefService->SetInteger(prefs::kIosPasswordBottomSheetDismissCount,
                              newDismissCount);
   }

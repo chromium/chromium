@@ -7,10 +7,10 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 source_set("bottom_sheet") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "bottom_sheet_java_script_feature.h",
-    "bottom_sheet_java_script_feature.mm",
-    "bottom_sheet_tab_helper.h",
-    "bottom_sheet_tab_helper.mm",
+    "autofill_bottom_sheet_java_script_feature.h",
+    "autofill_bottom_sheet_java_script_feature.mm",
+    "autofill_bottom_sheet_tab_helper.h",
+    "autofill_bottom_sheet_tab_helper.mm",
   ]
   deps = [
     ":bottom_sheet_ts",

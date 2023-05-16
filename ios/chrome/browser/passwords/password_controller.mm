@@ -53,7 +53,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/driver/sync_service.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/form_input_accessory_view_handler.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
@@ -570,10 +570,10 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 - (void)attachListenersForBottomSheet:
             (const std::vector<autofill::FieldRendererId>&)rendererIds
                               inFrame:(web::WebFrame*)frame {
-  BottomSheetTabHelper* bottomSheetTabHelper =
-      BottomSheetTabHelper::FromWebState(_webState);
+  AutofillBottomSheetTabHelper* bottomSheetTabHelper =
+      AutofillBottomSheetTabHelper::FromWebState(_webState);
   if (bottomSheetTabHelper) {
-    bottomSheetTabHelper->AttachListeners(rendererIds, frame);
+    bottomSheetTabHelper->AttachPasswordListeners(rendererIds, frame);
   }
 }
 
