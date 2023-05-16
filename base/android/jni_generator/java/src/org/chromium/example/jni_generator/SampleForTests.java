@@ -276,7 +276,9 @@ class SampleForTests {
         @NativeClassQualifiedName("CPPClass::InnerClass")
         double methodOtherP0(long nativePtr, SampleForTests caller);
 
+        // Tests passing a nested class.
         void addStructB(long nativeCPPClass, SampleForTests caller, InnerStructB b);
+
         void iterateAndDoSomethingWithStructB(long nativeCPPClass, SampleForTests caller);
         String returnAString(long nativeCPPClass, SampleForTests caller);
     }

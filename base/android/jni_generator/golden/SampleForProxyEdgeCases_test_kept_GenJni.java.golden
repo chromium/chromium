@@ -28,4 +28,16 @@ public class GEN_JNI {
     public static void org_chromium_example_jni_1generator_SampleProxyEdgeCases_fooForTesting() {
         J.N.MCNruAwI_ForTesting();
     }
+
+    public static void org_chromium_example_jni_1generator_SampleProxyEdgeCases_addStructB(Object caller, Object b) {
+        J.N.MyOkSBQ0(caller, b);
+    }
+
+    public static void org_chromium_example_jni_1generator_SampleProxyEdgeCases_setStringBuilder(Object sb) {
+        J.N.MD8PmkAP(sb);
+    }
+
+    public static void org_chromium_example_jni_1generator_SampleProxyEdgeCases_setBool(Object b, Object i) {
+        J.N.MPgXV$mN(b, i);
+    }
 }

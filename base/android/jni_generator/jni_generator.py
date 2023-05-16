@@ -30,6 +30,8 @@ sys.path.insert(1, _BUILD_ANDROID_GYP)
 from util import build_utils
 import action_helpers  # build_utils adds //build to sys.path.
 
+import type_resolver
+
 # Match single line comments, multiline comments, character literals, and
 # double-quoted strings.
 _COMMENT_REMOVER_REGEX = re.compile(
@@ -324,130 +326,8 @@ def _NameIsTestOnly(name):
   return name.endswith('ForTest') or name.endswith('ForTesting')
 
 
+# TODO(crbug.com/1406605): Move these to top-level functions.
 class JniParams(object):
-  """Get JNI related parameters."""
-
-  def __init__(self, fully_qualified_class):
-    self._fully_qualified_class = 'L' + fully_qualified_class
-    self._package = '/'.join(fully_qualified_class.split('/')[:-1])
-    self._imports = []
-    self._inner_classes = []
-    self._implicit_imports = []
-
-  def ExtractImportsAndInnerClasses(self, contents):
-    contents = contents.replace('\n', '')
-    re_import = re.compile(r'import.*?(?P<class>\S*?);')
-    for match in re.finditer(re_import, contents):
-      self._imports += ['L' + match.group('class').replace('.', '/')]
-
-    re_inner = re.compile(r'(class|interface|enum)\s+?(?P<name>\w+?)\W')
-    for match in re.finditer(re_inner, contents):
-      inner = match.group('name')
-      if not self._fully_qualified_class.endswith(inner):
-        self._inner_classes += [self._fully_qualified_class + '$' + inner]
-
-  def JavaToJni(self, param):
-    """Converts a java param into a JNI signature type."""
-    pod_param_map = {
-        'int': 'I',
-        'boolean': 'Z',
-        'char': 'C',
-        'short': 'S',
-        'long': 'J',
-        'double': 'D',
-        'float': 'F',
-        'byte': 'B',
-        'void': 'V',
-    }
-    object_param_list = [
-        'Ljava/lang/Boolean',
-        'Ljava/lang/Integer',
-        'Ljava/lang/Long',
-        'Ljava/lang/Object',
-        'Ljava/lang/String',
-        'Ljava/lang/Class',
-        'Ljava/lang/ClassLoader',
-        'Ljava/lang/CharSequence',
-        'Ljava/lang/Runnable',
-        'Ljava/lang/Throwable',
-    ]
-
-    prefix = ''
-    # Array?
-    while param[-2:] == '[]':
-      prefix += '['
-      param = param[:-2]
-    # Generic?
-    if '<' in param:
-      param = param[:param.index('<')]
-    if param in pod_param_map:
-      return prefix + pod_param_map[param]
-    if '/' in param:
-      # Coming from javap, use the fully qualified param directly.
-      return prefix + 'L' + param + ';'
-
-    for qualified_name in (object_param_list + [self._fully_qualified_class] +
-                           self._inner_classes):
-      if (qualified_name.endswith('/' + param)
-          or qualified_name.endswith('$' + param.replace('.', '$'))
-          or qualified_name == 'L' + param):
-        return prefix + qualified_name + ';'
-
-    # Is it from an import? (e.g. referecing Class from import pkg.Class;
-    # note that referencing an inner class Inner from import pkg.Class.Inner
-    # is not supported).
-    for qualified_name in self._imports:
-      if qualified_name.endswith('/' + param):
-        # Ensure it's not an inner class.
-        components = qualified_name.split('/')
-        if len(components) > 2 and components[-2][0].isupper():
-          raise SyntaxError(
-              'Inner class (%s) can not be imported '
-              'and used by JNI (%s). Please import the outer '
-              'class and use Outer.Inner instead.' % (qualified_name, param))
-        return prefix + qualified_name + ';'
-
-    # Is it an inner class from an outer class import? (e.g. referencing
-    # Class.Inner from import pkg.Class).
-    if '.' in param:
-      components = param.split('.')
-      outer = '/'.join(components[:-1])
-      inner = components[-1]
-      for qualified_name in self._imports:
-        if qualified_name.endswith('/' + outer):
-          return (prefix + qualified_name + '$' + inner + ';')
-      param = param.replace('.', '$')
-
-    self._CheckImplicitImports(param)
-
-    # Type not found, falling back to same package as this class.
-    return (prefix + 'L' + self._package + '/' + param + ';')
-
-  def _CheckImplicitImports(self, param):
-    # Ensure implicit imports, such as java.lang.*, are not being treated
-    # as being in the same package.
-    if not self._implicit_imports:
-      # This file was generated from android.jar and lists
-      # all classes that are implicitly imported.
-      android_jar_path = os.path.join(_FILE_DIR, 'android_jar.classes')
-      with open(android_jar_path) as f:
-        self._implicit_imports = f.readlines()
-    for implicit_import in self._implicit_imports:
-      implicit_import = implicit_import.strip().replace('.class', '')
-      implicit_import = implicit_import.replace('/', '.')
-      if implicit_import.endswith('.' + param):
-        raise SyntaxError('Ambiguous class (%s) can not be used directly '
-                          'by JNI.\nPlease import it, probably:\n\n'
-                          'import %s;' % (param, implicit_import))
-
-  def Signature(self, params, returns):
-    """Returns the JNI signature for the given datatypes."""
-    items = ['(']
-    items += [self.JavaToJni(param.datatype) for param in params]
-    items += [')']
-    items += [self.JavaToJni(returns)]
-    return '"{}"'.format(''.join(items))
-
   @staticmethod
   def ParseJavaPSignature(signature_line):
     prefix = 'Signature: '
@@ -632,7 +512,7 @@ def GetMangledMethodName(jni_params, name, params, return_type):
   """
   mangled_items = []
   for datatype in [return_type] + [x.datatype for x in params]:
-    mangled_items += [GetMangledParam(jni_params.JavaToJni(datatype))]
+    mangled_items += [GetMangledParam(jni_params.java_to_jni(datatype))]
   mangled_name = name + '_'.join(mangled_items)
   assert re.match(r'[0-9a-zA-Z_]+', mangled_name)
   return mangled_name
@@ -759,7 +639,7 @@ class JNIFromJavaP(object):
     # Java 7's javap includes type parameters in output, like HashSet<T>. Strip
     # away the <...> and use the raw class name that Java 6 would've given us.
     self.fully_qualified_class = self.fully_qualified_class.split('<', 1)[0]
-    self.jni_params = JniParams(self.fully_qualified_class)
+    self.jni_params = type_resolver.TypeResolver(self.fully_qualified_class)
     self.java_class_name = self.fully_qualified_class.split('/')[-1]
     if not self.namespace:
       self.namespace = 'JNI_' + self.java_class_name
@@ -967,8 +847,8 @@ class JNIFromJavaSource(object):
       fully_qualified_class = GetFullyQualifiedClassWithPackagePrefix(
           fully_qualified_class, options.package_prefix)
     contents = RemoveComments(contents)
-    self.jni_params = JniParams(fully_qualified_class)
-    self.jni_params.ExtractImportsAndInnerClasses(contents)
+    self.jni_params = type_resolver.TypeResolver(fully_qualified_class)
+    self.jni_params.parse_imports_and_nested_types(contents)
     jni_namespace = ExtractJNINamespace(contents) or options.namespace
     called_by_natives = ExtractCalledByNatives(self.jni_params, contents)
 
@@ -1417,8 +1297,8 @@ ${PROFILING_ENTERED_NATIVE}\
     if called_by_native.signature:
       jni_signature = called_by_native.signature
     else:
-      jni_signature = self.jni_params.Signature(called_by_native.params,
-                                                jni_return_type)
+      jni_signature = self.jni_params.create_signature(called_by_native.params,
+                                                       jni_return_type)
     java_name_full = java_class.replace('/', '.') + '.' + jni_name
     return {
         'JAVA_CLASS_ONLY': java_class_only,

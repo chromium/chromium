@@ -19,4 +19,10 @@ public class N {
       public static native void M3dXOemX_ForTesting();
       // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_fooForTesting
       public static native void MCNruAwI_ForTesting();
+      // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_addStructB
+      public static native void MyOkSBQ0(Object caller, Object b);
+      // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_setStringBuilder
+      public static native void MD8PmkAP(Object sb);
+      // Original name: org_chromium_example_jni_1generator_SampleProxyEdgeCases_setBool
+      public static native void MPgXV$mN(Object b, Object i);
 }

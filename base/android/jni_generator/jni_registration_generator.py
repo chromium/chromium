@@ -19,9 +19,12 @@ import sys
 import zipfile
 
 import jni_generator
+import type_resolver
+
 from util import build_utils
 import action_helpers  # build_utils adds //build to sys.path.
 import zip_helpers
+
 
 # All but FULL_CLASS_NAME, which is used only for sorting.
 MERGEABLE_KEYS = [
@@ -225,8 +228,8 @@ def _DictForPath(options, path, stub_only=False, cached_results_for_stubs=None):
   # The namespace for the content is separate from the namespace for the
   # generated header file.
   content_namespace = jni_generator.ExtractJNINamespace(contents)
-  jni_params = jni_generator.JniParams(fully_qualified_class)
-  jni_params.ExtractImportsAndInnerClasses(contents)
+  jni_params = type_resolver.TypeResolver(fully_qualified_class)
+  jni_params.parse_imports_and_nested_types(contents)
   dict_generator = DictionaryGenerator(options, path, content_namespace,
                                        fully_qualified_class, natives,
                                        jni_params)
@@ -631,7 +634,8 @@ ${KMETHODS}
                                'reinterpret_cast<void*>(${STUB_NAME}) },')
 
     name = 'native' + native.name
-    jni_signature = self.jni_params.Signature(native.params, native.return_type)
+    jni_signature = self.jni_params.create_signature(native.params,
+                                                     native.return_type)
     stub_name = self.helper.GetStubName(native)
 
     if native.is_proxy:
@@ -646,7 +650,7 @@ ${KMETHODS}
             _GetMultiplexProxyName(return_type, params_list))
 
         name = _GetMultiplexProxyName(return_type, params_list)
-        jni_signature = self.jni_params.Signature(
+        jni_signature = self.jni_params.create_signature(
             [jni_generator.Param(datatype='long', name='switch_num')] +
             native.params, native.return_type)
         stub_name = 'Java_' + class_name + '_' + proxy_signature
