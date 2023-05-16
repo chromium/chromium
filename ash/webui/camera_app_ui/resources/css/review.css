@@ -56,16 +56,24 @@
 }
 
 .review-views .review-intent-button-group>button {
-  height: 72px;
-  margin-bottom: 2px;
-  margin-top: 2px;
-  width: 72px;
+  height: 60px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  width: 60px;
 }
 
 .review-views .review-intent-button-group button[i18n-label=confirm_review_button] {
-  background-image: url(/images/camera_intent_result_confirm.svg);
+  background: var(--cros-sys-primary);
+
+  :is(svg-wrapper) {
+    color: var(--cros-sys-on_primary);
+  }
 }
 
 .review-views .review-intent-button-group button[i18n-label=cancel_review_button] {
-  background-image: url(/images/camera_intent_result_cancel.svg);
+  background: var(--cros-sys-inverse_surface);
+
+  :is(svg-wrapper) {
+    color: var(--cros-sys-secondary_container);
+  }
 }

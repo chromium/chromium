@@ -632,10 +632,6 @@ SVG_ALLOWLIST = [
     # This image is only used as -webkit-mask, which needs to have
     # solid fill color but the fill color itself is not used.
     'images/barcode_scan_box_border_mask.svg',
-
-    # SVGs that are not migrated to dynamic color yet.
-    'images/camera_intent_result_cancel.svg',
-    'images/camera_intent_result_confirm.svg',
 ]
 
 
