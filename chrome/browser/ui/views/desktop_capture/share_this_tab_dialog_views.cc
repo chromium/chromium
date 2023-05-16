@@ -33,6 +33,7 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
@@ -41,6 +42,7 @@
 
 namespace {
 
+constexpr int kTitleTopMargin = 16;
 constexpr gfx::Insets kAudioToggleInsets = gfx::Insets::VH(8, 16);
 constexpr int kAudioToggleChildSpacing = 8;
 
@@ -77,16 +79,27 @@ ShareThisTabDialogView::ShareThisTabDialogView(
       this));
 
   const ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
+  gfx::Insets dialog_insets = provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kControl);
+  dialog_insets.set_top(kTitleTopMargin);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      provider->GetDialogInsetsForContentType(
-          views::DialogContentType::kText, views::DialogContentType::kControl),
+      views::BoxLayout::Orientation::kVertical, dialog_insets,
       provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_VERTICAL_SMALL)));
 
-  description_label_ = AddChildView(std::make_unique<views::Label>());
-  description_label_->SetMultiLine(true);
-  description_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  description_label_->SetText(
+  views::Label* title_label = AddChildView(std::make_unique<views::Label>());
+  title_label->SetFontList(views::style::GetFont(
+      views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
+  title_label->SetAllowCharacterBreak(true);
+  title_label->SetMultiLine(true);
+  title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_label->SetText(
+      l10n_util::GetStringFUTF16(IDS_SHARE_THIS_TAB_DIALOG_TITLE, app_name_));
+
+  views::Label* description_label =
+      AddChildView(std::make_unique<views::Label>());
+  description_label->SetMultiLine(true);
+  description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  description_label->SetText(
       l10n_util::GetStringUTF16(IDS_SHARE_THIS_TAB_DIALOG_TEXT));
 
   SetupSourceView();
@@ -145,9 +158,8 @@ gfx::Size ShareThisTabDialogView::CalculatePreferredSize() const {
   return gfx::Size(kDialogViewWidth, GetHeightForWidth(kDialogViewWidth));
 }
 
-std::u16string ShareThisTabDialogView::GetWindowTitle() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return l10n_util::GetStringFUTF16(IDS_SHARE_THIS_TAB_DIALOG_TITLE, app_name_);
+bool ShareThisTabDialogView::ShouldShowWindowTitle() const {
+  return false;
 }
 
 bool ShareThisTabDialogView::Accept() {
