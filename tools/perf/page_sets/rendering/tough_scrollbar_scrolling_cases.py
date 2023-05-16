@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import time
+import os
 
 from telemetry.internal.actions import page_action
 from telemetry.page import shared_page_state
@@ -32,8 +33,8 @@ class ToughFastScrollbarScrollingPage(rendering_story.RenderingStory):
                          extra_browser_args=extra_browser_args)
 
   def RunPageInteractions(self, action_runner):
-    scrollbar_x, scrollbar_top, scrollbar_bottom = self._ScrollBarRatios(
-        action_runner)
+    scrollbar_x, scrollbar_top, scrollbar_bottom, top_button, bottom_button = \
+      self._ScrollBarRatios(action_runner)
     start = time.time()
     with action_runner.CreateGestureInteraction('DragAction'):
       direction = 'down'
@@ -43,14 +44,14 @@ class ToughFastScrollbarScrollingPage(rendering_story.RenderingStory):
               left_start_ratio=scrollbar_x,
               top_start_ratio=scrollbar_top,
               left_end_ratio=scrollbar_x,
-              top_end_ratio=scrollbar_bottom,
+              top_end_ratio=bottom_button,
               speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND)
         else:
           action_runner.DragPage(
               left_start_ratio=scrollbar_x,
               top_start_ratio=scrollbar_bottom,
               left_end_ratio=scrollbar_x,
-              top_end_ratio=scrollbar_top,
+              top_end_ratio=top_button,
               speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND)
         direction = 'up' if direction == 'down' else 'down'
 
@@ -88,17 +89,45 @@ class ToughFastScrollbarScrollingPage(rendering_story.RenderingStory):
     window_width = float(action_runner.EvaluateJavaScript('window.innerWidth'))
     window_height = float(
         action_runner.EvaluateJavaScript('window.innerHeight'))
+    # Add logic to account for Fluent scrollbars on Windows.
+    # TODO(crbug.com/1445774): Investigate why this logic causes performance
+    # regressions on Linux and reunify code paths.
+    if os.name == 'nt':
+      # Works only when there is no horizontally overflowing content.
+      left_margin = float(
+          action_runner.EvaluateJavaScript(
+              'document.body.getBoundingClientRect().x'))
+      body_width = float(
+          action_runner.EvaluateJavaScript(
+              'document.body.getBoundingClientRect().width'))
+      top_margin = float(
+          action_runner.EvaluateJavaScript(
+              'document.body.getBoundingClientRect().y'))
+      window_height = window_height - top_margin
 
-    # For regular scrollbars the minimal thumb length is one and two times the
-    # track's width in W10 and W11 respectively. For Fluent scrollbars the
-    # minimal thumb length is 17px. The constant was chosen such that:
-    # (Button Length) <= (Track width * |track_to_arrow_button_ratio|) <=
-    # (Button Length + Minimum thumb length) for all scrollbars.
-    track_to_arrow_button_ratio = 1.8
-    top = (scrollbar_thickness * track_to_arrow_button_ratio) / window_height
-    bottom = 1 - top
+      # For regular scrollbars the minimal thumb length is one and two times the
+      # track's width in W10 and W11 respectively. For Fluent scrollbars the
+      # minimal thumb length is 17px. The constant was chosen such that:
+      # (Button Length) <= (Track width * |track_to_arrow_button_ratio|) <=
+      # (Button Length + Minimum thumb length) for all scrollbars.
+      track_to_arrow_button_ratio = 1.8
+      top = (scrollbar_thickness * track_to_arrow_button_ratio -
+             top_margin) / (window_height)
+      bottom = 1 - (scrollbar_thickness *
+                    track_to_arrow_button_ratio) / window_height
+      scrollbar_mid_x = (window_width - left_margin -
+                         (scrollbar_thickness / 2)) / body_width
+      # Ensure the thumb goes through the full range of motion. These
+      # variables make the the mouse drag until the middle of the scrollbar
+      # buttons.
+      top_button = ((scrollbar_thickness / 2) - top_margin) / window_height
+      bottom_button = 1 - (scrollbar_thickness / 2) / window_height
+      return scrollbar_mid_x, top, bottom, top_button, bottom_button
+    top = 0
+    bottom = 1 - (scrollbar_thickness * 1.5) / (window_height +
+                                                scrollbar_thickness)
     scrollbar_mid_x = (window_width + (scrollbar_thickness / 2)) / window_width
-    return scrollbar_mid_x, top, bottom
+    return scrollbar_mid_x, top, bottom, top, bottom
 
   def WillStartTracing(self, chrome_trace_config):
     chrome_trace_config.EnableUMAHistograms(*TOUGH_SCROLLBAR_UMA)
