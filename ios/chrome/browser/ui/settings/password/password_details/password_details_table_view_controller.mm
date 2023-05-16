@@ -100,12 +100,12 @@ NSUInteger GetPasswordIndex(NSUInteger section) {
 }
 
 // Returns true if the "Dismiss Warning" button should be shown.
-bool ShouldAllowToDismissWarning(DetailsContext context) {
+bool ShouldAllowToDismissWarning(DetailsContext context, bool is_compromised) {
   switch (context) {
     case DetailsContext::kGeneral:
     case DetailsContext::kCompromisedIssues:
-      return IsPasswordCheckupEnabled();
     case DetailsContext::kDismissedWarnings:
+      return IsPasswordCheckupEnabled() && is_compromised;
     case DetailsContext::kReusedIssues:
     case DetailsContext::kWeakIssues:
       return false;
@@ -113,9 +113,16 @@ bool ShouldAllowToDismissWarning(DetailsContext context) {
 }
 
 // Returns true if the "Restore Warning" button should be shown.
-bool ShouldAllowToRestoreWarning(DetailsContext context) {
-  return IsPasswordCheckupEnabled() &&
-         context == DetailsContext::kDismissedWarnings;
+bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
+  switch (context) {
+    case DetailsContext::kGeneral:
+    case DetailsContext::kCompromisedIssues:
+    case DetailsContext::kReusedIssues:
+    case DetailsContext::kWeakIssues:
+      return false;
+    case DetailsContext::kDismissedWarnings:
+      return IsPasswordCheckupEnabled() && is_muted;
+  }
 }
 
 }  // namespace
@@ -1175,8 +1182,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context) {
 
     [model addSectionWithIdentifier:SectionIdentifierSite];
     [model addSectionWithIdentifier:SectionIdentifierPassword];
-    if (passwordDetails.compromised ||
-        passwordDetails.context == DetailsContext::kDismissedWarnings) {
+    if (passwordDetails.isCompromised || passwordDetails.isMuted) {
       [model addSectionWithIdentifier:SectionIdentifierCompromisedInfo];
     }
     if (passwordDetails.shouldOfferToMoveToAccount) {
@@ -1225,8 +1231,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context) {
         [model setFooter:footer forSectionWithIdentifier:sectionForPassword];
       }
 
-      if (passwordDetails.isCompromised ||
-          passwordDetails.context == DetailsContext::kDismissedWarnings) {
+      if (passwordDetails.isCompromised || passwordDetails.isMuted) {
         [model addItem:[self changePasswordRecommendationItem]
             toSectionWithIdentifier:sectionForCompromisedInfo];
 
@@ -1235,10 +1240,12 @@ bool ShouldAllowToRestoreWarning(DetailsContext context) {
               toSectionWithIdentifier:sectionForCompromisedInfo];
         }
 
-        if (ShouldAllowToDismissWarning(passwordDetails.context)) {
+        if (ShouldAllowToDismissWarning(passwordDetails.context,
+                                        passwordDetails.compromised)) {
           [model addItem:[self dismissWarningItem]
               toSectionWithIdentifier:sectionForCompromisedInfo];
-        } else if (ShouldAllowToRestoreWarning(passwordDetails.context)) {
+        } else if (ShouldAllowToRestoreWarning(passwordDetails.context,
+                                               passwordDetails.muted)) {
           [model addItem:[self restoreWarningItem]
               toSectionWithIdentifier:sectionForCompromisedInfo];
         }
