@@ -19,7 +19,7 @@
 
 #define PA_THREAD_ISOLATED_FILL_PAGE_SZ(size)        \
   ((PA_THREAD_ISOLATED_ALIGN_SZ -                    \
-    (size & PA_THREAD_ISOLATED_ALIGN_OFFSET_MASK)) % \
+    ((size)&PA_THREAD_ISOLATED_ALIGN_OFFSET_MASK)) % \
    PA_THREAD_ISOLATED_ALIGN_SZ)
 // Calculate the required padding so that the last element of a page-aligned
 // array lands on a page boundary. In other words, calculate that padding so
