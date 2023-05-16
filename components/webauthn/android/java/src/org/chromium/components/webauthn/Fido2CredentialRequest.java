@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.OutcomeReceiver;
 import android.os.Parcel;
+import android.util.Base64;
 import android.util.Pair;
 
 import androidx.annotation.Nullable;
@@ -68,6 +69,8 @@ import java.util.List;
 public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private static final String TAG = "Fido2Request";
     private static final String CRED_MAN_PREFIX = "androidx.credentials.";
+    private static final String GPM_COMPONENT_NAME = "com.google.android.gms/com.google.android.gms"
+            + ".auth.api.credentials.credman.service.PasswordAndPasskeyService";
     static final String NON_EMPTY_ALLOWLIST_ERROR_MSG =
             "Authentication request must have non-empty allowList";
     static final String NON_VALID_ALLOWED_CREDENTIALS_ERROR_MSG =
@@ -788,6 +791,16 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         requestBundle.putByteArray(CRED_MAN_PREFIX + "BUNDLE_KEY_CLIENT_DATA_HASH", clientDataHash);
         requestBundle.putBoolean(
                 CRED_MAN_PREFIX + "BUNDLE_KEY_PREFER_IMMEDIATELY_AVAILABLE_CREDENTIALS", false);
+
+        final Bundle displayInfoBundle = new Bundle();
+        displayInfoBundle.putCharSequence(CRED_MAN_PREFIX + "BUNDLE_KEY_USER_ID",
+                Base64.encodeToString(
+                        options.user.id, Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP));
+        displayInfoBundle.putString(
+                CRED_MAN_PREFIX + "BUNDLE_KEY_DEFAULT_PROVIDER", GPM_COMPONENT_NAME);
+
+        requestBundle.putBundle(
+                CRED_MAN_PREFIX + "BUNDLE_KEY_REQUEST_DISPLAY_INFO", displayInfoBundle);
 
         // The Android 14 APIs have to be called via reflection until Chromium
         // builds with the Android 14 SDK by default.
