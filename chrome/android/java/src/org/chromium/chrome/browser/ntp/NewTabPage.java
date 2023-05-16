@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
 
@@ -1091,11 +1092,34 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mSingleTabCardContainer = (FrameLayout) ((ViewStub) mNewTabPageLayout.findViewById(
                                                          R.id.tab_switcher_module_container_stub))
                                           .inflate();
+        updateSingleTabCardContainerMargins();
         mSingleTabSwitcherCoordinator = new SingleTabSwitcherCoordinator(mActivity,
                 mSingleTabCardContainer, mActivityLifecycleDispatcher, mTabModelSelector, true,
                 isScrollableMvtEnabled(mContext), mostRecentTab);
         mSingleTabSwitcherCoordinator.initWithNative();
         setSingleTabCardVisibility(true);
+    }
+
+    /**
+     * Updates the margins for the single tab card container based on the type of MV tiles.
+     */
+    private void updateSingleTabCardContainerMargins() {
+        if (!mIsNtpAsHomeSurfaceEnabled) return;
+
+        MarginLayoutParams marginLayoutParams =
+                (MarginLayoutParams) mSingleTabCardContainer.getLayoutParams();
+        int SingleTabCardContainerTopAndBottomMargin;
+        if (isScrollableMvtEnabled(mContext)) {
+            SingleTabCardContainerTopAndBottomMargin =
+                    mNewTabPageLayout.getResources().getDimensionPixelOffset(
+                            R.dimen.single_tab_card_top_and_bottom_margin_carousel_mvt_tablet);
+        } else {
+            SingleTabCardContainerTopAndBottomMargin =
+                    mNewTabPageLayout.getResources().getDimensionPixelOffset(
+                            R.dimen.single_tab_card_top_and_bottom_margin_grid_mvt_tablet);
+        }
+        marginLayoutParams.topMargin = -SingleTabCardContainerTopAndBottomMargin;
+        marginLayoutParams.bottomMargin = SingleTabCardContainerTopAndBottomMargin;
     }
 
     /* Set the visibility of the single tab card.

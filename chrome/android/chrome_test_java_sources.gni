@@ -447,6 +447,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/storage/BlobUrlStoreTest.java",
   "javatests/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSitesMetadataUtilsTest.java",
   "javatests/src/org/chromium/chrome/browser/suggestions/tile/MostVisitedTilesLayoutTest.java",
+  "javatests/src/org/chromium/chrome/browser/suggestions/tile/MostVisitedTilesLayoutUnitTest.java",
   "javatests/src/org/chromium/chrome/browser/suggestions/tile/MostVisitedTilesViewBinderUnitTest.java",
   "javatests/src/org/chromium/chrome/browser/suggestions/tile/TileGroupTest.java",
   "javatests/src/org/chromium/chrome/browser/suggestions/tile/TileGroupUnitTest.java",

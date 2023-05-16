@@ -17,6 +17,7 @@ import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesPrope
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MVT_LAYOUT_VISIBLE;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.PLACEHOLDER_VIEW;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.UPDATE_INTERVAL_PADDINGS_TABLET;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -272,7 +273,8 @@ public class MostVisitedMediatorUnitTest {
     @Test
     public void testSetPortraitPaddings_NonScrollableMVT() {
         mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
-        createMediator(/*isScrollableMVTEnabled=*/false);
+        createMediator(/*isScrollableMVTEnabled=*/false,
+                /*isMultiColumnFeedOnTabletEnabled=*/false);
         mMediator.onTileDataChanged();
         Assert.assertNull(mModel.get(HORIZONTAL_EDGE_PADDINGS));
         Assert.assertNull(mModel.get(HORIZONTAL_INTERVAL_PADDINGS));
@@ -293,7 +295,8 @@ public class MostVisitedMediatorUnitTest {
     @Test
     public void testSetLandscapePaddings_NonScrollableMVT() {
         mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
-        createMediator(/*isScrollableMVTEnabled=*/false);
+        createMediator(/*isScrollableMVTEnabled=*/false,
+                /*isMultiColumnFeedOnTabletEnabled=*/false);
         mMediator.onTileDataChanged();
 
         Assert.assertNull(mModel.get(HORIZONTAL_EDGE_PADDINGS));
@@ -310,11 +313,33 @@ public class MostVisitedMediatorUnitTest {
         verify(mTemplateUrlService).removeObserver(mMediator);
     }
 
-    private void createMediator() {
-        createMediator(true);
+    @Test
+    public void testUpdateTilesViewForCarouselLayout() {
+        mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
+        createMediator(/*isScrollableMVTEnabled=*/true, /*isMultiColumnFeedOnTabletEnabled=*/true);
+        mMediator.onTileDataChanged();
+        Assert.assertEquals("The horizontal edge padding passed to the model is wrong", 0,
+                (int) mModel.get(HORIZONTAL_EDGE_PADDINGS));
+        Assert.assertFalse("The value of property UPDATE_INTERVAL_PADDINGS_TABLET passed "
+                        + "to the model is wrong",
+                mModel.get(UPDATE_INTERVAL_PADDINGS_TABLET));
+
+        mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        createMediator(/*isScrollableMVTEnabled=*/true, /*isMultiColumnFeedOnTabletEnabled=*/true);
+        mMediator.onTileDataChanged();
+        Assert.assertEquals("The horizontal edge padding passed to the model is wrong", 0,
+                (int) mModel.get(HORIZONTAL_EDGE_PADDINGS));
+        Assert.assertTrue("The value of property UPDATE_INTERVAL_PADDINGS_TABLET passed "
+                        + "to the model is wrong",
+                mModel.get(UPDATE_INTERVAL_PADDINGS_TABLET));
     }
 
-    private void createMediator(boolean isScrollableMVTEnabled) {
+    private void createMediator() {
+        createMediator(true, false);
+    }
+
+    private void createMediator(
+            boolean isScrollableMVTEnabled, boolean isMultiColumnFeedOnTabletEnabled) {
         if (!isScrollableMVTEnabled) {
             mMvTilesLayout = Mockito.mock(MostVisitedTilesGridLayout.class);
         } else {
@@ -328,7 +353,8 @@ public class MostVisitedMediatorUnitTest {
 
         mMediator = new MostVisitedTilesMediator(mResources, mUiConfig, mMvTilesLayout,
                 mNoMvPlaceholderStub, mTileRenderer, mModel, false, isScrollableMVTEnabled, false,
-                mSnapshotTileGridChangedRunnable, mTileCountChangedRunnable);
+                mSnapshotTileGridChangedRunnable, mTileCountChangedRunnable,
+                isMultiColumnFeedOnTabletEnabled);
         mMediator.initWithNative(mSuggestionsUiDelegate, mContextMenuManager, mTileGroupDelegate,
                 mOfflinePageBridge, mTileRenderer);
     }

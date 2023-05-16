@@ -161,6 +161,13 @@ found in the LICENSE file.
     <dimen name="tile_grid_layout_bottom_margin_push_down_large">64dp</dimen>
     <dimen name="tile_grid_layout_bottom_margin_pull_up">24dp</dimen>
     <dimen name="tile_carousel_layout_bottom_margin">24dp</dimen>
+    <dimen name="mvt_container_to_ntp_right_extra_margin_two_feed_tablet">16dp</dimen>
+    <dimen name="mvt_container_bottom_margin_tablet">48dp</dimen>
+    <dimen name="tile_grid_layout_landscape_edge_margin_tablet">48dp</dimen>
+    <dimen name="tile_grid_layout_portrait_edge_margin_tablet">32dp</dimen>
+    <dimen name="tile_carousel_layout_max_interval_margin_tablet">64dp</dimen>
+    <dimen name="single_tab_card_top_and_bottom_margin_carousel_mvt_tablet">48dp</dimen>
+    <dimen name="single_tab_card_top_and_bottom_margin_grid_mvt_tablet">36dp</dimen>
     <dimen name="ntp_iph_searchbox_y_inset">6dp</dimen>
     <dimen name="ntp_logo_height">100dp</dimen>
     <dimen name="ntp_logo_margin_top">26dp</dimen>

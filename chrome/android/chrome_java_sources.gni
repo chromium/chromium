@@ -1044,6 +1044,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/suggestions/tile/MostVisitedTilesCarouselLayout.java",
   "java/src/org/chromium/chrome/browser/suggestions/tile/MostVisitedTilesCoordinator.java",
   "java/src/org/chromium/chrome/browser/suggestions/tile/MostVisitedTilesGridLayout.java",
+  "java/src/org/chromium/chrome/browser/suggestions/tile/MostVisitedTilesLayout.java",
   "java/src/org/chromium/chrome/browser/suggestions/tile/MostVisitedTilesMediator.java",
   "java/src/org/chromium/chrome/browser/suggestions/tile/MostVisitedTilesProperties.java",
   "java/src/org/chromium/chrome/browser/suggestions/tile/MostVisitedTilesViewBinder.java",
