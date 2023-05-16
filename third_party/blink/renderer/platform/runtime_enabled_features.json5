@@ -679,7 +679,7 @@
       // blink::features::kComputePressure is a kill switch for the API. If the
       // feature is disabled, origin trial tokens are ignored.
       name: "ComputePressure",
-      origin_trial_feature_name: "ComputePressure",
+      origin_trial_feature_name: "ComputePressure_v2",
       status: "experimental",
       base_feature_status: "enabled",
       copied_from_base_feature_if: "overridden",
