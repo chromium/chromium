@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "gin/v8_platform_thread_isolated_allocator.h"
+#include "base/allocator/partition_allocator/partition_root.h"
 
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
 
@@ -24,15 +25,11 @@ ThreadIsolatedAllocator::~ThreadIsolatedAllocator() = default;
 
 void ThreadIsolatedAllocator::Initialize(int pkey) {
   pkey_ = pkey;
-  allocator_.init({
-      partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
-      partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-      partition_alloc::PartitionOptions::Quarantine::kDisallowed,
-      partition_alloc::PartitionOptions::Cookie::kAllowed,
-      partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
-      partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
-      partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
-      partition_alloc::ThreadIsolationOption(pkey_),
+  allocator_.init(partition_alloc::PartitionOptions{
+      .aligned_alloc =
+          partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
+      .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
+      .thread_isolation = partition_alloc::ThreadIsolationOption(pkey_),
   });
 }
 
