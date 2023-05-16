@@ -7167,6 +7167,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "tab-hover-card-images",
+    "owners": [ "dfried", "estalin" ],
+    "expiry_milestone": 116
+  },
+  {
     "name": "tab-inactivity-threshold",
     "owners": [ "alionadangla", "lpromero", "bling-flags@google.com" ],
     "expiry_milestone": 120
