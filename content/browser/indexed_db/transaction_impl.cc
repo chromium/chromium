@@ -118,11 +118,6 @@ void TransactionImpl::Put(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(dispatcher_host_);
 
-  std::vector<IndexedDBExternalObject> external_objects;
-  if (!input_value->external_objects.empty()) {
-    CreateExternalObjects(input_value, &external_objects);
-  }
-
   if (!transaction_) {
     IndexedDBDatabaseError error(blink::mojom::IDBException::kUnknownError,
                                  "Unknown transaction.");
@@ -151,7 +146,14 @@ void TransactionImpl::Put(
     return;
   }
 
-  uint64_t commit_size = input_value->bits.size() + key.size_estimate();
+  std::vector<IndexedDBExternalObject> external_objects;
+  uint64_t total_blob_size = 0;
+  if (!input_value->external_objects.empty()) {
+    total_blob_size = CreateExternalObjects(input_value, &external_objects);
+  }
+
+  transaction_->set_size(input_value->bits.size() + key.size_estimate() +
+                         total_blob_size);
   std::unique_ptr<IndexedDBDatabase::PutOperationParams> params(
       std::make_unique<IndexedDBDatabase::PutOperationParams>());
   IndexedDBValue& output_value = params->value;
@@ -179,13 +181,9 @@ void TransactionImpl::Put(
   transaction_->ScheduleTask(BindWeakOperation(
       &IndexedDBDatabase::PutOperation, connection->database()->AsWeakPtr(),
       std::move(params)));
-
-  // Size can't be big enough to overflow because it represents the
-  // actual bytes passed through IPC.
-  transaction_->set_size(transaction_->size() + commit_size);
 }
 
-void TransactionImpl::CreateExternalObjects(
+uint64_t TransactionImpl::CreateExternalObjects(
     blink::mojom::IDBValuePtr& value,
     std::vector<IndexedDBExternalObject>* external_objects) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -220,6 +218,7 @@ void TransactionImpl::CreateExternalObjects(
         break;
     }
   }
+  return total_blob_size.ValueOrDie();
 }
 
 void TransactionImpl::Commit(int64_t num_errors_handled) {
