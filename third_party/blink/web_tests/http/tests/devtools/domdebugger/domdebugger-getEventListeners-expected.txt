@@ -6,7 +6,7 @@ Running: testSetUp
 Running: testWindowEventListeners
 type: scroll
 useCapture: true
-location: 11:22
+location: 13:22
 handler: function foo() {}
 sourceURL: domdebugger-getEventListeners.js
 
@@ -14,7 +14,7 @@ sourceURL: domdebugger-getEventListeners.js
 Running: testDivEventListeners
 type: click
 useCapture: true
-location: 12:22
+location: 14:22
 handler: function boo() {}
 sourceURL: domdebugger-getEventListeners.js
 
@@ -28,7 +28,7 @@ sourceURL: inspected-page.html
 
 type: mouseout
 useCapture: false
-location: 11:22
+location: 13:22
 handler: function foo() {}
 sourceURL: domdebugger-getEventListeners.js
 
