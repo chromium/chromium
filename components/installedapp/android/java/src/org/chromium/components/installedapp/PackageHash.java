@@ -9,15 +9,13 @@ import android.util.SparseArray;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.ByteArrayGenerator;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -59,12 +57,8 @@ class PackageHash {
         byte[] salt = sSaltMap.get(browserContext.hashCode());
         if (salt != null) return salt;
 
-        try {
-            salt = new ByteArrayGenerator().getBytes(20);
-        } catch (IOException | GeneralSecurityException e) {
-            // If this happens, the crypto source is messed up and we want the browser to crash.
-            throw new RuntimeException(e);
-        }
+        salt = new byte[20];
+        new SecureRandom().nextBytes(salt);
         sSaltMap.put(browserContext.hashCode(), salt);
         return salt;
     }
