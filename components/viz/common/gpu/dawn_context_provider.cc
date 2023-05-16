@@ -83,6 +83,7 @@ wgpu::Device DawnContextProvider::CreateDevice(wgpu::BackendType type) {
   features.push_back(wgpu::FeatureName::DawnInternalUsages);
   features.push_back(wgpu::FeatureName::DepthClipControl);
   features.push_back(wgpu::FeatureName::Depth32FloatStencil8);
+  features.push_back(wgpu::FeatureName::ImplicitDeviceSynchronization);
 
   descriptor.requiredFeatures = features.data();
   descriptor.requiredFeaturesCount = features.size();
