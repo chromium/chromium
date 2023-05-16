@@ -381,6 +381,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://linux-proxy-config",
     "chrome://manage-mirrorsync",
     "chrome://multidevice-internals",
+    "chrome://multidevice-setup",
     "chrome://nearby-internals",
     "chrome://network",
     "chrome://office-fallback/",

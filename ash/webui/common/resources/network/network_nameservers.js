@@ -85,8 +85,10 @@ Polymer({
     googleNameserversText_: {
       type: String,
       value() {
-        return this.i18nAdvanced(
-            'networkNameserversGoogle', {substitutions: [], tags: ['a']});
+        return this
+            .i18nAdvanced(
+                'networkNameserversGoogle', {substitutions: [], tags: ['a']})
+            .toString();
       },
     },
 

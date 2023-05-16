@@ -73,8 +73,9 @@ suite('CrComponentsBluetoothPairingDeviceSelectionPageTest', function() {
         deviceSelectionPage.shadowRoot.querySelector('localized-link');
     assertTrue(!!getLearnMoreLink());
     assertEquals(
-        getLearnMoreLink().localizedString,
-        deviceSelectionPage.i18nAdvanced('bluetoothPairingLearnMoreLabel'));
+        getLearnMoreLink().localizedString.toString(),
+        deviceSelectionPage.i18nAdvanced('bluetoothPairingLearnMoreLabel')
+            .toString());
 
     const getLearnMoreDescription = () =>
         deviceSelectionPage.shadowRoot.querySelector('#learn-more-description');

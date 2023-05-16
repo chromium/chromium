@@ -80,7 +80,7 @@ export const I18nBehavior = {
    * Polymer bindings that are inner-h-t-m-l, for example.
    * @param {string} id The ID of the string to translate.
    * @param {SanitizeInnerHtmlOpts=} opts
-   * @return {string}
+   * @return {TrustedHTML}
    */
   i18nAdvanced(id, opts) {
     opts = opts || {};
