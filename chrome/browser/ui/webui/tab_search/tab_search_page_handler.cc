@@ -463,11 +463,12 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
         web_ui_->GetWebContents()->GetColorProvider();
     const gfx::ImageSkia default_favicon =
         favicon::GetDefaultFaviconModel().Rasterize(&provider);
+    const gfx::ImageSkia raster_favicon =
+        tab_renderer_data.favicon.Rasterize(&provider);
     tab_data->favicon_url = GURL(webui::EncodePNGAndMakeDataURI(
-        default_favicon, web_ui_->GetDeviceScaleFactor()));
+        raster_favicon, web_ui_->GetDeviceScaleFactor()));
     tab_data->is_default_favicon =
-        tab_renderer_data.favicon.Rasterize(&provider).BackedBySameObjectAs(
-            default_favicon);
+        raster_favicon.BackedBySameObjectAs(default_favicon);
   }
 
   tab_data->show_icon = tab_renderer_data.show_icon;
