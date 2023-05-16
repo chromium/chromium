@@ -401,8 +401,6 @@
       'Win 10 Fast Ring': 'release_trybot_minimal_symbols_reclient',
       'Win x64 Builder (reclient compare)': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Win x64 Builder (reclient)': 'gpu_tests_release_bot_minimal_symbols_reclient',
-      'android-backuprefptr-arm-fyi-rel': 'release_trybot_backuprefptr_arm_reclient',
-      'android-backuprefptr-arm64-fyi-rel': 'release_trybot_backuprefptr_arm64_reclient',
       'android-build-perf-developer': 'android_developer',
       'android-fieldtrial-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
       'android-perfetto-rel': 'perfetto_release_bot_reclient_android',
@@ -447,7 +445,6 @@
       'lacros-arm-generic-rel-skylab-fyi': 'chromeos_arm-generic_lacros_rel_skylab_reclient',
       'lacros-arm64-generic-rel-skylab-fyi': 'chromeos_arm64-generic_lacros_rel_skylab_reclient',
       'linux-annotator-rel': 'release_bot_reclient',
-      'linux-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64_reclient',
       'linux-blink-animation-use-time-delta': 'debug_bot_enable_blink_animation_use_time_delta_reclient',
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_minimal_symbols_tsan',
       'linux-blink-heap-verification': 'release_bot_enable_blink_heap_verification_dcheck_always_on_reclient',
@@ -473,7 +470,6 @@
       'linux-wpt-fyi-rel': 'release_trybot_minimal_symbols_reclient',
       'linux-wpt-identity-fyi-rel': 'release_bot_minimal_symbols_reclient',
       'linux-wpt-input-fyi-rel': 'release_bot_minimal_symbols_reclient',
-      'mac-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64_reclient',
       'mac-cr23-rel': 'release_bot_minimal_symbols_reclient',
       'mac-osxbeta-rel': 'gpu_tests_debug_trybot_reclient',
       'mac-perfetto-rel': 'perfetto_release_bot_reclient',
@@ -485,8 +481,6 @@
       'mac13-arm64-wpt-content-shell-fyi-rel': 'mac_arm64_release_bot_reclient',
       'mac13-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
       'win-annotator-rel': 'release_bot_reclient',
-      'win-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64_reclient',
-      'win-backuprefptr-x86-fyi-rel': 'release_trybot_backuprefptr_x86_reclient',
       'win-build-perf-developer': 'developer',
       'win-celab-builder-rel': 'release_bot_minimal_symbols_reclient',
       'win-cr23-rel': 'release_bot_minimal_symbols_reclient',
@@ -3515,22 +3509,6 @@
       'release_trybot',
     ],
 
-    'release_trybot_backuprefptr_arm64_reclient': [
-      'release_trybot_blink', 'no_goma', 'reclient', 'backuprefptr', 'android', 'arm64',
-    ],
-
-    'release_trybot_backuprefptr_arm_reclient': [
-      'release_trybot_blink', 'no_goma', 'reclient', 'backuprefptr', 'android', 'arm',
-    ],
-
-    'release_trybot_backuprefptr_x64_reclient': [
-      'release_trybot_blink', 'no_goma', 'reclient', 'backuprefptr', 'x64',
-    ],
-
-    'release_trybot_backuprefptr_x86_reclient': [
-      'release_trybot_blink', 'no_goma', 'reclient', 'backuprefptr', 'x86',
-    ],
-
     'release_trybot_blink': [
       'release_trybot_blink',
     ],
@@ -3806,10 +3784,6 @@
 
     'asan': {
       'gn_args': 'is_asan=true',
-    },
-
-    'backuprefptr': {
-      'gn_args': 'use_partition_alloc_as_malloc=true enable_backup_ref_ptr_support=true put_ref_count_in_previous_slot=true enable_backup_ref_ptr_slow_checks=true',
     },
 
     'betty-arc-r': {

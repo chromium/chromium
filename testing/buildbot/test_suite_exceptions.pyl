@@ -1247,11 +1247,6 @@
           'shards': 60,
         },
       },
-      'win-backuprefptr-x64-fyi-rel': {
-       'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/win_backuprefptr_fyi.browser_tests.filter',
-        ],
-      },
       'win-rel-cft': {
         'args': [
           # crbug.com/868082

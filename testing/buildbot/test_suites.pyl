@@ -295,44 +295,6 @@
       'wm_unittests': {},
     },
 
-    'backuprefptr_generic_gtests': {
-      'base_unittests': {},
-      'blink_common_unittests': {},
-      'blink_platform_unittests': {},
-      'cast_unittests': {},
-      'cc_unittests': {},
-      'components_unittests': {
-        'android_swarming': {
-          'shards': 6,
-        },
-      },
-      'content_browsertests': {
-        'android_swarming': {
-          'shards': 15,
-        },
-        'swarming': {
-          'shards': 8,
-        },
-      },
-      'content_unittests': {
-        'android_swarming': {
-          'shards': 3,
-        },
-      },
-      'unit_tests': {
-        'android_swarming': {
-          'shards': 2,
-        },
-      },
-      'webkit_unit_tests': {
-        'test': 'blink_unittests',
-        'android_swarming': {
-          'shards': 6,
-        },
-      },
-      'wtf_unittests': {},
-    },
-
     'bfcache_android_specific_gtests': {
       'bf_cache_android_browsertests': {
         'args': [
@@ -5931,10 +5893,6 @@
       'webview_64_cts_tests_gtest',
       'webview_ui_instrumentation_tests',
       'webengine_android_gtests',
-    ],
-
-    'backuprefptr_gtests': [
-      'backuprefptr_generic_gtests',
     ],
 
     'bfcache_android_gtests': [

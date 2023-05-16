@@ -358,44 +358,6 @@
       "use_remoteexec": true
     }
   },
-  "android-backuprefptr-arm-fyi-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "debuggable_apks": false,
-      "enable_backup_ref_ptr_slow_checks": true,
-      "enable_backup_ref_ptr_support": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "put_ref_count_in_previous_slot": true,
-      "symbol_level": 1,
-      "target_cpu": "arm",
-      "target_os": "android",
-      "use_goma": false,
-      "use_partition_alloc_as_malloc": true,
-      "use_remoteexec": true
-    }
-  },
-  "android-backuprefptr-arm64-fyi-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "debuggable_apks": false,
-      "enable_backup_ref_ptr_slow_checks": true,
-      "enable_backup_ref_ptr_support": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "put_ref_count_in_previous_slot": true,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
-      "target_os": "android",
-      "use_goma": false,
-      "use_partition_alloc_as_malloc": true,
-      "use_remoteexec": true
-    }
-  },
   "android-build-perf-developer": {
     "gn_args": {
       "enable_nacl": false,
@@ -904,23 +866,6 @@
       "use_remoteexec": true
     }
   },
-  "linux-backuprefptr-x64-fyi-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "enable_backup_ref_ptr_slow_checks": true,
-      "enable_backup_ref_ptr_support": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "put_ref_count_in_previous_slot": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "use_goma": false,
-      "use_partition_alloc_as_malloc": true,
-      "use_remoteexec": true
-    }
-  },
   "linux-blink-animation-use-time-delta": {
     "gn_args": {
       "blink_animation_use_time_delta": true,
@@ -1172,23 +1117,6 @@
       "use_remoteexec": true
     }
   },
-  "mac-backuprefptr-x64-fyi-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "enable_backup_ref_ptr_slow_checks": true,
-      "enable_backup_ref_ptr_support": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "put_ref_count_in_previous_slot": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "use_goma": false,
-      "use_partition_alloc_as_malloc": true,
-      "use_remoteexec": true
-    }
-  },
   "mac-cr23-rel": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -1286,40 +1214,6 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "use_remoteexec": true
-    }
-  },
-  "win-backuprefptr-x64-fyi-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "enable_backup_ref_ptr_slow_checks": true,
-      "enable_backup_ref_ptr_support": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "put_ref_count_in_previous_slot": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "use_goma": false,
-      "use_partition_alloc_as_malloc": true,
-      "use_remoteexec": true
-    }
-  },
-  "win-backuprefptr-x86-fyi-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "enable_backup_ref_ptr_slow_checks": true,
-      "enable_backup_ref_ptr_support": true,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "put_ref_count_in_previous_slot": true,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_goma": false,
-      "use_partition_alloc_as_malloc": true,
       "use_remoteexec": true
     }
   },
