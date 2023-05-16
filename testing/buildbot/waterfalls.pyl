@@ -2762,7 +2762,7 @@
         'os_type': 'fuchsia',
         'mixins': [
           'isolate_profile_data',
-          'linux-bionic',
+          'linux-jammy',
         ],
         'swarming': {
           'dimension_sets': [
