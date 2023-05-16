@@ -299,6 +299,20 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHBackNavigationMenuFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger = EventConfig("back_navigation_menu_iph_is_triggered",
+                                  Comparator(LESS_THAN_OR_EQUAL, 4), 360, 360);
+    config->used = EventConfig("back_navigation_menu_is_opened",
+                               Comparator(EQUAL, 0), 7, 360);
+    config->snooze_params.snooze_interval = 7;
+    config->snooze_params.max_limit = 4;
+    return config;
+  }
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
