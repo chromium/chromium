@@ -158,6 +158,7 @@ class PathContext(object):
       # below where these are patched.
       self.archive_name = 'chrome-win32.zip'
       self._archive_extract_dir = 'chrome-win32'
+      self._binary_name = 'chrome.exe'
     elif self.platform in ('android', 'android64'):
       self._binary_name = 'apks/ChromePublic.apk'
       self.archive_name = 'chrome-android.zip'
