@@ -348,7 +348,7 @@ void ScopedStyleResolver::AddFontFeatureValuesRules(const RuleSet& rule_set) {
   for (auto& rule : font_feature_values_rules) {
     for (auto& font_family : rule->GetFamilies()) {
       unsigned layer_order = CascadeLayerMap::kImplicitOuterLayerOrder;
-      if (cascade_layer_map_) {
+      if (cascade_layer_map_ && rule->GetCascadeLayer() != nullptr) {
         layer_order =
             cascade_layer_map_->GetLayerOrder(*rule->GetCascadeLayer());
       }
