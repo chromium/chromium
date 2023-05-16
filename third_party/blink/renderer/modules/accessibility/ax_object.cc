@@ -598,46 +598,6 @@ AXObject::~AXObject() {
   --number_of_live_ax_objects_;
 }
 
-void AXObject::SetAncestorsHaveDirtyDescendants() const {
-  if (!RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
-    return;
-  }
-  for (auto* obj = CachedParentObject(); obj; obj = obj->CachedParentObject()) {
-    DCHECK(!obj->IsDetached());
-    // We need to to continue setting bits through AX objects for which
-    // LastKnownIsIncludedInTreeValue is false, since those objects are omitted
-    // from the generated tree.
-    if (obj->has_dirty_descendants_ && obj->LastKnownIsIncludedInTreeValue()) {
-      break;
-    }
-    obj->has_dirty_descendants_ = true;
-  }
-#if DCHECK_IS_ON()
-  // Walk up the tree looking for dirty bits that failed to be set. If any
-  // are found, this is a bug.
-  if (!AXObjectCache().UpdatingTree()) {
-    bool fail = false;
-    for (auto* obj = CachedParentObject(); obj;
-         obj = obj->CachedParentObject()) {
-      if (!obj->has_dirty_descendants_) {
-        fail = true;
-        break;
-      }
-    }
-    if (fail) {
-      LOG(ERROR) << "Failed to set dirty bits on some objects in the ancestor"
-                    "chain. Bits set: ";
-      for (auto* obj = this; obj; obj = obj->CachedParentObject()) {
-        LOG(ERROR) << "has_dirty_descendants_: " << obj->has_dirty_descendants_
-                   << " object: " << obj->AXObjectID()
-                   << " detached: " << obj->IsDetached();
-      }
-      DCHECK(false);
-    }
-  }
-#endif
-}
-
 void AXObject::Init(AXObject* parent) {
 #if DCHECK_IS_ON()
   DCHECK(!parent_) << "Should not already have a cached parent:"
@@ -733,7 +693,6 @@ void AXObject::Detach() {
   parent_ = nullptr;
   ax_object_cache_ = nullptr;
   children_dirty_ = false;
-  has_dirty_descendants_ = false;
   id_ = 0;
 }
 
@@ -797,7 +756,6 @@ void AXObject::SetParent(AXObject* new_parent) const {
 
 #endif
   parent_ = new_parent;
-  SetAncestorsHaveDirtyDescendants();
 }
 
 bool AXObject::IsMissingParent() const {
@@ -5515,7 +5473,6 @@ void AXObject::SetNeedsToUpdateChildren() const {
     return;
   children_dirty_ = true;
   ClearChildren();
-  SetAncestorsHaveDirtyDescendants();
 }
 
 // static

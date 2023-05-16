@@ -252,10 +252,6 @@
       base_feature: "none",
     },
     {
-      name: "AccessibilityEagerAXTreeUpdate",
-      status: "stable",
-    },
-    {
       name: "AccessibilityExposeDisplayNone",
       status: "test",
       base_feature: "none",
