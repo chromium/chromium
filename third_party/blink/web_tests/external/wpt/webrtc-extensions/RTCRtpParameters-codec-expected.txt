@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+PASS Codec should be undefined by default on audio encodings
+PASS Codec should be undefined by default on video encodings
+FAIL Creating an audio sender with addTransceiver and codec should work promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'mimeType')"
+FAIL Creating a video sender with addTransceiver and codec should work promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'mimeType')"
+FAIL Setting codec on an audio sender with setParameters should work promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'mimeType')"
+FAIL Setting codec on a video sender with setParameters should work promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'mimeType')"
+FAIL Creating an audio sender with addTransceiver and non-existing codec should throw OperationError assert_throws_dom: function "() => pc.addTransceiver('video', {
+      sendEncodings: [{codec: newCodec}],
+    })" did not throw
+FAIL Creating a video sender with addTransceiver and non-existing codec should throw OperationError assert_throws_dom: function "() => pc.addTransceiver('video', {
+      sendEncodings: [{codec: newCodec}],
+    })" did not throw
+FAIL Setting a non-existing codec on an audio sender with setParameters should throw InvalidModificationError assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Setting a non-existing codec on a video sender with setParameters should throw InvalidModificationError assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Setting a non-preferred codec on an audio sender with setParameters should throw InvalidModificationError assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Setting a non-preferred codec on a video sender with setParameters should throw InvalidModificationError assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Setting a non-negotiated codec on an audio sender with setParameters should throw InvalidModificationError assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Setting a non-negotiated codec on a video sender with setParameters should throw InvalidModificationError assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Codec should be undefined after negotiating away the currently set codec on an audio sender promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'mimeType')"
+FAIL Codec should be undefined after negotiating away the currently set codec on a video sender promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'mimeType')"
+FAIL Stats output-rtp should match the selected codec in non-simulcast usecase on an audio sender assert_array_equals: expected property 0 to be "audio/opus" but got "audio/G722" (expected array ["audio/opus"] got ["audio/G722"])
+FAIL Stats output-rtp should match the selected codec in non-simulcast usecase on a video sender assert_array_equals: expected property 0 to be "video/VP8" but got "video/H264" (expected array ["video/VP8"] got ["video/H264"])
+Harness: the test ran to completion.
+
