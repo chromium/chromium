@@ -5043,6 +5043,7 @@ if (is_chromeos_lacros) {
       "../browser/chromeos/video_conference/video_conference_manager_client_browsertest.cc",
       "../browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_lacros_apitest.cc",
       "../browser/extensions/api/networking_private/networking_private_chromeos_apitest.cc",
+      "../browser/extensions/api/offscreen/offscreen_api_lacros_browsertest.cc",
       "../browser/extensions/api/preference/preference_api_lacros_browsertest.cc",
       "../browser/extensions/api/proxy/proxy_apitest.cc",
       "../browser/extensions/api/vpn_provider/vpn_provider_apitest.cc",
