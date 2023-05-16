@@ -75,6 +75,20 @@ export class RecentlyUsedStore {
     save(this.storeName, this.data);
   }
 
+  clearItem(category: CategoryEnum, item: EmojiVariants) {
+    if (category === CategoryEnum.GIF) {
+      this.data.history = this.data.history.filter(
+        x =>
+          (x.base.visualContent &&
+            x.base.visualContent.id !== item.base.visualContent?.id));
+    } else {
+      this.data.history = this.data.history.filter(
+        x =>
+          (x.base.string && x.base.string !== item.base.string));
+    }
+    save(this.storeName, this.data);
+  }
+
   /**
    * Moves the given item to the front of the MRU list, inserting it if
    * it did not previously exist.

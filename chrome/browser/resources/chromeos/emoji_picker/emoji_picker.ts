@@ -600,7 +600,8 @@ export class EmojiPicker extends PolymerElement {
 
   private clearRecentEmoji(event: events.EmojiClearRecentClickEvent) {
     const category = event.detail.category;
-    this.clearHistoryData(category);
+    const item = event.detail.item;
+    this.clearHistoryData(category, item);
     afterNextRender(this, () => {
       this.updateActiveGroup();
       this.updateHistoryTabDisabledProperty();
@@ -1099,14 +1100,19 @@ export class EmojiPicker extends PolymerElement {
   }
 
   /**
-   * Clears history items for a category.
+   * Clears history item(s) for a category.
    */
-  private clearHistoryData(category: CategoryEnum) {
+  private clearHistoryData(category: CategoryEnum, item?: EmojiVariants) {
     if (this.incognito) {
       return;
     }
 
-    this.categoriesHistory[category]?.clearRecents();
+    if (item === undefined) {
+      this.categoriesHistory[category]?.clearRecents();
+    } else {
+      this.categoriesHistory[category]?.clearItem(category, item);
+    }
+
     this.categoryHistoryUpdated(category, true, false);
   }
 
