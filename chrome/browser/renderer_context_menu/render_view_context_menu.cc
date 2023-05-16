@@ -1108,7 +1108,8 @@ void RenderViewContextMenu::InitMenu() {
   // Show Read Anything option if text is selected and if it's not already open
   // in the side panel.
   if (features::IsReadAnythingEnabled()) {
-    if (GetBrowser() && !IsReadAnythingEntryShowing(GetBrowser()) &&
+    if (GetBrowser() && GetBrowser()->is_type_normal() &&
+        !IsReadAnythingEntryShowing(GetBrowser()) &&
         (content_type_->SupportsGroup(
              ContextMenuContentType::ITEM_GROUP_COPY) ||
          content_type_->SupportsGroup(
