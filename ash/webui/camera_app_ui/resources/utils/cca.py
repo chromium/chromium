@@ -634,7 +634,6 @@ SVG_ALLOWLIST = [
     'images/barcode_scan_box_border_mask.svg',
 
     # SVGs that are not migrated to dynamic color yet.
-    'images/camera_focus_aim.svg',
     'images/camera_intent_result_cancel.svg',
     'images/camera_intent_result_confirm.svg',
 ]

@@ -854,6 +854,8 @@ body.mirror #preview-document-corner-overlay .corner-container {
 }
 
 #preview-focus-aim {
+  color: var(--cros-sys-ripple_primary);
+  --secondary-color: var(--cros-sys-focus_ring);
   position: absolute;
   transform: translate(-50%, -50%);
 }
