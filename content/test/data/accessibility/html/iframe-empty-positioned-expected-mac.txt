@@ -1,6 +1,5 @@
 AXWebArea
 ++AXGroup
-++++AXGroup
-++++++AXWebArea
-++++AXGroup
-++++++AXWebArea
+++++AXWebArea
+++AXGroup
+++++AXWebArea

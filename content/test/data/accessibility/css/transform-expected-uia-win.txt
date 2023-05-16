@@ -1,5 +1,4 @@
 Document
 ++Group BoundingRectangle=(0, 50, 48, 18) IsControlElement=false
 ++++Group BoundingRectangle=(0, 50, 48, 18) IsControlElement=false
-++++++Group BoundingRectangle=(0, 50, 48, 18) IsControlElement=false
-++++++++Text BoundingRectangle=(0, 50, 48, 17) Name='content'
+++++++Text BoundingRectangle=(0, 50, 48, 17) Name='content'

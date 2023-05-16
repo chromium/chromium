@@ -1,6 +1,6 @@
 UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
-++++UNKNOWN
+++++UNKNOWN hidden
 ++++++UNKNOWN
 ++++++++UNKNOWN focusable
 ++++++++++UNKNOWN hidden

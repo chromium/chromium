@@ -1,8 +1,7 @@
 Document
-++Group IsControlElement=false
-++++Document IsControlElement=false
-++++++Document
-++++++++Image
-++++Document IsControlElement=false
-++++++Document
-++++++++Image
+++Document IsControlElement=false
+++++Document
+++++++Image
+++Document IsControlElement=false
+++++Document
+++++++Image

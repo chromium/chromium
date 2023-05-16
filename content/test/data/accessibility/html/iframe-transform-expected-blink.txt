@@ -1,6 +1,6 @@
 rootWebArea pageLocation=(0, 0)
 ++genericContainer ignored
-++++genericContainer pageLocation=(0, 0)
+++++genericContainer ignored
 ++++++iframe pageLocation=(0, 0)
 ++++++++rootWebArea pageLocation=(0, 0)
 ++++++++++genericContainer ignored
