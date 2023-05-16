@@ -62,10 +62,11 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   // system to that of the client view.
   void ConvertPointToClientView(EditingHandleView* source, gfx::Point* point);
 
-  // Convenience method to update a handle's selection bound and visibility.
-  void UpdateHandle(EditingHandleView* handle,
-                    const gfx::SelectionBound& bound_in_screen,
-                    bool should_show_handle);
+  // Convenience method to set a handle's selection bound and hide it if it is
+  // located out of client view.
+  void SetHandleBound(EditingHandleView* handle,
+                      const gfx::SelectionBound& bound,
+                      const gfx::SelectionBound& bound_in_screen);
 
   // Checks if handle should be shown for selection bound.
   // |bound| should be the clipped version of the selection bound.
