@@ -39,7 +39,7 @@ void ShowInProgressDownloads(Profile* profile) {
   DownloadCoreService* download_core_service =
       DownloadCoreServiceFactory::GetForBrowserContext(profile);
   if (download_core_service &&
-      download_core_service->NonMaliciousDownloadCount() > 0) {
+      download_core_service->BlockingShutdownCount() > 0) {
     chrome::ScopedTabbedBrowserDisplayer displayer(profile);
     chrome::ShowDownloads(displayer.browser());
   }
@@ -105,8 +105,7 @@ void BrowserCloseManager::CheckForDownloadsInProgress() {
   // Mac has its own in-progress downloads prompt in app_controller_mac.mm.
   CloseBrowsers();
 #else
-  int download_count =
-      DownloadCoreService::NonMaliciousDownloadCountAllProfiles();
+  int download_count = DownloadCoreService::BlockingShutdownCountAllProfiles();
   if (download_count == 0) {
     CloseBrowsers();
     return;

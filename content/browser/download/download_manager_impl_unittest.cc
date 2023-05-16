@@ -248,6 +248,7 @@ download::DownloadItemImpl* MockDownloadItemFactory::CreatePersistedItem(
   EXPECT_CALL(*result, GetId())
       .WillRepeatedly(Return(download_id));
   EXPECT_CALL(*result, GetGuid()).WillRepeatedly(ReturnRefOfCopy(guid));
+  EXPECT_CALL(*result, IsTransient()).WillRepeatedly(Return(transient));
   items_[download_id] = result;
   return result;
 }
@@ -302,6 +303,7 @@ download::DownloadItemImpl* MockDownloadItemFactory::CreateActiveItem(
       .WillRepeatedly(Return(download::DOWNLOAD_INTERRUPT_REASON_NONE));
   EXPECT_CALL(*result, IsPaused()).WillRepeatedly(Return(false));
   EXPECT_CALL(*result, IsTemporary()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*result, IsTransient()).WillRepeatedly(Return(info.transient));
 
   if (is_download_persistent_) {
     EXPECT_CALL(*result, RemoveObserver(_));
@@ -894,6 +896,35 @@ TEST_F(DownloadManagerTest,
     EXPECT_EQ(
         deserialized_fallback_spc.fallback_to_partition_domain_for_blob_urls(),
         fallback_pair.first);
+  }
+}
+
+TEST_F(DownloadManagerTest, BlockingShutdownCount) {
+  download::MockDownloadItemImpl& item(AddItemToManager());
+
+  EXPECT_CALL(item, GetState())
+      .WillRepeatedly(Return(download::DownloadItem::COMPLETE));
+  EXPECT_EQ(download_manager_->BlockingShutdownCount(), 0);
+
+  EXPECT_CALL(item, GetState())
+      .WillRepeatedly(Return(download::DownloadItem::IN_PROGRESS));
+  EXPECT_EQ(download_manager_->BlockingShutdownCount(), 1);
+
+  const download::DownloadDangerType kDangerTypes[] = {
+      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL,
+      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT,
+      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST,
+      download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
+      download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS,
+      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
+      download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING};
+  for (download::DownloadDangerType danger_type : kDangerTypes) {
+    SCOPED_TRACE(testing::Message()
+                 << "Failed for danger type "
+                 << download::GetDownloadDangerTypeString(danger_type)
+                 << std::endl);
+    EXPECT_CALL(item, GetDangerType()).WillRepeatedly(Return(danger_type));
+    EXPECT_EQ(download_manager_->BlockingShutdownCount(), 0);
   }
 }
 

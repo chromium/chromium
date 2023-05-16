@@ -53,15 +53,15 @@ class DownloadCoreService : public KeyedService {
   // Has a download manager been created?
   virtual bool HasCreatedDownloadManager() = 0;
 
-  // Number of non-malicious downloads associated with this instance of the
+  // Number of downloads blocking shutdown associated with this instance of the
   // service.
-  virtual int NonMaliciousDownloadCount() const = 0;
+  virtual int BlockingShutdownCount() const = 0;
 
   // Cancels all in-progress downloads for this profile.
   virtual void CancelDownloads() = 0;
 
-  // Number of non-malicious downloads associated with all profiles.
-  static int NonMaliciousDownloadCountAllProfiles();
+  // Number of downloads blocking shutdown associated with all profiles.
+  static int BlockingShutdownCountAllProfiles();
 
   // Cancels all in-progress downloads for all profiles.
   static void CancelAllDownloads();

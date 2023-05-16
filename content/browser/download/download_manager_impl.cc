@@ -1222,7 +1222,7 @@ int DownloadManagerImpl::InProgressCount() {
   return count;
 }
 
-int DownloadManagerImpl::NonMaliciousInProgressCount() {
+int DownloadManagerImpl::BlockingShutdownCount() {
   int count = 0;
   for (const auto& it : downloads_by_guid_) {
     download::DownloadItemImpl* download = it.second;
@@ -1241,7 +1241,11 @@ int DownloadManagerImpl::NonMaliciousInProgressCount() {
           download->GetDangerType() !=
               download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS &&
           it.second->GetDangerType() !=
-              download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE) {
+              download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE &&
+          it.second->GetDangerType() !=
+              download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT &&
+          it.second->GetDangerType() !=
+              download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
         ++count;
       }
     }

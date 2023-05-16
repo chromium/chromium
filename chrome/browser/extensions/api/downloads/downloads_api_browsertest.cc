@@ -551,7 +551,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
   DownloadItem* CreateFirstSlowTestDownload() {
     DownloadManager* manager = GetCurrentManager();
 
-    EXPECT_EQ(0, manager->NonMaliciousInProgressCount());
+    EXPECT_EQ(0, manager->BlockingShutdownCount());
     EXPECT_EQ(0, manager->InProgressCount());
     if (manager->InProgressCount() != 0)
       return nullptr;
@@ -4337,7 +4337,7 @@ IN_PROC_BROWSER_TEST_F(
     std::unique_ptr<content::DownloadTestObserver> observer(
         new JustInProgressDownloadObserver(manager, 1));
     ASSERT_EQ(0, manager->InProgressCount());
-    ASSERT_EQ(0, manager->NonMaliciousInProgressCount());
+    ASSERT_EQ(0, manager->BlockingShutdownCount());
     // Tabs created just for a download are automatically closed, invalidating
     // the download's WebContents. Downloads without WebContents cannot be
     // resumed. http://crbug.com/225901

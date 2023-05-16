@@ -934,7 +934,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest, TestWithDownloads) {
   WaitForAllBrowsersToClose();
   EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
-  EXPECT_EQ(1, DownloadCoreService::NonMaliciousDownloadCountAllProfiles());
+  EXPECT_EQ(1, DownloadCoreService::BlockingShutdownCountAllProfiles());
 
   // Attempting to close again should not crash.
   TestBrowserCloseManager::AttemptClose(
@@ -966,10 +966,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 
   // Check that the download manager has the expected state.
   EXPECT_EQ(1, browser()->profile()->GetDownloadManager()->InProgressCount());
-  EXPECT_EQ(0, browser()
-                   ->profile()
-                   ->GetDownloadManager()
-                   ->NonMaliciousInProgressCount());
+  EXPECT_EQ(
+      0, browser()->profile()->GetDownloadManager()->BlockingShutdownCount());
 
   // Close the browser with no user action.
   TestBrowserCloseManager::AttemptClose(
@@ -999,9 +997,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest, TestWithDownloads) {
   EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
   if (browser_defaults::kBrowserAliveWithNoWindows)
-    EXPECT_EQ(1, DownloadCoreService::NonMaliciousDownloadCountAllProfiles());
+    EXPECT_EQ(1, DownloadCoreService::BlockingShutdownCountAllProfiles());
   else
-    EXPECT_EQ(0, DownloadCoreService::NonMaliciousDownloadCountAllProfiles());
+    EXPECT_EQ(0, DownloadCoreService::BlockingShutdownCountAllProfiles());
 }
 
 // Test shutdown with a download in progress in an off-the-record profile.
@@ -1030,7 +1028,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   ui_test_utils::WaitForBrowserToClose();
   EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
-  EXPECT_EQ(0, DownloadCoreService::NonMaliciousDownloadCountAllProfiles());
+  EXPECT_EQ(0, DownloadCoreService::BlockingShutdownCountAllProfiles());
 }
 
 // Test shutdown with a download in progress in a regular profile an inconito
@@ -1076,9 +1074,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
   if (browser_defaults::kBrowserAliveWithNoWindows)
-    EXPECT_EQ(1, DownloadCoreService::NonMaliciousDownloadCountAllProfiles());
+    EXPECT_EQ(1, DownloadCoreService::BlockingShutdownCountAllProfiles());
   else
-    EXPECT_EQ(0, DownloadCoreService::NonMaliciousDownloadCountAllProfiles());
+    EXPECT_EQ(0, DownloadCoreService::BlockingShutdownCountAllProfiles());
 }
 
 // Test shutdown with a download in progress from one profile, where the only
@@ -1130,9 +1128,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   EXPECT_TRUE(browser_shutdown::IsTryingToQuit());
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
   if (browser_defaults::kBrowserAliveWithNoWindows)
-    EXPECT_EQ(1, DownloadCoreService::NonMaliciousDownloadCountAllProfiles());
+    EXPECT_EQ(1, DownloadCoreService::BlockingShutdownCountAllProfiles());
   else
-    EXPECT_EQ(0, DownloadCoreService::NonMaliciousDownloadCountAllProfiles());
+    EXPECT_EQ(0, DownloadCoreService::BlockingShutdownCountAllProfiles());
 }
 
 // Fails on ChromeOS and Linux, times out on Win. crbug.com/749098

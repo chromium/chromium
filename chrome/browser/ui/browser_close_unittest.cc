@@ -70,7 +70,7 @@ class TestingDownloadCoreService : public DownloadCoreService {
 #endif
   bool HasCreatedDownloadManager() override { return true; }
 
-  int NonMaliciousDownloadCount() const override { return download_count_; }
+  int BlockingShutdownCount() const override { return download_count_; }
 
   void CancelDownloads() override {}
 

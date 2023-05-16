@@ -108,7 +108,7 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
     DownloadCoreService* service =
         DownloadCoreServiceFactory::GetForBrowserContext(profile);
     service->CancelDownloads();
-    DCHECK_EQ(0, service->NonMaliciousDownloadCount());
+    DCHECK_EQ(0, service->BlockingShutdownCount());
 
     // Take a ScopedProfileKeepAlive for the the deletion process to avoid the
     // profile from being randomly unloaded.

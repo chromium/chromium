@@ -1041,9 +1041,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
                 download_core_service->HasCreatedDownloadManager()
             ? profile->GetDownloadManager()
             : nullptr;
-    if (download_manager &&
-        download_manager->NonMaliciousInProgressCount() > 0) {
-      int downloadCount = download_manager->NonMaliciousInProgressCount();
+    if (download_manager && download_manager->BlockingShutdownCount() > 0) {
+      int downloadCount = download_manager->BlockingShutdownCount();
       if ([self userWillWaitForInProgressDownloads:downloadCount]) {
         // Create a new browser window (if necessary) and navigate to the
         // downloads page if the user chooses to wait.
