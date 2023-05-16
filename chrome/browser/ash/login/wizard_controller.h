@@ -583,6 +583,9 @@ class WizardController : public OobeUI::Observer {
 
   base::ObserverList<ScreenObserver> screen_observers_;
 
+  // Shared factory for outgoing network requests.
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
+
   base::WeakPtrFactory<WizardController> weak_factory_{this};
 };
 

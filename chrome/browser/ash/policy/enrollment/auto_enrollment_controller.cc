@@ -214,12 +214,14 @@ void EnrollmentFwmpHelper::OnGetFirmwareManagementParametersReceived(
   std::move(result_callback).Run(dev_disable_boot);
 }
 
-AutoEnrollmentController::AutoEnrollmentController()
+AutoEnrollmentController::AutoEnrollmentController(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
     : enrollment_fwmp_helper_(ash::InstallAttributesClient::Get()),
       psm_rlwe_client_factory_(
           base::BindRepeating(&policy::psm::RlweDmserverClientImpl::Create)),
       enrollment_state_fetcher_factory_(
-          base::BindRepeating(EnrollmentStateFetcher::Create)) {}
+          base::BindRepeating(EnrollmentStateFetcher::Create)),
+      shared_url_loader_factory_(shared_url_loader_factory) {}
 
 AutoEnrollmentController::~AutoEnrollmentController() = default;
 
@@ -240,6 +242,17 @@ void AutoEnrollmentController::Start() {
     case AutoEnrollmentState::kServerError:
       // Continue (re-)start.
       break;
+  }
+
+  if (!AutoEnrollmentTypeChecker::Initialized()) {
+    if (!auto_enrollment_check_type_init_started_) {
+      auto_enrollment_check_type_init_started_ = true;
+      AutoEnrollmentTypeChecker::Initialize(
+          shared_url_loader_factory_,
+          base::BindOnce(&AutoEnrollmentController::Start,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
+    return;
   }
 
   if (AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled()) {
@@ -273,9 +286,7 @@ void AutoEnrollmentController::Start() {
         base::BindRepeating(&AutoEnrollmentController::UpdateState,
                             weak_ptr_factory_.GetWeakPtr()),
         g_browser_process->local_state(), psm_rlwe_client_factory_,
-        InitializeAndGetDeviceManagementService(),
-        g_browser_process->system_network_context_manager()
-            ->GetSharedURLLoaderFactory(),
+        InitializeAndGetDeviceManagementService(), shared_url_loader_factory_,
         ash::SystemClockClient::Get(),
         g_browser_process->platform_part()
             ->browser_policy_connector_ash()
@@ -460,9 +471,7 @@ void AutoEnrollmentController::StartClientForFRE(
   client_ = GetAutoEnrollmentClientFactory()->CreateForFRE(
       base::BindRepeating(&AutoEnrollmentController::UpdateState,
                           weak_ptr_factory_.GetWeakPtr()),
-      service, g_browser_process->local_state(),
-      g_browser_process->system_network_context_manager()
-          ->GetSharedURLLoaderFactory(),
+      service, g_browser_process->local_state(), shared_url_loader_factory_,
       state_keys.front(), power_initial, power_limit);
 
   LOG(WARNING) << "Starting auto-enrollment client for FRE.";
@@ -511,15 +520,11 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
   client_ = GetAutoEnrollmentClientFactory()->CreateForInitialEnrollment(
       base::BindRepeating(&AutoEnrollmentController::UpdateState,
                           weak_ptr_factory_.GetWeakPtr()),
-      service, g_browser_process->local_state(),
-      g_browser_process->system_network_context_manager()
-          ->GetSharedURLLoaderFactory(),
+      service, g_browser_process->local_state(), shared_url_loader_factory_,
       std::string(serial_number.value()), std::string(rlz_brand_code.value()),
       std::make_unique<psm::RlweDmserverClientImpl>(
-          service,
-          g_browser_process->system_network_context_manager()
-              ->GetSharedURLLoaderFactory(),
-          plaintext_id, psm_rlwe_client_factory_));
+          service, shared_url_loader_factory_, plaintext_id,
+          psm_rlwe_client_factory_));
 
   LOG(WARNING) << "Starting auto-enrollment client for Initial Enrollment.";
   client_->Start();

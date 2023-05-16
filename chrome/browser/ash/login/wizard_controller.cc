@@ -358,13 +358,6 @@ OobeUI* GetOobeUI() {
   return host ? host->GetOobeUI() : nullptr;
 }
 
-scoped_refptr<network::SharedURLLoaderFactory>&
-GetSharedURLLoaderFactoryForTesting() {
-  static base::NoDestructor<scoped_refptr<network::SharedURLLoaderFactory>>
-      loader;
-  return *loader;
-}
-
 OobeScreenId PrefToScreenId(const std::string& pref_value) {
   if (pref_value == kLegacyUpdateScreenName) {
     return UpdateView::kScreenId;
@@ -402,7 +395,9 @@ PrefService* WizardController::local_state_for_testing_ = nullptr;
 
 WizardController::WizardController(WizardContext* wizard_context)
     : screen_manager_(std::make_unique<ScreenManager>()),
-      wizard_context_(wizard_context) {
+      wizard_context_(wizard_context),
+      shared_url_loader_factory_(
+          g_browser_process->shared_url_loader_factory()) {
   wizard_context_->skip_post_login_screens_for_tests =
       switches::ShouldSkipOobePostLogin();
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
@@ -576,8 +571,7 @@ void WizardController::SetCurrentScreenForTesting(BaseScreen* screen) {
 
 void WizardController::SetSharedURLLoaderFactoryForTesting(
     scoped_refptr<network::SharedURLLoaderFactory> factory) {
-  auto& testing_factory = GetSharedURLLoaderFactoryForTesting();
-  testing_factory = std::move(factory);
+  shared_url_loader_factory_ = factory;
 }
 
 std::vector<std::pair<OobeScreenId, std::unique_ptr<BaseScreen>>>
@@ -2202,11 +2196,9 @@ void WizardController::StartTimezoneResolve() {
     return;
   }
 
-  auto& testing_factory = GetSharedURLLoaderFactoryForTesting();
   geolocation_provider_ = std::make_unique<SimpleGeolocationProvider>(
       g_browser_process->platform_part()->GetTimezoneResolverManager(),
-      testing_factory ? testing_factory
-                      : g_browser_process->shared_url_loader_factory(),
+      shared_url_loader_factory_,
       SimpleGeolocationProvider::DefaultGeolocationProviderURL());
   geolocation_provider_->RequestGeolocation(
       base::Seconds(kResolveTimeZoneTimeoutSeconds),
@@ -2220,7 +2212,6 @@ void WizardController::PerformPostNetworkScreenActions() {
   StartNetworkTimezoneResolve();
   DelayNetworkCall(ServicesCustomizationDocument::GetInstance()
                        ->EnsureCustomizationAppliedClosure());
-
   GetAutoEnrollmentController()->Start();
 }
 
@@ -2698,11 +2689,8 @@ void WizardController::OnTimezoneResolved(
 
 TimeZoneProvider* WizardController::GetTimezoneProvider() {
   if (!timezone_provider_) {
-    auto& testing_factory = GetSharedURLLoaderFactoryForTesting();
     timezone_provider_ = std::make_unique<TimeZoneProvider>(
-        testing_factory ? testing_factory
-                        : g_browser_process->shared_url_loader_factory(),
-        DefaultTimezoneProviderURL());
+        shared_url_loader_factory_, DefaultTimezoneProviderURL());
   }
   return timezone_provider_.get();
 }
@@ -2801,7 +2789,8 @@ policy::AutoEnrollmentController*
 WizardController::GetAutoEnrollmentController() {
   if (!auto_enrollment_controller_) {
     auto_enrollment_controller_ =
-        std::make_unique<policy::AutoEnrollmentController>();
+        std::make_unique<policy::AutoEnrollmentController>(
+            shared_url_loader_factory_);
   }
   return auto_enrollment_controller_.get();
 }
