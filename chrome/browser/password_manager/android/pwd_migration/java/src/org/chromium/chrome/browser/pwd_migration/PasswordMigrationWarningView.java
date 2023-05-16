@@ -63,11 +63,6 @@ class PasswordMigrationWarningView implements BottomSheetContent {
 
         mFragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
         mIntroFragment = new PasswordMigrationWarningIntroFragment(context);
-        mFragmentManager.beginTransaction()
-                .setReorderingAllowed(true)
-                .add(R.id.fragment_container_view, mIntroFragment,
-                        "PasswordMigrationWarningFragment")
-                .commit();
     }
 
     void setDismissHandler(Callback<Integer> dismissHandler) {
@@ -84,6 +79,11 @@ class PasswordMigrationWarningView implements BottomSheetContent {
             mBottomSheetController.removeObserver(mBottomSheetObserver);
             return false;
         }
+        mFragmentManager.beginTransaction()
+                .setReorderingAllowed(true)
+                .add(R.id.fragment_container_view, mIntroFragment,
+                        "PasswordMigrationWarningFragment")
+                .commit();
         return true;
     }
 
