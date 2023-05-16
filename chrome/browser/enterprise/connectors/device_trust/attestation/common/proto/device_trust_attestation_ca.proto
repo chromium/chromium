@@ -109,6 +109,14 @@ message KeyInfo {
   optional string device_trust_signals_json = 10;
   // DM token to be used for this request.
   optional string dm_token = 11;
+  // The identifier of the customer for the managed user, as defined by the
+  // Google Admin SDK at
+  // https://developers.google.com/admin-sdk/directory/v1/guides/manage-customers.
+  optional string user_customer_id = 12;
+  // Obfuscated gaia ID associated with the signed in managed user.
+  optional string obfuscated_gaia_id = 13;
+  // The ID of a profile on the device.
+  optional string profile_id = 14;
 }
 
 // Device Trust Signals
