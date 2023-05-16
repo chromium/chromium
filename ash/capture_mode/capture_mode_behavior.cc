@@ -11,6 +11,7 @@
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
+#include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/game_capture_bar_view.h"
@@ -26,6 +27,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
+#include "ui/aura/window_observer.h"
 
 namespace ash {
 
@@ -168,7 +171,8 @@ class ProjectorBehavior : public CaptureModeBehavior {
 // GameDashboardBehavior:
 // Implements the `CaptureModeBehavior` interface with behaviors defined by the
 // game dashboard-initiated capture mode.
-class GameDashboardBehavior : public CaptureModeBehavior {
+class GameDashboardBehavior : public CaptureModeBehavior,
+                              public aura::WindowObserver {
  public:
   GameDashboardBehavior()
       : CaptureModeBehavior({CaptureModeType::kVideo,
@@ -183,6 +187,45 @@ class GameDashboardBehavior : public CaptureModeBehavior {
   ~GameDashboardBehavior() override = default;
 
   // CaptureModeBehavior:
+  void AttachToSession() override {
+    cached_configs_ = GetCaptureModeSessionConfigs();
+
+    // Overwrite the current capture mode session with the game dashboard
+    // configurations.
+    // TODO(b/280660443): Restore the previous game dashboard session configs
+    // instead of overwriting the session with fixed configs.
+    SetCaptureModeSessionConfigs(capture_mode_configs_);
+
+    CaptureModeController* controller = CaptureModeController::Get();
+    CaptureModeSession* session = controller->capture_mode_session();
+    CHECK(session);
+    if (!pre_selected_window_) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](base::WeakPtr<GameDashboardBehavior> game_dashboard_behavior,
+                 CaptureModeController* controller) {
+                if (controller->IsActive()) {
+                  controller->Stop();
+                }
+              },
+              weak_ptr_factory_.GetWeakPtr(), controller));
+    } else {
+      session->SetPreSelectedWindow(pre_selected_window_);
+    }
+  }
+
+  void DetachFromSession() override {
+    CHECK(cached_configs_);
+    SetCaptureModeSessionConfigs(cached_configs_.value());
+    cached_configs_.reset();
+
+    if (pre_selected_window_) {
+      pre_selected_window_->RemoveObserver(this);
+      pre_selected_window_ = nullptr;
+    }
+  }
+
   bool ShouldImageCaptureTypeBeAllowed() const override { return false; }
   bool ShouldFulscreenCaptureSourceBeAllowed() const override { return false; }
   bool ShouldRegionCaptureSourceBeAllowed() const override { return false; }
@@ -193,8 +236,21 @@ class GameDashboardBehavior : public CaptureModeBehavior {
   std::unique_ptr<CaptureModeBarView> CreateCaptureModeBarView() override {
     return std::make_unique<GameCaptureBarView>();
   }
+  void SetPreSelectedWindow(aura::Window* pre_selected_window) override {
+    CHECK(!pre_selected_window_);
+    pre_selected_window_ = pre_selected_window;
+    pre_selected_window_->AddObserver(this);
+  }
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override {
+    CHECK_EQ(window, pre_selected_window_);
+    pre_selected_window_->RemoveObserver(this);
+    pre_selected_window_ = nullptr;
+  }
 
  protected:
+  // CaptureModeBehavior:
   gfx::Rect GetBarAnchorBoundsInScreen(aura::Window* root) const override {
     const aura::Window* selected_window =
         Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)[0];
@@ -203,6 +259,10 @@ class GameDashboardBehavior : public CaptureModeBehavior {
   }
 
   int GetCaptureBarWidth() const override { return kGameCaptureBarWidth; }
+
+ private:
+  raw_ptr<aura::Window, ExperimentalAsh> pre_selected_window_ = nullptr;
+  base::WeakPtrFactory<GameDashboardBehavior> weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -316,6 +376,11 @@ std::vector<RecordingType> CaptureModeBehavior::GetSupportedRecordingTypes()
     supported_recording_types.push_back(RecordingType::kGif);
   }
   return supported_recording_types;
+}
+
+void CaptureModeBehavior::SetPreSelectedWindow(
+    aura::Window* pre_selected_window) {
+  NOTREACHED();
 }
 
 const char* CaptureModeBehavior::GetClientMetricComponent() const {

@@ -151,6 +151,10 @@ class ASH_EXPORT CaptureModeController
   // |source_|. Also records what |entry_type| that started capture mode.
   void Start(CaptureModeEntryType entry_type);
 
+  // Starts a new capture session with a pre-selected window which will be
+  // observed throughout the session and can't be altered.
+  void StartForGameDashboard(aura::Window* game_window);
+
   // Stops an existing capture session.
   void Stop();
 

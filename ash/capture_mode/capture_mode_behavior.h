@@ -85,6 +85,7 @@ class CaptureModeBehavior {
       base::OnceCallback<void(const base::FilePath& capture_file_full_path)>;
   virtual void CreateCaptureFolder(OnCaptureFolderCreatedCallback callback);
   virtual std::vector<RecordingType> GetSupportedRecordingTypes() const;
+  virtual void SetPreSelectedWindow(aura::Window* pre_selected_window);
 
   // Returns the client specific string component to be inserted to a histogram
   // in order to differentiate the metrics for example "Projector." is used to

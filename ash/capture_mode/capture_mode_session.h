@@ -120,6 +120,11 @@ class ASH_EXPORT CaptureModeSession
   // nullptr if no window is available for selection.
   aura::Window* GetSelectedWindow() const;
 
+  // Sets the pre-selected window to be observed by `capture_window_observer_`,
+  // once set, the window can't be altered throughout the entire capture
+  // session.
+  void SetPreSelectedWindow(aura::Window* pre_selected_window);
+
   // Called when a user toggles the capture source or capture type to announce
   // an accessibility alert. If `trigger_now` is true, it will announce
   // immediately; otherwise, it will trigger another alert asynchronously with

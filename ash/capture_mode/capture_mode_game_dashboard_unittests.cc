@@ -6,12 +6,15 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
+#include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/base/window_properties.h"
 
 namespace ash {
 
@@ -24,7 +27,8 @@ class GameDashboardCaptureModeTest : public AshTestBase {
       delete;
   ~GameDashboardCaptureModeTest() override = default;
 
-  aura::Window* window() const { return window_.get(); }
+  aura::Window* game_window() const { return game_window_.get(); }
+  void CloseGameWindow() { game_window_.reset(); }
 
   // AshTestBase:
   void SetUp() override {
@@ -34,18 +38,19 @@ class GameDashboardCaptureModeTest : public AshTestBase {
     AshTestBase::SetUp();
     EXPECT_TRUE(features::IsGameDashboardEnabled());
 
-    window_ = CreateTestWindow();
+    game_window_ = CreateAppWindow(gfx::Rect(0, 100, 100, 100));
+    game_window_->SetProperty(chromeos::kIsGameKey, true);
   }
 
   void TearDown() override {
-    window_.reset();
+    game_window_.reset();
     AshTestBase::TearDown();
     base::SysInfo::ResetChromeOSVersionInfoForTest();
   }
 
   CaptureModeController* StartGameCaptureModeSession() {
     auto* controller = CaptureModeController::Get();
-    controller->Start(CaptureModeEntryType::kGameDashboard);
+    controller->StartForGameDashboard(game_window_.get());
     CHECK(controller->IsActive());
     return controller;
   }
@@ -53,7 +58,7 @@ class GameDashboardCaptureModeTest : public AshTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  std::unique_ptr<aura::Window> window_;
+  std::unique_ptr<aura::Window> game_window_;
 };
 
 TEST_F(GameDashboardCaptureModeTest, GameDashboardBehavior) {
@@ -84,6 +89,28 @@ TEST_F(GameDashboardCaptureModeTest, GameDashboardBehavior) {
   EXPECT_TRUE(active_behavior->ShouldAutoSelectFirstCamera());
 }
 
+// Tests that when starting the capture mode session from game dashboard, the
+// window is pre-selected and won't be altered on mouse hover during the
+// session. On the destroying of the pre-selected window, the selected window
+// will be reset.
+TEST_F(GameDashboardCaptureModeTest, StartForGameDashboardTest) {
+  UpdateDisplay("1000x700");
+  std::unique_ptr<aura::Window> other_window(
+      CreateAppWindow(gfx::Rect(0, 300, 500, 300)));
+  CaptureModeController* controller = StartGameCaptureModeSession();
+  CaptureModeSession* capture_mode_session = controller->capture_mode_session();
+  ASSERT_TRUE(capture_mode_session);
+  EXPECT_EQ(capture_mode_session->GetSelectedWindow(), game_window());
+
+  // The selected window will not change when mouse hovers on `other_window`.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseToCenterOf(other_window.get());
+  EXPECT_EQ(capture_mode_session->GetSelectedWindow(), game_window());
+
+  CloseGameWindow();
+  EXPECT_FALSE(controller->IsActive());
+}
+
 TEST_F(GameDashboardCaptureModeTest, CaptureBar) {
   StartGameCaptureModeSession();
   views::Widget* bar_widget = GetCaptureModeBarWidget();
@@ -106,7 +133,7 @@ TEST_F(GameDashboardCaptureModeTest, CaptureBarPosition) {
   views::Widget* bar_widget = GetCaptureModeBarWidget();
   ASSERT_TRUE(bar_widget);
 
-  const gfx::Rect window_bounds = window()->GetBoundsInScreen();
+  const gfx::Rect window_bounds = game_window()->GetBoundsInScreen();
   const gfx::Rect bar_bounds = bar_widget->GetWindowBoundsInScreen();
   // Checks that the game capture bar is inside the window. And centered above a
   // constant distance from the bottom of the window.

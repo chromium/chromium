@@ -50,6 +50,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chromeos/ui/wm/window_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
@@ -617,6 +618,13 @@ void CaptureModeController::Start(CaptureModeEntryType entry_type) {
   delegate_->CheckCaptureModeInitRestrictionByDlp(base::BindOnce(
       &CaptureModeController::OnDlpRestrictionCheckedAtSessionInit,
       weak_ptr_factory_.GetWeakPtr(), entry_type));
+}
+
+void CaptureModeController::StartForGameDashboard(aura::Window* game_window) {
+  CHECK(chromeos::wm::IsGameWindow(game_window));
+  CaptureModeBehavior* behavior = GetBehavior(BehaviorType::kGameDashboard);
+  behavior->SetPreSelectedWindow(game_window);
+  Start(CaptureModeEntryType::kGameDashboard);
 }
 
 void CaptureModeController::Stop() {
@@ -1896,7 +1904,6 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
   capture_mode_session_ =
       std::make_unique<CaptureModeSession>(this, GetBehavior(behavior_type));
   capture_mode_session_->Initialize();
-
   camera_controller_->OnCaptureSessionStarted();
 }
 

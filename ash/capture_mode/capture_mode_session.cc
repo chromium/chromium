@@ -444,7 +444,6 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller,
       focus_cycler_(std::make_unique<CaptureModeSessionFocusCycler>(this)),
       capture_toast_controller_(this) {
   CHECK(current_root_);
-  active_behavior->AttachToSession();
 }
 
 CaptureModeSession::~CaptureModeSession() = default;
@@ -544,6 +543,7 @@ void CaptureModeSession::Initialize() {
   }
 
   Shell::Get()->AddShellObserver(this);
+  active_behavior_->AttachToSession();
 }
 
 void CaptureModeSession::Shutdown() {
@@ -617,6 +617,13 @@ void CaptureModeSession::Shutdown() {
 aura::Window* CaptureModeSession::GetSelectedWindow() const {
   return capture_window_observer_ ? capture_window_observer_->window()
                                   : nullptr;
+}
+
+void CaptureModeSession::SetPreSelectedWindow(
+    aura::Window* pre_selected_window) {
+  CHECK(capture_window_observer_);
+  capture_window_observer_->SetSelectedWindow(pre_selected_window,
+                                              /*allow_window_change=*/false);
 }
 
 void CaptureModeSession::A11yAlertCaptureSource(bool trigger_now) {
@@ -1956,7 +1963,7 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
       case ui::ET_TOUCH_MOVED: {
         if (is_capture_window) {
           capture_window_observer_->UpdateSelectedWindowAtPosition(
-              screen_location, {});
+              screen_location);
         }
         break;
       }
