@@ -51,9 +51,12 @@ class HlsDataSourceImpl final : public media::HlsDataSource {
             ReadCb callback) override {
     DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
-    // Read into the byterange, if one was given.
-    // Caller will be using 0-based positions regardless.
     if (range_.has_value()) {
+      if (pos >= range_->GetLength()) {
+        std::move(callback).Run(HlsDataSource::ReadStatusCodes::kError);
+        return;
+      }
+      size = std::min(size, range_->GetLength() - pos);
       pos += range_->GetOffset();
     }
 
