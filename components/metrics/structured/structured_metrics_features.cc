@@ -4,6 +4,8 @@
 
 #include "components/metrics/structured/structured_metrics_features.h"
 
+#include "base/metrics/field_trial_params.h"
+
 namespace metrics::structured {
 
 BASE_FEATURE(kStructuredMetrics,
@@ -35,24 +37,6 @@ constexpr base::FeatureParam<int> kFileSizeByteLimitParam{
 constexpr base::FeatureParam<std::string> kDisallowedProjectsParam{
     &kStructuredMetrics, "disabled_projects", ""};
 
-constexpr base::FeatureParam<int> kMinLogQueueCount{
-    &kEnabledStructuredMetricsService, "min_log_queue_count", 10};
-
-constexpr base::FeatureParam<int> kMinLogQueueSizeBytes{
-    &kEnabledStructuredMetricsService, "min_log_queue_size_bytes",
-    300 * 1024 * 1024  // 300 KiB
-};
-
-constexpr base::FeatureParam<int> kMaxLogSizeBytes{
-    &kEnabledStructuredMetricsService, "max_log_size_bytes",
-    1024 * 1024 * 1024  // 1 MiB
-};
-
-constexpr base::FeatureParam<int> kUploadTimeInSeconds{
-    &kEnabledStructuredMetricsService, "upload_time_in_seconds",
-    40 * 60  // 40 minutes
-};
-
 bool IsIndependentMetricsUploadEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kStructuredMetrics, "enable_independent_metrics_upload", true);
@@ -68,10 +52,6 @@ int GetFileSizeByteLimit() {
 
 std::string GetDisabledProjects() {
   return kDisallowedProjectsParam.Get();
-}
-
-int GetUploadInterval() {
-  return kUploadTimeInSeconds.Get();
 }
 
 }  // namespace metrics::structured
