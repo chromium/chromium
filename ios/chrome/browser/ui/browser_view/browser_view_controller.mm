@@ -88,6 +88,7 @@
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
+#import "ios/chrome/browser/web/web_state_update_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/webui/show_mail_composer_context.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -268,6 +269,9 @@ enum HeaderBehaviour {
 
   // Used for common web navigation tasks.
   WebNavigationBrowserAgent* _webNavigationBrowserAgent;
+
+  // Used for updates in web state.
+  WebStateUpdateBrowserAgent* _webStateUpdateBrowserAgent;
 
   // For thumb strip, when YES, fullscreen disabler is reset only when web view
   // dragging stops, to avoid closing thumb strip and going fullscreen in
@@ -458,6 +462,7 @@ enum HeaderBehaviour {
     _voiceSearchController = dependencies.voiceSearchController;
     self.safeAreaProvider = dependencies.safeAreaProvider;
     _pagePlaceholderBrowserAgent = dependencies.pagePlaceholderBrowserAgent;
+    _webStateUpdateBrowserAgent = dependencies.webStateUpdateBrowserAgent;
 
     dependencies.lensCoordinator.delegate = self;
 
@@ -690,10 +695,6 @@ enum HeaderBehaviour {
 - (WebStateList*)webStateList {
   WebStateList* webStateList = _webStateList.get();
   return webStateList ? webStateList : nullptr;
-}
-
-- (int)webStateListSize {
-  return self.webStateList ? _webStateList->count() : 0;
 }
 
 #pragma mark - Public methods
@@ -2045,24 +2046,14 @@ enum HeaderBehaviour {
     if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
       self.viewTranslatedForSmoothScrolling = YES;
       CGFloat toolbarHeight = [self expandedTopToolbarHeight];
-      if (self.currentWebState) {
+      if (self.viewForCurrentWebState) {
         CGRect webStateViewFrame =
             UIEdgeInsetsInsetRect(self.viewForCurrentWebState.frame,
                                   UIEdgeInsetsMake(toolbarHeight, 0, 0, 0));
         self.viewForCurrentWebState.frame = webStateViewFrame;
       }
-
-      // Translate all web states' offset so web states from other tabs are also
-      // updated.
-      for (int index = 0; index < self.webStateListSize; ++index) {
-        web::WebState* webState = self.webStateList->GetWebStateAt(index);
-        CRWWebViewScrollViewProxy* scrollProxy =
-            webState->GetWebViewProxy().scrollViewProxy;
-        CGPoint scrollOffset = scrollProxy.contentOffset;
-        scrollOffset.y += toolbarHeight;
-        scrollProxy.contentOffset = scrollOffset;
-      }
-
+      _webStateUpdateBrowserAgent->UpdateWebStateScrollViewOffset(
+          toolbarHeight);
       // This alerts the fullscreen controller to use the correct new content
       // insets.
       self.fullscreenController->FreezeToolbarHeight(true);
@@ -2145,28 +2136,20 @@ enum HeaderBehaviour {
     [self installFakeStatusBar];
     [self setupStatusBarLayout];
 
-    // See the comments in `-willAnimateViewReveal:` for the explanation of why
-    // this is necessary.
+    // See the comments in `-willAnimateViewRevealFromState:toState:` for the
+    // explanation of why this is necessary.
     if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
       self.viewTranslatedForSmoothScrolling = NO;
       self.fullscreenController->FreezeToolbarHeight(false);
       CGFloat toolbarHeight = [self expandedTopToolbarHeight];
-      if (self.currentWebState) {
+      if (self.viewForCurrentWebState) {
         CGRect webStateViewFrame =
             UIEdgeInsetsInsetRect(self.viewForCurrentWebState.frame,
                                   UIEdgeInsetsMake(-toolbarHeight, 0, 0, 0));
         self.viewForCurrentWebState.frame = webStateViewFrame;
       }
-
-      for (int index = 0; index < self.webStateListSize; ++index) {
-        web::WebState* webState = self.webStateList->GetWebStateAt(index);
-        CRWWebViewScrollViewProxy* scrollProxy =
-            webState->GetWebViewProxy().scrollViewProxy;
-
-        CGPoint scrollOffset = scrollProxy.contentOffset;
-        scrollOffset.y -= toolbarHeight;
-        scrollProxy.contentOffset = scrollOffset;
-      }
+      _webStateUpdateBrowserAgent->UpdateWebStateScrollViewOffset(
+          -toolbarHeight);
     }
   } else if (currentViewRevealState == ViewRevealState::Peeked) {
     // Close the omnibox after opening the thumb strip

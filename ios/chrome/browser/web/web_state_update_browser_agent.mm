@@ -26,6 +26,23 @@ WebStateUpdateBrowserAgent::WebStateUpdateBrowserAgent(Browser* browser)
 
 WebStateUpdateBrowserAgent::~WebStateUpdateBrowserAgent() {}
 
+#pragma mark - Public
+
+void WebStateUpdateBrowserAgent::UpdateWebStateScrollViewOffset(
+    CGFloat toolbar_height) {
+  if (!web_state_list_) {
+    return;
+  }
+  for (int index = 0; index < web_state_list_->count(); ++index) {
+    web::WebState* web_state = web_state_list_->GetWebStateAt(index);
+    CRWWebViewScrollViewProxy* scroll_proxy =
+        web_state->GetWebViewProxy().scrollViewProxy;
+    CGPoint scroll_offset = scroll_proxy.contentOffset;
+    scroll_offset.y += toolbar_height;
+    scroll_proxy.contentOffset = scroll_offset;
+  }
+}
+
 #pragma mark - WebStateListObserver
 
 void WebStateUpdateBrowserAgent::WebStateActivatedAt(

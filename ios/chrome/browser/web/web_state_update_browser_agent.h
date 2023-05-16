@@ -27,6 +27,10 @@ class WebStateUpdateBrowserAgent
   WebStateUpdateBrowserAgent& operator=(const WebStateUpdateBrowserAgent&) =
       delete;
 
+  // Translates all web states' offset so web states from other tabs are also
+  // updated.
+  void UpdateWebStateScrollViewOffset(CGFloat toolbar_height);
+
  private:
   friend class BrowserUserData<WebStateUpdateBrowserAgent>;
   BROWSER_USER_DATA_KEY_DECL();

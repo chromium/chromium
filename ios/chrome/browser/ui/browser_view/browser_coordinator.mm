@@ -901,6 +901,8 @@ enum class ToolbarKind {
       [[SafeAreaProvider alloc] initWithBrowser:self.browser];
   _viewControllerDependencies.pagePlaceholderBrowserAgent =
       PagePlaceholderBrowserAgent::FromBrowser(self.browser);
+  _viewControllerDependencies.webStateUpdateBrowserAgent =
+      WebStateUpdateBrowserAgent::FromBrowser(self.browser);
 }
 
 - (void)updateViewControllerDependencies {
@@ -965,6 +967,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.voiceSearchController = nil;
   _viewControllerDependencies.safeAreaProvider = nil;
   _viewControllerDependencies.pagePlaceholderBrowserAgent = nil;
+  _viewControllerDependencies.webStateUpdateBrowserAgent = nil;
 
   [_bookmarksCoordinator shutdown];
   _bookmarksCoordinator = nil;

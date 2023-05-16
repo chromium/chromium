@@ -288,6 +288,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.safeAreaProvider = safe_area_provider_;
     dependencies.pagePlaceholderBrowserAgent = page_placeholder_browser_agent_;
     dependencies.applicationCommandsHandler = mockApplicationCommandHandler_;
+    dependencies.webStateUpdateBrowserAgent =
+        WebStateUpdateBrowserAgent::FromBrowser(browser_.get());
 
     bvc_ = [[BrowserViewController alloc]
         initWithBrowserContainerViewController:container_
