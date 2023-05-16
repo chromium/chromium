@@ -480,8 +480,10 @@ const base::FeatureParam<ChromeRefresh2023Level> kChromeRefresh2023Level(
     &kChromeRefresh2023LevelOption);
 
 ChromeRefresh2023Level GetChromeRefresh2023Level() {
-  return IsChromeRefresh2023() ? kChromeRefresh2023Level.Get()
-                               : ChromeRefresh2023Level::kDisabled;
+  static const ChromeRefresh2023Level level =
+      IsChromeRefresh2023() ? kChromeRefresh2023Level.Get()
+                            : ChromeRefresh2023Level::kDisabled;
+  return level;
 }
 
 #if !BUILDFLAG(IS_LINUX)
