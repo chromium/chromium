@@ -1977,6 +1977,17 @@
     "expires": "Dec 21, 2023"
   },
   {
+    "prefix": "abort-signal-any-disabled",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/fetch/api/abort/general.any.js",
+      "external/wpt/service-workers/cache-storage/cache-abort.https.any.js",
+      "external/wpt/service-workers/cache-storage/cache-add.https.any.js"
+    ],
+    "args": ["--disable-blink-features=AbortSignalAny"],
+    "expires": "Dec 21, 2023"
+  },
+  {
     "prefix": "keepalive-in-browser-migration",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

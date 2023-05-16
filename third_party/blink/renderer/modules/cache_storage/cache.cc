@@ -1092,11 +1092,22 @@ ScriptPromise Cache::AddAllImpl(ScriptState* script_state,
 
   // Begin loading each of the requests.
   for (wtf_size_t i = 0; i < request_list.size(); ++i) {
-    // Chain the AbortSignal objects together so the requests will abort if
-    // the |barrier_callback| encounters an error.
+    auto* init = RequestInit::Create();
     if (barrier_callback->Signal()) {
-      request_list[i]->signal()->Follow(script_state,
-                                        barrier_callback->Signal());
+      if (RuntimeEnabledFeatures::AbortSignalAnyEnabled()) {
+        HeapVector<Member<AbortSignal>> signals;
+        signals.push_back(barrier_callback->Signal());
+        signals.push_back(request_list[i]->signal());
+        init->setSignal(
+            MakeGarbageCollected<AbortSignal>(script_state, signals));
+      } else {
+        // Chain the AbortSignal objects together so the requests will abort if
+        // the |barrier_callback| encounters an error.
+        if (barrier_callback->Signal()) {
+          request_list[i]->signal()->Follow(script_state,
+                                            barrier_callback->Signal());
+        }
+      }
     }
 
     V8RequestInfo* info = MakeGarbageCollected<V8RequestInfo>(request_list[i]);
@@ -1114,8 +1125,7 @@ ScriptPromise Cache::AddAllImpl(ScriptState* script_state,
         script_state, MakeGarbageCollected<FetchHandler>(
                           /*response_loader=*/nullptr, barrier_callback,
                           exception_state.GetContext()));
-    scoped_fetcher_
-        ->Fetch(script_state, info, RequestInit::Create(), exception_state)
+    scoped_fetcher_->Fetch(script_state, info, init, exception_state)
         .Then(on_resolve, on_reject);
   }
 

@@ -54,13 +54,13 @@ class CORE_EXPORT Request final : public ScriptWrappable,
                          Request*,
                          const RequestInit*,
                          ExceptionState&);
-  static Request* Create(ScriptState*, FetchRequestData*);
+  static Request* Create(ScriptState*, FetchRequestData*, AbortSignal*);
   static Request* Create(ScriptState*,
                          mojom::blink::FetchAPIRequestPtr,
                          ForServiceWorkerFetchEvent);
 
   Request(ScriptState*, FetchRequestData*, Headers*, AbortSignal*);
-  Request(ScriptState*, FetchRequestData*);
+  Request(ScriptState*, FetchRequestData*, AbortSignal*);
   Request(const Request&) = delete;
   Request& operator=(const Request&) = delete;
 
