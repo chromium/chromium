@@ -988,7 +988,9 @@ bool HasScope(const std::vector<std::string>& scope, std::string name) {
   return true;
 }
 
-bool ShouldRequestPermission(const std::vector<std::string>& scope) {
+// static
+bool FederatedAuthRequestImpl::ShouldMediateAuthz(
+    const std::vector<std::string>& scope) {
   if (!IsFedCmAuthzEnabled()) {
     return true;
   }
@@ -998,8 +1000,12 @@ bool ShouldRequestPermission(const std::vector<std::string>& scope) {
     // ["sub", "name", "email" and "picture"].
     return true;
   }
-  return HasScope(scope, "sub") && HasScope(scope, "name") &&
-         HasScope(scope, "email") && HasScope(scope, "picture");
+
+  if (scope.size() == 2) {
+    return HasScope(scope, "profile") && HasScope(scope, "email");
+  }
+
+  return false;
 }
 
 void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
@@ -1010,7 +1016,7 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
 
   const GURL& idp_config_url = idp_info->provider->config_url;
 
-  bool request_permission = ShouldRequestPermission(idp_info->provider->scope);
+  bool request_permission = ShouldMediateAuthz(idp_info->provider->scope);
 
   const std::string idp_for_display =
       FormatUrlWithDomain(idp_config_url, /*for_display=*/true);
@@ -1378,7 +1384,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
 
       bool need_client_metadata = false;
 
-      if (ShouldRequestPermission(idp_info->provider->scope)) {
+      if (ShouldMediateAuthz(idp_info->provider->scope)) {
         for (const IdentityRequestAccount& account : accounts) {
           // ComputeLoginStateAndReorderAccounts() should have populated
           // IdentityRequestAccount::login_state.

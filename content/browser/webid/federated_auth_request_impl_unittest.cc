@@ -4050,4 +4050,42 @@ TEST_F(FederatedAuthRequestImplTest, IdentityRegistryIsNotified) {
   EXPECT_TRUE(test_identity_registry_->notified_);
 }
 
+TEST_F(FederatedAuthRequestImplTest, ShouldNotMediateAuthz) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAuthz);
+  // A completely unknown oauth scope is being requested.
+  EXPECT_FALSE(
+      FederatedAuthRequestImpl::ShouldMediateAuthz({"calendar.readonly"}));
+  // Just the email scope is being requested.
+  EXPECT_FALSE(FederatedAuthRequestImpl::ShouldMediateAuthz({"email"}));
+  // Just the email scope and the name scope are being requested.
+  EXPECT_FALSE(
+      FederatedAuthRequestImpl::ShouldMediateAuthz({"email", "address"}));
+  // Just the email, picture and name scopes are being requested.
+  EXPECT_FALSE(FederatedAuthRequestImpl::ShouldMediateAuthz(
+      {"email", "address", "phone"}));
+  // When the basic profile scope is passed in addition to others.
+  EXPECT_FALSE(FederatedAuthRequestImpl::ShouldMediateAuthz(
+      {"profile", "email", "calendar.readonly"}));
+}
+
+TEST_F(FederatedAuthRequestImplTest, ShouldMediateAuthz) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAuthz);
+  // When scope isn't passed, we default to the basic profile authorization
+  // permission.
+  EXPECT_TRUE(FederatedAuthRequestImpl::ShouldMediateAuthz({}));
+  // When the basic profile authorization scope is passed explicitly.
+  EXPECT_TRUE(
+      FederatedAuthRequestImpl::ShouldMediateAuthz({"profile", "email"}));
+}
+
+TEST_F(FederatedAuthRequestImplTest,
+       ShouldNotMediateAuthzWithoutFeatureEnabled) {
+  // Assert that we always mediate the authorization when the kFedCmAuthz
+  // is not enabled.
+  EXPECT_TRUE(
+      FederatedAuthRequestImpl::ShouldMediateAuthz({"profile", "email"}));
+}
+
 }  // namespace content

@@ -145,6 +145,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                                        const IdentityRequestAccount& account);
   void DismissAccountsDialogForDevtools(bool should_embargo);
 
+  // Check if the scope of the request allows the browser to mediate
+  // or delegate (to the IdP) the authorization.
+  static bool ShouldMediateAuthz(const std::vector<std::string>& scope);
+
  private:
   friend class FederatedAuthRequestImplTest;
 
