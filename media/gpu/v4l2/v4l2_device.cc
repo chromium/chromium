@@ -36,7 +36,6 @@
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/v4l2/buffer_affinity_tracker.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
 #include "ui/gfx/generic_shared_memory_id.h"
 #include "ui/gfx/native_pixmap_handle.h"
@@ -1020,7 +1019,6 @@ V4L2Queue::V4L2Queue(scoped_refptr<V4L2Device> dev,
                      enum v4l2_buf_type type,
                      base::OnceClosure destroy_cb)
     : type_(type),
-      affinity_tracker_(0),
       device_(dev),
       destroy_cb_(std::move(destroy_cb)),
       weak_this_factory_(this) {
@@ -1164,6 +1162,8 @@ size_t V4L2Queue::AllocateBuffers(size_t count,
         << "Cannot allocate new buffers while others are still allocated.";
     return 0;
   }
+  // Should have been cleared in DeallocateBuffers() if it was ever filled in.
+  DCHECK(free_buffers_indexes_.empty());
 
   if (count == 0) {
     VQLOGF(1) << "Attempting to allocate 0 buffers.";
@@ -1214,8 +1214,6 @@ size_t V4L2Queue::AllocateBuffers(size_t count,
     free_buffers_->ReturnBuffer(i);
   }
 
-  affinity_tracker_.resize(buffers_.size());
-
   DCHECK(free_buffers_);
   DCHECK_EQ(free_buffers_->size(), buffers_.size());
   DCHECK(queued_buffers_.empty());
@@ -1236,7 +1234,7 @@ bool V4L2Queue::DeallocateBuffers() {
 
   weak_this_factory_.InvalidateWeakPtrs();
   buffers_.clear();
-  affinity_tracker_.resize(0);
+  free_buffers_indexes_.clear();
   free_buffers_ = nullptr;
 
   // Free all buffers.
@@ -1328,12 +1326,17 @@ absl::optional<V4L2WritableBufferRef> V4L2Queue::GetFreeBufferForFrame(
     return absl::nullopt;
   }
 
-  const auto v4l2_id = affinity_tracker_.get_buffer_for_id(id);
-  if (!v4l2_id) {
-    return absl::nullopt;
+  // If |id| has already been used in |buffers_|, then return that buffer.
+  // Otherwise use the next buffer from |free_buffers_indexes_|.
+  if (!base::Contains(free_buffers_indexes_, id)) {
+    if (free_buffers_indexes_.size() >= buffers_.size()) {
+      return absl::nullopt;
+    }
+    // The value for |id| is simply the map size(): a poor man's way to have a
+    // monotonically increasing counter.
+    free_buffers_indexes_.emplace(id, free_buffers_indexes_.size());
   }
-
-  return GetFreeBuffer(*v4l2_id);
+  return GetFreeBuffer(free_buffers_indexes_[id]);
 }
 
 bool V4L2Queue::QueueBuffer(struct v4l2_buffer* v4l2_buffer,

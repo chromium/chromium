@@ -35,7 +35,6 @@
 #include "media/base/video_frame_layout.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/gpu/v4l2/buffer_affinity_tracker.h"
 #include "media/gpu/v4l2/v4l2_device_poller.h"
 #include "media/video/video_decode_accelerator.h"
 #include "media/video/video_encode_accelerator.h"
@@ -532,9 +531,11 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // by the v4l2_buffer queue ID. The value will be set to the VideoFrame that
   // has been passed when we queued the buffer, if any.
   base::small_map<std::map<size_t, scoped_refptr<VideoFrame>>> queued_buffers_;
-  // Keep track of which buffer was assigned to which frame by
-  // |GetFreeBufferForFrame()| so we reuse the same buffer in subsequent calls.
-  BufferAffinityTracker affinity_tracker_;
+
+  // Dictionary of queue buffers (indexed 0... |buffers_| size), indexed by the
+  // unique VideoFrame id (be that a GpuMemoryBuffer ID or a DmaBuf ID).
+  std::map<gfx::GenericSharedMemoryId, size_t> free_buffers_indexes_
+      GUARDED_BY(sequence_checker_);
 
   scoped_refptr<V4L2Device> device_;
   // Callback to call in this queue's destructor.
