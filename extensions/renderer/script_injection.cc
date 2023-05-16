@@ -91,7 +91,7 @@ ScriptInjection::ScriptInjection(
   CHECK(injection_host_.get());
   TRACE_EVENT_BEGIN(
       "extensions", "ScriptInjection", perfetto::Track::FromPointer(this),
-      ChromeTrackEvent::kRenderProcessHost, *content::RenderThread::Get(),
+      ChromeTrackEvent::kRenderProcessHost, content::RenderThread::Get(),
       ChromeTrackEvent::kChromeExtensionId,
       ExtensionIdForTracing(host_id().id));
 }
@@ -102,7 +102,7 @@ ScriptInjection::~ScriptInjection() {
 
   TRACE_EVENT_END("extensions", perfetto::Track::FromPointer(this),
                   ChromeTrackEvent::kRenderProcessHost,
-                  *content::RenderThread::Get(),
+                  content::RenderThread::Get(),
                   ChromeTrackEvent::kChromeExtensionId,
                   ExtensionIdForTracing(host_id().id));
 }
