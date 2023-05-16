@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL rel=dictionary correctly supported assert_true: dictionary links shall be supported by default. expected true got false
+FAIL rel=dictionary correctly supported with origin trail tokens assert_true: dictionary links shall be supported with origin trial. expected true got false
+Harness: the test ran to completion.
+

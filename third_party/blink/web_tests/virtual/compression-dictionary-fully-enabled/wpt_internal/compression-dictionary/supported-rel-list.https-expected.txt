@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS rel=dictionary correctly supported
+Harness: the test ran to completion.
+

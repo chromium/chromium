@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Dictionary correctly fetched assert_equals: Dictionary shall be fetched. expected "OK" but got "FAIL"
+FAIL Not-same-site origin dictionary correctly fetched assert_equals: Dictionary shall be fetched. expected "OK" but got "FAIL"
+FAIL Remote origin dictionary correctly fetched assert_equals: Dictionary shall be fetched. expected "OK" but got "FAIL"
+Harness: the test ran to completion.
+
