@@ -23,11 +23,8 @@ class ChromeStylePluginTest(plugin_testing.ClangPluginTest):
         # Skip code generation
         '-fsyntax-only',
         # Fake system directory for tests
-        '-isystem',
-        os.path.join(os.getcwd(), 'system'),
+        '-isystem', os.path.join(os.getcwd(), 'system'),
         '-Wno-inconsistent-missing-override',
-        '--include-directory',
-        '.',
     ])
 
 

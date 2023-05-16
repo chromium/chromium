@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "RawPtrCastingUnsafeChecker.h"
 #include "StackAllocatedChecker.h"
 #include "Util.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
@@ -359,10 +358,6 @@ AST_MATCHER_P(clang::CXXRecordDecl,
               chrome_checker::StackAllocatedPredicate,
               checker) {
   return checker.IsStackAllocated(&Node);
-}
-
-AST_MATCHER_P(clang::Type, isCastingUnsafe, CastingUnsafePredicate, checker) {
-  return checker.IsCastingUnsafe(&Node);
 }
 
 #endif  // TOOLS_CLANG_PLUGINS_RAWPTRHELPERS_H_
