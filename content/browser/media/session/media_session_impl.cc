@@ -24,7 +24,6 @@
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/common/media/constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
@@ -435,12 +434,7 @@ void MediaSessionImpl::RenderFrameHostStateChanged(
       if (player.observer->render_frame_host() != host)
         continue;
       hidden_players_.erase(player);
-
-      // We directly call `AddPlayerInternal()` to avoid the
-      // `CanRequestSystemAudioFocus()` check, since we can add the players
-      // back regardless.
-      AddPlayerInternal(player.observer, player.player_id);
-
+      AddPlayer(player.observer, player.player_id);
       added_players = true;
     }
 
@@ -455,15 +449,6 @@ void MediaSessionImpl::RenderFrameHostStateChanged(
 
 bool MediaSessionImpl::AddPlayer(MediaSessionPlayerObserver* observer,
                                  int player_id) {
-  if (!CanRequestSystemAudioFocus()) {
-    return false;
-  }
-
-  return AddPlayerInternal(observer, player_id);
-}
-
-bool MediaSessionImpl::AddPlayerInternal(MediaSessionPlayerObserver* observer,
-                                         int player_id) {
   media::MediaContentType media_content_type = observer->GetMediaContentType();
 
   if (media_content_type == media::MediaContentType::OneShot)
@@ -683,8 +668,7 @@ void MediaSessionImpl::Resume(SuspendType suspend_type) {
 
   // When the resume requests comes from another source than system, audio focus
   // must be requested.
-  if (suspend_type != SuspendType::kSystem &&
-      CanRequestSystemAudioFocus(suspend_type)) {
+  if (suspend_type != SuspendType::kSystem) {
     // Request audio focus again in case we lost it because another app started
     // playing while the playback was paused. If the audio focus request is
     // delayed we will resume the player when the request completes.
@@ -1919,38 +1903,6 @@ void MediaSessionImpl::ResetDurationUpdateGuard() {
   duration_update_allowance_ = kDurationUpdateMaxAllowance;
   is_throttling_ = false;
   guarding_player_id_.reset();
-}
-
-bool MediaSessionImpl::CanRequestSystemAudioFocus() const {
-  // If we already have audio focus, we're able to continue adding players.
-  if (audio_focus_state_ == State::ACTIVE) {
-    return true;
-  }
-
-  // If we don't allow background playback and the widget is hidden, then we
-  // should not request audio focus as playback will fail to start.
-  if (kIsBackgroundMediaSuspendEnabled) {
-    if (web_contents()->GetRenderWidgetHostView() &&
-        web_contents()->GetRenderWidgetHostView()->GetRenderWidgetHost()) {
-      return !static_cast<RenderWidgetHostImpl*>(web_contents()
-                                                     ->GetRenderWidgetHostView()
-                                                     ->GetRenderWidgetHost())
-                  ->is_hidden();
-    }
-  }
-
-  return true;
-}
-
-bool MediaSessionImpl::CanRequestSystemAudioFocus(
-    SuspendType suspend_type) const {
-  // When the resume request comes from UI, then we always allow it to resume
-  // playback.
-  if (suspend_type == SuspendType::kUI) {
-    return true;
-  }
-
-  return CanRequestSystemAudioFocus();
 }
 
 void MediaSessionImpl::SetShouldThrottleDurationUpdateForTest(

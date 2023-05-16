@@ -357,8 +357,6 @@ class MediaSessionImpl : public MediaSession,
   friend class MediaSessionImplDurationThrottleTest;
   friend class MediaInternalsAudioFocusTest;
 
-  bool AddPlayerInternal(MediaSessionPlayerObserver* observer, int player_id);
-
   CONTENT_EXPORT void RemoveAllPlayersForTest();
   CONTENT_EXPORT MediaSessionUmaHelper* uma_helper_for_test();
 
@@ -486,14 +484,6 @@ class MediaSessionImpl : public MediaSession,
   void IncreaseDurationUpdateAllowance();
 
   void ResetDurationUpdateGuard();
-
-  // Returns true if MediaSessionImpl should request system audio focus when
-  // playback occurs.
-  bool CanRequestSystemAudioFocus() const;
-
-  // Same as |CanRequestSystemAudioFocus()|, except taking into account the
-  // source of the playback request was received.
-  bool CanRequestSystemAudioFocus(SuspendType suspend_type) const;
 
   CONTENT_EXPORT void SetShouldThrottleDurationUpdateForTest(
       bool should_throttle);

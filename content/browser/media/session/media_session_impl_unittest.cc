@@ -13,7 +13,6 @@
 #include "content/browser/media/session/media_session_player_observer.h"
 #include "content/browser/media/session/mock_media_session_player_observer.h"
 #include "content/browser/media/session/mock_media_session_service_impl.h"
-#include "content/common/media/constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -200,11 +199,6 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
   const std::set<media_session::mojom::MediaSessionAction>& default_actions()
       const {
     return default_actions_;
-  }
-
-  void HideRenderWidgetHost() {
-    auto* rwh = RenderWidgetHostImpl::From(rvh()->GetWidget());
-    rwh->WasHidden();
   }
 
  private:
@@ -791,22 +785,6 @@ TEST_F(MediaSessionImplTest, RaiseActivatesWebContents) {
   // When the WebContents does not have a delegate, |Raise()| should not crash.
   web_contents()->SetDelegate(nullptr);
   GetMediaSession()->Raise();
-}
-
-TEST_F(MediaSessionImplTest,
-       HiddenTabsCantRequestFocusWhenBackgroundSuspendIsEnabled) {
-  MockAudioFocusDelegate* delegate = new MockAudioFocusDelegate();
-  SetDelegateForTests(GetMediaSession(), delegate);
-
-  EXPECT_EQ(0, delegate->request_audio_focus_count());
-  HideRenderWidgetHost();
-  StartNewPlayer();
-
-  if (kIsBackgroundMediaSuspendEnabled) {
-    EXPECT_EQ(0, delegate->request_audio_focus_count());
-  } else {
-    EXPECT_EQ(1, delegate->request_audio_focus_count());
-  }
 }
 
 // Tests for throttling duration updates.
