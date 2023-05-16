@@ -134,6 +134,10 @@ struct Manifest {
   // experiment. See:
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/tabbed-mode-explainer.md
   ManifestTabStrip? tab_strip;
+
+  // TODO(crbug.com/1444407): This field is non-standard and part of an
+  // experiment. See: https://github.com/WICG/isolated-web-apps
+  mojo_base.mojom.String16? version;
 };
 
 // Structure representing a Shortcut Item per the Manifest specification, see:

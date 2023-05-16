@@ -531,6 +531,8 @@ class MODULES_EXPORT ManifestParser {
   // of the manifest.
   Vector<UrlPattern> ParseScopePatterns(const JSONObject* object);
 
+  String ParseVersion(const JSONObject* object);
+
   void AddErrorInfo(const String& error_msg,
                     bool critical = false,
                     int error_line = 0,

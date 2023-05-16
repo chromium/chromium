@@ -233,6 +233,8 @@ bool ManifestParser::Parse() {
     manifest_->tab_strip = ParseTabStrip(root_object.get());
   }
 
+  manifest_->version = ParseVersion(root_object.get());
+
   ManifestUmaUtil::ParseSucceeded(manifest_);
 
   return has_comments;
@@ -2209,6 +2211,10 @@ Vector<UrlPattern> ManifestParser::ParseScopePatterns(
   }
 
   return result;
+}
+
+String ManifestParser::ParseVersion(const JSONObject* object) {
+  return ParseString(object, "version", Trim(false)).value_or(String());
 }
 
 void ManifestParser::AddErrorInfo(const String& error_msg,

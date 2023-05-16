@@ -6768,4 +6768,31 @@ TEST_F(ManifestParserTest, TabStripHomeTabScopeParseRules) {
   }
 }
 
+TEST_F(ManifestParserTest, VersionParseRules) {
+  // Valid versions are parsed.
+  {
+    auto& manifest = ParseManifest(R"({ "version": "1.2.3" })");
+    EXPECT_FALSE(manifest->version.IsNull());
+    EXPECT_EQ(manifest->version, "1.2.3");
+
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Do not tamper with the version string in any way.
+  {
+    auto& manifest = ParseManifest(R"({ "version": " abc !^?$ test " })");
+    EXPECT_FALSE(manifest->version.IsNull());
+    EXPECT_EQ(manifest->version, " abc !^?$ test ");
+
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Reject versions that are not strings.
+  {
+    auto& manifest = ParseManifest(R"({ "version": 123 })");
+    EXPECT_TRUE(manifest->version.IsNull());
+    EXPECT_EQ(1u, GetErrorCount());
+  }
+}
+
 }  // namespace blink
