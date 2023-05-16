@@ -1994,7 +1994,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/eche_app/app',
-        'version': 'mp7VmGY1Q1UulmnySPfyNCNanvuXojM-JNIQCOdHGLcC',
+        'version': 'sLWeOjL4G-D4A_bChDSoLuxlIJNgcolXupAbfnnWS64C',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
