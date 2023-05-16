@@ -96,6 +96,38 @@ BASE_DECLARE_FEATURE(kPasswordGenerationPreviewOnHover);
 
 // All features parameters are in alphabetical order.
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+// This enum supports enabling specific arms of the
+// `kPasswordGenerationExperiment` (go/strong-passwords-desktop).
+// Keep the order consistent with
+// `kPasswordGenerationExperimentVariationOption` below and with
+// `kPasswordGenerationExperimentVariations` in about_flags.cc.
+enum class PasswordGenerationVariation {
+  // Adjusts the language focusing on recommendation and security messaging.
+  kTrustedAdvice = 1,
+  // Adjusts the language making the suggestion softer and more guiding.
+  kSafetyFirst = 2,
+  // Adjusts the language adding a more persuasive and reassuring tone.
+  kTrySomethingNew = 3,
+  // Adjusts the language focusing on the convenience of use.
+  kConvenience = 4,
+};
+
+inline constexpr base::FeatureParam<PasswordGenerationVariation>::Option
+    kPasswordGenerationExperimentVariationOption[] = {
+        {PasswordGenerationVariation::kTrustedAdvice, "trusted_advice"},
+        {PasswordGenerationVariation::kSafetyFirst, "safety_first"},
+        {PasswordGenerationVariation::kTrySomethingNew, "try_something_new"},
+        {PasswordGenerationVariation::kConvenience, "convenience"},
+};
+
+inline constexpr base::FeatureParam<PasswordGenerationVariation>
+    kPasswordGenerationExperimentVariationParam{
+        &kPasswordGenerationExperiment, "password_generation_variation",
+        PasswordGenerationVariation::kTrustedAdvice,
+        &kPasswordGenerationExperimentVariationOption};
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 // If true, then password strength indicator will display a minimized state for
 // passwords with more than 5 characters as long as they are weak. Otherwise,
 // the full dropdown will be displayed as long as the password is weak.

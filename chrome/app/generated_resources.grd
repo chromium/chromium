@@ -6162,12 +6162,36 @@ Keep your key file in a safe place. You will need it to create new versions of y
 
       <if expr="not use_titlecase">
         <message name="IDS_PASSWORD_GENERATION_SUGGESTION_GPM" desc="Text shown next to a generated password describing it as a suggestion.">
-        Use strong password
+          Use strong password
+        </message>
+        <message name="IDS_PASSWORD_GENERATION_SUGGESTION_TRUSTED_ADVICE" desc="Text shown next to a generated password describing it as recommended.">
+          Use recommended password
+        </message>
+        <message name="IDS_PASSWORD_GENERATION_SUGGESTION_SAFETY_FIRST" desc="Text shown next to a generated password describing it as safe.">
+          Use a safer password
+        </message>
+        <message name="IDS_PASSWORD_GENERATION_SUGGESTION_TRY_SOMETHING_NEW" desc="Text shown next to a generated password describing it in a reassuring way.">
+          Try a new password
+        </message>
+        <message name="IDS_PASSWORD_GENERATION_SUGGESTION_CONVENIENCE" desc="Text shown next to a generated password describing its convenience.">
+          Quickly use a strong password
         </message>
       </if>
       <if expr="use_titlecase">
         <message name="IDS_PASSWORD_GENERATION_SUGGESTION_GPM" desc="In Title Case: Text shown next to a generated password describing it as a suggestion.">
           Use Strong Password
+        </message>
+        <message name="IDS_PASSWORD_GENERATION_SUGGESTION_TRUSTED_ADVICE" desc="Text shown next to a generated password describing it as recommended.">
+          Use Recommended Password
+        </message>
+        <message name="IDS_PASSWORD_GENERATION_SUGGESTION_SAFETY_FIRST" desc="Text shown next to a generated password describing it as safe.">
+          Use a Safer Password
+        </message>
+        <message name="IDS_PASSWORD_GENERATION_SUGGESTION_TRY_SOMETHING_NEW" desc="Text shown next to a generated password describing it in a reassuring way.">
+          Try a New Password
+        </message>
+        <message name="IDS_PASSWORD_GENERATION_SUGGESTION_CONVENIENCE" desc="Text shown next to a generated password describing its convenience.">
+          Quickly Use a Strong Password
         </message>
       </if>
 
@@ -6226,6 +6250,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_PASSWORD_GENERATION_PROMPT_GOOGLE_PASSWORD_MANAGER" desc="Autofill dropdown text describing password generation.">
           You won't need to remember this password. It will be saved to <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph> for <ph name="EMAIL">$2<ex>user@gmail.com</ex></ph>.
+      </message>
+      <message name="IDS_PASSWORD_GENERATION_HELP_TEXT_TRUSTED_ADVICE" desc="Autofill dropdown text describing password generation focusing on strong security messaging.">
+          Keep this account more secure with a strong password. It will be saved to <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph> for <ph name="EMAIL">$2<ex>user@gmail.com</ex></ph>.
+      </message>
+      <message name="IDS_PASSWORD_GENERATION_HELP_TEXT_SAFETY_FIRST" desc="Autofill dropdown text describing password generation focusing on safety.">
+          Stay safer online with a strong password. It will be saved to <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph> for <ph name="EMAIL">$2<ex>user@gmail.com</ex></ph>.
+      </message>
+      <message name="IDS_PASSWORD_GENERATION_HELP_TEXT_TRY_SOMETHING_NEW" desc="Autofill dropdown text describing password generation with a more persuasive and reassuring tone.">
+          You can always change this password later. It will be saved to <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph> for <ph name="EMAIL">$2<ex>user@gmail.com</ex></ph>.
+      </message>
+      <message name="IDS_PASSWORD_GENERATION_HELP_TEXT_CONVENIENCE" desc="Autofill dropdown text describing password generation with a convenience proposition.">
+          Sign up and sign in faster when your password is automatically saved to <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph> for <ph name="EMAIL">$2<ex>user@gmail.com</ex></ph>.
       </message>
       <message name="IDS_PASSWORD_MANAGEMENT_BUBBLE_FOOTER_ACCOUNT_STORE_USERS" desc="The footer text of the managment bubble the lists saved password for this website. This is used only for account store users.">
         Passwords are saved to <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google Password Manager</ex></ph>.

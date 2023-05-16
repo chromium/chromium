@@ -89,6 +89,25 @@ class PasswordGenerationPopupViewWithMinimizedStrengthIndicatorTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// The test parameter controls the value of kPasswordGenerationExperiment
+// feature param.
+class PasswordGenerationPopupViewWithContentExperimentTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<std::string> {
+ public:
+  PasswordGenerationPopupViewWithContentExperimentTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{password_manager::features::
+                                   kPasswordGenerationExperiment,
+                               {{"password_generation_variation",
+                                 GetParam()}}}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Regression test for crbug.com/400543. Verifying that moving the mouse in the
 // editing dialog doesn't crash.
 IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
@@ -458,5 +477,42 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewAxTest, PopupInAxTree) {
   GTEST_SKIP() << "Accessibility reflection is not supported on this platform.";
 #endif
 }
+
+IN_PROC_BROWSER_TEST_P(PasswordGenerationPopupViewWithContentExperimentTest,
+                       DoesNotCrashShowingGenerationOfferWithModifiedContent) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  password_generation::PasswordGenerationUIData ui_data(
+      gfx::RectF(web_contents->GetContainerBounds().x(),
+                 web_contents->GetContainerBounds().y(), 10, 10),
+      /*max_length=*/10,
+      /*generation_element=*/std::u16string(),
+      /*user_typed_password=*/std::u16string(), FieldRendererId(100),
+      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
+      FormData());
+
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      PasswordGenerationPopupControllerImpl::GetOrCreate(
+          /*previous=*/nullptr, ui_data.bounds, ui_data,
+          password_manager::ContentPasswordManagerDriverFactory::
+              FromWebContents(web_contents)
+                  ->GetDriverForFrame(web_contents->GetPrimaryMainFrame())
+                  ->AsWeakPtr(),
+          /*observer=*/nullptr, web_contents,
+          web_contents->GetPrimaryMainFrame());
+
+  controller->Show(PasswordGenerationPopupController::kOfferGeneration);
+  EXPECT_TRUE(controller->IsVisible());
+
+  // This hides the popup and destroys the controller.
+  web_contents->Close();
+}
+
+INSTANTIATE_TEST_SUITE_P(ContentExperiment,
+                         PasswordGenerationPopupViewWithContentExperimentTest,
+                         testing::Values("trusted_advice",
+                                         "safety_first",
+                                         "try_something_new",
+                                         "convenience"));
 
 }  // namespace autofill

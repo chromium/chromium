@@ -87,14 +87,12 @@ class PasswordGenerationPopupViewBrowsertest
     ON_CALL(controller(), password).WillByDefault(ReturnRef(password_));
   }
 
-  void PrepareOfferGenerationState() {
+  void PrepareOfferGenerationState(const std::u16string& suggested_text) {
     ON_CALL(controller(), state)
         .WillByDefault(Return(PasswordGenerationPopupController::
                                   GenerationUIState::kOfferGeneration));
     ON_CALL(controller(), IsStateMinimized).WillByDefault(Return(false));
-    ON_CALL(controller(), SuggestedText)
-        .WillByDefault(Return(
-            l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SUGGESTION_GPM)));
+    ON_CALL(controller(), SuggestedText).WillByDefault(Return(suggested_text));
   }
 
   void PrepareEditingSuggestionState() {
@@ -134,14 +132,44 @@ class PasswordGenerationPopupViewBrowsertest
 
 IN_PROC_BROWSER_TEST_P(PasswordGenerationPopupViewBrowsertest,
                        OfferPasswordGeneration) {
-  PrepareOfferGenerationState();
+  PrepareOfferGenerationState(
+      l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SUGGESTION_GPM));
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(PasswordGenerationPopupViewBrowsertest,
                        OfferPasswordGenerationHovered) {
-  PrepareOfferGenerationState();
+  PrepareOfferGenerationState(
+      l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SUGGESTION_GPM));
   SetSelected(true);
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PasswordGenerationPopupViewBrowsertest,
+                       OfferPasswordGenerationWithTrustedAdvice) {
+  PrepareOfferGenerationState(l10n_util::GetStringUTF16(
+      IDS_PASSWORD_GENERATION_SUGGESTION_TRUSTED_ADVICE));
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PasswordGenerationPopupViewBrowsertest,
+                       OfferPasswordGenerationWithSafetyFirst) {
+  PrepareOfferGenerationState(l10n_util::GetStringUTF16(
+      IDS_PASSWORD_GENERATION_SUGGESTION_SAFETY_FIRST));
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PasswordGenerationPopupViewBrowsertest,
+                       OfferPasswordGenerationWithTrySomethingNew) {
+  PrepareOfferGenerationState(l10n_util::GetStringUTF16(
+      IDS_PASSWORD_GENERATION_SUGGESTION_TRY_SOMETHING_NEW));
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PasswordGenerationPopupViewBrowsertest,
+                       OfferPasswordGenerationWithConvenience) {
+  PrepareOfferGenerationState(l10n_util::GetStringUTF16(
+      IDS_PASSWORD_GENERATION_SUGGESTION_CONVENIENCE));
   ShowAndVerifyUi();
 }
 

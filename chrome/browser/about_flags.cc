@@ -3623,6 +3623,41 @@ const FeatureEntry::Choice kCastMirroringTargetPlayoutDelayChoices[] = {
      switches::kCastMirroringTargetPlayoutDelay, "350"}};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kPasswordGenerationTrustedAdvice[] = {
+    {password_manager::features::kPasswordGenerationExperimentVariationParam
+         .name,
+     password_manager::features::kPasswordGenerationExperimentVariationOption[0]
+         .name}};
+const FeatureEntry::FeatureParam kPasswordGenerationSafetyFirst[] = {
+    {password_manager::features::kPasswordGenerationExperimentVariationParam
+         .name,
+     password_manager::features::kPasswordGenerationExperimentVariationOption[1]
+         .name}};
+const FeatureEntry::FeatureParam kPasswordGenerationTrySomethingNew[] = {
+    {password_manager::features::kPasswordGenerationExperimentVariationParam
+         .name,
+     password_manager::features::kPasswordGenerationExperimentVariationOption[2]
+         .name}};
+const FeatureEntry::FeatureParam kPasswordGenerationConvenience[] = {
+    {password_manager::features::kPasswordGenerationExperimentVariationParam
+         .name,
+     password_manager::features::kPasswordGenerationExperimentVariationOption[3]
+         .name}};
+
+const FeatureEntry::FeatureVariation kPasswordGenerationExperimentVariations[] =
+    {
+        {"Trusted advice", kPasswordGenerationTrustedAdvice,
+         std::size(kPasswordGenerationTrustedAdvice), nullptr},
+        {"Safety first", kPasswordGenerationSafetyFirst,
+         std::size(kPasswordGenerationSafetyFirst), nullptr},
+        {"Try something new", kPasswordGenerationTrySomethingNew,
+         std::size(kPasswordGenerationTrySomethingNew), nullptr},
+        {"Convenience", kPasswordGenerationConvenience,
+         std::size(kPasswordGenerationConvenience), nullptr},
+};
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -8773,8 +8808,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"password-generation-experiment",
      flag_descriptions::kPasswordGenerationExperimentName,
      flag_descriptions::kPasswordGenerationExperimentDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kPasswordGenerationExperiment)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         password_manager::features::kPasswordGenerationExperiment,
+         kPasswordGenerationExperimentVariations,
+         "PasswordGenerationExperiment")},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
