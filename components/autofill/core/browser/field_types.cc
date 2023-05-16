@@ -434,10 +434,8 @@ base::StringPiece FieldTypeToStringPiece(ServerFieldType type) {
 }
 
 ServerFieldType TypeNameToFieldType(base::StringPiece type_name) {
-  if (kTypeNameToFieldType.contains(type_name)) {
-    return kTypeNameToFieldType.at(type_name);
-  }
-  return UNKNOWN_TYPE;
+  auto* it = kTypeNameToFieldType.find(type_name);
+  return it != kTypeNameToFieldType.end() ? it->second : UNKNOWN_TYPE;
 }
 
 std::ostream& operator<<(std::ostream& o, ServerFieldTypeSet field_type_set) {
