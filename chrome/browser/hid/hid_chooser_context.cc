@@ -704,8 +704,7 @@ bool HidChooserContext::CanApplyPolicy() {
   auto* profile_helper = ash::ProfileHelper::Get();
   DCHECK(profile_helper);
   user_manager::User* user = profile_helper->GetUserByProfile(profile_);
-  DCHECK(user);
-  return user->IsAffiliated();
+  return !user || user->IsAffiliated();
 #else
   return true;
 #endif

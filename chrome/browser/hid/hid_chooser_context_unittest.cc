@@ -66,19 +66,21 @@ class HidChooserContextTestBase {
       delete;
   ~HidChooserContextTestBase() = default;
 
-  void DoSetUp(bool is_affiliated) {
+  void DoSetUp(bool is_affiliated, bool login_user) {
     constexpr char kTestUserEmail[] = "user@example.com";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    constexpr char kTestUserGaiaId[] = "1111111111";
-    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    auto* fake_user_manager_ptr = fake_user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+    if (login_user) {
+      constexpr char kTestUserGaiaId[] = "1111111111";
+      auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
+      auto* fake_user_manager_ptr = fake_user_manager.get();
+      scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+          std::move(fake_user_manager));
 
-    auto account_id =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
-    fake_user_manager_ptr->AddUserWithAffiliation(account_id, is_affiliated);
-    fake_user_manager_ptr->LoginUser(account_id);
+      auto account_id =
+          AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
+      fake_user_manager_ptr->AddUserWithAffiliation(account_id, is_affiliated);
+      fake_user_manager_ptr->LoginUser(account_id);
+    }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
@@ -305,7 +307,9 @@ class HidChooserContextTestBase {
 class HidChooserContextTest : public HidChooserContextTestBase,
                               public testing::Test {
  public:
-  void SetUp() override { DoSetUp(/*is_affiliated=*/true); }
+  void SetUp() override {
+    DoSetUp(/*is_affiliated=*/true, /*login_user=*/true);
+  }
   void TearDown() override { DoTearDown(); }
 };
 
@@ -655,7 +659,9 @@ class HidChooserContextBlocklistTest
  public:
   HidChooserContextBlocklistTest() = default;
 
-  void SetUp() override { DoSetUp(/*is_affiliated=*/true); }
+  void SetUp() override {
+    DoSetUp(/*is_affiliated=*/true, /*login_user=*/true);
+  }
   void TearDown() override { DoTearDown(); }
 };
 
@@ -805,7 +811,7 @@ class HidChooserContextAffiliatedTest : public HidChooserContextTestBase,
  public:
   HidChooserContextAffiliatedTest() : is_affiliated_(GetParam()) {}
 
-  void SetUp() override { DoSetUp(is_affiliated_); }
+  void SetUp() override { DoSetUp(is_affiliated_, /*login_user=*/true); }
   void TearDown() override { DoTearDown(); }
 
   bool is_affiliated() const { return is_affiliated_; }
@@ -1212,3 +1218,37 @@ INSTANTIATE_TEST_SUITE_P(
 #endif
     [](const testing::TestParamInfo<HidChooserContextAffiliatedTest::ParamType>&
            info) { return info.param ? "affiliated" : "unaffiliated"; });
+
+namespace {
+
+class HidChooserContextLoginScreenTest : public HidChooserContextTestBase,
+                                         public testing::Test {
+ public:
+  HidChooserContextLoginScreenTest() = default;
+
+  void SetUp() override {
+    DoSetUp(/*is_affiliated=*/false, /*login_user=*/false);
+  }
+  void TearDown() override { DoTearDown(); }
+};
+
+}  // namespace
+
+TEST_F(HidChooserContextLoginScreenTest, ApplyPolicyOnLoginScreen) {
+  const auto kOrigin = url::Origin::Create(GURL("https://google.com"));
+
+  // Connect a device.
+  auto device = ConnectPersistentUsbDeviceBlocking();
+
+  // Set the AllowDevicesForUrls policy
+  SetAllowDevicesForUrlsPolicy(R"(
+      [
+        {
+          "devices": [{ "vendor_id": 4660, "product_id": 43981 }],
+          "urls": [ "https://google.com" ]
+        }
+      ])");
+  EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(1u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(1u, context()->GetAllGrantedObjects().size());
+}
