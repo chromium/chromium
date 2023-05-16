@@ -9,6 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -61,7 +63,8 @@ FullscreenToolbarStyle GetUserPreferredToolbarStyle(bool always_show) {
 BrowserNonClientFrameViewMac::BrowserNonClientFrameViewMac(
     BrowserFrame* frame,
     BrowserView* browser_view)
-    : BrowserNonClientFrameView(frame, browser_view) {
+    : BrowserNonClientFrameView(frame, browser_view),
+      fullscreen_session_timer_(std::make_unique<base::OneShotTimer>()) {
   if (web_app::AppBrowserController::IsWebApp(browser_view->browser())) {
     auto* provider =
         web_app::WebAppProvider::GetForWebApps(browser_view->GetProfile());
@@ -91,14 +94,38 @@ BrowserNonClientFrameViewMac::BrowserNonClientFrameViewMac(
 }
 
 BrowserNonClientFrameViewMac::~BrowserNonClientFrameViewMac() {
-  if ([fullscreen_toolbar_controller_ isInFullscreen])
+  if ([fullscreen_toolbar_controller_ isInFullscreen]) {
     [fullscreen_toolbar_controller_ exitFullscreenMode];
+  }
+  EmitFullscreenSessionHistograms();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNonClientFrameViewMac, BrowserNonClientFrameView implementation:
 
 void BrowserNonClientFrameViewMac::OnFullscreenStateChanged() {
+  // Record the start of a browser fullscreen session. Content fullscreen is
+  // ignored.
+  FullscreenController* controller =
+      browser_view()->GetExclusiveAccessManager()->fullscreen_controller();
+  if (browser_view()->IsFullscreen() &&
+      !controller->IsWindowFullscreenForTabOrPending() &&
+      !controller->IsExtensionFullscreenOrPending()) {
+    fullscreen_session_start_ = base::TimeTicks::Now();
+
+    // Add a backstop to emit the metric 24 hours from now. Any session lasting
+    // more than 24 hours would be counted in the overflow bucket, so emit at 24
+    // hours to get the count emitted faster.
+    fullscreen_session_timer_->Start(
+        FROM_HERE, base::Days(1),
+        base::BindOnce(
+            &BrowserNonClientFrameViewMac::EmitFullscreenSessionHistograms,
+            base::Unretained(this)));
+  } else {
+    fullscreen_session_timer_->Stop();
+    EmitFullscreenSessionHistograms();
+  }
+
   if (browser_view()->UsesImmersiveFullscreenMode()) {
     browser_view()->immersive_mode_controller()->SetEnabled(
         browser_view()->IsFullscreen());
@@ -553,4 +580,17 @@ bool BrowserNonClientFrameViewMac::AlwaysShowToolbarInFullscreen() const {
   } else {
     return *show_fullscreen_toolbar_;
   }
+}
+
+void BrowserNonClientFrameViewMac::EmitFullscreenSessionHistograms() {
+  if (!fullscreen_session_start_.has_value()) {
+    return;
+  }
+  base::TimeDelta delta =
+      base::TimeTicks::Now() - fullscreen_session_start_.value();
+  fullscreen_session_start_.reset();
+
+  // Max duration of 1 day.
+  UMA_HISTOGRAM_CUSTOM_TIMES("Session.BrowserFullscreen.DurationUpTo24H", delta,
+                             base::Milliseconds(1), base::Days(1), 100);
 }

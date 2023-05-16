@@ -36,6 +36,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.BrowserFullscreen.DurationUpTo24H" units="ms"
+    expires_after="2024-02-01">
+  <owner>bur@chromium.org</owner>
+  <owner>chrome-mac-dev@google.com</owner>
+  <summary>
+    The total time a Chrome browser window spends in fullscreen. Content
+    fullscreen is not represented. Records are capped at 24 hours.
+
+    The metric is recorded when a browser window exits fullscreen or after 24
+    hours has elapsed, whichever comes first. This includes quitting the browser
+    while in fullscreen.
+
+    Mac-only.
+  </summary>
+</histogram>
+
 <histogram name="Session.IsActive" enum="BooleanActive"
     expires_after="2023-11-12">
   <owner>rogerm@chromium.org</owner>
