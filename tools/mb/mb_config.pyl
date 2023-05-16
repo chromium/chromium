@@ -156,6 +156,7 @@
     },
 
     'chromium.cft': {
+      'linux-arm64-rel-cft': 'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_reclient_arm64',
       'linux-rel-cft': 'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_reclient',
       'mac-rel-cft': 'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_reclient',
       'win-rel-cft': 'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_reclient',
@@ -2729,6 +2730,11 @@
     'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_reclient': [
       'gpu_tests', 'release_bot_reclient', 'minimal_symbols',
       'chrome_for_testing',
+    ],
+
+    'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_reclient_arm64': [
+      'gpu_tests', 'release_bot_reclient', 'minimal_symbols',
+      'chrome_for_testing', 'arm64',
     ],
 
     'gpu_tests_release_bot_minimal_symbols_code_coverage': [

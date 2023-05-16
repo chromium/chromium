@@ -54,6 +54,18 @@ ci.builder(
 )
 
 ci.builder(
+    name = "linux-arm64-rel-cft",
+    builder_spec = builder_spec(
+        build_config = builder_config.build_config.RELEASE,
+        target_platform = builder_config.target_platform.LINUX,
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        short_name = "linux-arm64-rel-cft",
+    ),
+)
+
+ci.builder(
     name = "linux-rel-cft",
     builder_spec = builder_spec(
         build_config = builder_config.build_config.RELEASE,
