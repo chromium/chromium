@@ -17,11 +17,13 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './password_details_card.html.js';
 import {PasswordManagerImpl, PasswordViewPageInteractions} from './password_manager_proxy.js';
 import {ShowPasswordMixin} from './show_password_mixin.js';
+import {UserUtilMixin} from './user_utils_mixin.js';
 
 export type PasswordRemovedEvent =
     CustomEvent<{removedFromStores: chrome.passwordsPrivate.PasswordStoreSet}>;
@@ -49,7 +51,7 @@ export interface PasswordDetailsCardElement {
 }
 
 const PasswordDetailsCardElementBase =
-    ShowPasswordMixin(I18nMixin(PolymerElement));
+    UserUtilMixin(ShowPasswordMixin(I18nMixin(PolymerElement)));
 
 export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   static get is() {
@@ -69,6 +71,13 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
 
       showEditPasswordDialog_: Boolean,
       showDeletePasswordDialog_: Boolean,
+
+      enableSendPasswords_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableSendPasswords');
+        },
+      },
     };
   }
 
@@ -78,6 +87,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   private showNoteFully_: boolean;
   private showEditPasswordDialog_: boolean;
   private showDeletePasswordDialog_: boolean;
+  private enableSendPasswords_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -203,6 +213,10 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
       return this.i18n('sitesAndAppsLabel');
     }
     return hasApps ? this.i18n('appsLabel') : this.i18n('sitesLabel');
+  }
+
+  private showShareButton_(): boolean {
+    return this.isSyncingPasswords && this.enableSendPasswords_;
   }
 }
 

@@ -275,6 +275,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
      IDS_PASSWORD_MANAGER_UI_RUN_CHECKUP_ARIA_DESCRIPTION},
     {"save", IDS_SAVE},
     {"savePasswordsLabel", IDS_PASSWORD_MANAGER_UI_SAVE_PASSWORDS_TOGGLE_LABEL},
+    {"share", IDS_PASSWORD_MANAGER_UI_SHARE},
     {"searchPrompt", IDS_PASSWORD_MANAGER_UI_SEARCH_PROMPT},
     {"selectFile", IDS_PASSWORD_MANAGER_UI_SELECT_FILE},
     {"settings", IDS_PASSWORD_MANAGER_UI_SETTINGS},
@@ -348,6 +349,10 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
   source->AddBoolean("enablePasswordsImportM2",
                      base::FeatureList::IsEnabled(
                          password_manager::features::kPasswordsImportM2));
+
+  source->AddBoolean(
+      "enableSendPasswords",
+      base::FeatureList::IsEnabled(password_manager::features::kSendPasswords));
 
   source->AddString("passwordManagerLearnMoreURL",
                     chrome::kPasswordManagerLearnMoreURL);
