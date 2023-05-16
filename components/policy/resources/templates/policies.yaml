@@ -1106,6 +1106,7 @@ policies:
   1105: BrowserContextAwareAccessSignalsAllowlist
   1106: UserContextAwareAccessSignalsAllowlist
   1107: GoogleSearchSidePanelEnabled
+  1108: PdfUseSkiaRendererEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

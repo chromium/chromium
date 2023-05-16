@@ -7,12 +7,16 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "chrome/browser/pdf/pdf_pref_names.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/pdf_resources.h"
 #include "components/pdf/browser/pdf_stream_delegate.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/api/mime_handler.mojom.h"
@@ -29,6 +33,24 @@
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 namespace {
+
+// Determines whether the PDF viewer should use Skia renderer based on the
+// user's choice, the enterprise policy and the finch experiment. The priority
+// hierarchy is: enterprise policy > user choice > finch experiment.
+bool ShouldEnableSkiaRenderer(content::WebContents* contents) {
+  CHECK(contents);
+  const PrefService* prefs =
+      Profile::FromBrowserContext(contents->GetBrowserContext())->GetPrefs();
+
+  // When the enterprise policy is set.
+  if (prefs->IsManagedPreference(prefs::kPdfUseSkiaRendererEnabled)) {
+    return prefs->GetBoolean(prefs::kPdfUseSkiaRendererEnabled);
+  }
+
+  //  When the enterprise policy is not set, use finch/feature flag choice.
+  return base::FeatureList::IsEnabled(
+      chrome_pdf::features::kPdfUseSkiaRenderer);
+}
 
 // Associates a `pdf::PdfStreamDelegate::StreamInfo` with a `WebContents`.
 // `ChromePdfStreamDelegate::MapToOriginalUrl()` initializes this in
@@ -87,12 +109,7 @@ absl::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
         stream->pdf_plugin_attributes()->background_color);
     info.full_frame = !stream->embedded();
     info.allow_javascript = stream->pdf_plugin_attributes()->allow_javascript;
-
-    // TODO(crbug.com/1440430): Set `info.use_skia` based on both the feature
-    // flag and the enterprise policy once the policy is available for the Skia
-    // finch experiment.
-    info.use_skia =
-        base::FeatureList::IsEnabled(chrome_pdf::features::kPdfUseSkiaRenderer);
+    info.use_skia = ShouldEnableSkiaRenderer(contents);
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   } else if (stream_url.GetWithEmptyPath() ==
              chrome::kChromeUIUntrustedPrintURL) {
@@ -102,8 +119,7 @@ absl::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
     info.background_color = gfx::kGoogleGrey300;
     info.full_frame = false;
     info.allow_javascript = false;
-    info.use_skia =
-        base::FeatureList::IsEnabled(chrome_pdf::features::kPdfUseSkiaRenderer);
+    info.use_skia = ShouldEnableSkiaRenderer(contents);
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
   } else {
     return absl::nullopt;

@@ -19107,6 +19107,28 @@
       }
     ]
   },
+  "PdfUseSkiaRendererEnabled": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PdfUseSkiaRendererEnabled": true
+        },
+        "prefs": {
+          "pdf.enable_skia": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      }
+    ]
+  },
   "ExplicitlyAllowedNetworkPorts": {
     "os": [
       "win",

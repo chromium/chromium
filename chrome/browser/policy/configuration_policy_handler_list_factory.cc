@@ -572,6 +572,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kPdfLocalFileAccessAllowedForDomains,
     prefs::kPdfLocalFileAccessAllowedForDomains,
     base::Value::Type::LIST},
+  { key::kPdfUseSkiaRendererEnabled,
+    prefs::kPdfUseSkiaRendererEnabled,
+    base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(ENABLE_PDF)
   { key::kPolicyRefreshRate,
     policy_prefs::kUserPolicyRefreshRate,
