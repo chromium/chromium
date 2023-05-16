@@ -46,6 +46,7 @@ constexpr auto kDelayBeforeCollapsingChip = base::Seconds(12);
 // Abusive origins do not support expand animation, hence the dismiss timer
 // should be longer.
 constexpr auto kDelayBeforeCollapsingChipForAbusiveOrigins = base::Seconds(18);
+constexpr auto kPermissionChipAutoDismissDelay = base::Seconds(6);
 
 class BubbleButtonController : public views::ButtonController {
  public:
@@ -646,13 +647,8 @@ void ChipController::StartDismissTimer() {
     return;
 
   if (permission_prompt_model_->ShouldExpand()) {
-    if (base::FeatureList::IsEnabled(
-            permissions::features::kPermissionChipAutoDismiss)) {
-      auto delay = base::Milliseconds(
-          permissions::features::kPermissionChipAutoDismissDelay.Get());
-      dismiss_timer_.Start(FROM_HERE, delay, this,
-                           &ChipController::OnPromptExpired);
-    }
+    dismiss_timer_.Start(FROM_HERE, kPermissionChipAutoDismissDelay, this,
+                         &ChipController::OnPromptExpired);
   } else {
     dismiss_timer_.Start(FROM_HERE, kDelayBeforeCollapsingChipForAbusiveOrigins,
                          this, &ChipController::OnPromptExpired);
