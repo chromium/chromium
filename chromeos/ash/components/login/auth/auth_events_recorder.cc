@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -17,9 +18,13 @@
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/crash/core/common/crash_key.h"
 
 namespace ash {
 namespace {
+
+constexpr int kMaxSessionStateCrashKeyLength = 32;
+constexpr char kSessionStateCrashKey[] = "session-state";
 
 using AuthenticationSurface = AuthEventsRecorder::AuthenticationSurface;
 using AuthenticationOutcome = AuthEventsRecorder::AuthenticationOutcome;
@@ -181,6 +186,29 @@ std::string GetRecoveryDurationHistogramName(CryptohomeRecoveryResult result) {
       {kRecoveryDurationHistogramPrefix, GetRecoveryOutcomeSuffix(result)});
 }
 
+// Values of the `kSessionStateCrashKey`. The length should not exceed
+// `kMaxSessionStateCrashKeyLength`.
+std::string GetSessionStateCrashKeyValue(session_manager::SessionState state) {
+  switch (state) {
+    case session_manager::SessionState::ACTIVE:
+      return "active";
+    case session_manager::SessionState::LOGGED_IN_NOT_ACTIVE:
+      return "logged_in_not_active";
+    case session_manager::SessionState::LOCKED:
+      return "locked";
+    case session_manager::SessionState::LOGIN_PRIMARY:
+      return "login_primary";
+    case session_manager::SessionState::LOGIN_SECONDARY:
+      return "login_secondary";
+    case session_manager::SessionState::OOBE:
+      return "oobe";
+    case session_manager::SessionState::RMA:
+      return "rma";
+    case session_manager::SessionState::UNKNOWN:
+      return "unknown";
+  }
+}
+
 }  // namespace
 
 // static
@@ -189,6 +217,15 @@ AuthEventsRecorder* AuthEventsRecorder::instance_ = nullptr;
 AuthEventsRecorder::AuthEventsRecorder() {
   DCHECK(!instance_);
   instance_ = this;
+  // Note: SessionManager may be nullptr in tests.
+  if (!session_manager::SessionManager::Get()) {
+    LOG(WARNING) << "Failed to observe SessionManager";
+    CHECK_IS_TEST();
+    return;
+  }
+  session_observation_.Observe(session_manager::SessionManager::Get());
+  // Set the initial value.
+  OnSessionStateChanged();
 }
 
 AuthEventsRecorder::~AuthEventsRecorder() {
@@ -285,6 +322,14 @@ void AuthEventsRecorder::OnRecoveryDone(CryptohomeRecoveryResult result,
                                         const base::TimeDelta& time) {
   base::UmaHistogramMediumTimes(GetRecoveryDurationHistogramName(result), time);
   base::UmaHistogramEnumeration(kRecoveryResultHistogramName, result);
+}
+
+void AuthEventsRecorder::OnSessionStateChanged() {
+  session_manager::SessionState session_state =
+      session_manager::SessionManager::Get()->session_state();
+  static crash_reporter::CrashKeyString<kMaxSessionStateCrashKeyLength> key(
+      kSessionStateCrashKey);
+  key.Set(GetSessionStateCrashKeyValue(session_state));
 }
 
 void AuthEventsRecorder::MaybeUpdateUserLoginType(bool is_new_user,

@@ -9,19 +9,31 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
+#include "components/crash/core/common/crash_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
+namespace {
+
+std::string GetSessionStateCrashKeyValue() {
+  return crash_reporter::GetCrashKeyValue("session-state");
+}
+
+}  // namespace
+
 class AuthEventsRecorderTest : public ::testing::Test {
  public:
   AuthEventsRecorderTest() {
+    crash_reporter::InitializeCrashKeysForTesting();
+    session_manager_ = std::make_unique<session_manager::SessionManager>();
     recorder_ = AuthEventsRecorder::CreateForTesting();
   }
 
   ~AuthEventsRecorderTest() override { recorder_.reset(); }
 
  protected:
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<ash::AuthEventsRecorder> recorder_;
 };
 
@@ -245,6 +257,21 @@ TEST_F(AuthEventsRecorderTest, OnRecoveryDone) {
       1);
   histogram_tester.ExpectTimeBucketCount(
       "Login.CryptohomeRecoveryDuration.Failure", two_seconds, 1);
+}
+
+TEST_F(AuthEventsRecorderTest, SessionStateCrashKey) {
+  session_manager_->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  EXPECT_EQ(GetSessionStateCrashKeyValue(), "login_primary");
+
+  session_manager_->SetSessionState(session_manager::SessionState::LOCKED);
+  EXPECT_EQ(GetSessionStateCrashKeyValue(), "locked");
+
+  session_manager_->SetSessionState(session_manager::SessionState::ACTIVE);
+  EXPECT_EQ(GetSessionStateCrashKeyValue(), "active");
+
+  session_manager_->SetSessionState(session_manager::SessionState::UNKNOWN);
+  EXPECT_EQ(GetSessionStateCrashKeyValue(), "unknown");
 }
 
 }  // namespace ash
