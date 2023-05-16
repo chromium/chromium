@@ -25,6 +25,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/graphite/Image.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "ui/gfx/color_conversion_sk_filter_cache.h"
 #include "ui/gfx/hdr_metadata.h"
@@ -448,10 +449,8 @@ sk_sp<SkImage> ReadImage(
             skgpu::Budgeted::kNo);
       } else {
         CHECK(graphite_recorder);
-        SkImage::RequiredImageProperties props{
-            .fMipmapped = mip_mapped_for_upload ? skgpu::Mipmapped::kYes
-                                                : skgpu::Mipmapped::kNo};
-        image = image->makeTextureImage(graphite_recorder, props);
+        SkImage::RequiredProperties props{.fMipmapped = mip_mapped_for_upload};
+        image = SkImages::TextureFromImage(graphite_recorder, image, props);
       }
 
       if (!image) {
@@ -493,10 +492,8 @@ sk_sp<SkImage> ReadImage(
                                              /*flushPendingGrContextIO=*/true);
       } else {
         CHECK(graphite_recorder);
-        SkImage::RequiredImageProperties props{
-            .fMipmapped = mip_mapped_for_upload ? skgpu::Mipmapped::kYes
-                                                : skgpu::Mipmapped::kNo};
-        plane = plane->makeTextureImage(graphite_recorder, props);
+        SkImage::RequiredProperties props{.fMipmapped = mip_mapped_for_upload};
+        plane = SkImages::TextureFromImage(graphite_recorder, plane, props);
         // TODO(crbug.com/1434141): Should we flush the graphite recorder here?
       }
       if (!plane) {
@@ -834,9 +831,8 @@ bool ServiceImageTransferCacheEntry::Deserialize(
             gr_context, image_, GrMipMapped::kYes, skgpu::Budgeted::kNo);
       } else {
         CHECK(graphite_recorder);
-        SkImage::RequiredImageProperties props{.fMipmapped =
-                                                   skgpu::Mipmapped::kYes};
-        image_ = image_->makeTextureImage(graphite_recorder, props);
+        SkImage::RequiredProperties props{.fMipmapped = true};
+        image_ = SkImages::TextureFromImage(graphite_recorder, image_, props);
       }
       if (!image_) {
         DLOG(ERROR) << "Failed to generate mipmaps after color conversion";
@@ -901,10 +897,9 @@ void ServiceImageTransferCacheEntry::EnsureMips() {
                                        GrMipMapped::kYes, skgpu::Budgeted::kNo);
       } else {
         CHECK(graphite_recorder_);
-        SkImage::RequiredImageProperties props{.fMipmapped =
-                                                   skgpu::Mipmapped::kYes};
-        mipped_plane = plane_images_.at(plane)->makeTextureImage(
-            graphite_recorder_, props);
+        SkImage::RequiredProperties props{.fMipmapped = true};
+        mipped_plane = SkImages::TextureFromImage(
+            graphite_recorder_, plane_images_.at(plane), props);
       }
       if (!mipped_plane) {
         return;
@@ -932,9 +927,9 @@ void ServiceImageTransferCacheEntry::EnsureMips() {
           gr_context_, image_, GrMipMapped::kYes, skgpu::Budgeted::kNo);
     } else {
       CHECK(graphite_recorder_);
-      SkImage::RequiredImageProperties props{.fMipmapped =
-                                                 skgpu::Mipmapped::kYes};
-      mipped_image = image_->makeTextureImage(graphite_recorder_, props);
+      SkImage::RequiredProperties props{.fMipmapped = true};
+      mipped_image =
+          SkImages::TextureFromImage(graphite_recorder_, image_, props);
     }
     if (!mipped_image) {
       DLOG(ERROR) << "Failed to mipmapped image";

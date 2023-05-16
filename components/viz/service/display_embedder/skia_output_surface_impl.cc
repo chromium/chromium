@@ -51,6 +51,7 @@
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/graphite/Image.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_space.h"
@@ -555,7 +556,7 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
     SkColorInfo color_info(color_type, y_context->alpha_type(),
                            y_context->color_space());
     void* fulfill = new FulfillForPlane(y_context);
-    image = SkImage::MakeGraphitePromiseTexture(
+    image = SkImages::PromiseTextureFrom(
         graphite_recorder_, gfx::SizeToSkISize(y_context->size()), texture_info,
         color_info, skgpu::graphite::Volatile::kNo, FulfillGraphite, CleanUp,
         ReleaseGraphite, fulfill);
@@ -606,7 +607,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
         dependency_->gr_context_type(), format, /*plane_index=*/0, mipmap);
     SkColorInfo color_info(color_type, image_context->alpha_type(),
                            image_context->color_space());
-    auto image = SkImage::MakeGraphitePromiseTexture(
+    auto image = SkImages::PromiseTextureFrom(
         graphite_recorder_, gfx::SizeToSkISize(image_context->size()),
         texture_info, color_info, skgpu::graphite::Volatile::kNo,
         FulfillGraphite, CleanUp, ReleaseGraphite, fulfill);
@@ -652,7 +653,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
     SkColorInfo color_info(color_type, image_context->alpha_type(),
                            image_context->color_space());
     void* fulfill = new FulfillForPlane(image_context, /*plane_index=*/0);
-    auto image = SkImage::MakeGraphitePromiseTexture(
+    auto image = SkImages::PromiseTextureFrom(
         graphite_recorder_, gfx::SizeToSkISize(image_context->size()),
         texture_info, color_info, skgpu::graphite::Volatile::kNo,
         FulfillGraphite, CleanUp, ReleaseGraphite, fulfill);

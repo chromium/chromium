@@ -18,6 +18,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/graphite/Image.h"
 #include "third_party/skia/include/gpu/graphite/YUVABackendTextures.h"
 #include "ui/gl/gl_fence.h"
 
@@ -602,8 +603,8 @@ SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::CreateSkImage(
     auto alpha_type = representation()->alpha_type();
     auto color_type =
         viz::ToClosestSkColorType(/*gpu_compositing=*/true, format);
-    return SkImage::MakeGraphiteFromBackendTexture(
-        recorder, graphite_texture(), color_type, alpha_type, sk_color_space);
+    return SkImages::AdoptTextureFrom(recorder, graphite_texture(), color_type,
+                                      alpha_type, sk_color_space);
   } else {
     CHECK_EQ(static_cast<int>(graphite_textures_.size()),
              format.NumberOfPlanes());
@@ -616,7 +617,7 @@ SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::CreateSkImage(
                          ToSkYUVASubsampling(format), yuv_color_space);
     skgpu::graphite::YUVABackendTextures yuva_backend_textures(
         recorder, yuva_info, graphite_textures_.data());
-    return SkImage::MakeGraphiteFromYUVABackendTextures(
+    return SkImages::TextureFromYUVATextures(
         recorder, yuva_backend_textures, sk_color_space, texture_release_proc,
         release_context);
   }
@@ -631,10 +632,9 @@ sk_sp<SkImage> SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::
   auto alpha_type = SkAlphaType::kOpaque_SkAlphaType;
   auto color_type =
       viz::ToClosestSkColorType(/*gpu_compositing=*/true, format, plane_index);
-  return SkImage::MakeGraphiteFromBackendTexture(
-      context_state->gpu_main_graphite_recorder(),
-      graphite_texture(plane_index), color_type, alpha_type,
-      /*sk_color_space=*/nullptr);
+  return SkImages::AdoptTextureFrom(context_state->gpu_main_graphite_recorder(),
+                                    graphite_texture(plane_index), color_type,
+                                    alpha_type, /*colorSpace=*/nullptr);
 }
 
 bool SkiaGraphiteImageRepresentation::ScopedGraphiteReadAccess::
