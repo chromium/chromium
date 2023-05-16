@@ -13,6 +13,8 @@ source_set("embedder") {
   sources = [
     "input_delegate/tab_rank_dispatcher.cc",
     "input_delegate/tab_rank_dispatcher.h",
+    "input_delegate/tab_session_source.cc",
+    "input_delegate/tab_session_source.h",
     "model_provider_factory_impl.cc",
     "model_provider_factory_impl.h",
   ]
@@ -41,6 +43,7 @@ source_set("unit_tests") {
   # tests in //components/segmentation_platform/components_unittests.filter
   sources = [
     "input_delegate/tab_rank_dispatcher_unittest.cc",
+    "input_delegate/tab_session_source_unittest.cc",
     "model_provider_factory_impl_unittest.cc",
   ]
 
