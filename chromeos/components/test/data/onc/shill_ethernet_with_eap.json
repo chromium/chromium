@@ -5,6 +5,5 @@
   "EAP.UseSystemCAs":true,
   "GUID":"guid",
   "SaveCredentials":true,
-  "StaticIPConfig": {},
   "Type":"etherneteap"
 }

@@ -8,7 +8,6 @@
    "ProxyConfig": "{\"mode\":\"pac_script\",\"pac_mandatory\":false,\"pac_url\":\"https://proxycfg.my.domain.com/proxy.dat\"}",
    "SaveCredentials": true,
    "SecurityClass": "802_1x",
-   "StaticIPConfig": {},
    "Type": "wifi",
    "WiFi.HexSSID": "4F70656E577274", // "OpenWrt"
 }

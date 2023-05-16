@@ -471,9 +471,8 @@ void LocalTranslator::TranslateNetworkConfiguration() {
       *onc_object_, ::onc::network_config::kIPAddressConfigType);
   const std::string name_servers_config_type = FindStringKeyOrEmpty(
       *onc_object_, ::onc::network_config::kNameServersConfigType);
-  if ((ip_address_config_type != ::onc::network_config::kIPConfigTypeStatic) &&
-      (name_servers_config_type !=
-       ::onc::network_config::kIPConfigTypeStatic)) {
+  if ((ip_address_config_type == ::onc::network_config::kIPConfigTypeDHCP) &&
+      (name_servers_config_type == ::onc::network_config::kIPConfigTypeDHCP)) {
     // If neither type is set to Static, provide an empty dictionary to ensure
     // that any unset properties are cleared.
     // Note: A type defaults to DHCP if not specified.

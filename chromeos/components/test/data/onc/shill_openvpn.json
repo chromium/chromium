@@ -33,6 +33,5 @@
   "Provider.Host":"vpn.my.domain.com",
   "Provider.Type":"openvpn",
   "SaveCredentials":false,
-  "StaticIPConfig": {},
   "Type":"vpn"
 }

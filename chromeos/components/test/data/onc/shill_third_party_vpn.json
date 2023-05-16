@@ -2,6 +2,5 @@
   "Type": "vpn",
   "Name": "third-party VPN",
   "Provider.Host": "deadbeefdeadbeefdeadbeefdeadbeef",
-  "Provider.Type": "thirdpartyvpn",
-  "StaticIPConfig": {}
+  "Provider.Type": "thirdpartyvpn"
 }

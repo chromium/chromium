@@ -1861,6 +1861,8 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, RetainEthernetIPAddr) {
           "GUID": "{EthernetGuid}",
           "Name": "EthernetName",
           "Type": "Ethernet",
+          "IPAddressConfigType": "DHCP",
+          "NameServersConfigType": "DHCP",
           "Ethernet": {
              "Authentication": "None"
           },
@@ -2319,6 +2321,8 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationNoEthernetWorkaroundTest,
           "GUID": "%s",
           "Name": "EthernetName",
           "Type": "Ethernet",
+          "IPAddressConfigType": "DHCP",
+          "NameServersConfigType": "DHCP",
           "Ethernet": {
              "Authentication": "None"
           }
