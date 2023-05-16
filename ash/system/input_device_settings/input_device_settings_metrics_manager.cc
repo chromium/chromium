@@ -252,6 +252,15 @@ void InputDeviceSettingsMetricsManager::RecordMouseChangedMetrics(
         static_cast<PointerSensitivity>(mouse.settings->sensitivity);
     base::UmaHistogramEnumeration(
         "ChromeOS.Settings.Device.Mouse.Sensitivity.Changed", sensitivity);
+    const int speed_difference =
+        mouse.settings->sensitivity - old_settings.sensitivity;
+    const std::string delta_sensitivity_metric =
+        speed_difference > 0
+            ? "ChromeOS.Settings.Device.Mouse.Sensitivity.Increase"
+            : "ChromeOS.Settings.Device.Mouse.Sensitivity.Decrease";
+    base::UmaHistogramEnumeration(
+        delta_sensitivity_metric,
+        static_cast<PointerSensitivity>(abs(speed_difference)));
   }
   if (mouse.settings->swap_right != old_settings.swap_right) {
     base::UmaHistogramBoolean(
@@ -303,6 +312,15 @@ void InputDeviceSettingsMetricsManager::RecordPointingStickChangedMetrics(
     base::UmaHistogramEnumeration(
         "ChromeOS.Settings.Device.PointingStick.Sensitivity.Changed",
         sensitivity);
+    const int speed_difference =
+        pointing_stick.settings->sensitivity - old_settings.sensitivity;
+    const std::string delta_sensitivity_metric =
+        speed_difference > 0
+            ? "ChromeOS.Settings.Device.PointingStick.Sensitivity.Increase"
+            : "ChromeOS.Settings.Device.PointingStick.Sensitivity.Decrease";
+    base::UmaHistogramEnumeration(
+        delta_sensitivity_metric,
+        static_cast<PointerSensitivity>(abs(speed_difference)));
   }
   if (pointing_stick.settings->swap_right != old_settings.swap_right) {
     base::UmaHistogramBoolean(
@@ -376,6 +394,13 @@ void InputDeviceSettingsMetricsManager::RecordTouchpadChangedMetrics(
         static_cast<PointerSensitivity>(touchpad.settings->sensitivity);
     base::UmaHistogramEnumeration(
         touchpad_metrics_prefix + "Sensitivity.Changed", sensitivity);
+    const int speed_difference =
+        touchpad.settings->sensitivity - old_settings.sensitivity;
+    const std::string delta_metric_suffix =
+        speed_difference > 0 ? "Sensitivity.Increase" : "Sensitivity.Decrease";
+    base::UmaHistogramEnumeration(
+        base::StrCat({touchpad_metrics_prefix, delta_metric_suffix}),
+        static_cast<PointerSensitivity>(abs(speed_difference)));
   }
   if (touchpad.settings->tap_dragging_enabled !=
       old_settings.tap_dragging_enabled) {
@@ -400,6 +425,14 @@ void InputDeviceSettingsMetricsManager::RecordTouchpadChangedMetrics(
       base::UmaHistogramEnumeration(
           touchpad_metrics_prefix + "HapticSensitivity.Changed",
           haptic_sensitivity);
+      const int speed_difference = touchpad.settings->haptic_sensitivity -
+                                   old_settings.haptic_sensitivity;
+      const std::string delta_metric_suffix =
+          speed_difference > 0 ? "HapticSensitivity.Increase"
+                               : "HapticSensitivity.Decrease";
+      base::UmaHistogramEnumeration(
+          base::StrCat({touchpad_metrics_prefix, delta_metric_suffix}),
+          static_cast<PointerSensitivity>(abs(speed_difference)));
     }
   }
 }

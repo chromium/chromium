@@ -18,6 +18,7 @@ constexpr char kInternalKeyboardId[] = "test:internal";
 constexpr char kExternalMouseId[] = "test:mouse";
 constexpr char kPointingStickId[] = "test:pointingstick";
 constexpr char kExternalTouchpadId[] = "test:touchpad-external";
+constexpr int kSampleMinSensitivity = 1;
 constexpr int kSampleSensitivity = 3;
 constexpr int kSampleMaxSensitivity = 5;
 
@@ -209,7 +210,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordMouseSettings) {
 
   // Call record changed settings metrics.
   const auto old_setting = mouse.settings->Clone();
-  mouse.settings->sensitivity = kSampleMaxSensitivity;
+  mouse.settings->sensitivity = kSampleMinSensitivity;
   mouse.settings->reverse_scrolling = !mouse.settings->reverse_scrolling;
   manager_.get()->RecordMouseChangedMetrics(mouse, *old_setting);
   histogram_tester.ExpectTotalCount(
@@ -221,6 +222,13 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordMouseSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Mouse.ReverseScrolling.Changed",
       /*expected_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Mouse.Sensitivity.Increase",
+      /*expected_count=*/0);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.Mouse.Sensitivity.Decrease",
+      /*sample=*/2u,
+      /*expected_bucket_count=*/1u);
 }
 
 TEST_F(InputDeviceSettingsMetricsManagerTest, RecordPointingStickSettings) {
@@ -266,6 +274,13 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordPointingStickSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.PointingStick.SwapPrimaryButtons.Changed",
       /*expected_count=*/1u);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.PointingStick.Sensitivity.Increase",
+      /*sample=*/2u,
+      /*expected_bucket_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.PointingStick.Sensitivity.Decrease",
+      /*expected_count=*/0);
 }
 
 TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
@@ -314,7 +329,7 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
       !touchpad_external.settings->tap_dragging_enabled;
   touchpad_external.settings->tap_to_click_enabled =
       !touchpad_external.settings->tap_to_click_enabled;
-  touchpad_external.settings->haptic_sensitivity = kSampleMaxSensitivity;
+  touchpad_external.settings->haptic_sensitivity = kSampleMinSensitivity;
 
   manager_.get()->RecordTouchpadChangedMetrics(touchpad_external, *old_setting);
   histogram_tester.ExpectTotalCount(
@@ -329,6 +344,13 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Touchpad.External.Sensitivity.Changed",
       /*expected_count=*/1u);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.Touchpad.External.Sensitivity.Increase",
+      /*sample=*/2u,
+      /*expected_bucket_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Touchpad.External.Sensitivity.Decrease",
+      /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Touchpad.External.TapDragging.Changed",
       /*expected_count=*/1u);
@@ -337,7 +359,14 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
       /*expected_count=*/1u);
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.Settings.Device.Touchpad.External.HapticSensitivity.Changed",
-      /*sample=*/5u, /*expected_bucket_count=*/1u);
+      /*sample=*/1u, /*expected_bucket_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Touchpad.External.HapticSensitivity.Increase",
+      /*expected_count=*/0);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.Touchpad.External.HapticSensitivity.Decrease",
+      /*sample=*/2u,
+      /*expected_bucket_count=*/1u);
 }
 
 TEST_F(InputDeviceSettingsMetricsManagerTest, RecordModifierRemappingMetrics) {
