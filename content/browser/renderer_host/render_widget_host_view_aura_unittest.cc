@@ -5987,13 +5987,14 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
     view_for_third_process_ =
         CreateViewForProcess(widget_host_for_third_process_);
 
-    views_.insert(views_.begin(),
-                  {tab_view(), view_for_first_process_,
-                   view_for_second_process_, view_for_third_process_});
+    views_.insert(views_.begin(), {tab_view(), view_for_first_process_.get(),
+                                   view_for_second_process_.get(),
+                                   view_for_third_process_.get()});
     widget_hosts_.insert(
         widget_hosts_.begin(),
-        {tab_widget_host(), widget_host_for_first_process_,
-         widget_host_for_second_process_, widget_host_for_third_process_});
+        {tab_widget_host(), widget_host_for_first_process_.get(),
+         widget_host_for_second_process_.get(),
+         widget_host_for_third_process_.get()});
     active_view_sequence_.insert(active_view_sequence_.begin(),
                                  {0, 1, 2, 1, 1, 3, 0, 3, 1});
   }
@@ -6058,8 +6059,8 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
 
   MockRenderWidgetHostImpl* tab_widget_host() const { return widget_host_; }
 
-  std::vector<RenderWidgetHostViewBase*> views_;
-  std::vector<MockRenderWidgetHostImpl*> widget_hosts_;
+  std::vector<dangling_raw_ptr<RenderWidgetHostViewBase>> views_;
+  std::vector<dangling_raw_ptr<MockRenderWidgetHostImpl>> widget_hosts_;
   // A sequence of indices in [0, 3] which determines the index of a RWHV in
   // |views_|. This sequence is used in the tests to sequentially make a RWHV
   // active for a subsequent IME result method call.
@@ -6506,7 +6507,7 @@ TEST_F(InputMethodStateAuraTest, SelectedTextCopiedToClipboard) {
 // composition, the RenderWidgetHostViewAura will receive the notification and
 // the current composition is canceled.
 TEST_F(InputMethodStateAuraTest, ImeCancelCompositionForAllViews) {
-  for (auto* view : views_) {
+  for (content::RenderWidgetHostViewBase* view : views_) {
     ActivateViewForTextInputManager(view, ui::TEXT_INPUT_TYPE_TEXT);
     // There is no composition in the beginning.
     EXPECT_FALSE(has_composition_text());

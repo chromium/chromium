@@ -52,13 +52,13 @@ NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
         std::make_unique<PrivacyIndicatorsTrayItemView>(shelf));
   }
 
-  for (auto* tray_item : tray_container()->children()) {
+  for (views::View* tray_item : tray_container()->children()) {
     static_cast<TrayItemView*>(tray_item)->AddObserver(this);
   }
 }
 
 NotificationCenterTray::~NotificationCenterTray() {
-  for (auto* tray_item : tray_container()->children()) {
+  for (views::View* tray_item : tray_container()->children()) {
     static_cast<TrayItemView*>(tray_item)->RemoveObserver(this);
   }
 }

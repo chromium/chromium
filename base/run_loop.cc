@@ -62,7 +62,7 @@ RunLoop::Delegate::~Delegate() {
 }
 
 bool RunLoop::Delegate::ShouldQuitWhenIdle() {
-  const auto* top_loop = active_run_loops_.top();
+  const auto* top_loop = active_run_loops_.top().get();
   if (top_loop->quit_when_idle_) {
     TRACE_EVENT_WITH_FLOW0("toplevel.flow", "RunLoop_ExitedOnIdle",
                            TRACE_ID_LOCAL(top_loop), TRACE_EVENT_FLAG_FLOW_IN);

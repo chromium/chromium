@@ -109,10 +109,11 @@ bool ShouldAnimateWindowForTransition(aura::Window* window) {
 
   MruWindowTracker::WindowList window_list =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  auto* first_mru_window = window_list.empty() ? nullptr : window_list.front();
+  auto* first_mru_window =
+      window_list.empty() ? nullptr : window_list.front().get();
   if (first_mru_window && WindowState::Get(first_mru_window)->IsFloated()) {
     auto* second_mru_window =
-        window_list.size() < 2u ? nullptr : window_list[1];
+        window_list.size() < 2u ? nullptr : window_list[1].get();
     return window == second_mru_window;
   }
 

@@ -20,6 +20,7 @@
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/display_util.h"
@@ -105,7 +106,7 @@ bool InTabletMode() {
 }
 
 bool TopTwoVisibleWindowsBothSnapped(
-    const std::vector<aura::Window*>& windows) {
+    const std::vector<dangling_raw_ptr<aura::Window>>& windows) {
   int windows_size = windows.size();
   if (windows_size < 2)
     return false;
@@ -116,7 +117,7 @@ bool TopTwoVisibleWindowsBothSnapped(
   if (!top_snap_window_state->IsSnapped())
     return false;
 
-  for (auto* window : base::Reversed(windows)) {
+  for (aura::Window* window : base::Reversed(windows)) {
     // Skip the top one.
     if (window == windows.back())
       continue;
@@ -558,7 +559,7 @@ void SplitViewMetricsController::InitObservedWindowsOnActiveDesk() {
       current_desk_
           ->GetDeskContainerForRoot(split_view_controller_->root_window())
           ->children();
-  for (auto* window : windows) {
+  for (aura::Window* window : windows) {
     if (!CanIncludeWindowInMruList(window))
       continue;
     AddObservedWindow(window);
@@ -566,7 +567,7 @@ void SplitViewMetricsController::InitObservedWindowsOnActiveDesk() {
 }
 
 void SplitViewMetricsController::ClearObservedWindows() {
-  for (auto* window : observed_windows_) {
+  for (aura::Window* window : observed_windows_) {
     WindowState::Get(window)->RemoveObserver(this);
     window->RemoveObserver(this);
   }
@@ -610,7 +611,7 @@ bool SplitViewMetricsController::
     return false;
 
   return TopTwoVisibleWindowsBothSnapped(
-      std::vector<aura::Window*>(begin_iter, iter));
+      std::vector<dangling_raw_ptr<aura::Window>>(begin_iter, iter));
 }
 
 void SplitViewMetricsController::ResetTimeAndCounter() {

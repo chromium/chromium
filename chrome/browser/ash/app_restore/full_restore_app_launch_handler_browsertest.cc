@@ -290,7 +290,7 @@ class FullRestoreAppLaunchHandlerBrowserTest
   }
 
   aura::Window* FindWebAppWindow() {
-    for (auto* browser : *BrowserList::GetInstance()) {
+    for (Browser* browser : *BrowserList::GetInstance()) {
       aura::Window* window = browser->window()->GetNativeWindow();
       if (window->GetProperty(::app_restore::kRestoreWindowIdKey) ==
           kWindowId2) {
@@ -1211,7 +1211,8 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   // become activatable after a couple seconds. Verify that the
   // `non_restored_window` is topmost and check that `window` is not
   // activatable.
-  std::vector<aura::Window*> expected_stacking{window, non_restored_window};
+  std::vector<dangling_raw_ptr<aura::Window>> expected_stacking{
+      window, non_restored_window};
   EXPECT_EQ(non_restored_window->parent()->children(), expected_stacking);
   EXPECT_FALSE(views::Widget::GetWidgetForNativeView(window)->IsActive());
   EXPECT_FALSE(wm::CanActivateWindow(window));

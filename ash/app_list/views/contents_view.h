@@ -229,7 +229,7 @@ class ASH_EXPORT ContentsView : public views::View,
       nullptr;
 
   // The child page views. Owned by the views hierarchy.
-  std::vector<AppListPage*> app_list_pages_;
+  std::vector<dangling_raw_ptr<AppListPage>> app_list_pages_;
 
   // Owned by the views hierarchy.
   const raw_ptr<AppListView, ExperimentalAsh> app_list_view_;

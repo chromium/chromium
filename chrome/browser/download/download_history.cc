@@ -323,8 +323,9 @@ DownloadHistory::DownloadHistory(content::DownloadManager* manager,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   download::SimpleDownloadManager::DownloadVector items;
   notifier_.GetManager()->GetAllDownloads(&items);
-  for (auto* item : items)
+  for (download::DownloadItem* item : items) {
     OnDownloadCreated(notifier_.GetManager(), item);
+  }
   history_->QueryDownloads(base::BindOnce(&DownloadHistory::QueryCallback,
                                           weak_ptr_factory_.GetWeakPtr()));
 }

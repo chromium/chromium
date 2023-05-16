@@ -3579,7 +3579,7 @@ TEST_P(CaptureModeCameraPreviewTest, MultiDisplayResize) {
   StartCaptureSessionWithParam();
   auto* controller = CaptureModeController::Get();
   auto* session = controller->capture_mode_session();
-  auto* display_2_root = Shell::GetAllRootWindows()[1];
+  auto* display_2_root = Shell::GetAllRootWindows()[1].get();
 
   // When capturing a window, set its bounds such that it is placed on the
   // secondary display.

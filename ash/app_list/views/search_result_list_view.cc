@@ -275,8 +275,9 @@ SearchResultListView::ScheduleResultAnimations(
 
   if (num_results() < 1 || !enabled_) {
     SetVisible(false);
-    for (auto* result_view : search_result_views_)
+    for (ash::SearchResultView* result_view : search_result_views_) {
       result_view->SetVisible(false);
+    }
     return current_animation_info;
   }
 

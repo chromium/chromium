@@ -563,7 +563,7 @@ bool SharesheetBubbleView::OnKeyPressed(const ui::KeyEvent& event) {
 
   const size_t default_views = default_view_->children().size();
   auto* expanded_view_table =
-      show_expanded_view_ ? expanded_view_->children()[1] : nullptr;
+      show_expanded_view_ ? expanded_view_->children()[1].get() : nullptr;
   const size_t targets =
       default_views +
       (show_expanded_view_ ? expanded_view_table->children().size() : 0);

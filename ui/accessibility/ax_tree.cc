@@ -50,7 +50,7 @@ std::string TreeToStringHelper(const AXNode* node, int indent, bool verbose) {
   return std::accumulate(
       node->children().cbegin(), node->children().cend(),
       std::string(2 * indent, ' ') + node->data().ToString(verbose) + "\n",
-      [indent, verbose](const std::string& str, const auto* child) {
+      [indent, verbose](const std::string& str, const ui::AXNode* child) {
         return str + TreeToStringHelper(child, indent + 1, verbose);
       });
 }
@@ -622,7 +622,7 @@ struct AXTree::OrderedSetContent {
       : ordered_set_(ordered_set) {}
   ~OrderedSetContent() = default;
 
-  std::vector<const AXNode*> set_items_;
+  std::vector<dangling_raw_ptr<const AXNode>> set_items_;
 
   // Some ordered set items may not be associated with an ordered set.
   raw_ptr<const AXNode> ordered_set_;
@@ -843,7 +843,7 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
     // bad state.
     if (bounds.IsEmpty() && !GetTreeUpdateInProgressState() &&
         allow_recursion) {
-      for (auto* child : node->children()) {
+      for (ui::AXNode* child : node->children()) {
         bool ignore_offscreen;
         gfx::RectF child_bounds =
             RelativeToTreeBoundsInternal(child, gfx::RectF(), &ignore_offscreen,
@@ -1264,9 +1264,10 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
         // If the tree doesn't exists any more because the root has just been
         // replaced, there is nothing more to clear.
         if (root_) {
-          for (auto* child : cleared_node->children())
+          for (ui::AXNode* child : cleared_node->children()) {
             DestroySubtree(child, &update_state);
-          std::vector<AXNode*> children;
+          }
+          std::vector<dangling_raw_ptr<AXNode>> children;
           cleared_node->SwapChildren(&children);
           update_state.pending_node_ids.insert(cleared_node->id());
         }
@@ -1947,7 +1948,7 @@ bool AXTree::UpdateNode(const AXNodeData& src,
 
   // Now build a new children vector, reusing nodes when possible,
   // and swap it in.
-  std::vector<AXNode*> new_children;
+  std::vector<dangling_raw_ptr<AXNode>> new_children;
   bool success = CreateNewChildVector(
       node, src.child_ids, &new_children, update_state);
   node->SwapChildren(&new_children);
@@ -2047,8 +2048,9 @@ void AXTree::RecursivelyNotifyNodeDeletedForTreeTeardown(AXNode* node) {
 
   for (AXTreeObserver& observer : observers_)
     observer.OnNodeDeleted(this, node->id());
-  for (auto* child : node->children())
+  for (ui::AXNode* child : node->children()) {
     RecursivelyNotifyNodeDeletedForTreeTeardown(child);
+  }
 }
 
 void AXTree::NotifyNodeHasBeenDeleted(AXNodeID node_id) {
@@ -2506,8 +2508,9 @@ void AXTree::DestroyNodeAndSubtree(AXNode* node,
   id_map_.erase(iter);
   node = nullptr;
 
-  for (auto* child : node_to_delete->children())
+  for (ui::AXNode* child : node_to_delete->children()) {
     DestroyNodeAndSubtree(child, update_state);
+  }
   if (update_state) {
     update_state->pending_node_ids.erase(id);
     update_state->DecrementPendingDestroyNodeCount(id);
@@ -2539,10 +2542,11 @@ void AXTree::DeleteOldChildren(AXNode* node,
   }
 }
 
-bool AXTree::CreateNewChildVector(AXNode* node,
-                                  const std::vector<AXNodeID>& new_child_ids,
-                                  std::vector<AXNode*>* new_children,
-                                  AXTreeUpdateState* update_state) {
+bool AXTree::CreateNewChildVector(
+    AXNode* node,
+    const std::vector<AXNodeID>& new_child_ids,
+    std::vector<dangling_raw_ptr<AXNode>>* new_children,
+    AXTreeUpdateState* update_state) {
   DCHECK(GetTreeUpdateInProgressState());
   bool success = true;
   for (size_t i = 0; i < new_child_ids.size(); ++i) {

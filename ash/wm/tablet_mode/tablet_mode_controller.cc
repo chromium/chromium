@@ -867,8 +867,9 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
   // Hide the context menu on entering tablet mode to prevent users from
   // accessing forbidden options. Hide the context menu on exiting tablet mode
   // to match behaviors.
-  for (auto* root_window : Shell::Get()->GetAllRootWindows())
+  for (aura::Window* root_window : Shell::Get()->GetAllRootWindows()) {
     RootWindowController::ForWindow(root_window)->HideContextMenu();
+  }
 
   // Suspend occlusion tracker when entering or exiting tablet mode.
   SuspendOcclusionTracker();

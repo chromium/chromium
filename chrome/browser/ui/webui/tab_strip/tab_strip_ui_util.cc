@@ -41,7 +41,7 @@ absl::optional<tab_groups::TabGroupId> GetTabGroupIdFromString(
 }
 
 Browser* GetBrowserWithGroupId(Profile* profile, std::string group_id_string) {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (profile && browser->profile() != profile) {
       continue;
     }

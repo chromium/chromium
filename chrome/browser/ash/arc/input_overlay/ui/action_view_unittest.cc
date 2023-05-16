@@ -299,7 +299,7 @@ TEST_F(ActionViewTest, TestDragMoveActionMove) {
 
 TEST_F(ActionViewTest, TestDisplayModeChange) {
   // In view mode.
-  auto* label = tap_action_view_->labels()[0];
+  auto* label = tap_action_view_->labels()[0].get();
   EXPECT_EQ(label->size(), tap_action_view_->size());
   const auto expected_touch_center = tap_action_view_->GetTouchCenterInWindow();
   // In edit mode.
@@ -337,7 +337,7 @@ TEST_F(ActionViewTest, TestDisplayModeChange) {
 TEST_F(ActionViewTest, TestDragMoveActionTap) {
   SetDisplayMode(DisplayMode::kEdit);
   const auto* touch_point = tap_action_view_->touch_point();
-  const auto* label = tap_action_view_->labels()[0];
+  const auto* label = tap_action_view_->labels()[0].get();
   // Check initial position.
   CheckActionTapLabelPosition(TapLabelPosition::kTopLeft, touch_point, label);
   // Drag move by mouse.

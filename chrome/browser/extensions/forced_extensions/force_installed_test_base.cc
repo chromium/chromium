@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/forced_extensions/force_installed_test_base.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -42,7 +43,8 @@ void ForceInstalledTestBase::SetUp() {
       /*is_first_policy_load_complete_return=*/false);
 
   auto policy_service = std::make_unique<policy::PolicyServiceImpl>(
-      std::vector<policy::ConfigurationPolicyProvider*>{&policy_provider_});
+      std::vector<dangling_raw_ptr<policy::ConfigurationPolicyProvider>>{
+          &policy_provider_});
   profile_manager_ = std::make_unique<TestingProfileManager>(
       TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager_->SetUp());

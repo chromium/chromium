@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/audio_parameters.h"
@@ -87,7 +88,8 @@ AudioBus::AudioBus(int channels, int frames, float* data)
   BuildChannelData(channels, aligned_frames, data);
 }
 
-AudioBus::AudioBus(int frames, const std::vector<float*>& channel_data)
+AudioBus::AudioBus(int frames,
+                   const std::vector<dangling_raw_ptr<float>>& channel_data)
     : channel_data_(channel_data), frames_(frames), is_wrapper_(false) {
   ValidateConfig(
       base::checked_cast<int>(channel_data_.size()), frames_);
@@ -101,7 +103,7 @@ AudioBus::AudioBus(int channels)
     : channel_data_(channels), frames_(0), is_wrapper_(true) {
   CHECK_GT(channels, 0);
   for (size_t i = 0; i < channel_data_.size(); ++i)
-    channel_data_[i] = NULL;
+    channel_data_[i] = nullptr;
 }
 
 AudioBus::~AudioBus() {
@@ -124,7 +126,7 @@ std::unique_ptr<AudioBus> AudioBus::CreateWrapper(int channels) {
 
 std::unique_ptr<AudioBus> AudioBus::WrapVector(
     int frames,
-    const std::vector<float*>& channel_data) {
+    const std::vector<dangling_raw_ptr<float>>& channel_data) {
   return base::WrapUnique(new AudioBus(frames, channel_data));
 }
 

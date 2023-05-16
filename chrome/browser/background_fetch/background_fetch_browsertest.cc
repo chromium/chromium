@@ -540,11 +540,11 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest,
   ASSERT_NO_FATAL_FAILURE(
       RunScriptFunction("StartSingleFileDownloadWithCorrectDownloadTotal()"));
 
-  std::vector<const ukm::mojom::UkmEntry*> entries =
+  std::vector<dangling_raw_ptr<const ukm::mojom::UkmEntry>> entries =
       test_ukm_recorder_->GetEntriesByName(
           ukm::builders::BackgroundFetch::kEntryName);
   ASSERT_EQ(1u, entries.size());
-  const auto* entry = entries[0];
+  const auto* entry = entries[0].get();
   test_ukm_recorder_->ExpectEntryMetric(
       entry, ukm::builders::BackgroundFetch::kHasTitleName, 1);
   test_ukm_recorder_->ExpectEntryMetric(
@@ -1029,7 +1029,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
       "frames.";
   StartSingleFileDownload(fenced_frame, kExpectedError);
 
-  std::vector<const ukm::mojom::UkmEntry*> entries =
+  std::vector<dangling_raw_ptr<const ukm::mojom::UkmEntry>> entries =
       test_ukm_recorder_->GetEntriesByName(
           ukm::builders::BackgroundFetch::kEntryName);
   ASSERT_EQ(0u, entries.size());
@@ -1072,7 +1072,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchFencedFrameBrowserTest,
       "frames.";
   StartSingleFileDownload(fenced_frame, kExpectedError);
 
-  std::vector<const ukm::mojom::UkmEntry*> entries =
+  std::vector<dangling_raw_ptr<const ukm::mojom::UkmEntry>> entries =
       test_ukm_recorder_->GetEntriesByName(
           ukm::builders::BackgroundFetch::kEntryName);
   ASSERT_EQ(0u, entries.size());

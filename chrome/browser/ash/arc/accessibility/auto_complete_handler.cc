@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/accessibility/auto_complete_handler.h"
 
 #include "ash/components/arc/mojom/accessibility_helper.mojom-forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
@@ -66,7 +67,7 @@ AutoCompleteHandler::CreateIfNecessary(
   std::vector<IdAndHandler> results;
 
   // Check all updated nodes under the event source.
-  std::vector<AccessibilityInfoDataWrapper*> to_visit;
+  std::vector<dangling_raw_ptr<AccessibilityInfoDataWrapper>> to_visit;
   to_visit.push_back(tree_source->GetFromId(event_data.source_id));
   while (!to_visit.empty()) {
     AccessibilityInfoDataWrapper* node_ptr = to_visit.back();

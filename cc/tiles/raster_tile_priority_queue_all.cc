@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "cc/base/features.h"
 #include "cc/tiles/tiling_set_raster_queue_all.h"
@@ -61,12 +62,12 @@ class RasterOrderComparator {
 };
 
 void CreateTilingSetRasterQueues(
-    const std::vector<PictureLayerImpl*>& layers,
+    const std::vector<dangling_raw_ptr<PictureLayerImpl>>& layers,
     TreePriority tree_priority,
     std::vector<std::unique_ptr<TilingSetRasterQueueAll>>* queues) {
   DCHECK(queues->empty());
 
-  for (auto* layer : layers) {
+  for (cc::PictureLayerImpl* layer : layers) {
     if (!layer->HasValidTilePriorities())
       continue;
 
@@ -93,8 +94,8 @@ RasterTilePriorityQueueAll::RasterTilePriorityQueueAll()
 RasterTilePriorityQueueAll::~RasterTilePriorityQueueAll() = default;
 
 void RasterTilePriorityQueueAll::Build(
-    const std::vector<PictureLayerImpl*>& active_layers,
-    const std::vector<PictureLayerImpl*>& pending_layers,
+    const std::vector<dangling_raw_ptr<PictureLayerImpl>>& active_layers,
+    const std::vector<dangling_raw_ptr<PictureLayerImpl>>& pending_layers,
     TreePriority tree_priority) {
   tree_priority_ = tree_priority;
 

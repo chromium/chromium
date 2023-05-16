@@ -25,6 +25,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/uuid.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -149,7 +150,8 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
       return;
     }
 
-    std::vector<DeskMiniView*> mini_views = bar_view_->mini_views();
+    std::vector<dangling_raw_ptr<DeskMiniView>> mini_views =
+        bar_view_->mini_views();
     if (mini_views.empty()) {
       return;
     }
@@ -194,7 +196,7 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
             kDeskBarDeskPreviewViewFocusRingThicknessAndPadding;
     const int y =
         kDeskBarMiniViewsY - mini_views[0]->GetPreviewBorderInsets().top();
-    for (auto* mini_view : mini_views) {
+    for (ash::DeskMiniView* mini_view : mini_views) {
       mini_view->SetBoundsRect(gfx::Rect(gfx::Point(x, y), mini_view_size));
       x += (mini_view_size.width() + kDeskBarMiniViewsSpacing);
     }
@@ -301,7 +303,8 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
       return;
     }
 
-    std::vector<DeskMiniView*> mini_views = bar_view_->mini_views();
+    std::vector<dangling_raw_ptr<DeskMiniView>> mini_views =
+        bar_view_->mini_views();
     if (mini_views.empty()) {
       return;
     }
@@ -347,7 +350,7 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
             kDeskBarDeskPreviewViewFocusRingThicknessAndPadding;
     const int y =
         kDeskBarMiniViewsY - mini_views[0]->GetPreviewBorderInsets().top();
-    for (auto* mini_view : mini_views) {
+    for (ash::DeskMiniView* mini_view : mini_views) {
       mini_view->SetBoundsRect(gfx::Rect(gfx::Point(x, y), mini_view_size));
       x += (mini_view_size.width() + kDeskBarMiniViewsSpacing);
     }
@@ -722,7 +725,7 @@ bool DeskBarViewBase::IsDeskNameBeingModified() const {
     return false;
   }
 
-  for (auto* mini_view : mini_views_) {
+  for (ash::DeskMiniView* mini_view : mini_views_) {
     if (mini_view->IsDeskNameBeingModified()) {
       return true;
     }
@@ -746,7 +749,7 @@ void DeskBarViewBase::ScrollToShowViewIfNecessary(const views::View* view) {
 }
 
 DeskMiniView* DeskBarViewBase::FindMiniViewForDesk(const Desk* desk) const {
-  for (auto* mini_view : mini_views_) {
+  for (ash::DeskMiniView* mini_view : mini_views_) {
     if (mini_view->desk() == desk) {
       return mini_view;
     }
@@ -1002,7 +1005,7 @@ int DeskBarViewBase::DetermineMoveIndex(int location_screen_x) const {
   // We find the target position according to the x-axis coordinate of the
   // desks' center positions in screen in ascending order.
   for (int new_index = 0; new_index != views_size - 1; ++new_index) {
-    auto* mini_view = mini_views_[new_index];
+    auto* mini_view = mini_views_[new_index].get();
 
     // Note that we cannot directly use `GetBoundsInScreen`. Because we may
     // perform animation (transform) on mini views. The bounds gotten from
@@ -1161,7 +1164,7 @@ void DeskBarViewBase::OnLibraryButtonPressed() {
 }
 
 void DeskBarViewBase::MaybeUpdateCombineDesksTooltips() {
-  for (auto* mini_view : mini_views_) {
+  for (ash::DeskMiniView* mini_view : mini_views_) {
     // If desk is being removed, do not update the tooltip.
     if (mini_view->desk()->is_desk_being_removed()) {
       continue;

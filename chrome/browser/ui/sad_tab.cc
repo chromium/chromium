@@ -63,7 +63,7 @@ bool IsRepeatedlyCrashing() {
 
 bool AreOtherTabsOpen() {
   size_t tab_count = 0;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     tab_count += browser->tab_strip_model()->count();
     if (tab_count > 1U)
       break;

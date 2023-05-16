@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ui/label_formatter.h"
@@ -34,11 +35,12 @@ namespace autofill {
 // Non street address examples: London, 02113, CA, Rio Comprido, and Germany
 class MobileLabelFormatter : public LabelFormatter {
  public:
-  MobileLabelFormatter(const std::vector<AutofillProfile*>& profiles,
-                       const std::string& app_locale,
-                       ServerFieldType focused_field_type,
-                       uint32_t groups,
-                       const std::vector<ServerFieldType>& field_types);
+  MobileLabelFormatter(
+      const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
+      const std::string& app_locale,
+      ServerFieldType focused_field_type,
+      uint32_t groups,
+      const std::vector<ServerFieldType>& field_types);
 
   ~MobileLabelFormatter() override;
 

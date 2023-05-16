@@ -4,6 +4,7 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper.h"
@@ -47,7 +48,7 @@ class MockPersonalDataHelper : public FastCheckoutPersonalDataHelper {
               GetValidCreditCards,
               (),
               (const override));
-  MOCK_METHOD(std::vector<autofill::AutofillProfile*>,
+  MOCK_METHOD(std::vector<dangling_raw_ptr<autofill::AutofillProfile>>,
               GetValidAddressProfiles,
               (),
               (const override));
@@ -55,7 +56,7 @@ class MockPersonalDataHelper : public FastCheckoutPersonalDataHelper {
               GetPersonalDataManager,
               (),
               (const override));
-  MOCK_METHOD(std::vector<autofill::AutofillProfile*>,
+  MOCK_METHOD(std::vector<dangling_raw_ptr<autofill::AutofillProfile>>,
               GetProfilesToSuggest,
               (),
               (const override));
@@ -106,7 +107,8 @@ class FastCheckoutTriggerValidatorTest
             Return(std::vector<autofill::CreditCard*>{&credit_card_}));
     ON_CALL(*personal_data_helper(), GetValidAddressProfiles)
         .WillByDefault(
-            Return(std::vector<autofill::AutofillProfile*>{&profile_}));
+            Return(std::vector<dangling_raw_ptr<autofill::AutofillProfile>>{
+                &profile_}));
     ON_CALL(*personal_data_helper(), GetPersonalDataManager)
         .WillByDefault(Return(pdm()));
     ON_CALL(*pdm(), IsAutofillCreditCardEnabled).WillByDefault(Return(true));
@@ -232,7 +234,8 @@ TEST_F(FastCheckoutTriggerValidatorTest,
 TEST_F(FastCheckoutTriggerValidatorTest,
        ShouldRun_NoValidAddressProfiles_ReturnsFalse) {
   ON_CALL(*personal_data_helper(), GetValidAddressProfiles)
-      .WillByDefault(Return(std::vector<autofill::AutofillProfile*>{}));
+      .WillByDefault(
+          Return(std::vector<dangling_raw_ptr<autofill::AutofillProfile>>{}));
   EXPECT_EQ(ShouldRun(),
             FastCheckoutTriggerOutcome::kFailureNoValidAutofillProfile);
 }

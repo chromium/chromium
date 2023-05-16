@@ -840,7 +840,7 @@ ui::KeyboardCode StringToKeyCode(const std::string& str) {
 }
 
 aura::Window* GetActiveWindow() {
-  std::vector<aura::Window*> list = ash::GetAppWindowList();
+  std::vector<dangling_raw_ptr<aura::Window>> list = ash::GetAppWindowList();
   if (!list.size()) {
     return nullptr;
   }
@@ -951,7 +951,7 @@ class DisplaySmoothnessTracker {
     }
 
     DCHECK_EQ(windows.size(), 1u);
-    auto* root_window = windows[0];
+    auto* root_window = windows[0].get();
     throughput_.push_back(
         100 - root_window->GetHost()->compositor()->GetPercentDroppedFrames());
   }
@@ -2963,7 +2963,7 @@ AutotestPrivateTakeScreenshotForDisplayFunction::Run() {
   base::StringToInt64(params->display_id, &target_display_id);
   auto grabber = std::make_unique<ui::ScreenshotGrabber>();
 
-  for (auto* const window : ash::Shell::GetAllRootWindows()) {
+  for (aura::Window* const window : ash::Shell::GetAllRootWindows()) {
     const int64_t display_id =
         display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
     if (display_id == target_display_id) {
@@ -4537,7 +4537,7 @@ AutotestPrivateGetAppWindowListFunction::Run() {
   auto window_list = ash::GetAppWindowList();
   std::vector<api::autotest_private::AppWindowInfo> result_list;
 
-  for (auto* window : window_list) {
+  for (aura::Window* window : window_list) {
     if (window->GetId() == aura::Window::kInitialId) {
       window->SetId(id_count--);
     }

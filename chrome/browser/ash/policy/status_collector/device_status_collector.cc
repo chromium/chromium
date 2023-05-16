@@ -2471,7 +2471,7 @@ bool DeviceStatusCollector::GetUsers(em::DeviceStatusReportRequest* status) {
       ash::ChromeUserManager::Get()->GetUsers();
 
   bool anything_reported = false;
-  for (auto* user : users) {
+  for (user_manager::User* user : users) {
     // Only users with gaia accounts (regular) are reported.
     if (!user->HasGaiaAccount())
       continue;

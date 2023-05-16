@@ -160,7 +160,7 @@ TEST_F(LoadingStatsCollectorTest, TestPreconnectPrecisionRecallMetrics) {
   auto entries = ukm_recorder_->GetEntriesByName(
       ukm::builders::LoadingPredictor::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   ukm_recorder_->ExpectEntryMetric(
       entry, ukm::builders::LoadingPredictor::kLocalPredictionOriginsName, 4);
   ukm_recorder_->ExpectEntryMetric(
@@ -279,7 +279,7 @@ TEST_F(LoadingStatsCollectorTest,
   auto entries = ukm_recorder_->GetEntriesByName(
       ukm::builders::LoadingPredictor::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   ukm_recorder_->ExpectEntryMetric(
       entry,
       ukm::builders::LoadingPredictor::kSubresourcePrefetchesInitiatedName, 3);

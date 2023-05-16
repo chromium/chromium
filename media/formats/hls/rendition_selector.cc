@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "media/formats/hls/audio_rendition.h"
 #include "media/formats/hls/multivariant_playlist.h"
@@ -45,11 +46,11 @@ RenditionSelector::CodecSupportType VariantTypeSupported(
 // |ComputeFallbackCandidate (T, T) -> T| function to ensure that the resulting
 // list always has at least one item in it.
 template <typename IsAcceptable, typename ComputeFallbackCandidate>
-std::vector<const VariantStream*> OptimalFilter(
-    const std::vector<const VariantStream*>& options,
+std::vector<dangling_raw_ptr<const VariantStream>> OptimalFilter(
+    const std::vector<dangling_raw_ptr<const VariantStream>>& options,
     IsAcceptable filter_functor,
     ComputeFallbackCandidate compare_functor) {
-  std::vector<const VariantStream*> acceptable;
+  std::vector<dangling_raw_ptr<const VariantStream>> acceptable;
   const VariantStream* best_fallback_candidate = nullptr;
 
   for (const VariantStream* test : options) {
@@ -75,9 +76,10 @@ std::vector<const VariantStream*> OptimalFilter(
 
 // Use the |OptimalFilter| function above to find all Variants under a max bit
 // rate, or, if everything is over the max bitrate, find the lowest one.
-std::vector<const VariantStream*> GetPreferredVariantsByBitrate(
+std::vector<dangling_raw_ptr<const VariantStream>>
+GetPreferredVariantsByBitrate(
     absl::optional<types::DecimalInteger> max_bitrate,
-    std::vector<const VariantStream*> inputs) {
+    std::vector<dangling_raw_ptr<const VariantStream>> inputs) {
   if (!max_bitrate.has_value()) {
     return inputs;
   }
@@ -184,13 +186,13 @@ RenditionSelector::PreferredVariants RenditionSelector::GetPreferredVariants(
   // variant after. Get the acceptable bitrate variants first, then filter by
   // resolution. From there, we select the highest bitrate one, which should be
   // first, as they are sorted descending by bitrate.
-  std::vector<const VariantStream*> acceptable_bitrates =
+  std::vector<dangling_raw_ptr<const VariantStream>> acceptable_bitrates =
       GetPreferredVariantsByBitrate(video_preferences.max_smooth_bitrate,
                                     video_variants_);
 
   // TODO: prefer variants which have the same aspect ratio, even if they are
   // a bit larger, as that will probably look better.
-  std::vector<const VariantStream*> acceptable_resolutions;
+  std::vector<dangling_raw_ptr<const VariantStream>> acceptable_resolutions;
   if (video_preferences.video_player_resolution.has_value()) {
     gfx::Size resolution = *video_preferences.video_player_resolution;
     acceptable_resolutions = OptimalFilter(
@@ -235,7 +237,7 @@ RenditionSelector::PreferredVariants RenditionSelector::GetPreferredVariants(
     if (acceptable_audio.empty()) {
       return result;
     }
-    result.selected_variant = acceptable_audio[0];
+    result.selected_variant = acceptable_audio[0].get();
     result.audio_override_rendition =
         TryFindAudioOverride(audio_preferences, result.selected_variant);
 
@@ -252,8 +254,8 @@ RenditionSelector::PreferredVariants RenditionSelector::GetPreferredVariants(
 
   // For now, since we only select a potential override from the selected
   // variant, the audio override variant is always the same.
-  result.selected_variant = acceptable_resolutions[0];
-  result.audio_override_variant = acceptable_resolutions[0];
+  result.selected_variant = acceptable_resolutions[0].get();
+  result.audio_override_variant = acceptable_resolutions[0].get();
 
   // If our selected variant is an audio/video stream, we should use its audio
   // group to determine what rendition to pick as an override, if it has an

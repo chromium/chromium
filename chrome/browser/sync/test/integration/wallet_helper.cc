@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -118,12 +119,69 @@ void LogLists(const std::vector<Item*>& list_a,
   }
 }
 
+template <class Item, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
+void LogLists(const std::vector<raw_ptr<Item, Traits>>& list_a,
+              const std::vector<raw_ptr<Item, Traits>>& list_b) {
+  int x = 0;
+  for (Item* item : list_a) {
+    DVLOG(1) << "A#" << x++ << " " << *item;
+  }
+  x = 0;
+  for (Item* item : list_b) {
+    DVLOG(1) << "B#" << x++ << " " << *item;
+  }
+}
+
+template <class Item, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
+bool ListsMatch(int profile_a,
+                const std::vector<raw_ptr<Item, Traits>>& list_a,
+                int profile_b,
+                const std::vector<raw_ptr<Item, Traits>>& list_b) {
+  std::map<std::string, Item> list_a_map;
+  for (Item* item : list_a) {
+    list_a_map[item->server_id()] = *item;
+  }
+
+  // This seems to be a transient state that will eventually be rectified by
+  // model type logic. We don't need to check b for duplicates directly because
+  // after the first is erased from |autofill_profiles_a_map| the second will
+  // not be found.
+  if (list_a.size() != list_a_map.size()) {
+    DVLOG(1) << "Profile " << profile_a << " contains duplicate server_ids.";
+    return false;
+  }
+
+  for (Item* item : list_b) {
+    if (!list_a_map.count(item->server_id())) {
+      DVLOG(1) << "GUID " << item->server_id() << " not found in profile "
+               << profile_b << ".";
+      return false;
+    }
+    Item* expected_item = &list_a_map[item->server_id()];
+    if (expected_item->Compare(*item) != 0 ||
+        expected_item->use_count() != item->use_count() ||
+        expected_item->use_date() != item->use_date()) {
+      DVLOG(1) << "Mismatch in profile with server_id " << item->server_id()
+               << ".";
+      return false;
+    }
+    list_a_map.erase(item->server_id());
+  }
+
+  if (!list_a_map.empty()) {
+    DVLOG(1) << "Entries present in profile " << profile_a
+             << " but not in profile" << profile_b << ".";
+    return false;
+  }
+  return true;
+}
+
 bool WalletDataAndMetadataMatch(
     int profile_a,
-    const std::vector<CreditCard*>& server_cards_a,
+    const std::vector<dangling_raw_ptr<CreditCard>>& server_cards_a,
     const std::vector<AutofillProfile*>& server_profiles_a,
     int profile_b,
-    const std::vector<CreditCard*>& server_cards_b,
+    const std::vector<dangling_raw_ptr<CreditCard>>& server_cards_b,
     const std::vector<AutofillProfile*>& server_profiles_b) {
   if (!ListsMatch(profile_a, server_cards_a, profile_b, server_cards_b)) {
     LogLists(server_cards_a, server_cards_b);
@@ -523,13 +581,13 @@ std::vector<AutofillProfile*> GetServerProfiles(int profile) {
   return pdm->GetServerProfiles();
 }
 
-std::vector<AutofillProfile*> GetLocalProfiles(int profile) {
+std::vector<dangling_raw_ptr<AutofillProfile>> GetLocalProfiles(int profile) {
   WaitForPDMToRefresh(profile);
   PersonalDataManager* pdm = GetPersonalDataManager(profile);
   return pdm->GetProfiles();
 }
 
-std::vector<CreditCard*> GetServerCreditCards(int profile) {
+std::vector<dangling_raw_ptr<CreditCard>> GetServerCreditCards(int profile) {
   WaitForPDMToRefresh(profile);
   PersonalDataManager* pdm = GetPersonalDataManager(profile);
   return pdm->GetServerCreditCards();

@@ -1261,7 +1261,7 @@ void NetworkContext::AddReportingApiObserver(
 
     auto service_reports =
         url_request_context()->reporting_service()->GetReports();
-    for (const auto* service_report : service_reports) {
+    for (const net::ReportingReport* service_report : service_reports) {
       reporting_api_observers_.Get(id)->OnReportAdded(*service_report);
     }
 

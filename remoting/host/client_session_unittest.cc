@@ -194,7 +194,7 @@ class ClientSessionTest : public testing::Test {
 
   // HostExtensions to pass when creating the ClientSession. Caller retains
   // ownership of the HostExtensions themselves.
-  std::vector<HostExtension*> extensions_;
+  std::vector<dangling_raw_ptr<HostExtension>> extensions_;
 
   // ClientSession instance under test.
   std::unique_ptr<ClientSession> client_session_;

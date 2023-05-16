@@ -87,7 +87,7 @@ class TabGroupViews {
   // Finds the first and last tab or group header belonging to |group_| within
   // |children|.
   std::tuple<views::View*, views::View*> GetLeadingTrailingGroupViews(
-      std::vector<views::View*> children) const;
+      std::vector<dangling_raw_ptr<views::View>> children) const;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_VIEWS_H_

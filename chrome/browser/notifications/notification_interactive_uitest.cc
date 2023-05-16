@@ -407,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, InlinePermissionRevokeUkm) {
 
   auto entries = ukm_recorder.GetEntriesByName("Permission");
   EXPECT_EQ(1u, entries.size());
-  auto* entry = entries.front();
+  auto* entry = entries.front().get();
 
   ukm_recorder.ExpectEntrySourceHasUrl(entry,
                                        embedded_test_server()->base_url());

@@ -131,7 +131,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   bool IsPasswordManagerEnabled() override;
   void PropagateAutofillPredictions(
       AutofillDriver* driver,
-      const std::vector<FormStructure*>& forms) override;
+      const std::vector<dangling_raw_ptr<FormStructure>>& forms) override;
   void DidFillOrPreviewForm(mojom::RendererFormDataAction action,
                             AutofillTriggerSource trigger_source,
                             bool is_refill) override;

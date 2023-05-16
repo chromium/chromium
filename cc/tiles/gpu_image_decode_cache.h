@@ -958,8 +958,8 @@ class CC_EXPORT GpuImageDecodeCache
 
   // We can't modify GPU backed SkImages without holding the context lock, so
   // we queue up operations to run the next time the lock is held.
-  std::vector<SkImage*> images_pending_complete_lock_;
-  std::vector<SkImage*> images_pending_unlock_;
+  std::vector<dangling_raw_ptr<SkImage>> images_pending_complete_lock_;
+  std::vector<dangling_raw_ptr<SkImage>> images_pending_unlock_;
   std::vector<sk_sp<SkImage>> images_pending_deletion_;
   // Images that are backed by planar textures must be handled differently
   // to avoid inadvertently flattening to RGB and creating additional textures.

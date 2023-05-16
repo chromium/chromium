@@ -124,7 +124,7 @@ const user_manager::User* BrowserContextHelper::GetUserByBrowserContext(
   // Finds the matching user in logged-in user list since only a logged-in
   // user would have a profile.
   auto* user_manager = user_manager::UserManager::Get();
-  for (const auto* user : user_manager->GetLoggedInUsers()) {
+  for (const user_manager::User* user : user_manager->GetLoggedInUsers()) {
     if (user->username_hash() == hash) {
       return user;
     }

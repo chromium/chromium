@@ -5,6 +5,7 @@
 
 #include <iterator>
 
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
@@ -160,7 +161,7 @@ TEST_F(SuggestionSelectionTest, GetPrefixMatchedSuggestions_LimitProfiles) {
   profiles_data.push_back(CreateProfileUniquePtr("Marie"));
 
   // Map all the pointers into an array that has the right type.
-  std::vector<AutofillProfile*> profiles_pointers;
+  std::vector<dangling_raw_ptr<AutofillProfile>> profiles_pointers;
   base::ranges::transform(profiles_data, std::back_inserter(profiles_pointers),
                           &std::unique_ptr<AutofillProfile>::get);
 
@@ -196,7 +197,7 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_SingleDedupe) {
 
   auto profile_pointers = {profile1.get(), profile2.get()};
 
-  std::vector<AutofillProfile*> unique_matched_profiles;
+  std::vector<dangling_raw_ptr<AutofillProfile>> unique_matched_profiles;
   auto unique_suggestions =
       GetUniqueSuggestions({}, comparator_, app_locale_, profile_pointers,
                            CreateSuggestions(profile_pointers, NAME_FIRST),
@@ -224,7 +225,7 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_MultipleDedupe) {
 
   auto profile_pointers = {profile1.get(), profile2.get(), profile3.get()};
 
-  std::vector<AutofillProfile*> unique_matched_profiles;
+  std::vector<dangling_raw_ptr<AutofillProfile>> unique_matched_profiles;
   auto unique_suggestions = GetUniqueSuggestions(
       {NAME_LAST}, comparator_, app_locale_, profile_pointers,
       CreateSuggestions(profile_pointers, NAME_FIRST),
@@ -257,7 +258,7 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_DedupeLimit) {
   base::ranges::transform(profiles_data, std::back_inserter(profiles_pointers),
                           &std::unique_ptr<AutofillProfile>::get);
 
-  std::vector<AutofillProfile*> unique_matched_profiles;
+  std::vector<dangling_raw_ptr<AutofillProfile>> unique_matched_profiles;
   auto unique_suggestions = GetUniqueSuggestions(
       {NAME_LAST}, comparator_, app_locale_, profiles_pointers,
       CreateSuggestions(profiles_pointers, NAME_FIRST),
@@ -274,7 +275,7 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_DedupeLimit) {
 }
 
 TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_EmptyMatchingProfiles) {
-  std::vector<AutofillProfile*> unique_matched_profiles;
+  std::vector<dangling_raw_ptr<AutofillProfile>> unique_matched_profiles;
   auto unique_suggestions = GetUniqueSuggestions(
       {NAME_LAST}, comparator_, app_locale_, {}, {}, &unique_matched_profiles);
 
@@ -295,7 +296,7 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_kAccount) {
   std::vector<AutofillProfile*> profiles = {local_profile.get(),
                                             account_profile.get()};
 
-  std::vector<AutofillProfile*> unique_matched_profiles;
+  std::vector<dangling_raw_ptr<AutofillProfile>> unique_matched_profiles;
   GetUniqueSuggestions({}, comparator_, app_locale_, profiles,
                        CreateSuggestions(profiles, NAME_FIRST),
                        &unique_matched_profiles);
@@ -325,7 +326,7 @@ TEST_F(SuggestionSelectionTest, RemoveProfilesNotUsedSinceTimestamp) {
   }
 
   // Map all the pointers into an array that has the right type.
-  std::vector<AutofillProfile*> all_profile_ptrs;
+  std::vector<dangling_raw_ptr<AutofillProfile>> all_profile_ptrs;
   base::ranges::transform(all_profile_data,
                           std::back_inserter(all_profile_ptrs),
                           &std::unique_ptr<AutofillProfile>::get);
@@ -337,10 +338,10 @@ TEST_F(SuggestionSelectionTest, RemoveProfilesNotUsedSinceTimestamp) {
     const base::Time k175DaysAgo =
         kCurrentTime - (k30Days * kNbSuggestions) + k5DaysBuffer;
     // Create a working copy of the profile pointers.
-    std::vector<AutofillProfile*> profiles(all_profile_ptrs);
+    std::vector<dangling_raw_ptr<AutofillProfile>> profiles(all_profile_ptrs);
 
     // The first 6 have use dates more recent than 175 days ago.
-    std::vector<AutofillProfile*> expected_profiles(
+    std::vector<dangling_raw_ptr<AutofillProfile>> expected_profiles(
         profiles.begin(), profiles.begin() + kNbSuggestions);
 
     // Filter the profiles while capturing histograms.
@@ -363,11 +364,11 @@ TEST_F(SuggestionSelectionTest, RemoveProfilesNotUsedSinceTimestamp) {
     const base::Time k145DaysAgo =
         kCurrentTime - (k30Days * kNbSuggestions) + k5DaysBuffer;
     // Create a reversed working copy of the profile pointers.
-    std::vector<AutofillProfile*> profiles(all_profile_ptrs.rbegin(),
-                                           all_profile_ptrs.rend());
+    std::vector<dangling_raw_ptr<AutofillProfile>> profiles(
+        all_profile_ptrs.rbegin(), all_profile_ptrs.rend());
 
     // The last 5 profiles have use dates more recent than 145 days ago.
-    std::vector<AutofillProfile*> expected_profiles(
+    std::vector<dangling_raw_ptr<AutofillProfile>> expected_profiles(
         profiles.begin() + kNbSuggestions, profiles.end());
 
     // Filter the profiles while capturing histograms.
@@ -391,11 +392,13 @@ TEST_F(SuggestionSelectionTest, RemoveProfilesNotUsedSinceTimestamp) {
         kCurrentTime - (k30Days * kNbSuggestions) + k5DaysBuffer;
 
     // Created a shuffled master copy of the profile pointers.
-    std::vector<AutofillProfile*> shuffled_profiles(all_profile_ptrs);
+    std::vector<dangling_raw_ptr<AutofillProfile>> shuffled_profiles(
+        all_profile_ptrs);
     base::RandomShuffle(shuffled_profiles.begin(), shuffled_profiles.end());
 
     // Copy the shuffled profile pointer collections to use as the working set.
-    std::vector<AutofillProfile*> profiles_recently_used(shuffled_profiles);
+    std::vector<dangling_raw_ptr<AutofillProfile>> profiles_recently_used(
+        shuffled_profiles);
 
     // Filter the profiles while capturing histograms.
     base::HistogramTester histogram_tester;
@@ -430,7 +433,7 @@ TEST_F(SuggestionSelectionTest, RemoveProfilesNotUsedSinceTimestamp) {
   // Verify all profiles are removed if they're all disused.
   {
     // Create a working copy of the profile pointers.
-    std::vector<AutofillProfile*> profiles(all_profile_ptrs);
+    std::vector<dangling_raw_ptr<AutofillProfile>> profiles(all_profile_ptrs);
 
     // Filter the profiles while capturing histograms.
     base::HistogramTester histogram_tester;
@@ -447,7 +450,7 @@ TEST_F(SuggestionSelectionTest, RemoveProfilesNotUsedSinceTimestamp) {
   // Verify all profiles are retained if they're sufficiently recently used.
   {
     // Create a working copy of the profile pointers.
-    std::vector<AutofillProfile*> profiles(all_profile_ptrs);
+    std::vector<dangling_raw_ptr<AutofillProfile>> profiles(all_profile_ptrs);
 
     // Filter the profiles while capturing histograms.
     base::HistogramTester histogram_tester;

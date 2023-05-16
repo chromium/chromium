@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_resource.h"
@@ -58,7 +59,7 @@ class FakeMediaResource final : public MediaResource {
   ~FakeMediaResource() override;
 
   // MediaResource implementation.
-  std::vector<DemuxerStream*> GetAllStreams() override;
+  std::vector<dangling_raw_ptr<DemuxerStream>> GetAllStreams() override;
 
  private:
   std::unique_ptr<FakeDemuxerStream> audio_stream_;

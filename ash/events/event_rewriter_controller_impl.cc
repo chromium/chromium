@@ -37,7 +37,7 @@ EventRewriterControllerImpl::EventRewriterControllerImpl() {
 EventRewriterControllerImpl::~EventRewriterControllerImpl() {
   aura::Env::GetInstance()->RemoveObserver(this);
   // Remove the rewriters from every root window EventSource.
-  for (auto* window : Shell::GetAllRootWindows()) {
+  for (aura::Window* window : Shell::GetAllRootWindows()) {
     auto* event_source = window->GetHost()->GetEventSource();
     for (const auto& rewriter : rewriters_) {
       event_source->RemoveEventRewriter(rewriter.get());
@@ -79,15 +79,17 @@ void EventRewriterControllerImpl::Initialize(
 void EventRewriterControllerImpl::AddEventRewriter(
     std::unique_ptr<ui::EventRewriter> rewriter) {
   // Add the rewriters to each existing root window EventSource.
-  for (auto* window : Shell::GetAllRootWindows())
+  for (aura::Window* window : Shell::GetAllRootWindows()) {
     window->GetHost()->GetEventSource()->AddEventRewriter(rewriter.get());
+  }
 
   // In case there are any mirroring displays, their hosts' EventSources won't
   // be included above.
   const auto* mirror_window_controller =
       Shell::Get()->window_tree_host_manager()->mirror_window_controller();
-  for (auto* window : mirror_window_controller->GetAllRootWindows())
+  for (aura::Window* window : mirror_window_controller->GetAllRootWindows()) {
     window->GetHost()->GetEventSource()->AddEventRewriter(rewriter.get());
+  }
 
   rewriters_.push_back(std::move(rewriter));
 }

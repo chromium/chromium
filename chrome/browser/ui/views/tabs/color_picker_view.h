@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -58,7 +59,7 @@ class ColorPickerView : public views::View {
   // Called each time the color selection changes.
   ColorSelectedCallback callback_;
 
-  std::vector<ColorPickerElementView*> elements_;
+  std::vector<dangling_raw_ptr<ColorPickerElementView>> elements_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COLOR_PICKER_VIEW_H_

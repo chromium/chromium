@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_data.h"
@@ -90,14 +91,14 @@ void AXTreeSourceViews::CacheChildrenIfNeeded(AXAuraObjWrapper* node) {
 }
 
 size_t AXTreeSourceViews::GetChildCount(AXAuraObjWrapper* node) const {
-  std::vector<AXAuraObjWrapper*> children;
+  std::vector<dangling_raw_ptr<AXAuraObjWrapper>> children;
   node->GetChildren(&children);
   return children.size();
 }
 
 AXAuraObjWrapper* AXTreeSourceViews::ChildAt(AXAuraObjWrapper* node,
                                              size_t index) const {
-  std::vector<AXAuraObjWrapper*> children;
+  std::vector<dangling_raw_ptr<AXAuraObjWrapper>> children;
   node->GetChildren(&children);
   return children[index];
 }
@@ -170,7 +171,7 @@ std::string AXTreeSourceViews::ToString(AXAuraObjWrapper* root,
   root->Serialize(&data);
   std::string output = prefix + data.ToString() + '\n';
 
-  std::vector<AXAuraObjWrapper*> children;
+  std::vector<dangling_raw_ptr<AXAuraObjWrapper>> children;
   root->GetChildren(&children);
 
   prefix += prefix[0];

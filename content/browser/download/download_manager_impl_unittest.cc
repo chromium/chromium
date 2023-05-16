@@ -17,6 +17,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -788,7 +789,7 @@ TEST_F(DownloadManagerTest, OnInProgressDownloadsLoaded) {
       .WillOnce(Return());
   OnInProgressDownloadManagerInitialized();
   ASSERT_TRUE(download_manager_->GetDownloadByGuid(kGuid));
-  std::vector<download::DownloadItem*> vector;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> vector;
   download_manager_->GetAllDownloads(&vector);
   ASSERT_EQ(0u, vector.size());
 

@@ -6,6 +6,7 @@
 #define WEBLAYER_BROWSER_AUTOFILL_CLIENT_IMPL_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -146,7 +147,8 @@ class AutofillClientImpl : public autofill::ContentAutofillClient,
   bool IsPasswordManagerEnabled() override;
   void PropagateAutofillPredictions(
       autofill::AutofillDriver* driver,
-      const std::vector<autofill::FormStructure*>& forms) override;
+      const std::vector<dangling_raw_ptr<autofill::FormStructure>>& forms)
+      override;
   void DidFillOrPreviewForm(autofill::mojom::RendererFormDataAction action,
                             autofill::AutofillTriggerSource trigger_source,
                             bool is_refill) override;

@@ -388,7 +388,7 @@ TEST_F(AXTreeSerializerTest, DuplicateIdsCrashes) {
   // This could not happen with an AXTree, but could happen with
   // another AXTreeSource if the structure it wraps is buggy. We want to
   // fail but not crash when that happens.
-  std::vector<AXNode*> node2_children;
+  std::vector<dangling_raw_ptr<AXNode>> node2_children;
   node2_children.push_back(tree1_->GetFromId(7));
   node2_children.push_back(tree1_->GetFromId(6));
   tree1_->GetFromId(2)->SwapChildren(&node2_children);

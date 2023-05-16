@@ -505,7 +505,7 @@ TEST_F(FocusManagerTest, RotatePaneFocus) {
   v4->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   pane2->AddChildView(v4);
 
-  std::vector<views::View*> panes;
+  std::vector<dangling_raw_ptr<views::View>> panes;
   panes.push_back(pane1);
   panes.push_back(pane2);
   SetAccessiblePanes(panes);

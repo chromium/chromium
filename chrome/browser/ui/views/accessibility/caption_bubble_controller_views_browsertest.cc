@@ -1315,8 +1315,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HeaderView) {
 
   // With Live Translate disabled, only the caption settings icon should be
   // visible in the left header container.
-  auto* live_translate_label = left_header_container->children()[0];
-  auto* caption_settings_icon = left_header_container->children()[1];
+  auto* live_translate_label = left_header_container->children()[0].get();
+  auto* caption_settings_icon = left_header_container->children()[1].get();
   ASSERT_FALSE(live_translate_label->GetVisible());
   ASSERT_TRUE(caption_settings_icon->GetVisible());
   ASSERT_EQ(14, static_cast<views::BoxLayout*>(

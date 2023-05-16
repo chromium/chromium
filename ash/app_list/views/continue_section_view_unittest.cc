@@ -31,6 +31,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1445,7 +1446,7 @@ TEST_P(ContinueSectionViewTest, InitialShowDoesNotAnimate) {
       InitializeForAnimationTest(/*result_count=*/5);
   ASSERT_EQ(4u, initial_bounds.size());
 
-  std::vector<views::View*> container_children =
+  std::vector<dangling_raw_ptr<views::View>> container_children =
       GetContinueSectionView()->suggestions_container()->children();
   ASSERT_EQ(4u, container_children.size());
   for (int i = 0; i < 4; ++i) {
@@ -1462,7 +1463,7 @@ TEST_P(ContinueSectionViewTest, UpdateWithNoChangesDoesNotAnimate) {
   GetContinueSectionView()->suggestions_container()->Update();
   base::RunLoop().RunUntilIdle();
 
-  std::vector<views::View*> container_children =
+  std::vector<dangling_raw_ptr<views::View>> container_children =
       GetContinueSectionView()->suggestions_container()->children();
   ASSERT_EQ(4u, container_children.size());
   for (int i = 0; i < 4; ++i) {
@@ -1482,7 +1483,8 @@ TEST_P(ContinueSectionViewTest, AnimatesWhenLastItemReplaced) {
       GetContinueSectionView()->suggestions_container();
   container_view->Update();
 
-  std::vector<views::View*> container_children = container_view->children();
+  std::vector<dangling_raw_ptr<views::View>> container_children =
+      container_view->children();
   const size_t new_views_start = 4;
   ASSERT_EQ(new_views_start + 4, container_children.size());
 
@@ -1539,7 +1541,8 @@ TEST_P(ContinueSectionViewTest, AnimatesWhenFirstItemRemoved) {
       GetContinueSectionView()->suggestions_container();
   container_view->Update();
 
-  std::vector<views::View*> container_children = container_view->children();
+  std::vector<dangling_raw_ptr<views::View>> container_children =
+      container_view->children();
   const size_t new_views_start = 4;
   ASSERT_EQ(new_views_start + 4, container_children.size());
 
@@ -1602,7 +1605,8 @@ TEST_P(ContinueSectionViewTest, AnimatesWhenSecondItemRemoved) {
       GetContinueSectionView()->suggestions_container();
   container_view->Update();
 
-  std::vector<views::View*> container_children = container_view->children();
+  std::vector<dangling_raw_ptr<views::View>> container_children =
+      container_view->children();
   const size_t new_views_start = 4;
   ASSERT_EQ(new_views_start + 4, container_children.size());
 
@@ -1672,7 +1676,8 @@ TEST_P(ContinueSectionViewTest, AnimatesWhenThirdItemRemoved) {
       GetContinueSectionView()->suggestions_container();
   container_view->Update();
 
-  std::vector<views::View*> container_children = container_view->children();
+  std::vector<dangling_raw_ptr<views::View>> container_children =
+      container_view->children();
   const size_t new_views_start = 4;
   ASSERT_EQ(new_views_start + 4, container_children.size());
 
@@ -1747,7 +1752,8 @@ TEST_P(ContinueSectionViewTest, AnimatesWhenItemInserted) {
       GetContinueSectionView()->suggestions_container();
   container_view->Update();
 
-  std::vector<views::View*> container_children = container_view->children();
+  std::vector<dangling_raw_ptr<views::View>> container_children =
+      container_view->children();
   const size_t new_views_start = 4;
   ASSERT_EQ(new_views_start + 4, container_children.size());
 
@@ -1825,7 +1831,8 @@ TEST_P(ContinueSectionViewTest, AnimatesWhenTwoItemsRemoved) {
       GetContinueSectionView()->suggestions_container();
   container_view->Update();
 
-  std::vector<views::View*> container_children = container_view->children();
+  std::vector<dangling_raw_ptr<views::View>> container_children =
+      container_view->children();
 
   const size_t new_views_start = 4;
   ASSERT_EQ(new_views_start + 4, container_children.size());
@@ -1905,7 +1912,8 @@ TEST_P(ContinueSectionViewTest, ResultRemovedMidAnimation) {
   GetResults()->DeleteAt(1);
   container_view->Update();
 
-  std::vector<views::View*> container_children = container_view->children();
+  std::vector<dangling_raw_ptr<views::View>> container_children =
+      container_view->children();
   const size_t new_views_start = 4;
   ASSERT_EQ(new_views_start + 4, container_children.size());
 
@@ -1984,7 +1992,8 @@ TEST_P(ContinueSectionViewTest, ContinueSectionHiddenMidAnimation) {
   container_view->Update();
 
   EXPECT_FALSE(GetContinueSectionView()->GetVisible());
-  std::vector<views::View*> container_children = container_view->children();
+  std::vector<dangling_raw_ptr<views::View>> container_children =
+      container_view->children();
   ASSERT_EQ(1u, container_children.size());
   EXPECT_FALSE(container_children[0]->layer()->GetAnimator()->is_animating());
 }
@@ -2000,7 +2009,8 @@ TEST_P(ContinueSectionViewTest, AnimatesWhenNumberOfChipsChanges) {
       GetContinueSectionView()->suggestions_container();
   container_view->Update();
 
-  std::vector<views::View*> container_children = container_view->children();
+  std::vector<dangling_raw_ptr<views::View>> container_children =
+      container_view->children();
   const size_t new_views_start = 4;
   ASSERT_EQ(new_views_start + 3, container_children.size());
 

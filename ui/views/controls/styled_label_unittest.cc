@@ -788,8 +788,9 @@ TEST_F(StyledLabelTest, ViewsCenteredWithLinkAndCustomView) {
   styled()->SetBounds(0, 0, 1000, 500);
   test::RunScheduledLayout(styled());
   const int height = styled()->GetPreferredSize().height();
-  for (const auto* child : styled()->children())
+  for (const views::View* child : styled()->children()) {
     EXPECT_EQ(height / 2, child->bounds().CenterPoint().y());
+  }
 }
 
 TEST_F(StyledLabelTest, ViewsCenteredForEvenAndOddSizes) {
@@ -810,8 +811,9 @@ TEST_F(StyledLabelTest, ViewsCenteredForEvenAndOddSizes) {
     styled()->SetBounds(0, 0, kViewWidth * 3, height);
     test::RunScheduledLayout(styled());
 
-    for (const auto* child : styled()->children())
+    for (const views::View* child : styled()->children()) {
       EXPECT_EQ(height / 2, child->bounds().CenterPoint().y());
+    }
   }
 }
 

@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
@@ -926,14 +927,14 @@ bool ChromeDownloadManagerDelegate::IsMostRecentDownloadItemAtFilePath(
       profile->GetOriginalProfile()->GetAllOffTheRecordProfiles();
   profiles_to_check.push_back(profile->GetOriginalProfile());
 
-  std::vector<DownloadItem*> all_downloads;
+  std::vector<dangling_raw_ptr<DownloadItem>> all_downloads;
   for (auto* profile_to_check : profiles_to_check) {
     content::DownloadManager* manager = profile_to_check->GetDownloadManager();
     if (manager)
       manager->GetAllDownloads(&all_downloads);
   }
 
-  for (const auto* item : all_downloads) {
+  for (const download::DownloadItem* item : all_downloads) {
     if (item->GetGuid() == download->GetGuid() ||
         item->GetTargetFilePath() != download->GetTargetFilePath())
       continue;
@@ -1850,7 +1851,7 @@ void ChromeDownloadManagerDelegate::CancelForEphemeralWarning(
 void ChromeDownloadManagerDelegate::CancelAllEphemeralWarnings() {
   content::DownloadManager::DownloadVector downloads;
   download_manager_->GetAllDownloads(&downloads);
-  for (auto* download : downloads) {
+  for (download::DownloadItem* download : downloads) {
     auto model = std::make_unique<DownloadItemModel>(download);
     if (model->IsEphemeralWarning() &&
         model->GetState() != download::DownloadItem::CANCELLED) {

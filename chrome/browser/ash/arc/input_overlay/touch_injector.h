@@ -242,13 +242,15 @@ class TouchInjector : public ui::EventRewriter {
       std::vector<std::unique_ptr<Action>>& actions);
   // Add removed default actions and show their views in |actions|, and save
   // these actions in |added_actions|.
-  void AddDefaultActionsAndViews(std::vector<std::unique_ptr<Action>>& actions,
-                                 std::vector<Action*>& added_actions);
+  void AddDefaultActionsAndViews(
+      std::vector<std::unique_ptr<Action>>& actions,
+      std::vector<dangling_raw_ptr<Action>>& added_actions);
   // Add the |deleted_default_actions| back and show their views.
-  void AddDefaultActionsAndViews(std::vector<Action*>& deleted_default_actions);
+  void AddDefaultActionsAndViews(
+      std::vector<dangling_raw_ptr<Action>>& deleted_default_actions);
   // Remove the |added_default_actions| and remove their views.
   void RemoveDefaultActionsAndViews(
-      std::vector<Action*>& added_default_actions);
+      std::vector<dangling_raw_ptr<Action>>& added_default_actions);
 
   // For test.
   int GetRewrittenTouchIdForTesting(ui::PointerId original_id);
@@ -305,8 +307,8 @@ class TouchInjector : public ui::EventRewriter {
   std::vector<std::unique_ptr<Action>> pending_add_user_actions_;
   std::vector<std::unique_ptr<Action>> pending_delete_user_actions_;
   // Default actions wont be removed from |actions_|.
-  std::vector<Action*> pending_add_default_actions_;
-  std::vector<Action*> pending_delete_default_actions_;
+  std::vector<dangling_raw_ptr<Action>> pending_add_default_actions_;
+  std::vector<dangling_raw_ptr<Action>> pending_delete_default_actions_;
 
   // Callback when saving proto file.
   OnSaveProtoFileCallback save_file_callback_;

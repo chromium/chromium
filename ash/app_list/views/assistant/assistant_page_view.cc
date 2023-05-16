@@ -106,7 +106,7 @@ class AssistantPageViewLayout : public views::LayoutManagerBase {
         std::max(preferred_height, host->GetMinimumSize().height());
 
     // Snap to |kMaxHeightDip| if |child| exceeds |preferred_height|.
-    for (const auto* child : host->children()) {
+    for (const views::View* child : host->children()) {
       if (child->GetHeightForWidth(width) > preferred_height)
         return kMaxHeightDip;
     }
@@ -126,7 +126,7 @@ class AssistantPageViewLayout : public views::LayoutManagerBase {
 
     views::ProposedLayout proposed_layout;
     proposed_layout.host_size = host_view()->size();
-    for (auto* child : host_view()->children()) {
+    for (views::View* child : host_view()->children()) {
       proposed_layout.child_layouts.push_back(views::ChildLayout{
           child, child->GetVisible(), bounds, views::SizeBounds()});
     }

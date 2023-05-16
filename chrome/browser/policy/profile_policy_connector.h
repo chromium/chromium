@@ -126,7 +126,8 @@ class ProfilePolicyConnector final : public PolicyService::Observer {
   // [1] i.e. g_browser_process->policy_service()
   // [2] i.e. g_browser_process->local_state()
   std::unique_ptr<PolicyService> CreatePolicyServiceWithInitializationThrottled(
-      const std::vector<ConfigurationPolicyProvider*>& policy_providers,
+      const std::vector<dangling_raw_ptr<ConfigurationPolicyProvider>>&
+          policy_providers,
       std::vector<std::unique_ptr<PolicyMigrator>> migrators,
       ConfigurationPolicyProvider* user_policy_delegate);
 
@@ -180,7 +181,7 @@ class ProfilePolicyConnector final : public PolicyService::Observer {
   // use the policies exposed by the PolicyService!
   // The default ConfigurationPolicyProvider::IsInitializationComplete()
   // result is true, so take care if a provider overrides that.
-  std::vector<ConfigurationPolicyProvider*> policy_providers_;
+  std::vector<dangling_raw_ptr<ConfigurationPolicyProvider>> policy_providers_;
 
   std::unique_ptr<PolicyService> policy_service_;
 

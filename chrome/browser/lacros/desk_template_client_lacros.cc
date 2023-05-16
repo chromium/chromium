@@ -207,7 +207,7 @@ void DeskTemplateClientLacros::GetBrowserInformation(
     GetBrowserInformationCallback callback) {
   Browser* browser = nullptr;
 
-  for (auto* b : *BrowserList::GetInstance()) {
+  for (Browser* b : *BrowserList::GetInstance()) {
     if (views::DesktopWindowTreeHostLacros::From(
             b->window()->GetNativeWindow()->GetHost())
             ->platform_window()

@@ -68,7 +68,7 @@ class SmsBrowserTest : public ContentBrowserTest {
     if (entries.empty())
       FAIL() << "No WebOTPServiceOutcome was recorded";
 
-    for (const auto* const entry : entries) {
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
       const int64_t* metric = ukm_recorder()->GetEntryMetric(entry, "Outcome");
       if (metric && *metric == static_cast<int>(outcome)) {
         SUCCEED();
@@ -85,7 +85,7 @@ class SmsBrowserTest : public ContentBrowserTest {
     if (entries.empty())
       FAIL() << "No WebOTPServiceOutcome was recorded";
 
-    for (const auto* const entry : entries) {
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
       const int64_t* metric = ukm_recorder()->GetEntryMetric(entry, "Outcome");
       if (metric && *metric == static_cast<int>(outcome)) {
         bool actual_cross_origin =
@@ -104,7 +104,7 @@ class SmsBrowserTest : public ContentBrowserTest {
 
     ASSERT_FALSE(entries.empty());
 
-    for (const auto* const entry : entries) {
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
       if (ukm_recorder()->GetEntryMetric(entry, metric_name)) {
         SUCCEED();
         return;
@@ -127,7 +127,7 @@ class SmsBrowserTest : public ContentBrowserTest {
 
     ASSERT_FALSE(entries.empty());
 
-    for (const auto* const entry : entries) {
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
       const int64_t* metric =
           ukm_recorder()->GetEntryMetric(entry, "SmsParsingStatus");
       if (metric && *metric == status) {

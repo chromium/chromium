@@ -59,7 +59,7 @@ aura::Window* GetWindowWithBrowser(Browser* browser) {
 }
 
 aura::Window* GetWindowWithTabStripModel(TabStripModel* tab_strip_model) {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->tab_strip_model() == tab_strip_model) {
       return GetWindowWithBrowser(browser);
     }

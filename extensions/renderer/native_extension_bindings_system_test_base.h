@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "extensions/common/api/messaging/channel_type.h"
 #include "extensions/common/api/messaging/message.h"
@@ -156,7 +157,7 @@ class NativeExtensionBindingsSystemUnittest : public APIBindingTest {
   ExtensionIdSet extension_ids_;
   std::unique_ptr<content::MockRenderThread> render_thread_;
   std::unique_ptr<ScriptContextSet> script_context_set_;
-  std::vector<ScriptContext*> raw_script_contexts_;
+  std::vector<dangling_raw_ptr<ScriptContext>> raw_script_contexts_;
   std::unique_ptr<NativeExtensionBindingsSystem> bindings_system_;
   // The TestIPCMessageSender; owned by the bindings system.
   TestIPCMessageSender* ipc_message_sender_ = nullptr;

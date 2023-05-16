@@ -418,7 +418,7 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
 #endif
   // This value is not surrounded by build flags as it is meant to be updated
   // manually in binary experiment patches.
-  trials.emplace("VectorRawPtrExperiment", "Disabled");
+  trials.emplace("VectorRawPtrExperiment", "Enabled");
 
   return trials;
 }

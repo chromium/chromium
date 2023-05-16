@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/graph/properties.h"
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -78,7 +79,7 @@ class DummyNode {
       observed_only_on_changes_with_previous_value_{false};
 
   bool can_set_ = true;
-  std::vector<DummyObserver*> observers_;
+  RAW_PTR_EXCLUSION std::vector<DummyObserver*> observers_;
 };
 
 class GraphPropertiesTest : public ::testing::Test {

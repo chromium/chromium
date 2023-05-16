@@ -371,7 +371,8 @@ class SaveCardInfobarEGTestHelper
       chrome_test_util::GetOriginalBrowserState();
   autofill::PersonalDataManager* personalDataManager =
       autofill::PersonalDataManagerFactory::GetForBrowserState(browserState);
-  for (const auto* profile : personalDataManager->GetProfiles()) {
+  for (const autofill::AutofillProfile* profile :
+       personalDataManager->GetProfiles()) {
     personalDataManager->RemoveByGUID(profile->guid());
   }
 

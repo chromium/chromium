@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_model_observer.h"
@@ -43,7 +44,7 @@ void DeskUuidChecker::DeskModelLoaded() {
 }
 
 void DeskUuidChecker::EntriesAddedOrUpdatedRemotely(
-    const std::vector<const ash::DeskTemplate*>& new_entries) {
+    const std::vector<dangling_raw_ptr<const ash::DeskTemplate>>& new_entries) {
   CheckExitCondition();
 }
 
@@ -83,7 +84,7 @@ void DeskUuidDeletedChecker::DeskModelLoaded() {
 }
 
 void DeskUuidDeletedChecker::EntriesAddedOrUpdatedRemotely(
-    const std::vector<const ash::DeskTemplate*>& new_entries) {
+    const std::vector<dangling_raw_ptr<const ash::DeskTemplate>>& new_entries) {
   CheckExitCondition();
 }
 
@@ -114,7 +115,7 @@ void DeskModelReadyChecker::DeskModelLoaded() {
 }
 
 void DeskModelReadyChecker::EntriesAddedOrUpdatedRemotely(
-    const std::vector<const ash::DeskTemplate*>& new_entries) {
+    const std::vector<dangling_raw_ptr<const ash::DeskTemplate>>& new_entries) {
   CheckExitCondition();
 }
 

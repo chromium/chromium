@@ -125,7 +125,7 @@ class DisplayConfigurator::DisplayLayoutManagerImpl
   MultipleDisplayState GetDisplayState() const override;
   chromeos::DisplayPowerState GetPowerState() const override;
   bool GetDisplayLayout(
-      const std::vector<DisplaySnapshot*>& displays,
+      const std::vector<dangling_raw_ptr<DisplaySnapshot>>& displays,
       MultipleDisplayState new_display_state,
       chromeos::DisplayPowerState new_power_state,
       RefreshRateThrottleState new_throttle_state,
@@ -144,7 +144,7 @@ class DisplayConfigurator::DisplayLayoutManagerImpl
   // TODO(dnicoara): Break this into GetSelectedMode() and GetMirrorMode() and
   // remove DisplayState.
   std::vector<DisplayState> ParseDisplays(
-      const std::vector<DisplaySnapshot*>& displays) const;
+      const std::vector<dangling_raw_ptr<DisplaySnapshot>>& displays) const;
 
   const DisplayMode* GetUserSelectedMode(const DisplaySnapshot& display) const;
 
@@ -202,9 +202,9 @@ DisplayConfigurator::DisplayLayoutManagerImpl::GetPowerState() const {
 
 std::vector<DisplayState>
 DisplayConfigurator::DisplayLayoutManagerImpl::ParseDisplays(
-    const std::vector<DisplaySnapshot*>& snapshots) const {
+    const std::vector<dangling_raw_ptr<DisplaySnapshot>>& snapshots) const {
   std::vector<DisplayState> cached_displays;
-  for (auto* snapshot : snapshots) {
+  for (display::DisplaySnapshot* snapshot : snapshots) {
     DisplayState display_state;
     display_state.display = snapshot;
     display_state.selected_mode = GetUserSelectedMode(*snapshot);
@@ -258,7 +258,7 @@ DisplayConfigurator::DisplayLayoutManagerImpl::ParseDisplays(
 }
 
 bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
-    const std::vector<DisplaySnapshot*>& displays,
+    const std::vector<dangling_raw_ptr<DisplaySnapshot>>& displays,
     MultipleDisplayState new_display_state,
     chromeos::DisplayPowerState new_power_state,
     RefreshRateThrottleState new_throttle_state,
@@ -275,7 +275,7 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
   // Framebuffer dimensions.
   gfx::Size size;
 
-  for (auto* display : displays) {
+  for (display::DisplaySnapshot* display : displays) {
     requests->push_back(DisplayConfigureRequest(
         display, display->current_mode(), gfx::Point(),
         new_vrr_enabled_state && display->IsVrrCapable()));
@@ -1085,8 +1085,8 @@ void DisplayConfigurator::RunPendingConfiguration() {
 
 void DisplayConfigurator::OnConfigured(
     bool success,
-    const std::vector<DisplaySnapshot*>& displays,
-    const std::vector<DisplaySnapshot*>& unassociated_displays,
+    const std::vector<dangling_raw_ptr<DisplaySnapshot>>& displays,
+    const std::vector<dangling_raw_ptr<DisplaySnapshot>>& unassociated_displays,
     MultipleDisplayState new_display_state,
     chromeos::DisplayPowerState new_power_state,
     bool new_vrr_state_) {
@@ -1228,7 +1228,7 @@ bool DisplayConfigurator::GetRequestedVrrState() const {
 }
 
 bool DisplayConfigurator::ShouldConfigureVrr() const {
-  for (const auto* display : cached_displays_) {
+  for (const display::DisplaySnapshot* display : cached_displays_) {
     if (!display->IsVrrCapable()) {
       continue;
     }
@@ -1243,7 +1243,7 @@ bool DisplayConfigurator::ShouldConfigureVrr() const {
 
 bool DisplayConfigurator::IsVrrEnabledOnInternalDisplay() const {
   const DisplaySnapshot* internal_display;
-  for (const auto* display : cached_displays_) {
+  for (const display::DisplaySnapshot* display : cached_displays_) {
     if (display->type() == DISPLAY_CONNECTION_TYPE_INTERNAL) {
       internal_display = display;
       break;

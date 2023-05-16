@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -134,7 +135,7 @@ bool CachedFormNeedsUpdate(const FormData& live_form,
 // static
 void AutofillManager::LogAutofillTypePredictionsAvailable(
     LogManager* log_manager,
-    const std::vector<FormStructure*>& forms) {
+    const std::vector<dangling_raw_ptr<FormStructure>>& forms) {
   if (VLOG_IS_ON(1)) {
     VLOG(1) << "Parsed forms:";
     for (FormStructure* form : forms)
@@ -387,8 +388,8 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
 
   driver()->HandleParsedForms(forms);
 
-  std::vector<FormStructure*> non_queryable_forms;
-  std::vector<FormStructure*> queryable_forms;
+  std::vector<dangling_raw_ptr<FormStructure>> non_queryable_forms;
+  std::vector<dangling_raw_ptr<FormStructure>> queryable_forms;
   DenseSet<FormType> form_types;
   for (const FormData& form : forms) {
     FormStructure* form_structure = FindCachedFormById(form.global_id());
@@ -649,7 +650,7 @@ AutofillManager::CreateFormInteractionsUkmLogger() {
 
 size_t AutofillManager::FindCachedFormsBySignature(
     FormSignature form_signature,
-    std::vector<FormStructure*>* form_structures) const {
+    std::vector<dangling_raw_ptr<FormStructure>>* form_structures) const {
   size_t hits_num = 0;
   for (const auto& [form_id, form_structure] : form_structures_) {
     if (form_structure->form_signature() == form_signature) {
@@ -942,7 +943,7 @@ void AutofillManager::OnLoadedServerPredictions(
     const std::vector<FormSignature>& queried_form_signatures) {
   // Get the current valid FormStructures represented by
   // |queried_form_signatures|.
-  std::vector<FormStructure*> queried_forms;
+  std::vector<dangling_raw_ptr<FormStructure>> queried_forms;
   queried_forms.reserve(queried_form_signatures.size());
   for (const auto& form_signature : queried_form_signatures) {
     FindCachedFormsBySignature(form_signature, &queried_forms);

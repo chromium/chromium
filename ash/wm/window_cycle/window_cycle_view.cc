@@ -218,7 +218,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
                       kInsideBorderVerticalPaddingDp + 8));
   }
 
-  for (auto* window : windows) {
+  for (aura::Window* window : windows) {
     // |mirror_container_| owns |view|. The |preview_view_| in |view| will
     // use trilinear filtering in InitLayerOwner().
     auto* view = mirror_container_->AddChildView(
@@ -320,7 +320,7 @@ void WindowCycleView::UpdateWindows(const WindowList& windows) {
   if (no_windows)
     return;
 
-  for (auto* window : windows) {
+  for (aura::Window* window : windows) {
     auto* view = mirror_container_->AddChildView(
         std::make_unique<WindowCycleItemView>(window));
     window_view_map_[window] = view;

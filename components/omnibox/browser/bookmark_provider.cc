@@ -12,6 +12,7 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -252,7 +253,7 @@ std::pair<int, int> BookmarkProvider::CalculateBookmarkMatchRelevance(
 
   // Boost the score if the bookmark's URL is referenced by other bookmarks.
   const int kURLCountBoost[4] = {0, 75, 125, 150};
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<dangling_raw_ptr<const BookmarkNode>> nodes;
   local_or_syncable_bookmark_model_->GetNodesByURL(url, &nodes);
   DCHECK_GE(std::min(std::size(kURLCountBoost), nodes.size()), 1U);
   relevance +=

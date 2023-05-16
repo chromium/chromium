@@ -12,6 +12,7 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
@@ -73,7 +74,7 @@ class ASH_EXPORT DeskBarController : public OverviewObserver,
   // Bar widgets and bar views for the desk bars. Right now, it supports only
   // desk button desk bar. Support for overview desk bar will be added later.
   std::vector<std::unique_ptr<views::Widget>> desk_bar_widgets_;
-  std::vector<DeskBarViewBase*> desk_bar_views_;
+  std::vector<dangling_raw_ptr<DeskBarViewBase>> desk_bar_views_;
 };
 
 }  // namespace ash

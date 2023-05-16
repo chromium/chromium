@@ -380,7 +380,7 @@ bool SessionControllerClientImpl::CanLockScreen() {
 // static
 bool SessionControllerClientImpl::ShouldLockScreenAutomatically() {
   const UserList logged_in_users = UserManager::Get()->GetLoggedInUsers();
-  for (auto* user : logged_in_users) {
+  for (user_manager::User* user : logged_in_users) {
     Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
     if (profile &&
         profile->GetPrefs()->GetBoolean(ash::prefs::kEnableAutoScreenLock)) {
@@ -602,7 +602,7 @@ void SessionControllerClientImpl::SendUserSessionOrder() {
 
   const UserList logged_in_users = user_manager->GetLoggedInUsers();
   std::vector<uint32_t> user_session_ids;
-  for (auto* user : user_manager->GetLRULoggedInUsers()) {
+  for (user_manager::User* user : user_manager->GetLRULoggedInUsers()) {
     const uint32_t user_session_id = GetSessionId(*user);
     DCHECK_NE(0u, user_session_id);
     user_session_ids.push_back(user_session_id);

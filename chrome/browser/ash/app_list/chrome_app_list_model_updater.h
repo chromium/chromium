@@ -57,10 +57,11 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   void SetSearchEngineIsGoogle(bool is_google) override;
   void RecalculateWouldTriggerLauncherSearchIph() override;
   void PublishSearchResults(
-      const std::vector<ChromeSearchResult*>& results,
+      const std::vector<dangling_raw_ptr<ChromeSearchResult>>& results,
       const std::vector<ash::AppListSearchResultCategory>& categories) override;
   void ClearSearchResults() override;
-  std::vector<ChromeSearchResult*> GetPublishedSearchResultsForTest() override;
+  std::vector<dangling_raw_ptr<ChromeSearchResult>>
+  GetPublishedSearchResultsForTest() override;
 
   // Methods only used by ChromeAppListItem that talk to ash directly.
   void SetItemIconVersion(const std::string& id, int icon_version) override;
@@ -225,7 +226,7 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   bool is_active_ = false;
 
   // The most recently list of search results.
-  std::vector<ChromeSearchResult*> published_results_;
+  std::vector<dangling_raw_ptr<ChromeSearchResult>> published_results_;
   base::ObserverList<AppListModelUpdaterObserver> observers_;
   bool search_engine_is_google_ = false;
 

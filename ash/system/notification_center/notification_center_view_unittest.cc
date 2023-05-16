@@ -525,7 +525,7 @@ TEST_P(NotificationCenterViewTest, StackingIconsNeverMoreThanThree) {
     auto icons_container_children =
         GetNotificationBarIconsContainer()->children();
     int animating_count = 0;
-    for (auto* child : icons_container_children) {
+    for (views::View* child : icons_container_children) {
       // Verify that no more than one icon is animating at any one time.
       if (child->layer()->GetAnimator()->is_animating()) {
         animating_count++;

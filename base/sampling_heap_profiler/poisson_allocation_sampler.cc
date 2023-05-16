@@ -13,6 +13,7 @@
 #include "base/allocator/dispatcher/tls.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -294,7 +295,7 @@ void PoissonAllocationSampler::DoRecordAllocation(
   }
 
   ScopedMuteThreadSamples no_reentrancy_scope;
-  std::vector<SamplesObserver*> observers_copy;
+  std::vector<dangling_raw_ptr<SamplesObserver>> observers_copy;
   {
     AutoLock lock(mutex_);
 
@@ -309,7 +310,8 @@ void PoissonAllocationSampler::DoRecordAllocation(
   }
 
   size_t total_allocated = mean_interval * samples;
-  for (auto* observer : observers_copy) {
+  for (base::PoissonAllocationSampler::SamplesObserver* observer :
+       observers_copy) {
     observer->SampleAdded(address, size, total_allocated, type, context);
   }
 }
@@ -320,13 +322,14 @@ void PoissonAllocationSampler::DoRecordFree(void* address) {
   // thus reenter DoRecordAlloc. However the call chain won't build up further
   // as RecordAlloc accesses are guarded with pthread TLS-based ReentryGuard.
   ScopedMuteThreadSamples no_reentrancy_scope;
-  std::vector<SamplesObserver*> observers_copy;
+  std::vector<dangling_raw_ptr<SamplesObserver>> observers_copy;
   {
     AutoLock lock(mutex_);
     observers_copy = observers_;
     sampled_addresses_set().Remove(address);
   }
-  for (auto* observer : observers_copy) {
+  for (base::PoissonAllocationSampler::SamplesObserver* observer :
+       observers_copy) {
     observer->SampleRemoved(address);
   }
 }

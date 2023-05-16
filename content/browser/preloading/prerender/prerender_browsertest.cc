@@ -516,7 +516,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     bool final_status_entry_found = false;
     const auto entries = ukm_recorder_->GetEntriesByName(
         ukm::builders::PrerenderPageLoad::kEntryName);
-    for (const auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       if (ukm_recorder_->EntryHasMetric(
               entry, ukm::builders::PrerenderPageLoad::kFinalStatusName)) {
         final_status_entry_found = true;
@@ -8648,7 +8648,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, TriggeredPrerenderUkm) {
 
   // PrerenderPageLoad:TriggeredPrerender is recorded for the initiator page
   // load.
-  const std::vector<const ukm::mojom::UkmEntry*> entries =
+  const std::vector<dangling_raw_ptr<const ukm::mojom::UkmEntry>> entries =
       ukm_recorder.GetEntriesByName(
           ukm::builders::PrerenderPageLoad::kEntryName);
   ASSERT_EQ(1u, entries.size());

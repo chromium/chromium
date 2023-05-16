@@ -1143,7 +1143,7 @@ void UserSessionManager::OnUsersSignInConstraintsChanged() {
       user_manager::UserManager::Get();
   const user_manager::UserList& logged_in_users =
       user_manager->GetLoggedInUsers();
-  for (auto* user : logged_in_users) {
+  for (user_manager::User* user : logged_in_users) {
     if (user->GetType() != user_manager::USER_TYPE_REGULAR &&
         user->GetType() != user_manager::USER_TYPE_GUEST &&
         user->GetType() != user_manager::USER_TYPE_CHILD) {

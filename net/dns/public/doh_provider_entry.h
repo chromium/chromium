@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
@@ -53,7 +54,7 @@ enum class DohProviderIdForHistogram {
 // the dropdown menu.
 struct NET_EXPORT DohProviderEntry {
  public:
-  using List = std::vector<const DohProviderEntry*>;
+  using List = std::vector<dangling_raw_ptr<const DohProviderEntry>>;
 
   enum class LoggingLevel {
     // Indicates the normal amount of logging, monitoring, and metrics.

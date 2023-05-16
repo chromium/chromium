@@ -407,7 +407,7 @@ void Shelf::ActivateShelfItemOnDisplay(int item_index, int64_t display_id) {
 
 // static
 void Shelf::UpdateShelfVisibility() {
-  for (auto* root : Shell::Get()->GetAllRootWindows()) {
+  for (aura::Window* root : Shell::Get()->GetAllRootWindows()) {
     Shelf::ForWindow(root)->UpdateVisibilityState();
   }
 }

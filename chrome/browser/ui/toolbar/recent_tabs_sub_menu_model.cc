@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
@@ -426,7 +427,7 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
   // a menu item, because they take always place in the end of menu.
 
   sync_sessions::OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate();
-  std::vector<const sync_sessions::SyncedSession*> sessions;
+  std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>> sessions;
   if (!open_tabs || !open_tabs->GetAllForeignSessions(&sessions)) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     AddItemWithStringId(IDC_RECENT_TABS_NO_DEVICE_TABS,

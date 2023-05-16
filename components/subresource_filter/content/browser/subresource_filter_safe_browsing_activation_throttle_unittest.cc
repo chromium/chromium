@@ -736,7 +736,7 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest, LogsUkm) {
   const auto& entries =
       test_ukm_recorder.GetEntriesByName(SubresourceFilter::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder.ExpectEntrySourceHasUrl(entry, url);
     test_ukm_recorder.ExpectEntryMetric(
         entry, SubresourceFilter::kActivationDecisionName,
@@ -755,7 +755,7 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
   const auto& entries =
       test_ukm_recorder.GetEntriesByName(SubresourceFilter::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder.ExpectEntrySourceHasUrl(entry, url);
     test_ukm_recorder.ExpectEntryMetric(
         entry, SubresourceFilter::kActivationDecisionName,
@@ -776,7 +776,7 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest, LogsUkmDryRun) {
   const auto& entries =
       test_ukm_recorder.GetEntriesByName(SubresourceFilter::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder.ExpectEntrySourceHasUrl(entry, url);
     test_ukm_recorder.ExpectEntryMetric(
         entry, SubresourceFilter::kActivationDecisionName,
@@ -1108,7 +1108,7 @@ TEST_F(SubresourceFilterSafeBrowsingActivationThrottleTest,
     auto entries =
         test_ukm_recorder.GetEntriesByName(SubresourceFilter::kEntryName);
     EXPECT_EQ(1u, entries.size());
-    const auto* entry = entries[0];
+    const auto* entry = entries[0].get();
     if (test_case.last_enforcement_position.has_value()) {
       test_ukm_recorder.ExpectEntryMetric(
           entry, SubresourceFilter::kEnforcementRedirectPositionName,

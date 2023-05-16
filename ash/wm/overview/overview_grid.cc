@@ -62,6 +62,7 @@
 #include "ash/wm/workspace_controller.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -483,9 +484,10 @@ class DesksBarSlideAnimation {
   std::unique_ptr<views::Widget> desks_widget_;
 };
 
-OverviewGrid::OverviewGrid(aura::Window* root_window,
-                           const std::vector<aura::Window*>& windows,
-                           OverviewSession* overview_session)
+OverviewGrid::OverviewGrid(
+    aura::Window* root_window,
+    const std::vector<dangling_raw_ptr<aura::Window>>& windows,
+    OverviewSession* overview_session)
     : root_window_(root_window),
       overview_session_(overview_session),
       split_view_drag_indicators_(
@@ -493,7 +495,7 @@ OverviewGrid::OverviewGrid(aura::Window* root_window,
               ? std::make_unique<SplitViewDragIndicators>(root_window)
               : nullptr),
       bounds_(GetGridBoundsInScreen(root_window)) {
-  for (auto* window : windows) {
+  for (aura::Window* window : windows) {
     if (window->GetRootWindow() != root_window)
       continue;
 
@@ -1511,7 +1513,7 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
   }
 
   auto* desks_controller = DesksController::Get();
-  for (auto* mini_view : desks_bar_view_->mini_views()) {
+  for (ash::DeskMiniView* mini_view : desks_bar_view_->mini_views()) {
     if (!mini_view->IsPointOnMiniView(screen_location))
       continue;
 
@@ -1901,7 +1903,7 @@ bool OverviewGrid::IsShowingSavedDeskLibrary() const {
 
 bool OverviewGrid::IsSavedDeskNameBeingModified() const {
   if (auto* library_view = GetSavedDeskLibraryView()) {
-    for (auto* grid_view : library_view->grid_views()) {
+    for (ash::SavedDeskGridView* grid_view : library_view->grid_views()) {
       if (grid_view->IsSavedDeskNameBeingModified()) {
         return true;
       }

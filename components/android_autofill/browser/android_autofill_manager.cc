@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/android_autofill/browser/autofill_provider.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_weblayer_android.h"
@@ -166,7 +167,7 @@ void AndroidAutofillManager::OnHidePopupImpl() {
 }
 
 void AndroidAutofillManager::PropagateAutofillPredictions(
-    const std::vector<FormStructure*>& forms) {
+    const std::vector<dangling_raw_ptr<FormStructure>>& forms) {
   has_server_prediction_ = true;
   if (auto* provider = GetAutofillProvider())
     provider->OnServerPredictionsAvailable(this);

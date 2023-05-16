@@ -34,7 +34,7 @@ namespace {
 
 BrowserList::BrowserVector GetBrowsersToClose(Profile* profile) {
   BrowserList::BrowserVector browsers_to_close;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile()->GetOriginalProfile() ==
         profile->GetOriginalProfile())
       browsers_to_close.push_back(browser);
@@ -44,7 +44,7 @@ BrowserList::BrowserVector GetBrowsersToClose(Profile* profile) {
 
 BrowserList::BrowserVector GetIncognitoBrowsersToClose(Profile* profile) {
   BrowserList::BrowserVector browsers_to_close;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile() == profile)
       browsers_to_close.push_back(browser);
   }
@@ -158,7 +158,7 @@ void BrowserList::RemoveObserver(BrowserListObserver* observer) {
 // static
 void BrowserList::CloseAllBrowsersWithProfile(Profile* profile) {
   BrowserVector browsers_to_close;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile()->GetOriginalProfile() ==
         profile->GetOriginalProfile())
       browsers_to_close.push_back(browser);
@@ -332,7 +332,7 @@ void BrowserList::NotifyBrowserCloseStarted(Browser* browser) {
 
 // static
 bool BrowserList::IsOffTheRecordBrowserActive() {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile()->IsOffTheRecord())
       return true;
   }

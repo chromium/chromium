@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -174,7 +175,7 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUpload) {
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
 
   // Successful upload should remove delivered reports.
-  std::vector<const ReportingReport*> reports;
+  std::vector<dangling_raw_ptr<const ReportingReport>> reports;
   cache()->GetReports(&reports);
   EXPECT_TRUE(reports.empty());
   histograms.ExpectBucketCount(
@@ -250,7 +251,7 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUploadDocumentReport) {
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
 
   // Successful upload should remove delivered reports.
-  std::vector<const ReportingReport*> reports;
+  std::vector<dangling_raw_ptr<const ReportingReport>> reports;
   cache()->GetReports(&reports);
   EXPECT_TRUE(reports.empty());
   histograms.ExpectBucketCount(
@@ -288,7 +289,7 @@ TEST_F(ReportingDeliveryAgentTest, UploadHeaderTypeEnumCountPerReport) {
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
 
   // Successful upload should remove delivered reports.
-  std::vector<const ReportingReport*> reports;
+  std::vector<dangling_raw_ptr<const ReportingReport>> reports;
   cache()->GetReports(&reports);
   EXPECT_TRUE(reports.empty());
   histograms.ExpectBucketCount(
@@ -330,7 +331,7 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateSubdomainUpload) {
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
 
   // Successful upload should remove delivered reports.
-  std::vector<const ReportingReport*> reports;
+  std::vector<dangling_raw_ptr<const ReportingReport>> reports;
   cache()->GetReports(&reports);
   EXPECT_TRUE(reports.empty());
 
@@ -370,7 +371,7 @@ TEST_F(ReportingDeliveryAgentTest,
   }
 
   // Successful upload should remove delivered reports.
-  std::vector<const ReportingReport*> reports;
+  std::vector<dangling_raw_ptr<const ReportingReport>> reports;
   cache()->GetReports(&reports);
   EXPECT_TRUE(reports.empty());
 }
@@ -419,7 +420,7 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulDelayedUpload) {
   }
 
   // Successful upload should remove delivered reports.
-  std::vector<const ReportingReport*> reports;
+  std::vector<dangling_raw_ptr<const ReportingReport>> reports;
   cache()->GetReports(&reports);
   EXPECT_TRUE(reports.empty());
 
@@ -446,7 +447,7 @@ TEST_F(ReportingDeliveryAgentTest, FailedUpload) {
   }
 
   // Failed upload should increment reports' attempts.
-  std::vector<const ReportingReport*> reports;
+  std::vector<dangling_raw_ptr<const ReportingReport>> reports;
   cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(1, reports[0]->attempts);
@@ -497,7 +498,7 @@ TEST_F(ReportingDeliveryAgentTest, DisallowedUpload) {
   }
 
   // Disallowed reports should NOT have been removed from the cache.
-  std::vector<const ReportingReport*> reports;
+  std::vector<dangling_raw_ptr<const ReportingReport>> reports;
   cache()->GetReports(&reports);
   EXPECT_EQ(1u, reports.size());
 }
@@ -519,7 +520,7 @@ TEST_F(ReportingDeliveryAgentTest, RemoveEndpointUpload) {
 
   // "Remove endpoint" upload should remove endpoint from *all* origins and
   // increment reports' attempts.
-  std::vector<const ReportingReport*> reports;
+  std::vector<dangling_raw_ptr<const ReportingReport>> reports;
   cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(1, reports[0]->attempts);
@@ -543,7 +544,7 @@ TEST_F(ReportingDeliveryAgentTest, ConcurrentRemove) {
   ASSERT_EQ(1u, pending_uploads().size());
 
   // Remove the report while the upload is running.
-  std::vector<const ReportingReport*> reports;
+  std::vector<dangling_raw_ptr<const ReportingReport>> reports;
   cache()->GetReports(&reports);
   EXPECT_EQ(1u, reports.size());
 
@@ -584,7 +585,7 @@ TEST_F(ReportingDeliveryAgentTest,
   ASSERT_TRUE(context()->test_delegate()->PermissionsCheckPaused());
 
   // Remove the report while the upload is running.
-  std::vector<const ReportingReport*> reports;
+  std::vector<dangling_raw_ptr<const ReportingReport>> reports;
   cache()->GetReports(&reports);
   EXPECT_EQ(1u, reports.size());
 

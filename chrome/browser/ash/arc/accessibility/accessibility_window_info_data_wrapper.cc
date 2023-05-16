@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
+#include "base/memory/raw_ptr.h"
 
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
@@ -155,7 +156,8 @@ std::string AccessibilityWindowInfoDataWrapper::ComputeAXName(
 }
 
 void AccessibilityWindowInfoDataWrapper::GetChildren(
-    std::vector<AccessibilityInfoDataWrapper*>* children) const {
+    std::vector<dangling_raw_ptr<AccessibilityInfoDataWrapper>>* children)
+    const {
   // Populate the children vector by combining the child window IDs with the
   // root node ID.
   if (window_ptr_->int_list_properties) {

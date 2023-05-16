@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
@@ -108,7 +109,8 @@ class FakeConnectTetheringOperationFactory
   FakeConnectTetheringOperationFactory() = default;
   ~FakeConnectTetheringOperationFactory() override = default;
 
-  std::vector<FakeConnectTetheringOperation*>& created_operations() {
+  std::vector<dangling_raw_ptr<FakeConnectTetheringOperation>>&
+  created_operations() {
     return created_operations_;
   }
 
@@ -129,7 +131,8 @@ class FakeConnectTetheringOperationFactory
   }
 
  private:
-  std::vector<FakeConnectTetheringOperation*> created_operations_;
+  std::vector<dangling_raw_ptr<FakeConnectTetheringOperation>>
+      created_operations_;
 };
 
 }  // namespace

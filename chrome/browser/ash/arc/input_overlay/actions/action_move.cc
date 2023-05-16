@@ -190,7 +190,7 @@ class ActionMove::ActionMoveKeyView : public ActionView {
 
     // Calculate minimum size of the |ActionMoveKeyView|.
     int left = INT_MAX, right = 0, top = INT_MAX, bottom = 0;
-    for (const auto* label : labels_) {
+    for (const arc::input_overlay::ActionLabel* label : labels_) {
       left = std::min(left, label->bounds().x());
       right = std::max(right, label->bounds().right());
       top = std::min(top, label->bounds().y());

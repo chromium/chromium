@@ -6704,7 +6704,7 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
  protected:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::vector<std::unique_ptr<FormStructure>> owned_forms_;
-  std::vector<FormStructure*> forms_;
+  std::vector<dangling_raw_ptr<FormStructure>> forms_;
 };
 
 TEST_F(AutofillMetricsParseQueryResponseTest, ServerHasData) {
@@ -6895,7 +6895,7 @@ TEST_F(AutofillMetricsTest, RecordCardUploadDecisionMetric) {
   auto entries = test_ukm_recorder_->GetEntriesByName(
       UkmCardUploadDecisionType::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, url);
     EXPECT_EQ(1u, entry->metrics.size());
     test_ukm_recorder_->ExpectEntryMetric(
@@ -6916,7 +6916,7 @@ TEST_F(AutofillMetricsTest, RecordDeveloperEngagementMetric) {
   auto entries = test_ukm_recorder_->GetEntriesByName(
       UkmDeveloperEngagementType::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, url);
     EXPECT_EQ(4u, entry->metrics.size());
     test_ukm_recorder_->ExpectEntryMetric(
@@ -8334,7 +8334,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
     for (size_t i = 0; i < field_entries.size(); ++i) {
       SCOPED_TRACE(testing::Message() << i);
       using UFIT = UkmFieldInfoType;
-      const auto* const entry = field_entries[i];
+      const auto* const entry = field_entries[i].get();
 
       SkipStatus status =
           i == 2 ? SkipStatus::kNoFillableGroup : SkipStatus::kNotSkipped;
@@ -8380,7 +8380,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
         test_ukm_recorder_->GetEntriesByName(UkmFormSummaryType::kEntryName);
     ASSERT_EQ(1u, form_entries.size());
     using UFST = UkmFormSummaryType;
-    const auto* const entry = form_entries[0];
+    const auto* const entry = form_entries[0].get();
     AutofillMetrics::FormEventSet form_events = {
         FORM_EVENT_INTERACTED_ONCE, FORM_EVENT_LOCAL_SUGGESTION_FILLED,
         FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE,
@@ -8506,7 +8506,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
   for (size_t i = 0; i < entries.size(); ++i) {
     SCOPED_TRACE(testing::Message() << i);
     using UFIT = UkmFieldInfoType;
-    const auto* const entry = entries[i];
+    const auto* const entry = entries[i].get();
     FieldPrediction::Source prediction_source =
         server_types[i] != NO_SERVER_DATA
             ? FieldPrediction::SOURCE_AUTOFILL_DEFAULT
@@ -8567,7 +8567,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
       test_ukm_recorder_->GetEntriesByName(UkmFormSummaryType::kEntryName);
   ASSERT_EQ(1u, form_entries.size());
   using UFST = UkmFormSummaryType;
-  const auto* const entry = form_entries[0];
+  const auto* const entry = form_entries[0].get();
   AutofillMetrics::FormEventSet form_events = {};
   std::map<std::string, int64_t> expected = {
       {UFST::kFormSessionIdentifierName,
@@ -8656,7 +8656,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   for (size_t i = 0; i < entries.size(); ++i) {
     SCOPED_TRACE(testing::Message() << i);
     using UFIT = UkmFieldInfoType;
-    const auto* const entry = entries[i];
+    const auto* const entry = entries[i].get();
     std::map<std::string, int64_t> expected = {
         {UFIT::kFormSessionIdentifierName,
          AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
@@ -8684,7 +8684,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
       test_ukm_recorder_->GetEntriesByName(UkmFormSummaryType::kEntryName);
   ASSERT_EQ(1u, form_entries.size());
   using UFST = UkmFormSummaryType;
-  const auto* const entry = form_entries[0];
+  const auto* const entry = form_entries[0].get();
   AutofillMetrics::FormEventSet form_events = {};
   std::map<std::string, int64_t> expected = {
       {UFST::kFormSessionIdentifierName,
@@ -8921,7 +8921,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   for (size_t i = 0; i < entries.size(); ++i) {
     SCOPED_TRACE(testing::Message() << i);
     using UFIT = UkmFieldInfoType;
-    const auto* const entry = entries[i];
+    const auto* const entry = entries[i].get();
     std::map<std::string, int64_t> expected = {
         {UFIT::kFormSessionIdentifierName,
          AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id())},
@@ -8951,7 +8951,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
       test_ukm_recorder_->GetEntriesByName(UkmFormSummaryType::kEntryName);
   ASSERT_EQ(1u, form_entries.size());
   using UFST = UkmFormSummaryType;
-  const auto* const form_entry = form_entries[0];
+  const auto* const form_entry = form_entries[0].get();
   AutofillMetrics::FormEventSet form_events = {FORM_EVENT_DID_PARSE_FORM};
   std::map<std::string, int64_t> expected = {
       {UFST::kFormSessionIdentifierName,

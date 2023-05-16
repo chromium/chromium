@@ -130,19 +130,19 @@ class MockFormSaver : public StubFormSaver {
   MOCK_METHOD(void,
               Save,
               (PasswordForm pending,
-               const std::vector<const PasswordForm*>& matches,
+               const std::vector<dangling_raw_ptr<const PasswordForm>>& matches,
                const std::u16string& old_password),
               (override));
   MOCK_METHOD(void,
               Update,
               (PasswordForm pending,
-               const std::vector<const PasswordForm*>& matches,
+               const std::vector<dangling_raw_ptr<const PasswordForm>>& matches,
                const std::u16string& old_password),
               (override));
   MOCK_METHOD(void,
               UpdateReplace,
               (PasswordForm pending,
-               const std::vector<const PasswordForm*>& matches,
+               const std::vector<dangling_raw_ptr<const PasswordForm>>& matches,
                const std::u16string& old_password,
                const PasswordForm& old_unique_key),
               (override));
@@ -341,13 +341,13 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
   TestMockTimeTaskRunner* task_runner() { return task_runner_.get(); }
 
   void SetNonFederatedAndNotifyFetchCompleted(
-      const std::vector<const PasswordForm*>& non_federated) {
+      const std::vector<dangling_raw_ptr<const PasswordForm>>& non_federated) {
     fetcher()->SetNonFederated(non_federated);
     fetcher()->NotifyFetchCompleted();
   }
 
   void SetFederatedAndNotifyFetchCompleted(
-      const std::vector<const PasswordForm*>& federated) {
+      const std::vector<dangling_raw_ptr<const PasswordForm>>& federated) {
     fetcher_->set_federated(federated);
     fetcher_->NotifyFetchCompleted();
   }
@@ -632,7 +632,7 @@ TEST_P(PasswordSaveManagerImplTest, SaveNewCredentials) {
   EXPECT_TRUE(password_save_manager_impl()->IsNewLogin());
 
   PasswordForm saved_form;
-  std::vector<const PasswordForm*> best_matches;
+  std::vector<dangling_raw_ptr<const PasswordForm>> best_matches;
   EXPECT_CALL(*mock_profile_form_saver(), Save)
       .WillOnce(DoAll(SaveArg<0>(&saved_form), SaveArg<1>(&best_matches)));
 
@@ -649,7 +649,8 @@ TEST_P(PasswordSaveManagerImplTest, SaveNewCredentials) {
             saved_form.username_element);
   EXPECT_EQ(submitted_form.fields[kPasswordFieldIndex].name,
             saved_form.password_element);
-  EXPECT_EQ(std::vector<const PasswordForm*>{&saved_match_}, best_matches);
+  EXPECT_EQ(std::vector<dangling_raw_ptr<const PasswordForm>>{&saved_match_},
+            best_matches);
 
   // Check histograms.
   histogram_tester.ExpectUniqueSample(
@@ -689,7 +690,7 @@ TEST_P(PasswordSaveManagerImplTest, SavePSLToAlreadySaved) {
                   .is_public_suffix_match);
 
   PasswordForm saved_form;
-  std::vector<const PasswordForm*> best_matches;
+  std::vector<dangling_raw_ptr<const PasswordForm>> best_matches;
   EXPECT_CALL(*mock_profile_form_saver(), Save)
       .WillOnce(DoAll(SaveArg<0>(&saved_form), SaveArg<1>(&best_matches)));
 
@@ -702,7 +703,9 @@ TEST_P(PasswordSaveManagerImplTest, SavePSLToAlreadySaved) {
   EXPECT_EQ(psl_saved_match_.username_element, saved_form.username_element);
   EXPECT_EQ(psl_saved_match_.password_element, saved_form.password_element);
 
-  EXPECT_EQ(std::vector<const PasswordForm*>{&psl_saved_match_}, best_matches);
+  EXPECT_EQ(
+      std::vector<dangling_raw_ptr<const PasswordForm>>{&psl_saved_match_},
+      best_matches);
 }
 
 // Tests that when credentials with already saved username but with a new
@@ -1966,9 +1969,9 @@ class MultiStorePasswordSaveManagerGenerationConflictTest
 
   // Helper function used because SetNonFederatedAndNotifyFetchCompleted() needs
   // a vector of pointers.
-  std::vector<const PasswordForm*> GetFormPointers(
+  std::vector<dangling_raw_ptr<const PasswordForm>> GetFormPointers(
       const std::vector<PasswordForm>& forms) const {
-    std::vector<const PasswordForm*> pointers_to_forms;
+    std::vector<dangling_raw_ptr<const PasswordForm>> pointers_to_forms;
     for (const auto& form : forms) {
       pointers_to_forms.push_back(&form);
     }

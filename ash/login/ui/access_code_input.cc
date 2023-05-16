@@ -309,7 +309,7 @@ void FixedLengthCodeInput::Backspace() {
 absl::optional<std::string> FixedLengthCodeInput::GetCode() const {
   std::string result;
   size_t length;
-  for (auto* field : input_fields_) {
+  for (ash::AccessibleInputField* field : input_fields_) {
     length = field->GetText().length();
     if (!length) {
       return absl::nullopt;
@@ -325,7 +325,7 @@ void FixedLengthCodeInput::SetInputColor(SkColor color) {
   const SkColor kErrorColor = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorAlert);
 
-  for (auto* field : input_fields_) {
+  for (ash::AccessibleInputField* field : input_fields_) {
     field->SetTextColor(color);
     // We don't update the underline color to red.
     if (color != kErrorColor) {
@@ -481,13 +481,13 @@ bool FixedLengthCodeInput::HandleGestureEvent(
 }
 
 void FixedLengthCodeInput::SetInputEnabled(bool input_enabled) {
-  for (auto* field : input_fields_) {
+  for (ash::AccessibleInputField* field : input_fields_) {
     field->SetEnabled(input_enabled);
   }
 }
 
 void FixedLengthCodeInput::SetReadOnly(bool read_only) {
-  for (auto* field : input_fields_) {
+  for (ash::AccessibleInputField* field : input_fields_) {
     field->SetReadOnly(read_only);
     field->SetCursorEnabled(!read_only);
   }
@@ -505,7 +505,7 @@ bool FixedLengthCodeInput::IsReadOnly() const {
 }
 
 void FixedLengthCodeInput::ClearInput() {
-  for (auto* field : input_fields_) {
+  for (ash::AccessibleInputField* field : input_fields_) {
     field->SetText(std::u16string());
   }
   active_input_index_ = 0;
@@ -514,7 +514,7 @@ void FixedLengthCodeInput::ClearInput() {
 }
 
 bool FixedLengthCodeInput::IsEmpty() const {
-  for (auto* field : input_fields_) {
+  for (ash::AccessibleInputField* field : input_fields_) {
     if (field->GetText().length()) {
       return false;
     }

@@ -295,19 +295,22 @@ class MockFormSaver : public StubFormSaver {
 
   // FormSaver:
   MOCK_METHOD1(Blocklist, PasswordForm(PasswordFormDigest));
-  MOCK_METHOD3(Save,
-               void(PasswordForm pending,
-                    const std::vector<const PasswordForm*>& matches,
-                    const std::u16string& old_password));
-  MOCK_METHOD3(Update,
-               void(PasswordForm pending,
-                    const std::vector<const PasswordForm*>& matches,
-                    const std::u16string& old_password));
-  MOCK_METHOD4(UpdateReplace,
-               void(PasswordForm pending,
-                    const std::vector<const PasswordForm*>& matches,
-                    const std::u16string& old_password,
-                    const PasswordForm& old_unique_key));
+  MOCK_METHOD3(
+      Save,
+      void(PasswordForm pending,
+           const std::vector<dangling_raw_ptr<const PasswordForm>>& matches,
+           const std::u16string& old_password));
+  MOCK_METHOD3(
+      Update,
+      void(PasswordForm pending,
+           const std::vector<dangling_raw_ptr<const PasswordForm>>& matches,
+           const std::u16string& old_password));
+  MOCK_METHOD4(
+      UpdateReplace,
+      void(PasswordForm pending,
+           const std::vector<dangling_raw_ptr<const PasswordForm>>& matches,
+           const std::u16string& old_password,
+           const PasswordForm& old_unique_key));
   MOCK_METHOD1(Remove, void(const PasswordForm&));
 
   std::unique_ptr<FormSaver> Clone() override {
@@ -525,7 +528,7 @@ class PasswordFormManagerTest : public testing::Test,
   }
 
   void SetNonFederatedAndNotifyFetchCompleted(
-      const std::vector<const PasswordForm*>& non_federated) {
+      const std::vector<dangling_raw_ptr<const PasswordForm>>& non_federated) {
     fetcher_->SetNonFederated(non_federated);
     fetcher_->NotifyFetchCompleted();
   }
@@ -997,7 +1000,7 @@ TEST_P(PasswordFormManagerTest, SaveNewCredentials) {
 
   MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
   PasswordForm saved_form;
-  std::vector<const PasswordForm*> best_matches;
+  std::vector<dangling_raw_ptr<const PasswordForm>> best_matches;
   EXPECT_CALL(form_saver, Save(_, _, _))
       .WillOnce(DoAll(SaveArg<0>(&saved_form), SaveArg<1>(&best_matches)));
   EXPECT_CALL(client_, UpdateFormManagers());
@@ -1015,7 +1018,8 @@ TEST_P(PasswordFormManagerTest, SaveNewCredentials) {
             saved_form.username_element);
   EXPECT_EQ(submitted_form.fields[kPasswordFieldIndex].name,
             saved_form.password_element);
-  EXPECT_EQ(std::vector<const PasswordForm*>{&saved_match_}, best_matches);
+  EXPECT_EQ(std::vector<dangling_raw_ptr<const PasswordForm>>{&saved_match_},
+            best_matches);
 
   // Check UKM metrics.
   form_manager_.reset();
@@ -1047,7 +1051,7 @@ TEST_P(PasswordFormManagerTest, SavePSLToAlreadySaved) {
 
   MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
   PasswordForm saved_form;
-  std::vector<const PasswordForm*> best_matches;
+  std::vector<dangling_raw_ptr<const PasswordForm>> best_matches;
   EXPECT_CALL(form_saver, Save(_, _, _))
       .WillOnce(DoAll(SaveArg<0>(&saved_form), SaveArg<1>(&best_matches)));
 
@@ -1060,7 +1064,9 @@ TEST_P(PasswordFormManagerTest, SavePSLToAlreadySaved) {
   EXPECT_EQ(saved_form.username_element, psl_saved_match_.username_element);
   EXPECT_EQ(saved_form.password_element, psl_saved_match_.password_element);
 
-  EXPECT_EQ(std::vector<const PasswordForm*>{&psl_saved_match_}, best_matches);
+  EXPECT_EQ(
+      std::vector<dangling_raw_ptr<const PasswordForm>>{&psl_saved_match_},
+      best_matches);
 }
 
 // Tests that when credentials with already saved username but with a new
@@ -2001,7 +2007,7 @@ TEST_P(PasswordFormManagerTest, SaveHttpAuthNoHttpAuthStored) {
     CreateFormManagerForNonWebForm(http_auth_form);
     MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
 
-    std::vector<const PasswordForm*> saved_matches;
+    std::vector<dangling_raw_ptr<const PasswordForm>> saved_matches;
     if (html_credentials_saved)
       saved_matches.push_back(&saved_match_);
     SetNonFederatedAndNotifyFetchCompleted(saved_matches);
@@ -3379,7 +3385,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, SaveHttpAuthNoHttpAuthStored) {
     EXPECT_CALL(driver_, SetPasswordFillData(_)).Times(0);
     EXPECT_CALL(client_, AutofillHttpAuth(_, _)).Times(0);
     CreateFormManagerForNonWebForm(http_auth_form);
-    std::vector<const PasswordForm*> saved_matches;
+    std::vector<dangling_raw_ptr<const PasswordForm>> saved_matches;
     if (html_credentials_saved)
       saved_matches.push_back(&saved_match_);
     SetNonFederatedAndNotifyFetchCompleted(saved_matches);

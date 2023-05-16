@@ -366,7 +366,7 @@ void TabSharingUIViews::ApplyDlpForAllUsersForTesting() {
 void TabSharingUIViews::CreateInfobarsForAllTabs() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   BrowserList* browser_list = BrowserList::GetInstance();
-  for (auto* browser : *browser_list) {
+  for (Browser* browser : *browser_list) {
     CHECK(browser);
 
     if (base::FeatureList::IsEnabled(kTabShareInGuestModeBugfix) &&

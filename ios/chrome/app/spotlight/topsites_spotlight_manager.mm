@@ -169,7 +169,7 @@ class SpotlightTopSitesBridge : public history::TopSitesObserver {
   if (!_bookmarkModel->loaded())
     return NO;
 
-  std::vector<const bookmarks::BookmarkNode*> nodes;
+  std::vector<dangling_raw_ptr<const bookmarks::BookmarkNode>> nodes;
   _bookmarkModel->GetNodesByURL(URL, &nodes);
   return nodes.size() > 0;
 }

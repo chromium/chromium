@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
@@ -93,7 +94,7 @@ TEST_F(DownloadsDOMHandlerTest, HandleGetDownloads) {
 }
 
 TEST_F(DownloadsDOMHandlerTest, ClearAll) {
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
 
   // Safe, in-progress items should be passed over.
   testing::StrictMock<download::MockDownloadItem> in_progress;

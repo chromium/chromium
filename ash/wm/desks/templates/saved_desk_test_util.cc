@@ -109,8 +109,9 @@ SavedDeskLibraryViewTestApi::SavedDeskLibraryViewTestApi(
     : library_view_(library_view) {}
 
 void SavedDeskLibraryViewTestApi::WaitForAnimationDone() {
-  for (auto* grid_view : library_view_->grid_views())
+  for (ash::SavedDeskGridView* grid_view : library_view_->grid_views()) {
     SavedDeskGridViewTestApi(grid_view).WaitForItemMoveAnimationDone();
+  }
 }
 
 SavedDeskGridViewTestApi::SavedDeskGridViewTestApi(SavedDeskGridView* grid_view)
@@ -134,7 +135,7 @@ SavedDeskItemViewTestApi::~SavedDeskItemViewTestApi() = default;
 
 std::vector<SavedDeskIconView*> SavedDeskItemViewTestApi::GetIconViews() const {
   std::vector<SavedDeskIconView*> casted_icon_views;
-  for (auto* icon_view : item_view_->icon_container_view_->children()) {
+  for (views::View* icon_view : item_view_->icon_container_view_->children()) {
     casted_icon_views.push_back(static_cast<SavedDeskIconView*>(icon_view));
   }
   return casted_icon_views;
@@ -170,7 +171,8 @@ std::vector<SavedDeskItemView*> GetItemViewsFromDeskLibrary(
     SavedDeskLibraryView* saved_desk_library_view) {
   DCHECK(saved_desk_library_view);
   std::vector<SavedDeskItemView*> grid_items;
-  for (auto* grid_view : saved_desk_library_view->grid_views()) {
+  for (ash::SavedDeskGridView* grid_view :
+       saved_desk_library_view->grid_views()) {
     auto& items = grid_view->grid_items();
     grid_items.insert(grid_items.end(), items.begin(), items.end());
   }

@@ -324,7 +324,8 @@ class PageInfoBubbleViewTestApi {
 
   raw_ptr<views::BubbleDialogDelegateView> bubble_delegate_;
   raw_ptr<PageInfo> presenter_ = nullptr;
-  raw_ptr<std::vector<PermissionToggleRowView*>> toggle_rows_ = nullptr;
+  raw_ptr<std::vector<dangling_raw_ptr<PermissionToggleRowView>>> toggle_rows_ =
+      nullptr;
 
   raw_ptr<PageInfoNavigationHandler> navigation_handler_ = nullptr;
 
@@ -494,7 +495,7 @@ TEST_F(PageInfoBubbleViewTest, NotificationPermissionRevokeUkm) {
 
   auto entries = ukm_recorder.GetEntriesByName("Permission");
   EXPECT_EQ(1u, entries.size());
-  auto* entry = entries.front();
+  auto* entry = entries.front().get();
 
   ukm_recorder.ExpectEntrySourceHasUrl(entry, origin_url);
   EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Source"),

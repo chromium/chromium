@@ -14,6 +14,7 @@
 #include "base/i18n/file_util_icu.h"
 #include "base/i18n/time_formatting.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -104,9 +105,10 @@ const BookmarkNode* GetNodeFromString(BookmarkModel* model,
 
 // Gets a vector of bookmark nodes from the argument list of IDs.
 // This returns false in the case of failure.
-bool GetNodesFromVector(BookmarkModel* model,
-                        const std::vector<std::string>& id_strings,
-                        std::vector<const BookmarkNode*>* nodes) {
+bool GetNodesFromVector(
+    BookmarkModel* model,
+    const std::vector<std::string>& id_strings,
+    std::vector<dangling_raw_ptr<const BookmarkNode>>* nodes) {
   if (id_strings.empty())
     return false;
 
@@ -171,9 +173,9 @@ bookmark_manager_private::BookmarkNodeData CreateApiBookmarkNodeData(
   node_data.same_profile = data.IsFromProfilePath(profile_path);
 
   if (node_data.same_profile) {
-    std::vector<const BookmarkNode*> nodes = data.GetNodes(
+    std::vector<dangling_raw_ptr<const BookmarkNode>> nodes = data.GetNodes(
         BookmarkModelFactory::GetForBrowserContext(profile), profile_path);
-    for (const auto* node : nodes) {
+    for (const bookmarks::BookmarkNode* node : nodes) {
       node_data.elements.push_back(
           CreateNodeDataElementFromBookmarkNode(*node));
     }
@@ -185,7 +187,8 @@ bookmark_manager_private::BookmarkNodeData CreateApiBookmarkNodeData(
   return node_data;
 }
 
-bool HasPermanentNodes(const std::vector<const BookmarkNode*>& list) {
+bool HasPermanentNodes(
+    const std::vector<dangling_raw_ptr<const BookmarkNode>>& list) {
   for (const BookmarkNode* node : list) {
     if (node->is_permanent_node())
       return true;
@@ -357,7 +360,7 @@ ExtensionFunction::ResponseValue ClipboardBookmarkManagerFunction::CopyOrCut(
     bool cut,
     const std::vector<std::string>& id_list) {
   BookmarkModel* model = GetBookmarkModel();
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<dangling_raw_ptr<const BookmarkNode>> nodes;
   if (!GetNodesFromVector(model, id_list, &nodes)) {
     return Error(bookmark_keys::kBookmarkNodesNotFoundFromIdListError,
                  base::JoinString(id_list, ", "));
@@ -411,7 +414,7 @@ BookmarkManagerPrivatePasteFunction::RunOnReady() {
     return Error("Could not paste from clipboard");
 
   // We want to use the highest index of the selected nodes as a destination.
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<dangling_raw_ptr<const BookmarkNode>> nodes;
   // No need to test return value, if we got an empty list, we insert at end.
   if (params->selected_id_list)
     GetNodesFromVector(model, *params->selected_id_list, &nodes);
@@ -479,7 +482,7 @@ BookmarkManagerPrivateStartDragFunction::RunOnReady() {
 
   BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(GetProfile());
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<dangling_raw_ptr<const BookmarkNode>> nodes;
   if (!GetNodesFromVector(model, params->id_list, &nodes)) {
     return Error(bookmark_keys::kBookmarkNodesNotFoundFromIdListError,
                  base::JoinString(params->id_list, ", "));
@@ -647,7 +650,7 @@ BookmarkManagerPrivateOpenInNewWindowFunction::RunOnReady() {
 
   BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(calling_profile);
-  std::vector<const BookmarkNode*> nodes;
+  std::vector<dangling_raw_ptr<const BookmarkNode>> nodes;
   if (!GetNodesFromVector(model, params->id_list, &nodes)) {
     return Error(bookmark_keys::kBookmarkNodesNotFoundFromIdListError,
                  base::JoinString(params->id_list, ", "));
@@ -655,7 +658,7 @@ BookmarkManagerPrivateOpenInNewWindowFunction::RunOnReady() {
 
   std::vector<GURL> urls;
   urls.reserve(nodes.size());
-  for (const auto* node : nodes) {
+  for (const bookmarks::BookmarkNode* node : nodes) {
     if (!node->is_url())
       return Error("Cannot open a folder in a new window.");
     urls.push_back(node->url());
@@ -670,7 +673,7 @@ BookmarkManagerPrivateOpenInNewWindowFunction::RunOnReady() {
 
   std::vector<UrlAndId> url_and_ids;
   urls.reserve(nodes.size());
-  for (const auto* node : nodes) {
+  for (const bookmarks::BookmarkNode* node : nodes) {
     if (!base::Contains(urls, node->url()))
       continue;  // The URL was filtered out; ignore this node.
     UrlAndId url_and_id;

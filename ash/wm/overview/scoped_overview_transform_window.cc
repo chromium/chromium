@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/wm/overview/scoped_overview_transform_window.h"
+#include "base/memory/raw_ptr.h"
 
 #include <algorithm>
 #include <utility>
@@ -173,7 +174,7 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
       original_clip_rect_(window_->layer()->GetTargetClipRect()) {
   type_ = GetWindowDimensionsType(window->bounds().size());
 
-  std::vector<aura::Window*> transient_children_to_hide;
+  std::vector<dangling_raw_ptr<aura::Window>> transient_children_to_hide;
   for (auto* transient : GetTransientTreeIterator(window)) {
     event_targeting_blocker_map_[transient] =
         std::make_unique<aura::ScopedWindowEventTargetingBlocker>(transient);
@@ -705,13 +706,14 @@ void ScopedOverviewTransformWindow::CloseWidget() {
 }
 
 void ScopedOverviewTransformWindow::AddHiddenTransientWindows(
-    const std::vector<aura::Window*>& transient_windows) {
+    const std::vector<dangling_raw_ptr<aura::Window>>& transient_windows) {
   if (!hidden_transient_children_) {
     hidden_transient_children_ = std::make_unique<ScopedOverviewHideWindows>(
         std::move(transient_windows), /*forced_hidden=*/true);
   } else {
-    for (auto* window : transient_windows)
+    for (aura::Window* window : transient_windows) {
       hidden_transient_children_->AddWindow(window);
+    }
   }
 }
 

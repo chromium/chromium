@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -41,7 +42,7 @@ std::string CreateFakeAppName(int index) {
   return "fakeapp" + base::NumberToString(index);
 }
 
-void FlushPendingOperations(std::vector<Profile*> profiles) {
+void FlushPendingOperations(std::vector<dangling_raw_ptr<Profile>> profiles) {
   for (Profile* profile : profiles) {
     web_app::WebAppProvider::GetForTest(profile)
         ->command_manager()
@@ -89,7 +90,8 @@ bool HasSameApps(Profile* profile1, Profile* profile2) {
 }
 
 bool AllProfilesHaveSameApps() {
-  const std::vector<Profile*>& profiles = test()->GetAllProfiles();
+  const std::vector<dangling_raw_ptr<Profile>>& profiles =
+      test()->GetAllProfiles();
   for (Profile* profile : profiles) {
     if (profile != profiles.front() &&
         !HasSameApps(profiles.front(), profile)) {
@@ -194,7 +196,7 @@ void FixNTPOrdinalCollisions(Profile* profile) {
   SyncAppHelper::GetInstance()->FixNTPOrdinalCollisions(profile);
 }
 
-bool AwaitWebAppQuiescence(std::vector<Profile*> profiles) {
+bool AwaitWebAppQuiescence(std::vector<dangling_raw_ptr<Profile>> profiles) {
   FlushPendingOperations(profiles);
 
   // If sync is off, then `AwaitQuiescence()` will crash. This code can be

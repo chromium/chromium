@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -56,7 +57,7 @@ constexpr size_t kOnAllSitesButtonIndex = 2;
 
 // Returns the site access button in a site permissions `page`.
 std::vector<views::RadioButton*> GetSiteAccessButtons(views::View* page) {
-  std::vector<views::View*> buttons;
+  std::vector<dangling_raw_ptr<views::View>> buttons;
   page->GetViewsInGroup(kSiteAccessButtonsId, &buttons);
 
   std::vector<views::RadioButton*> site_access_buttons;

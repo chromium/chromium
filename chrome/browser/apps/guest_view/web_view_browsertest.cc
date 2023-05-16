@@ -3498,7 +3498,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DownloadCookieIsolation) {
           download_manager, 2,
           content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
 
-  for (auto* download : downloads) {
+  for (download::DownloadItem* download : downloads) {
     ASSERT_TRUE(download->CanResume());
     EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_SERVER_FAILED,
               download->GetLastReason());
@@ -3509,7 +3509,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DownloadCookieIsolation) {
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   std::set<std::string> cookies;
-  for (auto* download : downloads) {
+  for (download::DownloadItem* download : downloads) {
     ASSERT_EQ(download::DownloadItem::COMPLETE, download->GetState());
     ASSERT_TRUE(base::PathExists(download->GetTargetFilePath()));
     std::string content;
@@ -3606,7 +3606,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DownloadCookieIsolation_CrossSession) {
   // try to talk to the old EmbeddedTestServer instance. We need to update the
   // URL to point to the new instance, which should only differ by the port
   // number.
-  for (auto* download : saved_downloads) {
+  for (download::DownloadItem* download : saved_downloads) {
     const std::string port_string =
         base::NumberToString(embedded_test_server()->port());
     GURL::Replacements replacements;
@@ -3636,7 +3636,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, DownloadCookieIsolation_CrossSession) {
       download_manager, 2,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
 
-  for (auto* download : downloads) {
+  for (download::DownloadItem* download : downloads) {
     ASSERT_TRUE(download->CanResume());
     ASSERT_TRUE(download->GetFullPath().empty());
     ASSERT_TRUE(download::DOWNLOAD_INTERRUPT_REASON_CRASH ==

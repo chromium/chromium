@@ -30,7 +30,7 @@ using bookmarks::BookmarkModel;
 
 - (NSArray*)appleScriptWindows {
   std::map<NSWindow*, Browser*> browsers;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->IsAttemptingToCloseBrowser()) {
       continue;
     }

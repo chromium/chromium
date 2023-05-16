@@ -308,7 +308,7 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
     // There should be only one UKM entry of Companion_PageView type.
     const char* entry_name = ukm::builders::Companion_PageView::kEntryName;
     EXPECT_EQ(ukm_recorder->GetEntriesByName(entry_name).size(), 1ul);
-    auto* entry = ukm_recorder->GetEntriesByName(entry_name)[0];
+    auto* entry = ukm_recorder->GetEntriesByName(entry_name)[0].get();
 
     // Verify the metric.
     ukm_recorder->EntryHasMetric(entry, metric_name);

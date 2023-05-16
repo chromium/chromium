@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_SORTING_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_SORTING_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 
@@ -27,7 +28,7 @@ void SortCategories(CategoriesList& categories);
 // - Category
 // - Burn-in iteration number
 // - Display score.
-void SortResults(std::vector<ChromeSearchResult*>& results,
+void SortResults(std::vector<dangling_raw_ptr<ChromeSearchResult>>& results,
                  const CategoriesList& categories);
 
 }  // namespace app_list

@@ -385,7 +385,7 @@ TEST_F(MediaItemUIDeviceSelectorViewTest, CurrentAudioDeviceHighlighted) {
   AddAudioDevices(delegate);
   view_ = CreateDeviceSelectorView(&delegate, "3");
 
-  auto* first_entry = GetDeviceEntryViewsContainer()->children().front();
+  auto* first_entry = GetDeviceEntryViewsContainer()->children().front().get();
   EXPECT_EQ(EntryLabelText(first_entry), "Earbuds");
   EXPECT_TRUE(IsHighlighted(first_entry));
 }
@@ -452,7 +452,7 @@ TEST_F(MediaItemUIDeviceSelectorViewTest, AudioDeviceButtonsChange) {
 
     // When the device highlighted in the UI is removed, and there is no default
     // device, the UI should not highlight any of the devices.
-    for (auto* device_view : container_children) {
+    for (views::View* device_view : container_children) {
       EXPECT_FALSE(IsHighlighted(device_view));
     }
   }

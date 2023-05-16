@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -143,9 +144,9 @@ BrowserPolicyConnectorBase::GetPolicyProviderForTesting() {
   return g_testing_provider;
 }
 
-std::vector<ConfigurationPolicyProvider*>
+std::vector<dangling_raw_ptr<ConfigurationPolicyProvider>>
 BrowserPolicyConnectorBase::GetProvidersForPolicyService() {
-  std::vector<ConfigurationPolicyProvider*> providers;
+  std::vector<dangling_raw_ptr<ConfigurationPolicyProvider>> providers;
   if (g_testing_provider) {
     providers.push_back(g_testing_provider);
     return providers;

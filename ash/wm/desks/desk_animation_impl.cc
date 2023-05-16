@@ -73,7 +73,7 @@ DeskActivationAnimation::DeskActivationAnimation(DesksController* controller,
           desks_util::GetSelectedCompositorForPerformanceMetrics(),
           kDeskUpdateGestureHistogramName,
           kDeskUpdateGestureMaxLatencyHistogramName)) {
-  for (auto* root : Shell::GetAllRootWindows()) {
+  for (aura::Window* root : Shell::GetAllRootWindows()) {
     desk_switch_animators_.emplace_back(
         std::make_unique<RootWindowDeskSwitchAnimator>(
             root, starting_desk_index, ending_desk_index, this,
@@ -320,7 +320,7 @@ DeskRemovalAnimation::DeskRemovalAnimation(DesksController* controller,
   DCHECK_EQ(controller_->active_desk(),
             controller_->desks()[desk_to_remove_index_].get());
 
-  for (auto* root : Shell::GetAllRootWindows()) {
+  for (aura::Window* root : Shell::GetAllRootWindows()) {
     desk_switch_animators_.emplace_back(
         std::make_unique<RootWindowDeskSwitchAnimator>(
             root, desk_to_remove_index_, desk_to_activate_index, this,

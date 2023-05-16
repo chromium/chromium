@@ -531,7 +531,7 @@ bool ShelfView::ShouldHideTooltip(const gfx::Point& cursor_location) const {
 
 const std::vector<aura::Window*> ShelfView::GetOpenWindowsForView(
     views::View* view) {
-  std::vector<aura::Window*> window_list =
+  std::vector<dangling_raw_ptr<aura::Window>> window_list =
       Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kActiveDesk);
   std::vector<aura::Window*> open_windows;
   const ShelfItem* item = ShelfItemForView(view);
@@ -541,7 +541,7 @@ const std::vector<aura::Window*> ShelfView::GetOpenWindowsForView(
   if (!item)
     return open_windows;
 
-  for (auto* window : window_list) {
+  for (aura::Window* window : window_list) {
     const std::string window_app_id =
         ShelfID::Deserialize(window->GetProperty(kShelfIDKey)).app_id;
     if (window_app_id == item->id.app_id) {
@@ -674,7 +674,7 @@ View* ShelfView::GetTooltipHandlerForPoint(const gfx::Point& point) {
   // Similar implementation as views::View, but without going into each
   // child's subviews.
   View::Views children = GetChildrenInZOrder();
-  for (auto* child : base::Reversed(children)) {
+  for (views::View* child : base::Reversed(children)) {
     if (!child->GetVisible())
       continue;
 

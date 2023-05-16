@@ -15,6 +15,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -557,7 +558,7 @@ class MockDeskModelObserver : public DeskModelObserver {
  public:
   MOCK_METHOD0(DeskModelLoaded, void());
   MOCK_METHOD1(EntriesAddedOrUpdatedRemotely,
-               void(const std::vector<const DeskTemplate*>&));
+               void(const std::vector<dangling_raw_ptr<const DeskTemplate>>&));
   MOCK_METHOD1(EntriesRemovedRemotely, void(const std::vector<base::Uuid>&));
 };
 

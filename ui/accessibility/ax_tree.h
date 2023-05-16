@@ -412,7 +412,7 @@ class AX_EXPORT AXTree {
   // error. Returns true on success, false on fatal error.
   bool CreateNewChildVector(AXNode* node,
                             const std::vector<AXNodeID>& new_child_ids,
-                            std::vector<AXNode*>* new_children,
+                            std::vector<dangling_raw_ptr<AXNode>>* new_children,
                             AXTreeUpdateState* update_state);
 
   // Returns the lowest unignored ancestor of the node with the given ID. If the

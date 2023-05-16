@@ -57,7 +57,7 @@ class DetailedViewContainer : public views::View {
 
   // views::View:
   void Layout() override {
-    for (auto* child : children()) {
+    for (views::View* child : children()) {
       child->SetBoundsRect(GetContentsBounds());
     }
     views::View::Layout();

@@ -263,7 +263,7 @@ void UpdateFloatingPanelBoundsIfNeeded(aura::Window* root_window) {
 // with the current configuration.
 gfx::Size CalculatePreviewInitialSize() {
   int max_shorter_side = 0;
-  for (auto* root_window : Shell::GetAllRootWindows()) {
+  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
     const auto work_area = display::Screen::GetScreen()
                                ->GetDisplayNearestWindow(root_window)
                                .work_area();

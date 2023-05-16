@@ -32,14 +32,15 @@ class SignalStorageConfig;
 
 class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
  public:
-  ModelExecutionSchedulerImpl(std::vector<Observer*>&& observers,
-                              SegmentInfoDatabase* segment_database,
-                              SignalStorageConfig* signal_storage_config,
-                              ModelExecutionManager* model_execution_manager,
-                              ModelExecutor* model_executor,
-                              base::flat_set<proto::SegmentId> segment_ids,
-                              base::Clock* clock,
-                              const PlatformOptions& platform_options);
+  ModelExecutionSchedulerImpl(
+      std::vector<dangling_raw_ptr<Observer>>&& observers,
+      SegmentInfoDatabase* segment_database,
+      SignalStorageConfig* signal_storage_config,
+      ModelExecutionManager* model_execution_manager,
+      ModelExecutor* model_executor,
+      base::flat_set<proto::SegmentId> segment_ids,
+      base::Clock* clock,
+      const PlatformOptions& platform_options);
   ~ModelExecutionSchedulerImpl() override;
 
   // Disallow copy/assign.
@@ -67,7 +68,7 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
 
   // Observers listening to model exeuction events. Required by the segment
   // selection pipeline.
-  std::vector<Observer*> observers_;
+  std::vector<dangling_raw_ptr<Observer>> observers_;
 
   // The database storing metadata and results.
   const raw_ptr<SegmentInfoDatabase> segment_database_;

@@ -416,7 +416,7 @@ TEST_F(TranslateRankerImplTest, RecordAndFlushEvents) {
   EXPECT_EQ(2u, entries.size());
   bool has_kUkmSourceId0 = false;
   bool has_kUkmSourceId1 = false;
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     if (entry->source_id == kUkmSourceId0)
       has_kUkmSourceId0 = true;
     if (entry->source_id == kUkmSourceId1)

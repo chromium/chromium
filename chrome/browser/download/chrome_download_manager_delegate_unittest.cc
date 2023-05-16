@@ -1694,7 +1694,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, CancelAllEphemeralWarnings) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {safe_browsing::kDownloadBubble, safe_browsing::kDownloadBubbleV2}, {});
-  std::vector<download::DownloadItem*> items;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> items;
   auto safe_item = CreateActiveDownloadItem(0);
   EXPECT_CALL(*safe_item, GetDangerType())
       .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));

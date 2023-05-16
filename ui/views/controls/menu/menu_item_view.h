@@ -640,7 +640,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   mutable MenuItemDimensions dimensions_;
 
   // Removed items to be deleted in ChildrenChanged().
-  std::vector<View*> removed_items_;
+  std::vector<dangling_raw_ptr<View>> removed_items_;
 
   // Margins in pixels.
   int top_margin_ = -1;

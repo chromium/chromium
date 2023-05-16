@@ -95,7 +95,7 @@ VideoConferenceTrayEffectsManager::EffectDataVector
 VideoConferenceTrayEffectsManager::GetSetValueEffects() {
   EffectDataVector effects;
 
-  for (auto* delegate : effect_delegates_) {
+  for (ash::VcEffectsDelegate* delegate : effect_delegates_) {
     for (auto* effect : delegate->GetEffects(VcEffectType::kSetValue)) {
       effects.push_back(effect);
     }
@@ -116,7 +116,7 @@ VideoConferenceTrayEffectsManager::EffectDataVector
 VideoConferenceTrayEffectsManager::GetTotalToggleEffectButtons() {
   EffectDataVector effects;
 
-  for (auto* delegate : effect_delegates_) {
+  for (ash::VcEffectsDelegate* delegate : effect_delegates_) {
     for (auto* effect : delegate->GetEffects(VcEffectType::kToggle)) {
       effects.push_back(effect);
     }

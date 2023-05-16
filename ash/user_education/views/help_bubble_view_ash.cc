@@ -682,7 +682,7 @@ void HelpBubbleViewAsh::OnThemeChanged() {
         foreground_color, icon_view_->GetPreferredSize().height() / 2));
   }
 
-  for (auto* label : labels_) {
+  for (views::Label* label : labels_) {
     label->SetBackgroundColor(background_color);
     label->SetEnabledColor(foreground_color);
   }

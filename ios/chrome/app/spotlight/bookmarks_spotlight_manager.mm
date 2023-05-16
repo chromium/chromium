@@ -302,9 +302,9 @@ class SpotlightBookmarkModelBridge : public bookmarks::BookmarkModelObserver {
                           favicon:(UIImage*)favicon
                      defaultTitle:(NSString*)defaultTitle {
   NSMutableDictionary* spotlightItems = [[NSMutableDictionary alloc] init];
-  std::vector<const bookmarks::BookmarkNode*> nodes;
+  std::vector<dangling_raw_ptr<const bookmarks::BookmarkNode>> nodes;
   _bookmarkModel->GetNodesByURL(URL, &nodes);
-  for (auto* node : nodes) {
+  for (const bookmarks::BookmarkNode* node : nodes) {
     NSString* nodeTitle = base::SysUTF16ToNSString(node->GetTitle());
     NSString* spotlightID = [self spotlightIDForURL:URL title:nodeTitle];
     CSSearchableItem* item = [spotlightItems objectForKey:spotlightID];

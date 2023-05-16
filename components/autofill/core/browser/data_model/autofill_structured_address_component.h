@@ -299,7 +299,7 @@ class AddressComponent {
   bool MergeTokenEquivalentComponent(const AddressComponent& newer_component);
 
   // Returns a constant vector of pointers to the child nodes of the component.
-  const std::vector<AddressComponent*>& Subcomponents() const {
+  const std::vector<dangling_raw_ptr<AddressComponent>>& Subcomponents() const {
     return subcomponents_;
   }
 
@@ -543,7 +543,7 @@ class AddressComponent {
   const ServerFieldType storage_type_;
 
   // A vector of pointers to the subcomponents.
-  std::vector<AddressComponent*> subcomponents_;
+  std::vector<dangling_raw_ptr<AddressComponent>> subcomponents_;
 
   // A vector that contains the tokens of |value_| after normalization,
   // meaning that it was converted to lower case and diacritics have been

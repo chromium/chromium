@@ -17,6 +17,7 @@
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -241,7 +242,7 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
     AddImageViewTo(parent_view, size);
   }
 
-  std::vector<RoundedImageView*> image_views_;
+  std::vector<dangling_raw_ptr<RoundedImageView>> image_views_;
 
   // Used for recording UMA to indicate whether or not a user tried to interact
   // with the image preview.

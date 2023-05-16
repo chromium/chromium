@@ -150,9 +150,9 @@ void FeatureTilesContainerView::RelayoutTiles() {
   // and rows so we have to rebuild them from scratch.
   std::vector<std::unique_ptr<FeatureTile>> tiles;
   for (PageContainer* page : pages_) {
-    for (auto* row : page->children()) {
+    for (views::View* row : page->children()) {
       // Copy the list of children since it will be modified during iteration.
-      std::vector<views::View*> children = row->children();
+      std::vector<dangling_raw_ptr<views::View>> children = row->children();
       for (views::View* child : children) {
         DCHECK(views::IsViewClass<FeatureTile>(child));
         FeatureTile* tile = static_cast<FeatureTile*>(child);
@@ -294,7 +294,7 @@ void FeatureTilesContainerView::UpdateTotalPages() {
 int FeatureTilesContainerView::GetVisibleFeatureTileCount() const {
   int count = 0;
   for (PageContainer* page : pages_) {
-    for (auto* row : page->children()) {
+    for (views::View* row : page->children()) {
       for (views::View* child : row->children()) {
         DCHECK(views::IsViewClass<FeatureTile>(child));
         if (child->GetVisible()) {

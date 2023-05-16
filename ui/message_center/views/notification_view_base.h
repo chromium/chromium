@@ -246,7 +246,9 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   views::View* action_buttons_row() { return action_buttons_row_; }
   const views::View* action_buttons_row() const { return action_buttons_row_; }
 
-  std::vector<views::LabelButton*> action_buttons() { return action_buttons_; }
+  std::vector<dangling_raw_ptr<views::LabelButton>> action_buttons() {
+    return action_buttons_;
+  }
 
   views::ProgressBar* progress_bar_view() const { return progress_bar_view_; }
 
@@ -254,7 +256,9 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
 
   views::Label* status_view() { return status_view_; }
   const views::Label* status_view() const { return status_view_; }
-  const std::vector<views::View*> item_views() const { return item_views_; }
+  const std::vector<dangling_raw_ptr<views::View>> item_views() const {
+    return item_views_;
+  }
 
   bool inline_settings_enabled() const { return inline_settings_enabled_; }
   void set_inline_settings_enabled(bool inline_settings_enabled) {
@@ -379,8 +383,8 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION views::View* image_container_view_ = nullptr;
-  std::vector<views::LabelButton*> action_buttons_;
-  std::vector<views::View*> item_views_;
+  std::vector<dangling_raw_ptr<views::LabelButton>> action_buttons_;
+  std::vector<dangling_raw_ptr<views::View>> item_views_;
   raw_ptr<views::ProgressBar, DanglingUntriaged> progress_bar_view_ = nullptr;
   raw_ptr<CompactTitleMessageView> compact_title_message_view_ = nullptr;
   raw_ptr<views::View> action_buttons_row_ = nullptr;

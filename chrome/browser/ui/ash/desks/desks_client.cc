@@ -778,7 +778,7 @@ void DesksClient::RemoveLaunchPerformanceTracker(
 
 aura::Window* DesksClient::GetWindowByBrowserSessionId(
     SessionID browser_session_id) {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->session_id() == browser_session_id)
       return browser->window()->GetNativeWindow();
   }

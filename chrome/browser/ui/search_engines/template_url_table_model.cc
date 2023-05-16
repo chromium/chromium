@@ -36,7 +36,7 @@ void TemplateURLTableModel::Reload() {
   TemplateURL::TemplateURLVector default_entries, active_entries, other_entries,
       extension_entries;
   // Keywords that can be made the default first.
-  for (auto* template_url : urls) {
+  for (TemplateURL* template_url : urls) {
     // Don't include starter pack keywords if the starter pack feature flag is
     // not enabled.
     if (!OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&

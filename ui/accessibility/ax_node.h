@@ -115,7 +115,7 @@ class AX_EXPORT AXNode final {
   // trees that are part of the same webpage, PDF or window into a large global
   // tree.
 
-  const std::vector<AXNode*>& GetAllChildren() const;
+  const std::vector<dangling_raw_ptr<AXNode>>& GetAllChildren() const;
   size_t GetChildCount() const;
   size_t GetChildCountCrossingTreeBoundary() const;
   size_t GetUnignoredChildCount() const;
@@ -165,7 +165,9 @@ class AX_EXPORT AXNode final {
   // Deprecated methods for walking the tree.
   //
 
-  const std::vector<AXNode*>& children() const { return children_; }
+  const std::vector<dangling_raw_ptr<AXNode>>& children() const {
+    return children_;
+  }
   AXNode* parent() const { return parent_; }
   size_t index_in_parent() const { return index_in_parent_; }
 
@@ -270,7 +272,7 @@ class AX_EXPORT AXNode final {
 
   // Swap the internal children vector with |children|. This instance
   // now owns all of the passed children.
-  void SwapChildren(std::vector<AXNode*>* children);
+  void SwapChildren(std::vector<dangling_raw_ptr<AXNode>>* children);
 
   // Returns true if this node is equal to or a descendant of |ancestor|.
   bool IsDescendantOf(const AXNode* ancestor) const;
@@ -578,7 +580,7 @@ class AX_EXPORT AXNode final {
   // Extra computed nodes for the accessibility tree for macOS:
   // one column node for each table column, followed by one
   // table header container node, or nullptr if not applicable.
-  const std::vector<AXNode*>* GetExtraMacNodes() const;
+  const std::vector<dangling_raw_ptr<AXNode>>* GetExtraMacNodes() const;
 
   // Return true for mock nodes added to the map, such as extra mac nodes.
   bool IsGenerated() const;
@@ -780,7 +782,7 @@ class AX_EXPORT AXNode final {
   size_t unignored_index_in_parent_;
   size_t unignored_child_count_ = 0;
   const raw_ptr<AXNode> parent_;
-  std::vector<AXNode*> children_;
+  std::vector<dangling_raw_ptr<AXNode>> children_;
 
   // Stores information about this node that is immutable and which has been
   // computed by the tree's source, such as `content::BlinkAXTreeSource`.

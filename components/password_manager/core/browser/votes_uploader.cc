@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/hash/hash.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -156,7 +157,7 @@ void LabelFields(const FieldTypeMap& field_types,
 // which doesn't have a username.
 bool IsAddingUsernameToExistingMatch(
     const PasswordForm& credentials,
-    const std::vector<const PasswordForm*>& matches) {
+    const std::vector<dangling_raw_ptr<const PasswordForm>>& matches) {
   if (credentials.username_value.empty())
     return false;
   const PasswordForm* match = FindFormByUsername(matches, std::u16string());
@@ -197,7 +198,8 @@ FieldSignature GetUsernameFieldSignature(
 
 AutofillUploadContents::ValueType GetValueType(
     const std::u16string& username_value,
-    const std::vector<const PasswordForm*>& stored_credentials) {
+    const std::vector<dangling_raw_ptr<const PasswordForm>>&
+        stored_credentials) {
   if (username_value.empty())
     return AutofillUploadContents::NO_VALUE_TYPE;
 
@@ -230,7 +232,7 @@ SingleUsernameVoteData::SingleUsernameVoteData(
     FieldRendererId renderer_id,
     const std::u16string& username_value,
     const FormPredictions& form_predictions,
-    const std::vector<const PasswordForm*>& stored_credentials,
+    const std::vector<dangling_raw_ptr<const PasswordForm>>& stored_credentials,
     bool password_form_had_username_field)
     : renderer_id(renderer_id),
       form_predictions(form_predictions),
@@ -260,7 +262,7 @@ VotesUploader::~VotesUploader() = default;
 void VotesUploader::SendVotesOnSave(
     const FormData& observed,
     const PasswordForm& submitted_form,
-    const std::vector<const PasswordForm*>& best_matches,
+    const std::vector<dangling_raw_ptr<const PasswordForm>>& best_matches,
     PasswordForm* pending_credentials) {
   if (pending_credentials->times_used_in_html_form == 1 ||
       IsAddingUsernameToExistingMatch(*pending_credentials, best_matches)) {
@@ -469,7 +471,7 @@ bool VotesUploader::UploadPasswordVote(
 
 // TODO(crbug.com/840384): Share common code with UploadPasswordVote.
 void VotesUploader::UploadFirstLoginVotes(
-    const std::vector<const PasswordForm*>& best_matches,
+    const std::vector<dangling_raw_ptr<const PasswordForm>>& best_matches,
     const PasswordForm& pending_credentials,
     const PasswordForm& form_to_upload) {
   AutofillDownloadManager* download_manager =
@@ -694,7 +696,7 @@ void VotesUploader::AddGeneratedVote(FormStructure* form_structure) {
 
 void VotesUploader::SetKnownValueFlag(
     const PasswordForm& pending_credentials,
-    const std::vector<const PasswordForm*>& best_matches,
+    const std::vector<dangling_raw_ptr<const PasswordForm>>& best_matches,
     FormStructure* form) {
   const std::u16string& known_username = pending_credentials.username_value;
   std::u16string known_password;
@@ -739,7 +741,7 @@ bool VotesUploader::FindUsernameInOtherAlternativeUsernames(
 }
 
 bool VotesUploader::FindCorrectedUsernameElement(
-    const std::vector<const PasswordForm*>& matches,
+    const std::vector<dangling_raw_ptr<const PasswordForm>>& matches,
     const std::u16string& username,
     const std::u16string& password) {
   if (username.empty())

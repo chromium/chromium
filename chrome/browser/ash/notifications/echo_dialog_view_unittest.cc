@@ -49,7 +49,7 @@ bool IsLabelWithText(const views::View* view, const std::u16string& text) {
 views::View* FindLabelWithText(views::View* root, const std::u16string& text) {
   if (IsLabelWithText(root, text))
     return root;
-  for (auto* child : root->children()) {
+  for (views::View* child : root->children()) {
     views::View* matched = FindLabelWithText(child, text);
     if (matched)
       return matched;

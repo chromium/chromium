@@ -147,7 +147,8 @@ class AURA_EXPORT Env : public ui::EventTarget {
     cursor_shape_client_ = cursor_shape_client;
   }
 
-  const std::vector<aura::WindowTreeHost*>& window_tree_hosts() const {
+  const std::vector<dangling_raw_ptr<aura::WindowTreeHost>>& window_tree_hosts()
+      const {
     return window_tree_hosts_;
   }
 
@@ -212,7 +213,7 @@ class AURA_EXPORT Env : public ui::EventTarget {
 
   std::unique_ptr<WindowOcclusionTracker> window_occlusion_tracker_;
 
-  std::vector<aura::WindowTreeHost*> window_tree_hosts_;
+  std::vector<dangling_raw_ptr<aura::WindowTreeHost>> window_tree_hosts_;
 
   raw_ptr<client::CursorShapeClient> cursor_shape_client_ = nullptr;
 };

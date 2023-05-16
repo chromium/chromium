@@ -454,7 +454,7 @@ class DownloadNotificationTest : public DownloadNotificationTestBase {
     download_in_progress_observer.WaitForFinished();
 
     // Confirms that a download is started.
-    std::vector<download::DownloadItem*> downloads;
+    std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
     GetDownloadManager(browser)->GetAllDownloads(&downloads);
     EXPECT_EQ(1u, downloads.size());
     download_item_ = downloads[0];
@@ -502,7 +502,7 @@ class DownloadNotificationTest : public DownloadNotificationTestBase {
   }
 
   void VerifyDownloadState(download::DownloadItem::DownloadState state) {
-    std::vector<download::DownloadItem*> downloads;
+    std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
     GetDownloadManager(browser())->GetAllDownloads(&downloads);
     ASSERT_EQ(1u, downloads.size());
     EXPECT_EQ(state, downloads[0]->GetState());
@@ -681,7 +681,7 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
   // Checks there is neither any download nor any notification.
   EXPECT_FALSE(notification());
   EXPECT_EQ(0u, GetDownloadNotifications().size());
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   GetDownloadManager(browser())->GetAllDownloads(&downloads);
   EXPECT_EQ(0u, downloads.size());
 
@@ -781,7 +781,7 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
   CloseNotification();
 
   // Confirms that a download is still in progress.
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   content::DownloadManager* download_manager = GetDownloadManager(browser());
   download_manager->GetAllDownloads(&downloads);
   EXPECT_EQ(1u, downloads.size());
@@ -811,7 +811,7 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest, DownloadRemoved) {
   EXPECT_FALSE(notification());
 
   // Confirms that the download item is removed.
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   GetDownloadManager(browser())->GetAllDownloads(&downloads);
   EXPECT_EQ(0u, downloads.size());
 }
@@ -839,7 +839,7 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
   }
 
   // Confirms that there is a download.
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   GetDownloadManager(browser())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
   download::DownloadItem* download1 = downloads[0];
@@ -986,7 +986,7 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
   }
 
   // Confirms that the second download is also started.
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   GetDownloadManager(browser())->GetAllDownloads(&downloads);
   EXPECT_EQ(2u, downloads.size());
   EXPECT_TRUE(first_download_item == downloads[0] ||
@@ -1019,7 +1019,7 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest, CancelDownload) {
   EXPECT_EQ(0u, GetDownloadNotifications().size());
 
   // Confirms that the download is cancelled.
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   GetDownloadManager(browser())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
   EXPECT_EQ(download::DownloadItem::CANCELLED, downloads[0]->GetState());
@@ -1035,7 +1035,7 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
   EXPECT_EQ(0u, GetDownloadNotifications().size());
 
   // Confirms that the download is cancelled.
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   GetDownloadManager(browser())->GetAllDownloads(&downloads);
   EXPECT_EQ(1u, downloads.size());
   EXPECT_EQ(download::DownloadItem::CANCELLED, downloads[0]->GetState());
@@ -1104,7 +1104,7 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
   EXPECT_FALSE(notification_id1.empty());
 
   // Confirms that there is a download.
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   GetDownloadManager(browser())->GetAllDownloads(&downloads);
   EXPECT_EQ(0u, downloads.size());
   downloads.clear();
@@ -1290,7 +1290,7 @@ IN_PROC_BROWSER_TEST_P(MultiProfileDownloadNotificationTest,
     WaitForDownloadNotificationForDisplayService(display_service1_.get());
 
   // Confirms that the download is started.
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   GetDownloadManager(browser1)->GetAllDownloads(&downloads);
   EXPECT_EQ(1u, downloads.size());
   download::DownloadItem* download1 = downloads[0];

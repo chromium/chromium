@@ -154,7 +154,8 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
   bool IsPasswordManagerEnabled() override;
   void PropagateAutofillPredictions(
       autofill::AutofillDriver* driver,
-      const std::vector<autofill::FormStructure*>& forms) override;
+      const std::vector<dangling_raw_ptr<autofill::FormStructure>>& forms)
+      override;
   void DidFillOrPreviewForm(autofill::mojom::RendererFormDataAction action,
                             autofill::AutofillTriggerSource trigger_source,
                             bool is_refill) override;

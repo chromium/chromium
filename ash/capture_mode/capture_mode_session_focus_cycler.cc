@@ -26,6 +26,7 @@
 #include "ash/wm/window_state.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/base/class_property.h"
@@ -66,7 +67,8 @@ constexpr int kIntersectingWindowOutset =
     chromeos::kResizeOutsideBoundsSize + 1;
 constexpr int kWindowOfInterestInset = 1;
 
-std::vector<aura::Window*> GetWindowListIgnoreModalForActiveDesk() {
+std::vector<dangling_raw_ptr<aura::Window>>
+GetWindowListIgnoreModalForActiveDesk() {
   return Shell::Get()->mru_window_tracker()->BuildWindowListIgnoreModal(
       DesksMruType::kActiveDesk);
 }
@@ -452,7 +454,7 @@ CaptureModeSessionFocusCycler::CaptureModeSessionFocusCycler(
       session_(session),
       scoped_a11y_overrider_(
           std::make_unique<ScopedA11yOverrideWindowSetter>()) {
-  for (auto* window : GetWindowListIgnoreModalForActiveDesk()) {
+  for (aura::Window* window : GetWindowListIgnoreModalForActiveDesk()) {
     if (!IsCaptureWindowSelectable(window))
       continue;
     highlightable_windows_.emplace(
@@ -830,12 +832,12 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
       break;
     }
     case FocusGroup::kCaptureWindow: {
-      const std::vector<aura::Window*> windows =
+      const std::vector<dangling_raw_ptr<aura::Window>> windows =
           GetWindowListIgnoreModalForActiveDesk();
       if (!windows.empty()) {
         const std::vector<HighlightableView*> camera_items =
             GetGroupItems(FocusGroup::kCameraPreview);
-        for (auto* window : windows) {
+        for (aura::Window* window : windows) {
           auto iter = highlightable_windows_.find(window);
           if (iter != highlightable_windows_.end()) {
             items.push_back(iter->second.get());

@@ -62,7 +62,8 @@ class VIEWS_EXPORT LayoutManagerBase : public LayoutManager {
   LayoutManagerBase();
 
   // LayoutManager:
-  std::vector<View*> GetChildViewsInPaintOrder(const View* host) const override;
+  std::vector<dangling_raw_ptr<View>> GetChildViewsInPaintOrder(
+      const View* host) const override;
 
   // Direct cache control for subclasses that want to override default caching
   // behavior. Use at your own risk.

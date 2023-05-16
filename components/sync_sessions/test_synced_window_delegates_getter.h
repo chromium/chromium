@@ -158,7 +158,7 @@ class TestSyncedWindowDelegate : public SyncedWindowDelegate {
   const SessionID window_id_;
   const sync_pb::SyncEnums_BrowserType window_type_;
 
-  std::vector<SyncedTabDelegate*> tab_delegates_;
+  std::vector<dangling_raw_ptr<SyncedTabDelegate>> tab_delegates_;
   bool is_session_restore_in_progress_;
 };
 

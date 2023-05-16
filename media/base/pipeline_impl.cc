@@ -1166,14 +1166,14 @@ void PipelineImpl::RendererWrapper::ReportMetadata(StartType start_type) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   PipelineMetadata metadata;
-  std::vector<DemuxerStream*> streams;
+  std::vector<dangling_raw_ptr<DemuxerStream>> streams;
 
   switch (demuxer_->GetType()) {
     case MediaResource::Type::STREAM:
       metadata.timeline_offset = demuxer_->GetTimelineOffset();
       // TODO(servolk): What should we do about metadata for multiple streams?
       streams = demuxer_->GetAllStreams();
-      for (auto* stream : streams) {
+      for (media::DemuxerStream* stream : streams) {
         if (stream->type() == DemuxerStream::VIDEO && !metadata.has_video) {
           metadata.has_video = true;
           metadata.natural_size = GetRotatedVideoSize(
@@ -1226,7 +1226,7 @@ bool PipelineImpl::RendererWrapper::HasEncryptedStream() {
 
   auto streams = demuxer_->GetAllStreams();
 
-  for (auto* stream : streams) {
+  for (media::DemuxerStream* stream : streams) {
     if (stream->type() == DemuxerStream::AUDIO &&
         stream->audio_decoder_config().is_encrypted())
       return true;

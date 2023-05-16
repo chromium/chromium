@@ -504,7 +504,9 @@ class DownloadFileTest : public testing::Test {
   RAW_PTR_EXCLUSION StrictMock<MockInputStream>* input_stream_;
 
   // Additional streams to test multiple stream write.
-  std::vector<StrictMock<MockInputStream>*> additional_streams_;
+  // This field is excluded from raw_ptr rewrite since it's used as a buffer.
+  RAW_PTR_EXCLUSION std::vector<StrictMock<MockInputStream>*>
+      additional_streams_;
 
   // Sink callback data for stream.
   mojo::SimpleWatcher::ReadyCallback sink_callback_;

@@ -47,7 +47,7 @@ struct VIZ_SERVICE_EXPORT FixedPassData {
   // DrawQuads in |render_pass| that can contribute additional damage (eg.
   // surface and render passes) that need to be visited during the prewalk phase
   // of aggregation. Stored in front-to-back order like in |render_pass|.
-  std::vector<const DrawQuad*> prewalk_quads;
+  std::vector<dangling_raw_ptr<const DrawQuad>> prewalk_quads;
 
   // How many times this render pass is embedded by another render pass in the
   // same frame.
@@ -126,7 +126,7 @@ class VIZ_SERVICE_EXPORT ResolvedPassData {
   const std::vector<ResolvedQuadData>& draw_quads() const {
     return fixed_.draw_quads;
   }
-  const std::vector<const DrawQuad*>& prewalk_quads() const {
+  const std::vector<dangling_raw_ptr<const DrawQuad>>& prewalk_quads() const {
     return fixed_.prewalk_quads;
   }
 

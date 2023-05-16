@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
@@ -110,8 +111,8 @@ void ManagePasswordsTest::SetupManagingPasswords() {
   federated_form.federation_origin =
       url::Origin::Create(GURL("https://somelongeroriginurl.com/"));
   federated_form.username_value = u"test_federation_username";
-  std::vector<const password_manager::PasswordForm*> forms = {&password_form_,
-                                                              &federated_form};
+  std::vector<dangling_raw_ptr<const password_manager::PasswordForm>> forms = {
+      &password_form_, &federated_form};
   GetController()->OnPasswordAutofilled(
       forms, embedded_test_server()->GetOrigin(), nullptr);
 }
@@ -179,14 +180,15 @@ void ManagePasswordsTest::SetupMovingPasswords() {
       testing::NiceMock<password_manager::MockPasswordFormManagerForUI>>();
   password_manager::MockPasswordFormManagerForUI* form_manager_ptr =
       form_manager.get();
-  std::vector<const password_manager::PasswordForm*> best_matches = {
-      test_form()};
+  std::vector<dangling_raw_ptr<const password_manager::PasswordForm>>
+      best_matches = {test_form()};
   EXPECT_CALL(*form_manager, GetBestMatches).WillOnce(ReturnRef(best_matches));
   ON_CALL(*form_manager, GetPendingCredentials)
       .WillByDefault(ReturnRef(*test_form()));
   ON_CALL(*form_manager, GetFederatedMatches)
       .WillByDefault(
-          Return(std::vector<const password_manager::PasswordForm*>{}));
+          Return(std::vector<
+                 dangling_raw_ptr<const password_manager::PasswordForm>>{}));
   ON_CALL(*form_manager, GetURL).WillByDefault(ReturnRef(test_form()->url));
   GetController()->OnShowMoveToAccountBubble(std::move(form_manager));
   // Clearing the mock here ensures that |GetBestMatches| won't be called with a

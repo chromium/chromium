@@ -149,7 +149,7 @@ class WrappedDeviceFactory final : public media::FakeVideoCaptureDeviceFactory {
     devices_.erase(it);
   }
 
-  std::vector<WrappedDevice*> devices_;
+  std::vector<dangling_raw_ptr<WrappedDevice>> devices_;
 };
 
 // Listener class used to track progress of VideoCaptureManager test.

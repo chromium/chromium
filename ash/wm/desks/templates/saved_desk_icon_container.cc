@@ -186,7 +186,7 @@ void SavedDeskIconContainer::PopulateIconContainerFromTemplate(
 }
 
 void SavedDeskIconContainer::PopulateIconContainerFromWindows(
-    const std::vector<aura::Window*>& windows) {
+    const std::vector<dangling_raw_ptr<aura::Window>>& windows) {
   DCHECK(!windows.empty());
 
   // Iterate through `windows`, counting the occurrences of each unique icon and
@@ -194,7 +194,7 @@ void SavedDeskIconContainer::PopulateIconContainerFromWindows(
   std::map<std::string, IconInfo> icon_identifier_to_icon_info;
   auto* delegate = Shell::Get()->saved_desk_delegate();
   for (size_t i = 0; i < windows.size(); ++i) {
-    auto* window = windows[i];
+    auto* window = windows[i].get();
 
     // If `window` is an incognito window, we want to display the incognito icon
     // instead of its favicons so denote it using

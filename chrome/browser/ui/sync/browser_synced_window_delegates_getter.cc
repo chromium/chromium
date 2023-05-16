@@ -22,7 +22,7 @@ BrowserSyncedWindowDelegatesGetter::SyncedWindowDelegateMap
 BrowserSyncedWindowDelegatesGetter::GetSyncedWindowDelegates() {
   SyncedWindowDelegateMap synced_window_delegates;
   // Add all the browser windows.
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile() != profile_) {
       continue;
     }

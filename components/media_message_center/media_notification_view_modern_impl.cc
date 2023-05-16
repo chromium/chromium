@@ -564,7 +564,7 @@ void MediaNotificationViewModernImpl::UpdateWithVolume(float volume) {
 }
 
 void MediaNotificationViewModernImpl::UpdateActionButtonsVisibility() {
-  for (auto* view : media_controls_container_->children()) {
+  for (views::View* view : media_controls_container_->children()) {
     views::Button* action_button = views::Button::AsButton(view);
     bool should_show = base::Contains(enabled_actions_,
                                       GetActionFromButtonTag(*action_button));

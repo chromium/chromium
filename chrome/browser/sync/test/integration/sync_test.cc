@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
@@ -461,8 +462,8 @@ Profile* SyncTest::GetProfile(int index) const {
   return profile;
 }
 
-std::vector<Profile*> SyncTest::GetAllProfiles() {
-  std::vector<Profile*> profiles;
+std::vector<dangling_raw_ptr<Profile>> SyncTest::GetAllProfiles() {
+  std::vector<dangling_raw_ptr<Profile>> profiles;
   if (UseVerifier()) {
     profiles.push_back(verifier());
   }
@@ -538,8 +539,8 @@ syncer::UserSelectableTypeSet SyncTest::GetRegisteredSelectableTypes(
       ->GetRegisteredSelectableTypes();
 }
 
-std::vector<SyncServiceImpl*> SyncTest::GetSyncServices() {
-  std::vector<SyncServiceImpl*> services;
+std::vector<dangling_raw_ptr<SyncServiceImpl>> SyncTest::GetSyncServices() {
+  std::vector<dangling_raw_ptr<SyncServiceImpl>> services;
   for (int i = 0; i < num_clients(); ++i) {
     services.push_back(GetSyncService(i));
   }

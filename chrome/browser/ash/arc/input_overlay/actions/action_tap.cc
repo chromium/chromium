@@ -24,7 +24,7 @@ namespace {
 gfx::Size GetBoundingBoxOfChildren(views::View* view) {
   int x = 0;
   int y = 0;
-  for (auto* child : view->children()) {
+  for (views::View* child : view->children()) {
     x = std::max(x, child->bounds().right());
     y = std::max(y, child->bounds().bottom());
   }

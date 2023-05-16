@@ -355,7 +355,7 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
   const auto& entries =
       test_ukm_recorder_->GetEntriesByName(kCompositorLatency);
   EXPECT_EQ(1u, entries.size());
-  const auto* entry = entries[0];
+  const auto* entry = entries[0].get();
 
   EXPECT_NE(ukm::kInvalidSourceId, entry->source_id);
   test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, GURL(kTestUrl));
@@ -567,7 +567,7 @@ TEST_F(UkmManagerTest, EventLatency) {
   const auto& entries = test_ukm_recorder_->GetEntriesByName(kEventLatency);
   EXPECT_EQ(4u, entries.size());
   for (size_t i = 0; i < entries.size(); i++) {
-    const auto* entry = entries[i];
+    const auto* entry = entries[i].get();
     const auto* event_metrics = events_metrics[i].get();
 
     EXPECT_NE(ukm::kInvalidSourceId, entry->source_id);

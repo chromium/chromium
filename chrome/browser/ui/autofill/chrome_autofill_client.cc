@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -657,7 +658,7 @@ void ChromeAutofillClient::ConfirmSaveUpiIdLocally(
 }
 
 void ChromeAutofillClient::OfferVirtualCardOptions(
-    const std::vector<CreditCard*>& candidates,
+    const std::vector<dangling_raw_ptr<CreditCard>>& candidates,
     base::OnceCallback<void(const std::string&)> callback) {
   VirtualCardSelectionDialogControllerImpl::CreateForWebContents(
       web_contents());
@@ -1025,7 +1026,7 @@ bool ChromeAutofillClient::IsPasswordManagerEnabled() {
 
 void ChromeAutofillClient::PropagateAutofillPredictions(
     AutofillDriver* autofill_driver,
-    const std::vector<FormStructure*>& forms) {
+    const std::vector<dangling_raw_ptr<FormStructure>>& forms) {
   // This cast is safe because all non-iOS clients use ContentAutofillDriver as
   // AutofillDriver implementation.
   content::RenderFrameHost* rfh =

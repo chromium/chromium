@@ -289,8 +289,9 @@ IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAllArticles,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   NavigateAndWait(kSimpleArticlePath, base::TimeDelta());
 
-  std::vector<const ukm::mojom::UkmEntry*> distillability_entries =
-      ukm_recorder.GetEntriesByName("ReaderModeReceivedDistillability");
+  std::vector<dangling_raw_ptr<const ukm::mojom::UkmEntry>>
+      distillability_entries =
+          ukm_recorder.GetEntriesByName("ReaderModeReceivedDistillability");
   ASSERT_THAT(distillability_entries, SizeIs(1));
   EXPECT_THAT(ukm_recorder.GetEntryMetric(distillability_entries.front(),
                                           "IsPageDistillable"),
@@ -305,8 +306,9 @@ IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAllArticles,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   NavigateAndWait(kNonArticlePath, base::TimeDelta());
 
-  std::vector<const ukm::mojom::UkmEntry*> distillability_entries =
-      ukm_recorder.GetEntriesByName("ReaderModeReceivedDistillability");
+  std::vector<dangling_raw_ptr<const ukm::mojom::UkmEntry>>
+      distillability_entries =
+          ukm_recorder.GetEntriesByName("ReaderModeReceivedDistillability");
   ASSERT_THAT(distillability_entries, SizeIs(1));
   EXPECT_THAT(ukm_recorder.GetEntryMetric(distillability_entries.front(),
                                           "IsPageDistillable"),

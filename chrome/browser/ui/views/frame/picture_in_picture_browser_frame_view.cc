@@ -810,7 +810,7 @@ void PictureInPictureBrowserFrameView::UpdateContentSettingsIcons() {
   const auto kButtonContainerViewInsets =
       gfx::Insets::VH(0, GetLayoutConstant(TAB_AFTER_TITLE_PADDING));
 
-  for (auto* view : content_setting_views_) {
+  for (ContentSettingImageView* view : content_setting_views_) {
     view->Update();
 
     // Currently the only content setting view we have is for camera and

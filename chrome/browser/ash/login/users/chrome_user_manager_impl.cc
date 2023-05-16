@@ -490,7 +490,7 @@ user_manager::UserList ChromeUserManagerImpl::GetUnlockUsers() const {
   if (logged_in_users.size() == 1 ||
       primary_behavior == MultiProfileUserController::kBehaviorPrimaryOnly) {
     if (can_primary_lock)
-      unlock_users.push_back(primary_user_);
+      unlock_users.push_back(primary_user_.get());
   } else {
     // Fill list of potential unlock users based on multi-profile policy state.
     for (user_manager::User* user : logged_in_users) {
@@ -961,7 +961,7 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
 
   // Get the current list of device local accounts.
   std::vector<std::string> old_accounts;
-  for (auto* user : users_) {
+  for (user_manager::User* user : users_) {
     if (user->IsDeviceLocalAccount())
       old_accounts.push_back(user->GetAccountId().GetUserEmail());
   }

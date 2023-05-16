@@ -44,7 +44,8 @@ struct QueryFields {
 
 class VectorIterator {
  public:
-  explicit VectorIterator(std::vector<const BookmarkNode*>* nodes);
+  explicit VectorIterator(
+      std::vector<dangling_raw_ptr<const BookmarkNode>>* nodes);
   VectorIterator(const VectorIterator& other) = delete;
   VectorIterator& operator=(const VectorIterator& other) = delete;
   ~VectorIterator();
@@ -52,8 +53,8 @@ class VectorIterator {
   const BookmarkNode* Next();
 
  private:
-  raw_ptr<std::vector<const BookmarkNode*>> nodes_;
-  std::vector<const BookmarkNode*>::iterator current_;
+  raw_ptr<std::vector<dangling_raw_ptr<const BookmarkNode>>> nodes_;
+  std::vector<dangling_raw_ptr<const BookmarkNode>>::iterator current_;
 };
 
 // Clones bookmark node, adding newly created nodes to |parent| starting at
@@ -70,10 +71,11 @@ void CloneBookmarkNode(BookmarkModel* model,
 // removed after copied to the clipboard. The nodes are copied in such a way
 // that if pasted again copies are made. Pass the calling context through as
 // `source`.
-void CopyToClipboard(BookmarkModel* model,
-                     const std::vector<const BookmarkNode*>& nodes,
-                     bool remove_nodes,
-                     metrics::BookmarkEditSource source);
+void CopyToClipboard(
+    BookmarkModel* model,
+    const std::vector<dangling_raw_ptr<const BookmarkNode>>& nodes,
+    bool remove_nodes,
+    metrics::BookmarkEditSource source);
 
 // Pastes from the clipboard. The new nodes are added to |parent|, unless
 // |parent| is null in which case this does nothing. The nodes are inserted
@@ -129,7 +131,7 @@ void RegisterManagedBookmarksPrefs(PrefRegistrySimple* registry);
 // added nodes should be added at.
 const BookmarkNode* GetParentForNewNodes(
     const BookmarkNode* parent,
-    const std::vector<const BookmarkNode*>& selection,
+    const std::vector<dangling_raw_ptr<const BookmarkNode>>& selection,
     size_t* index);
 
 // Deletes the bookmark folders for the given list of |ids|.
@@ -173,8 +175,9 @@ std::u16string CleanUpTitleForMatching(const std::u16string& title);
 
 // Returns true if all the |nodes| can be edited by the user,
 // as determined by BookmarkClient::CanBeEditedByUser().
-bool CanAllBeEditedByUser(BookmarkClient* client,
-                          const std::vector<const BookmarkNode*>& nodes);
+bool CanAllBeEditedByUser(
+    BookmarkClient* client,
+    const std::vector<dangling_raw_ptr<const BookmarkNode>>& nodes);
 
 // Returns true if |url| has a bookmark in the |model| that can be edited
 // by the user.
@@ -191,8 +194,9 @@ const BookmarkNode* GetBookmarkNodeByUuid(const BookmarkModel* model,
 bool IsDescendantOf(const BookmarkNode* node, const BookmarkNode* root);
 
 // Returns true if any node in |list| is a descendant of |root|.
-bool HasDescendantsOf(const std::vector<const BookmarkNode*>& list,
-                      const BookmarkNode* root);
+bool HasDescendantsOf(
+    const std::vector<dangling_raw_ptr<const BookmarkNode>>& list,
+    const BookmarkNode* root);
 
 // Returns the parent to add new nodes to, never returns null (as long as
 // the model is loaded).

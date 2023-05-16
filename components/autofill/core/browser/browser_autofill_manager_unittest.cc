@@ -278,9 +278,10 @@ class MockAutofillDownloadManager : public AutofillDownloadManager {
                base::WeakPtr<Observer>),
               (override));
 
-  bool StartQueryRequest(const std::vector<FormStructure*>& forms,
-                         net::IsolationInfo isolation_info,
-                         base::WeakPtr<Observer> observer) override {
+  bool StartQueryRequest(
+      const std::vector<dangling_raw_ptr<FormStructure>>& forms,
+      net::IsolationInfo isolation_info,
+      base::WeakPtr<Observer> observer) override {
     last_queried_forms_ = forms;
     return true;
   }
@@ -295,7 +296,7 @@ class MockAutofillDownloadManager : public AutofillDownloadManager {
   }
 
  private:
-  std::vector<FormStructure*> last_queried_forms_;
+  std::vector<dangling_raw_ptr<FormStructure>> last_queried_forms_;
 };
 
 class MockTouchToFillDelegate : public TouchToFillDelegate {
@@ -518,7 +519,7 @@ class MockAutofillDriver : public TestAutofillDriver {
               (override));
   MOCK_METHOD(void,
               SendAutofillTypePredictionsToRenderer,
-              (const std::vector<FormStructure*>& forms),
+              (const std::vector<dangling_raw_ptr<FormStructure>>& forms),
               (override));
   MOCK_METHOD(void,
               SendFieldsEligibleForManualFillingToRenderer,

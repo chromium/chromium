@@ -75,7 +75,7 @@ class HelpAppSearchBrowserTestBase : public AppListSearchBrowserTest {
 
   // Returns the first published continue section result.
   const ChromeSearchResult* FindLeadingContinueSectionResult() {
-    for (const auto* result : PublishedResults()) {
+    for (const ChromeSearchResult* result : PublishedResults()) {
       if (result->display_type() == ash::SearchResultDisplayType::kContinue)
         return result;
     }

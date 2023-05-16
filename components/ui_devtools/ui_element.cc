@@ -80,8 +80,9 @@ void UIElement::AddOrderedChild(UIElement* child,
 }
 
 void UIElement::ClearChildren() {
-  for (auto* child : children_)
+  for (ui_devtools::UIElement* child : children_) {
     delete child;
+  }
   children_.clear();
 }
 

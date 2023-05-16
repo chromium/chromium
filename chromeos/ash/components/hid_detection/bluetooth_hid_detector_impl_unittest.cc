@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/hid_detection/bluetooth_hid_detector_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -181,7 +182,8 @@ class BluetoothHidDetectorImplTest : public testing::Test {
     EXPECT_TRUE(device_pairing_handler->current_pairing_device_id().empty());
   }
 
-  std::vector<FakeDevicePairingHandler*> GetDevicePairingHandlers() {
+  std::vector<dangling_raw_ptr<FakeDevicePairingHandler>>
+  GetDevicePairingHandlers() {
     return scoped_bluetooth_config_test_helper_
         .fake_discovery_session_manager()
         ->device_pairing_handlers();

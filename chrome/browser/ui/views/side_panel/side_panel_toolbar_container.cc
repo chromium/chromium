@@ -146,7 +146,8 @@ SidePanelToolbarContainer::~SidePanelToolbarContainer() {}
 bool SidePanelToolbarContainer::IsActiveEntryPinnedAndVisible() {
   absl::optional<SidePanelEntry::Id> active_id =
       browser_view_->side_panel_coordinator()->GetCurrentEntryId();
-  for (auto* pinned_button : pinned_entry_buttons_) {
+  for (SidePanelToolbarContainer::PinnedSidePanelToolbarButton* pinned_button :
+       pinned_entry_buttons_) {
     if (pinned_button->id() == active_id) {
       return pinned_button->GetVisible();
     }
@@ -157,7 +158,8 @@ bool SidePanelToolbarContainer::IsActiveEntryPinnedAndVisible() {
 void SidePanelToolbarContainer::UpdateAllIcons() {
   GetSidePanelButton()->UpdateIcon();
 
-  for (auto* const pinned_entry_button : pinned_entry_buttons_) {
+  for (SidePanelToolbarContainer::PinnedSidePanelToolbarButton* const
+           pinned_entry_button : pinned_entry_buttons_) {
     pinned_entry_button->UpdateIcon();
   }
 }
@@ -224,7 +226,10 @@ void SidePanelToolbarContainer::RemovePinnedEntryButtonFor(
     return;
   }
   const auto iter = base::ranges::find(
-      pinned_entry_buttons_, id, [](auto* button) { return button->id(); });
+      pinned_entry_buttons_, id,
+      [](SidePanelToolbarContainer::PinnedSidePanelToolbarButton* button) {
+        return button->id();
+      });
   DCHECK(iter != pinned_entry_buttons_.end());
   RemoveChildView(*iter);
   pinned_entry_buttons_.erase(iter);
@@ -262,7 +267,10 @@ void SidePanelToolbarContainer::UpdateSidePanelContainerButtonsState() {
 
 bool SidePanelToolbarContainer::HasPinnedEntryButtonFor(SidePanelEntry::Id id) {
   const auto iter = base::ranges::find(
-      pinned_entry_buttons_, id, [](auto* button) { return button->id(); });
+      pinned_entry_buttons_, id,
+      [](SidePanelToolbarContainer::PinnedSidePanelToolbarButton* button) {
+        return button->id();
+      });
   return iter != pinned_entry_buttons_.end();
 }
 

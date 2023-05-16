@@ -339,7 +339,7 @@ bool WebViewAutofillClientIOS::IsPasswordManagerEnabled() {
 
 void WebViewAutofillClientIOS::PropagateAutofillPredictions(
     AutofillDriver* driver,
-    const std::vector<FormStructure*>& forms) {
+    const std::vector<dangling_raw_ptr<FormStructure>>& forms) {
   [bridge_
       propagateAutofillPredictionsForForms:forms
                                    inFrame:(static_cast<AutofillDriverIOS*>(

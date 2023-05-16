@@ -179,7 +179,7 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
     base::Lock lock_;
 
     // The input nodes.
-    std::vector<SnooperNode*> inputs_;  // Guarded by |lock_|.
+    std::vector<dangling_raw_ptr<SnooperNode>> inputs_;  // Guarded by |lock_|.
 
     // Current stream volume. The audio output from this FlowNetwork is scaled
     // by this amount during mixing.

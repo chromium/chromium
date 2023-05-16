@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DefaultContextMenu) {
   EXPECT_EQ(items[4], "App info");
 
   // Close app window.
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->is_type_app())
       browser->window()->Close();
   }

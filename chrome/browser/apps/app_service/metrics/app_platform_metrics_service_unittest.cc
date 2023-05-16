@@ -618,7 +618,7 @@ class AppPlatformMetricsServiceTest
     const std::string kUrl = std::string("app://") + app_id;
     const auto entries = test_ukm_recorder()->GetEntriesByName(ukm_name);
     int usage_time = 0;
-    for (const auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       const ukm::UkmSource* src =
           test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
       if (src == nullptr || src->url() != GURL(kUrl)) {
@@ -647,7 +647,7 @@ class AppPlatformMetricsServiceTest
                                         AppTypeName app_type_name) {
     const auto entries = test_ukm_recorder()->GetEntriesByName(ukm_name);
     int usage_time = 0;
-    for (const auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       const ukm::UkmSource* src =
           test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
       if (src == nullptr || src->url() != url) {
@@ -690,7 +690,7 @@ class AppPlatformMetricsServiceTest
     const auto entries =
         test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InstalledApp");
     int count = 0;
-    for (const auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       const ukm::UkmSource* src =
           test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
       if (src == nullptr || src->url() != GURL(app_info)) {
@@ -715,7 +715,7 @@ class AppPlatformMetricsServiceTest
     const auto entries =
         test_ukm_recorder()->GetEntriesByName("ChromeOSApp.Launch");
     int count = 0;
-    for (const auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       const ukm::UkmSource* src =
           test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
       if (src == nullptr || src->url() != GURL(app_info)) {
@@ -736,7 +736,7 @@ class AppPlatformMetricsServiceTest
     const auto entries =
         test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UninstallApp");
     int count = 0;
-    for (const auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       const ukm::UkmSource* src =
           test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
       if (src == nullptr || src->url() != GURL(app_info)) {
@@ -2325,7 +2325,7 @@ class AppPlatformInputMetricsTest : public AppPlatformMetricsServiceTest {
     const auto entries =
         test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
     ASSERT_EQ(1U, entries.size());
-    const auto* entry = entries[0];
+    const auto* entry = entries[0].get();
     test_ukm_recorder()->ExpectEntrySourceHasUrl(entry, GURL(app_info));
     test_ukm_recorder()->ExpectEntryMetric(entry, "AppType",
                                            (int)app_type_name);
@@ -2343,7 +2343,7 @@ class AppPlatformInputMetricsTest : public AppPlatformMetricsServiceTest {
     const auto entries =
         test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
     ASSERT_EQ(count, (int)entries.size());
-    const auto* entry = entries[count - 1];
+    const auto* entry = entries[count - 1].get();
     test_ukm_recorder()->ExpectEntrySourceHasUrl(entry, GURL(app_info));
     test_ukm_recorder()->ExpectEntryMetric(entry, "AppType",
                                            (int)app_type_name);
@@ -2440,7 +2440,7 @@ TEST_P(AppPlatformInputMetricsTest, KeyEvents) {
   entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
   ASSERT_EQ(2U, entries.size());
   std::set<int> counts;
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder()->ExpectEntrySourceHasUrl(entry,
                                                  GURL("app://com.google.A"));
     test_ukm_recorder()->ExpectEntryMetric(entry, "AppType",
@@ -2472,7 +2472,7 @@ TEST_P(AppPlatformInputMetricsTest, MultipleEvents) {
   int mouse_event_count = 0;
   int keyboard_event_count = 0;
   int stylus_event_count = 0;
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder()->ExpectEntrySourceHasUrl(entry,
                                                  GURL("app://com.google.A"));
     test_ukm_recorder()->ExpectEntryMetric(entry, "AppType",
@@ -2611,7 +2611,7 @@ TEST_P(AppPlatformInputMetricsTest, InputEventsUkmReportAfterReboot) {
   int event_source;
   int keyboard_event_count = 0;
   int stylus_event_count = 0;
-  for (const auto* entry : entries) {
+  for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder()->ExpectEntrySourceHasUrl(entry,
                                                  GURL("app://com.google.A"));
     test_ukm_recorder()->ExpectEntryMetric(entry, "AppType",

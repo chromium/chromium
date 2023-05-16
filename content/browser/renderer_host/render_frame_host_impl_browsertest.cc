@@ -5509,7 +5509,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Spot-check that an example entry recorded from the renderer uses the
   // correct document source id set by the RFH.
   const auto& blink_entries = recorder.GetEntriesByName("Blink.PageLoad");
-  for (const auto* entry : blink_entries) {
+  for (const ukm::mojom::UkmEntry* entry : blink_entries) {
     EXPECT_EQ(main_frame_doc_ukm_source_id, entry->source_id);
   }
 }

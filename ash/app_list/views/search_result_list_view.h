@@ -159,7 +159,8 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
 
   raw_ptr<views::View, ExperimentalAsh> results_container_;
 
-  std::vector<SearchResultView*> search_result_views_;  // Not owned.
+  std::vector<dangling_raw_ptr<SearchResultView>>
+      search_result_views_;  // Not owned.
 
   // The SearchResultListViewType dictates what kinds of results will be shown.
   absl::optional<SearchResultListType> list_type_ =

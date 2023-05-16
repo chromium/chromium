@@ -622,7 +622,7 @@ class TemplateURLRef {
 // is made a friend so that it can be the exception to this pattern.
 class TemplateURL {
  public:
-  using TemplateURLVector = std::vector<TemplateURL*>;
+  using TemplateURLVector = std::vector<dangling_raw_ptr<TemplateURL>>;
   using OwnedTemplateURLVector = std::vector<std::unique_ptr<TemplateURL>>;
 
   // These values are not persisted and can be freely changed.

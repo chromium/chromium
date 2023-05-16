@@ -163,7 +163,7 @@ int MultiTabLoadingPageLoadMetricsObserver::NumberOfTabsWithInflightLoad(
     content::NavigationHandle* navigation_handle) {
   content::WebContents* this_contents = navigation_handle->GetWebContents();
   int num_loading = 0;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     TabStripModel* model = browser->tab_strip_model();
     // Note: |this_contents| may not appear in |model|, e.g. for a new
     // background tab navigation.

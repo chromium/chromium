@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1533,7 +1534,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
       blink::mojom::WebFeature::kOpenerNavigationDownloadCrossOrigin, 1);
 
   // Ensure that no download happened.
-  std::vector<download::DownloadItem*> download_items;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> download_items;
   content::DownloadManager* manager =
       browser()->profile()->GetDownloadManager();
   manager->GetAllDownloads(&download_items);
@@ -1580,11 +1581,11 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
       blink::mojom::WebFeature::kOpenerNavigationDownloadCrossOrigin, 0);
 
   // Delete any pending download.
-  std::vector<download::DownloadItem*> download_items;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> download_items;
   content::DownloadManager* manager =
       browser()->profile()->GetDownloadManager();
   manager->GetAllDownloads(&download_items);
-  for (auto* item : download_items) {
+  for (download::DownloadItem* item : download_items) {
     if (!item->IsDone())
       item->Cancel(true);
   }

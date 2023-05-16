@@ -288,7 +288,7 @@ TEST_F(FromGWSPageLoadMetricsObserverTest, SearchPreviousCommittedUrl1) {
   auto entries = tester()->test_ukm_recorder().GetEntriesByName(
       ukm::builders::PageLoad_FromGoogleSearch::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry,
                                                           GURL(kExampleUrl));
   }
@@ -317,7 +317,7 @@ TEST_F(FromGWSPageLoadMetricsObserverTest, SearchPreviousCommittedUrl2) {
   auto entries = tester()->test_ukm_recorder().GetEntriesByName(
       ukm::builders::PageLoad_FromGoogleSearch::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry,
                                                           GURL(kExampleUrl));
   }
@@ -346,7 +346,7 @@ TEST_F(FromGWSPageLoadMetricsObserverTest, SearchPreviousCommittedUrl3) {
   auto entries = tester()->test_ukm_recorder().GetEntriesByName(
       ukm::builders::PageLoad_FromGoogleSearch::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry,
                                                           GURL(kExampleUrl));
   }
@@ -375,7 +375,7 @@ TEST_F(FromGWSPageLoadMetricsObserverTest, SearchPreviousCommittedUrl4) {
   auto entries = tester()->test_ukm_recorder().GetEntriesByName(
       ukm::builders::PageLoad_FromGoogleSearch::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry,
                                                           GURL(kExampleUrl));
   }
@@ -405,7 +405,7 @@ TEST_F(FromGWSPageLoadMetricsObserverTest, GoogleSearchModeLogged) {
   auto entries = tester()->test_ukm_recorder().GetEntriesByName(
       ukm::builders::PageLoad_FromGoogleSearch::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     tester()->test_ukm_recorder().ExpectEntryMetric(
         entry, ukm::builders::PageLoad_FromGoogleSearch::kGoogleSearchModeName,
         static_cast<int64_t>(google_util::GoogleSearchMode::kVideos));
@@ -444,7 +444,7 @@ TEST_F(FromGWSPageLoadMetricsObserverTest, SearchToNonSearchToOtherPage) {
   auto entries = tester()->test_ukm_recorder().GetEntriesByName(
       ukm::builders::PageLoad_FromGoogleSearch::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry,
                                                           GURL(kExampleUrl));
   }
@@ -480,7 +480,7 @@ TEST_F(FromGWSPageLoadMetricsObserverTest, SearchToNonSearchToSearch) {
   auto entries = tester()->test_ukm_recorder().GetEntriesByName(
       ukm::builders::PageLoad_FromGoogleSearch::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry,
                                                           GURL(kExampleUrl));
   }
@@ -529,7 +529,7 @@ TEST_F(FromGWSPageLoadMetricsObserverTest,
   auto entries = tester()->test_ukm_recorder().GetEntriesByName(
       ukm::builders::PageLoad_FromGoogleSearch::kEntryName);
   EXPECT_EQ(2u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry,
                                                           GURL(kExampleUrl));
   }
@@ -574,7 +574,7 @@ TEST_F(FromGWSPageLoadMetricsObserverTest,
   auto entries = tester()->test_ukm_recorder().GetEntriesByName(
       ukm::builders::PageLoad_FromGoogleSearch::kEntryName);
   EXPECT_EQ(2u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry,
                                                           GURL(kExampleUrl));
   }
@@ -605,7 +605,7 @@ TEST_F(FromGWSPageLoadMetricsObserverTest,
   auto entries = tester()->test_ukm_recorder().GetEntriesByName(
       ukm::builders::PageLoad_FromGoogleSearch::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const auto* const entry : entries) {
+  for (const ukm::mojom::UkmEntry* const entry : entries) {
     tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry,
                                                           GURL(kExampleUrl));
   }
@@ -1109,7 +1109,7 @@ TEST_F(FromGWSPageLoadMetricsObserverWithSidePanelTest,
   auto entries = tester()->test_ukm_recorder().GetEntriesByName(
       ukm::builders::PageLoad_FromGoogleSearch::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  const auto* entry = entries[0];
+  const auto* entry = entries[0].get();
   tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry,
                                                         GURL(kExampleUrl2));
 }
@@ -1151,7 +1151,7 @@ TEST_F(FromGWSPageLoadMetricsObserverWithSidePanelTest,
   auto entries = tester()->test_ukm_recorder().GetEntriesByName(
       ukm::builders::PageLoad_FromGoogleSearch::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  auto* const entry = entries[0];
+  auto* const entry = entries[0].get();
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry, ukm::builders::PageLoad_FromGoogleSearch::kGoogleSearchModeName,
       static_cast<int64_t>(google_util::GoogleSearchMode::kVideos));

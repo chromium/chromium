@@ -2393,9 +2393,9 @@ TEST_F(HoldingSpacePreviewsTrayTest, ShelfAlignmentChangeWithMultipleDisplays) {
   views::View* const secondary_icon_previews_container =
       secondary_tray->GetViewByID(kHoldingSpaceTrayPreviewsIconId)
           ->children()[0];
-  const std::vector<ui::Layer*>& primary_icon_previews =
+  const std::vector<dangling_raw_ptr<ui::Layer>>& primary_icon_previews =
       primary_icon_previews_container->layer()->children();
-  const std::vector<ui::Layer*>& secondary_icon_previews =
+  const std::vector<dangling_raw_ptr<ui::Layer>>& secondary_icon_previews =
       secondary_icon_previews_container->layer()->children();
 
   // Verify each tray contains three previews.

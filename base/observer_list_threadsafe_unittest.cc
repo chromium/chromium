@@ -221,16 +221,16 @@ class FooRemover : public Foo {
   void AddFooToRemove(Foo* foo) { foos_.push_back(foo); }
 
   void Observe(int x) override {
-    std::vector<Foo*> tmp;
+    std::vector<dangling_raw_ptr<Foo>> tmp;
     tmp.swap(foos_);
-    for (auto* it : tmp) {
+    for (Foo* it : tmp) {
       list_->RemoveObserver(it);
     }
   }
 
  private:
   const scoped_refptr<ObserverListThreadSafe<Foo>> list_;
-  std::vector<Foo*> foos_;
+  std::vector<dangling_raw_ptr<Foo>> foos_;
 };
 
 TEST(ObserverListThreadSafeTest, RemoveMultipleObservers) {

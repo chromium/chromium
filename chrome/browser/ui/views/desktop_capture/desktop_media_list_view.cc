@@ -256,8 +256,9 @@ void DesktopMediaListView::SetStyle(DesktopMediaSourceViewStyle* style) {
   active_style_ = style;
   controller_->SetThumbnailSize(style->image_rect.size());
 
-  for (auto* child : children())
+  for (views::View* child : children()) {
     AsDesktopMediaSourceView(child)->SetStyle(*active_style_);
+  }
 }
 
 DesktopMediaSourceView* DesktopMediaListView::GetSelectedView() {

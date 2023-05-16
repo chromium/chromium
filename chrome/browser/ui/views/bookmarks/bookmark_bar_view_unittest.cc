@@ -556,7 +556,8 @@ TEST_F(BookmarkBarViewTest, OnSavedTabGroupUpdateBookmarkBarCallsLayout) {
   // Save the position of the 3rd button. The 4th button is an overflow menu
   // that is only visible when there are more than 4 groups saved.
   ASSERT_EQ(4u, test_helper_->saved_tab_group_bar()->children().size());
-  const auto* button_3 = test_helper_->saved_tab_group_bar()->children()[2];
+  const auto* button_3 =
+      test_helper_->saved_tab_group_bar()->children()[2].get();
   gfx::Rect bounds_in_screen = button_3->GetBoundsInScreen();
 
   // Remove the middle tab group.

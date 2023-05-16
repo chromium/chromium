@@ -1234,7 +1234,7 @@ void ShellSurfaceBase::OnCaptureChanged(aura::Window* lost_capture,
   // Use index instead of iterator because the vector grows during the
   // iteration.
   for (size_t i = 0; i < all.size(); ++i) {
-    const std::vector<aura::Window*>& children =
+    const std::vector<dangling_raw_ptr<aura::Window>>& children =
         wm::GetTransientChildren(all[i].first);
     for (aura::Window* child : children) {
       const bool to_close =

@@ -421,7 +421,7 @@ void AddressNode::MigrateLegacyStructure() {
   // Otherwise set the status of the subcomponents to observed if they already
   // have a value assigned. Note, those are all the tokens that are already
   // present in the unstructured address representation.
-  for (auto* component : Subcomponents()) {
+  for (autofill::AddressComponent* component : Subcomponents()) {
     if (!component->GetValue().empty() &&
         component->GetVerificationStatus() == VerificationStatus::kNoStatus) {
       component->SetValue(component->GetValue(), VerificationStatus::kObserved);

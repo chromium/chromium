@@ -631,7 +631,7 @@ void ScreenOrientationController::ApplyLockForTopMostWindowOnInternalDisplay() {
       Shell::Get()->mru_window_tracker()->BuildWindowListIgnoreModal(
           kActiveDesk));
 
-  for (auto* window : mru_windows) {
+  for (aura::Window* window : mru_windows) {
     if (window->GetRootWindow() != internal_display_root)
       continue;
 

@@ -125,6 +125,23 @@ void ExpectSameElements(const std::vector<T*>& expectations,
       results_copy.end());
 }
 
+template <typename T>
+void ExpectSameElements(const std::vector<dangling_raw_ptr<T>>& expectations,
+                        const std::vector<dangling_raw_ptr<T>>& results) {
+  ASSERT_EQ(expectations.size(), results.size());
+
+  std::vector<dangling_raw_ptr<T>> expectations_copy = expectations;
+  std::sort(expectations_copy.begin(), expectations_copy.end(),
+            CompareElements<T>);
+  std::vector<dangling_raw_ptr<T>> results_copy = results;
+  std::sort(results_copy.begin(), results_copy.end(), CompareElements<T>);
+
+  EXPECT_EQ(
+      base::ranges::mismatch(results_copy, expectations_copy, ElementsEqual<T>)
+          .first,
+      results_copy.end());
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 std::vector<std::vector<Suggestion::Text>> ConstructLabelLineMatrix(
     const std::vector<std::u16string>& parts) {
@@ -486,7 +503,8 @@ TEST_F(PersonalDataManagerTest, AddProfile) {
   // Reload the database.
   ResetPersonalDataManager(USER_MODE_NORMAL);
   // Verify the addition.
-  const std::vector<AutofillProfile*>& results1 = personal_data_->GetProfiles();
+  const std::vector<dangling_raw_ptr<AutofillProfile>>& results1 =
+      personal_data_->GetProfiles();
   ASSERT_EQ(1U, results1.size());
   EXPECT_EQ(0, profile0.Compare(*results1[0]));
 
@@ -500,7 +518,8 @@ TEST_F(PersonalDataManagerTest, AddProfile) {
   ResetPersonalDataManager(USER_MODE_NORMAL);
 
   // Verify the non-addition.
-  const std::vector<AutofillProfile*>& results2 = personal_data_->GetProfiles();
+  const std::vector<dangling_raw_ptr<AutofillProfile>>& results2 =
+      personal_data_->GetProfiles();
   ASSERT_EQ(1U, results2.size());
   EXPECT_EQ(0, profile0.Compare(*results2[0]));
 
@@ -518,7 +537,7 @@ TEST_F(PersonalDataManagerTest, AddProfile) {
   ResetPersonalDataManager(USER_MODE_NORMAL);
 
   // Verify the addition.
-  std::vector<AutofillProfile*> profiles;
+  std::vector<dangling_raw_ptr<AutofillProfile>> profiles;
   profiles.push_back(&profile0);
   profiles.push_back(&profile1);
   ExpectSameElements(profiles, personal_data_->GetProfiles());
@@ -587,8 +606,9 @@ TEST_F(PersonalDataManagerTest, GetProfiles_Order) {
               testing::ElementsAre(Pointee(profile3), Pointee(profile2),
                                    Pointee(profile1)));
 
-  std::vector<AutofillProfile*> profiles = personal_data_->GetProfiles(
-      PersonalDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc);
+  std::vector<dangling_raw_ptr<AutofillProfile>> profiles =
+      personal_data_->GetProfiles(
+          PersonalDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc);
   // Ordered by `use_date()`.
   EXPECT_THAT(profiles,
               testing::ElementsAre(Pointee(profile2), Pointee(profile3),
@@ -736,7 +756,8 @@ TEST_F(PersonalDataManagerTest, AddProfile_BasicInformation) {
   ResetPersonalDataManager(USER_MODE_NORMAL);
 
   // Verify the addition.
-  const std::vector<AutofillProfile*>& results = personal_data_->GetProfiles();
+  const std::vector<dangling_raw_ptr<AutofillProfile>>& results =
+      personal_data_->GetProfiles();
   ASSERT_EQ(1U, results.size());
   EXPECT_EQ(0, profile.Compare(*results[0]));
 
@@ -892,7 +913,8 @@ TEST_F(PersonalDataManagerTest, SaveImportedProfileSetModificationDate) {
   EXPECT_NE(base::Time(), profile.modification_date());
 
   SaveImportedProfileToPersonalDataManager(profile);
-  const std::vector<AutofillProfile*>& profiles = personal_data_->GetProfiles();
+  const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles =
+      personal_data_->GetProfiles();
   ASSERT_EQ(1U, profiles.size());
   EXPECT_GT(base::Milliseconds(2000),
             AutofillClock::Now() - profiles[0]->modification_date());
@@ -918,7 +940,7 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveProfiles) {
   AddProfileToPersonalDataManager(profile0);
   AddProfileToPersonalDataManager(profile1);
 
-  std::vector<AutofillProfile*> profiles;
+  std::vector<dangling_raw_ptr<AutofillProfile>> profiles;
   profiles.push_back(&profile0);
   profiles.push_back(&profile1);
   ExpectSameElements(profiles, personal_data_->GetProfiles());
@@ -1466,7 +1488,7 @@ TEST_F(PersonalDataManagerTest, AddProfilesAndCreditCards) {
   AddProfileToPersonalDataManager(profile0);
   AddProfileToPersonalDataManager(profile1);
 
-  std::vector<AutofillProfile*> profiles;
+  std::vector<dangling_raw_ptr<AutofillProfile>> profiles;
   profiles.push_back(&profile0);
   profiles.push_back(&profile1);
   ExpectSameElements(profiles, personal_data_->GetProfiles());
@@ -1503,7 +1525,8 @@ TEST_F(PersonalDataManagerTest, PopulateUniqueIDsOnLoad) {
   AddProfileToPersonalDataManager(profile0);
 
   // Verify that we've loaded the profiles from the web database.
-  const std::vector<AutofillProfile*>& results2 = personal_data_->GetProfiles();
+  const std::vector<dangling_raw_ptr<AutofillProfile>>& results2 =
+      personal_data_->GetProfiles();
   ASSERT_EQ(1U, results2.size());
   EXPECT_EQ(0, profile0.Compare(*results2[0]));
 
@@ -1514,7 +1537,8 @@ TEST_F(PersonalDataManagerTest, PopulateUniqueIDsOnLoad) {
   AddProfileToPersonalDataManager(profile1);
 
   // Make sure the two profiles have different GUIDs, both valid.
-  const std::vector<AutofillProfile*>& results3 = personal_data_->GetProfiles();
+  const std::vector<dangling_raw_ptr<AutofillProfile>>& results3 =
+      personal_data_->GetProfiles();
   ASSERT_EQ(2U, results3.size());
   EXPECT_NE(results3[0]->guid(), results3[1]->guid());
   EXPECT_TRUE(base::Uuid::ParseCaseInsensitive(results3[0]->guid()).is_valid());
@@ -1615,7 +1639,7 @@ TEST_F(PersonalDataManagerTest, Refresh) {
   AddProfileToPersonalDataManager(profile0);
   AddProfileToPersonalDataManager(profile1);
 
-  std::vector<AutofillProfile*> profiles;
+  std::vector<dangling_raw_ptr<AutofillProfile>> profiles;
   profiles.push_back(&profile0);
   profiles.push_back(&profile1);
   ExpectSameElements(profiles, personal_data_->GetProfiles());
@@ -2052,7 +2076,8 @@ TEST_F(PersonalDataManagerTest, UpdateLanguageCodeInProfile) {
   profile.set_language_code("en");
   UpdateProfileOnPersonalDataManager(profile);
 
-  const std::vector<AutofillProfile*>& results = personal_data_->GetProfiles();
+  const std::vector<dangling_raw_ptr<AutofillProfile>>& results =
+      personal_data_->GetProfiles();
   ASSERT_EQ(1U, results.size());
   EXPECT_EQ(0, profile.Compare(*results[0]));
   EXPECT_EQ("en", results[0]->language_code());
@@ -3572,7 +3597,7 @@ TEST_P(SaveImportedProfileTest, SaveImportedProfile) {
   profile2.FinalizeAfterImport();
   SaveImportedProfileToPersonalDataManager(profile2);
 
-  const std::vector<AutofillProfile*>& saved_profiles =
+  const std::vector<dangling_raw_ptr<AutofillProfile>>& saved_profiles =
       personal_data_->GetProfiles();
 
   // Get the set of profiles persisted in the db.
@@ -4100,7 +4125,7 @@ TEST_F(PersonalDataManagerTest,
   EXPECT_TRUE(personal_data_->GetServerProfiles().back()->has_converted());
 
   // Get the profiles, sorted by ranking to have a deterministic order.
-  std::vector<AutofillProfile*> profiles =
+  std::vector<dangling_raw_ptr<AutofillProfile>> profiles =
       personal_data_->GetProfilesToSuggest();
 
   // Make sure that the two profiles have not merged.
@@ -4197,7 +4222,7 @@ TEST_F(PersonalDataManagerTest,
   EXPECT_TRUE(personal_data_->GetServerProfiles().back()->has_converted());
 
   // Get the profiles, sorted by frequency to have a deterministic order.
-  std::vector<AutofillProfile*> profiles =
+  std::vector<dangling_raw_ptr<AutofillProfile>> profiles =
       personal_data_->GetProfilesToSuggest();
 
   // Make sure that the two profiles have merged.
@@ -4353,7 +4378,7 @@ TEST_F(
   EXPECT_TRUE(personal_data_->GetServerProfiles()[1]->has_converted());
 
   // Get the profiles, sorted by ranking to have a deterministic order.
-  std::vector<AutofillProfile*> profiles =
+  std::vector<dangling_raw_ptr<AutofillProfile>> profiles =
       personal_data_->GetProfilesToSuggest();
 
   // Make sure that the two Wallet addresses merged together and were added as
@@ -4430,7 +4455,7 @@ TEST_F(
 
   // Make sure that the billing address id of the card now point to the
   // converted profile.
-  std::vector<AutofillProfile*> profiles =
+  std::vector<dangling_raw_ptr<AutofillProfile>> profiles =
       personal_data_->GetProfilesToSuggest();
   ASSERT_EQ(1U, profiles.size());
   EXPECT_EQ(profiles[0]->guid(),
@@ -4729,7 +4754,7 @@ TEST_F(PersonalDataManagerTest, OnSyncServiceInitialized_NoSyncService) {
 
   // Check that cards were masked and other were untouched.
   EXPECT_EQ(3U, personal_data_->GetCreditCards().size());
-  std::vector<CreditCard*> server_cards =
+  std::vector<dangling_raw_ptr<CreditCard>> server_cards =
       personal_data_->GetServerCreditCards();
   EXPECT_EQ(2U, server_cards.size());
   for (CreditCard* card : server_cards)
@@ -4752,7 +4777,7 @@ TEST_F(PersonalDataManagerTest, OnSyncServiceInitialized_NotActiveSyncService) {
 
   // Check that cards were masked and other were untouched.
   EXPECT_EQ(3U, personal_data_->GetCreditCards().size());
-  std::vector<CreditCard*> server_cards =
+  std::vector<dangling_raw_ptr<CreditCard>> server_cards =
       personal_data_->GetServerCreditCards();
   EXPECT_EQ(2U, server_cards.size());
   for (CreditCard* card : server_cards)

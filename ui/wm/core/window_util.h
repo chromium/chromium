@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/types/display_constants.h"
 
@@ -102,7 +103,7 @@ COMPONENT_EXPORT(UI_WM) aura::Window* GetTransientParent(aura::Window* window);
 COMPONENT_EXPORT(UI_WM)
 const aura::Window* GetTransientParent(const aura::Window* window);
 COMPONENT_EXPORT(UI_WM)
-const std::vector<aura::Window*>& GetTransientChildren(
+const std::vector<dangling_raw_ptr<aura::Window>>& GetTransientChildren(
     const aura::Window* window);
 COMPONENT_EXPORT(UI_WM)
 void AddTransientChild(aura::Window* parent, aura::Window* child);

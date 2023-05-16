@@ -57,8 +57,9 @@ WebAuthnHoverButton::WebAuthnHoverButton(
   // ignore the child views created by the LabelButton ancestor. They're not
   // used but must exist to keep things happy. This view should be refactored to
   // descend from views::Button directly.
-  for (auto* child : children())
+  for (views::View* child : children()) {
     layout->SetChildViewIgnoredByLayout(child, true);
+  }
 
   const int icon_padding = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);

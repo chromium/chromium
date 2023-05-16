@@ -333,8 +333,9 @@ void CandidateWindowView::UpdateCandidates(
       }
     }
     if (new_candidate_window.orientation() == ui::CandidateWindow::VERTICAL) {
-      for (auto* view : candidate_views_)
+      for (ui::ime::CandidateView* view : candidate_views_) {
         view->SetWidths(max_shortcut_width, max_candidate_width);
+      }
     }
 
     std::unique_ptr<CandidateWindowBorder> border =

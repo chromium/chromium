@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -387,7 +388,7 @@ class DownloadBubbleUpdateService
       const std::vector<offline_items_collection::OfflineItem>& all_items);
 
   // Gets download items from profile and original profile.
-  std::vector<download::DownloadItem*> GetAllDownloadItems();
+  std::vector<dangling_raw_ptr<download::DownloadItem>> GetAllDownloadItems();
 
   // Called when a crx download has waited out its 2 second delay. Adds the
   // item to the cache if it's not already done, and notifies window-level

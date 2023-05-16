@@ -27,7 +27,7 @@ std::vector<uint32_t> ParseDrmSysfsAndFindPort(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   std::vector<uint32_t> port_nums;
-  for (auto* state : display_states) {
+  for (display::DisplaySnapshot* state : display_states) {
     // Each DisplaySnapshot holds the `sys_path` of a DRM device (i.e.
     // /sys/class/drm/cardX).
     base::FileEnumerator enumerator(state->sys_path(), false,
@@ -103,7 +103,7 @@ void DisplayPortObserver::OnDisplayModeChanged(
   // If no changes in base connector ids, then assume no changes on ports, so
   // return early to prevent overkill.
   std::set<uint64_t> base_connector_ids_;
-  for (auto* state : display_states) {
+  for (display::DisplaySnapshot* state : display_states) {
     base_connector_ids_.insert(state->base_connector_id());
   }
   if (base_connector_ids_ == prev_base_connector_ids_) {

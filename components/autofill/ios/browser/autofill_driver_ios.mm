@@ -107,7 +107,7 @@ void AutofillDriverIOS::HandleParsedForms(const std::vector<FormData>& forms) {
 }
 
 void AutofillDriverIOS::SendAutofillTypePredictionsToRenderer(
-    const std::vector<FormStructure*>& forms) {
+    const std::vector<dangling_raw_ptr<FormStructure>>& forms) {
   web::WebFrame* frame = web_frame();
   if (!frame) {
     return;

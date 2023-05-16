@@ -124,8 +124,8 @@ class ASH_EXPORT LoginPinView : public NonAccessibleView {
   // The submit button does not exist when no |on_submit| callback is passed.
   raw_ptr<SubmitPinButton, ExperimentalAsh> submit_button_ = nullptr;
 
-  std::vector<NonAccessibleView*> rows_;
-  std::vector<DigitPinButton*> digit_buttons_;
+  std::vector<dangling_raw_ptr<NonAccessibleView>> rows_;
+  std::vector<dangling_raw_ptr<DigitPinButton>> digit_buttons_;
 };
 
 }  // namespace ash

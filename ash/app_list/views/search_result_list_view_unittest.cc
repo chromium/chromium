@@ -119,7 +119,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
 
   std::vector<SearchResultView*> GetAssistantResultViews() const {
     std::vector<SearchResultView*> results;
-    for (auto* view : default_view_->search_result_views_) {
+    for (ash::SearchResultView* view : default_view_->search_result_views_) {
       auto* result = view->result();
       if (result &&
           result->result_type() == AppListSearchResultType::kAssistantText)

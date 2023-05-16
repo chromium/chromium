@@ -74,9 +74,10 @@ class ManagePasswordsState {
   // autofilled. In addition, |federated_matches|, if not null, contains stored
   // federated credentials to show to the user as well.
   void OnPasswordAutofilled(
-      const std::vector<const password_manager::PasswordForm*>& password_forms,
+      const std::vector<dangling_raw_ptr<const password_manager::PasswordForm>>&
+          password_forms,
       url::Origin origin,
-      const std::vector<const password_manager::PasswordForm*>*
+      const std::vector<dangling_raw_ptr<const password_manager::PasswordForm>>*
           federated_matches);
 
   // Move to INACTIVE_STATE.

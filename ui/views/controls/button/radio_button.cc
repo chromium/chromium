@@ -46,7 +46,7 @@ void RadioButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 View* RadioButton::GetSelectedViewForGroup(int group) {
   Views views;
   GetViewsInGroupFromParent(group, &views);
-  const auto i = base::ranges::find_if(views, [](const auto* view) {
+  const auto i = base::ranges::find_if(views, [](const views::View* view) {
     // Why don't we check the runtime type like is done in SetChecked()?
     return static_cast<const RadioButton*>(view)->GetChecked();
   });
@@ -111,7 +111,7 @@ void RadioButton::SetChecked(bool checked) {
     // component or even if views want to use the group for a different purpose.
     Views other;
     GetViewsInGroupFromParent(GetGroup(), &other);
-    for (auto* peer : other) {
+    for (views::View* peer : other) {
       if (peer != this) {
         DCHECK(!strcmp(peer->GetClassName(), kViewClassName))
             << "radio-button-nt has same group as non radio-button-nt views.";

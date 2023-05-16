@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -64,7 +65,7 @@ UserInfo TranslateProfile(const AutofillProfile* profile) {
 }
 
 std::vector<UserInfo> UserInfosForProfiles(
-    const std::vector<AutofillProfile*>& profiles) {
+    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles) {
   std::vector<UserInfo> infos(profiles.size());
   base::ranges::transform(profiles, infos.begin(), TranslateProfile);
   return infos;
@@ -110,7 +111,7 @@ AddressAccessoryControllerImpl::GetSheetData() const {
   if (!personal_data_manager_) {
     return absl::nullopt;
   }
-  std::vector<AutofillProfile*> profiles =
+  std::vector<dangling_raw_ptr<AutofillProfile>> profiles =
       personal_data_manager_->GetProfilesToSuggest();
   std::u16string title_or_empty_message;
   if (profiles.empty()) {

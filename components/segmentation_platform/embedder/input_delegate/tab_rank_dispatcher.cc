@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/embedder/input_delegate/tab_rank_dispatcher.h"
 #include <queue>
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
@@ -45,7 +46,7 @@ void TabRankDispatcher::GetTopRankedTabs(const std::string& segmentation_key,
   const sync_sessions::SyncedSession* local_session = nullptr;
   session_sync_service_->GetOpenTabsUIDelegate()->GetLocalSession(
       &local_session);
-  std::vector<const sync_sessions::SyncedSession*> sessions;
+  std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>> sessions;
   session_sync_service_->GetOpenTabsUIDelegate()->GetAllForeignSessions(
       &sessions);
   if (local_session) {
@@ -58,7 +59,7 @@ void TabRankDispatcher::GetTopRankedTabs(const std::string& segmentation_key,
 
   const base::Time now = base::Time::Now();
   std::queue<RankedTab> candidate_tabs;
-  for (const auto* session : sessions) {
+  for (const sync_sessions::SyncedSession* session : sessions) {
     if (IsTabTooOld(now, session->GetModifiedTime(), tab_filter.max_tab_age)) {
       continue;
     }

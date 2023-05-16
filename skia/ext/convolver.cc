@@ -5,6 +5,7 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "skia/ext/convolver.h"
 #include "skia/ext/convolver_SSE2.h"
@@ -122,7 +123,7 @@ class CircularRowBuffer {
   int next_row_coordinate_;
 
   // Buffer used by GetRowAddresses().
-  std::vector<unsigned char*> row_addresses_;
+  RAW_PTR_EXCLUSION std::vector<unsigned char*> row_addresses_;
 };
 
 // Convolves horizontally along a single row. The row data is given in

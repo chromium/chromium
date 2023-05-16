@@ -389,8 +389,9 @@ void RemoteSafeBrowsingDatabaseManager::StopOnSBThread(bool shutdown) {
 
   // Call back and delete any remaining clients. OnRequestDone() modifies
   // |current_requests_|, so we make a copy first.
-  std::vector<ClientRequest*> to_callback(current_requests_);
-  for (auto* req : to_callback) {
+  std::vector<dangling_raw_ptr<ClientRequest>> to_callback(current_requests_);
+  for (safe_browsing::RemoteSafeBrowsingDatabaseManager::ClientRequest* req :
+       to_callback) {
     DVLOG(1) << "Stopping: Invoking unfinished req for URL " << req->url();
     req->OnRequestDone(SB_THREAT_TYPE_SAFE, ThreatMetadata());
   }

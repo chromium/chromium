@@ -191,12 +191,13 @@ void WMDesksPrivateFeatureAsh::GetSavedDesks(GetSavedDesksCallback callback) {
   DesksClient::Get()->GetDeskTemplates(base::BindOnce(
       [](GetSavedDesksCallback callback,
          absl::optional<DesksClient::DeskActionError> error,
-         const std::vector<const ash::DeskTemplate*>& desk_templates) {
+         const std::vector<dangling_raw_ptr<const ash::DeskTemplate>>&
+             desk_templates) {
         if (error) {
           std::move(callback).Run(GetStringError(error.value()), {});
         } else {
           std::vector<api::wm_desks_private::SavedDesk> api_templates;
-          for (auto* desk_template : desk_templates) {
+          for (const ash::DeskTemplate* desk_template : desk_templates) {
             api::wm_desks_private::SavedDesk saved_desk =
                 GetSavedDeskFromAshDeskTemplate(*desk_template);
             api_templates.push_back(std::move(saved_desk));

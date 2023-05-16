@@ -146,8 +146,9 @@ PolicyServiceImpl::PolicyServiceImpl(Providers providers,
   for (int domain = 0; domain < POLICY_DOMAIN_SIZE; ++domain)
     policy_domain_status_[domain] = PolicyDomainStatus::kUninitialized;
 
-  for (auto* provider : providers_)
+  for (policy::ConfigurationPolicyProvider* provider : providers_) {
     provider->AddObserver(this);
+  }
   // There are no observers yet, but calls to GetPolicies() should already get
   // the processed policy values.
   MergeAndTriggerUpdates();
@@ -164,8 +165,9 @@ PolicyServiceImpl::CreateWithThrottledInitialization(Providers providers,
 
 PolicyServiceImpl::~PolicyServiceImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto* provider : providers_)
+  for (policy::ConfigurationPolicyProvider* provider : providers_) {
     provider->RemoveObserver(this);
+  }
 }
 
 void PolicyServiceImpl::AddObserver(PolicyDomain domain,
@@ -244,10 +246,12 @@ void PolicyServiceImpl::RefreshPolicies(base::OnceClosure callback) {
   } else {
     // Some providers might invoke OnUpdatePolicy synchronously while handling
     // RefreshPolicies. Mark all as pending before refreshing.
-    for (auto* provider : providers_)
+    for (policy::ConfigurationPolicyProvider* provider : providers_) {
       refresh_pending_.insert(provider);
-    for (auto* provider : providers_)
+    }
+    for (policy::ConfigurationPolicyProvider* provider : providers_) {
       provider->RefreshPolicies();
+    }
   }
 }
 
@@ -321,7 +325,7 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
 #if BUILDFLAG(IS_CHROMEOS)
   DefaultChromeAppsMigrator chrome_apps_migrator;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  for (auto* provider : providers_) {
+  for (policy::ConfigurationPolicyProvider* provider : providers_) {
     PolicyBundle provided_bundle = provider->policies().Clone();
     IgnoreUserCloudPrecedencePolicies(&provided_bundle.Get(chrome_namespace));
     DowngradeMetricsReportingToRecommendedPolicy(
@@ -444,7 +448,7 @@ std::vector<PolicyDomain> PolicyServiceImpl::UpdatePolicyDomainStatus() {
 
     PolicyDomainStatus new_status = PolicyDomainStatus::kPolicyReady;
 
-    for (auto* provider : providers_) {
+    for (policy::ConfigurationPolicyProvider* provider : providers_) {
       if (!provider->IsInitializationComplete(policy_domain)) {
         new_status = PolicyDomainStatus::kUninitialized;
         break;

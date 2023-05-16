@@ -51,7 +51,7 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   auto* delegate = shell->saved_desk_delegate();
   bool has_supported_apps = false;
-  for (auto* window : mru_windows) {
+  for (aura::Window* window : mru_windows) {
     // Skip transient windows without reporting.
     if (wm::GetTransientParent(window))
       continue;

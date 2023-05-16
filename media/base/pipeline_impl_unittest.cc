@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -117,7 +118,7 @@ class PipelineImplTest : public ::testing::Test {
 
     // SetDemuxerExpectations() adds overriding expectations for expected
     // non-NULL streams.
-    std::vector<DemuxerStream*> empty;
+    std::vector<dangling_raw_ptr<DemuxerStream>> empty;
     EXPECT_CALL(*demuxer_, GetAllStreams()).WillRepeatedly(Return(empty));
 
     EXPECT_CALL(*demuxer_, GetTimelineOffset())
@@ -366,7 +367,7 @@ class PipelineImplTest : public ::testing::Test {
   base::WeakPtr<MockRenderer> renderer_;
   std::unique_ptr<StrictMock<MockDemuxerStream>> audio_stream_;
   std::unique_ptr<StrictMock<MockDemuxerStream>> video_stream_;
-  std::vector<DemuxerStream*> streams_;
+  std::vector<dangling_raw_ptr<DemuxerStream>> streams_;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   RAW_PTR_EXCLUSION RendererClient* renderer_client_ = nullptr;

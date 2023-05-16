@@ -206,7 +206,8 @@ class BackgroundModeManagerTest : public testing::Test {
         std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
 
     auto policy_service = std::make_unique<policy::PolicyServiceImpl>(
-        std::vector<policy::ConfigurationPolicyProvider*>{&policy_provider_});
+        std::vector<dangling_raw_ptr<policy::ConfigurationPolicyProvider>>{
+            &policy_provider_});
     profile_manager_ = CreateTestingProfileManager();
     profile_ = profile_manager_->CreateTestingProfile(
         "p1", nullptr, u"p1", 0, TestingProfile::TestingFactories(),

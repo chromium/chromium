@@ -181,7 +181,7 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
   raw_ptr<views::TableLayout, ExperimentalAsh> table_layout_ = nullptr;
 
   // The list of tasks views for the container.
-  std::vector<ContinueTaskView*> suggestion_tasks_views_;
+  std::vector<dangling_raw_ptr<ContinueTaskView>> suggestion_tasks_views_;
 
   // The number of results shown in the container. Each result has one view.
   size_t num_results_ = 0;
@@ -207,7 +207,8 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
   // of results shown in the container gets updated. The views are only still
   // needed for the update animation and should be removed once the animation
   // completes.
-  std::vector<ContinueTaskView*> views_to_remove_after_animation_;
+  std::vector<dangling_raw_ptr<ContinueTaskView>>
+      views_to_remove_after_animation_;
 
   // Timer which when active disables container update animations. The timer
   // gets started when the container gets shown. The goal is to disable update

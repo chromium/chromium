@@ -269,7 +269,7 @@ class MetricsBuilder {
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
   std::vector<blink::mojom::AnchorElementMetricsPtr> metrics_;
   std::vector<blink::mojom::AnchorElementEnteredViewportPtr> entered_viewport_;
-  std::vector<const ukm::mojom::UkmEntry*> ukm_entries_;
+  std::vector<dangling_raw_ptr<const ukm::mojom::UkmEntry>> ukm_entries_;
 };
 
 TEST_F(NavigationPredictorTest,
@@ -428,7 +428,7 @@ TEST_F(NavigationPredictorTest, ReportAnchorElementClick) {
   using UkmEntry = ukm::builders::NavigationPredictorPageLinkClick;
   auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   auto get_metric = [&](auto name) {
     return *ukm_recorder.GetEntryMetric(entry, name);
   };

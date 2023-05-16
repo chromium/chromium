@@ -11,6 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -181,7 +182,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const std::string& upi_id,
       base::OnceCallback<void(bool accept)> callback) override;
   void OfferVirtualCardOptions(
-      const std::vector<CreditCard*>& candidates,
+      const std::vector<dangling_raw_ptr<CreditCard>>& candidates,
       base::OnceCallback<void(const std::string&)> callback) override;
 #else  // !BUILDFLAG(IS_ANDROID)
   void ConfirmAccountNameFixFlow(
@@ -244,7 +245,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   bool IsPasswordManagerEnabled() override;
   void PropagateAutofillPredictions(
       AutofillDriver* driver,
-      const std::vector<FormStructure*>& forms) override;
+      const std::vector<dangling_raw_ptr<FormStructure>>& forms) override;
   void DidFillOrPreviewForm(mojom::RendererFormDataAction action,
                             AutofillTriggerSource trigger_source,
                             bool is_refill) override;

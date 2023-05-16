@@ -77,7 +77,7 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
   views::View* header_ = nullptr;
   raw_ptr<ChildBubbleContainer, ExperimentalAsh> child_bubble_container_ =
       nullptr;
-  std::vector<HoldingSpaceTrayChildBubble*> child_bubbles_;
+  std::vector<dangling_raw_ptr<HoldingSpaceTrayChildBubble>> child_bubbles_;
 
   std::unique_ptr<TrayBubbleWrapper> bubble_wrapper_;
   std::unique_ptr<ui::EventHandler> event_handler_;

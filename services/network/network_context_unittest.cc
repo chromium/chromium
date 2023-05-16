@@ -2499,7 +2499,7 @@ TEST_F(NetworkContextTest, ClearReportingCacheReports) {
       domain, absl::nullopt, net::NetworkAnonymizationKey(), "Mozilla/1.0",
       "group", "type", base::Value::Dict(), 0);
 
-  std::vector<const net::ReportingReport*> reports;
+  std::vector<dangling_raw_ptr<const net::ReportingReport>> reports;
   reporting_cache->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
 
@@ -2532,7 +2532,7 @@ TEST_F(NetworkContextTest, ClearReportingCacheReportsWithFilter) {
                                  net::NetworkAnonymizationKey(), "Mozilla/1.0",
                                  "group", "type", base::Value::Dict(), 0);
 
-  std::vector<const net::ReportingReport*> reports;
+  std::vector<dangling_raw_ptr<const net::ReportingReport>> reports;
   reporting_cache->GetReports(&reports);
   ASSERT_EQ(2u, reports.size());
 
@@ -2571,7 +2571,7 @@ TEST_F(NetworkContextTest,
                                  net::NetworkAnonymizationKey(), "Mozilla/1.0",
                                  "group", "type", base::Value::Dict(), 0);
 
-  std::vector<const net::ReportingReport*> reports;
+  std::vector<dangling_raw_ptr<const net::ReportingReport>> reports;
   reporting_cache->GetReports(&reports);
   ASSERT_EQ(2u, reports.size());
 
@@ -2598,7 +2598,7 @@ TEST_F(NetworkContextTest, ClearEmptyReportingCacheReports) {
       CreateNetworkContextParamsForTesting(),
       net::ReportingService::CreateForTesting(std::move(reporting_context)));
 
-  std::vector<const net::ReportingReport*> reports;
+  std::vector<dangling_raw_ptr<const net::ReportingReport>> reports;
   reporting_cache->GetReports(&reports);
   ASSERT_TRUE(reports.empty());
 
@@ -4140,14 +4140,15 @@ class TestResolverFactory : public net::HostResolver::Factory {
     return resolver;
   }
 
-  const std::vector<net::ContextHostResolver*>& resolvers() const {
+  const std::vector<dangling_raw_ptr<net::ContextHostResolver>>& resolvers()
+      const {
     return resolvers_;
   }
 
   void ForgetResolvers() { resolvers_.clear(); }
 
  private:
-  std::vector<net::ContextHostResolver*> resolvers_;
+  std::vector<dangling_raw_ptr<net::ContextHostResolver>> resolvers_;
 };
 
 TEST_F(NetworkContextTest, CreateHostResolver) {

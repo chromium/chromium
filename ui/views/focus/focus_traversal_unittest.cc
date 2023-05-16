@@ -242,12 +242,12 @@ class FocusTraversalTest : public FocusManagerTest {
   // sure there is no cycle while traversing the children views.
   void ReverseChildrenFocusOrderImpl(View* parent,
                                      base::flat_set<View*> seen_views = {}) {
-    std::vector<View*> children_views = parent->children();
+    std::vector<dangling_raw_ptr<View>> children_views = parent->children();
     if (children_views.empty())
       return;
 
     View* first_child = children_views[0];
-    std::vector<View*> children_in_focus_order;
+    std::vector<dangling_raw_ptr<View>> children_in_focus_order;
 
     // Set each child to be before the first child in the focus list.  Do this
     // in reverse so that the last child is the first focusable view.

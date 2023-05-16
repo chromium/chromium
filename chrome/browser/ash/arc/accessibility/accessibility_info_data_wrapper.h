@@ -49,12 +49,14 @@ class AccessibilityInfoDataWrapper {
   virtual void Serialize(ui::AXNodeData* out_data) const;
   virtual std::string ComputeAXName(bool do_recursive) const = 0;
   virtual void GetChildren(
-      std::vector<AccessibilityInfoDataWrapper*>* children) const = 0;
+      std::vector<dangling_raw_ptr<AccessibilityInfoDataWrapper>>* children)
+      const = 0;
   virtual int32_t GetWindowId() const = 0;
 
  protected:
   raw_ptr<AXTreeSourceArc, ExperimentalAsh> tree_source_;
-  absl::optional<std::vector<AccessibilityInfoDataWrapper*>> cached_children_;
+  absl::optional<std::vector<dangling_raw_ptr<AccessibilityInfoDataWrapper>>>
+      cached_children_;
 
  private:
   friend class AXTreeSourceArc;

@@ -6,6 +6,7 @@
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_VIEW_ASH_IMPL_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/media_message_center/media_notification_view.h"
 #include "components/media_message_center/notification_theme.h"
@@ -109,7 +110,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewAshImpl
   media_session::MediaPosition position_;
 
   // The list of action buttons in the view.
-  std::vector<views::Button*> action_buttons_;
+  std::vector<dangling_raw_ptr<views::Button>> action_buttons_;
 
   // Set of enabled actions.
   base::flat_set<media_session::mojom::MediaSessionAction> enabled_actions_;

@@ -117,7 +117,7 @@ const ui::Layer* NextLayer(const ui::Layer* layer) {
   const ui::Layer* parent = layer->parent();
   if (!parent)
     return nullptr;
-  const std::vector<ui::Layer*> children = parent->children();
+  const std::vector<dangling_raw_ptr<ui::Layer>> children = parent->children();
   const auto i = base::ranges::find(children, layer) + 1;
   return (i == children.cend()) ? parent : FirstLayer(*i);
 }
@@ -5192,7 +5192,8 @@ TEST_F(ViewLayerTest, RecreateLayerZOrder) {
   v2->SetPaintToLayer();
 
   // Test the initial z-order.
-  const std::vector<ui::Layer*>& child_layers_pre = v->layer()->children();
+  const std::vector<dangling_raw_ptr<ui::Layer>>& child_layers_pre =
+      v->layer()->children();
   ASSERT_EQ(2u, child_layers_pre.size());
   EXPECT_EQ(v1->layer(), child_layers_pre[0]);
   EXPECT_EQ(v2->layer(), child_layers_pre[1]);
@@ -5201,7 +5202,8 @@ TEST_F(ViewLayerTest, RecreateLayerZOrder) {
 
   // Test the new layer order. We expect: |v1| |v1_old_layer| |v2|.
   // for |v1| and |v2|.
-  const std::vector<ui::Layer*>& child_layers_post = v->layer()->children();
+  const std::vector<dangling_raw_ptr<ui::Layer>>& child_layers_post =
+      v->layer()->children();
   ASSERT_EQ(3u, child_layers_post.size());
   EXPECT_EQ(v1->layer(), child_layers_post[0]);
   EXPECT_EQ(v1_old_layer.get(), child_layers_post[1]);
@@ -5221,7 +5223,8 @@ TEST_F(ViewLayerTest, RecreateLayerZOrderWidgetParent) {
   ui::Layer* root_layer = GetRootLayer();
 
   // Test the initial z-order.
-  const std::vector<ui::Layer*>& child_layers_pre = root_layer->children();
+  const std::vector<dangling_raw_ptr<ui::Layer>>& child_layers_pre =
+      root_layer->children();
   ASSERT_EQ(2u, child_layers_pre.size());
   EXPECT_EQ(v1->layer(), child_layers_pre[0]);
   EXPECT_EQ(v2->layer(), child_layers_pre[1]);
@@ -5229,7 +5232,8 @@ TEST_F(ViewLayerTest, RecreateLayerZOrderWidgetParent) {
   std::unique_ptr<ui::Layer> v1_old_layer(v1->RecreateLayer());
 
   // Test the new layer order. We expect: |v1| |v1_old_layer| |v2|.
-  const std::vector<ui::Layer*>& child_layers_post = root_layer->children();
+  const std::vector<dangling_raw_ptr<ui::Layer>>& child_layers_post =
+      root_layer->children();
   ASSERT_EQ(3u, child_layers_post.size());
   EXPECT_EQ(v1->layer(), child_layers_post[0]);
   EXPECT_EQ(v1_old_layer.get(), child_layers_post[1]);
@@ -6013,7 +6017,8 @@ TEST_F(ViewTest, ChildViewZOrderChanged) {
   for (size_t i = 0; i < kNumChildren; ++i)
     AddViewWithChildLayer(view.get());
   View::Views children = view->GetChildrenInZOrder();
-  const std::vector<ui::Layer*>& layers = view->layer()->children();
+  const std::vector<dangling_raw_ptr<ui::Layer>>& layers =
+      view->layer()->children();
   ASSERT_EQ(kNumChildren, children.size());
   ASSERT_EQ(kNumChildren, layers.size());
   for (size_t i = 0; i < kNumChildren; ++i) {
@@ -6055,7 +6060,8 @@ TEST_F(ViewTest, AttachChildViewWithComplicatedLayers) {
   // grand_child_view has layer.
   View* grand_child_view = child_view2->AddChildView(std::make_unique<View>());
   grand_child_view->SetPaintToLayer();
-  const std::vector<ui::Layer*>& layers = parent_view->layer()->children();
+  const std::vector<dangling_raw_ptr<ui::Layer>>& layers =
+      parent_view->layer()->children();
   EXPECT_EQ(2u, layers.size());
   EXPECT_EQ(layers[0], grand_child_view->layer());
   EXPECT_EQ(layers[1], child_view1->layer());
@@ -6064,7 +6070,7 @@ TEST_F(ViewTest, AttachChildViewWithComplicatedLayers) {
   // should not change.
   OrderableView* parent_view_ptr =
       grand_parent_view->AddChildView(std::move(parent_view));
-  const std::vector<ui::Layer*>& layers_after_attached =
+  const std::vector<dangling_raw_ptr<ui::Layer>>& layers_after_attached =
       parent_view_ptr->layer()->children();
   EXPECT_EQ(2u, layers_after_attached.size());
   EXPECT_EQ(layers_after_attached[0], grand_child_view->layer());

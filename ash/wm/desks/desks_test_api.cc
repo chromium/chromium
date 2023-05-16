@@ -88,7 +88,7 @@ ui::LayerTreeOwner* DesksTestApi::GetMirroredContentsLayerTreeForRootAndDesk(
                          ->GetGridWithRootWindow(root)
                          ->desks_bar_view()
                          ->mini_views();
-  for (auto* mini_view : mini_views) {
+  for (ash::DeskMiniView* mini_view : mini_views) {
     if (mini_view->desk() == desk) {
       return mini_view->desk_preview()
           ->desk_mirrored_contents_layer_tree_owner_.get();

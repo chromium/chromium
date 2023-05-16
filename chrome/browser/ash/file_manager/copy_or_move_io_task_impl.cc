@@ -204,7 +204,8 @@ void CopyOrMoveIOTaskImpl::VerifyTransfer() {
   if (ash::cloud_upload::UrlIsOnODFS(profile_,
                                      progress_->GetDestinationFolder())) {
     // Check none of the logged in users are managed.
-    for (auto* user : user_manager::UserManager::Get()->GetLoggedInUsers()) {
+    for (user_manager::User* user :
+         user_manager::UserManager::Get()->GetLoggedInUsers()) {
       Profile* user_profile = Profile::FromBrowserContext(
           ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
       if (user_profile->GetProfilePolicyConnector()->IsManaged()) {

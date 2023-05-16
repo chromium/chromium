@@ -227,8 +227,9 @@ class DeviceCacheImplTest : public testing::Test {
   }
 
  private:
-  std::vector<const device::BluetoothDevice*> GenerateDevices() {
-    std::vector<const device::BluetoothDevice*> devices;
+  std::vector<dangling_raw_ptr<const device::BluetoothDevice>>
+  GenerateDevices() {
+    std::vector<dangling_raw_ptr<const device::BluetoothDevice>> devices;
     for (auto& device : mock_devices_)
       devices.push_back(device.get());
     return devices;

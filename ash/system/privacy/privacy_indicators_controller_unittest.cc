@@ -133,7 +133,7 @@ class PrivacyIndicatorsControllerTest : public AshTestBase {
     auto* action_buttons = view->GetViewByID(
         message_center::NotificationViewBase::kActionButtonsRow);
 
-    auto* button_view = action_buttons->children()[button_index];
+    auto* button_view = action_buttons->children()[button_index].get();
 
     ui::test::EventGenerator generator(GetRootWindow(button_view->GetWidget()));
     gfx::Point cursor_location = button_view->GetBoundsInScreen().CenterPoint();

@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/device_reauth/device_authenticator.h"
@@ -48,13 +49,13 @@ void PasswordManagerClient::GeneratePassword(
 
 void PasswordManagerClient::UpdateCredentialCache(
     const url::Origin& origin,
-    const std::vector<const PasswordForm*>& best_matches,
+    const std::vector<dangling_raw_ptr<const PasswordForm>>& best_matches,
     bool is_blocklisted) {}
 
 void PasswordManagerClient::PasswordWasAutofilled(
-    const std::vector<const PasswordForm*>& best_matches,
+    const std::vector<dangling_raw_ptr<const PasswordForm>>& best_matches,
     const url::Origin& origin,
-    const std::vector<const PasswordForm*>* federated_matches,
+    const std::vector<dangling_raw_ptr<const PasswordForm>>* federated_matches,
     bool was_autofilled_on_pageload) {}
 
 void PasswordManagerClient::AutofillHttpAuth(

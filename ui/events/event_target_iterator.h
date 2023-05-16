@@ -25,7 +25,8 @@ class EventTargetIterator {
 template <typename T>
 class EventTargetIteratorPtrImpl : public EventTargetIterator {
  public:
-  explicit EventTargetIteratorPtrImpl(const std::vector<T*>& children)
+  explicit EventTargetIteratorPtrImpl(
+      const std::vector<dangling_raw_ptr<T>>& children)
       : begin_(children.rbegin()), end_(children.rend()) {}
   ~EventTargetIteratorPtrImpl() override {}
 
@@ -38,8 +39,8 @@ class EventTargetIteratorPtrImpl : public EventTargetIterator {
   }
 
  private:
-  typename std::vector<T*>::const_reverse_iterator begin_;
-  typename std::vector<T*>::const_reverse_iterator end_;
+  typename std::vector<dangling_raw_ptr<T>>::const_reverse_iterator begin_;
+  typename std::vector<dangling_raw_ptr<T>>::const_reverse_iterator end_;
 };
 
 template <typename T>

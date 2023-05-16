@@ -237,7 +237,7 @@
 
   // When launched from the star button, removing the current bookmark
   // removes all matching nodes.
-  std::vector<const bookmarks::BookmarkNode*> nodesVector;
+  std::vector<dangling_raw_ptr<const bookmarks::BookmarkNode>> nodesVector;
   [self bookmarkModel]->GetNodesByURL([self bookmark]->url(), &nodesVector);
   std::set<const bookmarks::BookmarkNode*> nodes(nodesVector.begin(),
                                                  nodesVector.end());

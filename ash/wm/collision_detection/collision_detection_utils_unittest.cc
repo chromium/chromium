@@ -139,7 +139,7 @@ class CollisionDetectionUtilsDisplayTest
     const std::size_t root_window_index = std::get<1>(GetParam());
     UpdateWorkArea(display_string);
     ASSERT_LT(root_window_index, Shell::GetAllRootWindows().size());
-    root_window_ = Shell::GetAllRootWindows()[root_window_index];
+    root_window_ = Shell::GetAllRootWindows()[root_window_index].get();
     scoped_display_ =
         std::make_unique<display::ScopedDisplayForNewWindows>(root_window_);
     for (auto* root_window_controller : Shell::GetAllRootWindowControllers()) {

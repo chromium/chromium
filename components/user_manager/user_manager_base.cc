@@ -278,7 +278,7 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
   active_user_->set_is_active(true);
   active_user_->set_username_hash(username_hash);
 
-  logged_in_users_.push_back(active_user_);
+  logged_in_users_.push_back(active_user_.get());
   SetLRUUser(active_user_);
 
   if (!primary_user_) {
@@ -1021,7 +1021,7 @@ void UserManagerBase::EnsureUsersLoaded() {
     users_.push_back(user);
   }
 
-  for (auto* user : users_) {
+  for (user_manager::User* user : users_) {
     auto& account_id = user->GetAccountId();
     const std::string* display_name =
         prefs_display_names.FindString(account_id.GetUserEmail());

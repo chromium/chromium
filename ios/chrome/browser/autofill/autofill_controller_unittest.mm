@@ -485,7 +485,7 @@ TEST_F(AutofillControllerTest, ProfileImport) {
   WaitForCondition(^bool {
     return personal_data_manager->GetProfiles().size();
   });
-  const std::vector<AutofillProfile*>& profiles =
+  const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles =
       personal_data_manager->GetProfiles();
   if (profiles.size() != 1)
     FAIL() << "Not exactly one profile found after attempted import";

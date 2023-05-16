@@ -114,7 +114,8 @@ bool EntryUrlsAre::MatchAndExplain(
     const ukm::TestUkmRecorder& ukm_recorder,
     testing::MatchResultListener* result_listener) const {
   std::vector<std::string> actual_urls;
-  for (const auto* entry : ukm_recorder.GetEntriesByName(entry_name_)) {
+  for (const ukm::mojom::UkmEntry* entry :
+       ukm_recorder.GetEntriesByName(entry_name_)) {
     GURL url = ukm_recorder.GetSourceForSourceId(entry->source_id)->url();
     actual_urls.push_back(url.spec());
   }

@@ -163,8 +163,8 @@ void MetricReportingManager::DeviceSettingsUpdated() {
   }
 }
 
-std::vector<CollectorBase*> MetricReportingManager::GetTelemetryCollectors(
-    MetricEventType event_type) {
+std::vector<dangling_raw_ptr<CollectorBase>>
+MetricReportingManager::GetTelemetryCollectors(MetricEventType event_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (event_type) {
     case WIFI_SIGNAL_STRENGTH_LOW:
@@ -650,7 +650,7 @@ void MetricReportingManager::InitDeviceActivityCollector() {
   samplers_.push_back(std::move(device_activity_sampler));
 }
 
-std::vector<CollectorBase*>
+std::vector<dangling_raw_ptr<CollectorBase>>
 MetricReportingManager::GetTelemetryCollectorsFromSetting(
     base::StringPiece setting_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -662,7 +662,7 @@ MetricReportingManager::GetTelemetryCollectorsFromSetting(
     return {};
   }
 
-  std::vector<CollectorBase*> samplers;
+  std::vector<dangling_raw_ptr<CollectorBase>> samplers;
   for (const base::Value& telemetry : *telemetry_list) {
     if (samplers.size() == telemetry_collectors_.size()) {
       // All samplers are already used, remaining telemetry names would be

@@ -665,7 +665,7 @@ bool SessionService::IsOnlyOneTabLeft() const {
     return is_only_one_tab_left_for_test_;
 
   int window_count = 0;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     const SessionID window_id = browser->session_id();
     if (ShouldTrackBrowser(browser) &&
         window_closing_ids_.find(window_id) == window_closing_ids_.end()) {
@@ -684,7 +684,7 @@ bool SessionService::HasOpenTrackableBrowsers(SessionID window_id) const {
   if (profile()->AsTestingProfile())
     return has_open_trackable_browser_for_test_;
 
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     const SessionID browser_id = browser->session_id();
     if (browser_id != window_id &&
         window_closing_ids_.find(browser_id) == window_closing_ids_.end() &&
@@ -715,7 +715,7 @@ void SessionService::LogExitEvent() {
   RemoveExitEvent();
   int browser_count = 0;
   int tab_count = 0;
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile() == profile()) {
       ++browser_count;
       tab_count += browser->tab_strip_model()->count();

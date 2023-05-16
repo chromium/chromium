@@ -289,7 +289,7 @@ void SidePanel::UpdateVisibility() {
   bool any_child_visible = false;
   // TODO(pbos): Iterate content instead. Requires moving the owned pointer out
   // of owned contents before resetting it.
-  for (const auto* view : children()) {
+  for (const views::View* view : children()) {
     if (view == border_view_ || view == resize_area_)
       continue;
 

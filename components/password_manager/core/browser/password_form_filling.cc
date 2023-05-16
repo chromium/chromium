@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
@@ -70,13 +71,14 @@ bool IsPublicSuffixMatchOrAffiliationBasedMatch(const PasswordForm& form) {
   return form.is_public_suffix_match || form.is_affiliation_based_match;
 }
 
-void Autofill(PasswordManagerClient* client,
-              PasswordManagerDriver* driver,
-              const PasswordForm& form_for_autofill,
-              const std::vector<const PasswordForm*>& best_matches,
-              const std::vector<const PasswordForm*>& federated_matches,
-              const PasswordForm& preferred_match,
-              bool wait_for_username) {
+void Autofill(
+    PasswordManagerClient* client,
+    PasswordManagerDriver* driver,
+    const PasswordForm& form_for_autofill,
+    const std::vector<dangling_raw_ptr<const PasswordForm>>& best_matches,
+    const std::vector<dangling_raw_ptr<const PasswordForm>>& federated_matches,
+    const PasswordForm& preferred_match,
+    bool wait_for_username) {
   DCHECK_EQ(PasswordForm::Scheme::kHtml, preferred_match.scheme);
 
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
@@ -123,8 +125,8 @@ LikelyFormFilling SendFillInformationToRenderer(
     PasswordManagerClient* client,
     PasswordManagerDriver* driver,
     const PasswordForm& observed_form,
-    const std::vector<const PasswordForm*>& best_matches,
-    const std::vector<const PasswordForm*>& federated_matches,
+    const std::vector<dangling_raw_ptr<const PasswordForm>>& best_matches,
+    const std::vector<dangling_raw_ptr<const PasswordForm>>& federated_matches,
     const PasswordForm* preferred_match,
     bool blocked_by_user,
     PasswordFormMetricsRecorder* metrics_recorder,
@@ -277,7 +279,7 @@ LikelyFormFilling SendFillInformationToRenderer(
 
 PasswordFormFillData CreatePasswordFormFillData(
     const PasswordForm& form_on_page,
-    const std::vector<const PasswordForm*>& matches,
+    const std::vector<dangling_raw_ptr<const PasswordForm>>& matches,
     const PasswordForm& preferred_match,
     const Origin& main_frame_origin,
     bool wait_for_username) {

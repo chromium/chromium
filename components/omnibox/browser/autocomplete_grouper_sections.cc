@@ -59,7 +59,7 @@ ACMatches Section::GroupMatches(PSections sections, ACMatches& matches) {
   ACMatches grouped_matches = {};
   for (const auto& section : sections) {
     for (const auto& group : section->groups_) {
-      for (auto* match : group.matches()) {
+      for (AutocompleteMatch* match : group.matches()) {
         grouped_matches.push_back(std::move(*match));
       }
     }

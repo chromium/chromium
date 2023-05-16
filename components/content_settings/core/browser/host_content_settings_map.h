@@ -459,7 +459,7 @@ class HostContentSettingsMap : public content_settings::Observer,
   // List of content settings providers containing settings which can be
   // modified by the user. Members are owned by the
   // |content_settings_providers_| map above.
-  std::vector<content_settings::UserModifiableProvider*>
+  std::vector<dangling_raw_ptr<content_settings::UserModifiableProvider>>
       user_modifiable_providers_;
 
   // content_settings_providers_[PREF_PROVIDER] but specialized.

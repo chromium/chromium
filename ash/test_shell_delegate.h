@@ -10,6 +10,7 @@
 
 #include "ash/shell_delegate.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "url/gurl.h"
@@ -82,7 +83,7 @@ class TestShellDelegate : public ShellDelegate {
   void SetUpEnvironmentForLockedFullscreen(bool locked) override {}
   const GURL& GetLastCommittedURLForWindowIfAny(aura::Window* window) override;
   void ForceSkipWarningUserOnClose(
-      const std::vector<aura::Window*>& windows) override {}
+      const std::vector<dangling_raw_ptr<aura::Window>>& windows) override {}
 
   void SetCanGoBack(bool can_go_back);
   void SetShouldExitFullscreenBeforeLock(

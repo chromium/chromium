@@ -13,6 +13,7 @@
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -168,7 +169,7 @@ void FloatingWorkspaceService::OnDeskModelDestroying() {
 }
 
 void FloatingWorkspaceService::EntriesAddedOrUpdatedRemotely(
-    const std::vector<const DeskTemplate*>& new_entries) {
+    const std::vector<dangling_raw_ptr<const DeskTemplate>>& new_entries) {
   const DeskTemplate* floating_workspace_template = nullptr;
   for (const DeskTemplate* desk_template : new_entries) {
     if (desk_template &&
@@ -210,7 +211,8 @@ void FloatingWorkspaceService::InitForV2() {
 const sync_sessions::SyncedSession*
 FloatingWorkspaceService::GetMostRecentlyUsedRemoteSession() {
   sync_sessions::OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate();
-  std::vector<const sync_sessions::SyncedSession*> remote_sessions;
+  std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>>
+      remote_sessions;
   if (!open_tabs || !open_tabs->GetAllForeignSessions(&remote_sessions)) {
     return nullptr;
   }

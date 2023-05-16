@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util_win.h"
@@ -71,7 +72,8 @@ std::unique_ptr<VirtualFidoDevice::PrivateKey> MakePrivateKey(
 
 struct FakeWinWebAuthnApi::CredentialInfoList {
   WEBAUTHN_CREDENTIAL_DETAILS_LIST credential_details_list;
-  std::vector<WEBAUTHN_CREDENTIAL_DETAILS*> win_credentials;
+  // Field excluded as it is passed as a buffer to third_party api.
+  RAW_PTR_EXCLUSION std::vector<WEBAUTHN_CREDENTIAL_DETAILS*> win_credentials;
   std::vector<std::unique_ptr<CredentialInfo>> credentials;
 };
 

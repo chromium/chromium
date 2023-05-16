@@ -220,7 +220,8 @@ class BookmarkModel final : public BookmarkUndoProvider,
   void SetDateAdded(const BookmarkNode* node, base::Time date_added);
 
   // Returns the set of nodes with the |url|.
-  void GetNodesByURL(const GURL& url, std::vector<const BookmarkNode*>* nodes);
+  void GetNodesByURL(const GURL& url,
+                     std::vector<dangling_raw_ptr<const BookmarkNode>>* nodes);
 
   // Returns the most recently added user node for the |url|; urls from any
   // nodes that are not editable by the user are never returned by this call.

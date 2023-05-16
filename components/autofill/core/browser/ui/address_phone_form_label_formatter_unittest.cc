@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -29,7 +30,7 @@ std::vector<ServerFieldType> GetFieldTypes() {
 }
 
 TEST(AddressPhoneFormLabelFormatterTest, GetLabelsWithMissingProfiles) {
-  const std::vector<AutofillProfile*> profiles{};
+  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{};
   const std::unique_ptr<LabelFormatter> formatter =
       LabelFormatter::Create(profiles, "en-US", NAME_FULL, GetFieldTypes());
   EXPECT_TRUE(formatter->GetLabels().empty());
@@ -54,8 +55,8 @@ TEST(AddressPhoneFormLabelFormatterTest, GetLabelsForUSProfilesAndFocusedName) {
   test::SetProfileInfo(&profile4, "John", "", "Adams", "", "", "", "", "", "",
                        "", "US", "");
 
-  const std::vector<AutofillProfile*> profiles{&profile1, &profile2, &profile3,
-                                               &profile4};
+  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{
+      &profile1, &profile2, &profile3, &profile4};
   const std::unique_ptr<LabelFormatter> formatter =
       LabelFormatter::Create(profiles, "en-US", NAME_FULL, GetFieldTypes());
 
@@ -85,8 +86,8 @@ TEST(AddressPhoneFormLabelFormatterTest,
   test::SetProfileInfo(&profile4, "", "", "", "", "", "141 Franklin St", "",
                        "Quincy", "MA", "02169", "US", "");
 
-  const std::vector<AutofillProfile*> profiles{&profile1, &profile2, &profile3,
-                                               &profile4};
+  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{
+      &profile1, &profile2, &profile3, &profile4};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "en-US", ADDRESS_HOME_LINE1, GetFieldTypes());
 
@@ -116,8 +117,8 @@ TEST(AddressPhoneFormLabelFormatterTest,
   test::SetProfileInfo(&profile4, "", "", "", "", "", "", "", "Quincy", "MA",
                        "02169", "US", "");
 
-  const std::vector<AutofillProfile*> profiles{&profile1, &profile2, &profile3,
-                                               &profile4};
+  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{
+      &profile1, &profile2, &profile3, &profile4};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "en-US", ADDRESS_HOME_CITY, GetFieldTypes());
 
@@ -147,8 +148,8 @@ TEST(AddressPhoneFormLabelFormatterTest,
   test::SetProfileInfo(&profile4, "", "", "", "", "", "", "", "", "", "", "US",
                        "");
 
-  const std::vector<AutofillProfile*> profiles{&profile1, &profile2, &profile3,
-                                               &profile4};
+  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{
+      &profile1, &profile2, &profile3, &profile4};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "en-US", PHONE_HOME_WHOLE_NUMBER, GetFieldTypes());
 
@@ -172,7 +173,8 @@ TEST(AddressPhoneFormLabelFormatterTest, GetLabelsForBRProfilesAndFocusedName) {
                        "Rio de Janeiro", "RJ", "22460-320", "BR",
                        "21987650000");
 
-  const std::vector<AutofillProfile*> profiles{&profile1, &profile2};
+  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{&profile1,
+                                                                &profile2};
   const std::unique_ptr<LabelFormatter> formatter =
       LabelFormatter::Create(profiles, "pt-BR", NAME_FULL, GetFieldTypes());
 
@@ -198,7 +200,8 @@ TEST(AddressPhoneFormLabelFormatterTest,
                        "Rio de Janeiro", "RJ", "22460-320", "BR",
                        "21987650000");
 
-  const std::vector<AutofillProfile*> profiles{&profile1, &profile2};
+  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{&profile1,
+                                                                &profile2};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "pt-BR", ADDRESS_HOME_LINE1, GetFieldTypes());
 
@@ -222,7 +225,8 @@ TEST(AddressPhoneFormLabelFormatterTest,
                        "Rio de Janeiro", "RJ", "22460-320", "BR",
                        "21987650000");
 
-  const std::vector<AutofillProfile*> profiles{&profile1, &profile2};
+  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{&profile1,
+                                                                &profile2};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "pt-BR", ADDRESS_HOME_ZIP, GetFieldTypes());
 
@@ -247,7 +251,8 @@ TEST(AddressPhoneFormLabelFormatterTest,
                        "Rio de Janeiro", "RJ", "22460-320", "BR",
                        "21987650000");
 
-  const std::vector<AutofillProfile*> profiles{&profile1, &profile2};
+  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{&profile1,
+                                                                &profile2};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "pt-BR", PHONE_HOME_WHOLE_NUMBER, GetFieldTypes());
 
@@ -266,7 +271,7 @@ TEST(AddressPhoneFormLabelFormatterTest,
                        "333 Washington St", "", "Brookline", "MA", "02445",
                        "US", "16177302000");
 
-  const std::vector<AutofillProfile*> profiles{&profile};
+  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{&profile};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "en-US", PHONE_HOME_WHOLE_NUMBER,
       {NAME_FULL, PHONE_HOME_WHOLE_NUMBER, ADDRESS_HOME_ZIP});
@@ -282,7 +287,7 @@ TEST(AddressPhoneFormLabelFormatterTest, GetLabelsForFormWithoutName) {
                        "", "19 North Sq", "", "Boston", "MA", "02113", "US",
                        "16175232338");
 
-  const std::vector<AutofillProfile*> profiles{&profile};
+  const std::vector<dangling_raw_ptr<AutofillProfile>> profiles{&profile};
   const std::unique_ptr<LabelFormatter> formatter = LabelFormatter::Create(
       profiles, "en-US", ADDRESS_HOME_LINE1,
       {ADDRESS_HOME_LINE1, ADDRESS_HOME_ZIP, PHONE_HOME_WHOLE_NUMBER});

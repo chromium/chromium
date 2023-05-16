@@ -56,10 +56,11 @@ class CC_EXPORT PictureLayerTilingSet {
 
   const PictureLayerTilingClient* client() const { return client_; }
 
-  void CleanUpTilings(float min_acceptable_high_res_scale_key,
-                      float max_acceptable_high_res_scale_key,
-                      const std::vector<PictureLayerTiling*>& needed_tilings,
-                      PictureLayerTilingSet* twin_set);
+  void CleanUpTilings(
+      float min_acceptable_high_res_scale_key,
+      float max_acceptable_high_res_scale_key,
+      const std::vector<dangling_raw_ptr<PictureLayerTiling>>& needed_tilings,
+      PictureLayerTilingSet* twin_set);
   void RemoveNonIdealTilings();
 
   // This function is called on the active tree during activation.

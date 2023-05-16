@@ -103,10 +103,11 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
     modified_time_ = modified_time;
   }
 
-  MOCK_METHOD(bool,
-              GetAllForeignSessions,
-              (std::vector<const sync_sessions::SyncedSession*>*),
-              (override));
+  MOCK_METHOD(
+      bool,
+      GetAllForeignSessions,
+      (std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>>*),
+      (override));
 
   MOCK_METHOD(bool,
               GetForeignSessionTabs,
@@ -155,8 +156,9 @@ class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
   // GetForeignSessionTabs().
   void MockResponses() {
     ON_CALL(*this, GetAllForeignSessions)
-        .WillByDefault([this](std::vector<const sync_sessions::SyncedSession*>*
-                                  sessions) {
+        .WillByDefault([this](
+                           std::vector<dangling_raw_ptr<
+                               const sync_sessions::SyncedSession>>* sessions) {
           sessions->push_back(Session(sync_pb::SyncEnums_DeviceType_TYPE_PHONE,
                                       syncer::DeviceInfo::FormFactor::kPhone));
           sessions->push_back(Session(sync_pb::SyncEnums_DeviceType_TYPE_PHONE,

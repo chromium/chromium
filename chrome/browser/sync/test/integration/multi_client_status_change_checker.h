@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/sync/driver/sync_service_impl.h"
@@ -19,7 +20,7 @@ class MultiClientStatusChangeChecker : public StatusChangeChecker,
                                        public syncer::SyncServiceObserver {
  public:
   explicit MultiClientStatusChangeChecker(
-      std::vector<syncer::SyncServiceImpl*> services);
+      std::vector<dangling_raw_ptr<syncer::SyncServiceImpl>> services);
 
   MultiClientStatusChangeChecker(const MultiClientStatusChangeChecker&) =
       delete;
@@ -36,10 +37,12 @@ class MultiClientStatusChangeChecker : public StatusChangeChecker,
   // StatusChangeChecker implementations and stubs.
   bool IsExitConditionSatisfied(std::ostream* os) override = 0;
 
-  const std::vector<syncer::SyncServiceImpl*>& services() { return services_; }
+  const std::vector<dangling_raw_ptr<syncer::SyncServiceImpl>>& services() {
+    return services_;
+  }
 
  private:
-  std::vector<syncer::SyncServiceImpl*> services_;
+  std::vector<dangling_raw_ptr<syncer::SyncServiceImpl>> services_;
   base::ScopedMultiSourceObservation<syncer::SyncService,
                                      syncer::SyncServiceObserver>
       scoped_observations_{this};

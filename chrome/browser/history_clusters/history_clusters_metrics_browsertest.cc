@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   auto entries =
       ukm_recorder.GetEntriesByName(ukm::builders::HistoryClusters::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   ValidateHistoryClustersUKMEntry(
       entry, HistoryClustersInitialState::kDirectNavigation, 0, 0);
   histogram_tester.ExpectUniqueSample(
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   auto entries =
       ukm_recorder.GetEntriesByName(ukm::builders::HistoryClusters::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  auto* entry = entries[0];
+  auto* entry = entries[0].get();
   ValidateHistoryClustersUKMEntry(
       entry, HistoryClustersInitialState::kDirectNavigation, 2, 0);
   histogram_tester.ExpectUniqueSample(
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   auto entries =
       ukm_recorder.GetEntriesByName(ukm::builders::HistoryClusters::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  auto* ukm_entry = entries[0];
+  auto* ukm_entry = entries[0].get();
   ValidateHistoryClustersUKMEntry(
       ukm_entry, HistoryClustersInitialState::kDirectNavigation, 0, 1);
   histogram_tester.ExpectUniqueSample(
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(
   auto entries =
       ukm_recorder.GetEntriesByName(ukm::builders::HistoryClusters::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  auto* ukm_entry = entries[0];
+  auto* ukm_entry = entries[0].get();
   ValidateHistoryClustersUKMEntry(
       ukm_entry, HistoryClustersInitialState::kIndirectNavigation, 0, 1);
   histogram_tester.ExpectUniqueSample(
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   auto entries =
       ukm_recorder.GetEntriesByName(ukm::builders::HistoryClusters::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  auto* ukm_entry = entries[0];
+  auto* ukm_entry = entries[0].get();
   ValidateHistoryClustersUKMEntry(
       ukm_entry, HistoryClustersInitialState::kIndirectNavigation, 0, 0);
   histogram_tester.ExpectUniqueSample(

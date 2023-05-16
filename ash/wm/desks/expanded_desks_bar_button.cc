@@ -208,7 +208,7 @@ void ExpandedDesksBarButton::Layout() {
   const gfx::Rect inner_button_bounds = DeskMiniView::GetDeskPreviewBounds(
       bar_view_->GetWidget()->GetNativeWindow()->GetRootWindow());
   inner_button_->SetBoundsRect(inner_button_bounds);
-  auto* desk_mini_view = bar_view_->mini_views()[0];
+  auto* desk_mini_view = bar_view_->mini_views()[0].get();
   auto* desk_name_view = desk_mini_view->desk_name_view();
   // `button_label_` string might exceed the maximum width in different
   // languages. Elide the string `button_label_` if it exceeds the width limit

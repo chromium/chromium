@@ -116,7 +116,7 @@ class CalendarViewTest : public AshTestBase {
   const views::LabelButton* GetDateCell(CalendarMonthView* month,
                                         std::u16string day) {
     const views::LabelButton* date_cell = nullptr;
-    for (const auto* child_view : month->children()) {
+    for (const views::View* child_view : month->children()) {
       auto* current_date_cell =
           static_cast<const views::LabelButton*>(child_view);
       if (day != current_date_cell->GetText()) {
@@ -1443,7 +1443,7 @@ class CalendarViewAnimationTest : public AshTestBase {
   const views::LabelButton* GetDateCell(CalendarMonthView* month,
                                         std::u16string day) {
     const views::LabelButton* date_cell = nullptr;
-    for (const auto* child_view : month->children()) {
+    for (const views::View* child_view : month->children()) {
       auto* current_date_cell =
           static_cast<const views::LabelButton*>(child_view);
       if (day != current_date_cell->GetText()) {

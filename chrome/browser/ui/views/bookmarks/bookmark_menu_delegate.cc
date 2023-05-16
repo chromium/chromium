@@ -238,7 +238,8 @@ bool BookmarkMenuDelegate::IsTriggerableEvent(views::MenuItemView* menu,
 void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
   DCHECK(menu_id_to_node_map_.find(id) != menu_id_to_node_map_.end());
 
-  std::vector<const BookmarkNode*> selection = {menu_id_to_node_map_[id]};
+  std::vector<dangling_raw_ptr<const BookmarkNode>> selection = {
+      menu_id_to_node_map_[id]};
 
   RecordBookmarkLaunch(location_,
                        profile_metrics::GetBrowserProfileType(profile_));
@@ -403,7 +404,7 @@ bool BookmarkMenuDelegate::ShowContextMenu(MenuItemView* source,
                                            ui::MenuSourceType source_type) {
   DCHECK(menu_id_to_node_map_.find(id) != menu_id_to_node_map_.end());
   const BookmarkNode* node = menu_id_to_node_map_[id];
-  std::vector<const BookmarkNode*> nodes(1, node);
+  std::vector<dangling_raw_ptr<const BookmarkNode>> nodes(1, node);
   context_menu_ = std::make_unique<BookmarkContextMenu>(
       parent_, browser_, profile_, location_, node->parent(), nodes,
       ShouldCloseOnRemove(node));
@@ -458,7 +459,7 @@ void BookmarkMenuDelegate::BookmarkNodeFaviconChanged(
 }
 
 void BookmarkMenuDelegate::WillRemoveBookmarks(
-    const std::vector<const BookmarkNode*>& bookmarks) {
+    const std::vector<dangling_raw_ptr<const BookmarkNode>>& bookmarks) {
   DCHECK(!is_mutating_model_);
   is_mutating_model_ = true;  // Set to false in DidRemoveBookmarks().
 

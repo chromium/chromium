@@ -102,7 +102,7 @@ protocol::Response TargetHandler::CreateTarget(
   if (!create_new_window) {
     // Find a browser to open a new tab.
     // We shouldn't use browser that is scheduled to close.
-    for (auto* browser : *BrowserList::GetInstance()) {
+    for (Browser* browser : *BrowserList::GetInstance()) {
       if (browser->profile() == profile &&
           !browser->IsAttemptingToCloseBrowser()) {
         target_browser = browser;

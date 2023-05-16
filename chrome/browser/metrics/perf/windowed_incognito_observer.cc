@@ -66,9 +66,10 @@ void WindowedIncognitoMonitor::RegisterInstance() {
     return;
   BrowserList::AddObserver(this);
 
-  for (auto* window : *BrowserList::GetInstance())
+  for (Browser* window : *BrowserList::GetInstance()) {
     if (window->profile()->IsOffTheRecord())
       num_active_incognito_windows_++;
+  }
 }
 
 void WindowedIncognitoMonitor::UnregisterInstance() {

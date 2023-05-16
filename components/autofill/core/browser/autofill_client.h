@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -591,7 +592,7 @@ class AutofillClient : public RiskDataLoader {
   // as a virtual card. |candidates| must not be empty and has at least one
   // card. Runs |callback| when a card is selected.
   virtual void OfferVirtualCardOptions(
-      const std::vector<CreditCard*>& candidates,
+      const std::vector<dangling_raw_ptr<CreditCard>>& candidates,
       base::OnceCallback<void(const std::string&)> callback) = 0;
 
 #else  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -764,7 +765,7 @@ class AutofillClient : public RiskDataLoader {
   // and to the password generation manager to detect account creation forms.
   virtual void PropagateAutofillPredictions(
       AutofillDriver* driver,
-      const std::vector<FormStructure*>& forms) = 0;
+      const std::vector<dangling_raw_ptr<FormStructure>>& forms) = 0;
 
   // Inform the client that the form has been filled.
   virtual void DidFillOrPreviewForm(mojom::RendererFormDataAction action,

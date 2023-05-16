@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -211,8 +212,9 @@ bool IsMutedInsecureCredential(const PasswordForm* credential,
   return it != credential->password_issues.end() && it->second.is_muted;
 }
 
-bool HasMutedCredentials(const std::vector<const PasswordForm*>& credentials,
-                         const std::u16string& username) {
+bool HasMutedCredentials(
+    const std::vector<dangling_raw_ptr<const PasswordForm>>& credentials,
+    const std::u16string& username) {
   return base::ranges::any_of(credentials, [&username](const auto& credential) {
     return credential->username_value == username &&
            (IsMutedInsecureCredential(credential, InsecureType::kLeaked) ||
@@ -1226,7 +1228,7 @@ void PasswordManager::MaybeSavePasswordHash(
 
 void PasswordManager::ProcessAutofillPredictions(
     PasswordManagerDriver* driver,
-    const std::vector<FormStructure*>& forms) {
+    const std::vector<dangling_raw_ptr<FormStructure>>& forms) {
   // Don't do anything if Password store is not available.
   if(!client_->GetProfilePasswordStore())
     return;

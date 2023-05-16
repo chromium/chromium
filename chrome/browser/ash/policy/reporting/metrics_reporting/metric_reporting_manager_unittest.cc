@@ -983,7 +983,7 @@ TEST_P(EventDrivenTelemetryCollectorPoolTest,
   auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
       std::move(mock_delegate_), nullptr);
 
-  std::vector<CollectorBase*> event_telemetry =
+  std::vector<dangling_raw_ptr<CollectorBase>> event_telemetry =
       metric_reporting_manager->GetTelemetryCollectors(test_case.event_type);
 
   ASSERT_TRUE(event_telemetry.empty());

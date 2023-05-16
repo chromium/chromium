@@ -15,6 +15,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -689,7 +690,7 @@ bool AutofillProfile::SaveAdditionalInfo(const AutofillProfile& profile,
 
 // static
 void AutofillProfile::CreateDifferentiatingLabels(
-    const std::vector<AutofillProfile*>& profiles,
+    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
     const std::string& app_locale,
     std::vector<std::u16string>* labels) {
   const size_t kMinimalFieldsShown = 2;
@@ -700,7 +701,7 @@ void AutofillProfile::CreateDifferentiatingLabels(
 
 // static
 void AutofillProfile::CreateInferredLabels(
-    const std::vector<AutofillProfile*>& profiles,
+    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
     const std::vector<ServerFieldType>* suggested_fields,
     ServerFieldType excluded_field,
     size_t minimal_fields_shown,
@@ -894,7 +895,7 @@ bool AutofillProfile::SetInfoWithVerificationStatusImpl(
 
 // static
 void AutofillProfile::CreateInferredLabelsHelper(
-    const std::vector<AutofillProfile*>& profiles,
+    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
     const std::list<size_t>& indices,
     const std::vector<ServerFieldType>& fields,
     size_t num_fields_to_include,

@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 
 namespace ash {
@@ -36,7 +37,8 @@ class DeskModelObserver {
   // This is the mechanism for the sync server to push changes in the state of
   // the model to clients.
   virtual void EntriesAddedOrUpdatedRemotely(
-      const std::vector<const ash::DeskTemplate*>& new_entries) = 0;
+      const std::vector<dangling_raw_ptr<const ash::DeskTemplate>>&
+          new_entries) = 0;
   virtual void EntriesRemovedRemotely(const std::vector<base::Uuid>& uuids) = 0;
 
  protected:

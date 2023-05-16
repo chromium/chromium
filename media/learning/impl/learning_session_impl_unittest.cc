@@ -20,8 +20,10 @@ namespace learning {
 class LearningSessionImplTest : public testing::Test {
  public:
   class FakeLearningTaskController;
-  using ControllerVector = std::vector<FakeLearningTaskController*>;
-  using TaskRunnerVector = std::vector<base::SequencedTaskRunner*>;
+  using ControllerVector =
+      std::vector<dangling_raw_ptr<FakeLearningTaskController>>;
+  using TaskRunnerVector =
+      std::vector<dangling_raw_ptr<base::SequencedTaskRunner>>;
 
   class FakeLearningTaskController : public LearningTaskController {
    public:

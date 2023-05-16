@@ -221,7 +221,8 @@ class VideoConferenceIntegrationTest
         GetVcTray()->GetBubbleView()->GetViewByID(BubbleViewID::kReturnToApp));
 
     std::vector<ReturnToAppButton*> output;
-    for (auto* button : return_to_app_panel->container_view_->children()) {
+    for (views::View* button :
+         return_to_app_panel->container_view_->children()) {
       output.push_back(static_cast<ReturnToAppButton*>(button));
     }
     return output;
@@ -836,8 +837,8 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
   auto* toggle_effects_view = GetVcTray()->GetBubbleView()->GetViewByID(
       BubbleViewID::kToggleEffectsView);
 
-  for (auto* row : toggle_effects_view->children()) {
-    for (auto* tile : row->children()) {
+  for (views::View* row : toggle_effects_view->children()) {
+    for (views::View* tile : row->children()) {
       // Each tile is a button to click on; we want its label.
       views::Label* label = static_cast<views::Label*>(
           tile->GetViewByID(BubbleViewID::kToggleEffectLabel));

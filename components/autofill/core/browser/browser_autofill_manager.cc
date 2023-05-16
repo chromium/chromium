@@ -28,6 +28,7 @@
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -409,10 +410,10 @@ bool ContainsAutofillableValue(const FormStructure& form) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Retrieves all valid credit card candidates for virtual card selection. A
 // valid candidate must have exactly one cloud token.
-std::vector<CreditCard*> GetVirtualCardCandidates(
+std::vector<dangling_raw_ptr<CreditCard>> GetVirtualCardCandidates(
     PersonalDataManager* personal_data_manager) {
   DCHECK(personal_data_manager);
-  std::vector<CreditCard*> candidates =
+  std::vector<dangling_raw_ptr<CreditCard>> candidates =
       personal_data_manager->GetServerCreditCards();
   const std::vector<CreditCardCloudTokenData*> cloud_token_data =
       personal_data_manager->GetCreditCardCloudTokenData();
@@ -697,7 +698,7 @@ void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void BrowserAutofillManager::FetchVirtualCardCandidates() {
-  const std::vector<CreditCard*>& candidates =
+  const std::vector<dangling_raw_ptr<CreditCard>>& candidates =
       GetVirtualCardCandidates(client()->GetPersonalDataManager());
   // Make sure the |candidates| is not empty, otherwise the check in
   // ShouldShowVirtualCardOption() should fail.
@@ -898,7 +899,7 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
 
   // Only upload server statistics and UMA metrics if at least some local data
   // is available to use as a baseline.
-  std::vector<AutofillProfile*> profiles =
+  std::vector<dangling_raw_ptr<AutofillProfile>> profiles =
       client()->GetPersonalDataManager()->GetProfiles();
   if (observed_submission && form_structure->IsAutofillable()) {
     AutofillMetrics::LogNumberOfProfilesAtAutofillableFormSubmission(
@@ -1847,7 +1848,7 @@ void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
 }
 
 void BrowserAutofillManager::PropagateAutofillPredictions(
-    const std::vector<FormStructure*>& forms) {
+    const std::vector<dangling_raw_ptr<FormStructure>>& forms) {
   client()->PropagateAutofillPredictions(driver(), forms);
 }
 
@@ -2118,7 +2119,7 @@ bool BrowserAutofillManager::RefreshDataModels() {
     return false;
 
   // No autofill data to return if the profiles are empty.
-  const std::vector<AutofillProfile*>& profiles =
+  const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles =
       client()->GetPersonalDataManager()->GetProfiles();
   credit_card_access_manager_->UpdateCreditCardFormEventLogger();
 

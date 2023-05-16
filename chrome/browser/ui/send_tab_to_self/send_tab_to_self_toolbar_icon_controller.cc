@@ -115,7 +115,8 @@ void SendTabToSelfToolbarIconController::RemoveDelegate(
 
 SendTabToSelfToolbarIconControllerDelegate*
 SendTabToSelfToolbarIconController::GetActiveDelegate() {
-  for (auto* delegate : delegate_list_) {
+  for (send_tab_to_self::SendTabToSelfToolbarIconControllerDelegate* delegate :
+       delegate_list_) {
     if (delegate->IsActive()) {
       return delegate;
     }

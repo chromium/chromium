@@ -11,6 +11,7 @@
 #include "ash/system/progress_indicator/progress_indicator_animation.h"
 #include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -45,9 +46,10 @@ TEST_F(ProgressIndicatorAnimationRegistryTest, EraseAllAnimations) {
   // * a callback to invoke to erase progress animations,
   // * keys for which to expect progress animations after erase invocation.
   struct TestCase {
-    std::vector<size_t*> keys;
+    std::vector<dangling_raw_ptr<size_t>> keys;
     base::OnceClosure erase_callback;
-    std::vector<size_t*> keys_with_animations_after_erase_callback;
+    std::vector<dangling_raw_ptr<size_t>>
+        keys_with_animations_after_erase_callback;
   };
 
   std::vector<TestCase> test_cases;
@@ -93,7 +95,7 @@ TEST_F(ProgressIndicatorAnimationRegistryTest, EraseAllAnimations) {
 
     // Iterate over `keys`.
     for (auto it = keys.begin(); it != keys.end(); ++it) {
-      const auto* key = *it;
+      const auto* key = (*it).get();
       const size_t index = std::distance(keys.begin(), it);
 
       // Verify no progress animations are set for `key`.
@@ -142,7 +144,7 @@ TEST_F(ProgressIndicatorAnimationRegistryTest, EraseAllAnimations) {
                   test_case.keys_with_animations_after_erase_callback.size());
 
     // Iterate over `keys`.
-    for (const auto* key : keys) {
+    for (const unsigned long* key : keys) {
       const bool expected = base::Contains(
           test_case.keys_with_animations_after_erase_callback, key);
 

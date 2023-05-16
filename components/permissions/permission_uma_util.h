@@ -482,7 +482,7 @@ class PermissionUmaUtil {
 
   // Recorded when a permission prompt creation is in progress.
   static void RecordPermissionPromptAttempt(
-      const std::vector<PermissionRequest*>& requests,
+      const std::vector<dangling_raw_ptr<PermissionRequest>>& requests,
       bool IsLocationBarEditingOrEmpty);
 
   // UMA specifically for when permission prompts are shown. This should be
@@ -495,10 +495,10 @@ class PermissionUmaUtil {
   //   granted+denied+dismissed+ignored is not equal to requested), so it is
   //   unclear from those metrics alone how many prompts are seen by users.
   static void PermissionPromptShown(
-      const std::vector<PermissionRequest*>& requests);
+      const std::vector<dangling_raw_ptr<PermissionRequest>>& requests);
 
   static void PermissionPromptResolved(
-      const std::vector<PermissionRequest*>& requests,
+      const std::vector<dangling_raw_ptr<PermissionRequest>>& requests,
       content::WebContents* web_contents,
       PermissionAction permission_action,
       base::TimeDelta time_to_decision,
@@ -591,7 +591,7 @@ class PermissionUmaUtil {
       PermissionPromptDisposition prompt_disposition);
 
   static void RecordIgnoreReason(
-      const std::vector<PermissionRequest*>& requests,
+      const std::vector<dangling_raw_ptr<PermissionRequest>>& requests,
       PermissionPromptDisposition prompt_disposition,
       PermissionIgnoredReason reason);
 
@@ -675,7 +675,7 @@ class PermissionUmaUtil {
                                                int count);
 
   static void RecordPromptDecided(
-      const std::vector<PermissionRequest*>& requests,
+      const std::vector<dangling_raw_ptr<PermissionRequest>>& requests,
       bool accepted,
       bool is_one_time);
 };

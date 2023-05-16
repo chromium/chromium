@@ -8,6 +8,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move.h"
@@ -269,11 +270,13 @@ class TouchInjectorTest : public views::ViewsTestBase {
     return injector_->pending_delete_user_actions_;
   }
 
-  const std::vector<Action*> GetPendingAddDefaultActions() const {
+  const std::vector<dangling_raw_ptr<Action>> GetPendingAddDefaultActions()
+      const {
     return injector_->pending_add_default_actions_;
   }
 
-  const std::vector<Action*> GetPendingDeleteDefaultActions() const {
+  const std::vector<dangling_raw_ptr<Action>> GetPendingDeleteDefaultActions()
+      const {
     return injector_->pending_delete_default_actions_;
   }
 

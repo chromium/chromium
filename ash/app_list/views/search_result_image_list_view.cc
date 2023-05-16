@@ -14,6 +14,7 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -151,7 +152,7 @@ SearchResultImageListView::ScheduleResultAnimations(
   return absl::nullopt;
 }
 
-std::vector<SearchResultImageView*>
+std::vector<dangling_raw_ptr<SearchResultImageView>>
 SearchResultImageListView::GetSearchResultImageViews() {
   return image_views_;
 }

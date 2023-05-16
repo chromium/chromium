@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/metrics/event_driven_telemetry_collector_pool.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -27,14 +28,14 @@ class FakeEventDrivenTelemetryCollectorPool
   ~FakeEventDrivenTelemetryCollectorPool() override;
 
   // EventDrivenTelemetryCollectorPool:
-  std::vector<CollectorBase*> GetTelemetryCollectors(
+  std::vector<dangling_raw_ptr<CollectorBase>> GetTelemetryCollectors(
       MetricEventType event_type) override;
 
   void AddEventTelemetryCollector(MetricEventType event_type,
                                   CollectorBase* collector);
 
  private:
-  base::flat_map<MetricEventType, std::vector<CollectorBase*>>
+  base::flat_map<MetricEventType, std::vector<dangling_raw_ptr<CollectorBase>>>
       event_telemetry_map_;
 };
 

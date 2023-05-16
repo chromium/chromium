@@ -1819,7 +1819,7 @@ TEST_F(SiteSettingsHandlerTest, NotificationPermissionRevokeUkm) {
 
   auto entries = ukm_recorder.GetEntriesByName("Permission");
   EXPECT_EQ(1u, entries.size());
-  auto* entry = entries.front();
+  auto* entry = entries.front().get();
 
   ukm_recorder.ExpectEntrySourceHasUrl(entry, GURL(google));
   EXPECT_EQ(

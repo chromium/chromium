@@ -466,7 +466,7 @@ int SavedTabGroupBar::CalculatePreferredWidthRestrictedBy(int max_x) {
   int current_x = 0;
   // Calculate the amount of space that the SavedTabGroupBar can utilize
   // restricted by `max_x`.
-  for (auto* button : children()) {
+  for (views::View* button : children()) {
     gfx::Size preferred_size = button->GetPreferredSize();
     int next_x =
         current_x +
@@ -504,7 +504,7 @@ void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
       ShowOverflowButton();
     }
 
-    auto* button = children()[index];
+    auto* button = children()[index].get();
     button->SetVisible(false);
   } else if (overflow_button_->GetVisible()) {
     HideOverflowButton();
@@ -572,7 +572,7 @@ void SavedTabGroupBar::RemoveTabGroupButton(const base::Uuid& guid) {
   // If a visible button was removed set the next button to be visible.
   if (children().size() >= (kMaxVisibleButtons + 1)) {
     if (visible_button_removed) {
-      auto* invisible_button = children()[3];
+      auto* invisible_button = children()[3].get();
       invisible_button->SetSize(invisible_button->GetPreferredSize());
       invisible_button->SetVisible(true);
       PreferredSizeChanged();
@@ -637,7 +637,7 @@ void SavedTabGroupBar::MaybeShowOverflowMenu() {
   auto overflow_menu = std::make_unique<OverflowMenu>(*this);
 
   // Add all buttons that are not currently visible to the overflow menu.
-  for (const auto* const child : children()) {
+  for (const views::View* const child : children()) {
     if (child->GetVisible() ||
         !views::IsViewClass<SavedTabGroupButton>(child)) {
       continue;

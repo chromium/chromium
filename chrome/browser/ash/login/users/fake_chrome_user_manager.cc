@@ -407,7 +407,7 @@ void FakeChromeUserManager::UserLoggedIn(const AccountId& account_id,
                                          const std::string& username_hash,
                                          bool browser_restart,
                                          bool is_child) {
-  for (auto* user : users_) {
+  for (user_manager::User* user : users_) {
     if (user->username_hash() == username_hash) {
       user->set_is_logged_in(true);
       logged_in_users_.push_back(user);
@@ -434,7 +434,7 @@ const user_manager::User* FakeChromeUserManager::FindUser(
     return active_user_;
 
   const user_manager::UserList& users = GetUsers();
-  for (const auto* user : users) {
+  for (const user_manager::User* user : users) {
     if (user->GetAccountId() == account_id)
       return user;
   }
@@ -448,7 +448,7 @@ user_manager::User* FakeChromeUserManager::FindUserAndModify(
     return active_user_;
 
   const user_manager::UserList& users = GetUsers();
-  for (auto* user : users) {
+  for (user_manager::User* user : users) {
     if (user->GetAccountId() == account_id)
       return user;
   }
@@ -491,7 +491,7 @@ void FakeChromeUserManager::SaveForceOnlineSignin(const AccountId& account_id,
 void FakeChromeUserManager::SaveUserDisplayName(
     const AccountId& account_id,
     const std::u16string& display_name) {
-  for (auto* user : users_) {
+  for (user_manager::User* user : users_) {
     if (user->GetAccountId() == account_id) {
       user->set_display_name(display_name);
       return;
@@ -627,7 +627,7 @@ bool FakeChromeUserManager::IsUserAllowed(
 
 void FakeChromeUserManager::SimulateUserProfileLoad(
     const AccountId& account_id) {
-  for (auto* user : users_) {
+  for (user_manager::User* user : users_) {
     if (user->GetAccountId() == account_id) {
       user->SetProfileIsCreated();
       break;
@@ -692,7 +692,7 @@ user_manager::User* FakeChromeUserManager::GetActiveUserInternal() const {
   if (users_.empty())
     return nullptr;
   if (active_account_id_.is_valid()) {
-    for (auto* user : users_) {
+    for (user_manager::User* user : users_) {
       if (user->GetAccountId() == active_account_id_)
         return user;
     }

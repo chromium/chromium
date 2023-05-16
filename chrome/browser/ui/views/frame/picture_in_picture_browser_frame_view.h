@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_PICTURE_IN_PICTURE_BROWSER_FRAME_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_PICTURE_IN_PICTURE_BROWSER_FRAME_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
@@ -210,7 +211,7 @@ class PictureInPictureBrowserFrameView
   raw_ptr<views::FlexLayoutView> button_container_view_ = nullptr;
 
   // The content setting views for icons and bubbles.
-  std::vector<ContentSettingImageView*> content_setting_views_;
+  std::vector<dangling_raw_ptr<ContentSettingImageView>> content_setting_views_;
 
   raw_ptr<CloseImageButton> close_image_button_ = nullptr;
   raw_ptr<views::View> back_to_tab_button_ = nullptr;

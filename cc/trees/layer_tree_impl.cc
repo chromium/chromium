@@ -375,7 +375,7 @@ void LayerTreeImpl::InvalidateRegionForImages(
   if (!images_to_invalidate.empty()) {
     // TODO(khushalsagar): It might be better to keep track of layers with
     // images and only iterate through those here.
-    for (auto* picture_layer : picture_layers_) {
+    for (cc::PictureLayerImpl* picture_layer : picture_layers_) {
       auto result =
           picture_layer->InvalidateRegionForImages(images_to_invalidate);
       switch (result) {
@@ -935,8 +935,9 @@ void LayerTreeImpl::MoveChangeTrackingToLayers() {
 }
 
 void LayerTreeImpl::ForceRecalculateRasterScales() {
-  for (auto* layer : picture_layers_)
+  for (cc::PictureLayerImpl* layer : picture_layers_) {
     layer->ResetRasterScale();
+  }
 }
 
 bool LayerTreeImpl::IsElementInPropertyTree(ElementId element_id) const {

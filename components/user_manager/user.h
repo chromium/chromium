@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_info.h"
@@ -346,7 +347,7 @@ class USER_MANAGER_EXPORT User : public UserInfo {
 };
 
 // List of known users.
-using UserList = std::vector<User*>;
+using UserList = std::vector<dangling_raw_ptr<User>>;
 
 }  // namespace user_manager
 

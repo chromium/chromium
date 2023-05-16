@@ -75,8 +75,9 @@ void AddTextNodesToVector(const ui::AXNode* node,
     return;
   }
 
-  for (const auto* child : node->children())
+  for (const ui::AXNode* child : node->children()) {
     AddTextNodesToVector(child, strings);
+  }
 }
 
 using PageContentsCallback = base::OnceCallback<void(const std::u16string&)>;

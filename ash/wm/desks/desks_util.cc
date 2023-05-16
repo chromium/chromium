@@ -19,6 +19,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -213,7 +214,7 @@ bool IsZOrderTracked(aura::Window* window) {
 }
 
 absl::optional<size_t> GetWindowZOrder(
-    const std::vector<aura::Window*>& windows,
+    const std::vector<dangling_raw_ptr<aura::Window>>& windows,
     aura::Window* window) {
   size_t position = 0;
   for (aura::Window* w : base::Reversed(windows)) {

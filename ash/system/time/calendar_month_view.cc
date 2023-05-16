@@ -556,19 +556,19 @@ void CalendarMonthView::OnEventsFetched(
 }
 
 void CalendarMonthView::EnableFocus() {
-  for (auto* cell : children()) {
+  for (views::View* cell : children()) {
     static_cast<CalendarDateCellView*>(cell)->EnableFocus();
   }
 }
 
 void CalendarMonthView::DisableFocus() {
-  for (auto* cell : children()) {
+  for (views::View* cell : children()) {
     static_cast<CalendarDateCellView*>(cell)->DisableFocus();
   }
 }
 
 void CalendarMonthView::UpdateIsFetchedAndRepaint(bool updated_is_fetched) {
-  for (auto* cell : children()) {
+  for (views::View* cell : children()) {
     static_cast<CalendarDateCellView*>(cell)->UpdateFetchStatus(
         updated_is_fetched);
   }

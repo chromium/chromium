@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundSyncMetricsBrowserTest,
     auto entries = recorder_->GetEntriesByName(
         ukm::builders::BackgroundSyncRegistered::kEntryName);
     ASSERT_EQ(entries.size(), 1u);
-    const auto* entry = entries[0];
+    const auto* entry = entries[0].get();
     recorder_->ExpectEntryMetric(
         entry, ukm::builders::BackgroundSyncRegistered::kCanFireName, true);
     recorder_->ExpectEntryMetric(
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundSyncMetricsBrowserTest,
     auto entries = recorder_->GetEntriesByName(
         ukm::builders::BackgroundSyncCompleted::kEntryName);
     ASSERT_EQ(entries.size(), 1u);
-    const auto* entry = entries[0];
+    const auto* entry = entries[0].get();
     recorder_->ExpectEntryMetric(
         entry, ukm::builders::BackgroundSyncCompleted::kStatusName,
         static_cast<int64_t>(blink::ServiceWorkerStatusCode::kOk));
@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundSyncMetricsBrowserTest,
     auto entries = recorder_->GetEntriesByName(
         ukm::builders::PeriodicBackgroundSyncRegistered::kEntryName);
     ASSERT_EQ(entries.size(), 1u);
-    const auto* entry = entries[0];
+    const auto* entry = entries[0].get();
     recorder_->ExpectEntryMetric(
         entry,
         ukm::builders::PeriodicBackgroundSyncRegistered::kMinIntervalMsName,
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundSyncMetricsBrowserTest,
     auto entries = recorder_->GetEntriesByName(
         ukm::builders::PeriodicBackgroundSyncEventCompleted::kEntryName);
     ASSERT_EQ(entries.size(), 1u);
-    const auto* entry = entries[0];
+    const auto* entry = entries[0].get();
     recorder_->ExpectEntryMetric(
         entry, ukm::builders::PeriodicBackgroundSyncEventCompleted::kStatusName,
         static_cast<int64_t>(blink::ServiceWorkerStatusCode::kOk));

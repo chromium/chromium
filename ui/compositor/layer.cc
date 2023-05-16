@@ -237,8 +237,9 @@ Layer::~Layer() {
     SetMaskLayer(nullptr);
   if (layer_mask_back_link_)
     layer_mask_back_link_->SetMaskLayer(nullptr);
-  for (auto* child : children_)
+  for (ui::Layer* child : children_) {
     child->parent_ = nullptr;
+  }
 
   if (content_layer_)
     content_layer_->ClearClient();
@@ -891,7 +892,7 @@ bool Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
   surface_layer_ = nullptr;
   mirror_layer_ = nullptr;
 
-  for (auto* child : children_) {
+  for (ui::Layer* child : children_) {
     DCHECK(child->cc_layer_);
     cc_layer_->AddChild(child->cc_layer_.get());
   }
@@ -1265,7 +1266,7 @@ void Layer::CompleteAllAnimations() {
 
 void Layer::StackChildrenAtBottom(
     const std::vector<Layer*>& new_leading_children) {
-  std::vector<Layer*> new_children_order;
+  std::vector<dangling_raw_ptr<Layer>> new_children_order;
   new_children_order.reserve(children_.size());
 
   cc::LayerList new_cc_children_order;
@@ -1279,7 +1280,8 @@ void Layer::StackChildrenAtBottom(
         scoped_refptr<cc::Layer>(leading_child->cc_layer_.get()));
   }
 
-  base::flat_set<Layer*> reordered_children(new_children_order);
+  base::flat_set<dangling_raw_ptr<Layer>> reordered_children(
+      new_children_order);
 
   const cc::LayerList& old_cc_children_order = cc_layer_->children();
 
@@ -1298,8 +1300,9 @@ void Layer::SuppressPaint() {
   if (!delegate_)
     return;
   delegate_ = nullptr;
-  for (auto* child : children_)
+  for (ui::Layer* child : children_) {
     child->SuppressPaint();
+  }
 }
 
 void Layer::OnDeviceScaleFactorChanged(float device_scale_factor) {
@@ -1350,7 +1353,7 @@ void Layer::OnDeviceScaleFactorChanged(float device_scale_factor) {
 
   // We may add or remove children during child->OnDeviceScaleFactorChanged().
   std::vector<base::WeakPtr<Layer>> weak_children(children_.size());
-  for (auto* child : children_) {
+  for (ui::Layer* child : children_) {
     weak_children.push_back(child->weak_ptr_factory_.GetWeakPtr());
   }
   for (auto& child : weak_children) {
@@ -1446,8 +1449,9 @@ void Layer::CollectAnimators(
     std::vector<scoped_refptr<LayerAnimator>>* animators) {
   if (animator_ && animator_->is_animating())
     animators->push_back(animator_);
-  for (auto* child : children_)
+  for (ui::Layer* child : children_) {
     child->CollectAnimators(animators);
+  }
 }
 
 void Layer::StackRelativeTo(Layer* child, Layer* other, bool above) {
@@ -1768,8 +1772,9 @@ void Layer::SetCompositorForAnimatorsInTree(Compositor* compositor) {
     animator_->AttachLayerAndTimeline(compositor);
   }
 
-  for (auto* child : children_)
+  for (ui::Layer* child : children_) {
     child->SetCompositorForAnimatorsInTree(compositor);
+  }
 }
 
 void Layer::ResetCompositorForAnimatorsInTree(Compositor* compositor) {
@@ -1781,8 +1786,9 @@ void Layer::ResetCompositorForAnimatorsInTree(Compositor* compositor) {
     animator_->RemoveFromCollection(collection);
   }
 
-  for (auto* child : children_)
+  for (ui::Layer* child : children_) {
     child->ResetCompositorForAnimatorsInTree(compositor);
+  }
 }
 
 void Layer::OnMirrorDestroyed(LayerMirror* mirror) {
@@ -1827,8 +1833,9 @@ void Layer::GetFlattenedWeakList(
   if (layer_mask_)
     flattened_list->emplace_back(layer_mask_->weak_ptr_factory_.GetWeakPtr());
 
-  for (auto* child : children_)
+  for (ui::Layer* child : children_) {
     child->GetFlattenedWeakList(flattened_list);
+  }
 }
 
 void Layer::SetFillsBoundsOpaquelyWithReason(bool fills_bounds_opaquely,

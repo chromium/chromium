@@ -12,6 +12,7 @@
 #include "ash/utility/transformer_util.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move.h"
@@ -918,7 +919,7 @@ std::vector<std::unique_ptr<Action>> TouchInjector::RemoveUserActionsAndViews(
 
 void TouchInjector::AddDefaultActionsAndViews(
     std::vector<std::unique_ptr<Action>>& actions,
-    std::vector<Action*>& added_actions) {
+    std::vector<dangling_raw_ptr<Action>>& added_actions) {
   if (actions.empty()) {
     return;
   }
@@ -935,12 +936,12 @@ void TouchInjector::AddDefaultActionsAndViews(
 }
 
 void TouchInjector::AddDefaultActionsAndViews(
-    std::vector<Action*>& deleted_default_actions) {
+    std::vector<dangling_raw_ptr<Action>>& deleted_default_actions) {
   if (deleted_default_actions.empty()) {
     return;
   }
 
-  for (auto* action : deleted_default_actions) {
+  for (arc::input_overlay::Action* action : deleted_default_actions) {
     DCHECK(action->deleted());
     action->set_deleted(false);
     AddActionView(action);
@@ -949,12 +950,12 @@ void TouchInjector::AddDefaultActionsAndViews(
 }
 
 void TouchInjector::RemoveDefaultActionsAndViews(
-    std::vector<Action*>& added_default_actions) {
+    std::vector<dangling_raw_ptr<Action>>& added_default_actions) {
   if (added_default_actions.empty()) {
     return;
   }
 
-  for (auto* action : added_default_actions) {
+  for (arc::input_overlay::Action* action : added_default_actions) {
     DCHECK(!action->deleted());
     action->set_deleted(true);
     RemoveActionView(action);

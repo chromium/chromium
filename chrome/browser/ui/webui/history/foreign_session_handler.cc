@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -266,7 +267,7 @@ void ForeignSessionHandler::HandleGetForeignSessions(
 base::Value::List ForeignSessionHandler::GetForeignSessions() {
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       GetOpenTabsUIDelegate(web_ui());
-  std::vector<const sync_sessions::SyncedSession*> sessions;
+  std::vector<dangling_raw_ptr<const sync_sessions::SyncedSession>> sessions;
 
   base::Value::List session_list;
   if (open_tabs && open_tabs->GetAllForeignSessions(&sessions)) {

@@ -109,7 +109,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
     auto entries = recorder().GetEntriesByName("Blink.UpdateTime");
     EXPECT_GT(entries.size(), index);
 
-    auto* entry = entries[index];
+    auto* entry = entries[index].get();
     EXPECT_TRUE(
         ukm::TestUkmRecorder::EntryHasMetric(entry, GetPrimaryMetricName()));
     const int64_t* primary_metric_value =
@@ -154,7 +154,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
     auto entries = recorder().GetEntriesByName("Blink.PageLoad");
 
     EXPECT_EQ(entries.size(), expected_num_entries);
-    for (auto* entry : entries) {
+    for (const ukm::mojom::UkmEntry* entry : entries) {
       EXPECT_TRUE(
           ukm::TestUkmRecorder::EntryHasMetric(entry, GetPrimaryMetricName()));
       const int64_t* primary_metric_value =
@@ -223,7 +223,7 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
     EXPECT_EQ(recorder().entries_count(), expected_num_entries);
     auto entries = recorder().GetEntriesByName("Blink.UpdateTime");
     EXPECT_GT(entries.size(), expected_num_entries - 1);
-    auto* entry = entries[expected_num_entries - 1];
+    auto* entry = entries[expected_num_entries - 1].get();
 
     EXPECT_TRUE(ukm::TestUkmRecorder::EntryHasMetric(
         entry, GetMetricName(LocalFrameUkmAggregator::kForcedStyleAndLayout)));

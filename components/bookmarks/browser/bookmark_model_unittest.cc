@@ -1866,7 +1866,7 @@ class BookmarkModelFaviconTest : public testing::Test,
       const std::set<GURL>& removed_urls) override {}
 
   std::unique_ptr<BookmarkModel> model_;
-  std::vector<const BookmarkNode*> updated_nodes_;
+  std::vector<dangling_raw_ptr<const BookmarkNode>> updated_nodes_;
 };
 
 // Test that BookmarkModel::OnFaviconsChanged() sends a notification that the

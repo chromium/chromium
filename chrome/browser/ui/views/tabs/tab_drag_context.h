@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/gfx/geometry/rect.h"
@@ -114,21 +115,23 @@ class TabDragContext : public TabDragContextBase {
   // groups.
   virtual int GetInsertionIndexForDraggedBounds(
       const gfx::Rect& dragged_bounds,
-      std::vector<TabSlotView*> dragged_views,
+      std::vector<dangling_raw_ptr<TabSlotView>> dragged_views,
       int num_dragged_tabs,
       absl::optional<tab_groups::TabGroupId> group) const = 0;
 
   // Returns the bounds needed for each of the views, relative to a leading
   // coordinate of 0 for the left edge of the first view's bounds.
   virtual std::vector<gfx::Rect> CalculateBoundsForDraggedViews(
-      const std::vector<TabSlotView*>& views) = 0;
+      const std::vector<dangling_raw_ptr<TabSlotView>>& views) = 0;
 
   // Sets the bounds of |views| to |bounds|.
-  virtual void SetBoundsForDrag(const std::vector<TabSlotView*>& views,
-                                const std::vector<gfx::Rect>& bounds) = 0;
+  virtual void SetBoundsForDrag(
+      const std::vector<dangling_raw_ptr<TabSlotView>>& views,
+      const std::vector<gfx::Rect>& bounds) = 0;
 
   // Used by TabDragController when the user starts or stops dragging.
-  virtual void StartedDragging(const std::vector<TabSlotView*>& views) = 0;
+  virtual void StartedDragging(
+      const std::vector<dangling_raw_ptr<TabSlotView>>& views) = 0;
 
   // Invoked when TabDragController detaches a set of tabs.
   virtual void DraggedTabsDetached() = 0;
@@ -136,15 +139,17 @@ class TabDragContext : public TabDragContextBase {
   // Used by TabDragController when the user stops dragging. |completed| is
   // true if the drag operation completed successfully, false if it was
   // reverted.
-  virtual void StoppedDragging(const std::vector<TabSlotView*>& views) = 0;
+  virtual void StoppedDragging(
+      const std::vector<dangling_raw_ptr<TabSlotView>>& views) = 0;
 
   // Invoked during drag to layout the views being dragged in |views| at
   // |location|. If |initial_drag| is true, this is the initial layout after the
   // user moved the mouse far enough to trigger a drag.
-  virtual void LayoutDraggedViewsAt(const std::vector<TabSlotView*>& views,
-                                    TabSlotView* source_view,
-                                    const gfx::Point& location,
-                                    bool initial_drag) = 0;
+  virtual void LayoutDraggedViewsAt(
+      const std::vector<dangling_raw_ptr<TabSlotView>>& views,
+      TabSlotView* source_view,
+      const gfx::Point& location,
+      bool initial_drag) = 0;
 
   // Forces the entire tabstrip to lay out.
   virtual void ForceLayout() = 0;

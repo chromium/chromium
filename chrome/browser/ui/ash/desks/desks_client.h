@@ -110,9 +110,9 @@ class DesksClient : public ash::SessionObserver {
   void DeleteDeskTemplate(const base::Uuid& template_uuid,
                           DeleteDeskTemplateCallback callback);
 
-  using GetDeskTemplatesCallback =
-      base::OnceCallback<void(absl::optional<DeskActionError> result,
-                              const std::vector<const ash::DeskTemplate*>&)>;
+  using GetDeskTemplatesCallback = base::OnceCallback<void(
+      absl::optional<DeskActionError> result,
+      const std::vector<dangling_raw_ptr<const ash::DeskTemplate>>&)>;
   // Returns the current available saved desk templates.
   // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
   // further uses of this method.

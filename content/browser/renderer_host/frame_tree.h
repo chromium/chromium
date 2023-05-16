@@ -95,10 +95,11 @@ class CONTENT_EXPORT FrameTree {
     friend class FrameTreeTest;
     friend class NodeRange;
 
-    NodeIterator(const std::vector<FrameTreeNode*>& starting_nodes,
-                 const FrameTreeNode* root_of_subtree_to_skip,
-                 bool should_descend_into_inner_trees,
-                 bool include_delegate_nodes_for_inner_frame_trees);
+    NodeIterator(
+        const std::vector<dangling_raw_ptr<FrameTreeNode>>& starting_nodes,
+        const FrameTreeNode* root_of_subtree_to_skip,
+        bool should_descend_into_inner_trees,
+        bool include_delegate_nodes_for_inner_frame_trees);
 
     void AdvanceNode();
 
@@ -124,12 +125,13 @@ class CONTENT_EXPORT FrameTree {
    private:
     friend class FrameTree;
 
-    NodeRange(const std::vector<FrameTreeNode*>& starting_nodes,
-              const FrameTreeNode* root_of_subtree_to_skip,
-              bool should_descend_into_inner_trees,
-              bool include_delegate_nodes_for_inner_frame_trees);
+    NodeRange(
+        const std::vector<dangling_raw_ptr<FrameTreeNode>>& starting_nodes,
+        const FrameTreeNode* root_of_subtree_to_skip,
+        bool should_descend_into_inner_trees,
+        bool include_delegate_nodes_for_inner_frame_trees);
 
-    const std::vector<FrameTreeNode*> starting_nodes_;
+    const std::vector<dangling_raw_ptr<FrameTreeNode>> starting_nodes_;
     const raw_ptr<const FrameTreeNode> root_of_subtree_to_skip_;
     const bool should_descend_into_inner_trees_;
     const bool include_delegate_nodes_for_inner_frame_trees_;

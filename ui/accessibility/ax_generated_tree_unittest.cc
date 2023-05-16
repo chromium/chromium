@@ -58,7 +58,7 @@ std::string TreeToStringHelper(const AXNode* node) {
     result += "x";
   if (node->children().empty())
     return result;
-  const auto add_children = [](const std::string& str, const auto* node) {
+  const auto add_children = [](const std::string& str, const AXNode* node) {
     return str + " " + TreeToStringHelper(node);
   };
   return result + " (" +

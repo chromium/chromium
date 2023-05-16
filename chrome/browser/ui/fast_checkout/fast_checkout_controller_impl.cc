@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/preferences/autofill/autofill_profile_bridge.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -18,7 +19,8 @@ FastCheckoutControllerImpl::FastCheckoutControllerImpl(
 FastCheckoutControllerImpl::~FastCheckoutControllerImpl() = default;
 
 void FastCheckoutControllerImpl::Show(
-    const std::vector<autofill::AutofillProfile*>& autofill_profiles,
+    const std::vector<dangling_raw_ptr<autofill::AutofillProfile>>&
+        autofill_profiles,
     const std::vector<autofill::CreditCard*>& credit_cards) {
   GetOrCreateView()->Show(autofill_profiles, credit_cards);
 }

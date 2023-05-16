@@ -8,6 +8,8 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+
 namespace gfx {
 class Transform;
 }  // namespace gfx
@@ -40,8 +42,8 @@ class ExpandedDesksBarButton;
 void PerformNewDeskMiniViewAnimation(
     DeskBarViewBase* bar_view,
     std::vector<DeskMiniView*> new_mini_views,
-    std::vector<DeskMiniView*> mini_views_left,
-    std::vector<DeskMiniView*> mini_views_right,
+    std::vector<dangling_raw_ptr<DeskMiniView>> mini_views_left,
+    std::vector<dangling_raw_ptr<DeskMiniView>> mini_views_right,
     int shift_x);
 
 // Performs the mini_view removal animation. It is in charge of removing the
@@ -60,8 +62,8 @@ void PerformNewDeskMiniViewAnimation(
 void PerformRemoveDeskMiniViewAnimation(
     DeskBarViewBase* bar_view,
     DeskMiniView* removed_mini_view,
-    std::vector<DeskMiniView*> mini_views_left,
-    std::vector<DeskMiniView*> mini_views_right,
+    std::vector<dangling_raw_ptr<DeskMiniView>> mini_views_left,
+    std::vector<dangling_raw_ptr<DeskMiniView>> mini_views_right,
     int shift_x);
 
 // Performs the animation of switching from zero state desk bar to expanded
@@ -88,7 +90,7 @@ void PerformZeroStateToExpandedStateMiniViewAnimationCrOSNext(
 // - Layout will be done once the animation is completed.
 void PerformExpandedStateToZeroStateMiniViewAnimation(
     DeskBarViewBase* bar_view,
-    std::vector<DeskMiniView*> removed_mini_views);
+    std::vector<dangling_raw_ptr<DeskMiniView>> removed_mini_views);
 
 // Performs the mini_view reorder animation. It moves the desks to make space at
 // `new_index` for the mini_view at `old_index`. Before reordering, if
@@ -104,7 +106,7 @@ void PerformExpandedStateToZeroStateMiniViewAnimation(
 void PerformReorderDeskMiniViewAnimation(
     int old_index,
     int new_index,
-    const std::vector<DeskMiniView*>& mini_views);
+    const std::vector<dangling_raw_ptr<DeskMiniView>>& mini_views);
 
 // Performs the animation which happens when the saved desk library button is
 // shown or hidden. Shifts all the mini views and the new desk button to the
@@ -113,7 +115,7 @@ void PerformReorderDeskMiniViewAnimation(
 // - It assumes all the `mini_views` and new desk button have been laid out in
 //   their final positions.
 void PerformLibraryButtonVisibilityAnimation(
-    const std::vector<DeskMiniView*>& mini_views,
+    const std::vector<dangling_raw_ptr<DeskMiniView>>& mini_views,
     views::View* new_desk_button,
     int shift_x);
 

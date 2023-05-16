@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
@@ -772,7 +773,7 @@ ExternalVkImageBacking::ProduceGLTexture(SharedImageManager* manager,
     }
   }
 
-  std::vector<gles2::Texture*> textures;
+  std::vector<dangling_raw_ptr<gles2::Texture>> textures;
   textures.reserve(gl_textures_.size());
   for (auto& gl_texture : gl_textures_) {
     textures.push_back(gl_texture.texture());

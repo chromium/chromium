@@ -118,7 +118,9 @@ class OpenXrLayers {
   // layer for a specific view configuration.
   std::vector<XrCompositionLayerProjection> secondary_projection_layers_;
   // Pointers to the corresponding layer in secondary_projection_layers_.
-  std::vector<XrCompositionLayerBaseHeader*> secondary_composition_layers_;
+  // excluded since the field is passed to third_party api
+  RAW_PTR_EXCLUSION std::vector<XrCompositionLayerBaseHeader*>
+      secondary_composition_layers_;
 
   // The secondary view configuration layer info containing the data above,
   // which is passed to xrEndFrame.

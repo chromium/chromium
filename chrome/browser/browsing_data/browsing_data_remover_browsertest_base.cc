@@ -195,7 +195,7 @@ void BrowsingDataRemoverBrowserTestBase::VerifyDownloadCount(size_t expected,
   content::DownloadManager* download_manager = profile->GetDownloadManager();
   DownloadManagerWaiter download_manager_waiter(download_manager);
   download_manager_waiter.WaitForInitialized();
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   download_manager->GetAllDownloads(&downloads);
   EXPECT_EQ(expected, downloads.size());
 }

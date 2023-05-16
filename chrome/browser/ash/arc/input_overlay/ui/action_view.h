@@ -104,7 +104,9 @@ class ActionView : public views::View {
   void AddedToWidget() override;
 
   Action* action() { return action_; }
-  const std::vector<ActionLabel*>& labels() const { return labels_; }
+  const std::vector<dangling_raw_ptr<ActionLabel>>& labels() const {
+    return labels_;
+  }
   TouchPoint* touch_point() { return touch_point_; }
   void set_editable(bool editable) { editable_ = editable; }
   DisplayOverlayController* display_overlay_controller() {
@@ -133,7 +135,7 @@ class ActionView : public views::View {
   // Three-dot button to show the |ActionEditMenu|.
   raw_ptr<ActionEditButton> menu_entry_ = nullptr;
   // Labels for mapping hints.
-  std::vector<ActionLabel*> labels_;
+  std::vector<dangling_raw_ptr<ActionLabel>> labels_;
   // Current display mode.
   DisplayMode current_display_mode_ = DisplayMode::kNone;
   // Local center position of the touch point view.

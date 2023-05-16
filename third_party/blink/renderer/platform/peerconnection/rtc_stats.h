@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
@@ -100,8 +101,10 @@ class PLATFORM_EXPORT RTCStatsWrapper {
   // Pointer to a stats object that is owned by |stats_owner_|.
   const webrtc::RTCStats* const stats_;
   // Members of the |stats_| object, equivalent to |stats_->Members()|.
-  const std::vector<const webrtc::RTCStatsMemberInterface*> stats_members_
-      ALLOW_DISCOURAGED_TYPE("Matches webrtc::RTCStats::Members()");
+  // Excluded due to interaction with third_party api.
+  RAW_PTR_EXCLUSION const std::vector<const webrtc::RTCStatsMemberInterface*>
+      stats_members_
+          ALLOW_DISCOURAGED_TYPE("Matches webrtc::RTCStats::Members()");
 };
 
 class PLATFORM_EXPORT RTCStatsMember {

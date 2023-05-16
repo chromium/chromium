@@ -162,7 +162,7 @@ void FakeUserManager::UserLoggedIn(const AccountId& account_id,
                                    const std::string& username_hash,
                                    bool browser_restart,
                                    bool is_child) {
-  for (auto* user : users_) {
+  for (user_manager::User* user : users_) {
     if (user->GetAccountId() == account_id) {
       user->set_is_logged_in(true);
       user->set_username_hash(username_hash);

@@ -24,6 +24,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -513,7 +514,7 @@ std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
 
 // static
 bool FormStructure::EncodeQueryRequest(
-    const std::vector<FormStructure*>& forms,
+    const std::vector<dangling_raw_ptr<FormStructure>>& forms,
     AutofillPageQueryRequest* query,
     std::vector<FormSignature>* queried_form_signatures) {
   DCHECK(queried_form_signatures);
@@ -531,7 +532,7 @@ bool FormStructure::EncodeQueryRequest(
   // considered for field signatures; (2) for dynamic forms we will hold on to
   // the original form signature.
   std::set<FormSignature> processed_forms;
-  for (const auto* form : forms) {
+  for (const autofill::FormStructure* form : forms) {
     if (base::Contains(processed_forms, form->form_signature()))
       continue;
     UMA_HISTOGRAM_COUNTS_1000("Autofill.FieldCount", form->field_count());
@@ -547,7 +548,7 @@ bool FormStructure::EncodeQueryRequest(
 // static
 void FormStructure::ParseApiQueryResponse(
     base::StringPiece payload,
-    const std::vector<FormStructure*>& forms,
+    const std::vector<dangling_raw_ptr<FormStructure>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager) {
@@ -575,7 +576,7 @@ void FormStructure::ParseApiQueryResponse(
 // static
 void FormStructure::ProcessQueryResponse(
     const AutofillQueryResponse& response,
-    const std::vector<FormStructure*>& forms,
+    const std::vector<dangling_raw_ptr<FormStructure>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager) {
@@ -744,7 +745,7 @@ void FormStructure::ProcessQueryResponse(
 
 // static
 std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
-    const std::vector<FormStructure*>& form_structures) {
+    const std::vector<dangling_raw_ptr<FormStructure>>& form_structures) {
   std::vector<FormDataPredictions> forms;
   forms.reserve(form_structures.size());
   for (const FormStructure* form_structure : form_structures) {
@@ -781,9 +782,9 @@ std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
 
 // static
 std::vector<FieldGlobalId> FormStructure::FindFieldsEligibleForManualFilling(
-    const std::vector<FormStructure*>& forms) {
+    const std::vector<dangling_raw_ptr<FormStructure>>& forms) {
   std::vector<FieldGlobalId> fields_eligible_for_manual_filling;
-  for (const auto* form : forms) {
+  for (const autofill::FormStructure* form : forms) {
     for (const auto& field : form->fields_) {
       FieldTypeGroup field_type_group =
           GroupTypeOfServerFieldType(field->server_type());

@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -464,7 +465,7 @@ const CreditCard* AutofillSuggestionGenerator::GetServerCardForLocalCard(
   if (local_card->record_type() != CreditCard::LOCAL_CARD)
     return nullptr;
 
-  std::vector<CreditCard*> server_cards =
+  std::vector<dangling_raw_ptr<CreditCard>> server_cards =
       personal_data_->GetServerCreditCards();
   auto it = base::ranges::find_if(
       server_cards.begin(), server_cards.end(),

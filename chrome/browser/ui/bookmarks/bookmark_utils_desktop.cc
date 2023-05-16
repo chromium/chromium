@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -68,7 +69,7 @@ namespace {
 // recurses one level deep, not infinitely.  TODO(pkasting): It's not clear why
 // this shouldn't just recurse infinitely.
 std::vector<UrlAndId> GetURLsToOpen(
-    const std::vector<const BookmarkNode*>& nodes,
+    const std::vector<dangling_raw_ptr<const BookmarkNode>>& nodes,
     content::BrowserContext* browser_context = nullptr,
     bool incognito_urls_only = false) {
   std::vector<UrlAndId> url_and_ids;
@@ -243,10 +244,11 @@ OpenedWebContentsSet OpenAllHelper(Browser* browser,
 
 }  // namespace
 
-void OpenAllIfAllowed(Browser* browser,
-                      const std::vector<const bookmarks::BookmarkNode*>& nodes,
-                      WindowOpenDisposition initial_disposition,
-                      bool add_to_group) {
+void OpenAllIfAllowed(
+    Browser* browser,
+    const std::vector<dangling_raw_ptr<const bookmarks::BookmarkNode>>& nodes,
+    WindowOpenDisposition initial_disposition,
+    bool add_to_group) {
   std::vector<UrlAndId> url_and_ids = GetURLsToOpen(
       nodes, browser->profile(),
       initial_disposition == WindowOpenDisposition::OFF_THE_RECORD);
@@ -320,7 +322,7 @@ void OpenAllIfAllowed(Browser* browser,
 }
 
 void OpenAllNow(Browser* browser,
-                const std::vector<const BookmarkNode*>& nodes,
+                const std::vector<dangling_raw_ptr<const BookmarkNode>>& nodes,
                 WindowOpenDisposition initial_disposition,
                 content::BrowserContext* browser_context) {
   // Opens all |nodes| of type URL and any children of |nodes| that are of type
@@ -335,9 +337,10 @@ void OpenAllNow(Browser* browser,
                 initial_disposition);
 }
 
-int OpenCount(gfx::NativeWindow parent,
-              const std::vector<const bookmarks::BookmarkNode*>& nodes,
-              content::BrowserContext* incognito_context) {
+int OpenCount(
+    gfx::NativeWindow parent,
+    const std::vector<dangling_raw_ptr<const bookmarks::BookmarkNode>>& nodes,
+    content::BrowserContext* incognito_context) {
   return GetURLsToOpen(nodes, incognito_context, incognito_context != nullptr)
       .size();
 }
@@ -347,8 +350,10 @@ int OpenCount(gfx::NativeWindow parent,
               content::BrowserContext* incognito_context) {
   std::vector<const BookmarkNode*> nodes;
   nodes.push_back(node);
-  return OpenCount(parent, std::vector<const bookmarks::BookmarkNode*>{node},
-                   incognito_context);
+  return OpenCount(
+      parent,
+      std::vector<dangling_raw_ptr<const bookmarks::BookmarkNode>>{node},
+      incognito_context);
 }
 
 bool ConfirmDeleteBookmarkNode(gfx::NativeWindow window,
@@ -382,12 +387,13 @@ void ShowBookmarkAllTabsDialog(Browser* browser) {
                            base::Unretained(profile)));
 }
 
-bool HasBookmarkURLs(const std::vector<const BookmarkNode*>& selection) {
+bool HasBookmarkURLs(
+    const std::vector<dangling_raw_ptr<const BookmarkNode>>& selection) {
   return !GetURLsToOpen(selection).empty();
 }
 
 bool HasBookmarkURLsAllowedInIncognitoMode(
-    const std::vector<const BookmarkNode*>& selection,
+    const std::vector<dangling_raw_ptr<const BookmarkNode>>& selection,
     content::BrowserContext* browser_context) {
   return !GetURLsToOpen(selection, browser_context, true).empty();
 }

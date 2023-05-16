@@ -105,7 +105,7 @@ static ScopedJavaLocalRef<jobjectArray> JNI_SecureDnsBridge_GetProviders(
   ret.reserve(providers.size());
   base::ranges::transform(
       providers, std::back_inserter(ret),
-      [](const auto* entry) -> std::vector<std::u16string> {
+      [](const net::DohProviderEntry* entry) -> std::vector<std::u16string> {
         net::DnsOverHttpsConfig config({entry->doh_server_config});
         return {base::UTF8ToUTF16(entry->ui_name),
                 base::UTF8ToUTF16(config.ToString()),

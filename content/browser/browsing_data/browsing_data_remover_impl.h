@@ -159,7 +159,7 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
     uint64_t remove_mask;
     uint64_t origin_type_mask;
     std::unique_ptr<BrowsingDataFilterBuilder> filter_builder;
-    std::vector<Observer*> observers;
+    std::vector<dangling_raw_ptr<Observer>> observers;
     base::TimeTicks task_started;
   };
 

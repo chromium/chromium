@@ -2115,7 +2115,7 @@ TEST_F(DisplayManagerTest, CloseDisplayByEvent) {
 
   auto* mirror_window_controller =
       Shell::Get()->window_tree_host_manager()->mirror_window_controller();
-  auto* host_root = mirror_window_controller->GetAllRootWindows()[1];
+  auto* host_root = mirror_window_controller->GetAllRootWindows()[1].get();
   ui::test::EventGenerator generator(host_root);
   generator.PressAndReleaseKey(ui::VKEY_A);
 

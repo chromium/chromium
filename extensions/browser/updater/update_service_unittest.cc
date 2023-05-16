@@ -216,7 +216,7 @@ class FakeUpdateClient : public update_client::UpdateClient {
 
   std::vector<absl::optional<update_client::CrxComponent>> data_;
   std::vector<UninstallPing> uninstall_pings_;
-  std::vector<Observer*> observers_;
+  std::vector<dangling_raw_ptr<Observer>> observers_;
 
   bool delay_update_ = false;
   bool is_malware_update_item_ = false;

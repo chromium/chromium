@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -433,8 +434,8 @@ GURL PermissionUtil::GetCanonicalOrigin(ContentSettingsType permission,
 }
 
 bool PermissionUtil::HasUserGesture(PermissionPrompt::Delegate* delegate) {
-  const std::vector<permissions::PermissionRequest*>& requests =
-      delegate->Requests();
+  const std::vector<dangling_raw_ptr<permissions::PermissionRequest>>&
+      requests = delegate->Requests();
   return std::any_of(
       requests.begin(), requests.end(),
       [](permissions::PermissionRequest* request) {

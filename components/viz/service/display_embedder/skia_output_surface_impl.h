@@ -255,7 +255,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   bool needs_swap_size_notifications_ = false;
 
   // Images for current frame or render pass.
-  std::vector<ImageContextImpl*> images_in_current_paint_;
+  std::vector<dangling_raw_ptr<ImageContextImpl>> images_in_current_paint_;
 
   THREAD_CHECKER(thread_checker_);
 

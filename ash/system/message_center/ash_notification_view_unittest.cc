@@ -28,6 +28,7 @@
 #include "ash/system/notification_center/notification_list_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -338,7 +339,8 @@ class AshNotificationViewTestBase : public AshTestBase,
     return static_cast<AshNotificationView*>(
         view->grouped_notifications_container_->children().front());
   }
-  std::vector<views::View*> GetChildNotifications(AshNotificationView* view) {
+  std::vector<dangling_raw_ptr<views::View>> GetChildNotifications(
+      AshNotificationView* view) {
     return view->grouped_notifications_container_->children();
   }
   views::View* GetMainView(AshNotificationView* view) {
@@ -388,7 +390,8 @@ class AshNotificationViewTestBase : public AshTestBase,
   views::View* GetActionButtonsRow(AshNotificationView* view) {
     return view->action_buttons_row();
   }
-  std::vector<views::LabelButton*> GetActionButtons(AshNotificationView* view) {
+  std::vector<dangling_raw_ptr<views::LabelButton>> GetActionButtons(
+      AshNotificationView* view) {
     return view->action_buttons();
   }
   message_center::NotificationInputContainer* GetInlineReply(
@@ -675,7 +678,7 @@ TEST_F(AshNotificationViewTest,
   // Only the first `kMaxGroupedNotificationsInCollapsedState` grouped
   // notifications should be visible in the collapsed state.
   int counter = 0;
-  for (auto* child : GetChildNotifications(notification_view())) {
+  for (views::View* child : GetChildNotifications(notification_view())) {
     if (counter <
         message_center_style::kMaxGroupedNotificationsInCollapsedState) {
       EXPECT_TRUE(child->GetVisible());
@@ -687,7 +690,7 @@ TEST_F(AshNotificationViewTest,
 
   // All grouped notifications should be visible once the parent is expanded.
   notification_view()->SetExpanded(true);
-  for (auto* child : GetChildNotifications(notification_view())) {
+  for (views::View* child : GetChildNotifications(notification_view())) {
     EXPECT_TRUE(child->GetVisible());
   }
 
@@ -697,7 +700,7 @@ TEST_F(AshNotificationViewTest,
   // `kMaxGroupedNotificationsInCollapsedState` grouped notifications should be
   // visible.
   counter = 0;
-  for (auto* child : GetChildNotifications(notification_view())) {
+  for (views::View* child : GetChildNotifications(notification_view())) {
     if (counter <
         message_center_style::kMaxGroupedNotificationsInCollapsedState) {
       EXPECT_TRUE(child->GetVisible());

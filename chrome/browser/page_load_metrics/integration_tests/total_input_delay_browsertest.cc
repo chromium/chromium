@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 
 #include "base/test/trace_event_analyzer.h"
@@ -21,9 +22,9 @@ class TotalInputDelayIntegrationTest : public MetricIntegrationTest {
  protected:
   std::vector<int64_t> GetAllInputDelay() {
     std::vector<int64_t> input_delay_list;
-    std::vector<const UkmEntry*> entries =
+    std::vector<dangling_raw_ptr<const UkmEntry>> entries =
         ukm_recorder().GetEntriesByName(InputEvent::kEntryName);
-    for (auto* const entry : entries) {
+    for (const ukm::mojom::UkmEntry* const entry : entries) {
       const int64_t* metric = TestUkmRecorder::GetEntryMetric(
           entry, InputEvent::kInteractiveTiming_InputDelayName);
       input_delay_list.push_back(*metric);

@@ -38,6 +38,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -155,14 +156,14 @@ void LegacyDeskBarView::Init() {
 }
 
 void LegacyDeskBarView::OnHoverStateMayHaveChanged() {
-  for (auto* mini_view : mini_views_) {
+  for (ash::DeskMiniView* mini_view : mini_views_) {
     mini_view->UpdateDeskButtonVisibility();
   }
 }
 
 void LegacyDeskBarView::OnGestureTap(const gfx::Rect& screen_rect,
                                      bool is_long_gesture) {
-  for (auto* mini_view : mini_views_) {
+  for (ash::DeskMiniView* mini_view : mini_views_) {
     mini_view->OnWidgetGestureTap(screen_rect, is_long_gesture);
   }
 }
@@ -177,7 +178,7 @@ void LegacyDeskBarView::SetDragDetails(const gfx::Point& screen_location,
     return;
   }
 
-  for (auto* mini_view : mini_views_) {
+  for (ash::DeskMiniView* mini_view : mini_views_) {
     mini_view->UpdateFocusColor();
   }
 
@@ -442,7 +443,7 @@ void LegacyDeskBarView::OnDeskRemoved(const Desk* desk) {
     expanded_state_new_desk_button_->SetButtonState(/*enabled=*/true);
   }
 
-  for (auto* mini_view : mini_views_) {
+  for (ash::DeskMiniView* mini_view : mini_views_) {
     mini_view->UpdateDeskButtonVisibility();
   }
 
@@ -468,8 +469,10 @@ void LegacyDeskBarView::OnDeskRemoved(const Desk* desk) {
   Layout();
   PerformRemoveDeskMiniViewAnimation(
       this, removed_mini_view,
-      std::vector<DeskMiniView*>(mini_views_.begin(), partition_iter),
-      std::vector<DeskMiniView*>(partition_iter, mini_views_.end()),
+      std::vector<dangling_raw_ptr<DeskMiniView>>(mini_views_.begin(),
+                                                  partition_iter),
+      std::vector<dangling_raw_ptr<DeskMiniView>>(partition_iter,
+                                                  mini_views_.end()),
       begin_x - GetFirstMiniViewXOffset());
 
   MaybeUpdateCombineDesksTooltips();
@@ -479,7 +482,7 @@ void LegacyDeskBarView::OnDeskReordered(int old_index, int new_index) {
   desks_util::ReorderItem(mini_views_, old_index, new_index);
 
   // Update the order of child views.
-  auto* reordered_view = mini_views_[new_index];
+  auto* reordered_view = mini_views_[new_index].get();
   reordered_view->parent()->ReorderChildView(reordered_view, new_index);
   reordered_view->parent()->NotifyAccessibilityEvent(
       ax::mojom::Event::kTreeChanged, true);
@@ -493,7 +496,7 @@ void LegacyDeskBarView::OnDeskReordered(int old_index, int new_index) {
 
 void LegacyDeskBarView::OnDeskActivationChanged(const Desk* activated,
                                                 const Desk* deactivated) {
-  for (auto* mini_view : mini_views_) {
+  for (ash::DeskMiniView* mini_view : mini_views_) {
     const Desk* desk = mini_view->desk();
     if (desk == activated || desk == deactivated) {
       mini_view->UpdateFocusColor();
@@ -572,11 +575,12 @@ void LegacyDeskBarView::UpdateNewMiniViews(bool initializing_bar_view,
   DCHECK(std::vector<DeskMiniView*>(left_partition_iter,
                                     right_partition_iter) == new_mini_views);
 
-  PerformNewDeskMiniViewAnimation(
-      this, new_mini_views,
-      std::vector<DeskMiniView*>(mini_views_.begin(), left_partition_iter),
-      std::vector<DeskMiniView*>(right_partition_iter, mini_views_.end()),
-      begin_x - GetFirstMiniViewXOffset());
+  PerformNewDeskMiniViewAnimation(this, new_mini_views,
+                                  std::vector<dangling_raw_ptr<DeskMiniView>>(
+                                      mini_views_.begin(), left_partition_iter),
+                                  std::vector<dangling_raw_ptr<DeskMiniView>>(
+                                      right_partition_iter, mini_views_.end()),
+                                  begin_x - GetFirstMiniViewXOffset());
 }
 
 void LegacyDeskBarView::SwitchToZeroState() {
@@ -592,7 +596,7 @@ void LegacyDeskBarView::SwitchToZeroState() {
     EndDragDesk(drag_view_, /*end_by_user=*/false);
   }
 
-  std::vector<DeskMiniView*> removed_mini_views = mini_views_;
+  std::vector<dangling_raw_ptr<DeskMiniView>> removed_mini_views = mini_views_;
   mini_views_.clear();
 
   auto* highlight_controller = GetHighlightController();

@@ -12,6 +12,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/download/android/download_open_source.h"
@@ -286,7 +287,8 @@ class DownloadManagerService
   bool is_manager_initialized_;
   bool is_pending_downloads_loaded_;
 
-  std::vector<ProfileKey*> profiles_with_pending_get_downloads_actions_;
+  std::vector<dangling_raw_ptr<ProfileKey>>
+      profiles_with_pending_get_downloads_actions_;
 
   PendingDownloadActions pending_actions_;
 

@@ -690,7 +690,7 @@ PipelineStatus PipelineIntegrationTestBase::StartPipelineWithMediaSource(
 
   RunUntilQuitOrEndedOrError(&run_loop);
 
-  for (auto* stream : demuxer_->GetAllStreams()) {
+  for (media::DemuxerStream* stream : demuxer_->GetAllStreams()) {
     EXPECT_TRUE(stream->SupportsConfigChanges());
   }
 

@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -36,14 +37,14 @@ class WebAppContentSettingsContainer : public views::View {
 
   void EnsureVisible();
 
-  const std::vector<ContentSettingImageView*>& get_content_setting_views()
-      const {
+  const std::vector<dangling_raw_ptr<ContentSettingImageView>>&
+  get_content_setting_views() const {
     return content_setting_views_;
   }
 
  private:
   // Owned by the views hierarchy.
-  std::vector<ContentSettingImageView*> content_setting_views_;
+  std::vector<dangling_raw_ptr<ContentSettingImageView>> content_setting_views_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_CONTENT_SETTINGS_CONTAINER_H_

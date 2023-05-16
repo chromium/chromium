@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -391,7 +392,7 @@ void TemplateUrlServiceAndroid::GetTemplateUrls(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& template_url_list_obj) {
-  std::vector<TemplateURL*> template_urls =
+  std::vector<dangling_raw_ptr<TemplateURL>> template_urls =
       template_url_service_->GetTemplateURLs();
 
   // Clean up duplication between a Play API template URL and a corresponding

@@ -74,7 +74,7 @@ ExtensionMenuItemView* GetAsMenuItem(views::View* view) {
 ExtensionMenuItemView* GetMenuItem(
     views::View* parent_view,
     const ToolbarActionsModel::ActionId& action_id) {
-  for (auto* view : parent_view->children()) {
+  for (views::View* view : parent_view->children()) {
     auto* item_view = GetAsMenuItem(view);
     if (item_view->view_controller()->GetId() == action_id) {
       return item_view;

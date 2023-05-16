@@ -264,8 +264,9 @@ NavigateToURLWithDispositionBlockUntilNavigationsComplete(
     same_tab_observer.set_expected_initial_url(url);
 
   std::set<Browser*> initial_browsers;
-  for (auto* initial_browser : *BrowserList::GetInstance())
+  for (Browser* initial_browser : *BrowserList::GetInstance()) {
     initial_browsers.insert(initial_browser);
+  }
 
   AllBrowserTabAddedWaiter tab_added_waiter;
 
@@ -465,7 +466,7 @@ void SendToOmniboxAndSubmit(Browser* browser,
 }
 
 Browser* GetBrowserNotInSet(const std::set<Browser*>& excluded_browsers) {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     if (excluded_browsers.find(browser) == excluded_browsers.end())
       return browser;
   }

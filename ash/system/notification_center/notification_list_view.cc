@@ -441,7 +441,7 @@ NotificationListView::NotificationListView(
 NotificationListView::~NotificationListView() {
   if (!features::IsQsRevampEnabled()) {
     model_->ClearNotificationChanges();
-    for (auto* view : children()) {
+    for (views::View* view : children()) {
       auto* mvc = AsMVC(view);
       // Make sure we only store expanded state for notifications that still
       // exist.
@@ -491,7 +491,7 @@ void NotificationListView::ClearAllWithAnimation() {
                            children().size());
 
   // Record a ClosedByClearAll metric for each notification dismissed.
-  for (auto* child : children()) {
+  for (views::View* child : children()) {
     auto* view = AsMVC(child);
     metrics_utils::LogClosedByClearAll(view->GetNotificationId());
   }
@@ -510,9 +510,9 @@ void NotificationListView::ClearAllWithAnimation() {
   }
 }
 
-std::vector<message_center::Notification*>
+std::vector<dangling_raw_ptr<message_center::Notification>>
 NotificationListView::GetAllNotifications() const {
-  std::vector<message_center::Notification*> notifications;
+  std::vector<dangling_raw_ptr<message_center::Notification>> notifications;
   for (views::View* view : children()) {
     // The view may be present in the view hierarchy, but deleted in the message
     // center.
@@ -534,9 +534,9 @@ std::vector<std::string> NotificationListView::GetAllNotificationIds() const {
   return notifications;
 }
 
-std::vector<message_center::Notification*>
+std::vector<dangling_raw_ptr<message_center::Notification>>
 NotificationListView::GetNotificationsAboveY(int y_offset) const {
-  std::vector<message_center::Notification*> notifications;
+  std::vector<dangling_raw_ptr<message_center::Notification>> notifications;
   for (views::View* view : children()) {
     const int bottom_limit =
         view->bounds().y() + kNotificationIconStackThreshold;
@@ -551,9 +551,9 @@ NotificationListView::GetNotificationsAboveY(int y_offset) const {
   return notifications;
 }
 
-std::vector<message_center::Notification*>
+std::vector<dangling_raw_ptr<message_center::Notification>>
 NotificationListView::GetNotificationsBelowY(int y_offset) const {
-  std::vector<message_center::Notification*> notifications;
+  std::vector<dangling_raw_ptr<message_center::Notification>> notifications;
   for (views::View* view : children()) {
     const int bottom_limit =
         view->bounds().y() + kNotificationIconStackThreshold;
@@ -603,7 +603,7 @@ int NotificationListView::GetTotalNotificationCount() const {
 
 int NotificationListView::GetTotalPinnedNotificationCount() const {
   int count = 0;
-  for (auto* child : children()) {
+  for (views::View* child : children()) {
     if (AsMVC(child)->IsPinned()) {
       count++;
     }
@@ -665,7 +665,7 @@ void NotificationListView::PreferredSizeChanged() {
 }
 
 void NotificationListView::Layout() {
-  for (auto* child : children()) {
+  for (views::View* child : children()) {
     auto* view = AsMVC(child);
     if (state_ == State::IDLE) {
       view->SetBoundsRect(view->target_bounds());
@@ -714,7 +714,7 @@ void NotificationListView::AnimateResize() {
 
 message_center::MessageView*
 NotificationListView::GetMessageViewForNotificationId(const std::string& id) {
-  auto it = base::ranges::find(children(), id, [](auto* child) {
+  auto it = base::ranges::find(children(), id, [](views::View* child) {
     DCHECK(child->GetClassName() == kMessageViewContainerClassName);
     return AsMVC(child)->message_view()->notification_id();
   });
@@ -843,7 +843,7 @@ void NotificationListView::OnNotificationUpdated(const std::string& id) {
   InterruptClearAll();
 
   MessageView* found_child;
-  for (auto* child : children()) {
+  for (views::View* child : children()) {
     auto* mvc = AsMVC(child);
     // First checks through the immediate children.
     if (mvc->GetNotificationId() == id) {
@@ -874,7 +874,7 @@ void NotificationListView::OnNotificationUpdated(const std::string& id) {
 void NotificationListView::OnSlideStarted(const std::string& notification_id) {
   // When the swipe control for |notification_id| is shown, hide all other swipe
   // controls.
-  for (auto* child : children()) {
+  for (views::View* child : children()) {
     auto* view = AsMVC(child);
     if (view->GetNotificationId() != notification_id) {
       view->CloseSwipeControl();
@@ -974,7 +974,7 @@ void NotificationListView::ConfigureMessageView(
   }
 }
 
-std::vector<message_center::Notification*>
+std::vector<dangling_raw_ptr<message_center::Notification>>
 NotificationListView::GetStackedNotifications() const {
   return message_center_view_->GetStackedNotifications();
 }
@@ -998,7 +998,7 @@ NotificationListView::MessageViewContainer* NotificationListView::AsMVC(
 
 const NotificationListView::MessageViewContainer*
 NotificationListView::GetNotificationById(const std::string& id) const {
-  const auto i = base::ranges::find(children(), id, [](const auto* v) {
+  const auto i = base::ranges::find(children(), id, [](const views::View* v) {
     return AsMVC(v)->GetNotificationId();
   });
   return (i == children().cend()) ? nullptr : AsMVC(*i);
@@ -1008,13 +1008,13 @@ NotificationListView::MessageViewContainer*
 NotificationListView::GetNextRemovableNotification() {
   const auto i = base::ranges::find_if_not(
       base::Reversed(children()),
-      [](const auto* v) { return AsMVC(v)->IsPinned(); });
+      [](const views::View* v) { return AsMVC(v)->IsPinned(); });
   return (i == children().rend()) ? nullptr : AsMVC(*i);
 }
 
 void NotificationListView::CollapseAllNotifications() {
   base::AutoReset<bool> auto_reset(&ignore_size_change_, true);
-  for (auto* child : children()) {
+  for (views::View* child : children()) {
     AsMVC(child)->Collapse();
   }
 }
@@ -1023,7 +1023,7 @@ void NotificationListView::UpdateBorders(bool force_update) {
   // The top notification is drawn with rounded corners when the stacking bar
   // is not shown.
   bool is_top = state_ != State::MOVE_DOWN;
-  for (auto* child : children()) {
+  for (views::View* child : children()) {
     AsMVC(child)->UpdateBorder(is_top, child == children().back(),
                                force_update);
     is_top = false;
@@ -1032,7 +1032,7 @@ void NotificationListView::UpdateBorders(bool force_update) {
 
 void NotificationListView::UpdateBounds() {
   int y = 0;
-  for (auto* child : children()) {
+  for (views::View* child : children()) {
     auto* view = AsMVC(child);
     // Height is taken from preferred size, which is calculated based on the
     // tween and animation state when animations are occurring. So views which
@@ -1074,7 +1074,7 @@ void NotificationListView::InterruptClearAll() {
     return;
   }
 
-  for (auto* child : children()) {
+  for (views::View* child : children()) {
     auto* view = AsMVC(child);
     if (!view->IsPinned()) {
       view->set_is_removed();
@@ -1090,12 +1090,13 @@ void NotificationListView::DeleteRemovedNotifications() {
   }
 
   views::View::Views removed_views;
-  base::ranges::copy_if(children(), std::back_inserter(removed_views),
-                        [](const auto* v) { return AsMVC(v)->is_removed(); });
+  base::ranges::copy_if(
+      children(), std::back_inserter(removed_views),
+      [](const views::View* v) { return AsMVC(v)->is_removed(); });
 
   {
     base::AutoReset<bool> auto_reset(&is_deleting_removed_notifications_, true);
-    for (auto* view : removed_views) {
+    for (views::View* view : removed_views) {
       if (!features::IsQsRevampEnabled()) {
         model_->RemoveNotificationExpanded(AsMVC(view)->GetNotificationId());
       }
@@ -1176,7 +1177,7 @@ void NotificationListView::UpdateClearAllAnimation() {
       DeleteRemovedNotifications();
       UpdateBounds();
       start_height_ = target_height_;
-      for (auto* child : children()) {
+      for (views::View* child : children()) {
         auto* child_view = AsMVC(child);
         child_view->set_start_bounds(child_view->target_bounds());
       }

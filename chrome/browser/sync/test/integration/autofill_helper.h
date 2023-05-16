@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
@@ -82,8 +83,8 @@ void UpdateProfile(int profile,
 
 // Gets all the Autofill profiles in the PersonalDataManager of sync profile
 // |profile|.
-[[nodiscard]] std::vector<autofill::AutofillProfile*> GetAllAutoFillProfiles(
-    int profile);
+[[nodiscard]] std::vector<dangling_raw_ptr<autofill::AutofillProfile>>
+GetAllAutoFillProfiles(int profile);
 
 // Returns the number of autofill profiles contained by sync profile
 // |profile|.

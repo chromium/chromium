@@ -551,6 +551,8 @@ template <typename T, RawPtrTraits Traits>
 class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
  public:
   using Impl = typename raw_ptr_traits::TraitsToImpl<Traits>::Impl;
+  // Needed to make gtest Pointee macro work with raw_ptr.
+  using element_type = T;
 
 #if !BUILDFLAG(USE_PARTITION_ALLOC)
   // See comment at top about `PA_RAW_PTR_CHECK()`.
@@ -1185,6 +1187,12 @@ constexpr auto AllowPtrArithmetic = base::RawPtrTraits::kAllowPtrArithmetic;
 //
 // This is not meant to be added manually. You can ignore this flag.
 constexpr auto ExperimentalAsh = base::RawPtrTraits::kExperimentalAsh;
+
+// Temporary introduced alias in the context of rewriting std::vector<T*> into
+// std::vector<raw_ptr<T>> to study the performance impact of BackupRefPtr and
+// not worrying about dangling pointer detection.
+template <typename T, base::RawPtrTraits Traits = base::RawPtrTraits::kEmpty>
+using dangling_raw_ptr = raw_ptr<T, Traits | DanglingUntriaged>;
 
 namespace std {
 

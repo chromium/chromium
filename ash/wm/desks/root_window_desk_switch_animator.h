@@ -331,7 +331,7 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   // screenshots of desk 0 and desk 1 stored at indices 0 and 1, but the
   // remaining indices will have nullptr. The layers, if not null are owned by
   // |animation_layer_owner_|.
-  std::vector<ui::Layer*> screenshot_layers_;
+  std::vector<dangling_raw_ptr<ui::Layer>> screenshot_layers_;
 
   // Stores the size of |root_window_| that takes into account all scale factors
   // by snapping to the edge of the display. This will prevent any 1px gaps we

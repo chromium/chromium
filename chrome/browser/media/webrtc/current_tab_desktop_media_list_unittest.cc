@@ -171,7 +171,7 @@ class CurrentTabDesktopMediaListTest : public testing::Test {
   StrictMock<MockObserver> observer_;
   std::unique_ptr<CurrentTabDesktopMediaList> list_;
 
-  std::vector<WebContents*> all_web_contents_;
+  std::vector<dangling_raw_ptr<WebContents>> all_web_contents_;
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

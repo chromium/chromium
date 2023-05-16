@@ -907,7 +907,7 @@ TEST_P(FormDataImporterTest, ImportStructuredNameProfile) {
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   ExtractAddressProfiles(/*extraction_successful=*/true, form_structure);
 
-  const std::vector<AutofillProfile*>& results =
+  const std::vector<dangling_raw_ptr<AutofillProfile>>& results =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
 
@@ -953,7 +953,7 @@ TEST_P(FormDataImporterTest,
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   ExtractAddressProfiles(/*extraction_successful=*/true, form_structure);
 
-  const std::vector<AutofillProfile*>& results =
+  const std::vector<dangling_raw_ptr<AutofillProfile>>& results =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
 
@@ -1007,7 +1007,7 @@ TEST_P(
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   ExtractAddressProfiles(/*extraction_successful=*/true, form_structure);
 
-  const std::vector<AutofillProfile*>& results =
+  const std::vector<dangling_raw_ptr<AutofillProfile>>& results =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
 
@@ -1053,7 +1053,7 @@ TEST_P(FormDataImporterTest,
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   ExtractAddressProfiles(/*extraction_successful=*/true, form_structure);
 
-  const std::vector<AutofillProfile*>& results =
+  const std::vector<dangling_raw_ptr<AutofillProfile>>& results =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
 
@@ -1096,7 +1096,7 @@ TEST_P(FormDataImporterTest, ImportStructuredNameAddressProfile) {
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   ExtractAddressProfiles(/*extraction_successful=*/true, form_structure);
 
-  const std::vector<AutofillProfile*>& results =
+  const std::vector<dangling_raw_ptr<AutofillProfile>>& results =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
 
@@ -3009,7 +3009,7 @@ TEST_P(FormDataImporterTest, ExtractFormData_OneAddressOneCreditCard) {
   test::SetProfileInfo(&expected_address, "George", nullptr, "Washington",
                        "theprez@gmail.com", nullptr, "21 Laussat St", nullptr,
                        "San Francisco", "California", "94102", "US", nullptr);
-  const std::vector<AutofillProfile*>& results_addr =
+  const std::vector<dangling_raw_ptr<AutofillProfile>>& results_addr =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results_addr.size());
   EXPECT_THAT(*results_addr[0], ComparesEqual(expected_address));
@@ -3327,7 +3327,7 @@ TEST_P(FormDataImporterTest, ExtractFormData_OneAddressCreditCardDisabled) {
   test::SetProfileInfo(&expected_address, "George", nullptr, "Washington",
                        "theprez@gmail.com", nullptr, "21 Laussat St", nullptr,
                        "San Francisco", "California", "94102", "US", nullptr);
-  const std::vector<AutofillProfile*>& results_addr =
+  const std::vector<dangling_raw_ptr<AutofillProfile>>& results_addr =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results_addr.size());
   EXPECT_THAT(*results_addr[0], ComparesEqual(expected_address));
@@ -3964,7 +3964,7 @@ TEST_P(FormDataImporterTest, SilentlyUpdateExistingProfileByIncompleteProfile) {
   ExtractAddressProfiles(/*extraction_successful=*/false, form_structure);
 
   // Expect that no new profile is saved.
-  const std::vector<AutofillProfile*>& results =
+  const std::vector<dangling_raw_ptr<AutofillProfile>>& results =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
   EXPECT_NE(0, profile.Compare(*results[0]));
@@ -4022,7 +4022,7 @@ TEST_P(
                          /*allow_save_prompts=*/false);
 
   // Expect that no new profile is saved and the existing profile is updated.
-  const std::vector<AutofillProfile*>& results =
+  const std::vector<dangling_raw_ptr<AutofillProfile>>& results =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
   EXPECT_NE(0, profile.Compare(*results[0]));
@@ -4077,7 +4077,7 @@ TEST_P(FormDataImporterTest, UnusableIncompleteProfile) {
                          /*skip_waiting_on_pdm=*/true);
 
   // Expect that no new profile is saved.
-  const std::vector<AutofillProfile*>& results =
+  const std::vector<dangling_raw_ptr<AutofillProfile>>& results =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
   EXPECT_THAT(*results[0], ComparesEqual(profile));

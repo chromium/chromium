@@ -112,12 +112,12 @@ class FocusChangeListenerStub : public views::FocusChangeListener {
   }
 
   // Returns all views that received the focus at some point.
-  const std::vector<views::View*>& focused_views() const {
+  const std::vector<dangling_raw_ptr<views::View>>& focused_views() const {
     return focused_views_;
   }
 
  private:
-  std::vector<views::View*> focused_views_;
+  std::vector<dangling_raw_ptr<views::View>> focused_views_;
   raw_ptr<views::FocusManager, ExperimentalAsh> focus_manager_;
 };
 

@@ -585,7 +585,7 @@ views::View* AppListTestApi::GetVisibleSearchResultView(int index) {
   app_list->GetViewsInGroup(kSearchResultViewGroup, &search_results);
 
   int current_visible_index = -1;
-  for (auto* view : search_results) {
+  for (views::View* view : search_results) {
     if (view->GetVisible())
       ++current_visible_index;
     if (current_visible_index == index)

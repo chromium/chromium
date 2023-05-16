@@ -1401,8 +1401,8 @@ class BookmarkBarViewTest13 : public BookmarkBarViewEventTestBase {
 
     // Find the first separator.
     views::SubmenuView* submenu = menu->GetSubmenu();
-    const auto i =
-        base::ranges::find_if_not(submenu->children(), [](const auto* child) {
+    const auto i = base::ranges::find_if_not(
+        submenu->children(), [](const views::View* child) {
           return child->GetID() == views::MenuItemView::kMenuItemViewID;
         });
     ASSERT_FALSE(i == submenu->children().end());

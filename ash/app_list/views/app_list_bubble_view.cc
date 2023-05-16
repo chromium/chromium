@@ -41,6 +41,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -189,7 +190,7 @@ class ButtonFocusSkipper : public ui::EventHandler {
   }
 
  private:
-  std::vector<views::View*> buttons_;
+  std::vector<dangling_raw_ptr<views::View>> buttons_;
 };
 
 AppListBubbleView::AppListBubbleView(

@@ -1920,7 +1920,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, CancelAtFinalRename) {
   ASSERT_EQ(1u, callbacks.size());
 
   // Cancel it.
-  std::vector<download::DownloadItem*> items;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> items;
   download_manager->GetAllDownloads(&items);
   ASSERT_EQ(1u, items.size());
   items[0]->Cancel(true);
@@ -1973,7 +1973,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, CancelAtRelease) {
   callbacks.clear();
 
   // Confirm download still IN_PROGRESS (internal state COMPLETING).
-  std::vector<download::DownloadItem*> items;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> items;
   download_manager->GetAllDownloads(&items);
   EXPECT_EQ(download::DownloadItem::IN_PROGRESS, items[0]->GetState());
 
@@ -2067,7 +2067,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, ShutdownAtRelease) {
   callbacks.clear();
 
   // Confirm download isn't complete yet.
-  std::vector<download::DownloadItem*> items;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> items;
   DownloadManagerForShell(shell())->GetAllDownloads(&items);
   EXPECT_EQ(download::DownloadItem::IN_PROGRESS, items[0]->GetState());
 
@@ -2080,7 +2080,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, ShutdownAtRelease) {
 
   MockDownloadItemObserver observer;
   items[0]->AddObserver(&observer);
-  EXPECT_CALL(observer, OnDownloadDestroyed(items[0]));
+  EXPECT_CALL(observer, OnDownloadDestroyed(items[0].get()));
 
   // Shutdown the download manager.  Mostly this is confirming a lack of
   // crashes.
@@ -2309,7 +2309,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, RedirectDownload) {
   observer->WaitForFinished();
 
   // Verify download failed.
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
   EXPECT_EQ(1u, downloads.size());
   EXPECT_EQ(download::DownloadItem::COMPLETE, downloads[0]->GetState());
@@ -2342,7 +2342,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, FailCrossOriginDownload) {
   observer->WaitForFinished();
 
   // Verify download is done.
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
   EXPECT_EQ(1u, downloads.size());
   EXPECT_EQ(download::DownloadItem::INTERRUPTED, downloads[0]->GetState());
@@ -2378,7 +2378,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, RedirectUnsafeDownload) {
   observer->WaitForFinished();
 
   // Verify download failed.
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
   EXPECT_EQ(1u, downloads.size());
   EXPECT_EQ(download::DownloadItem::INTERRUPTED, downloads[0]->GetState());
@@ -2414,7 +2414,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, NoDownloadManagerDelegateDownload) {
   // Verify there were no downloads.
   EXPECT_TRUE(EnsureNoPendingDownloads());
 
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   download_manager->GetAllDownloads(&downloads);
   EXPECT_TRUE(downloads.empty());
 }
@@ -3727,7 +3727,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, UpdateSiteForCookies) {
   // Get the important info from other threads and check it.
   EXPECT_TRUE(EnsureNoPendingDownloads());
 
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
   ASSERT_EQ(download::DownloadItem::COMPLETE, downloads[0]->GetState());
@@ -3779,7 +3779,7 @@ IN_PROC_BROWSER_TEST_F(
   // Get the important info from other threads and check it.
   EXPECT_TRUE(EnsureNoPendingDownloads());
 
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
   ASSERT_EQ(download::DownloadItem::COMPLETE, downloads[0]->GetState());
@@ -3885,7 +3885,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
             shell(), referrer_url, download::DownloadItem::COMPLETE);
       }));
 
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
 
@@ -3936,7 +3936,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   NavigateToCommittedURLAndWaitForDownload(shell(), referrer_url,
                                            download::DownloadItem::COMPLETE);
 
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
 
@@ -3990,7 +3990,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
                     origin_two.GetURL("/download") /* expected_commit_url */));
   ASSERT_EQ(expected_title, observer.WaitAndGetTitle());
 
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
   ASSERT_EQ(0u, downloads.size());
   ASSERT_TRUE(origin_one.ShutdownAndWaitUntilComplete());
@@ -4111,7 +4111,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   EXPECT_EQ(
       1u, observer->NumDownloadsSeenInState(download::DownloadItem::COMPLETE));
 
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
   base::FilePath file_name = downloads[0]->GetTargetFilePath().BaseName();
@@ -4141,7 +4141,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, DownloadAttributeDataUrl) {
   NavigateToCommittedURLAndWaitForDownload(shell(), url,
                                            download::DownloadItem::COMPLETE);
 
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
 
@@ -4364,7 +4364,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, SniffedMimeTypeForDownloadURL) {
   observer->WaitForFinished();
 
   // Verify download failed.
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
   EXPECT_EQ(1u, downloads.size());
   EXPECT_EQ(download::DownloadItem::COMPLETE, downloads[0]->GetState());
@@ -4380,7 +4380,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, DuplicateContentDisposition) {
           "/download/double-content-disposition.txt"),
       download::DownloadItem::COMPLETE);
 
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
 
@@ -4724,7 +4724,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, DownloadIgnoresXFO) {
   EXPECT_EQ(
       1u, observer->NumDownloadsSeenInState(download::DownloadItem::COMPLETE));
 
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
 
@@ -4755,7 +4755,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, FetchErrorResponseBody) {
   std::unique_ptr<DownloadTestObserver> observer(CreateWaiter(shell(), 1));
   download_manager->DownloadUrl(std::move(download_parameters));
   observer->WaitForFinished();
-  std::vector<download::DownloadItem*> items;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> items;
   download_manager->GetAllDownloads(&items);
   EXPECT_EQ(1u, items.size());
 
@@ -4791,7 +4791,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, UploadBytes) {
   std::unique_ptr<DownloadTestObserver> observer(CreateWaiter(shell(), 1));
   download_manager->DownloadUrl(std::move(download_parameters));
   observer->WaitForFinished();
-  std::vector<download::DownloadItem*> items;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> items;
   download_manager->GetAllDownloads(&items);
   EXPECT_EQ(1u, items.size());
 
@@ -4832,7 +4832,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, FetchErrorResponseBodyResumption) {
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
   download_manager->DownloadUrl(std::move(download_parameters));
   observer->WaitForFinished();
-  std::vector<download::DownloadItem*> items;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> items;
   download_manager->GetAllDownloads(&items);
   EXPECT_EQ(1u, items.size());
 
@@ -4880,7 +4880,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, DownloadFromWebUI) {
 
   EXPECT_TRUE(EnsureNoPendingDownloads());
 
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
   ASSERT_EQ(download::DownloadItem::COMPLETE, downloads[0]->GetState());
@@ -4902,7 +4902,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, DownloadFromWebUIWithoutRenderer) {
 
   EXPECT_TRUE(EnsureNoPendingDownloads());
 
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
 
@@ -4926,7 +4926,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, SaveImageAt) {
       1u, observer->NumDownloadsSeenInState(download::DownloadItem::COMPLETE));
 
   // Verify that there was one, appropriately named download.
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
   EXPECT_EQ(FILE_PATH_LITERAL("download.png"),
@@ -5169,7 +5169,7 @@ IN_PROC_BROWSER_TEST_F(DownloadPrerenderTest, DiscardNonNavigationDownload) {
   // Verify there were no downloads.
   EXPECT_TRUE(EnsureNoPendingDownloads());
 
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   download_manager->GetAllDownloads(&downloads);
   EXPECT_TRUE(downloads.empty());
 }
@@ -5203,7 +5203,7 @@ IN_PROC_BROWSER_TEST_F(DownloadFencedFrameTest, DiscardNonNavigationDownload) {
 
   // Verify there were no downloads.
   EXPECT_TRUE(EnsureNoPendingDownloads());
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   download_manager->GetAllDownloads(&downloads);
   EXPECT_TRUE(downloads.empty());
 }
@@ -5242,7 +5242,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   // Wait for the download.
   observer->WaitForFinished();
 
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
 
@@ -5304,7 +5304,7 @@ IN_PROC_BROWSER_TEST_P(DownloadRangeTest, ArbitraryDownloadRangeTest) {
   observer->WaitForFinished();
 
   // Verify download completed.
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
   EXPECT_EQ(1u, downloads.size());
   EXPECT_EQ(download::DownloadItem::COMPLETE, downloads[0]->GetState());
@@ -5378,7 +5378,7 @@ IN_PROC_BROWSER_TEST_F(DownloadRangeResumptionTest,
   parameters.ClearInjectedErrors();
   TestDownloadHttpResponse::StartServing(parameters, server_url);
 
-  std::vector<download::DownloadItem*> downloads;
+  std::vector<dangling_raw_ptr<download::DownloadItem>> downloads;
   DownloadManagerForShell(shell())->GetAllDownloads(&downloads);
   EXPECT_EQ(1u, downloads.size());
   download::DownloadItem* download = downloads[0];

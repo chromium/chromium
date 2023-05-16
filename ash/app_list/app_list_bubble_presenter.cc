@@ -32,6 +32,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
@@ -321,8 +322,9 @@ void AppListBubblePresenter::Dismiss() {
     // when the app list is dismissed.
     auto* manager = ::wm::TransientWindowManager::GetOrCreate(bubble_window);
     if (manager) {
-      std::vector<aura::Window*> children = manager->transient_children();
-      for (auto* child : children) {
+      std::vector<dangling_raw_ptr<aura::Window>> children =
+          manager->transient_children();
+      for (aura::Window* child : children) {
         views::Widget* child_widget =
             views::Widget::GetWidgetForNativeWindow(child);
         if (child_widget) {

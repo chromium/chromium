@@ -51,6 +51,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
@@ -176,7 +177,8 @@ void OverviewSession::Init(const WindowList& windows,
     tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
     hide_windows_for_saved_desks_grid_ =
         std::make_unique<ScopedOverviewHideWindows>(
-            /*windows=*/std::vector<aura::Window*>({}), /*forced_hidden=*/true);
+            /*windows=*/std::vector<dangling_raw_ptr<aura::Window>>{},
+            /*forced_hidden=*/true);
   }
 
   hide_overview_windows_ = std::make_unique<ScopedOverviewHideWindows>(
@@ -206,7 +208,7 @@ void OverviewSession::Init(const WindowList& windows,
                      (b->GetBoundsInScreen().x() + b->GetBoundsInScreen().y());
             });
 
-  for (auto* root : root_windows) {
+  for (aura::Window* root : root_windows) {
     auto grid = std::make_unique<OverviewGrid>(root, windows, this);
     num_items_ += grid->size();
     grid_list_.push_back(std::move(grid));
@@ -291,8 +293,9 @@ void OverviewSession::Shutdown() {
 
   desks_controller_observation_.Reset();
   if (observing_desk_) {
-    for (auto* root : Shell::GetAllRootWindows())
+    for (aura::Window* root : Shell::GetAllRootWindows()) {
       observing_desk_->GetDeskContainerForRoot(root)->RemoveObserver(this);
+    }
   }
 
   Shell::Get()->RemovePreTargetHandler(this);
@@ -1089,11 +1092,13 @@ void OverviewSession::ShowSavedDeskLibrary(
   if (!library_view)
     return;
 
-  std::vector<SavedDeskGridView*> grid_views = library_view->grid_views();
+  std::vector<dangling_raw_ptr<SavedDeskGridView>> grid_views =
+      library_view->grid_views();
   if (grid_views.empty())
     return;
 
-  std::vector<SavedDeskItemView*> grid_items = grid_views.front()->grid_items();
+  std::vector<dangling_raw_ptr<SavedDeskItemView>> grid_items =
+      grid_views.front()->grid_items();
   if (grid_items.empty() ||
       library_view->GetWidget()->GetNativeWindow()->GetRootWindow() !=
           root_window) {
@@ -1195,7 +1200,7 @@ void OverviewSession::OnDeskActivationChanged(const Desk* activated,
                                               const Desk* deactivated) {
   observing_desk_ = activated;
 
-  for (auto* root : Shell::GetAllRootWindows()) {
+  for (aura::Window* root : Shell::GetAllRootWindows()) {
     activated->GetDeskContainerForRoot(root)->AddObserver(this);
     deactivated->GetDeskContainerForRoot(root)->RemoveObserver(this);
 
@@ -1580,7 +1585,7 @@ bool OverviewSession::ShouldKeepOverviewOpenForSavedDeskDialog(
 }
 
 void OverviewSession::UpdateFrameThrottling() {
-  std::vector<aura::Window*> windows_to_throttle;
+  std::vector<dangling_raw_ptr<aura::Window>> windows_to_throttle;
   if (!grid_list_.empty()) {
     windows_to_throttle.reserve(grid_list_.size() * grid_list_[0]->size() * 2);
     for (auto& grid : grid_list_) {

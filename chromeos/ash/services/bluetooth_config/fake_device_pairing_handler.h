@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAKE_DEVICE_PAIRING_HANDLER_H_
 #define CHROMEOS_ASH_SERVICES_BLUETOOTH_CONFIG_FAKE_DEVICE_PAIRING_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/bluetooth_config/device_pairing_handler.h"
 
 namespace ash::bluetooth_config {
@@ -51,7 +52,7 @@ class FakeDevicePairingHandler : public DevicePairingHandler {
 
   absl::optional<bool> last_confirm_;
 
-  std::vector<device::BluetoothDevice*> device_list_;
+  std::vector<dangling_raw_ptr<device::BluetoothDevice>> device_list_;
 
   FetchDeviceCallback fetch_device_callback_;
 };

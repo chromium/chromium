@@ -53,7 +53,8 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
         &std::unique_ptr<permissions::PermissionRequest>::get);
   }
 
-  const std::vector<permissions::PermissionRequest*>& Requests() override {
+  const std::vector<dangling_raw_ptr<permissions::PermissionRequest>>&
+  Requests() override {
     return raw_requests_;
   }
 
@@ -108,7 +109,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
 
  private:
   std::vector<std::unique_ptr<permissions::PermissionRequest>> requests_;
-  std::vector<permissions::PermissionRequest*> raw_requests_;
+  std::vector<dangling_raw_ptr<permissions::PermissionRequest>> raw_requests_;
   bool was_current_request_already_displayed_ = false;
   absl::optional<permissions::PermissionUiSelector::QuietUiReason>
       quiet_ui_reason_;

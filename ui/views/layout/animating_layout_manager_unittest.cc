@@ -178,13 +178,13 @@ class AnimatingLayoutManagerTest : public testing::Test {
     // These can't be constructed statically since they depend on the child
     // views.
     layout1_ = {{100, 100},
-                {{children_[0], true, {5, 5, 10, 10}},
-                 {children_[1], false},
-                 {children_[2], true, {20, 20, 20, 20}}}};
+                {{children_[0].get(), true, {5, 5, 10, 10}},
+                 {children_[1].get(), false},
+                 {children_[2].get(), true, {20, 20, 20, 20}}}};
     layout2_ = {{200, 200},
-                {{children_[0], true, {10, 20, 20, 30}},
-                 {children_[1], false},
-                 {children_[2], true, {10, 100, 10, 10}}}};
+                {{children_[0].get(), true, {10, 20, 20, 30}},
+                 {children_[1].get(), false},
+                 {children_[2].get(), true, {10, 100, 10, 10}}}};
   }
 
   void TearDown() override {
@@ -259,7 +259,7 @@ class AnimatingLayoutManagerTest : public testing::Test {
   ProposedLayout layout1_;
   ProposedLayout layout2_;
   raw_ptr<View> view_;
-  std::vector<TestView*> children_;
+  std::vector<dangling_raw_ptr<TestView>> children_;
   raw_ptr<AnimatingLayoutManager> animating_layout_manager_ = nullptr;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<gfx::AnimationContainerTestApi> container_test_api_;
@@ -2701,7 +2701,8 @@ TEST_F(AnimatingLayoutManagerTest, ZOrder_FadingOutViewMovedToBack) {
                                       {child(1), false},
                                       {child(2), true, {5, 5, 2, 2}}}};
 
-  const std::vector<View*> expected_order{child(1), child(0), child(2)};
+  const std::vector<dangling_raw_ptr<View>> expected_order{child(1), child(0),
+                                                           child(2)};
 
   layout()->SetBoundsAnimationMode(
       AnimatingLayoutManager::BoundsAnimationMode::kAnimateBothAxes);
@@ -2741,7 +2742,8 @@ TEST_F(AnimatingLayoutManagerTest, ZOrder_FadingInViewMovedToBack) {
                                       {child(1), true, {3, 3, 2, 2}},
                                       {child(2), true, {7, 7, 2, 2}}}};
 
-  const std::vector<View*> expected_order{child(1), child(0), child(2)};
+  const std::vector<dangling_raw_ptr<View>> expected_order{child(1), child(0),
+                                                           child(2)};
 
   layout()->SetBoundsAnimationMode(
       AnimatingLayoutManager::BoundsAnimationMode::kAnimateBothAxes);

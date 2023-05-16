@@ -52,7 +52,7 @@ class MockDisplaySystemDelegate
   MOCK_METHOD(void,
               UnregisterClient,
               (display::ContentProtectionManager::ClientId));
-  MOCK_METHOD(const std::vector<display::DisplaySnapshot*>&,
+  MOCK_METHOD(const std::vector<dangling_raw_ptr<display::DisplaySnapshot>>&,
               cached_displays,
               (),
               (const));
@@ -135,7 +135,7 @@ class OutputProtectionImplTest : public testing::Test {
   mojo::Remote<OutputProtection> output_protection_mojo_;
   raw_ptr<MockDisplaySystemDelegate> delegate_;  // Not owned.
   std::unique_ptr<display::DisplaySnapshot> displays_[std::size(kDisplayIds)];
-  std::vector<display::DisplaySnapshot*> cached_displays_;
+  std::vector<dangling_raw_ptr<display::DisplaySnapshot>> cached_displays_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;

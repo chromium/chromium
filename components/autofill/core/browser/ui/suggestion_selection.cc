@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -69,7 +70,7 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
     const std::u16string& field_contents_canon,
     const AutofillProfileComparator& comparator,
     bool field_is_autofilled,
-    const std::vector<AutofillProfile*>& profiles,
+    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
     std::vector<AutofillProfile*>* matched_profiles) {
   std::vector<Suggestion> suggestions;
 
@@ -154,7 +155,7 @@ std::vector<Suggestion> GetUniqueSuggestions(
     const std::string app_locale,
     const std::vector<AutofillProfile*> matched_profiles,
     const std::vector<Suggestion>& suggestions,
-    std::vector<AutofillProfile*>* unique_matched_profiles) {
+    std::vector<dangling_raw_ptr<AutofillProfile>>* unique_matched_profiles) {
   std::vector<Suggestion> unique_suggestions;
 
   // Limit number of unique profiles as having too many makes the
@@ -265,7 +266,7 @@ bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
 
 void RemoveProfilesNotUsedSinceTimestamp(
     base::Time min_last_used,
-    std::vector<AutofillProfile*>* profiles) {
+    std::vector<dangling_raw_ptr<AutofillProfile>>* profiles) {
   const size_t original_size = profiles->size();
   profiles->erase(
       std::stable_partition(profiles->begin(), profiles->end(),

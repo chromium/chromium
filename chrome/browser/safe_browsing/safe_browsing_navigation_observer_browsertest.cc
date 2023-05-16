@@ -122,7 +122,8 @@ class DownloadItemCreatedObserver : public DownloadManager::Observer {
   }
 
   // Wait for the first download item created after object creation.
-  void WaitForDownloadItem(std::vector<DownloadItem*>* items_seen) {
+  void WaitForDownloadItem(
+      std::vector<dangling_raw_ptr<DownloadItem>>* items_seen) {
     if (!manager_) {
       // The manager went away before we were asked to wait; return
       // what we have, even if it's null.
@@ -161,7 +162,7 @@ class DownloadItemCreatedObserver : public DownloadManager::Observer {
 
   base::OnceClosure quit_waiting_callback_;
   raw_ptr<DownloadManager> manager_;
-  std::vector<DownloadItem*> items_seen_;
+  std::vector<dangling_raw_ptr<DownloadItem>> items_seen_;
 };
 
 class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
@@ -218,18 +219,18 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
   // download completed or not. So we cancel downloads as soon as we record
   // all the navigation events we need.
   void CancelDownloads() {
-    std::vector<DownloadItem*> download_items;
+    std::vector<dangling_raw_ptr<DownloadItem>> download_items;
     content::DownloadManager* manager =
         browser()->profile()->GetDownloadManager();
     manager->GetAllDownloads(&download_items);
-    for (auto* item : download_items) {
+    for (download::DownloadItem* item : download_items) {
       if (!item->IsDone())
         item->Cancel(true);
     }
   }
 
   DownloadItem* GetDownload() {
-    std::vector<DownloadItem*> download_items;
+    std::vector<dangling_raw_ptr<DownloadItem>> download_items;
     content::DownloadManager* manager =
         browser()->profile()->GetDownloadManager();
     manager->GetAllDownloads(&download_items);
@@ -326,7 +327,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
   }
 
   void TriggerDownloadViaHtml5FileApi() {
-    std::vector<DownloadItem*> items;
+    std::vector<dangling_raw_ptr<DownloadItem>> items;
     content::DownloadManager* manager =
         browser()->profile()->GetDownloadManager();
     content::WebContents* current_web_contents =

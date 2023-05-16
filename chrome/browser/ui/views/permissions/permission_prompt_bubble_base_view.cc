@@ -318,7 +318,7 @@ bool PermissionPromptBubbleBaseView::IsOneTimePermission(
     return false;
   }
   CHECK_GT(delegate.Requests().size(), 0u);
-  for (auto* request : delegate.Requests()) {
+  for (permissions::PermissionRequest* request : delegate.Requests()) {
     auto content_setting_type =
         permissions::RequestTypeToContentSettingsType(request->request_type());
     if (!content_setting_type.has_value() ||

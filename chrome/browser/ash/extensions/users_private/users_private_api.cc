@@ -127,7 +127,7 @@ base::Value::List GetUsersList(content::BrowserContext* browser_context) {
   });
 
   const user_manager::UserList& users = user_manager->GetUsers();
-  for (const auto* user : users) {
+  for (const user_manager::User* user : users) {
     base::Value email_value(user->GetAccountId().GetUserEmail());
     if (!base::Contains(email_list, email_value))
       email_list.Append(std::move(email_value));

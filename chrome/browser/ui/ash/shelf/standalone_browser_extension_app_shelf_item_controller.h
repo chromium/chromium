@@ -13,6 +13,7 @@
 #include "ash/public/cpp/shelf_model_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -125,13 +126,13 @@ class StandaloneBrowserExtensionAppShelfItemController
   // In order to preserve order that menu items show up, we use a vector instead
   // of a set. The order of the windows in the vector is simply the order in
   // which they were tracked by this file.
-  std::vector<aura::Window*> windows_;
+  std::vector<dangling_raw_ptr<aura::Window>> windows_;
 
   // The list of windows that was last shown via a context menu. Windows as they
   // are destroyed are removed from this list. The existing API only returns a
   // command_id as metadata, so there is no way to accurately record the item
   // that was selected, in case windows are destroyed in between.
-  std::vector<aura::Window*> context_menu_windows_;
+  std::vector<dangling_raw_ptr<aura::Window>> context_menu_windows_;
 
   // This member lets the IconLoader know that we still need the icon.
   std::unique_ptr<apps::IconLoader::Releaser> icon_loader_releaser_;

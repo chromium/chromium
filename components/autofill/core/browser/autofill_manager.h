@@ -134,7 +134,7 @@ class AutofillManager
   // AutofillManager.
   static void LogAutofillTypePredictionsAvailable(
       LogManager* log_manager,
-      const std::vector<FormStructure*>& forms);
+      const std::vector<dangling_raw_ptr<FormStructure>>& forms);
 
   AutofillManager(const AutofillManager&) = delete;
   AutofillManager& operator=(const AutofillManager&) = delete;
@@ -273,7 +273,7 @@ class AutofillManager
   // Invoked when the field type predictions are downloaded from the autofill
   // server.
   virtual void PropagateAutofillPredictions(
-      const std::vector<FormStructure*>& forms) = 0;
+      const std::vector<dangling_raw_ptr<FormStructure>>& forms) = 0;
 
   virtual void ReportAutofillWebOTPMetrics(bool used_web_otp) = 0;
 
@@ -466,7 +466,7 @@ class AutofillManager
   // appends them to |form_structures|. Runs in linear time.
   size_t FindCachedFormsBySignature(
       FormSignature form_signature,
-      std::vector<FormStructure*>* form_structures) const;
+      std::vector<dangling_raw_ptr<FormStructure>>* form_structures) const;
 
   // Parses multiple forms in one go. The function proceeds in three stages:
   //

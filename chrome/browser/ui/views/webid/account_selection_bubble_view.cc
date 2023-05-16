@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
@@ -985,7 +986,7 @@ void AccountSelectionBubbleView::ConfigureIdpBrandImageView(
 }
 
 void AccountSelectionBubbleView::RemoveNonHeaderChildViews() {
-  const std::vector<views::View*> child_views = children();
+  const std::vector<dangling_raw_ptr<views::View>> child_views = children();
   for (views::View* child_view : child_views) {
     if (child_view != header_view_) {
       RemoveChildView(child_view);

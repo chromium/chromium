@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -56,11 +57,12 @@ TEST_F(FedCmModalDialogViewTest, Init) {
                            /*observer=*/nullptr);
   views::View* view = modal_dialog_view.GetContentsView();
 
-  const std::vector<views::View*> container = view->children();
+  const std::vector<dangling_raw_ptr<views::View>> container = view->children();
   ASSERT_EQ(container.size(), 1u);
 
   // Check for header and web view.
-  const std::vector<views::View*> children = container[0]->children();
+  const std::vector<dangling_raw_ptr<views::View>> children =
+      container[0]->children();
   ASSERT_EQ(children.size(), 2u);
   EXPECT_THAT(GetChildClassNames(container[0]),
               testing::ElementsAreArray({"View", "WebView"}));

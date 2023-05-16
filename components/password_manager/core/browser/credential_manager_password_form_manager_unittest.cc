@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -38,14 +39,16 @@ class MockFormSaver : public StubFormSaver {
   ~MockFormSaver() override = default;
 
   // FormSaver:
-  MOCK_METHOD3(Save,
-               void(PasswordForm pending,
-                    const std::vector<const PasswordForm*>& matches,
-                    const std::u16string& old_password));
-  MOCK_METHOD3(Update,
-               void(PasswordForm pending,
-                    const std::vector<const PasswordForm*>& matches,
-                    const std::u16string& old_password));
+  MOCK_METHOD3(
+      Save,
+      void(PasswordForm pending,
+           const std::vector<dangling_raw_ptr<const PasswordForm>>& matches,
+           const std::u16string& old_password));
+  MOCK_METHOD3(
+      Update,
+      void(PasswordForm pending,
+           const std::vector<dangling_raw_ptr<const PasswordForm>>& matches,
+           const std::u16string& old_password));
 
   // Convenience downcasting method.
   static MockFormSaver& Get(PasswordFormManager* form_manager) {
@@ -91,7 +94,7 @@ class CredentialManagerPasswordFormManagerTest : public testing::Test {
 
   void SetNonFederatedAndNotifyFetchCompleted(
       FormFetcher* fetcher,
-      const std::vector<const PasswordForm*>& non_federated) {
+      const std::vector<dangling_raw_ptr<const PasswordForm>>& non_federated) {
     auto* fake_fetcher = static_cast<FakeFormFetcher*>(fetcher);
     fake_fetcher->SetNonFederated(non_federated);
     fake_fetcher->NotifyFetchCompleted();

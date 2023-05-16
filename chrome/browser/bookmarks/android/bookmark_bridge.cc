@@ -248,7 +248,7 @@ BookmarkBridge::GetBookmarkIdForWebContents(
   }
 
   // Get all the nodes for |url| and sort them by date added.
-  std::vector<const bookmarks::BookmarkNode*> nodes;
+  std::vector<dangling_raw_ptr<const bookmarks::BookmarkNode>> nodes;
   bookmarks::ManagedBookmarkService* managed =
       ManagedBookmarkServiceFactory::GetForProfile(profile_);
   bookmarks::BookmarkModel* model =
@@ -258,7 +258,7 @@ BookmarkBridge::GetBookmarkIdForWebContents(
   std::sort(nodes.begin(), nodes.end(), &bookmarks::MoreRecentlyAdded);
 
   // Return the first node matching the search criteria.
-  for (const auto* node : nodes) {
+  for (const bookmarks::BookmarkNode* node : nodes) {
     if (only_editable && !managed->CanBeEditedByUser(node))
       continue;
     return JavaBookmarkIdCreateBookmarkId(env, node->id(),

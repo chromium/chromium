@@ -277,7 +277,7 @@ class FixedLengthCodeInput : public AccessCodeInput {
   int active_input_index_ = 0;
 
   // Unowned input textfields ordered from the first to the last digit.
-  std::vector<AccessibleInputField*> input_fields_;
+  std::vector<dangling_raw_ptr<AccessibleInputField>> input_fields_;
 
   // Value of current input, associate with AX event. The value will be the
   // concat string of input fields. i.e. [1][2][3][|][][], text_value_for_a11y_

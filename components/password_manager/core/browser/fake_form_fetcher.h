@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
@@ -43,15 +44,19 @@ class FakeFormFetcher : public FormFetcher {
   State GetState() const override;
 
   const std::vector<InteractionsStats>& GetInteractionsStats() const override;
-  std::vector<const PasswordForm*> GetInsecureCredentials() const override;
-  std::vector<const PasswordForm*> GetNonFederatedMatches() const override;
-  std::vector<const PasswordForm*> GetFederatedMatches() const override;
+  std::vector<dangling_raw_ptr<const PasswordForm>> GetInsecureCredentials()
+      const override;
+  std::vector<dangling_raw_ptr<const PasswordForm>> GetNonFederatedMatches()
+      const override;
+  std::vector<dangling_raw_ptr<const PasswordForm>> GetFederatedMatches()
+      const override;
   bool IsBlocklisted() const override;
   bool IsMovingBlocked(const autofill::GaiaIdHash& destination,
                        const std::u16string& username) const override;
-  const std::vector<const PasswordForm*>& GetAllRelevantMatches()
+  const std::vector<dangling_raw_ptr<const PasswordForm>>&
+  GetAllRelevantMatches() const override;
+  const std::vector<dangling_raw_ptr<const PasswordForm>>& GetBestMatches()
       const override;
-  const std::vector<const PasswordForm*>& GetBestMatches() const override;
   const PasswordForm* GetPreferredMatch() const override;
   // Returns a new FakeFormFetcher.
   std::unique_ptr<FormFetcher> Clone() override;
@@ -65,17 +70,19 @@ class FakeFormFetcher : public FormFetcher {
 
   void set_scheme(PasswordForm::Scheme scheme) { scheme_ = scheme; }
 
-  void set_federated(const std::vector<const PasswordForm*>& federated) {
+  void set_federated(
+      const std::vector<dangling_raw_ptr<const PasswordForm>>& federated) {
     state_ = State::NOT_WAITING;
     federated_ = federated;
   }
 
   void set_insecure_credentials(
-      const std::vector<const PasswordForm*>& credentials) {
+      const std::vector<dangling_raw_ptr<const PasswordForm>>& credentials) {
     insecure_credentials_ = credentials;
   }
 
-  void SetNonFederated(const std::vector<const PasswordForm*>& non_federated);
+  void SetNonFederated(
+      const std::vector<dangling_raw_ptr<const PasswordForm>>& non_federated);
 
   void SetBlocklisted(bool is_blocklisted);
 
@@ -89,11 +96,11 @@ class FakeFormFetcher : public FormFetcher {
   State state_ = State::NOT_WAITING;
   PasswordForm::Scheme scheme_ = PasswordForm::Scheme::kHtml;
   std::vector<InteractionsStats> stats_;
-  std::vector<const PasswordForm*> non_federated_;
-  std::vector<const PasswordForm*> federated_;
-  std::vector<const PasswordForm*> non_federated_same_scheme_;
-  std::vector<const PasswordForm*> best_matches_;
-  std::vector<const PasswordForm*> insecure_credentials_;
+  std::vector<dangling_raw_ptr<const PasswordForm>> non_federated_;
+  std::vector<dangling_raw_ptr<const PasswordForm>> federated_;
+  std::vector<dangling_raw_ptr<const PasswordForm>> non_federated_same_scheme_;
+  std::vector<dangling_raw_ptr<const PasswordForm>> best_matches_;
+  std::vector<dangling_raw_ptr<const PasswordForm>> insecure_credentials_;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
   bool is_blocklisted_ = false;

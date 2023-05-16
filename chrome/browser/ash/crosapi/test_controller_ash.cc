@@ -489,7 +489,7 @@ void TestControllerAsh::GetOpenAshBrowserWindows(
 
 void TestControllerAsh::CloseAllBrowserWindows(
     CloseAllBrowserWindowsCallback callback) {
-  for (auto* browser : *BrowserList::GetInstance()) {
+  for (Browser* browser : *BrowserList::GetInstance()) {
     browser->window()->Close();
   }
 

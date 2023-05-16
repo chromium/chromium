@@ -62,7 +62,7 @@ class SadTabView : public SadTab, public views::View {
 
   bool painted_ = false;
   raw_ptr<views::Label> message_;
-  std::vector<views::Label*> bullet_labels_;
+  std::vector<dangling_raw_ptr<views::Label>> bullet_labels_;
   raw_ptr<views::MdTextButton> action_button_;
   raw_ptr<views::Label> title_;
   raw_ptr<views::WebView> owner_ = nullptr;

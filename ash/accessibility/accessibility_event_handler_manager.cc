@@ -43,7 +43,7 @@ void AccessibilityEventHandlerManager::RemoveAccessibilityEventHandler(
 void AccessibilityEventHandlerManager::UpdateEventHandlers() {
   // Remove them all and add them again so they are guaranteed to be in the
   // right order.
-  for (auto* handler : event_handlers_) {
+  for (ui::EventHandler* handler : event_handlers_) {
     if (handler == nullptr)
       continue;
     ash::Shell::Get()->RemovePreTargetHandler(handler);

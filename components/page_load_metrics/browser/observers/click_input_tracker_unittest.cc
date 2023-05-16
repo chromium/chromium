@@ -90,7 +90,7 @@ TEST_F(ClickInputTrackerTest, OnUserInputGestureTapClickBurst) {
   using UkmEntry = ukm::builders::ClickInput;
   auto entries = test_ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(1u, entries.size());
-  auto* entry = entries.at(0);
+  auto* entry = entries.at(0).get();
   test_ukm_recorder.ExpectEntryMetric(
       entry, UkmEntry::kExperimental_ClickInputBurstName, 4);
 }

@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/demuxer.h"
@@ -27,9 +28,9 @@ MediaUrlDemuxer::MediaUrlDemuxer(
 MediaUrlDemuxer::~MediaUrlDemuxer() = default;
 
 // Should never be called since MediaResource::Type is URL.
-std::vector<DemuxerStream*> MediaUrlDemuxer::GetAllStreams() {
+std::vector<dangling_raw_ptr<DemuxerStream>> MediaUrlDemuxer::GetAllStreams() {
   NOTREACHED();
-  return std::vector<DemuxerStream*>();
+  return std::vector<dangling_raw_ptr<DemuxerStream>>();
 }
 
 const MediaUrlParams& MediaUrlDemuxer::GetMediaUrlParams() const {

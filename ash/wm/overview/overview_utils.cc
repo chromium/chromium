@@ -81,7 +81,7 @@ bool ShouldAnimateWallpaper(aura::Window* root_window) {
 
   auto windows =
       Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kActiveDesk);
-  for (auto* window : windows) {
+  for (aura::Window* window : windows) {
     if (window->GetRootWindow() == root_window &&
         CanCoverAvailableWorkspace(window))
       return false;

@@ -839,7 +839,8 @@ absl::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
   // `candidate`, and we treat it as a new card.
   bool same_last_four_but_different_expiration_date = false;
 
-  for (auto* server_card : personal_data_manager_->GetServerCreditCards()) {
+  for (CreditCard* server_card :
+       personal_data_manager_->GetServerCreditCards()) {
     if (!server_card->HasSameNumberAs(candidate)) {
       continue;
     }

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
@@ -502,7 +503,7 @@ void FillUploadField(AutofillUploadContents::Field* field,
 // Perhaps a neater way would be to move this to TestFormStructure.
 std::vector<FormSignature> GetEncodedSignatures(const FormStructure& form);
 std::vector<FormSignature> GetEncodedSignatures(
-    const std::vector<FormStructure*>& forms);
+    const std::vector<dangling_raw_ptr<FormStructure>>& forms);
 
 // Calls the required functions on the given external delegate to cause the
 // delegate to display a popup.

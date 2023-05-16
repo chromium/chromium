@@ -35,7 +35,7 @@ namespace ash {
 class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
                                    public display::DisplayObserver {
  public:
-  using WindowList = std::vector<aura::Window*>;
+  using WindowList = std::vector<dangling_raw_ptr<aura::Window>>;
 
   WindowCycleList(const WindowList& windows, bool same_app_only);
   WindowCycleList(const WindowCycleList&) = delete;

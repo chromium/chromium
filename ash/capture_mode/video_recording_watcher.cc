@@ -740,7 +740,7 @@ void VideoRecordingWatcher::UpdateLayerStackingAndDimmers() {
           DesksMruType::kAllDesks);
   bool did_find_recorded_window = false;
   // Note that the order of |mru_windows| are from top-most first.
-  for (auto* window : mru_windows) {
+  for (aura::Window* window : mru_windows) {
     if (window == window_being_recorded_) {
       did_find_recorded_window = true;
       continue;

@@ -4,6 +4,7 @@
 
 #include "ui/views/test/focus_manager_test.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
@@ -79,7 +80,8 @@ void FocusManagerTest::AddWidgetFocusChangeListener(
   WidgetFocusManager::GetInstance()->AddFocusChangeListener(listener);
 }
 
-void FocusManagerTest::SetAccessiblePanes(const std::vector<View*>& panes) {
+void FocusManagerTest::SetAccessiblePanes(
+    const std::vector<dangling_raw_ptr<View>>& panes) {
   accessible_panes_ = panes;
 }
 

@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -121,7 +122,7 @@ class FormStructure {
   // multiple FormStructures have the same FormSignature, only the first one is
   // included in |query| and |queried_form_signatures|.
   static bool EncodeQueryRequest(
-      const std::vector<FormStructure*>& forms,
+      const std::vector<dangling_raw_ptr<FormStructure>>& forms,
       AutofillPageQueryRequest* query,
       std::vector<FormSignature>* queried_form_signatures);
 
@@ -129,7 +130,7 @@ class FormStructure {
   // ProcessQueryResponse().
   static void ParseApiQueryResponse(
       base::StringPiece payload,
-      const std::vector<FormStructure*>& forms,
+      const std::vector<dangling_raw_ptr<FormStructure>>& forms,
       const std::vector<FormSignature>& queried_form_signatures,
       AutofillMetrics::FormInteractionsUkmLogger*,
       LogManager* log_manager);
@@ -137,7 +138,7 @@ class FormStructure {
   // Returns predictions using the details from the given |form_structures| and
   // their fields' predicted types.
   static std::vector<FormDataPredictions> GetFieldTypePredictions(
-      const std::vector<FormStructure*>& form_structures);
+      const std::vector<dangling_raw_ptr<FormStructure>>& form_structures);
 
   // Creates FormStructure that has bare minimum information for uploading
   // votes, namely form and field signatures. Warning: do not use for Autofill
@@ -282,7 +283,7 @@ class FormStructure {
   // Returns the FieldGlobalIds of the |fields_| that are eligible for manual
   // filling on form interaction.
   static std::vector<FieldGlobalId> FindFieldsEligibleForManualFilling(
-      const std::vector<FormStructure*>& forms);
+      const std::vector<dangling_raw_ptr<FormStructure>>& forms);
 
   const std::vector<std::unique_ptr<AutofillField>>& fields() const {
     return fields_;
@@ -484,7 +485,7 @@ class FormStructure {
   // null in tests.
   static void ProcessQueryResponse(
       const AutofillQueryResponse& response,
-      const std::vector<FormStructure*>& forms,
+      const std::vector<dangling_raw_ptr<FormStructure>>& forms,
       const std::vector<FormSignature>& queried_form_signatures,
       AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       LogManager* log_manager);

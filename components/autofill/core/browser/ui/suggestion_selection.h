@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -33,7 +34,7 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
     const std::u16string& field_contents_canon,
     const AutofillProfileComparator& comparator,
     bool field_is_autofilled,
-    const std::vector<AutofillProfile*>& profiles,
+    const std::vector<dangling_raw_ptr<AutofillProfile>>& profiles,
     std::vector<AutofillProfile*>* matched_profiles);
 
 // Dedupes given suggestions based on if one is a subset of the other.
@@ -47,7 +48,7 @@ std::vector<Suggestion> GetUniqueSuggestions(
     const std::string app_locale,
     const std::vector<AutofillProfile*> matched_profiles,
     const std::vector<Suggestion>& suggestions,
-    std::vector<AutofillProfile*>* unique_matched_profiles);
+    std::vector<dangling_raw_ptr<AutofillProfile>>* unique_matched_profiles);
 
 // Returns whether the |suggestion_canon| is valid considering the
 // |field_contents_canon|, the |type|, |is_masked_server_card|, and
@@ -65,7 +66,7 @@ bool IsValidSuggestionForFieldContents(std::u16string suggestion_canon,
 // |profiles|. The relative ordering of |profiles| is maintained.
 void RemoveProfilesNotUsedSinceTimestamp(
     base::Time min_last_used,
-    std::vector<AutofillProfile*>* profiles);
+    std::vector<dangling_raw_ptr<AutofillProfile>>* profiles);
 
 // Prepares a collection of Suggestions to show to the user. Adds |labels| to
 // their corresponding |suggestions| and removes duplicates, if any. A label

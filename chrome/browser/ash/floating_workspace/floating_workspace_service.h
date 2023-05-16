@@ -78,7 +78,8 @@ class FloatingWorkspaceService : public KeyedService,
   void DeskModelLoaded() override {}
   void OnDeskModelDestroying() override;
   void EntriesAddedOrUpdatedRemotely(
-      const std::vector<const DeskTemplate*>& new_entries) override;
+      const std::vector<dangling_raw_ptr<const DeskTemplate>>& new_entries)
+      override;
   void EntriesRemovedRemotely(const std::vector<base::Uuid>& uuids) override {}
 
  protected:

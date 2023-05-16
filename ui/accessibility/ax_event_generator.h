@@ -353,7 +353,7 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
 
   // Valid between the call to OnIntAttributeChanged and the call to
   // OnAtomicUpdateFinished. List of nodes whose active descendant changed.
-  std::vector<AXNode*> active_descendant_changed_;
+  std::vector<dangling_raw_ptr<AXNode>> active_descendant_changed_;
 
   // Keeps track of nodes that have changed their state from ignored to
   // unignored, but which used to be in an invisible subtree. We should not fire

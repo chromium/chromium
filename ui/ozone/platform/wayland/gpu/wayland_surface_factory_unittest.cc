@@ -353,7 +353,7 @@ TEST_P(WaylandSurfaceFactoryTest,
     // pending requests that we need to execute.
     auto params_vector = server->zwp_linux_dmabuf_v1()->buffer_params();
     ASSERT_EQ(params_vector.size(), 2u);
-    for (auto* mock_params : params_vector) {
+    for (wl::TestZwpLinuxBufferParamsV1* mock_params : params_vector) {
       zwp_linux_buffer_params_v1_send_created(mock_params->resource(),
                                               mock_params->buffer_resource());
     }
@@ -453,7 +453,7 @@ TEST_P(WaylandSurfaceFactoryTest,
 
     auto params_vector = server->zwp_linux_dmabuf_v1()->buffer_params();
     ASSERT_EQ(params_vector.size(), 1u);
-    for (auto* mock_params : params_vector) {
+    for (wl::TestZwpLinuxBufferParamsV1* mock_params : params_vector) {
       zwp_linux_buffer_params_v1_send_created(mock_params->resource(),
                                               mock_params->buffer_resource());
     }
@@ -542,7 +542,7 @@ TEST_P(WaylandSurfaceFactoryTest,
 
     auto params_vector = server->zwp_linux_dmabuf_v1()->buffer_params();
     ASSERT_EQ(params_vector.size(), 1u);
-    for (auto* mock_params : params_vector) {
+    for (wl::TestZwpLinuxBufferParamsV1* mock_params : params_vector) {
       zwp_linux_buffer_params_v1_send_created(mock_params->resource(),
                                               mock_params->buffer_resource());
     }
@@ -718,7 +718,7 @@ TEST_P(WaylandSurfaceFactoryTest,
     // first commit.
     auto params_vector = server->zwp_linux_dmabuf_v1()->buffer_params();
     ASSERT_EQ(params_vector.size(), 3u);
-    for (auto* param : params_vector) {
+    for (wl::TestZwpLinuxBufferParamsV1* param : params_vector) {
       zwp_linux_buffer_params_v1_send_created(param->resource(),
                                               param->buffer_resource());
     }
@@ -836,7 +836,7 @@ TEST_P(WaylandSurfaceFactoryTest,
     // 2 more buffers are to be created.
     auto params_vector = server->zwp_linux_dmabuf_v1()->buffer_params();
     ASSERT_EQ(params_vector.size(), 2u);
-    for (auto* param : params_vector) {
+    for (wl::TestZwpLinuxBufferParamsV1* param : params_vector) {
       zwp_linux_buffer_params_v1_send_created(param->resource(),
                                               param->buffer_resource());
     }
