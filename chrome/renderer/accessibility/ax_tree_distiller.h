@@ -67,9 +67,9 @@ class AXTreeDistiller {
 #endif
 
  private:
-  // Distills the AXTree via a rules-based algorithm. Runs the callback on
-  // completion.
-  void DistillViaAlgorithm(const ui::AXTree& tree);
+  // Distills the AXTree via a rules-based algorithm.
+  void DistillViaAlgorithm(const ui::AXTree& tree,
+                           std::vector<ui::AXNodeID>* content_node_ids);
 
   // render_frame_ is only used in the ENABLE_SCREEN_AI_SERVICE buildflag.
   // Fuchsia does not build with that buildflag so it is throwing
