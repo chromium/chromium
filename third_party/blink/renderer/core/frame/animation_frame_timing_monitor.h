@@ -75,6 +75,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
 
   // probes
   void WillHandlePromise(ExecutionContext*,
+                         ScriptState*,
                          bool resolving,
                          const char* class_like,
                          const char* property_like);

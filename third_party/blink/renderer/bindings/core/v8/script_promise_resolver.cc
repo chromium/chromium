@@ -145,8 +145,9 @@ void ScriptPromiseResolver::ResolveOrRejectImmediately() {
   DCHECK(!GetExecutionContext()->IsContextDestroyed());
   DCHECK(!GetExecutionContext()->IsContextPaused());
 
-  probe::WillHandlePromise(GetExecutionContext(), state_ == kResolving,
-                           class_like_name_, property_like_name_);
+  probe::WillHandlePromise(GetExecutionContext(), script_state_,
+                           state_ == kResolving, class_like_name_,
+                           property_like_name_);
   {
     if (state_ == kResolving) {
       resolver_.Resolve(value_.Get(script_state_->GetIsolate()));
