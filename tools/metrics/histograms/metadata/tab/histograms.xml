@@ -1327,7 +1327,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.PersistedTabData.Deserialize.Critical"
-    enum="BooleanSuccess" expires_after="2023-06-19">
+    enum="BooleanSuccess" expires_after="2024-05-14">
 <!-- P2 project which hasn't launched yet -->
 
   <owner>yusufo@chromium.org</owner>
