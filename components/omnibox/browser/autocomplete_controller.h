@@ -363,17 +363,20 @@ class AutocompleteController : public AutocompleteProviderListener,
   // only runs on Lacros and the @tabs scope.
   bool ShouldRunProvider(AutocompleteProvider* provider) const;
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Runs the async scoring model for all the eligible matches in
   // `results_.matches_` and bypasses the ineligible matches. Passes
   // `completion_callback` to `OnUrlScoringModelDone()` callback which is called
   // once the model is done for all the eligible matches, whether successfully
   // or not, and all the ineligible matches are bypassed.
   void RunUrlScoringModel(base::OnceClosure completion_callback);
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   // Tries to cancel any pending requests to the scoring model and prevents
   // `OnUrlScoringModelDone()` and its completion callback from being called.
   void CancelUrlScoringModel();
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Called when the async scoring model is done running for all the eligible
   // matches in `results_.matches_` and all the ineligible matches are bypassed.
   // Redistributes the existing relevance scores to the matches based on the
@@ -385,6 +388,7 @@ class AutocompleteController : public AutocompleteProviderListener,
       base::OnceClosure completion_callback,
       std::vector<std::tuple<absl::optional<float>, size_t, GURL>>
           outputs_and_match_info);
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   base::ObserverList<Observer> observers_;
 

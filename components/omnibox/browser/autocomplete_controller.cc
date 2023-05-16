@@ -1040,11 +1040,14 @@ void AutocompleteController::UpdateResult(
       }
     }
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     RunUrlScoringModel(base::BindOnce(
         &AutocompleteController::SortCullAndAnnotateResult,
         weak_ptr_factory_.GetWeakPtr(), last_default_match,
         last_default_associated_keyword, force_notify_default_match_changed,
         default_match_to_preserve));
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
     return;
   }
 
@@ -1540,6 +1543,7 @@ bool AutocompleteController::ShouldRunProvider(
   return true;
 }
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void AutocompleteController::RunUrlScoringModel(
     base::OnceClosure completion_callback) {
   TRACE_EVENT0("omnibox", "AutocompleteController::RunUrlScoringModel");
@@ -1574,6 +1578,7 @@ void AutocompleteController::RunUrlScoringModel(
     }
   }
 }
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 void AutocompleteController::CancelUrlScoringModel() {
   // Try to cancel any pending requests to the scoring model and invalidate the
@@ -1582,6 +1587,7 @@ void AutocompleteController::CancelUrlScoringModel() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void AutocompleteController::OnUrlScoringModelDone(
     const base::ElapsedTimer elapsed_timer,
     base::OnceClosure completion_callback,
@@ -1649,3 +1655,4 @@ void AutocompleteController::OnUrlScoringModelDone(
   }
   std::move(completion_callback).Run();
 }
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
