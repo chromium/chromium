@@ -145,6 +145,9 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
 
     void SetPaused(bool paused);
     virtual bool CanEncodeAlphaChannel() const;
+    void ForceKeyFrameForNextFrameForTesting() {
+      request_key_frame_for_testing_ = true;
+    }
 
    protected:
     friend class VideoTrackRecorderTest;
@@ -152,7 +155,8 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     scoped_refptr<media::VideoFrame> MaybeProvideEncodableFrame(
         scoped_refptr<media::VideoFrame> video_frame);
     virtual void EncodeFrame(scoped_refptr<media::VideoFrame> frame,
-                             base::TimeTicks capture_timestamp) = 0;
+                             base::TimeTicks capture_timestamp,
+                             bool request_keyframe) = 0;
 
     // Called when the frame reference is released after encode.
     void FrameReleased(scoped_refptr<media::VideoFrame> frame);
@@ -174,6 +178,9 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
 
     // Target bitrate for video encoding. If 0, a standard bitrate is used.
     const uint32_t bits_per_second_;
+
+    // Testing state - decides if we should request a key frame next round.
+    bool request_key_frame_for_testing_ = false;
 
     // Number of frames that we keep the reference alive for encode.
     std::unique_ptr<Counter> num_frames_in_encode_;
@@ -284,6 +291,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
   void Resume() override;
   void OnVideoFrameForTesting(scoped_refptr<media::VideoFrame> frame,
                               base::TimeTicks capture_time) override;
+  void ForceKeyFrameForNextFrameForTesting();
 
  private:
   friend class VideoTrackRecorderTest;

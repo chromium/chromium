@@ -443,7 +443,9 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
       WTF::BindOnce(&VideoTrackRecorderImpl::Counter::DecreaseCount,
                     num_frames_in_encode_->GetWeakPtr())));
   num_frames_in_encode_->IncreaseCount();
-  EncodeFrame(std::move(frame), capture_timestamp);
+  EncodeFrame(std::move(frame), capture_timestamp,
+              request_key_frame_for_testing_);
+  request_key_frame_for_testing_ = false;
 }
 
 scoped_refptr<media::VideoFrame>
@@ -733,6 +735,11 @@ void VideoTrackRecorderImpl::OnVideoFrameForTesting(
   encoder_.AsyncCall(&Encoder::StartFrameEncode)
       .WithArgs(std::move(frame),
                 std::vector<scoped_refptr<media::VideoFrame>>(), timestamp);
+}
+
+void VideoTrackRecorderImpl::ForceKeyFrameForNextFrameForTesting() {
+  DVLOG(3) << __func__;
+  encoder_.AsyncCall(&Encoder::ForceKeyFrameForNextFrameForTesting);
 }
 
 void VideoTrackRecorderImpl::InitializeEncoder(

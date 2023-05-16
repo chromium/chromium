@@ -155,7 +155,8 @@ void VEAEncoder::FrameFinished(
 }
 
 void VEAEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
-                             base::TimeTicks capture_timestamp) {
+                             base::TimeTicks capture_timestamp,
+                             bool request_keyframe) {
   TRACE_EVENT0("media", "VEAEncoder::EncodeFrame");
   DVLOG(3) << __func__;
 
@@ -180,16 +181,17 @@ void VEAEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
   if (output_buffers_.empty() || vea_requested_input_coded_size_.IsEmpty()) {
     // TODO(emircan): Investigate if resetting encoder would help.
     DVLOG(3) << "Might drop frame.";
-    last_frame_ = std::make_unique<
-        std::pair<scoped_refptr<media::VideoFrame>, base::TimeTicks>>(
-        frame, capture_timestamp);
+    last_frame_ = std::make_unique<VideoFrameAndMetadata>(
+        std::move(frame), capture_timestamp, request_keyframe);
     return;
   }
 
   // If first frame hasn't been encoded, do it first.
   if (last_frame_) {
-    std::unique_ptr<VideoFrameAndTimestamp> last_frame(last_frame_.release());
-    EncodeFrame(last_frame->first, last_frame->second);
+    std::unique_ptr<VideoFrameAndMetadata> last_frame = std::move(last_frame_);
+    last_frame_ = nullptr;
+    EncodeFrame(last_frame->frame, last_frame->timestamp,
+                last_frame->request_keyframe);
   }
 
   // Lower resolutions may fall back to SW encoder in some platforms, i.e. Mac.
@@ -261,7 +263,8 @@ void VEAEncoder::EncodeFrame(scoped_refptr<media::VideoFrame> frame,
   frames_in_encode_.emplace(media::Muxer::VideoParameters(*frame),
                             capture_timestamp);
 
-  video_encoder_->Encode(video_frame, force_next_frame_to_be_keyframe_);
+  video_encoder_->Encode(video_frame,
+                         force_next_frame_to_be_keyframe_ || request_keyframe);
   force_next_frame_to_be_keyframe_ = false;
 }
 

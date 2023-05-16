@@ -195,7 +195,6 @@ class VideoTrackRecorderTest
                     std::string encoded_alpha,
                     base::TimeTicks timestamp,
                     bool keyframe));
-
   void Encode(scoped_refptr<media::VideoFrame> frame,
               base::TimeTicks capture_time) {
     EXPECT_TRUE(scheduler::GetSingleThreadTaskRunnerForTesting()
@@ -440,6 +439,31 @@ TEST_P(VideoTrackRecorderTest, EncodeFrameRGB) {
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   Encode(video_frame, base::TimeTicks::Now());
   run_loop.Run();
+
+  Mock::VerifyAndClearExpectations(this);
+}
+
+TEST_P(VideoTrackRecorderTest, EncoderHonorsKeyFrameRequests) {
+  InitializeRecorder(testing::get<0>(GetParam()));
+  InSequence s;
+  auto frame = media::VideoFrame::CreateBlackFrame(kTrackRecorderTestSize[0]);
+
+  base::RunLoop run_loop1;
+  EXPECT_CALL(*this, OnEncodedVideo)
+      .WillOnce(RunClosure(run_loop1.QuitClosure()));
+  Encode(frame, base::TimeTicks::Now());
+  run_loop1.Run();
+
+  // Request the next frame to be a key frame, and the following frame a delta
+  // frame.
+  video_track_recorder_->ForceKeyFrameForNextFrameForTesting();
+  base::RunLoop run_loop2;
+  EXPECT_CALL(*this, OnEncodedVideo(_, _, _, _, true));
+  EXPECT_CALL(*this, OnEncodedVideo(_, _, _, _, false))
+      .WillOnce(RunClosure(run_loop2.QuitClosure()));
+  Encode(frame, base::TimeTicks::Now());
+  Encode(frame, base::TimeTicks::Now());
+  run_loop2.Run();
 
   Mock::VerifyAndClearExpectations(this);
 }

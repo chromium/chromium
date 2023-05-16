@@ -43,10 +43,12 @@ class MODULES_EXPORT MediaRecorderEncoderWrapper final
 
   struct EncodeTask {
     EncodeTask(scoped_refptr<media::VideoFrame> frame,
-               base::TimeTicks capture_timestamp);
+               base::TimeTicks capture_timestamp,
+               bool request_keyframe);
     ~EncodeTask();
     scoped_refptr<media::VideoFrame> frame;
     base::TimeTicks capture_timestamp;
+    bool request_keyframe;
   };
 
   struct VideoParamsAndTimestamp {
@@ -66,7 +68,8 @@ class MODULES_EXPORT MediaRecorderEncoderWrapper final
 
   // VideoTrackRecorder::Encoder implementation.
   void EncodeFrame(scoped_refptr<media::VideoFrame> frame,
-                   base::TimeTicks capture_timestamp) override;
+                   base::TimeTicks capture_timestamp,
+                   bool request_keyframe) override;
   bool CanEncodeAlphaChannel() const override;
 
   void EnterErrorState();
