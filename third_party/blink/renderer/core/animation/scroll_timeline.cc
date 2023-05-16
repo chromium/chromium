@@ -12,8 +12,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
-#include "third_party/blink/renderer/core/animation/worklet_animation_base.h"
-#include "third_party/blink/renderer/core/animation/worklet_animation_controller.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_values.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -366,13 +364,6 @@ void ScrollTimeline::AnimationDetached(Animation* animation) {
   }
 }
 
-void ScrollTimeline::WorkletAnimationAttached(WorkletAnimationBase* worklet) {
-  if (!ResolvedSource()) {
-    return;
-  }
-  attached_worklet_animations_.insert(worklet);
-}
-
 Node* ScrollTimeline::ComputeResolvedSource() const {
   if (!CurrentAttachment()) {
     return nullptr;
@@ -388,7 +379,6 @@ bool ScrollTimeline::ComputeIsResolved(Node* resolved_source) {
 
 void ScrollTimeline::Trace(Visitor* visitor) const {
   visitor->Trace(timeline_state_snapshotted_);
-  visitor->Trace(attached_worklet_animations_);
   visitor->Trace(attachments_);
   AnimationTimeline::Trace(visitor);
   ScrollSnapshotClient::Trace(visitor);

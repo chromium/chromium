@@ -27,7 +27,6 @@ namespace blink {
 class PaintLayerScrollableArea;
 class ScrollTimelineOptions;
 class ScrollTimelineAttachment;
-class WorkletAnimationBase;
 
 // Implements the ScrollTimeline concept from the Scroll-linked Animations spec.
 //
@@ -121,13 +120,6 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
 
   cc::AnimationTimeline* EnsureCompositorTimeline() override;
   void UpdateCompositorTimeline() override;
-
-  // TODO(crbug.com/896249): This method is temporary and currently required
-  // to support worklet animations. Once worklet animations become animations
-  // these methods will not be longer needed. They are used to keep track of
-  // the of worklet animations attached to the scroll timeline for updating
-  // compositing state.
-  void WorkletAnimationAttached(WorkletAnimationBase*);
 
   void AnimationAttached(Animation*) override;
   void AnimationDetached(Animation*) override;
@@ -236,7 +228,6 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   // Snapshotted value produced by the last SnapshotState call.
   TimelineState timeline_state_snapshotted_;
 
-  HeapHashSet<WeakMember<WorkletAnimationBase>> attached_worklet_animations_;
   HeapVector<Member<ScrollTimelineAttachment>, 1> attachments_;
 };
 

@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
-#include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/animation/worklet_animation_controller.h"
@@ -304,9 +303,6 @@ WorkletAnimation::WorkletAnimation(
   }
   effect_timings_ = std::make_unique<WorkletAnimationEffectTimings>(
       timings, normalized_timings);
-
-  if (timeline_->IsScrollTimeline())
-    To<ScrollTimeline>(*timeline_).WorkletAnimationAttached(this);
 }
 
 String WorkletAnimation::playState() {
