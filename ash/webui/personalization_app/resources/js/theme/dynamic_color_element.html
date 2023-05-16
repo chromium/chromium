@@ -64,7 +64,7 @@
     display: none;
   }
 
-  cr-button[aria-pressed='true'] iron-icon[icon='personalization:circle_checkmark'] {
+  cr-button[aria-checked='true'] iron-icon[icon='personalization:circle_checkmark'] {
     --iron-icon-height: 20px;
     --iron-icon-width: 20px;
     bottom: -4px;
@@ -98,14 +98,16 @@
       id="colorSchemeSelector"
       selected="0"
       selected-item="{{colorSchemeHighlightedButton_}}"
-      hidden="[[!automaticSeedColorEnabled]]">
+      hidden="[[!automaticSeedColorEnabled]]"
+      role="radiogroup">
     <template is="dom-repeat" items="[[sampleColorSchemes_]]" as="colorScheme">
       <cr-button
           tabindex$="[[getColorSchemeTabIndex_(colorScheme.scheme)]]"
           on-click="onClickColorSchemeButton_"
           data-color-scheme-id$="[[colorScheme.scheme]]"
-          aria-pressed$="[[getColorSchemeAriaPressed_(colorScheme.scheme, colorSchemeSelected_)]]"
-          aria-description$="[[getColorSchemeAriaDescription_(colorScheme.scheme)]]">
+          aria-checked$="[[getColorSchemeAriaChecked_(colorScheme.scheme, colorSchemeSelected_)]]"
+          aria-description$="[[getColorSchemeAriaDescription_(colorScheme.scheme)]]"
+          role="radio">
         <div class="container">
           <color-scheme-icon-svg scheme="[[colorScheme]]"></color-scheme-icon-svg>
           <iron-icon class="checkmark" icon="personalization:circle_checkmark"></iron-icon>
@@ -117,12 +119,14 @@
       id="staticColorSelector"
       selected="0"
       selected-item="{{staticColorHighlightedButton_}}"
-      hidden$="[[automaticSeedColorEnabled]]">
+      hidden$="[[automaticSeedColorEnabled]]"
+      role="radiogroup">
     <template is="dom-repeat" items="[[staticColors_]]" as="staticColor">
       <cr-button
           tabindex$="[[getStaticColorTabIndex_(staticColor.seedVal)]]"
           on-click="onClickStaticColorButton_"
-          aria-pressed$="[[getStaticColorAriaPressed_(staticColor.seedVal, staticColorSelected_)]]"
+          role="radio"
+          aria-checked$="[[getStaticColorAriaChecked_(staticColor.seedVal, staticColorSelected_)]]"
           aria-description$="[[getStaticColorAriaDescription_(staticColor.enumVal)]]">
         <div class="container">
           <svg>

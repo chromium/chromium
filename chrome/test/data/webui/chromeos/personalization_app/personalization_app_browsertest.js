@@ -140,13 +140,13 @@ TEST_F(PersonalizationAppBrowserTest.name, 'All', async () => {
       const lightButton = await waitUntil(
           () => theme.shadowRoot.getElementById('lightMode'),
           'failed to find light button');
-      assertEquals('false', lightButton.getAttribute('aria-pressed'));
+      assertEquals('false', lightButton.getAttribute('aria-checked'));
       const darkButton = theme.shadowRoot.getElementById('darkMode');
       assertTrue(!!darkButton);
-      assertEquals('false', darkButton.getAttribute('aria-pressed'));
+      assertEquals('false', darkButton.getAttribute('aria-checked'));
       const autoButton = theme.shadowRoot.getElementById('autoMode');
       assertTrue(!!autoButton);
-      assertEquals('true', autoButton.getAttribute('aria-pressed'));
+      assertEquals('true', autoButton.getAttribute('aria-checked'));
     });
 
     test('selects dark mode', async () => {
@@ -157,7 +157,7 @@ TEST_F(PersonalizationAppBrowserTest.name, 'All', async () => {
 
       darkButton.click();
 
-      assertEquals('true', darkButton.getAttribute('aria-pressed'));
+      assertEquals('true', darkButton.getAttribute('aria-checked'));
       await waitUntil(
           () => getBodyColorChannels().every(channel => channel < 50),
           'failed to switch to dark mode');
@@ -171,7 +171,7 @@ TEST_F(PersonalizationAppBrowserTest.name, 'All', async () => {
 
       lightButton.click();
 
-      assertEquals('true', lightButton.getAttribute('aria-pressed'));
+      assertEquals('true', lightButton.getAttribute('aria-checked'));
       await waitUntil(
           () => getBodyColorChannels().every(channel => channel > 200),
           'failed to switch to light mode');
@@ -606,7 +606,7 @@ TEST_F(
         const colorSchemeButtons =
             Array.from(getColorSchemeSelector().querySelectorAll('cr-button'));
         for (const button of colorSchemeButtons) {
-          if (button.ariaPressed === 'false') {
+          if (button.ariaChecked === 'false') {
             const originalColor = getComputedStyle(toggleDescription).color;
             button.click();
             await waitUntil(
@@ -643,7 +643,7 @@ TEST_F(
         await waitUntil(
             () => getBodyColorChannels().every(channel => channel > 200),
             'failed to switch to light mode');
-        assertEquals('true', lightButton.getAttribute('aria-pressed'));
+        assertEquals('true', lightButton.getAttribute('aria-checked'));
         setDynamicColorToggle(false);
 
         // Click all of the static color buttons and save the background color
@@ -652,7 +652,7 @@ TEST_F(
         const staticColorButtons =
             Array.from(getStaticColorSelector().querySelectorAll('cr-button'));
         for (const button of staticColorButtons) {
-          if (button.ariaPressed === 'false') {
+          if (button.ariaChecked === 'false') {
             const originalColor = getComputedStyle(lightButton).backgroundColor;
             button.click();
             await waitUntil(

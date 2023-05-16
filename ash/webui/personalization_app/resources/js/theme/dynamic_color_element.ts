@@ -190,10 +190,10 @@ export class DynamicColorElement extends WithPersonalizationStore {
     return isAutomaticSeedColorEnabled(colorScheme);
   }
 
-  private getColorSchemeAriaPressed_(
+  private getColorSchemeAriaChecked_(
       colorScheme: number, colorSchemeSelected: number|null): 'true'|'false' {
-    const pressedColorScheme = colorSchemeSelected || DEFAULT_COLOR_SCHEME;
-    return pressedColorScheme === colorScheme ? 'true' : 'false';
+    const checkedColorScheme = colorSchemeSelected || DEFAULT_COLOR_SCHEME;
+    return checkedColorScheme === colorScheme ? 'true' : 'false';
   }
 
   private getColorSchemeAriaDescription_(colorScheme: ColorScheme): string {
@@ -212,10 +212,10 @@ export class DynamicColorElement extends WithPersonalizationStore {
     }
   }
 
-  private getStaticColorAriaPressed_(
+  private getStaticColorAriaChecked_(
       staticColor: string, staticColorSelected: SkColor|null): 'true'|'false' {
-    const pressedStaticColor = staticColorSelected || DEFAULT_STATIC_COLOR;
-    return staticColor === convertToRgbHexStr(pressedStaticColor.value) ?
+    const checkedStaticColor = staticColorSelected || DEFAULT_STATIC_COLOR;
+    return staticColor === convertToRgbHexStr(checkedStaticColor.value) ?
         'true' :
         'false';
   }

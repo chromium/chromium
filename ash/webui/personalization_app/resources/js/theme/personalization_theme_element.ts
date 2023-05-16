@@ -117,7 +117,7 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
     e.detail.keyboardEvent.preventDefault();
   }
 
-  private getLightAriaPressed_(): string {
+  private getLightAriaChecked_(): string {
     //  If auto schedule mode is enabled, the system disregards whether dark
     //  mode is enabled or not. To ensure expected behavior, we show that dark
     //  mode can only be selected only when auto schedule mode is disabled and
@@ -130,7 +130,7 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
         .toString();
   }
 
-  private getDarkAriaPressed_(): string {
+  private getDarkAriaChecked_(): string {
     //  If auto schedule mode is enabled, the system disregards whether dark
     //  mode is enabled or not. To ensure expected behavior, we show that light
     //  mode is selected only when both auto schedule mode and dark mode are
@@ -139,7 +139,7 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
         .toString();
   }
 
-  private getAutoAriaPressed_(): string {
+  private getAutoAriaChecked_(): string {
     return (!!this.colorModeAutoScheduleEnabled_).toString();
   }
 
