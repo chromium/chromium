@@ -270,6 +270,7 @@
 #include "third_party/blink/renderer/core/loader/pending_link_preload.h"
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
+#include "third_party/blink/renderer/core/loader/resource/link_dictionary_resource.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_row_element.h"
 #include "third_party/blink/renderer/core/mathml_element_factory.h"
@@ -3820,6 +3821,16 @@ void Document::CheckCompleted() {
   }
 }
 
+void Document::FetchDictionaryFromLinkHeader() {
+  if (!CompressionDictionaryTransportFullyEnabled(GetExecutionContext()) ||
+      !Loader()) {
+    return;
+  }
+  Loader()->DispatchLinkHeaderPreloads(
+      nullptr /* viewport */,
+      PreloadHelper::LoadLinksFromHeaderMode::kDocumentAfterLoadCompleted);
+}
+
 bool Document::CheckCompletedInternal() {
   if (!ShouldComplete())
     return false;
@@ -3874,6 +3885,10 @@ bool Document::CheckCompletedInternal() {
     GetFrame()->GetFrameScheduler()->OnLoad();
 
     DetectJavascriptFrameworksOnLoad(*this);
+    // Only load the dictionary after the full document load completes.
+    // The compression dictionary is of low priority and shall be only loaded
+    // when the browser is idle.
+    FetchDictionaryFromLinkHeader();
   } else if (loading_for_print_) {
     loading_for_print_ = false;
     GetFrame()->Client()->DispatchDidFinishLoadForPrinting();
@@ -9197,6 +9212,16 @@ Document::PendingJavascriptUrl::~PendingJavascriptUrl() = default;
 
 void Document::ResetAgent(Agent& agent) {
   agent_ = agent;
+}
+
+Resource* Document::GetPendingLinkPreloadForTesting(const KURL& url) {
+  for (auto pending_preload : pending_link_header_preloads_) {
+    Resource* resource = pending_preload->GetResourceForTesting();
+    if (resource && resource->Url() == url) {
+      return resource;
+    }
+  }
+  return nullptr;
 }
 
 template class CORE_TEMPLATE_EXPORT Supplement<Document>;

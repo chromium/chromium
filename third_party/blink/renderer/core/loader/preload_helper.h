@@ -28,6 +28,7 @@ class PreloadHelper final {
     kDocumentBeforeCommit,
     kDocumentAfterCommitWithoutViewport,
     kDocumentAfterCommitWithViewport,
+    kDocumentAfterLoadCompleted,
     kSubresourceFromMemoryCache,
     kSubresourceNotFromMemoryCache,
   };

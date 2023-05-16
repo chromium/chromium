@@ -189,6 +189,8 @@ bool IsNetworkHintAllowed(PreloadHelper::LoadLinksFromHeaderMode mode) {
     case PreloadHelper::LoadLinksFromHeaderMode::
         kDocumentAfterCommitWithViewport:
       return false;
+    case PreloadHelper::LoadLinksFromHeaderMode::kDocumentAfterLoadCompleted:
+      return false;
     case PreloadHelper::LoadLinksFromHeaderMode::kSubresourceFromMemoryCache:
       return true;
     case PreloadHelper::LoadLinksFromHeaderMode::kSubresourceNotFromMemoryCache:
@@ -207,6 +209,8 @@ bool IsResourceLoadAllowed(PreloadHelper::LoadLinksFromHeaderMode mode,
     case PreloadHelper::LoadLinksFromHeaderMode::
         kDocumentAfterCommitWithViewport:
       return is_viewport_dependent;
+    case PreloadHelper::LoadLinksFromHeaderMode::kDocumentAfterLoadCompleted:
+      return false;
     case PreloadHelper::LoadLinksFromHeaderMode::kSubresourceFromMemoryCache:
       return false;
     case PreloadHelper::LoadLinksFromHeaderMode::kSubresourceNotFromMemoryCache:
@@ -733,7 +737,11 @@ void PreloadHelper::LoadLinksFromHeader(
     bool is_network_hint_allowed = IsNetworkHintAllowed(mode);
     bool is_resource_load_allowed =
         IsResourceLoadAllowed(mode, header.IsViewportDependent());
-    if (!is_network_hint_allowed && !is_resource_load_allowed) {
+    // We load compression dictionaries after the page load completes.
+    bool is_dictionary_load_allowed =
+        (mode == LoadLinksFromHeaderMode::kDocumentAfterLoadCompleted);
+    if (!is_network_hint_allowed && !is_resource_load_allowed &&
+        !is_dictionary_load_allowed) {
       continue;
     }
 
@@ -809,18 +817,23 @@ void PreloadHelper::LoadLinksFromHeader(
 
       PreconnectIfNeeded(params, document, &frame, kLinkCalledFromHeader);
     }
-    if (is_resource_load_allowed) {
+    if (is_resource_load_allowed || is_dictionary_load_allowed) {
       DCHECK(document);
       PendingLinkPreload* pending_preload =
           MakeGarbageCollected<PendingLinkPreload>(*document,
                                                    nullptr /* LinkLoader */);
       document->AddPendingLinkHeaderPreload(*pending_preload);
-      PreloadIfNeeded(params, *document, base_url, kLinkCalledFromHeader,
-                      viewport_description, kNotParserInserted,
-                      pending_preload);
-      PrefetchIfNeeded(params, *document, pending_preload);
-      ModulePreloadIfNeeded(params, *document, viewport_description,
-                            pending_preload);
+      if (is_resource_load_allowed) {
+        PreloadIfNeeded(params, *document, base_url, kLinkCalledFromHeader,
+                        viewport_description, kNotParserInserted,
+                        pending_preload);
+        PrefetchIfNeeded(params, *document, pending_preload);
+        ModulePreloadIfNeeded(params, *document, viewport_description,
+                              pending_preload);
+      }
+      if (is_dictionary_load_allowed) {
+        FetchDictionaryIfNeeded(params, *document, pending_preload);
+      }
     }
     if (params.rel.IsServiceWorker()) {
       UseCounter::Count(document, WebFeature::kLinkHeaderServiceWorker);
@@ -829,6 +842,8 @@ void PreloadHelper::LoadLinksFromHeader(
   }
 }
 
+// TODO(crbug.com/1413922):
+// Always load the resource after the full document load completes
 void PreloadHelper::FetchDictionaryIfNeeded(
     const LinkLoadParameters& params,
     Document& document,
