@@ -3,7 +3,7 @@ Tests removing event listeners in the Elements sidebar panel.
 
 ======== click ========
 == Raw
-[expanded] button#nodeRemoveevent-listener-sidebar-remove.js:16
+[expanded] button#nodeRemoveevent-listener-sidebar-remove.js:19
     useCapture: false
     passive: false
     once: false
@@ -11,7 +11,7 @@ Tests removing event listeners in the Elements sidebar panel.
 
 ======== mouseover ========
 == Raw
-[expanded] button#nodeRemoveevent-listener-sidebar-remove.js:16
+[expanded] button#nodeRemoveevent-listener-sidebar-remove.js:19
     useCapture: false
     passive: false
     once: false
@@ -20,7 +20,7 @@ Listeners after removal:
 
 ======== mouseover ========
 == Raw
-[expanded] button#nodeRemoveevent-listener-sidebar-remove.js:16
+[expanded] button#nodeRemoveevent-listener-sidebar-remove.js:19
     useCapture: false
     passive: false
     once: false
@@ -29,7 +29,7 @@ Listeners for sibling node:
 
 ======== click ========
 == Raw
-[expanded] button#node-siblingRemoveevent-listener-sidebar-remove.js:17
+[expanded] button#node-siblingRemoveevent-listener-sidebar-remove.js:20
     useCapture: false
     passive: false
     once: false
@@ -37,7 +37,7 @@ Listeners for sibling node:
 
 ======== mouseover ========
 == Raw
-[expanded] button#node-siblingRemoveevent-listener-sidebar-remove.js:17
+[expanded] button#node-siblingRemoveevent-listener-sidebar-remove.js:20
     useCapture: false
     passive: false
     once: false

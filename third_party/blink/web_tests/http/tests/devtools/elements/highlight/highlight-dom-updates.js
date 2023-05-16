@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {ElementsTestRunner} from 'elements_test_runner';
+import {ConsoleTestRunner} from 'console_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests DOM update highlights in the DOM tree.\n`);
-  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
-  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('elements');
+  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="container">

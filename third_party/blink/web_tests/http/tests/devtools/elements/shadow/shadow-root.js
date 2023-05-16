@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {ElementsTestRunner} from 'elements_test_runner';
+
 (async function() {
   TestRunner.addResult(
       `This test verifies that author shadow root's #document-fragment is displayed and user-agent one is hidden by default.\n`);
-  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <p id="description"></p>

@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {ElementsTestRunner} from 'elements_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests that you can click and hover on links in attributes.\n`);
-  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <img id="linkify-1" srcset="./1x/googlelogo_color_272x92dp.png 1x, ./2x/googlelogo_color_272x92dp.png 2x">

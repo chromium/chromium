@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {ElementsTestRunner} from 'elements_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests that elements panel preserves selected shadow DOM node on page refresh.\n`);
-  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.navigatePromise('../resources/elements-panel-shadow-selection-on-refresh.html');
 

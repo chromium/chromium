@@ -3,7 +3,7 @@ Tests event listeners output in the Elements sidebar panel when the listeners ar
 
 ======== click ========
 == Raw
-[expanded] bodyRemoveevent-listeners-about-blank.js:16
+[expanded] bodyRemoveevent-listeners-about-blank.js:19
     useCapture: true
     passive: false
     once: false
@@ -11,7 +11,7 @@ Tests event listeners output in the Elements sidebar panel when the listeners ar
 
 ======== hover ========
 == Raw
-[expanded] div#div-in-iframeRemoveevent-listeners-about-blank.js:16
+[expanded] div#div-in-iframeRemoveevent-listeners-about-blank.js:19
     useCapture: true
     passive: false
     once: true
@@ -19,7 +19,7 @@ Tests event listeners output in the Elements sidebar panel when the listeners ar
 
 ======== wheel ========
 == Raw
-[expanded] bodyRemoveToggle Passiveevent-listeners-about-blank.js:16
+[expanded] bodyRemoveToggle Passiveevent-listeners-about-blank.js:19
     useCapture: false
     passive: true
     once: false

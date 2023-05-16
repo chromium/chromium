@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+
 (async function() {
   TestRunner.addResult(
       `Tests that resolveNode from alien document does not crash. https://bugs.webkit.org/show_bug.cgi?id=71806.\n`);

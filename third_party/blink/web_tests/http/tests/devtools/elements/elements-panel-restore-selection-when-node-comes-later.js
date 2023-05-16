@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {ElementsTestRunner} from 'elements_test_runner';
+
 (async function() {
   TestRunner.addResult(
       `Verify that last selected element is restored properly later, even if it failed to do so once.\n`);
-  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements');
   await TestRunner.showPanel('elements');
   await TestRunner.navigatePromise('./resources/elements-panel-restore-selection-when-node-comes-later.html');
 
