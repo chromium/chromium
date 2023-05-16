@@ -339,6 +339,7 @@ void AutofillAgent::DidCommitProvisionalLoad(ui::PageTransition transition) {
 }
 
 void AutofillAgent::DidDispatchDOMContentLoadedEvent() {
+  is_dom_content_loaded_ = true;
   ProcessFormsUnthrottled(/*callback=*/{});
 }
 
@@ -1071,7 +1072,7 @@ AutofillAgent::ProccessFormsAndReturnIssues() {
 void AutofillAgent::ProcessForms(base::OneShotTimer& timer,
                                  base::OnceCallback<void(bool)> callback) {
   static constexpr base::TimeDelta kThrottle = base::Milliseconds(100);
-  if (timer.IsRunning()) {
+  if (!is_dom_content_loaded_ || timer.IsRunning()) {
     if (!callback.is_null()) {
       std::move(callback).Run(/*success=*/false);
     }

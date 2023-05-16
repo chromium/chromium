@@ -458,6 +458,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   base::OneShotTimer process_forms_reparse_timer_;
   base::OneShotTimer process_forms_reparse_with_response_timer_;
 
+  // True iff DidDispatchDOMContentLoadedEvent() fired.
+  bool is_dom_content_loaded_ = false;
+
   // Will be set when accessibility mode changes, depending on what the new mode
   // is.
   bool is_screen_reader_enabled_ = false;
