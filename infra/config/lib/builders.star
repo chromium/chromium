@@ -674,7 +674,7 @@ def builder(
              "use sheriff_rotations instead")
     if "$build/goma" in properties:
         fail('Setting "$build/goma" property is not supported: ' +
-             "use goma_backend, goma_dbug, goma_enable_ats and goma_jobs instead")
+             "use goma_backend, goma_enable_ats and goma_jobs instead")
     if "$build/code_coverage" in properties:
         fail('Setting "$build/code_coverage" property is not supported: ' +
              "use coverage_gs_bucket, use_clang_coverage, use_java_coverage, " +
