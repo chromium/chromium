@@ -3887,6 +3887,7 @@ source_set("ash") {
     "//chromeos/components/cdm_factory_daemon/mojom",
     "//chromeos/components/certificate_provider",
     "//chromeos/components/disks:prefs",
+    "//chromeos/components/kiosk",
     "//chromeos/components/mojo_bootstrap",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/components/sensors",

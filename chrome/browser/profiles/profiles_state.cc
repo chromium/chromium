@@ -288,20 +288,6 @@ bool IsPublicSession() {
 #endif
 }
 
-bool IsKioskSession() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::LoginState::IsInitialized() &&
-         ash::LoginState::Get()->IsKioskSession();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  crosapi::mojom::SessionType session_type =
-      chromeos::BrowserParamsProxy::Get()->SessionType();
-  return session_type == crosapi::mojom::SessionType::kWebKioskSession ||
-         session_type == crosapi::mojom::SessionType::kAppKioskSession;
-#else
-  return false;
-#endif
-}
-
 bool IsDemoSession() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::DemoSession::IsDeviceInDemoMode();

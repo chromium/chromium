@@ -11,12 +11,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/bulleted_label_list_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -551,7 +551,7 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
   actions_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   // Do not show the help link in the kiosk session to prevent escape from a
   // kiosk app.
-  if (!profiles::IsKioskSession()) {
+  if (!chromeos::IsKioskSession()) {
     auto* help_link =
         actions_container->AddChildView(std::make_unique<views::Link>(
             l10n_util::GetStringUTF16(GetHelpLinkTitle())));

@@ -811,6 +811,7 @@ static_library("extensions") {
     "//chrome/browser/safe_browsing:metrics_collector",
     "//chrome/browser/ui/tabs:tab_enums",
     "//chrome/browser/web_applications",
+    "//chromeos/components/kiosk",
     "//components/cbor:cbor",
     "//components/commerce/core:pref_names",
     "//components/device_reauth",
@@ -1038,6 +1039,7 @@ static_library("extensions") {
       "system_display/display_info_provider_utils.cc",
       "system_display/display_info_provider_utils.h",
     ]
+    deps += [ "//chromeos/components/kiosk" ]
     if (use_cups) {
       sources += [
         "api/printing/print_job_submitter.cc",

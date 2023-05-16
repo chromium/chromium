@@ -49,6 +49,7 @@
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -64,7 +65,7 @@ namespace {
 extensions::mojom::FeatureSessionType GetExtSessionType() {
   using extensions::mojom::FeatureSessionType;
 
-  if (profiles::IsKioskSession()) {
+  if (chromeos::IsKioskSession()) {
     return FeatureSessionType::kKiosk;
   }
 

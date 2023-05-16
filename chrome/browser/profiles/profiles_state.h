@@ -111,9 +111,6 @@ void RemoveBrowsingDataForProfile(const base::FilePath& profile_path);
 // Returns whether a public session is being run currently.
 bool IsPublicSession();
 
-// Returns whether a kiosk session is being run currently.
-bool IsKioskSession();
-
 // Returns true if the current session is a Demo session.
 bool IsDemoSession();
 

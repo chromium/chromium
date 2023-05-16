@@ -13,7 +13,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -1080,7 +1080,7 @@ bool BrowserNonClientFrameViewChromeOS::IsFloated() const {
 bool BrowserNonClientFrameViewChromeOS::ShouldEnableImmersiveModeController()
     const {
   // Do not support immersive mode in kiosk.
-  if (profiles::IsKioskSession()) {
+  if (chromeos::IsKioskSession()) {
     return false;
   }
 

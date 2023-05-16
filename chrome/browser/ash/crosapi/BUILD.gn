@@ -310,6 +310,7 @@ source_set("crosapi") {
     "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
     "//chromeos/components/certificate_provider:certificate_provider",
     "//chromeos/components/firewall_hole",
+    "//chromeos/components/kiosk",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/components/remote_apps/mojom",
     "//chromeos/components/sensors",

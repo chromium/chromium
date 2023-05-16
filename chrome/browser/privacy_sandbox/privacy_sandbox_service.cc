@@ -49,6 +49,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #endif
 
 namespace {
@@ -88,7 +89,7 @@ bool IsRegularProfile(profile_metrics::BrowserProfileType profile_type) {
 #if BUILDFLAG(IS_CHROMEOS)
   // Any Device Local account, which is a CrOS concept powering things like
   // Kiosks and Managed Guest Sessions, is not considered regular.
-  return !profiles::IsPublicSession() && !profiles::IsKioskSession() &&
+  return !profiles::IsPublicSession() && !chromeos::IsKioskSession() &&
          !profiles::IsChromeAppKioskSession();
 #else
   return true;

@@ -721,6 +721,7 @@ static_library("ui") {
   }
   if (is_chromeos) {
     deps += [
+      "//chromeos/components/kiosk",
       "//chromeos/constants",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/cpp:crosapi_constants",
@@ -3426,6 +3427,7 @@ static_library("ui") {
       "//chromeos/ash/services/multidevice_setup/public/cpp:url_provider",
       "//chromeos/ash/services/nearby/public/mojom",
       "//chromeos/ash/services/recording/public/mojom",
+      "//chromeos/components/kiosk",
       "//chromeos/components/onc",
       "//chromeos/components/quick_answers",
       "//chromeos/components/quick_answers/public/cpp:cpp",
@@ -3571,6 +3573,7 @@ static_library("ui") {
     deps += [
       "//chrome/app:generated_resources",
       "//chrome/browser/chromeos",
+      "//chromeos/components/kiosk",
       "//chromeos/components/security_token_pin",
       "//chromeos/constants",
       "//chromeos/dbus/power",
@@ -5558,6 +5561,7 @@ static_library("ui") {
       "//base",
       "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/ui/views",
+      "//chromeos/components/kiosk",
       "//components/commerce/core:public",
       "//components/commerce/core:shopping_service",
       "//components/constrained_window",
@@ -5972,6 +5976,9 @@ static_library("ui") {
       "webui/extensions/extension_icon_source.h",
     ]
 
+    if (is_chromeos) {
+      deps += [ "//chromeos/components/kiosk" ]
+    }
     if (is_chromeos_ash) {
       deps += [
         "//chrome/browser/ash/system_web_apps/types",

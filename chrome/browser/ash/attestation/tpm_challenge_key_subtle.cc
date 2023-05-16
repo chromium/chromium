@@ -26,7 +26,6 @@
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -35,6 +34,7 @@
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -636,7 +636,7 @@ void TpmChallengeKeySubtleImpl::StartSignChallengeStep(
   // * the request is a machine challenge
   // * the request is a user challenge and this is a kiosk session.
   request.set_include_customer_id(is_machine_challenge ||
-                                  profiles::IsKioskSession());
+                                  chromeos::IsKioskSession());
   AttestationClient::Get()->SignEnterpriseChallenge(
       request, base::BindOnce(&TpmChallengeKeySubtleImpl::SignChallengeCallback,
                               weak_factory_.GetWeakPtr()));

@@ -192,6 +192,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/blocked_content/popup_blocker.h"
 #include "components/browsing_topics/browsing_topics_service.h"
@@ -7502,7 +7503,7 @@ bool ChromeContentBrowserClient::OpenExternally(
     return false;
   }
 
-  if (profiles::IsKioskSession()) {
+  if (chromeos::IsKioskSession()) {
     // Kiosk sessions already hide the navigation bar and block window creation.
     // Moreover, they don't support SWAs which we might end up trying to run
     // below.
