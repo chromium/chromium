@@ -35,6 +35,10 @@
 #include "chrome/test/base/ui_test_utils.h"
 #endif  // defined (
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace safe_browsing {
 
 namespace {
@@ -123,6 +127,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 #endif
 IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
                        MAYBE_ModelUpdatesPropagated) {
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::IsAtLeastOS13()) {
+    GTEST_SKIP() << "Flaky on macOS 13: https://crbug.com/1433315";
+  }
+#endif
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -224,6 +233,12 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
                        MAYBE_TfLiteClassification) {
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::IsAtLeastOS13()) {
+    GTEST_SKIP() << "Flaky on macOS 13: https://crbug.com/1433315";
+  }
+#endif
+
   GURL url(embedded_test_server()->GetURL("/empty.html"));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -366,6 +381,12 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_P(ClientSideDetectionServiceBrowserTest,
                        MAYBE_TfLiteClassificationAfterTwoModelUploads) {
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::IsAtLeastOS13()) {
+    GTEST_SKIP() << "Flaky on macOS 13: https://crbug.com/1433315";
+  }
+#endif
+
   if (!base::FeatureList::IsEnabled(
           kClientSideDetectionModelOptimizationGuide)) {
     return;
