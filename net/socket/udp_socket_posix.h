@@ -72,6 +72,9 @@ class NET_EXPORT UDPSocketPosix {
                  net::NetLog* net_log,
                  const net::NetLogSource& source);
 
+  UDPSocketPosix(DatagramSocket::BindType bind_type,
+                 NetLogWithSource source_net_log);
+
   UDPSocketPosix(const UDPSocketPosix&) = delete;
   UDPSocketPosix& operator=(const UDPSocketPosix&) = delete;
 
@@ -279,6 +282,14 @@ class NET_EXPORT UDPSocketPosix {
   // with the specified address family. The socket should only be created but
   // not bound or connected to an address.
   int AdoptOpenedSocket(AddressFamily address_family, int socket);
+
+  uint32_t get_multicast_interface_for_testing() {
+    return multicast_interface_;
+  }
+  bool get_msg_confirm_for_testing() { return sendto_flags_; }
+  bool get_experimental_recv_optimization_enabled_for_testing() {
+    return experimental_recv_optimization_enabled_;
+  }
 
  private:
   enum SocketOptions {

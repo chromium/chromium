@@ -165,6 +165,9 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
                net::NetLog* net_log,
                const net::NetLogSource& source);
 
+  UDPSocketWin(DatagramSocket::BindType bind_type,
+               NetLogWithSource source_net_log);
+
   UDPSocketWin(const UDPSocketWin&) = delete;
   UDPSocketWin& operator=(const UDPSocketWin&) = delete;
 
@@ -346,8 +349,8 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
   // Resets the thread to be used for thread-safety checks.
   void DetachFromThread();
 
-  // This class by default uses overlapped IO. Call this method before Open()
-  // to switch to non-blocking IO.
+  // This class by default uses overlapped IO. Call this method before Open() or
+  // AdoptOpenedSocket() to switch to non-blocking IO.
   void UseNonBlockingIO();
 
   // Apply |tag| to this socket.
@@ -355,8 +358,15 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
 
   // Takes ownership of `socket`, which should be a socket descriptor opened
   // with the specified address family. The socket should only be created but
-  // not bound or connected to an address.
+  // not bound or connected to an address. This method must be called after
+  // UseNonBlockingIO, otherwise the adopted socket will not have the
+  // non-blocking IO flag set.
   int AdoptOpenedSocket(AddressFamily address_family, SOCKET socket);
+
+  uint32_t get_multicast_interface_for_testing() {
+    return multicast_interface_;
+  }
+  bool get_use_non_blocking_io_for_testing() { return use_non_blocking_io_; }
 
  private:
   enum SocketOptions {

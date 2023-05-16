@@ -139,6 +139,22 @@ UDPSocketPosix::UDPSocketPosix(DatagramSocket::BindType bind_type,
   net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE, source);
 }
 
+UDPSocketPosix::UDPSocketPosix(DatagramSocket::BindType bind_type,
+                               NetLogWithSource source_net_log)
+    : socket_(kInvalidSocket),
+      bind_type_(bind_type),
+      read_socket_watcher_(FROM_HERE),
+      write_socket_watcher_(FROM_HERE),
+      read_watcher_(this),
+      write_watcher_(this),
+      net_log_(source_net_log),
+      bound_network_(handles::kInvalidNetworkHandle),
+      always_update_bytes_received_(base::FeatureList::IsEnabled(
+          features::kUdpSocketPosixAlwaysUpdateBytesReceived)) {
+  net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE,
+                                       net_log_.source());
+}
+
 UDPSocketPosix::~UDPSocketPosix() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Close();

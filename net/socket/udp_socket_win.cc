@@ -249,6 +249,16 @@ UDPSocketWin::UDPSocketWin(DatagramSocket::BindType bind_type,
   net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE, source);
 }
 
+UDPSocketWin::UDPSocketWin(DatagramSocket::BindType bind_type,
+                           NetLogWithSource source_net_log)
+    : socket_(INVALID_SOCKET),
+      socket_options_(SOCKET_OPTION_MULTICAST_LOOP),
+      net_log_(source_net_log) {
+  EnsureWinsockInit();
+  net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE,
+                                       net_log_.source());
+}
+
 UDPSocketWin::~UDPSocketWin() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Close();

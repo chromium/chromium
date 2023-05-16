@@ -30,6 +30,11 @@ class NET_EXPORT_PRIVATE UDPClientSocket : public DatagramClientSocket {
       const net::NetLogSource& source,
       handles::NetworkHandle network = handles::kInvalidNetworkHandle);
 
+  UDPClientSocket(
+      DatagramSocket::BindType bind_type,
+      NetLogWithSource source_net_log,
+      handles::NetworkHandle network = handles::kInvalidNetworkHandle);
+
   UDPClientSocket(const UDPClientSocket&) = delete;
   UDPClientSocket& operator=(const UDPClientSocket&) = delete;
 
@@ -74,14 +79,34 @@ class NET_EXPORT_PRIVATE UDPClientSocket : public DatagramClientSocket {
   int SetMulticastInterface(uint32_t interface_index) override;
   void SetIOSNetworkServiceType(int ios_network_service_type) override;
 
-  // Takes ownership of an opened but unconnected and unbound `socket`.
-  void AdoptOpenedSocket(AddressFamily address_family, SocketDescriptor socket);
+  // Takes ownership of an opened but unconnected and unbound `socket`. This
+  // method must be called after UseNonBlockingIO, otherwise the adopted socket
+  // will not have the non-blocking IO flag set.
+  int AdoptOpenedSocket(AddressFamily address_family, SocketDescriptor socket);
+
+  uint32_t get_multicast_interface_for_testing() {
+    return socket_.get_multicast_interface_for_testing();
+  }
+#if !BUILDFLAG(IS_WIN)
+  bool get_msg_confirm_for_testing() {
+    return socket_.get_msg_confirm_for_testing();
+  }
+  bool get_recv_optimization_for_testing() {
+    return socket_.get_experimental_recv_optimization_enabled_for_testing();
+  }
+#endif
+#if BUILDFLAG(IS_WIN)
+  bool get_use_non_blocking_io_for_testing() {
+    return socket_.get_use_non_blocking_io_for_testing();
+  }
+#endif
 
  private:
   UDPSocket socket_;
+  bool adopted_opened_socket_ = false;
   bool connect_called_ = false;
   // The network the socket is currently bound to.
-  handles::NetworkHandle network_;
+  handles::NetworkHandle network_ = handles::kInvalidNetworkHandle;
   handles::NetworkHandle connect_using_network_;
 };
 

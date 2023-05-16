@@ -114,7 +114,7 @@ TEST_F(TCPClientSocketBrokeredTest, FailedConnect) {
   net::TestCompletionCallback callback;
   base::test::ScopedDisableRunLoopTimeout disable_timeout;
 
-  socket_broker_impl_.SetMockSocketTest(true);
+  socket_broker_impl_.SetConnectionFailure(true);
 
   int result = socket_->Connect(callback.callback());
 
