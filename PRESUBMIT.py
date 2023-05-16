@@ -921,6 +921,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [
         # Needed to use QUICHE API.
         r'services/network/web_transport\.cc',
+        r'chrome/browser/ip_protection/.*',
         # Not an error in third_party folders.
         _THIRD_PARTY_EXCEPT_BLINK
       ],
@@ -935,6 +936,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         # Needed to use liburlpattern API.
         r'third_party/blink/renderer/core/url_pattern/.*',
         r'third_party/blink/renderer/modules/manifest/manifest_parser\.cc',
+        # Needed to use QUICHE API.
+        r'chrome/browser/ip_protection/.*',
         # Not an error in third_party folders.
         _THIRD_PARTY_EXCEPT_BLINK
       ],
@@ -1080,6 +1083,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
           # This code is in the process of being extracted into a third-party library.
           # See https://crbug.com/1322914
           '^net/cert/pki/path_builder_unittest\.cc',
+          # Needed to use QUICHE API
+          r'chrome/browser/ip_protection/.*',
           # TODO(https://crbug.com/1364577): Various uses that should be
           # migrated to something else.
           # Should use base::OnceCallback or base::RepeatingCallback.
