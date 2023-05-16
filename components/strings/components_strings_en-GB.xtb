@@ -263,7 +263,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1553358976309200471">Update Chrome</translation>
 <translation id="1555130319947370107">Blue</translation>
 <translation id="1559447966090556585">Get notifications?</translation>
-<translation id="1559486004335285648">Auto-fill payment info</translation>
+<translation id="1559486004335285648">Autofill payment info</translation>
 <translation id="1559528461873125649">No such file or directory</translation>
 <translation id="1559572115229829303">&lt;p&gt;A private connection to <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> can't be established because your device's date and time (<ph name="DATE_AND_TIME" />) are incorrect.&lt;/p&gt;
 

@@ -418,7 +418,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1919526244108283799">400 x 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ningún}=1{1 sitio}other{# sitios}}</translation>
 <translation id="1924727005275031552">Novo</translation>
-<translation id="1927439593081478069">Botón para executar a comprobación de seguranza de Chrome. Se queres executar unha comprobación de seguranza na configuración de Chrome, preme Introducir</translation>
+<translation id="1927439593081478069">Botón para executar a Comprobación de seguranza de Chrome. Se queres executar unha Comprobación de seguranza na configuración de Chrome, preme Introducir</translation>
 <translation id="1935995810530254458">Copiar igualmente</translation>
 <translation id="1939175642807587452">Pode pedirche permiso para enviar notificacións</translation>
 <translation id="1943994668912612445">Deseño</translation>
@@ -736,7 +736,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="271663710482723385">Para saír da pantalla completa, preme |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />|</translation>
 <translation id="2718207025093645426">O usuario ou dispositivo xestionado non ten ningunha política cargada.</translation>
 <translation id="2721148159707890343">Solicitude correcta</translation>
-<translation id="2723669454293168317">Executar unha comprobación de seguranza na configuración de Chrome</translation>
+<translation id="2723669454293168317">Executar unha Comprobación de seguranza na configuración de Chrome</translation>
 <translation id="2726001110728089263">Bandexa lateral</translation>
 <translation id="2728127805433021124">O certificado do servidor está asinado cun algoritmo de sinatura débil.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Executar diagnósticos de conectividade<ph name="END_LINK" /></translation>
@@ -978,7 +978,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3369459162151165748">Pezas e accesorios para vehículos</translation>
 <translation id="3371064404604898522">Establecer Chrome como navegador predeterminado</translation>
 <translation id="337363190475750230">Desaprovisionado</translation>
-<translation id="3375754925484257129">Executar comprobación de seguranza de Chrome</translation>
+<translation id="3375754925484257129">Executar Comprobación de seguranza de Chrome</translation>
 <translation id="3377144306166885718">O servidor utilizou unha versión obsoleta de TLS.</translation>
 <translation id="3377188786107721145">Erro de análise da política</translation>
 <translation id="3377736046129930310">Usar o bloqueo de pantalla para confirmar as tarxetas máis rápido</translation>
@@ -1075,7 +1075,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3611317423880285981">Produtos do fogar</translation>
 <translation id="3614103345592970299">Tamaño 2</translation>
 <translation id="361438452008624280">Entrada da lista "<ph name="LANGUAGE_ID" />": idioma descoñecido ou non compatible.</translation>
-<translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Se queres executar unha comprobación de seguranza na configuración de Chrome, preme Tabulador e, a continuación, Introducir</translation>
+<translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Se queres executar unha Comprobación de seguranza na configuración de Chrome, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="3615877443314183785">Introduce unha data de caducidade válida</translation>
 <translation id="36224234498066874">Borrar datos de navegación...</translation>
 <translation id="362276910939193118">Mostrar historial completo</translation>
@@ -1555,7 +1555,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4757993714154412917">Acabas de escribir o teu contrasinal nun sitio enganoso. Para protexer as túas contas, Chromium recoméndache que comprobes os contrasinais que tes gardados.</translation>
 <translation id="4758311279753947758">Engadir información de contacto</translation>
 <translation id="4761104368405085019">Utilizar o micrófono</translation>
-<translation id="4761869838909035636">Executar comprobación de seguranza de Chrome</translation>
+<translation id="4761869838909035636">Executar Comprobación de seguranza de Chrome</translation>
 <translation id="4764776831041365478">É posible que a páxina web de <ph name="URL" /> estea temporalmente inactiva ou que se trasladase definitivamente a outro enderezo web.</translation>
 <translation id="4766713847338118463">Dúas grampas na parte inferior</translation>
 <translation id="4771973620359291008">Produciuse un erro descoñecido.</translation>

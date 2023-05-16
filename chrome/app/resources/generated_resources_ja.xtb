@@ -272,7 +272,7 @@
 <translation id="1227660082540388410">パスキーの編集</translation>
 <translation id="1227993798763400520">キャストできませんでした。もう一度お試しください。</translation>
 <translation id="1230417814058465809">標準保護機能がオンになっています。セキュリティをさらに強化するには、保護強化機能を使用してください。</translation>
-<translation id="1231733316453485619">同期を有効にしますか？</translation>
+<translation id="1231733316453485619">同期を ON にしますか？</translation>
 <translation id="1232569758102978740">無題</translation>
 <translation id="1233497634904001272">リクエストを完了するには、セキュリティ キーをもう一度タップしてください。</translation>
 <translation id="1233721473400465416">言語/地域</translation>
@@ -7209,7 +7209,7 @@
 <translation id="7410421966064092098">サイトは、あなたが bot でないことを確認する情報を提供できません。</translation>
 <translation id="7410852728357935715">デバイスにキャスト</translation>
 <translation id="7411614333737930931">デバイスを再起動して、もう一度お試しください</translation>
-<translation id="741204030948306876">有効にする</translation>
+<translation id="741204030948306876">ON にする</translation>
 <translation id="7412226954991670867">GPU メモリ</translation>
 <translation id="7414464185801331860">18 倍</translation>
 <translation id="7415454883318062233">設定完了</translation>
