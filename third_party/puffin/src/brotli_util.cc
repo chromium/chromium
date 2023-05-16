@@ -44,7 +44,6 @@ bool BrotliEncode(const uint8_t* input,
 
     if (!BrotliEncoderCompressStream(encoder.get(), op, &available_in, &next_in,
                                      &available_out, &next_out, nullptr)) {
-      LOG(ERROR) << "Failed to compress " << input_size << " bytes with brotli";
       return false;
     }
 
@@ -90,8 +89,6 @@ bool BrotliDecode(const uint8_t* input,
                                       &available_out, &next_out, nullptr);
     if (result == BROTLI_DECODER_RESULT_ERROR ||
         result == BROTLI_DECODER_RESULT_NEEDS_MORE_INPUT) {
-      LOG(ERROR) << "Failed to decompress " << input_size
-                 << " bytes with brotli, result " << result;
       return false;
     }
 

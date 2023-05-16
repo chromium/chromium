@@ -15,7 +15,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/update_client/buildflags.h"
 #include "components/update_client/component_patcher_operation.h"  // nogncheck
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -109,10 +108,6 @@ void PuffPatch(mojo::PendingRemote<mojom::FilePatcher> file_patcher,
                base::File patch_file,
                base::File output_file,
                PatchCallback callback) {
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
-  // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
-  // we should remove this #if.
-
   // Use a context object to share callback.
   scoped_refptr<PatchParams> patch_params = base::MakeRefCounted<PatchParams>(
       std::move(file_patcher), std::move(callback));
@@ -123,7 +118,6 @@ void PuffPatch(mojo::PendingRemote<mojom::FilePatcher> file_patcher,
   patch_params->file_patcher()->PatchFilePuffPatch(
       std::move(input_file), std::move(patch_file), std::move(output_file),
       base::BindOnce(&PatchDone, patch_params));
-#endif
 }
 
 }  // namespace patch

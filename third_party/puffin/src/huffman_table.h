@@ -53,10 +53,6 @@ class HuffmanTable {
                                        size_t num_distance,
                                        size_t num_codes) {
     if (num_lit_len > 286 || num_distance > 30 || num_codes > 19) {
-      LOG(ERROR) << "The lengths of the dynamic Huffman table are invalid: "
-                 << "num_lit_len(" << num_lit_len << ") "
-                 << "num_distance(" << num_distance << ") "
-                 << "num_codes(" << num_codes << ")";
       return false;
     }
     return true;

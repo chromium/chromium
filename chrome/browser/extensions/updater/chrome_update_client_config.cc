@@ -31,7 +31,6 @@
 #include "components/services/patch/content/patch_service.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/update_client/activity_data_service.h"
-#include "components/update_client/buildflags.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/net/network_chromium.h"
 #include "components/update_client/patch/patch_impl.h"
@@ -315,15 +314,13 @@ void ChromeUpdateClientConfig::SetChromeUpdateClientConfigFactoryForTesting(
   GetFactoryCallback() = factory;
 }
 
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
 absl::optional<base::FilePath> ChromeUpdateClientConfig::GetCrxCachePath()
     const {
   base::FilePath path;
   bool result = base::PathService::Get(chrome::DIR_USER_DATA, &path);
   return result ? absl::optional<base::FilePath>(
-                      path.AppendASCII((kExtensionsCrxCachePath)))
+                      path.AppendASCII("extensions_crx_cache"))
                 : absl::nullopt;
 }
-#endif
 
 }  // namespace extensions

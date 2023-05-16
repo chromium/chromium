@@ -70,7 +70,6 @@ bool HuffmanTable::InitHuffmanCodes(const Buffer& lens, size_t* max_bits) {
   // more than 2^L items.
   for (size_t idx = 1; idx <= *max_bits; idx++) {
     if (len_count_[idx] > (1 << idx)) {
-      LOG(ERROR) << "Oversubscribed code lengths error!";
       return false;
     }
   }
@@ -361,7 +360,6 @@ bool HuffmanTable::BuildHuffmanCodeLengths(BitReaderInterface* br,
           break;
 
         default:
-          LOG(ERROR) << "Invalid code!";
           return false;
       }
       idx += copy_num;
