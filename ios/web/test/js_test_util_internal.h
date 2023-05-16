@@ -19,6 +19,12 @@ id ExecuteJavaScript(WKWebView* web_view,
                      WKContentWorld* content_world,
                      NSString* script);
 
+// Executes `script` in `content_world` as an asynchronous JavaScript function,
+// waits for execution to complete, and returns the result.
+id ExecuteAsyncJavaScript(WKWebView* web_view,
+                          WKContentWorld* content_world,
+                          NSString* script);
+
 }  // namespace test
 }  // namespace web
 

@@ -138,7 +138,10 @@ source_set("java_script_feature_util") {
 source_set("scoped_wk_script_message_handler") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
-  deps = [ "//base" ]
+  deps = [
+    ":web_view_js_utils",
+    "//base",
+  ]
 
   sources = [
     "scoped_wk_script_message_handler.h",
