@@ -670,12 +670,12 @@ public class BookmarkUtils {
             Context context, @BookmarkRowDisplayPref int displayPref) {
         Resources res = context.getResources();
         boolean visual = displayPref == BookmarkRowDisplayPref.VISUAL;
-        int displayIconSize = getDisplayIconSize(res, displayPref);
+        int displayIconSize = getFaviconDisplaySize(res, displayPref);
 
         return visual
                 ? new RoundedIconGenerator(displayIconSize, displayIconSize, displayIconSize / 2,
                         context.getColor(R.color.default_favicon_background_color),
-                        getDisplayTextSize(res, displayPref))
+                        getDisplayTextSize(res))
                 : FaviconUtils.createCircularIconGenerator(context);
     }
 
@@ -684,48 +684,43 @@ public class BookmarkUtils {
         return resources.getDimensionPixelSize(R.dimen.default_favicon_min_size);
     }
 
+    /** Returns the size to use when displaying an image. */
+    public static int getImageIconSize(
+            Resources resources, @BookmarkRowDisplayPref int displayPref) {
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            return displayPref == BookmarkRowDisplayPref.VISUAL
+                    ? resources.getDimensionPixelSize(
+                            R.dimen.improved_bookmark_start_image_size_visual)
+                    : resources.getDimensionPixelSize(
+                            R.dimen.improved_bookmark_start_image_size_compact);
+        }
+
+        return BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled()
+                ? resources.getDimensionPixelSize(R.dimen.list_item_v2_start_icon_width_compact)
+                : resources.getDimensionPixelSize(R.dimen.list_item_start_icon_width);
+    }
+
     /** Returns the size to use when displaying the favicon. */
     public static int getFaviconDisplaySize(
             Resources resources, @BookmarkRowDisplayPref int displayPref) {
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            return displayPref == BookmarkRowDisplayPref.VISUAL
-                    ? resources.getDimensionPixelSize(
-                            R.dimen.bookmark_refresh_preferred_start_icon_size)
-                    : resources.getDimensionPixelSize(R.dimen.circular_monogram_size);
+            return resources.getDimensionPixelSize(R.dimen.improved_bookmark_favicon_display_size);
         }
 
         return BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled()
-                ? resources.getDimensionPixelSize(
-                        R.dimen.bookmark_refresh_preferred_start_icon_size)
-                : resources.getDimensionPixelSize(R.dimen.circular_monogram_size);
+                ? resources.getDimensionPixelSize(R.dimen.list_item_v2_start_icon_width_compact)
+                : resources.getDimensionPixelSize(R.dimen.list_item_start_icon_width);
     }
 
-    private static int getDisplayTextSize(
-            Resources resources, @BookmarkRowDisplayPref int displayPref) {
+    private static int getDisplayTextSize(Resources resources) {
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            return displayPref == BookmarkRowDisplayPref.VISUAL
-                    ? resources.getDimensionPixelSize(
-                            R.dimen.bookmark_refresh_circular_monogram_text_size)
-                    : resources.getDimensionPixelSize(R.dimen.circular_monogram_text_size);
+            return resources.getDimensionPixelSize(R.dimen.circular_monogram_text_size);
         }
 
         return BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled()
                 ? resources.getDimensionPixelSize(
                         R.dimen.bookmark_refresh_circular_monogram_text_size)
                 : resources.getDimensionPixelSize(R.dimen.circular_monogram_text_size);
-    }
-
-    public static int getDisplayIconSize(
-            Resources resources, @BookmarkRowDisplayPref int displayPref) {
-        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            return displayPref == BookmarkRowDisplayPref.VISUAL
-                    ? resources.getDimensionPixelSize(R.dimen.improved_bookmark_icon_visual_size)
-                    : resources.getDimensionPixelSize(R.dimen.improved_bookmark_icon_size);
-        }
-
-        return BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled()
-                ? resources.getDimensionPixelSize(R.dimen.list_item_v2_start_icon_width_compact)
-                : resources.getDimensionPixelSize(R.dimen.list_item_start_icon_width);
     }
 
     private static Locale getLocale(Activity activity) {

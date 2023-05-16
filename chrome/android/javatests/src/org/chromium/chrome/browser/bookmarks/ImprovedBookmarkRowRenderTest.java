@@ -121,8 +121,7 @@ public class ImprovedBookmarkRowRenderTest {
                 .format(anyLong(), any(), any());
 
         int bitmapSize = mActivityTestRule.getActivity().getResources().getDimensionPixelSize(
-                mUseVisualRowLayout ? R.dimen.improved_bookmark_icon_visual_size
-                                    : R.dimen.default_favicon_size);
+                R.dimen.improved_bookmark_favicon_display_size);
         mBitmap = Bitmap.createBitmap(bitmapSize, bitmapSize, Bitmap.Config.ARGB_8888);
         mBitmap.eraseColor(Color.GREEN);
 

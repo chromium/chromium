@@ -230,10 +230,14 @@ found in the LICENSE file.
     <dimen name="bookmark_list_view_padding_top">64dp</dimen>
     <dimen name="bookmark_dialog_toolbar_shadow_height">4dp</dimen>
     <dimen name="bookmark_reading_list_section_header_padding_top">15dp</dimen>
-    <!-- The size of the icon view, but not the size of the fetched image. -->
-    <dimen name="improved_bookmark_icon_size">48dp</dimen>
-    <!-- The size of the icon view and the size of the fetched image. -->
-    <dimen name="improved_bookmark_icon_visual_size">80dp</dimen>
+
+     <!-- Improved bookmark row properties. -->
+     <!-- The size of the start image for compact rows.. -->
+    <dimen name="improved_bookmark_start_image_size_compact">48dp</dimen>
+     <!-- The size of the start image for visual rows.. -->
+    <dimen name="improved_bookmark_start_image_size_visual">80dp</dimen>
+    <!-- The size of displayed favicons for each row. -->
+    <dimen name="improved_bookmark_favicon_display_size">24dp</dimen>
 
     <!-- Bookmark visual refresh dimensions. -->
      <dimen name="bookmark_refresh_preferred_start_icon_size">32dp</dimen>

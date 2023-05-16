@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
@@ -25,6 +26,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -145,15 +147,24 @@ public class BookmarkManagerCoordinator
         LargeIconBridge largeIconBridge = new LargeIconBridge(mProfile);
         largeIconBridge.createCache(computeCacheMaxSize());
 
+        Resources res = context.getResources();
+        final @BookmarkRowDisplayPref int displayPref =
+                mBookmarkUiPrefs.getBookmarkRowDisplayPref();
+        BookmarkImageFetcher bookmarkImageFetcher = new BookmarkImageFetcher(context,
+                mBookmarkModel,
+                ImageFetcherFactory.createImageFetcher(
+                        ImageFetcherConfig.DISK_CACHE_ONLY, mProfile.getProfileKey()),
+                largeIconBridge, BookmarkUtils.getRoundedIconGenerator(context, displayPref),
+                BookmarkUtils.getImageIconSize(res, displayPref),
+                BookmarkUtils.getFaviconDisplaySize(res, displayPref));
+
         BookmarkUndoController bookmarkUndoController =
                 new BookmarkUndoController(context, mBookmarkModel, snackbarManager);
         mMediator = new BookmarkManagerMediator(context, mBookmarkModel, mBookmarkOpener,
                 mSelectableListLayout, mSelectionDelegate, mRecyclerView,
                 dragReorderableRecyclerViewAdapter, largeIconBridge, isDialogUi, isIncognito,
                 mBackPressStateSupplier, mProfile, bookmarkUndoController, modelList,
-                mBookmarkUiPrefs, this::hideKeyboard,
-                ImageFetcherFactory.createImageFetcher(
-                        ImageFetcherConfig.DISK_CACHE_ONLY, mProfile.getProfileKey()));
+                mBookmarkUiPrefs, this::hideKeyboard, bookmarkImageFetcher);
         mPromoHeaderManager = mMediator.getPromoHeaderManager();
 
         bookmarkDelegateSupplier.set(/*bookmarkDelegate=*/mMediator);

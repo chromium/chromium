@@ -48,7 +48,6 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
-import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -277,7 +276,7 @@ class BookmarkManagerMediator
             Resources res = mContext.getResources();
             mBookmarkImageFetcher.setupFetchProperties(
                     BookmarkUtils.getRoundedIconGenerator(mContext, displayPref),
-                    BookmarkUtils.getDisplayIconSize(res, displayPref),
+                    BookmarkUtils.getImageIconSize(res, displayPref),
                     BookmarkUtils.getFaviconDisplaySize(res, displayPref));
 
             mModelList.clear();
@@ -342,7 +341,7 @@ class BookmarkManagerMediator
             ObservableSupplierImpl<Boolean> backPressStateSupplier, Profile profile,
             BookmarkUndoController bookmarkUndoController, ModelList modelList,
             BookmarkUiPrefs bookmarkUiPrefs, Runnable hideKeyboardRunnable,
-            ImageFetcher imageFetcher) {
+            BookmarkImageFetcher bookmarkImageFetcher) {
         mContext = context;
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(mBookmarkModelObserver);
@@ -375,14 +374,7 @@ class BookmarkManagerMediator
         mBookmarkUiPrefs = bookmarkUiPrefs;
         mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
         mHideKeyboardRunnable = hideKeyboardRunnable;
-
-        Resources res = mContext.getResources();
-        final @BookmarkRowDisplayPref int displayPref =
-                mBookmarkUiPrefs.getBookmarkRowDisplayPref();
-        mBookmarkImageFetcher = new BookmarkImageFetcher(mContext, mBookmarkModel, imageFetcher,
-                mLargeIconBridge, BookmarkUtils.getRoundedIconGenerator(mContext, displayPref),
-                BookmarkUtils.getDisplayIconSize(res, displayPref),
-                BookmarkUtils.getFaviconDisplaySize(res, displayPref));
+        mBookmarkImageFetcher = bookmarkImageFetcher;
 
         // Previously we were waiting for BookmarkModel to be loaded, but it's not necessary.
         PartnerBookmarksReader.addFaviconUpdateObserver(this);

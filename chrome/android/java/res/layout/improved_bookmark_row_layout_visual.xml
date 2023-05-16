@@ -24,8 +24,8 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.widget.RoundedCornerImageView
         android:id="@+id/start_image"
-        android:layout_width="@dimen/improved_bookmark_icon_visual_size"
-        android:layout_height="@dimen/improved_bookmark_icon_visual_size"
+        android:layout_width="@dimen/improved_bookmark_start_image_size_visual"
+        android:layout_height="@dimen/improved_bookmark_start_image_size_visual"
         android:scaleType="center"
         android:importantForAccessibility="no"
         android:background="@drawable/rounded_rectangle_surface_1"
