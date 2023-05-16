@@ -91,13 +91,11 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
 
   // Creates fake pending request in pref.
   void SetPendingList(const std::vector<std::string>& ids) {
-    std::unique_ptr<base::Value> id_values =
-        std::make_unique<base::Value>(base::Value::Type::DICT);
+    base::Value::Dict id_values;
     for (const auto& id : ids) {
-      base::Value request_data(base::Value::Type::DICT);
-      request_data.SetKey(extension_misc::kExtensionRequestTimestamp,
-                          ::base::TimeToValue(base::Time::Now()));
-      id_values->SetKey(id, std::move(request_data));
+      id_values.Set(id, base::Value::Dict().Set(
+                            extension_misc::kExtensionRequestTimestamp,
+                            ::base::TimeToValue(base::Time::Now())));
     }
     profile()->GetTestingPrefService()->SetUserPref(
         prefs::kCloudExtensionRequestIds, std::move(id_values));
@@ -123,8 +121,7 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
         base::JSONReader::Read(settings_string);
     ASSERT_TRUE(settings.has_value());
     profile()->GetTestingPrefService()->SetManagedPref(
-        extensions::pref_names::kExtensionManagement,
-        base::Value::ToUniquePtrValue(std::move(*settings)));
+        extensions::pref_names::kExtensionManagement, std::move(*settings));
   }
 
   void CloseNotificationAndVerify(
