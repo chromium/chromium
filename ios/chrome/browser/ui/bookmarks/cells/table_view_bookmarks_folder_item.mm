@@ -134,6 +134,9 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
         [[UIImageView alloc] initWithImage:cloudSlashedImage];
     self.cloudSlashedView.tintColor = CloudSlashTintColor();
     self.cloudSlashedView.hidden = YES;
+    [self.cloudSlashedView
+        setContentHuggingPriority:UILayoutPriorityRequired
+                          forAxis:UILayoutConstraintAxisHorizontal];
 
     // Container StackView.
     UIStackView* horizontalStack =
