@@ -213,9 +213,8 @@ void ShareThisTabDialogView::SetupSourceView() {
 
 void ShareThisTabDialogView::SetupAudioToggle() {
   View* audio_toggle_container = AddChildView(std::make_unique<views::View>());
-  // TODO(crbug.com/1444707): Create a color_id for this usage.
-  audio_toggle_container->SetBackground(
-      views::CreateSolidBackground(gfx::kGoogleGrey050));
+  audio_toggle_container->SetBackground(views::CreateThemedSolidBackground(
+      kColorShareThisTabAudioToggleBackground));
 
   views::ImageView* audio_icon_view = audio_toggle_container->AddChildView(
       std::make_unique<views::ImageView>());

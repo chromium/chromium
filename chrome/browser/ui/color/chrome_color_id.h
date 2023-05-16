@@ -332,7 +332,8 @@
   /* Screenshot captured bubble colors. */ \
   E_CPONLY(kColorScreenshotCapturedImageBackground) \
   E_CPONLY(kColorScreenshotCapturedImageBorder) \
-  /* Share-this-tab dialg colors. */ \
+  /* Share-this-tab dialog colors. */ \
+  E_CPONLY(kColorShareThisTabAudioToggleBackground) \
   E_CPONLY(kColorShareThisTabSourceViewBorder) \
   /* Side panel colors. */ \
   E_CPONLY(kColorSidePanelBackground) \
