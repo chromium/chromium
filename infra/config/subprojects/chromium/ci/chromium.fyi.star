@@ -2601,11 +2601,8 @@ ci.builder(
 
 fyi_mac_builder(
     name = "mac-cr23-rel",
-    # Builderless Mac machines are at full capacity.
-    # For now, run at 11AM UTC, once a day.
     # TODO(crbug.com/1422735): use thin_tester once FYI bots have
     # dedicated compilators.
-    schedule = "0 11 * * *",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",

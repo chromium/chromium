@@ -607,4 +607,5 @@ try_.gpu.optional_tests_builder(
 try_.builder(
     name = "mac-cr23-rel",
     mirrors = ["ci/mac-cr23-rel"],
+    os = os.MAC_DEFAULT,
 )
