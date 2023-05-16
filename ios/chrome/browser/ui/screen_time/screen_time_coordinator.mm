@@ -31,7 +31,13 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  self.screenTimeViewController = [[ScreenTimeViewController alloc] init];
+  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
+    self.screenTimeViewController =
+        [ScreenTimeViewController sharedOTRInstance];
+  } else {
+    self.screenTimeViewController = [ScreenTimeViewController sharedInstance];
+  }
+
   self.mediator = [[ScreenTimeMediator alloc]
         initWithWebStateList:self.browser->GetWebStateList()
       suppressUsageRecording:self.browser->GetBrowserState()->IsOffTheRecord()];
@@ -42,6 +48,9 @@
 
 - (void)stop {
   self.mediator = nil;
+  [self.screenTimeViewController willMoveToParentViewController:nil];
+  [self.screenTimeViewController.view removeFromSuperview];
+  [self.screenTimeViewController removeFromParentViewController];
   self.screenTimeViewController = nil;
 }
 

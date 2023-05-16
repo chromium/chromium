@@ -1687,8 +1687,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests that suggested actions section does not appear in search mode for
 // incognito page.
-// TODO(crbug.com/1443003): This test is flaky.
-- (void)FLAKY_testSuggestedActionsNotAvailableInIncognitoPageSearchMode {
+- (void)testSuggestedActionsNotAvailableInIncognitoPageSearchMode {
   [self loadTestURLsInNewIncognitoTabs];
   [ChromeEarlGreyUI openTabGrid];
 
