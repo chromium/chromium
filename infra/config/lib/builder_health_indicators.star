@@ -60,7 +60,11 @@ def _generate_health_specs(ctx):
         builder = node.key.id
         specs.setdefault(bucket, {})[builder] = node.props
 
-    specs["_default"] = _default_thresholds
-    ctx.output["health-specs/health-specs.json"] = json.indent(json.encode(specs), indent = "  ")
+    result = {
+        "_default": _default_thresholds,
+        "thresholds": specs,
+    }
+
+    ctx.output["health-specs/health-specs.json"] = json.indent(json.encode(result), indent = "  ")
 
 lucicfg.generator(_generate_health_specs)
