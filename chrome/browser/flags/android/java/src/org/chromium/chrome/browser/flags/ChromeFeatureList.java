@@ -155,8 +155,6 @@ public abstract class ChromeFeatureList {
     public static final String CAPTIVE_PORTAL_CERTIFICATE_LIST = "CaptivePortalCertificateList";
     public static final String CAST_ANOTHER_CONTENT_WHILE_CASTING =
             "CastAnotherContentWhileCasting";
-    public static final String CCT_ALLOW_CROSS_UID_ACTIVITY_SWITCH_FROM_BELOW =
-            "CCTAllowCrossUidActivitySwitchFromBelow";
     public static final String CCT_AUTO_TRANSLATE = "CCTAutoTranslate";
     public static final String CCT_BOTTOM_BAR_SWIPE_UP_GESTURE = "CCTBottomBarSwipeUpGesture";
     public static final String CCT_BRAND_TRANSPARENCY = "CCTBrandTransparency";
@@ -338,8 +336,6 @@ public abstract class ChromeFeatureList {
     public static final String PAGE_INFO_ABOUT_THIS_SITE_NEW_ICON = "PageInfoAboutThisSiteNewIcon";
     public static final String PAGE_INFO_ABOUT_THIS_SITE_NON_EN = "PageInfoAboutThisSiteNonEn";
     public static final String PAINT_PREVIEW_DEMO = "PaintPreviewDemo";
-    public static final String PARTNER_HOMEPAGE_INITIAL_LOAD_IMPROVEMENT =
-            "PartnerHomepageInitialLoadImprovement";
     public static final String PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID =
             "PasskeyManagementUsingAccountSettingsAndroid";
     public static final String PASSWORD_EDIT_DIALOG_WITH_DETAILS = "PasswordEditDialogWithDetails";
@@ -489,8 +485,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(BASELINE_GM3_SURFACE_COLORS, false);
     public static final CachedFlag sBottomSheetGtsSupport =
             new CachedFlag(BOTTOM_SHEET_GTS_SUPPORT, true);
-    public static final CachedFlag sCctAllowCrossUidActivitySwitchFromBelow =
-            new CachedFlag(CCT_ALLOW_CROSS_UID_ACTIVITY_SWITCH_FROM_BELOW, true);
     public static final CachedFlag sCctAutoTranslate = new CachedFlag(CCT_AUTO_TRANSLATE, true);
     public static final CachedFlag sCctBottomBarSwipeUpGesture =
             new CachedFlag(CCT_BOTTOM_BAR_SWIPE_UP_GESTURE, true);
@@ -541,10 +535,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sInstanceSwitcher = new CachedFlag(INSTANCE_SWITCHER, true);
     public static final CachedFlag sInstantStart = new CachedFlag(INSTANT_START, false);
     public static final CachedFlag sInterestFeedV2 = new CachedFlag(INTEREST_FEED_V2, true);
-    public static final CachedFlag sLensCameraAssistedSearch =
-            new CachedFlag(LENS_CAMERA_ASSISTED_SEARCH, true);
-    public static final CachedFlag sOmahaMinSdkVersionAndroid =
-            new CachedFlag(OMAHA_MIN_SDK_VERSION_ANDROID, false);
     public static final CachedFlag sOmniboxMatchToolbarAndStatusBarColor =
             new CachedFlag(OMNIBOX_MATCH_TOOLBAR_AND_STATUS_BAR_COLOR, false);
     public static final CachedFlag sOmniboxModernizeVisualUpdate =
@@ -554,10 +544,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sOptimizationGuidePushNotifications =
             new CachedFlag(OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, false);
     public static final CachedFlag sPaintPreviewDemo = new CachedFlag(PAINT_PREVIEW_DEMO, false);
-    public static final CachedFlag sPartnerHomepageInitialLoadImprovement =
-            new CachedFlag(PARTNER_HOMEPAGE_INITIAL_LOAD_IMPROVEMENT, true);
-    public static final CachedFlag sPrefetchNotificationSchedulingIntegration =
-            new CachedFlag(PREFETCH_NOTIFICATION_SCHEDULING_INTEGRATION, false);
     public static final CachedFlag sQueryTiles = new CachedFlag(QUERY_TILES, false);
     public static final CachedFlag sQueryTilesOnStart = new CachedFlag(QUERY_TILES_ON_START, false);
     public static final CachedFlag sShouldIgnoreIntentSkipInternalCheck =
