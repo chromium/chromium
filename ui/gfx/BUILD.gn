@@ -176,7 +176,6 @@ component("gfx") {
       "decorated_text_mac.h",
       "decorated_text_mac.mm",
       "font_fallback_mac.mm",
-      "font_render_params_mac.cc",
       "image/image_mac.mm",
       "image/image_skia_util_mac.h",
       "image/image_skia_util_mac.mm",
@@ -227,6 +226,9 @@ component("gfx") {
       "win/window_impl.h",
     ]
   }
+  if (is_apple) {
+    sources += [ "font_render_params_mac.cc" ]
+  }
   if (is_ios) {
     sources += [
       "image/image_ios.mm",
@@ -241,9 +243,7 @@ component("gfx") {
       "scoped_ui_graphics_push_context_ios.mm",
       "text_utils_ios.mm",
     ]
-    if (use_blink) {
-      sources += [ "font_render_params_mac.cc" ]
-    } else {
+    if (!use_blink) {
       sources += [
         "image/image_skia_rep_ios.cc",
         "image/image_skia_rep_ios.h",

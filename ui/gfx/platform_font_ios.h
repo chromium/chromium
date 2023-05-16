@@ -70,6 +70,9 @@ class PlatformFontIOS : public PlatformFont {
   int ascent_;
   int cap_height_;
   int average_width_;
+
+  // Details about how the font should be rendered.
+  FontRenderParams render_params_;
 };
 
 }  // namespace gfx

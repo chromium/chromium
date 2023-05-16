@@ -117,9 +117,7 @@ int PlatformFontIOS::GetFontSize() const {
 }
 
 const FontRenderParams& PlatformFontIOS::GetFontRenderParams() {
-  NOTIMPLEMENTED();
-  static FontRenderParams params;
-  return params;
+  return render_params_;
 }
 
 CTFontRef PlatformFontIOS::GetCTFont() const {
@@ -159,6 +157,13 @@ void PlatformFontIOS::CalculateMetrics() {
   ascent_ = ceil(font.ascender);
   cap_height_ = ceil(font.capHeight);
   average_width_ = [@"x" cr_sizeWithFont:font].width;
+
+  FontRenderParamsQuery query;
+  query.families.push_back(font_name_);
+  query.pixel_size = font_size_;
+  query.style = style_;
+  query.weight = weight_;
+  render_params_ = gfx::GetFontRenderParams(query, nullptr);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
