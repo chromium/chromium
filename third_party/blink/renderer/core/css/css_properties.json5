@@ -5089,6 +5089,18 @@
       valid_for_formatted_text_run: true,
     },
     {
+      name: "timeline-scope",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      field_group: "*->timeline",
+      field_template: "external",
+      default_value: "nullptr",
+      type_name: "ScopedCSSNameList",
+      wrapper_pointer_name: "Persistent",
+      converter: "ConvertTimelineScope",
+      separator: ",",
+      runtime_flag: "TimelineScope",
+    },
+    {
       name: "toggle-group",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "CSSToggles",

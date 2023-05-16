@@ -454,6 +454,7 @@ textTransform
 textUnderlineOffset
 textUnderlinePosition
 textWrap
+timelineScope
 toggle
 toggleGroup
 toggleRoot
