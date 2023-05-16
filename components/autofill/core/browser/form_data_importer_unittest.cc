@@ -4091,17 +4091,15 @@ TEST_P(FormDataImporterTest, UnusableIncompleteProfile) {
 // Note that this function doesn't test the removal functionality itself. This
 // is done in the AutofillProfile unit tests.
 TEST_P(FormDataImporterTest, RemoveInaccessibleProfileValuesMetrics) {
-  // Minimal importable profile, but with a state, which is setting-inaccessible
-  // for Germany.
-  TypeValuePairs type_value_pairs = {{ADDRESS_HOME_COUNTRY, "DE"},
-                                     {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
-                                     {ADDRESS_HOME_CITY, kDefaultCity},
-                                     {ADDRESS_HOME_ZIP, kDefaultZip},
-                                     {ADDRESS_HOME_STATE, kDefaultState}};
+  // State is setting-inaccessible in Germany. Expect that when importing a
+  // German profile with a state, the state information is removed.
+  TypeValuePairs type_value_pairs =
+      GetDefaultProfileTypeValuePairsWithOverriddenCountry("DE");
+  ASSERT_EQ(type_value_pairs[6].first, ADDRESS_HOME_STATE);
 
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(type_value_pairs);
-  type_value_pairs.pop_back();  // Remove state manually for verification.
+  SetValueForType(type_value_pairs, ADDRESS_HOME_STATE, "");
   base::HistogramTester histogram_tester;
   ExtractAddressProfilesAndVerifyExpectation(
       *form_structure, {ConstructProfileFromTypeValuePairs(type_value_pairs)});
