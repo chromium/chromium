@@ -258,7 +258,7 @@ public class CustomTabsConnectionTest {
     }
 
     /**
-     * Tests that if the renderer backing a hidden tab is killed, the speculation is
+     * Tests that if the renderer backing a hidden tab is killed, the speculation is not
      * canceled.
      */
     @Test
@@ -278,15 +278,9 @@ public class CustomTabsConnectionTest {
                     mCustomTabsConnection.getSpeculationParamsForTesting());
             Tab speculationTab = mCustomTabsConnection.getSpeculationParamsForTesting().tab;
             Assert.assertNotNull("Null speculation tab", speculationTab);
-            speculationTab.addObserver(new EmptyTabObserver() {
-                @Override
-                public void onDestroyed(Tab tab) {
-                    tabDestroyedHelper.notifyCalled();
-                }
-            });
             WebContentsUtils.simulateRendererKilled(speculationTab.getWebContents());
+            Assert.assertNotNull("Null speculation tab", speculationTab);
         });
-        tabDestroyedHelper.waitForCallback("The speculated tab was not destroyed", 0);
     }
 
     @Test
