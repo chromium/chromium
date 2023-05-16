@@ -398,14 +398,60 @@ void ExtensionsMenuViewController::UpdateMainPage(
     ExtensionsMenuMainPageView* main_page,
     content::WebContents* web_contents) {
   CHECK(web_contents);
+
+  // Update subheader.
   std::u16string current_site = GetCurrentHost(web_contents);
   bool is_site_settings_toggle_visible =
       IsSiteSettingsToggleVisible(*toolbar_model_, web_contents);
   bool is_site_settings_toggle_on =
       IsSiteSettingsToggleOn(browser_, web_contents);
-  main_page->Update(current_site, is_site_settings_toggle_visible,
-                    is_site_settings_toggle_on);
+  main_page->UpdateSubheader(current_site, is_site_settings_toggle_visible,
+                             is_site_settings_toggle_on);
 
+  // Update request access section.
+  auto site_setting =
+      PermissionsManager::Get(browser_->profile())
+          ->GetUserSiteSetting(
+              web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  if (site_setting ==
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions) {
+    // Extensions cannot request access if user blocked all extensions on this
+    // site.
+    main_page->ClearExtensionsRequestingAccess();
+  } else {
+    int index = 0;
+    std::vector<std::string> extension_ids =
+        SortExtensionsByName(*toolbar_model_);
+    for (const auto& extension_id : extension_ids) {
+      SitePermissionsHelper::SiteInteraction site_interaction =
+          SitePermissionsHelper(browser_->profile())
+              .GetSiteInteraction(*GetExtension(browser_, extension_id),
+                                  web_contents);
+      if (site_interaction ==
+          SitePermissionsHelper::SiteInteraction::kWithheld) {
+        // Add or update the extension entry in the request access section when
+        // the extension is requesting access.
+        ToolbarActionViewController* action_controller =
+            extensions_container_->GetActionForId(extension_id);
+        std::u16string name = action_controller->GetActionName();
+        const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+            DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
+        ui::ImageModel icon = action_controller->GetIcon(
+            web_contents, gfx::Size(icon_size, icon_size));
+
+        main_page->AddOrUpdateExtensionRequestingAccess(extension_id, name,
+                                                        icon, index);
+        ++index;
+      } else {
+        // Otherwise remove its entry, if existent.
+        main_page->RemoveExtensionRequestingAccess(extension_id);
+      }
+    }
+  }
+
+  // Update menu items.
+  // TODO(crbug.com/1390952): Reorder the extensions after updating them, since
+  // their names can change.
   std::vector<ExtensionMenuItemView*> menu_items = main_page->GetMenuItems();
   for (auto* menu_item : menu_items) {
     const extensions::Extension* extension =

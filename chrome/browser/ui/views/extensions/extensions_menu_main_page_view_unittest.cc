@@ -67,6 +67,10 @@ class ExtensionsMenuMainPageViewUnitTest : public ExtensionsToolbarUnitTest {
   // Asserts there is exactly one menu item and then returns it.
   ExtensionMenuItemView* GetOnlyMenuItem();
 
+  // Returns the extension names in the request access section. If it's empty,
+  // the section is not visible.
+  std::vector<extensions::ExtensionId> GetExtensionsInRequestAccessSection();
+
   // Since this is a unittest, the extensions menu widget sometimes needs a
   // nudge to re-layout the views.
   void LayoutMenuIfNecessary();
@@ -112,6 +116,13 @@ ExtensionMenuItemView* ExtensionsMenuMainPageViewUnitTest::GetOnlyMenuItem() {
     return nullptr;
   }
   return *items.begin();
+}
+
+std::vector<extensions::ExtensionId>
+ExtensionsMenuMainPageViewUnitTest::GetExtensionsInRequestAccessSection() {
+  ExtensionsMenuMainPageView* page = main_page();
+  return page ? page->GetExtensionsRequestingAccessForTesting()
+              : std::vector<std::string>();
 }
 
 void ExtensionsMenuMainPageViewUnitTest::LayoutMenuIfNecessary() {
@@ -947,4 +958,61 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, RestrictedSite) {
       menu_items()[0]->site_permissions_button_for_testing()->GetVisible());
   EXPECT_FALSE(
       menu_items()[1]->site_permissions_button_for_testing()->GetVisible());
+}
+
+// Test that request access section is populated with extensions that have
+// withheld permission to the current site and the user can change their site
+// access.
+TEST_F(ExtensionsMenuMainPageViewUnitTest, RequestsAccessSection) {
+  // Install extensions that cannot request site access in the menu because they
+  // don't request host permissions, or because they are granted host
+  // permissions by enterprise.
+  InstallExtensionWithHostPermissions("Extension", {});
+  InstallEnterpriseExtension("Enterprise extension",
+                             /*host_permissions=*/{"<all_urls>"});
+
+  // Install two extension that requests host permissions. By default site
+  // access will be granted.
+  auto extension_A =
+      InstallExtensionWithHostPermissions("Extension A", {"<all_urls>"});
+  auto extension_B =
+      InstallExtensionWithHostPermissions("Extension B", {"<all_urls>"});
+
+  const GURL url("http://www.example.com");
+  web_contents_tester()->NavigateAndCommit(url);
+
+  ShowMenu();
+
+  // Requests access section is empty because:
+  //   - extension with no host permissions cannot be granted site access
+  //   - enterprise extensions are always granted access (if requested)
+  //   - extensions with host permissions have granted access by default because
+  //     site setting is "customize by extension" and each extension is granted
+  //     access.
+  ASSERT_EQ(GetUserSiteSetting(url),
+            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+  EXPECT_TRUE(GetExtensionsInRequestAccessSection().empty());
+
+  // Request access section includes extension A when its site access
+  // is withheld.
+  WithholdHostPermissions(extension_A.get());
+  LayoutMenuIfNecessary();
+  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
+              testing::ElementsAre(extension_A->id()));
+
+  // Requests access section includes extension A if its site access is still
+  // withheld when there any of the installed extensions is updated. Extension B
+  // is not included because it has granted site access.
+  UpdateUserSiteAccess(*extension_B.get(),
+                       browser()->tab_strip_model()->GetActiveWebContents(),
+                       extensions::PermissionsManager::UserSiteAccess::kOnSite);
+  LayoutMenuIfNecessary();
+  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
+              testing::ElementsAre(extension_A->id()));
+
+  // Requests access section is hidden when user has blocked all extension on
+  // the site.
+  UpdateUserSiteSetting(
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions, url);
+  EXPECT_TRUE(GetExtensionsInRequestAccessSection().empty());
 }
