@@ -19,6 +19,10 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace bookmarks {
 
 NSString* const kUTTypeChromiumBookmarkDictionaryList =
@@ -101,7 +105,7 @@ void ConvertNSArrayToElements(
     NSNumber* node_id =
         base::mac::ObjCCast<NSNumber>(bookmark_dict[kChromiumBookmarkIdKey]);
     if (node_id)
-      new_node->set_id([node_id longLongValue]);
+      new_node->set_id(node_id.longLongValue);
 
     NSDictionary* meta_info = base::mac::ObjCCast<NSDictionary>(
         bookmark_dict[kChromiumBookmarkMetaInfoKey]);
@@ -250,7 +254,7 @@ NSArray<NSPasteboardItem*>* PasteboardItemsFromBookmarks(
     // consist of bookmark folders. The data for those folders will be contained
     // in the Chromium-specific data, so make a single pasteboard item to hold
     // it.
-    items = @[ [[[NSPasteboardItem alloc] init] autorelease] ];
+    items = @[ [[NSPasteboardItem alloc] init] ];
   }
 
   [items.firstObject setPropertyList:GetNSArrayForBookmarkList(elements)

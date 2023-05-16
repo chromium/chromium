@@ -91,6 +91,7 @@ static_library("browser") {
       "AppKit.framework",
       "Foundation.framework",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_ios) {
