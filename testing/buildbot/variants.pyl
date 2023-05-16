@@ -787,22 +787,6 @@
     ],
     'identifier': 'Ash ToT',
   },
-  'LACROS_BETTY_PI_ARC': {
-    'args': [
-      '--board=betty-pi-arc',
-      '--use-vm',
-    ],
-    'identifier': 'betty-pi-arc',
-    'swarming': {
-       'dimension_sets': [
-        {
-          'cpu': 'x86',
-          'kvm': '1',
-          'os': 'Ubuntu-18.04',
-        }
-      ],
-    },
-  },
   'LACROS_EVE': {
     'args': [
       '--board=eve',

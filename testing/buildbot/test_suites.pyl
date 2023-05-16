@@ -4122,18 +4122,6 @@
       },
     },
 
-    'lacros_variations_tast_tests': {
-      'lacros_variations_tast_tests': {
-        'swarming': {
-          'idempotent': False,  # https://crbug.com/923426#c27
-        },
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'experiment_percentage': 100,
-      },
-    },
-
     'lacros_vm_gtests': {
       'base_unittests': {},
     },
@@ -7356,19 +7344,6 @@
         'variants': [
           'LACROS_JACUZZI',
         ],
-      },
-    },
-
-    'lacros_device_or_vm_tast_tests': {
-      'lacros_all_tast_tests': {
-        'variants': [
-          'LACROS_EVE',
-        ]
-      },
-      'lacros_variations_tast_tests': {
-        'variants': [
-          'LACROS_BETTY_PI_ARC',
-        ]
       },
     },
 

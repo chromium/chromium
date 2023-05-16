@@ -26,7 +26,6 @@
       'chromeos-octopus-chrome': 'chromeos_octopus_include_unwind_tables_official_dchecks_reclient',
       'chromeos-octopus-chrome-skylab': 'chromeos_octopus_include_unwind_tables_official_dchecks_skylab',
       'chromeos-reven-chrome': 'chromeos_reven_include_unwind_tables_official_dchecks_reclient',
-      'lacros-amd64-generic-chrome': 'chromeos_amd64-generic_lacros_official_no_symbols_reclient',
       'lacros-amd64-generic-chrome-skylab': 'chromeos_amd64-generic_lacros_official_skylab_reclient',
       'lacros-arm-generic-chrome': 'chromeos_arm-generic_lacros_official_reclient',
       'lacros-arm-generic-chrome-skylab': 'chromeos_arm-generic_lacros_official_skylab_reclient',
@@ -2038,9 +2037,6 @@
     # chromeos_amd64-generic_lacros_official instead.
     'chromeos_amd64-generic_lacros_official_no_symbols': [
       'chromeos_amd64-generic-crostoolchain', 'lacros', 'official', 'no_symbols', 'cfi', 'thin_lto',
-    ],
-    'chromeos_amd64-generic_lacros_official_no_symbols_reclient': [
-      'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'official', 'no_symbols', 'cfi', 'thin_lto',
     ],
 
     'chromeos_amd64-generic_lacros_official_reclient': [

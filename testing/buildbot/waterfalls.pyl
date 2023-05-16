@@ -190,22 +190,6 @@
           'gtest_tests': 'chromeos_device_no_gtests',
         },
       },
-      'lacros-amd64-generic-chrome': {
-        'additional_compile_targets': [
-          'chrome',
-          'linux_symbols',
-          'symupload',
-          'strip_lacros_files',
-        ],
-        'mixins': [
-          'chrome-swarming-pool',
-        ],
-        'test_suites': {
-          'gtest_tests': 'lacros_device_or_vm_tast_tests',
-          'isolated_scripts': 'chrome_sizes',
-        },
-        'os_type': 'chromeos',
-      },
       # TODO(crbug.com/1218582): Merge this to lacros-amd64-generic-chrome once
       # it's proven to be stable and easy to debug. This is the first time we
       # run Skylab on CI, so wanted to be cautious to avoid causing trouble to

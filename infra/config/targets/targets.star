@@ -1322,14 +1322,6 @@ targets.generated_script(
     ],
 )
 
-targets.generated_script(
-    name = "lacros_variations_tast_tests",
-    label = "//chromeos/lacros:lacros_variations_tast_tests",
-    args = [
-        "--logs-dir=${ISOLATED_OUTDIR}",
-    ],
-)
-
 targets.console_test_launcher(
     name = "latency_unittests",
     label = "//ui/latency:latency_unittests",

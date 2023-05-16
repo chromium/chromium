@@ -1541,16 +1541,6 @@
   },
   'chrome_sizes': {
     'modifications': {
-      'lacros-amd64-generic-chrome': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'cpu': 'x86-64',
-              'os': 'Ubuntu-18.04',
-            },
-          ],
-        },
-      },
       'lacros-amd64-generic-chrome-skylab': {
         'swarming': {
           'dimension_sets': [
