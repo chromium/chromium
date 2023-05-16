@@ -135,8 +135,6 @@ static_library("extensions") {
     "api/developer_private/extension_info_generator.h",
     "api/developer_private/inspectable_views_finder.cc",
     "api/developer_private/inspectable_views_finder.h",
-    "api/developer_private/show_permissions_dialog_helper.cc",
-    "api/developer_private/show_permissions_dialog_helper.h",
     "api/downloads/downloads_api.cc",
     "api/downloads/downloads_api.h",
     "api/downloads_internal/downloads_internal_api.cc",

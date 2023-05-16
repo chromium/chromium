@@ -30,7 +30,6 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/extensions/api/developer_private/entry_picker.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
-#include "chrome/browser/extensions/api/developer_private/show_permissions_dialog_helper.h"
 #include "chrome/browser/extensions/chrome_zipfile_installer.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/devtools_util.h"
@@ -1258,37 +1257,6 @@ void DeveloperPrivateReloadFunction::ClearObservers() {
   error_reporter_observation_.Reset();
 
   Release();  // Balanced in Run().
-}
-
-DeveloperPrivateShowPermissionsDialogFunction::
-DeveloperPrivateShowPermissionsDialogFunction() {}
-
-DeveloperPrivateShowPermissionsDialogFunction::
-~DeveloperPrivateShowPermissionsDialogFunction() {}
-
-ExtensionFunction::ResponseAction
-DeveloperPrivateShowPermissionsDialogFunction::Run() {
-  absl::optional<developer::ShowPermissionsDialog::Params> params =
-      developer::ShowPermissionsDialog::Params::Create(args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  const Extension* target_extension = GetExtensionById(params->extension_id);
-  if (!target_extension)
-    return RespondNow(Error(kNoSuchExtensionError));
-
-  content::WebContents* web_contents = GetSenderWebContents();
-  if (!web_contents)
-    return RespondNow(Error(kCouldNotFindWebContentsError));
-
-  ShowPermissionsDialogHelper::Show(
-      browser_context(), web_contents, target_extension,
-      base::BindOnce(&DeveloperPrivateShowPermissionsDialogFunction::Finish,
-                     this));
-  return RespondLater();
-}
-
-void DeveloperPrivateShowPermissionsDialogFunction::Finish() {
-  Respond(NoArguments());
 }
 
 DeveloperPrivateLoadUnpackedFunction::DeveloperPrivateLoadUnpackedFunction() {}

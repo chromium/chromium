@@ -60,7 +60,7 @@ class ExtensionInstallPrompt {
     RE_ENABLE_PROMPT = 3,
     PERMISSIONS_PROMPT = 4,
     EXTERNAL_INSTALL_PROMPT = 5,
-    POST_INSTALL_PERMISSIONS_PROMPT = 6,
+    // POST_INSTALL_PERMISSIONS_PROMPT_DEPRECATED = 6,
     // LAUNCH_PROMPT_DEPRECATED = 7,
     REMOTE_INSTALL_PROMPT = 8,
     REPAIR_PROMPT = 9,
@@ -121,8 +121,6 @@ class ExtensionInstallPrompt {
     std::u16string GetAcceptButtonLabel() const;
     std::u16string GetAbortButtonLabel() const;
     std::u16string GetPermissionsHeading() const;
-    std::u16string GetRetainedFilesHeading() const;
-    std::u16string GetRetainedDevicesHeading() const;
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     void set_requires_parent_permission(bool requires_parent_permission) {
@@ -133,8 +131,6 @@ class ExtensionInstallPrompt {
       return requires_parent_permission_;
     }
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
-    bool ShouldShowPermissions() const;
 
     // Returns whether the dialog should withheld permissions if the dialog is
     // accepted.
@@ -154,23 +150,10 @@ class ExtensionInstallPrompt {
     size_t GetPermissionCount() const;
     std::u16string GetPermission(size_t index) const;
     std::u16string GetPermissionsDetails(size_t index) const;
-    size_t GetRetainedFileCount() const;
-    std::u16string GetRetainedFile(size_t index) const;
-    size_t GetRetainedDeviceCount() const;
-    std::u16string GetRetainedDeviceMessageString(size_t index) const;
 
     const extensions::Extension* extension() const { return extension_; }
     void set_extension(const extensions::Extension* extension) {
       extension_ = extension;
-    }
-
-    // May be populated for POST_INSTALL_PERMISSIONS_PROMPT.
-    void set_retained_files(const std::vector<base::FilePath>& retained_files) {
-      retained_files_ = retained_files;
-    }
-    void set_retained_device_messages(
-        const std::vector<std::u16string>& retained_device_messages) {
-      retained_device_messages_ = retained_device_messages;
     }
 
     const std::string& delegated_username() const {
@@ -201,8 +184,6 @@ class ExtensionInstallPrompt {
     void OnDialogCanceled();
 
    private:
-    bool ShouldDisplayRevokeButton() const;
-
     const PromptType type_;
 
     // Permissions that are being requested (may not be all of an extension's

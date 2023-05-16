@@ -138,9 +138,6 @@ std::u16string ExtensionInstallPrompt::Prompt::GetDialogTitle() const {
       else
         id = IDS_EXTENSION_EXTERNAL_INSTALL_PROMPT_TITLE_EXTENSION;
       break;
-    case POST_INSTALL_PERMISSIONS_PROMPT:
-      id = IDS_EXTENSION_POST_INSTALL_PERMISSIONS_PROMPT_TITLE;
-      break;
     case REMOTE_INSTALL_PROMPT:
       id = IDS_EXTENSION_REMOTE_INSTALL_PROMPT_TITLE;
       break;
@@ -168,14 +165,6 @@ std::u16string ExtensionInstallPrompt::Prompt::GetDialogTitle() const {
 }
 
 int ExtensionInstallPrompt::Prompt::GetDialogButtons() const {
-  // The "OK" button in the post install permissions dialog allows revoking
-  // file/device access, and is only shown if such permissions exist; see
-  // ShouldDisplayRevokeButton().
-  if (type_ == POST_INSTALL_PERMISSIONS_PROMPT &&
-      !ShouldDisplayRevokeButton()) {
-    return ui::DIALOG_BUTTON_CANCEL;
-  }
-
   // Extension pending request dialog doesn't have confirm button because there
   // is no user action required.
   if (type_ == EXTENSION_PENDING_REQUEST_PROMPT)
@@ -216,18 +205,6 @@ std::u16string ExtensionInstallPrompt::Prompt::GetAcceptButtonLabel() const {
         id = IDS_EXTENSION_EXTERNAL_INSTALL_PROMPT_ACCEPT_BUTTON_THEME;
       else
         id = IDS_EXTENSION_EXTERNAL_INSTALL_PROMPT_ACCEPT_BUTTON_EXTENSION;
-      break;
-    case POST_INSTALL_PERMISSIONS_PROMPT:
-      if (GetRetainedFileCount() && GetRetainedDeviceCount()) {
-        id =
-            IDS_EXTENSION_PROMPT_PERMISSIONS_CLEAR_RETAINED_FILES_AND_DEVICES_BUTTON;
-      } else if (GetRetainedFileCount()) {
-        id = IDS_EXTENSION_PROMPT_PERMISSIONS_CLEAR_RETAINED_FILES_BUTTON;
-      } else if (GetRetainedDeviceCount()) {
-        id = IDS_EXTENSION_PROMPT_PERMISSIONS_CLEAR_RETAINED_DEVICES_BUTTON;
-      }
-      // If there are neither retained files nor devices, leave id -1 so there
-      // will be no "accept" button.
       break;
     case REMOTE_INSTALL_PROMPT:
       if (extension_->is_app())
@@ -275,7 +252,6 @@ std::u16string ExtensionInstallPrompt::Prompt::GetAbortButtonLabel() const {
     case EXTERNAL_INSTALL_PROMPT:
       id = IDS_EXTENSION_EXTERNAL_INSTALL_PROMPT_ABORT_BUTTON;
       break;
-    case POST_INSTALL_PERMISSIONS_PROMPT:
     case EXTENSION_PENDING_REQUEST_PROMPT:
       id = IDS_CLOSE;
       break;
@@ -304,7 +280,6 @@ std::u16string ExtensionInstallPrompt::Prompt::GetPermissionsHeading() const {
     case PERMISSIONS_PROMPT:
       id = IDS_EXTENSION_PROMPT_WANTS_ACCESS_TO;
       break;
-    case POST_INSTALL_PERMISSIONS_PROMPT:
     case REPAIR_PROMPT:
       id = IDS_EXTENSION_PROMPT_CAN_ACCESS;
       break;
@@ -313,21 +288,6 @@ std::u16string ExtensionInstallPrompt::Prompt::GetPermissionsHeading() const {
       NOTREACHED();
   }
   return l10n_util::GetStringUTF16(id);
-}
-
-std::u16string ExtensionInstallPrompt::Prompt::GetRetainedFilesHeading() const {
-  return l10n_util::GetPluralStringFUTF16(
-      IDS_EXTENSION_PROMPT_RETAINED_FILES, GetRetainedFileCount());
-}
-
-std::u16string ExtensionInstallPrompt::Prompt::GetRetainedDevicesHeading()
-    const {
-  return l10n_util::GetPluralStringFUTF16(
-      IDS_EXTENSION_PROMPT_RETAINED_DEVICES, GetRetainedDeviceCount());
-}
-
-bool ExtensionInstallPrompt::Prompt::ShouldShowPermissions() const {
-  return GetPermissionCount() > 0 || type_ == POST_INSTALL_PERMISSIONS_PROMPT;
 }
 
 void ExtensionInstallPrompt::Prompt::AppendRatingStars(
@@ -391,26 +351,6 @@ std::u16string ExtensionInstallPrompt::Prompt::GetPermissionsDetails(
   return prompt_permissions_.details[index];
 }
 
-size_t ExtensionInstallPrompt::Prompt::GetRetainedFileCount() const {
-  return retained_files_.size();
-}
-
-std::u16string ExtensionInstallPrompt::Prompt::GetRetainedFile(
-    size_t index) const {
-  CHECK_LT(index, retained_files_.size());
-  return retained_files_[index].AsUTF16Unsafe();
-}
-
-size_t ExtensionInstallPrompt::Prompt::GetRetainedDeviceCount() const {
-  return retained_device_messages_.size();
-}
-
-std::u16string ExtensionInstallPrompt::Prompt::GetRetainedDeviceMessageString(
-    size_t index) const {
-  CHECK_LT(index, retained_device_messages_.size());
-  return retained_device_messages_[index];
-}
-
 void ExtensionInstallPrompt::Prompt::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -435,10 +375,6 @@ void ExtensionInstallPrompt::Prompt::OnDialogCanceled() {
   for (Observer& observer : observers_) {
     observer.OnDialogCanceled();
   }
-}
-
-bool ExtensionInstallPrompt::Prompt::ShouldDisplayRevokeButton() const {
-  return !retained_files_.empty() || !retained_device_messages_.empty();
 }
 
 bool ExtensionInstallPrompt::Prompt::ShouldWithheldPermissionsOnDialogAccept()

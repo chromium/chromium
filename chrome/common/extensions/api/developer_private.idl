@@ -665,12 +665,6 @@ namespace developerPrivate {
         ProfileConfigurationUpdate update,
         optional VoidCallback callback);
 
-    // Opens a permissions dialog.
-    // |extensionId| : The id of the extension to show permissions for.
-    [supportsPromises] static void showPermissionsDialog(
-        DOMString extensionId,
-        optional VoidCallback callback);
-
     // Reloads a given extension.
     // |extensionId| : The id of the extension to reload.
     // |options| : Additional configuration parameters.

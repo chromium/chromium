@@ -4580,9 +4580,6 @@ You can send it to Google to check if it's unsafe. Scans usually take a few seco
       <message name="IDS_EXTENSION_PERMISSIONS_PROMPT_TITLE" desc="Titlebar of the extension or app permissions prompt. Asks the user if they want to grant the permissions to the particular extension or app.">
         "<ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>" has requested additional permissions.
       </message>
-      <message name="IDS_EXTENSION_POST_INSTALL_PERMISSIONS_PROMPT_TITLE" desc="Titlebar of the extension or app permissions prompt. Shows the user the permissions a particular extension or app has.">
-        Current Permissions for "<ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>"
-      </message>
       <message name="IDS_EXTENSION_REMOTE_INSTALL_PROMPT_TITLE" desc="Titlebar of the extension or app installation prompt. Asks the user if they want to enable a particular extension or app that was installed remotely.">
         Enable "<ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>"?
       </message>
@@ -4685,9 +4682,6 @@ You can send it to Google to check if it's unsafe. Scans usually take a few seco
       <message name="IDS_EXTENSION_PROMPT_CAN_ACCESS" desc="Second line in the content area of the extension or app permissions view dialog. Note that the exact wording is important. This should mean that the extension _can now_ access the listed privileges, because it has already been installed. This message appeared because the user must approve new permissions of the extension or app.">
         It can:
       </message>
-      <message name="IDS_EXTENSION_NO_SPECIAL_PERMISSIONS" desc="Shown when the app/extension requires no special permission">
-        Has no special permissions.
-      </message>
     <message name="IDS_EXTENSION_PROMPT_GRANT_PERMISSIONS_CHECKBOX" desc="Label next to the checkbox in the extension or app installation prompt, which indicates if a user wants to grant access to all requested sites.">
         Grant access to all requested sites.
       </message>
@@ -4714,17 +4708,6 @@ You can send it to Google to check if it's unsafe. Scans usually take a few seco
       </message>
       <message name="IDS_EXTENSION_PROMPT_STORE_LINK" desc="Anchor text for link to Chrome Web Store in app or extension installation dialog">
         Open in Web Store
-      </message>
-      <message name="IDS_EXTENSION_PROMPT_RETAINED_FILES" desc="A line of explanatory text that precedes the list of files the app has permanent access to, showing the number of files. This is shown when an app has persistent access to files. [ICU Syntax]">
-        {NUM_FILES, plural,
-         =1 {It has permanent access to one file.}
-         other {It has permanent access to # files.}}
-      </message>
-
-      <message name="IDS_EXTENSION_PROMPT_RETAINED_DEVICES" desc="A line of explanatory text that precedes the list of devices the app has permanent access to, showing the number of devices. This is shown when an app has persistent access to devices. [ICU Syntax]">
-        {NUM_DEVICES, plural,
-         =1 {Communicate with a USB device}
-         other {Communicate with # USB devices}}
       </message>
 
       <if expr="enable_extensions">
@@ -5559,15 +5542,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_EXTENSION_PROMPT_PERMISSIONS_ABORT_BUTTON" desc="Text for the deny button on the extension permissions prompt">
         Deny
-      </message>
-      <message name="IDS_EXTENSION_PROMPT_PERMISSIONS_CLEAR_RETAINED_FILES_BUTTON" desc="Text for the Revoke File Access button on the extension permissions prompt">
-        Revoke file access
-      </message>
-      <message name="IDS_EXTENSION_PROMPT_PERMISSIONS_CLEAR_RETAINED_DEVICES_BUTTON" desc="Text for the Revoke Device Access button on the extension permissions prompt">
-        Revoke device access
-      </message>
-      <message name="IDS_EXTENSION_PROMPT_PERMISSIONS_CLEAR_RETAINED_FILES_AND_DEVICES_BUTTON" desc="Text for the Revoke File and Device Access button on the extension permissions prompt">
-        Revoke file and device access
       </message>
       <message name="IDS_EXTENSION_PROMPT_REMOTE_INSTALL_BUTTON_EXTENSION" desc="Text for the install button on the extension install prompt for a remotely installed extension">
         Enable extension

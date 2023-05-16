@@ -643,33 +643,8 @@ void ExtensionInstallDialogView::CreateContents() {
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
   std::vector<ExtensionInfoSection> sections;
-  if (prompt_->ShouldShowPermissions()) {
-    bool has_permissions = prompt_->GetPermissionCount() > 0;
-    if (has_permissions) {
-      AddPermissions(prompt_.get(), sections, content_width);
-    } else {
-      sections.push_back(
-          {l10n_util::GetStringUTF16(IDS_EXTENSION_NO_SPECIAL_PERMISSIONS),
-           nullptr});
-    }
-  }
-
-  if (prompt_->GetRetainedFileCount()) {
-    std::vector<std::u16string> details;
-    for (size_t i = 0; i < prompt_->GetRetainedFileCount(); ++i) {
-      details.push_back(prompt_->GetRetainedFile(i));
-    }
-    sections.push_back({prompt_->GetRetainedFilesHeading(),
-                        std::make_unique<ExpandableContainerView>(details)});
-  }
-
-  if (prompt_->GetRetainedDeviceCount()) {
-    std::vector<std::u16string> details;
-    for (size_t i = 0; i < prompt_->GetRetainedDeviceCount(); ++i) {
-      details.push_back(prompt_->GetRetainedDeviceMessageString(i));
-    }
-    sections.push_back({prompt_->GetRetainedDevicesHeading(),
-                        std::make_unique<ExpandableContainerView>(details)});
+  if (prompt_->GetPermissionCount() > 0) {
+    AddPermissions(prompt_.get(), sections, content_width);
   }
 
   if (sections.empty() &&

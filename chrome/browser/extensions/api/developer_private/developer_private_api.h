@@ -489,26 +489,6 @@ class DeveloperPrivateReloadFunction : public DeveloperPrivateAPIFunction,
       error_reporter_observation_{this};
 };
 
-class DeveloperPrivateShowPermissionsDialogFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.showPermissionsDialog",
-                             DEVELOPERPRIVATE_PERMISSIONS)
-  DeveloperPrivateShowPermissionsDialogFunction();
-
-  DeveloperPrivateShowPermissionsDialogFunction(
-      const DeveloperPrivateShowPermissionsDialogFunction&) = delete;
-  DeveloperPrivateShowPermissionsDialogFunction& operator=(
-      const DeveloperPrivateShowPermissionsDialogFunction&) = delete;
-
- protected:
-  // DeveloperPrivateAPIFunction:
-  ~DeveloperPrivateShowPermissionsDialogFunction() override;
-  ResponseAction Run() override;
-
-  void Finish();
-};
-
 class DeveloperPrivateChooseEntryFunction : public ExtensionFunction,
                                             public EntryPickerClient {
  protected:
