@@ -762,8 +762,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
        # Fuchsia provides C++ libraries that use std::shared_ptr<>.
        '^base/fuchsia/.*\.(cc|h)',
        '.*fuchsia.*test\.(cc|h)',
-       # Needed for clang plugin tests
-       '^tools/clang/plugins/tests/',
+       # Clang plugins have different build config.
+       '^tools/clang/plugins/',
        _THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
     BanRule(
@@ -1023,7 +1023,12 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         'absl::optional instead.',
       ),
       True,
-      [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+      [
+          # Clang plugins have different build config.
+          '^tools/clang/plugins/',
+          # Not an error in third_party folders.
+          _THIRD_PARTY_EXCEPT_BLINK,
+      ],
     ),
     BanRule(
       r'/#include <chrono>',
