@@ -270,24 +270,27 @@ export namespace Script {
   //   ?maxObjectDepth: (js-uint / null) .default null,
   //   ?includeShadowTree: ("none" / "open" / "all") .default "none",
   // }
-  const SerializationOptions = zod.object({
-    maxDomDepth: zod.number().int().min(0).optional(),
-    maxObjectDepth: zod.number().int().min(0).max(MAX_INT).optional(),
+  const SerializationOptionsSchema = zod.object({
+    maxDomDepth: zod.union([zod.null(), zod.number().int().min(0)]).optional(),
+    maxObjectDepth: zod
+      .union([zod.null(), zod.number().int().min(0).max(MAX_INT)])
+      .optional(),
     includeShadowTree: zod.enum(['none', 'open', 'all']).optional(),
   });
 
-  // ScriptEvaluateParameters = {
-  //   expression: text;
-  //   target: Target;
-  //   ?awaitPromise: bool;
-  //   ?resultOwnership: ResultOwnership;
+  // script.EvaluateParameters = {
+  //   expression: text,
+  //   target: script.Target,
+  //   awaitPromise: bool,
+  //   ?resultOwnership: script.ResultOwnership,
+  //   ?serializationOptions: script.SerializationOptions,
   // }
   const EvaluateParametersSchema = zod.object({
     expression: zod.string(),
     awaitPromise: zod.boolean(),
     target: TargetSchema,
     resultOwnership: ResultOwnershipSchema.optional(),
-    // serializationOptions: SerializationOptions.optional(),
+    serializationOptions: SerializationOptionsSchema.optional(),
   });
 
   export function parseEvaluateParams(
@@ -378,7 +381,7 @@ export namespace Script {
     target: TargetSchema,
     arguments: zod.array(ArgumentValueSchema).optional(),
     resultOwnership: ResultOwnershipSchema.optional(),
-    serializationOptions: SerializationOptions.optional(),
+    serializationOptions: SerializationOptionsSchema.optional(),
     this: ArgumentValueSchema.optional(),
   });
 

@@ -632,8 +632,8 @@ export namespace Script {
   export type ResultOwnership = 'root' | 'none';
 
   export type SerializationOptions = {
-    maxDomDepth?: number;
-    maxObjectDepth?: number;
+    maxDomDepth?: number | null;
+    maxObjectDepth?: number | null;
     includeShadowTree?: 'none' | 'open' | 'all';
   };
 

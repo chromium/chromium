@@ -94,8 +94,10 @@ export class ScriptEvaluator {
     resultOwnership: Script.ResultOwnership,
     serializationOptions: Script.SerializationOptions
   ): Promise<Script.ScriptResult> {
-    if (![0, undefined].includes(serializationOptions?.maxDomDepth))
-      throw new Error('serializationOptions.maxDomDepth!=0 is not supported');
+    if (![0, null, undefined].includes(serializationOptions.maxDomDepth))
+      throw new Error(
+        'serializationOptions.maxDomDepth other than 0 or null is not supported'
+      );
 
     const cdpEvaluateResult = await realm.cdpClient.sendCommand(
       'Runtime.evaluate',
@@ -105,9 +107,10 @@ export class ScriptEvaluator {
         awaitPromise,
         serializationOptions: {
           serialization: 'deep',
-          ...(serializationOptions?.maxObjectDepth
+          ...(serializationOptions.maxObjectDepth === undefined ||
+          serializationOptions.maxObjectDepth === null
             ? {}
-            : {maxDepth: serializationOptions?.maxObjectDepth}),
+            : {maxDepth: serializationOptions.maxObjectDepth}),
         },
       }
     );
@@ -142,8 +145,10 @@ export class ScriptEvaluator {
     resultOwnership: Script.ResultOwnership,
     serializationOptions: Script.SerializationOptions
   ): Promise<Script.ScriptResult> {
-    if (![0, undefined].includes(serializationOptions?.maxDomDepth))
-      throw new Error('serializationOptions.maxDomDepth!=0 is not supported');
+    if (![0, null, undefined].includes(serializationOptions.maxDomDepth))
+      throw new Error(
+        'serializationOptions.maxDomDepth other than 0 or null is not supported'
+      );
 
     const callFunctionAndSerializeScript = `(...args)=>{ return _callFunction((\n${functionDeclaration}\n), args);
       function _callFunction(f, args) {
@@ -173,9 +178,10 @@ export class ScriptEvaluator {
           arguments: thisAndArgumentsList, // this, arguments.
           serializationOptions: {
             serialization: 'deep',
-            ...(serializationOptions?.maxObjectDepth
+            ...(serializationOptions.maxObjectDepth === undefined ||
+            serializationOptions.maxObjectDepth === null
               ? {}
-              : {maxDepth: serializationOptions?.maxObjectDepth}),
+              : {maxDepth: serializationOptions.maxObjectDepth}),
           },
           executionContextId: realm.executionContextId,
         }
