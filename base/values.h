@@ -756,16 +756,6 @@ class BASE_EXPORT GSL_OWNER Value {
     std::vector<Value> storage_;
   };
 
-  // ===== DEPRECATED methods that require `type() == Type::DICT` =====
-  // `SetKey` looks up `key` in the underlying dictionary and sets the mapped
-  // value to `value`. If `key` could not be found, a new element is inserted.
-  // A pointer to the modified item is returned.
-  //
-  // Note: Prefer `Set<Type>Key()` if the input is not already a `Value`.
-  //
-  // DEPRECATED: Prefer `Value::Dict::Set()`.
-  Value* SetKey(StringPiece key, Value&& value);
-
   // Note: Do not add more types. See the file-level comment above for why.
 
   // Comparison operators so that Values can easily be used with standard

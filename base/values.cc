@@ -1152,10 +1152,6 @@ bool operator>=(const Value::List& lhs, const Value::List& rhs) {
   return !(lhs < rhs);
 }
 
-Value* Value::SetKey(StringPiece key, Value&& value) {
-  return GetDict().Set(key, std::move(value));
-}
-
 bool operator==(const Value& lhs, const Value& rhs) {
   return lhs.data_ == rhs.data_;
 }
