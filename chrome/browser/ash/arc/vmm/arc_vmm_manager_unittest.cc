@@ -96,6 +96,14 @@ class ArcVmmManagerTest : public testing::Test {
         std::make_unique<TestConciergeClient>(ash::FakeCiceroneClient::Get());
   }
 
+  void EnableAndConnectArcVm() {
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->InitFromArgv({"", "--enable-arcvm"});
+    if (manager_) {
+      manager_->OnConnectionReady();
+    }
+  }
+
   void InitVmmManager() {
     manager_ = ArcVmmManager::GetForBrowserContextForTesting(testing_profile_);
     manager_->set_user_id_hash("test_user_hash_id");
@@ -136,6 +144,7 @@ class ArcVmmManagerTest : public testing::Test {
 
 TEST_F(ArcVmmManagerTest, EnableSwapWhenTrimSuccess) {
   InitVmmManager();
+  EnableAndConnectArcVm();
   SetTrimCall(true);
   InitAggressiveBallonResponse();
 
@@ -151,6 +160,7 @@ TEST_F(ArcVmmManagerTest, EnableSwapWhenTrimSuccess) {
 
 TEST_F(ArcVmmManagerTest, NotEnableSwapWhenTrimFail) {
   InitVmmManager();
+  EnableAndConnectArcVm();
   SetTrimCall(false);
   InitAggressiveBallonResponse();
 
@@ -166,6 +176,7 @@ TEST_F(ArcVmmManagerTest, NotEnableSwapWhenTrimFail) {
 
 TEST_F(ArcVmmManagerTest, ForceSwapSuccess) {
   InitVmmManager();
+  EnableAndConnectArcVm();
   SetTrimCall(true);
   InitAggressiveBallonResponse();
 
@@ -173,6 +184,20 @@ TEST_F(ArcVmmManagerTest, ForceSwapSuccess) {
   base::RunLoop().RunUntilIdle();
   // Send "FORCE_ENABLE".
   EXPECT_EQ(1, client()->force_enable_count());
+  EXPECT_EQ(0, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
+}
+
+TEST_F(ArcVmmManagerTest, NotSendSwapRequestIfArcNotReady) {
+  InitVmmManager();
+  SetTrimCall(true);
+  InitAggressiveBallonResponse();
+
+  manager()->SetSwapState(SwapState::FORCE_ENABLE);
+  base::RunLoop().RunUntilIdle();
+  // Not send "FORCE_ENABLE".
+  EXPECT_EQ(0, client()->force_enable_count());
   EXPECT_EQ(0, client()->enable_count());
   EXPECT_EQ(0, client()->swap_out_count());
   EXPECT_EQ(0, client()->disable_count());

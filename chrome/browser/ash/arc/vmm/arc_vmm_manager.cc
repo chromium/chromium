@@ -97,6 +97,10 @@ ArcVmmManager::ArcVmmManager(content::BrowserContext* context,
 ArcVmmManager::~ArcVmmManager() = default;
 
 void ArcVmmManager::SetSwapState(SwapState state) {
+  if (!IsArcVmEnabled() || !arc_connected_) {
+    LOG(ERROR) << "Failed to SetSwapState, ARCVM not enabled or connected.";
+    return;
+  }
   vm_tools::concierge::SwapOperation op;
   switch (state) {
     case SwapState::ENABLE:
@@ -137,6 +141,13 @@ void ArcVmmManager::SetSwapState(SwapState state) {
                  "failure";
     }
   }
+}
+
+void ArcVmmManager::OnConnectionReady() {
+  arc_connected_ = true;
+}
+void ArcVmmManager::OnConnectionClosed() {
+  arc_connected_ = false;
 }
 
 void ArcVmmManager::SendSwapRequest(

@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
@@ -27,7 +29,8 @@ enum class SwapState {
 };
 
 // ARCVM vmm features manager.
-class ArcVmmManager : public KeyedService {
+class ArcVmmManager : public KeyedService,
+                      public arc::ConnectionObserver<arc::mojom::AppInstance> {
  public:
   // Returns singleton instance for the given BrowserContext, or nullptr if
   // the browser |context| is not allowed to use ARC.
@@ -52,6 +55,10 @@ class ArcVmmManager : public KeyedService {
   }
 
   static void EnsureFactoryBuilt();
+
+  // arc::ConnectionObserver:
+  void OnConnectionReady() override;
+  void OnConnectionClosed() override;
 
  private:
   friend class ArcVmmManagerTest;
@@ -92,6 +99,8 @@ class ArcVmmManager : public KeyedService {
   // Swap request scheduler for experimental usage. Always behind the feature
   // flag and parameters.
   std::unique_ptr<ArcVmmSwapScheduler> scheduler_;
+
+  bool arc_connected_ = false;
 
   std::string user_id_hash_;
 
