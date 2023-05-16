@@ -21,6 +21,7 @@
 #include "services/accessibility/assistive_technology_controller_impl.h"
 #include "services/accessibility/features/automation_internal_bindings.h"
 #include "services/accessibility/features/mojo/mojo.h"
+#include "services/accessibility/features/tts_interface_binder.h"
 #include "services/accessibility/features/v8_bindings_utils.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-object.h"
@@ -93,6 +94,15 @@ void V8Manager::InstallAutomation(
                                 weak_ptr_factory_.GetWeakPtr(), at_controller));
 }
 
+void V8Manager::InstallTts(
+    base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+  DCHECK(main_runner_ == base::SequencedTaskRunner::GetCurrentDefault());
+  v8_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&V8Manager::BindTtsOnThread,
+                                weak_ptr_factory_.GetWeakPtr(), at_controller));
+}
+
 void V8Manager::AddV8Bindings() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK(main_runner_ == base::SequencedTaskRunner::GetCurrentDefault());
@@ -125,13 +135,22 @@ void V8Manager::BindInterface(const std::string& interface_name,
                               mojo::GenericPendingReceiver pending_receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO(b:262637071): Add mappings for bindings for other C++/JS mojom APIs.
+  // TODO(b:262637071): We may need to use associated remotes/receivers to avoid
+  // messages coming in an unpredicted order compared to the Extensions system.
   if (test_mojo_interface_ &&
       test_mojo_interface_->MatchesInterface(interface_name)) {
     test_mojo_interface_->BindReceiver(std::move(pending_receiver));
     return;
   }
-  LOG(ERROR) << "Couldn't find remote implementation for interface "
-             << interface_name;
+  if (tts_interface_binder_ &&
+      tts_interface_binder_->MatchesInterface(interface_name)) {
+    tts_interface_binder_->BindReceiver(std::move(pending_receiver));
+    return;
+  }
+  LOG(ERROR) << "Couldn't find Receiver for interface " << interface_name
+             << ". Ensure it's installed in the isolate with "
+             << "V8Manager::Install* and available for binding in "
+             << "V8Manager::BindInterface.";
 }
 
 void V8Manager::SetTestMojoInterface(
@@ -244,6 +263,13 @@ void V8Manager::BindAutomationOnThread(
   // Construct the AutomationInternalBindings and its routes.
   automation_bindings_ = std::make_unique<AutomationInternalBindings>(
       weak_ptr_factory_.GetWeakPtr(), at_controller, main_runner_);
+}
+
+void V8Manager::BindTtsOnThread(
+    base::WeakPtr<AssistiveTechnologyControllerImpl> at_controller) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  tts_interface_binder_ =
+      std::make_unique<TtsInterfaceBinder>(at_controller, main_runner_);
 }
 
 void V8Manager::SetTestMojoInterfaceOnThread(

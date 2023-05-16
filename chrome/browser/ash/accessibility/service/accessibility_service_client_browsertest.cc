@@ -4,16 +4,20 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router_factory.h"
 #include "chrome/browser/ash/accessibility/service/accessibility_service_client.h"
 #include "chrome/browser/ash/accessibility/service/automation_client_impl.h"
 #include "chrome/browser/ash/accessibility/service/fake_accessibility_service.h"
+#include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/test/browser_test.h"
-#include "services/accessibility/public/mojom/accessibility_service.mojom-shared.h"
+#include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/tts.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
 
@@ -216,4 +220,37 @@ IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest,
   // Disabling multiple times has no bad effect.
   // fake_service_->AutomationClientEnable(false);
 }
+
+IN_PROC_BROWSER_TEST_F(AccessibilityServiceClientTest, TtsGetVoices) {
+  AccessibilityServiceClient client;
+  test::SpeechMonitor sm;
+  client.SetProfile(browser()->profile());
+  // Enable some assistive technology. The service will not be started until
+  // some AT needs it.
+  client.SetSelectToSpeakEnabled(true);
+  EXPECT_TRUE(ServiceHasATEnabled(AssistiveTechnologyType::kSelectToSpeak));
+
+  fake_service_->BindAnotherTts();
+
+  base::RunLoop waiter;
+  fake_service_->RequestTtsVoices(base::BindLambdaForTesting(
+      [&waiter](std::vector<ax::mojom::TtsVoicePtr> voices) {
+        waiter.Quit();
+        ASSERT_GT(voices.size(), 0u);
+        auto& voice = voices[0];
+        EXPECT_EQ(voice->voice_name, "SpeechMonitor");
+        EXPECT_EQ(voice->engine_id,
+                  extension_misc::kGoogleSpeechSynthesisExtensionId);
+        ASSERT_TRUE(voice->event_types);
+        ASSERT_EQ(voice->event_types.value().size(), 1u);
+        EXPECT_EQ(voice->event_types.value()[0], ax::mojom::TtsEventType::kEnd);
+      }));
+  waiter.Run();
+
+  // The service may bind multiple TTS without crashing.
+  for (int i = 0; i < 2; i++) {
+    fake_service_->BindAnotherTts();
+  }
+}
+
 }  // namespace ash

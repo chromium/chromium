@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/accessibility/service/accessibility_service_client.h"
+
 #include <memory>
+
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router_factory.h"
 #include "chrome/browser/ash/accessibility/service/automation_client_impl.h"
+#include "chrome/browser/ash/accessibility/service/tts_client_impl.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -25,6 +28,11 @@ void AccessibilityServiceClient::BindAutomation(
     mojo::PendingRemote<ax::mojom::Automation> automation,
     mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client) {
   automation_client_->Bind(std::move(automation), std::move(automation_client));
+}
+
+void AccessibilityServiceClient::BindTts(
+    mojo::PendingReceiver<ax::mojom::Tts> tts_receiver) {
+  tts_client_->Bind(std::move(tts_receiver));
 }
 
 void AccessibilityServiceClient::SetProfile(content::BrowserContext* profile) {
@@ -75,6 +83,7 @@ void AccessibilityServiceClient::SetDictationEnabled(bool enabled) {
 void AccessibilityServiceClient::Reset() {
   at_controller_.reset();
   automation_client_.reset();
+  tts_client_.reset();
 }
 
 void AccessibilityServiceClient::EnableAssistiveTechnology(
@@ -109,6 +118,7 @@ void AccessibilityServiceClient::LaunchAccessibilityServiceAndBind() {
     return;
 
   automation_client_ = std::make_unique<AutomationClientImpl>();
+  tts_client_ = std::make_unique<TtsClientImpl>(profile_);
 
   ax::AccessibilityServiceRouter* router =
       ax::AccessibilityServiceRouterFactory::GetForBrowserContext(
