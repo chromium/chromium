@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "chrome/browser/password_manager/android/password_generation_controller_impl.h"
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/functional/bind.h"
 
 #include <map>
+#include <memory>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -14,6 +17,8 @@
 #include "chrome/browser/autofill/mock_manual_filling_controller.h"
 #include "chrome/browser/password_manager/android/password_generation_dialog_view_interface.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/touch_to_fill/password_generation/android/mock_touch_to_fill_password_generation_bridge.h"
+#include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -137,6 +142,9 @@ MATCHER_P(PointsToSameAddress, expected, "") {
 class PasswordGenerationControllerTest
     : public ChromeRenderViewHostTestHarness {
  public:
+  using CreateTouchToFillGenerationControllerFactory = base::RepeatingCallback<
+      std::unique_ptr<TouchToFillPasswordGenerationController>()>;
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
@@ -145,11 +153,6 @@ class PasswordGenerationControllerTest
         test_pwd_manager_client_.get());
     ON_CALL(*test_pwd_manager_client_, GetPasswordManager())
         .WillByDefault(Return(password_manager_.get()));
-
-    PasswordGenerationControllerImpl::CreateForWebContentsForTesting(
-        web_contents(), test_pwd_manager_client_.get(),
-        mock_manual_filling_controller_.AsWeakPtr(),
-        mock_dialog_factory_.Get());
 
     password_manager_driver_ = std::make_unique<ContentPasswordManagerDriver>(
         main_rfh(), test_pwd_manager_client_.get(), &test_autofill_client_);
@@ -167,6 +170,16 @@ class PasswordGenerationControllerTest
     mock_dialog_ =
         std::make_unique<NiceMock<MockPasswordGenerationDialogView>>();
 
+    ON_CALL(create_ttf_generation_controller_, Run).WillByDefault([this]() {
+      return std::make_unique<TouchToFillPasswordGenerationController>(
+          active_driver(), web_contents(),
+          std::make_unique<MockTouchToFillPasswordGenerationBridge>());
+    });
+
+    PasswordGenerationControllerImpl::CreateForWebContentsForTesting(
+        web_contents(), test_pwd_manager_client_.get(),
+        mock_manual_filling_controller_.AsWeakPtr(), mock_dialog_factory_.Get(),
+        create_ttf_generation_controller_.Get());
     EXPECT_CALL(mock_manual_filling_controller_,
                 OnAccessoryActionAvailabilityChanged(
                     ShouldShowAction(false),
@@ -203,6 +216,8 @@ class PasswordGenerationControllerTest
   std::unique_ptr<ContentPasswordManagerDriver>
       another_password_manager_driver_;
   std::unique_ptr<NiceMock<MockPasswordGenerationDialogView>> mock_dialog_;
+  base::MockCallback<CreateTouchToFillGenerationControllerFactory>
+      create_ttf_generation_controller_;
 
  private:
   NiceMock<
@@ -225,6 +240,9 @@ TEST_F(PasswordGenerationControllerTest, IsNotRecreatedForSameWebContents) {
 }
 
 TEST_F(PasswordGenerationControllerTest, RelaysAutomaticGenerationAvailable) {
+  // TODO (crbug.com/1421753): Test this is for the
+  // PasswordGenerationBottomSheet flag disabled. Add one more test for the case
+  // after the bottom sheet is dismissed.
   EXPECT_CALL(mock_manual_filling_controller_,
               OnAccessoryActionAvailabilityChanged(
                   ShouldShowAction(true),
@@ -466,12 +484,73 @@ TEST_F(PasswordGenerationControllerTest,
   feature_list.InitAndEnableFeature(
       password_manager::features::kPasswordGenerationBottomSheet);
 
+  auto ttf_password_generation_bridge =
+      std::make_unique<MockTouchToFillPasswordGenerationBridge>();
+  MockTouchToFillPasswordGenerationBridge* ttf_password_generation_bridge_ptr =
+      ttf_password_generation_bridge.get();
+  EXPECT_CALL(create_ttf_generation_controller_, Run)
+      .WillOnce(Return(
+          ByMove(std::make_unique<TouchToFillPasswordGenerationController>(
+              active_driver(), web_contents(),
+              std::move(ttf_password_generation_bridge)))));
+
+  // Keyboard accessory shouldn't show up.
+  EXPECT_CALL(mock_manual_filling_controller_,
+              OnAccessoryActionAvailabilityChanged(
+                  ShouldShowAction(true),
+                  autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC))
+      .Times(0);
+  EXPECT_CALL(*ttf_password_generation_bridge_ptr, Show);
+  controller()->OnAutomaticGenerationAvailable(
+      active_driver(), GetTestGenerationUIData1(), gfx::RectF(100, 20));
+  // Removes the keyboard suppression callback from the render widget host. It
+  // needs to be done before the `PasswordGenerationController` destructor is
+  // called.
+  controller()->HideBottomSheetIfNeeded();
+}
+
+TEST_F(PasswordGenerationControllerTest,
+       DoesNotCallKeyboardAccessoryWhenBottomSheetIsDisplayed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordGenerationBottomSheet);
+  controller()->OnAutomaticGenerationAvailable(
+      active_driver(), GetTestGenerationUIData1(), gfx::RectF(100, 20));
+
   // Keyboard accessory shouldn't be called.
   EXPECT_CALL(mock_manual_filling_controller_,
               OnAccessoryActionAvailabilityChanged(
                   _, autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC))
       .Times(0);
+  EXPECT_CALL(create_ttf_generation_controller_, Run).Times(0);
   controller()->OnAutomaticGenerationAvailable(
       active_driver(), GetTestGenerationUIData1(), gfx::RectF(100, 20));
+  // Removes the keyboard suppression callback from the render widget host. It
+  // needs to be done before the `PasswordGenerationController` destructor is
+  // called.
   controller()->HideBottomSheetIfNeeded();
+}
+
+TEST_F(PasswordGenerationControllerTest,
+       CallsKeyboardAccessoryWhenGenerationBottomSheetFailedToShow) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kPasswordGenerationBottomSheet);
+
+  auto ttf_password_generation_bridge =
+      std::make_unique<MockTouchToFillPasswordGenerationBridge>();
+  EXPECT_CALL(*ttf_password_generation_bridge, Show).WillOnce(Return(false));
+  EXPECT_CALL(create_ttf_generation_controller_, Run)
+      .WillOnce(Return(
+          ByMove(std::make_unique<TouchToFillPasswordGenerationController>(
+              active_driver(), web_contents(),
+              std::move(ttf_password_generation_bridge)))));
+
+  // Keyboard accessory should show up.
+  EXPECT_CALL(mock_manual_filling_controller_,
+              OnAccessoryActionAvailabilityChanged(
+                  ShouldShowAction(true),
+                  autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
+  controller()->OnAutomaticGenerationAvailable(
+      active_driver(), GetTestGenerationUIData1(), gfx::RectF(100, 20));
 }

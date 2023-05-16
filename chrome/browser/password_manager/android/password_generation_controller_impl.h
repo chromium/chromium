@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
+#include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_bridge.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/gfx/geometry/rect.h"
@@ -35,6 +36,8 @@ class PasswordGenerationControllerImpl
  public:
   using CreateDialogFactory = base::RepeatingCallback<std::unique_ptr<
       PasswordGenerationDialogViewInterface>(PasswordGenerationController*)>;
+  using CreateTouchToFillGenerationControllerFactory = base::RepeatingCallback<
+      std::unique_ptr<TouchToFillPasswordGenerationController>()>;
 
   PasswordGenerationControllerImpl(const PasswordGenerationControllerImpl&) =
       delete;
@@ -81,7 +84,9 @@ class PasswordGenerationControllerImpl
       content::WebContents* web_contents,
       password_manager::PasswordManagerClient* client,
       base::WeakPtr<ManualFillingController> manual_filling_controller,
-      CreateDialogFactory create_dialog_callback);
+      CreateDialogFactory create_dialog_callback,
+      CreateTouchToFillGenerationControllerFactory
+          create_touch_to_fill_generation_controller);
 
  protected:
   // Callable in tests.
@@ -105,7 +110,12 @@ class PasswordGenerationControllerImpl
       content::WebContents* web_contents,
       password_manager::PasswordManagerClient* client,
       base::WeakPtr<ManualFillingController> manual_filling_controller,
-      CreateDialogFactory create_dialog_callback);
+      CreateDialogFactory create_dialog_callback,
+      CreateTouchToFillGenerationControllerFactory
+          create_touch_to_fill_generation_controller);
+
+  std::unique_ptr<TouchToFillPasswordGenerationController>
+  CreateTouchToFillGenerationController();
 
   // Checks if the given PasswordManagerDriver is the same as the one
   // belonging to the currently considered active frame for generation.
@@ -118,6 +128,8 @@ class PasswordGenerationControllerImpl
   // dialog was shown for a manual or automatic generation flow. This is used
   // for metrics.
   void ShowDialog(autofill::password_generation::PasswordGenerationType type);
+
+  bool TryToShowGenerationTouchToFill();
 
   // Resets the current active frame driver, as well as the dialog if shown
   // and the generation element data.
@@ -148,6 +160,11 @@ class PasswordGenerationControllerImpl
 
   // Creation callback for the modal dialog view meant to facilitate testing.
   CreateDialogFactory create_dialog_factory_;
+
+  // Creation callback for the password generation bottom sheet controller to
+  // facilitate testing.
+  CreateTouchToFillGenerationControllerFactory
+      create_touch_to_fill_generation_controller_;
 
   // Whether manual generation was requested from the UI. Used to filter out
   // unexpected or delayed manual generation responses from the renderer.

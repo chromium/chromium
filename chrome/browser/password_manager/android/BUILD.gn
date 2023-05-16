@@ -452,6 +452,8 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/autofill",
     "//chrome/browser/password_manager/android/pwd_migration:utils",
+    "//chrome/browser/touch_to_fill/password_generation/android:public",
+    "//chrome/browser/touch_to_fill/password_generation/android:test_support",
     "//chrome/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
