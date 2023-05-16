@@ -266,12 +266,14 @@ PasswordSyncBridge::PasswordSyncBridge(
         {FROM_HERE, "Password metadata store isn't available."});
     sync_metadata_read_error = SyncMetadataReadError::kDbNotAvailable;
   } else {
-    batch = password_store_sync_->GetMetadataStore()->GetAllSyncMetadata();
+    batch = password_store_sync_->GetMetadataStore()->GetAllSyncMetadata(
+        syncer::PASSWORDS);
     if (!batch) {
       // If the metadata cannot be read, it's either a persistent error or force
       // initial sync has been requested. In both cases, we drop the metadata to
       // go through the initial sync flow.
-      password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata();
+      password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata(
+          syncer::PASSWORDS);
       batch = std::make_unique<syncer::MetadataBatch>();
       sync_metadata_read_error = SyncMetadataReadError::kReadFailed;
     } else if (DoesPasswordStoreHaveEncryptionServiceFailures(
@@ -279,7 +281,8 @@ PasswordSyncBridge::PasswordSyncBridge(
                ShouldCleanSyncMetadataDuringStartupWhenDecryptionFails()) {
       // Some Credentials in the passwords store cannot be read, force initial
       // sync by dropping the metadata.
-      password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata();
+      password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata(
+          syncer::PASSWORDS);
       batch = std::make_unique<syncer::MetadataBatch>();
       sync_metadata_read_error = SyncMetadataReadError::kReadSuccessButCleared;
     } else if (base::FeatureList::IsEnabled(
@@ -291,7 +294,8 @@ PasswordSyncBridge::PasswordSyncBridge(
       // contains supported fields, this means that the browser was updated and
       // we should force the initial sync flow to propagate the cached data into
       // the local model.
-      password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata();
+      password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata(
+          syncer::PASSWORDS);
       batch = std::make_unique<syncer::MetadataBatch>();
       sync_metadata_read_error = SyncMetadataReadError::
           kNewlySupportedFieldDetectedInUnsupportedFieldsCache;
@@ -305,7 +309,8 @@ PasswordSyncBridge::PasswordSyncBridge(
       // flow and download any potential passwords notes on the server. The
       // processor takes care of setting the flag in the model type state to
       // avoid running this flow upon every start-up.
-      password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata();
+      password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata(
+          syncer::PASSWORDS);
       batch = std::make_unique<syncer::MetadataBatch>();
       sync_metadata_read_error = SyncMetadataReadError::
           kPasswordsRequireRedownloadForPotentialNotesOnTheServer;
@@ -908,7 +913,8 @@ bool PasswordSyncBridge::SupportsGetStorageKey() const {
 void PasswordSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   if (!password_store_sync_->IsAccountStore()) {
-    password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata();
+    password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata(
+        syncer::PASSWORDS);
     sync_enabled_or_disabled_cb_.Run();
     return;
   }
@@ -942,7 +948,8 @@ void PasswordSyncBridge::ApplyDisableSyncChanges(
       }
     }
   }
-  password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata();
+  password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata(
+      syncer::PASSWORDS);
   password_store_sync_->DeleteAndRecreateDatabaseFile();
   password_store_sync_->NotifyCredentialsChanged(password_store_changes);
 
@@ -1028,7 +1035,7 @@ std::set<FormPrimaryKey> PasswordSyncBridge::GetUnsyncedPasswordsStorageKeys() {
     return storage_keys;
   }
   std::unique_ptr<syncer::MetadataBatch> batch =
-      metadata_store->GetAllSyncMetadata();
+      metadata_store->GetAllSyncMetadata(syncer::PASSWORDS);
   for (const auto& [storage_key, metadata] : batch->GetAllMetadata()) {
     // Ignore unsynced deletions.
     if (!metadata->is_deleted() &&
