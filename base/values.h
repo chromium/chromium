@@ -774,17 +774,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // Deprecated: Prefer `Value::Dict::Remove()`.
   bool RemoveKey(StringPiece key);
 
-  // Searches a hierarchy of dictionary values for a given value. If a path
-  // of dictionaries exist, returns the item at that path. If any of the path
-  // components do not exist or if any but the last path components are not
-  // dictionaries, returns nullptr. The type of the leaf Value is not checked.
-  //
-  // This version takes a StringPiece for the path, using dots as separators.
-  //
-  // DEPRECATED: Prefer `Value::Dict::FindByDottedPath()`.
-  Value* FindPath(StringPiece path);
-  const Value* FindPath(StringPiece path) const;
-
   // Note: Do not add more types. See the file-level comment above for why.
 
   // Comparison operators so that Values can easily be used with standard

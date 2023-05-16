@@ -1160,14 +1160,6 @@ bool Value::RemoveKey(StringPiece key) {
   return GetDict().Remove(key);
 }
 
-Value* Value::FindPath(StringPiece path) {
-  return GetDict().FindByDottedPath(path);
-}
-
-const Value* Value::FindPath(StringPiece path) const {
-  return GetDict().FindByDottedPath(path);
-}
-
 bool operator==(const Value& lhs, const Value& rhs) {
   return lhs.data_ == rhs.data_;
 }
