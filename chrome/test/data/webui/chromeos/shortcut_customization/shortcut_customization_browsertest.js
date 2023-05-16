@@ -44,6 +44,7 @@ const tests = [
   ['AcceleratorRowTest', 'accelerator_row_test.js'],
   ['AcceleratorEditDialogTest', 'accelerator_edit_dialog_test.js'],
   ['AcceleratorSubsectionTest', 'accelerator_subsection_test.js'],
+  ['BottomNavContentTest', 'bottom_nav_content_test.js'],
   ['FakeShortcutProviderTest', 'fake_shortcut_provider_test.js'],
   ['FakeShortcutSearchHandlerTest', 'fake_shortcut_search_handler_test.js'],
   ['InputKeyTest', 'input_key_test.js'],

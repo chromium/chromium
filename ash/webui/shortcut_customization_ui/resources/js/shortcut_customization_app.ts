@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './accelerator_edit_dialog.js';
+import './bottom_nav_content.js';
 import './shortcut_input.js';
 import './shortcuts_page.js';
 import '../strings.m.js';
@@ -94,11 +95,6 @@ export class ShortcutCustomizationAppElement extends
       showRestoreAllDialog: {
         type: Boolean,
         value: false,
-      },
-
-      keyboardSettingsLink: {
-        type: String,
-        value: '',
       },
     };
   }

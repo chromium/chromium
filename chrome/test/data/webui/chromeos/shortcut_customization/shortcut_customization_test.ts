@@ -563,8 +563,10 @@ suite('shortcutCustomizationAppTest', function() {
     assertFalse(!!restoreDialog);
 
     // Click on the Restore all button.
-    const restoreButton = getPage().shadowRoot!.querySelector(
-                              '#restoreAllButton') as CrButtonElement;
+    const restoreButton =
+        getPage()
+            .shadowRoot!.querySelector('shortcuts-bottom-nav-content')!
+            .shadowRoot!.querySelector('#restoreAllButton') as CrButtonElement;
     restoreButton!.click();
 
     await flushTasks();
@@ -606,8 +608,10 @@ suite('shortcutCustomizationAppTest', function() {
     page = initShortcutCustomizationAppElement();
     waitAfterNextRender(getPage());
     await flushTasks();
-    const restoreButton = getPage().shadowRoot!.querySelector(
-                              '#restoreAllButton') as CrButtonElement;
+    const restoreButton =
+        getPage()
+            .shadowRoot!.querySelector('shortcuts-bottom-nav-content')!
+            .shadowRoot!.querySelector('#restoreAllButton') as CrButtonElement;
     await flushTasks();
     assertTrue(isVisible(restoreButton));
   });
@@ -617,8 +621,10 @@ suite('shortcutCustomizationAppTest', function() {
     page = initShortcutCustomizationAppElement();
     waitAfterNextRender(getPage());
     await flushTasks();
-    const restoreButton = getPage().shadowRoot!.querySelector(
-                              '#restoreAllButton') as CrButtonElement;
+    const restoreButton =
+        getPage()
+            .shadowRoot!.querySelector('shortcuts-bottom-nav-content')!
+            .shadowRoot!.querySelector('#restoreAllButton') as CrButtonElement;
     await flushTasks();
     assertFalse(isVisible(restoreButton));
   });
@@ -776,8 +782,10 @@ suite('shortcutCustomizationAppTest', function() {
     await flushTasks();
     const actualLink =
         getPage()
-            .shadowRoot!.querySelector('#keyboardSettingsLinkContainer')!
-            .querySelector('#keyboardSettingsLink') as HTMLLinkElement;
+            .shadowRoot!.querySelector(
+                            'shortcuts-bottom-nav-content')!.shadowRoot!
+            .querySelector('#keyboardSettingsLinkContainer')!.querySelector(
+                '#keyboardSettingsLink') as HTMLLinkElement;
     assertEquals('chrome://os-settings/keyboard-overlay', actualLink.href);
   });
 
@@ -789,8 +797,10 @@ suite('shortcutCustomizationAppTest', function() {
     await flushTasks();
     const actualLink =
         getPage()
-            .shadowRoot!.querySelector('#keyboardSettingsLinkContainer')!
-            .querySelector('#keyboardSettingsLink') as HTMLLinkElement;
+            .shadowRoot!.querySelector(
+                            'shortcuts-bottom-nav-content')!.shadowRoot!
+            .querySelector('#keyboardSettingsLinkContainer')!.querySelector(
+                '#keyboardSettingsLink') as HTMLLinkElement;
     assertEquals('chrome://os-settings/per-device-keyboard', actualLink.href);
   });
 });
