@@ -2608,6 +2608,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.QuicMultiPort.NumDefaultPathDegrading" units="times"
     expires_after="2023-10-22">
+  <obsolete>
+    Replaced by Net.QuicSession.NumDefaultPathDegrading in May 2023, as
+    num_path_degrading is no longer specific to the multi-port feature.
+  </obsolete>
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3627,6 +3631,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of active streams when idle timeout is detected and connection is
     being closed.
+  </summary>
+</histogram>
+
+<histogram name="Net.QuicSession.NumDefaultPathDegrading" units="times"
+    expires_after="2023-10-22">
+  <owner>renjietang@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The number of time that a session which has multi-port enabled enters
+    path-degrading state on the default path.
   </summary>
 </histogram>
 
