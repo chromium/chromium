@@ -9,6 +9,7 @@
 
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
@@ -78,14 +79,13 @@ void ArrayBufferAllocator::InitializePartition() {
       partition_allocator{};
 
   // These configuration options are copied from blink's ArrayBufferPartition.
-  partition_allocator->init({
-      partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
-      partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-      partition_alloc::PartitionOptions::Quarantine::kAllowed,
-      partition_alloc::PartitionOptions::Cookie::kAllowed,
-      partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
-      partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
-      partition_alloc::PartitionOptions::UseConfigurablePool::kIfAvailable,
+  partition_allocator->init(partition_alloc::PartitionOptions{
+      .quarantine = partition_alloc::PartitionOptions::Quarantine::kAllowed,
+      .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
+      .backup_ref_ptr =
+          partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
+      .use_configurable_pool =
+          partition_alloc::PartitionOptions::UseConfigurablePool::kIfAvailable,
   });
 
   partition_ = partition_allocator->root();

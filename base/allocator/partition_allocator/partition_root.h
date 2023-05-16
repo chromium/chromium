@@ -185,41 +185,13 @@ struct PartitionOptions {
     kIfAvailable,
   };
 
-  // Constructor to suppress aggregate initialization.
-  constexpr PartitionOptions(
-      AlignedAlloc aligned_alloc,
-      ThreadCache thread_cache,
-      Quarantine quarantine,
-      Cookie cookie,
-      BackupRefPtr backup_ref_ptr,
-      BackupRefPtrZapping backup_ref_ptr_zapping,
-      UseConfigurablePool use_configurable_pool
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
-      ,
-      ThreadIsolationOption thread_isolation = ThreadIsolationOption()
-#endif
-          )
-      : aligned_alloc(aligned_alloc),
-        thread_cache(thread_cache),
-        quarantine(quarantine),
-        cookie(cookie),
-        backup_ref_ptr(backup_ref_ptr),
-        backup_ref_ptr_zapping(backup_ref_ptr_zapping),
-        use_configurable_pool(use_configurable_pool)
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
-        ,
-        thread_isolation(thread_isolation)
-#endif
-  {
-  }
-
-  AlignedAlloc aligned_alloc;
-  ThreadCache thread_cache;
-  Quarantine quarantine;
-  Cookie cookie;
-  BackupRefPtr backup_ref_ptr;
-  BackupRefPtrZapping backup_ref_ptr_zapping;
-  UseConfigurablePool use_configurable_pool;
+  AlignedAlloc aligned_alloc = AlignedAlloc::kDisallowed;
+  ThreadCache thread_cache = ThreadCache::kDisabled;
+  Quarantine quarantine = Quarantine::kDisallowed;
+  Cookie cookie = Cookie::kDisallowed;
+  BackupRefPtr backup_ref_ptr = BackupRefPtr::kDisabled;
+  BackupRefPtrZapping backup_ref_ptr_zapping = BackupRefPtrZapping::kDisabled;
+  UseConfigurablePool use_configurable_pool = UseConfigurablePool::kNo;
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   ThreadIsolationOption thread_isolation;
 #endif

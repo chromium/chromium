@@ -1501,8 +1501,7 @@ TEST_F(RawPtrTest, ToAddressGivesBackRawAddress) {
 
 }  // namespace
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && \
     !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
@@ -1512,13 +1511,10 @@ void HandleOOM(size_t unused_size) {
 }
 
 static constexpr partition_alloc::PartitionOptions kOpts = {
-    partition_alloc::PartitionOptions::AlignedAlloc::kDisallowed,
-    partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-    partition_alloc::PartitionOptions::Quarantine::kDisallowed,
-    partition_alloc::PartitionOptions::Cookie::kAllowed,
-    partition_alloc::PartitionOptions::BackupRefPtr::kEnabled,
-    partition_alloc::PartitionOptions::BackupRefPtrZapping::kEnabled,
-    partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
+    .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
+    .backup_ref_ptr = partition_alloc::PartitionOptions::BackupRefPtr::kEnabled,
+    .backup_ref_ptr_zapping =
+        partition_alloc::PartitionOptions::BackupRefPtrZapping::kEnabled,
 };
 
 class BackupRefPtrTest : public testing::Test {
@@ -2393,5 +2389,4 @@ TEST(DanglingPtrTest, DetectResetAndDestructor) {
   EXPECT_EQ(instrumentation->dangling_ptr_released(), 1u);
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

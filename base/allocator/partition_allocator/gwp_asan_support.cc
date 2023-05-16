@@ -25,13 +25,7 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
   PA_CHECK(slot_count > 0);
 
   constexpr PartitionOptions kConfig{
-      PartitionOptions::AlignedAlloc::kDisallowed,
-      PartitionOptions::ThreadCache::kDisabled,
-      PartitionOptions::Quarantine::kDisallowed,
-      PartitionOptions::Cookie::kDisallowed,
-      PartitionOptions::BackupRefPtr::kEnabled,
-      PartitionOptions::BackupRefPtrZapping::kDisabled,
-      PartitionOptions::UseConfigurablePool::kNo,
+      .backup_ref_ptr = PartitionOptions::BackupRefPtr::kEnabled,
   };
   static internal::base::NoDestructor<ThreadSafePartitionRoot> root(kConfig);
 

@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/thread_isolation/thread_isolation.h"
 
 #if BUILDFLAG(ENABLE_PKEYS)
@@ -111,15 +112,10 @@ class PkeyTest : public testing::Test {
     }
     isolatedGlobals.pkey = pkey;
 
-    isolatedGlobals.allocator->init({
-        partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
-        partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-        partition_alloc::PartitionOptions::Quarantine::kDisallowed,
-        partition_alloc::PartitionOptions::Cookie::kAllowed,
-        partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
-        partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
-        partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
-        partition_alloc::ThreadIsolationOption(isolatedGlobals.pkey),
+    isolatedGlobals.allocator->init(PartitionOptions{
+        .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
+        .cookie = PartitionOptions::Cookie::kAllowed,
+        .thread_isolation = ThreadIsolationOption(isolatedGlobals.pkey),
     });
     isolatedGlobals.allocatorRoot = isolatedGlobals.allocator->root();
 

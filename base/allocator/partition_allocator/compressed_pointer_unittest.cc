@@ -6,6 +6,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace partition_alloc {
@@ -84,15 +85,7 @@ class CompressedPointerTest : public ::testing::Test {
   using PointerType = UncompressedPointer<T>;
 #endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 
-  CompressedPointerTest() {
-    allocator_.init({PartitionOptions::AlignedAlloc::kDisallowed,
-                     PartitionOptions::ThreadCache::kDisabled,
-                     PartitionOptions::Quarantine::kDisallowed,
-                     PartitionOptions::Cookie::kDisallowed,
-                     PartitionOptions::BackupRefPtr::kDisabled,
-                     PartitionOptions::BackupRefPtrZapping::kDisabled,
-                     PartitionOptions::UseConfigurablePool::kNo});
-  }
+  CompressedPointerTest() { allocator_.init(PartitionOptions{}); }
 
  protected:
   internal::PartitionAllocator<internal::ThreadSafe> allocator_;

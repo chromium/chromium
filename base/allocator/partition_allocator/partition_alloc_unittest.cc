@@ -322,51 +322,33 @@ class PartitionAllocTest
     // other pools still work. As part of the initializition, we tag some memory
     // with the new pkey, effectively making it read-only. So there's some
     // potential for breakage that this should catch.
-    pkey_allocator.init({
-        partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
-        partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-        partition_alloc::PartitionOptions::Quarantine::kDisallowed,
-        partition_alloc::PartitionOptions::Cookie::kAllowed,
-        partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
-        partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
-        partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
-        partition_alloc::ThreadIsolationOption(pkey_),
+    pkey_allocator.init(PartitionOptions{
+        .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
+        .cookie = PartitionOptions::Cookie::kAllowed,
+        .thread_isolation = ThreadIsolationOption(pkey_),
     });
     if (UseThreadIsolatedPool() && pkey_ != kInvalidPkey) {
-      allocator.init({
-          partition_alloc::PartitionOptions::AlignedAlloc::kAllowed,
-          partition_alloc::PartitionOptions::ThreadCache::kDisabled,
-          partition_alloc::PartitionOptions::Quarantine::kDisallowed,
-          partition_alloc::PartitionOptions::Cookie::kAllowed,
-          partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
-          partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled,
-          partition_alloc::PartitionOptions::UseConfigurablePool::kNo,
-          partition_alloc::ThreadIsolationOption(pkey_),
+      allocator.init(PartitionOptions{
+          .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
+          .cookie = PartitionOptions::Cookie::kAllowed,
+          .thread_isolation = ThreadIsolationOption(pkey_),
       });
       return;
     }
 #endif  // BUILDFLAG(ENABLE_PKEYS)
-    allocator.init({
+    allocator.init(PartitionOptions {
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
     BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
       // AlignedAllocWithFlags() can't be called when BRP is in the "before
       // allocation" mode, because this mode adds extras before the allocation.
       // Extras after the allocation are ok.
-      PartitionOptions::AlignedAlloc::kAllowed,
-#else
-      PartitionOptions::AlignedAlloc::kDisallowed,
+      .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
 #endif
-          PartitionOptions::ThreadCache::kDisabled,
-          PartitionOptions::Quarantine::kDisallowed,
-          PartitionOptions::Cookie::kAllowed,
+      .cookie = PartitionOptions::Cookie::kAllowed,
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-          PartitionOptions::BackupRefPtr::kEnabled,
-          PartitionOptions::BackupRefPtrZapping::kEnabled,
-#else
-          PartitionOptions::BackupRefPtr::kDisabled,
-          PartitionOptions::BackupRefPtrZapping::kDisabled,
+      .backup_ref_ptr = PartitionOptions::BackupRefPtr::kEnabled,
+      .backup_ref_ptr_zapping = PartitionOptions::BackupRefPtrZapping::kEnabled,
 #endif
-          PartitionOptions::UseConfigurablePool::kNo,
     });
   }
 
@@ -380,14 +362,8 @@ class PartitionAllocTest
     PartitionAllocGlobalInit(HandleOOM);
     InitializeAllocator();
 
-    aligned_allocator.init({
-        PartitionOptions::AlignedAlloc::kAllowed,
-        PartitionOptions::ThreadCache::kDisabled,
-        PartitionOptions::Quarantine::kDisallowed,
-        PartitionOptions::Cookie::kDisallowed,
-        PartitionOptions::BackupRefPtr::kDisabled,
-        PartitionOptions::BackupRefPtrZapping::kDisabled,
-        PartitionOptions::UseConfigurablePool::kNo,
+    aligned_allocator.init(PartitionOptions{
+        .aligned_alloc = PartitionOptions::AlignedAlloc::kAllowed,
     });
     test_bucket_index_ = SizeToIndex(RealAllocSize());
     allocator.root()->UncapEmptySlotSpanMemoryForTesting();
@@ -4747,14 +4723,8 @@ TEST_P(PartitionAllocTest, CrossPartitionRootRealloc) {
   // Create new root and call PurgeMemory to simulate ConfigurePartitions().
   allocator.root()->PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans |
                                 PurgeFlags::kDiscardUnusedSystemPages);
-  auto* new_root = new PartitionRoot<ThreadSafe>({
-      PartitionOptions::AlignedAlloc::kDisallowed,
-      PartitionOptions::ThreadCache::kDisabled,
-      PartitionOptions::Quarantine::kDisallowed,
-      PartitionOptions::Cookie::kAllowed,
-      PartitionOptions::BackupRefPtr::kDisabled,
-      PartitionOptions::BackupRefPtrZapping::kDisabled,
-      PartitionOptions::UseConfigurablePool::kNo,
+  auto* new_root = new PartitionRoot<ThreadSafe>(PartitionOptions{
+      .cookie = PartitionOptions::Cookie::kAllowed,
   });
   SetDistributionForPartitionRoot(new_root, GetBucketDistribution());
 
@@ -4953,14 +4923,10 @@ TEST_P(PartitionAllocTest, ConfigurablePool) {
 
     EXPECT_TRUE(IsConfigurablePoolAvailable());
 
-    auto* root = new PartitionRoot<ThreadSafe>({
-        PartitionOptions::AlignedAlloc::kDisallowed,
-        PartitionOptions::ThreadCache::kDisabled,
-        PartitionOptions::Quarantine::kDisallowed,
-        PartitionOptions::Cookie::kAllowed,
-        PartitionOptions::BackupRefPtr::kDisabled,
-        PartitionOptions::BackupRefPtrZapping::kDisabled,
-        PartitionOptions::UseConfigurablePool::kIfAvailable,
+    auto* root = new PartitionRoot<ThreadSafe>(PartitionOptions{
+        .cookie = PartitionOptions::Cookie::kAllowed,
+        .use_configurable_pool =
+            PartitionOptions::UseConfigurablePool::kIfAvailable,
     });
     root->UncapEmptySlotSpanMemoryForTesting();
     SetDistributionForPartitionRoot(root, GetBucketDistribution());
@@ -4991,14 +4957,8 @@ TEST_P(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
   // Use another root, since the ones from the test harness disable the empty
   // slot span size cap.
   PartitionRoot<ThreadSafe> root;
-  root.Init({
-      PartitionOptions::AlignedAlloc::kDisallowed,
-      PartitionOptions::ThreadCache::kDisabled,
-      PartitionOptions::Quarantine::kDisallowed,
-      PartitionOptions::Cookie::kAllowed,
-      PartitionOptions::BackupRefPtr::kDisabled,
-      PartitionOptions::BackupRefPtrZapping::kDisabled,
-      PartitionOptions::UseConfigurablePool::kNo,
+  root.Init(PartitionOptions{
+      .cookie = PartitionOptions::Cookie::kAllowed,
   });
   SetDistributionForPartitionRoot(&root, GetBucketDistribution());
 
@@ -5051,14 +5011,10 @@ TEST_P(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
 }
 
 TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
-  PartitionRoot<ThreadSafe> root({
-      PartitionOptions::AlignedAlloc::kDisallowed,
-      PartitionOptions::ThreadCache::kDisabled,
-      PartitionOptions::Quarantine::kDisallowed,
-      PartitionOptions::Cookie::kAllowed,
-      PartitionOptions::BackupRefPtr::kDisabled,
-      PartitionOptions::BackupRefPtrZapping::kDisabled,
-      PartitionOptions::UseConfigurablePool::kIfAvailable,
+  PartitionRoot<ThreadSafe> root(PartitionOptions{
+      .cookie = PartitionOptions::Cookie::kAllowed,
+      .use_configurable_pool =
+          PartitionOptions::UseConfigurablePool::kIfAvailable,
   });
   root.UncapEmptySlotSpanMemoryForTesting();
   SetDistributionForPartitionRoot(&root, GetBucketDistribution());
