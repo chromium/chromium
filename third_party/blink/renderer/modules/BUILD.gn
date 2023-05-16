@@ -503,6 +503,7 @@ source_set("unit_tests") {
     "mediacapturefromelement/html_video_element_capturer_source_unittest.cc",
     "mediarecorder/audio_track_recorder_unittest.cc",
     "mediarecorder/fake_encoded_video_frame.h",
+    "mediarecorder/key_frame_request_processor_unittest.cc",
     "mediarecorder/media_recorder_encoder_wrapper_unittest.cc",
     "mediarecorder/media_recorder_handler_unittest.cc",
     "mediarecorder/media_recorder_unittest.cc",
