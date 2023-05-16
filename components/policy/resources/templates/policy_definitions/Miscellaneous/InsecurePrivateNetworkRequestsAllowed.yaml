@@ -22,10 +22,10 @@ features:
 future_on:
 - fuchsia
 items:
-- caption: Allow insecure websites to make requests to any network endpoint
+- caption: Allow websites to make requests to any network endpoint in an insecure manner.
   value: true
-- caption: Use default behavior when determining if insecure websites can make requests
-    to any network endpoint
+- caption: Use default behavior when determining if websites can make requests
+    to network endpoints.
   value: false
 owners:
 - titouan@chromium.org
