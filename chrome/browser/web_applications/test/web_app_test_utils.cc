@@ -71,7 +71,9 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/common/url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom-shared.h"
+#include "third_party/liburlpattern/pattern.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -381,6 +383,42 @@ std::vector<blink::Manifest::ImageResource> CreateRandomHomeTabIcons(
     icons.push_back(std::move(icon));
   }
   return icons;
+}
+
+std::vector<blink::UrlPattern> CreateRandomScopePatterns(RandomHelper& random) {
+  std::vector<blink::UrlPattern> scope_patterns;
+
+  for (int i = random.next_uint(4) + 1; i >= 0; --i) {
+    blink::UrlPattern url_pattern;
+
+    for (int j = random.next_uint(4) + 1; j >= 0; --j) {
+      liburlpattern::Part part;
+
+      std::vector<liburlpattern::PartType> part_types = {
+          liburlpattern::PartType::kFixed,
+          liburlpattern::PartType::kFullWildcard,
+          liburlpattern::PartType::kSegmentWildcard};
+      std::vector<liburlpattern::Modifier> modifiers = {
+          liburlpattern::Modifier::kZeroOrMore,
+          liburlpattern::Modifier::kOptional,
+          liburlpattern::Modifier::kOneOrMore, liburlpattern::Modifier::kNone};
+      part.type = part_types[random.next_uint(part_types.size())];
+      part.value = "value" + base::NumberToString(j);
+      if (part.type == liburlpattern::PartType::kFullWildcard ||
+          part.type == liburlpattern::PartType::kSegmentWildcard) {
+        part.prefix = "prefix" + base::NumberToString(j);
+        part.name = "name" + base::NumberToString(j);
+        part.suffix = "suffix" + base::NumberToString(j);
+      }
+
+      part.modifier = modifiers[random.next_uint(modifiers.size())];
+
+      url_pattern.pathname.push_back(std::move(part));
+    }
+
+    scope_patterns.push_back(std::move(url_pattern));
+  }
+  return scope_patterns;
 }
 
 proto::WebAppOsIntegrationState GenerateRandomWebAppOsIntegrationState(
@@ -827,6 +865,9 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
       blink::Manifest::HomeTabParams home_tab_params;
       if (random.next_bool()) {
         home_tab_params.icons = CreateRandomHomeTabIcons(random);
+      }
+      if (random.next_bool()) {
+        home_tab_params.scope_patterns = CreateRandomScopePatterns(random);
       }
       tab_strip.home_tab = std::move(home_tab_params);
     } else {

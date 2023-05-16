@@ -1,0 +1,39 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package web_app.proto;
+
+// Proto represtenting a UrlPattern. This should be kept up to date with
+// third_party/blink/public/common/url_pattern.h
+message UrlPattern {
+  repeated UrlPatternPart pathname = 1;
+}
+
+message UrlPatternPart {
+  enum PartType {
+    UNKNOWN_PART_TYPE = 0;
+    FULL_WILDCARD = 1;
+    SEGMENT_WILDCARD = 2;
+    FIXED = 3;
+  }
+  optional PartType part_type = 1;
+
+  optional string name = 2;
+  optional string prefix = 3;
+  optional string value = 4;
+  optional string suffix = 5;
+
+  enum Modifier {
+    UNKNOWN_MODIFIER = 0;
+    ZERO_OR_MORE = 1;
+    OPTIONAL = 2;
+    ONE_OR_MORE = 3;
+    NONE = 4;
+  }
+  optional Modifier modifier = 6;
+}
