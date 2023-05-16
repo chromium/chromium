@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL The popover-hide-delay causes a popover to be hidden after a delay assert_false: expected false got true
-FAIL hovering the popover keeps it from being hidden assert_false: expected false got true
-FAIL hovering a popovertargetaction=hover invoking element keeps the popover from being hidden assert_false: expected false got true
-FAIL hovering a popovertargetaction=toggle invoking element keeps the popover from being hidden promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'slice')"
-Harness: the test ran to completion.
-

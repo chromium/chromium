@@ -38,6 +38,11 @@ namespace blink {
 
 class HTMLFormElement;
 
+constexpr const char* kPopoverTargetActionToggle = "toggle";
+constexpr const char* kPopoverTargetActionShow = "show";
+constexpr const char* kPopoverTargetActionHide = "hide";
+constexpr const char* kPopoverTargetActionHover = "hover";
+
 // HTMLFormControlElement is the default implementation of
 // ListedElement, and listed element implementations should use
 // HTMLFormControlElement unless there is a special reason.
@@ -106,6 +111,9 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   virtual PopoverTriggerSupport SupportsPopoverTriggering() const {
     return PopoverTriggerSupport::kNone;
   }
+  // The IDL reflections:
+  AtomicString popoverTargetAction() const;
+  void setPopoverTargetAction(const AtomicString& value);
 
   void DefaultEventHandler(Event&) override;
 
