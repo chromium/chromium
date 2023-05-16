@@ -74,10 +74,6 @@ VIZ_RESOURCE_FORMAT_EXPORT unsigned int TextureStorageFormat(
 VIZ_RESOURCE_FORMAT_EXPORT bool IsGpuMemoryBufferFormatSupported(
     ResourceFormat format);
 
-// Returns whether the format can be used as a software bitmap for export to the
-// display compositor.
-VIZ_RESOURCE_FORMAT_EXPORT bool IsBitmapFormatSupported(ResourceFormat format);
-
 VIZ_RESOURCE_FORMAT_EXPORT SharedImageFormat
 GetSharedImageFormat(gfx::BufferFormat format);
 
