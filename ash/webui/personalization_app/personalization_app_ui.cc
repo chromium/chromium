@@ -22,9 +22,11 @@
 #include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/browser_context.h"
@@ -378,6 +380,7 @@ PersonalizationAppUI::PersonalizationAppUI(
       theme_provider_(std::move(theme_provider)),
       user_provider_(std::move(user_provider)),
       wallpaper_provider_(std::move(wallpaper_provider)) {
+  start_time_ = base::Time::Now();
   DCHECK(wallpaper_provider_);
 
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -404,7 +407,13 @@ PersonalizationAppUI::PersonalizationAppUI(
   AddIntegers(source);
 }
 
-PersonalizationAppUI::~PersonalizationAppUI() = default;
+PersonalizationAppUI::~PersonalizationAppUI() {
+  base::TimeDelta duration = base::Time::Now() - start_time_;
+  base::UmaHistogramCustomTimes("Ash.Personalization.App.Duration", duration,
+                                /*min=*/base::Minutes(1),
+                                /*max=*/base::Minutes(30),
+                                /*buckets=*/31);
+}
 
 void PersonalizationAppUI::BindInterface(
     mojo::PendingReceiver<personalization_app::mojom::AmbientProvider>

@@ -92,6 +92,7 @@ class PersonalizationAppUI : public ui::MojoWebUIController {
   void HandleWebUIRequest(const std::string& path,
                           content::WebUIDataSource::GotDataCallback callback);
 
+  base::Time start_time_;
   std::unique_ptr<PersonalizationAppAmbientProvider> ambient_provider_;
   std::unique_ptr<PersonalizationAppKeyboardBacklightProvider>
       keyboard_backlight_provider_;
