@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
 
@@ -91,12 +91,6 @@ export class FakeInputDeviceSettingsProvider implements
   setFakeKeyboards(keyboards: Keyboard[]): void {
     this.methods.setResult('fakeKeyboards', keyboards);
     this.notifyKeboardListUpdated();
-  }
-
-  async getConnectedKeyboards(): Promise<{keyboards: Keyboard[]}> {
-    // TODO(wangdanny): Remove this function once https://crrev.com/c/4337720
-    // is submitted.
-    assertNotReached();
   }
 
   getConnectedKeyboardSettings(): Promise<Keyboard[]> {
