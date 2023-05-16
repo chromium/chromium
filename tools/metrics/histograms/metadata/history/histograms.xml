@@ -188,7 +188,6 @@ chromium-metrics-reviews@google.com.
     <variant name="MediaFeeds" summary="MediaFeeds"/>
     <variant name="NaclCache" summary="NaclCache"/>
     <variant name="NetworkErrorLogging" summary="NetworkErrorLogging"/>
-    <variant name="NetworkPredictor" summary="NetworkPredictor"/>
     <variant name="OfflinePages" summary="OfflinePages"/>
     <variant name="Passwords" summary="Passwords"/>
     <variant name="PasswordsStatistics" summary="PasswordsStatistics"/>

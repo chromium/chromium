@@ -112,7 +112,7 @@ class ChromeBrowsingDataRemoverDelegate
     kPluginData = 8,
     // kFlashLsoHelper = 9, deprecated
     kDomainReliability = 10,
-    kNetworkPredictor = 11,
+    // kNetworkPredictor = 11, deprecated
     kWebrtcLogs = 12,
     kVideoDecodeHistory = 13,
     kCookies = 14,

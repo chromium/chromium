@@ -15762,7 +15762,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="8" label="kPluginData"/>
   <int value="9" label="kFlashLsoHelper"/>
   <int value="10" label="kDomainReliability"/>
-  <int value="11" label="kNetworkPredictor"/>
+  <int value="11" label="(Obsolete) kNetworkPredictor"/>
   <int value="12" label="kWebrtcLogs"/>
   <int value="13" label="kVideoDecodeHistory"/>
   <int value="14" label="kCookies"/>
