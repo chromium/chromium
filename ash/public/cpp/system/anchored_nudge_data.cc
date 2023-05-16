@@ -32,7 +32,7 @@ std::u16string GetDismissText(const std::u16string& custom_dismiss_text,
 AnchoredNudgeData::AnchoredNudgeData(const std::string& id,
                                      AnchoredNudgeCatalogName catalog_name,
                                      const std::u16string& text,
-                                     views::View* anchor,
+                                     views::View* anchor_view,
                                      // TODO(b/280499122): Condense "dismiss"
                                      // vars into ActionButtonParams struct.
                                      bool has_dismiss_button,
@@ -42,7 +42,7 @@ AnchoredNudgeData::AnchoredNudgeData(const std::string& id,
     : id(std::move(id)),
       catalog_name(catalog_name),
       text(text),
-      anchor(anchor),
+      anchor_view(anchor_view),
       dismiss_text(GetDismissText(custom_dismiss_text, has_dismiss_button)),
       dismiss_callback(std::move(dismiss_callback)),
       leading_icon(&leading_icon) {}

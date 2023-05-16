@@ -53,6 +53,7 @@ class ASH_EXPORT SystemToastStyle : public views::View {
   views::LabelButton* button() const { return button_; }
 
  private:
+  friend class AnchoredNudgeManagerImplTest;
   friend class ToastManagerImplTest;
 
   // views::View:

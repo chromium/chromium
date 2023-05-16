@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_TOAST_ANCHORED_NUDGE_H_
 #define ASH_SYSTEM_TOAST_ANCHORED_NUDGE_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
@@ -20,13 +22,20 @@ namespace ash {
 class SystemToastStyle;
 
 // Contents view class for the anchored nudge widget.
-// TODO(b/279653685): Accept an `AnchoredNudgeData` parameter to set the view's
-// contents.
 class ASH_EXPORT AnchoredNudge : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(AnchoredNudge);
 
-  explicit AnchoredNudge(AnchoredNudgeData nudge_data);
+  // Used to notify nudge events to `AnchoredNudgeManagerImpl`.
+  class ASH_EXPORT Delegate {
+   public:
+    virtual ~Delegate() {}
+
+    // Called when the nudge is being destroyed.
+    virtual void OnNudgeClosed(const std::string& id) = 0;
+  };
+
+  AnchoredNudge(Delegate* delegate, const AnchoredNudgeData& nudge_data);
   AnchoredNudge(const AnchoredNudge&) = delete;
   AnchoredNudge& operator=(const AnchoredNudge&) = delete;
   ~AnchoredNudge() override;
@@ -35,11 +44,19 @@ class ASH_EXPORT AnchoredNudge : public views::BubbleDialogDelegateView {
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
 
-  // Update arrow to adjust to items that are anchored to the shelf.
-  void UpdateArrowFromShelfAlignment(ShelfAlignment alignment);
+  const std::string& id() { return id_; }
 
  private:
-  SystemToastStyle* toast_contents_view_ = nullptr;
+  friend class AnchoredNudgeManagerImplTest;
+
+  // Used to notify nudge events to the manager.
+  raw_ptr<Delegate> delegate_;
+
+  // Unique id used to find and dismiss the nudge through the manager.
+  const std::string id_;
+
+  // Owned by the views hierarchy. Contents view of the anchored nudge.
+  raw_ptr<SystemToastStyle> toast_contents_view_ = nullptr;
 };
 
 }  // namespace ash

@@ -13,36 +13,28 @@
 
 namespace ash {
 
-namespace {
-
-views::BubbleBorder::Arrow GetArrowAlignmentFromShelf(
-    ShelfAlignment alignment) {
-  switch (alignment) {
-    case ash::ShelfAlignment::kBottom:
-    case ash::ShelfAlignment::kBottomLocked:
-      return views::BubbleBorder::BOTTOM_CENTER;
-    case ash::ShelfAlignment::kLeft:
-      return views::BubbleBorder::LEFT_CENTER;
-    case ash::ShelfAlignment::kRight:
-      return views::BubbleBorder::RIGHT_CENTER;
-  }
-}
-
-}  // namespace
-
-AnchoredNudge::AnchoredNudge(AnchoredNudgeData nudge_data)
-    : views::BubbleDialogDelegateView(nudge_data.anchor,
+AnchoredNudge::AnchoredNudge(Delegate* delegate,
+                             const AnchoredNudgeData& nudge_data)
+    : views::BubbleDialogDelegateView(nudge_data.anchor_view,
                                       nudge_data.arrow,
-                                      views::BubbleBorder::NO_SHADOW) {
+                                      views::BubbleBorder::NO_SHADOW),
+      delegate_(delegate),
+      id_(nudge_data.id) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_color(SK_ColorTRANSPARENT);
   set_margins(gfx::Insets());
+  set_close_on_deactivate(false);
   SetLayoutManager(std::make_unique<views::FlexLayout>());
   toast_contents_view_ = AddChildView(std::make_unique<SystemToastStyle>(
       nudge_data.dismiss_callback, nudge_data.text, nudge_data.dismiss_text));
 }
 
-AnchoredNudge::~AnchoredNudge() = default;
+AnchoredNudge::~AnchoredNudge() {
+  // Make sure `delegate_` knows that the nudge has been closed, for cases where
+  // the nudge wasn't closed through the manager (e.g. widget destroyed by
+  // test).
+  delegate_->OnNudgeClosed(id_);
+}
 
 std::unique_ptr<views::NonClientFrameView>
 AnchoredNudge::CreateNonClientFrameView(views::Widget* widget) {
@@ -62,10 +54,6 @@ AnchoredNudge::CreateNonClientFrameView(views::Widget* widget) {
   static_cast<views::BubbleFrameView*>(frame.get())
       ->SetBubbleBorder(std::move(bubble_border));
   return frame;
-}
-
-void AnchoredNudge::UpdateArrowFromShelfAlignment(ShelfAlignment alignment) {
-  SetArrow(GetArrowAlignmentFromShelf(alignment));
 }
 
 BEGIN_METADATA(AnchoredNudge, views::BubbleDialogDelegateView)
