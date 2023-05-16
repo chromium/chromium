@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="GoogleUpdate.ErrorHresult" enum="Hresult"
-    expires_after="2023-06-26">
+    expires_after="2024-06-26">
   <owner>sorin@chromium.org</owner>
   <owner>waffles@chromium.org</owner>
   <summary>The HRESULT for a failed on-demand update check.</summary>
