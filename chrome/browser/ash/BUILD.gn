@@ -4991,6 +4991,7 @@ source_set("unit_tests") {
     "arc/vmm/arc_system_state_observation_unittest.cc",
     "arc/vmm/arc_vmm_manager_unittest.cc",
     "arc/vmm/arc_vmm_swap_scheduler_unittest.cc",
+    "arc/vmm/arcvm_working_set_trim_executor_unittest.cc",
     "arc/wallpaper/arc_wallpaper_service_unittest.cc",
     "assistant/assistant_util_unittest.cc",
     "attestation/attestation_ca_client_unittest.cc",

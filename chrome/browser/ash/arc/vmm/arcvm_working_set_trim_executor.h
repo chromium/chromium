@@ -52,6 +52,11 @@ class ArcVmWorkingSetTrimExecutor {
 
   static void LogErrorAndInvokeCallback(const char* error,
                                         ResultCallback callback);
+
+  // Global-like indicator var, set true when starting trim, and set false in
+  // the result callback of trim.
+  // Use this var in order to prevent double trim from different caller.
+  static bool is_trimming_;
 };
 }  // namespace arc
 
