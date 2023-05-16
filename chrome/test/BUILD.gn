@@ -5346,7 +5346,13 @@ template("performance_test_suite_template_base") {
     script = "//testing/scripts/run_performance_tests.py"
     if (is_chromeos_device) {
       if (defined(override_board)) {
-        args = [ "bin/cros_update_wrapper --board=${override_board} --flash ../../tools/perf/run_benchmark" ]
+        # TODO(b/248270560): Restore the --flash once the bug is fixed.
+        if (is_chromeos_lacros && chrome_pgo_phase == 1 &&
+            (override_board == "jacuzzi" || override_board == "jacuzzi64")) {
+          args = [ "bin/cros_update_wrapper --board=${override_board} ../../tools/perf/run_benchmark" ]
+        } else {
+          args = [ "bin/cros_update_wrapper --board=${override_board} --flash ../../tools/perf/run_benchmark" ]
+        }
       } else {
         args = [ "bin/cros_update_wrapper ../../tools/perf/run_benchmark" ]
       }
