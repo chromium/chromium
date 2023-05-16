@@ -7,7 +7,7 @@ import 'chrome://os-settings/chromeos/os_settings.js';
 import {createPageAvailabilityForTesting, OsSettingsMenuElement, OsSettingsRoutes, Route, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 /** @fileoverview Runs tests for the OS settings menu. */
 
@@ -158,12 +158,10 @@ suite('<os-settings-menu> reset', () => {
 
 suite('<os-settings-menu> page availability', () => {
   let settingsMenu: OsSettingsMenuElement;
-  const pageAvailability = createPageAvailabilityForTesting();
-  const pageNames = Object.keys(pageAvailability);
 
   setup(() => {
     settingsMenu = document.createElement('os-settings-menu');
-    settingsMenu.pageAvailability = pageAvailability;
+    settingsMenu.pageAvailability = createPageAvailabilityForTesting();
     document.body.appendChild(settingsMenu);
     flush();
   });
@@ -172,32 +170,53 @@ suite('<os-settings-menu> page availability', () => {
     settingsMenu.remove();
   });
 
-  for (const pageName of pageNames) {
-    [true, false].forEach((available) => {
-      suite(
-          `When ${pageName} page is ${available ? 'available' : 'unavailable'}`,
-          () => {
-            setup(() => {
-              settingsMenu.pageAvailability = {
-                ...settingsMenu.pageAvailability,
-                [pageName]: available,
-              };
-              flush();
-            });
+  function queryMenuItemByPageName(pageName: string): HTMLElement|null {
+    return settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+        `a.item[data-page-name='${pageName}']`);
+  }
 
-            test(
-                `respective menu item should ${
-                    available ? 'exist' : 'not exist'}`,
-                () => {
-                  const menuItem = settingsMenu.shadowRoot!.querySelector(
-                      `a.item[data-page-name='${pageName}']`);
-                  if (available) {
-                    assertTrue(!!menuItem, 'Menu item should exist.');
-                  } else {
-                    assertEquals(null, menuItem, 'Menu item should not exist.');
-                  }
-                });
-          });
+  const pages = [
+    // Basic pages
+    'internet',
+    'bluetooth',
+    'multidevice',
+    'kerberos',
+    'osPeople',
+    'device',
+    'personalization',
+    'osSearch',
+    'osPrivacy',
+    'apps',
+    'osAccessibility',
+    // Advanced section pages
+    'dateTime',
+    'osLanguages',
+    'files',
+    'osPrinting',
+    'crostini',
+    'osReset',
+  ];
+  for (const pageName of pages) {
+    test(`${pageName} menu item is controlled by pageAvailability`, () => {
+      // Make page available
+      settingsMenu.pageAvailability = {
+        ...settingsMenu.pageAvailability,
+        [pageName]: true,
+      };
+      flush();
+
+      let menuItem = queryMenuItemByPageName(pageName);
+      assertTrue(!!menuItem, `Menu item for ${pageName} should be stamped.`);
+
+      // Make page unavailable
+      settingsMenu.pageAvailability = {
+        ...settingsMenu.pageAvailability,
+        [pageName]: false,
+      };
+      flush();
+
+      menuItem = queryMenuItemByPageName(pageName);
+      assertNull(menuItem, `Menu item for ${pageName} should not be stamped.`);
     });
   }
 });
