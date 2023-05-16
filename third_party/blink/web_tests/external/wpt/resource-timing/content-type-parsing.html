@@ -28,33 +28,31 @@ function isByteCompatible(str) {
   return "compatible";
 }
 
-// Test for mime-type minimization
-const run_mime_type_mimization_tests = (json_entries) => {
+// Test for content-type parsing.
+const run_content_type_parsing_tests = (json_entries) => {
   json_entries.forEach( (json_entry, i) => {
     promise_test(async t => {
-        let identifier = Math.floor(Math.random() * 1000000000);
-        let url = `/fetch/content-type/resources/content-type.py?single_header&value=`+ encodeURIComponent(json_entry.input) + `&identifier=${identifier}`;
+        let url = "/fetch/content-type/resources/content-type.py?single_header&";
+        json_entry.contentType.forEach(val => {
+          url += "value=" + encodeURIComponent(val) + "&";
+        });
         fetch(url);
         const entry = await new Promise(resolve => new PerformanceObserver((entryList, observer) => {
-          entryList.getEntries().forEach(e => {
-            if (e.name.includes(identifier)) {
-              resolve(e);
-              observer.disconnect();
-            }
-          });
+            observer.disconnect();
+            resolve(entryList.getEntries()[0]);
         }).observe({entryTypes: ['resource']}));
-        assert_equals(entry.contentType, json_entry.output);
-    }, "mime-type-minimized " + i + " : " + json_entry.input);
+        assert_equals(entry.contentType, json_entry["mimeType"]);
+    }, "content-type " + i + " : " + json_entry.contentType);
   });
 }
 
 // Test for mime-type parsing.
-const run_mime_type_parsing_and_minimization_tests = (json_entries) => {
+const run_mime_type_parsing_tests = (json_entries) => {
   json_entries.forEach( (val, i) => {
     if(typeof val === "string" || val.navigable === undefined || isByteCompatible(val.input) !== "compatible") {
       return;
     }
-    const minimizedMIMEType = val.minimizedMIMEType;
+    const output = val.output === null ? "" : val.output
     promise_test(async t => {
         let url = `/fetch/content-type/resources/content-type.py?single_header&value=${val.input}`;
         fetch(url);
@@ -62,16 +60,16 @@ const run_mime_type_parsing_and_minimization_tests = (json_entries) => {
             observer.disconnect();
             resolve(entryList.getEntries()[0]);
         }).observe({entryTypes: ['resource']}));
-        assert_equals(entry.contentType, minimizedMIMEType);
+        assert_equals(entry.contentType, output);
     }, "mime-type " + i + " : " + val.input);
   });
 }
 
 Promise.all([
-    fetch("/mimesniff/mime-types/resources/mime-types-minimized.json"),
+    fetch("/fetch/content-type/resources/content-types.json"),
     fetch("/mimesniff/mime-types/resources/mime-types.json")
-  ]).then(([res, res2]) => res.json().then(run_mime_type_mimization_tests)
-    .then(() => res2.json().then(run_mime_type_parsing_and_minimization_tests)));
+  ]).then(([res, res2]) => res.json().then(run_content_type_parsing_tests)
+    .then(() => res2.json().then(run_mime_type_parsing_tests)));
 
 </script>
 </body>

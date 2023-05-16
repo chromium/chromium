@@ -209,16 +209,6 @@ TEST(HTTPParsersTest, ExtractMIMETypeFromMediaType) {
   EXPECT_EQ(text_html.Impl(), passthrough.Impl());
 }
 
-TEST(HTTPParsersTest, MinimizedMIMEType) {
-  EXPECT_EQ("text/javascript",
-            MinimizedMIMEType(AtomicString("application/javascript")));
-  EXPECT_EQ("application/json", MinimizedMIMEType(AtomicString("text/json")));
-  EXPECT_EQ("image/svg+xml", MinimizedMIMEType(AtomicString("image/svg+xml")));
-  EXPECT_EQ("application/xml",
-            MinimizedMIMEType(AtomicString("application/rss+xml")));
-  EXPECT_EQ("image/png", MinimizedMIMEType(AtomicString("image/png")));
-}
-
 TEST(HTTPParsersTest, ExtractMIMETypeFromMediaTypeInvalidInput) {
   // extractMIMETypeFromMediaType() returns the string before the first
   // semicolon after trimming OWSes at the head and the tail even if the
