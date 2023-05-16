@@ -102,4 +102,8 @@ void PdfNupConverter::SetWebContentsURL(const GURL& url) {
   crash_key.Set(url.spec());
 }
 
+void PdfNupConverter::SetUseSkiaRendererPolicy(bool use_skia) {
+  chrome_pdf::SetUseSkiaRendererPolicy(use_skia);
+}
+
 }  // namespace printing

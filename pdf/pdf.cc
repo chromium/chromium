@@ -13,6 +13,7 @@
 #include "pdf/pdf_engine.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_init.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -20,16 +21,17 @@ namespace chrome_pdf {
 
 namespace {
 
+absl::optional<bool> g_use_skia_renderer_enabled_by_policy;
+
 class ScopedSdkInitializer {
  public:
   explicit ScopedSdkInitializer(bool enable_v8) {
     if (!IsSDKInitializedViaPlugin()) {
-      // TODO(crbug.com/1440430): Modify ScopedSdkInitializer() so that the
-      // option to use Skia can be based on enterprise policy if such policy is
-      // set.
-      InitializeSDK(enable_v8,
-                    base::FeatureList::IsEnabled(features::kPdfUseSkiaRenderer),
-                    FontMappingMode::kNoMapping);
+      InitializeSDK(
+          enable_v8,
+          g_use_skia_renderer_enabled_by_policy.value_or(
+              base::FeatureList::IsEnabled(features::kPdfUseSkiaRenderer)),
+          FontMappingMode::kNoMapping);
     }
   }
 
@@ -44,7 +46,13 @@ class ScopedSdkInitializer {
 
 }  // namespace
 
+void SetUseSkiaRendererPolicy(bool use_skia) {
+  g_use_skia_renderer_enabled_by_policy = use_skia;
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/1440430): Make sure its callers set
+// `g_use_skia_renderer_enabled_by_policy` before calling this function.
 std::vector<uint8_t> CreateFlattenedPdf(
     base::span<const uint8_t> input_buffer) {
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/false);
@@ -53,6 +61,8 @@ std::vector<uint8_t> CreateFlattenedPdf(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/1440430): Make sure its callers set
+// `g_use_skia_renderer_enabled_by_policy` before calling this function.
 bool RenderPDFPageToDC(base::span<const uint8_t> pdf_buffer,
                        int page_index,
                        HDC dc,
@@ -84,6 +94,8 @@ void SetPDFUsePrintMode(int mode) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+// TODO(crbug.com/1440430): Make sure its callers set
+// `g_use_skia_renderer_enabled_by_policy` before calling this function.
 bool GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
                    int* page_count,
                    float* max_page_width) {
@@ -92,12 +104,16 @@ bool GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
   return engine_exports->GetPDFDocInfo(pdf_buffer, page_count, max_page_width);
 }
 
+// TODO(crbug.com/1440430): Make sure its callers set
+// `g_use_skia_renderer_enabled_by_policy` before calling this function.
 absl::optional<bool> IsPDFDocTagged(base::span<const uint8_t> pdf_buffer) {
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/true);
   PDFEngineExports* engine_exports = PDFEngineExports::Get();
   return engine_exports->IsPDFDocTagged(pdf_buffer);
 }
 
+// TODO(crbug.com/1440430): Make sure its callers set
+// `g_use_skia_renderer_enabled_by_policy` before calling this function.
 base::Value GetPDFStructTreeForPage(base::span<const uint8_t> pdf_buffer,
                                     int page_index) {
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/true);
@@ -105,6 +121,8 @@ base::Value GetPDFStructTreeForPage(base::span<const uint8_t> pdf_buffer,
   return engine_exports->GetPDFStructTreeForPage(pdf_buffer, page_index);
 }
 
+// TODO(crbug.com/1440430): Make sure its callers set
+// `g_use_skia_renderer_enabled_by_policy` before calling this function.
 absl::optional<gfx::SizeF> GetPDFPageSizeByIndex(
     base::span<const uint8_t> pdf_buffer,
     int page_index) {
@@ -114,6 +132,8 @@ absl::optional<gfx::SizeF> GetPDFPageSizeByIndex(
   return engine_exports->GetPDFPageSizeByIndex(pdf_buffer, page_index);
 }
 
+// TODO(crbug.com/1440430): Make sure its callers set
+// `g_use_skia_renderer_enabled_by_policy` before calling this function.
 bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,
                            int page_index,
                            void* bitmap_buffer,

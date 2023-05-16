@@ -7,14 +7,24 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/pdf/pdf_pref_names.h"
 #include "chrome/browser/printing/printing_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/services/printing/public/mojom/pdf_nup_converter.mojom.h"
 #include "chrome/services/printing/public/mojom/printing_service.mojom.h"
+#include "components/prefs/pref_service.h"
 
 namespace printing {
 
 PdfNupConverterClient::PdfNupConverterClient(content::WebContents* web_contents)
-    : content::WebContentsUserData<PdfNupConverterClient>(*web_contents) {}
+    : content::WebContentsUserData<PdfNupConverterClient>(*web_contents) {
+  const PrefService* prefs =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext())
+          ->GetPrefs();
+  if (prefs && prefs->IsManagedPreference(prefs::kPdfUseSkiaRendererEnabled)) {
+    skia_policy_ = prefs->GetBoolean(prefs::kPdfUseSkiaRendererEnabled);
+  }
+}
 
 PdfNupConverterClient::~PdfNupConverterClient() {}
 
@@ -80,6 +90,9 @@ PdfNupConverterClient::CreatePdfNupConverterRemote() {
   GetPrintingService()->BindPdfNupConverter(
       pdf_nup_converter.BindNewPipeAndPassReceiver());
   pdf_nup_converter->SetWebContentsURL(GetWebContents().GetLastCommittedURL());
+  if (skia_policy_) {
+    pdf_nup_converter->SetUseSkiaRendererPolicy(*skia_policy_);
+  }
   return pdf_nup_converter;
 }
 

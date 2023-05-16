@@ -34,6 +34,7 @@ class PdfNupConverter : public printing::mojom::PdfNupConverter {
                           base::ReadOnlySharedMemoryRegion src_pdf_region,
                           NupDocumentConvertCallback callback) override;
   void SetWebContentsURL(const GURL& url) override;
+  void SetUseSkiaRendererPolicy(bool use_skia) override;
 };
 
 }  // namespace printing
