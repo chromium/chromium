@@ -272,6 +272,7 @@ source_set("crosapi") {
     "//chrome/browser:browser_process",
     "//chrome/browser/ash:print_job_info_proto",
     "//chrome/browser/ash/smart_reader",
+    "//chrome/browser/ash/system_web_apps:system_web_apps",
     "//chrome/browser/ash/system_web_apps/types:types",
     "//chrome/browser/ash/telemetry_extension",
     "//chrome/browser/ash/video_conference",

@@ -623,6 +623,7 @@ void RecordLaunchMetrics(const AppId& app_id,
 void UpdateLaunchStats(content::WebContents* web_contents,
                        const AppId& app_id,
                        const GURL& launch_url) {
+  CHECK(web_contents != nullptr);
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 

@@ -118,6 +118,12 @@ bool UrlHandlerAsh::OpenUrlInternal(const GURL& url) {
           GURL(kChromeUrlPrefix +
                crosapi::gurl_os_handler_utils::AshOsUrlHost(target_url));
     }
+    absl::optional<ash::SystemWebAppType> swa_type =
+        ash::GetCapturingSystemAppForURL(
+            ProfileManager::GetPrimaryUserProfile(), target_url);
+    if (swa_type.has_value()) {
+      return false;
+    }
   } else {
     LOG(ERROR) << "Invalid URL passed to UrlHandlerAsh::OpenUrl:" << url;
     return false;
