@@ -243,6 +243,7 @@ chromium-metrics-reviews@google.com.
     <variant name="ToggleOverview"/>
     <variant name="ToggleProjectorMarker"/>
     <variant name="ToggleResizeLockMenu"/>
+    <variant name="ToggleSnapGroupWindowsGroupAndUngroup"/>
     <variant name="ToggleSnapGroupWindowsMinimizeAndRestore"/>
     <variant name="ToggleSpokenFeedback"/>
     <variant name="ToggleSystemTrayBubble"/>

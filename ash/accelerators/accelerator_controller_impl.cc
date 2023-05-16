@@ -773,6 +773,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return true;
     case AcceleratorAction::kToggleOverview:
       return accelerators::CanToggleOverview();
+    case AcceleratorAction::kToggleSnapGroupWindowsGroupAndUngroup:
+      return accelerators::CanGroupOrUngroupWindows();
     case AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore:
       return accelerators::CanMinimizeSnapGroupWindows();
     case AcceleratorAction::kToggleMultitaskMenu:
@@ -1347,6 +1349,9 @@ void AcceleratorControllerImpl::PerformAction(
     case AcceleratorAction::kToggleOverview:
       base::RecordAction(base::UserMetricsAction("Accel_Overview_F5"));
       accelerators::ToggleOverview();
+      break;
+    case AcceleratorAction::kToggleSnapGroupWindowsGroupAndUngroup:
+      accelerators::GroupOrUngroupWindowsInSnapGroup();
       break;
     case AcceleratorAction::kToggleSnapGroupWindowsMinimizeAndRestore:
       base::RecordAction(base::UserMetricsAction(

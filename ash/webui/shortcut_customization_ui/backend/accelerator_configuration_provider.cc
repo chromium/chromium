@@ -296,6 +296,19 @@ std::string GetUuid(mojom::AcceleratorSource source,
                        base::NumberToString(action)});
 }
 
+// Returns true if the given `details` should be excluded from the view, since
+// certain shortcuts can be associated with a disabled feature behind a flag,
+// or specific device property.
+bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
+  switch (details.action_id) {
+    case kToggleSnapGroupWindowsGroupAndUngroup:
+    case kToggleSnapGroupWindowsMinimizeAndRestore:
+      return !features::IsSnapGroupEnabled();
+  }
+
+  return false;
+}
+
 }  // namespace
 
 namespace shortcut_ui {
@@ -331,6 +344,9 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider()
   // data that provides additional details for the app for styling.
   // Also create a cached shortcut description lookup.
   for (const auto& layout_details : kAcceleratorLayouts) {
+    if (ShouldExcludeItem(layout_details)) {
+      continue;
+    }
     layout_infos_.push_back(LayoutInfoToMojom(layout_details));
     accelerator_layout_lookup_[GetUuid(
         layout_details.source, layout_details.action_id)] = layout_details;
@@ -843,7 +859,8 @@ void AcceleratorConfigurationProvider::PopulateAshAcceleratorConfig(
       accelerator_config_output[mojom::AcceleratorSource::kAsh];
 
   for (const auto& layout_info : kAcceleratorLayouts) {
-    if (layout_info.source != mojom::AcceleratorSource::kAsh) {
+    if (layout_info.source != mojom::AcceleratorSource::kAsh ||
+        ShouldExcludeItem(layout_info)) {
       // Only ash accelerators can have dynamically modified properties.
       // Note that ambient accelerators cannot be in kAsh.
       continue;

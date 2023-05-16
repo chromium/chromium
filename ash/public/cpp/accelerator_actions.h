@@ -136,10 +136,11 @@ namespace ash {
   ACCELERATOR_ACTION_ENTRY(ToggleOverview)                              \
   ACCELERATOR_ACTION_ENTRY(ToggleProjectorMarker)                       \
   ACCELERATOR_ACTION_ENTRY(ToggleResizeLockMenu)                        \
+  ACCELERATOR_ACTION_ENTRY(ToggleSnapGroupWindowsGroupAndUngroup)       \
+  ACCELERATOR_ACTION_ENTRY(ToggleSnapGroupWindowsMinimizeAndRestore)    \
   ACCELERATOR_ACTION_ENTRY(ToggleSpokenFeedback)                        \
   ACCELERATOR_ACTION_ENTRY(ToggleSystemTrayBubble)                      \
   ACCELERATOR_ACTION_ENTRY(ToggleWifi)                                  \
-  ACCELERATOR_ACTION_ENTRY(ToggleSnapGroupWindowsMinimizeAndRestore)    \
   ACCELERATOR_ACTION_ENTRY(TouchHudClear)                               \
   ACCELERATOR_ACTION_ENTRY(TouchHudModeChange)                          \
   ACCELERATOR_ACTION_ENTRY(Unpin)                                       \

@@ -3487,6 +3487,12 @@ Connect your device to power.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_SHELF" desc="Label for accelerator action - Highlight launcher button on shelf.">
         Highlight launcher button on shelf
       </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MINIMIZE_RESTORE_WINDOWS" translateable="false" desc="Label for accelerator action - Minimize or restores the windows in snap group.">
+        Minimize or restore the windows in snap group
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_GROUP_UNGROUP_WINDOWS" translateable="false" desc="Label for accelerator action - Group or ungroup windows in split view.">
+        Group or ungroup the windows in split view
+      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_KEYBOARD_BACKLIGHT_TOGGLE" translateable="false" desc="Label for accelerator action - Toggle keyboard backlight.">
         Toggle keyboard backlight
       </message>
