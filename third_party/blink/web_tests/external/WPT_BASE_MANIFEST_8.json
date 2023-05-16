@@ -1884,6 +1884,13 @@
        {}
       ]
      ],
+     "font-features-two-stylesheets-crash.html": [
+      "0e6490974c27afe7aff29a22418107890eef45e2",
+      [
+       null,
+       {}
+      ]
+     ],
      "infinite-size-crash.html": [
       "d44cf4a37e26a772a4742a825a7422b795dfc9ee",
       [
@@ -122353,6 +122360,19 @@
      ],
      "percentage-padding-003.html": [
       "ee84f1570efb877843384b923e8a28ee58537f70",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "percentage-padding-004.html": [
+      "ca96e546cc86e6a0c0db1a9884653cdecfab7409",
       [
        null,
        [
@@ -267306,6 +267326,19 @@
         {}
        ]
       ],
+      "pattern-opacity-01.svg": [
+       "eb2d2d7e9a9a7776e5ffeeaf51ba992204a70fc4",
+       [
+        null,
+        [
+         [
+          "/svg/pservers/reftests/reference/pattern-opacity-01-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "pattern-viewbox-01.svg": [
        "618b8fc29e69d2624d5556d6bbcdba600ce21a4a",
        [
@@ -272136,11 +272169,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "33994b8c7d47d7fe5dad78f845cda057ecdbe35c",
+     "1005ed4e173635321c8d3b87230ae8ce960f2167",
      []
     ],
     "mtime.json": [
-     "712c0eb75ab94f25f4850f933ea44fd9adf14dd8",
+     "c4f5ab75c07eaaf599235b4daf047995dbf658e4",
      []
     ]
    },
@@ -297847,12 +297880,12 @@
       []
      ],
      "animations": {
-      "font-size-adjust-interpolation-expected.txt": [
-       "58fe3c7440937f2f5584afa4b80880c99605ed62",
+      "font-size-adjust-composition-expected.txt": [
+       "21f150cd5dfb168718debbd23d07d61ec0c747f6",
        []
       ],
-      "font-size-adjust-interpolation.html.ini": [
-       "c97359074bba5596073557191e3719dbaedfb744",
+      "font-size-adjust-composition.html.ini": [
+       "389f920d0c0301452ca886b9861249745c782015",
        []
       ],
       "font-variation-settings-interpolation.html.ini": [
@@ -317058,10 +317091,6 @@
       "9f505dd7f1d121c0bd0af0131b51f536225326b1",
       []
      ],
-     "textarea-scrollbar-width-none.html.ini": [
-      "16a645b45c87eaed88a375d62f59ccf2e2768e8a",
-      []
-     ],
      "transparent-on-root-ref.html": [
       "a5b2de4f00f3abd19c74b08b80a027d09a7abcca",
       []
@@ -331957,7 +331986,7 @@
       []
      ],
      "round-mod-rem-computed-expected.txt": [
-      "6c536edc1f0c8406a73f4ae599e23f49586272a4",
+      "3b5dcb2bb88ac76f7c13b3addf3288697622c5cb",
       []
      ],
      "round-mod-rem-computed.html.ini": [
@@ -379582,7 +379611,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "0835ead581d41e170115e74e1a41764197e7191b",
+     "7431c2a2b9e4e22dd024039d8766107f16b1e0b4",
      []
     ],
     "modulepreload-expected.txt": [
@@ -389858,6 +389887,10 @@
         "120941444a4898197d6b6001f9908a6cd48b62ba",
         []
        ],
+       "pattern-opacity-01-ref.svg": [
+        "1c9c68bd9d5becec895d4cacac93082bc2defcec",
+        []
+       ],
        "pattern-viewbox-01-ref.svg": [
         "c9f6931deadd57bad20ae1dbbd529d595b14adfb",
         []
@@ -397622,6 +397655,10 @@
      ],
      "echo.py": [
       "4347d4aae3e1c6475b21a8f246fb768d91a43afc",
+      []
+     ],
+     "echo_datagram_length.py": [
+      "f0610b085fe30b4d5fda6473bf17fc498eb47650",
       []
      ],
      "query.py": [
@@ -446601,6 +446638,13 @@
     },
     "css-fonts": {
      "animations": {
+      "font-size-adjust-composition.html": [
+       "d98b0ffd10e5550ab7ccc7a96d02ebb93385ddcb",
+       [
+        null,
+        {}
+       ]
+      ],
       "font-size-adjust-interpolation.html": [
        "a138d7fee5a39bc925a7a4cc5224dcc3db5cc387",
        [
@@ -611583,10 +611627,43 @@
    },
    "storage": {
     "buckets": {
-     "buckets_storage_policy.tentative.https.any.js": [
-      "a66fd81cd4394209d1c534322b2b150cac35adf6",
+     "bucket-quota-indexeddb.tentative.https.any.js": [
+      "ba82edb72ec6fc1656be169a14c3a025e1ab6a23",
       [
-       "storage/buckets/buckets_storage_policy.tentative.https.any.html",
+       "storage/buckets/bucket-quota-indexeddb.tentative.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Bucket quota enforcement for indexeddb"
+         ],
+         [
+          "script",
+          "/storage/buckets/resources/util.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "storage/buckets/bucket-quota-indexeddb.tentative.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Bucket quota enforcement for indexeddb"
+         ],
+         [
+          "script",
+          "/storage/buckets/resources/util.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "bucket-storage-policy.tentative.https.any.js": [
+      "d6dce3675d0bca18a379518c6ecf2c7ec1310930",
+      [
+       "storage/buckets/bucket-storage-policy.tentative.https.any.html",
        {
         "script_metadata": [
          [
@@ -611605,7 +611682,7 @@
        }
       ],
       [
-       "storage/buckets/buckets_storage_policy.tentative.https.any.serviceworker.html",
+       "storage/buckets/bucket-storage-policy.tentative.https.any.serviceworker.html",
        {
         "script_metadata": [
          [
@@ -611624,7 +611701,7 @@
        }
       ],
       [
-       "storage/buckets/buckets_storage_policy.tentative.https.any.sharedworker.html",
+       "storage/buckets/bucket-storage-policy.tentative.https.any.sharedworker.html",
        {
         "script_metadata": [
          [
@@ -611643,7 +611720,7 @@
        }
       ],
       [
-       "storage/buckets/buckets_storage_policy.tentative.https.any.worker.html",
+       "storage/buckets/bucket-storage-policy.tentative.https.any.worker.html",
        {
         "script_metadata": [
          [
@@ -654155,7 +654232,7 @@
      ]
     ],
     "datagrams.https.any.js": [
-     "dc7133bb867e203ee651d887b64e48782dc3c58b",
+     "d5b8e3bbda158707bb5273628ec1abea7206d1ac",
      [
       "webtransport/datagrams.https.any.html",
       {
