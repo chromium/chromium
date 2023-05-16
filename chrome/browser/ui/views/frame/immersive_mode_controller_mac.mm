@@ -205,8 +205,7 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
                                .GetNativeNSWindow()
                                .contentView;
     browser_view_->overlay_widget()->SetNativeWindowProperty(
-        views::NativeWidgetMacNSWindowHost::kImmersiveContentNSView,
-        content_view);
+        views::NativeWidgetMacNSWindowHost::kMovedContentNSView, content_view);
 
     // Move the appropriate children from the browser widget to the overlay
     // widget. Make sure to call `Show()` on the overlay widget before enabling
@@ -263,7 +262,7 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     browser_view_->overlay_widget()->Hide();
     ns_window_mojo_->DisableImmersiveFullscreen();
     browser_view_->overlay_widget()->SetNativeWindowProperty(
-        views::NativeWidgetMacNSWindowHost::kImmersiveContentNSView, nullptr);
+        views::NativeWidgetMacNSWindowHost::kMovedContentNSView, nullptr);
 
     // Remove the root FocusTraversable.
     browser_view_->GetWidget()->SetFocusTraversableParent(nullptr);

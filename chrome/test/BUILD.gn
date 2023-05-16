@@ -3649,6 +3649,7 @@ if (!is_android) {
       }
       if (is_mac) {
         sources += [
+          "../browser/ui/views/frame/immersive_mode_controller_mac_browsertest.mm",
           "../browser/ui/views/javascript_tab_modal_dialog_view_views_browsertest_mac.mm",
           "../browser/ui/views/status_bubble_views_browsertest_mac.h",
           "../browser/ui/views/status_bubble_views_browsertest_mac.mm",

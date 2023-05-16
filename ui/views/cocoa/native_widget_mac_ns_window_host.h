@@ -69,9 +69,9 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
       gfx::NativeWindow window);
   static NativeWidgetMacNSWindowHost* GetFromNativeView(gfx::NativeView view);
 
-  // Key used to bind the content NSView to the overlay widget in immersive
-  // mode.
-  static const char kImmersiveContentNSView[];
+  // Key used to bind the content NSView to the widget when it becomes
+  // a child widget.
+  static const char kMovedContentNSView[];
 
   // Unique integer id handles are used to bridge between the
   // NativeWidgetMacNSWindowHost in one process and the NativeWidgetNSWindowHost

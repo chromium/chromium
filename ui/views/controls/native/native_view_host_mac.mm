@@ -31,14 +31,41 @@ void EnsureNativeViewHasNoChildWidgets(NSView* native_view) {
   }
 }
 
+// Searches for the first Widget with a kMovedContentNSView reference to
+// `native_view`. If found, removes the reference and returns the Widget's
+// NSWindow.
+NSWindow* RemoveReferenceToMovedContentView(NSView* native_view) {
+  for (NSWindow* window in [NSApp windows]) {
+    Widget* widget =
+        views::Widget::GetWidgetForNativeWindow(gfx::NativeWindow(window));
+    if (widget == nullptr) {
+      continue;
+    }
+
+    NSView* moved_content_view = (NSView*)widget->GetNativeWindowProperty(
+        views::NativeWidgetMacNSWindowHost::kMovedContentNSView);
+
+    if (moved_content_view == native_view) {
+      widget->SetNativeWindowProperty(
+          views::NativeWidgetMacNSWindowHost::kMovedContentNSView, nullptr);
+      return window;
+    }
+  }
+
+  return nullptr;
+}
+
 }  // namespace
 
 NativeViewHostMac::NativeViewHostMac(NativeViewHost* host) : host_(host) {
-  // Ensure that |host_| have its own ui::Layer and that it draw nothing.
+  // Ensure that |host_| has its own ui::Layer and that it draws nothing.
   host_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 }
 
-NativeViewHostMac::~NativeViewHostMac() = default;
+NativeViewHostMac::~NativeViewHostMac() {
+  // The native_view_ is going away, so clear out any reference to it.
+  RemoveReferenceToMovedContentView(native_view_);
+}
 
 NativeWidgetMacNSWindowHost* NativeViewHostMac::GetNSWindowHost() const {
   return NativeWidgetMacNSWindowHost::GetFromNativeWindow(
@@ -90,11 +117,24 @@ void NativeViewHostMac::AttachNativeView() {
   auto* window_host = GetNSWindowHost();
   CHECK(window_host);
 
+  // Save these for later.
+  NSWindow* ns_window = [native_view_ window];
+  Widget* widget = Widget::GetWidgetForNativeView(host_->native_view());
+
   // TODO(https://crbug.com/933679): This is lifted out the ViewsHostableAttach
   // call below because of crashes being observed in the field.
   NSView* superview =
       window_host->native_widget_mac()->GetNativeView().GetNativeNSView();
   [superview addSubview:native_view_];
+
+  // If adding the native view to another view hierarchy removed it from its
+  // host window where it was the contentView (new AppKit behavior as of macOS
+  // 13), save a reference to it, otherwise the Views Widget machinery will
+  // break.
+  if (![ns_window contentView] && widget) {
+    widget->SetNativeWindowProperty(
+        views::NativeWidgetMacNSWindowHost::kMovedContentNSView, native_view_);
+  }
 
   if (native_view_hostable_) {
     native_view_hostable_->ViewsHostableAttach(this);
@@ -121,6 +161,7 @@ void NativeViewHostMac::NativeViewDetaching(bool destroyed) {
   }
 
   DCHECK(native_view_ == host_native_view);
+
   if (native_view_hostable_) {
     native_view_hostable_->ViewsHostableDetach();
     native_view_hostable_ = nullptr;
@@ -134,6 +175,23 @@ void NativeViewHostMac::NativeViewDetaching(bool destroyed) {
   // NativeWidgetNSWindowBridge can be null when Widget is closing.
   if (window_host)
     window_host->OnNativeViewHostDetach(host_);
+
+  // If the previous call to AttachNativeView() removed the native_view_ from
+  // its window (and it was the window's contentView), remove the reference we
+  // created for it in its originating window.
+  NSWindow* originating_window =
+      RemoveReferenceToMovedContentView(native_view_);
+
+  // Prior to macOS Ventura, AttachNativeView() added native_view_ as a subview
+  // of another view tree while leaving it as its originating window's
+  // contentView. After removing native_view_ from its superview in this method,
+  // it still remained as its window's contentView. With Ventura, the AppKit
+  // won't allow a view to live in two separate window view hierarchies at the
+  // same time. Restoring it as the contentView of its originating window
+  // preserves the pre-Ventura behavior of NativeViewDetaching().
+  if ([originating_window contentView] == nil) {
+    [originating_window setContentView:native_view_];
+  }
 
   native_view_.reset();
 }

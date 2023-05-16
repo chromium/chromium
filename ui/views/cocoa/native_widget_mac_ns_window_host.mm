@@ -273,8 +273,8 @@ NativeWidgetMacNSWindowHost* NativeWidgetMacNSWindowHost::GetFromNativeView(
 }
 
 // static
-const char NativeWidgetMacNSWindowHost::kImmersiveContentNSView[] =
-    "kImmersiveContentNSView";
+const char NativeWidgetMacNSWindowHost::kMovedContentNSView[] =
+    "kMovedContentNSView";
 
 // static
 NativeWidgetMacNSWindowHost* NativeWidgetMacNSWindowHost::GetFromId(
