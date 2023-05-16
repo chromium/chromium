@@ -326,6 +326,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
 void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
     std::unique_ptr<ExtensionActionViewController> action_controller,
     extensions::ExtensionId extension_id,
+    bool is_enterprise,
     ExtensionMenuItemView::SiteAccessToggleState site_access_toggle_state,
     ExtensionMenuItemView::SitePermissionsButtonState
         site_permissions_button_state,
@@ -335,7 +336,7 @@ void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
   // base::Unretained() below is safe because `menu_handler_` lifetime is
   // tied to this view lifetime by the extensions menu coordinator.
   auto item = std::make_unique<ExtensionMenuItemView>(
-      browser_, std::move(action_controller),
+      browser_, is_enterprise, std::move(action_controller),
       base::BindRepeating(&ExtensionsMenuHandler::OnExtensionToggleSelected,
                           base::Unretained(menu_handler_), extension_id),
       base::BindRepeating(&ExtensionsMenuHandler::OpenSitePermissionsPage,

@@ -512,28 +512,8 @@ void ExtensionsMenuViewController::OnToolbarActionAdded(
   // Insert a menu item for the extension when main page is opened.
   auto* main_page = GetMainPage(current_page_);
   DCHECK(main_page);
-
   int index = FindIndex(*toolbar_model_, action_id);
-  std::unique_ptr<ExtensionActionViewController> action_controller =
-      ExtensionActionViewController::Create(action_id, browser_,
-                                            extensions_container_);
-  auto* web_contents = GetActiveWebContents();
-  ExtensionMenuItemView::SiteAccessToggleState site_access_toggle_state =
-      GetSiteAccessToggleState(*action_controller->extension(),
-                               *browser_->profile(), *toolbar_model_,
-                               *web_contents);
-  ExtensionMenuItemView::SitePermissionsButtonState
-      site_permissions_button_state = GetSitePermissionsButtonState(
-          *action_controller->extension(), *browser_->profile(),
-          *toolbar_model_, *web_contents);
-  ExtensionMenuItemView::SitePermissionsButtonAccess
-      site_permissions_button_access = GetSitePermissionsButtonAccess(
-          *action_controller->extension(), *browser_->profile(),
-          *toolbar_model_, *web_contents);
-
-  main_page->CreateAndInsertMenuItem(
-      std::move(action_controller), action_id, site_access_toggle_state,
-      site_permissions_button_state, site_permissions_button_access, index);
+  InsertMenuItemMainPage(main_page, action_id, index);
 
   // TODO(crbug.com/1390952): Update requests access section once
   // such section is implemented (if the extension added requests
@@ -680,32 +660,43 @@ void ExtensionsMenuViewController::SwitchToPage(
 
 void ExtensionsMenuViewController::PopulateMainPage(
     ExtensionsMenuMainPageView* main_page) {
+  // TODO(crbug.com/1390952): We should update the subheader here since it
+  // despends in `toolbar_model_`.
   std::vector<std::string> sorted_ids = SortExtensionsByName(*toolbar_model_);
   for (size_t i = 0; i < sorted_ids.size(); ++i) {
-    // TODO(emiliapaz): Under MVC architecture, view should not own the view
-    // controller. However, the current extensions structure depends on this
-    // thus a major restructure is needed.
-    std::unique_ptr<ExtensionActionViewController> action_controller =
-        ExtensionActionViewController::Create(sorted_ids[i], browser_,
-                                              extensions_container_);
-    auto* web_contents = GetActiveWebContents();
-    ExtensionMenuItemView::SiteAccessToggleState site_access_toggle_state =
-        GetSiteAccessToggleState(*action_controller->extension(),
-                                 *browser_->profile(), *toolbar_model_,
-                                 *web_contents);
-    ExtensionMenuItemView::SitePermissionsButtonState
-        site_permissions_button_state = GetSitePermissionsButtonState(
-            *action_controller->extension(), *browser_->profile(),
-            *toolbar_model_, *web_contents);
-    ExtensionMenuItemView::SitePermissionsButtonAccess
-        site_permissions_button_access = GetSitePermissionsButtonAccess(
-            *action_controller->extension(), *browser_->profile(),
-            *toolbar_model_, *web_contents);
-
-    main_page->CreateAndInsertMenuItem(
-        std::move(action_controller), sorted_ids[i], site_access_toggle_state,
-        site_permissions_button_state, site_permissions_button_access, i);
+    InsertMenuItemMainPage(main_page, sorted_ids[i], i);
   }
+}
+
+void ExtensionsMenuViewController::InsertMenuItemMainPage(
+    ExtensionsMenuMainPageView* main_page,
+    const extensions::ExtensionId& extension_id,
+    int index) {
+  // TODO(emiliapaz): Under MVC architecture, view should not own the view
+  // controller. However, the current extensions structure depends on this
+  // thus a major restructure is needed.
+  std::unique_ptr<ExtensionActionViewController> action_controller =
+      ExtensionActionViewController::Create(extension_id, browser_,
+                                            extensions_container_);
+  const extensions::Extension* extension = action_controller->extension();
+  Profile* profile = browser_->profile();
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  bool is_enterprise = HasEnterpriseForcedAccess(*extension, *profile);
+  ExtensionMenuItemView::SiteAccessToggleState site_access_toggle_state =
+      GetSiteAccessToggleState(*extension, *profile, *toolbar_model_,
+                               *web_contents);
+  ExtensionMenuItemView::SitePermissionsButtonState
+      site_permissions_button_state = GetSitePermissionsButtonState(
+          *extension, *profile, *toolbar_model_, *web_contents);
+  ExtensionMenuItemView::SitePermissionsButtonAccess
+      site_permissions_button_access = GetSitePermissionsButtonAccess(
+          *extension, *profile, *toolbar_model_, *web_contents);
+
+  main_page->CreateAndInsertMenuItem(std::move(action_controller), extension_id,
+                                     is_enterprise, site_access_toggle_state,
+                                     site_permissions_button_state,
+                                     site_permissions_button_access, index);
 }
 
 content::WebContents* ExtensionsMenuViewController::GetActiveWebContents()

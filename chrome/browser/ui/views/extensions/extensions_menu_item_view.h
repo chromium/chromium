@@ -70,6 +70,7 @@ class ExtensionMenuItemView : public views::FlexLayoutView {
   // Constructor for the kExtensionsMenuAccessControl feature.
   ExtensionMenuItemView(
       Browser* browser,
+      bool is_enterprise,
       std::unique_ptr<ToolbarActionViewController> controller,
       base::RepeatingCallback<void(bool)> site_access_toggle_callback,
       views::Button::PressedCallback site_permissions_button_callback);
