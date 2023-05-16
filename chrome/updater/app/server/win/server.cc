@@ -190,19 +190,21 @@ bool UninstallGoogleUpdate(UpdaterScope scope,
         }));
   }
 
-  // Delete the GoogleUpdate tasks.
+  // Delete the GoogleUpdate tasks. This is a best-effort operation.
   scoped_refptr<TaskScheduler> task_scheduler(
       TaskScheduler::CreateInstance(scope, /*use_task_subfolders=*/false));
-  task_scheduler->ForEachTaskWithPrefix(
-      IsSystemInstall(scope) ? kLegacyTaskNamePrefixSystem
-                             : kLegacyTaskNamePrefixUser,
-      base::BindRepeating(
-          [](scoped_refptr<TaskScheduler> task_scheduler,
-             const std::wstring& task_name) {
-            VLOG(2) << __func__ << ": Deleting legacy task: " << task_name;
-            task_scheduler->DeleteTask(task_name.c_str());
-          },
-          task_scheduler));
+  if (task_scheduler) {
+    task_scheduler->ForEachTaskWithPrefix(
+        IsSystemInstall(scope) ? kLegacyTaskNamePrefixSystem
+                               : kLegacyTaskNamePrefixUser,
+        base::BindRepeating(
+            [](scoped_refptr<TaskScheduler> task_scheduler,
+               const std::wstring& task_name) {
+              VLOG(2) << __func__ << ": Deleting legacy task: " << task_name;
+              task_scheduler->DeleteTask(task_name.c_str());
+            },
+            task_scheduler));
+  }
 
   // Keep only `GoogleUpdate.exe` and nothing else under `\Google\Update`.
   const absl::optional<base::FilePath> google_update_exe =

@@ -154,20 +154,23 @@ void AddInstallServerWorkItems(HKEY root,
 std::wstring GetTaskName(UpdaterScope scope) {
   scoped_refptr<TaskScheduler> task_scheduler =
       TaskScheduler::CreateInstance(scope);
-  CHECK(task_scheduler);
-  return task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope));
+  return task_scheduler
+             ? task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope))
+             : std::wstring();
 }
 
 void UnregisterWakeTask(UpdaterScope scope) {
-  auto task_scheduler = TaskScheduler::CreateInstance(scope);
-  CHECK(task_scheduler);
-
+  scoped_refptr<TaskScheduler> task_scheduler =
+      TaskScheduler::CreateInstance(scope);
+  if (!task_scheduler) {
+    LOG(ERROR) << "Can't create a TaskScheduler instance.";
+    return;
+  }
   const std::wstring task_name = GetTaskName(scope);
   if (task_name.empty()) {
     LOG(ERROR) << "Empty task name during uninstall.";
     return;
   }
-
   task_scheduler->DeleteTask(task_name.c_str());
   VLOG(1) << "UnregisterWakeTask succeeded: " << task_name;
 }
@@ -501,7 +504,10 @@ RegisterWakeTaskWorkItem::~RegisterWakeTaskWorkItem() = default;
 bool RegisterWakeTaskWorkItem::DoImpl() {
   scoped_refptr<TaskScheduler> task_scheduler =
       TaskScheduler::CreateInstance(scope_);
-  CHECK(task_scheduler);
+  if (!task_scheduler) {
+    LOG(ERROR) << "Can't create a TaskScheduler instance.";
+    return false;
+  }
 
   // Task already exists.
   if (!GetTaskName(scope_).empty()) {
@@ -533,9 +539,11 @@ void RegisterWakeTaskWorkItem::RollbackImpl() {
   if (task_name_.empty()) {
     return;
   }
-
-  auto task_scheduler = TaskScheduler::CreateInstance(scope_);
-  CHECK(task_scheduler);
+  scoped_refptr<TaskScheduler> task_scheduler =
+      TaskScheduler::CreateInstance(scope_);
+  if (!task_scheduler) {
+    return;
+  }
   task_scheduler->DeleteTask(task_name_.c_str());
 }
 

@@ -83,7 +83,6 @@ bool UTCFileTimeToLocalSystemTime(const FILETIME& file_time_utc,
 bool GetCurrentUser(base::win::ScopedBstr* user_name) {
   CHECK(user_name);
   ULONG user_name_size = 256;
-  // Paranoia... ;-)
   CHECK_EQ(sizeof(OLECHAR), sizeof(WCHAR));
   if (!::GetUserNameExW(
           NameSamCompatible,
@@ -118,13 +117,27 @@ void PinModule(const wchar_t* module_name) {
 
 // A task scheduler class uses the V2 API of the task scheduler.
 class TaskSchedulerV2 final : public TaskScheduler {
+ private:
+  // Forces creation of instances through the factory function because the
+  // constructor of `TaskSchedulerV2` is not accessible.
+  struct ConstructorTag {};
+
  public:
-  TaskSchedulerV2(UpdaterScope scope, bool use_task_subfolders)
+  static scoped_refptr<TaskScheduler> CreateInstance(UpdaterScope scope,
+                                                     bool use_task_subfolders) {
+    auto instance = base::MakeRefCounted<TaskSchedulerV2>(
+        ConstructorTag(), scope, use_task_subfolders);
+    return instance->task_service_ ? instance : nullptr;
+  }
+
+  TaskSchedulerV2(ConstructorTag /*tag*/,
+                  UpdaterScope scope,
+                  bool use_task_subfolders)
       : scope_(scope), use_task_subfolders_(use_task_subfolders) {
     task_service_ = GetTaskService();
-    CHECK(task_service_);
+    VLOG_IF(2, !task_service_) << "Can't get the task service.";
     task_folder_ = GetUpdaterTaskFolder();
-    CHECK(task_folder_);
+    VLOG_IF(2, !task_folder_) << "Can't get the task scheduler folder.";
   }
   TaskSchedulerV2(const TaskSchedulerV2&) = delete;
   TaskSchedulerV2& operator=(const TaskSchedulerV2&) = delete;
@@ -693,19 +706,20 @@ class TaskSchedulerV2 final : public TaskScheduler {
     Microsoft::WRL::ComPtr<IRegisteredTask> registered_task;
     base::win::ScopedVariant user(user_name.Get());
 
-    CHECK(task_folder_);
-    hr = task_folder_->RegisterTaskDefinition(
-        base::win::ScopedBstr(task_name).Get(), task.Get(),
-        TASK_CREATE_OR_UPDATE,
-        *user.AsInput(),  // Not really input, but API expect non-const.
-        base::win::ScopedVariant::kEmptyVariant,
-        is_system ? TASK_LOGON_SERVICE_ACCOUNT : TASK_LOGON_INTERACTIVE_TOKEN,
-        base::win::ScopedVariant::kEmptyVariant, &registered_task);
-    if (FAILED(hr)) {
-      LOG(ERROR) << "RegisterTaskDefinition failed: " << std::hex << hr << ": "
-                 << logging::SystemErrorCodeToString(hr)
-                 << ": Task XML: " << task_xml.Get();
-      return false;
+    if (task_folder_) {
+      hr = task_folder_->RegisterTaskDefinition(
+          base::win::ScopedBstr(task_name).Get(), task.Get(),
+          TASK_CREATE_OR_UPDATE,
+          *user.AsInput(),  // Not really input, but API expect non-const.
+          base::win::ScopedVariant::kEmptyVariant,
+          is_system ? TASK_LOGON_SERVICE_ACCOUNT : TASK_LOGON_INTERACTIVE_TOKEN,
+          base::win::ScopedVariant::kEmptyVariant, &registered_task);
+      if (FAILED(hr)) {
+        LOG(ERROR) << "RegisterTaskDefinition failed: " << std::hex << hr
+                   << ": " << logging::SystemErrorCodeToString(hr)
+                   << ": Task XML: " << task_xml.Get();
+        return false;
+      }
     }
 
     CHECK(IsTaskRegistered(task_name));
@@ -883,6 +897,9 @@ class TaskSchedulerV2 final : public TaskScheduler {
   // Return the task with |task_name| and false if not found. |task| can be null
   // when only interested in task's existence.
   bool GetTask(const wchar_t* task_name, IRegisteredTask** task) {
+    if (!task_folder_) {
+      return false;
+    }
     for (TaskIterator it(task_folder_.Get()); !it.done(); it.Next()) {
       if (::_wcsicmp(it.name().c_str(), task_name) == 0) {
         if (task) {
@@ -1343,7 +1360,7 @@ TaskScheduler::TaskInfo::~TaskInfo() = default;
 scoped_refptr<TaskScheduler> TaskScheduler::CreateInstance(
     UpdaterScope scope,
     bool use_task_subfolders) {
-  return base::MakeRefCounted<TaskSchedulerV2>(scope, use_task_subfolders);
+  return TaskSchedulerV2::CreateInstance(scope, use_task_subfolders);
 }
 
 TaskScheduler::TaskScheduler() = default;
