@@ -81,9 +81,9 @@ bool UTCFileTimeToLocalSystemTime(const FILETIME& file_time_utc,
 }
 
 bool GetCurrentUser(base::win::ScopedBstr* user_name) {
+  static_assert(sizeof(OLECHAR) == sizeof(WCHAR));
   CHECK(user_name);
   ULONG user_name_size = 256;
-  CHECK_EQ(sizeof(OLECHAR), sizeof(WCHAR));
   if (!::GetUserNameExW(
           NameSamCompatible,
           user_name->AllocateBytes(user_name_size * sizeof(OLECHAR)),
@@ -96,7 +96,6 @@ bool GetCurrentUser(base::win::ScopedBstr* user_name) {
             NameSamCompatible,
             user_name->AllocateBytes(user_name_size * sizeof(OLECHAR)),
             &user_name_size)) {
-      CHECK_NE(DWORD{ERROR_MORE_DATA}, ::GetLastError());
       PLOG(ERROR) << "GetUserNameEx failed.";
       return false;
     }
@@ -148,7 +147,6 @@ class TaskSchedulerV2 final : public TaskScheduler {
     if (!task_folder_) {
       return false;
     }
-
     return GetTask(task_name, nullptr);
   }
 
@@ -417,18 +415,14 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return false;
     }
 
-    CHECK(!IsTaskRegistered(task_name));
-
-    if (!use_task_subfolders_) {
-      return true;
+    if (use_task_subfolders_) {
+      // Try to delete \\Company\Product first and \\Company second.
+      if (DeleteFolderIfEmpty(GetTaskSubfolderName())) {
+        DeleteFolderIfEmpty(GetTaskCompanyFolder());
+      }
     }
 
-    // Try to delete \\Company\Product first and \\Company second.
-    if (DeleteFolderIfEmpty(GetTaskSubfolderName())) {
-      DeleteFolderIfEmpty(GetTaskCompanyFolder());
-    }
-
-    return true;
+    return !IsTaskRegistered(task_name);
   }
 
   bool RegisterTask(const wchar_t* task_name,
@@ -441,7 +435,6 @@ class TaskSchedulerV2 final : public TaskScheduler {
 
     // Create the task definition object to create the task.
     Microsoft::WRL::ComPtr<ITaskDefinition> task;
-    CHECK(task_service_);
     HRESULT hr = task_service_->NewTask(0, &task);
     if (FAILED(hr)) {
       PLOG(ERROR) << "Can't create new task. " << std::hex << hr;
@@ -722,11 +715,9 @@ class TaskSchedulerV2 final : public TaskScheduler {
       }
     }
 
-    CHECK(IsTaskRegistered(task_name));
-
     VLOG(1) << __func__ << ":" << task_name << ": "
             << run_command.GetCommandLineString();
-    return true;
+    return IsTaskRegistered(task_name);
   }
 
   bool StartTask(const wchar_t* task_name) override {
@@ -757,10 +748,9 @@ class TaskSchedulerV2 final : public TaskScheduler {
   }
 
   std::wstring GetTaskSubfolderName() override {
-    CHECK(use_task_subfolders_);
-
-    return base::StrCat(
-        {GetTaskCompanyFolder(), L"\\" PRODUCT_FULLNAME_STRING});
+    return use_task_subfolders_ ? base::StrCat({GetTaskCompanyFolder(),
+                                                L"\\" PRODUCT_FULLNAME_STRING})
+                                : std::wstring();
   }
 
   void ForEachTaskWithPrefix(
@@ -888,8 +878,6 @@ class TaskSchedulerV2 final : public TaskScheduler {
   // task folders have a "System" suffix, and User task folders have a "User"
   // suffix.
   std::wstring GetTaskCompanyFolder() const {
-    CHECK(use_task_subfolders_);
-
     return base::StrCat({L"\\" COMPANY_SHORTNAME_STRING,
                          IsSystemInstall(scope_) ? L"System" : L"User"});
   }
@@ -1106,10 +1094,6 @@ class TaskSchedulerV2 final : public TaskScheduler {
 
   // Return the branded task folder (e.g. \\Google\Updater).
   Microsoft::WRL::ComPtr<ITaskFolder> GetUpdaterTaskFolder() {
-    if (!task_service_) {
-      return nullptr;
-    }
-
     Microsoft::WRL::ComPtr<ITaskFolder> root_task_folder;
     HRESULT hr = task_service_->GetFolder(base::win::ScopedBstr(L"\\").Get(),
                                           &root_task_folder);
@@ -1343,17 +1327,12 @@ class TaskSchedulerV2 final : public TaskScheduler {
 }  // namespace
 
 TaskScheduler::TaskInfo::TaskInfo() = default;
-
 TaskScheduler::TaskInfo::TaskInfo(const TaskScheduler::TaskInfo&) = default;
-
 TaskScheduler::TaskInfo::TaskInfo(TaskScheduler::TaskInfo&&) = default;
-
 TaskScheduler::TaskInfo& TaskScheduler::TaskInfo::operator=(
     const TaskScheduler::TaskInfo&) = default;
-
 TaskScheduler::TaskInfo& TaskScheduler::TaskInfo::operator=(
     TaskScheduler::TaskInfo&&) = default;
-
 TaskScheduler::TaskInfo::~TaskInfo() = default;
 
 // static.
