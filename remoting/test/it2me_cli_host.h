@@ -44,7 +44,7 @@ class It2MeCliHost final : public extensions::NativeMessageHost::Client {
   void CloseChannel(const std::string& error_message) override;
 
   // Sends message to host in separate task.
-  void SendMessageToHost(const std::string& type, base::Value params);
+  void SendMessageToHost(const std::string& type, base::Value::Dict params);
   // Actually sends message to host.
   void DoSendMessage(const std::string& json);
   void OnProtocolBroken(const std::string& message);
@@ -74,7 +74,7 @@ class It2MeCliHost final : public extensions::NativeMessageHost::Client {
   std::unique_ptr<extensions::NativeMessageHost> host_;
 
   // Filled structure with parameters for "connect" message.
-  base::Value connect_params_;
+  base::Value::Dict connect_params_;
 
   // Determines actions when receiving messages from CRD host,
   // if command is still running (no error / access code), then

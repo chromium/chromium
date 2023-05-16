@@ -185,15 +185,16 @@ class KeyboardControllerImplTest : public AshTestBase {
   }
 
   void SetKeyboardConfigToPref(const base::Value& value) {
-    base::Value features(base::Value::Type::DICT);
-    features.SetKey("auto_complete_enabled", value.Clone());
-    features.SetKey("auto_correct_enabled", value.Clone());
-    features.SetKey("handwriting_enabled", value.Clone());
-    features.SetKey("spell_check_enabled", value.Clone());
-    features.SetKey("voice_input_enabled", value.Clone());
+    auto features = base::Value::Dict()
+                        .Set("auto_complete_enabled", value.Clone())
+                        .Set("auto_correct_enabled", value.Clone())
+                        .Set("handwriting_enabled", value.Clone())
+                        .Set("spell_check_enabled", value.Clone())
+                        .Set("voice_input_enabled", value.Clone());
     PrefService* prefs =
         Shell::Get()->session_controller()->GetLastActiveUserPrefService();
-    prefs->Set(prefs::kAccessibilityVirtualKeyboardFeatures, features);
+    prefs->SetDict(prefs::kAccessibilityVirtualKeyboardFeatures,
+                   std::move(features));
   }
 
   void VerifyKeyboardConfig(const KeyboardConfig& config, bool expected_value) {

@@ -146,9 +146,9 @@ void It2MeCliHost::CloseChannel(const std::string& error_message) {
 }
 
 void It2MeCliHost::SendMessageToHost(const std::string& type,
-                                     base::Value params) {
+                                     base::Value::Dict params) {
   std::string message_json;
-  params.SetKey(kMessageType, base::Value(type));
+  params.Set(kMessageType, type);
   base::JSONWriter::Write(params, &message_json);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&It2MeCliHost::DoSendMessage,
@@ -175,14 +175,11 @@ void It2MeCliHost::StartCRDHostAndGetCode(OAuthTokenGetter::Status status,
   DCHECK(!host_);
 
   // Store all parameters for future connect call.
-  base::Value connect_params(base::Value::Type::DICT);
-
-  connect_params.SetKey(kUserName, base::Value(user_email));
-  connect_params.SetKey(kAuthServiceWithToken,
-                        base::Value("oauth2:" + access_token));
-  connect_params.SetKey(kSuppressUserDialogs, base::Value(true));
-  connect_params.SetKey(kSuppressNotifications, base::Value(true));
-  connect_params_ = std::move(connect_params);
+  connect_params_ = base::Value::Dict()
+                        .Set(kUserName, user_email)
+                        .Set(kAuthServiceWithToken, "oauth2:" + access_token)
+                        .Set(kSuppressUserDialogs, true)
+                        .Set(kSuppressNotifications, true);
 
   remote_connected_ = false;
   command_awaiting_crd_access_code_ = true;
@@ -190,8 +187,7 @@ void It2MeCliHost::StartCRDHostAndGetCode(OAuthTokenGetter::Status status,
   host_ = CreateNativeMessagingHost(ui_task_runner_);
   host_->Start(this);
 
-  base::Value params(base::Value::Type::DICT);
-  SendMessageToHost(kHelloMessage, std::move(params));
+  SendMessageToHost(kHelloMessage, base::Value::Dict());
 }
 
 void It2MeCliHost::ShutdownHost() {
@@ -261,8 +257,7 @@ void It2MeCliHost::OnStateRemoteDisconnected() {
   remote_connected_ = false;
   // Remote has disconnected, time to send "disconnect" that would result
   // in shutting down the host.
-  base::Value params(base::Value::Type::DICT);
-  SendMessageToHost(kDisconnectMessage, std::move(params));
+  SendMessageToHost(kDisconnectMessage, base::Value::Dict());
 }
 
 void It2MeCliHost::OnStateReceivedAccessCode(const base::Value::Dict& message) {
@@ -272,8 +267,7 @@ void It2MeCliHost::OnStateReceivedAccessCode(const base::Value::Dict& message) {
       // this CRD session through a remote command, and we can not send a new
       // access code. Assuming that the old access code is no longer valid, we
       // can only terminate the current CRD session.
-      base::Value params(base::Value::Type::DICT);
-      SendMessageToHost(kDisconnectMessage, std::move(params));
+      SendMessageToHost(kDisconnectMessage, base::Value::Dict());
     }
     return;
   }

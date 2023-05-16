@@ -5,7 +5,7 @@
 #include "services/network/test/trust_token_test_util.h"
 
 #include "base/json/json_reader.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -161,33 +161,20 @@ SerializeTrustTokenParametersAndConstructExpectation(
     parameters.Set("issuers", std::move(issuers));
   }
 
-  std::string serialized_parameters;
-  JSONStringValueSerializer serializer(&serialized_parameters);
-  CHECK(serializer.Serialize(parameters));
-
-  return {std::move(trust_token_params), std::move(serialized_parameters)};
+  return {std::move(trust_token_params), *base::WriteJson(parameters)};
 }
 
 std::string WrapKeyCommitmentsForIssuers(
     base::flat_map<url::Origin, base::StringPiece> issuers_and_commitments) {
-  std::string ret;
-  JSONStringValueSerializer serializer(&ret);
-
-  base::Value to_serialize(base::Value::Type::DICT);
-
-  for (const auto& kv : issuers_and_commitments) {
-    const url::Origin& issuer = kv.first;
-    base::StringPiece commitment = kv.second;
-
+  base::Value::Dict to_serialize;
+  for (const auto& [issuer, commitment] : issuers_and_commitments) {
     // guard against accidentally passing an origin without a unique
     // serialization
     CHECK_NE(issuer.Serialize(), "null");
 
-    to_serialize.SetKey(issuer.Serialize(),
-                        *base::JSONReader::Read(commitment));
+    to_serialize.Set(issuer.Serialize(), *base::JSONReader::Read(commitment));
   }
-  CHECK(serializer.Serialize(to_serialize));
-  return ret;
+  return *base::WriteJson(to_serialize);
 }
 
 }  // namespace network

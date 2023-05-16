@@ -183,10 +183,7 @@ base::Value GetSampleDynamicCapabilityNewValue() {
 bool JsonStringEquals(const std::string& json,
                       const std::string& key,
                       const base::Value& value) {
-  base::Value dict_value(base::Value::Type::DICT);
-  dict_value.SetKey(key, value.Clone());
-  std::string dict_json;
-  return base::JSONWriter::Write(dict_value, &dict_json) && dict_json == json;
+  return base::WriteJson(base::Value::Dict().Set(key, value.Clone())) == json;
 }
 
 // The function runs through the set of basic operations of DeviceCapabilities.

@@ -569,14 +569,13 @@ base::flat_set<std::string> ProfileAttributesEntry::GetGaiaIds() const {
 
 void ProfileAttributesEntry::SetGaiaIds(
     const base::flat_set<std::string>& gaia_ids) {
-  base::Value accounts(base::Value::Type::DICT);
+  base::Value::Dict accounts;
   for (const auto& gaia_id : gaia_ids) {
-    base::Value dict(base::Value::Type::DICT);
     // The dictionary is empty for now, but can hold account-specific info in
     // the future.
-    accounts.SetKey(gaia_id, std::move(dict));
+    accounts.Set(gaia_id, base::Value::Dict());
   }
-  SetValue(kAllAccountsKey, std::move(accounts));
+  SetValue(kAllAccountsKey, base::Value(std::move(accounts)));
 }
 
 void ProfileAttributesEntry::SetLocalProfileName(const std::u16string& name,
