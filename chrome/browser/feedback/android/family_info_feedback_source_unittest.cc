@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
@@ -138,9 +137,6 @@ class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
 // Tests that the parental control sites value for a child user is recorded.
 TEST_P(FamilyInfoFeedbackSourceForChildFilterBehaviorTest,
        GetChildFilteringBehaviour) {
-  base::test::ScopedFeatureList scoped_list{
-      chrome::android::kReportParentalControlSitesChild};
-
   CoreAccountInfo primary_account =
       identity_test_env()->MakePrimaryAccountAvailable(
           kTestEmail, signin::ConsentLevel::kSignin);
