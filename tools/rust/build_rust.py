@@ -74,9 +74,6 @@ EXCLUDED_TESTS = [
     os.path.join('tests', 'codegen', 'sanitizer-cfi-emit-type-checks.rs'),
     os.path.join('tests', 'codegen',
                  'sanitizer-cfi-emit-type-metadata-itanium-cxx-abi.rs'),
-    # https://github.com/rust-lang/rust/issues/96464 used to be Windows only but
-    # now fails everywhere.
-    os.path.join('tests', 'codegen', 'vec-shrink-panik.rs'),
     # https://github.com/rust-lang/rust/issues/109671 the test is being
     # optimized in newer LLVM which breaks its expectations.
     os.path.join('tests', 'ui', 'abi', 'stack-protector.rs'),
@@ -88,6 +85,8 @@ EXCLUDED_TESTS = [
     os.path.join('tests', 'ui', 'numeric', 'numeric-cast.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
+    # https://github.com/rust-lang/rust/issues/96464
+    os.path.join('tests', 'codegen', 'vec-shrink-panik.rs'),
 ]
 
 CLANG_SCRIPTS_DIR = os.path.join(THIS_DIR, '..', 'clang', 'scripts')
