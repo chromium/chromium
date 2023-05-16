@@ -186,6 +186,18 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
      "WebAuthn Credentials",
      sync_pb::EntitySpecifics::kWebauthnCredentialFieldNumber,
      ModelTypeForHistograms::kWebAuthnCredentials},
+    {INCOMING_PASSWORD_SHARING_INVITATION,
+     "INCOMING_PASSWORD_SHARING_INVITATION",
+     "incoming_password_sharing_invitation",
+     "Incoming Password Sharing Invitations",
+     sync_pb::EntitySpecifics::kIncomingPasswordSharingInvitationFieldNumber,
+     ModelTypeForHistograms::kIncomingPasswordSharingInvitations},
+    {OUTGOING_PASSWORD_SHARING_INVITATION,
+     "OUTGOING_PASSWORD_SHARING_INVITATION",
+     "outgoing_password_sharing_invitation",
+     "Outgoing Password Sharing Invitations",
+     sync_pb::EntitySpecifics::kOutgoingPasswordSharingInvitationFieldNumber,
+     ModelTypeForHistograms::kOutgoingPasswordSharingInvitations},
     // ---- Proxy types ----
     {PROXY_TABS, "", "", "Proxy tabs", -1, ModelTypeForHistograms::kProxyTabs},
     // ---- Control Types ----
@@ -197,7 +209,7 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
 static_assert(std::size(kModelTypeInfoMap) == GetNumModelTypes(),
               "kModelTypeInfoMap should have GetNumModelTypes() elements");
 
-static_assert(46 == syncer::GetNumModelTypes(),
+static_assert(48 == syncer::GetNumModelTypes(),
               "When adding a new type, update enum SyncModelTypes in enums.xml "
               "and suffix SyncModelType in histograms.xml.");
 
@@ -343,6 +355,12 @@ void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics) {
     case WEBAUTHN_CREDENTIAL:
       specifics->mutable_webauthn_credential();
       break;
+    case INCOMING_PASSWORD_SHARING_INVITATION:
+      specifics->mutable_incoming_password_sharing_invitation();
+      break;
+    case OUTGOING_PASSWORD_SHARING_INVITATION:
+      specifics->mutable_outgoing_password_sharing_invitation();
+      break;
   }
 }
 
@@ -373,7 +391,7 @@ void internal::GetModelTypeSetFromSpecificsFieldNumberListHelper(
 }
 
 ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  static_assert(46 == syncer::GetNumModelTypes(),
+  static_assert(48 == syncer::GetNumModelTypes(),
                 "When adding new protocol types, the following type lookup "
                 "logic must be updated.");
   if (specifics.has_bookmark())
@@ -465,6 +483,12 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
   if (specifics.has_webauthn_credential()) {
     return WEBAUTHN_CREDENTIAL;
   }
+  if (specifics.has_incoming_password_sharing_invitation()) {
+    return INCOMING_PASSWORD_SHARING_INVITATION;
+  }
+  if (specifics.has_outgoing_password_sharing_invitation()) {
+    return OUTGOING_PASSWORD_SHARING_INVITATION;
+  }
 
   // This client version doesn't understand |specifics|.
   DVLOG(1) << "Unknown datatype in sync proto.";
@@ -472,7 +496,7 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
 }
 
 ModelTypeSet EncryptableUserTypes() {
-  static_assert(46 == syncer::GetNumModelTypes(),
+  static_assert(48 == syncer::GetNumModelTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   ModelTypeSet encryptable_user_types = UserTypes();
@@ -493,6 +517,9 @@ ModelTypeSet EncryptableUserTypes() {
   encryptable_user_types.Remove(PRIORITY_PREFERENCES);
   encryptable_user_types.Remove(OS_PRIORITY_PREFERENCES);
   encryptable_user_types.Remove(SUPERVISED_USER_SETTINGS);
+  // Password sharing invitations have different encryption implementation.
+  encryptable_user_types.Remove(INCOMING_PASSWORD_SHARING_INVITATION);
+  encryptable_user_types.Remove(OUTGOING_PASSWORD_SHARING_INVITATION);
   // Proxy types have no sync representation and are therefore not encrypted.
   // Note however that proxy types map to one or more protocol types, which
   // may or may not be encrypted themselves.

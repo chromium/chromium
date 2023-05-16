@@ -30,6 +30,7 @@
 #include "components/sync/protocol/note_entity.pb.h"
 #include "components/sync/protocol/os_preference_specifics.pb.h"
 #include "components/sync/protocol/os_priority_preference_specifics.pb.h"
+#include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/protocol/persisted_entity_data.pb.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
@@ -553,7 +554,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntityMetadata& proto) {
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
-  static_assert(46 == GetNumModelTypes(),
+  static_assert(48 == GetNumModelTypes(),
                 "When adding a new protocol type, you will likely need to add "
                 "it here as well.");
   VISIT(encrypted);
@@ -574,10 +575,12 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(extension_setting);
   VISIT(history);
   VISIT(history_delete_directive);
+  VISIT(incoming_password_sharing_invitation);
   VISIT(managed_user_setting);
   VISIT(nigori);
   VISIT(os_preference);
   VISIT(os_priority_preference);
+  VISIT(outgoing_password_sharing_invitation);
   VISIT(password);
   VISIT(power_bookmark);
   VISIT(preference);
@@ -665,6 +668,11 @@ VISIT_PROTO_FIELDS(const sync_pb::HistoryDeleteDirectiveSpecifics& proto) {
   VISIT(global_id_directive);
   VISIT(time_range_directive);
   VISIT(url_directive);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::IncomingPasswordSharingInvitationSpecifics& proto) {
+  VISIT(guid);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::InvalidationSpecificFields& proto) {
@@ -845,6 +853,11 @@ VISIT_PROTO_FIELDS(const sync_pb::OsPreferenceSpecifics& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::OsPriorityPreferenceSpecifics& proto) {
   VISIT(preference);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::OutgoingPasswordSharingInvitationSpecifics& proto) {
+  VISIT(guid);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecifics& proto) {

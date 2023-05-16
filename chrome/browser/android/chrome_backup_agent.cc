@@ -18,7 +18,7 @@
 
 namespace {
 
-static_assert(46 == syncer::GetNumModelTypes(),
+static_assert(48 == syncer::GetNumModelTypes(),
               "If the new type has a corresponding pref, add it here");
 const char* backed_up_preferences_[] = {
     autofill::prefs::kAutofillWalletImportEnabled,

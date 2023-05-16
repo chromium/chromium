@@ -69,6 +69,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
       // Types with sometimes automatic changes get longer delays to allow more
       // coalescing.
       return kBigLocalChangeNudgeDelay;
+    case OUTGOING_PASSWORD_SHARING_INVITATION:
     case SHARING_MESSAGE:
       // Sharing messages are time-sensitive, so use a small nudge delay.
       return kMinLocalChangeNudgeDelay;
@@ -89,6 +90,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
     case HISTORY_DELETE_DIRECTIVES:
     case DICTIONARY:
     case DEVICE_INFO:
+    case INCOMING_PASSWORD_SHARING_INVITATION:
     case PRIORITY_PREFERENCES:
     case SUPERVISED_USER_SETTINGS:
     case APP_LIST:
@@ -169,6 +171,8 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
     case POWER_BOOKMARK:
     case PROXY_TABS:
     case WEBAUTHN_CREDENTIAL:
+    case INCOMING_PASSWORD_SHARING_INVITATION:
+    case OUTGOING_PASSWORD_SHARING_INVITATION:
       return false;
     case UNSPECIFIED:
       NOTREACHED();

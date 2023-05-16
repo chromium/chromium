@@ -35,6 +35,7 @@ import "components/sync/protocol/managed_user_shared_setting_specifics.proto";
 import "components/sync/protocol/nigori_specifics.proto";
 import "components/sync/protocol/os_preference_specifics.proto";
 import "components/sync/protocol/os_priority_preference_specifics.proto";
+import "components/sync/protocol/password_sharing_invitation_specifics.proto";
 import "components/sync/protocol/password_specifics.proto";
 import "components/sync/protocol/power_bookmark_specifics.proto";
 import "components/sync/protocol/preference_specifics.proto";
@@ -142,6 +143,10 @@ message EntitySpecifics {
     ContactInfoSpecifics contact_info = 1034378;
     SegmentationSpecifics segmentation = 1026052;
     PowerBookmarkSpecifics power_bookmark = 1073150;
+    IncomingPasswordSharingInvitationSpecifics
+        incoming_password_sharing_invitation = 1141935;
+    OutgoingPasswordSharingInvitationSpecifics
+        outgoing_password_sharing_invitation = 1142081;
 
     // No-longer-supported data types, in various stages of removal.
     // TODO(crbug.com/1395003): Eventually, these should all become "reserved"

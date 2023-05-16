@@ -53,7 +53,7 @@ class SyncServiceFactoryTest : public PlatformTest {
  protected:
   // Returns the collection of default datatypes.
   syncer::ModelTypeSet DefaultDatatypes() {
-    static_assert(46 == syncer::GetNumModelTypes(),
+    static_assert(48 == syncer::GetNumModelTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled).");
 
@@ -88,6 +88,8 @@ class SyncServiceFactoryTest : public PlatformTest {
     datatypes.Put(syncer::USER_EVENTS);
     datatypes.Put(syncer::USER_CONSENTS);
     datatypes.Put(syncer::SEND_TAB_TO_SELF);
+    // TODO(crbug.com/1445868): Add *_PASSWORD_SHARING_INVITATION once
+    // implemented.
 
     return datatypes;
   }

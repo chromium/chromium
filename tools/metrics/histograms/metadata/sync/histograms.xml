@@ -40,10 +40,14 @@ chromium-metrics-reviews@google.com.
   <variant name=".EXTENSION_SETTING" summary="EXTENSION_SETTING"/>
   <variant name=".HISTORY" summary="HISTORY"/>
   <variant name=".HISTORY_DELETE_DIRECTIVE" summary="HISTORY_DELETE_DIRECTIVE"/>
+  <variant name=".INCOMING_PASSWORD_SHARING_INVITATION"
+      summary="INCOMING_PASSWORD_SHARING_INVITATION"/>
   <variant name=".MANAGED_USER_SETTING" summary="MANAGED_USER_SETTING"/>
   <variant name=".NIGORI" summary="NIGORI"/>
   <variant name=".OS_PREFERENCE" summary="OS_PREFERENCE"/>
   <variant name=".OS_PRIORITY_PREFERENCE" summary="OS_PRIORITY_PREFERENCE"/>
+  <variant name=".OUTGOING_PASSWORD_SHARING_INVITATION"
+      summary="OUTGOING_PASSWORD_SHARING_INVITATION"/>
   <variant name=".PASSWORD" summary="PASSWORD"/>
   <variant name=".POWER_BOOKMARK" summary="POWER_BOOKMARK"/>
   <variant name=".PREFERENCE" summary="PREFERENCE"/>

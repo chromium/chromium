@@ -28,10 +28,10 @@
 namespace {
 
 syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
-  static_assert(46 == syncer::GetNumModelTypes(),
+  static_assert(48 == syncer::GetNumModelTypes(),
                 "Add new types below if they run in transport mode");
-  // Only some special allowlisted types (and control types) are allowed in
-  // standalone transport mode.
+  // Only some types will run by default in transport mode (i.e. without their
+  // own separate opt-in).
   syncer::ModelTypeSet allowed_types = {
       syncer::DEVICE_INFO,     syncer::USER_CONSENTS,
       syncer::SECURITY_EVENTS, syncer::AUTOFILL_WALLET_DATA,
