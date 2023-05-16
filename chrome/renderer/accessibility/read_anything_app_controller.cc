@@ -653,6 +653,16 @@ std::string ReadAnythingAppController::GetHtmlTag(
     return "div";
   }
 
+  // Some divs are marked with role=heading and aria-level=# to indicate
+  // the heading level, so use the <h#> tag directly.
+  if (ax_node->GetRole() == ax::mojom::Role::kHeading) {
+    std::string aria_level;
+    ax_node->GetHtmlAttribute("aria-level", &aria_level);
+    if (!aria_level.empty()) {
+      return "h" + aria_level;
+    }
+  }
+
   // Replace mark element with bold element for readability
   std::string html_tag =
       ax_node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);

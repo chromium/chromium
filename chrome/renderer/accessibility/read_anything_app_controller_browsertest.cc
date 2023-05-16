@@ -414,6 +414,23 @@ TEST_F(ReadAnythingAppControllerTest, GetHtmlTag_TextFieldReturnsDiv) {
   EXPECT_EQ(div, GetHtmlTag(4));
 }
 
+TEST_F(ReadAnythingAppControllerTest,
+       GetHtmlTag_DivWithHeadingAndAriaLevelReturnsH) {
+  std::string h3 = "h3";
+  std::string div = "div";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(3);
+  update.nodes[0].id = 2;
+  update.nodes[1].id = 3;
+  update.nodes[2].id = 4;
+  update.nodes[1].role = ax::mojom::Role::kHeading;
+  update.nodes[1].html_attributes.emplace_back("aria-level", "3");
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
+  EXPECT_EQ(h3, GetHtmlTag(3));
+}
+
 TEST_F(ReadAnythingAppControllerTest, GetTextContent_NoSelection) {
   std::string text_content = "Hello";
   std::string missing_text_content = "";
