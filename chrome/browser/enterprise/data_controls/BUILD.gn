@@ -15,6 +15,10 @@ source_set("data_controls") {
     "//components/prefs",
     "//url",
   ]
+
+  if (is_chromeos) {
+    sources += [ "component.h" ]
+  }
 }
 
 source_set("test_support") {

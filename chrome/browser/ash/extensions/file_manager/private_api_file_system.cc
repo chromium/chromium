@@ -256,10 +256,9 @@ extensions::api::file_manager_private::DlpLevel DlpRulesManagerLevelToApiEnum(
 }
 
 extensions::api::file_manager_private::VolumeType
-DlpRulesManagerComponentToApiEnum(
-    policy::DlpRulesManager::Component component) {
+DlpRulesManagerComponentToApiEnum(data_controls::Component component) {
   using ::extensions::api::file_manager_private::VolumeType;
-  using Component = ::policy::DlpRulesManager::Component;
+  using Component = ::data_controls::Component;
   switch (component) {
     case Component::kArc:
       return VolumeType::VOLUME_TYPE_ANDROID_FILES;
@@ -1124,7 +1123,7 @@ FileManagerPrivateGetDlpBlockedComponentsFunction::Run() {
   const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  const std::vector<policy::DlpRulesManager::Component> components =
+  const std::vector<data_controls::Component> components =
       files_controller->GetBlockedComponents(params->source_url);
 
   using extensions::api::file_manager_private::VolumeType;

@@ -43,25 +43,25 @@ policy::DlpFilesController::FileAction MapProtoToFileAction(
   }
 }
 
-// Maps |component| to DlpRulesManager::Component.
-policy::DlpRulesManager::Component MapProtoToPolicyComponent(
+// Maps |component| to data_controls::Component.
+data_controls::Component MapProtoToPolicyComponent(
     ::dlp::DlpComponent component) {
   switch (component) {
     case ::dlp::DlpComponent::ARC:
-      return policy::DlpRulesManager::Component::kArc;
+      return data_controls::Component::kArc;
     case ::dlp::DlpComponent::CROSTINI:
-      return policy::DlpRulesManager::Component::kCrostini;
+      return data_controls::Component::kCrostini;
     case ::dlp::DlpComponent::PLUGIN_VM:
-      return policy::DlpRulesManager::Component::kPluginVm;
+      return data_controls::Component::kPluginVm;
     case ::dlp::DlpComponent::USB:
-      return policy::DlpRulesManager::Component::kUsb;
+      return data_controls::Component::kUsb;
     case ::dlp::DlpComponent::GOOGLE_DRIVE:
-      return policy::DlpRulesManager::Component::kDrive;
+      return data_controls::Component::kDrive;
     case ::dlp::DlpComponent::MICROSOFT_ONEDRIVE:  // TODO(b/280575394): Handle
                                                    // OneDrive properly.
     case ::dlp::DlpComponent::UNKNOWN_COMPONENT:
     case ::dlp::DlpComponent::SYSTEM:
-      return policy::DlpRulesManager::Component::kUnknownComponent;
+      return data_controls::Component::kUnknownComponent;
   }
 }
 

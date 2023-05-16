@@ -414,7 +414,7 @@ bool SelectFileDialogHolder::SelectFile(
   owner.window = owner_window;
   owner.android_task_id = task_id;
   owner.dialog_caller =
-      policy::DlpFileDestination(policy::DlpRulesManager::Component::kArc);
+      policy::DlpFileDestination(data_controls::Component::kArc);
   select_file_dialog_->SelectFileWithFileManagerParams(
       type,
       /*title=*/std::u16string(), default_path, file_types,

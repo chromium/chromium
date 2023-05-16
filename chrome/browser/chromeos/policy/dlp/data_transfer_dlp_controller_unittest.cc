@@ -117,16 +117,16 @@ std::unique_ptr<content::WebContents> CreateTestWebContents(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-DlpRulesManager::Component GetComponent(ui::EndpointType endpoint_type) {
+data_controls::Component GetComponent(ui::EndpointType endpoint_type) {
   switch (endpoint_type) {
     case ui::EndpointType::kArc:
-      return DlpRulesManager::Component::kArc;
+      return data_controls::Component::kArc;
     case ui::EndpointType::kCrostini:
-      return DlpRulesManager::Component::kCrostini;
+      return data_controls::Component::kCrostini;
     case ui::EndpointType::kPluginVm:
-      return DlpRulesManager::Component::kPluginVm;
+      return data_controls::Component::kPluginVm;
     default:
-      return DlpRulesManager::Component::kUnknownComponent;
+      return data_controls::Component::kUnknownComponent;
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

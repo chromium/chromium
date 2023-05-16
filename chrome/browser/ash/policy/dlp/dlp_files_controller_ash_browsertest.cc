@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
   EXPECT_CALL(*mock_rules_manager_, GetReportingManager);
   EXPECT_CALL(*mock_rules_manager_,
               IsRestrictedComponent(
-                  GURL(kExampleUrl), DlpRulesManager::Component::kDrive,
+                  GURL(kExampleUrl), data_controls::Component::kDrive,
                   DlpRulesManager::Restriction::kFiles, testing::_, testing::_))
       .WillOnce(testing::Return(DlpRulesManager::Level::kWarn));
 
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
                                  kExampleUrl);
   EXPECT_EQ(files_controller_->GetWarnDialogForTesting(), nullptr);
   files_controller_->IsFilesTransferRestricted(
-      transferred_files, DlpFileDestination(DlpRulesManager::Component::kDrive),
+      transferred_files, DlpFileDestination(data_controls::Component::kDrive),
       DlpFilesControllerAsh::FileAction::kMove, base::DoNothing());
   EXPECT_NE(files_controller_->GetWarnDialogForTesting(), nullptr);
 }
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
   EXPECT_CALL(*mock_rules_manager_, GetReportingManager);
   EXPECT_CALL(*mock_rules_manager_,
               IsRestrictedComponent(
-                  GURL(kExampleUrl), DlpRulesManager::Component::kDrive,
+                  GURL(kExampleUrl), data_controls::Component::kDrive,
                   DlpRulesManager::Restriction::kFiles, testing::_, testing::_))
       .WillOnce(testing::Return(DlpRulesManager::Level::kWarn));
 
@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
                                  kExampleUrl);
   EXPECT_EQ(files_controller_->GetWarnDialogForTesting(), nullptr);
   files_controller_->IsFilesTransferRestricted(
-      transferred_files, DlpFileDestination(DlpRulesManager::Component::kDrive),
+      transferred_files, DlpFileDestination(data_controls::Component::kDrive),
       DlpFilesControllerAsh::FileAction::kDownload, base::DoNothing());
   EXPECT_NE(files_controller_->GetWarnDialogForTesting(), nullptr);
 }

@@ -8,8 +8,7 @@ namespace policy {
 
 DlpFileDestination::DlpFileDestination(const std::string& url)
     : url_or_path_(url) {}
-DlpFileDestination::DlpFileDestination(
-    const DlpRulesManager::Component component)
+DlpFileDestination::DlpFileDestination(const data_controls::Component component)
     : component_(component) {}
 
 DlpFileDestination::DlpFileDestination(const DlpFileDestination&) = default;
@@ -54,8 +53,7 @@ absl::optional<std::string> DlpFileDestination::url_or_path() const {
   return url_or_path_;
 }
 
-absl::optional<DlpRulesManager::Component> DlpFileDestination::component()
-    const {
+absl::optional<data_controls::Component> DlpFileDestination::component() const {
   return component_;
 }
 

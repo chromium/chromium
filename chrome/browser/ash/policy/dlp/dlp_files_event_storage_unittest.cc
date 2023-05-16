@@ -68,7 +68,7 @@ TEST_F(DlpFilesEventStorageTest, UpsertEvents) {
   storage.SetTaskRunnerForTesting(task_runner);
 
   const auto dst1 = DlpFileDestination(kExampleUrl1);
-  const auto dst2 = DlpFileDestination(DlpRulesManager::Component::kDrive);
+  const auto dst2 = DlpFileDestination(data_controls::Component::kDrive);
 
   // Insertion
   ASSERT_TRUE(storage.StoreEventAndCheckIfItShouldBeReported(kInode1, dst1));

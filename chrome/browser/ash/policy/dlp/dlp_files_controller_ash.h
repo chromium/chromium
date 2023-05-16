@@ -87,7 +87,7 @@ class DlpFilesControllerAsh : public DlpFilesController {
     // List of URLs for which the restriction is enforced.
     std::vector<std::string> urls;
     // List of components for which the restriction is enforced.
-    std::vector<DlpRulesManager::Component> components;
+    std::vector<data_controls::Component> components;
   };
 
   // FileDaemonInfo represents file info used for communication with the DLP
@@ -202,7 +202,7 @@ class DlpFilesControllerAsh : public DlpFilesController {
 
   // Returns a list of components to which the transfer of a file with
   // `source_url` is blocked.
-  std::vector<DlpRulesManager::Component> GetBlockedComponents(
+  std::vector<data_controls::Component> GetBlockedComponents(
       const std::string& source_url);
 
   // Returns whether a dlp policy matches for the `file`.

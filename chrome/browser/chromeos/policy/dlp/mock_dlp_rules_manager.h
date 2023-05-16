@@ -37,7 +37,7 @@ class MockDlpRulesManager : public DlpRulesManager {
 
   MOCK_CONST_METHOD5(IsRestrictedComponent,
                      Level(const GURL& source,
-                           const Component& destination,
+                           const data_controls::Component& destination,
                            Restriction restriction,
                            std::string* out_source_pattern,
                            RuleMetadata* out_rule_metadata));

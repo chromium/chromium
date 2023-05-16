@@ -56,7 +56,7 @@ class DlpReportingManagerTest : public testing::Test {
 
  protected:
   void ReportEventAndCheckComponent(
-      DlpRulesManager::Component rule_component,
+      data_controls::Component rule_component,
       DlpPolicyEventDestination_Component event_component,
       unsigned int event_number) {
     manager_.ReportEvent(kCompanyPattern, rule_component,
@@ -150,20 +150,20 @@ TEST_F(DlpReportingManagerTest, ReportEventWithUrlDst) {
 }
 
 TEST_F(DlpReportingManagerTest, ReportEventWithComponentDst) {
-  ReportEventAndCheckComponent(DlpRulesManager::Component::kArc,
+  ReportEventAndCheckComponent(data_controls::Component::kArc,
                                DlpPolicyEventDestination_Component_ARC, 0u);
-  ReportEventAndCheckComponent(DlpRulesManager::Component::kCrostini,
+  ReportEventAndCheckComponent(data_controls::Component::kCrostini,
                                DlpPolicyEventDestination_Component_CROSTINI,
                                1u);
-  ReportEventAndCheckComponent(DlpRulesManager::Component::kPluginVm,
+  ReportEventAndCheckComponent(data_controls::Component::kPluginVm,
                                DlpPolicyEventDestination_Component_PLUGIN_VM,
                                2u);
-  ReportEventAndCheckComponent(DlpRulesManager::Component::kUsb,
+  ReportEventAndCheckComponent(data_controls::Component::kUsb,
                                DlpPolicyEventDestination_Component_USB, 3u);
-  ReportEventAndCheckComponent(DlpRulesManager::Component::kDrive,
+  ReportEventAndCheckComponent(data_controls::Component::kDrive,
                                DlpPolicyEventDestination_Component_DRIVE, 4u);
   ReportEventAndCheckComponent(
-      DlpRulesManager::Component::kUnknownComponent,
+      data_controls::Component::kUnknownComponent,
       DlpPolicyEventDestination_Component_UNDEFINED_COMPONENT, 5u);
   EXPECT_EQ(manager_.events_reported(), 6u);
 }

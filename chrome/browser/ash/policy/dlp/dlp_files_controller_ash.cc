@@ -126,11 +126,11 @@ absl::optional<DlpFileDestination> GetFileDestinationForApp(
       return DlpFileDestination(base::StrCat(
           {extensions::kExtensionScheme, "://", app_update.AppId()}));
     case apps::AppType::kArc:
-      return DlpFileDestination(DlpRulesManager::Component::kArc);
+      return DlpFileDestination(data_controls::Component::kArc);
     case apps::AppType::kCrostini:
-      return DlpFileDestination(DlpRulesManager::Component::kCrostini);
+      return DlpFileDestination(data_controls::Component::kCrostini);
     case apps::AppType::kPluginVm:
-      return DlpFileDestination(DlpRulesManager::Component::kPluginVm);
+      return DlpFileDestination(data_controls::Component::kPluginVm);
     case apps::AppType::kWeb:
       return DlpFileDestination(app_update.PublisherId());
     case apps::AppType::kUnknown:
@@ -155,38 +155,38 @@ std::vector<absl::optional<ino64_t>> GetFilesInodes(
   return inodes;
 }
 
-// Maps |file_path| to DlpRulesManager::Component if possible.
-absl::optional<DlpRulesManager::Component> MapFilePathtoPolicyComponent(
+// Maps |file_path| to data_controls::Component if possible.
+absl::optional<data_controls::Component> MapFilePathtoPolicyComponent(
     Profile* profile,
     const base::FilePath file_path) {
   if (base::FilePath(file_manager::util::GetAndroidFilesPath())
           .IsParent(file_path)) {
-    return DlpRulesManager::Component::kArc;
+    return data_controls::Component::kArc;
   }
 
   if (base::FilePath(file_manager::util::kRemovableMediaPath)
           .IsParent(file_path)) {
-    return DlpRulesManager::Component::kUsb;
+    return data_controls::Component::kUsb;
   }
 
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   if (integration_service && integration_service->is_enabled() &&
       integration_service->GetMountPointPath().IsParent(file_path)) {
-    return DlpRulesManager::Component::kDrive;
+    return data_controls::Component::kDrive;
   }
 
   base::FilePath linux_files =
       file_manager::util::GetCrostiniMountDirectory(profile);
   if (linux_files == file_path || linux_files.IsParent(file_path)) {
-    return DlpRulesManager::Component::kCrostini;
+    return data_controls::Component::kCrostini;
   }
 
   return {};
 }
 
 // Gets the component out of |destination| if possible.
-absl::optional<DlpRulesManager::Component> MaybeGetComponent(
+absl::optional<data_controls::Component> MaybeGetComponent(
     Profile* profile,
     const DlpFileDestination& destination) {
   if (destination.component().has_value()) {
@@ -199,19 +199,19 @@ absl::optional<DlpRulesManager::Component> MaybeGetComponent(
 
 // Maps |component| to ::dlp::DlpComponent.
 ::dlp::DlpComponent MapPolicyComponentToProto(
-    DlpRulesManager::Component component) {
+    data_controls::Component component) {
   switch (component) {
-    case DlpRulesManager::Component::kUnknownComponent:
+    case data_controls::Component::kUnknownComponent:
       return ::dlp::DlpComponent::UNKNOWN_COMPONENT;
-    case DlpRulesManager::Component::kArc:
+    case data_controls::Component::kArc:
       return ::dlp::DlpComponent::ARC;
-    case DlpRulesManager::Component::kCrostini:
+    case data_controls::Component::kCrostini:
       return ::dlp::DlpComponent::CROSTINI;
-    case DlpRulesManager::Component::kPluginVm:
+    case data_controls::Component::kPluginVm:
       return ::dlp::DlpComponent::PLUGIN_VM;
-    case DlpRulesManager::Component::kUsb:
+    case data_controls::Component::kUsb:
       return ::dlp::DlpComponent::USB;
-    case DlpRulesManager::Component::kDrive:
+    case data_controls::Component::kDrive:
       return ::dlp::DlpComponent::GOOGLE_DRIVE;
   }
 }
@@ -426,19 +426,19 @@ void GotFilesSourcesOfCopy(
 }
 
 ::dlp::DlpComponent MapPolicyToProtoComponent(
-    DlpRulesManager::Component component) {
+    data_controls::Component component) {
   switch (component) {
-    case DlpRulesManager::Component::kUnknownComponent:
+    case data_controls::Component::kUnknownComponent:
       return ::dlp::DlpComponent::UNKNOWN_COMPONENT;
-    case DlpRulesManager::Component::kArc:
+    case data_controls::Component::kArc:
       return ::dlp::DlpComponent::ARC;
-    case DlpRulesManager::Component::kCrostini:
+    case data_controls::Component::kCrostini:
       return ::dlp::DlpComponent::CROSTINI;
-    case DlpRulesManager::Component::kPluginVm:
+    case data_controls::Component::kPluginVm:
       return ::dlp::DlpComponent::PLUGIN_VM;
-    case DlpRulesManager::Component::kUsb:
+    case data_controls::Component::kUsb:
       return ::dlp::DlpComponent::USB;
-    case DlpRulesManager::Component::kDrive:
+    case data_controls::Component::kDrive:
       return ::dlp::DlpComponent::GOOGLE_DRIVE;
   }
 }
@@ -523,20 +523,20 @@ DlpFileDestination DTEndpointToFileDestination(
       return DlpFileDestination(endpoint->GetURL()->spec());
 
     case ui::EndpointType::kArc:
-      return DlpFileDestination(DlpRulesManager::Component::kArc);
+      return DlpFileDestination(data_controls::Component::kArc);
 
     case ui::EndpointType::kCrostini:
-      return DlpFileDestination(DlpRulesManager::Component::kCrostini);
+      return DlpFileDestination(data_controls::Component::kCrostini);
 
     case ui::EndpointType::kPluginVm:
-      return DlpFileDestination(DlpRulesManager::Component::kPluginVm);
+      return DlpFileDestination(data_controls::Component::kPluginVm);
 
     case ui::EndpointType::kLacros:
     case ui::EndpointType::kDefault:
     case ui::EndpointType::kClipboardHistory:
     case ui::EndpointType::kBorealis:
     case ui::EndpointType::kUnknownVm:
-      return DlpFileDestination(DlpRulesManager::Component::kUnknownComponent);
+      return DlpFileDestination(data_controls::Component::kUnknownComponent);
   }
 }
 
@@ -645,13 +645,13 @@ void DlpFilesControllerAsh::RequestCopyAccess(
   }
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
 
-  absl::optional<DlpRulesManager::Component> dst_component =
+  absl::optional<data_controls::Component> dst_component =
       MapFilePathtoPolicyComponent(profile, destination.path());
-  absl::optional<DlpRulesManager::Component> src_component =
+  absl::optional<data_controls::Component> src_component =
       MapFilePathtoPolicyComponent(profile, source_file.path());
   ::dlp::DlpComponent component_proto;
   if (!src_component.has_value()) {
-    src_component = DlpRulesManager::Component::kUnknownComponent;
+    src_component = data_controls::Component::kUnknownComponent;
   }
   if (dst_component.has_value()) {
     component_proto = MapPolicyToProtoComponent(dst_component.value());
@@ -662,7 +662,7 @@ void DlpFilesControllerAsh::RequestCopyAccess(
   }
 
   // Copy from external is not limited by DLP.
-  if (src_component != DlpRulesManager::Component::kUnknownComponent) {
+  if (src_component != data_controls::Component::kUnknownComponent) {
     std::move(result_callback)
         .Run(std::make_unique<file_access::ScopedFileAccess>(
             file_access::ScopedFileAccess::Allowed()));
@@ -921,7 +921,7 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
     IsFilesTransferRestrictedCallback result_callback) {
   auto* profile = ProfileManager::GetPrimaryUserProfile();
   DCHECK(profile);
-  absl::optional<DlpRulesManager::Component> dst_component =
+  absl::optional<data_controls::Component> dst_component =
       MaybeGetComponent(profile, destination);
 
   DlpFileDestination actual_dst = destination;
@@ -1055,14 +1055,14 @@ DlpFilesControllerAsh::GetDlpRestrictionDetails(const std::string& source_url) {
   return result;
 }
 
-std::vector<DlpRulesManager::Component>
+std::vector<data_controls::Component>
 DlpFilesControllerAsh::GetBlockedComponents(const std::string& source_url) {
   const GURL source(source_url);
   const DlpRulesManager::AggregatedComponents aggregated_components =
       rules_manager_->GetAggregatedComponents(
           source, DlpRulesManager::Restriction::kFiles);
 
-  std::vector<DlpRulesManager::Component> result;
+  std::vector<data_controls::Component> result;
   const auto it = aggregated_components.find(DlpRulesManager::Level::kBlock);
   if (it != aggregated_components.end()) {
     base::ranges::move(it->second.begin(), it->second.end(),
@@ -1096,7 +1096,7 @@ bool DlpFilesControllerAsh::IsDlpPolicyMatched(const FileDaemonInfo& file) {
 
   MaybeReportEvent(
       file.inode, file.path, src_pattern,
-      DlpFileDestination(DlpRulesManager::Component::kUnknownComponent),
+      DlpFileDestination(data_controls::Component::kUnknownComponent),
       absl::nullopt, rule_metadata, level);
 
   return restricted;
@@ -1275,7 +1275,7 @@ void DlpFilesControllerAsh::ReturnDlpMetadata(
     if (level == DlpRulesManager::Level::kBlock && destination.has_value()) {
       auto* profile = ProfileManager::GetPrimaryUserProfile();
       DCHECK(profile);
-      absl::optional<DlpRulesManager::Component> dst_component =
+      absl::optional<data_controls::Component> dst_component =
           MaybeGetComponent(profile, destination.value());
       if (dst_component.has_value()) {
         DlpRulesManager::Level dst_level =

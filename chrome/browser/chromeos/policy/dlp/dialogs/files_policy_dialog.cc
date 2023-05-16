@@ -43,20 +43,20 @@ std::u16string GetDestinationURL(DlpFileDestination destination) {
 const std::u16string GetDestinationComponent(DlpFileDestination destination) {
   DCHECK(destination.component().has_value());
   switch (destination.component().value()) {
-    case DlpRulesManager::Component::kArc:
+    case data_controls::Component::kArc:
       return l10n_util::GetStringUTF16(
           IDS_FILE_BROWSER_ANDROID_FILES_ROOT_LABEL);
-    case DlpRulesManager::Component::kCrostini:
+    case data_controls::Component::kCrostini:
       return l10n_util::GetStringUTF16(IDS_FILE_BROWSER_LINUX_FILES_ROOT_LABEL);
-    case DlpRulesManager::Component::kPluginVm:
+    case data_controls::Component::kPluginVm:
       return l10n_util::GetStringUTF16(
           IDS_FILE_BROWSER_PLUGIN_VM_DIRECTORY_LABEL);
-    case DlpRulesManager::Component::kUsb:
+    case data_controls::Component::kUsb:
       return l10n_util::GetStringUTF16(
           IDS_POLICY_DLP_FILES_DESTINATION_REMOVABLE_STORAGE);
-    case DlpRulesManager::Component::kDrive:
+    case data_controls::Component::kDrive:
       return l10n_util::GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
-    case DlpRulesManager::Component::kUnknownComponent:
+    case data_controls::Component::kUnknownComponent:
       NOTREACHED();
       return u"";
   }
