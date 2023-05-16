@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
@@ -54,6 +53,7 @@ import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenMode;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenWebFeedEntryPoint;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
+import org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler;
 import org.chromium.chrome.browser.xsurface.feed.StreamType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -389,8 +389,7 @@ public class FeedStream implements Stream {
     /**
      * Implementation of FeedActionsHandler methods.
      */
-    class FeedActionsHandlerImpl
-            implements org.chromium.chrome.browser.xsurface.FeedActionsHandler {
+    class FeedActionsHandlerImpl implements FeedActionsHandler {
         private static final int SNACKBAR_DURATION_MS_SHORT = 4000;
         private static final int SNACKBAR_DURATION_MS_LONG = 10000;
         // This is based on the menu animation time (218ms) from BottomSheet.java.
@@ -456,37 +455,13 @@ public class FeedStream implements Stream {
                     mNativeFeedStream, FeedStream.this, changeId);
         }
 
-        private @org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler.SnackbarDuration
-        int convertDuration(SnackbarDuration duration) {
-            switch (duration) {
-                case SHORT:
-                    return org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler
-                            .SnackbarDuration.SHORT;
-                case LONG:
-                    return org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler
-                            .SnackbarDuration.LONG;
-            }
-            return org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler.SnackbarDuration
-                    .SHORT;
-        }
-
-        @Override
-        public void showSnackbar(String text, String actionLabel, SnackbarDuration duration,
-                SnackbarController controller) {
-            showSnackbar(text, actionLabel, convertDuration(duration), controller);
-        }
-
         @Override
         public void showSnackbar(String text, String actionLabel,
-                @org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler.SnackbarDuration
-                int duration,
-                org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler
-                        .SnackbarController delegateController) {
+                @FeedActionsHandler.SnackbarDuration int duration,
+                FeedActionsHandler.SnackbarController delegateController) {
             assert ThreadUtils.runningOnUiThread();
             int durationMs = SNACKBAR_DURATION_MS_SHORT;
-            if (duration
-                    == org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler.SnackbarDuration
-                               .LONG) {
+            if (duration == FeedActionsHandler.SnackbarDuration.LONG) {
                 durationMs = SNACKBAR_DURATION_MS_LONG;
             }
             SnackbarManager.SnackbarController controller =
