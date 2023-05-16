@@ -566,6 +566,9 @@ void ApplicationContextImpl::CreateLocalState() {
       std::max(std::min<int>(net::kDefaultMaxSocketsPerProxyServer, 99),
                net::ClientSocketPoolManager::max_sockets_per_group(
                    net::HttpNetworkSession::NORMAL_SOCKET_POOL)));
+
+  // Cleanup obsolete preferences.
+  MigrateObsoleteLocalStatePrefs(local_state_.get());
 }
 
 void ApplicationContextImpl::CreateGCMDriver() {
