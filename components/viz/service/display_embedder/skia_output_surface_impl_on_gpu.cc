@@ -1738,11 +1738,17 @@ bool SkiaOutputSurfaceImplOnGpu::Initialize() {
   }
 
   if (is_using_vulkan()) {
-    if (!InitializeForVulkan())
+    if (!InitializeForVulkan()) {
       return false;
+    }
+  } else if (is_using_graphite_dawn()) {
+    if (!InitializeForDawn()) {
+      return false;
+    }
   } else {
-    if (!InitializeForGL())
+    if (!InitializeForGL()) {
       return false;
+    }
   }
 
   max_resource_cache_bytes_ =
@@ -1957,18 +1963,26 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
           GetDidSwapBuffersCompleteCallback());
     }
 #elif BUILDFLAG(IS_WIN)
-    std::unique_ptr<SkiaOutputDeviceDawn> output_device =
-        std::make_unique<SkiaOutputDeviceDawn>(
-            dawn_context_provider_, gfx::SurfaceOrigin::kTopLeft,
-            shared_gpu_deps_->memory_tracker(),
-            GetDidSwapBuffersCompleteCallback());
-    const gpu::SurfaceHandle child_window_handle =
-        output_device->GetChildSurfaceHandle();
-    AddChildWindowToBrowser(child_window_handle);
-    output_device_ = std::move(output_device);
+    output_device_ = std::make_unique<SkiaOutputDeviceDawn>(
+        dawn_context_provider_, gfx::SurfaceOrigin::kTopLeft,
+        shared_gpu_deps_->memory_tracker(),
+        GetDidSwapBuffersCompleteCallback());
+    AddChildWindowToBrowser(output_device_->GetChildSurfaceHandle());
+#elif BUILDFLAG(IS_MAC)
+    presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr(),
+                                              gl::GLSurfaceFormat());
+    if (features::UseGpuVsync()) {
+      presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
+    }
+    output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
+        std::make_unique<OutputPresenterGL>(
+            presenter_, dependency_, shared_image_factory_.get(),
+            shared_image_representation_factory_.get()),
+        dependency_, shared_image_representation_factory_.get(),
+        shared_gpu_deps_->memory_tracker(),
+        GetDidSwapBuffersCompleteCallback());
 #else
-    NOTREACHED();
-    return false;
+    NOTREACHED_NORETURN();
 #endif
   }
 #endif

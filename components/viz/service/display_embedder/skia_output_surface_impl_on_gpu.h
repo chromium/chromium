@@ -336,6 +336,11 @@ class SkiaOutputSurfaceImplOnGpu
     return gpu_preferences_.gr_context_type == gpu::GrContextType::kGL;
   }
 
+  bool is_using_graphite_dawn() const {
+    return !!dawn_context_provider_ && gpu_preferences_.gr_context_type ==
+                                           gpu::GrContextType::kGraphiteDawn;
+  }
+
   // Helper for `CopyOutput()` method, handles the RGBA format.
   void CopyOutputRGBA(SkSurface* surface,
                       copy_output::RenderPassGeometry geometry,
