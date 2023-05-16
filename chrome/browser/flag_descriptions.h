@@ -1898,6 +1898,9 @@ extern const char kVp9kSVCHWDecodingDescription[];
 extern const char kWalletServiceUseSandboxName[];
 extern const char kWalletServiceUseSandboxDescription[];
 
+extern const char kTaskManagerEndProcessDisabledForExtensionName[];
+extern const char kTaskManagerEndProcessDisabledForExtensionDescription[];
+
 extern const char kWallpaperFastRefreshName[];
 extern const char kWallpaperFastRefreshDescription[];
 

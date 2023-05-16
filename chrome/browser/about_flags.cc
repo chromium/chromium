@@ -3002,6 +3002,11 @@ const FeatureEntry::FeatureVariation kEolIncentiveVariations[] = {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS)
+constexpr char kTaskManagerEndProcessDisabledForExtensionInternalName[] =
+    "enable-task-manager-end-process-disabled-for-extension";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kWallpaperFastRefreshInternalName[] = "wallpaper-fast-refresh";
 constexpr char kWallpaperGooglePhotosSharedAlbumsInternalName[] =
@@ -8408,6 +8413,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          features::kClearCrossSiteCrossBrowsingContextGroupWindowName)},
+
+#if BUILDFLAG(IS_CHROMEOS)
+    {kTaskManagerEndProcessDisabledForExtensionInternalName,
+     flag_descriptions::kTaskManagerEndProcessDisabledForExtensionName,
+     flag_descriptions::kTaskManagerEndProcessDisabledForExtensionDescription,
+     kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(features::kDesktopPWAsRunOnOsLogin)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {kWallpaperFastRefreshInternalName,

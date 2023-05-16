@@ -248,6 +248,13 @@ const base::FeatureParam<OsIntegrationSubManagersStage>
         OsIntegrationSubManagersStage::kWriteConfig, &sub_manager_stages};
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+// If enabled, specified extensions cannot be closed via the task manager.
+BASE_FEATURE(kDesktopTaskManagerEndProcessDisabledForExtension,
+             "DesktopTaskManagerEndProcessDisabledForExtension",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Generates customised default offline page that is shown when web app is
 // offline if no custom page is provided by developer.
 BASE_FEATURE(kPWAsDefaultOfflinePage,

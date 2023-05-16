@@ -3352,6 +3352,13 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-task-manager-end-process-disabled-for-extension",
+    "owners": [
+      "simonha"
+    ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-tflite-language-detection",
     "owners": [ "sophiechang", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 120
