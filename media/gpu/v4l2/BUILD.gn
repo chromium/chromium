@@ -24,6 +24,8 @@ generate_stubs("libv4l2_stubs") {
 source_set("v4l2") {
   defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
   sources = [
+    "buffer_affinity_tracker.cc",
+    "buffer_affinity_tracker.h",
     "legacy/v4l2_slice_video_decode_accelerator.cc",
     "legacy/v4l2_slice_video_decode_accelerator.h",
     "legacy/v4l2_stateful_workaround.cc",
