@@ -25,7 +25,7 @@ namespace ash {
 
 namespace {
 
-constexpr base::StringPiece kAmbientVideoSrcQueryParam = "video_src";
+constexpr base::StringPiece kAmbientVideoFileQueryParam = "video_file";
 
 // Apply the same jitter interval to the peripheral elements as the slideshow
 // theme does (which applies jitter each time the photo switches).
@@ -38,12 +38,12 @@ GURL BuildFileUrl(const base::FilePath& file_path) {
 
 }  // namespace
 
-AmbientVideoView::AmbientVideoView(const base::FilePath& video_path,
+AmbientVideoView::AmbientVideoView(base::StringPiece video_file,
                                    const base::FilePath& html_path,
                                    AmbientViewDelegate* view_delegate)
     : peripheral_ui_(
           std::make_unique<AmbientSlideshowPeripheralUi>(view_delegate)) {
-  DCHECK(!video_path.empty());
+  DCHECK(!video_file.empty());
   DCHECK(!html_path.empty());
   DCHECK(AshWebViewFactory::Get());
   SetUseDefaultFillLayout(true);
@@ -56,8 +56,7 @@ AmbientVideoView::AmbientVideoView(const base::FilePath& video_path,
   ash_web_view->SetID(kAmbientVideoWebView);
   ash_web_view->SetUseDefaultFillLayout(true);
   GURL ambient_video_url = net::AppendQueryParameter(
-      BuildFileUrl(html_path), kAmbientVideoSrcQueryParam,
-      BuildFileUrl(video_path).spec());
+      BuildFileUrl(html_path), kAmbientVideoFileQueryParam, video_file);
   ash_web_view->Navigate(ambient_video_url);
 
   AddChildView(peripheral_ui_.get());

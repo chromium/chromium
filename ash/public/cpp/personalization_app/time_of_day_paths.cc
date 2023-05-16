@@ -12,24 +12,9 @@ namespace {
 
 constexpr base::FilePath::CharType kAssetsRootDir[] =
     FILE_PATH_LITERAL("/usr/share/chromeos-assets/personalization/time_of_day");
-constexpr base::FilePath::CharType kVideosSubDir[] = FILE_PATH_LITERAL("video");
-constexpr base::FilePath::CharType kWallpapersSubDir[] =
-    FILE_PATH_LITERAL("wallpaper");
 constexpr base::FilePath::CharType kSrcSubDir[] = FILE_PATH_LITERAL("src");
 
 }  // namespace
-
-const base::FilePath& GetTimeOfDayWallpapersDir() {
-  static const base::NoDestructor<base::FilePath> kPath(
-      base::FilePath(kAssetsRootDir).Append(kWallpapersSubDir));
-  return *kPath;
-}
-
-const base::FilePath& GetTimeOfDayVideosDir() {
-  static const base::NoDestructor<base::FilePath> kPath(
-      base::FilePath(kAssetsRootDir).Append(kVideosSubDir));
-  return *kPath;
-}
 
 const base::FilePath& GetTimeOfDaySrcDir() {
   static const base::NoDestructor<base::FilePath> kPath(

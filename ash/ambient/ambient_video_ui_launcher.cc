@@ -6,20 +6,14 @@
 
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/ambient_ui_settings.h"
-#include "ash/ambient/ui/ambient_video_utils.h"
 #include "ash/ambient/ui/ambient_video_view.h"
 #include "ash/public/cpp/personalization_app/time_of_day_paths.h"
 #include "ash/shell.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -30,20 +24,12 @@ base::FilePath GetVideoHtmlPath() {
       personalization_app::kAmbientVideoHtml);
 }
 
-void VerifyVideoExistsOnDisc(AmbientVideo video) {
-  bool all_resources_exists = base::PathExists(GetAmbientVideoPath(video)) &&
-                              base::PathExists(GetVideoHtmlPath());
-  // Currently, all resources are shipped with the OTA and reside on rootfs, so
-  // this should never be true unless there is a major bug.
-  //
-  // TODO(b/271182121): Add UMA metrics for this error case, and start using the
-  // Initialize with bool callback, not being used right now as it causes some
-  // tests to fail. This should only make a difference if/when the ambient
-  // video resources start getting downloaded at run-time.
-
-  if (!all_resources_exists) {
-    LOG(ERROR) << "Ambient video resources do not exist on disc. video="
-               << GetAmbientVideoPath(video) << " src=" << GetVideoHtmlPath();
+base::StringPiece GetVideoFile(AmbientVideo video) {
+  switch (video) {
+    case AmbientVideo::kNewMexico:
+      return personalization_app::kTimeOfDayNewMexicoVideo;
+    case AmbientVideo::kClouds:
+      return personalization_app::kTimeOfDayCloudsVideo;
   }
 }
 
@@ -67,11 +53,6 @@ void AmbientVideoUiLauncher::Initialize(InitializationCallback on_done) {
       << "AmbientVideoUiLauncher should not be active for "
       << ToString(ui_settings.theme());
   current_video_ = *ui_settings.video();
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&VerifyVideoExistsOnDisc, current_video_));
   weather_refresher_ = Shell::Get()
                            ->ambient_controller()
                            ->ambient_weather_controller()
@@ -81,7 +62,7 @@ void AmbientVideoUiLauncher::Initialize(InitializationCallback on_done) {
 
 std::unique_ptr<views::View> AmbientVideoUiLauncher::CreateView() {
   CHECK(is_active_);
-  return std::make_unique<AmbientVideoView>(GetAmbientVideoPath(current_video_),
+  return std::make_unique<AmbientVideoView>(GetVideoFile(current_video_),
                                             GetVideoHtmlPath(), view_delegate_);
 }
 

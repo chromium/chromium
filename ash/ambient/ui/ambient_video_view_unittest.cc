@@ -25,8 +25,7 @@ using ::testing::NotNull;
 using AmbientVideoViewTest = AmbientAshTestBase;
 
 TEST_F(AmbientVideoViewTest, NavigatesToCorrectURL) {
-  AmbientVideoView view(base::FilePath("/path/to/video"),
-                        base::FilePath("/path/to/html"),
+  AmbientVideoView view("video.webm", base::FilePath("/path/to/html"),
                         ambient_controller()->ambient_view_delegate());
   const TestAshWebView* web_view = static_cast<const TestAshWebView*>(
       view.GetViewByID(kAmbientVideoWebView));
@@ -34,12 +33,10 @@ TEST_F(AmbientVideoViewTest, NavigatesToCorrectURL) {
   EXPECT_FALSE(web_view->init_params_for_testing().enable_wake_locks);
   EXPECT_TRUE(web_view->current_url().SchemeIsFile());
   EXPECT_THAT(web_view->current_url().path(), Eq("/path/to/html"));
-  std::string video_path_requested;
-  ASSERT_TRUE(net::GetValueForKeyInQuery(web_view->current_url(), "video_src",
-                                         &video_path_requested));
-  GURL video_src_url(video_path_requested);
-  EXPECT_TRUE(video_src_url.SchemeIsFile());
-  EXPECT_THAT(video_src_url.path(), Eq("/path/to/video"));
+  std::string video_file_requested;
+  ASSERT_TRUE(net::GetValueForKeyInQuery(web_view->current_url(), "video_file",
+                                         &video_file_requested));
+  EXPECT_THAT(video_file_requested, Eq("video.webm"));
 }
 
 }  // namespace
