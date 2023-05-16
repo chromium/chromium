@@ -23,10 +23,11 @@ const mp4VideoProcessorURL: TrustedScriptURL = (() => {
  * Connects the |port| to worker which exposes the video processor.
  */
 async function connectToWorker(port: MessagePort): Promise<void> {
-  /**
+  /*
    * TODO(pihsun): TypeScript only supports string|URL instead of
    * TrustedScriptURL as parameter to Worker.
    */
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   const trustedURL = mp4VideoProcessorURL as unknown as URL;
 
   // TODO(pihsun): actually get correct type from the function definition.

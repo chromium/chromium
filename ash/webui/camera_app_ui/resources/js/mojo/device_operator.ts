@@ -468,6 +468,9 @@ export class DeviceOperator {
    *     support pan control.
    */
   async getPanDefault(deviceId: string): Promise<number|undefined> {
+    // This is a custom USB HAL vendor tag, defined in hal/usb/vendor_tag.h on
+    // platform side.
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const tag = 0x8001000d as CameraMetadataTag;
     const data = await this.getStaticMetadata(deviceId, tag);
     return data[0];
@@ -478,6 +481,9 @@ export class DeviceOperator {
    *     support tilt control.
    */
   async getTiltDefault(deviceId: string): Promise<number|undefined> {
+    // This is a custom USB HAL vendor tag, defined in hal/usb/vendor_tag.h on
+    // platform side.
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const tag = 0x80010016 as CameraMetadataTag;
     const data = await this.getStaticMetadata(deviceId, tag);
     return data[0];
@@ -488,6 +494,9 @@ export class DeviceOperator {
    *     support zoom control.
    */
   async getZoomDefault(deviceId: string): Promise<number|undefined> {
+    // This is a custom USB HAL vendor tag, defined in hal/usb/vendor_tag.h on
+    // platform side.
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const tag = 0x80010019 as CameraMetadataTag;
     const data = await this.getStaticMetadata(deviceId, tag);
     return data[0];
@@ -538,7 +547,10 @@ export class DeviceOperator {
    * @throws Thrown when the device operation is not supported.
    */
   async isPortraitModeSupported(deviceId: string): Promise<boolean> {
+    // This is a custom vendor tag, defined in common/vendor_tag_manager.h on
+    // platform side.
     // TODO(wtlee): Change to portrait mode tag.
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const portraitModeTag = 0x80000000 as CameraMetadataTag;
 
     const portraitMode =
@@ -818,12 +830,11 @@ export class DeviceOperator {
     const deviceOperatorWrapper: ProxyHandler<DeviceOperator> = {
       get: function(target, property) {
         const val = Reflect.get(target, property);
-        if (val instanceof Function) {
-          return (...args: unknown[]) => operationQueue.push(
-                     () =>
-                         Reflect.apply(val, target, args) as Promise<unknown>);
+        if (!(val instanceof Function)) {
+          return val;
         }
-        return val;
+        return (...args: unknown[]) =>
+                   operationQueue.push(() => Reflect.apply(val, target, args));
       },
     };
     instance = new Proxy(rawInstance, deviceOperatorWrapper);

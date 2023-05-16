@@ -26,10 +26,6 @@ import {
   UIComponent,
 } from './cca_type.js';
 
-/**
- * Possible HTMLElement types that can have a boolean attribute "disabled".
- */
-type HTMLElementWithDisabled = HTMLElement&{disabled: boolean};
 interface Coordinate {
   x: number;
   y: number;
@@ -392,16 +388,15 @@ export class CCATest {
   }
 
   /**
-   * Returns disabled attribute of the component. In case the element with
+   * Returns disabled attribute of the component. In case the element without
    * "disabled" attribute, always returns false.
    */
   static isDisabled(component: UIComponent, index?: number): boolean {
     const element = resolveElement(component, index);
-    const withDisabledElement = element as HTMLElementWithDisabled;
-    if (withDisabledElement.disabled === undefined) {
-      return false;
+    if ('disabled' in element && typeof element.disabled === 'boolean') {
+      return element.disabled;
     }
-    return withDisabledElement.disabled;
+    return false;
   }
 
   /**

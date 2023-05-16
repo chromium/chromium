@@ -4,6 +4,7 @@
 
 import {assert} from '../assert.js';
 import {AsyncJobQueue} from '../async_job_queue.js';
+import {isFileSystemDirectoryHandle, isFileSystemFileHandle} from '../util.js';
 
 import {AsyncWriter} from './async_writer.js';
 
@@ -173,8 +174,8 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
   async getFiles(): Promise<FileAccessEntry[]> {
     const results = [];
     for await (const handle of this.handle.values()) {
-      if (handle.kind === 'file') {
-        results.push(new FileAccessEntry(handle as FileSystemFileHandle, this));
+      if (isFileSystemFileHandle(handle)) {
+        results.push(new FileAccessEntry(handle, this));
       }
     }
     return results;
@@ -183,9 +184,8 @@ export class DirectoryAccessEntryImpl implements DirectoryAccessEntry {
   async getDirectories(): Promise<DirectoryAccessEntry[]> {
     const results = [];
     for await (const handle of this.handle.values()) {
-      if (handle.kind === 'directory') {
-        results.push(
-            new DirectoryAccessEntryImpl(handle as FileSystemDirectoryHandle));
+      if (isFileSystemDirectoryHandle(handle)) {
+        results.push(new DirectoryAccessEntryImpl(handle));
       }
     }
     return results;

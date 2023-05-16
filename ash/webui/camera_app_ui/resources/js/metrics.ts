@@ -50,6 +50,7 @@ async function sendEvent(
       // The TypeScript definition for UniversalAnalytics.FieldsObject
       // manually listed out dimension1 ~ dimension200, and TypeScript don't
       // recognize accessing it using []. Force the type here.
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       (e as Record<string, unknown>)[`dimension${key}`] = value;
     }
   }

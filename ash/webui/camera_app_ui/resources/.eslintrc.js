@@ -474,7 +474,22 @@ module.exports = {
         noSingleLineBlocks: true,
       },
     ],
-    'jsdoc/no-bad-blocks': 'error',
+    'jsdoc/no-bad-blocks': [
+      'error',
+      {
+        // The first four are default values, and the last one is added since
+        // the lint name is too long and the eslint-disable-next-line is
+        // frequently line wrapped, which cause jsdoc/no-bad-blocks to think
+        // that it should be a docstring.
+        ignore: [
+          'ts-check',
+          'ts-expect-error',
+          'ts-ignore',
+          'ts-nocheck',
+          'typescript-eslint/consistent-type-assertions',
+        ],
+      },
+    ],
     'jsdoc/no-defaults': 'error',
     'jsdoc/no-multi-asterisks': [
       'error',
@@ -614,13 +629,21 @@ module.exports = {
       },
     ],
 
+    // Using "as" type assertion should be rare and as a last resort if it's
+    // really too complicated to put the constraint in type system, and it's
+    // not easy to do a runtime assertion (assertInstanceof) either.
+    //
+    // If it's the case, please have a eslint-disable-next-line to disable the
+    // lint together with some comment explaining why the assertion is safe.
+    //
+    // See also:
+    // go/tsstyle#type-and-non-nullability-assertions
     // go/tsstyle#type-assertions-syntax
     // go/tsstyle#type-assertions-and-object-literals
     '@typescript-eslint/consistent-type-assertions': [
       'error',
       {
-        assertionStyle: 'as',
-        objectLiteralTypeAssertions: 'never',
+        assertionStyle: 'never',
       },
     ],
 

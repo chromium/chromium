@@ -56,6 +56,10 @@ function bindWindow(url: string): (AppWindow&Comlink.ProxyMarked)|null {
   return null;
 }
 
+// This is needed since we currently have the same tsconfig for files running
+// in SharedWorker and in CCA.
+// TODO(b/213408699): Remove this after the tsconfig are separated.
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 const sharedWorkerScope = self as SharedWorkerGlobalScope;
 
 export interface TestBridge {

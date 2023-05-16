@@ -52,6 +52,7 @@ export async function injectUntrustedJSModule<T>(
   await untrustedRemote.loadScript(scriptUrl);
   // loadScript adds the script exports to what's exported by the
   // untrustedRemote, so we manually cast it to the expected type.
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return untrustedRemote as unknown as Comlink.Remote<T>;
 }
 

@@ -41,6 +41,10 @@ let instance: ChromeHelper|null = null;
  * Forces casting type from Uint8Array to number[].
  */
 function castToNumberArray(data: Uint8Array): number[] {
+  // This cast is to workaround that the generated mojo binding only accepts
+  // number[], but actually can be passed Uint8Array (which also supports
+  // indexing via [] and length).
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
   return data as unknown as number[];
 }
 

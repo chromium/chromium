@@ -553,8 +553,12 @@ export class Video extends ModeBase {
   /**
    * Gets video track of recording stream.
    */
-  private getVideoTrack(): MediaStreamTrack {
-    return this.getRecordingStream().getVideoTracks()[0];
+  private getVideoTrack(): MediaStreamVideoTrack {
+    // The type annotation on MediaStream.getVideoTracks() in @types/webrtc is
+    // not specific enough.
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    return this.getRecordingStream().getVideoTracks()[0] as
+        MediaStreamVideoTrack;
   }
 
   async start(): Promise<[Promise<void>]> {
@@ -817,7 +821,7 @@ export class Video extends ModeBase {
         TIME_LAPSE_INITIAL_SPEED);
 
     // Creates a frame reader from track processor.
-    const track = this.getVideoTrack() as MediaStreamVideoTrack;
+    const track = this.getVideoTrack();
     const trackProcessor = new MediaStreamTrackProcessor({track});
     const reader = trackProcessor.readable.getReader();
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from '../assert.js';
+import {isFileSystemDirectoryHandle} from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
 import {
@@ -98,13 +99,13 @@ async function initCameraDirectory(): Promise<DirectoryAccessEntry|null> {
     assert(launchQueue !== undefined);
     launchQueue.setConsumer(async (launchParams) => {
       assert(launchParams.files.length > 0);
-      const dir: FileSystemHandle = launchParams.files[0];
-      assert(dir.kind === 'directory');
+      const dir = launchParams.files[0];
+      assert(isFileSystemDirectoryHandle(dir));
 
       await idb.set(idb.KEY_CAMERA_DIRECTORY_HANDLE, dir);
       window.sessionStorage.setItem('IsConsumedHandle', 'true');
 
-      handle.signal(dir as FileSystemDirectoryHandle);
+      handle.signal(dir);
     });
   }
   const dir = await handle.wait();
