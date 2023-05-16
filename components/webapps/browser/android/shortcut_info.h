@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "components/webapps/browser/android/webapp_icon.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -136,9 +135,9 @@ struct ShortcutInfo {
   // Updates the source of the shortcut.
   void UpdateSource(const Source source);
 
-  // Returns a vector of icons including |best_primary_icon_url|,
+  // Returns a set of icons including |best_primary_icon_url|,
   // |splash_image_url| and |best_shortcut_icon_urls| if they are not empty
-  std::vector<WebappIcon> GetWebApkIcons();
+  std::set<GURL> GetWebApkIcons();
 
   GURL manifest_url;
   GURL url;

@@ -69,35 +69,17 @@ std::unique_ptr<ShortcutInfo> ShortcutInfo::CreateShortcutInfo(
   return shortcut_info;
 }
 
-std::vector<WebappIcon> ShortcutInfo::GetWebApkIcons() {
-  std::vector<WebappIcon> icons;
-  icons.emplace_back(best_primary_icon_url, is_primary_icon_maskable,
-                     webapk::Image::PRIMARY_ICON);
+std::set<GURL> ShortcutInfo::GetWebApkIcons() {
+  std::set<GURL> icons{best_primary_icon_url};
 
-  if (!splash_image_url.is_empty()) {
-    auto it = std::find_if(icons.begin(), icons.end(), [&](auto& icon) {
-      return icon.url() == splash_image_url;
-    });
-    if (it == icons.end()) {
-      icons.emplace_back(splash_image_url, is_splash_image_maskable,
-                         webapk::Image::SPLASH_ICON);
-    } else {
-      it->AddUsage(webapk::Image::SPLASH_ICON);
-    }
+  if (!splash_image_url.is_empty() &&
+      splash_image_url != best_primary_icon_url) {
+    icons.insert(splash_image_url);
   }
 
-  for (const auto& shortcut_icon_url : best_shortcut_icon_urls) {
-    if (shortcut_icon_url.is_valid()) {
-      auto it = std::find_if(icons.begin(), icons.end(), [&](auto& icon) {
-        return icon.url() == shortcut_icon_url;
-      });
-      if (it == icons.end()) {
-        icons.emplace_back(shortcut_icon_url, false,
-                           webapk::Image::SHORTCUT_ICON);
-      } else {
-        it->AddUsage(webapk::Image::SHORTCUT_ICON);
-      }
-    }
+  for (const auto& shortcut_icon : best_shortcut_icon_urls) {
+    if (shortcut_icon.is_valid())
+      icons.insert(shortcut_icon);
   }
 
   return icons;

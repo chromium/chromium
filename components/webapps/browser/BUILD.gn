@@ -105,8 +105,6 @@ source_set("browser") {
       "android/webapk/webapk_proto_builder.cc",
       "android/webapk/webapk_proto_builder.h",
       "android/webapk/webapk_types.h",
-      "android/webapp_icon.cc",
-      "android/webapp_icon.h",
       "android/webapps_icon_utils.cc",
       "android/webapps_icon_utils.h",
       "android/webapps_utils.cc",

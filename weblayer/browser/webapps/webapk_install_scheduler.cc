@@ -64,7 +64,7 @@ void WebApkInstallScheduler::FetchMurmur2Hashes(
   //
   // We redownload the icon in order to take the Murmur2 hash. The redownload
   // should be fast because the icon should be in the HTTP cache.
-  std::vector<webapps::WebappIcon> icons = shortcut_info_->GetWebApkIcons();
+  std::set<GURL> icons = shortcut_info_->GetWebApkIcons();
 
   webapps::WebApkIconHasher::DownloadAndComputeMurmur2Hash(
       web_contents->GetBrowserContext()

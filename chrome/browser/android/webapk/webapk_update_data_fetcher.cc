@@ -18,7 +18,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/WebApkUpdateDataFetcher_jni.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/webapps/browser/android/webapp_icon.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/android/webapps_utils.h"
 #include "components/webapps/browser/features.h"
@@ -216,7 +215,14 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
     is_splash_icon_maskable_ = data.has_maskable_splash_icon;
   }
 
-  std::vector<webapps::WebappIcon> icons = info_.GetWebApkIcons();
+  std::set<GURL> urls{info_.best_primary_icon_url};
+  if (!info_.splash_image_url.is_empty())
+    urls.insert(info_.splash_image_url);
+
+  for (const auto& shortcut_url : info_.best_shortcut_icon_urls) {
+    if (shortcut_url.is_valid())
+      urls.insert(shortcut_url);
+  }
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
@@ -226,7 +232,7 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
           ->GetURLLoaderFactoryForBrowserProcess()
           .get(),
       web_contents()->GetWeakPtr(), url::Origin::Create(last_fetched_url_),
-      icons,
+      urls,
       base::BindOnce(&WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes,
                      weak_ptr_factory_.GetWeakPtr()));
 }
