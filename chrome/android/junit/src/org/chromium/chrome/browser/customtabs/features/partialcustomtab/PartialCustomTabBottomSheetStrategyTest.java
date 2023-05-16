@@ -327,6 +327,26 @@ public class PartialCustomTabBottomSheetStrategyTest {
     }
 
     @Test
+    public void setTitleWhenLaunched() {
+        final String title = "BottomSheet";
+        var coordinator = mPCCTTestRule.mCoordinatorLayout;
+        doReturn(false).when(coordinator).isAttachedToWindow();
+        doReturn(title).when(mPCCTTestRule.mResources).getString(anyInt());
+        PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);
+        var listener = mPCCTTestRule.mAttachStateChangeListener;
+        verify(coordinator).addOnAttachStateChangeListener(listener.capture());
+        listener.getValue().onViewAttachedToWindow(null);
+        verify(mPCCTTestRule.mWindow).setTitle(eq(title));
+        verify(coordinator).removeOnAttachStateChangeListener(listener.getValue());
+        clearInvocations(coordinator);
+
+        // Once attached, the title is not set again.
+        doReturn(true).when(coordinator).isAttachedToWindow();
+        strategy.onPostInflationStartup();
+        verify(coordinator, never()).addOnAttachStateChangeListener(any());
+    }
+
+    @Test
     public void moveFromTop() {
         // Drag to the top
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500);

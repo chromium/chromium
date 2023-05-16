@@ -5715,6 +5715,17 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Undo
       </message>
 
+      <!-- Partial Custom Tab accessibility -->
+      <message name="IDS_ACCESSIBILITY_PARTIAL_CUSTOM_TAB_BOTTOM_SHEET" desc="Content description for partial custom tab of bottom sheet type">
+        Bottom sheet
+      </message>
+      <message name="IDS_ACCESSIBILITY_PARTIAL_CUSTOM_TAB_SIDE_SHEET" desc="Content description for partial custom tab of side sheet type">
+        Side sheet
+      </message>
+      <message name="IDS_ACCESSIBILITY_PARTIAL_CUSTOM_TAB_FULL_SHEET" desc="Content description for partial custom tab of full size type">
+        Full-size sheet
+      </message>
+
        <!-- Quick Delete strings -->
       <message name="IDS_QUICK_DELETE_DIALOG_TITLE" desc="Title of the dialog when asking users to confirm deleting the last 15 minutes of browsing data.">
         Delete last 15 minutes?
