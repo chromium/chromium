@@ -294,8 +294,9 @@ void QRCodeGeneratorServiceImpl::GenerateQRCode(
     QRCodeGenerator qr;
     qr_data = qr.Generate(base::as_bytes(base::make_span(request->data)),
                           kMinimumQRVersion);
-    base::UmaHistogramTimes("Sharing.QRCodeGeneration.Duration.BytesToQrPixels",
-                            base::TimeTicks::Now() - start_time);
+    base::UmaHistogramMicrosecondsTimes(
+        "Sharing.QRCodeGeneration.Duration.BytesToQrPixels2",
+        base::TimeTicks::Now() - start_time);
   }
 
   if (!qr_data || qr_data->data.data() == nullptr ||
@@ -319,8 +320,8 @@ void QRCodeGeneratorServiceImpl::GenerateQRCode(
     base::TimeTicks start_time = base::TimeTicks::Now();
     response->bitmap = RenderBitmap(base::make_span(qr_data->data),
                                     response->data_size, *request);
-    base::UmaHistogramTimes(
-        "Sharing.QRCodeGeneration.Duration.QrPixelsToQrImage",
+    base::UmaHistogramMicrosecondsTimes(
+        "Sharing.QRCodeGeneration.Duration.QrPixelsToQrImage2",
         base::TimeTicks::Now() - start_time);
   }
 

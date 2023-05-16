@@ -203,8 +203,8 @@ chromium-metrics-reviews@google.com.
 
     This metric captures end-to-end time which may include the overhead of
     spawning a utility process as well as the time needed to translate input
-    bytes into QR pixels (see also the &quot;BytesToQrPixels&quot; metric) and
-    into QR image (see also the &quot;QrPixelsToQrImage&quot; metric).
+    bytes into QR pixels (see also the &quot;BytesToQrPixels2&quot; metric) and
+    into QR image (see also the &quot;QrPixelsToQrImage2&quot; metric).
 
     Recorded whenever `chrome/services/qrcode_generator` generates a QR code.
     For example: when using the omnibox to share the URL via QR code, when using
@@ -212,23 +212,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.QRCodeGeneration.Duration.BytesToQrPixels" units="ms"
-    expires_after="2023-11-12">
+<histogram name="Sharing.QRCodeGeneration.Duration.BytesToQrPixels2"
+    units="microseconds" expires_after="2023-11-12">
   <owner>danakj@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <owner>petewil@chromium.org</owner>
   <summary>
     The time to translate the sequence of input bytes into a vector of QR pixels
-    (this is not a QR _image_ just yet - see QrPixelsToQrImage metric for that).
+    (this is not a QR _image_ just yet - see &quot;QrPixelsToQrImage2&quot;
+    metric for that).
 
     Recorded whenever `chrome/services/qrcode_generator` generates a QR code.
     For example: when using the omnibox to share the URL via QR code, when using
     WebAuthn, or when generating an RMA.
+
+    The metric is reported for only clients with high-resolution clocks (i.e.
+    excludes a small percentage of Windows users population). This is okay,
+    because we are mostly interested in comparing C++ vs Rust and it seems okay
+    to assume that such comparison would give similar results for the filtered
+    and non-filtered population.
   </summary>
 </histogram>
 
-<histogram name="Sharing.QRCodeGeneration.Duration.QrPixelsToQrImage"
-    units="ms" expires_after="2023-11-12">
+<histogram name="Sharing.QRCodeGeneration.Duration.QrPixelsToQrImage2"
+    units="microseconds" expires_after="2023-11-12">
   <owner>danakj@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <owner>petewil@chromium.org</owner>
@@ -239,6 +246,12 @@ chromium-metrics-reviews@google.com.
     Recorded whenever `chrome/services/qrcode_generator` generates a QR code.
     For example: when using the omnibox to share the URL via QR code, when using
     WebAuthn, or when generating an RMA.
+
+    The metric is reported for only clients with high-resolution clocks (i.e.
+    excludes a small percentage of Windows users population). This is okay,
+    because we are mostly interested in comparing C++ vs Rust and it seems okay
+    to assume that such comparison would give similar results for the filtered
+    and non-filtered population.
   </summary>
 </histogram>
 
