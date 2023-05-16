@@ -209,9 +209,6 @@ enum HeaderBehaviour {
   // Used to display the Voice Search UI.  Nil if not visible.
   id<VoiceSearchController> _voiceSearchController;
 
-  // YES if new tab is animating in.
-  BOOL _inNewTabAnimation;
-
   // YES if Voice Search should be started when the new tab animation is
   // finished.
   BOOL _startVoiceSearchAfterNewTabAnimation;
@@ -466,7 +463,7 @@ enum HeaderBehaviour {
 
     dependencies.lensCoordinator.delegate = self;
 
-    _inNewTabAnimation = NO;
+    self.inNewTabAnimation = NO;
     self.fullscreenController = dependencies.fullscreenController;
     _footerFullscreenProgress = 1.0;
 
@@ -582,14 +579,11 @@ enum HeaderBehaviour {
 }
 
 - (void)setInNewTabAnimation:(BOOL)inNewTabAnimation {
-  if (_inNewTabAnimation == inNewTabAnimation)
+  if (_inNewTabAnimation == inNewTabAnimation) {
     return;
+  }
   _inNewTabAnimation = inNewTabAnimation;
   [self updateBroadcastState];
-}
-
-- (BOOL)isInNewTabAnimation {
-  return _inNewTabAnimation;
 }
 
 - (void)setHideStatusBar:(BOOL)hideStatusBar {
