@@ -224,8 +224,9 @@ try_.orchestrator_builder(
     mirrors = [
         "ci/Linux Builder",
         "ci/Linux Tests",
-        "ci/GPU Linux Builder",
-        "ci/Linux Release (NVIDIA)",
+        # TODO(guterman): Re-enable when https://crbug.com/1445991 is fixed
+        # "ci/GPU Linux Builder",
+        # "ci/Linux Release (NVIDIA)",
     ],
     try_settings = builder_config.try_settings(
         rts_config = builder_config.rts_config(
