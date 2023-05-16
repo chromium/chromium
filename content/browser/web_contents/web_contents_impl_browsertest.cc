@@ -460,14 +460,12 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
 
   // Navigate to an invalid URL and make sure it doesn't leave a pending entry.
-  LoadStopNotificationObserver load_observer1(
-      &shell()->web_contents()->GetController());
+  LoadStopObserver load_observer1(shell()->web_contents());
   ASSERT_TRUE(ExecJs(shell(), "window.location.href=\"nonexistent:12121\";"));
   load_observer1.Wait();
   EXPECT_FALSE(shell()->web_contents()->GetController().GetPendingEntry());
 
-  LoadStopNotificationObserver load_observer2(
-      &shell()->web_contents()->GetController());
+  LoadStopObserver load_observer2(shell()->web_contents());
   ASSERT_TRUE(ExecJs(shell(), "window.location.href=\"#foo\";"));
   load_observer2.Wait();
   EXPECT_EQ(embedded_test_server()->GetURL("/title1.html#foo"),
@@ -691,8 +689,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
       new LoadingStateChangedDelegate());
   shell()->web_contents()->SetDelegate(delegate.get());
 
-  LoadStopNotificationObserver load_observer(
-      &shell()->web_contents()->GetController());
+  LoadStopObserver load_observer(shell()->web_contents());
   TitleWatcher title_watcher(shell()->web_contents(), u"pushState");
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/push_state.html")));

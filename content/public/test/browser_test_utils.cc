@@ -780,9 +780,7 @@ void WaitForLoadStopWithoutSuccessCheck(WebContents* web_contents) {
   // In many cases, the load may have finished before we get here.  Only wait if
   // the tab still has a pending navigation.
   if (web_contents->IsLoading()) {
-    WindowedNotificationObserver load_stop_observer(
-        NOTIFICATION_LOAD_STOP,
-        Source<NavigationController>(&web_contents->GetController()));
+    LoadStopObserver load_stop_observer(web_contents);
     load_stop_observer.Wait();
   }
 }

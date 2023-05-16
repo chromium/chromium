@@ -356,6 +356,6 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
 
   // Navigate back with the keyboard.
   SendBackKeyboardCommand();
-  WaitForLoadStop(GURL("chrome://profile-picker"));
+  WaitForLoadStop(GURL("chrome://profile-picker"), web_contents());
   EXPECT_EQ(0, web_contents()->GetController().GetLastCommittedEntryIndex());
 }
