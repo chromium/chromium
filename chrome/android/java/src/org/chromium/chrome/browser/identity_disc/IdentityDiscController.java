@@ -308,7 +308,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
     private void recordIdentityDiscUsed() {
         BrowserUiUtils.recordIdentityDiscClicked(mIsStartSurface, mIsTabNtp);
 
-        assert mProfileSupplier != null && mProfileSupplier.get() != null;
+        assert isProfileInitialized();
         Tracker tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
         tracker.notifyEvent(EventConstants.IDENTITY_DISC_USED);
         RecordUserAction.record("MobileToolbarIdentityDiscTap");
@@ -364,9 +364,13 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
                 R.string.accessibility_toolbar_btn_identity_disc_with_name, userName);
     }
 
+    private boolean isProfileInitialized() {
+        return mProfileSupplier != null && mProfileSupplier.get() != null;
+    }
+
     @VisibleForTesting
     void onClick() {
-        if (!mNativeIsInitialized) {
+        if (!isProfileInitialized()) {
             return;
         }
         recordIdentityDiscUsed();
