@@ -103506,8 +103506,6 @@
     { "name": "freepro.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "freeunitconverter.online", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "frequence-turf.fr", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
-    { "name": "fresenius.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
-    { "name": "fresenius.de", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "fridakahlofans.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "frieslandcollege.nl", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "fromlifephoto.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
