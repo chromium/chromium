@@ -51,11 +51,11 @@ needs to be updated.""" % migration_test_path)]
 
   # Check that a golden file for the previous version was added, and that its
   # version is set correctly.
-  golden_file_dir = "components/test/data/web_database/"
+  golden_file_dir = "components/test/data/web_database"
   golden_file = FindAffectedFile(
     "%s/version_%d.sql" % (golden_file_dir, version-1))
   sql_version_pattern = input_api.re.compile(
-      "INSERT INTO meta VALUES\('version','([0-9]+')\)")
+      "INSERT INTO meta VALUES\('version','([0-9]+)'\)")
   if not golden_file or version-1 != FindInt(golden_file, sql_version_pattern):
     return [output_api.PresubmitError("""
 A golden file for version {0} needs to be added in {1}.
