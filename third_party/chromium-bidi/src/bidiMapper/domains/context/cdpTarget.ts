@@ -133,7 +133,7 @@ export class CdpTarget {
       await this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger');
     } catch (error: any) {
       // The target might have been closed before the initialization finished.
-      if (!error.message.includes('Target closed')) {
+      if (!this.#cdpClient.isCloseError(error)) {
         throw error;
       }
     }

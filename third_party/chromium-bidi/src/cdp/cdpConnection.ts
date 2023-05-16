@@ -28,6 +28,11 @@ interface CdpCallbacks {
 }
 
 /**
+ * A error that will be thrown if when the connection is closed
+ */
+export class CloseError extends Error {}
+
+/**
  * Represents a high-level CDP connection to the browser backend.
  * Manages a CdpClient instance for each active CDP session.
  */
@@ -38,7 +43,6 @@ export class CdpConnection {
   readonly #sessionCdpClients = new Map<string, CdpClient>();
   readonly #commandCallbacks = new Map<number, CdpCallbacks>();
   readonly #log: (...messages: unknown[]) => void;
-
   #nextId = 0;
 
   constructor(
@@ -93,7 +97,7 @@ export class CdpConnection {
       this.#commandCallbacks.set(id, {
         resolve,
         reject,
-        error: new Error(
+        error: new CloseError(
           `${method} ${JSON.stringify(params)} ${
             sessionId ?? ''
           } call rejected because the connection has been closed.`

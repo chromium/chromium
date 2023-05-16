@@ -19,7 +19,7 @@ import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js'
 
 import {EventEmitter} from '../utils/EventEmitter.js';
 
-import {CdpConnection} from './cdpConnection.js';
+import {CdpConnection, CloseError} from './cdpConnection.js';
 
 type Mapping = {
   [Property in keyof ProtocolMapping.Events]: ProtocolMapping.Events[Property][0];
@@ -59,5 +59,9 @@ export class CdpClient extends EventEmitter<Mapping> {
   ): Promise<ProtocolMapping.Commands[CdpMethod]['returnType']> {
     const param = params[0];
     return this.#cdpConnection.sendCommand(method, param, this.#sessionId);
+  }
+
+  isCloseError(error: unknown): boolean {
+    return error instanceof CloseError;
   }
 }
