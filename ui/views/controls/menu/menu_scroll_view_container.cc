@@ -470,9 +470,7 @@ void MenuScrollViewContainer::CreateBubbleBorder() {
                                menu_controller->rounded_corners().has_value();
   if (use_ash_system_ui_layout_ || border_radius > 0 || has_customized_corner) {
     if (has_customized_corner) {
-      bubble_border->SetRoundedCorners(
-          GetRoundedCorners().upper_left(), GetRoundedCorners().upper_right(),
-          GetRoundedCorners().lower_right(), GetRoundedCorners().lower_left());
+      bubble_border->set_rounded_corners(GetRoundedCorners());
     } else {
       bubble_border->SetCornerRadius(border_radius);
     }

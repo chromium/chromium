@@ -49,9 +49,6 @@ struct HelpBubbleAnchorParams {
   // This is an optional override of the anchor rect in screen coordinates.
   // If unspecified, the bubble is anchored as normal to `view`.
   absl::optional<gfx::Rect> rect;
-
-  // Whether or not a visible arrow should be shown.
-  bool show_arrow = true;
 };
 
 }  // namespace internal
@@ -85,10 +82,12 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
   void SetForceAnchorRect(gfx::Rect force_anchor_rect);
 
  protected:
-  // BubbleDialogDelegateView:
+  // views::BubbleDialogDelegateView:
+  void OnAnchorBoundsChanged() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   std::u16string GetAccessibleWindowTitle() const override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  void OnWidgetBoundsChanged(views::Widget* widget, const gfx::Rect&) override;
   void OnThemeChanged() override;
   gfx::Size CalculatePreferredSize() const override;
   gfx::Rect GetAnchorRect() const override;
@@ -101,6 +100,11 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
   void MaybeStartAutoCloseTimer();
 
   void OnTimeout();
+
+  // Updates the help bubble's rounded corners based on its position relative to
+  // its anchor. When the help bubble is not center aligned with its anchor, the
+  // corner closest to the anchor has a smaller radius.
+  void UpdateRoundedCorners();
 
   // If set, overrides the anchor bounds within the anchor view.
   absl::optional<gfx::Rect> local_anchor_bounds_;

@@ -31,6 +31,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_utils.h"
@@ -63,6 +64,7 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -75,6 +77,12 @@ constexpr int kBubbleMaxWidthDip = 340;
 
 // The insets from the bubble border to the text inside.
 constexpr auto kBubbleContentsInsets = gfx::Insets::VH(16, 20);
+
+// Corner radii for the help bubble. Note that when the help bubble is not
+// center aligned with its anchor, the corner closest to the anchor has a
+// smaller radius.
+constexpr int kBubbleCornerRadiusDefault = 16;
+constexpr int kBubbleCornerRadiusSmall = 2;
 
 // Translates from HelpBubbleArrow to the Views equivalent.
 views::BubbleBorder::Arrow TranslateArrow(
@@ -601,17 +609,13 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
 
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
 
-  // This gets reset to the platform default when we call CreateBubble(), so we
-  // have to change it afterwards:
+  // This gets reset to the platform default when we call `CreateBubble()`, so
+  // we have to change it afterwards. Note that rounded corners are updated
+  // *after* adjusting bounds since they are dependent on the help bubble's
+  // position relative to its anchor.
   set_adjust_if_offscreen(true);
-  auto* const frame_view = GetBubbleFrameView();
-  frame_view->SetCornerRadius(
-      views::LayoutProvider::Get()->GetCornerRadiusMetric(
-          views::Emphasis::kHigh));
-  frame_view->SetDisplayVisibleArrow(
-      anchor.show_arrow &&
-      params.arrow != user_education::HelpBubbleArrow::kNone);
   SizeToContents();
+  UpdateRoundedCorners();
 
   widget->ShowInactive();
   auto* const anchor_bubble =
@@ -636,6 +640,11 @@ void HelpBubbleViewAsh::MaybeStartAutoCloseTimer() {
 void HelpBubbleViewAsh::OnTimeout() {
   std::move(timeout_callback_).Run();
   GetWidget()->Close();
+}
+
+void HelpBubbleViewAsh::OnAnchorBoundsChanged() {
+  views::BubbleDialogDelegateView::OnAnchorBoundsChanged();
+  UpdateRoundedCorners();
 }
 
 bool HelpBubbleViewAsh::OnMousePressed(const ui::MouseEvent& event) {
@@ -665,6 +674,12 @@ void HelpBubbleViewAsh::OnWidgetActivationChanged(views::Widget* widget,
       MaybeStartAutoCloseTimer();
     }
   }
+}
+
+void HelpBubbleViewAsh::OnWidgetBoundsChanged(views::Widget* widget,
+                                              const gfx::Rect& bounds) {
+  views::BubbleDialogDelegateView::OnWidgetBoundsChanged(widget, bounds);
+  UpdateRoundedCorners();
 }
 
 void HelpBubbleViewAsh::OnThemeChanged() {
@@ -767,6 +782,35 @@ void HelpBubbleViewAsh::SetForceAnchorRect(gfx::Rect force_anchor_rect) {
   force_anchor_rect.Offset(
       -views::BubbleDialogDelegateView::GetAnchorRect().OffsetFromOrigin());
   local_anchor_bounds_ = force_anchor_rect;
+}
+
+void HelpBubbleViewAsh::UpdateRoundedCorners() {
+  if (!GetWidget()) {
+    return;
+  }
+
+  // Alias constants to avoid line wrapping below.
+  constexpr float kDefault = kBubbleCornerRadiusDefault;
+  constexpr float kSmall = kBubbleCornerRadiusSmall;
+
+  // Cache anchor and help bubble bounds in screen coordinates.
+  const gfx::Rect anchor_rect = anchor_widget()->GetWindowBoundsInScreen();
+  const gfx::Point anchor_center = anchor_rect.CenterPoint();
+  const gfx::Rect bounds = GetBoundsInScreen();
+  const gfx::Point bounds_center = bounds.CenterPoint();
+
+  // When the help bubble is not center aligned with its anchor, the corner
+  // closest to the anchor has a smaller radius.
+  const int dx = anchor_center.x() - bounds_center.x();
+  const int dy = anchor_center.y() - bounds_center.y();
+  const float upper_left = dx < 0 && dy < 0 ? kSmall : kDefault;
+  const float upper_right = dx > 0 && dy < 0 ? kSmall : kDefault;
+  const float lower_right = dx > 0 && dy > 0 ? kSmall : kDefault;
+  const float lower_left = dx < 0 && dy > 0 ? kSmall : kDefault;
+
+  // Update rounded corners.
+  GetBubbleFrameView()->bubble_border()->set_rounded_corners(
+      gfx::RoundedCornersF(upper_left, upper_right, lower_right, lower_left));
 }
 
 BEGIN_METADATA(HelpBubbleViewAsh, views::BubbleDialogDelegateView)

@@ -106,7 +106,6 @@ class HelpBubbleViewAshPixelTestBase : public AshTestBase {
     // Anchor the help bubble view to the test `widget_`.
     internal::HelpBubbleAnchorParams anchor_params;
     anchor_params.view = widget_->GetContentsView();
-    anchor_params.show_arrow = false;
 
     // NOTE: The returned help bubble view is owned by its widget.
     return new HelpBubbleViewAsh(HelpBubbleId::kTest, anchor_params,
@@ -201,7 +200,7 @@ TEST_P(HelpBubbleViewAshPixelTest, Appearance) {
                            with_body_icon(), with_buttons(), with_progress());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "appearance", /*revision_number=*/2u, help_bubble_view,
+      "appearance", /*revision_number=*/3u, help_bubble_view,
       help_bubble_view->anchor_widget()));
 }
 
@@ -267,7 +266,7 @@ TEST_P(HelpBubbleViewAshArrowPixelTest, Placement) {
       /*with_buttons=*/true, /*with_progress=*/true);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "placement", /*revision_number=*/2u, help_bubble_view,
+      "placement", /*revision_number=*/3u, help_bubble_view,
       help_bubble_view->anchor_widget()));
 }
 

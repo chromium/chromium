@@ -112,7 +112,8 @@ bool HelpBubbleViewsAsh::ToggleFocusForAccessibility() {
 
 void HelpBubbleViewsAsh::OnAnchorBoundsChanged() {
   if (help_bubble_view_) {
-    help_bubble_view_->OnAnchorBoundsChanged();
+    static_cast<views::BubbleDialogDelegateView*>(help_bubble_view_)
+        ->OnAnchorBoundsChanged();
   }
 }
 
