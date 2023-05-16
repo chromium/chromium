@@ -53,8 +53,7 @@ ArcGhostWindowShellSurface::ArcGhostWindowShellSurface(
           /*can_minimize=*/true,
           container,
           /*default_scale_cancellation=*/true,
-          /*supports_floated_state=*/arc::GetArcAndroidSdkVersionAsInt() !=
-              arc::kArcVersionP) {
+          /*supports_floated_state=*/false) {
   controller_surface_ = std::move(surface);
   buffer_ = std::make_unique<exo::Buffer>(
       aura::Env::GetInstance()
@@ -140,13 +139,12 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
     shell_surface->SetTitle(restore_data->title.value());
 
   // Set frame buttons.
-  constexpr uint32_t kAllButtonMask =
+  constexpr uint32_t kVisibleButtonMask =
       1 << views::CAPTION_BUTTON_ICON_MINIMIZE |
       1 << views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE |
       1 << views::CAPTION_BUTTON_ICON_CLOSE |
-      1 << views::CAPTION_BUTTON_ICON_BACK |
-      1 << views::CAPTION_BUTTON_ICON_FLOAT;
-  shell_surface->SetFrameButtons(kAllButtonMask, kAllButtonMask);
+      1 << views::CAPTION_BUTTON_ICON_BACK;
+  shell_surface->SetFrameButtons(kVisibleButtonMask, kVisibleButtonMask);
   shell_surface->OnSetFrameColors(theme_color, theme_color);
 
   shell_surface->controller_surface()->Commit();
