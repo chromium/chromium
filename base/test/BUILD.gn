@@ -550,4 +550,10 @@ if (enable_base_tracing) {
       public_deps = [ ":test_trace_processor" ]
     }
   }
+} else if (!is_component_build && is_mac) {
+  # Provide a dummy target in order for clients to not have to special-case
+  # the dependency.
+  group("test_trace_processor_bundle_data") {
+    testonly = true
+  }
 }
