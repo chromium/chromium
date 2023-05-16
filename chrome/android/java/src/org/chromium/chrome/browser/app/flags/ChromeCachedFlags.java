@@ -69,7 +69,6 @@ public class ChromeCachedFlags {
         // clang-format off
         List<CachedFlag> featuresToCache = List.of(ChromeFeatureList.sAppMenuMobileSiteOption,
                 ChromeFeatureList.sBackGestureActivityTabProvider,
-                ChromeFeatureList.sBackGestureRefactorActivityAndroid,
                 ChromeFeatureList.sBackGestureRefactorAndroid,
                 ChromeFeatureList.sBaselineGm3SurfaceColors,
                 ChromeFeatureList.sBottomSheetGtsSupport,

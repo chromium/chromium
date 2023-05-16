@@ -175,6 +175,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCloseTabSaveTabList,
     &kCriticalPersistedTabData,
     &kCreateNewTabInitializeRenderer,
+    &kCCTAllowCrossUidActivitySwitchFromBelow,
     &kCCTBackgroundTab,
     &kCCTBottomBarSwipeUpGesture,
     &kCCTBrandTransparency,
@@ -252,6 +253,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kOmniboxConsumesImeInsets,
     &kOmniboxWarmRecycledViewPool,
     &kOpaqueOriginForIncomingIntents,
+    &kPartnerHomepageInitialLoadImprovement,
     &kProbabilisticCryptidRenderer,
     &kQuickDeleteForAndroid,
     &kReachedCodeProfiler,
@@ -507,6 +509,10 @@ BASE_FEATURE(kCreateNewTabInitializeRenderer,
 BASE_FEATURE(kCriticalPersistedTabData,
              "CriticalPersistedTabData",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTAllowCrossUidActivitySwitchFromBelow,
+             "CCTAllowCrossUidActivitySwitchFromBelow",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTBottomBarSwipeUpGesture,
              "CCTBottomBarSwipeUpGesture",
@@ -824,6 +830,10 @@ BASE_FEATURE(kOmniboxWarmRecycledViewPool,
 
 BASE_FEATURE(kOpaqueOriginForIncomingIntents,
              "OpaqueOriginForIncomingIntents",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPartnerHomepageInitialLoadImprovement,
+             "PartnerHomepageInitialLoadImprovement",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProbabilisticCryptidRenderer,
