@@ -1934,7 +1934,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                             const Platform::GraphicsInfo& graphics_info,
                             const CanvasContextCreationAttributesCore&,
                             Platform::ContextType);
-  static bool SupportOwnOffscreenSurface(ExecutionContext*);
   static std::unique_ptr<WebGraphicsContext3DProvider>
   CreateContextProviderInternal(CanvasRenderingContextHost*,
                                 const CanvasContextCreationAttributesCore&,

@@ -163,11 +163,6 @@ struct GPU_EXPORT StructTraits<gpu::mojom::ContextCreationAttribsDataView,
     return attribs.should_use_native_gmb_for_backbuffer;
   }
 
-  static bool own_offscreen_surface(
-      const gpu::ContextCreationAttribs& attribs) {
-    return attribs.own_offscreen_surface;
-  }
-
   static bool single_buffer(const gpu::ContextCreationAttribs& attribs) {
     return attribs.single_buffer;
   }

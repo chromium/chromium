@@ -669,19 +669,11 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
   }
   Collect3DContextInformation(gl_info, gpu_channel_host->gpu_info());
 
-  // This is an offscreen context. Generally it won't use the default
-  // frame buffer, in that case don't request any alpha, depth, stencil,
-  // antialiasing. But we do need those attributes for the "own
-  // offscreen surface" optimization which supports directly drawing
-  // to a custom surface backed frame buffer.
   gpu::ContextCreationAttribs attributes;
-  attributes.alpha_size = web_attributes.support_alpha ? 8 : -1;
-  attributes.depth_size = web_attributes.support_depth ? 24 : 0;
-  attributes.stencil_size = web_attributes.support_stencil ? 8 : 0;
-  attributes.samples = web_attributes.support_antialias ? 4 : 0;
-  attributes.own_offscreen_surface =
-      web_attributes.support_alpha || web_attributes.support_depth ||
-      web_attributes.support_stencil || web_attributes.support_antialias;
+  attributes.alpha_size = -1;
+  attributes.depth_size = 0;
+  attributes.stencil_size = 0;
+  attributes.samples = 0;
   attributes.sample_buffers = 0;
   attributes.bind_generates_resource = false;
   attributes.enable_raster_interface = web_attributes.enable_raster_interface;

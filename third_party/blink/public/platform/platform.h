@@ -441,13 +441,6 @@ class BLINK_PLATFORM_EXPORT Platform {
     bool prefer_low_power_gpu = false;
     bool fail_if_major_performance_caveat = false;
     ContextType context_type = kGLES2ContextType;
-    // Offscreen contexts usually share a surface for the default frame buffer
-    // since they aren't rendering to it. Setting any of the following
-    // attributes causes creation of a custom surface owned by the context.
-    bool support_alpha = false;
-    bool support_depth = false;
-    bool support_antialias = false;
-    bool support_stencil = false;
 
     // Offscreen contexts created for WebGL should not need the RasterInterface
     // or GrContext. If either of these are set to false, it will not be
