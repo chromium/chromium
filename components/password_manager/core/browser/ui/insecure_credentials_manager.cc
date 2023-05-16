@@ -71,6 +71,15 @@ bool IsCheckForWeakPasswordsEnabled() {
 #endif
 }
 
+bool ChangesRequireRerunningCheck(const PasswordStoreChangeList& changes) {
+  return base::ranges::any_of(changes, [](const auto& change) {
+    return change.type() == PasswordStoreChange::ADD ||
+           change.type() == PasswordStoreChange::REMOVE ||
+           (change.type() == PasswordStoreChange::UPDATE &&
+            change.password_changed());
+  });
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace
 
@@ -219,34 +228,37 @@ void InsecureCredentialsManager::OnWeakCheckDone(
   NotifyInsecureCredentialsChanged();
 }
 
-void InsecureCredentialsManager::OnEdited(const CredentialUIEntry& credential) {
-  // The WeakCheck feature is not available on Android yet. Disable on Android
-  // to avoid pulling in a big dependency on zxcvbn.
-#if !BUILDFLAG(IS_ANDROID)
-  if (IsCheckForReusedPasswordsEnabled()) {
-    // Re-run reused check since user might have changed reused password.
-    StartReuseCheck();
-  }
-
-  if (IsCheckForWeakPasswordsEnabled()) {
-    const std::u16string& password = credential.password;
-    if (weak_passwords_.contains(password) || !IsWeak(password)) {
-      // Either the password is already known to be weak, or it is not weak at
-      // all. In both cases there is nothing to do.
-      return;
-    }
-
-    weak_passwords_.insert(password);
-    NotifyInsecureCredentialsChanged();
-  }
-#endif
-}
-
 // Re-computes the list of insecure credentials with passwords after obtaining a
 // new list of saved passwords.
 void InsecureCredentialsManager::OnSavedPasswordsChanged(
     const PasswordStoreChangeList& changes) {
+  // Disable on Android  to avoid pulling in a big dependency on zxcvbn.
+#if !BUILDFLAG(IS_ANDROID)
+  if (IsCheckForWeakPasswordsEnabled()) {
+    for (const auto& change : changes) {
+      if (change.type() == PasswordStoreChange::ADD ||
+          (change.type() == PasswordStoreChange::UPDATE &&
+           change.password_changed())) {
+        const std::u16string& password = change.form().password_value;
+        if (!weak_passwords_.contains(password) && IsWeak(password)) {
+          weak_passwords_.insert(password);
+        }
+      }
+    }
+  }
+  if (IsCheckForReusedPasswordsEnabled() &&
+      ChangesRequireRerunningCheck(changes)) {
+    // Re-run reused check since user might have changed reused password. Don't
+    // notify observers yet, as they'll be notified on OnReuseCheckDone()
+    // anyway.
+    StartReuseCheck();
+  } else {
+    // Notify about changes immediately.
+    NotifyInsecureCredentialsChanged();
+  }
+#else
   NotifyInsecureCredentialsChanged();
+#endif
 }
 
 void InsecureCredentialsManager::NotifyInsecureCredentialsChanged() {
