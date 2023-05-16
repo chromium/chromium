@@ -415,7 +415,7 @@ TrustedTypesCodeGenerationCheck(v8::Local<v8::Context> context,
 
   // If the input is not a string or TrustedScript, pass it through.
   if (!source->IsString() && !is_code_like &&
-      !V8TrustedScript::HasInstance(source, isolate)) {
+      !V8TrustedScript::HasInstance(isolate, source)) {
     return {true, v8::MaybeLocal<v8::String>()};
   }
 

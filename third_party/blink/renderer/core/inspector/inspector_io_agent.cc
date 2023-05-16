@@ -28,7 +28,7 @@ protocol::Response InspectorIOAgent::resolveBlob(const String& object_id,
         ToCoreString(std::move(error)).Utf8());
   }
 
-  if (!V8Blob::HasInstance(value, isolate_)) {
+  if (!V8Blob::HasInstance(isolate_, value)) {
     return protocol::Response::ServerError(
         "Object id doesn't reference a Blob");
   }

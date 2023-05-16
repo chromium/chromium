@@ -48,8 +48,9 @@
 namespace blink {
 
 WebDOMFileSystem WebDOMFileSystem::FromV8Value(v8::Local<v8::Value> value) {
-  if (!V8DOMFileSystem::HasInstance(value, v8::Isolate::GetCurrent()))
+  if (!V8DOMFileSystem::HasInstance(v8::Isolate::GetCurrent(), value)) {
     return WebDOMFileSystem();
+  }
   v8::Local<v8::Object> object = v8::Local<v8::Object>::Cast(value);
   DOMFileSystem* dom_file_system = V8DOMFileSystem::ToImpl(object);
   DCHECK(dom_file_system);

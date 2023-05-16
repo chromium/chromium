@@ -77,7 +77,7 @@ bool V8ScriptValueSerializerForModules::ExtractTransferable(
   if (exception_state.HadException())
     return false;
 
-  if (V8VideoFrame::HasInstance(object, isolate)) {
+  if (V8VideoFrame::HasInstance(isolate, object)) {
     VideoFrame* video_frame =
         V8VideoFrame::ToImpl(v8::Local<v8::Object>::Cast(object));
     VideoFrameTransferList* transfer_list =
@@ -93,7 +93,7 @@ bool V8ScriptValueSerializerForModules::ExtractTransferable(
     return true;
   }
 
-  if (V8AudioData::HasInstance(object, isolate)) {
+  if (V8AudioData::HasInstance(isolate, object)) {
     AudioData* audio_data =
         V8AudioData::ToImpl(v8::Local<v8::Object>::Cast(object));
     AudioDataTransferList* transfer_list =
@@ -109,7 +109,7 @@ bool V8ScriptValueSerializerForModules::ExtractTransferable(
     return true;
   }
 
-  if (V8MediaStreamTrack::HasInstance(object, isolate) &&
+  if (V8MediaStreamTrack::HasInstance(isolate, object) &&
       RuntimeEnabledFeatures::MediaStreamTrackTransferEnabled(
           CurrentExecutionContext(isolate))) {
     MediaStreamTrack* track =
@@ -125,7 +125,7 @@ bool V8ScriptValueSerializerForModules::ExtractTransferable(
     return true;
   }
 
-  if (V8MediaSourceHandle::HasInstance(object, isolate)) {
+  if (V8MediaSourceHandle::HasInstance(isolate, object)) {
     MediaSourceHandleImpl* media_source_handle =
         V8MediaSourceHandle::ToImpl(v8::Local<v8::Object>::Cast(object));
     MediaSourceHandleTransferList* transfer_list =

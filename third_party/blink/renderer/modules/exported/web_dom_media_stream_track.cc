@@ -40,7 +40,7 @@ WebDOMMediaStreamTrack::WebDOMMediaStreamTrack(MediaStreamTrack* track)
 
 WebDOMMediaStreamTrack WebDOMMediaStreamTrack::FromV8Value(
     v8::Local<v8::Value> value) {
-  if (V8MediaStreamTrack::HasInstance(value, v8::Isolate::GetCurrent())) {
+  if (V8MediaStreamTrack::HasInstance(v8::Isolate::GetCurrent(), value)) {
     v8::Local<v8::Object> object = v8::Local<v8::Object>::Cast(value);
     return WebDOMMediaStreamTrack(V8MediaStreamTrack::ToImpl(object));
   }

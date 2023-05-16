@@ -143,7 +143,7 @@ static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
 
-  if (V8Blob::HasInstance(body, isolate)) {
+  if (V8Blob::HasInstance(isolate, body)) {
     Blob* blob = V8Blob::ToImpl(body.As<v8::Object>());
     return_buffer = BodyStreamBuffer::Create(
         script_state,
@@ -187,7 +187,7 @@ static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
         script_state,
         MakeGarbageCollected<FormDataBytesConsumer>(array_buffer_view),
         nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr);
-  } else if (V8FormData::HasInstance(body, isolate)) {
+  } else if (V8FormData::HasInstance(isolate, body)) {
     scoped_refptr<EncodedFormData> form_data =
         V8FormData::ToImpl(body.As<v8::Object>())->EncodeMultiPartFormData();
     // Here we handle formData->boundary() as a C-style string. See
@@ -199,7 +199,7 @@ static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
         MakeGarbageCollected<FormDataBytesConsumer>(execution_context,
                                                     std::move(form_data)),
         nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr);
-  } else if (V8URLSearchParams::HasInstance(body, isolate)) {
+  } else if (V8URLSearchParams::HasInstance(isolate, body)) {
     scoped_refptr<EncodedFormData> form_data =
         V8URLSearchParams::ToImpl(body.As<v8::Object>())->ToEncodedFormData();
     return_buffer = BodyStreamBuffer::Create(
@@ -210,7 +210,7 @@ static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
     content_type = "application/x-www-form-urlencoded;charset=UTF-8";
   } else if (RuntimeEnabledFeatures::FetchUploadStreamingEnabled(
                  execution_context) &&
-             V8ReadableStream::HasInstance(body, isolate)) {
+             V8ReadableStream::HasInstance(isolate, body)) {
     ReadableStream* readable_stream =
         V8ReadableStream::ToImpl(body.As<v8::Object>());
     // This is implemented in Request::CreateRequestWithRequestOrString():
@@ -706,7 +706,7 @@ Request* Request::CreateRequestWithRequestOrString(
     // From "extract a body":
     // - If the keepalive flag is set, then throw a TypeError.
     if (init->hasKeepalive() && init->keepalive() &&
-        V8ReadableStream::HasInstance(init_body, script_state->GetIsolate())) {
+        V8ReadableStream::HasInstance(script_state->GetIsolate(), init_body)) {
       exception_state.ThrowTypeError(
           "Keepalive request cannot have a ReadableStream body.");
       return nullptr;

@@ -1344,7 +1344,7 @@ protocol::Response InspectorDOMAgent::NodeForRemoteObjectId(
     return protocol::Response::ServerError(
         ToCoreString(std::move(error)).Utf8());
   }
-  if (!V8Node::HasInstance(value, isolate_)) {
+  if (!V8Node::HasInstance(isolate_, value)) {
     return protocol::Response::ServerError(
         "Object id doesn't reference a Node");
   }
@@ -2720,7 +2720,7 @@ protocol::Response InspectorDOMAgent::getFileInfo(const String& object_id,
         ToCoreString(std::move(error)).Utf8());
   }
 
-  if (!V8File::HasInstance(value, isolate_)) {
+  if (!V8File::HasInstance(isolate_, value)) {
     return protocol::Response::ServerError(
         "Object id doesn't reference a File");
   }

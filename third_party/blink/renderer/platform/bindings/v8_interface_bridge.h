@@ -31,11 +31,6 @@ class V8InterfaceBridge : public V8InterfaceBridgeBase {
         V8T::GetWrapperTypeInfo(), value);
   }
 
-  // Migration adapter
-  static bool HasInstance(v8::Local<v8::Value> value, v8::Isolate* isolate) {
-    return HasInstance(isolate, value);
-  }
-
   static T* ToImpl(v8::Local<v8::Object> value) {
     return ToWrappableUnsafe(value);
   }

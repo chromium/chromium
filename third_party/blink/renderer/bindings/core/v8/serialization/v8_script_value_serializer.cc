@@ -91,7 +91,7 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     Transferables& transferables,
     ExceptionState& exception_state) {
   // Validation of Objects implementing an interface, per WebIDL spec 4.1.15.
-  if (V8MessagePort::HasInstance(object, isolate)) {
+  if (V8MessagePort::HasInstance(isolate, object)) {
     MessagePort* port =
         V8MessagePort::ToImpl(v8::Local<v8::Object>::Cast(object));
     // Check for duplicate MessagePorts.
@@ -105,7 +105,7 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     transferables.message_ports.push_back(port);
     return true;
   }
-  if (V8MojoHandle::HasInstance(object, isolate)) {
+  if (V8MojoHandle::HasInstance(isolate, object)) {
     MojoHandle* handle =
         V8MojoHandle::ToImpl(v8::Local<v8::Object>::Cast(object));
     // Check for duplicate MojoHandles.
@@ -151,7 +151,7 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     transferables.array_buffers.push_back(shared_array_buffer);
     return true;
   }
-  if (V8ImageBitmap::HasInstance(object, isolate)) {
+  if (V8ImageBitmap::HasInstance(isolate, object)) {
     ImageBitmap* image_bitmap =
         V8ImageBitmap::ToImpl(v8::Local<v8::Object>::Cast(object));
     if (transferables.image_bitmaps.Contains(image_bitmap)) {
@@ -164,7 +164,7 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     transferables.image_bitmaps.push_back(image_bitmap);
     return true;
   }
-  if (V8OffscreenCanvas::HasInstance(object, isolate)) {
+  if (V8OffscreenCanvas::HasInstance(isolate, object)) {
     OffscreenCanvas* offscreen_canvas =
         V8OffscreenCanvas::ToImpl(v8::Local<v8::Object>::Cast(object));
     if (transferables.offscreen_canvases.Contains(offscreen_canvas)) {
@@ -177,7 +177,7 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     transferables.offscreen_canvases.push_back(offscreen_canvas);
     return true;
   }
-  if (V8ReadableStream::HasInstance(object, isolate)) {
+  if (V8ReadableStream::HasInstance(isolate, object)) {
     ReadableStream* stream =
         V8ReadableStream::ToImpl(v8::Local<v8::Object>::Cast(object));
     if (transferables.readable_streams.Contains(stream)) {
@@ -190,7 +190,7 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     transferables.readable_streams.push_back(stream);
     return true;
   }
-  if (V8WritableStream::HasInstance(object, isolate)) {
+  if (V8WritableStream::HasInstance(isolate, object)) {
     WritableStream* stream =
         V8WritableStream::ToImpl(v8::Local<v8::Object>::Cast(object));
     if (transferables.writable_streams.Contains(stream)) {
@@ -203,7 +203,7 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     transferables.writable_streams.push_back(stream);
     return true;
   }
-  if (V8TransformStream::HasInstance(object, isolate)) {
+  if (V8TransformStream::HasInstance(isolate, object)) {
     TransformStream* stream =
         V8TransformStream::ToImpl(v8::Local<v8::Object>::Cast(object));
     if (transferables.transform_streams.Contains(stream)) {

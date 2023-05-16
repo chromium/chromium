@@ -251,7 +251,7 @@ void FetchRespondWithObserver::OnResponseFulfilled(
     const ScriptValue& value,
     const ExceptionContext& exception_context) {
   DCHECK(GetExecutionContext());
-  if (!V8Response::HasInstance(value.V8Value(), script_state->GetIsolate())) {
+  if (!V8Response::HasInstance(script_state->GetIsolate(), value.V8Value())) {
     OnResponseRejected(ServiceWorkerResponseError::kNoV8Instance);
     return;
   }
