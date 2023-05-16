@@ -642,7 +642,7 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
     scoped_refptr<QueryHistoryState> state,
     base::Time start_time,
     WebHistoryService::Request* request,
-    base::optional_ref<base::Value::Dict> results_dict) {
+    base::optional_ref<const base::Value::Dict> results_dict) {
   // If the response came in too late, do nothing.
   // TODO(dubroy): Maybe show a banner, and prompt the user to reload?
   if (!web_history_timer_->IsRunning())

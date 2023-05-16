@@ -85,7 +85,8 @@ class WebHistoryService : public KeyedService {
   // TODO(dubroy): Extract the dictionary Value into a structured results
   // object.
   using QueryWebHistoryCallback =
-      base::OnceCallback<void(Request*, base::optional_ref<base::Value::Dict>)>;
+      base::OnceCallback<void(Request*,
+                              base::optional_ref<const base::Value::Dict>)>;
 
   using ExpireWebHistoryCallback = base::OnceCallback<void(bool success)>;
 
