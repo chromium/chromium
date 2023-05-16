@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBr
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -81,6 +82,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     protected final String mUrl;
     protected final Tracker mFeatureEngagementTracker;
     protected final Profile mProfile;
+    protected final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
 
     /**
      * Constructs a new {@link ChromeProvidedSharingOptionsProviderBase}.
@@ -97,13 +99,14 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
      * @param featureEngagementTracker feature engagement tracker.
      * @param url Url to share.
      * @param profile The current profile of the User.
+     * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      */
     protected ChromeProvidedSharingOptionsProviderBase(Activity activity,
             WindowAndroid windowAndroid, Supplier<Tab> tabProvider,
             BottomSheetController bottomSheetController, ShareParams shareParams,
             Callback<Tab> printTab, boolean isIncognito,
             ChromeOptionShareCallback chromeOptionShareCallback, Tracker featureEngagementTracker,
-            String url, Profile profile) {
+            String url, Profile profile, DeviceLockActivityLauncher deviceLockActivityLauncher) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mTabProvider = tabProvider;
@@ -115,6 +118,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
         mChromeOptionShareCallback = chromeOptionShareCallback;
         mUrl = url;
         mProfile = profile;
+        mDeviceLockActivityLauncher = deviceLockActivityLauncher;
 
         mOrderedFirstPartyOptions = new ArrayList<>();
         initializeFirstPartyOptionsInOrder();
@@ -418,9 +422,9 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                 .setIcon(R.drawable.send_tab, R.string.send_tab_to_self_share_activity_title)
                 .setFeatureNameForMetrics(USER_ACTION_SEND_TAB_TO_SELF_SELECTED)
                 .setOnClickCallback((view) -> {
-                    SendTabToSelfCoordinator sttsCoordinator =
-                            new SendTabToSelfCoordinator(mActivity, mWindowAndroid, mUrl,
-                                    mShareParams.getTitle(), mBottomSheetController, mProfile);
+                    SendTabToSelfCoordinator sttsCoordinator = new SendTabToSelfCoordinator(
+                            mActivity, mWindowAndroid, mUrl, mShareParams.getTitle(),
+                            mBottomSheetController, mProfile, mDeviceLockActivityLauncher);
                     sttsCoordinator.show();
                 })
                 .build();

@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.share.link_to_text.LinkToTextMetricsHelper;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -89,6 +90,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private @LinkGeneration int mLinkGenerationStatusForMetrics = LinkGeneration.MAX;
     private LinkToggleMetricsDetails mLinkToggleMetricsDetails =
             new LinkToggleMetricsDetails(LinkToggleState.COUNT, DetailedContentType.NOT_SPECIFIED);
+    private DeviceLockActivityLauncher mDeviceLockActivityLauncher;
 
     /**
      * Constructs a new ShareSheetCoordinator.
@@ -101,13 +103,14 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
      * @param isIncognito Whether the share sheet was opened in incognito mode or not.
      * @param imageEditorModuleProvider Image Editor module entry point if present in the APK.
      * @param profile The current profile of the User.
+     * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      */
     // TODO(crbug/1022172): Should be package-protected once modularization is complete.
     public ShareSheetCoordinator(BottomSheetController controller,
             ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
             Callback<Tab> printTab, LargeIconBridge iconBridge, boolean isIncognito,
             ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker,
-            Profile profile) {
+            Profile profile, DeviceLockActivityLauncher deviceLockActivityLauncher) {
         mBottomSheetController = controller;
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
@@ -135,6 +138,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mIconBridge = iconBridge;
         mFeatureEngagementTracker = featureEngagementTracker;
         mProfile = profile;
+        mDeviceLockActivityLauncher = deviceLockActivityLauncher;
         mPropertyModelBuilder = new ShareSheetPropertyModelBuilder(mBottomSheetController,
                 ContextUtils.getApplicationContext().getPackageManager(), mProfile);
         mShareSheetUsageRankingHelper = new ShareSheetUsageRankingHelper(mBottomSheetController,
@@ -299,7 +303,8 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                 mWindowAndroid, mTabProvider, mBottomSheetController, mBottomSheet, shareParams,
                 mPrintTabCallback, mIsIncognito, mShareStartTime, this, mImageEditorModuleProvider,
                 mFeatureEngagementTracker, getUrlToShare(shareParams, chromeShareExtras),
-                mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails, mProfile);
+                mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails, mProfile,
+                mDeviceLockActivityLauncher);
         mIsMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
 
         return mChromeProvidedSharingOptionsProvider.getPropertyModels(

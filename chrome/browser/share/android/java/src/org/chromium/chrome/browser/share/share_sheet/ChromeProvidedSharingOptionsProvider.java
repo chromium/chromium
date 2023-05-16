@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordin
 import org.chromium.chrome.browser.share.screenshot.ScreenshotCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -75,7 +76,8 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
      * generation, sharing text from successful link-to-text generation, or sharing link-to-text.
      * @param linkToggleMetricsDetails {@link LinkToggleMetricsDetails} for recording the final
      *         toggle state.
-     * * @param profile The current profile of the User.
+     * @param profile The current profile of the User.
+     * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      */
     ChromeProvidedSharingOptionsProvider(Activity activity, WindowAndroid windowAndroid,
             Supplier<Tab> tabProvider, BottomSheetController bottomSheetController,
@@ -84,9 +86,11 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
             ChromeOptionShareCallback chromeOptionShareCallback,
             ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker,
             String url, @LinkGeneration int linkGenerationStatusForMetrics,
-            LinkToggleMetricsDetails linkToggleMetricsDetails, Profile profile) {
+            LinkToggleMetricsDetails linkToggleMetricsDetails, Profile profile,
+            DeviceLockActivityLauncher deviceLockActivityLauncher) {
         super(activity, windowAndroid, tabProvider, bottomSheetController, shareParams, printTab,
-                isIncognito, chromeOptionShareCallback, featureEngagementTracker, url, profile);
+                isIncognito, chromeOptionShareCallback, featureEngagementTracker, url, profile,
+                deviceLockActivityLauncher);
         mBottomSheetContent = bottomSheetContent;
         mShareStartTime = shareStartTime;
         mImageEditorModuleProvider = imageEditorModuleProvider;

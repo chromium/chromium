@@ -13,6 +13,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.app.creator.CreatorActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.SingleWebFeedEntryPoint;
 import org.chromium.chrome.browser.feed.signinbottomsheet.SigninBottomSheetCoordinator;
@@ -152,9 +153,9 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_BOC_SIGN_IN_INTERSTITIAL)) {
             SigninMetricsUtils.logSigninStartAccessPoint(signinAccessPoint);
             SigninMetricsUtils.logSigninUserActionForAccessPoint(signinAccessPoint);
-            SigninBottomSheetCoordinator signinCoordinator =
-                    new SigninBottomSheetCoordinator(windowAndroid, bottomSheetController,
-                            Profile.getLastUsedRegularProfile(), null, null, signinAccessPoint);
+            SigninBottomSheetCoordinator signinCoordinator = new SigninBottomSheetCoordinator(
+                    windowAndroid, DeviceLockActivityLauncherImpl.get(), bottomSheetController,
+                    Profile.getLastUsedRegularProfile(), null, null, signinAccessPoint);
             signinCoordinator.show();
         }
     }

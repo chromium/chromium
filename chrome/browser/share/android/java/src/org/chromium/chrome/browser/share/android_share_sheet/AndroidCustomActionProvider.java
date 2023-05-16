@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordin
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -75,15 +76,18 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
      * @param chromeShareExtras The {@link ChromeShareExtras} for the current share, if exists.
      * @param isMultiWindow Whether the current activity is in multi-window mode.
      * @param linkToTextCoordinator Link to text generator used for this share.
+     * @param deviceLockActivityLauncher The launcher to start up the device lock page.
      */
     AndroidCustomActionProvider(Activity activity, WindowAndroid windowAndroid,
             Supplier<Tab> tabProvider, BottomSheetController bottomSheetController,
             ShareParams shareParams, Callback<Tab> printTab, boolean isIncognito,
             ChromeOptionShareCallback chromeOptionShareCallback, Tracker featureEngagementTracker,
             String url, Profile profile, ChromeShareExtras chromeShareExtras, boolean isMultiWindow,
-            @Nullable LinkToTextCoordinator linkToTextCoordinator) {
+            @Nullable LinkToTextCoordinator linkToTextCoordinator,
+            DeviceLockActivityLauncher deviceLockActivityLauncher) {
         super(activity, windowAndroid, tabProvider, bottomSheetController, shareParams, printTab,
-                isIncognito, chromeOptionShareCallback, featureEngagementTracker, url, profile);
+                isIncognito, chromeOptionShareCallback, featureEngagementTracker, url, profile,
+                deviceLockActivityLauncher);
         mChromeShareExtras = chromeShareExtras;
         mLinkToTextCoordinator = linkToTextCoordinator;
         initCustomActions(shareParams, chromeShareExtras, isMultiWindow);

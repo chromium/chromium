@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBr
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.signin.DeviceLockActivityLauncher;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -114,6 +115,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
     private ShareParams.TargetChosenCallback mTargetChosenCallback;
     @Mock
     private WindowAndroid mWindowAndroid;
+    @Mock
+    private DeviceLockActivityLauncher mDeviceLockActivityLauncher;
 
     private TestActivity mActivity;
     private ChromeProvidedSharingOptionsProvider mChromeProvidedSharingOptionsProvider;
@@ -422,7 +425,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
                 /*imageEditorModuleProvider*/ null, mTracker, URL, linkGenerationStatus,
                 new LinkToggleMetricsDetails(
                         LinkToggleState.COUNT, DetailedContentType.NOT_SPECIFIED),
-                mProfile);
+                mProfile, mDeviceLockActivityLauncher);
     }
 
     private boolean propertyModelsContain(List<PropertyModel> propertyModels, int labelId) {
