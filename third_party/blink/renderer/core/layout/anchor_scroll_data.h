@@ -93,6 +93,10 @@ class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
   void InvalidateLayout();
   void InvalidatePaint();
 
+  // ValidateSnapshot is called every frame, but AnchorScrollData only needs
+  // to perform the validation once (during the frame it was created).
+  bool is_snapshot_validated_ = false;
+
   // The anchor-positioned element.
   Member<Element> owner_;
 

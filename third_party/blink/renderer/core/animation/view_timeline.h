@@ -66,8 +66,6 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   CSSNumericValue* startOffset() const;
   CSSNumericValue* endOffset() const;
 
-  bool ResolveTimelineOffsets() const;
-
   void Trace(Visitor*) const override;
 
  protected:
@@ -75,22 +73,11 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
                         ScrollOrientation physical_orientation,
                         TimelineState* state) const override;
 
-  // ScrollSnapshotClient:
-  void UpdateSnapshot() override;
-
-  bool ValidateTimelineOffsets() override;
-  bool CheckIfSubjectNeedsValidation(Node* resolved_source) const override;
-
   absl::optional<LayoutSize> SubjectSize() const;
   absl::optional<gfx::PointF> SubjectPosition(Node* resolved_source) const;
 
  private:
   double ToFractionalOffset(const TimelineOffset& timeline_offset) const;
-
-  // Cache values for post-layout validation check.  If the subject position or
-  // size changes, then the range boundaries are stale.
-  mutable absl::optional<LayoutSize> subject_size_;
-  mutable absl::optional<gfx::PointF> subject_position_;
 
   // If either of the following elements are non-null, we need to update
   // |inset_| on a style change.

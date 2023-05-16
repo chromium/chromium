@@ -204,6 +204,11 @@ void AnchorScrollData::UpdateSnapshot() {
 }
 
 bool AnchorScrollData::ValidateSnapshot() {
+  if (is_snapshot_validated_) {
+    return true;
+  }
+  is_snapshot_validated_ = true;
+
   // If this AnchorScrollData is detached in the previous style recalc, we no
   // longer need to validate it.
   if (!IsActive())

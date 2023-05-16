@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
+#include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -165,6 +166,8 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   void AddAttachment(ScrollTimelineAttachment*);
   void RemoveAttachment(ScrollTimelineAttachment*);
 
+  void ResolveTimelineOffsets() const;
+
  protected:
   ScrollTimeline(Document*, TimelineAttachment, ScrollTimelineAttachment*);
 
@@ -219,12 +222,6 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   void UpdateSnapshot() override;
   bool ValidateSnapshot() override;
   bool ShouldScheduleNextService() override;
-  bool CheckIfNeedsValidation() override;
-
-  virtual bool ValidateTimelineOffsets() { return true; }
-  virtual bool CheckIfSubjectNeedsValidation(Node* resolved_source) const {
-    return false;
-  }
 
   bool ComputeIsResolved() const;
 
@@ -238,11 +235,9 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   // See Node::[Un]RegisterScrollTimeline.
   Element* RetainingElement() const;
 
-  TimelineState ComputeTimelineState();
+  TimelineState ComputeTimelineState() const;
 
   TimelineAttachment attachment_type_;
-  absl::optional<ScrollOffset> minimum_scroll_offset_;
-  absl::optional<ScrollOffset> maximum_scroll_offset_;
 
   // Snapshotted value produced by the last SnapshotState call.
   TimelineState timeline_state_snapshotted_;

@@ -299,22 +299,23 @@ void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
   DCHECK(ComputeIsResolved(state->resolved_source));
   DCHECK(subject());
 
-  subject_position_ = SubjectPosition(state->resolved_source);
-  subject_size_ = SubjectSize();
+  absl::optional<LayoutSize> subject_size = SubjectSize();
+  absl::optional<gfx::PointF> subject_position =
+      SubjectPosition(state->resolved_source);
 
-  DCHECK(subject_position_);
+  DCHECK(subject_position);
   double target_offset = physical_orientation == kHorizontalScroll
-                             ? subject_position_->x()
-                             : subject_position_->y();
+                             ? subject_position->x()
+                             : subject_position->y();
 
-  DCHECK(subject_size_);
+  DCHECK(subject_size);
   double target_size;
   LayoutUnit viewport_size;
   if (physical_orientation == kHorizontalScroll) {
-    target_size = subject_size_->Width().ToDouble();
+    target_size = subject_size->Width().ToDouble();
     viewport_size = scrollable_area->LayoutContentRect().Width();
   } else {
-    target_size = subject_size_->Height().ToDouble();
+    target_size = subject_size->Height().ToDouble();
     viewport_size = scrollable_area->LayoutContentRect().Height();
   }
 
@@ -500,30 +501,6 @@ CSSNumericValue* ViewTimeline::endOffset() const {
 
   DCHECK(GetResolvedZoom());
   return CSSUnitValues::px(scroll_offsets->end / GetResolvedZoom());
-}
-
-void ViewTimeline::UpdateSnapshot() {
-  ScrollTimeline::UpdateSnapshot();
-  ResolveTimelineOffsets();
-}
-
-bool ViewTimeline::ValidateTimelineOffsets() {
-  bool has_keyframe_update = ResolveTimelineOffsets();
-  return !has_keyframe_update;
-}
-
-bool ViewTimeline::CheckIfSubjectNeedsValidation(Node* resolved_source) const {
-  return subject_size_ != SubjectSize() ||
-         subject_position_ != SubjectPosition(resolved_source);
-}
-
-bool ViewTimeline::ResolveTimelineOffsets() const {
-  TimelineRange timeline_range = GetTimelineRange();
-  bool has_keyframe_update = false;
-  for (Animation* animation : GetAnimations()) {
-    has_keyframe_update |= animation->ResolveTimelineOffsets(timeline_range);
-  }
-  return has_keyframe_update;
 }
 
 void ViewTimeline::Trace(Visitor* visitor) const {

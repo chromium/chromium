@@ -3487,7 +3487,7 @@ void LocalFrame::UpdateScrollSnapshots() {
 bool LocalFrame::ValidateScrollSnapshotClients() {
   bool valid = true;
   for (auto& client : scroll_snapshot_clients_) {
-    valid &= client->ValidateSnapshotIfNeeded();
+    valid &= client->ValidateSnapshot();
   }
   return valid;
 }

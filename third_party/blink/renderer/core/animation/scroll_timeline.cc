@@ -158,6 +158,13 @@ V8CSSNumberish* ScrollTimeline::duration() {
   return MakeGarbageCollected<V8CSSNumberish>(CSSUnitValues::percent(100));
 }
 
+void ScrollTimeline::ResolveTimelineOffsets() const {
+  TimelineRange timeline_range = GetTimelineRange();
+  for (Animation* animation : GetAnimations()) {
+    animation->ResolveTimelineOffsets(timeline_range);
+  }
+}
+
 Element* ScrollTimeline::RetainingElement() const {
   if (attachment_type_ == TimelineAttachment::kLocal) {
     return CurrentAttachment()->GetReferenceElement();
@@ -180,7 +187,7 @@ Element* ScrollTimeline::RetainingElement() const {
 // Resolved to remove the before and after phases in
 // https://github.com/w3c/csswg-drafts/issues/7240.
 // https://drafts.csswg.org/scroll-animations-1/#current-time-algorithm
-ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() {
+ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
   TimelineState state;
   state.resolved_source = ComputeResolvedSource();
 
@@ -210,13 +217,6 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() {
          scrollable_area->MinimumScrollOffset().y() == 0);
   DCHECK(scrollable_area->MaximumScrollOffset().x() == 0 ||
          scrollable_area->MinimumScrollOffset().x() == 0);
-
-  // Record the scroll range for a quick validation check at the end
-  // of the layout process. If the cached values change, a fresh
-  // style + layout cycle is required. The check is performed only once
-  // per frame to avoid an infinite loop in the update cycle.
-  minimum_scroll_offset_ = scrollable_area->MinimumScrollOffset();
-  maximum_scroll_offset_ = scrollable_area->MaximumScrollOffset();
 
   ScrollOffset scroll_offset = scrollable_area->GetScrollOffset();
   auto physical_orientation =
@@ -315,29 +315,6 @@ bool ScrollTimeline::ShouldScheduleNextService() {
   return current_phase_and_time != last_current_phase_and_time_;
 }
 
-bool ScrollTimeline::CheckIfNeedsValidation() {
-  Node* resolved_source = ComputeResolvedSource();
-
-  if (CheckIfSubjectNeedsValidation(resolved_source)) {
-    return true;
-  }
-
-  absl::optional<ScrollOffset> min_scroll_offset;
-  absl::optional<ScrollOffset> max_scroll_offset;
-
-  if (ComputeIsResolved(resolved_source)) {
-    LayoutBox* layout_box = resolved_source->GetLayoutBox();
-    PaintLayerScrollableArea* scrollable_area = layout_box->GetScrollableArea();
-    min_scroll_offset = scrollable_area->MinimumScrollOffset();
-    max_scroll_offset = scrollable_area->MaximumScrollOffset();
-  }
-
-  // Scroll range is cached during the snapshot update. If the values do not
-  // align, the timeline state is no longer valid.
-  return min_scroll_offset != minimum_scroll_offset_ ||
-         max_scroll_offset != maximum_scroll_offset_;
-}
-
 void ScrollTimeline::ScheduleNextService() {
   // See DocumentAnimations::UpdateAnimations() for why we shouldn't reach here.
   NOTREACHED();
@@ -353,6 +330,7 @@ void ScrollTimeline::UpdateSnapshot() {
       animation->InvalidateNormalizedTiming();
     }
   }
+  ResolveTimelineOffsets();
 }
 
 Element* ScrollTimeline::source() const {
@@ -432,14 +410,16 @@ void ScrollTimeline::InvalidateEffectTargetStyle() const {
 }
 
 bool ScrollTimeline::ValidateSnapshot() {
-  // ValidateTimelineOffsets will resolve timeline offsets according to
-  // data in `timeline_state_snapshotted_`, so that needs to be updated
-  // before the call.
-  TimelineState old_state = timeline_state_snapshotted_;
-  timeline_state_snapshotted_ = ComputeTimelineState();
-  if (ValidateTimelineOffsets() && old_state == timeline_state_snapshotted_) {
+  TimelineState new_state = ComputeTimelineState();
+
+  if (timeline_state_snapshotted_.HasConsistentLayout(new_state)) {
     return true;
   }
+
+  // Note that `timeline_state_snapshotted_` must be updated before
+  // ResolveTimelineOffsets is called.
+  timeline_state_snapshotted_ = new_state;
+  ResolveTimelineOffsets();
 
   // Mark an attached animation's target as dirty if the play state is running
   // or finished. Idle animations are not in effect and the effect of a paused
