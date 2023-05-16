@@ -59,6 +59,11 @@ class ShareThisTabDialogView : public views::DialogDelegateView {
 
   // Timer for an initial delay during which the allow-button is disabled.
   base::OneShotTimer activation_timer_;
+
+  // Auto-selection. Used only in tests.
+  const bool auto_accept_this_tab_capture_;  // Only for current-tab capture.
+  const bool auto_reject_this_tab_capture_;  // Only for current-tab capture.
+
   base::WeakPtrFactory<ShareThisTabDialogView> weak_factory_{this};
 };
 

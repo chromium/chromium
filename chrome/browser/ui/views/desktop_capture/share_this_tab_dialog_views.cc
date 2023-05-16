@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
@@ -66,8 +67,15 @@ ShareThisTabDialogView::ShareThisTabDialogView(
     ShareThisTabDialogViews* parent)
     : web_contents_(params.web_contents->GetWeakPtr()),
       app_name_(params.app_name),
-      parent_(parent) {
+      parent_(parent),
+      auto_accept_this_tab_capture_(
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kThisTabCaptureAutoAccept)),
+      auto_reject_this_tab_capture_(
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kThisTabCaptureAutoReject)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(!auto_accept_this_tab_capture_ || !auto_reject_this_tab_capture_);
   SetModalType(params.modality);
   RegisterDeleteDelegateCallback(base::BindOnce(
       [](ShareThisTabDialogView* dialog) {
@@ -108,11 +116,15 @@ ShareThisTabDialogView::ShareThisTabDialogView(
     SetupAudioToggle();
   }
 
-  activation_timer_.Start(
-      FROM_HERE,
-      base::Milliseconds(media::kShareThisTabDialogActivationDelayMs.Get()),
-      base::BindOnce(&ShareThisTabDialogView::Activate,
-                     weak_factory_.GetWeakPtr()));
+  // Use no delay in tests that auto-accepts/rejects the dialog.
+  const base::TimeDelta activation_delay =
+      auto_accept_this_tab_capture_ || auto_reject_this_tab_capture_
+          ? base::Milliseconds(0)
+          : base::Milliseconds(
+                media::kShareThisTabDialogActivationDelayMs.Get());
+  activation_timer_.Start(FROM_HERE, activation_delay,
+                          base::BindOnce(&ShareThisTabDialogView::Activate,
+                                         weak_factory_.GetWeakPtr()));
 
   // If |params.web_contents| is set and it's not a background page then the
   // picker will be shown modal to the web contents. Otherwise the picker is
@@ -251,6 +263,12 @@ void ShareThisTabDialogView::Activate() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   source_view_->Activate();
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, true);
+
+  if (auto_accept_this_tab_capture_) {
+    Accept();
+  } else if (auto_reject_this_tab_capture_) {
+    Cancel();
+  }
 }
 
 BEGIN_METADATA(ShareThisTabDialogView, views::DialogDelegateView)
