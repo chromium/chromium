@@ -498,6 +498,7 @@ if (is_android) {
       "android/java/res/drawable-xxxhdpi/omnibox_not_secure_warning.png",
       "android/java/res/drawable/action_call.xml",
       "android/java/res/drawable/action_directions.xml",
+      "android/java/res/drawable/action_reviews.xml",
       "android/java/res/drawable/action_web.xml",
       "android/java/res/values/colors.xml",
       "android/java/res/values/drawables.xml",

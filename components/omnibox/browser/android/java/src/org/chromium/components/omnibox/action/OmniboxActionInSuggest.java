@@ -57,6 +57,8 @@ public class OmniboxActionInSuggest extends OmniboxAction {
                 new ChipIcon(R.drawable.action_directions, true));
         map.put(EntityInfoProto.ActionInfo.ActionType.WEBSITE_VALUE,
                 new ChipIcon(R.drawable.action_web, true));
+        map.put(EntityInfoProto.ActionInfo.ActionType.REVIEWS_VALUE,
+                new ChipIcon(R.drawable.action_reviews, true));
         return map;
     }
 
