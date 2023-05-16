@@ -1,10 +1,10 @@
 Name: Implementation of WebDriver BiDi standard
 Short Name: chromium-bidi
-URL: https://github.com/GoogleChromeLabs/chromium-bidi/archive/175fa98da68f37a5194b5f54b286abbfd5402437.zip
+URL: https://github.com/GoogleChromeLabs/chromium-bidi/archive/fe3145bb0ba4e809dd610c0f04eb2a353caf092a.zip
 Version: 0
-Date: 2023-05-08
-Revision: 175fa98da68f37a5194b5f54b286abbfd5402437
-SHA-512: 39f4f9df108166afec30818e22d6bba122d33c6d7dc92c71178a99624c84e5f7624c59b53b94b9653380694aff83f1543420be2d2a2d57fb96a05f1c7b93e074
+Date: 2023-05-16
+Revision: fe3145bb0ba4e809dd610c0f04eb2a353caf092a
+SHA-512: ea04d62e36ec01bc22f1e44fa7030d0ef9912a11c52caca97af3699ade12855741949f8aecba11a5009ea39c09007cc8d5413cdce6a4febdf68bab4fe2a34058
 License: Apache 2.0
 License File: LICENSE
 Security Critical: no
