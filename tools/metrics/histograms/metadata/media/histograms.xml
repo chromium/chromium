@@ -6110,9 +6110,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.{VaapiClientName}.VAAPIError" enum="VaapiFunctions"
-    expires_after="2023-06-26">
+    expires_after="2024-05-16">
   <owner>mcasas@chromium.org</owner>
-  <owner>chromeos-gfx@chromium.org</owner>
+  <owner>chromeos-gfx-video@chromium.org</owner>
   <summary>
     Error codes reported by libva (via VaapiWrapper) while being used from the
     specified client name. {VaapiClientName}
