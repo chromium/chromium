@@ -614,11 +614,38 @@ TEST_P(TextInputTestWithConsumedByIme, InsertCharNormalKey) {
                          ui::TextInputClient::FOCUS_REASON_OTHER);
 
   char16_t ch = 'x';
-  ui::KeyEvent ev(ch, ui::VKEY_X, ui::DomCode::NONE, 0);
+  ui::KeyEvent ev(ch, ui::VKEY_X, ui::DomCode::US_X, 0);
   ui::SetKeyboardImeFlags(&ev, ui::kPropertyKeyboardImeHandledFlag);
 
   EXPECT_CALL(*delegate(), SendKey(testing::Ref(ev))).Times(1);
   text_input()->InsertChar(ev);
+}
+
+TEST_P(TextInputTestWithConsumedByIme, InsertCharNumpadEqual) {
+  text_input()->Activate(seat(), surface(),
+                         ui::TextInputClient::FOCUS_REASON_OTHER);
+
+  // NUMPAD_EQUAL is set key_code to VKEY_UNKNOWN, but code t- NUMPAD_EQUAL.
+  ui::KeyEvent ev(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN,
+                  ui::DomCode::NUMPAD_EQUAL, /*flags=*/0, /*key=*/0,
+                  base::TimeTicks());
+  ev.set_character(u'=');
+
+  if (GetParam()) {
+    // If ConsumedByIme fix is enabled, InsertChar should ignore it (because
+    // it is not consumed by IME), and exo::Keyboard is expected to handle the
+    // case.
+    EXPECT_CALL(*delegate(), SendKey(_)).Times(0);
+    EXPECT_CALL(*delegate(), Commit(_)).Times(0);
+  } else {
+    // If ConsumedByIme fix is disabled, the event is (wrongly) interpreted
+    // as consumed by IME, so exo::Keyboard does not send key events.
+    // Instead, InsertChar here is expected to send the event via Commit().
+    EXPECT_CALL(*delegate(), SendKey(_)).Times(0);
+    EXPECT_CALL(*delegate(), Commit(base::StringPiece16(u"="))).Times(1);
+  }
+  text_input()->InsertChar(ev);
+  testing::Mock::VerifyAndClearExpectations(delegate());
 }
 
 TEST_F(TextInputTest, SurroundingText) {
