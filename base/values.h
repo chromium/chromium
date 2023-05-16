@@ -766,14 +766,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // DEPRECATED: Prefer `Value::Dict::Set()`.
   Value* SetKey(StringPiece key, Value&& value);
 
-  // This attempts to remove the value associated with `key`. In case of
-  // failure, e.g. the key does not exist, false is returned and the underlying
-  // dictionary is not changed. In case of success, `key` is deleted from the
-  // dictionary and the method returns true.
-  //
-  // Deprecated: Prefer `Value::Dict::Remove()`.
-  bool RemoveKey(StringPiece key);
-
   // Note: Do not add more types. See the file-level comment above for why.
 
   // Comparison operators so that Values can easily be used with standard

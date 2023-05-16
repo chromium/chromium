@@ -1156,10 +1156,6 @@ Value* Value::SetKey(StringPiece key, Value&& value) {
   return GetDict().Set(key, std::move(value));
 }
 
-bool Value::RemoveKey(StringPiece key) {
-  return GetDict().Remove(key);
-}
-
 bool operator==(const Value& lhs, const Value& rhs) {
   return lhs.data_ == rhs.data_;
 }
