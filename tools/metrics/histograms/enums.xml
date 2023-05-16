@@ -61694,6 +61694,7 @@ from previous Chrome versions.
   <int value="-480263549" label="AutofillShadowDOM:disabled"/>
   <int value="-479601398" label="InfoCardAcknowledgementTracking:enabled"/>
   <int value="-478462945" label="enable-ephemeral-apps"/>
+  <int value="-478404134" label="CCTPageInsightsHub:enabled"/>
   <int value="-477101783" label="HandwritingGesture:disabled"/>
   <int value="-476171840" label="EnableFamilyInfoFeedback:enabled"/>
   <int value="-475537287" label="EcheLauncherListView:enabled"/>
@@ -65713,6 +65714,7 @@ from previous Chrome versions.
   <int value="1691568199" label="AndroidSpellCheckerNonLowEnd:disabled"/>
   <int value="1691853573" label="PersonalizationHub:enabled"/>
   <int value="1692847616" label="ArcEnableWebAppShare:enabled"/>
+  <int value="1692995109" label="CCTPageInsightsHub:disabled"/>
   <int value="1693094211" label="FilesNG:disabled"/>
   <int value="1693658048" label="AppsShortcutDefaultOff:enabled"/>
   <int value="1693685694"

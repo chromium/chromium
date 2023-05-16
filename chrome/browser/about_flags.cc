@@ -6825,6 +6825,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+    {"cct-page-insights-hub", flag_descriptions::kCCTPageInsightsHubName,
+     flag_descriptions::kCCTPageInsightsHubDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTPageInsightsHub)},
+
     {"cct-resizable-90-maximum-height",
      flag_descriptions::kCCTResizable90MaximumHeightName,
      flag_descriptions::kCCTResizable90MaximumHeightDescription, kOsAndroid,

@@ -40,6 +40,10 @@ found in the LICENSE file.
                 android:title="@null" />
           </menu>
         </item>
+        <item android:id="@+id/page_insights_id"
+            android:title="@string/menu_page_insights"
+            android:visible="false"
+            android:orderInCategory="2" />
         <item android:id="@+id/find_in_page_id"
             android:title="@string/menu_find_in_page"
             android:orderInCategory="2" />

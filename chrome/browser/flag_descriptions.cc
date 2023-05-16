@@ -3657,6 +3657,10 @@ const char kCCTIncognitoAvailableToThirdPartyDescription[] =
     "Enabling it would allow third party apps to open incognito mode for "
     "Chrome Custom Tabs, on Android.";
 
+const char kCCTPageInsightsHubName[] = "PageInsights Hub";
+const char kCCTPageInsightsHubDescription[] =
+    "Show PageInsights Hub on Chrome Custom Tabs.";
+
 const char kCCTResizable90MaximumHeightName[] =
     "Bottom sheet Custom Tabs maximum height";
 const char kCCTResizable90MaximumHeightDescription[] =

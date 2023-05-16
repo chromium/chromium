@@ -949,6 +949,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "cct-page-insights-hub",
+    "owners": [ "jinsukkim", "kgrosu@google.com", "twellington" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "cct-real-time-engagement-signals",
     "owners": ["sinansahin@google.com", "jinsukkim"],
     "expiry_milestone": 120

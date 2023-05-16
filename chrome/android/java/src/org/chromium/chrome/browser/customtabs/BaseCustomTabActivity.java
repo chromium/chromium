@@ -267,6 +267,13 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         return (getIntent().getFlags() & separateTaskFlags) != 0;
     }
 
+    /**
+     * Return true when PageInsights Hub is enabled on Custom Tabs. False by default.
+     */
+    protected boolean isPageInsightsHubEnabled() {
+        return false;
+    }
+
     @Override
     public void performPreInflationStartup() {
         // Parse the data from the Intent before calling super to allow the Intent to customize
@@ -409,7 +416,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 mIntentDataProvider.shouldShowShareMenuItem(),
                 mIntentDataProvider.shouldShowStarButton(),
                 mIntentDataProvider.shouldShowDownloadButton(), mIntentDataProvider.isIncognito(),
-                isMenuIconAtStart);
+                isMenuIconAtStart, this::isPageInsightsHubEnabled);
     }
 
     @Override
