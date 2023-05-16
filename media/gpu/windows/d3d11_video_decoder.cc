@@ -104,10 +104,9 @@ std::unique_ptr<VideoDecoder> D3D11VideoDecoder::Create(
   // Note that we WrapUnique<VideoDecoder> rather than D3D11VideoDecoder to make
   // this castable; the deleters have to match.
   std::unique_ptr<MediaLog> cloned_media_log = media_log->Clone();
-  auto get_helper_cb =
-      base::BindRepeating(CreateCommandBufferHelper, std::move(get_stub_cb),
-                          scoped_refptr<CommandBufferHelperHolder>(
-                              new CommandBufferHelperHolder(gpu_task_runner)));
+  auto get_helper_cb = base::BindRepeating(
+      CreateCommandBufferHelper, std::move(get_stub_cb),
+      base::MakeRefCounted<CommandBufferHelperHolder>(gpu_task_runner));
   return base::WrapUnique<VideoDecoder>(new D3D11VideoDecoder(
       gpu_task_runner, std::move(media_log), gpu_preferences, gpu_workarounds,
       base::SequenceBound<D3D11VideoDecoderImpl>(
@@ -817,9 +816,9 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
     }
 
     const size_t array_slice = use_single_video_decoder_texture_ ? 0 : i;
-    picture_buffers_.push_back(
-        new D3D11PictureBuffer(decoder_task_runner_, in_texture, array_slice,
-                               std::move(tex_wrapper), size, i /* level */));
+    picture_buffers_.push_back(base::MakeRefCounted<D3D11PictureBuffer>(
+        decoder_task_runner_, in_texture, array_slice, std::move(tex_wrapper),
+        size, /*level=*/i));
 
     base::OnceCallback<void(scoped_refptr<media::D3D11PictureBuffer>)>
         picture_buffer_gpu_resource_init_done_cb = base::DoNothing();
