@@ -47,7 +47,7 @@ deployments should always track the latest stable release. When you do this,
 there is no need to further assess the risk of Chromium vulnerabilities: we
 strive to fix vulnerabilities quickly and release often.
 
-<a name="TOC-How-can-I-know-which-fixes-to-include-in-my-downstream-project-">
+<a name="TOC-How-can-I-know-which-fixes-to-include-in-my-downstream-project-"></a>
 ### How can I know which fixes to include in my downstream project?
 
 Chrome is built with mitigations and hardening which aim to prevent or reduce
