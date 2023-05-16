@@ -103,8 +103,7 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
   // accounts.
   auto* user =
       user_manager::UserManager::Get()->FindUser(user_context->GetAccountId());
-  CHECK(user);
-  if (user->IsChild()) {
+  if (user && user->IsChild()) {
     context()->user_context = std::move(user_context);
     exit_callback_.Run(Result::kNotApplicable);
     return;
