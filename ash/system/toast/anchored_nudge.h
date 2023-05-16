@@ -11,6 +11,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
@@ -33,6 +34,10 @@ class ASH_EXPORT AnchoredNudge : public views::BubbleDialogDelegateView {
 
     // Called when the nudge is being destroyed.
     virtual void OnNudgeClosed(const std::string& id) = 0;
+
+    // Called when the mouse hover enters or exits the nudge.
+    virtual void OnNudgeHoverStateChanged(const std::string& id,
+                                          bool is_hovering) = 0;
   };
 
   AnchoredNudge(Delegate* delegate, const AnchoredNudgeData& nudge_data);
@@ -44,10 +49,19 @@ class ASH_EXPORT AnchoredNudge : public views::BubbleDialogDelegateView {
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
 
+  // Called by `AnchoredNudgeManager` to start observing hover events once the
+  // `AnchoredNudge` bubble was shown.
+  void AddHoverObserver(gfx::NativeWindow native_window);
+
+  // Called by `hover_observer_` when the mouse enters or exits the nudge.
+  void OnHoverStateChanged(bool is_hovering);
+
   const std::string& id() { return id_; }
 
  private:
   friend class AnchoredNudgeManagerImplTest;
+
+  class HoverObserver;
 
   // Used to notify nudge events to the manager.
   raw_ptr<Delegate> delegate_;
@@ -57,6 +71,9 @@ class ASH_EXPORT AnchoredNudge : public views::BubbleDialogDelegateView {
 
   // Owned by the views hierarchy. Contents view of the anchored nudge.
   raw_ptr<SystemToastStyle> toast_contents_view_ = nullptr;
+
+  // Used to pause and restart the nudge's dismiss timer.
+  std::unique_ptr<HoverObserver> hover_observer_;
 };
 
 }  // namespace ash

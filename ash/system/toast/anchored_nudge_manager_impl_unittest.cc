@@ -12,6 +12,7 @@
 #include "ash/system/toast/anchored_nudge.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/task_environment.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 
@@ -19,7 +20,8 @@ namespace ash {
 
 class AnchoredNudgeManagerImplTest : public AshTestBase {
  public:
-  AnchoredNudgeManagerImplTest() = default;
+  AnchoredNudgeManagerImplTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   AnchoredNudgeManagerImplTest(const AnchoredNudgeManagerImplTest&) = delete;
   AnchoredNudgeManagerImplTest& operator=(const AnchoredNudgeManagerImplTest&) =
       delete;
@@ -31,9 +33,11 @@ class AnchoredNudgeManagerImplTest : public AshTestBase {
 
   void ShowNudge(const std::string& id,
                  views::View* anchor_view,
-                 const std::u16string& text = std::u16string()) {
+                 const std::u16string& text = std::u16string(),
+                 bool has_infinite_duration = false) {
     AnchoredNudgeData nudge_data(id, AnchoredNudgeCatalogName::kTest, text,
                                  anchor_view);
+    nudge_data.has_infinite_duration = has_infinite_duration;
 
     anchored_nudge_manager()->Show(nudge_data);
   }
@@ -264,6 +268,50 @@ TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_OnShutdown) {
   EXPECT_TRUE(GetShownNudges()[id]);
 
   // Nudge is left open, no crash.
+}
+
+// Tests that nudges with `has_infinite_duration` set to false expire after
+// their default duration reaches its end.
+TEST_F(AnchoredNudgeManagerImplTest, NudgeCloses_WhenDismissTimerExpires) {
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Set up nudge data contents.
+  const std::string id = "id";
+  auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
+
+  // Show a nudge.
+  ShowNudge(id, anchor_view);
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  // Fast forward `kNudgeDefaultDuration` plus one second, the nudge should have
+  // expired.
+  task_environment()->FastForwardBy(
+      AnchoredNudgeManagerImpl::kAnchoredNudgeDuration + base::Seconds(1));
+  EXPECT_FALSE(GetShownNudges()[id]);
+}
+
+// Tests that nudges with `has_infinite_duration` set to true will not expire
+// after the default duration time has passed.
+TEST_F(AnchoredNudgeManagerImplTest, NudgeWithInfiniteDuration) {
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Set up nudge data contents.
+  const std::string id = "id";
+  auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
+  const std::u16string text = u"text";
+  bool has_infinite_duration = true;
+
+  // Show a nudge.
+  ShowNudge(id, anchor_view, text, has_infinite_duration);
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  // Fast forward `kNudgeDefaultDuration` plus one second, the nudge should not
+  // have expired.
+  task_environment()->FastForwardBy(
+      AnchoredNudgeManagerImpl::kAnchoredNudgeDuration + base::Seconds(1));
+  EXPECT_TRUE(GetShownNudges()[id]);
+
+  // Nudge with infinite duration is left open, no crash on shutdown.
 }
 
 // Tests that attempting to cancel a nudge with an invalid `id` should not

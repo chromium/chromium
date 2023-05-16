@@ -93,6 +93,8 @@ void AnchoredNudgeManagerImpl::Show(const AnchoredNudgeData& nudge_data) {
     return;
   }
 
+  const bool has_infinite_duration = nudge_data.has_infinite_duration;
+
   auto anchored_nudge =
       std::make_unique<AnchoredNudge>(/*delegate=*/this, nudge_data);
   auto* anchored_nudge_ptr = anchored_nudge.get();
@@ -118,6 +120,14 @@ void AnchoredNudgeManagerImpl::Show(const AnchoredNudgeData& nudge_data) {
 
   anchor_view_observers_[id] = std::make_unique<AnchorViewObserver>(
       anchored_nudge_ptr, anchor_view, this);
+
+  // Only nudges that expire should be able to persist on hover (i.e. nudges
+  // with infinite duration persist regardless of hover).
+  if (!has_infinite_duration) {
+    anchored_nudge_ptr->AddHoverObserver(
+        anchored_nudge_widget->GetNativeWindow());
+    StartDismissTimer(id);
+  }
 }
 
 void AnchoredNudgeManagerImpl::Cancel(const std::string& id) {
@@ -127,6 +137,7 @@ void AnchoredNudgeManagerImpl::Cancel(const std::string& id) {
 
   auto anchored_nudge_ptr = shown_nudges_[id];
 
+  dismiss_timers_.erase(id);
   anchor_view_observers_.erase(id);
   shown_nudges_.erase(id);
   anchored_nudge_ptr->GetWidget()->CloseNow();
@@ -140,6 +151,29 @@ void AnchoredNudgeManagerImpl::CloseAllNudges() {
 
 void AnchoredNudgeManagerImpl::OnNudgeClosed(const std::string& id) {
   Cancel(id);
+}
+
+void AnchoredNudgeManagerImpl::OnNudgeHoverStateChanged(const std::string& id,
+                                                        bool is_hovering) {
+  if (is_hovering) {
+    StopDismissTimer(id);
+  } else {
+    StartDismissTimer(id);
+  }
+}
+
+void AnchoredNudgeManagerImpl::StartDismissTimer(const std::string& id) {
+  // TODO(b/282805060): Use a `PausableTimer` instead of restarting timer.
+  dismiss_timers_[id].Start(FROM_HERE, kAnchoredNudgeDuration,
+                            base::BindOnce(&AnchoredNudgeManagerImpl::Cancel,
+                                           base::Unretained(this), id));
+}
+
+void AnchoredNudgeManagerImpl::StopDismissTimer(const std::string& id) {
+  if (!base::Contains(dismiss_timers_, id)) {
+    return;
+  }
+  dismiss_timers_[id].Stop();
 }
 
 }  // namespace ash

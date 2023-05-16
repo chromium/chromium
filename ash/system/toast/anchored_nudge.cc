@@ -6,13 +6,71 @@
 
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/style/system_toast_style.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/events/event.h"
+#include "ui/events/event_observer.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/event_monitor.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
+///////////////////////////////////////////////////////////////////////////////
+//  HoverObserver
+class AnchoredNudge::HoverObserver : public ui::EventObserver {
+ public:
+  using HoverStateChangeCallback =
+      base::RepeatingCallback<void(bool is_hovering)>;
+
+  HoverObserver(aura::Window* widget_window,
+                HoverStateChangeCallback on_hover_state_changed)
+      : event_monitor_(views::EventMonitor::CreateWindowMonitor(
+            /*event_observer=*/this,
+            widget_window,
+            {ui::ET_MOUSE_ENTERED, ui::ET_MOUSE_EXITED})),
+        on_hover_state_changed_(std::move(on_hover_state_changed)) {}
+
+  HoverObserver(const HoverObserver&) = delete;
+
+  HoverObserver& operator=(const HoverObserver&) = delete;
+
+  ~HoverObserver() override = default;
+
+  // ui::EventObserver:
+  void OnEvent(const ui::Event& event) override {
+    switch (event.type()) {
+      case ui::ET_MOUSE_ENTERED:
+        on_hover_state_changed_.Run(/*is_hovering=*/true);
+        break;
+      case ui::ET_MOUSE_EXITED:
+        on_hover_state_changed_.Run(/*is_hovering=*/false);
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
+
+ private:
+  // While this `EventMonitor` object exists, this object will only look for
+  // `ui::ET_MOUSE_ENTERED` and `ui::ET_MOUSE_EXITED` events that occur in the
+  // `widget_window` indicated in the constructor.
+  std::unique_ptr<views::EventMonitor> event_monitor_;
+
+  // This is run whenever the mouse enters or exits the observed window with a
+  // parameter to indicate whether the window is being hovered.
+  HoverStateChangeCallback on_hover_state_changed_;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+//  AnchoredNudge
 AnchoredNudge::AnchoredNudge(Delegate* delegate,
                              const AnchoredNudgeData& nudge_data)
     : views::BubbleDialogDelegateView(nudge_data.anchor_view,
@@ -30,6 +88,8 @@ AnchoredNudge::AnchoredNudge(Delegate* delegate,
 }
 
 AnchoredNudge::~AnchoredNudge() {
+  hover_observer_.reset();
+
   // Make sure `delegate_` knows that the nudge has been closed, for cases where
   // the nudge wasn't closed through the manager (e.g. widget destroyed by
   // test).
@@ -54,6 +114,22 @@ AnchoredNudge::CreateNonClientFrameView(views::Widget* widget) {
   static_cast<views::BubbleFrameView*>(frame.get())
       ->SetBubbleBorder(std::move(bubble_border));
   return frame;
+}
+
+void AnchoredNudge::AddHoverObserver(gfx::NativeWindow native_window) {
+  hover_observer_ = std::make_unique<HoverObserver>(
+      native_window, base::BindRepeating(&AnchoredNudge::OnHoverStateChanged,
+                                         base::Unretained(this)));
+}
+
+void AnchoredNudge::OnHoverStateChanged(bool is_hovering) {
+  CHECK(hover_observer_);
+  if (!GetWidget()) {
+    return;
+  }
+
+  // TODO(b/282805056): Handle hover state observations directly in the manager.
+  delegate_->OnNudgeHoverStateChanged(id_, is_hovering);
 }
 
 BEGIN_METADATA(AnchoredNudge, views::BubbleDialogDelegateView)
