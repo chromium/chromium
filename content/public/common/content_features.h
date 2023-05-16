@@ -196,8 +196,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kProcessSharingWithDefaultSiteInstances);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kProcessSharingWithStrictSiteInstances);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPushSubscriptionChangeEvent);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kReloadHiddenTabsWithCrashedSubframes);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kRenderAccessibilityHostDeserializationOffMainThread);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kRenderDocument);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kRetryGetVideoCaptureDeviceInfos);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kProcessPerSiteUpToMainFrameThreshold);

@@ -400,15 +400,6 @@ static_assert(kSubframeProcessShutdownDelayInMSec + kUnloadTimeoutInMSec <
 const void* const kRenderFrameHostAndroidKey = &kRenderFrameHostAndroidKey;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Causes RenderAccessibilityHost HandleAXEvents messages to be handled with
-// minimal copying of the data.
-//
-// TODO(nuskos): Once we've conducted a retroactive study of chrometto
-// improvements clean up this feature.
-BASE_FEATURE(kRenderAccessibilityHostAvoidCopying,
-             "RenderAccessibilityHostAvoidCopying",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // The next value to use for the accessibility reset token.
 int g_next_accessibility_reset_token = 1;
 
@@ -8757,30 +8748,13 @@ void RenderFrameHostImpl::HandleAXEvents(
 
   AXEventNotificationDetails details;
   details.ax_tree_id = tree_id;
-
-  // TODO(1213848): Remove the false path when the experiment is complete.
-  if (base::FeatureList::IsEnabled(kRenderAccessibilityHostAvoidCopying)) {
-    details.events = std::move(updates_and_events->events);
-
-    details.updates = std::move(updates_and_events->updates);
-    for (auto& update : details.updates) {
-      if (update.has_tree_data) {
-        DCHECK_EQ(tree_id, update.tree_data.tree_id);
-        ax_tree_data_ = update.tree_data;
-        update.tree_data = GetAXTreeData();
-      }
-    }
-  } else {
-    details.events = updates_and_events->events;
-
-    details.updates.resize(updates_and_events->updates.size());
-    for (size_t i = 0; i < updates_and_events->updates.size(); ++i) {
-      details.updates[i] = updates_and_events->updates[i];
-      if (updates_and_events->updates[i].has_tree_data) {
-        DCHECK_EQ(tree_id, updates_and_events->updates[i].tree_data.tree_id);
-        ax_tree_data_ = updates_and_events->updates[i].tree_data;
-        details.updates[i].tree_data = GetAXTreeData();
-      }
+  details.events = std::move(updates_and_events->events);
+  details.updates = std::move(updates_and_events->updates);
+  for (auto& update : details.updates) {
+    if (update.has_tree_data) {
+      DCHECK_EQ(tree_id, update.tree_data.tree_id);
+      ax_tree_data_ = update.tree_data;
+      update.tree_data = GetAXTreeData();
     }
   }
 
@@ -11179,10 +11153,7 @@ void RenderFrameHostImpl::BindRenderAccessibilityHost(
   if (!render_accessibility_host_ ||
       ax_tree_id != render_accessibility_host_ax_tree_id_) {
     render_accessibility_host_ = base::SequenceBound<RenderAccessibilityHost>(
-        base::FeatureList::IsEnabled(
-            features::kRenderAccessibilityHostDeserializationOffMainThread)
-            ? base::ThreadPool::CreateSequencedTaskRunner({})
-            : base::SequencedTaskRunner::GetCurrentDefault(),
+        base::ThreadPool::CreateSequencedTaskRunner({}),
         render_frame_scoped_weak_ptr_factory_.GetWeakPtr(), ax_tree_id);
   }
   render_accessibility_host_ax_tree_id_ = ax_tree_id;

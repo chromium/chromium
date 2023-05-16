@@ -941,16 +941,6 @@ BASE_FEATURE(kReloadHiddenTabsWithCrashedSubframes,
 #endif
 );
 
-// Causes RenderAccessibilityHost messages to be handled initially on a thread
-// pool before being forwarded to the browser main thread to avoid so the
-// deserialization does not block it.
-//
-// TODO(nuskos): Once we've conducted a retroactive study of chrometto
-// improvements clean up this feature.
-BASE_FEATURE(kRenderAccessibilityHostDeserializationOffMainThread,
-             "RenderAccessibilityHostDeserializationOffMainThread",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // RenderDocument:
 //
 // Currently, a RenderFrameHost represents neither a frame nor a document, but a
