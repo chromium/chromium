@@ -151,7 +151,7 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
 
   base::scoped_nsobject<NativeThemeEffectiveAppearanceObserver>
       appearance_observer_;
-  id high_contrast_notification_token_;
+  base::scoped_nsobject<id> high_contrast_notification_token_;
 
   // Used to notify the web native theme of changes to dark mode and high
   // contrast.

@@ -12,7 +12,6 @@
 
 #include "base/command_line.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_block.h"
 #include "base/no_destructor.h"
 #include "cc/paint/paint_shader.h"
 #include "ui/base/ui_base_features.h"
@@ -28,12 +27,16 @@
 #include "ui/native_theme/native_theme_aura.h"
 #include "ui/native_theme/native_theme_features.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 bool IsDarkMode() {
   if (@available(macOS 10.14, *)) {
     NSAppearanceName appearance =
-        [[NSApp effectiveAppearance] bestMatchFromAppearancesWithNames:@[
+        [NSApp.effectiveAppearance bestMatchFromAppearancesWithNames:@[
           NSAppearanceNameAqua, NSAppearanceNameDarkAqua
         ]];
     return [appearance isEqual:NSAppearanceNameDarkAqua];
@@ -51,13 +54,13 @@ bool IsHighContrast() {
 @end
 
 @implementation NativeThemeEffectiveAppearanceObserver {
-  base::mac::ScopedBlock<void (^)()> _handler;
+  void (^_handler)() __strong;
 }
 
 - (instancetype)initWithHandler:(void (^)())handler {
   self = [super init];
   if (self) {
-    _handler.reset([handler copy]);
+    _handler = handler;
     if (@available(macOS 10.14, *)) {
       [NSApp addObserver:self
               forKeyPath:@"effectiveAppearance"
@@ -72,14 +75,13 @@ bool IsHighContrast() {
   if (@available(macOS 10.14, *)) {
     [NSApp removeObserver:self forKeyPath:@"effectiveAppearance"];
   }
-  [super dealloc];
 }
 
 - (void)observeValueForKeyPath:(NSString*)forKeyPath
                       ofObject:(id)object
                         change:(NSDictionary*)change
                        context:(void*)context {
-  _handler.get()();
+  _handler();
 }
 
 @end
@@ -108,7 +110,8 @@ NativeTheme* NativeTheme::GetInstanceForNativeUi() {
 }
 
 NativeTheme* NativeTheme::GetInstanceForDarkUI() {
-  static base::NoDestructor<NativeThemeMac> s_native_theme(false, true);
+  static base::NoDestructor<NativeThemeMac> s_native_theme(
+      /*configure_web_instance=*/false, /*should_only_use_dark_colors=*/true);
   return s_native_theme.get();
 }
 
@@ -122,7 +125,8 @@ bool NativeTheme::SystemDarkModeSupported() {
 
 // static
 NativeThemeMac* NativeThemeMac::instance() {
-  static base::NoDestructor<NativeThemeMac> s_native_theme(true, false);
+  static base::NoDestructor<NativeThemeMac> s_native_theme(
+      /*configure_web_instance=*/true, /*should_only_use_dark_colors=*/false);
   return s_native_theme.get();
 }
 
@@ -340,7 +344,7 @@ void NativeThemeMac::PaintScrollbarTrackOuterBorder(
     paint_canvas.DrawRect(outer_border, flags);
   }
 
-  // Draw the vertial outer border.
+  // Draw the vertical outer border.
   if (is_corner ||
       extra_params.orientation != ScrollbarOrientation::kHorizontal) {
     gfx::Rect outer_border(rect);
@@ -508,8 +512,8 @@ NativeThemeMac::NativeThemeMac(bool configure_web_instance,
   if (!IsForcedHighContrast()) {
     SetPreferredContrast(CalculatePreferredContrast());
     __block auto theme = this;
-    high_contrast_notification_token_ =
-        [[[NSWorkspace sharedWorkspace] notificationCenter]
+    high_contrast_notification_token_.reset(
+        [NSWorkspace.sharedWorkspace.notificationCenter
             addObserverForName:
                 NSWorkspaceAccessibilityDisplayOptionsDidChangeNotification
                         object:nil
@@ -517,7 +521,7 @@ NativeThemeMac::NativeThemeMac(bool configure_web_instance,
                     usingBlock:^(NSNotification* notification) {
                       theme->SetPreferredContrast(CalculatePreferredContrast());
                       theme->NotifyOnNativeThemeUpdated();
-                    }];
+                    }]);
   }
 
   if (configure_web_instance)
@@ -525,7 +529,7 @@ NativeThemeMac::NativeThemeMac(bool configure_web_instance,
 }
 
 NativeThemeMac::~NativeThemeMac() {
-  [[NSNotificationCenter defaultCenter]
+  [NSNotificationCenter.defaultCenter
       removeObserver:high_contrast_notification_token_];
 }
 
