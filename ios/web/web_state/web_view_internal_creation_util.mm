@@ -70,10 +70,6 @@ WKWebView* BuildWKWebView(CGRect frame,
         web::GetWebClient()->GetUserAgent(user_agent_type));
   }
 
-  // By default the web view uses a very sluggish scroll speed. Set it to a more
-  // reasonable value.
-  web_view.scrollView.decelerationRate = UIScrollViewDecelerationRateNormal;
-
   if (@available(iOS 16.4, *)) {
     bool enable_web_inspector =
         web::GetWebClient()->EnableWebInspector(browser_state);
