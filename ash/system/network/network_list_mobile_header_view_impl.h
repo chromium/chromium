@@ -34,7 +34,7 @@ class ASH_EXPORT NetworkListMobileHeaderViewImpl
 
   // Used for testing.
   static constexpr int kAddESimButtonId =
-      NetworkListNetworkHeaderView::kToggleButtonId + 1;
+      NetworkListNetworkHeaderView::kToggleButtonId + 2;
 
   // NetworkListNetworkHeaderView:
   void AddExtraButtons() override;

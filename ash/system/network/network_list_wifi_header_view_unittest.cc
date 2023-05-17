@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
@@ -100,6 +101,10 @@ class NetworkListWifiHeaderViewTest : public AshTestBase {
 };
 
 TEST_F(NetworkListWifiHeaderViewTest, HeaderLabel) {
+  // QsRevamped `NetworkListHeaderView` doesn't have a header label.
+  if (features::IsQsRevampEnabled()) {
+    return;
+  }
   views::Label* label_view = GetLabelView();
   ASSERT_NE(nullptr, label_view);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_WIFI),
@@ -107,6 +112,10 @@ TEST_F(NetworkListWifiHeaderViewTest, HeaderLabel) {
 }
 
 TEST_F(NetworkListWifiHeaderViewTest, JoinWifiButtonStates) {
+  // QsRevamped `NetworkListWifiHeaderView` doesn't have a `join_wifi_button`.
+  if (features::IsQsRevampEnabled()) {
+    return;
+  }
   IconButton* join_wifi_button = GetJoinWifiButton();
   ASSERT_NE(nullptr, join_wifi_button);
   EXPECT_TRUE(join_wifi_button->GetEnabled());
@@ -124,6 +133,10 @@ TEST_F(NetworkListWifiHeaderViewTest, JoinWifiButtonStates) {
 }
 
 TEST_F(NetworkListWifiHeaderViewTest, WifiToggleButton) {
+  // QsRevamped `NetworkListWifiHeaderView` doesn't have a `join_wifi_button`.
+  if (features::IsQsRevampEnabled()) {
+    return;
+  }
   TrayToggleButton* toggle_button = GetToggleButton();
   ASSERT_NE(nullptr, toggle_button);
   EXPECT_TRUE(toggle_button->GetEnabled());
