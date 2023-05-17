@@ -110,6 +110,10 @@ source_set("hit_test") {
   ]
 }
 
+source_set("constants") {
+  sources = [ "command_id_constants.h" ]
+}
+
 # This target is used by mojom files, so it should have very few dependencies
 # (ideally none).
 source_set("types") {

@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
+#include "ui/base/command_id_constants.h"
 
 // This file lists all the command IDs understood by e.g. the browser.
 // It is used by Windows RC files, Mac NIB files, and other platforms too.
@@ -521,6 +522,6 @@
 // otherwise it'll conflict. Unbounded menus must also avoid conflicting with
 // each other, by only using every Nth id (where N is the number of unbounded
 // menus).
-#define IDC_FIRST_UNBOUNDED_MENU 0xE000
+#define IDC_FIRST_UNBOUNDED_MENU COMMAND_ID_FIRST_UNBOUNDED
 
 #endif  // CHROME_APP_CHROME_COMMAND_IDS_H_
