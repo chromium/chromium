@@ -13,12 +13,105 @@
 #include "base/memory/raw_ptr.h"
 #include "sql/database.h"
 #include "sql/internal_api_token.h"
+#include "sql/sqlite_result_code_values.h"
 
 namespace base {
 class FilePath;
 }
 
 namespace sql {
+
+// WARNING: This API is still experimental. If you're looking to add corruption
+// recovery to your feature that uses SQLite, use the `Recovery` class below...
+// for now! See https://crbug.com/1385500.
+//
+// TODO(https://crbug.com/1385500): This currently does not work on Fuchsia.
+//
+// Uses SQLite's built-in corruption recovery module to recover the database.
+// See https://www.sqlite.org/recovery.html
+class COMPONENT_EXPORT(SQL) BuiltInRecovery {
+ public:
+  enum class Strategy {
+    // Razes the database if it could not be recovered.
+    kRecoverOrRaze,
+
+    // Razes the database if it could not be recovered, or if a valid meta table
+    // with a version value could not be determined from the recovered database.
+    // Use this strategy if your client makes assertions about the version of
+    // the database schema.
+    kRecoverWithMetaVersionOrRaze,
+
+    // TODO(https://crbug.com/1385500): Consider exposing a way to keep around a
+    // successfully-recovered, but unsuccessfully-restored database if needed.
+  };
+
+  // Returns true for SQLite errors which `RecoverDatabase()` can plausibly fix.
+  // This does not guarantee that `RecoverDatabase()` will successfully recover
+  // the database.
+  static bool ShouldAttemptRecovery(int extended_error);
+
+  // Attempts to recover `database`, and razes the database if it could not be
+  // recovered according to `strategy`. After attempting recovery, the database
+  // can be re-opened and assumed to be free of corruption.
+  //
+  // It is not considered an error if some or all of the data cannot be
+  // recovered due to database corruption, so it is possible that some records
+  // could not be salvaged from the corrupted database.
+  // TODO(https://crbug.com/1385500): Support the lost-and-found table if the
+  // need arises to try to restore all these records.
+  //
+  // `database` must be open when calling this method and must not have an
+  // error callback set. This original handle is poisoned so that operations
+  // on the stack do not accidentally disrupt the restored data.
+  //
+  // Recovery must not be attempted on an in-memory or temporary database.
+  //
+  // Returns a SQLite error code specifying whether the database was
+  // successfully recovered.
+  [[nodiscard]] static SqliteResultCode RecoverDatabase(Database* database,
+                                                        Strategy strategy);
+
+  BuiltInRecovery(const BuiltInRecovery&) = delete;
+  BuiltInRecovery& operator=(const BuiltInRecovery&) = delete;
+
+ private:
+  enum Disposition {
+    kPoison,
+    kRazeAndPoison,
+  };
+
+  BuiltInRecovery(Database* database, Strategy strategy);
+  ~BuiltInRecovery();
+
+  // Entry point.
+  SqliteResultCode RecoverAndReplaceDatabase();
+
+  // Use SQLite's corruption recovery module to store the recovered content in
+  // `recover_db_`. See https://www.sqlite.org/recovery.html
+  SqliteResultCode AttemptToRecoverDatabaseToBackup();
+
+  bool RecoveredDbHasValidMetaTable();
+
+  // Use SQLite's Online Backup API to replace the original database with
+  // `recover_db_`. See https://www.sqlite.org/backup.html
+  SqliteResultCode ReplaceOriginalWithRecoveredDb();
+
+  void SetDbShutdownBehavior(Disposition disposition) {
+    DCHECK(!db_shutdown_behavior_.has_value());
+    db_shutdown_behavior_ = disposition;
+  }
+
+  const Strategy strategy_;
+
+  // What happens to the original database handle when this
+  // instance is destroyed. If unset, the database will be razed and poisoned.
+  absl::optional<Disposition> db_shutdown_behavior_;
+
+  raw_ptr<Database> db_;  // Original Database connection.
+  Database recover_db_;   // Recovery Database connection.
+
+  base::FilePath recovery_database_path_;
+};
 
 // Recovery module for sql/.  The basic idea is to create a fresh database and
 // populate it with the recovered contents of the original database.  If
@@ -63,7 +156,6 @@ namespace sql {
 //
 // If Recovered() is not called, then RazeAndPoison() is called on
 // orig_db.
-
 class COMPONENT_EXPORT(SQL) Recovery {
  public:
   Recovery(const Recovery&) = delete;
