@@ -96,6 +96,12 @@ AnchoredNudge::~AnchoredNudge() {
   delegate_->OnNudgeClosed(id_);
 }
 
+const std::u16string& AnchoredNudge::GetText() {
+  CHECK(toast_contents_view_);
+  CHECK(toast_contents_view_->label());
+  return toast_contents_view_->label()->GetText();
+}
+
 std::unique_ptr<views::NonClientFrameView>
 AnchoredNudge::CreateNonClientFrameView(views::Widget* widget) {
   // Create the customized bubble border.

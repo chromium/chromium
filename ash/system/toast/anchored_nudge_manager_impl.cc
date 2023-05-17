@@ -83,7 +83,7 @@ void AnchoredNudgeManagerImpl::Show(const AnchoredNudgeData& nudge_data) {
   CHECK(!id.empty());
 
   // If `id` is already in use, cancel the nudge so it can be replaced.
-  if (base::Contains(shown_nudges_, id)) {
+  if (IsNudgeShown(id)) {
     Cancel(id);
   }
 
@@ -131,7 +131,7 @@ void AnchoredNudgeManagerImpl::Show(const AnchoredNudgeData& nudge_data) {
 }
 
 void AnchoredNudgeManagerImpl::Cancel(const std::string& id) {
-  if (!base::Contains(shown_nudges_, id)) {
+  if (!IsNudgeShown(id)) {
     return;
   }
 
@@ -160,6 +160,22 @@ void AnchoredNudgeManagerImpl::OnNudgeHoverStateChanged(const std::string& id,
   } else {
     StartDismissTimer(id);
   }
+}
+
+bool AnchoredNudgeManagerImpl::IsNudgeShown(const std::string& id) {
+  return base::Contains(shown_nudges_, id);
+}
+
+const std::u16string& AnchoredNudgeManagerImpl::GetNudgeText(
+    const std::string& id) {
+  CHECK(IsNudgeShown(id));
+  return shown_nudges_[id]->GetText();
+}
+
+views::View* AnchoredNudgeManagerImpl::GetNudgeAnchorView(
+    const std::string& id) {
+  CHECK(IsNudgeShown(id));
+  return shown_nudges_[id]->GetAnchorView();
 }
 
 void AnchoredNudgeManagerImpl::StartDismissTimer(const std::string& id) {

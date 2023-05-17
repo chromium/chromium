@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/native_widget_types.h"
@@ -45,6 +44,9 @@ class ASH_EXPORT AnchoredNudge : public views::BubbleDialogDelegateView {
   AnchoredNudge& operator=(const AnchoredNudge&) = delete;
   ~AnchoredNudge() override;
 
+  // Gets the text set by the label in `toast_contents_view_`.
+  const std::u16string& GetText();
+
   // views::WidgetDelegate:
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
@@ -59,8 +61,6 @@ class ASH_EXPORT AnchoredNudge : public views::BubbleDialogDelegateView {
   const std::string& id() { return id_; }
 
  private:
-  friend class AnchoredNudgeManagerImplTest;
-
   class HoverObserver;
 
   // Used to notify nudge events to the manager.
