@@ -232,6 +232,11 @@ Preload::PrefetchStatus PrefetchStatusToProtocol(PrefetchStatus status) {
     case PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord:
       return Preload::PrefetchStatusEnum::
           PrefetchNotEligibleBrowserContextOffTheRecord;
+    case PrefetchStatus::kPrefetchNotEligiblePreloadingDisabled:
+      return Preload::PrefetchStatusEnum::PrefetchNotEligiblePreloadingDisabled;
+    case PrefetchStatus::kPrefetchNotEligibleBatterySaverEnabled:
+      return Preload::PrefetchStatusEnum::
+          PrefetchNotEligibleBatterySaverEnabled;
     case PrefetchStatus::kPrefetchHeldback:
       return Preload::PrefetchStatusEnum::PrefetchHeldback;
     case PrefetchStatus::kPrefetchAllowed:

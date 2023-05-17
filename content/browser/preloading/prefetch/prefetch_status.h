@@ -195,8 +195,14 @@ enum class PrefetchStatus {
   // that require the prefetch proxy to be made.
   kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy = 46,
 
+  // The prefetch was not made because the `Battery Saver` setting was enabled.
+  kPrefetchNotEligibleBatterySaverEnabled = 47,
+
+  // The prefetch was not made because preloading was disabled.
+  kPrefetchNotEligiblePreloadingDisabled = 48,
+
   // The max value of the PrefetchStatus. Update this when new enums are added.
-  kMaxValue = kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy,
+  kMaxValue = kPrefetchNotEligiblePreloadingDisabled,
 };
 
 }  // namespace content

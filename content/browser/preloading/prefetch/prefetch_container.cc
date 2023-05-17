@@ -64,12 +64,19 @@ static_assert(
     static_cast<int>(PreloadingEligibility::kPreloadingEligibilityContentEnd));
 
 PreloadingEligibility ToPreloadingEligibility(PrefetchStatus status) {
-  if (status == PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled) {
-    return PreloadingEligibility::kDataSaverEnabled;
+  switch (status) {
+    case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
+      return PreloadingEligibility::kDataSaverEnabled;
+    case PrefetchStatus::kPrefetchNotEligibleBatterySaverEnabled:
+      return PreloadingEligibility::kBatterySaverEnabled;
+    case PrefetchStatus::kPrefetchNotEligiblePreloadingDisabled:
+      return PreloadingEligibility::kPreloadingDisabled;
+    default:
+      return static_cast<PreloadingEligibility>(
+          static_cast<int>(status) +
+          static_cast<int>(
+              PreloadingEligibility::kPreloadingEligibilityCommonEnd));
   }
-  return static_cast<PreloadingEligibility>(
-      static_cast<int>(status) +
-      static_cast<int>(PreloadingEligibility::kPreloadingEligibilityCommonEnd));
 }
 
 // Please follow go/preloading-dashboard-updates if a new eligibility is added.
@@ -79,6 +86,8 @@ void SetIneligibilityFromStatus(PreloadingAttempt* attempt,
     switch (status) {
       case PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord:
       case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
+      case PrefetchStatus::kPrefetchNotEligibleBatterySaverEnabled:
+      case PrefetchStatus::kPrefetchNotEligiblePreloadingDisabled:
       case PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique:
       case PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps:
       case PrefetchStatus::kPrefetchProxyNotAvailable:
@@ -186,6 +195,8 @@ SetTriggeringOutcomeAndFailureReasonFromStatus(
       case PrefetchStatus::kPrefetchNotEligibleNonDefaultStoragePartition:
       case PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique:
       case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
+      case PrefetchStatus::kPrefetchNotEligibleBatterySaverEnabled:
+      case PrefetchStatus::kPrefetchNotEligiblePreloadingDisabled:
       case PrefetchStatus::kPrefetchNotEligibleExistingProxy:
       case PrefetchStatus::kPrefetchNotEligibleUserHasCookies:
       case PrefetchStatus::kPrefetchIneligibleRetryAfter:

@@ -87,6 +87,8 @@ bool ShouldConsiderDecoyRequestForStatus(PrefetchStatus status) {
     case PrefetchStatus::kPrefetchProxyNotAvailable:
     case PrefetchStatus::kPrefetchNotEligibleHostIsNonUnique:
     case PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled:
+    case PrefetchStatus::kPrefetchNotEligibleBatterySaverEnabled:
+    case PrefetchStatus::kPrefetchNotEligiblePreloadingDisabled:
     case PrefetchStatus::kPrefetchNotEligibleExistingProxy:
     case PrefetchStatus::kPrefetchNotEligibleBrowserContextOffTheRecord:
     case PrefetchStatus::
@@ -318,9 +320,17 @@ void PrefetchService::PrefetchUrl(
             prefetch_container->GetURL(), prefetch_container, false,
             PrefetchStatus::kPrefetchNotEligibleDataSaverEnabled);
         return;
+      case PreloadingEligibility::kBatterySaverEnabled:
+        OnGotEligibilityResult(
+            prefetch_container->GetURL(), prefetch_container, false,
+            PrefetchStatus::kPrefetchNotEligibleBatterySaverEnabled);
+        return;
+      case PreloadingEligibility::kPreloadingDisabled:
+        OnGotEligibilityResult(
+            prefetch_container->GetURL(), prefetch_container, false,
+            PrefetchStatus::kPrefetchNotEligiblePreloadingDisabled);
+        return;
       default:
-        // TODO(crbug.com/1382315): determine if kPreloadingDisabled or
-        // kBatterySaverEnabled should be handled.
         DVLOG(1) << *prefetch_container
                  << ": not prefetched (PrefetchServiceDelegate)";
         return;

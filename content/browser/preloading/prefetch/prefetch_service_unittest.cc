@@ -815,16 +815,16 @@ TEST_F(PrefetchServiceTest, NoPrefetchingPreloadingDisabled) {
   absl::optional<PrefetchServingPageMetrics> serving_page_metrics =
       GetMetricsForMostRecentNavigation();
   ASSERT_TRUE(serving_page_metrics);
-  EXPECT_FALSE(serving_page_metrics->prefetch_status);
+  EXPECT_TRUE(serving_page_metrics->prefetch_status);
+  EXPECT_EQ(
+      serving_page_metrics->prefetch_status.value(),
+      static_cast<int>(PrefetchStatus::kPrefetchNotEligiblePreloadingDisabled));
 
   base::WeakPtr<PrefetchContainer> serveable_prefetch_container =
       GetPrefetchToServe(GURL("https://example.com"));
   EXPECT_FALSE(serveable_prefetch_container);
 
-  // We expect one entry because the PreloadingAttempt is created when the
-  // container is created, but since `IsSomePreloadingEnabled()` is false
-  // we did not reach to the eligibility check.
-  ExpectCorrectUkmLogs(PreloadingEligibility::kUnspecified,
+  ExpectCorrectUkmLogs(PreloadingEligibility::kPreloadingDisabled,
                        PreloadingHoldbackStatus::kUnspecified,
                        PreloadingTriggeringOutcome::kUnspecified,
                        PreloadingFailureReason::kUnspecified);
