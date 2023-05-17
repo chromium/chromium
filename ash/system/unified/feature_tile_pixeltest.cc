@@ -136,6 +136,12 @@ TEST_F(FeatureTilePixelTest, CompactTile) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "descenders",
       /*revision_number=*/0, widget_.get()));
+
+  // Test one-line labels.
+  tile->SetLabel(u"One line");
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "one_line",
+      /*revision_number=*/0, widget_.get()));
 }
 
 }  // namespace

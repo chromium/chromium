@@ -58,9 +58,10 @@ constexpr gfx::Size kCompactSize(kCompactWidth, kFeatureTileHeight);
 constexpr gfx::Size kCompactIconButtonSize(kIconSize, kIconSize);
 constexpr gfx::Insets kCompactIconButtonMargins =
     gfx::Insets::TLBR(6, 22, 4, 22);
-constexpr gfx::Size kCompactTitleContainerSize(kCompactWidth, 34);
 constexpr gfx::Size kCompactTitleLabelSize(kCompactWidth - 32,
                                            kCompactTitleLineHeight * 2);
+constexpr gfx::Insets kCompactTitleLabelMargins =
+    gfx::Insets::TLBR(0, 16, 6, 16);
 
 // Creates an ink drop hover highlight for `host` with `color_id`.
 std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
@@ -149,43 +150,38 @@ void FeatureTile::CreateChildViews() {
   icon_button_->SetEnabled(false);
   icon_button_->SetCanProcessEventsWithinSubtree(false);
 
-  auto* title_container = AddChildView(std::make_unique<FlexLayoutView>());
-  title_container->SetCanProcessEventsWithinSubtree(false);
-  title_container->SetOrientation(is_compact
-                                      ? views::LayoutOrientation::kHorizontal
-                                      : views::LayoutOrientation::kVertical);
-  title_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-  title_container->SetCrossAxisAlignment(
-      is_compact ? views::LayoutAlignment::kStart
-                 : views::LayoutAlignment::kStretch);
-  title_container->SetPreferredSize(is_compact ? kCompactTitleContainerSize
-                                               : kTitlesContainerSize);
-
-  label_ = title_container->AddChildView(std::make_unique<views::Label>());
-  label_->SetHorizontalAlignment(is_compact ? gfx::ALIGN_CENTER
-                                            : gfx::ALIGN_LEFT);
-  label_->SetAutoColorReadabilityEnabled(false);
-
   if (is_compact) {
+    label_ = AddChildView(std::make_unique<views::Label>());
+    label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+    label_->SetAutoColorReadabilityEnabled(false);
     label_->SetPreferredSize(kCompactTitleLabelSize);
-    // TODO(b/259459827): verify multi-line text is rendering correctly, not
-    // clipping and center aligned.
+    label_->SetProperty(views::kMarginsKey, kCompactTitleLabelMargins);
     label_->SetMultiLine(true);
     label_->SetMaxLines(2);  // Elide after 2 lines.
     // Compact labels use kCrosAnnotation2 with a shorter custom line height.
     label_->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
         TypographyToken::kCrosAnnotation2));
     label_->SetLineHeight(kCompactTitleLineHeight);
-  } else {
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
-                                          *label_);
-    sub_label_ =
-        title_container->AddChildView(std::make_unique<views::Label>());
-    sub_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    sub_label_->SetAutoColorReadabilityEnabled(false);
-    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
-                                          *sub_label_);
+    return;
   }
+
+  auto* title_container = AddChildView(std::make_unique<FlexLayoutView>());
+  title_container->SetCanProcessEventsWithinSubtree(false);
+  title_container->SetOrientation(views::LayoutOrientation::kVertical);
+  title_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+  title_container->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  title_container->SetPreferredSize(kTitlesContainerSize);
+
+  label_ = title_container->AddChildView(std::make_unique<views::Label>());
+  label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label_->SetAutoColorReadabilityEnabled(false);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2, *label_);
+
+  sub_label_ = title_container->AddChildView(std::make_unique<views::Label>());
+  sub_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  sub_label_->SetAutoColorReadabilityEnabled(false);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
+                                        *sub_label_);
 }
 
 void FeatureTile::SetIconClickable(bool clickable) {
