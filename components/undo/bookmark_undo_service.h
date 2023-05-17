@@ -47,7 +47,6 @@ class BookmarkUndoService : public bookmarks::BaseBookmarkModelObserver,
   // ownership of the removed node.
   void AddUndoEntryForRemovedNode(
       bookmarks::BookmarkModel* model,
-      bookmarks::BookmarkUndoProvider* undo_provider,
       const bookmarks::BookmarkNode* parent,
       size_t index,
       std::unique_ptr<bookmarks::BookmarkNode> node);

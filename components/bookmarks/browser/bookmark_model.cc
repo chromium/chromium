@@ -235,7 +235,7 @@ void BookmarkModel::Remove(const BookmarkNode* node,
                                  removed_urls);
   }
 
-  client_->OnBookmarkNodeRemovedUndoable(this, this, parent, index.value(),
+  client_->OnBookmarkNodeRemovedUndoable(this, parent, index.value(),
                                          std::move(owned_node));
 
   metrics::RecordBookmarkRemoved(source);
@@ -303,7 +303,7 @@ void BookmarkModel::MoveToOtherModelWithNewNodeIdsAndUuids(
                                  removed_urls);
   }
 
-  client_->OnBookmarkNodeRemovedUndoable(this, this, parent, index.value(),
+  client_->OnBookmarkNodeRemovedUndoable(this, parent, index.value(),
                                          std::move(owned_node));
   // TODO(https://crbug.com/1416567): Record metrics.
 }
@@ -374,7 +374,7 @@ void BookmarkModel::RemoveAllUserBookmarks() {
 
   BeginGroupedChanges();
   for (auto& removed_node_data : removed_node_data_list) {
-    client_->OnBookmarkNodeRemovedUndoable(this, this, removed_node_data.parent,
+    client_->OnBookmarkNodeRemovedUndoable(this, removed_node_data.parent,
                                            removed_node_data.index,
                                            std::move(removed_node_data.node));
   }

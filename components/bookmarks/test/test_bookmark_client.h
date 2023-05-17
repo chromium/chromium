@@ -83,7 +83,6 @@ class TestBookmarkClient : public BookmarkClient {
       base::CancelableTaskTracker* tracker) override;
   void OnBookmarkNodeRemovedUndoable(
       BookmarkModel* model,
-      BookmarkUndoProvider* undo_provider,
       const BookmarkNode* parent,
       size_t index,
       std::unique_ptr<BookmarkNode> node) override;

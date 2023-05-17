@@ -128,29 +128,35 @@ class TestBookmarkClientWithUndo : public TestBookmarkClient {
   TestBookmarkClientWithUndo() = default;
   ~TestBookmarkClientWithUndo() override = default;
 
-  void RestoreLastRemovedBookmark() {
-    DCHECK(undo_provider_);
-    undo_provider_->RestoreRemovedNode(parent_, index_,
-                                       std::move(last_removed_node_));
+  [[nodiscard]] bool RestoreLastRemovedBookmark() {
+    if (!model_ || !last_removed_node_) {
+      return false;
+    }
+
+    static_cast<BookmarkUndoProvider*>(model_)->RestoreRemovedNode(
+        parent_, index_, std::move(last_removed_node_));
+
+    model_ = nullptr;
     parent_ = nullptr;
     index_ = 0;
+    last_removed_node_ = nullptr;
+    return true;
   }
 
   // BookmarkClient overrides.
   void OnBookmarkNodeRemovedUndoable(
       BookmarkModel* model,
-      BookmarkUndoProvider* undo_provider,
       const BookmarkNode* parent,
       size_t index,
       std::unique_ptr<BookmarkNode> node) override {
-    undo_provider_ = undo_provider;
+    model_ = model;
     parent_ = parent;
     index_ = index;
     last_removed_node_ = std::move(node);
   }
 
  private:
-  raw_ptr<BookmarkUndoProvider> undo_provider_ = nullptr;
+  raw_ptr<BookmarkModel> model_ = nullptr;
   raw_ptr<const BookmarkNode> parent_ = nullptr;
   size_t index_ = 0;
   std::unique_ptr<BookmarkNode> last_removed_node_;
@@ -1932,8 +1938,8 @@ TEST_F(BookmarkModelFaviconTest, ShouldResetFaviconStatusAfterRestore) {
 
   model_->Remove(node, bookmarks::metrics::BookmarkEditSource::kOther);
 
-  static_cast<TestBookmarkClientWithUndo*>(model_->client())
-      ->RestoreLastRemovedBookmark();
+  ASSERT_TRUE(static_cast<TestBookmarkClientWithUndo*>(model_->client())
+                  ->RestoreLastRemovedBookmark());
 
   EXPECT_FALSE(node->is_favicon_loading());
   EXPECT_FALSE(node->is_favicon_loaded());
