@@ -342,8 +342,10 @@ void ShoppingService::OnProductInfoJsonSanitizationCompleted(
     MergeProductInfoData(cached_info, result.value().GetDict());
   }
 
-  metrics::RecordPDPStateWithLocalMeta(pdp_detected_by_server,
-                                       pdp_detected_by_client);
+  if (base::FeatureList::IsEnabled(kCommerceLocalPDPDetection)) {
+    metrics::RecordPDPStateWithLocalMeta(pdp_detected_by_server,
+                                         pdp_detected_by_client);
+  }
 }
 
 bool ShoppingService::CheckIsPDPFromMetaOnly(
