@@ -63,7 +63,7 @@ NGPhysicalAnchorReference::NGPhysicalAnchorReference(
     const WritingModeConverter& converter)
     : rect(converter.ToPhysical(logical_reference.rect)),
       fragment(logical_reference.fragment),
-      is_invalid(logical_reference.is_invalid) {}
+      is_out_of_flow(logical_reference.is_out_of_flow) {}
 
 void NGLogicalAnchorReference::InsertInPreOrderInto(
     Member<NGLogicalAnchorReference>* head_ptr) {
@@ -78,11 +78,11 @@ void NGLogicalAnchorReference::InsertInPreOrderInto(
       break;
     }
 
-    // Skip adding if there is a reference with the same validity status and is
-    // before in the tree order. Only the first one in the tree order is needed
-    // for each validity status.
-    if (is_invalid == head->is_invalid)
+    // Skip adding if there is already an in-flow reference that is before in
+    // the tree order, which always has higher precedence than |this|.
+    if (!head->is_out_of_flow) {
       break;
+    }
 
     head_ptr = &head->next;
   }
@@ -130,15 +130,12 @@ NGAnchorEvaluatorImpl NGAnchorEvaluatorImpl::BuildFromLayoutResult(
   WritingModeConverter container_converter(
       container->StyleRef().GetWritingDirection(), container_size);
 
-  // TODO(crbug.com/1423493): The following doesn't support top-layer
-  // |layout_object| well. We need to include & filter "invalid" anchors.
-
   NGLogicalAnchorQuery* logical_query =
       MakeGarbageCollected<NGLogicalAnchorQuery>();
   logical_query->SetFromPhysical(
       *physical_query, container_converter,
       LogicalOffset() /* additional_offset */,
-      NGLogicalAnchorQuery::SetOptions::kValidInOrder);
+      NGLogicalAnchorQuery::SetOptions::kInFlowInOrder);
 
   Element* element = DynamicTo<Element>(layout_object.GetNode());
   Element* implicit_anchor =
@@ -146,42 +143,47 @@ NGAnchorEvaluatorImpl NGAnchorEvaluatorImpl::BuildFromLayoutResult(
   LayoutObject* implicit_anchor_object =
       implicit_anchor ? implicit_anchor->GetLayoutObject() : nullptr;
 
-  return NGAnchorEvaluatorImpl(*logical_query,
+  return NGAnchorEvaluatorImpl(layout_object, *logical_query,
                                layout_object.StyleRef().AnchorDefault(),
                                implicit_anchor_object, container_converter,
                                layout_object.StyleRef().GetWritingDirection(),
-                               PhysicalOffset() /* offset_to_padding_box */,
-                               layout_object.IsInTopOrViewTransitionLayer());
+                               PhysicalOffset() /* offset_to_padding_box */);
 }
 
 const NGPhysicalAnchorReference* NGPhysicalAnchorQuery::AnchorReference(
-    const NGAnchorKey& key,
-    bool can_use_invalid_anchors) const {
+    const LayoutObject& query_object,
+    const NGAnchorKey& key) const {
   if (const NGPhysicalAnchorReference* reference = Base::AnchorReference(key)) {
-    if (can_use_invalid_anchors || !reference->is_invalid)
+    if (!reference->is_out_of_flow ||
+        reference->fragment->GetLayoutObject()->IsBeforeInPreOrder(
+            query_object)) {
       return reference;
+    }
   }
   return nullptr;
 }
 
 const NGPhysicalFragment* NGPhysicalAnchorQuery::Fragment(
-    const NGAnchorKey& key,
-    bool can_use_invalid_anchors) const {
+    const LayoutObject& query_object,
+    const NGAnchorKey& key) const {
   if (const NGPhysicalAnchorReference* reference =
-          AnchorReference(key, can_use_invalid_anchors)) {
+          AnchorReference(query_object, key)) {
     return reference->fragment.Get();
   }
   return nullptr;
 }
 
 const NGLogicalAnchorReference* NGLogicalAnchorQuery::AnchorReference(
-    const NGAnchorKey& key,
-    bool can_use_invalid_anchor) const {
+    const LayoutObject& query_object,
+    const NGAnchorKey& key) const {
   if (const NGLogicalAnchorReference* reference = Base::AnchorReference(key)) {
     for (const NGLogicalAnchorReference* result = reference; result;
          result = result->next) {
-      if (can_use_invalid_anchor || !result->is_invalid)
+      if (!result->is_out_of_flow ||
+          reference->fragment->GetLayoutObject()->IsBeforeInPreOrder(
+              query_object)) {
         return result;
+      }
     }
   }
   return nullptr;
@@ -194,8 +196,8 @@ void NGLogicalAnchorQuery::Set(const NGAnchorKey& key,
   DCHECK(fragment.GetLayoutObject());
   Set(key,
       MakeGarbageCollected<NGLogicalAnchorReference>(
-          fragment, rect, options == SetOptions::kInvalid),
-      options == SetOptions::kValidOutOfOrder);
+          fragment, rect, options == SetOptions::kOutOfFlow),
+      options == SetOptions::kInFlowOutOfOrder);
 }
 
 void NGLogicalAnchorQuery::Set(const NGAnchorKey& key,
@@ -212,7 +214,7 @@ void NGLogicalAnchorQuery::Set(const NGAnchorKey& key,
       result.stored_value;
   NGLogicalAnchorReference* const existing_head = *existing_head_ptr;
   DCHECK(existing_head);
-  const NGLogicalAnchorReference* last_valid_existing = nullptr;
+  const NGLogicalAnchorReference* last_in_flow_existing = nullptr;
   const LayoutObject* new_object = reference->fragment->GetLayoutObject();
   DCHECK(new_object);
   for (NGLogicalAnchorReference* existing = existing_head; existing;
@@ -223,15 +225,18 @@ void NGLogicalAnchorQuery::Set(const NGAnchorKey& key,
       existing->rect.Unite(reference->rect);
       return;
     }
-    if (!existing->is_invalid)
-      last_valid_existing = existing;
+    if (!existing->is_out_of_flow) {
+      last_in_flow_existing = existing;
+    }
   }
 
-  // Ignore the new value if both new and existing values are valid, and the
+  // Ignore the new value if both new and existing values are in-flow, and the
   // call order is in the tree order.
-  if (!maybe_out_of_order && !reference->is_invalid && last_valid_existing) {
-    DCHECK(last_valid_existing->fragment->GetLayoutObject()->IsBeforeInPreOrder(
-        *new_object));
+  if (!maybe_out_of_order && !reference->is_out_of_flow &&
+      last_in_flow_existing) {
+    DCHECK(
+        last_in_flow_existing->fragment->GetLayoutObject()->IsBeforeInPreOrder(
+            *new_object));
     return;
   }
 
@@ -247,9 +252,9 @@ void NGPhysicalAnchorQuery::SetFromLogical(
   // references is not supported.
   DCHECK(IsEmpty());
   for (const auto entry : logical_query) {
-    // For each key, only the first one in the tree order, valid or invalid, is
-    // needed to be propagated, because the validity is re-computed for each
-    // containing block. Please see |SetFromPhysical|.
+    // For each key, only the first one in the tree order, in or out of flow, is
+    // needed to be propagated, because whether it's in flow is re-computed for
+    // each containing block. Please see |SetFromPhysical|.
     const auto result =
         Base::insert(entry.key, MakeGarbageCollected<NGPhysicalAnchorReference>(
                                     *entry.value, converter));
@@ -267,8 +272,8 @@ void NGLogicalAnchorQuery::SetFromPhysical(
     rect.offset += additional_offset;
     Set(entry.key,
         MakeGarbageCollected<NGLogicalAnchorReference>(
-            *entry.value->fragment, rect, options == SetOptions::kInvalid),
-        options == SetOptions::kValidOutOfOrder);
+            *entry.value->fragment, rect, options == SetOptions::kOutOfFlow),
+        options == SetOptions::kInFlowOutOfOrder);
   }
 }
 
@@ -433,14 +438,14 @@ const NGLogicalAnchorReference* NGAnchorEvaluatorImpl::ResolveAnchorReference(
     return nullptr;
   }
   if (anchor_specifier.IsNamed()) {
-    return anchor_query->AnchorReference(&anchor_specifier.GetName(),
-                                         is_in_top_layer_);
+    return anchor_query->AnchorReference(*query_object_,
+                                         &anchor_specifier.GetName());
   }
   if (anchor_specifier.IsDefault() && default_anchor_specifier_) {
-    return anchor_query->AnchorReference(default_anchor_specifier_,
-                                         is_in_top_layer_);
+    return anchor_query->AnchorReference(*query_object_,
+                                         default_anchor_specifier_);
   }
-  return anchor_query->AnchorReference(implicit_anchor_, is_in_top_layer_);
+  return anchor_query->AnchorReference(*query_object_, implicit_anchor_);
 }
 
 absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchor(

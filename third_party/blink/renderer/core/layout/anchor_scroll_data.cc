@@ -30,15 +30,11 @@ const LayoutObject* AnchorScrollObject(const LayoutObject* layout_object) {
   if (!anchor_query)
     return nullptr;
 
-  bool can_use_invalid_anchors = layout_object->IsInTopOrViewTransitionLayer();
-
   const NGPhysicalFragment* fragment = nullptr;
   if (value->IsNamed()) {
-    fragment =
-        anchor_query->Fragment(&value->GetName(), can_use_invalid_anchors);
+    fragment = anchor_query->Fragment(*layout_object, &value->GetName());
   } else if (value->IsDefault() && style.AnchorDefault()) {
-    fragment =
-        anchor_query->Fragment(style.AnchorDefault(), can_use_invalid_anchors);
+    fragment = anchor_query->Fragment(*layout_object, style.AnchorDefault());
   } else {
     DCHECK(value->IsImplicit() ||
            (value->IsDefault() && !style.AnchorDefault()));
@@ -47,17 +43,8 @@ const LayoutObject* AnchorScrollObject(const LayoutObject* layout_object) {
     LayoutObject* anchor_layout_object =
         anchor ? anchor->GetLayoutObject() : nullptr;
     if (anchor_layout_object) {
-      fragment =
-          anchor_query->Fragment(anchor_layout_object, can_use_invalid_anchors);
+      fragment = anchor_query->Fragment(*layout_object, anchor_layout_object);
     }
-  }
-
-  // |can_use_invalid_anchors| allows NGPhysicalAnchorQuery to return elements
-  // that are rendered after, and hence, can't be used as anchors for
-  // |layout_object|.
-  if (can_use_invalid_anchors && fragment &&
-      layout_object->IsBeforeInPreOrder(*fragment->GetLayoutObject())) {
-    return nullptr;
   }
 
   return fragment ? fragment->GetLayoutObject() : nullptr;

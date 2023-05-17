@@ -23,32 +23,36 @@ NGLogicalAnchorQuery::SetOptions AnchorQuerySetOptions(
     const NGPhysicalFragment& fragment,
     const NGLayoutInputNode& container,
     bool maybe_out_of_order_if_oof) {
-  // If the |fragment| is not absolutely positioned, it's a valid anchor.
+  // If the |fragment| is not absolutely positioned, it's an in-flow anchor.
   // https://drafts.csswg.org/css-anchor-1/#determining
-  if (!fragment.IsOutOfFlowPositioned())
-    return NGLogicalAnchorQuery::SetOptions::kValidInOrder;
+  if (!fragment.IsOutOfFlowPositioned()) {
+    return NGLogicalAnchorQuery::SetOptions::kInFlowInOrder;
+  }
 
   // If the OOF |fragment| is not in a block fragmentation context, it's a child
-  // of its containing block. Make it invalid.
+  // of its containing block. Make it out-of-flow.
   DCHECK(fragment.GetLayoutObject());
-  if (!maybe_out_of_order_if_oof)
-    return NGLogicalAnchorQuery::SetOptions::kInvalid;
+  if (!maybe_out_of_order_if_oof) {
+    return NGLogicalAnchorQuery::SetOptions::kOutOfFlow;
+  }
 
   // |container| is null if it's an inline box.
-  if (!container.GetLayoutBox())
-    return NGLogicalAnchorQuery::SetOptions::kInvalid;
+  if (!container.GetLayoutBox()) {
+    return NGLogicalAnchorQuery::SetOptions::kOutOfFlow;
+  }
 
   // If the OOF |fragment| is in a block fragmentation context, it's a child of
   // the fragmentation context root. If its containing block is the |container|,
-  // make it invalid.
+  // make it out-of-flow.
   const LayoutObject* layout_object = fragment.GetLayoutObject();
   const LayoutObject* containing_block = layout_object->Container();
   DCHECK(containing_block);
-  if (containing_block == container.GetLayoutBox())
-    return NGLogicalAnchorQuery::SetOptions::kInvalid;
+  if (containing_block == container.GetLayoutBox()) {
+    return NGLogicalAnchorQuery::SetOptions::kOutOfFlow;
+  }
   // Otherwise its containing block is a descendant of the block fragmentation
-  // context, so it's valid, but the call order is not in the tree order.
-  return NGLogicalAnchorQuery::SetOptions::kValidOutOfOrder;
+  // context, so it's in-flow, but the call order is not in the tree order.
+  return NGLogicalAnchorQuery::SetOptions::kInFlowOutOfOrder;
 }
 
 }  // namespace

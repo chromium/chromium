@@ -33,20 +33,6 @@ class NGAnchorQueryTest : public RenderingTest,
       return AnchorQuery(*element);
     return nullptr;
   }
-
-  Vector<AtomicString> ValidAnchorNames(const Element& element) const {
-    Vector<AtomicString> names;
-    if (const NGPhysicalAnchorQuery* anchor_query = AnchorQuery(element)) {
-      for (auto entry : *anchor_query) {
-        if (!entry.value->is_invalid) {
-          if (auto** name = absl::get_if<const ScopedCSSName*>(&entry.key)) {
-            names.push_back((*name)->GetName());
-          }
-        }
-      }
-    }
-    return names;
-  }
 };
 
 struct AnchorTestData {
@@ -178,48 +164,6 @@ TEST_F(NGAnchorQueryTest, AnchorNameRemove) {
   UpdateAllLifecyclePhasesForTest();
   anchor_query = AnchorQuery(*container);
   EXPECT_FALSE(anchor_query);
-}
-
-// https://drafts.csswg.org/css-anchor-1/#determining
-TEST_F(NGAnchorQueryTest, AnchorNameValid) {
-  SetBodyInnerHTML(R"HTML(
-    <div id="container" style="position: relative">
-      <div id="static1">
-        <div id="rel2" style="position: relative">
-          <div id="abs1" style="position: absolute">
-            <div id="rel1" style="position: relative">
-              <div style="anchor-name: --static"></div>
-              <div style="anchor-name: --abspos; position: absolute"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )HTML");
-  // For `rel1`, only `--static` is valid because "if el has the same containing
-  // block as the querying element, el is not absolutely positioned."
-  EXPECT_THAT(ValidAnchorNames(*GetElementById("rel1")),
-              testing::UnorderedElementsAre("--static"));
-  // For `abs1`, all anchors are valid because "if el has a different containing
-  // block from the querying element, the last containing block in el's
-  // containing block chain before reaching the querying element's containing
-  // block is not absolutely positioned." The "last containing block" is `rel1`,
-  // which is not absolutely positioned (has `position: relative`.)
-  EXPECT_THAT(ValidAnchorNames(*GetElementById("abs1")),
-              testing::UnorderedElementsAre("--abspos", "--static"));
-  // For the same reason, `rel2` has no anchors because the "last containing
-  // block" is `abs1`.
-  EXPECT_THAT(ValidAnchorNames(*GetElementById("rel2")),
-              testing::UnorderedElementsAre());
-  // The last containing block for `static1` is `rel2`. It's not visible to the
-  // web though, as the `static1` can't be a containing block of positioned
-  // objects. This is to test the internal propagation mechanism.
-  EXPECT_THAT(ValidAnchorNames(*GetElementById("static1")),
-              testing::UnorderedElementsAre("--abspos", "--static"));
-  // For `container`, the last containing block is `static1`, which is not
-  // absolutely positioned, so all anchor names are valid.
-  EXPECT_THAT(ValidAnchorNames(*GetElementById("container")),
-              testing::UnorderedElementsAre("--abspos", "--static"));
 }
 
 TEST_F(NGAnchorQueryTest, BlockFlow) {

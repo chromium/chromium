@@ -1677,18 +1677,18 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
         node_info.node.GetLayoutBox()->Container();
     DCHECK(css_containing_block);
     anchor_evaluator_storage.emplace(
-        *anchor_queries, candidate_style.AnchorDefault(), implicit_anchor,
-        *css_containing_block, container_converter, candidate_writing_direction,
-        container_converter.ToPhysical(node_info.container_info.rect).offset,
-        node_info.node.IsInTopOrViewTransitionLayer());
+        *node_info.node.GetLayoutBox(), *anchor_queries,
+        candidate_style.AnchorDefault(), implicit_anchor, *css_containing_block,
+        container_converter, candidate_writing_direction,
+        container_converter.ToPhysical(node_info.container_info.rect).offset);
   } else if (const NGLogicalAnchorQuery* anchor_query =
                  container_builder_->AnchorQuery()) {
     // Otherwise the |container_builder_| is the containing block.
     anchor_evaluator_storage.emplace(
-        *anchor_query, candidate_style.AnchorDefault(), implicit_anchor,
-        container_converter, candidate_writing_direction,
-        container_converter.ToPhysical(node_info.container_info.rect).offset,
-        node_info.node.IsInTopOrViewTransitionLayer());
+        *node_info.node.GetLayoutBox(), *anchor_query,
+        candidate_style.AnchorDefault(), implicit_anchor, container_converter,
+        candidate_writing_direction,
+        container_converter.ToPhysical(node_info.container_info.rect).offset);
   } else {
     anchor_evaluator_storage.emplace();
   }

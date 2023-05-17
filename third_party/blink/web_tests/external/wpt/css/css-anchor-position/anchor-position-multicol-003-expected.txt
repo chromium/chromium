@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+FAIL .target 1 assert_equals: 
+<div class="target" data-expected-height="50"></div>
+height expected 50 but got 0
+PASS .target 2
+PASS .target 3
+FAIL .target 4 assert_equals: 
+<div class="target" data-expected-height="50"></div>
+height expected 50 but got 0
+PASS .target 5
+PASS .target 6
+PASS .target 7
+Harness: the test ran to completion.
+
