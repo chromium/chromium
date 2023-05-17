@@ -8,42 +8,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 
-SidePanelEntry::Key::Key(SidePanelEntry::Id id) : id_(id) {
-  DCHECK(id_ != SidePanelEntry::Id::kExtension);
-}
-
-SidePanelEntry::Key::Key(SidePanelEntry::Id id,
-                         extensions::ExtensionId extension_id)
-    : id_(id), extension_id_(extension_id) {
-  DCHECK(id_ == SidePanelEntry::Id::kExtension);
-}
-
-SidePanelEntry::Key::Key(const Key& other) = default;
-
-SidePanelEntry::Key::~Key() = default;
-
-SidePanelEntry::Key& SidePanelEntry::Key::operator=(const Key& other) = default;
-
-bool SidePanelEntry::Key::operator==(const Key& other) const {
-  if (id_ == other.id_) {
-    if (id_ == SidePanelEntry::Id::kExtension) {
-      DCHECK(extension_id_.has_value() && other.extension_id_.has_value());
-      return extension_id_.value() == other.extension_id_.value();
-    }
-    return true;
-  }
-  return false;
-}
-
-bool SidePanelEntry::Key::operator<(const Key& other) const {
-  if (id_ == other.id_ && id_ == SidePanelEntry::Id::kExtension) {
-    DCHECK(extension_id_.has_value() && other.extension_id_.has_value());
-    // TODO(corising): Updating extension sorting
-    return extension_id_.value() < other.extension_id_.value();
-  }
-  return id_ < other.id_;
-}
-
 SidePanelEntry::SidePanelEntry(
     Id id,
     std::u16string name,

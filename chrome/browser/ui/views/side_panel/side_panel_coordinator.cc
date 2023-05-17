@@ -363,16 +363,6 @@ absl::optional<SidePanelEntry::Id> SidePanelCoordinator::GetCurrentEntryId()
              : absl::nullopt;
 }
 
-SidePanelEntry::Id SidePanelCoordinator::GetComboboxDisplayedEntryIdForTesting()
-    const {
-  return combobox_model_->GetKeyAt(header_combobox_->GetSelectedIndex().value())
-      .id();
-}
-
-SidePanelEntry* SidePanelCoordinator::GetLoadingEntryForTesting() const {
-  return GetLoadingEntry();
-}
-
 bool SidePanelCoordinator::IsSidePanelShowing() const {
   return GetContentView() != nullptr;
 }
@@ -381,6 +371,16 @@ bool SidePanelCoordinator::IsSidePanelEntryShowing(
     const SidePanelEntry::Key& entry_key) const {
   return IsSidePanelShowing() && current_entry_ &&
          current_entry_->key() == entry_key;
+}
+
+SidePanelEntry::Id SidePanelCoordinator::GetComboboxDisplayedEntryIdForTesting()
+    const {
+  return combobox_model_->GetKeyAt(header_combobox_->GetSelectedIndex().value())
+      .id();
+}
+
+SidePanelEntry* SidePanelCoordinator::GetLoadingEntryForTesting() const {
+  return GetLoadingEntry();
 }
 
 bool SidePanelCoordinator::IsSidePanelEntryShowing(

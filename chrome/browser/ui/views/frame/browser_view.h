@@ -215,9 +215,7 @@ class BrowserView : public BrowserWindow,
 
   SidePanel* unified_side_panel() { return unified_side_panel_; }
 
-  SidePanelCoordinator* side_panel_coordinator() {
-    return side_panel_coordinator_.get();
-  }
+  SidePanelCoordinator* side_panel_coordinator();
 
   void set_contents_border_widget(views::Widget* contents_border_widget) {
     GetBrowserViewLayout()->set_contents_border_widget(contents_border_widget);
@@ -1095,8 +1093,6 @@ class BrowserView : public BrowserWindow,
   // The side search side panel.
   raw_ptr<views::View, DanglingUntriaged> left_aligned_side_panel_separator_ =
       nullptr;
-
-  std::unique_ptr<SidePanelCoordinator> side_panel_coordinator_;
 
   // Provides access to the toolbar buttons this browser view uses. Buttons may
   // appear in a hosted app frame or in a tabbed UI toolbar.
