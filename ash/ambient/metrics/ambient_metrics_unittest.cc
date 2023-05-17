@@ -8,10 +8,15 @@
 #include <vector>
 
 #include "ash/ambient/ambient_ui_settings.h"
+#include "ash/constants/ambient_theme.h"
+#include "ash/constants/ambient_video.h"
 #include "ash/public/cpp/ambient/ambient_mode_photo_source.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
+#include "ash/test/test_ash_web_view.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "base/timer/elapsed_timer.h"
+#include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
@@ -90,6 +95,68 @@ TEST(AmbientOrientationMetricsRecorderTest, RecordsEngagementTime) {
   histogram_tester.ExpectTimeBucketCount(
       "Ash.AmbientMode.EngagementTime.FeelTheBreeze.Portrait",
       base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
+}
+
+TEST(AmbientMetricsTest, RecordAmbientModeVideoSmoothness) {
+  base::test::TaskEnvironment task_environment;
+  base::HistogramTester histogram_tester;
+  AshWebView::InitParams init_params;
+  TestAshWebView view(init_params);
+  view.Navigate(net::AppendOrReplaceRef(
+      GURL("http://test.com"), R"({"dropped_frames":1,"total_frames":5})"));
+  RecordAmbientModeVideoSmoothness(
+      &view, AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+  histogram_tester.ExpectBucketCount(
+      "Ash.AmbientMode.VideoSmoothness.Video.Clouds", 80, 1);
+
+  view.Navigate(net::AppendOrReplaceRef(
+      GURL("http://test.com"), R"({"dropped_frames":5,"total_frames":5})"));
+  RecordAmbientModeVideoSmoothness(
+      &view, AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+  histogram_tester.ExpectBucketCount(
+      "Ash.AmbientMode.VideoSmoothness.Video.Clouds", 0, 1);
+
+  view.Navigate(net::AppendOrReplaceRef(
+      GURL("http://test.com"), R"({"dropped_frames":0,"total_frames":5})"));
+  RecordAmbientModeVideoSmoothness(
+      &view, AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+  histogram_tester.ExpectBucketCount(
+      "Ash.AmbientMode.VideoSmoothness.Video.Clouds", 100, 1);
+}
+
+TEST(AmbientMetricsTest, RecordAmbientModeVideoSmoothnessInvalidInput) {
+  base::test::TaskEnvironment task_environment;
+  base::HistogramTester histogram_tester;
+  AshWebView::InitParams init_params;
+  TestAshWebView view(init_params);
+
+  view.Navigate(
+      net::AppendOrReplaceRef(GURL("http://test.com"), "invalid-json"));
+  RecordAmbientModeVideoSmoothness(
+      &view, AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+
+  view.Navigate(net::AppendOrReplaceRef(GURL("http://test.com"),
+                                        R"({"total_frames":5})"));
+  RecordAmbientModeVideoSmoothness(
+      &view, AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+
+  view.Navigate(net::AppendOrReplaceRef(GURL("http://test.com"),
+                                        R"({"dropped_frames":5})"));
+  RecordAmbientModeVideoSmoothness(
+      &view, AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+
+  view.Navigate(net::AppendOrReplaceRef(
+      GURL("http://test.com"), R"({"dropped_frames":0,"total_frames":0})"));
+  RecordAmbientModeVideoSmoothness(
+      &view, AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+
+  view.Navigate(net::AppendOrReplaceRef(
+      GURL("http://test.com"), R"({"dropped_frames":20,"total_frames":10})"));
+  RecordAmbientModeVideoSmoothness(
+      &view, AmbientUiSettings(AmbientTheme::kVideo, AmbientVideo::kClouds));
+
+  histogram_tester.ExpectTotalCount(
+      "Ash.AmbientMode.VideoSmoothness.Video.Clouds", 0);
 }
 
 }  // namespace metrics

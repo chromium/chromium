@@ -9,16 +9,23 @@
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
+#include "ash/public/cpp/ash_web_view.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/values.h"
+#include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace ambient {
@@ -32,6 +39,16 @@ namespace {
 // many hours. So the histogram's highest resolution should occupy the smaller
 // engagement times.
 constexpr int kAmbientModeElapsedTimeHistogramBuckets = 144;
+
+// Fields of the JSON dictionary that the ambient video HTML sends to C++ to
+// communicate playback metrics. They reflect the VideoPlaybackQuality JS API:
+// https://developer.mozilla.org/en-US/docs/Web/API/VideoPlaybackQuality
+//
+// Total number of video frames dropped since playback started.
+constexpr base::StringPiece kVideoFieldDroppedFrames = "dropped_frames";
+// Total number of video frames expected since playback started (frames
+// created + frames dropped).
+constexpr base::StringPiece kVideoFieldTotalFrames = "total_frames";
 
 std::string GetHistogramName(const char* prefix, bool tablet_mode) {
   std::string histogram = prefix;
@@ -141,6 +158,50 @@ void RecordAmbientModeStartupTime(base::TimeDelta startup_time,
       /*min=*/base::Seconds(0),
       /*max=*/kMetricsStartupTimeMax,
       /*buckets=*/50);
+}
+
+void RecordAmbientModeVideoSmoothness(AshWebView* web_view,
+                                      const AmbientUiSettings& ui_settings) {
+  CHECK(web_view);
+  CHECK_EQ(ui_settings.theme(), AmbientTheme::kVideo);
+  // The URL fragment identifier is used as a way of communicating the playback
+  // metrics data without using any elaborate frameworks or permissions
+  // (ex: a WebUI).
+  std::string serialized_playback_metrics =
+      net::UnescapePercentEncodedUrl(web_view->GetVisibleURL().ref());
+  if (serialized_playback_metrics.empty()) {
+    // This can legitimately happen if the ambient session was too short (just a
+    // couple seconds) and not statistically significant enough to record.
+    DVLOG(2) << "Ambient video session not long enough to record smoothness";
+    return;
+  }
+  absl::optional<base::Value::Dict> playback_metrics =
+      base::JSONReader::ReadDict(serialized_playback_metrics);
+  if (!playback_metrics) {
+    LOG(ERROR) << "Received non-json metrics: " << serialized_playback_metrics;
+    return;
+  }
+  absl::optional<int> dropped_frames =
+      playback_metrics->FindInt(kVideoFieldDroppedFrames);
+  // Assuming 24 fps, the ambient session would have to last ~2.83 years before
+  // the int overflows. For all intensive purposes, this should not happen.
+  absl::optional<int> expected_frames =
+      playback_metrics->FindInt(kVideoFieldTotalFrames);
+  if (!dropped_frames || !expected_frames) {
+    LOG(ERROR) << "Received invalid metrics dictionary: " << *playback_metrics;
+    return;
+  }
+  if (*dropped_frames < 0 || *expected_frames <= 0 ||
+      *dropped_frames > *expected_frames) {
+    LOG(ERROR) << "Frame statistics are invalid: " << *playback_metrics;
+    return;
+  }
+  int created_frames = *expected_frames - *dropped_frames;
+  int smoothness = base::ClampRound(
+      100.f * (static_cast<float>(created_frames) / *expected_frames));
+  base::UmaHistogramPercentage(base::StrCat({"Ash.AmbientMode.VideoSmoothness.",
+                                             ui_settings.ToString()}),
+                               smoothness);
 }
 
 AmbientOrientationMetricsRecorder::AmbientOrientationMetricsRecorder(

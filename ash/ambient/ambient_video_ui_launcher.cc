@@ -63,7 +63,8 @@ void AmbientVideoUiLauncher::Initialize(InitializationCallback on_done) {
 std::unique_ptr<views::View> AmbientVideoUiLauncher::CreateView() {
   CHECK(is_active_);
   return std::make_unique<AmbientVideoView>(GetVideoFile(current_video_),
-                                            GetVideoHtmlPath(), view_delegate_);
+                                            GetVideoHtmlPath(), current_video_,
+                                            view_delegate_);
 }
 
 void AmbientVideoUiLauncher::Finalize() {

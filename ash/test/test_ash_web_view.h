@@ -32,6 +32,7 @@ class TestAshWebView : public AshWebView {
   views::View* GetInitiallyFocusedView() override;
   void RequestFocus() override;
   bool HasFocus() const override;
+  const GURL& GetVisibleURL() override;
 
   const AshWebView::InitParams& init_params_for_testing() const {
     return init_params_;

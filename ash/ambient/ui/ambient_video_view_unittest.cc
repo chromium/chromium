@@ -26,6 +26,7 @@ using AmbientVideoViewTest = AmbientAshTestBase;
 
 TEST_F(AmbientVideoViewTest, NavigatesToCorrectURL) {
   AmbientVideoView view("video.webm", base::FilePath("/path/to/html"),
+                        AmbientVideo::kClouds,
                         ambient_controller()->ambient_view_delegate());
   const TestAshWebView* web_view = static_cast<const TestAshWebView*>(
       view.GetViewByID(kAmbientVideoWebView));

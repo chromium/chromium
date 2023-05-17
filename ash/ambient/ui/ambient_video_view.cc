@@ -4,8 +4,11 @@
 
 #include "ash/ambient/ui/ambient_video_view.h"
 
+#include "ash/ambient/ambient_ui_settings.h"
+#include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/ambient/ui/ambient_slideshow_peripheral_ui.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
+#include "ash/constants/ambient_theme.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
@@ -40,8 +43,10 @@ GURL BuildFileUrl(const base::FilePath& file_path) {
 
 AmbientVideoView::AmbientVideoView(base::StringPiece video_file,
                                    const base::FilePath& html_path,
+                                   AmbientVideo video,
                                    AmbientViewDelegate* view_delegate)
-    : peripheral_ui_(
+    : video_(video),
+      peripheral_ui_(
           std::make_unique<AmbientSlideshowPeripheralUi>(view_delegate)) {
   DCHECK(!video_file.empty());
   DCHECK(!html_path.empty());
@@ -51,13 +56,13 @@ AmbientVideoView::AmbientVideoView(base::StringPiece video_file,
   // Disables wake locks so the video doesn't stop the device from going to
   // sleep.
   web_view_params.enable_wake_locks = false;
-  AshWebView* ash_web_view =
+  ash_web_view_ =
       AddChildView(AshWebViewFactory::Get()->Create(web_view_params));
-  ash_web_view->SetID(kAmbientVideoWebView);
-  ash_web_view->SetUseDefaultFillLayout(true);
+  ash_web_view_->SetID(kAmbientVideoWebView);
+  ash_web_view_->SetUseDefaultFillLayout(true);
   GURL ambient_video_url = net::AppendQueryParameter(
       BuildFileUrl(html_path), kAmbientVideoFileQueryParam, video_file);
-  ash_web_view->Navigate(ambient_video_url);
+  ash_web_view_->Navigate(ambient_video_url);
 
   AddChildView(peripheral_ui_.get());
   peripheral_ui_jitter_timer_.Start(
@@ -65,6 +70,9 @@ AmbientVideoView::AmbientVideoView(base::StringPiece video_file,
       &AmbientSlideshowPeripheralUi::UpdateGlanceableInfoPosition);
 }
 
-AmbientVideoView::~AmbientVideoView() = default;
+AmbientVideoView::~AmbientVideoView() {
+  ambient::RecordAmbientModeVideoSmoothness(
+      ash_web_view_.get(), AmbientUiSettings(AmbientTheme::kVideo, video_));
+}
 
 }  // namespace ash

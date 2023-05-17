@@ -83,6 +83,10 @@ void AshWebViewImpl::Navigate(const GURL& url) {
   web_contents_->GetController().LoadURLWithParams(params);
 }
 
+const GURL& AshWebViewImpl::GetVisibleURL() {
+  return web_contents_->GetVisibleURL();
+}
+
 views::View* AshWebViewImpl::GetInitiallyFocusedView() {
   return web_view_;
 }

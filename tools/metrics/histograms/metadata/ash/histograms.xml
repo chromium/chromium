@@ -500,6 +500,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.AmbientMode.VideoSmoothness.{Settings}" units="%"
+    expires_after="2023-12-01">
+  <owner>esum@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Emitted at the end of each ambient mode session that renders {Settings}.
+    Only applies to ambient video themes. Tracks the total number of frames
+    created divided by the total number of frames expected during the entire
+    ambient session. 100% represents ideal smoothness, and any deviation from
+    that is due to dropped video frames. This metric requires a minimum of ~5
+    seconds of playback (~100 expected videos frames) to be recorded; ambient
+    video sessions shorter than that are not statistically significant enough to
+    record and will not be tracked. As such, this metric is just a general gauge
+    of the video's performance in the field. Separate fine-grained metrics
+    tracking rebuffering frequency and duration may be added in the future.
+  </summary>
+  <token key="Settings" variants="AmbientUiSettings"/>
+</histogram>
+
 <histogram name="Ash.AppNotificationBadgingPref" enum="Boolean"
     expires_after="2022-04-10">
   <owner>mmourgos@chromium.org</owner>
