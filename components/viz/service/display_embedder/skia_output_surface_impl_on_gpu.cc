@@ -502,15 +502,14 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     return;
   }
 
-  // TODO(crbug.com/1434131): Implement resource cleanup for Graphite.
-  dependency_->ScheduleGrContextCleanup();
-
   {
     absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
     if (dependency_->GetGrShaderCache()) {
       cache_use.emplace(dependency_->GetGrShaderCache(),
                         gpu::kDisplayCompositorClientId);
     }
+    // TODO(crbug.com/1434131): Implement resource cleanup for Graphite.
+    dependency_->ScheduleGrContextCleanup();
 
     std::vector<GrBackendSemaphore> begin_semaphores;
     std::vector<GrBackendSemaphore> end_semaphores;
@@ -670,6 +669,14 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     return;
   }
 
+  absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+  if (dependency_->GetGrShaderCache()) {
+    // TODO(crbug.com/1434131): Implement pipeline caching for Graphite.
+    CHECK(gr_context());
+    cache_use.emplace(dependency_->GetGrShaderCache(),
+                      gpu::kDisplayCompositorClientId);
+  }
+
   // When CompositorGpuThread is disabled, this cleanup for gpu main
   // thread context already happens in raster decoder and hence we do not want
   // to do additional cleanup here on same context. That results in more skia
@@ -707,12 +714,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
   SkSurface* surface = scoped_access->surface();
   DCHECK(surface);
 
-  absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
-  // TODO(crbug.com/1434131): Implement pipeline caching for Graphite.
-  if (gr_context() && dependency_->GetGrShaderCache()) {
-    cache_use.emplace(dependency_->GetGrShaderCache(),
-                      gpu::kDisplayCompositorClientId);
-  }
   promise_image_access_helper_.BeginAccess(std::move(image_contexts),
                                            &begin_semaphores, &end_semaphores);
 
