@@ -95,10 +95,6 @@ bool CreatePatch(const Buffer& raw_patch,
   offset += header_size;
 
   memcpy(patch->data() + offset, raw_patch.data(), raw_patch.size());
-
-  if (raw_patch.size() > patch->size()) {
-    LOG(ERROR) << "Puffin patch is invalid";
-  }
   return true;
 }
 
@@ -168,7 +164,6 @@ bool PuffDiff(UniqueStreamPtr src,
         compressed_patch, src_deflates, dst_deflates, src_puffs, dst_puffs,
         src_puff_buffer.size(), dst_puff_buffer.size(), patchAlgorithm, patch));
   } else {
-    LOG(ERROR) << "unsupported type " << static_cast<int>(patchAlgorithm);
     return false;
   }
 
@@ -220,14 +215,12 @@ Status PuffDiff(const string& src_file_path,
   puffin::UniqueStreamPtr src_stream =
       FileStream::Open(src_file_path, true, false);
   if (!src_stream) {
-    LOG(ERROR) << "Invalid source filepath";
     return Status::P_READ_OPEN_ERROR;
   }
   puffin::UniqueStreamPtr dest_stream =
       FileStream::Open(dest_file_path, true, false);
   if (!dest_stream) {
     src_stream->Close();
-    LOG(ERROR) << "Invalid destination filepath";
     return Status::P_READ_OPEN_ERROR;
   }
 
@@ -236,45 +229,34 @@ Status PuffDiff(const string& src_file_path,
   if (!src_stream->GetSize(&src_stream_size)) {
     src_stream->Close();
     dest_stream->Close();
-    LOG(ERROR) << "Unable to get streamsize for file: " << src_file_path;
     return Status::P_STREAM_ERROR;
   }
   Buffer src_data(src_stream_size);
   if (!src_stream->Read(src_data.data(), src_data.size())) {
     src_stream->Close();
     dest_stream->Close();
-    LOG(ERROR) << "Unable to read stream for file: " << src_file_path;
     return Status::P_STREAM_ERROR;
   }
-  if (!puffin::LocateDeflatesInZipArchive(src_data, &src_deflates_bit)) {
-    LOG(ERROR) << "No zip deflates found for source filepath: "
-               << src_file_path;
-  }
+  puffin::LocateDeflatesInZipArchive(src_data, &src_deflates_bit);
 
   // Get Dest Deflates.
   uint64_t dest_stream_size = 0;
   if (!dest_stream->GetSize(&dest_stream_size)) {
     src_stream->Close();
     dest_stream->Close();
-    LOG(ERROR) << "Unable to get streamsize for file: " << dest_file_path;
     return Status::P_STREAM_ERROR;
   }
   Buffer dest_data(dest_stream_size);
   if (!dest_stream->Read(dest_data.data(), dest_data.size())) {
     src_stream->Close();
     dest_stream->Close();
-    LOG(ERROR) << "Unable to read stream for file: " << dest_file_path;
     return Status::P_STREAM_ERROR;
   }
-  if (!puffin::LocateDeflatesInZipArchive(dest_data, &dst_deflates_bit)) {
-    LOG(ERROR) << "No zip deflates for destination filepath: "
-               << dest_file_path;
-  }
+  puffin::LocateDeflatesInZipArchive(dest_data, &dst_deflates_bit);
 
   if (src_deflates_bit.empty()) {
     if (!FindDeflateSubBlocks(src_stream, src_deflates_byte,
                               &src_deflates_bit)) {
-      LOG(ERROR) << "Unable to find deflate subblocks for source.";
       return Status::P_STREAM_ERROR;
     }
   }
@@ -282,7 +264,6 @@ Status PuffDiff(const string& src_file_path,
   if (dst_deflates_bit.empty()) {
     if (!FindDeflateSubBlocks(dest_stream, dst_deflates_byte,
                               &dst_deflates_bit)) {
-      LOG(ERROR) << "Unable to find deflate subblocks for destination";
       return Status::P_STREAM_ERROR;
     }
   }
@@ -296,19 +277,15 @@ Status PuffDiff(const string& src_file_path,
                         // support bsdiff and/or bzip2.
                         puffin::PatchAlgorithm::kZucchini, "/tmp/patch.tmp",
                         &puffdiff_delta)) {
-    LOG(ERROR) << "Unable to generate PuffDiff";
     return Status::P_UNABLE_TO_GENERATE_PUFFPATCH;
   }
-  LOG(INFO) << "patch_size: " << puffdiff_delta.size();
   puffin::UniqueStreamPtr patch_stream =
       FileStream::Open(output_patch_path, false, true);
   if (!patch_stream) {
-    LOG(ERROR) << "Unable to open patch Stream";
     return Status::P_STREAM_ERROR;
   }
   if (!patch_stream->Write(puffdiff_delta.data(), puffdiff_delta.size())) {
     patch_stream->Close();
-    LOG(ERROR) << "Unable to write to patch stream to patch filepath.";
     return Status::P_WRITE_ERROR;
   }
   patch_stream->Close();

@@ -55,11 +55,13 @@ TEST_F(BufferViewTest, FromRange) {
   EXPECT_EQ(bytes_.size(), mutable_buffer.size());
   EXPECT_EQ(std::begin(raw_data), mutable_buffer.begin());
 
+#if GTEST_HAS_DEATH_TEST
   EXPECT_DCHECK_DEATH(
       ConstBufferView::FromRange(std::end(raw_data), std::begin(raw_data)));
 
   EXPECT_DCHECK_DEATH(MutableBufferView::FromRange(std::begin(raw_data) + 1,
                                                    std::begin(raw_data)));
+#endif
 }
 
 TEST_F(BufferViewTest, Subscript) {
@@ -91,7 +93,9 @@ TEST_F(BufferViewTest, Shrink) {
   EXPECT_EQ(bytes_.size(), buffer.size());
   buffer.shrink(2);
   EXPECT_EQ(size_t(2), buffer.size());
+#if GTEST_HAS_DEATH_TEST
   EXPECT_DCHECK_DEATH(buffer.shrink(bytes_.size()));
+#endif
 }
 
 TEST_F(BufferViewTest, Read) {
@@ -109,10 +113,14 @@ TEST_F(BufferViewTest, Read) {
   EXPECT_EQ(0xFEDCBA9876543210ULL, buffer.read<uint64_t>(0));
 
   EXPECT_EQ(0x00, buffer.read<uint8_t>(9));
+#if GTEST_HAS_DEATH_TEST
   EXPECT_DEATH(buffer.read<uint8_t>(10), "");
+#endif
 
   EXPECT_EQ(0x0010FEDCU, buffer.read<uint32_t>(6));
+#if GTEST_HAS_DEATH_TEST
   EXPECT_DEATH(buffer.read<uint32_t>(7), "");
+#endif
 }
 
 TEST_F(BufferViewTest, Write) {
@@ -124,10 +132,14 @@ TEST_F(BufferViewTest, Write) {
             std::vector<uint8_t>(buffer.begin(), buffer.end()));
 
   buffer.write<uint8_t>(9, 0xFF);
+#if GTEST_HAS_DEATH_TEST
   EXPECT_DEATH(buffer.write<uint8_t>(10, 0xFF), "");
+#endif
 
   buffer.write<uint32_t>(6, 0xFFFFFFFF);
+#if GTEST_HAS_DEATH_TEST
   EXPECT_DEATH(buffer.write<uint32_t>(7, 0xFFFFFFFF), "");
+#endif
 }
 
 TEST_F(BufferViewTest, Modify) {
@@ -144,10 +156,14 @@ TEST_F(BufferViewTest, Modify) {
             std::vector<uint8_t>(buffer.begin(), buffer.end()));
 
   buffer.modify<uint8_t>(9);
+#if GTEST_HAS_DEATH_TEST
   EXPECT_DEATH(buffer.modify<uint8_t>(10), "");
+#endif
 
   buffer.modify<uint32_t>(6);
+#if GTEST_HAS_DEATH_TEST
   EXPECT_DEATH(buffer.modify<uint32_t>(7), "");
+#endif
 }
 
 TEST_F(BufferViewTest, CanAccess) {

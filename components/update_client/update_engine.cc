@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -20,11 +21,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/uuid.h"
 #include "components/prefs/pref_service.h"
-#include "components/update_client/buildflags.h"
 #include "components/update_client/component.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/crx_cache.h"
 #include "components/update_client/crx_update_item.h"
+#include "components/update_client/features.h"
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/protocol_parser.h"
 #include "components/update_client/update_checker.h"
@@ -35,9 +36,6 @@
 
 namespace update_client {
 
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
-// TODO(crbug.com/1349060) once Puffin patches are fully implemented,
-// we should remove this #if.
 UpdateContext::UpdateContext(
     scoped_refptr<Configurator> config,
     absl::optional<scoped_refptr<CrxCache>> crx_cache,
@@ -66,34 +64,6 @@ UpdateContext::UpdateContext(
         std::make_pair(id, std::make_unique<Component>(*this, id)));
   }
 }
-#else
-UpdateContext::UpdateContext(
-    scoped_refptr<Configurator> config,
-    bool is_foreground,
-    bool is_install,
-    const std::vector<std::string>& ids,
-    UpdateClient::CrxStateChangeCallback crx_state_change_callback,
-    const UpdateEngine::NotifyObserversCallback& notify_observers_callback,
-    UpdateEngine::Callback callback,
-    PersistedData* persisted_data,
-    bool is_update_check_only)
-    : config(config),
-      is_foreground(is_foreground),
-      is_install(is_install),
-      ids(ids),
-      crx_state_change_callback(crx_state_change_callback),
-      notify_observers_callback(notify_observers_callback),
-      callback(std::move(callback)),
-      session_id(base::StrCat(
-          {"{", base::Uuid::GenerateRandomV4().AsLowercaseString(), "}"})),
-      persisted_data(persisted_data),
-      is_update_check_only(is_update_check_only) {
-  for (const auto& id : ids) {
-    components.insert(
-        std::make_pair(id, std::make_unique<Component>(*this, id)));
-  }
-}
-#endif
 
 UpdateContext::~UpdateContext() = default;
 
@@ -109,18 +79,14 @@ UpdateEngine::UpdateEngine(
           std::make_unique<PersistedData>(config->GetPrefService(),
                                           config->GetActivityDataService())),
       notify_observers_callback_(notify_observers_callback) {
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
-  // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
-  // we should remove this #if.
   absl::optional<base::FilePath> crx_cache_path = config->GetCrxCachePath();
-  if (!crx_cache_path.has_value()) {
-    crx_cache_ = absl::nullopt;
-  } else {
+  if (base::FeatureList::IsEnabled(features::kPuffinPatches) &&
+      crx_cache_path.has_value()) {
     CrxCache::Options options(crx_cache_path.value());
     crx_cache_ = absl::optional<scoped_refptr<CrxCache>>(
         base::MakeRefCounted<CrxCache>(options));
   }
-#endif
+  crx_cache_ = absl::nullopt;
 }
 
 UpdateEngine::~UpdateEngine() = default;
@@ -184,15 +150,9 @@ base::RepeatingClosure UpdateEngine::InvokeOperation(
   }
 
   const auto update_context = base::MakeRefCounted<UpdateContext>(
-      config_,
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
-      // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
-      // we should remove this #if.
-      crx_cache_,
-#endif
-      is_foreground, is_install, ids, crx_state_change_callback,
-      notify_observers_callback_, std::move(callback), metadata_.get(),
-      is_update_check_only);
+      config_, crx_cache_, is_foreground, is_install, ids,
+      crx_state_change_callback, notify_observers_callback_,
+      std::move(callback), metadata_.get(), is_update_check_only);
   CHECK(!update_context->session_id.empty());
 
   const auto result = update_contexts_.insert(
@@ -472,13 +432,7 @@ void UpdateEngine::SendUninstallPing(const CrxComponent& crx_component,
   const std::string& id = crx_component.app_id;
 
   const auto update_context = base::MakeRefCounted<UpdateContext>(
-      config_,
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
-      // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
-      // we should remove this #if.
-      crx_cache_,
-#endif
-      false, false, std::vector<std::string>{id},
+      config_, crx_cache_, false, false, std::vector<std::string>{id},
       UpdateClient::CrxStateChangeCallback(),
       UpdateEngine::NotifyObserversCallback(), std::move(callback),
       metadata_.get(), /*is_update_check_only=*/false);

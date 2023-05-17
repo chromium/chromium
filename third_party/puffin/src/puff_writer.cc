@@ -32,7 +32,6 @@ bool BufferPuffWriter::Insert(const PuffData& pd) {
       }
       FALLTHROUGH_INTENDED;
     case PuffData::Type::kLiteral: {
-      DVLOG(2) << "Write literals length: " << pd.length;
       size_t length = pd.type == PuffData::Type::kLiteral ? 1 : pd.length;
       if (state_ == State::kWritingNonLiteral) {
         len_index_ = index_;
@@ -78,7 +77,6 @@ bool BufferPuffWriter::Insert(const PuffData& pd) {
       break;
     }
     case PuffData::Type::kLenDist:
-      DVLOG(2) << "Write length: " << pd.length << " distance: " << pd.distance;
       TEST_AND_RETURN_FALSE(FlushLiterals());
       TEST_AND_RETURN_FALSE(pd.length <= 258 && pd.length >= 3);
       TEST_AND_RETURN_FALSE(pd.distance <= 32768 && pd.distance >= 1);
@@ -114,7 +112,6 @@ bool BufferPuffWriter::Insert(const PuffData& pd) {
       break;
 
     case PuffData::Type::kBlockMetadata:
-      DVLOG(2) << "Write block metadata length: " << pd.length;
       TEST_AND_RETURN_FALSE(FlushLiterals());
       TEST_AND_RETURN_FALSE(pd.length <= sizeof(pd.block_metadata) &&
                             pd.length > 0);
@@ -135,7 +132,6 @@ bool BufferPuffWriter::Insert(const PuffData& pd) {
       break;
 
     case PuffData::Type::kEndOfBlock:
-      DVLOG(2) << "Write end of block";
       TEST_AND_RETURN_FALSE(FlushLiterals());
       if (puff_buf_out_ != nullptr) {
         // Boundary check
@@ -152,7 +148,6 @@ bool BufferPuffWriter::Insert(const PuffData& pd) {
       break;
 
     default:
-      LOG(ERROR) << "Invalid PuffData::Type";
       return false;
   }
   return true;
@@ -171,7 +166,6 @@ bool BufferPuffWriter::FlushLiterals() {
       }
       len_index_ = index_;
       state_ = State::kWritingNonLiteral;
-      DVLOG(2) << "Write small literals length: " << cur_literals_length_;
       break;
 
     case State::kWritingLargeLiteral:
@@ -185,7 +179,6 @@ bool BufferPuffWriter::FlushLiterals() {
 
       len_index_ = index_;
       state_ = State::kWritingNonLiteral;
-      DVLOG(2) << "Write large literals length: " << cur_literals_length_;
       break;
 
     case State::kWritingNonLiteral:
@@ -193,7 +186,6 @@ bool BufferPuffWriter::FlushLiterals() {
       break;
 
     default:
-      LOG(ERROR) << "Invalid State";
       return false;
   }
   cur_literals_length_ = 0;

@@ -17,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
-#include "components/update_client/buildflags.h"
 #include "components/update_client/configurator.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -106,9 +105,7 @@ class TestConfigurator : public Configurator {
       const override;
   absl::optional<bool> IsMachineExternallyManaged() const override;
   UpdaterStateProvider GetUpdaterStateProvider() const override;
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
   absl::optional<base::FilePath> GetCrxCachePath() const override;
-#endif
 
   void SetOnDemandTime(base::TimeDelta seconds);
   void SetInitialDelay(base::TimeDelta seconds);

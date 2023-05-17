@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -26,10 +27,10 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "components/update_client/action_runner.h"
-#include "components/update_client/buildflags.h"
 #include "components/update_client/component_unpacker.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/crx_downloader_factory.h"
+#include "components/update_client/features.h"
 #include "components/update_client/network.h"
 #include "components/update_client/patcher.h"
 #include "components/update_client/persisted_data.h"
@@ -202,9 +203,6 @@ void InstallOnBlockingTaskRunner(
                          std::move(callback), unpack_path_owner.Take())));
 }
 
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
-// TODO(crbug.com/1349060) once Puffin patches are fully implemented,
-// we should remove this #if.
 void CrxCachePutCompleteOnCrxCacheBlockingTaskRunner(
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
     const base::FilePath& crx_path,
@@ -230,7 +228,7 @@ void CrxCachePutCompleteOnCrxCacheBlockingTaskRunner(
                      std::move(callback)));
 }
 
-void UnpackCompleteOnBlockingTaskRunner(
+void PuffinUnpackCompleteOnBlockingTaskRunner(
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
     const base::FilePath& crx_path,
     const std::string& id,
@@ -248,10 +246,16 @@ void UnpackCompleteOnBlockingTaskRunner(
         FROM_HERE,
         base::BindOnce(std::move(callback), ErrorCategory::kUnpack,
                        static_cast<int>(result.error), result.extended_error));
-  } else if (!optional_crx_cache.has_value()) {
+  } else if (!base::FeatureList::IsEnabled(features::kPuffinPatches) ||
+             !optional_crx_cache.has_value()) {
     // If we were unable to create the crx_cache, skip the CrxCache::Put call.
     // Since we don't need the cache to perform full updates, ignore the error
-    DVLOG(2) << "No crx cache provided, proceeding without crx retention.";
+    if (base::FeatureList::IsEnabled(features::kPuffinPatches)) {
+      DVLOG(2) << "No crx cache provided, proceeding without crx retention.";
+    } else {
+      DVLOG(2)
+          << "Puffin Patches are disabled, proceeding without crx retention.";
+    }
     update_client::DeleteEmptyDirectory(crx_path.DirName());
     base::ThreadPool::PostTask(
         FROM_HERE, kTaskTraits,
@@ -274,39 +278,8 @@ void UnpackCompleteOnBlockingTaskRunner(
                                progress_callback, std::move(callback)))));
   }
 }
-#else
-void UnpackCompleteOnBlockingTaskRunner(
-    scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-    const base::FilePath& crx_path,
-    const std::string& fingerprint,
-    std::unique_ptr<CrxInstaller::InstallParams> install_params,
-    scoped_refptr<CrxInstaller> installer,
-    CrxInstaller::ProgressCallback progress_callback,
-    InstallOnBlockingTaskRunnerCompleteCallback callback,
-    const ComponentUnpacker::Result& result) {
-  update_client::DeleteFileAndEmptyParentDirectory(crx_path);
 
-  if (result.error != UnpackerError::kNone) {
-    main_task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), ErrorCategory::kUnpack,
-                       static_cast<int>(result.error), result.extended_error));
-    return;
-  }
-
-  base::ThreadPool::PostTask(
-      FROM_HERE, kTaskTraits,
-      base::BindOnce(&InstallOnBlockingTaskRunner, main_task_runner,
-                     result.unpack_path, result.public_key, fingerprint,
-                     std::move(install_params), installer, progress_callback,
-                     std::move(callback)));
-}
-#endif
-
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
-// TODO(crbug.com/1349060) once Puffin patches are fully implemented,
-// we should remove this #if.
-void StartInstallOnBlockingTaskRunner(
+void StartPuffinInstallOnBlockingTaskRunner(
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
     const std::vector<uint8_t>& pk_hash,
     const base::FilePath& crx_path,
@@ -321,38 +294,12 @@ void StartInstallOnBlockingTaskRunner(
     InstallOnBlockingTaskRunnerCompleteCallback callback) {
   PuffinComponentUnpacker::Unpack(
       pk_hash, crx_path, std::move(unzipper_), crx_format,
-      base::BindOnce(&UnpackCompleteOnBlockingTaskRunner, main_task_runner,
-                     crx_path, id, fingerprint, std::move(install_params),
-                     installer, optional_crx_cache, progress_callback,
-                     std::move(callback)));
+      base::BindOnce(&PuffinUnpackCompleteOnBlockingTaskRunner,
+                     main_task_runner, crx_path, id, fingerprint,
+                     std::move(install_params), installer, optional_crx_cache,
+                     progress_callback, std::move(callback)));
 }
-#else
-void StartInstallOnBlockingTaskRunner(
-    scoped_refptr<base::SequencedTaskRunner> main_task_runner,
-    const std::vector<uint8_t>& pk_hash,
-    const base::FilePath& crx_path,
-    const std::string& fingerprint,
-    std::unique_ptr<CrxInstaller::InstallParams> install_params,
-    scoped_refptr<CrxInstaller> installer,
-    std::unique_ptr<Unzipper> unzipper_,
-    scoped_refptr<Patcher> patcher_,
-    crx_file::VerifierFormat crx_format,
-    CrxInstaller::ProgressCallback progress_callback,
-    InstallOnBlockingTaskRunnerCompleteCallback callback) {
-  auto unpacker = base::MakeRefCounted<ComponentUnpacker>(
-      pk_hash, crx_path, installer, std::move(unzipper_), std::move(patcher_),
-      crx_format);
 
-  unpacker->Unpack(base::BindOnce(&UnpackCompleteOnBlockingTaskRunner,
-                                  main_task_runner, crx_path, fingerprint,
-                                  std::move(install_params), installer,
-                                  progress_callback, std::move(callback)));
-}
-#endif
-
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
-// TODO(crbug.com/1349060) once Puffin patches are fully implemented,
-// we should remove this #if.
 void OnPuffPatchCompleteOnBlockingTaskRunner(
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
     const std::vector<uint8_t>& pk_hash,
@@ -383,7 +330,7 @@ void OnPuffPatchCompleteOnBlockingTaskRunner(
       ->PostTask(
           FROM_HERE,
           base::BindOnce(
-              &update_client::StartInstallOnBlockingTaskRunner,
+              &update_client::StartPuffinInstallOnBlockingTaskRunner,
               main_task_runner, pk_hash, dest_crx_path, id, fingerprint,
               std::move(install_params), installer, std::move(unzipper_),
               absl::optional<scoped_refptr<update_client::CrxCache>>(crx_cache),
@@ -459,7 +406,6 @@ void StartGetPreviousCrxOnBlockingTaskRunner(
                              crx_format, progress_callback,
                              std::move(callback)))));
 }
-#endif
 
 // Returns a string literal corresponding to the value of the downloader |d|.
 const char* DownloaderToString(CrxDownloader::DownloadMetrics::Downloader d) {
@@ -984,10 +930,11 @@ void Component::StateCanUpdate::DoHandle() {
 // and the configuration allows this update.
 bool Component::StateCanUpdate::CanTryDiffUpdate() const {
   const auto& component = Component::State::component();
+  if (!base::FeatureList::IsEnabled(features::kPuffinPatches)) {
+    return false;
+  }
   return HasDiffUpdate(component) && !component.diff_error_code_ &&
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
          component.update_context_->crx_cache_.has_value() &&
-#endif
          component.update_context_->config->EnabledDeltas();
 }
 
@@ -1176,17 +1123,8 @@ void Component::StateUpdatingDiff::DoHandle() {
   // the callback can be posted to the main sequence instead of running
   // the callback on the sequence the installer is running on.
   auto main_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
-  // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
-  // we should remove this #if.
-  if (!update_context.crx_cache_.has_value()) {
-    main_task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(&Component::StateUpdatingDiff::InstallComplete,
-                       base::Unretained(this), ErrorCategory::kUnpack,
-                       static_cast<int>(UnpackerError::kCrxCacheNotProvided),
-                       0));
-  } else {
+  if (base::FeatureList::IsEnabled(features::kPuffinPatches) &&
+      update_context.crx_cache_.has_value()) {
     base::ThreadPool::CreateSequencedTaskRunner(kTaskTraits)
         ->PostTask(
             FROM_HERE,
@@ -1206,26 +1144,16 @@ void Component::StateUpdatingDiff::DoHandle() {
                     base::Unretained(this)),
                 base::BindOnce(&Component::StateUpdatingDiff::InstallComplete,
                                base::Unretained(this))));
+  } else {
+    // We shouldn't get here if kPuffinPatches is disabled, due to the check in
+    // CanTryDiffUpdate, but if we do, return an error to avoid diff updates.
+    main_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(&Component::StateUpdatingDiff::InstallComplete,
+                       base::Unretained(this), ErrorCategory::kUnpack,
+                       static_cast<int>(UnpackerError::kCrxCacheNotProvided),
+                       0));
   }
-#else
-  base::ThreadPool::CreateSequencedTaskRunner(kTaskTraits)
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              &update_client::StartInstallOnBlockingTaskRunner,
-              base::SequencedTaskRunner::GetCurrentDefault(),
-              component.crx_component()->pk_hash, component.payload_path_,
-              component.next_fp_, component.install_params(),
-              component.crx_component()->installer,
-              update_context.config->GetUnzipperFactory()->Create(),
-              update_context.config->GetPatcherFactory()->Create(),
-              component.crx_component()->crx_format_requirement,
-              base::BindRepeating(
-                  &Component::StateUpdatingDiff::InstallProgress,
-                  base::Unretained(this)),
-              base::BindOnce(&Component::StateUpdatingDiff::InstallComplete,
-                             base::Unretained(this))));
-#endif
 }
 
 void Component::StateUpdatingDiff::InstallProgress(int install_progress) {
@@ -1289,14 +1217,11 @@ void Component::StateUpdating::DoHandle() {
   // the callback can be posted to the main sequence instead of running
   // the callback on the sequence the installer is running on.
   auto main_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
-  // TODO(crbug.com/1349060) once Puffin patches are fully implemented,
-  // we should remove this #if.
   base::ThreadPool::CreateSequencedTaskRunner(kTaskTraits)
       ->PostTask(
           FROM_HERE,
           base::BindOnce(
-              &update_client::StartInstallOnBlockingTaskRunner,
+              &update_client::StartPuffinInstallOnBlockingTaskRunner,
               main_task_runner, component.crx_component()->pk_hash,
               component.payload_path_, component.crx_component()->app_id,
               component.next_fp_, component.install_params(),
@@ -1308,23 +1233,6 @@ void Component::StateUpdating::DoHandle() {
                                   base::Unretained(this)),
               base::BindOnce(&Component::StateUpdating::InstallComplete,
                              base::Unretained(this))));
-#else
-  base::ThreadPool::CreateSequencedTaskRunner(kTaskTraits)
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              &update_client::StartInstallOnBlockingTaskRunner,
-              main_task_runner, component.crx_component()->pk_hash,
-              component.payload_path_, component.next_fp_,
-              component.install_params(), component.crx_component()->installer,
-              update_context.config->GetUnzipperFactory()->Create(),
-              update_context.config->GetPatcherFactory()->Create(),
-              component.crx_component()->crx_format_requirement,
-              base::BindRepeating(&Component::StateUpdating::InstallProgress,
-                                  base::Unretained(this)),
-              base::BindOnce(&Component::StateUpdating::InstallComplete,
-                             base::Unretained(this))));
-#endif
 }
 
 void Component::StateUpdating::InstallProgress(int install_progress) {

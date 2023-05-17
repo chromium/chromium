@@ -29,7 +29,6 @@
 #include "chrome/updater/util/util.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/prefs/pref_service.h"
-#include "components/update_client/buildflags.h"
 #include "components/update_client/network.h"
 #include "components/update_client/patch/in_process_patcher.h"
 #include "components/update_client/patcher.h"
@@ -219,7 +218,6 @@ update_client::UpdaterStateProvider Configurator::GetUpdaterStateProvider()
   });
 }
 
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
 absl::optional<base::FilePath> Configurator::GetCrxCachePath() const {
   absl::optional<base::FilePath> optional_result =
       updater::GetInstallDirectory(GetUpdaterScope());
@@ -228,6 +226,5 @@ absl::optional<base::FilePath> Configurator::GetCrxCachePath() const {
                    optional_result.value().AppendASCII("crx_cache"))
              : absl::nullopt;
 }
-#endif
 
 }  // namespace updater

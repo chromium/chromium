@@ -19,7 +19,6 @@
 #include "components/services/patch/in_process_file_patcher.h"
 #include "components/services/unzip/in_process_unzipper.h"
 #include "components/update_client/activity_data_service.h"
-#include "components/update_client/buildflags.h"
 #include "components/update_client/crx_downloader_factory.h"
 #include "components/update_client/net/network_chromium.h"
 #include "components/update_client/patch/patch_impl.h"
@@ -180,7 +179,6 @@ UpdaterStateProvider TestConfigurator::GetUpdaterStateProvider() const {
   return updater_state_provider_;
 }
 
-#if BUILDFLAG(ENABLE_PUFFIN_PATCHES)
 absl::optional<base::FilePath> TestConfigurator::GetCrxCachePath() const {
   if (!crx_cache_root_temp_dir_.IsValid()) {
     return absl::nullopt;
@@ -188,7 +186,6 @@ absl::optional<base::FilePath> TestConfigurator::GetCrxCachePath() const {
   return absl::optional<base::FilePath>(
       crx_cache_root_temp_dir_.GetPath().AppendASCII("crx_cache"));
 }
-#endif
 
 void TestConfigurator::SetOnDemandTime(base::TimeDelta time) {
   ondemand_time_ = time;
