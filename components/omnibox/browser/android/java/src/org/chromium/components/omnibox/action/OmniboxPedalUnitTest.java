@@ -70,12 +70,15 @@ public class OmniboxPedalUnitTest {
     @Test
     public void safeCasting_assertsWithWrongClassType() {
         assertThrows(AssertionError.class,
-                () -> OmniboxPedal.from(new OmniboxAction(OmniboxActionType.PEDAL, "", null)));
+                () -> OmniboxPedal.from(new OmniboxAction(OmniboxActionType.PEDAL, "", null) {
+                    @Override
+                    public void execute(OmniboxActionDelegate d) {}
+                }));
     }
 
     @Test
     public void safeCasting_successWithPedal() {
-        OmniboxPedal.from(new OmniboxPedal("hint", OmniboxPedalType.NONE));
+        OmniboxPedal.from(OmniboxActionFactory.buildOmniboxPedal("hint", OmniboxPedalType.NONE));
     }
 
     /**

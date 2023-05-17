@@ -50,7 +50,7 @@ public class BaseSuggestionProcessorUnitTest {
         private final Context mContext;
         public TestBaseSuggestionProcessor(
                 Context context, SuggestionHost suggestionHost, FaviconFetcher faviconFetcher) {
-            super(context, suggestionHost, null, faviconFetcher);
+            super(context, suggestionHost, faviconFetcher);
             mContext = context;
         }
 

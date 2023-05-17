@@ -181,7 +181,7 @@ public class AnswerSuggestionProcessorUnitTest {
     @Before
     public void setUp() {
         mProcessor = new AnswerSuggestionProcessor(ContextUtils.getApplicationContext(),
-                mSuggestionHost, null, mUrlStateProvider, () -> mImageFetcher);
+                mSuggestionHost, mUrlStateProvider, () -> mImageFetcher);
         mDefaultLocale = Locale.getDefault();
     }
 

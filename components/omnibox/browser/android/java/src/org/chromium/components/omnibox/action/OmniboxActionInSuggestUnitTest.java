@@ -82,13 +82,13 @@ public class OmniboxActionInSuggestUnitTest {
 
     @Test
     public void creation_creationFailsWithInvalidSerializedProto() {
-        assertNull(OmniboxActionInSuggest.build("hint", new byte[] {1, 2, 3}));
+        assertNull(OmniboxActionFactory.buildActionInSuggest("hint", new byte[] {1, 2, 3}));
     }
 
     @Test
     public void creation_creationSucceedsWithValidSerializedProto() {
         var proto = EntityInfoProto.ActionInfo.newBuilder().setDisplayedText("text").build();
-        var action = OmniboxActionInSuggest.build("hint", proto.toByteArray());
+        var action = new OmniboxActionInSuggest("hint", proto);
 
         assertNotNull(action);
         assertEquals(action.actionInfo.getDisplayedText(), "text");
@@ -114,12 +114,16 @@ public class OmniboxActionInSuggestUnitTest {
         assertThrows(AssertionError.class,
                 ()
                         -> OmniboxActionInSuggest.from(new OmniboxAction(
-                                OmniboxActionType.ACTION_IN_SUGGEST, "hint", null)));
+                                OmniboxActionType.ACTION_IN_SUGGEST, "hint", null) {
+                    @Override
+                    public void execute(OmniboxActionDelegate d) {}
+                }));
     }
 
     @Test
     public void safeCasting_successWithHistoryClusters() {
-        OmniboxActionInSuggest.from(new OmniboxActionInSuggest("hint", EMPTY_INFO));
+        OmniboxActionInSuggest.from(
+                OmniboxActionFactory.buildActionInSuggest("hint", EMPTY_INFO.toByteArray()));
     }
 
     /**

@@ -64,12 +64,16 @@ public class HistoryClustersActionUnitTest {
         assertThrows(AssertionError.class,
                 ()
                         -> HistoryClustersAction.from(
-                                new OmniboxAction(OmniboxActionType.HISTORY_CLUSTERS, "", null)));
+                                new OmniboxAction(OmniboxActionType.HISTORY_CLUSTERS, "", null) {
+                                    @Override
+                                    public void execute(OmniboxActionDelegate d) {}
+                                }));
     }
 
     @Test
     public void safeCasting_successWithHistoryClusters() {
-        HistoryClustersAction.from(new HistoryClustersAction("hint", "query"));
+        HistoryClustersAction.from(
+                OmniboxActionFactory.buildHistoryClustersAction("hint", "query"));
     }
 
     @Test

@@ -2,10 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_JNI_WRAPPER_H_
-#define COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_JNI_WRAPPER_H_
+#ifndef COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_ACTION_FACTORY_ANDROID_H_
+#define COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_ACTION_FACTORY_ANDROID_H_
 
 #include <vector>
+#include "base/android/jni_android.h"
+#include "base/android/jni_array.h"
+#include "base/android/scoped_java_ref.h"
+#include "components/omnibox/browser/actions/omnibox_action.h"
+#include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
     JNIEnv* env,
@@ -26,4 +31,4 @@ base::android::ScopedJavaLocalRef<jobjectArray> ToJavaOmniboxActionsList(
     JNIEnv* env,
     const std::vector<scoped_refptr<OmniboxAction>>& actions);
 
-#endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_JNI_WRAPPER_H_
+#endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_ACTION_FACTORY_ANDROID_H_

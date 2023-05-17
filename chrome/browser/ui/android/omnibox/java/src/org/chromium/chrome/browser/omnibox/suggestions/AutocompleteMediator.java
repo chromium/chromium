@@ -47,6 +47,7 @@ import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxMetrics;
 import org.chromium.components.omnibox.OmniboxMetrics.RefineActionUsage;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
@@ -90,6 +91,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     private final @NonNull Callback<Tab> mBringTabToFrontCallback;
     private final @NonNull Supplier<TabWindowManager> mTabWindowManagerSupplier;
     private final @NonNull Runnable mClearFocusCallback;
+    private final @NonNull OmniboxActionDelegate mOmniboxActionDelegate;
 
     private @NonNull AutocompleteResult mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
     private @Nullable Runnable mCurrentAutocompleteRequest;
@@ -170,8 +172,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         mBringTabToFrontCallback = bringTabToFrontCallback;
         mTabWindowManagerSupplier = tabWindowManagerSupplier;
         mSuggestionModels = mListPropertyModel.get(SuggestionListProperties.SUGGESTION_MODELS);
-        mDropdownViewInfoListBuilder = new DropdownItemViewInfoListBuilder(activityTabSupplier,
-                bookmarkState, omniboxActionDelegate, openHistoryClustersDelegate);
+        mOmniboxActionDelegate = omniboxActionDelegate;
+        mDropdownViewInfoListBuilder = new DropdownItemViewInfoListBuilder(
+                activityTabSupplier, bookmarkState, openHistoryClustersDelegate);
         mDropdownViewInfoListBuilder.setShareDelegateSupplier(shareDelegateSupplier);
         mDropdownViewInfoListManager =
                 new DropdownItemViewInfoListManager(mSuggestionModels, context);
@@ -412,6 +415,12 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         }
 
         loadUrlForOmniboxMatch(matchIndex, suggestion, url, mLastActionUpTimestamp, true);
+    }
+
+    @Override
+    public void onOmniboxActionClicked(@NonNull OmniboxAction action) {
+        action.execute(mOmniboxActionDelegate);
+        finishInteraction();
     }
 
     /**

@@ -17,7 +17,7 @@ import org.chromium.components.omnibox.R;
  * Omnibox Actions are additional actions associated with Omnibox Matches. For more information,
  * please check on OmniboxAction class definition on native side.
  */
-public class OmniboxAction {
+public abstract class OmniboxAction {
     /** Describes the ChipView decoration. */
     public static final class ChipIcon {
         public final @DrawableRes int iconRes;
@@ -56,5 +56,5 @@ public class OmniboxAction {
      *
      * @param delegate delegate capable of routing and executing variety of action-specific tasks
      */
-    public void execute(@NonNull OmniboxActionDelegate delegate){};
+    public abstract void execute(@NonNull OmniboxActionDelegate delegate);
 }

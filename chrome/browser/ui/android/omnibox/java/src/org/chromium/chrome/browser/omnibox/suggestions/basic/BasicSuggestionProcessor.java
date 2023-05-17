@@ -9,7 +9,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.R;
@@ -22,7 +21,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableSt
 import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionSpannable;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
-import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -46,18 +44,15 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
     /**
      * @param context An Android context.
      * @param suggestionHost A handle to the object using the suggestions.
-     * @param omniboxActionDelegate Delegate that gives us information what action chips should look
-     *         like and how to execute them.
      * @param editingTextProvider A means of accessing the text in the omnibox.
      * @param faviconFetcher Fetcher for favicon images.
      * @param bookmarkState Provider of information about whether a given url is bookmarked.
      */
     public BasicSuggestionProcessor(@NonNull Context context,
             @NonNull SuggestionHost suggestionHost,
-            @Nullable OmniboxActionDelegate omniboxActionDelegate,
             @NonNull UrlBarEditingTextStateProvider editingTextProvider,
             @NonNull FaviconFetcher faviconFetcher, @NonNull BookmarkState bookmarkState) {
-        super(context, suggestionHost, omniboxActionDelegate, faviconFetcher);
+        super(context, suggestionHost, faviconFetcher);
 
         mUrlBarEditingTextProvider = editingTextProvider;
         mBookmarkState = bookmarkState;

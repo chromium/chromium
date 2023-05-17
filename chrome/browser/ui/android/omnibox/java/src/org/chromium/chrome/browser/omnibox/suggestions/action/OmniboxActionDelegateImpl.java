@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.app.omnibox;
+package org.chromium.chrome.browser.omnibox.suggestions.action;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
@@ -23,23 +24,21 @@ import java.util.function.Consumer;
 
 /**
  * Handle the events related to {@link OmniboxAction}.
- * TODO(crbug/1418077): repurpose as a OmniboxActionFactoryImpl, move `execute()` to OmniboxAction
- * instances.
  */
-public class ActionChipsDelegateImpl implements OmniboxActionDelegate {
+public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
     private final @NonNull Context mContext;
     private final @NonNull SettingsLauncher mSettingsLauncher;
     private final @NonNull Consumer<String> mOpenUrlInExistingTabElseNewTabCb;
     private final @NonNull Runnable mOpenIncognitoTabCb;
     private final @NonNull Runnable mOpenPasswordSettingsCb;
-    private final @NonNull Consumer<String> mOpenHistoryClustersForQueryCb;
+    private final @NonNull OpenHistoryClustersDelegate mOpenHistoryClustersForQueryCb;
     private final @NonNull Supplier<Tab> mTabSupplier;
 
-    public ActionChipsDelegateImpl(@NonNull Context context, @NonNull Supplier<Tab> tabSupplier,
+    public OmniboxActionDelegateImpl(@NonNull Context context, @NonNull Supplier<Tab> tabSupplier,
             @NonNull SettingsLauncher settingsLauncher,
             @NonNull Consumer<String> openUrlInExistingTabElseNewTabCb,
             @NonNull Runnable openIncognitoTabCb, @NonNull Runnable openPasswordSettingsCb,
-            @NonNull Consumer<String> openHistoryClustersForQueryCb) {
+            @NonNull OpenHistoryClustersDelegate openHistoryClustersForQueryCb) {
         mContext = context;
         mTabSupplier = tabSupplier;
         mSettingsLauncher = settingsLauncher;
@@ -49,17 +48,9 @@ public class ActionChipsDelegateImpl implements OmniboxActionDelegate {
         mOpenHistoryClustersForQueryCb = openHistoryClustersForQueryCb;
     }
 
-    /**
-     * TODO(crbug/1418077): turn the class into a factory and remove.
-     */
-    @Override
-    public void execute(OmniboxAction action) {
-        action.execute(this);
-    }
-
     @Override
     public void openHistoryClustersPage(String query) {
-        mOpenHistoryClustersForQueryCb.accept(query);
+        mOpenHistoryClustersForQueryCb.openHistoryClustersUi(query);
     }
 
     @Override

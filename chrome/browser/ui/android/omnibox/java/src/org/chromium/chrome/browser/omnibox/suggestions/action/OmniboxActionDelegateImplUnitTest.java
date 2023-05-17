@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.app.omnibox;
+package org.chromium.chrome.browser.omnibox.suggestions.action;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -29,34 +29,34 @@ import org.robolectric.shadows.ShadowApplication;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProcessor.OpenHistoryClustersDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
-import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.TestActivity;
 
 import java.util.function.Consumer;
 
 /**
- * Tests for {@link ActionChipsDelegateImpl}.
+ * Tests for {@link OmniboxActionDelegateImpl}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-public class ActionChipsDelegateImplUnitTest {
+public class OmniboxActionDelegateImplUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock Consumer<String> mMockOpenUrl;
-    private @Mock Consumer<String> mMockOpenHistoryClustersUi;
+    private @Mock OpenHistoryClustersDelegate mMockOpenHistoryClustersUi;
     private @Mock Runnable mMockOpenIncognitoPage;
     private @Mock Runnable mMockOpenPasswordSettings;
     private @Mock SettingsLauncher mMockSettingsLauncher;
     private @Mock Tab mTab;
     private Context mContext;
-    private OmniboxActionDelegate mDelegate;
+    private OmniboxActionDelegateImpl mDelegate;
 
     @Before
     public void setUp() {
         mContext = ContextUtils.getApplicationContext();
-        mDelegate = new ActionChipsDelegateImpl(mContext,
+        mDelegate = new OmniboxActionDelegateImpl(mContext,
                 ()
                         -> mTab,
                 mMockSettingsLauncher, mMockOpenUrl, mMockOpenIncognitoPage,
@@ -74,7 +74,7 @@ public class ActionChipsDelegateImplUnitTest {
     @Test
     public void openHistoryClustersPage() {
         mDelegate.openHistoryClustersPage("query");
-        verify(mMockOpenHistoryClustersUi, times(1)).accept("query");
+        verify(mMockOpenHistoryClustersUi, times(1)).openHistoryClustersUi("query");
     }
 
     @Test

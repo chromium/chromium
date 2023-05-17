@@ -58,7 +58,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     public EditUrlSuggestionProcessor(Context context, SuggestionHost suggestionHost,
             UrlBarDelegate locationBarDelegate, FaviconFetcher faviconFetcher,
             Supplier<Tab> tabSupplier, Supplier<ShareDelegate> shareDelegateSupplier) {
-        super(context, suggestionHost, null, faviconFetcher);
+        super(context, suggestionHost, faviconFetcher);
 
         mContext = context;
         mUrlBarDelegate = locationBarDelegate;

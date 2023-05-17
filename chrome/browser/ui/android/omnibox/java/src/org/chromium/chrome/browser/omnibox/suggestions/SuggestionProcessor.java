@@ -34,4 +34,12 @@ public interface SuggestionProcessor extends DropdownItemProcessor {
     default boolean allowBackgroundRounding() {
         return true;
     }
+
+    /**
+     * Return whether this suggestion can host OmniboxAction chips.
+     */
+    @Override
+    default boolean allowOmniboxActions() {
+        return true;
+    }
 }

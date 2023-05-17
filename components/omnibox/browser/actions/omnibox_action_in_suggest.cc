@@ -14,7 +14,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "components/omnibox/browser/actions/omnibox_pedal_jni_wrapper.h"
+#include "components/omnibox/browser/actions/omnibox_action_factory_android.h"
 #include "url/android/gurl_android.h"
 #endif
 

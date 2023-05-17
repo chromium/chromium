@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history_clusters/core/history_clusters_service.h"
+#include "components/omnibox/browser/actions/omnibox_action_factory_android.h"
 
 #include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "components/omnibox/browser/jni_headers/HistoryClustersAction_jni.h"
-#include "components/omnibox/browser/jni_headers/OmniboxActionInSuggest_jni.h"
-#include "components/omnibox/browser/jni_headers/OmniboxPedal_jni.h"
+#include "components/omnibox/browser/jni_headers/OmniboxActionFactory_jni.h"
 #include "omnibox_action.h"
 #include "url/android/gurl_android.h"
 
@@ -34,9 +32,10 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
     JNIEnv* env,
     const std::u16string& hint,
     OmniboxPedalId pedal_id) {
-  return base::android::ScopedJavaGlobalRef(Java_OmniboxPedal_Constructor(
-      env, base::android::ConvertUTF16ToJavaString(env, hint),
-      static_cast<int32_t>(pedal_id)));
+  return base::android::ScopedJavaGlobalRef(
+      Java_OmniboxActionFactory_buildOmniboxPedal(
+          env, base::android::ConvertUTF16ToJavaString(env, hint),
+          static_cast<int32_t>(pedal_id)));
 }
 
 base::android::ScopedJavaGlobalRef<jobject> BuildHistoryClustersAction(
@@ -44,7 +43,7 @@ base::android::ScopedJavaGlobalRef<jobject> BuildHistoryClustersAction(
     const std::u16string& hint,
     const std::string& query) {
   return base::android::ScopedJavaGlobalRef(
-      Java_HistoryClustersAction_Constructor(
+      Java_OmniboxActionFactory_buildHistoryClustersAction(
           env, base::android::ConvertUTF16ToJavaString(env, hint),
           base::android::ConvertUTF8ToJavaString(env, query)));
 }
@@ -53,9 +52,10 @@ base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
     JNIEnv* env,
     const std::u16string& hint,
     const std::string& serialized_action) {
-  return base::android::ScopedJavaGlobalRef(Java_OmniboxActionInSuggest_build(
-      env, base::android::ConvertUTF16ToJavaString(env, hint),
-      base::android::ToJavaByteArray(env, serialized_action)));
+  return base::android::ScopedJavaGlobalRef(
+      Java_OmniboxActionFactory_buildActionInSuggest(
+          env, base::android::ConvertUTF16ToJavaString(env, hint),
+          base::android::ToJavaByteArray(env, serialized_action)));
 }
 
 // Convert a vector of OmniboxActions to Java counterpart.

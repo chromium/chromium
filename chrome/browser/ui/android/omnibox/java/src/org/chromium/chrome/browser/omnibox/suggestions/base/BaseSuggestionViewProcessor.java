@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
-import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -36,7 +35,7 @@ import java.util.List;
 public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor {
     private final @NonNull Context mContext;
     private final @NonNull SuggestionHost mSuggestionHost;
-    private final @Nullable ActionChipsProcessor mActionChipsProcessor;
+    private final @NonNull ActionChipsProcessor mActionChipsProcessor;
     private final @Nullable FaviconFetcher mFaviconFetcher;
     private final int mDesiredFaviconWidthPx;
     private final int mDecorationImageSizePx;
@@ -48,7 +47,6 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * @param faviconFetcher A mechanism to use to retrieve favicons.
      */
     public BaseSuggestionViewProcessor(@NonNull Context context, @NonNull SuggestionHost host,
-            @Nullable OmniboxActionDelegate omniboxActionDelegate,
             @Nullable FaviconFetcher faviconFetcher) {
         mContext = context;
         mSuggestionHost = host;
@@ -59,12 +57,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         mSuggestionSizePx = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_content_height);
         mFaviconFetcher = faviconFetcher;
-
-        if (omniboxActionDelegate != null) {
-            mActionChipsProcessor = new ActionChipsProcessor(context, host, omniboxActionDelegate);
-        } else {
-            mActionChipsProcessor = null;
-        }
+        mActionChipsProcessor = new ActionChipsProcessor(context, host);
     }
 
     /**
@@ -169,7 +162,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                 () -> mSuggestionHost.setOmniboxEditingText(suggestion.getFillIntoEdit()));
         setActionButtons(model, null);
 
-        if (mActionChipsProcessor != null) {
+        if (allowOmniboxActions()) {
             mActionChipsProcessor.populateModel(suggestion, model, position);
         }
     }
@@ -177,17 +170,13 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
     @Override
     @CallSuper
     public void onUrlFocusChange(boolean hasFocus) {
-        if (mActionChipsProcessor != null) {
-            mActionChipsProcessor.onUrlFocusChange(hasFocus);
-        }
+        mActionChipsProcessor.onUrlFocusChange(hasFocus);
     }
 
     @Override
     @CallSuper
     public void onSuggestionsReceived() {
-        if (mActionChipsProcessor != null) {
-            mActionChipsProcessor.onSuggestionsReceived();
-        }
+        mActionChipsProcessor.onSuggestionsReceived();
     }
 
     /**

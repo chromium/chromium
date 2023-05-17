@@ -9,7 +9,6 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.omnibox.R;
 
 /**
@@ -24,7 +23,6 @@ public class HistoryClustersAction extends OmniboxAction {
     /** Associated user query, guaranteed to be a non-empty string. */
     public final @NonNull String query;
 
-    @CalledByNative
     public HistoryClustersAction(@NonNull String hint, @NonNull String query) {
         super(OmniboxActionType.HISTORY_CLUSTERS, hint, JOURNEYS_ICON);
         assert !TextUtils.isEmpty(query);

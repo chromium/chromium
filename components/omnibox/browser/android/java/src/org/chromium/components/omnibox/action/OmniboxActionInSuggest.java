@@ -8,12 +8,7 @@ import android.content.Intent;
 import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.omnibox.EntityInfoProto;
 import org.chromium.components.omnibox.OmniboxMetrics;
 import org.chromium.components.omnibox.R;
@@ -131,17 +126,5 @@ public class OmniboxActionInSuggest extends OmniboxAction {
                     break;
             }
         }
-    }
-
-    @CalledByNative
-    @VisibleForTesting
-    public static @Nullable OmniboxActionInSuggest build(
-            @NonNull String hint, @NonNull byte[] serializedActionInfo) {
-        try {
-            return new OmniboxActionInSuggest(
-                    hint, EntityInfoProto.ActionInfo.parseFrom(serializedActionInfo));
-        } catch (InvalidProtocolBufferException e) {
-        }
-        return null;
     }
 }

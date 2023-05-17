@@ -15,14 +15,6 @@ import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFrag
  */
 public interface OmniboxActionDelegate {
     /**
-     * Call this method when the pedal is clicked.
-     * TODO(crbug/1418077): move this to OmniboxAction.
-     *
-     * @param action the {@link OmniboxAction} whose action we want to execute.
-     */
-    void execute(OmniboxAction action);
-
-    /**
      * Returns whether the user is currently browsing incognito.
      */
     boolean isIncognito();

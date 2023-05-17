@@ -48,7 +48,7 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
             @NonNull Context context, @NonNull SuggestionHost suggestionHost,
             @NonNull UrlBarEditingTextStateProvider editingTextProvider,
             @NonNull FaviconFetcher faviconFetcher, @NonNull BookmarkState bookmarkState) {
-        super(context, suggestionHost, null, editingTextProvider, faviconFetcher, bookmarkState);
+        super(context, suggestionHost, editingTextProvider, faviconFetcher, bookmarkState);
         mOpenHistoryClustersDelegate = openHistoryClustersDelegate;
         mContext = context;
     }
@@ -92,6 +92,11 @@ public class HistoryClustersProcessor extends BasicSuggestionProcessor {
         model.set(SuggestionViewProperties.IS_SEARCH_SUGGESTION, true);
         setActionButtons(model, null);
         mJourneysActionShownPosition = position;
+    }
+
+    @Override
+    public boolean allowOmniboxActions() {
+        return false;
     }
 
     private void onJourneysSuggestionClicked(HistoryClustersAction action, int position) {
