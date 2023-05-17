@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 59
+// Next MinVersion: 60
 
 module arc.mojom;
 
@@ -152,6 +152,9 @@ enum ShowPackageInfoPage {
 
   // Page for managing links assigned to the app.
   MANAGE_LINKS = 1,
+
+  // Page for managing permissions assigned to the app.
+  [MinVersion=59] MANAGE_PERMISSIONS = 2,
 };
 
 // Describes the raw icon png data published by an Android application.
