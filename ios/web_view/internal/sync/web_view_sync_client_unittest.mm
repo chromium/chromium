@@ -96,10 +96,12 @@ TEST_F(WebViewSyncClientTest, CreateDataTypeControllers) {
   syncer::TestSyncService sync_service;
   syncer::DataTypeController::TypeVector data_type_controllers =
       client_.CreateDataTypeControllers(&sync_service);
-  syncer::ModelTypeSet allowed_types = syncer::ModelTypeSet(
-      syncer::DEVICE_INFO, syncer::AUTOFILL, syncer::AUTOFILL_PROFILE,
-      syncer::AUTOFILL_WALLET_DATA, syncer::AUTOFILL_WALLET_METADATA,
-      syncer::PASSWORDS);
+  syncer::ModelTypeSet allowed_types = {syncer::DEVICE_INFO,
+                                        syncer::AUTOFILL,
+                                        syncer::AUTOFILL_PROFILE,
+                                        syncer::AUTOFILL_WALLET_DATA,
+                                        syncer::AUTOFILL_WALLET_METADATA,
+                                        syncer::PASSWORDS};
   for (const auto& data_type_controller : data_type_controllers) {
     ASSERT_TRUE(allowed_types.Has(data_type_controller->type()));
     allowed_types.Remove(data_type_controller->type());
