@@ -4723,17 +4723,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.SafeMode.CheckStateBlockingTime" units="ms"
-    expires_after="2023-04-28">
-  <owner>ntfschr@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the time spent blocking WebView startup to check for SafeMode (see
-    &quot;Android.WebView.SafeMode.SafeModeEnabled&quot;). This is recorded once
-    during WebView startup, regardless of whether SafeMode is enabled.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.SafeMode.ExecutionResult"
     enum="AndroidWebViewSafeModeResult" expires_after="2024-01-28">
   <owner>ntfschr@chromium.org</owner>
