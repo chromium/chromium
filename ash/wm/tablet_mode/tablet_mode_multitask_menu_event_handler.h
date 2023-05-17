@@ -39,6 +39,7 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
   void ResetMultitaskMenu();
 
   // ui::EventHandler:
+  void OnTouchEvent(ui::TouchEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
  private:

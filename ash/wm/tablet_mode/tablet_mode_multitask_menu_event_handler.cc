@@ -13,8 +13,10 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target.h"
+#include "ui/events/event_utils.h"
 #include "ui/events/types/event_type.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -57,7 +59,6 @@ TabletModeMultitaskMenuEventHandler::~TabletModeMultitaskMenuEventHandler() {
   // The cue needs to be destroyed first so that it doesn't do any work when
   // window activation changes as a result of destroying `this`.
   multitask_cue_.reset();
-
   Shell::Get()->RemovePreTargetHandler(this);
 }
 
@@ -78,6 +79,54 @@ void TabletModeMultitaskMenuEventHandler::ShowMultitaskMenu(
 void TabletModeMultitaskMenuEventHandler::ResetMultitaskMenu() {
   multitask_cue_->ResetPosition();
   multitask_menu_.reset();
+}
+
+void TabletModeMultitaskMenuEventHandler::OnTouchEvent(ui::TouchEvent* event) {
+  if (event->IsSynthesized()) {
+    return;
+  }
+
+  aura::Window* target = static_cast<aura::Window*>(event->target());
+  aura::Window* window = GetTargetWindow(target);
+  if (!window) {
+    return;
+  }
+
+  // The swipe location may go out of menu bounds and trigger the tab strip, so
+  // filter all events that may show the menu regardless of location.
+  if (!window || !CanShowMenu(window)) {
+    return;
+  }
+
+  // Force gesture processing of touch events that may show the menu. This
+  // is needed to block the lacros tab strip, as they currently only process
+  // touch events (http://crbug/1299818).
+  // The events will get processed as follows:
+  // 1. Send ET_TOUCH_PRESSED events as normal.
+  // 2. Filter out and force process ET_TOUCH_MOVED events.
+  // 3. On touch release, either send ET_TOUCH_RELEASED as normal OR send
+  // ET_TOUCH_CANCELLED if we handled a drag, to block the lacros tab strip.
+
+  if (event->type() == ui::ET_TOUCH_MOVED) {
+    event->StopPropagation();
+    event->ForceProcessGesture();
+    return;
+  }
+
+  if (event->type() == ui::ET_TOUCH_RELEASED) {
+    if (!multitask_menu_) {
+      // If we didn't handle a drag on the menu, send touch release as normal.
+      return;
+    }
+    // Else send touch cancel to the target.
+    ui::PointerDetails touch_details(ui::EventPointerType::kTouch,
+                                     /*pointer_id=*/0, 1.0f, 1.0f, 1.0f);
+    ui::TouchEvent touch_cancel_event(ui::ET_TOUCH_CANCELLED, gfx::Point(),
+                                      ui::EventTimeForNow(), touch_details,
+                                      ui::EF_IS_SYNTHESIZED);
+    touch_cancel_event.StopPropagation();
+    std::ignore = window->GetHost()->SendEventToSink(&touch_cancel_event);
+  }
 }
 
 void TabletModeMultitaskMenuEventHandler::OnGestureEvent(

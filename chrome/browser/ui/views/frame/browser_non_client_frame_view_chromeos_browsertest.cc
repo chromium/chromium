@@ -1308,7 +1308,8 @@ class FloatBrowserNonClientFrameViewChromeOSTest
       chromeos::wm::features::kWindowLayoutMenu};
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests that swipe down in the top center of a window shows the ash tablet mode
+// multitask menu without the webui tabstrip.
 IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
                        TabletModeMultitaskMenu) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
@@ -1321,8 +1322,7 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
   aura::Window* window = widget->GetNativeWindow();
   ui::test::EventGenerator event_generator(window->GetRootWindow());
 
-  // A normal tap on the top center of the window and in the omnibox
-  // bounds will focus the omnibox.
+  // Tap on the omnibox top center, in the tablet mode multitask menu hit area.
   const gfx::Rect omnibox_bounds =
       browser_view->GetViewByID(VIEW_ID_OMNIBOX)->GetBoundsInScreen();
   ASSERT_NO_FATAL_FAILURE(
@@ -1332,17 +1332,19 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
 
   // Swipe down from the top center opens the multitask menu.
   event_generator.SetTouchRadius(10, 5);
-  const gfx::Point top_center(window->bounds().CenterPoint().x(), -1);
-  event_generator.PressTouch(top_center);
+  event_generator.PressTouch(omnibox_bounds.top_center());
   event_generator.MoveTouchBy(0, 100);
   event_generator.ReleaseTouch();
   ASSERT_NO_FATAL_FAILURE(
       ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, false));
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* multitask_menu_event_handler =
       ash::TabletModeControllerTestApi()
           .tablet_mode_window_manager()
           ->tablet_mode_multitask_menu_event_handler();
   EXPECT_TRUE(multitask_menu_event_handler->multitask_menu());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (browser_view->webui_tab_strip()) {
     // The tab strip doesn't get shown if the menu is.
@@ -1354,9 +1356,10 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
       event_generator.GestureTapAt(omnibox_bounds.left_center()));
   ASSERT_NO_FATAL_FAILURE(
       ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_FALSE(multitask_menu_event_handler->multitask_menu());
-}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
 
 IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
                        BrowserHeaderVisibilityInTabletModeTest) {
