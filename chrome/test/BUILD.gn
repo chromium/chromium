@@ -3691,22 +3691,27 @@ if (!is_android) {
     }
 
     # TODO(https://crbug.com/1218633): Fix the mixin and enable tests on LaCrOS and desktop.
-    if (enable_supervised_users && is_chromeos_ash) {
-      sources += [
-        "../browser/supervised_user/permission_request_creator_mock.cc",
-        "../browser/supervised_user/permission_request_creator_mock.h",
-        "../browser/supervised_user/supervised_user_navigation_throttle_browsertest.cc",
-        "../browser/supervised_user/supervised_user_regional_url_filter_browsertest.cc",
-        "../browser/supervised_user/supervised_user_service_browsertest.cc",
-        "../browser/supervised_user/supervised_user_url_filter_browsertest.cc",
-      ]
+    if (enable_supervised_users) {
       if (enable_extensions) {
         sources += [
           "../browser/supervised_user/supervised_user_extension_browsertest.cc",
           "../browser/ui/views/supervised_user/extension_install_blocked_by_parent_dialog_browsertest.cc",
-          "../browser/ui/views/supervised_user/parent_permission_dialog_view_browsertest.cc",
         ]
       }
+      if (is_chromeos_ash) {
+        sources += [
+          "../browser/supervised_user/permission_request_creator_mock.cc",
+          "../browser/supervised_user/permission_request_creator_mock.h",
+          "../browser/supervised_user/supervised_user_navigation_throttle_browsertest.cc",
+          "../browser/supervised_user/supervised_user_regional_url_filter_browsertest.cc",
+          "../browser/supervised_user/supervised_user_service_browsertest.cc",
+          "../browser/supervised_user/supervised_user_url_filter_browsertest.cc",
+        ]
+        if (enable_extensions) {
+          sources += [ "../browser/ui/views/supervised_user/parent_permission_dialog_view_browsertest.cc" ]
+        }
+      }
+
       deps += [
         "//chrome/browser/supervised_user:test_support",
         "//components/supervised_user/core/browser",
@@ -9301,6 +9306,14 @@ if (!is_android) {
       "permissions/permission_request_manager_test_api.cc",
       "permissions/permission_request_manager_test_api.h",
     ]
+
+    if (enable_supervised_users) {
+      sources += [
+        "supervised_user/supervision_mixin.cc",
+        "supervised_user/supervision_mixin.h",
+      ]
+    }
+
     if (is_mac) {
       sources += [
         "../browser/ui/test/test_browser_dialog_mac.h",
