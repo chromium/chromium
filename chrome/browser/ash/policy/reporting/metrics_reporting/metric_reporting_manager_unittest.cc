@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service_test_base.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
@@ -232,7 +233,7 @@ const MetricReportingSettingData displays_telemetry_settings = {
     ::ash::kReportDeviceGraphicsStatus, false, ::ash::kReportUploadFrequency,
     1};
 const MetricReportingSettingData app_event_settings = {
-    ::ash::kReportDeviceAppInfo, false, "", 1};
+    ::ash::reporting::kReportAppInventory, false, "", 1};
 const MetricReportingSettingData app_telemetry_settings = {
     ::ash::kReportDeviceAppInfo, false,
     ::ash::kDeviceActivityHeartbeatCollectionRateMs, 1};
@@ -588,7 +589,7 @@ INSTANTIATE_TEST_SUITE_P(
           /*is_affiliated=*/true, app_event_settings,
           /*has_init_delay=*/false,
           /*expected_count_before_login=*/0,
-          /*expected_count_after_login=*/0}}),
+          /*expected_count_after_login=*/1}}),
     [](const testing::TestParamInfo<MetricReportingManagerInfoTest::ParamType>&
            info) { return info.param.test_name; });
 
