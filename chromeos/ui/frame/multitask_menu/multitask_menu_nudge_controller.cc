@@ -264,8 +264,14 @@ void MultitaskMenuNudgeController::OnWindowStackingChanged(
 
   // Ensure the `nudge_widget_` is always above `window_`. We dont worry about
   // the pulse layer since it is not a window, and won't get stacked on top of
-  // during window activation for example.
-  window_->parent()->StackChildAbove(nudge_widget_->GetNativeWindow(), window);
+  // during window activation for example. When moving across displays, it is
+  // possible the window parent differs for a bit. In this case we cannot
+  // restack and we need to wait for `UpdateWidgetAndPulse` to place the nudge
+  // in the correct spot.
+  if (window_->parent() == nudge_widget_->GetNativeWindow()->parent()) {
+    window_->parent()->StackChildAbove(nudge_widget_->GetNativeWindow(),
+                                       window);
+  }
 }
 
 void MultitaskMenuNudgeController::OnWindowDestroying(aura::Window* window) {

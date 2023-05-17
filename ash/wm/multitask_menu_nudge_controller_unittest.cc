@@ -28,6 +28,7 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "chromeos/ui/wm/features.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -185,6 +186,27 @@ TEST_F(MultitaskMenuNudgeControllerTest,
           .CenterPoint());
   GetEventGenerator()->ClickLeftButton();
   EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
+}
+
+// Tests that there is no crash after entering tablet mode with the multitask
+// menu created on the secondary display. Regression test for b/278165707.
+TEST_F(MultitaskMenuNudgeControllerTest,
+       NoCrashAfterEnterTabletFromMultidisplay) {
+  UpdateDisplay("800x600,801+0-800x600");
+
+  auto window = CreateAppWindow(gfx::Rect(900, 0, 300, 300));
+  ASSERT_EQ(Shell::GetAllRootWindows()[1], window->GetRootWindow());
+
+  // Ensure that the clamshell nudge is closed and advance the clock so that the
+  // tablet one will show.
+  FireDismissNudgeTimer(window.get());
+  test_clock_.Advance(base::Hours(26));
+
+  // We use non zero duration since we want to mimic real behavior of stacking
+  // order changed on `window` before tablet mode is entered.
+  ui::ScopedAnimationDurationScaleMode scale_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  TabletModeControllerTestApi().EnterTabletMode();
 }
 
 TEST_F(MultitaskMenuNudgeControllerTest, NudgeTimeout) {
