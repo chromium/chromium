@@ -2535,7 +2535,7 @@
   {
     "name": "enable-force-dark",
     "owners": [ "beverloo", "pdr" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 123
   },
   {
     "name": "enable-fullscreen-api",
