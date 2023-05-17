@@ -167,6 +167,7 @@ enum MetricDimension {
   ASPECT_RATIO_SET = 35,
   DOC_PAGE_COUNT = 36,
   TIME_LAPSE_SPEED = 37,
+  IS_TEST_IMAGE = 38,
 }
 
 /**
@@ -186,10 +187,12 @@ export async function initMetrics(): Promise<void> {
     }
     return match[1];
   })();
+  const isTestImage = loadTimeData.getIsTestImage();
   baseDimen = new Map<MetricDimension, number|string>([
     [MetricDimension.BOARD, boardName],
     [MetricDimension.OS_VERSION, osVer],
     [MetricDimension.SCHEMA_VERSION, SCHEMA_VERSION],
+    [MetricDimension.IS_TEST_IMAGE, isTestImage ? '1' : '0'],
   ]);
 
   const clientId = localStorage.getString(LocalStorageKey.GA_USER_ID);
