@@ -69,13 +69,15 @@ chromium-metrics-reviews@google.com.
   <variant name="SessionWindow"/>
 </variants>
 
-<histogram name="PageActionController.ActionTypeShown"
+<histogram name="PageActionController.ActionTypeShown2"
     enum="PageActionIconType" expires_after="2023-10-01">
   <owner>emshack@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
     The type of Page Action currently shown. Logged once per ephemeral page
-    action the first time it becomes visible on a given page.
+    action the first time it becomes visible on a given page. Tab switches will
+    only trigger logging for any page actions that have not already been logged
+    as visible on this page.
   </summary>
 </histogram>
 
@@ -95,7 +97,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageActionController.Icon.CTR" enum="PageActionCTREvent"
+<histogram name="PageActionController.Icon.CTR2" enum="PageActionCTREvent"
     expires_after="2023-11-12">
   <owner>emshack@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -121,7 +123,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageActionController.NumberActionsShown" units="actions"
+<histogram name="PageActionController.NumberActionsShown2" units="actions"
     expires_after="2023-10-01">
   <owner>emshack@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -132,7 +134,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageActionController.PagesWithActionsShown"
+<histogram name="PageActionController.PagesWithActionsShown2"
     enum="PageActionPageEvent" expires_after="2023-10-01">
   <owner>emshack@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -151,7 +153,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageActionController.{PageActionType}.Icon.CTR"
+<histogram name="PageActionController.{PageActionType}.Icon.CTR2"
     enum="PageActionCTREvent" expires_after="2023-08-01">
   <owner>emshack@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>

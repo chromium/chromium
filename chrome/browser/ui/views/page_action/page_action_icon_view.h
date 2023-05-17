@@ -107,13 +107,6 @@ class PageActionIconView : public IconLabelBubbleView {
   const char* name_for_histograms() const { return name_for_histograms_; }
   bool ephemeral() const { return ephemeral_; }
 
-  bool should_record_metrics_if_shown() const {
-    return should_record_metrics_if_shown_;
-  }
-  void set_should_record_metrics_if_shown(bool record) {
-    should_record_metrics_if_shown_ = record;
-  }
-
   void ExecuteForTesting();
 
   // Creates and updates the loading indicator.
@@ -231,9 +224,6 @@ class PageActionIconView : public IconLabelBubbleView {
   // subclass, but generally indicates that the associated feature is acting on
   // the web page.
   bool active_ = false;
-
-  // Whether metrics should be recorded when setting this to visible.
-  bool should_record_metrics_if_shown_ = false;
 
   // The loading indicator, showing a throbber animation on top of the icon.
   raw_ptr<PageActionIconLoadingIndicatorView> loading_indicator_ = nullptr;
