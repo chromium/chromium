@@ -34282,6 +34282,7 @@ Called by update_extension_histograms.py.-->
   <int value="513" label="OS_EVENTS_ON_USB_EVENT"/>
   <int value="514" label="OS_EVENTS_ON_SD_CARD_EVENT"/>
   <int value="515" label="SMART_CARD_PROVIDER_PRIVATE_ON_TRANSMIT_REQUESTED"/>
+  <int value="516" label="SMART_CARD_PROVIDER_PRIVATE_ON_CONTROL_REQUESTED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">

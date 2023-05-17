@@ -1138,4 +1138,67 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, TransmitTimeout) {
   EXPECT_THAT(result_future.Take(), IsError(SmartCardError::kNoService));
 }
 
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Control) {
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs, R"(
+      const equals = (a, b) =>
+        a.length === b.length &&
+        a.every((v, i) => v === b[i]);
+
+      chrome.smartCardProviderPrivate.onControlRequested.addListener(
+          control);
+
+      function control(requestId, scardHandle, controlCode, data) {
+
+        const inputArray = new Uint8Array(data);
+        const expectedInputArray = new Uint8Array([3, 2, 1]);
+
+        if (scardHandle !== validHandle || controlCode !== 111
+            || !equals(inputArray, expectedInputArray)) {
+          chrome.smartCardProviderPrivate.reportDataResult(requestId,
+            new Uint8Array().buffer,
+            "INVALID_PARAMETER");
+          return;
+        }
+
+        let responseData = new Uint8Array([1, 100, 255]);
+
+        chrome.smartCardProviderPrivate.reportDataResult(requestId,
+          responseData.buffer, "SUCCESS");
+      }
+      )"});
+
+  auto [context, connection] = CreateContextAndConnection();
+  ASSERT_TRUE(connection.is_bound());
+
+  base::test::TestFuture<device::mojom::SmartCardDataResultPtr> result_future;
+
+  connection->Control(111u, {3u, 2u, 1u}, result_future.GetCallback());
+
+  device::mojom::SmartCardDataResultPtr result = result_future.Take();
+  ASSERT_TRUE(result->is_data());
+
+  EXPECT_EQ(result->get_data(), std::vector<uint8_t>({1u, 100u, 255u}));
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, ControlTimeout) {
+  ProviderAPI().SetResponseTimeLimitForTesting(base::Seconds(1));
+
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs, R"(
+      chrome.smartCardProviderPrivate.onControlRequested.addListener(
+          function (requestId, scardHandle, controlCode, data) {
+            // Do nothing.
+          });
+      )"});
+
+  auto [context, connection] = CreateContextAndConnection();
+  ASSERT_TRUE(connection.is_bound());
+
+  base::test::TestFuture<device::mojom::SmartCardDataResultPtr> result_future;
+
+  connection->Control(111u, std::vector<uint8_t>({3u, 2u, 1u}),
+                      result_future.GetCallback());
+
+  EXPECT_THAT(result_future.Take(), IsError(SmartCardError::kNoService));
+}
+
 }  // namespace extensions

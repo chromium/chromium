@@ -511,6 +511,27 @@ void SmartCardProviderPrivateAPI::SendTransmit(
           .Append(base::Value(std::move(data))));
 }
 
+void SmartCardProviderPrivateAPI::SendControl(ContextId scard_context,
+                                              Handle handle,
+                                              uint32_t control_code,
+                                              const std::vector<uint8_t>& data,
+                                              ControlCallback callback) {
+  auto process_result =
+      base::BindOnce(&SmartCardProviderPrivateAPI::ProcessDataResult,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  DispatchEventWithTimeout(
+      scard_context, scard_api::OnControlRequested::kEventName,
+      extensions::events::SMART_CARD_PROVIDER_PRIVATE_ON_CONTROL_REQUESTED,
+      std::move(process_result), std::move(callback),
+      &SmartCardProviderPrivateAPI::OnControlTimeout,
+      /*event_arguments=*/
+      base::Value::List()
+          .Append(handle.GetUnsafeValue())
+          .Append(int(control_code))
+          .Append(base::Value(std::move(data))));
+}
+
 void SmartCardProviderPrivateAPI::ReportResult(
     RequestId request_id,
     ResultArgs result_args,
@@ -1020,6 +1041,22 @@ void SmartCardProviderPrivateAPI::Transmit(
                      protocol, std::move(data), std::move(callback)));
 }
 
+void SmartCardProviderPrivateAPI::Control(uint32_t control_code,
+                                          const std::vector<uint8_t>& data,
+                                          ControlCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const auto& [context_id, handle] = connection_receivers_.current_context();
+  CHECK(context_id);
+  CHECK(handle);
+
+  RunOrQueueRequest(
+      context_id,
+      base::BindOnce(&SmartCardProviderPrivateAPI::SendControl,
+                     weak_ptr_factory_.GetWeakPtr(), context_id, handle,
+                     control_code, std::move(data), std::move(callback)));
+}
+
 SmartCardProviderPrivateAPI::ContextData&
 SmartCardProviderPrivateAPI::GetContextData(ContextId scard_context) {
   auto it = context_data_map_.find(scard_context);
@@ -1084,6 +1121,11 @@ ON_TIMEOUT_IMPL(Disconnect,
                 SmartCardResult::NewError(SmartCardError::kNoService))
 
 ON_TIMEOUT_IMPL(Transmit,
+                ReportResult,
+                std::vector<uint8_t>(),
+                SmartCardResult::NewError(SmartCardError::kNoService))
+
+ON_TIMEOUT_IMPL(Control,
                 ReportResult,
                 std::vector<uint8_t>(),
                 SmartCardResult::NewError(SmartCardError::kNoService))

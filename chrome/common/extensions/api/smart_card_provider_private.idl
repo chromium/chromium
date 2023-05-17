@@ -170,6 +170,12 @@ namespace smartCardProviderPrivate {
     // reportDataResult.
     [maxListeners=1] static void onTransmitRequested(long requestId,
         long scardHandle, Protocol protocol, ArrayBuffer data);
+
+    // Browser requested a SCardControl call.
+    // Extension must report the result to the browser by calling
+    // reportDataResult.
+    [maxListeners=1] static void onControlRequested(long requestId,
+        long scardHandle, long controlCode, ArrayBuffer data);
   };
 
   interface Functions {
