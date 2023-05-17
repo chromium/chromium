@@ -553,7 +553,8 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
       }
     }
 
-    if (activeScene) {
+    // Proceed if the active scene is initialized.
+    if (activeScene.browserProviderInterface) {
       web::WebState* currentWebState =
           activeScene.browserProviderInterface.currentBrowserProvider.browser
               ->GetWebStateList()
