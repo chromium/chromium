@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {ExtensionsTestRunner} from 'extensions_test_runner';
+
 (async function() {
   TestRunner.addResult(
       `Tests that extension does not get disconnected after a page with OOPIFs is reloaded\n`);
-  await TestRunner.loadTestModule('extensions_test_runner');
   await TestRunner.navigatePromise('http://localhost:8000/devtools/extensions/resources/page-with-oopif.html');
 
   await ExtensionsTestRunner.runExtensionTests([
