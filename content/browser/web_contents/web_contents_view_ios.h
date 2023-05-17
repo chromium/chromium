@@ -96,6 +96,9 @@ class WebContentsViewIOS : public WebContentsView,
   std::unique_ptr<WebContentsUIViewHolder> ui_view_;
 
   std::unique_ptr<PopupMenuHelper> popup_menu_helper_;
+
+  // Our optional delegate.
+  std::unique_ptr<WebContentsViewDelegate> delegate_;
 };
 
 }  // namespace content

@@ -28,6 +28,22 @@
 constexpr int kDefaultWidthForTesting = 800;
 constexpr int kDefaultHeightForTesting = 600;
 
+@interface UIApplication (Testing)
+- (BOOL)isRunningTests;
+@end
+
+@implementation UIApplication (Testing)
+- (BOOL)isRunningTests {
+  return NO;
+}
+@end
+
+namespace {
+bool IsTesting() {
+  return [[UIApplication sharedApplication] isRunningTests];
+}
+}  // namespace
+
 // TODO(dtapuska): Change this to be UITextInput and handle the other
 // events to implement the composition and selection ranges.
 @interface RenderWidgetUIViewTextInput : UIView <UIKeyInput> {
@@ -177,7 +193,7 @@ constexpr int kDefaultHeightForTesting = 600;
 
 - (BOOL)becomeFirstResponder {
   BOOL result = [super becomeFirstResponder];
-  if (result) {
+  if (result || _view->CanBecomeFirstResponderForTesting()) {
     _view->OnFirstResponderChanged();
   }
   return result;
@@ -185,7 +201,7 @@ constexpr int kDefaultHeightForTesting = 600;
 
 - (BOOL)resignFirstResponder {
   BOOL result = [super resignFirstResponder];
-  if (result) {
+  if (result || _view->CanResignFirstResponderForTesting()) {
     _view->OnFirstResponderChanged();
   }
   return result;
@@ -402,8 +418,7 @@ gfx::Size RenderWidgetHostViewIOS::GetRequestedRendererSize() {
   // When testing, we will not have a windowScene and, as a consequence, we will
   // not have an intrinsic renderer size. This will cause tests to fail, though,
   // so we will instead set a default size.
-  bool has_window_scene = [[ui_view_->view_ window] windowScene] != nil;
-  return has_window_scene
+  return !IsTesting()
              ? browser_compositor_->GetRendererSize()
              : gfx::Size(kDefaultWidthForTesting, kDefaultHeightForTesting);
 }
@@ -623,6 +638,14 @@ void RenderWidgetHostViewIOS::SendGestureEvent(
   }
 }
 
+bool RenderWidgetHostViewIOS::CanBecomeFirstResponderForTesting() const {
+  return IsTesting() && !is_first_responder_ && is_getting_focus_;
+}
+
+bool RenderWidgetHostViewIOS::CanResignFirstResponderForTesting() const {
+  return IsTesting() && is_first_responder_;
+}
+
 void RenderWidgetHostViewIOS::UpdateNativeViewTree(gfx::NativeView view) {
   if (view) {
     [view addSubview:ui_view_->view_];
@@ -665,7 +688,9 @@ RenderWidgetHostImpl* RenderWidgetHostViewIOS::GetActiveWidget() {
 
 void RenderWidgetHostViewIOS::OnFirstResponderChanged() {
   bool is_first_responder = [ui_view_->view_ isFirstResponder] ||
-                            [[ui_view_->view_ textInput] isFirstResponder];
+                            [[ui_view_->view_ textInput] isFirstResponder] ||
+                            (IsTesting() && is_getting_focus_);
+
   if (is_first_responder_ == is_first_responder) {
     return;
   }
