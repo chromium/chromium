@@ -48,6 +48,7 @@ using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::Truly;
 using ::testing::WithArg;
+using ::testing::WithArgs;
 
 constexpr char kCellularName1[] = "cellular_device_1";
 constexpr char kTestCellularPath1[] = "/device/cellular_device_1";
@@ -200,37 +201,63 @@ TEST_F(ApnMigratorTest, ApnRevampFlagDisabled) {
   // the second one as not.
   EXPECT_CALL(*managed_cellular_pref_handler(),
               ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
-      .Times(1)
-      .WillOnce(Return(true));
+      .Times(2)
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(*managed_cellular_pref_handler(),
               ContainsApnMigratedIccid(Eq(kTestCellularIccid2)))
-      .Times(1)
-      .WillOnce(Return(false));
+      .Times(3)
+      .WillRepeatedly(Return(false));
 
   // For the migrated network, the routine should not check for the current
   // custom APN list, but rather just resets the CustomApnList.
   EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid1))
       .Times(0);
-  base::Value::Dict expected_onc1 =
-      chromeos::network_config::CustomApnListToOnc(kTestCellularGuid1,
-                                                   /*custom_apn_list=*/nullptr);
+
+  base::OnceClosure success_cb;
+  network_handler::ErrorCallback failure_cb;
+  std::vector<std::string> expected_names;
+  expected_names.push_back(shill::kCellularCustomApnListProperty);
   EXPECT_CALL(
       *managed_network_configuration_handler(),
-      SetProperties(cellular_service_path_1,
-                    Truly([&expected_onc1](const base::Value::Dict& value) {
-                      return expected_onc1 == value;
-                    }),
-                    _, _))
-      .Times(1);
+      ClearShillProperties(
+          cellular_service_path_1,
+          Truly([&expected_names](const std::vector<std::string>& names) {
+            return expected_names == names;
+          }),
+          _, _))
+      .Times(2)
+      .WillRepeatedly(WithArgs<2, 3>(
+          Invoke([&success_cb, &failure_cb](
+                     base::OnceClosure callback,
+                     network_handler::ErrorCallback error_callback) {
+            success_cb = std::move(callback);
+            failure_cb = std::move(error_callback);
+          })));
 
   // Ensure that the function does not modify the non-migrated network.
   EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid2))
       .Times(0);
   EXPECT_CALL(*managed_network_configuration_handler(),
-              SetProperties(cellular_service_path_2, _, _, _))
+              ClearShillProperties(cellular_service_path_2, _, _, _))
       .Times(0);
 
   // Function under test
+  TriggerNetworkListChanged();
+
+  // Simulate the ClearShillProperties() call failing.
+  std::move(failure_cb).Run("error");
+  base::RunLoop().RunUntilIdle();
+
+  // Invoke the function again. |cellular_service_path_1|'s property should be
+  // attempted to be cleared again.
+  TriggerNetworkListChanged();
+
+  // Simulate the ClearShillProperties() call succeeding.
+  std::move(success_cb).Run();
+  base::RunLoop().RunUntilIdle();
+
+  // Invoke the function again. |cellular_service_path_1|'s property shouldn't
+  // be attempted to be cleared again.
   TriggerNetworkListChanged();
 }
 
@@ -368,12 +395,10 @@ TEST_F(ApnMigratorTest, AlreadyMigratedNetworks) {
 
   EXPECT_CALL(*managed_cellular_pref_handler(),
               ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
-      .Times(1)
-      .WillOnce(Return(true));
+      .Times(0);
   EXPECT_CALL(*managed_cellular_pref_handler(),
               ContainsApnMigratedIccid(Eq(kTestCellularIccid2)))
-      .Times(1)
-      .WillOnce(Return(true));
+      .Times(0);
 
   EXPECT_CALL(*managed_cellular_pref_handler(),
               ContainsApnMigratedIccid(Eq(kTestCellularIccid3)))
@@ -410,18 +435,8 @@ TEST_F(ApnMigratorTest, AlreadyMigratedNetworks) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(*managed_cellular_pref_handler(),
-              ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
-      .Times(1)
-      .WillOnce(Return(true));
-  EXPECT_CALL(*managed_cellular_pref_handler(),
-              ContainsApnMigratedIccid(Eq(kTestCellularIccid2)))
-      .Times(1)
-      .WillOnce(Return(true));
-
-  EXPECT_CALL(*managed_cellular_pref_handler(),
               ContainsApnMigratedIccid(Eq(kTestCellularIccid3)))
-      .Times(1)
-      .WillOnce(Return(true));
+      .Times(0);
 
   EXPECT_CALL(*managed_network_configuration_handler(),
               SetProperties(cellular_service_path_1, _, _, _))

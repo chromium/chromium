@@ -45,6 +45,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
                     const base::Value::Dict& user_settings,
                     base::OnceClosure callback,
                     network_handler::ErrorCallback error_callback));
+  MOCK_METHOD4(ClearShillProperties,
+               void(const std::string& service_path,
+                    const std::vector<std::string>& names,
+                    base::OnceClosure callback,
+                    network_handler::ErrorCallback error_callback));
   MOCK_CONST_METHOD4(CreateConfiguration,
                      void(const std::string& userhash,
                           const base::Value::Dict& properties,
