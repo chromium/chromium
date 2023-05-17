@@ -196,42 +196,46 @@ suite('CupsPrinterEntry', function() {
     const printerStatusReasonCache = new Map();
     printerStatusReasonCache.set('id1', PrinterStatusReason.NO_ERROR);
     printerStatusReasonCache.set('id2', PrinterStatusReason.OUT_OF_PAPER);
+    printerStatusReasonCache.set(
+        'id3', PrinterStatusReason.PRINTER_UNREACHABLE);
+    printerStatusReasonCache.set('id4', PrinterStatusReason.UNKNOWN_REASON);
 
     printerEntryTestElement.printerStatusReasonCache = printerStatusReasonCache;
     printerEntryTestElement.printerEntry =
         createPrinterEntry(PrinterType.SAVED);
 
-    // Start at the unknown state.
-    assertEquals(
-        'os-settings:printer-status-grey',
-        printerEntryTestElement.shadowRoot.querySelector('#printerStatusIcon')
-            .icon);
-    assertEquals(
-        '',
-        printerEntryTestElement.shadowRoot.querySelector('#printerSubtext')
-            .textContent.trim());
+    const printerStatusIcon =
+        printerEntryTestElement.shadowRoot.querySelector('#printerStatusIcon');
+    const printerSubtext =
+        printerEntryTestElement.shadowRoot.querySelector('#printerSubtext');
 
-    // Set to an error status reason.
+    // Start at the unknown state.
+    assertEquals('os-settings:printer-status-grey', printerStatusIcon.icon);
+    assertEquals('', printerSubtext.textContent.trim());
+
+    // Set to an low severity error status reason.
     printerEntryTestElement.set('printerEntry.printerInfo.printerId', 'id2');
-    assertEquals(
-        'os-settings:printer-status-red',
-        printerEntryTestElement.shadowRoot.querySelector('#printerStatusIcon')
-            .icon);
+    assertEquals('os-settings:printer-status-orange', printerStatusIcon.icon);
     assertEquals(
         loadTimeData.getString('printerStatusOutOfPaper'),
-        printerEntryTestElement.shadowRoot.querySelector('#printerSubtext')
-            .textContent.trim());
+        printerSubtext.textContent.trim());
 
     // Set to a good status reason.
     printerEntryTestElement.set('printerEntry.printerInfo.printerId', 'id1');
+    assertEquals('os-settings:printer-status-green', printerStatusIcon.icon);
+    assertEquals('', printerSubtext.textContent.trim());
+
+    // Set to a high severity error status reason.
+    printerEntryTestElement.set('printerEntry.printerInfo.printerId', 'id3');
+    assertEquals('os-settings:printer-status-red', printerStatusIcon.icon);
     assertEquals(
-        'os-settings:printer-status-green',
-        printerEntryTestElement.shadowRoot.querySelector('#printerStatusIcon')
-            .icon);
-    assertEquals(
-        '',
-        printerEntryTestElement.shadowRoot.querySelector('#printerSubtext')
-            .textContent.trim());
+        loadTimeData.getString('printerStatusPrinterUnreachable'),
+        printerSubtext.textContent.trim());
+
+    // Set to unknown status reason.
+    printerEntryTestElement.set('printerEntry.printerInfo.printerId', 'id4');
+    assertEquals('os-settings:printer-status-green', printerStatusIcon.icon);
+    assertEquals('', printerSubtext.textContent.trim());
 
   });
 

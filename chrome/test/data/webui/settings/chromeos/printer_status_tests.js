@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getStatusReasonFromPrinterStatus, PrinterStatusReason, PrinterStatusSeverity} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {computePrinterState, getStatusReasonFromPrinterStatus, PrinterState, PrinterStatusReason, PrinterStatusSeverity} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 suite('PrinterStatus', function() {
@@ -91,5 +91,38 @@ suite('PrinterStatus', function() {
     assertEquals(
         PrinterStatusReason.PAPER_JAM,
         getStatusReasonFromPrinterStatus(printerStatus));
+  });
+
+  // Verify the correct PrinterState is returned based on the printer status
+  // reason.
+  test('computePrinterState', () => {
+    // A non-existent printer status returns unknown state.
+    assertEquals(PrinterState.UNKNOWN, computePrinterState(null));
+
+    // Non error states.
+    assertEquals(
+        PrinterState.GOOD, computePrinterState(PrinterStatusReason.NO_ERROR));
+    assertEquals(
+        PrinterState.GOOD,
+        computePrinterState(PrinterStatusReason.UNKNOWN_REASON));
+
+    // Printer unreachable is the only high severity error.
+    assertEquals(
+        PrinterState.HIGH_SEVERITY_ERROR,
+        computePrinterState(PrinterStatusReason.PRINTER_UNREACHABLE));
+
+    // Low severity errors.
+    assertEquals(
+        PrinterState.LOW_SEVERITY_ERROR,
+        computePrinterState(PrinterStatusReason.DOOR_OPEN));
+    assertEquals(
+        PrinterState.LOW_SEVERITY_ERROR,
+        computePrinterState(PrinterStatusReason.DEVICE_ERROR));
+    assertEquals(
+        PrinterState.LOW_SEVERITY_ERROR,
+        computePrinterState(PrinterStatusReason.OUTPUT_ALMOST_FULL));
+    assertEquals(
+        PrinterState.LOW_SEVERITY_ERROR,
+        computePrinterState(PrinterStatusReason.PAUSED));
   });
 });

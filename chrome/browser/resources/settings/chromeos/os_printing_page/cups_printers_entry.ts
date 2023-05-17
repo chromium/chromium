@@ -58,6 +58,12 @@ export class SettingsCupsPrintersEntryElement extends
        */
       printerStatusReasonCache: Map<string, PrinterStatusReason>,
 
+      hasHighSeverityError_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
       /**
        * True when the "printer-settings-printer-status" feature flag is
        * enabled.
@@ -88,6 +94,7 @@ export class SettingsCupsPrintersEntryElement extends
   savingPrinter: boolean;
   userPrintersAllowed: boolean;
   printerStatusReasonCache: Map<string, PrinterStatusReason>;
+  private hasHighSeverityError_: boolean;
   private isPrinterSettingsRevampEnabled_: boolean;
   private isPrinterSettingsPrinterStatusEnabled_: boolean;
 
@@ -202,7 +209,7 @@ export class SettingsCupsPrintersEntryElement extends
 
     const printerStatusReason = this.printerStatusReasonCache.get(
         this.printerEntry.printerInfo.printerId);
-    if (!printerStatusReason) {
+    if (printerStatusReason === undefined || printerStatusReason === null) {
       return `os-settings:printer-status-grey`;
     }
 
@@ -211,7 +218,11 @@ export class SettingsCupsPrintersEntryElement extends
       case PrinterState.GOOD:
         iconColor = 'green';
         break;
-      case PrinterState.ERROR:
+      case PrinterState.LOW_SEVERITY_ERROR:
+        // TODO(b/278621575): Replace with orange printer icon once available.
+        iconColor = 'orange';
+        break;
+      case PrinterState.HIGH_SEVERITY_ERROR:
         iconColor = 'red';
         break;
       case PrinterState.UNKNOWN:
@@ -235,6 +246,11 @@ export class SettingsCupsPrintersEntryElement extends
       return window.trustedTypes!.emptyHTML;
     }
 
+    // Use the printer state to determine printer status text color.
+    this.hasHighSeverityError_ = computePrinterState(printerStatusReason) ===
+        PrinterState.HIGH_SEVERITY_ERROR;
+
+    // Use the printer state to determine printer status text content.
     const statusReasonStringKey =
         STATUS_REASON_STRING_KEY_MAP.get(printerStatusReason);
     return statusReasonStringKey ? this.i18nAdvanced(statusReasonStringKey) :

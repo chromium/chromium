@@ -31,6 +31,15 @@
     display: block;
     margin: auto;
   }
+
+  /* TODO(b/278621575): Replace with actual colors when available. */
+  #printerSubtext {
+    color: orange;
+  }
+
+  :host([has-high-severity-error_]) #printerSubtext {
+    color: red;
+  }
 </style>
 <div focus-row-container>
   <div id="entry" class="list-item" focus-row-control focus-type="entry">
