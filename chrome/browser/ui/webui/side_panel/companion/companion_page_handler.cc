@@ -47,9 +47,21 @@ CompanionPageHandler::CompanionPageHandler(
                                                 signin_delegate_.get())),
       promo_handler_(std::make_unique<PromoHandler>(GetProfile()->GetPrefs(),
                                                     signin_delegate_.get(),
-                                                    this)) {}
+                                                    this)),
+      consent_helper_(unified_consent::UrlKeyedDataCollectionConsentHelper::
+                          NewAnonymizedDataCollectionConsentHelper(
+                              GetProfile()->GetPrefs())) {
+  consent_helper_->AddObserver(this);
+}
 
-CompanionPageHandler::~CompanionPageHandler() = default;
+CompanionPageHandler::~CompanionPageHandler() {
+  consent_helper_->RemoveObserver(this);
+}
+
+void CompanionPageHandler::OnUrlKeyedDataCollectionConsentStateChanged(
+    unified_consent::UrlKeyedDataCollectionConsentHelper* consent_helper) {
+  NotifyURLChanged(/*is_full_reload=*/true);
+}
 
 void CompanionPageHandler::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -75,6 +87,16 @@ void CompanionPageHandler::DidFinishNavigation(
     return;
   }
   NotifyURLChanged(/*is_full_reload=*/false);
+}
+
+void CompanionPageHandler::OnVisibilityChanged(content::Visibility visibility) {
+  // Refresh companion whenever the tab is back to foreground state.
+  // Do this only when the user didn't have all the access permissions to begin
+  // with.
+  if (visibility == content::Visibility::VISIBLE &&
+      !MeetsAllAccessRequirements()) {
+    NotifyURLChanged(/*is_full_reload=*/true);
+  }
 }
 
 void CompanionPageHandler::ShowUI() {
@@ -136,6 +158,14 @@ void CompanionPageHandler::NotifyURLChanged(bool is_full_reload) {
         web_contents()->GetVisibleURL());
     page_->UpdateCompanionPage(companion_update_proto);
   }
+}
+
+bool CompanionPageHandler::MeetsAllAccessRequirements() {
+  auto* pref_service = GetProfile()->GetPrefs();
+  bool is_exps_opted_in = pref_service->GetBoolean(kExpsOptInStatusGrantedPref);
+  bool is_msbb_enabled =
+      IsUserPermittedToSharePageInfoWithCompanion(pref_service);
+  return signin_delegate_->IsSignedIn() && is_msbb_enabled && is_exps_opted_in;
 }
 
 void CompanionPageHandler::OnImageQuery(

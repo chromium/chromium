@@ -12,6 +12,7 @@
 #include "chrome/browser/companion/core/msbb_delegate.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "components/lens/buildflags.h"
+#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -29,9 +30,11 @@ class CompanionUrlBuilder;
 class PromoHandler;
 class SigninDelegate;
 
-class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
-                             public content::WebContentsObserver,
-                             public MsbbDelegate {
+class CompanionPageHandler
+    : public side_panel::mojom::CompanionPageHandler,
+      public content::WebContentsObserver,
+      public MsbbDelegate,
+      public unified_consent::UrlKeyedDataCollectionConsentHelper::Observer {
  public:
   CompanionPageHandler(
       mojo::PendingReceiver<side_panel::mojom::CompanionPageHandler> receiver,
@@ -59,9 +62,15 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   void OnPhFeedback(side_panel::mojom::PhFeedback ph_feedback) override;
   void OnCqJumptagClicked(const std::string& text_directive) override;
 
-  // content::WebContentsObserver:
+  // content::WebContentsObserver overrides.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
+
+  // UrlKeyedDataCollectionConsentHelper::Observer overrides.
+  void OnUrlKeyedDataCollectionConsentStateChanged(
+      unified_consent::UrlKeyedDataCollectionConsentHelper* consent_helper)
+      override;
 
   // Informs the page handler that a new text query to initialize / reload the
   // page with was sent from client.
@@ -89,12 +98,18 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   void DidFinishFindingCqTexts(
       const std::vector<std::pair<std::string, bool>>& text_found_vec);
 
+  // Helper method to determine whether the user has met all the access
+  // requirements, i.e. signed in, msbb enabled, and has exps access.
+  bool MeetsAllAccessRequirements();
+
   mojo::Receiver<side_panel::mojom::CompanionPageHandler> receiver_;
   mojo::Remote<side_panel::mojom::CompanionPage> page_;
   raw_ptr<CompanionSidePanelUntrustedUI> companion_untrusted_ui_ = nullptr;
   std::unique_ptr<SigninDelegate> signin_delegate_;
   std::unique_ptr<CompanionUrlBuilder> url_builder_;
   std::unique_ptr<PromoHandler> promo_handler_;
+  std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
+      consent_helper_;
 
   // Logs metrics for companion page. Reset when there is a new navigation.
   std::unique_ptr<CompanionMetricsLogger> metrics_logger_;

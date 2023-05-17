@@ -13,11 +13,14 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/companion/core/companion_metrics_logger.h"
+#include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
@@ -29,7 +32,11 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/unified_consent/pref_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -226,6 +233,16 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
                                              CreateUrl(kHost, relative_url)));
   }
 
+  void WaitForCompanionIframeReload() {
+    content::WebContents* companion_web_contents =
+        GetCompanionWebContents(browser());
+    EXPECT_TRUE(companion_web_contents);
+
+    // Wait for the navigations in both the frames to complete.
+    content::TestNavigationObserver nav_observer(companion_web_contents, 1);
+    nav_observer.Wait();
+  }
+
   ::testing::AssertionResult ExecJs(const std::string& code) {
     // Execute test in iframe.
     content::RenderFrameHost* iframe =
@@ -287,13 +304,24 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
   }
 
   void EnableMsbb(bool enable_msbb) {
-    if (enable_msbb) {
-      base::CommandLine::ForCurrentProcess()->AppendSwitch(
-          companion::switches::kDisableCheckUserPermissionsForCompanion);
-    } else {
-      base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-          companion::switches::kDisableCheckUserPermissionsForCompanion);
+    auto* pref_service = browser()->profile()->GetPrefs();
+    pref_service->SetBoolean(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
+        enable_msbb);
+  }
+
+  void EnableSignInMsbbExps(bool signed_in, bool msbb, bool exps) {
+    if (signed_in) {
+      // Mock a signed-in user.
+      signin::SetPrimaryAccount(
+          IdentityManagerFactory::GetForProfile(browser()->profile()),
+          "someemail@gmail.com", signin::ConsentLevel::kSignin);
     }
+
+    // Set MSBB and exps status.
+    EnableMsbb(msbb);
+    browser()->profile()->GetPrefs()->SetBoolean(
+        companion::kExpsOptInStatusGrantedPref, exps);
   }
 
   virtual void SetUpFeatureList() {
@@ -302,8 +330,6 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
         companion_server_.GetURL("/companion_iframe.html").spec();
     feature_list_.InitAndEnableFeatureWithParameters(
         companion::features::kSidePanelCompanion, params);
-
-    EnableMsbb(true);
   }
 
   void WaitForHistogram(const std::string& histogram_name) {
@@ -395,6 +421,93 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   proto = GetLastCompanionProtoFromPostMessage();
   EXPECT_TRUE(proto.has_value());
   EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl3));
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, AutoRefreshOnMsbb) {
+  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/false, /*exps=*/false);
+
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Inspect the URL from the proto. This will reset the proto.
+  auto proto = GetLastCompanionProtoFromUrlLoad();
+  EXPECT_TRUE(proto.has_value());
+  EXPECT_TRUE(proto->page_url().empty());
+
+  // Turn on Msbb via promo. This should auto refresh the companion page.
+  CompanionScriptBuilder builder(MethodType::kOnPromoAction);
+  builder.promo_type = PromoType::kMsbb;
+  builder.promo_action = PromoAction::kAccepted;
+  EXPECT_TRUE(ExecJs(builder.Build()));
+  WaitForHistogram("Companion.PromoEvent");
+
+  WaitForCompanionIframeReload();
+  proto = GetLastCompanionProtoFromUrlLoad();
+  EXPECT_TRUE(proto.has_value());
+  EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, AutoRefreshOnTabForegrounded) {
+  EnableSignInMsbbExps(/*signed_in=*/false, /*msbb=*/false, /*exps=*/false);
+
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Inspect the URL from the proto. This will reset the proto.
+  auto proto = GetLastCompanionProtoFromUrlLoad();
+  EXPECT_TRUE(proto.has_value());
+  EXPECT_TRUE(proto->page_url().empty());
+
+  // Navigate to a new tab.
+  chrome::NewTab(browser());
+
+  // Go back to the original tab. This should refresh the companion.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  WaitForCompanionIframeReload();
+
+  proto = GetLastCompanionProtoFromUrlLoad();
+  EXPECT_TRUE(proto.has_value());
+  EXPECT_TRUE(proto->page_url().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       DontAutoRefreshIfHasAllPermissions) {
+  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
+
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Inspect the URL from the proto. This will reset the proto.
+  auto proto = GetLastCompanionProtoFromUrlLoad();
+  EXPECT_TRUE(proto.has_value());
+  EXPECT_FALSE(proto->page_url().empty());
+  EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
+
+  // Navigate to a new tab.
+  chrome::NewTab(browser());
+
+  // Go back to the original tab. This should not refresh the companion.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  proto = GetLastCompanionProtoFromUrlLoad();
+  EXPECT_FALSE(proto.has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, SamePageNavigation) {
