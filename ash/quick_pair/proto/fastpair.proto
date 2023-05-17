@@ -193,22 +193,9 @@ message Device {
 }
 
 // Various states that a customer-configured device notification can be in.
-// PUBLISHED is the only state that shows notifications to the public.
+// |status_type| of PUBLISHED is the only state that shows notifications to the
+// public.
 message Status {
-  // Status types available for each device.
-  enum StatusType {
-    // Unknown status.
-    TYPE_UNSPECIFIED = 0;
-    // Drafted device.
-    DRAFT = 1;
-    // Submitted and waiting for approval.
-    SUBMITTED = 2;
-    // Fully approved and available for end users.
-    PUBLISHED = 3;
-    // Rejected and not available for end users.
-    REJECTED = 4;
-  }
-
   // Details about a device that has been rejected.
   message RejectionDetails {
     // The reason for the rejection.
