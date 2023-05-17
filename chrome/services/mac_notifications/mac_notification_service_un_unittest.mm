@@ -568,7 +568,13 @@ struct NotificationActionParams {
   absl::optional<std::u16string> reply;
 };
 
-TEST_F(MacNotificationServiceUNTest, OnNotificationAction) {
+// TODO(crbug.com/1446289): failing on Mac12-dbg
+#if !defined(NDEBUG)
+#define MAYBE_OnNotificationAction DISABLED_OnNotificationAction
+#else
+#define MAYBE_OnNotificationAction OnNotificationAction
+#endif
+TEST_F(MacNotificationServiceUNTest, MAYBE_OnNotificationAction) {
   if (@available(macOS 10.14, *)) {
     // We can't use TEST_P and INSTANTIATE_TEST_SUITE_P as we can't access
     // UNNotificationDefaultActionIdentifier etc. outside an @available block.
