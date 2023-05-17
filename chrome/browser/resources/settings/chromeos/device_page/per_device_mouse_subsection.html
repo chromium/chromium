@@ -11,7 +11,8 @@
         $i18n{mouseSwapButtons}
       </div>
       <settings-dropdown-menu id="mouseSwapButtonDropdown"
-          label="[[mouse.name]]"
+          aria-describedby="mouseName"
+          label="$i18n{mouseSwapButtons}"
           pref="{{primaryRightPref}}"
           menu-options="[[swapPrimaryOptions]]"
           deep-link-focus-id$="[[Setting.kMouseSwapPrimaryButtons]]">
@@ -21,7 +22,7 @@
         class="hr"
         pref="{{accelerationPref}}"
         label="$i18n{mouseAccelerationLabel}"
-        aria-label="[[mouse.name]] $i18n{mouseAccelerationLabel}"
+        aria-describedby="mouseName"
         deep-link-focus-id$="[[Setting.kMouseAcceleration]]">
     </settings-toggle-button>
     <div class="settings-box">
@@ -31,7 +32,8 @@
       <settings-slider id="mouseSpeedSlider"
           pref="{{sensitivityPref}}"
           ticks="[[sensitivityValues_]]"
-          label-aria="[[mouse.name]] $i18n{mouseSpeed}"
+          aria-describedby="mouseName"
+          label-aria="$i18n{mouseSpeed}"
           label-min="$i18n{pointerSlow}"
           label-max="$i18n{pointerFast}"
           deep-link-focus-id$="[[Setting.kMouseSpeed]]">
@@ -39,7 +41,7 @@
     </div>
     <template is="dom-if" if="[[allowScrollSettings_]]" restamp>
       <settings-toggle-button id="mouseScrollAcceleration"
-          aria-label="[[mouse.name]] $i18n{mouseScrollAccelerationLabel}"
+          aria-describedby="mouseName"
           class="hr"
           pref="{{scrollAccelerationPref}}"
           label="$i18n{mouseScrollAccelerationLabel}"
@@ -52,7 +54,8 @@
         <settings-slider id="mouseScrollSpeedSlider"
             pref="{{scrollSensitivityPref}}"
             ticks="[[sensitivityValues_]]"
-            label-aria="[[mouse.name]] $i18n{mouseScrollSpeed}"
+            aria-describedby="mouseName"
+            label-aria="$i18n{mouseScrollSpeed}"
             label-min="$i18n{pointerSlow}"
             label-max="$i18n{pointerFast}">
         </settings-slider>
@@ -70,7 +73,8 @@
       </div>
       <cr-toggle id="mouseReverseScroll"
           checked="{{reverseScrollValue}}"
-          aria-label="[[mouse.name]] $i18n{learnMoreLabel}"
+          aria-describedby="mouseName"
+          aria-label="$i18n{learnMoreLabel}"
           deep-link-focus-id$="[[Setting.kMouseReverseScrolling]]">
       </cr-toggle>
     </div>

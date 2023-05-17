@@ -7,26 +7,21 @@
     <settings-toggle-button id="enableTapToClick"
         pref="{{enableTapToClickPref}}"
         label="$i18n{touchpadTapToClickEnabledLabel}"
-        aria-label=
-            "[[getTouchpadName(touchpad.name)]]
-             $i18n{touchpadTapToClickEnabledLabel}"
+        aria-describedby="touchpadName"
         deep-link-focus-id$="[[Setting.kTouchpadTapToClick]]">
     </settings-toggle-button>
     <settings-toggle-button id="enableTapDragging"
         class="hr"
         pref="{{enableTapDraggingPref}}"
         label="$i18n{tapDraggingLabel}"
-        aria-label=
-            "[[getTouchpadName(touchpad.name)]] $i18n{tapDraggingLabel}"
+        aria-describedby="touchpadName"
         deep-link-focus-id$="[[Setting.kTouchpadTapDragging]]">
     </settings-toggle-button>
     <settings-toggle-button id="touchpadAcceleration"
         class="hr"
         pref="{{accelerationPref}}"
         label="$i18n{touchpadAccelerationLabel}"
-        aria-label=
-            "[[getTouchpadName(touchpad.name)]]
-             $i18n{touchpadAccelerationLabel}"
+        aria-describedby="touchpadName"
         deep-link-focus-id$="[[Setting.kTouchpadAcceleration]]">
     </settings-toggle-button>
     <div class="settings-box">
@@ -36,8 +31,8 @@
         <settings-slider id="touchpadSensitivity"
             pref="{{sensitivityPref}}"
             ticks="[[sensitivityValues_]]"
-            label-aria=
-                "[[getTouchpadName(touchpad.name)]] $i18n{touchpadSpeed}"
+            aria-describedby="touchpadName"
+            label-aria="$i18n{touchpadSpeed}"
             label-min="$i18n{pointerSlow}"
             label-max="$i18n{pointerFast}"
             deep-link-focus-id$="[[Setting.kTouchpadSpeed]]">
@@ -48,9 +43,7 @@
           class="hr"
           pref="{{scrollAccelerationPref}}"
           label="$i18n{touchpadScrollAccelerationLabel}"
-          aria-label=
-              "[[getTouchpadName(touchpad.name)]]
-               $i18n{touchpadScrollAccelerationLabel}"
+          aria-describedby="touchpadName"
           deep-link-focus-id$="[[Setting.kTouchpadScrollAcceleration]]">
       </settings-toggle-button>
       <div class="settings-box">
@@ -60,8 +53,8 @@
         <settings-slider id="touchpadScrollSpeedSlider"
             pref="{{scrollSensitivityPref}}"
             ticks="[[sensitivityValues_]]"
-            label-aria=
-                "[[getTouchpadName(touchpad.name)]] $i18n{touchpadScrollSpeed}"
+            aria-describedby="touchpadName"
+            label-aria="$i18n{touchpadScrollSpeed}"
             label-min="$i18n{pointerSlow}"
             label-max="$i18n{pointerFast}">
         </settings-slider>
@@ -76,9 +69,8 @@
         <settings-slider id="touchpadHapticClickSensitivity"
             pref="{{hapticClickSensitivityPref}}"
             ticks="[[hapticClickSensitivityValues_]]"
-            label-aria=
-                "[[getTouchpadName(touchpad.name)]]
-                 $i18n{touchpadHapticClickSensitivityLabel}"
+            aria-describedby="touchpadName"
+            label-aria="$i18n{touchpadHapticClickSensitivityLabel}"
             label-min="$i18n{touchpadHapticLightClickLabel}"
             label-max="$i18n{touchpadHapticFirmClickLabel}"
             deep-link-focus-id$=
@@ -100,8 +92,8 @@
         </div>
         <cr-toggle id="touchpadHapticFeedbackToggle"
             checked="{{hapticFeedbackValue}}"
-            aria-label=
-                "[[getTouchpadName(touchpad.name)]] $i18n{learnMoreLabel}"
+            aria-describedby="touchpadName"
+            aria-label="$i18n{learnMoreLabel}"
             deep-link-focus-id$="[[Setting.kTouchpadHapticFeedback]]">
         </cr-toggle>
       </div>
@@ -118,7 +110,8 @@
       </div>
       <cr-toggle id="enableReverseScrollingToggle"
           checked="{{reverseScrollValue}}"
-          aria-label="[[getTouchpadName(touchpad.name)]] $i18n{learnMoreLabel}"
+          aria-describedby="touchpadName"
+          aria-label="$i18n{learnMoreLabel}"
           deep-link-focus-id$="[[Setting.kTouchpadReverseScrolling]]">
       </cr-toggle>
     </div>
