@@ -128,9 +128,9 @@ bool LoadFileHandler(const std::string& handler_id,
         entry.first != keys::kFileHandlerTypes &&
         entry.first != keys::kFileHandlerIncludeDirectories &&
         entry.first != keys::kFileHandlerVerb) {
-      install_warnings->push_back(InstallWarning(
+      install_warnings->emplace_back(
           base::StringPrintf(kNotRecognized, entry.first.c_str()),
-          keys::kFileHandlers, entry.first));
+          keys::kFileHandlers, entry.first);
     }
   }
 

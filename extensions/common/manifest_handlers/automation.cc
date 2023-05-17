@@ -240,8 +240,8 @@ std::unique_ptr<AutomationInfo> AutomationInfo::FromValue(
     interact = true;
     if (automation_object.interact && !*automation_object.interact) {
       // TODO(aboxhall): Do we want to allow this?
-      install_warnings->push_back(
-          InstallWarning(automation_errors::kErrorDesktopTrueInteractFalse));
+      install_warnings->emplace_back(
+          automation_errors::kErrorDesktopTrueInteractFalse);
     }
   } else if (automation_object.interact && *automation_object.interact) {
     interact = true;
@@ -251,25 +251,23 @@ std::unique_ptr<AutomationInfo> AutomationInfo::FromValue(
   bool specified_matches = false;
   if (automation_object.matches) {
     if (desktop) {
-      install_warnings->push_back(
-          InstallWarning(automation_errors::kErrorDesktopTrueMatchesSpecified));
+      install_warnings->emplace_back(
+          automation_errors::kErrorDesktopTrueMatchesSpecified);
     } else {
       specified_matches = true;
 
-      for (auto it = automation_object.matches->begin();
-           it != automation_object.matches->end(); ++it) {
+      for (const auto& match : *automation_object.matches) {
         // TODO(aboxhall): Refactor common logic from content_scripts_handler,
         // manifest_url_handler and user_script.cc into a single location and
         // re-use here.
         URLPattern pattern(URLPattern::SCHEME_ALL &
                            ~URLPattern::SCHEME_CHROMEUI);
-        URLPattern::ParseResult parse_result = pattern.Parse(*it);
+        URLPattern::ParseResult parse_result = pattern.Parse(match);
 
         if (parse_result != URLPattern::ParseResult::kSuccess) {
-          install_warnings->push_back(
-              InstallWarning(ErrorUtils::FormatErrorMessage(
-                  automation_errors::kErrorInvalidMatch, *it,
-                  URLPattern::GetParseResultString(parse_result))));
+          install_warnings->emplace_back(ErrorUtils::FormatErrorMessage(
+              automation_errors::kErrorInvalidMatch, match,
+              URLPattern::GetParseResultString(parse_result)));
           continue;
         }
 
@@ -278,8 +276,7 @@ std::unique_ptr<AutomationInfo> AutomationInfo::FromValue(
     }
   }
   if (specified_matches && matches.is_empty()) {
-    install_warnings->push_back(
-        InstallWarning(automation_errors::kErrorNoMatchesProvided));
+    install_warnings->emplace_back(automation_errors::kErrorNoMatchesProvided);
   }
 
   return base::WrapUnique(new AutomationInfo(desktop, matches, interact));
