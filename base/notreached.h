@@ -50,6 +50,12 @@ namespace logging {
   (true) ? ::logging::NotReachedFailure() : EAT_CHECK_STREAM_PARAMS()
 #endif
 
+// The DUMP_WILL_BE_NOTREACHED_NORETURN() macro provides a convenient way to
+// non-fatally dump in official builds if ever hit. See DUMP_WILL_BE_CHECK for
+// suggested usage.
+#define DUMP_WILL_BE_NOTREACHED_NORETURN() \
+  ::logging::CheckError::DumpWillBeNotReachedNoreturn()
+
 // The NOTIMPLEMENTED() macro annotates codepaths which have not been
 // implemented yet. If output spam is a serious concern,
 // NOTIMPLEMENTED_LOG_ONCE can be used.
