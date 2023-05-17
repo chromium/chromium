@@ -172,7 +172,10 @@ ResultExpr RestrictPrctl() {
       .Cases({PR_GET_NAME, PR_SET_NAME, PR_GET_DUMPABLE, PR_SET_DUMPABLE
 #if BUILDFLAG(IS_ANDROID)
               , PR_SET_VMA, PR_SET_PTRACER, PR_SET_TIMERSLACK
-              , PR_GET_NO_NEW_PRIVS, PR_PAC_RESET_KEYS
+              , PR_GET_NO_NEW_PRIVS
+#if defined(ARCH_CPU_ARM64)
+              , PR_PAC_RESET_KEYS, PR_GET_TAGGED_ADDR_CTRL
+#endif
 
 // Enable PR_SET_TIMERSLACK_PID, an Android custom prctl which is used in:
 // https://android.googlesource.com/platform/system/core/+/lollipop-release/libcutils/sched_policy.c.
