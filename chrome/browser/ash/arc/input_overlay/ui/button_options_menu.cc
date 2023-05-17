@@ -152,7 +152,7 @@ void ButtonOptionsMenu::AddHeader() {
   container->AddChildView(std::make_unique<ash::IconButton>(
       base::BindRepeating(&ButtonOptionsMenu::OnTrashButtonPressed,
                           base::Unretained(this)),
-      ash::IconButton::Type::kMedium, &vector_icons::kCloseIcon,
+      ash::IconButton::Type::kMedium, &kGameControlsDeleteIcon,
       IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
 
   container->AddChildView(ash::bubble_utils::CreateLabel(
@@ -163,7 +163,7 @@ void ButtonOptionsMenu::AddHeader() {
   container->AddChildView(std::make_unique<ash::IconButton>(
       base::BindRepeating(&ButtonOptionsMenu::OnDoneButtonPressed,
                           base::Unretained(this)),
-      ash::IconButton::Type::kMedium, &vector_icons::kCloseIcon,
+      ash::IconButton::Type::kMedium, &kGameControlsDoneIcon,
       // TODO(b/281753420): Replace placeholder names with a11y strings.
       IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
 }
@@ -234,7 +234,7 @@ void ButtonOptionsMenu::AddActionSelection() {
       l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
   // TODO(b/281753420): Replace placeholder text with localized strings.
   move_button->SetLabel(u"Dpad");
-  move_button->SetVectorIcon(vector_icons::kCloseIcon);
+  move_button->SetVectorIcon(kGameControlsDpadKeyboardIcon);
   move_button->SetVisible(true);
   move_button->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
 }
