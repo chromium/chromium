@@ -22,5 +22,6 @@ component("clipboard_history") {
     "//chromeos/ui/vector_icons/",
     "//components/vector_icons",
     "//ui/base",
+    "//ui/base:constants",
   ]
 }

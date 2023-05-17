@@ -6,20 +6,20 @@
 
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
+#include "ui/base/command_id_constants.h"
 
 namespace chromeos::clipboard_history {
 
 // static
 std::unique_ptr<ClipboardHistorySubmenuModel>
 ClipboardHistorySubmenuModel::CreateClipboardHistorySubmenuModel(
-    crosapi::mojom::ClipboardHistoryControllerShowSource source,
-    size_t start_command_id) {
+    crosapi::mojom::ClipboardHistoryControllerShowSource source) {
   CHECK(source == crosapi::mojom::ClipboardHistoryControllerShowSource::
                       kRenderViewContextMenu ||
         source == crosapi::mojom::ClipboardHistoryControllerShowSource::
                       kTextfieldContextMenu);
-  return base::WrapUnique(new ClipboardHistorySubmenuModel(
-      source, start_command_id, QueryItemDescriptors()));
+  return base::WrapUnique(
+      new ClipboardHistorySubmenuModel(source, QueryItemDescriptors()));
 }
 
 ClipboardHistorySubmenuModel::~ClipboardHistorySubmenuModel() = default;
@@ -34,12 +34,13 @@ void ClipboardHistorySubmenuModel::ExecuteCommand(int command_id,
 
 ClipboardHistorySubmenuModel::ClipboardHistorySubmenuModel(
     crosapi::mojom::ClipboardHistoryControllerShowSource source,
-    size_t start_command_id,
     const std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor>&
         item_descriptors)
     : ui::SimpleMenuModel(this), source_(source) {
   for (size_t index = 0; index < item_descriptors.size(); ++index) {
-    const size_t command_id = start_command_id + index;
+    // Use the first unbounded command ID as the start ID so that the command
+    // IDs in the submenu do not conflict with those in the parent menu.
+    const size_t command_id = COMMAND_ID_FIRST_UNBOUNDED + index;
     AddItemWithIcon(command_id, item_descriptors[index].display_text,
                     GetIconForDescriptor(item_descriptors[index]));
     item_ids_by_command_ids_.emplace(command_id,
