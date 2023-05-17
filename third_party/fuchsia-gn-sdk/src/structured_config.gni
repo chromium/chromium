@@ -1,0 +1,290 @@
+# Copyright 2022 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("configc.gni")
+import("fidl_library.gni")
+
+# Defines a configuration value file for a Fuchsia component.
+#
+# A config value file is produced from a component manifest that contains a schema
+# and a JSON5 file with concrete configuration values.
+#
+# For example, if a component manifest defines the `enable_foo` flag:
+#
+# ```
+# // ./meta/my_component.cml
+# {
+#   // ...
+#   config: {
+#     enable_foo: { type: "bool" }
+#   }
+# }
+# ```
+#
+# The definition file will need to contain an entry for it and any other fields
+# in its manifest:
+#
+# ```
+# // ./config/my_component.json5
+# {
+#   enable_foo: true
+# }
+# ```
+#
+# Building the config value file requires the compiled manifest:
+#
+# ```
+# # ./BUILD.gn
+# fuchsia_component_manifest("my_component_manifest") {
+#   component = "my_component"
+#   manifest = "meta/my_component.cml"
+# }
+#
+# fuchsia_component("my_component") {
+#   cm_label = ":my_component_manifest"
+#   deps = [ ... ]
+# }
+#
+# fuchsia_structured_config_values("my_component_config") {
+#   cm_label = ":my_component_manifest"
+#   values = "config/my_component.json5"
+# }
+# ```
+#
+# Finally, the package must include the value file alongside the manifest:
+#
+# ```
+# # ./BUILD.gn
+# fuchsia_package("my_package") {
+#   deps = [
+#     ":my_component",
+#     ":my_component_config",
+#   ]
+# }
+# ```
+#
+# Parameters
+#
+#   cm_label (required)
+#     The label of the fuchsia_component_manifest target for which the file will be generated.
+#     Type: GN label, e.g. `:my_component_manifest`
+#
+#   values_source -or- values (required)
+#     values_source: The JSON5 file containing the concrete values for the generated file.
+#     values: A GN scope containing literal values for the generated file.
+#     TODO(https://fxbug.dev/87988) document this format properly.
+#     Type: path or scope
+#
+#   data_deps (optional)
+#   deps (optional)
+#   testonly (optional)
+#     Standard GN meaning.
+template("fuchsia_structured_config_values") {
+  assert(
+      defined(invoker.cm_label),
+      "must provide a component manifest label with a configuration declaration")
+
+  _source_defined = defined(invoker.values_source)
+  _values_defined = defined(invoker.values)
+  assert(
+      (_source_defined || _values_defined) &&
+          !(_source_defined && _values_defined),
+      "must provide either `values_source` (path to JSON5 file) or `values` (GN scope with literal values)")
+
+  if (_values_defined) {
+    _generated_values_label = "${target_name}_generated_values"
+    _value_file_deps = [ ":$_generated_values_label" ]
+    _value_file = "$target_gen_dir/${target_name}_values_from_literal.json"
+    generated_file(_generated_values_label) {
+      output_conversion = "json"
+      contents = invoker.values
+      outputs = [ _value_file ]
+    }
+  } else {
+    _value_file_deps = []
+    _value_file = invoker.values_source
+  }
+
+  # make sure invoker.cm_label is in the same module, i.e. starts with ":". get_target_outputs depends on this condition
+  segments = string_split(invoker.cm_label, ":")
+  assert(segments[0] == "", "cm_label cannot be in a different module")
+
+  # now we can call get_target_outputs without creating unactionable error messages
+  component_outputs = get_target_outputs(invoker.cm_label)
+  compiled_manifest = component_outputs[0]
+
+  # compile the value file
+  cvf(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "data_deps",
+                             "deps",
+                             "testonly",
+                             "visibility",
+                           ])
+    cm = compiled_manifest
+    value_file = _value_file
+    if (!defined(deps)) {
+      deps = []
+    }
+    deps += [ "${invoker.cm_label}" ] + _value_file_deps
+  }
+}
+
+# Defines a C++ configuration client library for a Fuchsia ELF component.
+#
+# A config client library is produced from a component manifest that contains a schema.
+#
+# For example, if a component manifest defines the `enable_foo` flag:
+#
+# ```
+# // ./meta/my_component.cml
+# {
+#   // ...
+#   config: {
+#     enable_foo: { type: "bool" }
+#   }
+# }
+# ```
+#
+# Building the config client library requires the compiled manifest:
+#
+# ```
+# # ./BUILD.gn
+# fuchsia_component_manifest("my_component_manifest") {
+#   component = "my_component"
+#   manifest = "meta/my_component.cml"
+# }
+#
+# fuchsia_component("my_component") {
+#   cm_label = ":my_component_manifest"
+#   deps = [ ... ]
+# }
+#
+# fuchsia_structured_config_cpp_elf_lib("my_component_config_lib") {
+#   cm_label = ":my_component_manifest"
+# }
+# ```
+#
+# Finally, a C++ binary can import this library for use
+#
+# ```
+# # ./BUILD.gn
+# executable("my_binary") {
+#   ...
+#   deps = [
+#     ":my_component_config_lib",
+#     ...
+#   ]
+# }
+# ```
+#
+# And in my_binary source, it can be used like this
+#
+# ```
+# #include "path/to/target/dir/my_component_config_lib.h"
+#
+# int main(int argc, void** argv) {
+#   auto config = my_component_config_lib::Config::TakeFromStartupHandle();
+#   DLOG(INFO) << "Is foo enabled = " << config.enable_foo();
+# }
+# ```
+#
+# Parameters
+#
+#   cm_label (required)
+#     The label of the fuchsia_component_manifest target for which the file will be generated.
+#     Type: GN label, e.g. `:my_component_manifest`
+#
+#   cpp_namespace (optional)
+#     Namespace used by the generated C++ library. If not specified, the target name is used.
+#     Type: string
+#
+#   fidl_library_name (optional)
+#     Name for the generated FIDL library. If not specified, the default (cf.sc.internal) is used.
+#     Type: string
+#
+#   testonly (optional)
+#     Standard GN meaning.
+template("fuchsia_structured_config_cpp_elf_lib") {
+  if (!defined(invoker.cpp_namespace)) {
+    cpp_namespace = target_name
+  } else {
+    cpp_namespace = invoker.cpp_namespace
+  }
+
+  # The library name is a string that is also used internally by configc when generating
+  # FIDL and C++ source files. It is not visible to the end user.
+  if (defined(invoker.fidl_library_name)) {
+    fidl_library_name = invoker.fidl_library_name
+  } else {
+    fidl_library_name = "cf.sc.internal"
+  }
+
+  cpp_namespace = string_replace(cpp_namespace, ".", "_")
+  cpp_namespace = string_replace(cpp_namespace, "-", "_")
+
+  fidl_source_target = "${target_name}_fidl_config_lib_source"
+  cpp_elf_source_target = "${target_name}_cpp_elf_config_lib_source"
+
+  assert(defined(invoker.cm_label), "must provide a component manifest label")
+
+  manifest_outputs = get_target_outputs(invoker.cm_label)
+  compiled_manifest = manifest_outputs[0]
+
+  # generate the client library FIDL source
+  fidl_config_client_lib_source(fidl_source_target) {
+    forward_variables_from(invoker, [ "testonly" ])
+    name = fidl_library_name
+    compiled_manifest = compiled_manifest
+    deps = [ invoker.cm_label ]
+  }
+
+  # generate the C++ source
+  cpp_config_client_lib_source(cpp_elf_source_target) {
+    forward_variables_from(invoker, [ "testonly" ])
+    namespace = cpp_namespace
+    fidl_library_name = fidl_library_name
+    compiled_manifest = compiled_manifest
+    flavor = "elf-hlcpp"
+    deps = [ invoker.cm_label ]
+  }
+
+  # generate the FIDL library
+  fidl_library_target = "${target_name}_fidl_internal"
+
+  fidl_library(fidl_library_target) {
+    library_name = fidl_library_name
+    forward_variables_from(invoker, [ "testonly" ])
+    sources = get_target_outputs(":${fidl_source_target}")
+    non_fidl_deps = [ ":${fidl_source_target}" ]
+  }
+
+  # generate the wrapper C++ library
+  source_set(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "testonly",
+                             "visibility",
+                           ])
+    sources = get_target_outputs(":${cpp_elf_source_target}")
+    deps = [
+      ":${fidl_library_target}",
+      "${fuchsia_sdk}/pkg/fidl",
+      "${fuchsia_sdk}/pkg/inspect_service_cpp",
+    ]
+
+    public_deps = [
+      ":${cpp_elf_source_target}($default_toolchain)",
+      "${fuchsia_sdk}/pkg/fidl",
+      "${fuchsia_sdk}/pkg/fidl_cpp",
+      "${fuchsia_sdk}/pkg/inspect_service_cpp",
+    ]
+
+    # prevent manifest from getting into package this way
+    metadata = {
+      distribution_entries_barrier = []
+    }
+  }
+}

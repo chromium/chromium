@@ -1,0 +1,107 @@
+# Copyright 2020 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("config/config.gni")
+assert(is_fuchsia)
+
+# Creates a .build-id dir of unstripped binaries, structured according to the
+# ".build_id" convention used by the symbolizer and GNU GDB.
+#
+# The .build-id dir will be constructed from ids.txt files which are passed
+# through deps specifying 'ids_txt_paths' metadata values. If an unstripped binary
+# is found, it is added to the archive. If the matching file is not found in any
+# of the build-id directories, the directory of ids.txt is checked for
+# an unstripped file matching the filename.
+#
+# If the .build-id dir already exists, it will be deleted prior to re-creation
+# such that stale binaries are removed.
+#
+# Parameters:
+#   output_path
+#     Specifies the path to the output .build-id directory.
+#
+#     Type: directory path
+#
+#   build_id_dirs: [Optional]
+#       List of paths to .build-id directories to search for the binary
+#       in addition to  $root_out_dir/.build-id and the fuchsia SDK .build-id
+#       directory.
+#
+#       Type: list of directories
+#
+#   Standard parameters:
+#     deps
+#     public_deps
+#     testonly
+#     visibility
+#
+template("build_id_dir") {
+  assert(defined(invoker.deps) || defined(invoker.public_deps),
+         "deps or public_deps are required")
+
+  _all_ids_txt_path = "$target_gen_dir/${target_name}/all_ids_txt.txt"
+  _all_ids_txt_target_name = "${target_name}_ids_txt"
+  _target_name_label = ":${target_name}"
+
+  _build_id_paths = [
+    "${root_out_dir}/.build-id",
+    "${fuchsia_sdk}/.build-id",
+  ]
+  if (defined(invoker.build_id_dirs)) {
+    _build_id_paths += invoker.build_id_dirs
+  }
+
+  generated_file(_all_ids_txt_target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "public_deps",
+                             "testonly",
+                           ])
+    data_keys = [ "ids_txt_paths" ]
+    outputs = [ _all_ids_txt_path ]
+    rebase = root_build_dir
+    visibility = [ _target_name_label ]
+  }
+
+  action(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "output_path",
+                             "public_deps",
+                             "testonly",
+                             "visibility",
+                           ])
+    script = "${fuchsia_sdk}/build/populate_build_id_dir.py"
+    inputs = [ _all_ids_txt_path ]
+    _stamp = "$target_gen_dir/$target_name.stamp"
+    outputs = [
+      _stamp,
+      output_path,
+    ]
+    depfile = "$target_gen_dir/$target_name.d"
+    deps = invoker.deps + [ ":${_all_ids_txt_target_name}" ]
+
+    args = [
+      rebase_path(_all_ids_txt_path, root_build_dir),
+      "--output_dir",
+      rebase_path(output_path, root_build_dir),
+      "--depfile",
+      rebase_path(depfile, root_build_dir),
+      "--stamp",
+      rebase_path(_stamp, root_build_dir),
+    ]
+    if (fuchsia_sdk_readelf_exec != "") {
+      args += [
+        "--readelf-exec",
+        rebase_path("${fuchsia_sdk_readelf_exec}", root_build_dir),
+      ]
+    }
+    foreach(dir, _build_id_paths) {
+      args += [
+        "--build-id-dir",
+        rebase_path(dir, root_build_dir),
+      ]
+    }
+  }
+}

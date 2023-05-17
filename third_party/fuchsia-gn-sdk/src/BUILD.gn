@@ -1,0 +1,20 @@
+# Copyright 2019 The Fuchsia Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("test_targets.gni")
+
+fuchsia_sdk_test_fidl_targets("fidl_targets") {
+}
+
+#
+# A generated file that lists all of the .fidl.json files
+# used in this package. This is useful for tools that need
+# to decode fidl.
+generated_file("fuchsia_sdk_all_fidl_refs") {
+  testonly = true
+  deps = [ ":fidl_targets" ]
+
+  outputs = [ "$root_build_dir/fidl_refs/fuchsia_sdk_all_fidl_refs.txt" ]
+  data_keys = [ "fidl_json" ]
+}

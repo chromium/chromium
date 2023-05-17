@@ -1,0 +1,27 @@
+{
+    "docs": [
+        "build/BUILD.gn",
+        "build/build_id_dir.gni",
+        "build/cipd.gni",
+        "build/cmc.gni",
+        "build/config/BUILD.gn",
+        "build/config/config.gni",
+        "build/configc.gni",
+        "build/enable_coverage_data.cml",
+        "build/fuchsia_sdk_pkg.gni",
+        "build/gn_run_binary.py",
+        "build/fidl_library.gni",
+        "build/gen_fidl_response_file.py",
+        "build/package.gni",
+        "build/package_tool.gni",
+        "build/component.gni",
+        "build/populate_build_id_dir.py",
+        "build/prepare_cipd_package_definition.py",
+        "build/prepare_package_inputs.py",
+        "build/structured_config.gni",
+        "build/test_targets.gni",
+        "build/test.gni"
+    ],
+    "name": "gn-rules",
+    "type": "documentation"
+}
