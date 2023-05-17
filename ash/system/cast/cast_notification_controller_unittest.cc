@@ -80,6 +80,8 @@ class CastNotificationControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     notification_controller_ = std::make_unique<CastNotificationController>();
+    cast_config_.set_has_sinks_and_routes(true);
+    cast_config_.set_has_active_route(true);
   }
 
   message_center::Notification* GetNotification() {
@@ -101,6 +103,9 @@ class CastNotificationControllerTest : public AshTestBase {
 };
 
 TEST_F(CastNotificationControllerTest, Notification) {
+  cast_config_.set_has_sinks_and_routes(false);
+  cast_config_.set_has_active_route(false);
+
   // There should be no cast notification to start with.
   EXPECT_FALSE(GetNotification());
 
@@ -126,8 +131,6 @@ TEST_F(CastNotificationControllerTest, Notification) {
 
 TEST_F(CastNotificationControllerTest, StopCasting) {
   // Create notification.
-  cast_config_.set_has_sinks_and_routes(true);
-  cast_config_.set_has_active_route(true);
   SinkAndRoute device = CreateDeviceLocalRoute();
   notification_controller_->OnDevicesUpdated({device});
   EXPECT_TRUE(GetNotification()->pinned());
@@ -145,8 +148,6 @@ TEST_F(CastNotificationControllerTest, StopCasting) {
 
 TEST_F(CastNotificationControllerTest, FreezeUi) {
   // Create notification.
-  cast_config_.set_has_sinks_and_routes(true);
-  cast_config_.set_has_active_route(true);
   SinkAndRoute device = CreateDeviceLocalRoute();
   // Make the device "freezable" so the freeze (pause) button appears.
   device.route.freeze_info.can_freeze = true;
@@ -189,8 +190,6 @@ TEST_F(CastNotificationControllerTest, FreezeUi) {
 
 TEST_F(CastNotificationControllerTest, FreezeWithTrayOpen) {
   // Create notification.
-  cast_config_.set_has_sinks_and_routes(true);
-  cast_config_.set_has_active_route(true);
   SinkAndRoute device = CreateDeviceLocalRoute();
   // Make the device "freezable" so the freeze (pause) button appears.
   device.route.freeze_info.can_freeze = true;
@@ -211,42 +210,69 @@ TEST_F(CastNotificationControllerTest, FreezeWithTrayOpen) {
   EXPECT_EQ(cast_config_.freeze_route_count(), 1u);
 }
 
-TEST_F(CastNotificationControllerTest, NotificationMessage) {
-  cast_config_.set_has_sinks_and_routes(true);
-  cast_config_.set_has_active_route(true);
-
-  // Create notification for a tab casting route.
-  SinkAndRoute device1 = CreateDeviceLocalRoute();
-  notification_controller_->OnDevicesUpdated({device1});
+TEST_F(CastNotificationControllerTest,
+       NotificationMessage_CastingTab_CannotPause) {
+  // Create a tab casting route that cannot be paused.
+  SinkAndRoute device = CreateDeviceLocalRoute();
+  notification_controller_->OnDevicesUpdated({device});
   EXPECT_EQ(GetNotification()->message(),
-            base::UTF8ToUTF16(device1.route.title));
-
-  // Create notification for a desktop route.
-  SinkAndRoute device2 = CreateDeviceLocalRouteDesktop();
-  notification_controller_->OnDevicesUpdated({device2});
+            base::UTF8ToUTF16(device.route.title));
+}
+TEST_F(CastNotificationControllerTest,
+       NotificationMessage_CastingScreen_CannotPause) {
+  // Create a screen casting route that cannot be paused.
+  SinkAndRoute device = CreateDeviceLocalRouteDesktop();
+  notification_controller_->OnDevicesUpdated({device});
   std::u16string desktop_casting_message = l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_CAST_CAST_DESKTOP_NOTIFICATION_MESSAGE);
   EXPECT_EQ(GetNotification()->message(), desktop_casting_message);
+}
+TEST_F(CastNotificationControllerTest,
+       NotificationMessage_CastingTab_CanPause) {
+  // Create a tab casting route that can be paused.
+  SinkAndRoute device = CreateDeviceLocalRoute();
+  device.route.freeze_info.can_freeze = true;
+  notification_controller_->OnDevicesUpdated({device});
+  std::u16string tab_casting_can_pause_message = l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_CAST_NOTIFICATION_MESSAGE_TAB_CAN_PAUSE);
+  EXPECT_EQ(GetNotification()->message(), tab_casting_can_pause_message);
+}
+TEST_F(CastNotificationControllerTest,
+       NotificationMessage_CastingScreen_CanPause) {
+  // Create a screen casting route that can be paused.
+  SinkAndRoute device = CreateDeviceLocalRouteDesktop();
+  device.route.freeze_info.can_freeze = true;
+  notification_controller_->OnDevicesUpdated({device});
+  std::u16string screen_casting_can_pause_message = l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_CAST_NOTIFICATION_MESSAGE_SCREEN_CAN_PAUSE);
+  EXPECT_EQ(GetNotification()->message(), screen_casting_can_pause_message);
+}
+TEST_F(CastNotificationControllerTest, NotificationMessage_CastingTab_Paused) {
+  // Create a tab casting route that is paused,
+  SinkAndRoute device = CreateDeviceLocalRoute();
+  device.route.freeze_info.can_freeze = true;
+  device.route.freeze_info.is_frozen = true;
+  notification_controller_->OnDevicesUpdated({device});
+  std::u16string tab_casting_paused_message = l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_CAST_NOTIFICATION_MESSAGE_PAUSED);
+  EXPECT_EQ(GetNotification()->message(), tab_casting_paused_message);
+}
 
-  // Create notification for a paused route.
-  SinkAndRoute device3 = CreateDeviceLocalRoute();
-  device3.route.freeze_info.is_frozen = true;
-  notification_controller_->OnDevicesUpdated({device3});
-  std::u16string casting_paused_message =
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_CAST_PAUSED);
-  EXPECT_EQ(GetNotification()->message(), casting_paused_message);
-
-  SinkAndRoute device4 = CreateDeviceLocalRouteDesktop();
-  device4.route.freeze_info.is_frozen = true;
-  notification_controller_->OnDevicesUpdated({device4});
-  EXPECT_EQ(GetNotification()->message(), casting_paused_message);
+TEST_F(CastNotificationControllerTest,
+       NotificationMessage_CastingScreen_Paused) {
+  // Create a screen casting route that is paused,
+  SinkAndRoute device = CreateDeviceLocalRouteDesktop();
+  device.route.freeze_info.can_freeze = true;
+  device.route.freeze_info.is_frozen = true;
+  notification_controller_->OnDevicesUpdated({device});
+  std::u16string screen_casting_paused_message = l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_CAST_NOTIFICATION_MESSAGE_SCREEN_PAUSED);
+  EXPECT_EQ(GetNotification()->message(), screen_casting_paused_message);
 }
 
 // Regression test for b/280864232
 TEST_F(CastNotificationControllerTest, NewRouteStop) {
   // Create notification.
-  cast_config_.set_has_sinks_and_routes(true);
-  cast_config_.set_has_active_route(true);
   SinkAndRoute device = CreateDeviceLocalRoute();
   // Make the device "freezable" so the freeze (pause) button appears.
   device.route.freeze_info.can_freeze = true;

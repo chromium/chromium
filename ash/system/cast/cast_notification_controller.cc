@@ -51,16 +51,39 @@ std::u16string GetNotificationTitle(const CastSink& sink,
 
 std::u16string GetNotificationMessage(const CastRoute& route) {
   if (route.freeze_info.is_frozen) {
-    return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_CAST_PAUSED);
-  }
-  switch (route.content_source) {
-    case ContentSource::kUnknown:
-      return std::u16string();
-    case ContentSource::kTab:
-      return base::UTF8ToUTF16(route.title);
-    case ContentSource::kDesktop:
-      return l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_CAST_CAST_DESKTOP_NOTIFICATION_MESSAGE);
+    // Casting is paused.
+    switch (route.content_source) {
+      case ContentSource::kUnknown:
+      case ContentSource::kTab:
+        return l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_CAST_NOTIFICATION_MESSAGE_PAUSED);
+      case ContentSource::kDesktop:
+        return l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_CAST_NOTIFICATION_MESSAGE_SCREEN_PAUSED);
+    }
+  } else if (route.freeze_info.can_freeze) {
+    // Casting is not paused, but it is pausable.
+    switch (route.content_source) {
+      case ContentSource::kUnknown:
+        return std::u16string();
+      case ContentSource::kTab:
+        return l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_CAST_NOTIFICATION_MESSAGE_TAB_CAN_PAUSE);
+      case ContentSource::kDesktop:
+        return l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_CAST_NOTIFICATION_MESSAGE_SCREEN_CAN_PAUSE);
+    }
+  } else {
+    // The cast session is not pausable.
+    switch (route.content_source) {
+      case ContentSource::kUnknown:
+        return std::u16string();
+      case ContentSource::kTab:
+        return base::UTF8ToUTF16(route.title);
+      case ContentSource::kDesktop:
+        return l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_CAST_CAST_DESKTOP_NOTIFICATION_MESSAGE);
+    }
   }
 }
 
