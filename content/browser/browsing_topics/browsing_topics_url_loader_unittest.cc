@@ -27,13 +27,9 @@ namespace {
 using FollowRedirectParams =
     network::TestURLLoaderFactory::TestURLLoader::FollowRedirectParams;
 
-constexpr char kExpectedHeaderForOrigin1[] =
-    "1;version=\"chrome.1:1:2\";config_version=\"chrome.1\";model_version="
-    "\"2\";taxonomy_version=\"1\"";
+constexpr char kExpectedHeaderForOrigin1[] = "1;v=\"chrome.1:1:2\"";
 
-constexpr char kExpectedHeaderForOrigin2[] =
-    "2;version=\"chrome.3:4:5\";config_version=\"chrome.3\";model_version="
-    "\"5\";taxonomy_version=\"4\"";
+constexpr char kExpectedHeaderForOrigin2[] = "2;v=\"chrome.3:4:5\"";
 
 class TopicsInterceptingContentBrowserClient : public ContentBrowserClient {
  public:
