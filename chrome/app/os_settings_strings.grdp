@@ -4874,16 +4874,22 @@ Press an assigned switch or key to remove assignment.
     For <ph name="DEVICE_NAME">$1<ex>Internal Keyboard</ex></ph>, choose an action for each key
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS" desc="In Device Settings, the inverted checkbox label for interpreting the top-row keys as function keys instead.">
-    Use function keys as Chromebook top row keys
+    Use function keys as top row keys
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_SEND_INVERTED_FUNCTION_KEYS_DESCRIPTION" desc="In Device Settings, the inverted label describing how to use the top-row keys' original actions when they are set to behave like function keys.">
-    F keys will now have the behavior as your Chromebook top row keys.
+    F keys will now have the behavior as system top-row keys
   </message>
-  <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES" desc="In Device Settings, the checkbox label to enable the meta key to switch the behavior of the top-row keys.">
-    Use the launcher key to change behavior of Chromebook top row keys
+  <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_SEARCH" desc="In Device Settings, the checkbox label to enable the Search key to switch the behavior of the top-row keys.">
+    Use the search key to change the behavior of function keys
   </message>
-  <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION" desc="In Device Settings, the label describing how to use the meta key to switch the behavior of the top-row keys.">
-    Hold the launcher key to change between the function keys
+  <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION_SEARCH" desc="In Device Settings, the label describing how to use the Search key to switch the behavior of the top-row keys.">
+    Hold the search key to change between function keys and system top-row keys
+  </message>
+  <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_LAUNCHER" desc="In Device Settings, the checkbox label to enable the launcher key to switch the behavior of the top-row keys.">
+    Use the launcher key to change the behavior of function keys
+  </message>
+  <message name="IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION_LAUNCHER" desc="In Device Settings, the label describing how to use the launcher key to switch the behavior of the top-row keys.">
+    Hold the launcher key to change between function keys and system top-row keys
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_REMAP_RESTORE_BUTTON_LABEL" desc="In Keyboard remap keys subpage, the reset keys button label.">
     Reset keys
@@ -4920,6 +4926,9 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_SEARCH" desc="In keyboard remap keys subpage, the label and dropdown list item for the Search key.">
     search
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_LAUNCHER" desc="In keyboard remap keys subpage, the label and dropdown list item for the Launcher key.">
+    launcher
   </message>
   <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_DISABLED" desc="In keyboard remap keys subpage, the dropdown list item for a disabled key.">
     disabled

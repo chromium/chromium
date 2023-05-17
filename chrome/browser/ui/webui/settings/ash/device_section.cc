@@ -780,10 +780,6 @@ bool IsListAllDisplayModesEnabled() {
 void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString keyboard_strings[] = {
       {"builtInKeyboardName", IDS_SETTINGS_BUILT_IN_KEYBOARD_NAME},
-      {"keyboardBlockMetaFunctionKeyRewrites",
-       IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES},
-      {"keyboardBlockMetaFunctionKeyRewritesDescription",
-       IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION},
       {"keyboardEnableAutoRepeat", IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE},
       {"keyboardEnableAutoRepeatSubLabel",
        IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE_SUB_LABEL},
@@ -849,22 +845,40 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       {"perDeviceKeyboardKeyEscape",
        IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_ESCAPE},
       {"perDeviceKeyboardKeyMeta", IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_META},
-      {"perDeviceKeyboardKeySearch",
-       IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_SEARCH},
-
   };
   html_source->AddLocalizedStrings(keyboard_strings);
 
-  html_source->AddLocalizedString(
-      "keyboardKeySearch",
-      Shell::Get()->keyboard_capability()->HasLauncherButton()
-          ? IDS_SETTINGS_KEYBOARD_KEY_LAUNCHER
-          : IDS_SETTINGS_KEYBOARD_KEY_SEARCH);
-  html_source->AddLocalizedString(
-      "keyboardSendFunctionKeysDescription",
-      Shell::Get()->keyboard_capability()->HasLauncherButton()
-          ? IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS_LAYOUT2_DESCRIPTION
-          : IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS_DESCRIPTION);
+  if (Shell::Get()->keyboard_capability()->HasLauncherButton()) {
+    html_source->AddLocalizedString(
+        "keyboardBlockMetaFunctionKeyRewrites",
+        IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_LAUNCHER);
+    html_source->AddLocalizedString(
+        "keyboardBlockMetaFunctionKeyRewritesDescription",
+        IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION_LAUNCHER);
+    html_source->AddLocalizedString(
+        "perDeviceKeyboardKeySearch",
+        IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_LAUNCHER);
+    html_source->AddLocalizedString("keyboardKeySearch",
+                                    IDS_SETTINGS_KEYBOARD_KEY_LAUNCHER);
+    html_source->AddLocalizedString(
+        "keyboardSendFunctionKeysDescription",
+        IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS_LAYOUT2_DESCRIPTION);
+  } else {
+    html_source->AddLocalizedString(
+        "keyboardBlockMetaFunctionKeyRewrites",
+        IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_SEARCH);
+    html_source->AddLocalizedString(
+        "keyboardBlockMetaFunctionKeyRewritesDescription",
+        IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_DESCRIPTION_SEARCH);
+    html_source->AddLocalizedString(
+        "perDeviceKeyboardKeySearch",
+        IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_SEARCH);
+    html_source->AddLocalizedString("keyboardKeySearch",
+                                    IDS_SETTINGS_KEYBOARD_KEY_SEARCH);
+    html_source->AddLocalizedString(
+        "keyboardSendFunctionKeysDescription",
+        IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS_DESCRIPTION);
+  }
 }
 
 void AddDeviceStylusStrings(content::WebUIDataSource* html_source) {
