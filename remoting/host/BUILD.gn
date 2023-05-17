@@ -38,6 +38,10 @@ group("all") {
       "//remoting/host/webauthn:remote_webauthn",
     ]
 
+    if (is_linux) {
+      deps += [ "//remoting/host/crash:remoting_crash_uploader" ]
+    }
+
     if (enable_me2me_host && (is_linux || is_win)) {
       deps += [ "//remoting/host/remote_open_url" ]
     }
@@ -67,6 +71,7 @@ source_set("host") {
 source_set("host_main_headers") {
   visibility = [
     ":*",
+    "//remoting/host/crash:crash_uploader_main_headers",
     "//remoting/host/it2me:main_headers",
     "//remoting/host/mac:remoting_native_messaging_host",
     "//remoting/host/mac:remoting_native_messaging_host_executable",
@@ -1152,6 +1157,9 @@ if (enable_me2me_host) {
         "//remoting/host/setup:start_host_main",
         "//remoting/host/webauthn:main",
       ]
+      if (is_linux) {
+        deps += [ "//remoting/host/crash:crash_uploader_main" ]
+      }
       if (is_win) {
         deps += [ "//remoting/host/security_key:main" ]
       }

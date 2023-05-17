@@ -59,6 +59,7 @@ group("remoting_all") {
 
     if (is_linux) {
       deps += [
+        "//remoting/host/crash:remoting_crash_uploader",
         "//remoting/host/linux:remoting_dev_me2me_host",
         "//remoting/host/linux:remoting_user_session",
       ]

@@ -20,6 +20,8 @@ SYSTEM_WIDE_DESKTOP_ENTRIES_DIR = $(DESTDIR)/usr/share/applications
 
 CORE_LIBNAME = $(BUILD_DIR)/libremoting_core.so
 CORE_DEBUGFILE = $(CORE_LIBNAME).debug
+CRASH_UPLOADER_PROGNAME = $(BUILD_DIR)/remoting_crash_uploader
+CRASH_UPLOADER_DEBUGFILE = $(CRASH_UPLOADER_PROGNAME).debug
 ME2ME_PROGNAME = $(BUILD_DIR)/remoting_me2me_host
 ME2ME_DEBUGFILE = $(ME2ME_PROGNAME).debug
 START_PROGNAME = $(BUILD_DIR)/remoting_start_host
@@ -78,6 +80,9 @@ install:
 
 	install "$(CORE_LIBNAME)" "$(INSTALL_DIR)/libremoting_core.so"
 	eu-strip -f "$(CORE_DEBUGFILE)" "$(INSTALL_DIR)/libremoting_core.so"
+
+	install "$(CRASH_UPLOADER_PROGNAME)" "$(INSTALL_DIR)/crash-uploader"
+	eu-strip -f "$(CRASH_UPLOADER_DEBUGFILE)" "$(INSTALL_DIR)/crash-uploader"
 
 	install "$(ME2ME_PROGNAME)" \
 	  "$(INSTALL_DIR)/chrome-remote-desktop-host"

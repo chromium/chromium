@@ -78,17 +78,27 @@ bool MinidumpCallback(const google_breakpad::MinidumpDescriptor& descriptor,
   auto metadata_file_contents = base::WriteJson(metadata);
   if (!metadata_file_contents.has_value()) {
     LOG(ERROR) << "Failed to convert metadata to JSON.";
+    self.handling_exception().exchange(false);
     return false;
   }
 
   ScopedAllowBlockingForCrashReporting scoped_allow_blocking;
-  base::FilePath metadata_file_path =
-      base::FilePath(descriptor.path()).ReplaceExtension("json");
-  if (!base::WriteFile(metadata_file_path, *metadata_file_contents)) {
-    LOG(ERROR) << "Failed to write crash dump metadata to file.";
+  auto temp_metadata_file_path =
+      base::FilePath(descriptor.path()).ReplaceExtension("temp");
+  if (!base::WriteFile(temp_metadata_file_path, *metadata_file_contents)) {
+    LOG(ERROR) << "Failed to write crash dump metadata to temp file.";
+    self.handling_exception().exchange(false);
     return false;
   }
 
+  auto metadata_file_path = temp_metadata_file_path.ReplaceExtension("json");
+  if (!base::Move(temp_metadata_file_path, metadata_file_path)) {
+    LOG(ERROR) << "Failed to rename temp metadata file.";
+    self.handling_exception().exchange(false);
+    return false;
+  }
+
+  self.handling_exception().exchange(false);
   return succeeded;
 }
 
