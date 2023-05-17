@@ -7408,7 +7408,7 @@
     'lacros_skylab_arm64': {
       'lacros_skylab_tests': {
         'variants': [
-          'CROS_HEROBRINE_RELEASE_LKGM',
+          'CROS_STRONGBAD_RELEASE_LKGM',
         ]
       },
     },

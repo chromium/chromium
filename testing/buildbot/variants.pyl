@@ -550,15 +550,6 @@
     'enabled': True,
     'identifier': 'HANA_RELEASE_STABLE',
   },
-  'CROS_HEROBRINE_RELEASE_LKGM': {
-    'skylab': {
-      'cros_board': 'herobrine',
-      'cros_chrome_version': '114.0.5692.0',
-      'cros_img': 'herobrine-release/R114-15410.0.0',
-    },
-    'enabled': True,
-    'identifier': 'HEROBRINE_RELEASE_LKGM',
-  },
   'CROS_JACUZZI_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'jacuzzi',

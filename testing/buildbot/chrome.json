@@ -1969,9 +1969,9 @@
     "skylab_tests": [
       {
         "args": [],
-        "cros_board": "herobrine",
-        "cros_img": "herobrine-release/R114-15410.0.0",
-        "name": "lacros_all_tast_tests HEROBRINE_RELEASE_LKGM",
+        "cros_board": "strongbad",
+        "cros_img": "strongbad-release/R114-15410.0.0",
+        "name": "lacros_all_tast_tests STRONGBAD_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1982,7 +1982,7 @@
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 10800,
-        "variant_id": "HEROBRINE_RELEASE_LKGM"
+        "variant_id": "STRONGBAD_RELEASE_LKGM"
       }
     ]
   },
