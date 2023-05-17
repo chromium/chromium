@@ -35,7 +35,7 @@ void CursorManager::Init() {
           switches::kForceShowCursor)) {
     // Set a custom cursor so users know that the switch is turned on.
     const gfx::ImageSkia custom_icon =
-        gfx::CreateVectorIcon(kTouchIndicatorIcon, SK_ColorBLACK);
+        gfx::CreateVectorIcon(kTouchIndicatorIcon);
     const float dsf =
         display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
     SkBitmap bitmap = custom_icon.GetRepresentation(dsf).GetBitmap();
