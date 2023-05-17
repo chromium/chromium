@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/layout/text_decoration_offset_base.h"
 #include "third_party/blink/renderer/core/paint/applied_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
-#include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"

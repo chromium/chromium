@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
+#include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -27,24 +27,24 @@ Color SelectionWebkitTextFillColor(const Document& document,
                                    Node* node,
                                    const ComputedStyle& originating_style) {
   scoped_refptr<const ComputedStyle> pseudo_style =
-      HighlightPaintingUtils::HighlightPseudoStyle(node, originating_style,
-                                                   kPseudoIdSelection);
-  return HighlightPaintingUtils::ResolveColor(
+      HighlightStyleUtils::HighlightPseudoStyle(node, originating_style,
+                                                kPseudoIdSelection);
+  return HighlightStyleUtils::ResolveColor(
       document, originating_style, pseudo_style.get(), kPseudoIdSelection,
       GetCSSPropertyWebkitTextFillColor(), Color::kBlack);
 }
 
 }  // namespace
 
-class HighlightPaintingUtilsTest : public SimTest,
-                                   private ScopedHighlightInheritanceForTest {
+class HighlightStyleUtilsTest : public SimTest,
+                                private ScopedHighlightInheritanceForTest {
  public:
   // TODO(crbug.com/1024156) remove CachedPseudoStyles tests, but keep
   // SelectedTextInputShadow, when HighlightInheritance becomes stable
-  HighlightPaintingUtilsTest() : ScopedHighlightInheritanceForTest(false) {}
+  HighlightStyleUtilsTest() : ScopedHighlightInheritanceForTest(false) {}
 };
 
-TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesWindowInactive) {
+TEST_F(HighlightStyleUtilsTest, CachedPseudoStylesWindowInactive) {
   // Test that we are only caching active selection styles as so that we don't
   // incorrectly use a cached ComputedStyle when the active state changes.
 
@@ -100,7 +100,7 @@ TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesWindowInactive) {
             body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
 }
 
-TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesNoWindowInactive) {
+TEST_F(HighlightStyleUtilsTest, CachedPseudoStylesNoWindowInactive) {
   // Test that we share a cached ComputedStyle for active and inactive
   // selections when there are no :window-inactive styles.
 
@@ -157,7 +157,7 @@ TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesNoWindowInactive) {
             body_style.GetCachedPseudoElementStyle(kPseudoIdSelection));
 }
 
-TEST_F(HighlightPaintingUtilsTest, SelectedTextInputShadow) {
+TEST_F(HighlightStyleUtilsTest, SelectedTextInputShadow) {
   // Test that we apply input ::selection style to the value text.
 
   SimRequest main_resource("https://example.com/test.html", "text/html");
@@ -188,7 +188,7 @@ TEST_F(HighlightPaintingUtilsTest, SelectedTextInputShadow) {
   PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
   TextPaintStyle paint_style;
 
-  paint_style = HighlightPaintingUtils::HighlightPaintingStyle(
+  paint_style = HighlightStyleUtils::HighlightPaintingStyle(
       GetDocument(), text_style, text_node, kPseudoIdSelection, paint_style,
       paint_info);
 

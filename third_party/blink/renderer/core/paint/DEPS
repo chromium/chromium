@@ -4,7 +4,6 @@ include_rules = [
     "+cc/layers/picture_layer.h",
     # For DCHECK.
     "+base/logging.h",
-    "+components/shared_highlighting/core/common",
 ]
 
 specific_include_rules = {

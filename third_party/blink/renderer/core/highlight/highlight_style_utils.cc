@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
+#include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
 
 #include "components/shared_highlighting/core/common/fragment_directives_constants.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -111,8 +111,9 @@ Color ForcedColor(const ComputedStyle& originating_style,
                   const CSSProperty& property) {
   mojom::blink::ColorScheme color_scheme =
       UsedColorScheme(originating_style, pseudo_style);
-  if (property.IDEquals(CSSPropertyID::kBackgroundColor))
+  if (property.IDEquals(CSSPropertyID::kBackgroundColor)) {
     return ForcedBackgroundColor(pseudo, color_scheme);
+  }
   return ForcedForegroundColor(pseudo, color_scheme);
 }
 
@@ -133,8 +134,9 @@ absl::optional<Color> DefaultForegroundColor(
 
   switch (pseudo) {
     case kPseudoIdSelection:
-      if (!LayoutTheme::GetTheme().SupportsSelectionForegroundColors())
+      if (!LayoutTheme::GetTheme().SupportsSelectionForegroundColors()) {
         return previous_layer_color;
+      }
       if (document.GetFrame()->Selection().FrameIsFocusedAndActive()) {
         return LayoutTheme::GetTheme().ActiveSelectionForegroundColor(
             color_scheme);
@@ -189,8 +191,9 @@ Color DefaultHighlightColor(const Document& document,
                             absl::optional<Color> previous_layer_color) {
   mojom::blink::ColorScheme color_scheme =
       UsedColorScheme(originating_style, pseudo_style);
-  if (property.IDEquals(CSSPropertyID::kBackgroundColor))
+  if (property.IDEquals(CSSPropertyID::kBackgroundColor)) {
     return DefaultBackgroundColor(document, pseudo, color_scheme);
+  }
   DCHECK(property.IDEquals(CSSPropertyID::kColor));
   if (absl::optional<Color> result =
           DefaultForegroundColor(document, pseudo, color_scheme)) {
@@ -206,8 +209,9 @@ HighlightPseudoStyleWithOriginatingInheritance(
     Node* node,
     PseudoId pseudo,
     const AtomicString& pseudo_argument = g_null_atom) {
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   Element* element = nullptr;
 
@@ -217,8 +221,9 @@ HighlightPseudoStyleWithOriginatingInheritance(
   // input::selection, we calculate highlight style on the shadow host for
   // elements inside the UA shadow.
   ShadowRoot* root = node->ContainingShadowRoot();
-  if (root && root->IsUserAgent())
+  if (root && root->IsUserAgent()) {
     element = node->OwnerShadowHost();
+  }
 
   // If we request highlight style for LayoutText, query highlight style on the
   // parent element instead, as that is the node for which the highligh pseudo
@@ -226,11 +231,13 @@ HighlightPseudoStyleWithOriginatingInheritance(
   // don't implement inheritance of highlight styles, it would probably break
   // cases where you style a shadow host with a highlight pseudo and expect
   // light tree text children to be affected by that style.
-  if (!element)
+  if (!element) {
     element = Traversal<Element>::FirstAncestorOrSelf(*node);
+  }
 
-  if (!element || element->IsPseudoElement())
+  if (!element || element->IsPseudoElement()) {
     return nullptr;
+  }
 
   if (pseudo == kPseudoIdSelection &&
       element->GetDocument().GetStyleEngine().UsesWindowInactiveSelector() &&
@@ -248,11 +255,13 @@ HighlightPseudoStyleWithOriginatingInheritance(
 bool UseForcedColors(const Document& document,
                      const ComputedStyle& originating_style,
                      const ComputedStyle* pseudo_style) {
-  if (!document.InForcedColorsMode())
+  if (!document.InForcedColorsMode()) {
     return false;
+  }
   // TODO(crbug.com/1309835) simplify when valid_for_highlight_legacy is removed
-  if (pseudo_style)
+  if (pseudo_style) {
     return pseudo_style->ForcedColorAdjust() == EForcedColorAdjust::kAuto;
+  }
   return originating_style.ForcedColorAdjust() == EForcedColorAdjust::kAuto;
 }
 
@@ -276,15 +285,16 @@ bool UseDefaultHighlightColors(const ComputedStyle* pseudo_style,
 
 // Returns the used value of the given <color>-valued |property|, taking into
 // account forced colors, default highlight colors, and ‘currentColor’ fallback.
-Color HighlightPaintingUtils::ResolveColor(
+Color HighlightStyleUtils::ResolveColor(
     const Document& document,
     const ComputedStyle& originating_style,
     const ComputedStyle* pseudo_style,
     PseudoId pseudo,
     const CSSProperty& property,
     absl::optional<Color> previous_layer_color) {
-  if (UseForcedColors(document, originating_style, pseudo_style))
+  if (UseForcedColors(document, originating_style, pseudo_style)) {
     return ForcedColor(originating_style, pseudo_style, pseudo, property);
+  }
   if (UseDefaultHighlightColors(pseudo_style, pseudo, property)) {
     return DefaultHighlightColor(document, originating_style, pseudo_style,
                                  pseudo, property, previous_layer_color);
@@ -293,8 +303,9 @@ Color HighlightPaintingUtils::ResolveColor(
     bool is_current_color;
     Color result = pseudo_style->VisitedDependentColor(To<Longhand>(property),
                                                        &is_current_color);
-    if (!is_current_color)
+    if (!is_current_color) {
       return result;
+    }
   }
   if (!property.IDEquals(CSSPropertyID::kColor)) {
     return ResolveColor(document, originating_style, pseudo_style, pseudo,
@@ -306,7 +317,7 @@ Color HighlightPaintingUtils::ResolveColor(
 // Returns highlight styles for the given node, inheriting through the “tree” of
 // highlight pseudo styles mirroring the originating element tree. None of the
 // returned styles are influenced by originating elements or pseudo-elements.
-scoped_refptr<const ComputedStyle> HighlightPaintingUtils::HighlightPseudoStyle(
+scoped_refptr<const ComputedStyle> HighlightStyleUtils::HighlightPseudoStyle(
     Node* node,
     const ComputedStyle& style,
     PseudoId pseudo,
@@ -316,8 +327,9 @@ scoped_refptr<const ComputedStyle> HighlightPaintingUtils::HighlightPseudoStyle(
                                                           pseudo_argument);
   }
 
-  if (!style.HighlightData())
+  if (!style.HighlightData()) {
     return nullptr;
+  }
 
   switch (pseudo) {
     case kPseudoIdSelection:
@@ -336,7 +348,7 @@ scoped_refptr<const ComputedStyle> HighlightPaintingUtils::HighlightPseudoStyle(
   }
 }
 
-Color HighlightPaintingUtils::HighlightBackgroundColor(
+Color HighlightStyleUtils::HighlightBackgroundColor(
     const Document& document,
     const ComputedStyle& style,
     Node* node,
@@ -344,8 +356,9 @@ Color HighlightPaintingUtils::HighlightBackgroundColor(
     PseudoId pseudo,
     const AtomicString& pseudo_argument) {
   if (pseudo == kPseudoIdSelection) {
-    if (node && !style.IsSelectable())
+    if (node && !style.IsSelectable()) {
       return Color::kTransparent;
+    }
   }
 
   scoped_refptr<const ComputedStyle> pseudo_style =
@@ -362,7 +375,7 @@ Color HighlightPaintingUtils::HighlightBackgroundColor(
 }
 
 absl::optional<AppliedTextDecoration>
-HighlightPaintingUtils::SelectionTextDecoration(
+HighlightStyleUtils::SelectionTextDecoration(
     const Document& document,
     const ComputedStyle& style,
     const ComputedStyle& pseudo_style,
@@ -385,7 +398,7 @@ HighlightPaintingUtils::SelectionTextDecoration(
   return decoration;
 }
 
-TextPaintStyle HighlightPaintingUtils::HighlightPaintingStyle(
+TextPaintStyle HighlightStyleUtils::HighlightPaintingStyle(
     const Document& document,
     const ComputedStyle& style,
     Node* node,
@@ -440,13 +453,14 @@ TextPaintStyle HighlightPaintingUtils::HighlightPaintingStyle(
   }
 
   // Text shadows are disabled when printing. http://crbug.com/258321
-  if (document.Printing())
+  if (document.Printing()) {
     highlight_style.shadow = nullptr;
+  }
 
   return highlight_style;
 }
 
-absl::optional<Color> HighlightPaintingUtils::HighlightTextDecorationColor(
+absl::optional<Color> HighlightStyleUtils::HighlightTextDecorationColor(
     const Document& document,
     const ComputedStyle& style,
     Node* node,
@@ -454,8 +468,9 @@ absl::optional<Color> HighlightPaintingUtils::HighlightTextDecorationColor(
     PseudoId pseudo) {
   DCHECK(pseudo == kPseudoIdSpellingError || pseudo == kPseudoIdGrammarError);
 
-  if (!RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled())
+  if (!RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
     return absl::nullopt;
+  }
 
   if (scoped_refptr<const ComputedStyle> pseudo_style =
           HighlightPseudoStyle(node, style, pseudo)) {

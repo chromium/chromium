@@ -1850,6 +1850,14 @@ _CONFIG = [
             'attribution_reporting:.*',
         ]
     },
+    {
+        'paths': [
+            'third_party/blink/renderer/core/highlight/highlight_style_utils.cc',
+        ],
+        'allowed': [
+            'shared_highlighting::kFragmentTextBackgroundColorARGB',
+        ]
+    },
 ]
 
 

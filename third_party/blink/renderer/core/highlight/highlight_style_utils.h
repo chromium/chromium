@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_HIGHLIGHT_PAINTING_UTILS_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_HIGHLIGHT_PAINTING_UTILS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HIGHLIGHT_HIGHLIGHT_STYLE_UTILS_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_HIGHLIGHT_HIGHLIGHT_STYLE_UTILS_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -23,8 +23,8 @@ class Node;
 struct TextPaintStyle;
 struct PaintInfo;
 
-class CORE_EXPORT HighlightPaintingUtils {
-  STATIC_ONLY(HighlightPaintingUtils);
+class CORE_EXPORT HighlightStyleUtils {
+  STATIC_ONLY(HighlightStyleUtils);
 
  public:
   static Color ResolveColor(const Document&,
@@ -69,4 +69,4 @@ class CORE_EXPORT HighlightPaintingUtils {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_HIGHLIGHT_PAINTING_UTILS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HIGHLIGHT_HIGHLIGHT_STYLE_UTILS_H_
