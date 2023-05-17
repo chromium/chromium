@@ -2004,16 +2004,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.Cellular.IPv6ConnectivityStatus"
-    enum="IPv6ConnectivityStatus" expires_after="2023-12-31">
-  <owner>ejcaruso@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    ChromeOS network metric that tracks the presence of complete IPv6
-    configuration at the time when cellular connection is established.
-  </summary>
-</histogram>
-
 <histogram name="Network.Shill.Cellular.NetworkConnectionIPType"
     enum="NetworkConnectionIPType" expires_after="2023-12-31">
   <owner>ejcaruso@chromium.org</owner>
@@ -3189,16 +3179,6 @@ chromium-metrics-reviews@google.com.
     that devices connect to. Results are recorded every time a device connects
     to an access point. The metric records either the HS20 version the AP
     supports, or that the AP does not support HS20.
-  </summary>
-</histogram>
-
-<histogram name="Network.Shill.Wifi.IPv6ConnectivityStatus"
-    enum="IPv6ConnectivityStatus" expires_after="2023-11-12">
-  <owner>norvez@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    ChromeOS network metric that tracks the presence of complete IPv6
-    configuration at the time when WiFi connection is established.
   </summary>
 </histogram>
 
