@@ -8,7 +8,7 @@
 #include <stddef.h>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 
@@ -42,18 +42,14 @@ struct CONTENT_EXPORT ContentMainParams {
   ContentMainParams(ContentMainParams&&);
   ContentMainParams& operator=(ContentMainParams&&);
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION ContentMainDelegate* delegate;
+  raw_ptr<ContentMainDelegate> delegate;
 
 #if BUILDFLAG(IS_WIN)
   HINSTANCE instance = nullptr;
 
   // |sandbox_info| should be initialized using InitializeSandboxInfo from
   // content_main_win.h
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION sandbox::SandboxInterfaceInfo* sandbox_info = nullptr;
+  raw_ptr<sandbox::SandboxInterfaceInfo> sandbox_info = nullptr;
 #elif !BUILDFLAG(IS_ANDROID)
   int argc = 0;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
