@@ -2,14 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/device/public/cpp/geolocation/system_geolocation_source_mac.h"
+
 #import <CoreLocation/CoreLocation.h>
 
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/sequence_checker.h"
-#include "services/device/public/cpp/geolocation/system_geolocation_source_mac.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @interface GeolocationManagerDelegate : NSObject <CLLocationManagerDelegate> {
   BOOL _permissionInitialized;

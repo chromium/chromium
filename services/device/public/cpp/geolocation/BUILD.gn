@@ -20,14 +20,15 @@ component("geolocation") {
     ]
   }
   if (is_apple) {
-    frameworks = [
-      "CoreLocation.framework",
-      "Foundation.framework",
-    ]
     sources += [
       "geolocation_manager_mac.cc",
       "system_geolocation_source_mac.h",
       "system_geolocation_source_mac.mm",
+    ]
+    configs += [ "//build/config/compiler:enable_arc" ]
+    frameworks = [
+      "CoreLocation.framework",
+      "Foundation.framework",
     ]
   }
 
