@@ -361,6 +361,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            kSetOnlyIfOverridden},
           {"TopicsXHR", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
            kSetOnlyIfOverridden},
+          {"TouchTextEditingRedesign",
+           raw_ref(features::kTouchTextEditingRedesign)},
           {"TrustedTypesFromLiteral",
            raw_ref(features::kTrustedTypesFromLiteral)},
           {"WebAppTabStrip", raw_ref(features::kDesktopPWAsTabStrip)},

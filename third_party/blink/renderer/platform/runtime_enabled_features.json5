@@ -3498,6 +3498,11 @@
       status: "stable",
       base_feature: "none",
     },
+    // Set to reflect the kTouchTextEditingRedesign feature.
+    {
+      name: "TouchTextEditingRedesign",
+      base_feature: "none",
+    },
     // This is conditionally set if the platform supports translation.
     {
       name: "TranslateService",

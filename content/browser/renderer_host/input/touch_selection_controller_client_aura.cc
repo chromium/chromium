@@ -22,6 +22,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/pointer/touch_editing_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event_observer.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -165,6 +166,14 @@ bool TouchSelectionControllerClientAura::HandleContextMenu(
       params.is_editable && params.selection_text.empty() &&
       IsQuickMenuAvailable()) {
     quick_menu_requested_ = true;
+    UpdateQuickMenu();
+    return true;
+  }
+
+  if (::features::IsTouchTextEditingRedesignEnabled() &&
+      params.source_type == ui::MENU_SOURCE_TOUCH && params.is_editable &&
+      params.selection_text.empty() && IsQuickMenuAvailable()) {
+    quick_menu_requested_ = !quick_menu_requested_;
     UpdateQuickMenu();
     return true;
   }

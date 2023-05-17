@@ -12,7 +12,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
@@ -33,6 +35,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/pointer/touch_editing_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/event_sink.h"
 #include "ui/events/event_utils.h"
@@ -144,6 +147,22 @@ class TestTouchSelectionControllerClientAura
     run_loop_ = std::make_unique<base::RunLoop>();
   }
 
+  void InitWaitForHandleContextMenu() {
+    DCHECK(!run_loop_);
+    waiting_for_handle_context_menu_ = true;
+    run_loop_ = std::make_unique<base::RunLoop>();
+  }
+
+  bool HandleContextMenu(const ContextMenuParams& params) override {
+    bool handled =
+        TouchSelectionControllerClientAura::HandleContextMenu(params);
+    if (run_loop_ && waiting_for_handle_context_menu_) {
+      waiting_for_handle_context_menu_ = false;
+      run_loop_->Quit();
+    }
+    return handled;
+  }
+
   void Wait() {
     DCHECK(run_loop_);
     run_loop_->Run();
@@ -167,13 +186,17 @@ class TestTouchSelectionControllerClientAura
     return true;
   }
 
+  bool waiting_for_handle_context_menu_ = false;
   ui::SelectionEventType expected_event_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
  public:
-  TouchSelectionControllerClientAuraTest() = default;
+  TouchSelectionControllerClientAuraTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kTouchTextEditingRedesign);
+  }
 
   TouchSelectionControllerClientAuraTest(
       const TouchSelectionControllerClientAuraTest&) = delete;
@@ -249,6 +272,8 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
 
   raw_ptr<TestTouchSelectionControllerClientAura> selection_controller_client_ =
       nullptr;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class TouchSelectionControllerClientAuraCAPFeatureTest
@@ -782,6 +807,41 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   generator.GestureTapAt(handle_center);
   EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Tests that tapping the caret toggles showing and hiding the quick menu.
+IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
+                       TapOnCaret) {
+  // Set the test page up.
+  ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
+  InitSelectionController();
+
+  RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
+  const gfx::NativeView native_view = rwhva->GetNativeView();
+  ui::test::EventGenerator generator(native_view->GetRootWindow());
+
+  // Mouse click inside the textfield to make a caret appear.
+  gfx::Point point = gfx::ToRoundedPoint(GetPointInsideTextfield());
+  generator.delegate()->ConvertPointFromTarget(native_view, &point);
+  generator.MoveMouseTo(point);
+  generator.PressLeftButton();
+  EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
+
+  // Tap the caret to show the quick menu.
+  selection_controller_client()->InitWaitForHandleContextMenu();
+  generator.GestureTapAt(point);
+  selection_controller_client()->Wait();
+  EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
+
+  // Tap the caret again to hide the quick menu. We advance the clock before
+  // tapping again to avoid the tap being treated as a double tap.
+  generator.AdvanceClock(base::Milliseconds(1000));
+  selection_controller_client()->InitWaitForHandleContextMenu();
+  generator.GestureTapAt(point);
+  selection_controller_client()->Wait();
+  EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
+}
+#endif
 
 // Tests that the quick menu is hidden whenever a touch point is active.
 // Flaky: https://crbug.com/803576
