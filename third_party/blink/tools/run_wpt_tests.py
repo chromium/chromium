@@ -435,11 +435,10 @@ class WPTAdapter:
             # wptrunner uses a 1-based index, whereas LUCI uses 0-based.
             options.this_chunk = self._shard_index + 1
             options.total_chunks = self._total_shards
-        # The default sharding strategy is to shard by directory. But
-        # we want to hash each test to determine which shard runs it.
-        # This allows running individual directories that have few
-        # tests across many shards.
-        options.chunk_type = options.chunk_type or 'hash'
+        # Override the default sharding strategy, which is to shard by directory
+        # (`dir_hash`). Sharding by test ID attempts to maximize shard workload
+        # uniformity, as test leaf directories can vary greatly in size.
+        options.chunk_type = options.chunk_type or 'id_hash'
 
     def path_from_output_dir(self, *parts):
         return self.path_finder.path_from_chromium_base('out', *parts)
