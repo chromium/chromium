@@ -84,3 +84,19 @@ cr-link-row[non-clickable] {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+input.password-input,
+cr-input.password-input::part(input) {
+  /* Since passwords are displayed with an input element, this is
+   * necessary to prevent Chrome from using the operating system's font
+   * instead of the Material Design font. */
+<if expr="is_linux or is_chromeos">
+  font-family: 'DejaVu Sans Mono', monospace;
+</if>
+<if expr="is_win">
+  font-family: 'Consolas', monospace;
+</if>
+<if expr="is_macosx">
+  font-family: 'Menlo', monospace;
+</if>
+}

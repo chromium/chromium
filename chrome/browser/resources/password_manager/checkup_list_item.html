@@ -24,6 +24,7 @@
     border: none;
     color: var(--cr-secondary-text-color);
     font-size: inherit;
+    margin-bottom: 2px;
     margin-inline-start: 4px;
     max-width: 10ch;
   }
@@ -75,7 +76,7 @@
     </div>
     <div id="usernameContainer" class="cr-secondary-text label">
       <span id="username" class="text-elide">[[item.username]]</span>
-      <input id="insecurePassword" focus-row-control
+      <input id="insecurePassword" focus-row-control class="password-input"
           focus-type="passwordField" readonly disabled
           type="[[getPasswordInputType(isPasswordVisible)]]"
           value="[[getPasswordValue_(item, isPasswordVisible)]]">
