@@ -517,12 +517,12 @@ void TooltipController::ResetWindowAtMousePressedIfNeeded(aura::Window* target,
 // identifier of the renderer side element that triggered the tooltip. Could we
 // pass a renderer element unique id alongside the tooltip text?
 bool TooltipController::ShouldHideBecauseMouseWasOncePressed() {
-  // Skip hiding when tootlip text is empty as no need to hide again.
-  // This is required since client side tooltip appears as empty text on sever
+  // Skip hiding when tooltip text is empty as no need to hide again.
+  // This is required since client-side tooltip appears as empty text on server
   // side so that the tooltip is overridden by empty text regardless of the
   // actual text to show.
   // TODO(crbug.com/1383844): Remove or update this special path when tooltip
-  // idetifier is implemented.
+  // identifier is implemented.
   if (wm::GetTooltipText(observed_window_).empty())
     return false;
 

@@ -99,7 +99,7 @@ class VIEWS_EXPORT TooltipController
                          aura::Window* gained_active,
                          aura::Window* lost_active) override;
 
-  // Upddates tooltip triggered by keyboard with anchor_point value.
+  // Updates tooltip triggered by keyboard with `anchor_point` value.
   // This should be called instead of UpdateTooltipFromKeyboard() when the
   // anchor point is already calculated (e.g. Exo).
   void UpdateTooltipFromKeyboardWithAnchorPoint(const gfx::Point& anchor_point,
@@ -120,7 +120,7 @@ class VIEWS_EXPORT TooltipController
  private:
   friend class test::TooltipControllerTestHelper;
 
-  // Reset the window and calls `TooltipStateManager::HideAndReset`.
+  // Resets the window and calls `TooltipStateManager::HideAndReset`.
   void HideAndReset();
 
   // Updates the tooltip if required (if there is any change in the tooltip
@@ -133,7 +133,7 @@ class VIEWS_EXPORT TooltipController
   // Returns true if the cursor is visible.
   bool IsCursorVisible() const;
 
-  // Get the delay after which the tooltip should be shown/hidden.
+  // Gets the delay after which the tooltip should be shown/hidden.
   base::TimeDelta GetShowTooltipDelay();
   base::TimeDelta GetHideTooltipDelay();
 
@@ -150,12 +150,13 @@ class VIEWS_EXPORT TooltipController
   // stored on the window are different.
   bool IsTooltipTextUpdateNeeded() const;
 
-  // Remove show/hide tooltip delay from `show_tooltip_delay_map_` and
+  // Removes show/hide tooltip delay from `show_tooltip_delay_map_` and
   // `hide_tooltip_timeout_map_`.
   void RemoveTooltipDelayFromMap(aura::Window* window);
 
-  // Stop tracking the window on which the cursor was when the mouse was pressed
-  // if we're on another window or if a new tooltip is triggered by keyboard.
+  // Stops tracking the window on which the cursor was when the mouse was
+  // pressed if we're on another window or if a new tooltip is triggered by
+  // keyboard.
   void ResetWindowAtMousePressedIfNeeded(aura::Window* target,
                                          bool force_reset);
 
