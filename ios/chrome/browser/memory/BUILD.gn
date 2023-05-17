@@ -16,7 +16,7 @@ source_set("memory") {
     "//base",
     "//build:branding_buildflags",
     "//components/prefs",
-    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/util",
   ]

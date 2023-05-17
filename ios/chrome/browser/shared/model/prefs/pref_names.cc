@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/prefs/pref_names.h"
+#include "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 namespace prefs {
 

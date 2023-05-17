@@ -257,7 +257,7 @@ source_set("eg2_tests") {
   deps = [
     "//components/password_manager/core/common:features",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/settings:settings_root_constants",
     "//ios/chrome/browser/ui/settings/password:password_constants",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/prefs/browser_prefs.h"
+#import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 
 #import "base/time/time.h"
 #import "base/types/cxx23_to_underlying.h"
@@ -63,10 +63,10 @@
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_service_client.h"
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/prerender/prerender_pref.h"
 #import "ios/chrome/browser/push_notification/push_notification_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
@@ -374,7 +374,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(prefs::kIosShareChromeLastShare, base::Time(),
                              PrefRegistry::LOSSY_PREF);
 
-
   registry->RegisterDictionaryPref(kPrefPromoObject);
 
   // Register pref storing whether Web Inspector support is enabled.
@@ -467,8 +466,9 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
     DCHECK_EQ(account_id.find('@'), std::string::npos)
         << "kGoogleServicesLastAccountId is not expected to be an email: "
         << account_id;
-    if (!account_id.empty())
+    if (!account_id.empty()) {
       prefs->SetString(prefs::kGoogleServicesLastGaiaId, account_id);
+    }
   }
 
   // Added 12/2022.

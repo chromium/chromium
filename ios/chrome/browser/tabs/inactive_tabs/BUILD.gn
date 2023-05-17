@@ -29,8 +29,8 @@ source_set("features") {
   public_deps = [ "//base" ]
   deps = [
     "//components/prefs",
-    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ui/base",
   ]
 }
@@ -44,9 +44,9 @@ source_set("unit_tests") {
     ":inactive_tabs",
     "//base/test:test_support",
     "//ios/chrome/browser/ntp",
-    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",

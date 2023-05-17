@@ -1834,7 +1834,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // to be migrated or cleared specifically for iOS as well. This could be by
   // doing the migration in feature code that's called by all platforms instead
   // of here, or by calling migration code in the appropriate place for iOS
-  // specifically, e.g. ios/chrome/browser/prefs/browser_prefs.mm.
+  // specifically, e.g. ios/chrome/browser/shared/model/prefs/browser_prefs.mm.
 
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
@@ -1944,7 +1944,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // to be migrated or cleared specifically for iOS as well. This could be by
   // doing the migration in feature code that's called by all platforms instead
   // of here, or by calling migration code in the appropriate place for iOS
-  // specifically, e.g. ios/chrome/browser/prefs/browser_prefs.mm.
+  // specifically, e.g. ios/chrome/browser/shared/model/prefs/browser_prefs.mm.
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1955,7 +1955,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // to be migrated or cleared specifically for iOS as well. This could be by
   // doing the migration in feature code that's called by all platforms instead
   // of here, or by calling migration code in the appropriate place for iOS
-  // specifically, e.g. ios/chrome/browser/prefs/browser_prefs.mm.
+  // specifically, e.g. ios/chrome/browser/shared/model/prefs/browser_prefs.mm.
 
   // BEGIN_MIGRATE_OBSOLETE_PROFILE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
@@ -2233,5 +2233,5 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // to be migrated or cleared specifically for iOS as well. This could be by
   // doing the migration in feature code that's called by all platforms instead
   // of here, or by calling migration code in the appropriate place for iOS
-  // specifically, e.g. ios/chrome/browser/prefs/browser_prefs.mm.
+  // specifically, e.g. ios/chrome/browser/shared/model/prefs/browser_prefs.mm.
 }

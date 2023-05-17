@@ -86,12 +86,12 @@ source_set("policy") {
     "//components/version_info:version_info",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/paths",
-    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity",
@@ -116,7 +116,7 @@ source_set("policy_util") {
     "//base",
     "//components/policy/core/common:common_constants",
     "//components/prefs",
-    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
   ]
 }
 
@@ -150,8 +150,8 @@ source_set("test_support") {
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/policy_url_blocking",
     "//ios/chrome/browser/prefs",
-    "//ios/chrome/browser/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
   ]
 
   public_deps = [
@@ -215,14 +215,14 @@ source_set("unit_tests") {
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/paths",
     "//ios/chrome/browser/prefs",
-    "//ios/chrome/browser/prefs:browser_prefs",
-    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene/test",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/signin:fake_system_identity_manager",
@@ -272,7 +272,7 @@ source_set("eg2_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/policy:eg_test_support+eg2",
-    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/translate:eg_test_support+eg2",

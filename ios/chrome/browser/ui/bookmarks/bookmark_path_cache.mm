@@ -8,7 +8,7 @@
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -16,8 +16,8 @@ source_set("enterprise_utils") {
     "//components/sync/base",
     "//components/sync/service",
     "//ios/chrome/browser/policy:policy_util",
-    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
   ]
