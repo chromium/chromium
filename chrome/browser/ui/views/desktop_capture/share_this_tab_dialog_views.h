@@ -45,6 +45,9 @@ class ShareThisTabDialogView : public views::DialogDelegateView {
 
   void Activate();
 
+  bool ShouldAutoAccept() const;
+  bool ShouldAutoReject() const;
+
   const base::WeakPtr<content::WebContents> web_contents_;
   const std::u16string app_name_;
 
@@ -61,6 +64,8 @@ class ShareThisTabDialogView : public views::DialogDelegateView {
   base::OneShotTimer activation_timer_;
 
   // Auto-selection. Used only in tests.
+  const std::string auto_select_tab_;        // Only tabs, by title.
+  const std::string auto_select_source_;     // Any source by its title.
   const bool auto_accept_this_tab_capture_;  // Only for current-tab capture.
   const bool auto_reject_this_tab_capture_;  // Only for current-tab capture.
 

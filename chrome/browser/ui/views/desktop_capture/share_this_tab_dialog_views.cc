@@ -68,6 +68,12 @@ ShareThisTabDialogView::ShareThisTabDialogView(
     : web_contents_(params.web_contents->GetWeakPtr()),
       app_name_(params.app_name),
       parent_(parent),
+      auto_select_tab_(
+          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+              switches::kAutoSelectTabCaptureSourceByTitle)),
+      auto_select_source_(
+          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+              switches::kAutoSelectDesktopCaptureSource)),
       auto_accept_this_tab_capture_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kThisTabCaptureAutoAccept)),
@@ -76,6 +82,7 @@ ShareThisTabDialogView::ShareThisTabDialogView(
               switches::kThisTabCaptureAutoReject)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!auto_accept_this_tab_capture_ || !auto_reject_this_tab_capture_);
+
   SetModalType(params.modality);
   RegisterDeleteDelegateCallback(base::BindOnce(
       [](ShareThisTabDialogView* dialog) {
@@ -118,7 +125,7 @@ ShareThisTabDialogView::ShareThisTabDialogView(
 
   // Use no delay in tests that auto-accepts/rejects the dialog.
   const base::TimeDelta activation_delay =
-      auto_accept_this_tab_capture_ || auto_reject_this_tab_capture_
+      (ShouldAutoAccept() || ShouldAutoReject())
           ? base::Milliseconds(0)
           : base::Milliseconds(
                 media::kShareThisTabDialogActivationDelayMs.Get());
@@ -261,14 +268,44 @@ void ShareThisTabDialogView::SetupAudioToggle() {
 
 void ShareThisTabDialogView::Activate() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   source_view_->Activate();
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, true);
 
-  if (auto_accept_this_tab_capture_) {
+  // In tests.
+  if (ShouldAutoAccept()) {
     Accept();
-  } else if (auto_reject_this_tab_capture_) {
+  } else if (ShouldAutoReject()) {
     Cancel();
   }
+}
+
+bool ShareThisTabDialogView::ShouldAutoAccept() const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!web_contents_) {
+    return false;
+  }
+
+  if (auto_accept_this_tab_capture_) {
+    return true;
+  }
+
+  if (!auto_select_tab_.empty() &&
+      web_contents_->GetTitle().find(base::ASCIIToUTF16(auto_select_tab_)) !=
+          std::u16string::npos) {
+    return true;
+  }
+
+  return (!auto_select_source_.empty() &&
+          web_contents_->GetTitle().find(
+              base::ASCIIToUTF16(auto_select_source_)) != std::u16string::npos);
+}
+
+bool ShareThisTabDialogView::ShouldAutoReject() const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  return auto_reject_this_tab_capture_;
 }
 
 BEGIN_METADATA(ShareThisTabDialogView, views::DialogDelegateView)
