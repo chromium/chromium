@@ -36,6 +36,22 @@ class MEDIA_EXPORT ManifestDemuxerEngineHost {
  public:
   virtual ~ManifestDemuxerEngineHost() {}
 
+  // Adds a new role to the chunk demuxer, and returns true if it succeeded.
+  virtual bool AddRole(std::string role,
+                       std::string container,
+                       std::string codec);
+
+  // Removes a role (on the media thread) to ensure that there are no
+  // media-thread-bound weak references.
+  virtual void RemoveRole(std::string role);
+
+  // Sets the sequence mode flag for a |role| which has been created with
+  // `AddRole`
+  virtual void SetSequenceMode(std::string role, bool sequence_mode);
+
+  // Sets the chunk demuxer duration.
+  virtual void SetDuration(double duration);
+
   // Handle errors.
   virtual void OnError(PipelineStatus error);
 };
@@ -125,6 +141,12 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
                                    TrackChangeCB change_completed_cb) override;
 
   // `ManifestDemuxerEngineHost` implementation
+  bool AddRole(std::string role,
+               std::string container,
+               std::string codec) override;
+  void RemoveRole(std::string role) override;
+  void SetSequenceMode(std::string role, bool sequence_mode) override;
+  void SetDuration(double duration) override;
   void OnError(PipelineStatus status) override;
 
   // Allow unit tests to grab the chunk demuxer.
@@ -166,6 +188,11 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
   void OnProgress();
   void OnEncryptedMediaData(EmeInitDataType type,
                             const std::vector<uint8_t>& data);
+  void OnChunkDemuxerParseWarning(std::string role,
+                                  SourceBufferParseWarning warning);
+  void OnChunkDemuxerTracksChanged(std::string role,
+                                   std::unique_ptr<MediaTracks> tracks);
+
   void OnDemuxerStreamRead(DemuxerStream::ReadCB wrapped_read_cb,
                            DemuxerStream::Status status,
                            DemuxerStream::DecoderBufferVector buffers);
