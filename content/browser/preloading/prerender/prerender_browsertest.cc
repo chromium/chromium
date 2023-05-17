@@ -7944,8 +7944,9 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
 
 // Tests that PrerenderHostRegistry can't start any prerenderings if the
 // acceptable percent of the system memory is set to 0.
+// TODO(crbug.com/1445186): re-enable the test.
 IN_PROC_BROWSER_TEST_F(MultiplePrerendersWithLimitedMemoryBrowserTest,
-                       AddSpeculationRulesMultipleTimes) {
+                       DISABLED_AddSpeculationRulesMultipleTimes) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
