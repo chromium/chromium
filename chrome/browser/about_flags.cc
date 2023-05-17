@@ -7071,10 +7071,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSharingDesktopScreenshotsName,
      flag_descriptions::kSharingDesktopScreenshotsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(sharing_hub::kDesktopScreenshots)},
-    {"sharing-desktop-share-to-google-collections",
-     flag_descriptions::kSharingDesktopShareToGoogleCollectionsName,
-     flag_descriptions::kSharingDesktopShareToGoogleCollectionsDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(share::kShareToGoogleCollections)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

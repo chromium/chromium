@@ -4721,11 +4721,6 @@ const char kSettingsEnableGetTheMostOutOfChromeDescription[] =
     "will be available.";
 #endif
 
-const char kSharingDesktopShareToGoogleCollectionsName[] =
-    "Share to Google Collections";
-const char kSharingDesktopShareToGoogleCollectionsDescription[] =
-    "Adds an item to the sharing hub to allow sharing to Google Collections.";
-
 const char kWebAppManifestImmediateUpdatingName[] =
     "Web App Manifest Immediate Updating";
 const char kWebAppManifestImmediateUpdatingDescription[] =
