@@ -8,6 +8,8 @@
   }
 
   .printer-name {
+    align-items: center;
+    display: flex;
     flex: 1;
   }
 
@@ -15,11 +17,25 @@
     background-color: var(--cros-highlight-color);
     outline: none;
   }
+
+  .entry-icon {
+    flex-basis: 40px;
+  }
+
+  .entry-text {
+    flex: 1;
+    margin: 20px auto;
+  }
+
+  iron-icon {
+    display: block;
+    margin: auto;
+  }
 </style>
 <div focus-row-container>
   <div id="entry" class="list-item" focus-row-control focus-type="entry">
     <div class="printer-name text-elide">
-      <span id="printerName" aria-hidden="true">
+      <span class="entry-icon" aria-hidden="true">
           <iron-icon
             hidden="[[!printerEntry.printerInfo.isManaged]]"
             icon="cr20:domain">
@@ -29,19 +45,24 @@
             icon="[[getPrinterIcon_(printerEntry.printerType,
                 printerEntry.printerInfo.printerId)]]">
           </iron-icon>
-          [[printerEntry.printerInfo.printerName]]
       </span>
-      <div id="printerSubtext" hidden="[[!subtext]]" class="secondary"
-          aria-hidden="true">
-        [[subtext]]
-      </div>
+      <span class="entry-text">
+        <div>
+          [[printerEntry.printerInfo.printerName]]
+        </div>
+        <div id="printerSubtext" class="secondary"
+            hidden="[[!showPrinterStatusIcon_(printerEntry.printerType)]]">
+          [[getStatusReasonString_(
+              printerEntry.printerInfo.printerId)]]
+        </div>
+      </span>
     </div>
     <template is="dom-if"
         if="[[showActionsMenu_(printerEntry.printerType)]]">
       <cr-icon-button id="moreActions" class="icon-more-vert"
           on-click="onOpenActionMenuClick_" title="$i18n{moreActions}"
-          aria-labelledby="printerName" focus-row-control
-          focus-type="moreActions" tabindex$="[[tabindex]]">
+          aria-label="[[printerEntry.printerInfo.printerName]]"
+          focus-row-control focus-type="moreActions" tabindex$="[[tabindex]]">
       </cr-icon-button>
     </template>
     <template is="dom-if"

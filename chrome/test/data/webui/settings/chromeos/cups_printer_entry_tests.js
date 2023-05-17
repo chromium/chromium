@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {PrinterStatusReason, PrinterType} from 'chrome://os-settings/chromeos/lazy_load.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -129,28 +130,12 @@ suite('CupsPrinterEntry', function() {
 
   test('initializePrinterEntry', function() {
     const expectedPrinterName = 'Test name';
-    const expectedPrinterSubtext = 'Test subtext';
 
     printerEntryTestElement.printerEntry =
         createPrinterEntry(PrinterType.SAVED);
     assertEquals(
         expectedPrinterName,
-        printerEntryTestElement.shadowRoot.querySelector('#printerName')
-            .textContent.trim());
-
-    assertTrue(
-        printerEntryTestElement.shadowRoot.querySelector('#printerSubtext')
-            .hidden);
-
-    // Assert that setting the subtext will make it visible.
-    printerEntryTestElement.subtext = expectedPrinterSubtext;
-    assertFalse(
-        printerEntryTestElement.shadowRoot.querySelector('#printerSubtext')
-            .hidden);
-
-    assertEquals(
-        expectedPrinterSubtext,
-        printerEntryTestElement.shadowRoot.querySelector('#printerSubtext')
+        printerEntryTestElement.shadowRoot.querySelector('.entry-text')
             .textContent.trim());
   });
 
@@ -221,13 +206,10 @@ suite('CupsPrinterEntry', function() {
         'os-settings:printer-status-grey',
         printerEntryTestElement.shadowRoot.querySelector('#printerStatusIcon')
             .icon);
-
-    // Set to a good status reason.
-    printerEntryTestElement.set('printerEntry.printerInfo.printerId', 'id1');
     assertEquals(
-        'os-settings:printer-status-green',
-        printerEntryTestElement.shadowRoot.querySelector('#printerStatusIcon')
-            .icon);
+        '',
+        printerEntryTestElement.shadowRoot.querySelector('#printerSubtext')
+            .textContent.trim());
 
     // Set to an error status reason.
     printerEntryTestElement.set('printerEntry.printerInfo.printerId', 'id2');
@@ -235,6 +217,22 @@ suite('CupsPrinterEntry', function() {
         'os-settings:printer-status-red',
         printerEntryTestElement.shadowRoot.querySelector('#printerStatusIcon')
             .icon);
+    assertEquals(
+        loadTimeData.getString('printerStatusOutOfPaper'),
+        printerEntryTestElement.shadowRoot.querySelector('#printerSubtext')
+            .textContent.trim());
+
+    // Set to a good status reason.
+    printerEntryTestElement.set('printerEntry.printerInfo.printerId', 'id1');
+    assertEquals(
+        'os-settings:printer-status-green',
+        printerEntryTestElement.shadowRoot.querySelector('#printerStatusIcon')
+            .icon);
+    assertEquals(
+        '',
+        printerEntryTestElement.shadowRoot.querySelector('#printerSubtext')
+            .textContent.trim());
+
   });
 
   // Verify the printer icon is visible based on the printer's type.

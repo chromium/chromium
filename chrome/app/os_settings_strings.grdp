@@ -3245,6 +3245,48 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PRINTING_SCANNING_LAUNCH_APP_SUBLABEL" desc="Sub-label that describes the scanning app which lets users scan documents.">
     Scan documents and images
   </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_DEVICE_ERROR" translateable="false" desc="Error label to show under the destination dropdown when there is a mechanical error inside the printer.">
+    Mechanical issue. Check printer
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_DOOR_OPEN" translateable="false" desc="Error label to show under the destination dropdown when the printer has an open cover or door.">
+   Printer door is open
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_LOW_ON_INK" translateable="false" desc="Error label to show under the destination dropdown when the printer is low on ink.">
+    Low on ink
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_LOW_ON_PAPER" translateable="false" desc="Error label to show under the destination dropdown when the printer is low on paper">
+    Low on paper
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_OUT_OF_INK" translateable="false" desc="Error label to show under the destination dropdown when the printer is out of ink.">
+   Out of ink
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_OUT_OF_PAPER" translateable="false" desc="Error label to show under the destination dropdown when the printer is out of paper.">
+    Out of paper
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_OUPUT_ALMOST_FULL" translateable="false" desc="Error label to show under the destination dropdown when the printer's output tray is almost full.">
+    Output tray is almost full
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_OUPUT_FULL" translateable="false" desc="Error label to show under the destination dropdown when the printer's output tray is full.">
+    Output tray is full
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_PAPER_JAM" translateable="false" desc="Error label to show under the destination dropdown when the printer has a paper jam.">
+    Paper is jammed
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_PAUSED" translateable="false" desc="Error label to show under the destination dropdown when someone has put the printer into a paused state.">
+    Printer is paused
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_PRINTER_QUEUE_FULL" translateable="false" desc="Error label to show under the destination dropdown when the printer's job queue is full and is temporarily unable to accept more print jobs.">
+    Printer queue is full
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_PRINTER_UNREACHABLE" translateable="false" desc="Error label to show under the destination dropdown when the device is attempting to schedule a print job on the printer but can't get a connection to the printer">
+    Can’t connect to printer
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_STOPPED" translateable="false" desc="Error label to show under the destination dropdown when the printer is in the process of stopping or the printer is powered down.">
+    Printer has stopped
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_PRINTER_STATUS_TRAY_MISSING" translateable="false" desc="Error label to show under the destination dropdown when the printer is missing a tray.">
+    Tray is missing
+  </message>
 
   <!-- Internet page (OS settings) -->
   <message name="IDS_SETTINGS_INTERNET_ADD_CELLULAR" desc="The accessibility label for the add cellular icon at Settings > Internet > Add Cellular label. This text will not be visible, but will be announced when ChromeVox is on and the user navigates to the icon. Clicking this icon will show a dialog that allows the user to activate a physical SIM or set up eSIM.">

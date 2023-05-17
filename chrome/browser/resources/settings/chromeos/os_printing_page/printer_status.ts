@@ -115,3 +115,24 @@ export function computePrinterState(
   }
   return PrinterState.ERROR;
 }
+
+export const STATUS_REASON_STRING_KEY_MAP: Map<PrinterStatusReason, string> =
+    new Map([
+      [PrinterStatusReason.DEVICE_ERROR, 'printerStatusDeviceError'],
+      [PrinterStatusReason.DOOR_OPEN, 'printerStatusDoorOpen'],
+      [PrinterStatusReason.LOW_ON_INK, 'printerStatusLowOnInk'],
+      [PrinterStatusReason.LOW_ON_PAPER, 'printerStatusLowOnPaper'],
+      [PrinterStatusReason.OUT_OF_INK, 'printerStatusOutOfInk'],
+      [PrinterStatusReason.OUT_OF_PAPER, 'printerStatusOutOfPaper'],
+      [PrinterStatusReason.OUTPUT_ALMOST_FULL, 'printerStatusOutputAlmostFull'],
+      [PrinterStatusReason.OUTPUT_FULL, 'printerStatusOutputFull'],
+      [PrinterStatusReason.PAPER_JAM, 'printerStatusPaperJam'],
+      [PrinterStatusReason.PAUSED, 'printerStatusPaused'],
+      [PrinterStatusReason.PRINTER_QUEUE_FULL, 'printerStatusPrinterQueueFull'],
+      [
+        PrinterStatusReason.PRINTER_UNREACHABLE,
+        'printerStatusPrinterUnreachable',
+      ],
+      [PrinterStatusReason.STOPPED, 'printerStatusStopped'],
+      [PrinterStatusReason.TRAY_MISSING, 'printerStatusTrayMissing'],
+    ]);

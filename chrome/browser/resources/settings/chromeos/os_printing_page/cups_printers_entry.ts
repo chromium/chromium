@@ -12,15 +12,17 @@ import '../../settings_shared.css.js';
 import './cups_printer_types.js';
 
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrinterListEntry, PrinterType} from './cups_printer_types.js';
 import {getTemplate} from './cups_printers_entry.html.js';
-import {computePrinterState, PrinterState, PrinterStatusReason} from './printer_status.js';
+import {computePrinterState, PrinterState, PrinterStatusReason, STATUS_REASON_STRING_KEY_MAP} from './printer_status.js';
 
-const SettingsCupsPrintersEntryElementBase = FocusRowMixin(PolymerElement);
+const SettingsCupsPrintersEntryElementBase =
+    FocusRowMixin(I18nMixin(PolymerElement));
 
 export class SettingsCupsPrintersEntryElement extends
     SettingsCupsPrintersEntryElementBase {
@@ -35,14 +37,6 @@ export class SettingsCupsPrintersEntryElement extends
   static get properties() {
     return {
       printerEntry: Object,
-
-
-      /**
-       * TODO(jimmyxgong): Determine how subtext should be set and what
-       * information it should have, including necessary ARIA labeling
-       * The additional information subtext for a printer.
-       */
-      subtext: {type: String, value: ''},
 
       /**
        * This value is set to true if the printer is in saving mode.
@@ -92,7 +86,6 @@ export class SettingsCupsPrintersEntryElement extends
 
   printerEntry: PrinterListEntry;
   savingPrinter: boolean;
-  subtext: string;
   userPrintersAllowed: boolean;
   printerStatusReasonCache: Map<string, PrinterStatusReason>;
   private isPrinterSettingsRevampEnabled_: boolean;
@@ -228,6 +221,24 @@ export class SettingsCupsPrintersEntryElement extends
         assertNotReached('Invalid PrinterState');
     }
     return `os-settings:printer-status-${iconColor}`;
+  }
+
+  private getStatusReasonString_(): TrustedHTML {
+    // Only saved printers need to display printer status text.
+    if (!this.isSavedPrinter_()) {
+      return window.trustedTypes!.emptyHTML;
+    }
+
+    const printerStatusReason = this.printerStatusReasonCache.get(
+        this.printerEntry.printerInfo.printerId);
+    if (!printerStatusReason) {
+      return window.trustedTypes!.emptyHTML;
+    }
+
+    const statusReasonStringKey =
+        STATUS_REASON_STRING_KEY_MAP.get(printerStatusReason);
+    return statusReasonStringKey ? this.i18nAdvanced(statusReasonStringKey) :
+                                   window.trustedTypes!.emptyHTML;
   }
 }
 
