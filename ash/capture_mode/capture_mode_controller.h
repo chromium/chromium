@@ -440,7 +440,7 @@ class ASH_EXPORT CaptureModeController
   void OnVideoFileSaved(const base::FilePath& saved_video_file_path,
                         const gfx::ImageSkia& video_thumbnail,
                         bool success,
-                        CaptureModeBehavior* behavior);
+                        const CaptureModeBehavior* behavior);
 
   // Shows a preview notification of the newly taken screenshot or screen
   // recording.
@@ -526,7 +526,7 @@ class ASH_EXPORT CaptureModeController
   // `proceed` is true, or to delete it when `proceed` is false.
   void OnDlpRestrictionCheckedAtVideoEnd(const gfx::ImageSkia& video_thumbnail,
                                          bool success,
-                                         CaptureModeBehavior* behavior,
+                                         const CaptureModeBehavior* behavior,
                                          bool proceed);
 
   // Encapsulates the policy check and calls into DLP manager to do DLP check.

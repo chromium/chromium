@@ -652,7 +652,7 @@ void CaptureModeCameraController::OnCaptureSessionStarted() {
 }
 
 void CaptureModeCameraController::OnRecordingStarted(
-    CaptureModeBehavior* active_behavior) {
+    const CaptureModeBehavior* active_behavior) {
   // Check if there's a camera disconnection that happened before recording
   // starts. In this case, we don't want the camera preview to show, even if the
   // camera reconnects within the allowed grace period.

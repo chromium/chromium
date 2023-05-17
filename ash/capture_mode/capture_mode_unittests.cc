@@ -4659,7 +4659,7 @@ TEST_F(CaptureModeTest, CaptureModeDefaultBehavior) {
       CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
   ASSERT_TRUE(controller->IsActive());
   CaptureModeSession* session = controller->capture_mode_session();
-  CaptureModeBehavior* active_behavior = session->active_behavior();
+  const CaptureModeBehavior* active_behavior = session->active_behavior();
   ASSERT_TRUE(active_behavior);
 
   auto expected_behavior = [&]() {
@@ -5264,7 +5264,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, EntryPoint) {
   EXPECT_TRUE(controller->IsActive());
   auto* session = controller->capture_mode_session();
   ASSERT_TRUE(session);
-  CaptureModeBehavior* behavior = session->active_behavior();
+  const CaptureModeBehavior* behavior = session->active_behavior();
   ASSERT_TRUE(behavior);
   EXPECT_TRUE(
       behavior->SupportsAudioRecordingMode(AudioRecordingMode::kMicrophone));
@@ -5408,7 +5408,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, StartEndRecording) {
 
   EXPECT_FALSE(controller->IsActive());
   EXPECT_TRUE(controller->is_recording_in_progress());
-  CaptureModeBehavior* active_behavior =
+  const CaptureModeBehavior* active_behavior =
       controller->video_recording_watcher_for_testing()->active_behavior();
   ASSERT_TRUE(active_behavior);
   EXPECT_TRUE(active_behavior->ShouldCreateRecordingOverlayController());
@@ -5741,7 +5741,8 @@ TEST_P(ProjectorCaptureModeIntegrationTests, ProjectorBehavior) {
   ASSERT_TRUE(controller->IsActive());
   CaptureModeSession* session = controller->capture_mode_session();
   ASSERT_TRUE(session);
-  CaptureModeBehavior* projector_active_behavior = session->active_behavior();
+  const CaptureModeBehavior* projector_active_behavior =
+      session->active_behavior();
   ASSERT_TRUE(projector_active_behavior);
 
   auto expected_behavior = [&]() {

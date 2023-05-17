@@ -1263,7 +1263,8 @@ void CaptureModeController::FinalizeRecording(bool success,
   delegate_->OnServiceRemoteReset();
   recording_service_client_receiver_.reset();
   drive_fs_quota_delegate_receiver_.reset();
-  CaptureModeBehavior* behavior = video_recording_watcher_->active_behavior();
+  const CaptureModeBehavior* behavior =
+      video_recording_watcher_->active_behavior();
   video_recording_watcher_.reset();
   capture_mode_util::MaybeUpdateCaptureModePrivacyIndicators();
 
@@ -1411,7 +1412,7 @@ void CaptureModeController::OnVideoFileSaved(
     const base::FilePath& saved_video_file_path,
     const gfx::ImageSkia& video_thumbnail,
     bool success,
-    CaptureModeBehavior* behavior) {
+    const CaptureModeBehavior* behavior) {
   DCHECK(base::CurrentUIThread::IsSet());
 
   if (!success) {
@@ -1925,7 +1926,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
 void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(
     const gfx::ImageSkia& video_thumbnail,
     bool success,
-    CaptureModeBehavior* behavior,
+    const CaptureModeBehavior* behavior,
     bool proceed) {
   const bool should_delete_file = !proceed;
   const auto video_file_path = current_video_file_path_;

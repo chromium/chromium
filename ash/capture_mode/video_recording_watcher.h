@@ -71,7 +71,9 @@ class ASH_EXPORT VideoRecordingWatcher
       bool is_recording_audio);
   ~VideoRecordingWatcher() override;
 
-  CaptureModeBehavior* active_behavior() const { return active_behavior_; }
+  const CaptureModeBehavior* active_behavior() const {
+    return active_behavior_;
+  }
   aura::Window* window_being_recorded() const { return window_being_recorded_; }
   bool is_recording_audio() const { return is_recording_audio_; }
   bool should_paint_layer() const { return should_paint_layer_; }
