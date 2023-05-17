@@ -1607,7 +1607,7 @@ BASE_FEATURE(kOobeDrivePinning,
 // Enables the Gaia info screen in OOBE.
 BASE_FEATURE(kOobeGaiaInfoScreen,
              "OobeGaiaInfoScreen",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, TouchPadScreen will be shown in CHOOBE.
 // enabling this without enabling OobeChoobe flag will have no effect

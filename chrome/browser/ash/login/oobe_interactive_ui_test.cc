@@ -54,6 +54,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/assistant_optin_flow_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/marketing_opt_in_screen_handler.h"
@@ -127,6 +128,14 @@ void RunNetworkSelectionScreenChecks() {
 
   test::OobeJS().CreateFocusWaiter({"network-selection", "nextButton"})->Wait();
   EXPECT_TRUE(test::IsScanningRequestedOnNetworkScreen());
+}
+
+void HandleGaiaInfoScreen() {
+  OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
+  LOG(INFO) << "OobeInteractiveUITest: Switched to 'gaia-info' screen.";
+
+  test::OobeJS().ClickOnPath({"gaia-info", "nextButton"});
+  LOG(INFO) << "OobeInteractiveUITest: Exiting 'gaia-info' screen.";
 }
 
 void WaitForGaiaSignInScreen() {
@@ -624,7 +633,12 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
   if (GetFirstSigninScreen() == UserCreationView::kScreenId) {
     test::WaitForUserCreationScreen();
     test::TapUserCreationNext();
+
+    if (features::IsOobeGaiaInfoScreenEnabled()) {
+      HandleGaiaInfoScreen();
+    }
   }
+
   WaitForGaiaSignInScreen();
   LogInAsRegularUser();
 

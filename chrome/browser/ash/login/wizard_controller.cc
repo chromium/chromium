@@ -1241,7 +1241,7 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
           }
         }
       } else {
-        // TODO: delete this part after removing the feature flag
+        // TODO: delete this part after removing the feature flag (b:282728089)
         if (result == GaiaScreen::Result::BACK &&
             wizard_context_->is_user_creation_enabled) {
           // `Result::BACK` is only triggered when pressing back button. It goes

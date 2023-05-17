@@ -86,7 +86,7 @@ enum class OobeDialogState {
   // chrome.loginScreenUi API.
   EXTENSION_LOGIN_CLOSED = 20,
 
-  // Showing Gaia Info screen
+  // Showing Gaia Info screen.
   GAIA_INFO = 21,
 };
 
