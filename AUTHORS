@@ -323,7 +323,6 @@ Derek Halman <d.halman@gmail.com>
 Devlin Cronin <rdevlin.cronin@gmail.com>
 Dhi Aurrahman <dio@rockybars.com>
 Di Wu <meetwudi@gmail.com>
-Di Zhang <dizhangg@chromium.org>
 Diana Suvorova <diana.suvorova@gmail.com>
 Diego Fernández Santos <agujaydedal@gmail.com>
 Diego Ferreiro Val <elfogris@gmail.com>
@@ -855,6 +854,7 @@ Max Schmitt <max@schmitt.mx>
 Max Vujovic <mvujovic@adobe.com>
 Mayank Gupta <mayank.g1@samsung.com>
 Mayur Kankanwadi <mayurk.vk@samsung.com>
+Mc Zeng <zengmcong@gmail.com>
 Md Abdullah Al Alamin <a.alamin.cse@gmail.com>
 Md. Hasanur Rashid <hasanur.r@samsung.com>
 Md Jobed Hossain <jobed.h@samsung.com>
@@ -1093,6 +1093,7 @@ Ryo Ogawa <negibokken@gmail.com>
 Ryuan Choi <ryuan.choi@samsung.com>
 Saikrishna Arcot <saiarcot895@gmail.com>
 Sajal Khandelwal <skhandelwa22@bloomberg.net>
+Sajeesh Sidharthan <sajeesh.sidharthan@amd.corp-partner.google.com>
 Saksham Mittal <gotlouemail@gmail.com>
 Salvatore Iovene <salvatore.iovene@intel.com>
 Sam James <sam@gentoo.org>
@@ -1184,7 +1185,6 @@ Simon Jackson <simon.jackson@sonocent.com>
 Simon La Macchia <smacchia@amazon.com>
 Siva Kumar Gunturi <siva.gunturi@samsung.com>
 Slava Aseev <nullptrnine@gmail.com>
-Sohan Jyoti Ghosh <sohanjg@chromium.org>
 Sohom Datta <sohom.datta@learner.manipal.edu>
 Sohom Datta <dattasohom1@gmail.com>
 Song Fangzhen <songfangzhen@bytedance.com>
@@ -1270,6 +1270,7 @@ Thomas White <im.toms.inbox@gmail.com>
 Tiago Vignatti <tiago.vignatti@intel.com>
 Tibor Dusnoki <tibor.dusnoki.91@gmail.com>
 Tibor Dusnoki <tdusnoki@inf.u-szeged.hu>
+Tien Hock Loh <tienhock.loh@starfivetech.com>
 Tim Ansell <mithro@mithis.com>
 Tim Niederhausen <tim@rnc-ag.de>
 Tim Steiner <twsteiner@gmail.com>
@@ -1443,6 +1444,7 @@ Zoltan Czirkos <czirkos.zoltan@gmail.com>
 Zoltan Herczeg <zherczeg.u-szeged@partner.samsung.com>
 Zoltan Kuscsik <zoltan.kuscsik@linaro.org>
 Zoru Lee <donzoru@gmail.com>
+Zuckjet <zuckjet@gmail.com>
 Zsolt Borbely <zsborbely.u-szeged@partner.samsung.com>
 方觉 (Fang Jue) <fangjue23303@gmail.com>
 迷渡 <justjavac@gmail.com>
@@ -1463,8 +1465,7 @@ CloudMosa, Inc. <*@cloudmosa.com>
 Code Aurora Forum <*@codeaurora.org>
 CodeWeavers, Inc. <*@codeweavers.com>
 Collabora Limited <*@collabora.com>
-Comodo CA Limited
-CoSMo Software pvt ltd <*@cosmosoftware.io>
+Comodo CA Limited CoSMo Software pvt ltd <*@cosmosoftware.io>
 Cosium <*@cosium.com>
 Dell Technologies Inc. <*@dell.corp-partner.google.com>
 Ding (Beijing) Intelligent Technology Co. Ltd <*@dingdao.com>
@@ -1472,9 +1473,6 @@ Duck Duck Go, Inc. <*@duckduckgo.com>
 Endless Mobile, Inc. <*@endlessm.com>
 EngFlow, Inc. <*@engflow.com>
 Estimote, Inc. <*@estimote.com>
-Meta Platforms, Inc. <*@fb.com>
-Meta Platforms, Inc. <*@meta.com>
-Meta Platforms, Inc. <*@oculus.com>
 Google Inc. <*@google.com>
 Grammarly, Inc. <*@grammarly.com>
 Hewlett-Packard Development Company, L.P. <*@hp.com>
@@ -1490,8 +1488,10 @@ Loongson Technology Corporation Limited. <*@loongson.cn>
 Macadamian <*@macadamian.com>
 Mail.ru Group <*@corp.mail.ru>
 Make Positive Provar Limited <*@provartesting.com>
-Mc Zeng <zengmcong@gmail.com>
 Mediatek <*@mediatek.com>
+Meta Platforms, Inc. <*@fb.com>
+Meta Platforms, Inc. <*@meta.com>
+Meta Platforms, Inc. <*@oculus.com>
 Microsoft <*@microsoft.com>
 MIPS Technologies, Inc. <*@mips.com>
 Mobica Limited <*@mobica.com>
@@ -1508,7 +1508,6 @@ Quality First Software GmbH <*@qf-software.com>
 Rakuten Kobo Inc. <*@kobo.com>
 Rakuten Kobo Inc. <*@rakuten.com>
 Red Hat Inc. <*@redhat.com>
-Sajeesh Sidharthan <sajeesh.sidharthan@amd.corp-partner.google.com>
 Semihalf <*@semihalf.com>
 Seznam.cz, a.s. <*@firma.seznam.cz>
 Slack Technologies Inc. <*@slack-corp.com>
@@ -1521,9 +1520,7 @@ The Browser Company <*@thebrowser.company>
 The Chromium Authors <*@chromium.org>
 The MathWorks, Inc. <binod.pant@mathworks.com>
 THEO Technologies <*@theoplayer.com>
-Tien Hock Loh <tienhock.loh@starfivetech.com>
-Torchmobile Inc.
-Upwork <*@cloud.upwork.com>
+Torchmobile Inc. Upwork <*@cloud.upwork.com>
 Venture 3 Systems LLC <*@venture3systems.com>
 Vewd Software AS <*@vewd.com>
 Vivaldi Technologies AS <*@vivaldi.com>
@@ -1531,6 +1528,5 @@ Wacom <*@wacom.com>
 Whist Technologies <*@whist.com>
 Xperi Corporation <*@xperi.com>
 Yandex LLC <*@yandex-team.ru>
-Zuckjet <zuckjet@gmail.com>
 # Please DO NOT APPEND here. See comments at the top of the file.
 # END organizations section.
