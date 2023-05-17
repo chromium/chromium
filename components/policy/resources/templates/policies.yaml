@@ -1107,6 +1107,7 @@ policies:
   1106: UserContextAwareAccessSignalsAllowlist
   1107: GoogleSearchSidePanelEnabled
   1108: PdfUseSkiaRendererEnabled
+  1109: DataUrlInSvgUseEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

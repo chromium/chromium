@@ -315,6 +315,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kInsecureHashesInTLSHandshakesEnabled,
     prefs::kInsecureHashesInTLSHandshakesEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kDataUrlInSvgUseEnabled,
+    prefs::kDataUrlInSvgUseEnabled,
+    base::Value::Type::BOOLEAN },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAuthAndroidNegotiateAccountType,

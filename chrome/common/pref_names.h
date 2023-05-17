@@ -548,6 +548,8 @@ extern const char kQuietNotificationPermissionPromoWasShown[];
 extern const char kNotificationPermissionActions[];
 extern const char kHadThreeConsecutiveNotificationPermissionDenies[];
 
+extern const char kDataUrlInSvgUseEnabled[];
+
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kManagedSerialAllowAllPortsForUrls[];
 extern const char kManagedSerialAllowUsbDevicesForUrls[];

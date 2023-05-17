@@ -32821,6 +32821,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1106" label="UserContextAwareAccessSignalsAllowlist"/>
   <int value="1107" label="GoogleSearchSidePanelEnabled"/>
   <int value="1108" label="PdfUseSkiaRendererEnabled"/>
+  <int value="1109" label="DataUrlInSvgUseEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

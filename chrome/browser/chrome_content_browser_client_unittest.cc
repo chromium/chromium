@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -1018,6 +1019,23 @@ TEST_F(ChromeContentBrowserClientSwitchTest, WebSQLAccessEnabled) {
   profile()->GetPrefs()->SetBoolean(storage::kWebSQLAccess, true);
   base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
   EXPECT_TRUE(result.HasSwitch(blink::switches::kWebSQLAccess));
+}
+
+TEST_F(ChromeContentBrowserClientSwitchTest, DataUrlInSvgDefault) {
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_FALSE(result.HasSwitch(blink::switches::kDataUrlInSvgUseEnabled));
+}
+
+TEST_F(ChromeContentBrowserClientSwitchTest, DataUrlInSvgDisabled) {
+  profile()->GetPrefs()->SetBoolean(prefs::kDataUrlInSvgUseEnabled, false);
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_FALSE(result.HasSwitch(blink::switches::kDataUrlInSvgUseEnabled));
+}
+
+TEST_F(ChromeContentBrowserClientSwitchTest, DataUrlInSvgEnabled) {
+  profile()->GetPrefs()->SetBoolean(prefs::kDataUrlInSvgUseEnabled, true);
+  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
+  EXPECT_TRUE(result.HasSwitch(blink::switches::kDataUrlInSvgUseEnabled));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

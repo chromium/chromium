@@ -1652,6 +1652,7 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
       policy::policy_prefs::kOffsetParentNewSpecBehaviorEnabled, true);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kSendMouseEventsDisabledFormControlsEnabled, true);
+  registry->RegisterBooleanPref(prefs::kDataUrlInSvgUseEnabled, false);
 
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterListPref(prefs::kMandatoryExtensionsForIncognitoNavigation);
@@ -2721,6 +2722,10 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       // switch so that we know whether to force WebSQL to be enabled.
       if (prefs->GetBoolean(storage::kWebSQLAccess)) {
         command_line->AppendSwitch(blink::switches::kWebSQLAccess);
+      }
+
+      if (prefs->GetBoolean(prefs::kDataUrlInSvgUseEnabled)) {
+        command_line->AppendSwitch(blink::switches::kDataUrlInSvgUseEnabled);
       }
 
 #if !BUILDFLAG(IS_ANDROID)

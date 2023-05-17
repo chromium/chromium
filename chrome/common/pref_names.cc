@@ -1660,6 +1660,11 @@ const char kQuietNotificationPermissionPromoWasShown[] =
     "profile.content_settings.quiet_permission_ui_promo.was_shown."
     "notifications";
 
+// Boolean indicating whether support for Data URLs in SVGUseElement should be
+// removed.
+const char kDataUrlInSvgUseEnabled[] =
+    "profile.content_settings.data_url_in_svg_use_enabled";
+
 // Boolean indicating if JS dialogs triggered from a different origin iframe
 // should be blocked. Has no effect if
 // "SuppressDifferentOriginSubframeJSDialogs" feature is disabled.
