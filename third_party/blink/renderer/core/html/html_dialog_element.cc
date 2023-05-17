@@ -164,9 +164,15 @@ void HTMLDialogElement::close(const String& return_value) {
     focus_options->setPreventScroll(true);
     Element* previously_focused_element = previously_focused_element_;
     previously_focused_element_ = nullptr;
-    previously_focused_element->Focus(FocusParams(
-        SelectionBehaviorOnFocus::kNone, mojom::blink::FocusType::kScript,
-        nullptr, focus_options, /*gate_on_user_activation=*/true));
+
+    bool descendant_is_focused = GetDocument().FocusedElement() &&
+                                 FlatTreeTraversal::IsDescendantOf(
+                                     *GetDocument().FocusedElement(), *this);
+    if (previously_focused_element && (is_modal_ || descendant_is_focused)) {
+      previously_focused_element->Focus(FocusParams(
+          SelectionBehaviorOnFocus::kNone, mojom::blink::FocusType::kScript,
+          nullptr, focus_options, /*gate_on_user_activation=*/true));
+    }
   }
 
   if (close_watcher_) {
