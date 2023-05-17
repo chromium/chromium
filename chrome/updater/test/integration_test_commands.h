@@ -134,6 +134,9 @@ class IntegrationTestCommands
   virtual void RunOfflineInstall(bool is_legacy_install,
                                  bool is_silent_install) = 0;
 
+  virtual void DMDeregisterDevice() = 0;
+  virtual void DMCleanup() = 0;
+
  protected:
   friend class base::RefCountedThreadSafe<IntegrationTestCommands>;
 

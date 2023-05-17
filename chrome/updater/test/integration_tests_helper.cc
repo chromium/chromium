@@ -364,6 +364,8 @@ void AppTestHelper::FirstTaskRun() {
      WithSwitch("silent",
                 WithSwitch("legacy_install",
                            WithSystemScope(Wrap(&RunOfflineInstall))))},
+    {"dm_deregister_device", WithSystemScope(Wrap(&DMDeregisterDevice))},
+    {"dm_cleanup", WithSystemScope(Wrap(&DMCleanup))},
   };
 
   const base::CommandLine* command_line =

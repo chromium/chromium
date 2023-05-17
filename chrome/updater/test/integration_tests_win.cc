@@ -202,8 +202,7 @@ void CheckInstallation(UpdaterScope scope,
     } else {
       if (::IsUserAnAdmin()) {
         for (const wchar_t* key :
-             {kRegKeyCompanyCloudManagement, kRegKeyCompanyEnrollment,
-              UPDATER_POLICIES_KEY}) {
+             {kRegKeyCompanyCloudManagement, UPDATER_POLICIES_KEY}) {
           EXPECT_FALSE(RegKeyExists(HKEY_LOCAL_MACHINE, key));
         }
       }

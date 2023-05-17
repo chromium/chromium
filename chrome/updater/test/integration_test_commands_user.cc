@@ -334,6 +334,12 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
                                      is_silent_install);
   }
 
+  void DMDeregisterDevice() override {
+    updater::test::DMDeregisterDevice(updater_scope_);
+  }
+
+  void DMCleanup() override { updater::test::DMCleanup(updater_scope_); }
+
  private:
   ~IntegrationTestCommandsUser() override = default;
 

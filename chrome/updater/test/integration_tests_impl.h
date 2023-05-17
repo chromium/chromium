@@ -285,6 +285,9 @@ void RunOfflineInstall(UpdaterScope scope,
 
 base::CommandLine MakeElevated(base::CommandLine command_line);
 
+void DMDeregisterDevice(UpdaterScope scope);
+void DMCleanup(UpdaterScope scope);
+
 }  // namespace updater::test
 
 #endif  // CHROME_UPDATER_TEST_INTEGRATION_TESTS_IMPL_H_
