@@ -1441,3 +1441,59 @@ testcase.driveFoldersRetainPinnedPropertyWhenBulkPinningEnabled = async () => {
   await remoteCall.waitForElement(
       appId, '#file-list [file-name="Shared Directory"].pinned');
 };
+
+/**
+ * Tests that when bulk pinning is enabled, the "Available offline" toggle
+ * should still be visible in the Shared with me section.
+ */
+testcase.drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled =
+    async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE, [], [
+    ENTRIES.hello,
+    ENTRIES.sharedWithMeDirectory,
+    ENTRIES.sharedWithMeDirectoryFile,
+  ]);
+
+  // Click the Shared with me volume, it has no children so navigating using the
+  // directory tree doesn't work.
+  chrome.test.assertFalse(!await remoteCall.callRemoteTestUtil(
+      'selectVolume', appId, ['drive_shared_with_me']));
+
+  // Wait until the breadcrumb path is updated.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Shared with me');
+
+  // Bring up the context menu for Shared Directory.
+  await remoteCall.waitAndRightClick(
+      appId, '#file-list [file-name="Shared Directory"]');
+
+  // The pinned toggle should be visible along with the command.
+  await remoteCall.waitForElement(
+      appId,
+      '#pinned-toggle-wrapper:not([hidden]) #pinned-toggle:not([disabled])');
+  await remoteCall.waitForElement(
+      appId, '[command="#toggle-pinned"]:not([hidden][disabled])');
+
+  // Mock the free space returned by spaced to be 1 GB and enable the bulk
+  // pinning preference.
+  await sendTestMessage({name: 'setSpacedFreeSpace', freeSpace: 1 << 30});
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
+  await remoteCall.waitForBulkPinningStage('Syncing');
+
+  // After bulk pinning is enabled and in the syncing stage, the toggle should
+  // still be visible and enabled.
+  await remoteCall.waitForElement(
+      appId,
+      '#pinned-toggle-wrapper:not([hidden]) #pinned-toggle:not([disabled])');
+  await remoteCall.waitForElement(
+      appId, '[command="#toggle-pinned"]:not([hidden][disabled])');
+
+  // Disable the bulk pinning preference wait for it to reflect in the pin state
+  // and ensure the pinned toggle has not changed.
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: false});
+  await remoteCall.waitForBulkPinningStage('Stopped');
+  await remoteCall.waitForElement(
+      appId,
+      '#pinned-toggle-wrapper:not([hidden]) #pinned-toggle:not([disabled])');
+  await remoteCall.waitForElement(
+      appId, '[command="#toggle-pinned"]:not([hidden][disabled])');
+};
