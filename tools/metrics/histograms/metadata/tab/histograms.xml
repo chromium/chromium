@@ -531,8 +531,9 @@ chromium-metrics-reviews@google.com.
   <owner>dljames@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
-    Records once an hour once the SavedTabGroupKeyedService is instantiated.
-    Tracks the age of a SavedTabGroup (since creation).
+    Records once per group per hour once the SavedTabGroupKeyedService is
+    instantiated upon profile open. Tracks the age of a SavedTabGroup (since
+    creation). Nothing is recorded for sessions shorter than one hour.
   </summary>
 </histogram>
 
@@ -541,8 +542,9 @@ chromium-metrics-reviews@google.com.
   <owner>dljames@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
-    Records once an hour once the SavedTabGroupKeyedService is instantiated.
-    Tracks the total number of groups saved in the profile.
+    Records per hour once the SavedTabGroupKeyedService is instantiated upon
+    profile open. Tracks the total number of groups saved in the profile.
+    Nothing is recorded for sessions shorter than one hour.
   </summary>
 </histogram>
 
@@ -552,7 +554,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
     Records when a SavedTabGroup is deleted. Tracks the total age / lifespan of
-    a SavedTabGroup (since creation) once deleted.
+    a SavedTabGroup (since creation) once deleted. Nothing is recorded for
+    sessions shorter than one hour.
   </summary>
 </histogram>
 
@@ -561,8 +564,9 @@ chromium-metrics-reviews@google.com.
   <owner>dljames@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
-    Records once an hour once the SavedTabGroupKeyedService is instantiated.
-    Tracks the number of tabs in a SavedTabGroup.
+    Records once per group per hour once the SavedTabGroupKeyedService is
+    instantiated. Tracks the number of tabs in a SavedTabGroup. Nothing is
+    recorded for sessions shorter than one hour.
   </summary>
 </histogram>
 
@@ -603,8 +607,9 @@ chromium-metrics-reviews@google.com.
   <owner>dljames@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
-    Records once an hour once the SavedTabGroupKeyedService is instantiated.
-    Tracks the number of unsaved TabGroups.
+    Records once an hour once the SavedTabGroupKeyedService is instantiated upon
+    profile open. Tracks the number of unsaved TabGroups. Nothing is recorded
+    for sessions shorter than one hour.
   </summary>
 </histogram>
 
@@ -613,8 +618,9 @@ chromium-metrics-reviews@google.com.
   <owner>dljames@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
-    Records once an hour once the SavedTabGroupKeyedService is instantiated.
-    Tracks the number of tabs in an unsaved TabGroup.
+    Records once per group per hour once the SavedTabGroupKeyedService is
+    instantiated. Tracks the number of tabs in an unsaved TabGroup. Nothing is
+    recorded for sessions shorter than one hour.
   </summary>
 </histogram>
 
