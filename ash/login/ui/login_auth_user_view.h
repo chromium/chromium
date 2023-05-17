@@ -16,6 +16,7 @@
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/session/user_info.h"
+#include "ash/style/pill_button.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -313,7 +314,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   raw_ptr<LoginUserView, ExperimentalAsh> user_view_ = nullptr;
   raw_ptr<LoginPasswordView, ExperimentalAsh> password_view_ = nullptr;
   raw_ptr<LoginPinInputView, ExperimentalAsh> pin_input_view_ = nullptr;
-  raw_ptr<views::LabelButton, ExperimentalAsh> pin_password_toggle_ = nullptr;
+  raw_ptr<PillButton, ExperimentalAsh> pin_password_toggle_ = nullptr;
   raw_ptr<LoginPinView, ExperimentalAsh> pin_view_ = nullptr;
   raw_ptr<views::LabelButton, ExperimentalAsh> online_sign_in_button_ = nullptr;
   raw_ptr<DisabledAuthMessageView, ExperimentalAsh> disabled_auth_message_ =

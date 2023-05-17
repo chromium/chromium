@@ -48,6 +48,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -57,6 +58,7 @@
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -96,6 +98,11 @@ const int kDistanceBetweenPasswordFieldAndPinKeyboardDp = 16;
 const int kPinPasswordToggleButtonHeight = 32;
 const int kPinPasswordToggleButtonPaddingTop = 24;
 const int kPinPasswordToggleButtonPaddingBottom = 20;
+
+// The background color id of the button used for switching between pin and
+// password. Applied only for Jellyroll.
+constexpr ui::ColorId kPinPasswordToggleColorId =
+    cros_tokens::kCrosSysSystemOnBase1;
 
 // Distance from the end of pin keyboard to the bottom of the big user view.
 const int kDistanceFromPinKeyboardToBigUserViewBottomDp = 50;
@@ -1070,6 +1077,10 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
           GetPinPasswordToggleText()));
   pin_password_toggle_->SetMaxSize(
       gfx::Size(/*ignored*/ 0, kPinPasswordToggleButtonHeight));
+
+  if (chromeos::features::IsJellyrollEnabled()) {
+    pin_password_toggle_->SetBackgroundColorId(kPinPasswordToggleColorId);
+  }
 
   auto pin_view = std::make_unique<LoginPinView>(
       LoginPinView::Style::kNumeric,
