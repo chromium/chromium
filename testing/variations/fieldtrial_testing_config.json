@@ -683,6 +683,25 @@
             ]
         }
     ],
+    "ArcVmIdleManager": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledAC",
+                    "params": {
+                        "ignore_battery_for_test": "true"
+                    },
+                    "enable_features": [
+                        "ArcIdleManager"
+                    ],
+                    "min_os_version": "15452.0.0"
+                }
+            ]
+        }
+    ],
     "ArcVmInitThrottle3": [
         {
             "platforms": [
