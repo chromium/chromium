@@ -579,6 +579,10 @@ void LocationBarView::Layout() {
                              !location_icon_view_->ShouldShowLabel() &&
                              !ShouldShowKeywordBubble();
 
+  const bool show_overriding_permission_chip =
+      chip_controller_ && chip_controller_->chip()->GetVisible() &&
+      !ShouldShowKeywordBubble();
+
   // There are 2 CR23 features that impact location bar layout. Make sure layout
   // is correct when neither, either, or both are enabled. Touch UI, whether the
   // popup is open (see `should_indent` comment above), whether a keyword is
@@ -601,6 +605,9 @@ void LocationBarView::Layout() {
   // Indentation to match the suggestion icons & texts when in keyword mode.
   int icon_keyword_indent = 0;
   int text_keyword_indent = 0;
+  // Indentation add padding when the permission chip is visible and replacing
+  // the LHS icon.
+  int text_overriding_permission_chip_indent = 0;
   if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled() &&
       OmniboxFieldTrial::IsCr23LayoutEnabled()) {
     icon_left = 4;
@@ -616,6 +623,7 @@ void LocationBarView::Layout() {
     text_indent = 12;
     icon_keyword_indent = -2;
     text_keyword_indent = -6;
+    text_overriding_permission_chip_indent = 3;
   } else if (OmniboxFieldTrial::IsCr23LayoutEnabled()) {
     icon_left = 2;
     text_left = 0;
@@ -623,6 +631,7 @@ void LocationBarView::Layout() {
     text_indent = 9;
     icon_keyword_indent = 6;
     text_keyword_indent = -1;
+    text_overriding_permission_chip_indent = 8;
   } else {
     icon_left = 2;
     text_left = 0;
@@ -630,6 +639,7 @@ void LocationBarView::Layout() {
     text_indent = 11;
     icon_keyword_indent = 0;
     text_keyword_indent = 0;
+    text_overriding_permission_chip_indent = 8;
   }
   if (should_indent) {
     icon_left += icon_indent;
@@ -639,6 +649,8 @@ void LocationBarView::Layout() {
     icon_left += icon_keyword_indent;
     text_left += text_keyword_indent;
   }
+  if (show_overriding_permission_chip)
+    text_left += text_overriding_permission_chip_indent;
 
   LocationBarLayout leading_decorations(LocationBarLayout::Position::kLeftEdge,
                                         text_left);
@@ -664,8 +676,7 @@ void LocationBarView::Layout() {
   // label/chip.
   const double kLeadingDecorationMaxFraction = 0.5;
 
-  if (chip_controller_ && chip_controller_->chip()->GetVisible() &&
-      !ShouldShowKeywordBubble()) {
+  if (show_overriding_permission_chip) {
     leading_decorations.AddDecoration(vertical_padding, location_height, false,
                                       0, icon_left, chip_controller_->chip());
   }
