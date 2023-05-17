@@ -419,7 +419,7 @@ void SkiaOutputSurfaceImplOnGpu::Reshape(const SkImageInfo& image_info,
                                          gfx::OverlayTransform transform) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::Reshape");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(gr_context());
+  DCHECK(gr_context() || graphite_context());
 
   if (context_is_lost_)
     return;
@@ -1740,8 +1740,8 @@ bool SkiaOutputSurfaceImplOnGpu::Initialize() {
 
   context_state_ = dependency_->GetSharedContextState();
   DCHECK(context_state_);
-  if (!context_state_->gr_context()) {
-    DLOG(ERROR) << "Failed to create GrContext";
+  if (!context_state_->gr_context() && !context_state_->graphite_context()) {
+    DLOG(ERROR) << "Failed to create GrContext or GraphiteContext";
     return false;
   }
 
@@ -1759,8 +1759,11 @@ bool SkiaOutputSurfaceImplOnGpu::Initialize() {
     }
   }
 
-  max_resource_cache_bytes_ =
-      context_state_->gr_context()->getResourceCacheLimit();
+  if (context_state_->gr_context()) {
+    max_resource_cache_bytes_ =
+        context_state_->gr_context()->getResourceCacheLimit();
+  }
+
   if (context_state_)
     context_state_->AddContextLostObserver(this);
 

@@ -769,7 +769,14 @@ class RasterDecoderImpl final : public RasterDecoder,
     access->ApplyBackendSurfaceEndState();
 
     if (graphite_context()) {
-      GraphiteFlushAndSubmit();
+      // SkSurface::flush doesn't flush GPU work, so it's necessary to snap and
+      // insert a recording here as well.
+      auto recording = graphite_recorder()->snap();
+      if (recording) {
+        skgpu::graphite::InsertRecordingInfo info = {};
+        info.fRecording = recording.get();
+        graphite_context()->insertRecording(info);
+      }
     }
 
     if (flush_count < 100) {
