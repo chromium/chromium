@@ -754,6 +754,7 @@ void PrintPreviewHandler::HandlePrint(const base::Value::List& args) {
                      weak_factory_.GetWeakPtr(), user_action,
                      std::move(settings), data, callback_id);
 
+  // TODO(b/283048997): Fix GetWeakPointer usage.
   auto hide_preview = base::BindOnce(&PrintPreviewUI::OnHidePreviewDialog,
                                      print_preview_ui()->GetWeakPointer());
 

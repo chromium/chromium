@@ -4600,6 +4600,7 @@ static_library("browser") {
 
     if (!is_fuchsia) {
       sources += [
+        # TODO(b/283125370): Change setup to match content analysis support.
         "enterprise/connectors/analysis/print_content_analysis_utils.cc",
         "enterprise/connectors/analysis/print_content_analysis_utils.h",
       ]

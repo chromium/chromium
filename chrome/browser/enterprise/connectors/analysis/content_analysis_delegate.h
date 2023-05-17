@@ -228,6 +228,9 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // Showing the UI is not possible in unit tests, call this to disable it.
   static void DisableUIForTesting();
 
+  // Undoes the effects of DisableUIForTesting() after testing is finished.
+  static void EnableUIAfterTesting();
+
   // Add a callback to allow tests to validate `AckAllRequests` will send the
   // appropriate actions.
   using OnAckAllRequestsCallback = base::OnceCallback<void(

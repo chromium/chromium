@@ -772,7 +772,7 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
 #endif
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
   absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
-      scanning_data = enterprise_connectors::ShouldAnalyzeBeforePrintPreview(
+      scanning_data = enterprise_connectors::GetBeforePrintPreviewAnalysisData(
           web_contents());
   if (scanning_data) {
     auto scanning_done_callback = base::BindOnce(

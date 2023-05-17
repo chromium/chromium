@@ -31,7 +31,7 @@ void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
                             base::OnceClosure hide_preview);
 
 absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
-ShouldAnalyzeBeforePrintPreview(content::WebContents* web_contents);
+GetBeforePrintPreviewAnalysisData(content::WebContents* web_contents);
 
 }  // namespace enterprise_connectors
 

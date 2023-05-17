@@ -341,6 +341,12 @@ void ContentAnalysisDelegate::DisableUIForTesting() {
   *UIEnabledStorage() = false;
 }
 
+// TODO(b/283067315): Add this to all the test TearDown()s.
+// static
+void ContentAnalysisDelegate::EnableUIAfterTesting() {
+  *UIEnabledStorage() = true;
+}
+
 // static
 void ContentAnalysisDelegate::SetOnAckAllRequestsCallbackForTesting(
     OnAckAllRequestsCallback callback) {

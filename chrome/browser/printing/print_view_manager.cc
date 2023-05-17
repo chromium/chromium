@@ -278,7 +278,7 @@ void PrintViewManager::RejectPrintPreviewRequestIfRestrictedByContentAnalysis(
     content::GlobalRenderFrameHostId rfh_id,
     base::OnceCallback<void(bool should_proceed)> callback) {
   absl::optional<enterprise_connectors::ContentAnalysisDelegate::Data>
-      scanning_data = enterprise_connectors::ShouldAnalyzeBeforePrintPreview(
+      scanning_data = enterprise_connectors::GetBeforePrintPreviewAnalysisData(
           web_contents());
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(rfh_id);
   if (rfh && scanning_data) {
