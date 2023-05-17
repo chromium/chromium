@@ -3196,7 +3196,8 @@ void RenderFrameHostImpl::RenderProcessGone(
 
   // If this was the current pending or speculative RFH dying, cancel and
   // destroy it.
-  if (lifecycle_state_ == LifecycleStateImpl::kSpeculative) {
+  if (lifecycle_state_ == LifecycleStateImpl::kSpeculative ||
+      lifecycle_state_ == LifecycleStateImpl::kPendingCommit) {
     CHECK(owner_);  // See `owner_` invariants about `lifecycle_state_`.
     owner_->GetRenderFrameHostManager()
         .CleanupSpeculativeRfhForRenderProcessGone();
@@ -4866,14 +4867,21 @@ NavigationRequest* RenderFrameHostImpl::GetSameDocumentNavigationRequest(
 
 void RenderFrameHostImpl::ResetOwnedNavigationRequests(
     NavigationDiscardReason reason) {
-  if (ShouldQueueNavigationsWhenPendingCommitRFHExists() &&
-      lifecycle_state_ == LifecycleStateImpl::kPendingCommit) {
-    // With navigation queueing, pending commit navigations shouldn't get
-    // canceled, unless the FrameTreeNode or renderer process
-    // is gone/will be gone soon.
-    CHECK(reason == NavigationDiscardReason::kRenderProcessGone ||
-          reason == NavigationDiscardReason::kWillRemoveFrame);
+  if (lifecycle_state_ == LifecycleStateImpl::kPendingCommit) {
+    // Pending commit RenderFrameHosts should never have same document
+    // navigation requests yet, as they do not have a real document committed
+    // yet.
+    DCHECK(same_document_navigation_requests_.empty());
+
+    if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+      // With navigation queueing, pending commit navigations shouldn't get
+      // canceled, unless the FrameTreeNode or renderer process
+      // is gone/will be gone soon.
+      CHECK(reason == NavigationDiscardReason::kRenderProcessGone ||
+            reason == NavigationDiscardReason::kWillRemoveFrame);
+    }
   }
+
   // Move the NavigationRequests to new maps first before deleting them. This
   // avoids issues if a re-entrant call is made when a NavigationRequest is
   // being deleted (e.g., if the process goes away as the tab is closing).
