@@ -304,7 +304,7 @@ void TabletModeMultitaskMenu::UpdateDrag(float current_y, bool down) {
   menu_view_->layer()->SetTransform(
       gfx::Transform::MakeTranslation(0, translation_y));
 
-  if (ui::Layer* cue_layer = event_handler_->multitask_cue()->cue_layer()) {
+  if (auto* cue_layer = event_handler_->multitask_cue()->cue_layer()) {
     cue_layer->SetTransform(gfx::Transform::MakeTranslation(
         0, menu_view_->GetPreferredSize().height() + kVerticalPosition +
                translation_y));

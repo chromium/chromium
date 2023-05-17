@@ -64,8 +64,9 @@ TabletModeMultitaskMenuEventHandler::~TabletModeMultitaskMenuEventHandler() {
 // static
 bool TabletModeMultitaskMenuEventHandler::CanShowMenu(aura::Window* window) {
   auto* window_state = WindowState::Get(window);
-  return window_state->CanMaximize() && window_state->CanResize() &&
-         !window_state->IsFloated() && !window_state->IsPinned();
+  return window_state && window_state->CanMaximize() &&
+         window_state->CanResize() && !window_state->IsFloated() &&
+         !window_state->IsPinned();
 }
 
 void TabletModeMultitaskMenuEventHandler::ShowMultitaskMenu(
