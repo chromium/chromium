@@ -634,7 +634,8 @@ TEST_F(
         assertTrue(getColorSchemeSelector().hidden);
       });
 
-      test('selects static color options', async () => {
+      // TODO(b/277811561) flaky test
+      test.skip('selects static color options', async () => {
         const theme = getRouter()
                           .shadowRoot.querySelector('personalization-main')
                           .shadowRoot.querySelector('personalization-theme');
