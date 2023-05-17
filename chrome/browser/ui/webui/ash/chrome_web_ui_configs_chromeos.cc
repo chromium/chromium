@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/chrome_untrusted_web_ui_configs_chromeos.h"
+#include "chrome/browser/ui/webui/ash/chrome_untrusted_web_ui_configs_chromeos.h"
 
 #include "base/functional/callback.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/webui_config_map.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Headers that are part of the //chrome/browser target.
 //
 // Depending on //chrome/browser would cause a circular dependency because it
@@ -110,7 +109,6 @@
 #include "chrome/browser/ui/webui/ash/emulator/device_emulator_ui.h"
 #endif  // !defined(USE_REAL_DBUS_CLIENTS)
 #endif  // !defined(OFFICIAL_BUILD)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace content {
 class WebUI;
@@ -152,7 +150,6 @@ std::unique_ptr<content::WebUIConfig> MakeComponentConfigWithArgs(
   return std::make_unique<Config>(create_controller_func);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<content::WebUIConfig> MakeConnectivityDiagnosticsUIConfig() {
   return MakeComponentConfigWithArgs<ConnectivityDiagnosticsUIConfig,
                                      ConnectivityDiagnosticsUI>(
@@ -325,11 +322,5 @@ void RegisterAshChromeWebUIConfigs() {
 #endif  // !defined(USE_REAL_DBUS_CLIENTS)
 #endif  // !defined(OFFICIAL_BUILD)
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}  // namespace ash
 
-void RegisterChromeOSChromeWebUIConfigs() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::RegisterAshChromeWebUIConfigs();
-#endif
-}
+}  // namespace ash

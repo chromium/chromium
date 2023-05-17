@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/chrome_untrusted_web_ui_configs_chromeos.h"
+#include "chrome/browser/ui/webui/ash/chrome_untrusted_web_ui_configs_chromeos.h"
 
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/webui_config_map.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/webui/demo_mode_app_ui/demo_mode_app_untrusted_ui.h"
 #include "ash/webui/eche_app_ui/untrusted_eche_app_ui.h"
@@ -27,51 +26,41 @@
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_untrusted_ui.h"
 #endif  // !defined(OFFICIAL_BUILD)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-namespace {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace ash {
 void RegisterAshChromeUntrustedWebUIConfigs() {
   auto& map = content::WebUIConfigMap::GetInstance();
   // Add untrusted `WebUIConfig`s for Ash ChromeOS to the list here.
   map.AddUntrustedWebUIConfig(std::make_unique<CroshUIConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<TerminalUIConfig>());
   map.AddUntrustedWebUIConfig(
-      std::make_unique<ash::eche_app::UntrustedEcheAppUIConfig>());
+      std::make_unique<eche_app::UntrustedEcheAppUIConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<MediaAppGuestUIConfig>());
+  map.AddUntrustedWebUIConfig(std::make_unique<HelpAppUntrustedUIConfig>());
+  map.AddUntrustedWebUIConfig(std::make_unique<CameraAppUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(
-      std::make_unique<ash::HelpAppUntrustedUIConfig>());
-  map.AddUntrustedWebUIConfig(
-      std::make_unique<ash::CameraAppUntrustedUIConfig>());
-  map.AddUntrustedWebUIConfig(
-      std::make_unique<ash::HelpAppKidsMagazineUntrustedUIConfig>());
-  if (ash::features::IsProjectorEnabled())
+      std::make_unique<HelpAppKidsMagazineUntrustedUIConfig>());
+  if (features::IsProjectorEnabled()) {
     map.AddUntrustedWebUIConfig(std::make_unique<UntrustedProjectorUIConfig>());
+  }
   map.AddUntrustedWebUIConfig(
       std::make_unique<UntrustedProjectorAnnotatorUIConfig>());
   map.AddUntrustedWebUIConfig(
-      std::make_unique<ash::file_manager::FileManagerUntrustedUIConfig>());
-  if (base::FeatureList::IsEnabled(ash::features::kOsFeedback)) {
+      std::make_unique<file_manager::FileManagerUntrustedUIConfig>());
+  if (base::FeatureList::IsEnabled(features::kOsFeedback)) {
     map.AddUntrustedWebUIConfig(
-        std::make_unique<ash::feedback::OsFeedbackUntrustedUIConfig>());
+        std::make_unique<feedback::OsFeedbackUntrustedUIConfig>());
   }
-  if (base::FeatureList::IsEnabled(ash::features::kFaceMLApp)) {
-    map.AddUntrustedWebUIConfig(
-        std::make_unique<ash::FaceMLAppUntrustedUIConfig>());
+  if (base::FeatureList::IsEnabled(features::kFaceMLApp)) {
+    map.AddUntrustedWebUIConfig(std::make_unique<FaceMLAppUntrustedUIConfig>());
   }
   map.AddUntrustedWebUIConfig(
-      std::make_unique<ash::DemoModeAppUntrustedUIConfig>(base::BindRepeating(
-          [] { return ash::DemoSession::Get()->GetDemoAppComponentPath(); })));
+      std::make_unique<DemoModeAppUntrustedUIConfig>(base::BindRepeating(
+          [] { return DemoSession::Get()->GetDemoAppComponentPath(); })));
 #if !defined(OFFICIAL_BUILD)
   map.AddUntrustedWebUIConfig(
-      std::make_unique<ash::SampleSystemWebAppUntrustedUIConfig>());
+      std::make_unique<SampleSystemWebAppUntrustedUIConfig>());
 #endif  // !defined(OFFICIAL_BUILD)
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}  // namespace
 
-void RegisterChromeOSChromeUntrustedWebUIConfigs() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  RegisterAshChromeUntrustedWebUIConfigs();
-#endif
-}
+}  // namespace ash

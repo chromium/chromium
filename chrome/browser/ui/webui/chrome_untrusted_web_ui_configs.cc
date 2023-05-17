@@ -12,9 +12,9 @@
 #include "chrome/browser/ui/webui/chrome_untrusted_web_ui_configs_desktop.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/webui/chromeos/chrome_untrusted_web_ui_configs_chromeos.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/webui/ash/chrome_untrusted_web_ui_configs_chromeos.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void RegisterChromeUntrustedWebUIConfigs() {
   // Don't add calls to `AddUntrustedWebUIConfig()` here. Add it in one of
@@ -31,7 +31,7 @@ void RegisterChromeUntrustedWebUIConfigs() {
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)  ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
-#if BUILDFLAG(IS_CHROMEOS)
-  RegisterChromeOSChromeUntrustedWebUIConfigs();
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::RegisterAshChromeUntrustedWebUIConfigs();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

@@ -38,17 +38,14 @@ source_set("configs") {
   }
 
   # Includes Ash Chrome and Lacros Chrome
-  if (is_chromeos) {
-    sources += [
-      "chromeos/chrome_untrusted_web_ui_configs_chromeos.cc",
-      "chromeos/chrome_untrusted_web_ui_configs_chromeos.h",
-      "chromeos/chrome_web_ui_configs_chromeos.cc",
-      "chromeos/chrome_web_ui_configs_chromeos.h",
-    ]
-    deps += [ "//build:chromeos_buildflags" ]
-  }
-
   if (is_chromeos_ash) {
+    sources += [
+      "ash/chrome_untrusted_web_ui_configs_chromeos.cc",
+      "ash/chrome_untrusted_web_ui_configs_chromeos.h",
+      "ash/chrome_web_ui_configs_chromeos.cc",
+      "ash/chrome_web_ui_configs_chromeos.h",
+    ]
+
     deps += [
       "//ash/constants",
       "//ash/webui/color_internals",
@@ -68,6 +65,7 @@ source_set("configs") {
       "//ash/webui/system_extensions_internals_ui",
       "//chrome/browser/ash",
     ]
+
     if (!is_official_build) {
       deps += [ "//ash/webui/sample_system_web_app_ui" ]
     }
