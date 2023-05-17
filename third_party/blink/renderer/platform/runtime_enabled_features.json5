@@ -1836,6 +1836,11 @@
       status: "stable",
     },
     {
+      // Bug fix for crbug.com/1429585
+      name: "FormStateRestoreCallbackCallWithState",
+      status: "stable",
+    },
+    {
       name: "FractionalScrollOffsets",
       implied_by: ["PercentBasedScrolling"],
       base_feature: "none",

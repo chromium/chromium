@@ -33,6 +33,57 @@ bool IsValidityStateFlagsValid(const ValidityStateFlags* flags) {
   return true;
 }
 
+void AppendToFormControlState(const V8ControlValue& value,
+                              FormControlState& state) {
+  switch (value.GetContentType()) {
+    case V8ControlValue::ContentType::kFile: {
+      state.Append("File");
+      value.GetAsFile()->AppendToControlState(state);
+      break;
+    }
+    case V8ControlValue::ContentType::kFormData: {
+      state.Append("FormData");
+      value.GetAsFormData()->AppendToControlState(state);
+      break;
+    }
+    case V8ControlValue::ContentType::kUSVString: {
+      state.Append("USVString");
+      state.Append(value.GetAsUSVString());
+      break;
+    }
+  }
+}
+
+const V8ControlValue* RestoreFromFormControlState(
+    const FormControlState& state,
+    const StringView& section_title,
+    wtf_size_t& index) {
+  if (state.ValueSize() < index + 3) {
+    return nullptr;
+  }
+  if (state[index] != section_title) {
+    NOTREACHED();
+    return nullptr;
+  }
+  const V8ControlValue* restored_value = nullptr;
+  const String& entry_type = state[index + 1];
+  index += 2;
+  if (entry_type == "USVString") {
+    restored_value = MakeGarbageCollected<V8ControlValue>(state[index++]);
+  } else if (entry_type == "File") {
+    if (auto* file = File::CreateFromControlState(state, index)) {
+      restored_value = MakeGarbageCollected<V8ControlValue>(file);
+    }
+  } else if (entry_type == "FormData") {
+    if (auto* form_data = FormData::CreateFromControlState(state, index)) {
+      restored_value = MakeGarbageCollected<V8ControlValue>(form_data);
+    }
+  } else {
+    NOTREACHED();
+  }
+  return restored_value;
+}
+
 }  // namespace
 
 ElementInternals::ElementInternals(HTMLElement& target) : target_(target) {
@@ -473,46 +524,41 @@ bool ElementInternals::ShouldSaveAndRestoreFormControlState() const {
 
 FormControlState ElementInternals::SaveFormControlState() const {
   FormControlState state;
-
-  if (!value_)
-    return state;
-
-  switch (value_->GetContentType()) {
-    case V8ControlValue::ContentType::kFile: {
-      state.Append("File");
-      value_->GetAsFile()->AppendToControlState(state);
-      break;
-    }
-    case V8ControlValue::ContentType::kFormData: {
-      state.Append("FormData");
-      value_->GetAsFormData()->AppendToControlState(state);
-      break;
-    }
-    case V8ControlValue::ContentType::kUSVString: {
-      state.Append("USVString");
-      state.Append(value_->GetAsUSVString());
-      break;
-    }
+  if (value_) {
+    state.Append("Value");
+    AppendToFormControlState(*value_, state);
+  }
+  if (RuntimeEnabledFeatures::FormStateRestoreCallbackCallWithStateEnabled() &&
+      state_) {
+    state.Append("State");
+    AppendToFormControlState(*state_, state);
   }
   return state;
 }
 
 void ElementInternals::RestoreFormControlState(const FormControlState& state) {
-  if (state.ValueSize() < 2)
-    return;
-  if (state[0] == "USVString") {
-    value_ = MakeGarbageCollected<V8ControlValue>(state[1]);
-  } else if (state[0] == "File") {
-    wtf_size_t i = 1;
-    if (auto* file = File::CreateFromControlState(state, i))
-      value_ = MakeGarbageCollected<V8ControlValue>(file);
-  } else if (state[0] == "FormData") {
-    wtf_size_t i = 1;
-    if (auto* form_data = FormData::CreateFromControlState(state, i))
-      value_ = MakeGarbageCollected<V8ControlValue>(form_data);
+  wtf_size_t index = 0;
+
+  // Per spec, the submission value shouldn't be automatically restored by the
+  // UA, but Blink has been doing that.
+  if (const V8ControlValue* restored_value =
+          RestoreFromFormControlState(state, "Value", index)) {
+    value_ = restored_value;
   }
-  if (value_)
-    CustomElement::EnqueueFormStateRestoreCallback(Target(), value_, "restore");
+  if (!RuntimeEnabledFeatures::FormStateRestoreCallbackCallWithStateEnabled()) {
+    if (value_) {
+      CustomElement::EnqueueFormStateRestoreCallback(Target(), value_,
+                                                     "restore");
+    }
+    return;
+  }
+
+  const V8ControlValue* restored_state =
+      RestoreFromFormControlState(state, "State", index);
+  if (restored_state) {
+    CustomElement::EnqueueFormStateRestoreCallback(Target(), restored_state,
+                                                   "restore");
+  }
 }
 
 }  // namespace blink
