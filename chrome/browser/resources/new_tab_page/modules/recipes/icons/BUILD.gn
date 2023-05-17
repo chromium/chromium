@@ -11,5 +11,5 @@ generate_grd("build_grdp") {
   out_grd = "$target_gen_dir/resources.grdp"
   input_files = [ "recipes_logo.svg" ]
   input_files_base_dir = rebase_path(".", "//")
-  resource_path_prefix = "modules/recipes_v2/icons"
+  resource_path_prefix = "modules/recipes/icons"
 }
