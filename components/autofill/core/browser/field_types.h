@@ -365,7 +365,11 @@ enum ServerFieldType {
   // recognized to understand where the building is situated.
   ADDRESS_HOME_LANDMARK = 136,
 
-  // Reserved for a server-side-only use: 130-153. Except 136.
+  // The type indicates that the address is at the intersection between two
+  // streets. This is a common way of writing addresses in Mexico.
+  ADDRESS_HOME_BETWEEN_STREETS = 143,
+
+  // Reserved for a server-side-only use: 130-153. Except 136 and 143.
 
   // No new types can be added without a corresponding change to the Autofill
   // server.

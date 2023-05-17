@@ -107,7 +107,8 @@ static constexpr auto kTypeNameToFieldType =
           CREDIT_CARD_STANDALONE_VERIFICATION_CODE},
          {"NUMERIC_QUANTITY", NUMERIC_QUANTITY},
          {"ONE_TIME_CODE", ONE_TIME_CODE},
-         {"ADDRESS_HOME_LANDMARK", ADDRESS_HOME_LANDMARK}});
+         {"ADDRESS_HOME_LANDMARK", ADDRESS_HOME_LANDMARK},
+         {"ADDRESS_HOME_BETWEEN_STREETS", ADDRESS_HOME_BETWEEN_STREETS}});
 
 ServerFieldType ToSafeServerFieldType(
     std::underlying_type_t<ServerFieldType> raw_value,
@@ -130,8 +131,8 @@ ServerFieldType ToSafeServerFieldType(
            !(67 <= t && t <= 72) &&
            // Fax numbers (values [20,24]) are deprecated.
            !(20 <= t && t <= 24) &&
-           // Reserved for server-side only use. Except 136.
-           t != 127 && (t == 136 || !(130 <= t && t <= 153));
+           // Reserved for server-side only use.
+           t != 127 && (t == 136 || t == 143 || !(130 <= t && t <= 153));
   };
   return IsValid(raw_value) ? static_cast<ServerFieldType>(raw_value)
                             : fallback_value;
@@ -184,6 +185,7 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case ADDRESS_HOME_ADDRESS_WITH_NAME:
     case ADDRESS_HOME_FLOOR:
     case ADDRESS_HOME_LANDMARK:
+    case ADDRESS_HOME_BETWEEN_STREETS:
       return true;
 
     case CREDIT_CARD_NAME_FULL:
@@ -427,6 +429,8 @@ base::StringPiece FieldTypeToStringPiece(ServerFieldType type) {
       return "ONE_TIME_CODE";
     case ADDRESS_HOME_LANDMARK:
       return "ADDRESS_HOME_LANDMARK";
+    case ADDRESS_HOME_BETWEEN_STREETS:
+      return "ADDRESS_HOME_BETWEEN_STREETS";
     case MAX_VALID_FIELD_TYPE:
       return "";
   }
