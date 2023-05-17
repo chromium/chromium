@@ -232,16 +232,21 @@ void ArcVmmManager::ShrinkArcVmMemoryAndEnableSwap(
             }
           },
           // If successfully execute trim, request enable aggressive balloon.
-          base::BindOnce(&ArcVmmManager::SendAggressiveBalloonRequest,
-                         weak_ptr_factory_.GetWeakPtr(), true,
-                         // If enable aggressive balloon successful, set shrink
-                         // result and re-send enable swap request.
-                         base::BindOnce(&ArcVmmManager::SetShrinkResult,
-                                        weak_ptr_factory_.GetWeakPtr(), true)
-                             .Then(base::BindOnce(
-                                 &ArcVmmManager::SendSwapRequest,
-                                 weak_ptr_factory_.GetWeakPtr(),
-                                 requested_operation, base::DoNothing())))),
+          base::BindOnce(
+              &ArcVmmManager::SendAggressiveBalloonRequest,
+              weak_ptr_factory_.GetWeakPtr(), true,
+              // If enable aggressive balloon successful, set shrink
+              // result and re-send enable swap request.
+              base::BindOnce(&ArcVmmManager::SetShrinkResult,
+                             weak_ptr_factory_.GetWeakPtr(), true)
+                  .Then(base::BindOnce(
+                      &ArcVmmManager::SendSwapRequest,
+                      weak_ptr_factory_.GetWeakPtr(), requested_operation,
+                      // Drop ARCVM page cache after successful enable swap.
+                      base::BindOnce(
+                          trim_call_, base::DoNothing(),
+                          arc::ArcVmReclaimType::kReclaimGuestPageCaches,
+                          arc::ArcSession::kNoPageLimit))))),
       arc::ArcVmReclaimType::kReclaimAll, arc::ArcSession::kNoPageLimit);
 }
 

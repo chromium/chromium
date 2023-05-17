@@ -94,6 +94,9 @@ class ArcVmmManagerTest : public testing::Test {
 
     concierge_client_ =
         std::make_unique<TestConciergeClient>(ash::FakeCiceroneClient::Get());
+
+    trim_type_reclaim_counter_ = 0;
+    trim_type_drop_pages_counter_ = 0;
   }
 
   void EnableAndConnectArcVm() {
@@ -117,8 +120,15 @@ class ArcVmmManagerTest : public testing::Test {
 
   void SetTrimCall(bool trim_result) {
     manager()->trim_call_ = base::BindLambdaForTesting(
-        [trim_result](ArcVmWorkingSetTrimExecutor::ResultCallback callback,
-                      ArcVmReclaimType reclaim_type, int page_limit) {
+        [trim_result, this](
+            ArcVmWorkingSetTrimExecutor::ResultCallback callback,
+            ArcVmReclaimType reclaim_type, int page_limit) {
+          if (reclaim_type == ArcVmReclaimType::kReclaimAll) {
+            trim_type_reclaim_counter_++;
+          } else if (reclaim_type ==
+                     ArcVmReclaimType::kReclaimGuestPageCaches) {
+            trim_type_drop_pages_counter_++;
+          }
           std::move(callback).Run(trim_result, "");
         });
   }
@@ -126,11 +136,17 @@ class ArcVmmManagerTest : public testing::Test {
   ArcVmmManager* manager() { return manager_; }
   TestConciergeClient* client() { return concierge_client_.get(); }
 
+  int reclaim_all_conter() { return trim_type_reclaim_counter_; }
+  int drop_pages_counter() { return trim_type_drop_pages_counter_; }
+
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
+  int trim_type_reclaim_counter_;
+  int trim_type_drop_pages_counter_;
+
   base::test::ScopedFeatureList scoped_features_;
   TestingPrefServiceSimple local_state_;
 
@@ -203,6 +219,23 @@ TEST_F(ArcVmmManagerTest, NotSendSwapRequestIfArcNotReady) {
   EXPECT_EQ(0, client()->disable_count());
 }
 
+TEST_F(ArcVmmManagerTest, DropCachesAfterEnableSuccess) {
+  InitVmmManager();
+  EnableAndConnectArcVm();
+  SetTrimCall(true);
+  InitAggressiveBallonResponse();
+
+  manager()->SetSwapState(SwapState::FORCE_ENABLE);
+  base::RunLoop().RunUntilIdle();
+  // Send "FORCE_ENABLE".
+  EXPECT_EQ(1, client()->force_enable_count());
+  EXPECT_EQ(0, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
+
+  EXPECT_EQ(1, reclaim_all_conter());
+  EXPECT_EQ(1, drop_pages_counter());
+}
 // This test verify the weak ptr safety in scheduler.
 TEST_F(ArcVmmManagerTest, WeakPtrRef) {
   class TestClass {
