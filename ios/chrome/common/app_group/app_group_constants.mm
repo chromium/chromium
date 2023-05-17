@@ -138,7 +138,14 @@ NSURL* ExternalCommandsItemsFolder() {
 }
 
 NSURL* ContentWidgetFaviconsFolder() {
-  return [AppGroupHelper widgetsFaviconsFolder];
+  NSURL* groupURL = [[NSFileManager defaultManager]
+      containerURLForSecurityApplicationGroupIdentifier:ApplicationGroup()];
+  NSURL* chromeURL =
+      [groupURL URLByAppendingPathComponent:@"Chrome" isDirectory:YES];
+  NSURL* contentWidgetFaviconsURL =
+      [chromeURL URLByAppendingPathComponent:@"ContentWidgetFavicons"
+                                 isDirectory:YES];
+  return contentWidgetFaviconsURL;
 }
 
 NSURL* SharedFaviconAttributesFolder() {

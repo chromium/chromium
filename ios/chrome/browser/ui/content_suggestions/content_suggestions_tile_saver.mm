@@ -13,7 +13,6 @@
 #import "components/favicon/core/fallback_url_util.h"
 #import "components/ntp_tiles/ntp_tile.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_provider.h"
-#import "ios/chrome/browser/widget_kit/widget_kit_swift.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/ntp_tile/ntp_tile.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
@@ -162,10 +161,10 @@ void WriteSavedMostVisited(NSDictionary<NSURL*, NTPTile*>* most_visited_data) {
   }
 
   NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
-
   [sharedDefaults setObject:data forKey:app_group::kSuggestedItems];
-  // Updates the Shortcut's widget with the user's current most visited sites
-  [WidgetTimelinesUpdater reloadTimelinesOfKind:@"ShortcutsWidget"];
+
+  // TODO(crbug.com/750673): Update the widget's visibility depending on
+  // availability of sites.
 }
 
 NSDictionary* ReadSavedMostVisited() {
