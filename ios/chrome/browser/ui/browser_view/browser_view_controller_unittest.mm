@@ -239,7 +239,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         [[SecondaryToolbarCoordinator alloc] initWithBrowser:browser_.get()];
 
     bubble_presenter_ = [[BubblePresenter alloc]
-        initWithBrowserState:chrome_browser_state_.get()];
+        initWithBrowserState:chrome_browser_state_.get()
+                webStateList:browser_->GetWebStateList()];
     [dispatcher startDispatchingToTarget:bubble_presenter_
                              forProtocol:@protocol(HelpCommands)];
 

@@ -2161,12 +2161,6 @@ enum HeaderBehaviour {
 
 #pragma mark - BubblePresenterDelegate
 
-- (web::WebState*)currentWebStateForBubblePresenter:
-    (BubblePresenter*)bubblePresenter {
-  DCHECK(bubblePresenter == _bubblePresenter);
-  return self.currentWebState;
-}
-
 - (BOOL)rootViewVisibleForBubblePresenter:(BubblePresenter*)bubblePresenter {
   DCHECK(bubblePresenter == _bubblePresenter);
   return self.viewVisible;

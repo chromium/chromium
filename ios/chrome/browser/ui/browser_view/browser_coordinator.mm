@@ -773,8 +773,9 @@ enum class ToolbarKind {
   [_toolbarCoordinatorAdaptor
       addToolbarCoordinator:_secondaryToolbarCoordinator];
 
-  _bubblePresenter =
-      [[BubblePresenter alloc] initWithBrowserState:browserState];
+  _bubblePresenter = [[BubblePresenter alloc]
+      initWithBrowserState:browserState
+              webStateList:self.browser->GetWebStateList()];
   _bubblePresenter.toolbarHandler =
       HandlerForProtocol(_dispatcher, ToolbarCommands);
   _bubblePresenter.layoutGuideCenter = _layoutGuideCenter;

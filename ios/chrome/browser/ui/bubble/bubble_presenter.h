@@ -13,6 +13,7 @@
 class ChromeBrowserState;
 @class LayoutGuideCenter;
 @protocol ToolbarCommands;
+class WebStateList;
 
 // Object handling the presentation of the different bubbles tips. The class is
 // holding all the bubble presenters.
@@ -21,6 +22,7 @@ class ChromeBrowserState;
 // Initializes a BubblePresenter whose bubbles are presented on the
 // `rootViewController`.
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
+                        webStateList:(WebStateList*)webStateList
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

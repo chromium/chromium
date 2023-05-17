@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -73,8 +74,8 @@ const CGFloat kBubblePresentationDelay = 1;
     priceNotificationsWhileBrowsingBubbleTipPresenter;
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* tabPinnedBubbleTipPresenter;
-
 @property(nonatomic, assign) ChromeBrowserState* browserState;
+@property(nonatomic, assign) WebStateList* webStateList;
 
 @end
 
@@ -82,10 +83,13 @@ const CGFloat kBubblePresentationDelay = 1;
 
 #pragma mark - Public
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
+                        webStateList:(WebStateList*)webStateList {
   self = [super init];
   if (self) {
+    DCHECK(webStateList);
     _browserState = browserState;
+    _webStateList = webStateList;
   }
   return self;
 }
@@ -237,12 +241,12 @@ const CGFloat kBubblePresentationDelay = 1;
 - (void)presentDefaultSiteViewTipBubble {
   if (![self canPresentBubble])
     return;
-
-  web::WebState* webState =
-      [self.delegate currentWebStateForBubblePresenter:self];
-  if (!webState ||
-      ShouldLoadUrlInDesktopMode(webState->GetVisibleURL(), self.browserState))
+  web::WebState* currentWebState = self.webStateList->GetActiveWebState();
+  if (!currentWebState ||
+      ShouldLoadUrlInDesktopMode(currentWebState->GetVisibleURL(),
+                                 self.browserState)) {
     return;
+  }
 
   BubbleArrowDirection arrowDirection =
       IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
@@ -484,10 +488,11 @@ presentBubbleForFeature:(const base::Feature&)feature
     return;
 
   // Do not present the new tab tips on NTP.
-  if (![self.delegate currentWebStateForBubblePresenter:self] ||
-      [self.delegate currentWebStateForBubblePresenter:self]->GetVisibleURL() ==
-          kChromeUINewTabURL)
+  web::WebState* currentWebState = self.webStateList->GetActiveWebState();
+  if (!currentWebState ||
+      currentWebState->GetVisibleURL() == kChromeUINewTabURL) {
     return;
+  }
 
   BubbleArrowDirection arrowDirection =
       IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
@@ -572,10 +577,9 @@ presentBubbleForFeature:(const base::Feature&)feature
   if (![self.delegate rootViewVisibleForBubblePresenter:self])
     return NO;
   // Do not present the bubble if there is no current tab.
-  web::WebState* currentWebState =
-      [self.delegate currentWebStateForBubblePresenter:self];
-  if (!currentWebState)
+  if (!self.webStateList->GetActiveWebState()) {
     return NO;
+  }
 
   // Do not present the bubble if the tab is not scrolled to the top.
   if (![self.delegate isTabScrolledToTopForBubblePresenter:self])
