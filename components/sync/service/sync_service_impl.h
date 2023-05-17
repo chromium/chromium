@@ -273,7 +273,7 @@ class SyncServiceImpl : public SyncService,
 
   bool UseTransportOnlyMode() const;
 
-  bool ShouldHonorBookmarksAndReadingListAccountStorageOptIn() const;
+  SyncPrefs::SyncAccountState GetSyncAccountStateForPrefs() const;
 
   // Returns the set of data types that are supported in principle, possibly
   // influenced by command-line options.

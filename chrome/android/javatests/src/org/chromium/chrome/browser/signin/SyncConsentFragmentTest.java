@@ -709,8 +709,10 @@ public class SyncConsentFragmentTest {
         onView(withId(R.id.button_primary)).check(matches(withText(R.string.signin_add_account)));
         onView(withId(R.id.button_secondary)).check(matches(withText(R.string.cancel)));
         settingsHistogram.assertExpected();
+        // As there is no account on the device, the set of selected types will be empty. Sync Setup
+        // UI in this case does not link to the types list.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertEquals(ALL_CLANK_SYNCABLE_DATA_TYPES, SyncService.get().getSelectedTypes());
+            assertEquals(Set.of(), SyncService.get().getSelectedTypes());
             assertTrue(SyncService.get().hasKeepEverythingSynced());
         });
     }

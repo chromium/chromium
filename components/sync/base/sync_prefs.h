@@ -40,6 +40,13 @@ class SyncPrefObserver {
 // global sync preferences. It is not thread-safe, and lives on the UI thread.
 class SyncPrefs {
  public:
+  enum class SyncAccountState {
+    kNotSignedIn = 0,
+    // In transport mode.
+    kSignedInNotSyncing = 1,
+    kSyncing = 2
+  };
+
   // |pref_service| must not be null and must outlive this object.
   explicit SyncPrefs(PrefService* pref_service);
 
@@ -72,13 +79,16 @@ class SyncPrefs {
   void SetSyncRequested(bool is_requested);
   bool IsSyncRequestedSetExplicitly() const;
 
-  // Whether the "Sync everything" toggle is enabled. Note that even if this is
-  // true, some types may be disabled e.g. due to enterprise policy.
+  // Whether the "Sync everything" toggle is enabled. This flag only has an
+  // effect if Sync-the-feature is enabled. Note that even if this is true, some
+  // types may be disabled e.g. due to enterprise policy.
   bool HasKeepEverythingSynced() const;
 
-  // Returns UserSelectableTypeSet::All() if HasKeepEverythingSynced() is true
-  // (except if some types are force-disabled by policy).
-  UserSelectableTypeSet GetSelectedTypes() const;
+  // Returns the set of types that the user has selected to be synced.
+  // If Sync-the-feature is enabled, this takes HasKeepEverythingSynced() into
+  // account (i.e. returns "all types").
+  // If some types are force-disabled by policy, they will not be included.
+  UserSelectableTypeSet GetSelectedTypes(SyncAccountState account_state) const;
 
   // Returns whether `type` is "managed" i.e. controlled by enterprise policy.
   bool IsTypeManagedByPolicy(UserSelectableType type) const;
@@ -101,6 +111,8 @@ class SyncPrefs {
   void SetBookmarksAndReadingListAccountStorageOptIn(bool value);
 
   // Gets the transport bookmarks & reading list pref.
+  // This is only used for testing as GetSelectedTypes already checks for the
+  // opt-in pref.
   bool IsOptedInForBookmarksAndReadingListAccountStorage();
 
   // Clears the transport bookmarks & reading list pref on sign out.

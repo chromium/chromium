@@ -136,21 +136,57 @@ bool SyncPrefs::HasKeepEverythingSynced() const {
   return pref_service_->GetBoolean(prefs::internal::kSyncKeepEverythingSynced);
 }
 
-UserSelectableTypeSet SyncPrefs::GetSelectedTypes() const {
+UserSelectableTypeSet SyncPrefs::GetSelectedTypes(
+    SyncAccountState account_state) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   UserSelectableTypeSet selected_types;
 
-  const bool sync_all_types =
-      pref_service_->GetBoolean(prefs::internal::kSyncKeepEverythingSynced);
-
-  for (UserSelectableType type : UserSelectableTypeSet::All()) {
-    const char* pref_name = GetPrefNameForType(type);
-    DCHECK(pref_name);
-    // If the type is managed, |sync_all_types| is ignored for this type.
-    if (pref_service_->GetBoolean(pref_name) ||
-        (sync_all_types && !IsTypeManagedByPolicy(type))) {
-      selected_types.Put(type);
+  switch (account_state) {
+    case SyncAccountState::kNotSignedIn: {
+      break;
+    }
+    case SyncAccountState::kSignedInNotSyncing: {
+      for (UserSelectableType type : UserSelectableTypeSet::All()) {
+        const char* pref_name = GetPrefNameForType(type);
+        DCHECK(pref_name);
+        if (pref_service_->GetBoolean(pref_name) ||
+            pref_service_->FindPreference(pref_name)->IsDefaultValue()) {
+          // In transport-mode, individual types are considered enabled by
+          // default.
+#if BUILDFLAG(IS_IOS)
+          // In transport-only mode, bookmarks and reading list require an
+          // additional opt-in.
+          // TODO(crbug.com/1440628): Cleanup the temporary behaviour of an
+          // additional opt in for Bookmarks and Reading Lists.
+          if ((type == UserSelectableType::kBookmarks ||
+               type == UserSelectableType::kReadingList) &&
+              !pref_service_->GetBoolean(
+                  prefs::internal::
+                      kBookmarksAndReadingListAccountStorageOptIn)) {
+            continue;
+          }
+#endif  // BUILDFLAG(IS_IOS)
+          selected_types.Put(type);
+        }
+      }
+      break;
+    }
+    case SyncAccountState::kSyncing: {
+      for (UserSelectableType type : UserSelectableTypeSet::All()) {
+        const char* pref_name = GetPrefNameForType(type);
+        DCHECK(pref_name);
+        if (pref_service_->GetBoolean(pref_name) ||
+            (!IsTypeManagedByPolicy(type) &&
+             pref_service_->GetBoolean(
+                 prefs::internal::kSyncKeepEverythingSynced))) {
+          // In full-sync mode, the "sync everything" bit is honored. If it's
+          // true, all types are considered selected, irrespective of their
+          // individual prefs.
+          selected_types.Put(type);
+        }
+      }
+      break;
     }
   }
 

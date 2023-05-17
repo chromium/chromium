@@ -12,13 +12,13 @@
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_type_preference_provider.h"
 #include "components/sync/service/sync_user_settings.h"
 
 namespace syncer {
 
-class SyncPrefs;
 class SyncServiceCrypto;
 
 class SyncUserSettingsImpl : public SyncUserSettings {
@@ -30,8 +30,8 @@ class SyncUserSettingsImpl : public SyncUserSettings {
                        SyncPrefs* prefs,
                        const SyncTypePreferenceProvider* preference_provider,
                        ModelTypeSet registered_types,
-                       base::RepeatingCallback<bool()>
-                           bookmarks_and_reading_list_opt_in_callback);
+                       base::RepeatingCallback<SyncPrefs::SyncAccountState()>
+                           sync_account_state_for_prefs_callback);
   ~SyncUserSettingsImpl() override;
 
   // SyncUserSettings implementation.
@@ -84,7 +84,8 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   const raw_ptr<SyncPrefs> prefs_;
   const raw_ptr<const SyncTypePreferenceProvider> preference_provider_;
   const ModelTypeSet registered_model_types_;
-  base::RepeatingCallback<bool()> bookmarks_and_reading_list_opt_in_callback_;
+  base::RepeatingCallback<SyncPrefs::SyncAccountState()>
+      sync_account_state_for_prefs_callback_;
 };
 
 }  // namespace syncer

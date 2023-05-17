@@ -56,13 +56,14 @@ SyncUserSettingsImpl::SyncUserSettingsImpl(
     SyncPrefs* prefs,
     const SyncTypePreferenceProvider* preference_provider,
     ModelTypeSet registered_model_types,
-    base::RepeatingCallback<bool()> bookmarks_and_reading_list_opt_in_callback)
+    base::RepeatingCallback<SyncPrefs::SyncAccountState()>
+        sync_account_state_for_prefs_callback)
     : crypto_(crypto),
       prefs_(prefs),
       preference_provider_(preference_provider),
       registered_model_types_(registered_model_types),
-      bookmarks_and_reading_list_opt_in_callback_(
-          std::move(bookmarks_and_reading_list_opt_in_callback)) {
+      sync_account_state_for_prefs_callback_(
+          std::move(sync_account_state_for_prefs_callback)) {
   DCHECK(crypto_);
   DCHECK(prefs_);
 }
@@ -87,20 +88,9 @@ bool SyncUserSettingsImpl::IsSyncEverythingEnabled() const {
 }
 
 UserSelectableTypeSet SyncUserSettingsImpl::GetSelectedTypes() const {
-  UserSelectableTypeSet types = prefs_->GetSelectedTypes();
+  UserSelectableTypeSet types =
+      prefs_->GetSelectedTypes(sync_account_state_for_prefs_callback_.Run());
   types.RetainAll(GetRegisteredSelectableTypes());
-
-#if BUILDFLAG(IS_IOS)
-  // In transport-only mode, bookmarks and reading list require an additional
-  // opt-in.
-  // TODO(crbug.com/1440628): Cleanup the temporary behaviour of an additional
-  // opt in for Bookmarks and Reading Lists.
-  if (bookmarks_and_reading_list_opt_in_callback_.Run() &&
-      !prefs_->IsOptedInForBookmarksAndReadingListAccountStorage()) {
-    types.Remove(UserSelectableType::kBookmarks);
-    types.Remove(UserSelectableType::kReadingList);
-  }
-#endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (base::FeatureList::IsEnabled(kSyncChromeOSAppsToggleSharing) &&

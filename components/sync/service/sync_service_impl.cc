@@ -32,6 +32,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/stop_source.h"
+#include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/engine_components_factory_impl.h"
@@ -225,10 +226,8 @@ void SyncServiceImpl::Initialize() {
   user_settings_ = std::make_unique<SyncUserSettingsImpl>(
       &crypto_, &sync_prefs_, sync_client_->GetPreferenceProvider(),
       GetRegisteredDataTypes(),
-      base::BindRepeating(
-          &SyncServiceImpl::
-              ShouldHonorBookmarksAndReadingListAccountStorageOptIn,
-          base::Unretained(this)));
+      base::BindRepeating(&SyncServiceImpl::GetSyncAccountStateForPrefs,
+                          base::Unretained(this)));
 
   sync_prefs_.AddSyncPrefObserver(this);
 
@@ -1437,13 +1436,19 @@ bool SyncServiceImpl::UseTransportOnlyMode() const {
   return !IsSyncFeatureEnabled() && !IsLocalSyncEnabled();
 }
 
-bool SyncServiceImpl::ShouldHonorBookmarksAndReadingListAccountStorageOptIn()
+SyncPrefs::SyncAccountState SyncServiceImpl::GetSyncAccountStateForPrefs()
     const {
-  // The special bookmarks&readinglist account-storage opt-in should be honored
-  // only in transport mode (not in full-sync mode). As a special case, it
-  // should not be honored while the setup for Sync-the-feature is in progress,
-  // so that the user can properly select the types they want to sync.
-  return !IsSetupInProgress() && UseTransportOnlyMode();
+  // Local sync does not require an actual signed in account to be running.
+  if (!IsSignedIn() && !IsLocalSyncEnabled()) {
+    return SyncPrefs::SyncAccountState::kNotSignedIn;
+  }
+  if (!IsSetupInProgress() && UseTransportOnlyMode()) {
+    // While the setup for Sync-the-feature is in progress, the account state
+    // should be syncing so that the user can properly select the types they
+    // want to sync.
+    return SyncPrefs::SyncAccountState::kSignedInNotSyncing;
+  }
+  return SyncPrefs::SyncAccountState::kSyncing;
 }
 
 ModelTypeSet SyncServiceImpl::GetRegisteredDataTypes() const {

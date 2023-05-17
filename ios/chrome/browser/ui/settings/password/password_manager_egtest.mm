@@ -17,6 +17,8 @@
 #import "components/policy/policy_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
+#import "components/sync/base/sync_prefs.h"
+#import "components/sync/base/user_selectable_type.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
@@ -504,6 +506,12 @@ id<GREYMatcher> EditDoneButton() {
 
 - (void)setUp {
   [super setUp];
+  // Manually clear sync passwords pref before testShowAccountStorageNotice*.
+  // TODO(crbug.com/1069086): Wipe the PrefService between tests.
+  [ChromeEarlGreyAppInterface
+      clearUserPrefWithName:base::SysUTF8ToNSString(
+                                syncer::SyncPrefs::GetPrefNameForTypeForTesting(
+                                    syncer::UserSelectableType::kPasswords))];
   GREYAssertNil([MetricsAppInterface setupHistogramTester],
                 @"Cannot setup histogram tester.");
   _passwordAutoFillStatusSwizzler =

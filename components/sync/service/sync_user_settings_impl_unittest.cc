@@ -73,7 +73,8 @@ class SyncUserSettingsImplTest : public testing::Test {
     return std::make_unique<SyncUserSettingsImpl>(
         sync_service_crypto_.get(), sync_prefs_.get(),
         /*preference_provider=*/nullptr, registered_types,
-        base::BindRepeating([] { return false; }));
+        base::BindRepeating(
+            [] { return SyncPrefs::SyncAccountState::kSyncing; }));
   }
 
   // The order of fields matters because it determines destruction order and

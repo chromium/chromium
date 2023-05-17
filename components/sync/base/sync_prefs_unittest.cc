@@ -123,13 +123,17 @@ TEST_F(SyncPrefsTest, Basic) {
 TEST_F(SyncPrefsTest, SelectedTypesKeepEverythingSynced) {
   ASSERT_TRUE(sync_prefs_->HasKeepEverythingSynced());
 
-  EXPECT_EQ(UserSelectableTypeSet::All(), sync_prefs_->GetSelectedTypes());
+  EXPECT_EQ(
+      UserSelectableTypeSet::All(),
+      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing));
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     sync_prefs_->SetSelectedTypes(
         /*keep_everything_synced=*/true,
         /*registered_types=*/UserSelectableTypeSet::All(),
         /*selected_types=*/{type});
-    EXPECT_EQ(UserSelectableTypeSet::All(), sync_prefs_->GetSelectedTypes());
+    EXPECT_EQ(
+        UserSelectableTypeSet::All(),
+        sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing));
   }
 }
 
@@ -140,7 +144,8 @@ TEST_F(SyncPrefsTest, SelectedTypesKeepEverythingSyncedButPolicyRestricted) {
 
   UserSelectableTypeSet expected_type_set = UserSelectableTypeSet::All();
   expected_type_set.Remove(UserSelectableType::kPreferences);
-  EXPECT_EQ(expected_type_set, sync_prefs_->GetSelectedTypes());
+  EXPECT_EQ(expected_type_set, sync_prefs_->GetSelectedTypes(
+                                   SyncPrefs::SyncAccountState::kSyncing));
 }
 
 TEST_F(SyncPrefsTest, SelectedTypesNotKeepEverythingSynced) {
@@ -149,13 +154,17 @@ TEST_F(SyncPrefsTest, SelectedTypesNotKeepEverythingSynced) {
       /*registered_types=*/UserSelectableTypeSet::All(),
       /*selected_types=*/UserSelectableTypeSet());
 
-  ASSERT_NE(UserSelectableTypeSet::All(), sync_prefs_->GetSelectedTypes());
+  ASSERT_NE(
+      UserSelectableTypeSet::All(),
+      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing));
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     sync_prefs_->SetSelectedTypes(
         /*keep_everything_synced=*/false,
         /*registered_types=*/UserSelectableTypeSet::All(),
         /*selected_types=*/{type});
-    EXPECT_EQ(UserSelectableTypeSet({type}), sync_prefs_->GetSelectedTypes());
+    EXPECT_EQ(
+        UserSelectableTypeSet({type}),
+        sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing));
   }
 }
 
@@ -168,7 +177,8 @@ TEST_F(SyncPrefsTest, SelectedTypesNotKeepEverythingSyncedAndPolicyRestricted) {
       /*selected_types=*/UserSelectableTypeSet());
 
   ASSERT_FALSE(
-      sync_prefs_->GetSelectedTypes().Has(UserSelectableType::kPreferences));
+      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing)
+          .Has(UserSelectableType::kPreferences));
   for (UserSelectableType type : UserSelectableTypeSet::All()) {
     sync_prefs_->SetSelectedTypes(
         /*keep_everything_synced=*/false,
@@ -176,18 +186,21 @@ TEST_F(SyncPrefsTest, SelectedTypesNotKeepEverythingSyncedAndPolicyRestricted) {
         /*selected_types=*/{type});
     UserSelectableTypeSet expected_type_set = {type};
     expected_type_set.Remove(UserSelectableType::kPreferences);
-    EXPECT_EQ(expected_type_set, sync_prefs_->GetSelectedTypes());
+    EXPECT_EQ(expected_type_set, sync_prefs_->GetSelectedTypes(
+                                     SyncPrefs::SyncAccountState::kSyncing));
   }
 }
 
 TEST_F(SyncPrefsTest, SetTypeDisabledByPolicy) {
   // By default, data types are enabled, and not policy-controlled.
   ASSERT_TRUE(
-      sync_prefs_->GetSelectedTypes().Has(UserSelectableType::kBookmarks));
+      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing)
+          .Has(UserSelectableType::kBookmarks));
   ASSERT_FALSE(
       sync_prefs_->IsTypeManagedByPolicy(UserSelectableType::kBookmarks));
   ASSERT_TRUE(
-      sync_prefs_->GetSelectedTypes().Has(UserSelectableType::kAutofill));
+      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing)
+          .Has(UserSelectableType::kAutofill));
   ASSERT_FALSE(
       sync_prefs_->IsTypeManagedByPolicy(UserSelectableType::kAutofill));
 
@@ -202,14 +215,67 @@ TEST_F(SyncPrefsTest, SetTypeDisabledByPolicy) {
 
   // The policy should take effect and disable bookmarks.
   EXPECT_FALSE(
-      sync_prefs_->GetSelectedTypes().Has(UserSelectableType::kBookmarks));
+      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing)
+          .Has(UserSelectableType::kBookmarks));
   EXPECT_TRUE(
       sync_prefs_->IsTypeManagedByPolicy(UserSelectableType::kBookmarks));
   // Other types should be unaffected.
   EXPECT_TRUE(
-      sync_prefs_->GetSelectedTypes().Has(UserSelectableType::kAutofill));
+      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing)
+          .Has(UserSelectableType::kAutofill));
   EXPECT_FALSE(
       sync_prefs_->IsTypeManagedByPolicy(UserSelectableType::kAutofill));
+}
+
+TEST_F(SyncPrefsTest, SelectedTypesInTransportMode) {
+  UserSelectableTypeSet expected_selected_types = UserSelectableTypeSet::All();
+
+#if BUILDFLAG(IS_IOS)
+  // In transport-only mode, bookmarks and reading list require an
+  // additional opt-in.
+  // TODO(crbug.com/1440628): Cleanup the temporary behaviour of an
+  // additional opt in for Bookmarks and Reading Lists.
+  expected_selected_types.Remove(UserSelectableType::kBookmarks);
+  expected_selected_types.Remove(UserSelectableType::kReadingList);
+#endif  // BUILDFLAG(IS_IOS)
+
+  // Get default values of selected types in transport-mode.
+  UserSelectableTypeSet selected_types = sync_prefs_->GetSelectedTypes(
+      SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+  EXPECT_EQ(expected_selected_types, selected_types);
+
+  // Change one of the default values for example kPasswords.
+  selected_types.Remove(UserSelectableType::kPasswords);
+  sync_prefs_->SetSelectedTypes(
+      /*keep_everything_synced=*/false,
+      /*registered_types=*/UserSelectableTypeSet::All(),
+      /*selected_types=*/selected_types);
+
+  // kPasswords should be disabled, other default values should be unaffected.
+  for (UserSelectableType type : expected_selected_types) {
+    if (type == UserSelectableType::kPasswords) {
+      EXPECT_FALSE(selected_types.Has(type));
+    } else {
+      EXPECT_TRUE(selected_types.Has(type));
+    }
+  }
+
+  // Pass keep_everything_synced true to verify that it has no effect in
+  // transport-mode.
+  sync_prefs_->SetSelectedTypes(
+      /*keep_everything_synced=*/true,
+      /*registered_types=*/UserSelectableTypeSet::All(),
+      /*selected_types=*/selected_types);
+
+  // kPasswords should still be disabled, other default values should be
+  // unaffected.
+  for (UserSelectableType type : expected_selected_types) {
+    if (type == UserSelectableType::kPasswords) {
+      EXPECT_FALSE(selected_types.Has(type));
+    } else {
+      EXPECT_TRUE(selected_types.Has(type));
+    }
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -245,7 +311,8 @@ TEST_F(SyncPrefsTest, GetSelectedOsTypesWithAllOsTypesEnabled) {
 }
 
 TEST_F(SyncPrefsTest, GetSelectedOsTypesNotAllOsTypesSelected) {
-  const UserSelectableTypeSet browser_types = sync_prefs_->GetSelectedTypes();
+  const UserSelectableTypeSet browser_types =
+      sync_prefs_->GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing);
 
   sync_prefs_->SetSelectedOsTypes(
       /*sync_all_os_types=*/false,
@@ -253,7 +320,8 @@ TEST_F(SyncPrefsTest, GetSelectedOsTypesNotAllOsTypesSelected) {
       /*selected_types=*/UserSelectableOsTypeSet());
   EXPECT_EQ(UserSelectableOsTypeSet(), sync_prefs_->GetSelectedOsTypes());
   // Browser types are not changed.
-  EXPECT_EQ(browser_types, sync_prefs_->GetSelectedTypes());
+  EXPECT_EQ(browser_types, sync_prefs_->GetSelectedTypes(
+                               SyncPrefs::SyncAccountState::kSyncing));
 
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
     sync_prefs_->SetSelectedOsTypes(
@@ -263,7 +331,8 @@ TEST_F(SyncPrefsTest, GetSelectedOsTypesNotAllOsTypesSelected) {
     EXPECT_EQ(UserSelectableOsTypeSet({type}),
               sync_prefs_->GetSelectedOsTypes());
     // Browser types are not changed.
-    EXPECT_EQ(browser_types, sync_prefs_->GetSelectedTypes());
+    EXPECT_EQ(browser_types, sync_prefs_->GetSelectedTypes(
+                                 SyncPrefs::SyncAccountState::kSyncing));
   }
 }
 
@@ -490,7 +559,8 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncRequestedWithSomeTypes) {
   EXPECT_TRUE(prefs.IsSyncRequested());
   EXPECT_TRUE(prefs.IsInitialSyncFeatureSetupComplete());
   EXPECT_FALSE(prefs.HasKeepEverythingSynced());
-  EXPECT_EQ(prefs.GetSelectedTypes(), enabled_types);
+  EXPECT_EQ(prefs.GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing),
+            enabled_types);
 }
 
 TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncRequestedWithNoTypes) {
@@ -508,7 +578,8 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncRequestedWithNoTypes) {
   EXPECT_TRUE(prefs.IsSyncRequested());
   EXPECT_TRUE(prefs.IsInitialSyncFeatureSetupComplete());
   EXPECT_FALSE(prefs.HasKeepEverythingSynced());
-  EXPECT_TRUE(prefs.GetSelectedTypes().Empty());
+  EXPECT_TRUE(
+      prefs.GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing).Empty());
 }
 
 TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncNotRequestedWithNoTypes) {
@@ -527,7 +598,8 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncNotRequestedWithNoTypes) {
   EXPECT_TRUE(prefs.IsSyncRequested());
   EXPECT_TRUE(prefs.IsInitialSyncFeatureSetupComplete());
   EXPECT_FALSE(prefs.HasKeepEverythingSynced());
-  EXPECT_TRUE(prefs.GetSelectedTypes().Empty());
+  EXPECT_TRUE(
+      prefs.GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing).Empty());
 }
 
 TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncNotRequestedWithSomeTypes) {
@@ -551,7 +623,8 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncNotRequestedWithSomeTypes) {
   EXPECT_TRUE(prefs.IsSyncRequested());
   EXPECT_TRUE(prefs.IsInitialSyncFeatureSetupComplete());
   EXPECT_FALSE(prefs.HasKeepEverythingSynced());
-  EXPECT_TRUE(prefs.GetSelectedTypes().Empty());
+  EXPECT_TRUE(
+      prefs.GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing).Empty());
 }
 
 TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncNotRequestedWithAllTypes) {
@@ -577,7 +650,8 @@ TEST_F(SyncPrefsMigrationTest, SyncRequested_SyncNotRequestedWithAllTypes) {
   EXPECT_TRUE(prefs.IsSyncRequested());
   EXPECT_TRUE(prefs.IsInitialSyncFeatureSetupComplete());
   EXPECT_FALSE(prefs.HasKeepEverythingSynced());
-  EXPECT_TRUE(prefs.GetSelectedTypes().Empty());
+  EXPECT_TRUE(
+      prefs.GetSelectedTypes(SyncPrefs::SyncAccountState::kSyncing).Empty());
 }
 
 // There are three boolean prefs which are relevant for the "SyncRequested"

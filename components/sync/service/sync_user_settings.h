@@ -44,11 +44,9 @@ class SyncUserSettings {
   virtual void SetInitialSyncFeatureSetupComplete(
       SyncFirstSetupCompleteSource source) = 0;
 
-  // The user's selected types. The "sync everything" flag means to sync all
-  // current and future data types. If it is set, then GetSelectedTypes() will
-  // always return "all types".
-  // NOTE: By default, GetSelectedTypes() returns "all types", even if the user
-  // has never enabled Sync, or if only Sync-the-transport is running.
+  // Whether the "Sync everything" is enabled. This only has an effect if
+  // Sync-the-feature is enabled. Note that even if this is true, some types may
+  // be disabled e.g. due to enterprise policy.
   virtual bool IsSyncEverythingEnabled() const = 0;
   virtual UserSelectableTypeSet GetSelectedTypes() const = 0;
   virtual bool IsTypeManagedByPolicy(UserSelectableType type) const = 0;
