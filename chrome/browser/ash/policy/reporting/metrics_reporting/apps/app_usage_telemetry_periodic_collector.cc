@@ -51,7 +51,7 @@ void AppUsageTelemetryPeriodicCollector::OnMetricDataCollected(
 }
 
 bool AppUsageTelemetryPeriodicCollector::CanCollect() const {
-  // `AppUsageCollector` performs necessary checks and validation to ensure the
+  // `AppUsageObserver` performs necessary checks and validation to ensure the
   // app is allowlisted for reporting purposes. Because we do not record the
   // timestamp with this usage telemetry data, we report it right away to
   // prevent staleness.

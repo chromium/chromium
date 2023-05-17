@@ -16,7 +16,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_collector.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_reporting_settings.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
@@ -239,9 +239,9 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   std::vector<std::unique_ptr<MetricEventObserverManager>>
       event_observer_managers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // App usage collector used to collect app usage reports from the
+  // App usage observer used to observe and collect app usage reports from the
   // `AppPlatformMetrics` component.
-  std::unique_ptr<AppUsageCollector> app_usage_collector_
+  std::unique_ptr<AppUsageObserver> app_usage_observer_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<Delegate> delegate_;

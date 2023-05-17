@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_collector.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_observer.h"
 
 #include <memory>
 
@@ -49,7 +49,7 @@ class MockAppPlatformMetricsRetriever : public AppPlatformMetricsRetriever {
               (override));
 };
 
-class AppUsageCollectorTest : public ::apps::AppPlatformMetricsServiceTestBase {
+class AppUsageObserverTest : public ::apps::AppPlatformMetricsServiceTestBase {
  protected:
   void SetUp() override {
     ::apps::AppPlatformMetricsServiceTestBase::SetUp();
@@ -63,7 +63,7 @@ class AppUsageCollectorTest : public ::apps::AppPlatformMetricsServiceTestBase {
     InstallOneApp(kTestAppId, ::apps::AppType::kArc, /*publisher_id=*/"",
                   ::apps::Readiness::kReady, ::apps::InstallSource::kPlayStore);
 
-    // Set up `AppUsageCollector` with relevant test params.
+    // Set up `AppUsageObserver` with relevant test params.
     auto mock_app_platform_metrics_retriever =
         std::make_unique<MockAppPlatformMetricsRetriever>();
     EXPECT_CALL(*mock_app_platform_metrics_retriever, GetAppPlatformMetrics(_))
@@ -72,7 +72,7 @@ class AppUsageCollectorTest : public ::apps::AppPlatformMetricsServiceTestBase {
           std::move(callback).Run(
               app_platform_metrics_service()->AppPlatformMetrics());
         });
-    app_usage_collector_ = AppUsageCollector::CreateForTest(
+    app_usage_observer_ = AppUsageObserver::CreateForTest(
         profile(), &reporting_settings_,
         std::move(mock_app_platform_metrics_retriever));
   }
@@ -111,11 +111,11 @@ class AppUsageCollectorTest : public ::apps::AppPlatformMetricsServiceTestBase {
   // Fake reporting settings component used by the test.
   test::FakeReportingSettings reporting_settings_;
 
-  // App usage collector used by tests.
-  std::unique_ptr<AppUsageCollector> app_usage_collector_;
+  // App usage observer used by tests.
+  std::unique_ptr<AppUsageObserver> app_usage_observer_;
 };
 
-TEST_F(AppUsageCollectorTest, PersistAppUsageDataInPrefStore) {
+TEST_F(AppUsageObserverTest, PersistAppUsageDataInPrefStore) {
   reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, true);
 
   // Create a new window for the app and simulate app usage.
@@ -130,7 +130,7 @@ TEST_F(AppUsageCollectorTest, PersistAppUsageDataInPrefStore) {
   VerifyAppUsageDataInPrefStoreForInstance(kInstanceId, kAppUsageDuration);
 }
 
-TEST_F(AppUsageCollectorTest, ShouldNotPersistMicrosecondUsageData) {
+TEST_F(AppUsageObserverTest, ShouldNotPersistMicrosecondUsageData) {
   reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, true);
 
   // Create a new window for the app and simulate insignificant app usage.
@@ -144,7 +144,7 @@ TEST_F(AppUsageCollectorTest, ShouldNotPersistMicrosecondUsageData) {
   ASSERT_TRUE(GetPrefService()->GetDict(::apps::kAppUsageTime).empty());
 }
 
-TEST_F(AppUsageCollectorTest, ShouldNotPersistAppUsageDataIfSettingDisabled) {
+TEST_F(AppUsageObserverTest, ShouldNotPersistAppUsageDataIfSettingDisabled) {
   reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, false);
 
   // Create a new window for the app and simulate app usage.
@@ -160,7 +160,7 @@ TEST_F(AppUsageCollectorTest, ShouldNotPersistAppUsageDataIfSettingDisabled) {
   ASSERT_TRUE(usage_dict_pref.empty());
 }
 
-TEST_F(AppUsageCollectorTest, ShouldAggregateAppUsageDataOnSubsequentUsage) {
+TEST_F(AppUsageObserverTest, ShouldAggregateAppUsageDataOnSubsequentUsage) {
   reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, true);
 
   // Create a new window for the app and simulate app usage.
@@ -184,7 +184,7 @@ TEST_F(AppUsageCollectorTest, ShouldAggregateAppUsageDataOnSubsequentUsage) {
                                            expected_usage_duration);
 }
 
-TEST_F(AppUsageCollectorTest,
+TEST_F(AppUsageObserverTest,
        ShouldStopPersistingAppUsageDataWhenSettingDisabled) {
   // Enable reporting setting initially.
   reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, true);
@@ -209,7 +209,7 @@ TEST_F(AppUsageCollectorTest,
   VerifyAppUsageDataInPrefStoreForInstance(kInstanceId, kAppUsageDuration);
 }
 
-TEST_F(AppUsageCollectorTest, ShouldPersistAppUsageDataForNewInstance) {
+TEST_F(AppUsageObserverTest, ShouldPersistAppUsageDataForNewInstance) {
   reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, true);
 
   // Create a new window for the app and simulate app usage.
@@ -234,7 +234,7 @@ TEST_F(AppUsageCollectorTest, ShouldPersistAppUsageDataForNewInstance) {
   VerifyAppUsageDataInPrefStoreForInstance(kInstanceId1, kAppUsageDuration);
 }
 
-TEST_F(AppUsageCollectorTest, OnAppPlatformMetricsDestroyed) {
+TEST_F(AppUsageObserverTest, OnAppPlatformMetricsDestroyed) {
   reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, true);
 
   // Reset `AppPlatformMetricsService` to destroy the `AppPlatformMetrics`

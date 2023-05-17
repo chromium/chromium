@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_APPS_APP_USAGE_COLLECTOR_H_
-#define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_APPS_APP_USAGE_COLLECTOR_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_APPS_APP_USAGE_OBSERVER_H_
+#define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_APPS_APP_USAGE_OBSERVER_H_
 
 #include <memory>
 
@@ -20,39 +20,39 @@
 
 namespace reporting {
 
-// Collector used to observe and collect app usage data from the
+// Observer used to observe and collect app usage data from the
 // `AppPlatformMetrics` component so it can be persisted in the pref store and
 // reported subsequently.
-class AppUsageCollector : public ::apps::AppPlatformMetrics::Observer {
+class AppUsageObserver : public ::apps::AppPlatformMetrics::Observer {
  public:
-  // Static helper that instantiates the `AppUsageCollector` for the given
+  // Static helper that instantiates the `AppUsageObserver` for the given
   // profile using the specified `ReportingSettings`.
-  static std::unique_ptr<AppUsageCollector> Create(
+  static std::unique_ptr<AppUsageObserver> Create(
       Profile* profile,
       const ReportingSettings* reporting_settings);
 
-  // Static test helper that instantiates the `AppUsageCollector` for the given
+  // Static test helper that instantiates the `AppUsageObserver` for the given
   // profile using the specified `ReportingSettings` and
   // `AppPlatformMetricsRetriever`.
-  static std::unique_ptr<AppUsageCollector> CreateForTest(
+  static std::unique_ptr<AppUsageObserver> CreateForTest(
       Profile* profile,
       const ReportingSettings* reporting_settings,
       std::unique_ptr<AppPlatformMetricsRetriever>
           app_platform_metrics_retriever);
 
-  AppUsageCollector(const AppUsageCollector& other) = delete;
-  AppUsageCollector& operator=(const AppUsageCollector& other) = delete;
-  ~AppUsageCollector() override;
+  AppUsageObserver(const AppUsageObserver& other) = delete;
+  AppUsageObserver& operator=(const AppUsageObserver& other) = delete;
+  ~AppUsageObserver() override;
 
  private:
-  AppUsageCollector(base::WeakPtr<Profile> profile,
-                    const ReportingSettings* reporting_settings,
-                    std::unique_ptr<AppPlatformMetricsRetriever>
-                        app_platform_metrics_retriever);
+  AppUsageObserver(base::WeakPtr<Profile> profile,
+                   const ReportingSettings* reporting_settings,
+                   std::unique_ptr<AppPlatformMetricsRetriever>
+                       app_platform_metrics_retriever);
 
-  // Initializes the usage collector and starts observing app usage collection
+  // Initializes the usage observer and starts observing app usage collection
   // tracked by the `AppPlatformMetrics` component (if initialized).
-  void InitUsageCollector(::apps::AppPlatformMetrics* app_platform_metrics);
+  void InitUsageObserver(::apps::AppPlatformMetrics* app_platform_metrics);
 
   // ::apps::AppPlatformMetrics::Observer:
   void OnAppUsage(const std::string& app_id,
@@ -76,23 +76,23 @@ class AppUsageCollector : public ::apps::AppPlatformMetrics::Observer {
   const base::WeakPtr<Profile> profile_;
 
   // Pointer to the reporting settings component that outlives the
-  // `AppUsageCollector`. Used to control usage data collection.
+  // `AppUsageObserver`. Used to control usage data collection.
   const raw_ptr<const ReportingSettings> reporting_settings_;
 
   // Retriever that retrieves the `AppPlatformMetrics` component so the usage
-  // collector can start tracking app usage collection.
+  // observer can start tracking app usage collection.
   const std::unique_ptr<AppPlatformMetricsRetriever>
       app_platform_metrics_retriever_;
 
   // Observer for tracking app usage collection. Will be reset if the
-  // `AppPlatformMetrics` component gets destructed before the usage collector.
+  // `AppPlatformMetrics` component gets destructed before the usage observer.
   base::ScopedObservation<::apps::AppPlatformMetrics,
                           ::apps::AppPlatformMetrics::Observer>
       observer_{this};
 
-  base::WeakPtrFactory<AppUsageCollector> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AppUsageObserver> weak_ptr_factory_{this};
 };
 
 }  // namespace reporting
 
-#endif  // CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_APPS_APP_USAGE_COLLECTOR_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_APPS_APP_USAGE_OBSERVER_H_

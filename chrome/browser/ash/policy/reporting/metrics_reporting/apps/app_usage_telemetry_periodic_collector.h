@@ -16,7 +16,7 @@
 namespace reporting {
 
 // Periodic collector that collects and reports app usage telemetry originally
-// collected by the `AppUsageCollector`. This is a standalone component that is
+// collected by the `AppUsageObserver`. This is a standalone component that is
 // similar to the `PeriodicCollector` but only controls the collection rate
 // based on the respective policy setting. This is to avoid data staleness
 // because we do not associate usage data with a timestamp today.

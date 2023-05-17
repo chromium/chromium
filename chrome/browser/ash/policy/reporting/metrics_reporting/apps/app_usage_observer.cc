@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_collector.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_observer.h"
 
 #include <memory>
 
@@ -22,30 +22,30 @@
 namespace reporting {
 
 // static
-std::unique_ptr<AppUsageCollector> AppUsageCollector::Create(
+std::unique_ptr<AppUsageObserver> AppUsageObserver::Create(
     Profile* profile,
     const ReportingSettings* reporting_settings) {
   DCHECK(profile);
   auto app_platform_metrics_retriever =
       std::make_unique<AppPlatformMetricsRetriever>(profile->GetWeakPtr());
   return base::WrapUnique(
-      new AppUsageCollector(profile->GetWeakPtr(), reporting_settings,
-                            std::move(app_platform_metrics_retriever)));
+      new AppUsageObserver(profile->GetWeakPtr(), reporting_settings,
+                           std::move(app_platform_metrics_retriever)));
 }
 
 // static
-std::unique_ptr<AppUsageCollector> AppUsageCollector::CreateForTest(
+std::unique_ptr<AppUsageObserver> AppUsageObserver::CreateForTest(
     Profile* profile,
     const ReportingSettings* reporting_settings,
     std::unique_ptr<AppPlatformMetricsRetriever>
         app_platform_metrics_retriever) {
   DCHECK(profile);
   return base::WrapUnique(
-      new AppUsageCollector(profile->GetWeakPtr(), reporting_settings,
-                            std::move(app_platform_metrics_retriever)));
+      new AppUsageObserver(profile->GetWeakPtr(), reporting_settings,
+                           std::move(app_platform_metrics_retriever)));
 }
 
-AppUsageCollector::AppUsageCollector(
+AppUsageObserver::AppUsageObserver(
     base::WeakPtr<Profile> profile,
     const ReportingSettings* reporting_settings,
     std::unique_ptr<AppPlatformMetricsRetriever> app_platform_metrics_retriever)
@@ -55,26 +55,26 @@ AppUsageCollector::AppUsageCollector(
           std::move(app_platform_metrics_retriever)) {
   DCHECK(app_platform_metrics_retriever_);
   app_platform_metrics_retriever_->GetAppPlatformMetrics(base::BindOnce(
-      &AppUsageCollector::InitUsageCollector, weak_ptr_factory_.GetWeakPtr()));
+      &AppUsageObserver::InitUsageObserver, weak_ptr_factory_.GetWeakPtr()));
 }
 
-AppUsageCollector::~AppUsageCollector() = default;
+AppUsageObserver::~AppUsageObserver() = default;
 
-void AppUsageCollector::InitUsageCollector(
+void AppUsageObserver::InitUsageObserver(
     ::apps::AppPlatformMetrics* app_platform_metrics) {
   if (!app_platform_metrics) {
     // This can happen if the `AppPlatformMetrics` component initialization
     // failed (for example, component was destructed). We just abort
-    // initialization of the usage collector when this happens.
+    // initialization of the usage observer when this happens.
     return;
   }
   observer_.Observe(app_platform_metrics);
 }
 
-void AppUsageCollector::OnAppUsage(const std::string& app_id,
-                                   ::apps::AppType app_type,
-                                   const base::UnguessableToken& instance_id,
-                                   base::TimeDelta running_time) {
+void AppUsageObserver::OnAppUsage(const std::string& app_id,
+                                  ::apps::AppType app_type,
+                                  const base::UnguessableToken& instance_id,
+                                  base::TimeDelta running_time) {
   DCHECK(reporting_settings_);
   auto is_enabled = metrics::kReportDeviceAppInfoDefaultValue;
   reporting_settings_->GetBoolean(::ash::kReportDeviceAppInfo, &is_enabled);
@@ -97,11 +97,11 @@ void AppUsageCollector::OnAppUsage(const std::string& app_id,
   CreateOrUpdateAppUsageEntry(app_id, app_type, instance_id, running_time);
 }
 
-void AppUsageCollector::OnAppPlatformMetricsDestroyed() {
+void AppUsageObserver::OnAppPlatformMetricsDestroyed() {
   observer_.Reset();
 }
 
-void AppUsageCollector::CreateOrUpdateAppUsageEntry(
+void AppUsageObserver::CreateOrUpdateAppUsageEntry(
     const std::string& app_id,
     ::apps::AppType app_type,
     const base::UnguessableToken& instance_id,

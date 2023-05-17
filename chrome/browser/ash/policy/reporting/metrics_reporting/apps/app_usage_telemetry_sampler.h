@@ -15,7 +15,7 @@ namespace reporting {
 
 // Sampler used to collect app usage telemetry from the user profile
 // pref store. This usage data is originally persisted in the pref store by the
-// `AppUsageCollector` as it observes and tracks data collection from the
+// `AppUsageObserver` as it observes and tracks data collection from the
 // `AppPlatformMetrics` component.
 class AppUsageTelemetrySampler : public Sampler {
  public:

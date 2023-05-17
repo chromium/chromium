@@ -21,7 +21,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_platform_metrics_retriever.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_collector.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_telemetry_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/audio/audio_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_metric_sampler.h"
@@ -212,7 +212,7 @@ MetricReportingManager::MetricReportingManager(
 void MetricReportingManager::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  app_usage_collector_.reset();
+  app_usage_observer_.reset();
   delegate_.reset();
   event_observer_managers_.clear();
   info_collectors_.clear();
@@ -311,10 +311,10 @@ void MetricReportingManager::InitOnAffiliatedLogin(Profile* profile) {
   // Start observing app events only if the app service is available for the
   // given profile.
   if (delegate_->IsAppServiceAvailableForProfile(profile)) {
-    // Initialize the `AppUsageCollector` so we can start tracking app usage
+    // Initialize the `AppUsageObserver` so we can start tracking app usage
     // reports right away.
-    app_usage_collector_ =
-        AppUsageCollector::Create(profile, &reporting_settings_);
+    app_usage_observer_ =
+        AppUsageObserver::Create(profile, &reporting_settings_);
     auto app_events_observer = std::make_unique<AppEventsObserver>(
         std::make_unique<AppPlatformMetricsRetriever>(profile->GetWeakPtr()),
         user_reporting_settings_.get());
