@@ -4161,7 +4161,7 @@
       keywords: ["auto", "thin", "none"],
       default_value: "auto",
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSScrollbars",
+      runtime_flag: "ScrollbarWidth",
     },
     {
       name: "scroll-behavior",

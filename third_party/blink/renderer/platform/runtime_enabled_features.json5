@@ -3058,7 +3058,7 @@
     },
     {
       name: "ScrollbarWidth",
-      status: "test",
+      status: "experimental",
       base_feature: "none",
     },
     {
