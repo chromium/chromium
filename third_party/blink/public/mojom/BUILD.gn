@@ -143,6 +143,7 @@ mojom("mojom_platform") {
     "navigation/navigation_policy.mojom",
     "navigation/prefetched_signed_exchange_info.mojom",
     "navigation/renderer_eviction_reason.mojom",
+    "navigation/system_entropy.mojom",
     "navigation/was_activated_option.mojom",
     "notifications/notification.mojom",
     "notifications/notification_service.mojom",

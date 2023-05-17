@@ -3909,6 +3909,7 @@ enum WebFeature {
   kV8FileSystemFileHandle_GetFile_Method = 4569,
   kV8FileSystemHandle_GetUniqueId_Method = 4570,
   kV8FileSystemHandle_Remove_Method = 4571,
+  kPerformanceNavigateSystemEntropy = 4572,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

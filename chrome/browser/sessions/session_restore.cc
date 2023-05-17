@@ -982,6 +982,7 @@ class SessionRestoreImpl : public BrowserListObserver {
                                ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                                : WindowOpenDisposition::NEW_BACKGROUND_TAB;
       params.tabstrip_add_types = add_types;
+      params.suggested_system_entropy = blink::mojom::SystemEntropy::kHigh;
       is_first_tab = false;
       Navigate(&params);
     }

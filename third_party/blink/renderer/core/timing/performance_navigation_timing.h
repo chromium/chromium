@@ -50,6 +50,7 @@ class CORE_EXPORT PerformanceNavigationTiming final
   AtomicString type() const;
   uint16_t redirectCount() const;
   ScriptValue notRestoredReasons(ScriptState* script_state) const;
+  AtomicString systemEntropy() const;
 
   // PerformanceResourceTiming overrides:
   DOMHighResTimeStamp fetchStart() const override;

@@ -28,6 +28,7 @@ import "third_party/blink/public/mojom/messaging/task_attribution_id.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_api_history_entry_arrays.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom";
+import "third_party/blink/public/mojom/navigation/system_entropy.mojom";
 import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
@@ -310,6 +311,10 @@ struct NavigationTiming {
   mojo_base.mojom.TimeTicks redirect_start;
   mojo_base.mojom.TimeTicks redirect_end;
   mojo_base.mojom.TimeTicks fetch_start;
+
+  // Indicates the entropy state of the user agent at the time the navigation
+  // begins.
+  SystemEntropy system_entropy_at_navigation_start = kEmpty;
 
   ParentResourceTimingAccess parent_resource_timing_access = ParentResourceTimingAccess.kDoNotReport;
 };

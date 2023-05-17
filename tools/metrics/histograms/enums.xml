@@ -42463,6 +42463,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4569" label="V8FileSystemFileHandle_GetFile_Method"/>
   <int value="4570" label="V8FileSystemHandle_GetUniqueId_Method"/>
   <int value="4571" label="V8FileSystemHandle_Remove_Method"/>
+  <int value="4572" label="PerformanceNavigateSystemEntropy"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

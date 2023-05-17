@@ -1920,6 +1920,7 @@ source_set("browser") {
     "renderer_host/stored_page.h",
     "renderer_host/subframe_history_navigation_throttle.cc",
     "renderer_host/subframe_history_navigation_throttle.h",
+    "renderer_host/system_entropy_utils.h",
     "renderer_host/text_input_manager.cc",
     "renderer_host/text_input_manager.h",
     "renderer_host/transient_allow_popup.cc",

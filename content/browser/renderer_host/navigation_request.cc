@@ -82,6 +82,7 @@
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/subframe_history_navigation_throttle.h"
+#include "content/browser/renderer_host/system_entropy_utils.h"
 #include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/browser/scoped_active_url.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -1379,6 +1380,10 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*not_restored_reasons=*/nullptr,
           /*load_with_storage_access=*/load_with_storage_access);
 
+  commit_params->navigation_timing->system_entropy_at_navigation_start =
+      SystemEntropyUtils::ComputeSystemEntropyForFrameTreeNode(
+          frame_tree_node, blink::mojom::SystemEntropy::kNormal);
+
   // CreateRendererInitiated() should only be triggered when the navigation is
   // initiated by a frame in the same process.
   // TODO(https://crbug.com/1074464): Find a way to DCHECK that the routing ID
@@ -1558,6 +1563,10 @@ NavigationRequest::CreateForSynchronousRendererCommit(
     navigation_request->commit_params_->storage_key =
         blink::StorageKey::Create(origin, top_level_site, ancestor_chain_bit);
   }
+  navigation_request->commit_params_->navigation_timing
+      ->system_entropy_at_navigation_start =
+      SystemEntropyUtils::ComputeSystemEntropyForFrameTreeNode(
+          frame_tree_node, blink::mojom::SystemEntropy::kNormal);
   navigation_request->commit_params_->session_storage_key =
       frame_tree_node->frame_tree().GetSessionStorageKey(
           navigation_request->commit_params_->storage_key);

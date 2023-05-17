@@ -944,6 +944,9 @@ blink::WebNavigationTimings BuildNavigationTimings(
   renderer_navigation_timings.parent_resource_timing_access =
       browser_navigation_timings.parent_resource_timing_access;
 
+  renderer_navigation_timings.system_entropy_at_navigation_start =
+      browser_navigation_timings.system_entropy_at_navigation_start;
+
   return renderer_navigation_timings;
 }
 
