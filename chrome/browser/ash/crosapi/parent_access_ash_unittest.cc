@@ -12,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/crosapi/fake_ash_parent_access_dialog_provider.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_dialog.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,6 +21,35 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "url/gurl.h"
+
+class FakeParentAccessDialogProvider : public ash::ParentAccessDialogProvider {
+ public:
+  ParentAccessDialogProvider::ShowError Show(
+      parent_access_ui::mojom::ParentAccessParamsPtr params,
+      ash::ParentAccessDialog::Callback callback) override {
+    callback_ = std::move(callback);
+    last_params_received_ = std::move(params);
+    return next_show_error_;
+  }
+
+  void SetNextShowError(ash::ParentAccessDialogProvider::ShowError error) {
+    next_show_error_ = error;
+  }
+
+  parent_access_ui::mojom::ParentAccessParamsPtr GetLastParamsReceived() {
+    return std::move(last_params_received_);
+  }
+
+  void TriggerCallbackWithResult(
+      std::unique_ptr<ash::ParentAccessDialog::Result> result) {
+    std::move(callback_).Run(std::move(result));
+  }
+
+ private:
+  ash::ParentAccessDialog::Callback callback_;
+  parent_access_ui::mojom::ParentAccessParamsPtr last_params_received_;
+  ash::ParentAccessDialogProvider::ShowError next_show_error_;
+};
 
 namespace {
 constexpr char test_url[] = "http://example.com";
@@ -40,9 +68,9 @@ class ParentAccessAshTest : public testing::Test {
     parent_access_ash_ = std::make_unique<crosapi::ParentAccessAsh>();
     parent_access_ash_->BindReceiver(
         parent_access_remote_.BindNewPipeAndPassReceiver());
-    dialog_provider_ = static_cast<crosapi::FakeAshParentAccessDialogProvider*>(
+    dialog_provider_ = static_cast<FakeParentAccessDialogProvider*>(
         parent_access_ash_->SetDialogProviderForTest(
-            std::make_unique<crosapi::FakeAshParentAccessDialogProvider>()));
+            std::make_unique<FakeParentAccessDialogProvider>()));
   }
 
   void TearDown() override { parent_access_ash_.reset(); }
@@ -51,8 +79,7 @@ class ParentAccessAshTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   mojo::Remote<crosapi::mojom::ParentAccess> parent_access_remote_;
   std::unique_ptr<crosapi::ParentAccessAsh> parent_access_ash_;
-  raw_ptr<crosapi::FakeAshParentAccessDialogProvider, ExperimentalAsh>
-      dialog_provider_;
+  raw_ptr<FakeParentAccessDialogProvider, ExperimentalAsh> dialog_provider_;
 };
 
 // Tests that the correct parameters were passed through to the dialog for
