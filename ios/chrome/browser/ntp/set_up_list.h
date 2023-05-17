@@ -19,7 +19,8 @@ class PrefService;
 // completed yet. (For example: set Chrome as Default Browser). `prefs` are
 // BrowserState prefs and are used to determine if CPE is enabled and
 // `localState` is used to store each SetUpListItem's state.
-// `authenticationService` is used to determine signed-in status.
+// `authenticationService` is used to determine signed-in status. Returns `nil`
+// if the Set Up List has been disabled in local state prefs.
 + (instancetype)buildFromPrefs:(PrefService*)prefs
                     localState:(PrefService*)localState
          authenticationService:(AuthenticationService*)authService;

@@ -69,6 +69,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ntp:set_up_list_item_type",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/test:test_support",
     "//third_party/ocmock",
     "//ui/base:test_support",
   ]

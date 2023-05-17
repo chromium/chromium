@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator_delegate.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
@@ -40,6 +41,7 @@ class SetUpListDefaultBrowserPromoCoordinatorTest : public PlatformTest {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   UIWindow* window_;
@@ -64,6 +66,7 @@ TEST_F(SetUpListDefaultBrowserPromoCoordinatorTest, PrimaryButton) {
   [delegate_ verify];
 
   [coordinator_ stop];
+  task_environment_.RunUntilIdle();
 }
 
 // Test that touching the secondary button calls the correct delegate method.
@@ -75,6 +78,7 @@ TEST_F(SetUpListDefaultBrowserPromoCoordinatorTest, SecondaryButton) {
   [delegate_ verify];
 
   [coordinator_ stop];
+  task_environment_.RunUntilIdle();
 }
 
 // Test that touching the secondary button calls the correct delegate method.
@@ -88,4 +92,5 @@ TEST_F(SetUpListDefaultBrowserPromoCoordinatorTest, SwipeToDismiss) {
   [delegate_ verify];
 
   [coordinator_ stop];
+  task_environment_.RunUntilIdle();
 }

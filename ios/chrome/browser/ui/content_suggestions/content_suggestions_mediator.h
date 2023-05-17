@@ -126,6 +126,9 @@ class WebStateList;
 // Indicates that the "Return to Recent Tab" tile should be hidden.
 - (void)hideRecentTabTile;
 
+// Disable and hide the Set Up List;
+- (void)disableSetUpList;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_MEDIATOR_H_

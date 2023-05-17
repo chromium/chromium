@@ -87,6 +87,9 @@ void AddItemIfNotNil(NSMutableArray* array, id item) {
 + (instancetype)buildFromPrefs:(PrefService*)prefs
                     localState:(PrefService*)localState
          authenticationService:(AuthenticationService*)authService {
+  if (set_up_list_prefs::IsSetUpListDisabled(localState)) {
+    return nil;
+  }
   NSMutableArray<SetUpListItem*>* items =
       [[NSMutableArray<SetUpListItem*> alloc] init];
   AddItemIfNotNil(items, BuildItem(SetUpListItemType::kSignInSync, prefs,

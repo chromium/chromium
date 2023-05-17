@@ -95,7 +95,6 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
 
 @property(nonatomic, strong)
     ContentSuggestionsViewController* contentSuggestionsViewController;
-@property(nonatomic, strong) ActionSheetCoordinator* alertCoordinator;
 @property(nonatomic, assign) BOOL contentSuggestionsEnabled;
 // Authentication Service for the user's signed-in state.
 @property(nonatomic, assign) AuthenticationService* authService;
@@ -118,6 +117,9 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
   // The coordinator that displays the Default Browser Promo for the Set Up
   // List.
   SetUpListDefaultBrowserPromoCoordinator* _defaultBrowserPromoCoordinator;
+
+  // The coordinator used to present an action sheet for the Set Up List menu.
+  ActionSheetCoordinator* _actionSheetCoordinator;
 }
 
 - (void)start {
@@ -374,8 +376,30 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
   }
 }
 
-- (void)showSetUpListMenu {
-  // TODO(crbug.com/1445766): Implement Set Up List menu.
+- (void)showSetUpListMenuWithButton:(UIButton*)button {
+  _actionSheetCoordinator = [[ActionSheetCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                           title:nil
+                         message:nil
+                            rect:button.frame
+                            view:button];
+
+  __weak ContentSuggestionsMediator* weakMediator =
+      self.contentSuggestionsMediator;
+  [_actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_SET_UP_LIST_SETTINGS_TURN_OFF)
+                action:^{
+                  [weakMediator disableSetUpList];
+                }
+                 style:UIAlertActionStyleDefault];
+  [_actionSheetCoordinator
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_IOS_SET_UP_LIST_SETTINGS_CANCEL)
+                action:nil
+                 style:UIAlertActionStyleCancel];
+  [_actionSheetCoordinator start];
 }
 
 #pragma mark - SetUpList Helpers

@@ -70,6 +70,9 @@ constexpr NSString* const kSetUpListMenuButtonID = @"kSetUpListMenuButtonID";
 
   // Whether the item list is expanded to show all items.
   BOOL _expanded;
+
+  // The button that opens the Set Up List menu.
+  UIButton* _menuButton;
 }
 
 - (instancetype)initWithItems:(NSArray<SetUpListItemViewData*>*)items {
@@ -110,7 +113,7 @@ constexpr NSString* const kSetUpListMenuButtonID = @"kSetUpListMenuButtonID";
 
 // Calls the command handler to notify that the menu button was tapped.
 - (void)didTapMenuButton {
-  [self.delegate showSetUpListMenu];
+  [self.delegate showSetUpListMenuWithButton:_menuButton];
 }
 
 // Toggles the expanded state of the items stack view.
@@ -152,20 +155,20 @@ constexpr NSString* const kSetUpListMenuButtonID = @"kSetUpListMenuButtonID";
       containerStack, self,
       NSDirectionalEdgeInsetsMake(0, kMargin, 0, kMargin));
 
-  UIButton* menuButton = [self createMenuButton];
-  [self addSubview:menuButton];
+  _menuButton = [self createMenuButton];
+  [self addSubview:_menuButton];
   [NSLayoutConstraint activateConstraints:@[
-    [menuButton.trailingAnchor
+    [_menuButton.trailingAnchor
         constraintEqualToAnchor:containerStack.trailingAnchor],
-    [menuButton.firstBaselineAnchor
+    [_menuButton.firstBaselineAnchor
         constraintEqualToAnchor:listTitle.firstBaselineAnchor],
   ]];
 
   if (_expandButton) {
     self.accessibilityElements =
-        @[ listTitle, menuButton, _itemsStack, _expandButton ];
+        @[ listTitle, _menuButton, _itemsStack, _expandButton ];
   } else {
-    self.accessibilityElements = @[ listTitle, menuButton, _itemsStack ];
+    self.accessibilityElements = @[ listTitle, _menuButton, _itemsStack ];
   }
 }
 

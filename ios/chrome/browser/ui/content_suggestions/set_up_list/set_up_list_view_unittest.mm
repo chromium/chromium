@@ -6,7 +6,6 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
 
-#import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/ntp/set_up_list.h"
 #import "ios/chrome/browser/ntp/set_up_list_item.h"
@@ -20,8 +19,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-using base::test::ios::SpinRunLoopWithMaxDelay;
 
 // Tests the SetUpListView and subviews.
 class SetUpListViewTest : public PlatformTest {
@@ -83,7 +80,7 @@ class SetUpListViewTest : public PlatformTest {
     ASSERT_TRUE(button);
     [button sendActionsForControlEvents:UIControlEventTouchUpInside];
     // Give time for run loop to execute events.
-    SpinRunLoopWithMaxDelay(base::Milliseconds(100));
+    _task_environment.RunUntilIdle();
   }
 
   // Returns a count of subviews of the given `klass`.
@@ -163,7 +160,7 @@ TEST_F(SetUpListViewTest, TouchSetUpListItemView) {
   gesture_recognizer.state = UIGestureRecognizerStateEnded;
   [item_view handleTap:(UITapGestureRecognizer*)gesture_recognizer];
   // Give time for run loop to execute events.
-  SpinRunLoopWithMaxDelay(base::Milliseconds(100));
+  _task_environment.RunUntilIdle();
 
   [view_delegate verify];
 }
@@ -174,7 +171,7 @@ TEST_F(SetUpListViewTest, MenuButton) {
   [_superview addSubview:view];
 
   id view_delegate = OCMProtocolMock(@protocol(SetUpListViewDelegate));
-  OCMExpect([view_delegate showSetUpListMenu]);
+  OCMExpect([view_delegate showSetUpListMenuWithButton:[OCMArg any]]);
   view.delegate = view_delegate;
 
   TouchButton(@"kSetUpListMenuButtonID");
@@ -194,7 +191,7 @@ TEST_F(SetUpListViewTest, SetUpListItemViewMarkComplete) {
 
   [item_view markComplete];
   // Give time for run loop to execute events.
-  SpinRunLoopWithMaxDelay(base::Milliseconds(100));
+  _task_environment.RunUntilIdle();
 
   EXPECT_TRUE(item_view.complete);
 }

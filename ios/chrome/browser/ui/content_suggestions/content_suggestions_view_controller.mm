@@ -67,6 +67,9 @@ const float kMagicStackSpacing = 10.0f;
 // The margin on the left and right of the Set Up List.
 const CGFloat kSetUpListHorizontalMargin = 10;
 
+// The duration of the animation that hides the Set Up List.
+const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
+
 }  // namespace
 
 @interface ContentSuggestionsViewController () <
@@ -484,6 +487,38 @@ const CGFloat kSetUpListHorizontalMargin = 10;
   }
 }
 
+- (void)hideSetUpListWithAnimations:(ProceduralBlock)animations {
+  CHECK(self.setUpListView);
+  NSInteger index = [self.verticalStackView.arrangedSubviews
+      indexOfObject:self.setUpListView];
+  CHECK_NE(index, NSNotFound);
+
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kSetUpListHideAnimationDuration.InSecondsF()
+      animations:^{
+        __typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        strongSelf.setUpListView.hidden = YES;
+        strongSelf.setUpListView.alpha = 0;
+        [strongSelf.view setNeedsLayout];
+        [strongSelf.view layoutIfNeeded];
+        if (animations) {
+          animations();
+        }
+      }
+      completion:^(BOOL finished) {
+        __typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        [strongSelf.setUpListView removeFromSuperview];
+        strongSelf.setUpListView.delegate = nil;
+        strongSelf.setUpListView = nil;
+      }];
+}
+
 - (CGFloat)contentSuggestionsHeight {
   CGFloat height = 0;
   if ([self.mostVisitedViews count] > 0 &&
@@ -505,6 +540,9 @@ const CGFloat kSetUpListHorizontalMargin = 10;
   }
   if (self.returnToRecentTabTile) {
     height += ReturnToRecentTabHeight();
+  }
+  if (self.setUpListView && !self.setUpListView.isHidden) {
+    height += self.setUpListView.frame.size.height;
   }
   return height;
 }

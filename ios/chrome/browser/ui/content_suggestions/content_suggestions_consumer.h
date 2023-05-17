@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_CONSUMER_H_
 
+#include "base/ios/block_types.h"
+
 @class ContentSuggestionsMostVisitedActionItem;
 @class ContentSuggestionsMostVisitedItem;
 @class ContentSuggestionsReturnToRecentTabItem;
@@ -57,6 +59,11 @@ enum class SetUpListItemType;
 
 // Marks a Set Up List item complete with an animation and updated appearance.
 - (void)markSetUpListItemComplete:(SetUpListItemType)type;
+
+// Hides the Set Up List, if it is currently visible. The given `animations`
+// block will be called as part of the animation that hides the Set Up list, to
+// allow other things to be animated at the same time.
+- (void)hideSetUpListWithAnimations:(ProceduralBlock)animations;
 
 @end
 

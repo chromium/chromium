@@ -206,8 +206,8 @@ TEST_F(SetUpListTest, BuildListWithFollow) {
   ExpectListToNotInclude(SetUpListItemType::kFollow);
 }
 
-// Test that SetUpList observes local state changes, updates the item, and calls
-// the delegate.
+// Tests that SetUpList observes local state changes, updates the item, and
+// calls the delegate.
 TEST_F(SetUpListTest, ObservesPrefs) {
   BuildSetUpList();
   id delegate = [OCMockObject mockForProtocol:@protocol(SetUpListDelegate)];
@@ -219,4 +219,14 @@ TEST_F(SetUpListTest, ObservesPrefs) {
                                       SetUpListItemType::kSignInSync);
   EXPECT_TRUE(item.complete);
   [delegate verify];
+}
+
+// Tests that the Set Up List can be disabled.
+TEST_F(SetUpListTest, Disable) {
+  EXPECT_FALSE(set_up_list_prefs::IsSetUpListDisabled(local_state_.Get()));
+  set_up_list_prefs::DisableSetUpList(local_state_.Get());
+  EXPECT_TRUE(set_up_list_prefs::IsSetUpListDisabled(local_state_.Get()));
+
+  BuildSetUpList();
+  EXPECT_EQ(set_up_list_, nil);
 }

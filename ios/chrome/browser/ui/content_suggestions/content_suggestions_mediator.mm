@@ -220,7 +220,8 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
     _readingListModelBridge =
         std::make_unique<ReadingListModelBridge>(self, readingListModel);
 
-    if (IsIOSSetUpListEnabled()) {
+    if (IsIOSSetUpListEnabled() &&
+        !set_up_list_prefs::IsSetUpListDisabled(_localState)) {
       _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
       _prefChangeRegistrar.Init(_localState);
       _prefObserverBridge->ObserveChangesForPreference(
@@ -351,6 +352,13 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
     self.returnToRecentTabItem = nil;
     [self.consumer hideReturnToRecentTabTile];
   }
+}
+
+- (void)disableSetUpList {
+  set_up_list_prefs::DisableSetUpList(_localState);
+  [self.consumer hideSetUpListWithAnimations:^{
+    [self.feedDelegate contentSuggestionsWasUpdated];
+  }];
 }
 
 #pragma mark - SetUpListDelegate
@@ -739,6 +747,9 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
 // Returns YES if the conditions are right to display the Set Up List.
 - (BOOL)shouldShowSetUpList {
   if (!IsIOSSetUpListEnabled()) {
+    return NO;
+  }
+  if (set_up_list_prefs::IsSetUpListDisabled(_localState)) {
     return NO;
   }
   // check if we are within 14 days of FRE

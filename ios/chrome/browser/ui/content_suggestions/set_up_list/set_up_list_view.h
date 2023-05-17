@@ -18,7 +18,7 @@ enum class SetUpListItemType;
 - (void)didSelectSetUpListItem:(SetUpListItemType)type;
 
 // Called when the user selects the Set Up List menu.
-- (void)showSetUpListMenu;
+- (void)showSetUpListMenuWithButton:(UIButton*)button;
 
 @end
 

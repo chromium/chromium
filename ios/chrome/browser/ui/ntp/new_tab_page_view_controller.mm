@@ -1173,12 +1173,14 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
 // Sets an top inset to the feed collection view to fit the content above it.
 - (void)updateFeedInsetsForContentAbove {
-  self.collectionView.contentInset = UIEdgeInsetsMake(
-      [self heightAboveFeed], 0, self.collectionView.contentInset.bottom, 0);
+  CGFloat heightAboveFeed = [self heightAboveFeed];
   // Updates `additionalOffset` using the content above the feed.
-  self.additionalOffset = [self heightAboveFeed];
-  // Update `scrolledToMinimumHeight` after updating `additionalOffset`.
-  [self updateScrolledToMinimumHeight];
+  self.additionalOffset = heightAboveFeed;
+  // Setting the contentInset will cause a scroll, which will call
+  // scrollViewDidScroll which calls updateScrolledToMinimumHeight. So no need
+  // to call here.
+  self.collectionView.contentInset = UIEdgeInsetsMake(
+      heightAboveFeed, 0, self.collectionView.contentInset.bottom, 0);
 }
 
 // Checks whether the feed top section is visible and updates the
