@@ -608,6 +608,8 @@ component("ash") {
     "game_dashboard/game_dashboard_controller.h",
     "game_dashboard/game_dashboard_delegate.h",
     "glanceables/classroom/glanceables_classroom_client.h",
+    "glanceables/classroom/glanceables_classroom_types.cc",
+    "glanceables/classroom/glanceables_classroom_types.h",
     "glanceables/glanceables_controller.cc",
     "glanceables/glanceables_controller.h",
     "glanceables/glanceables_delegate.h",

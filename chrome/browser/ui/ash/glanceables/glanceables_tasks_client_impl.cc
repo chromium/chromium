@@ -140,21 +140,22 @@ void GlanceablesTasksClientImpl::MarkAsCompleted(
   CHECK(!task_id.empty());
   CHECK(callback);
 
-  GetRequestSender()->StartRequestWithAuthRetry(
-      std::make_unique<PatchTaskRequest>(
-          request_sender_.get(),
-          base::BindOnce(&GlanceablesTasksClientImpl::OnMarkedAsCompleted,
-                         weak_factory_.GetWeakPtr(), task_list_id, task_id,
-                         std::move(callback)),
-          task_list_id, task_id, Task::Status::kCompleted));
+  auto* const request_sender = GetRequestSender();
+  request_sender->StartRequestWithAuthRetry(std::make_unique<PatchTaskRequest>(
+      request_sender,
+      base::BindOnce(&GlanceablesTasksClientImpl::OnMarkedAsCompleted,
+                     weak_factory_.GetWeakPtr(), task_list_id, task_id,
+                     std::move(callback)),
+      task_list_id, task_id, Task::Status::kCompleted));
 }
 
 void GlanceablesTasksClientImpl::FetchTaskListsPage(
     const std::string& page_token,
     GlanceablesTasksClient::GetTaskListsCallback callback) {
-  GetRequestSender()->StartRequestWithAuthRetry(
+  auto* const request_sender = GetRequestSender();
+  request_sender->StartRequestWithAuthRetry(
       std::make_unique<ListTaskListsRequest>(
-          request_sender_.get(),
+          request_sender,
           base::BindOnce(&GlanceablesTasksClientImpl::OnTaskListsPageFetched,
                          weak_factory_.GetWeakPtr(), std::move(callback)),
           page_token));
@@ -186,13 +187,13 @@ void GlanceablesTasksClientImpl::FetchTasksPage(
     const std::string& page_token,
     std::vector<std::unique_ptr<Task>> accumulated_raw_tasks,
     GlanceablesTasksClient::GetTasksCallback callback) {
-  GetRequestSender()->StartRequestWithAuthRetry(
-      std::make_unique<ListTasksRequest>(
-          request_sender_.get(),
-          base::BindOnce(&GlanceablesTasksClientImpl::OnTasksPageFetched,
-                         weak_factory_.GetWeakPtr(), task_list_id,
-                         std::move(accumulated_raw_tasks), std::move(callback)),
-          task_list_id, page_token));
+  auto* const request_sender = GetRequestSender();
+  request_sender->StartRequestWithAuthRetry(std::make_unique<ListTasksRequest>(
+      request_sender,
+      base::BindOnce(&GlanceablesTasksClientImpl::OnTasksPageFetched,
+                     weak_factory_.GetWeakPtr(), task_list_id,
+                     std::move(accumulated_raw_tasks), std::move(callback)),
+      task_list_id, page_token));
 }
 
 void GlanceablesTasksClientImpl::OnTasksPageFetched(

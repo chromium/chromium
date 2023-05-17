@@ -3476,6 +3476,7 @@ static_library("ui") {
       "//extensions/browser/api/messaging",
       "//extensions/browser/api/virtual_keyboard_private",
       "//google_apis/calendar",
+      "//google_apis/classroom",
       "//google_apis/common",
       "//google_apis/drive",
       "//google_apis/tasks",
