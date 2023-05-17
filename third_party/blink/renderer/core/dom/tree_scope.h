@@ -34,6 +34,8 @@
 #include "third_party/blink/renderer/core/html/forms/radio_button_group_scope.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -45,6 +47,7 @@ class CSSStyleSheet;
 class DOMSelection;
 class Document;
 class Element;
+class HTMLDetailsElement;
 class HTMLMapElement;
 class HitTestResult;
 class IdTargetObserverRegistry;
@@ -94,6 +97,17 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   void AddImageMap(HTMLMapElement&);
   void RemoveImageMap(HTMLMapElement&);
   HTMLMapElement* GetImageMap(const String& url) const;
+
+  // DetailsSet is the set of details elements with a particular name
+  // attribute.  They are stored in a HeapLinkedHashSet since the
+  // iteration order is web-exposed (through deprecated Mutation
+  // events), so it should be something vaguely reasonable (in this
+  // case, insertion order) that doesn't expose anything potentially
+  // sensitive.
+  using DetailsSet = HeapLinkedHashSet<WeakMember<HTMLDetailsElement>>;
+  using DetailsNameMap = HeapHashMap<AtomicString, Member<DetailsSet>>;
+  // HTMLDetailsElement objects that have a name attribute.
+  DetailsNameMap& NamedDetailsElements() { return details_name_map_; }
 
   Element* ElementFromPoint(double x, double y) const;
   Element* HitTestPoint(double x, double y, const HitTestRequest&) const;
@@ -189,6 +203,9 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
 
   Member<TreeOrderedMap> elements_by_id_;
   Member<TreeOrderedMap> image_maps_by_name_;
+
+  // HTMLDetailsElement objects that have a name attribute.
+  DetailsNameMap details_name_map_;
 
   Member<IdTargetObserverRegistry> id_target_observer_registry_;
 

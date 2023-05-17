@@ -46,7 +46,7 @@
 namespace blink {
 
 HTMLDetailsElement::HTMLDetailsElement(Document& document)
-    : HTMLElement(html_names::kDetailsTag, document), is_open_(false) {
+    : HTMLElement(html_names::kDetailsTag, document) {
   UseCounter::Count(document, WebFeature::kDetailsElement);
   EnsureUserAgentShadowRoot().SetSlotAssignmentMode(
       SlotAssignmentMode::kManual);
@@ -174,6 +174,26 @@ void HTMLDetailsElement::ParseAttribute(
     if (is_open_) {
       content->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
       content->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+
+      // The name attribute links multiple details elements into an
+      // exclusive accordion.  So if this one has a name, close the
+      // other ones with the same name.
+      CHECK_NE(params.reason,
+               AttributeModificationReason::kBySynchronizationOfLazyAttribute);
+      if (!name_.IsNull() && IsInTreeScope() &&
+          params.reason == AttributeModificationReason::kDirectly) {
+        CHECK(RuntimeEnabledFeatures::AccordionPatternEnabled());
+        // Copy the set of details elements, because the setAttribute
+        // call can trigger mutation events that change the set.
+        HeapVector<Member<HTMLDetailsElement>> details_with_name(
+            *GetTreeScope().NamedDetailsElements().at(name_));
+        for (HTMLDetailsElement* other_details : details_with_name) {
+          if (other_details == this) {
+            continue;
+          }
+          other_details->setAttribute(html_names::kOpenAttr, g_null_atom);
+        }
+      }
     } else {
       content->SetInlineStyleProperty(CSSPropertyID::kDisplay,
                                       CSSValueID::kBlock);
@@ -181,10 +201,46 @@ void HTMLDetailsElement::ParseAttribute(
                                       CSSValueID::kHidden);
       content->EnsureDisplayLockContext().SetIsDetailsSlotElement(true);
     }
-
-    return;
+  } else if (params.name == html_names::kNameAttr &&
+             RuntimeEnabledFeatures::AccordionPatternEnabled()) {
+    RemoveNameFromMap(GetTreeScope());
+    name_ = params.new_value;
+    AddNameToMap(GetTreeScope());
+  } else {
+    HTMLElement::ParseAttribute(params);
   }
-  HTMLElement::ParseAttribute(params);
+}
+
+void HTMLDetailsElement::DidMoveToNewTreeScope(TreeScope& old_scope) {
+  if (!name_.IsNull()) {
+    CHECK(RuntimeEnabledFeatures::AccordionPatternEnabled());
+
+    RemoveNameFromMap(old_scope);
+    AddNameToMap(GetTreeScope());
+  }
+}
+
+void HTMLDetailsElement::AddNameToMap(TreeScope& tree_scope) {
+  if (!name_.IsNull()) {
+    CHECK(RuntimeEnabledFeatures::AccordionPatternEnabled());
+
+    const auto add_result =
+        tree_scope.NamedDetailsElements().insert(name_, nullptr);
+    Member<Document::DetailsSet>& details_set = add_result.stored_value->value;
+    DCHECK_EQ(add_result.is_new_entry, !details_set);
+    if (!details_set) {
+      details_set = MakeGarbageCollected<Document::DetailsSet>();
+    }
+    details_set->insert(this);
+  }
+}
+
+void HTMLDetailsElement::RemoveNameFromMap(TreeScope& tree_scope) {
+  if (!name_.IsNull()) {
+    CHECK(RuntimeEnabledFeatures::AccordionPatternEnabled());
+
+    tree_scope.NamedDetailsElements().at(name_)->erase(this);
+  }
 }
 
 void HTMLDetailsElement::ToggleOpen() {
