@@ -5115,6 +5115,59 @@ TEST_F(DelegatedTest, DoNotDelegateCopyRequest) {
   EXPECT_EQ(0u, candidate_list.size());
 }
 
+TEST_F(DelegatedTest, BlockDelegationWithNonRootCopies) {
+  auto child_pass = CreateRenderPass();
+  AggregatedRenderPassId child_id{3};
+  child_pass->id = child_id;
+  CreateCandidateQuadAt(resource_provider_.get(),
+                        child_resource_provider_.get(), child_provider_.get(),
+                        child_pass->shared_quad_state_list.back(),
+                        child_pass.get(), kOverlayTopLeftRect);
+
+  auto root_pass = CreateRenderPass();
+  AggregatedRenderPassDrawQuad* quad =
+      root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
+  quad->SetNew(root_pass->shared_quad_state_list.back(), kOverlayRect,
+               kOverlayRect, child_id, kInvalidResourceId, gfx::RectF(),
+               gfx::Size(), gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(),
+               false, 1.0f);
+
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  SurfaceDamageRectList surface_damage_rect_list;
+  // Simplify by adding full root damage.
+  surface_damage_rect_list.push_back(kOverlayRect);
+  pass_list.push_back(std::move(child_pass));
+  pass_list.push_back(std::move(root_pass));
+
+  // The second copy frame will reset the counter. Three frames after that
+  // delegation can resume.
+  std::vector<bool> copy_frames = {true,  false, true, false,
+                                   false, false, false};
+  std::vector<size_t> expected_overlays = {0, 0, 0, 0, 0, 1, 1};
+  ASSERT_EQ(copy_frames.size(), expected_overlays.size());
+
+  for (size_t i = 0; i < copy_frames.size(); ++i) {
+    SCOPED_TRACE(i);
+
+    pass_list[0]->copy_requests.clear();
+    // Add copy request to child pass on certain frames.
+    if (copy_frames[i]) {
+      pass_list[0]->copy_requests.push_back(
+          CopyOutputRequest::CreateStubForTesting());
+    }
+
+    OverlayCandidateList candidate_list;
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        surface_damage_rect_list, overlay_processor_->GetDefaultPrimaryPlane(),
+        &candidate_list, &damage_rect_, &content_bounds_);
+    EXPECT_EQ(expected_overlays[i], candidate_list.size());
+  }
+}
+
 TEST_F(DelegatedTest, TestClipHandCrafted) {
   auto pass = CreateRenderPass();
   const auto kSmallCandidateRect = gfx::Rect(0, 0, 100, 100);

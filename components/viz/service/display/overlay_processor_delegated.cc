@@ -79,6 +79,10 @@ void RecordFDUsageUMA() {
   DBG_LOG("delegated.fd.usage", "FD usage: %d / %d - time us: %f",
           active_fd_count, fd_max, delta_time_taken.InMicrosecondsF());
 }
+
+// Block delegation if there has been a copy request in the last 3 frames.
+constexpr int kCopyRequestBlockFrames = 3;
+
 }  // namespace
 
 namespace viz {
@@ -140,9 +144,10 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   if (disable_delegation())
     return false;
 
-  // Do not delegated when we have copy requests otherwise we will end up with
-  // the delegated quads missing from the frame buffer.
-  if (!render_pass->copy_requests.empty()) {
+  // Do not delegate when we have copy requests on the root render pass or we
+  // will end up with the delegated quads missing from the frame buffer.
+  // Delegating with copy requests also increases power usage.
+  if (BlockForCopyRequests(render_pass_list)) {
     delegated_status_ = DelegationStatus::kCompositedCopyRequest;
     return false;
   }
@@ -304,6 +309,7 @@ void OverlayProcessorDelegated::ProcessForOverlays(
 
   UMA_HISTOGRAM_ENUMERATION("Viz.DelegatedCompositing.Status",
                             delegated_status_);
+  DBG_LOG("delegation_status", "delegation status: %d", delegated_status_);
   DBG_DRAW_RECT("delegated.outgoing.damage", (*damage_rect));
 
   TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("viz.debug.overlay_planes"),
@@ -329,6 +335,25 @@ void OverlayProcessorDelegated::AdjustOutputSurfaceOverlay(
 
 gfx::RectF OverlayProcessorDelegated::GetUnassignedDamage() const {
   return unassigned_damage_;
+}
+
+bool OverlayProcessorDelegated::BlockForCopyRequests(
+    const AggregatedRenderPassList* render_pass_list) {
+  bool has_copy = false;
+  for (auto& pass : *render_pass_list) {
+    if (!pass->copy_requests.empty()) {
+      has_copy = true;
+      break;
+    }
+  }
+
+  if (has_copy) {
+    copy_request_counter_ = kCopyRequestBlockFrames;
+  } else {
+    copy_request_counter_ = std::max(0, copy_request_counter_ - 1);
+  }
+
+  return copy_request_counter_ > 0;
 }
 
 }  // namespace viz

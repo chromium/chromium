@@ -109,10 +109,21 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
       OverlayCandidateList* candidates,
       std::vector<gfx::Rect>* content_bounds);
 
+  // Should delegation be blocked because we have recently had copy output
+  // requests on any render passes. The root render pass must not be delegated
+  // if there is a copy request in order to draw correctly. For non-root passes,
+  // this is done to prevent execessive power usage that can occur if copy
+  // output requests happen approximately every other frame, causing a lot of
+  // delegation overhead.
+  bool BlockForCopyRequests(const AggregatedRenderPassList* render_pass_list);
+
   DelegationStatus delegated_status_ = DelegationStatus::kCompositedOther;
   bool supports_clip_rect_ = false;
   bool needs_background_image_ = false;
   gfx::RectF unassigned_damage_;
+  // Used to count the number of frames we should wait until allowing delegation
+  // again.
+  int copy_request_counter_ = 0;
 };
 }  // namespace viz
 
