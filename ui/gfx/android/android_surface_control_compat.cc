@@ -10,17 +10,13 @@
 
 #include "base/android/build_info.h"
 #include "base/atomic_sequence_num.h"
-#include "base/containers/flat_set.h"
 #include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/hash/md5_constexpr.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/synchronization/lock.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
@@ -502,16 +498,6 @@ uint64_t GetTraceIdForTransaction(int transaction_id) {
   return kMask ^ transaction_id;
 }
 
-base::Lock& GetGlobalLock() {
-  static base::NoDestructor<base::Lock> lock;
-  return *lock;
-}
-
-base::flat_set<int>& GetGlobalPendingCompleteCallbackIds() {
-  static base::NoDestructor<base::flat_set<int>> set;
-  return *set;
-}
-
 // Note that the framework API states that this callback can be dispatched on
 // any thread (in practice it should be a binder thread).
 void OnTransactionCompletedOnAnyThread(void* context,
@@ -523,17 +509,6 @@ void OnTransactionCompletedOnAnyThread(void* context,
   TRACE_EVENT_WITH_FLOW0(
       "toplevel.flow", "gfx::SurfaceControlTransaction completed",
       GetTraceIdForTransaction(ack_ctx->id), TRACE_EVENT_FLAG_FLOW_IN);
-
-  bool dump = false;
-  {
-    base::AutoLock lock(GetGlobalLock());
-    size_t num_removed =
-        GetGlobalPendingCompleteCallbackIds().erase(ack_ctx->id);
-    dump = !num_removed;
-  }
-  if (dump) {
-    base::debug::DumpWithoutCrashing(base::Location::Current(), base::Days(1));
-  }
 
   std::move(ack_ctx->callback).Run(std::move(transaction_stats));
   delete ack_ctx;
@@ -950,16 +925,6 @@ void SurfaceControl::Transaction::PrepareCallbacks() {
     ack_ctx->callback = std::move(on_complete_cb_);
     ack_ctx->id = id_;
 
-    bool dump = false;
-    {
-      base::AutoLock lock(GetGlobalLock());
-      auto result = GetGlobalPendingCompleteCallbackIds().insert(id_);
-      dump = !result.second;
-    }
-    if (dump) {
-      base::debug::DumpWithoutCrashing(base::Location::Current(),
-                                       base::Days(1));
-    }
     SurfaceControlMethods::Get().ASurfaceTransaction_setOnCompleteFn(
         transaction_, ack_ctx, &OnTransactionCompletedOnAnyThread);
     need_to_apply_ = true;
