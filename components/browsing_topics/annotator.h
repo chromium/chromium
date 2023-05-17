@@ -6,14 +6,9 @@
 #define COMPONENTS_BROWSING_TOPICS_ANNOTATOR_H_
 
 #include <string>
-#include <unordered_map>
 #include <vector>
 
-#include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
-#include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/core/bert_model_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

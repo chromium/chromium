@@ -1,14 +1,13 @@
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//components/optimization_guide/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 source_set("browsing_topics") {
   sources = [
     "annotator.cc",
     "annotator.h",
-    "annotator_impl.cc",
-    "annotator_impl.h",
     "browsing_topics_calculator.cc",
     "browsing_topics_calculator.h",
     "browsing_topics_page_load_data_tracker.cc",
@@ -27,6 +26,18 @@ source_set("browsing_topics") {
     "util.cc",
     "util.h",
   ]
+
+  if (build_with_tflite_lib) {
+    sources += [
+      "annotator_impl.cc",
+      "annotator_impl.h",
+    ]
+  } else {
+    sources += [
+      "annotator_noop.cc",
+      "annotator_noop.h",
+    ]
+  }
 
   deps = [
     "//base",
@@ -71,7 +82,6 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "annotator_impl_unittest.cc",
     "browsing_topics_calculator_unittest.cc",
     "browsing_topics_page_load_data_tracker_unittest.cc",
     "browsing_topics_service_impl_unittest.cc",
@@ -79,6 +89,10 @@ source_set("unit_tests") {
     "epoch_topics_unittest.cc",
     "topic_and_domains_unittest.cc",
   ]
+
+  if (build_with_tflite_lib) {
+    sources += [ "annotator_impl_unittest.cc" ]
+  }
 
   deps = [
     ":browsing_topics",
