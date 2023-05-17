@@ -331,9 +331,20 @@
 
   .description {
     color: var(--cr-secondary-text-color);
-    flex-shrink: 0;
+    display: flex;
     font-size: 13px;
     font-weight: 400;
+    max-width: 100%;
+  }
+
+  .description-text:has(+ .timestamp:not([hidden])) {
+    /* Prioritize timestamp and let description shrink. */
+    flex-shrink: 1;
+  }
+
+  :host([reverse-elide-description]) .description-text {
+    /* Flip so the ellipsis appears at the front, typically for URLs. */
+    direction: rtl;
   }
 
   :host-context([chrome-refresh-2023]) .description {
@@ -342,11 +353,17 @@
   }
 
   .title,
-  .description {
+  .description-text,
+  .timestamp {
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .timestamp {
+    flex-shrink: 0;
+    padding-inline-start: 4px;
   }
 
   .badges {
@@ -428,7 +445,10 @@
       [[title]]
     </button>
     <div class="descriptions">
-      <div class="description" hidden$="[[!description]]">[[description]]</div>
+      <div class="description" hidden$="[[!description]]">
+        <span class="description-text">[[description]]</span>
+        <span class="timestamp" hidden$="[[!timestamp]]">- [[timestamp]]</span>
+      </div>
       <div class="badges">
         <slot id="badges" name="badges" on-slotchange="onBadgesSlotChange_">
         </slot>

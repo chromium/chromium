@@ -65,6 +65,12 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
         reflectToAttribute: true,
       },
 
+      reverseElideDescription: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
+
       isFolder_: {
         computed: 'computeIsFolder_(count)',
         type: Boolean,
@@ -95,6 +101,11 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
         type: Boolean,
         value: false,
       },
+
+      timestamp: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -102,6 +113,7 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   buttonAriaDescription?: string;
   count?: number;
   description?: string;
+  reverseElideDescription: boolean;
   private hasBadges_: boolean;
   private hasDescription_: boolean;
   private isFolder_: boolean;
@@ -110,6 +122,7 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   imageUrls: string[];
   private firstImageLoaded_: boolean;
   forceHover: boolean;
+  timestamp: string;
 
   override ready() {
     super.ready();
@@ -148,7 +161,7 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   }
 
   private computeHasDescriptions_(): boolean {
-    return !!this.description || this.hasBadges_;
+    return !!this.description || this.hasBadges_ || !!this.timestamp;
   }
 
   private computeIsFolder_(): boolean {
