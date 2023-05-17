@@ -67,6 +67,7 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
   dawn_instance_desc.additionalRuntimeSearchPathsCount =
       dawn_search_path.empty() ? 0u : 1u;
   dawn_instance_desc.additionalRuntimeSearchPaths = &dawn_search_path_c_str;
+  dawn_instance_desc.platform = platform;
   dawn_instance_desc.nextInChain = &dawn_toggle_desc;
 
   wgpu::InstanceDescriptor instance_desc;
@@ -74,7 +75,6 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
 
   auto instance = std::make_unique<DawnInstance>(
       reinterpret_cast<const WGPUInstanceDescriptor*>(&instance_desc));
-  instance->SetPlatform(platform);
 
   switch (gpu_preferences.enable_dawn_backend_validation) {
     case DawnBackendValidationLevel::kDisabled:
