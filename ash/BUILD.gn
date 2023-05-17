@@ -4029,6 +4029,8 @@ static_library("test_support") {
     "user_education/mock_user_education_delegate.h",
     "user_education/user_education_ash_test_base.cc",
     "user_education/user_education_ash_test_base.h",
+    "user_education/views/help_bubble_view_ash_test_base.cc",
+    "user_education/views/help_bubble_view_ash_test_base.h",
     "user_education/welcome_tour/mock_welcome_tour_controller_observer.cc",
     "user_education/welcome_tour/mock_welcome_tour_controller_observer.h",
     "utility/haptics_tracking_test_input_controller.cc",
