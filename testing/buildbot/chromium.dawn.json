@@ -2398,6 +2398,8 @@
       }
     ]
   },
+  "Dawn Mac arm64 DEPS Release (Apple M2)": {},
+  "Dawn Mac arm64 Release (Apple M2)": {},
   "Dawn Mac x64 Builder": {},
   "Dawn Mac x64 DEPS Builder": {},
   "Dawn Mac x64 DEPS Release (AMD)": {

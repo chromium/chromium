@@ -262,6 +262,9 @@
       'Dawn Linux x64 Builder': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
       'Dawn Linux x64 DEPS Builder': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
 
+      'Dawn Mac arm64 DEPS Release (Apple M2)': 'dawn_tests_release_bot_mac_arm64_dcheck_always_on_reclient',
+      'Dawn Mac arm64 Release (Apple M2)': 'dawn_tests_release_bot_mac_arm64_dcheck_always_on_reclient',
+
       'Dawn Mac x64 Builder': 'dawn_tests_release_bot_dcheck_always_on_reclient',
       'Dawn Mac x64 DEPS Builder': 'dawn_tests_release_bot_dcheck_always_on_reclient',
 
@@ -1128,6 +1131,7 @@
       'dawn-mac-x64-deps-rel': 'dawn_tests_release_trybot_reclient',
       'dawn-try-linux-tsan-rel': 'dawn_tests_tsan_release_trybot_reclient',
       'dawn-try-mac-amd-exp': 'dawn_tests_release_trybot_reclient',
+      'dawn-try-mac-arm64-rel': 'dawn_tests_release_trybot_mac_arm64_reclient',
       'dawn-try-mac-intel-exp': 'dawn_tests_release_trybot_reclient',
       'dawn-try-win-x64-intel-exp': 'dawn_tests_with_d3d11_release_trybot_reclient',
       'dawn-try-win-x86-intel-exp': 'dawn_tests_release_trybot_x86_reclient',
@@ -2472,6 +2476,14 @@
 
     'dawn_tests_release_bot_dcheck_always_on_reclient': [
       'dawn_tests', 'release_trybot_minimal_symbols_reclient',
+    ],
+
+    'dawn_tests_release_bot_mac_arm64_dcheck_always_on_reclient': [
+      'dawn_tests', 'release_trybot_minimal_symbols_reclient', 'arm64',
+    ],
+
+    'dawn_tests_release_trybot_mac_arm64_reclient': [
+      'dawn_tests', 'release_trybot_reclient', 'arm64',
     ],
 
     'dawn_tests_release_trybot_reclient': [
