@@ -138,12 +138,6 @@ inline constexpr base::FeatureParam<bool>
 #if BUILDFLAG(IS_ANDROID)
 extern const base::FeatureParam<int> kMigrationVersion;
 
-// Current version of the GMS Core API errors lists. Users save this value on
-// eviction due to error and will only be re-enrolled to the experiment if the
-// configured version is greater than the saved one.
-inline constexpr base::FeatureParam<int> kGmsApiErrorListVersion = {
-    &kUnifiedPasswordManagerAndroid, "api_error_list_version", 1};
-
 // Current list of the GMS Core API error codes that should be ignored and not
 // result in user eviction.
 // Errors to ignore: AUTH_ERROR_RESOLVABLE, AUTH_ERROR_UNRESOLVABLE
