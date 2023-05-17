@@ -213,8 +213,7 @@ bool RenderFrameProxyHost::OnMessageReceived(const IPC::Message& msg) {
 }
 
 std::string RenderFrameProxyHost::ToDebugString() {
-  return "RFPH:" +
-         GetRenderViewHost()->GetDelegate()->GetCreatorLocation().ToString();
+  return "RFPH:" + frame_tree_node_->current_frame_host()->ToDebugString();
 }
 
 bool RenderFrameProxyHost::InitRenderFrameProxy(
