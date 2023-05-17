@@ -294,6 +294,13 @@ void FocusFakebox() {
 // Tests that Search Copied Text menu button is shown with text in the clipboard
 // and is starting a search.
 - (void)testOmniboxMenuPasteTextToSearch {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1446360): This test fails on iOS 16.4 devices too.
+  if (@available(iOS 16.4, *)) {
+    EARL_GREY_TEST_DISABLED(@"crbug.com/1446360: Fails on iOS 16.4+ devices.");
+  }
+#endif
+
   FocusFakebox();
   NSString* textToSearch = @"TextToCopy";
   // Copy text in clipboard.
@@ -312,6 +319,13 @@ void FocusFakebox() {
 // Tests that Visit Copied Link menu button is shown with a link in the
 // clipboard and is visiting the URL.
 - (void)testOmniboxMenuPasteURLToSearch {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1446360): This test fails on iOS 16.4 devices too.
+  if (@available(iOS 16.4, *)) {
+    EARL_GREY_TEST_DISABLED(@"crbug.com/1446360: Fails on iOS 16.4+ devices.");
+  }
+#endif
+
   FocusFakebox();
   // Copy URL into clipboard.
   [ChromeEarlGrey copyTextToPasteboard:base::SysUTF8ToNSString(_URL1.spec())];
@@ -327,6 +341,13 @@ void FocusFakebox() {
 // Tests that Search Copied Image menu button is shown with an image in the
 // clipboard and is starting an image search.
 - (void)testOmniboxMenuPasteImageToSearch {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1446360): This test fails on iOS 16.4 devices too.
+  if (@available(iOS 16.4, *)) {
+    EARL_GREY_TEST_DISABLED(@"crbug.com/1446360: Fails on iOS 16.4+ devices.");
+  }
+#endif
+
   [self copyImageIntoClipboard];
 
   // Wait for the context menu to dismiss, so the omnibox can be tapped.
