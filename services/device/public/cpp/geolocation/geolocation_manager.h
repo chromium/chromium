@@ -5,12 +5,13 @@
 #ifndef SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_GEOLOCATION_MANAGER_H_
 #define SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_GEOLOCATION_MANAGER_H_
 
+#include <memory>
+
 #include "base/component_export.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
-#include <memory>
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
@@ -24,19 +25,23 @@
 
 namespace device {
 
+// This class provides access to location information on the supported OSs.
+class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
+ public:
+  // Retrieves the global instance of the Geolocation Manager.
+  static GeolocationManager* GetInstance();
+  // Sets the global instance of the Geolocation Manager.
+  static void SetInstance(std::unique_ptr<GeolocationManager> manager);
+
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_CHROMEOS)
 // Default empty implementation of Geolocation Manager. It is used on operation
 // systems for which we don't support system-level geolocation. A separate class
 // (as opposed to nullptr) makes sure no unsupported calls are made in such
 // context.
-class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {};
+};  // class GeolocationManager
 
 #else
 
-// This class is owned by the browser process and provides access to location
-// information on the supported OSs.
-class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
- public:
   class PermissionObserver : public base::CheckedObserver {
    public:
     virtual void OnSystemPermissionUpdated(

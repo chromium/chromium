@@ -4,6 +4,7 @@
 
 component("geolocation") {
   sources = [
+    "geolocation_manager.cc",
     "geolocation_manager.h",
     "geoposition.cc",
     "geoposition.h",
@@ -14,10 +15,7 @@ component("geolocation") {
   output_name = "geolocation_service"
 
   if (is_chromeos || is_apple) {
-    sources += [
-      "geolocation_manager.cc",
-      "system_geolocation_source.h",
-    ]
+    sources += [ "system_geolocation_source.h" ]
   }
   if (is_apple) {
     sources += [

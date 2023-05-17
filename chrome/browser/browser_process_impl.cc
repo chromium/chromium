@@ -636,7 +636,7 @@ void BrowserProcessImpl::FlushLocalStateAndReply(base::OnceClosure reply) {
 
 device::GeolocationManager* BrowserProcessImpl::geolocation_manager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return geolocation_manager_.get();
+  return device::GeolocationManager::GetInstance();
 }
 
 void BrowserProcessImpl::EndSession() {
@@ -725,7 +725,7 @@ metrics::MetricsService* BrowserProcessImpl::metrics_service() {
 void BrowserProcessImpl::SetGeolocationManager(
     std::unique_ptr<device::GeolocationManager> geolocation_manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  geolocation_manager_ = std::move(geolocation_manager);
+  device::GeolocationManager::SetInstance(std::move(geolocation_manager));
 }
 
 SystemNetworkContextManager*
