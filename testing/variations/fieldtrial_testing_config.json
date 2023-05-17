@@ -13129,19 +13129,16 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledMainFrame_20221129",
+                    "name": "AllMainFrame_20230517",
                     "params": {
                         "compile-in-parallel": "true",
-                        "compile-strategy": "eager",
+                        "compile-strategy": "lazy",
                         "inline-script-timeout": "5ms",
-                        "max-data-to-process": "1",
                         "precompile-main-frame-only": "true",
-                        "pretokenize-main-frame-only": "true",
                         "scan-main-frame-only": "true"
                     },
                     "enable_features": [
                         "PrecompileInlineScripts",
-                        "PretokenizeCSS",
                         "ThreadedBodyLoader",
                         "ThreadedPreloadScanner"
                     ]
