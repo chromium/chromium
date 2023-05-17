@@ -129,6 +129,8 @@ void ExternallyManagedInstallCommand::OnGetWebAppInstallInfoInCommand(
   // redirected. Will be overridden by manifest values if present.
   DCHECK(install_params_.fallback_start_url.is_valid());
   web_app_info_->start_url = install_params_.fallback_start_url;
+  web_app_info_->manifest_id =
+      GenerateManifestIdFromStartUrlOnly(web_app_info_->start_url);
 
   if (install_params_.fallback_app_name.has_value())
     web_app_info_->title = install_params_.fallback_app_name.value();
