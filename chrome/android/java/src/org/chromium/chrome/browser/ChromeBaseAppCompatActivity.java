@@ -66,7 +66,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
      * Activities that use their own action bar cannot use WITH_ACTION_BAR.
      * Activities that appear as Dialogs using themes do not have an automotive toolbar yet (NONE).
      *
-     * Note that full screen dialogs display the automotive toolbar using FullscreenAlertDialog.
+     * Full screen alert dialogs display the automotive toolbar using FullscreenAlertDialog.
+     * Full screen dialogs display the automotive toolbar using ChromeDialog.
      */
     @IntDef({
             AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW,

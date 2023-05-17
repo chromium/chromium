@@ -9,6 +9,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/widget/AlwaysDismissedDialog.java",
     "java/src/org/chromium/components/browser_ui/widget/BoundedLinearLayout.java",
     "java/src/org/chromium/components/browser_ui/widget/CheckBoxWithDescription.java",
+    "java/src/org/chromium/components/browser_ui/widget/ChromeDialog.java",
     "java/src/org/chromium/components/browser_ui/widget/ChromeTransitionDrawable.java",
     "java/src/org/chromium/components/browser_ui/widget/ClipDrawableProgressBar.java",
     "java/src/org/chromium/components/browser_ui/widget/CompositeTouchDelegate.java",

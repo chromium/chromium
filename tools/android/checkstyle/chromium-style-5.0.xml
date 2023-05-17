@@ -202,5 +202,11 @@
       <property name="ignoreComments" value="true"/>
       <property name="message" value="Use org.chromium.ui.accessibility.AccessibilityState instead of AccessibilityManager. For more information, contact //ui/accessibility/OWNERS."/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="FullscreenDialogs"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="ThemeOverlay\_BrowserUI\_Fullscreen"/>
+      <property name="message" value="Fullscreen AlertDialogs must use FullscreenAlertDialog and fullscreen Dialogs must use ChromeDialog. Not doing this will break automotive devices. (This check is triggered by the presence of ThemeOverlay_BrowserUI_Fullscreen and does not know if you are already using the correct class)"/>
+    </module>
   </module>
 </module>

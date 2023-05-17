@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
@@ -20,6 +19,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.ui.drawable.StateListDrawableBuilder;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ButtonCompat;
@@ -29,7 +29,7 @@ import org.chromium.ui.widget.ChromeBulletSpan;
 /**
  * Dialog in the form of a consent shown for the Privacy Sandbox.
  */
-public class PrivacySandboxDialogConsent extends Dialog implements View.OnClickListener {
+public class PrivacySandboxDialogConsent extends ChromeDialog implements View.OnClickListener {
     private final View mContentView;
     private final LayoutInflater mLayoutInflater;
     private final CheckableImageView mExpandArrowView;

@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.activity.ComponentDialog;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -45,6 +46,7 @@ import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.components.browser_ui.widget.FullscreenAlertDialog;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -133,7 +135,7 @@ public class BackButtonToolbarTest extends BlankUiTestActivityTestCase {
     @Feature({"Automotive Toolbar"})
     public void testAutomotiveToolbar_FullscreenAlertDialog() throws Exception {
         // Display a FullscreenAlertDialog.
-        FullscreenAlertDialog dialog = createAndShowDialog(getActivity());
+        FullscreenAlertDialog dialog = createAndShowFullscreenAlertDialog(getActivity());
 
         // Check that the automotive toolbar is present with only a back button.
         Toolbar toolbar = dialog.findViewById(R.id.back_button_toolbar);
@@ -156,7 +158,30 @@ public class BackButtonToolbarTest extends BlankUiTestActivityTestCase {
     @Feature({"Automotive Toolbar"})
     public void testAutomotiveToolbar_FullscreenAlertDialogBuilder() throws Exception {
         // Display a full screen AlertDialog created using FullscreenAlertDialog.Builder.
-        AlertDialog dialog = createAndShowDialogFromBuilder(getActivity());
+        AlertDialog dialog = createAndShowFullscreenAlertDialogFromBuilder(getActivity());
+
+        // Check that the automotive toolbar is present with only a back button.
+        Toolbar toolbar = dialog.findViewById(R.id.back_button_toolbar);
+        assertNotNull(toolbar);
+        assertEquals("Toolbar not visible", toolbar.getVisibility(), View.VISIBLE);
+        assertEquals("Toolbar should only contain a back button", toolbar.getChildCount(), 1);
+        assertThat(toolbar.getChildAt(0), instanceOf(AppCompatImageButton.class));
+
+        // Click the back button in the automotive toolbar.
+        addOnBackPressedCallback(dialog, mBackPressCallbackHelper);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { toolbar.getChildAt(0).performClick(); });
+
+        // Verify that #onBackPressed was called.
+        mBackPressCallbackHelper.waitForFirst();
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
+    @Feature({"Automotive Toolbar"})
+    public void testAutomotiveToolbar_FullscreenChromeDialog() throws Exception {
+        // Display a full screen AlertDialog created using FullscreenAlertDialog.Builder.
+        ChromeDialog dialog = createAndShowFullscreenChromeDialog(getActivity());
 
         // Check that the automotive toolbar is present with only a back button.
         Toolbar toolbar = dialog.findViewById(R.id.back_button_toolbar);
@@ -192,7 +217,18 @@ public class BackButtonToolbarTest extends BlankUiTestActivityTestCase {
         });
     }
 
-    private FullscreenAlertDialog createAndShowDialog(Context context) throws Exception {
+    private void addOnBackPressedCallback(
+            ComponentDialog dialog, CallbackHelper backPressCallback) {
+        dialog.getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                backPressCallback.notifyCalled();
+            }
+        });
+    }
+
+    private FullscreenAlertDialog createAndShowFullscreenAlertDialog(Context context)
+            throws Exception {
         return TestThreadUtils.runOnUiThreadBlocking(() -> {
             final FullscreenAlertDialog dialog = new FullscreenAlertDialog(context);
             View testView = LayoutInflater.from(context).inflate(TEST_DIALOG_LAYOUT, null);
@@ -202,10 +238,21 @@ public class BackButtonToolbarTest extends BlankUiTestActivityTestCase {
         });
     }
 
-    private AlertDialog createAndShowDialogFromBuilder(Context context) throws Exception {
+    private AlertDialog createAndShowFullscreenAlertDialogFromBuilder(Context context)
+            throws Exception {
         return TestThreadUtils.runOnUiThreadBlocking(() -> {
             final AlertDialog dialog =
                     new FullscreenAlertDialog.Builder(context).setView(TEST_DIALOG_LAYOUT).create();
+            dialog.show();
+            return dialog;
+        });
+    }
+
+    private ChromeDialog createAndShowFullscreenChromeDialog(Context context) throws Exception {
+        return TestThreadUtils.runOnUiThreadBlocking(() -> {
+            final ChromeDialog dialog =
+                    new ChromeDialog(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
+            dialog.setContentView(TEST_DIALOG_LAYOUT);
             dialog.show();
             return dialog;
         });

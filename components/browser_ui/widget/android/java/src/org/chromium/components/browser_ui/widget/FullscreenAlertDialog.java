@@ -21,7 +21,7 @@ import org.chromium.base.BuildInfo;
 /**
  * Full screen AlertDialog in Clank
  *
- * This class will automatically add the back button toolbar to automotive devices to full screen
+ * This class will automatically add the back button toolbar to automotive devices in full screen
  * AlertDialogs.
  */
 public class FullscreenAlertDialog extends AlertDialog {
