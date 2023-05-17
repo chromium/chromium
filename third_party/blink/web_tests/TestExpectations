@@ -6808,10 +6808,7 @@ crbug.com/1444592 [ Linux ] external/wpt/js-self-profiling/function-anonymous-na
 crbug.com/1444368 [ Win ] fast/selectors/specificity-overflow.html [ Crash Pass ]
 
 # Sheriff 2023-05-17
-# Fails on mac11-arm64 and mac 12
-crbug.com/1446184 [ Mac11-arm64 ] external/wpt/editing/other/typing-space-in-editable-summary.tentative.html [ Failure ]
-crbug.com/1446184 [ Mac12 ] external/wpt/editing/other/typing-space-in-editable-summary.tentative.html [ Failure ]
-crbug.com/1446184 [ Mac11-arm64 ] external/wpt/streams/readable-streams/owning-type.any.html [ Failure ]
-crbug.com/1446184 [ Mac12 ] external/wpt/streams/readable-streams/owning-type.any.html [ Failure ]
-crbug.com/1446184 [ Mac11-arm64 ] external/wpt/streams/readable-streams/owning-type.any.worker.html [ Failure ]
-crbug.com/1446184 [ Mac12 ] external/wpt/streams/readable-streams/owning-type.any.worker.html [ Failure ]
+# Fails on various Mac versions
+crbug.com/1446184 [ Mac ] external/wpt/editing/other/typing-space-in-editable-summary.tentative.html [ Failure ]
+crbug.com/1446184 [ Mac ] external/wpt/streams/readable-streams/owning-type.any.html [ Failure ]
+crbug.com/1446184 [ Mac ] external/wpt/streams/readable-streams/owning-type.any.worker.html [ Failure ]
