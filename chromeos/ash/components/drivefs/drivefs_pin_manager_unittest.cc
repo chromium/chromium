@@ -2214,20 +2214,16 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   md.stable_id = static_cast<int64_t>(stable_id);
   md.type = FileMetadata::Type::kDirectory;
   md.size = 0;
-  EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(1);
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
-  EXPECT_EQ(manager.progress_.skipped_items, 0);
+  EXPECT_EQ(manager.progress_.skipped_items, 1);
   EXPECT_EQ(manager.progress_.listed_shortcuts, 1);
-  EXPECT_EQ(manager.progress_.listed_dirs, 1);
+  EXPECT_EQ(manager.progress_.listed_dirs, 0);
   EXPECT_EQ(manager.progress_.listed_files, 0);
   EXPECT_EQ(manager.progress_.listed_docs, 0);
-  EXPECT_THAT(manager.listed_items_, SizeIs(1));
-  EXPECT_THAT(manager.listed_items_,
-              UnorderedElementsAre<PinManager::ListedItems::value_type>(
-                  {target_id, dir_id}));
+  EXPECT_THAT(manager.listed_items_, SizeIs(0));
   EXPECT_THAT(manager.files_to_pin_, IsEmpty());
-  EXPECT_FALSE(md.shortcut_details);
-  EXPECT_EQ(Id(md.stable_id), target_id);
+  EXPECT_TRUE(md.shortcut_details);
+  EXPECT_NE(Id(md.stable_id), target_id);
   reset();
 
   // Unexpected path

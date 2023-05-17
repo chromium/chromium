@@ -694,7 +694,7 @@ void PinManager::GetNextPage(const Id dir_id, Path dir_path, Query query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(progress_.stage, Stage::kListingFiles);
   DCHECK(query);
-  // Get the underlying pointer because we going to move `query`.
+  // Get the underlying pointer because we're going to move `query`.
   mojom::SearchQuery* const q = query.get();
   VLOG(2) << "Getting next batch of items from " << dir_id << " "
           << Quote(dir_path);
@@ -771,13 +771,14 @@ void PinManager::OnSearchResult(const Id dir_id,
 
   if (error == drive::FILE_ERROR_OK_WITH_MORE_RESULTS) {
     VLOG(2) << "No items returned from " << dir_id << " " << Quote(dir_path)
-            << " need to make cloud query";
+            << ": Need to make a cloud query";
+    DCHECK(items.empty());
   } else {
-    progress_.listed_items += items.size();
     VLOG(2) << "Got " << items.size() << " items from " << dir_id << " "
             << Quote(dir_path);
   }
 
+  progress_.listed_items += items.size();
   for (const QueryItemPtr& item : items) {
     DCHECK(item);
     HandleQueryItem(dir_id, dir_path, *item);
@@ -796,6 +797,7 @@ void PinManager::HandleQueryItem(Id dir_id,
                                  const QueryItem& item) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(item.metadata);
+  using Type = FileMetadata::Type;
   FileMetadata& md = *item.metadata;
   Id id = Id(md.stable_id);
   const Path& path = item.path;
@@ -811,6 +813,16 @@ void PinManager::HandleQueryItem(Id dir_id,
   // Is this item a shortcut?
   if (md.shortcut_details) {
     progress_.listed_shortcuts++;
+
+    // Is the shortcut pointing to a directory?
+    if (md.type == Type::kDirectory) {
+      // The shortcut's target is a directory.
+      progress_.skipped_items++;
+      VLOG(1) << "Skipped shortcut " << id << " " << Quote(path) << " to "
+              << Quote(md.type) << " "
+              << Id(md.shortcut_details->target_stable_id);
+      return;
+    }
 
     // Is the shortcut's target accessible?
     if (md.shortcut_details->target_lookup_status != LookupStatus::kOk) {
@@ -836,12 +848,12 @@ void PinManager::HandleQueryItem(Id dir_id,
       return;
     }
 
-    // The shortcut target is accessible.
+    // The shortcut's target is accessible and it is not a directory.
     VLOG(1) << "Following shortcut " << id << " " << Quote(path) << " to "
             << Quote(md.type) << " "
             << Id(md.shortcut_details->target_stable_id) << ": " << Quote(md);
 
-    // Follow the shortcut.
+    // Follow this shortcut.
     md.stable_id = md.shortcut_details->target_stable_id;
     id = Id(md.stable_id);
     md.shortcut_details.reset();
@@ -858,7 +870,6 @@ void PinManager::HandleQueryItem(Id dir_id,
     return;
   }
 
-  using Type = FileMetadata::Type;
   switch (md.type) {
     case Type::kFile:
       progress_.listed_files++;
