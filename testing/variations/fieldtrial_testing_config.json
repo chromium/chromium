@@ -5440,6 +5440,21 @@
             ]
         }
     ],
+    "FeedBoCSigninInterstitial": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_1Percent_20230516",
+                    "enable_features": [
+                        "FeedBoCSigninInterstitial"
+                    ]
+                }
+            ]
+        }
+    ],
     "FeedBottomSyncBanner": [
         {
             "platforms": [
