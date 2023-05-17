@@ -99,6 +99,7 @@ public class TabSwitcherLayout extends Layout {
     private boolean mIsInitialized;
 
     private float mBackgroundAlpha;
+    private int mTabListTopOffset;
 
     private int mFrameCount;
     private long mStartTime;
@@ -232,7 +233,7 @@ public class TabSwitcherLayout extends Layout {
             boolean quick = mGridTabListDelegate.prepareTabSwitcherView();
 
             // Skip animation when there is no tab in current tab model, we don't show the shrink
-            // tab animatio.
+            // tab animation.
             boolean isCurrentTabModelEmpty = mTabModelSelector.getCurrentModel().getCount() == 0;
             final boolean shouldAnimate = animate && !isCurrentTabModelEmpty;
 
@@ -250,9 +251,7 @@ public class TabSwitcherLayout extends Layout {
             } else {
                 mDeferredAnimationRunnable = () -> {
                     showOverviewWithTabShrink(shouldAnimate,
-                            ()
-                                    -> mGridTabListDelegate.getThumbnailLocationOfCurrentTab(false),
-                            quick);
+                            () -> mGridTabListDelegate.getThumbnailLocationOfCurrentTab(), quick);
                 };
                 mGridTabListDelegate.runAnimationOnNextLayout(() -> {
                     if (mDeferredAnimationRunnable != null) {
@@ -417,7 +416,8 @@ public class TabSwitcherLayout extends Layout {
             showShrinkingAnimation &= quick;
         }
 
-        if (!showShrinkingAnimation || target.get() == null) {
+        final Rect targetRect = target.get();
+        if (!showShrinkingAnimation || targetRect == null) {
             mController.showTabSwitcherView(animate);
             return;
         }
@@ -439,13 +439,13 @@ public class TabSwitcherLayout extends Layout {
 
         // Step 1: zoom out the source tab
         Supplier<Float> scaleStartValueSupplier = () -> 1.0f;
-        Supplier<Float> scaleEndValueSupplier = () -> target.get().width() / (getWidth() * mDpToPx);
+        Supplier<Float> scaleEndValueSupplier = () -> targetRect.width() / (getWidth() * mDpToPx);
 
         Supplier<Float> xStartValueSupplier = () -> 0f;
-        Supplier<Float> xEndValueSupplier = () -> target.get().left / mDpToPx;
+        Supplier<Float> xEndValueSupplier = () -> targetRect.left / mDpToPx;
 
         Supplier<Float> yStartValueSupplier = () -> 0f;
-        Supplier<Float> yEndValueSupplier = () -> target.get().top / mDpToPx;
+        Supplier<Float> yEndValueSupplier = () -> targetRect.top / mDpToPx;
 
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.SCALE, scaleStartValueSupplier, scaleEndValueSupplier, ZOOMING_DURATION,
@@ -466,6 +466,7 @@ public class TabSwitcherLayout extends Layout {
                         : getWidth(),
                 ZOOMING_DURATION, Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
 
+        int mTabListTopOffset = mGridTabListDelegate.getTabListTopOffset();
         CompositorAnimator backgroundAlpha =
                 CompositorAnimator.ofFloat(handler, 0f, 1f, BACKGROUND_FADING_DURATION_MS,
                         animator -> mBackgroundAlpha = animator.getAnimatedValue());
@@ -528,6 +529,7 @@ public class TabSwitcherLayout extends Layout {
                 sourceLayoutTab.getUnclampedOriginalContentHeight(), ZOOMING_DURATION,
                 Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
 
+        int mTabListTopOffset = mGridTabListDelegate.getTabListTopOffset();
         CompositorAnimator backgroundAlpha =
                 CompositorAnimator.ofFloat(handler, 1f, 0f, BACKGROUND_FADING_DURATION_MS,
                         animator -> mBackgroundAlpha = animator.getAnimatedValue());
@@ -623,7 +625,7 @@ public class TabSwitcherLayout extends Layout {
     }
 
     private Rect getThumbnailLocationOfCurrentTab() {
-        return mGridTabListDelegate.getThumbnailLocationOfCurrentTab(true);
+        return mGridTabListDelegate.getThumbnailLocationOfCurrentTab();
     }
 
     private TabListDelegate getGridTabListDelegate() {
@@ -693,7 +695,7 @@ public class TabSwitcherLayout extends Layout {
         mSceneLayer.pushLayers(getContext(), contentViewport, contentViewport, this,
                 tabContentManager, resourceManager, browserControls,
                 isTabGtsAnimationEnabled() ? mGridTabListDelegate.getResourceId() : 0,
-                mBackgroundAlpha, mGridTabListDelegate.getTabListTopOffset());
+                mBackgroundAlpha, mTabListTopOffset);
         mFrameCount++;
         if (mLastFrameTime != 0) {
             long elapsed = SystemClock.elapsedRealtime() - mLastFrameTime;

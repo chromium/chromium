@@ -574,6 +574,9 @@ class TabListRecyclerView
     }
 
     private Rect getRectOfComponent(View v) {
+        // If called before a thumbnail view exists or for list view then exit with null.
+        if (v == null) return null;
+
         Rect recyclerViewRect = new Rect();
         Rect componentRect = new Rect();
         getGlobalVisibleRect(recyclerViewRect);
