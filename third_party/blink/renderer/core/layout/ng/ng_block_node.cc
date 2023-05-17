@@ -970,7 +970,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   if (!is_in_perform_layout &&
       (IsGrid() ||
        (IsFlexibleBox() && Style().ResolvedIsColumnFlexDirection() &&
-        RuntimeEnabledFeatures::NewFlexboxSizingEnabled()))) {
+        RuntimeEnabledFeatures::LayoutFlexNewColumnAlgorithmEnabled()))) {
     const NGFragmentGeometry fragment_geometry =
         CalculateInitialFragmentGeometry(constraint_space, *this,
                                          /* break_token */ nullptr,

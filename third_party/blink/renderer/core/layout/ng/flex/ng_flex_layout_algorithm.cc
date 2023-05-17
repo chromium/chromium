@@ -2522,17 +2522,13 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
           Node(), BorderScrollbarPadding()))
     return *result;
 
-  if (RuntimeEnabledFeatures::NewFlexboxSizingEnabled()) {
-    // TODO(crbug.com/240765): Implement all the cases here.
-    if (is_column_) {
-      if (algorithm_.IsMultiline()) {
-        return ComputeMinMaxSizeOfMultilineColumnContainer();
-      } else {
-        // singleline column flexbox
-      }
-    } else {
-      return ComputeMinMaxSizeOfRowContainer();
-    }
+  if (RuntimeEnabledFeatures::LayoutFlexNewColumnAlgorithmEnabled() &&
+      is_column_ && algorithm_.IsMultiline()) {
+    return ComputeMinMaxSizeOfMultilineColumnContainer();
+  }
+  if (RuntimeEnabledFeatures::LayoutFlexNewRowAlgorithmEnabled() &&
+      !is_column_) {
+    return ComputeMinMaxSizeOfRowContainer();
   }
 
   MinMaxSizes sizes;

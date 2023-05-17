@@ -2068,6 +2068,14 @@
       status: "stable",
     },
     {
+      name: "LayoutFlexNewColumnAlgorithm",
+      status: "test",
+    },
+    {
+      name: "LayoutFlexNewRowAlgorithm",
+      status: "test",
+    },
+    {
       name: "LayoutFlexSafeAlignment",
       status: "stable",
     },
@@ -2359,10 +2367,6 @@
         "default": "experimental",
       },
       base_feature: "none",
-    },
-    {
-      name: "NewFlexboxSizing",
-      status: "test",
     },
     {
       name: "NodeAsNSResolver",
