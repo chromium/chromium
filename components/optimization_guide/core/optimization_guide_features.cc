@@ -35,6 +35,13 @@ constexpr auto enabled_by_default_desktop_only =
     base::FEATURE_ENABLED_BY_DEFAULT;
 #endif
 
+constexpr auto enabled_by_default_mobile_only =
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    true;
+#else
+    false;
+#endif
+
 // Returns whether |locale| is a supported locale for |feature|.
 //
 // This matches |locale| with the "supported_locales" feature param value in
@@ -223,9 +230,10 @@ base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {
 
 bool ShouldBatchUpdateHintsForActiveTabsAndTopHosts() {
   if (base::FeatureList::IsEnabled(kRemoteOptimizationGuideFetching)) {
+    // Batch update active tabs should only apply to non-desktop platforms.
     return GetFieldTrialParamByFeatureAsBool(kRemoteOptimizationGuideFetching,
                                              "batch_update_hints_for_top_hosts",
-                                             true);
+                                             enabled_by_default_mobile_only);
   }
   return false;
 }

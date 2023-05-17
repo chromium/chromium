@@ -497,11 +497,12 @@ class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
   void SetUp() override {
     // Enable OptimizationHintsFetching with |kRemoteOptimizationGuideFetching|.
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            {optimization_guide::features::kOptimizationHints, {}},
-            {optimization_guide::features::kRemoteOptimizationGuideFetching,
-             {{"max_concurrent_page_navigation_fetches", "2"}}},
-        },
+        {{optimization_guide::features::kOptimizationHints, {}},
+         {
+             optimization_guide::features::kRemoteOptimizationGuideFetching,
+             {{"max_concurrent_page_navigation_fetches", "2"},
+              {"batch_update_hints_for_top_hosts", "true"}},
+         }},
         {});
     // Call to inherited class to match same set up with feature flags added.
     HintsFetcherDisabledBrowserTest::SetUp();
