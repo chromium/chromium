@@ -58,10 +58,10 @@ class TabRankDispatcher : public base::SupportsUserData::Data {
   };
 
   // Fetches a list of ranked tabs for a given feature or ranking heuristic
-  // identified by `segmentation_key`. The result is std::set, and can be
+  // identified by `segmentation_key`. The result is std::multiset, and can be
   // iterated in order of tab rank, from best to worst.
   using RankedTabsCallback =
-      base::OnceCallback<void(bool, std::set<RankedTab>)>;
+      base::OnceCallback<void(bool, std::multiset<RankedTab>)>;
   void GetTopRankedTabs(const std::string& segmentation_key,
                         const TabFilter& tab_filter,
                         RankedTabsCallback callback);
@@ -69,11 +69,11 @@ class TabRankDispatcher : public base::SupportsUserData::Data {
  private:
   void GetNextResult(const std::string& segmentation_key,
                      std::queue<RankedTab> candidate_tabs,
-                     std::set<RankedTab> results,
+                     std::multiset<RankedTab> results,
                      RankedTabsCallback callback);
   void OnGetResult(const std::string& segmentation_key,
                    std::queue<RankedTab> candidate_tabs,
-                   std::set<RankedTab> results,
+                   std::multiset<RankedTab> results,
                    RankedTabsCallback callback,
                    RankedTab current_tab,
                    const AnnotatedNumericResult& result);

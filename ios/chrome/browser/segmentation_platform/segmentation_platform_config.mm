@@ -13,6 +13,7 @@
 #import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
 #import "components/segmentation_platform/embedder/default_model/search_user_model.h"
+#import "components/segmentation_platform/embedder/default_model/tab_resumption_ranker.h"
 #import "components/segmentation_platform/internal/stats.h"
 #import "components/segmentation_platform/public/config.h"
 #import "components/segmentation_platform/public/features.h"
@@ -116,6 +117,8 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
   if (base::FeatureList::IsEnabled(features::kSegmentationPlatformDeviceSwitcher)) {
     configs.emplace_back(DeviceSwitcherModel::GetConfig());
   }
+
+  configs.emplace_back(TabResumptionRanker::GetConfig());
 
   // Add new configs here.
 

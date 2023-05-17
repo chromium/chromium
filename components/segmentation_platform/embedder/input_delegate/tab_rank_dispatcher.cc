@@ -75,12 +75,12 @@ void TabRankDispatcher::GetTopRankedTabs(const std::string& segmentation_key,
     }
   }
   GetNextResult(segmentation_key, std::move(candidate_tabs),
-                std::set<RankedTab>(), std::move(callback));
+                std::multiset<RankedTab>(), std::move(callback));
 }
 
 void TabRankDispatcher::GetNextResult(const std::string& segmentation_key,
                                       std::queue<RankedTab> candidate_tabs,
-                                      std::set<RankedTab> results,
+                                      std::multiset<RankedTab> results,
                                       RankedTabsCallback callback) {
   if (candidate_tabs.empty()) {
     std::move(callback).Run(false, std::move(results));
@@ -108,7 +108,7 @@ void TabRankDispatcher::GetNextResult(const std::string& segmentation_key,
 
 void TabRankDispatcher::OnGetResult(const std::string& segmentation_key,
                                     std::queue<RankedTab> candidate_tabs,
-                                    std::set<RankedTab> results,
+                                    std::multiset<RankedTab> results,
                                     RankedTabsCallback callback,
                                     RankedTab current_tab,
                                     const AnnotatedNumericResult& result) {

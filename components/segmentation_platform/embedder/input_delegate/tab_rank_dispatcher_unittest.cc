@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/public/constants.h"
@@ -163,7 +164,7 @@ TEST_F(TabRankDispatcherTest, RankTabs) {
   dispatcher.GetTopRankedTabs(
       kTabResumptionClassifierKey, filter,
       base::BindOnce(
-          [](bool success, std::set<TabRankDispatcher::RankedTab> tabs) {
+          [](bool success, std::multiset<TabRankDispatcher::RankedTab> tabs) {
             ASSERT_EQ(tabs.size(), 3u);
             EXPECT_EQ(tabs.begin()->tab->guid, kLocalTabName);
             EXPECT_NEAR(tabs.begin()->model_score, 0.6, 0.001);
@@ -187,13 +188,39 @@ TEST_F(TabRankDispatcherTest, FilterTabs) {
   dispatcher.GetTopRankedTabs(
       kTabResumptionClassifierKey, filter,
       base::BindOnce(
-          [](bool success, std::set<TabRankDispatcher::RankedTab> tabs) {
+          [](bool success, std::multiset<TabRankDispatcher::RankedTab> tabs) {
             ASSERT_EQ(tabs.size(), 2u);
             EXPECT_EQ(tabs.begin()->tab->guid, kLocalTabName);
             EXPECT_NEAR(tabs.begin()->model_score, 0.6, 0.001);
             EXPECT_EQ((++tabs.begin())->tab->guid, kRemoteTabName2);
             EXPECT_NEAR((++tabs.begin())->model_score, 0.5, 0.001);
           }));
+}
+
+TEST_F(TabRankDispatcherTest, TabsWithSameScore) {
+  TabRankDispatcher dispatcher(&segmentation_service_, &session_sync_service_);
+  TabRankDispatcher::TabFilter filter;
+
+  testing::InSequence s;
+  EXPECT_CALL(segmentation_service_, GetAnnotatedNumericResult(_, _, _, _))
+      .WillOnce(base::test::RunOnceCallback<3>(CreateResult(0.3f)));
+  EXPECT_CALL(segmentation_service_, GetAnnotatedNumericResult(_, _, _, _))
+      .WillOnce(base::test::RunOnceCallback<3>(CreateResult(0.3f)));
+  EXPECT_CALL(segmentation_service_, GetAnnotatedNumericResult(_, _, _, _))
+      .WillOnce(base::test::RunOnceCallback<3>(CreateResult(0.6f)));
+
+  dispatcher.GetTopRankedTabs(
+      kTabResumptionClassifierKey, filter,
+      base::BindOnce([](bool success,
+                        std::multiset<TabRankDispatcher::RankedTab> tabs) {
+        ASSERT_EQ(tabs.size(), 3u);
+        EXPECT_EQ(tabs.begin()->tab->guid, kLocalTabName);
+        EXPECT_NEAR(tabs.begin()->model_score, 0.6, 0.001);
+        EXPECT_TRUE(base::StartsWith((++tabs.begin())->tab->guid, "remote_"));
+        EXPECT_NEAR((++tabs.begin())->model_score, 0.3, 0.001);
+        EXPECT_TRUE(base::StartsWith((++tabs.begin())->tab->guid, "remote_"));
+        EXPECT_NEAR(tabs.rbegin()->model_score, 0.3, 0.001);
+      }));
 }
 
 }  // namespace segmentation_platform

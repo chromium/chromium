@@ -22,10 +22,13 @@ static_library("default_model") {
     "search_user_model.h",
     "shopping_user_model.cc",
     "shopping_user_model.h",
+    "tab_resumption_ranker.cc",
+    "tab_resumption_ranker.h",
   ]
   deps = [
     "//base",
     "//components/prefs:prefs",
+    "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
@@ -66,6 +69,7 @@ source_set("unit_tests") {
     "resume_heavy_user_model_unittest.cc",
     "search_user_model_unittest.cc",
     "shopping_user_model_unittest.cc",
+    "tab_resumption_ranker_unittest.cc",
   ]
 
   if (is_android) {
@@ -85,6 +89,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/prefs:test_support",
+    "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public:public",
