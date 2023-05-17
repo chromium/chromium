@@ -276,19 +276,18 @@ void CheckInstallation(UpdaterScope scope,
     const std::wstring task_name =
         task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope));
     EXPECT_TRUE(!task_name.empty());
-    EXPECT_TRUE(task_scheduler->IsTaskRegistered(task_name.c_str()));
+    EXPECT_TRUE(task_scheduler->IsTaskRegistered(task_name));
 
     TaskScheduler::TaskInfo task_info;
-    ASSERT_TRUE(task_scheduler->GetTaskInfo(task_name.c_str(), &task_info));
+    ASSERT_TRUE(task_scheduler->GetTaskInfo(task_name, task_info));
     ASSERT_EQ(task_info.exec_actions.size(), 1u);
-    EXPECT_STREQ(
-        task_info.exec_actions[0].arguments.c_str(),
+    EXPECT_EQ(
+        task_info.exec_actions[0].arguments,
         base::StrCat({L"--wake ", IsSystemInstall(scope) ? L"--system " : L"",
                       L"--enable-logging "
                       L"--vmodule=*/components/winhttp/*=2,"
                       L"*/components/update_client/*=2,"
-                      L"*/chrome/updater/*=2"})
-            .c_str());
+                      L"*/chrome/updater/*=2"}));
 
     EXPECT_EQ(task_info.trigger_types,
               TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY |
@@ -604,7 +603,7 @@ void Clean(UpdaterScope scope) {
       base::BindRepeating(
           [](scoped_refptr<TaskScheduler> task_scheduler,
              const std::wstring& task_name) {
-            task_scheduler->DeleteTask(task_name.c_str());
+            EXPECT_TRUE(task_scheduler->DeleteTask(task_name));
           },
           task_scheduler));
 
@@ -1566,7 +1565,7 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
        {base::StrCat({task_name_prefix, L"Core"}),
         base::StrCat({task_name_prefix, L"UA"})}) {
     ASSERT_TRUE(task_scheduler->RegisterTask(
-        task_name.c_str(), task_name.c_str(),
+        task_name, task_name,
         base::CommandLine::FromString(L"C:\\temp\\temp.exe"),
         TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY, false));
   }

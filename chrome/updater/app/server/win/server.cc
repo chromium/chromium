@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/check.h"
@@ -201,7 +202,8 @@ bool UninstallGoogleUpdate(UpdaterScope scope,
             [](scoped_refptr<TaskScheduler> task_scheduler,
                const std::wstring& task_name) {
               VLOG(2) << __func__ << ": Deleting legacy task: " << task_name;
-              task_scheduler->DeleteTask(task_name.c_str());
+              bool is_deleted = task_scheduler->DeleteTask(task_name);
+              VLOG_IF(2, !is_deleted) << "Legacy task was not deleted.";
             },
             task_scheduler));
   }

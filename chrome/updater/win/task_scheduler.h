@@ -120,58 +120,63 @@ class TaskScheduler : public base::RefCountedThreadSafe<TaskScheduler> {
   TaskScheduler& operator=(const TaskScheduler&) = delete;
 
   // Identify whether the task is registered or not.
-  virtual bool IsTaskRegistered(const wchar_t* task_name) = 0;
+  [[nodiscard]] virtual bool IsTaskRegistered(
+      const std::wstring& task_name) = 0;
 
   // Return the time of the next schedule run for the given task name. Return
   // false on failure.
   // `next_run_time` is returned as local time on the current system, not UTC.
-  virtual bool GetNextTaskRunTime(const wchar_t* task_name,
-                                  base::Time* next_run_time) = 0;
+  [[nodiscard]] virtual bool GetNextTaskRunTime(const std::wstring& task_name,
+                                                base::Time& next_run_time) = 0;
 
   // Delete the task if it exists. No-op if the task doesn't exist. Return false
   // on failure to delete an existing task.
-  virtual bool DeleteTask(const wchar_t* task_name) = 0;
+  [[nodiscard]] virtual bool DeleteTask(const std::wstring& task_name) = 0;
 
   // Enable or disable task based on the value of |enabled|. Return true if the
   // task exists and the operation succeeded.
-  virtual bool SetTaskEnabled(const wchar_t* task_name, bool enabled) = 0;
+  [[nodiscard]] virtual bool SetTaskEnabled(const std::wstring& task_name,
+                                            bool enabled) = 0;
 
   // Return true if task exists and is enabled.
-  virtual bool IsTaskEnabled(const wchar_t* task_name) = 0;
+  [[nodiscard]] virtual bool IsTaskEnabled(const std::wstring& task_name) = 0;
 
   // Return true if task exists and is running.
-  virtual bool IsTaskRunning(const wchar_t* task_name) = 0;
+  [[nodiscard]] virtual bool IsTaskRunning(const std::wstring& task_name) = 0;
 
   // List all currently registered scheduled tasks.
-  virtual bool GetTaskNameList(std::vector<std::wstring>* task_names) = 0;
+  [[nodiscard]] virtual bool GetTaskNameList(
+      std::vector<std::wstring>& task_names) = 0;
 
   // Returns the first instance of a scheduled task installed with the given
   // `task_prefix`.
-  virtual std::wstring FindFirstTaskName(const std::wstring& task_prefix) = 0;
+  [[nodiscard]] virtual std::wstring FindFirstTaskName(
+      const std::wstring& task_prefix) = 0;
 
   // Return detailed information about a task. Return true if no errors were
   // encountered. On error, the struct is left unmodified.
-  virtual bool GetTaskInfo(const wchar_t* task_name, TaskInfo* info) = 0;
+  [[nodiscard]] virtual bool GetTaskInfo(const std::wstring& task_name,
+                                         TaskInfo& info) = 0;
 
   // Returns true if the task folder specified by |folder_name| exists.
-  virtual bool HasTaskFolder(const wchar_t* folder_name) = 0;
+  [[nodiscard]] virtual bool HasTaskFolder(const std::wstring& folder_name) = 0;
 
   // Register the task to run the specified application and using the given
   // `trigger_types`. `trigger_types` is a bitwise OR of one or more types in
   // the `TriggerType` enum.
-  virtual bool RegisterTask(const wchar_t* task_name,
-                            const wchar_t* task_description,
-                            const base::CommandLine& run_command,
-                            int trigger_types,
-                            bool hidden) = 0;
+  [[nodiscard]] virtual bool RegisterTask(const std::wstring& task_name,
+                                          const std::wstring& task_description,
+                                          const base::CommandLine& run_command,
+                                          int trigger_types,
+                                          bool hidden) = 0;
 
   // Returns true if the scheduled task specified by |task_name| can be started
   // successfully or is currently running.
-  virtual bool StartTask(const wchar_t* task_name) = 0;
+  [[nodiscard]] virtual bool StartTask(const std::wstring& task_name) = 0;
 
   // Name of the sub-folder that the scheduled tasks are created in, prefixed
   // with the company folder `GetTaskCompanyFolder`.
-  virtual std::wstring GetTaskSubfolderName() = 0;
+  [[nodiscard]] virtual std::wstring GetTaskSubfolderName() = 0;
 
   // Runs `callback` for each task that matches `prefix`.
   virtual void ForEachTaskWithPrefix(

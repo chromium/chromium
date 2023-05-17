@@ -12,6 +12,7 @@
 
 #include <cstring>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <vector>
 
@@ -171,8 +172,11 @@ void UnregisterWakeTask(UpdaterScope scope) {
     LOG(ERROR) << "Empty task name during uninstall.";
     return;
   }
-  task_scheduler->DeleteTask(task_name.c_str());
-  VLOG(1) << "UnregisterWakeTask succeeded: " << task_name;
+  if (task_scheduler->DeleteTask(task_name)) {
+    VLOG(1) << "UnregisterWakeTask succeeded: " << task_name;
+  } else {
+    VLOG(1) << "UnregisterWakeTask failed: " << task_name;
+  }
 }
 
 std::vector<IID> GetSideBySideInterfaces(UpdaterScope scope) {
@@ -521,10 +525,13 @@ bool RegisterWakeTaskWorkItem::DoImpl() {
     return false;
   }
 
-  CHECK(!task_scheduler->IsTaskRegistered(task_name.c_str()));
+  if (task_scheduler->IsTaskRegistered(task_name)) {
+    LOG(ERROR) << "Unexpected task name found. " << task_name;
+    return false;
+  }
 
   if (!task_scheduler->RegisterTask(
-          task_name.c_str(), GetTaskDisplayName(scope_).c_str(), run_command_,
+          task_name, GetTaskDisplayName(scope_), run_command_,
           TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY |
               TaskScheduler::TriggerType::TRIGGER_TYPE_LOGON,
           true)) {
@@ -544,7 +551,7 @@ void RegisterWakeTaskWorkItem::RollbackImpl() {
   if (!task_scheduler) {
     return;
   }
-  task_scheduler->DeleteTask(task_name_.c_str());
+  std::ignore = task_scheduler->DeleteTask(task_name_);
 }
 
 }  // namespace updater
