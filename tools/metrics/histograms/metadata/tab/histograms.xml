@@ -570,6 +570,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.SavedTabGroupTabTimeSinceModification"
+    units="minutes" expires_after="2023-12-27">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records once per saved tab per saved group per hour once the
+    SavedTabGroupKeyedService is instantiated upon profile open. Tracks the
+    duration since a saved tab's last modification. Nothing is recorded for
+    sessions shorter than one hour.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.SavedTabGroupTimeSinceModification" units="minutes"
+    expires_after="2023-12-27">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records once per group per hour once the SavedTabGroupKeyedService is
+    instantiated upon profile open. Tracks the duration since a saved group's
+    last modification. Nothing is recorded for sessions shorter than one hour.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.SessionsPerGroup" units="sessions"
     expires_after="2023-10-22">
   <owner>yusufo@chromium.org</owner>

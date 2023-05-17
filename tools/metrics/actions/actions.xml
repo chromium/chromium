@@ -35423,6 +35423,34 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroups_SavedTabGroups_TabAdded">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User added a tab into a SavedTabGroup, for example by clicking on a link
+    that opens a new tab or by manually adding a new tab into the group.
+  </description>
+</action>
+
+<action name="TabGroups_SavedTabGroups_TabNavigated">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User navigated within a tab to a new url in a SavedTabGroup, for example by
+    clicking on a link, by using the omnibox.
+  </description>
+</action>
+
+<action name="TabGroups_SavedTabGroups_TabRemoved">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User removed a tab from a SavedTabGroup. This is emitted whenever a user
+    performs an action that would remove a tab from the group (for example,
+    click the x on a tab, ctrl + w, drag a tab out of the group).
+  </description>
+</action>
+
 <action name="TabGroups_SwitchGroupedTab">
   <owner>dpenning@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>

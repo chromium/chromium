@@ -252,6 +252,9 @@ void SavedTabGroupModel::AddTabToGroup(const base::Uuid& group_id,
     for (auto& observer : observers_) {
       observer.SavedTabGroupUpdatedLocally(group_id, tab_id);
     }
+
+    base::RecordAction(
+        base::UserMetricsAction("TabGroups_SavedTabGroups_TabAdded"));
   }
 }
 
@@ -259,6 +262,15 @@ void SavedTabGroupModel::UpdateTabInGroup(const base::Uuid& group_id,
                                           SavedTabGroupTab tab) {
   absl::optional<int> group_index = GetIndexOf(group_id);
   CHECK(group_index.has_value());
+
+  const SavedTabGroupTab* const old_tab =
+      saved_tab_groups_[group_index.value()].GetTab(tab.saved_tab_guid());
+
+  if (old_tab->url() != tab.url()) {
+    base::RecordAction(
+        base::UserMetricsAction("TabGroups_SavedTabGroups_TabNavigated"));
+  }
+
   saved_tab_groups_[group_index.value()].UpdateTab(tab);
 
   for (auto& observer : observers_) {
@@ -303,6 +315,9 @@ void SavedTabGroupModel::RemoveTabFromGroup(const base::Uuid& group_id,
     for (auto& observer : observers_) {
       observer.SavedTabGroupUpdatedLocally(group_id, copy_tab_id);
     }
+
+    base::RecordAction(
+        base::UserMetricsAction("TabGroups_SavedTabGroups_TabRemoved"));
   }
 }
 
