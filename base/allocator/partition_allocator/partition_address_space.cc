@@ -79,12 +79,7 @@ PA_NOINLINE void HandlePoolAllocFailure() {
 
 }  // namespace
 
-#if BUILDFLAG(ENABLE_THREAD_ISOLATION)
-alignas(PA_THREAD_ISOLATED_ALIGN_SZ)
-#else
-alignas(kPartitionCachelineSize)
-#endif
-    PartitionAddressSpace::PoolSetup PartitionAddressSpace::setup_;
+PartitionAddressSpace::PoolSetup PartitionAddressSpace::setup_;
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
 std::ptrdiff_t PartitionAddressSpace::regular_pool_shadow_offset_ = 0;
@@ -159,28 +154,28 @@ void PartitionAddressSpace::Init() {
   size_t glued_pool_sizes = regular_pool_size * 2;
   // Note, BRP pool requires to be preceded by a "forbidden zone", which is
   // conveniently taken care of by the last guard page of the regular pool.
-  setup_.aligned.regular_pool_base_address_ =
+  setup_.regular_pool_base_address_ =
       AllocPages(glued_pool_sizes, glued_pool_sizes,
                  PageAccessibilityConfiguration(
                      PageAccessibilityConfiguration::kInaccessible),
                  PageTag::kPartitionAlloc, pools_fd);
-  if (!setup_.aligned.regular_pool_base_address_) {
+  if (!setup_.regular_pool_base_address_) {
     HandlePoolAllocFailure();
   }
-  setup_.aligned.brp_pool_base_address_ =
-      setup_.aligned.regular_pool_base_address_ + regular_pool_size;
+  setup_.brp_pool_base_address_ =
+      setup_.regular_pool_base_address_ + regular_pool_size;
 #else  // BUILDFLAG(GLUE_CORE_POOLS)
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
   int regular_pool_fd = memfd_create("/regular_pool", MFD_CLOEXEC);
 #else
   int regular_pool_fd = -1;
 #endif
-  setup_.aligned.regular_pool_base_address_ =
+  setup_.regular_pool_base_address_ =
       AllocPages(regular_pool_size, regular_pool_size,
                  PageAccessibilityConfiguration(
                      PageAccessibilityConfiguration::kInaccessible),
                  PageTag::kPartitionAlloc, regular_pool_fd);
-  if (!setup_.aligned.regular_pool_base_address_) {
+  if (!setup_.regular_pool_base_address_) {
     HandlePoolAllocFailure();
   }
 
@@ -203,69 +198,60 @@ void PartitionAddressSpace::Init() {
   if (!base_address) {
     HandlePoolAllocFailure();
   }
-  setup_.aligned.brp_pool_base_address_ = base_address + kForbiddenZoneSize;
+  setup_.brp_pool_base_address_ = base_address + kForbiddenZoneSize;
 #endif  // BUILDFLAG(GLUE_CORE_POOLS)
 
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-  setup_.aligned.regular_pool_base_mask_ = ~(regular_pool_size - 1);
-  setup_.aligned.brp_pool_base_mask_ = ~(brp_pool_size - 1);
+  setup_.regular_pool_base_mask_ = ~(regular_pool_size - 1);
+  setup_.brp_pool_base_mask_ = ~(brp_pool_size - 1);
 #if BUILDFLAG(GLUE_CORE_POOLS)
   // When PA_GLUE_CORE_POOLS is on, the BRP pool is placed at the end of the
   // regular pool, effectively forming one virtual pool of a twice bigger
   // size. Adjust the mask appropriately.
-  setup_.aligned.core_pools_base_mask_ = setup_.aligned.regular_pool_base_mask_
-                                         << 1;
-  PA_DCHECK(setup_.aligned.core_pools_base_mask_ ==
-            (setup_.aligned.brp_pool_base_mask_ << 1));
+  setup_.core_pools_base_mask_ = setup_.regular_pool_base_mask_ << 1;
+  PA_DCHECK(setup_.core_pools_base_mask_ == (setup_.brp_pool_base_mask_ << 1));
 #endif
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 
   AddressPoolManager::GetInstance().Add(
-      kRegularPoolHandle, setup_.aligned.regular_pool_base_address_,
-      regular_pool_size);
+      kRegularPoolHandle, setup_.regular_pool_base_address_, regular_pool_size);
   AddressPoolManager::GetInstance().Add(
-      kBRPPoolHandle, setup_.aligned.brp_pool_base_address_, brp_pool_size);
+      kBRPPoolHandle, setup_.brp_pool_base_address_, brp_pool_size);
 
   // Sanity check pool alignment.
-  PA_DCHECK(
-      !(setup_.aligned.regular_pool_base_address_ & (regular_pool_size - 1)));
-  PA_DCHECK(!(setup_.aligned.brp_pool_base_address_ & (brp_pool_size - 1)));
+  PA_DCHECK(!(setup_.regular_pool_base_address_ & (regular_pool_size - 1)));
+  PA_DCHECK(!(setup_.brp_pool_base_address_ & (brp_pool_size - 1)));
 #if BUILDFLAG(GLUE_CORE_POOLS)
-  PA_DCHECK(
-      !(setup_.aligned.regular_pool_base_address_ & (glued_pool_sizes - 1)));
+  PA_DCHECK(!(setup_.regular_pool_base_address_ & (glued_pool_sizes - 1)));
 #endif
 
   // Sanity check pool belonging.
-  PA_DCHECK(!IsInRegularPool(setup_.aligned.regular_pool_base_address_ - 1));
-  PA_DCHECK(IsInRegularPool(setup_.aligned.regular_pool_base_address_));
-  PA_DCHECK(IsInRegularPool(setup_.aligned.regular_pool_base_address_ +
+  PA_DCHECK(!IsInRegularPool(setup_.regular_pool_base_address_ - 1));
+  PA_DCHECK(IsInRegularPool(setup_.regular_pool_base_address_));
+  PA_DCHECK(IsInRegularPool(setup_.regular_pool_base_address_ +
                             regular_pool_size - 1));
-  PA_DCHECK(!IsInRegularPool(setup_.aligned.regular_pool_base_address_ +
-                             regular_pool_size));
-  PA_DCHECK(!IsInBRPPool(setup_.aligned.brp_pool_base_address_ - 1));
-  PA_DCHECK(IsInBRPPool(setup_.aligned.brp_pool_base_address_));
   PA_DCHECK(
-      IsInBRPPool(setup_.aligned.brp_pool_base_address_ + brp_pool_size - 1));
-  PA_DCHECK(
-      !IsInBRPPool(setup_.aligned.brp_pool_base_address_ + brp_pool_size));
+      !IsInRegularPool(setup_.regular_pool_base_address_ + regular_pool_size));
+  PA_DCHECK(!IsInBRPPool(setup_.brp_pool_base_address_ - 1));
+  PA_DCHECK(IsInBRPPool(setup_.brp_pool_base_address_));
+  PA_DCHECK(IsInBRPPool(setup_.brp_pool_base_address_ + brp_pool_size - 1));
+  PA_DCHECK(!IsInBRPPool(setup_.brp_pool_base_address_ + brp_pool_size));
 #if BUILDFLAG(GLUE_CORE_POOLS)
-  PA_DCHECK(!IsInCorePools(setup_.aligned.regular_pool_base_address_ - 1));
-  PA_DCHECK(IsInCorePools(setup_.aligned.regular_pool_base_address_));
-  PA_DCHECK(IsInCorePools(setup_.aligned.regular_pool_base_address_ +
-                          regular_pool_size - 1));
-  PA_DCHECK(IsInCorePools(setup_.aligned.regular_pool_base_address_ +
-                          regular_pool_size));
-  PA_DCHECK(IsInCorePools(setup_.aligned.brp_pool_base_address_ - 1));
-  PA_DCHECK(IsInCorePools(setup_.aligned.brp_pool_base_address_));
+  PA_DCHECK(!IsInCorePools(setup_.regular_pool_base_address_ - 1));
+  PA_DCHECK(IsInCorePools(setup_.regular_pool_base_address_));
   PA_DCHECK(
-      IsInCorePools(setup_.aligned.brp_pool_base_address_ + brp_pool_size - 1));
+      IsInCorePools(setup_.regular_pool_base_address_ + regular_pool_size - 1));
   PA_DCHECK(
-      !IsInCorePools(setup_.aligned.brp_pool_base_address_ + brp_pool_size));
+      IsInCorePools(setup_.regular_pool_base_address_ + regular_pool_size));
+  PA_DCHECK(IsInCorePools(setup_.brp_pool_base_address_ - 1));
+  PA_DCHECK(IsInCorePools(setup_.brp_pool_base_address_));
+  PA_DCHECK(IsInCorePools(setup_.brp_pool_base_address_ + brp_pool_size - 1));
+  PA_DCHECK(!IsInCorePools(setup_.brp_pool_base_address_ + brp_pool_size));
 #endif  // BUILDFLAG(GLUE_CORE_POOLS)
 
 #if PA_CONFIG(STARSCAN_USE_CARD_TABLE)
   // Reserve memory for PCScan quarantine card table.
-  uintptr_t requested_address = setup_.aligned.regular_pool_base_address_;
+  uintptr_t requested_address = setup_.regular_pool_base_address_;
   uintptr_t actual_address = AddressPoolManager::GetInstance().Reserve(
       kRegularPoolHandle, requested_address, kSuperPageSize);
   PA_CHECK(requested_address == actual_address)
@@ -281,7 +267,7 @@ void PartitionAddressSpace::Init() {
                      PageAccessibilityConfiguration::kInaccessible),
                  PageTag::kPartitionAlloc, regular_pool_fd);
   regular_pool_shadow_offset_ =
-      regular_pool_shadow_address - setup_.aligned.regular_pool_base_address_;
+      regular_pool_shadow_address - setup_.regular_pool_base_address_;
 
   uintptr_t brp_pool_shadow_address = AllocPagesWithAlignOffset(
       0, brp_pool_size + kForbiddenZoneSize, brp_pool_size,
@@ -290,12 +276,11 @@ void PartitionAddressSpace::Init() {
           PageAccessibilityConfiguration::kInaccessible),
       PageTag::kPartitionAlloc, brp_pool_fd);
   brp_pool_shadow_offset_ =
-      brp_pool_shadow_address - setup_.aligned.brp_pool_base_address_;
+      brp_pool_shadow_address - setup_.brp_pool_base_address_;
 #endif
 
 #if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
-  CompressedPointerBaseGlobal::SetBase(
-      setup_.aligned.regular_pool_base_address_);
+  CompressedPointerBaseGlobal::SetBase(setup_.regular_pool_base_address_);
 #endif  // BUILDFLAG(ENABLE_POINTER_COMPRESSION)
 }
 
@@ -319,17 +304,16 @@ void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
   PA_CHECK(base::bits::IsPowerOfTwo(size));
   PA_CHECK(pool_base % size == 0);
 
-  setup_.aligned.configurable_pool_base_address_ = pool_base;
-  setup_.aligned.configurable_pool_base_mask_ = ~(size - 1);
+  setup_.configurable_pool_base_address_ = pool_base;
+  setup_.configurable_pool_base_mask_ = ~(size - 1);
 
   AddressPoolManager::GetInstance().Add(
-      kConfigurablePoolHandle, setup_.aligned.configurable_pool_base_address_,
-      size);
+      kConfigurablePoolHandle, setup_.configurable_pool_base_address_, size);
 
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   // Put the metadata protection back in place.
   if (IsThreadIsolatedPoolInitialized()) {
-    WriteProtectThreadIsolatedGlobals(setup_.aligned.thread_isolation_);
+    WriteProtectThreadIsolatedGlobals(setup_.thread_isolation_);
   }
 #endif
 }
@@ -339,35 +323,33 @@ void PartitionAddressSpace::InitThreadIsolatedPool(
     ThreadIsolationOption thread_isolation) {
   // The ThreadIsolated pool can't be initialized with conflicting settings.
   if (IsThreadIsolatedPoolInitialized()) {
-    PA_CHECK(setup_.aligned.thread_isolation_ == thread_isolation);
+    PA_CHECK(setup_.thread_isolation_ == thread_isolation);
     return;
   }
 
   size_t pool_size = ThreadIsolatedPoolSize();
-  setup_.aligned.thread_isolated_pool_base_address_ =
+  setup_.thread_isolated_pool_base_address_ =
       AllocPages(pool_size, pool_size,
                  PageAccessibilityConfiguration(
                      PageAccessibilityConfiguration::kInaccessible),
                  PageTag::kPartitionAlloc);
-  if (!setup_.aligned.thread_isolated_pool_base_address_) {
+  if (!setup_.thread_isolated_pool_base_address_) {
     HandlePoolAllocFailure();
   }
 
-  PA_DCHECK(
-      !(setup_.aligned.thread_isolated_pool_base_address_ & (pool_size - 1)));
-  setup_.aligned.thread_isolation_ = thread_isolation;
+  PA_DCHECK(!(setup_.thread_isolated_pool_base_address_ & (pool_size - 1)));
+  setup_.thread_isolation_ = thread_isolation;
   AddressPoolManager::GetInstance().Add(
-      kThreadIsolatedPoolHandle,
-      setup_.aligned.thread_isolated_pool_base_address_, pool_size);
+      kThreadIsolatedPoolHandle, setup_.thread_isolated_pool_base_address_,
+      pool_size);
 
-  PA_DCHECK(!IsInThreadIsolatedPool(
-      setup_.aligned.thread_isolated_pool_base_address_ - 1));
-  PA_DCHECK(IsInThreadIsolatedPool(
-      setup_.aligned.thread_isolated_pool_base_address_));
-  PA_DCHECK(IsInThreadIsolatedPool(
-      setup_.aligned.thread_isolated_pool_base_address_ + pool_size - 1));
-  PA_DCHECK(!IsInThreadIsolatedPool(
-      setup_.aligned.thread_isolated_pool_base_address_ + pool_size));
+  PA_DCHECK(
+      !IsInThreadIsolatedPool(setup_.thread_isolated_pool_base_address_ - 1));
+  PA_DCHECK(IsInThreadIsolatedPool(setup_.thread_isolated_pool_base_address_));
+  PA_DCHECK(IsInThreadIsolatedPool(setup_.thread_isolated_pool_base_address_ +
+                                   pool_size - 1));
+  PA_DCHECK(!IsInThreadIsolatedPool(setup_.thread_isolated_pool_base_address_ +
+                                    pool_size));
 
   // TODO(1362969): support PA_ENABLE_SHADOW_METADATA
 }
@@ -380,22 +362,21 @@ void PartitionAddressSpace::UninitForTesting() {
 #if BUILDFLAG(GLUE_CORE_POOLS)
   // The core pools (regular & BRP) were allocated using a single allocation of
   // double size.
-  FreePages(setup_.aligned.regular_pool_base_address_, 2 * RegularPoolSize());
+  FreePages(setup_.regular_pool_base_address_, 2 * RegularPoolSize());
 #else   // BUILDFLAG(GLUE_CORE_POOLS)
-  FreePages(setup_.aligned.regular_pool_base_address_, RegularPoolSize());
+  FreePages(setup_.regular_pool_base_address_, RegularPoolSize());
   // For BRP pool, the allocation region includes a "forbidden zone" before the
   // pool.
   const size_t kForbiddenZoneSize = PageAllocationGranularity();
-  FreePages(setup_.aligned.brp_pool_base_address_ - kForbiddenZoneSize,
+  FreePages(setup_.brp_pool_base_address_ - kForbiddenZoneSize,
             BRPPoolSize() + kForbiddenZoneSize);
 #endif  // BUILDFLAG(GLUE_CORE_POOLS)
   // Do not free pages for the configurable pool, because its memory is owned
   // by someone else, but deinitialize it nonetheless.
-  setup_.aligned.regular_pool_base_address_ = kUninitializedPoolBaseAddress;
-  setup_.aligned.brp_pool_base_address_ = kUninitializedPoolBaseAddress;
-  setup_.aligned.configurable_pool_base_address_ =
-      kUninitializedPoolBaseAddress;
-  setup_.aligned.configurable_pool_base_mask_ = 0;
+  setup_.regular_pool_base_address_ = kUninitializedPoolBaseAddress;
+  setup_.brp_pool_base_address_ = kUninitializedPoolBaseAddress;
+  setup_.configurable_pool_base_address_ = kUninitializedPoolBaseAddress;
+  setup_.configurable_pool_base_mask_ = 0;
   AddressPoolManager::GetInstance().ResetForTesting();
 #if BUILDFLAG(ENABLE_POINTER_COMPRESSION)
   CompressedPointerBaseGlobal::ResetBaseForTesting();
@@ -412,13 +393,12 @@ void PartitionAddressSpace::UninitConfigurablePoolForTesting() {
   }
 #endif
   AddressPoolManager::GetInstance().Remove(kConfigurablePoolHandle);
-  setup_.aligned.configurable_pool_base_address_ =
-      kUninitializedPoolBaseAddress;
-  setup_.aligned.configurable_pool_base_mask_ = 0;
+  setup_.configurable_pool_base_address_ = kUninitializedPoolBaseAddress;
+  setup_.configurable_pool_base_mask_ = 0;
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   // Put the metadata protection back in place.
   if (IsThreadIsolatedPoolInitialized()) {
-    WriteProtectThreadIsolatedGlobals(setup_.aligned.thread_isolation_);
+    WriteProtectThreadIsolatedGlobals(setup_.thread_isolation_);
   }
 #endif
 }
@@ -431,12 +411,11 @@ void PartitionAddressSpace::UninitThreadIsolatedPoolForTesting() {
     ThreadIsolationSettings::settings.enabled = false;
 #endif
 
-    FreePages(setup_.aligned.thread_isolated_pool_base_address_,
+    FreePages(setup_.thread_isolated_pool_base_address_,
               ThreadIsolatedPoolSize());
     AddressPoolManager::GetInstance().Remove(kThreadIsolatedPoolHandle);
-    setup_.aligned.thread_isolated_pool_base_address_ =
-        kUninitializedPoolBaseAddress;
-    setup_.aligned.thread_isolation_.enabled = false;
+    setup_.thread_isolated_pool_base_address_ = kUninitializedPoolBaseAddress;
+    setup_.thread_isolation_.enabled = false;
   }
 }
 #endif
