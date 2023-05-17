@@ -27,6 +27,7 @@
 #if defined(TOOLKIT_VIEWS)
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/test/widget_test.h"
@@ -132,7 +133,16 @@ bool TestBrowserDialog::VerifyUi() {
   auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
   const std::string screenshot_name = base::StrCat(
       {test_info->test_case_name(), "_", test_info->name(), "_", baseline_});
-  if (!VerifyPixelUi(dialog_widget, "BrowserUiDialog", screenshot_name)) {
+
+  // For the CR2023 screenshots add a "CR2023" prefix so that they are compared
+  // exclusively with previous CR2023 screenshots. We would like Skia Gold to
+  // catch regressions in both CR2023 and non-CR2023.
+  // TODO(crbug.com/1444466): remove this after CR2023 launch.
+  const std::string screenshot_prefix = features::IsChromeRefresh2023()
+                                            ? "CR2023_BrowserUiDialog"
+                                            : "BrowserUiDialog";
+
+  if (!VerifyPixelUi(dialog_widget, screenshot_prefix, screenshot_name)) {
     LOG(INFO) << "VerifyUi(): Pixel compare failed.";
     return false;
   }

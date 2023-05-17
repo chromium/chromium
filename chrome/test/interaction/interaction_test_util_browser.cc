@@ -22,6 +22,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/webview/webview.h"
@@ -63,8 +64,17 @@ class PixelTestUi : public TestBrowserUi {
   bool VerifyUi() override {
     auto* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
-    const std::string test_name =
+    std::string test_name =
         base::StrCat({test_info->test_case_name(), "_", test_info->name()});
+
+    // For the CR2023 screenshots add a "CR2023" prefix so that they are
+    // compared exclusively with previous CR2023 screenshots. We would like Skia
+    // Gold to catch regressions in both CR2023 and non-CR2023.
+    // TODO(crbug.com/1444466): remove this after CR2023 launch.
+    if (features::IsChromeRefresh2023()) {
+      test_name = "CR2023_" + test_name;
+    }
+
     const std::string screenshot_name =
         screenshot_name_.empty()
             ? baseline_
