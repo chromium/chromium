@@ -166,15 +166,28 @@ if (enable_rust) {
 # other toolchains.
 rust_abi_target = ""
 if (is_linux || is_chromeos) {
-  cpu = current_cpu
-  if (cpu == "arm64") {
-    cpu = "aarch64"
-  } else if (cpu == "x86") {
-    cpu = "i686"
-  } else if (cpu == "x64") {
-    cpu = "x86_64"
+  if (current_cpu == "arm64") {
+    rust_abi_target = "aarch64-unknown-linux-gnu"
+  } else if (current_cpu == "x86") {
+    rust_abi_target = "i686-unknown-linux-gnu"
+  } else if (current_cpu == "x64") {
+    rust_abi_target = "x86_64-unknown-linux-gnu"
+  } else if (current_cpu == "arm") {
+    if (arm_float_abi == "hard") {
+      float_suffix = "hf"
+    } else {
+      float_suffix = ""
+    }
+    if (arm_arch == "armv7-a" || arm_arch == "armv7") {
+      # No way to inform Rust about the -a suffix.
+      rust_abi_target = "armv7-unknown-linux-gnueabi" + float_suffix
+    } else {
+      rust_abi_target = "arm-unknown-linux-gnueabi" + float_suffix
+    }
+  } else {
+    # Best guess for other future platforms.
+    rust_abi_target = current_cpu + "-unknown-linux-gnu"
   }
-  rust_abi_target = cpu + "-unknown-linux-gnu"
 } else if (is_android) {
   import("//build/config/android/abi.gni")
   rust_abi_target = android_abi_target
