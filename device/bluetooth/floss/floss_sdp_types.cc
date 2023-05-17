@@ -4,6 +4,8 @@
 
 #include "device/bluetooth/floss/floss_sdp_types.h"
 
+#include "base/containers/contains.h"
+
 namespace floss {
 
 BtSdpHeaderOverlay::BtSdpHeaderOverlay() = default;
@@ -421,12 +423,12 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
     unparsed_args[key] = std::move(entry_reader);
   }
 
-  if (!unparsed_args.contains(kTypeKey)) {
+  if (!base::Contains(unparsed_args, kTypeKey)) {
     LOG(ERROR) << "BtSdpRecord did not contain type identifier";
     return false;
   }
 
-  if (!unparsed_args.contains(kVariantValueKey)) {
+  if (!base::Contains(unparsed_args, kVariantValueKey)) {
     LOG(ERROR) << "BtSdpRecord did not contain argument #0";
     return false;
   }
