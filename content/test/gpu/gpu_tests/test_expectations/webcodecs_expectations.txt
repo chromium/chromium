@@ -133,6 +133,8 @@ crbug.com/1429736 [ chromeos chromeos-board-kevin ] WebCodecs_EncodeColorSpace_a
 crbug.com/1444151 [ mac apple-apple-m2 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_constant_* [ Failure ]
 crbug.com/1444151 [ mac apple-apple-m2 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_1500000 [ RetryOnFailure ]
 
+crbug.com/1446081 [ win10 amd-0x7340 passthrough angle-d3d11 ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
