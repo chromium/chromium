@@ -150,7 +150,6 @@ std::unique_ptr<KeyedService> SyncServiceFactory::BuildServiceInstanceFor(
   init_params.is_regular_profile_for_uma = true;
   init_params.identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
-  init_params.start_behavior = syncer::SyncServiceImpl::MANUAL_START;
   init_params.sync_client =
       std::make_unique<IOSChromeSyncClient>(browser_state);
   init_params.url_loader_factory = browser_state->GetSharedURLLoaderFactory();

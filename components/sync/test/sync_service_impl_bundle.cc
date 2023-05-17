@@ -40,11 +40,9 @@ std::unique_ptr<SyncClientMock> SyncServiceImplBundle::CreateSyncClientMock() {
 }
 
 SyncServiceImpl::InitParams SyncServiceImplBundle::CreateBasicInitParams(
-    SyncServiceImpl::StartBehavior start_behavior,
     std::unique_ptr<SyncClient> sync_client) {
   SyncServiceImpl::InitParams init_params;
 
-  init_params.start_behavior = start_behavior;
   init_params.sync_client = std::move(sync_client);
   init_params.identity_manager = identity_manager();
   init_params.url_loader_factory =

@@ -81,7 +81,6 @@ WebViewSyncServiceFactory::BuildServiceInstanceFor(
 
   syncer::SyncServiceImpl::InitParams init_params;
   init_params.identity_manager = identity_manager;
-  init_params.start_behavior = syncer::SyncServiceImpl::MANUAL_START;
   init_params.sync_client = WebViewSyncClient::Create(browser_state);
   init_params.url_loader_factory = browser_state->GetSharedURLLoaderFactory();
   init_params.network_connection_tracker =

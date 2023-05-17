@@ -60,15 +60,6 @@ class SyncServiceImpl : public SyncService,
                         public SyncServiceCrypto::Delegate,
                         public signin::IdentityManager::Observer {
  public:
-  // If AUTO_START, sync will set IsInitialSyncFeatureSetupComplete()
-  // automatically and sync will begin syncing without the user needing to
-  // confirm sync settings.
-  // TODO(crbug.com/1443438): Remove StartBehavior altogether.
-  enum StartBehavior {
-    AUTO_START,
-    MANUAL_START,
-  };
-
   // Bundles the arguments for SyncServiceImpl construction. This is a
   // movable struct. Because of the non-POD data members, it needs out-of-line
   // constructors, so in particular the move constructor needs to be
@@ -87,7 +78,6 @@ class SyncServiceImpl : public SyncService,
     // TODO(treib): Remove this and instead retrieve it via
     // SyncClient::GetIdentityManager (but mind LocalSync).
     raw_ptr<signin::IdentityManager> identity_manager = nullptr;
-    StartBehavior start_behavior = MANUAL_START;
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
     raw_ptr<network::NetworkConnectionTracker> network_connection_tracker =
         nullptr;
@@ -352,6 +342,11 @@ class SyncServiceImpl : public SyncService,
   // type.
   void MaybeRecordTrustedVaultHistograms();
 
+  // Whether sync-the-feature should be enabled without further action (e.g.
+  // ChromeOS Ash). In practice it means SyncRequested and FirstSetupComplete
+  // are set automatically.
+  bool ShouldAutoStartSyncFeature() const;
+
   // This profile's SyncClient, which abstracts away non-Sync dependencies and
   // the Sync API component factory.
   const std::unique_ptr<SyncClient> sync_client_;
@@ -450,8 +445,6 @@ class SyncServiceImpl : public SyncService,
   DataTypeController::TypeMap data_type_controllers_;
 
   CreateHttpPostProviderFactory create_http_post_provider_factory_cb_;
-
-  const StartBehavior start_behavior_;
 
   std::unique_ptr<SyncStoppedReporter> sync_stopped_reporter_;
 

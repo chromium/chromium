@@ -178,7 +178,6 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
       expect_sync_configuration_aborted_(false),
       create_http_post_provider_factory_cb_(
           base::BindRepeating(&CreateHttpBridgeFactory)),
-      start_behavior_(init_params.start_behavior),
       is_regular_profile_for_uma_(init_params.is_regular_profile_for_uma),
       should_record_trusted_vault_error_shown_on_startup_(true),
 #if BUILDFLAG(IS_ANDROID)
@@ -295,16 +294,15 @@ void SyncServiceImpl::Initialize() {
   // will set it, we need to set it here.
   // Local Sync bypasses the IsSyncRequested() check, so no need to set it in
   // that case.
-  // TODO(crbug.com/1443438): Get rid of AUTO_START and remove this workaround.
-  if (start_behavior_ == AUTO_START && !IsLocalSyncEnabled() &&
+  if (ShouldAutoStartSyncFeature() && !IsLocalSyncEnabled() &&
       !sync_prefs_.IsSyncRequestedSetExplicitly()) {
     SetSyncFeatureRequested();
   }
 
   bool force_immediate =
-      (start_behavior_ == AUTO_START &&
-       !user_settings_->IsInitialSyncFeatureSetupComplete() &&
-       (IsLocalSyncEnabled() || IsSyncFeatureConsideredRequested()));
+      ShouldAutoStartSyncFeature() &&
+      !user_settings_->IsInitialSyncFeatureSetupComplete() &&
+      (IsLocalSyncEnabled() || IsSyncFeatureConsideredRequested());
   if (force_immediate) {
     TryStart();
   } else if (IsEngineAllowedToRun()) {
@@ -891,7 +889,7 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
   crypto_.SetSyncEngine(GetAccountInfo(), engine_.get());
 
   // Auto-start means IsInitialSyncFeatureSetupComplete gets set automatically.
-  if (start_behavior_ == AUTO_START &&
+  if (ShouldAutoStartSyncFeature() &&
       !user_settings_->IsInitialSyncFeatureSetupComplete()) {
     // This will trigger a configure if it completes setup.
     user_settings_->SetInitialSyncFeatureSetupComplete(
@@ -2062,6 +2060,16 @@ void SyncServiceImpl::OnSetupInProgressHandleDestroyed() {
   }
 
   NotifyObservers();
+}
+
+// TODO(crbug.com/1445931): If FirstSetupComplete is set earlier, in
+// Initialize(), this method can be inlined.
+bool SyncServiceImpl::ShouldAutoStartSyncFeature() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return true;
+#else
+  return IsLocalSyncEnabled();
+#endif
 }
 
 }  // namespace syncer

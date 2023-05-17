@@ -107,8 +107,7 @@ class SyncServiceImplTest : public ::testing::Test {
         kTestUser, signin::ConsentLevel::kSync);
   }
 
-  void CreateService(SyncServiceImpl::StartBehavior behavior,
-                     std::vector<std::pair<ModelType, bool>>
+  void CreateService(std::vector<std::pair<ModelType, bool>>
                          registered_types_and_transport_mode_support = {
                              {BOOKMARKS, false},
                              {DEVICE_INFO, true}}) {
@@ -133,7 +132,7 @@ class SyncServiceImplTest : public ::testing::Test {
 
     service_ = std::make_unique<SyncServiceImpl>(
         sync_service_impl_bundle_.CreateBasicInitParams(
-            behavior, std::move(sync_client)));
+            std::move(sync_client)));
   }
 
   void CreateServiceWithLocalSyncBackend() {
@@ -152,8 +151,7 @@ class SyncServiceImplTest : public ::testing::Test {
         .WillByDefault(Return(ByMove(std::move(controllers))));
 
     SyncServiceImpl::InitParams init_params =
-        sync_service_impl_bundle_.CreateBasicInitParams(
-            SyncServiceImpl::AUTO_START, std::move(sync_client));
+        sync_service_impl_bundle_.CreateBasicInitParams(std::move(sync_client));
 
     prefs()->SetBoolean(prefs::kEnableLocalSyncBackend, true);
     init_params.identity_manager = nullptr;
@@ -251,7 +249,7 @@ class SyncServiceImplTest : public ::testing::Test {
 
 // Verify that the server URLs are sane.
 TEST_F(SyncServiceImplTest, InitialState) {
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForNthSync();
   const std::string& url = service()->GetSyncServiceUrlForDebugging().spec();
   EXPECT_TRUE(url == internal::kSyncServerUrl ||
@@ -260,7 +258,7 @@ TEST_F(SyncServiceImplTest, InitialState) {
 
 TEST_F(SyncServiceImplTest, SuccessfulInitialization) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForNthSync();
   EXPECT_TRUE(service()->GetDisableReasons().Empty());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
@@ -275,11 +273,13 @@ TEST_F(SyncServiceImplTest, SuccessfulLocalBackendInitialization) {
             service()->GetTransportState());
 }
 
+// ChromeOS Ash sets FirstSetupComplete automatically.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Verify that an initialization where first setup is not complete does not
 // start up Sync-the-feature.
 TEST_F(SyncServiceImplTest, NeedsConfirmation) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
 
   // Mimic a sync cycle (transport-only) having completed earlier.
   SyncPrefs sync_prefs(prefs());
@@ -299,11 +299,20 @@ TEST_F(SyncServiceImplTest, NeedsConfirmation) {
   EXPECT_FALSE(service()->IsSyncFeatureActive());
   EXPECT_FALSE(service()->IsSyncFeatureEnabled());
 }
+#endif
 
 TEST_F(SyncServiceImplTest, ModelTypesForTransportMode) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForFirstSync();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Sync-the-feature is normally enabled in Ash. Triggering a dashboard reset
+  // is one way to achieve otherwise.
+  SyncProtocolError client_cmd;
+  client_cmd.action = DISABLE_SYNC_ON_CLIENT;
+  service()->OnActionableProtocolError(client_cmd);
+#endif
 
   ASSERT_FALSE(service()->IsSyncFeatureActive());
   ASSERT_FALSE(service()->IsSyncFeatureEnabled());
@@ -323,7 +332,7 @@ TEST_F(SyncServiceImplTest, ModelTypesForTransportMode) {
 // Verify that the SetSetupInProgress function call updates state
 // and notifies observers.
 TEST_F(SyncServiceImplTest, SetupInProgress) {
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForFirstSync();
 
   TestSyncServiceObserver observer;
@@ -342,7 +351,7 @@ TEST_F(SyncServiceImplTest, SetupInProgress) {
 TEST_F(SyncServiceImplTest, DisabledByPolicyBeforeInit) {
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForNthSync();
   // Sync was disabled due to the policy.
   EXPECT_EQ(SyncService::DisableReasonSet(
@@ -374,13 +383,7 @@ TEST_P(SyncServiceImplTestWithIgnoreSyncRequestedFeature,
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
   SignIn();
 
-  // To make this test more realistic, the StartBehavior is chosen depending on
-  // the platform, which also influences other aspects.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  CreateService(SyncServiceImpl::AUTO_START);
-#else
-  CreateService(SyncServiceImpl::MANUAL_START);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  CreateService();
 
   InitializeForNthSync();
   // Sync was disabled due to the policy.
@@ -403,8 +406,7 @@ TEST_P(SyncServiceImplTestWithIgnoreSyncRequestedFeature,
   EXPECT_TRUE(service()->GetDisableReasons().Empty());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On ChromeOS Ash, the first setup is marked as complete automatically, due
-  // AUTO_START used as StartBehavior.
+  // On ChromeOS Ash, the first setup is marked as complete automatically.
   ASSERT_TRUE(
       service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
 
@@ -442,7 +444,7 @@ INSTANTIATE_TEST_SUITE_P(SyncIgnoreSyncRequestedPreference,
 // been initialized.
 TEST_F(SyncServiceImplTest, DisabledByPolicyAfterInit) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForNthSync();
 
   ASSERT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
@@ -463,7 +465,7 @@ TEST_F(SyncServiceImplTest, DisabledByPolicyAfterInit) {
 // before the backend initialize call returns.
 TEST_F(SyncServiceImplTest, AbortedByShutdown) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   component_factory()->AllowFakeEngineInitCompletion(false);
 
   InitializeForNthSync();
@@ -479,7 +481,7 @@ TEST_F(SyncServiceImplTest, AbortedByShutdown) {
 // Test the user signing out before the backend's initialization completes.
 TEST_F(SyncServiceImplTest, EarlySignOut) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   // Set up a fake sync engine that will not immediately finish initialization.
   component_factory()->AllowFakeEngineInitCompletion(false);
   InitializeForNthSync();
@@ -513,7 +515,7 @@ TEST_F(SyncServiceImplTest, EarlySignOut) {
 TEST_F(SyncServiceImplTest, SignOutDisablesSyncTransportAndSyncFeature) {
   // Sign-in and enable sync.
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForNthSync();
   ASSERT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
@@ -539,7 +541,7 @@ TEST_F(SyncServiceImplTest,
        SignOutClearsSyncTransportDataAndSyncTheFeaturePrefs) {
   // Sign-in and enable sync.
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForNthSync();
   ASSERT_TRUE(
       service()->GetUserSettings()->IsInitialSyncFeatureSetupComplete());
@@ -572,7 +574,7 @@ TEST_F(SyncServiceImplTest,
        SignOutDuringTransportModeClearsTransportDataAndAccountStorageOptIn) {
   // Sign-in.
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForFirstSync();
 
   ASSERT_FALSE(service()->IsSyncFeatureActive());
@@ -608,7 +610,7 @@ TEST_F(SyncServiceImplTest,
 
 TEST_F(SyncServiceImplTest, GetSyncTokenStatus) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForNthSync(/*run_until_idle=*/false);
 
   // Initial status: The Sync engine startup has not begun yet; no token request
@@ -657,7 +659,7 @@ TEST_F(SyncServiceImplTest, GetSyncTokenStatus) {
 
 TEST_F(SyncServiceImplTest, RevokeAccessTokenFromTokenService) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForNthSync();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
@@ -691,7 +693,7 @@ TEST_F(SyncServiceImplTest, RevokeAccessTokenFromTokenService) {
 // Sync. Regression test for https://crbug.com/824791.
 TEST_F(SyncServiceImplTest, CredentialsRejectedByClient_StopSync) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForNthSync();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
@@ -739,11 +741,11 @@ TEST_F(SyncServiceImplTest, CredentialsRejectedByClient_StopSync) {
   service()->RemoveObserver(&observer);
 }
 
-// CrOS does not support signout.
+// CrOS Ash does not support signout.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncServiceImplTest, SignOutRevokeAccessToken) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForNthSync();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
@@ -778,7 +780,7 @@ TEST_F(SyncServiceImplTest, SignOutRevokeAccessToken) {
 
 TEST_F(SyncServiceImplTest, StopAndClearWillClearDataAndSwitchToTransportMode) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForNthSync();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
@@ -803,7 +805,7 @@ TEST_F(SyncServiceImplTest, ClearTransportDataOnInitializeWhenSignedOut) {
   identity_test_env()->WaitForRefreshTokensLoaded();
 
   // Don't sign-in before creating the service.
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
 
   ASSERT_EQ(0, component_factory()->clear_transport_data_call_count());
 
@@ -815,7 +817,7 @@ TEST_F(SyncServiceImplTest, ClearTransportDataOnInitializeWhenSignedOut) {
 
 TEST_F(SyncServiceImplTest, StopSyncAndClearTwiceDoesNotCrash) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForNthSync();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
@@ -838,7 +840,7 @@ TEST_F(SyncServiceImplTest, CredentialErrorReturned) {
   identity_test_env()->SetAutomaticIssueOfAccessTokens(false);
 
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForNthSync();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
@@ -893,7 +895,7 @@ TEST_F(SyncServiceImplTest, CredentialErrorClearsOnNewToken) {
   identity_test_env()->SetAutomaticIssueOfAccessTokens(false);
 
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForNthSync();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
@@ -967,7 +969,7 @@ TEST_F(SyncServiceImplTest, NoDisableSyncFlag) {
 // RESET_LOCAL_SYNC_DATA it restarts sync.
 TEST_F(SyncServiceImplTest, ResetSyncData) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   // Backend should get initialized two times: once during initialization and
   // once when handling actionable error.
   InitializeForNthSync();
@@ -982,14 +984,7 @@ TEST_F(SyncServiceImplTest, ResetSyncData) {
 TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   SignIn();
 
-  // To make this test more realistic, the StartBehavior is chosen depending on
-  // the platform, which influences the behavior for
-  // IsSyncFeatureDisabledViaDashboard().
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  CreateService(SyncServiceImpl::AUTO_START);
-#else
-  CreateService(SyncServiceImpl::MANUAL_START);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  CreateService();
 
   InitializeForNthSync();
 
@@ -1044,7 +1039,7 @@ TEST_F(SyncServiceImplTest,
   const PassphraseType kPassphraseType = PassphraseType::kKeystorePassphrase;
 
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForNthSync();
 
   service()->GetEncryptionObserverForTest()->OnPassphraseTypeChanged(
@@ -1075,7 +1070,7 @@ TEST_F(SyncServiceImplTest,
   const PassphraseType kPassphraseType = PassphraseType::kKeystorePassphrase;
 
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForNthSync();
 
   service()->GetEncryptionObserverForTest()->OnPassphraseTypeChanged(
@@ -1130,7 +1125,7 @@ TEST_F(SyncServiceImplTest, ConfigureDataTypeManagerReason) {
   SignIn();
 
   // First sync.
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForFirstSync();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
@@ -1146,7 +1141,7 @@ TEST_F(SyncServiceImplTest, ConfigureDataTypeManagerReason) {
   ShutdownAndDeleteService();
 
   // Nth sync.
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForNthSync();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
@@ -1166,7 +1161,7 @@ TEST_F(SyncServiceImplTest, ConfigureDataTypeManagerReason) {
 // SyncServiceImpl usages after shutdown are addressed.
 TEST_F(SyncServiceImplTest, ShouldProvideDisableReasonsAfterShutdown) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForFirstSync();
   service()->Shutdown();
   EXPECT_FALSE(service()->GetDisableReasons().Empty());
@@ -1174,12 +1169,12 @@ TEST_F(SyncServiceImplTest, ShouldProvideDisableReasonsAfterShutdown) {
 
 TEST_F(SyncServiceImplTest, ShouldSendDataTypesToSyncInvalidationsService) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START,
-                /*registered_types_and_transport_mode_support=*/
-                {
-                    {BOOKMARKS, false},
-                    {DEVICE_INFO, true},
-                });
+  CreateService(
+      /*registered_types_and_transport_mode_support=*/
+      {
+          {BOOKMARKS, false},
+          {DEVICE_INFO, true},
+      });
   // Note: Even though NIGORI technically isn't registered, it should always be
   // considered part of the interested data types.
   EXPECT_CALL(*sync_invalidations_service(),
@@ -1191,15 +1186,17 @@ TEST_F(SyncServiceImplTest, ShouldSendDataTypesToSyncInvalidationsService) {
   EXPECT_TRUE(engine()->started_handling_invalidations());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncServiceImplTest,
        ShouldSendDataTypesToSyncInvalidationsServiceInTransportMode) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START,
-                /*registered_types_and_transport_mode_support=*/
-                {
-                    {BOOKMARKS, false},
-                    {DEVICE_INFO, true},
-                });
+  CreateService(
+      /*registered_types_and_transport_mode_support=*/
+      {
+          {BOOKMARKS, false},
+          {DEVICE_INFO, true},
+      });
+
   // In this test, BOOKMARKS doesn't support transport mode, so it should *not*
   // be included.
   // Note: Even though NIGORI technically isn't registered, it should always be
@@ -1209,14 +1206,49 @@ TEST_F(SyncServiceImplTest,
                                            Not(ContainsDataType(BOOKMARKS)),
                                            ContainsDataType(DEVICE_INFO))));
   InitializeForFirstSync();
+
   ASSERT_FALSE(service()->IsSyncFeatureActive());
   EXPECT_TRUE(engine()->started_handling_invalidations());
 }
+#else
+TEST_F(SyncServiceImplTest,
+       ShouldSendDataTypesToSyncInvalidationsServiceInTransportModeAsh) {
+  SignIn();
+  CreateService(
+      /*registered_types_and_transport_mode_support=*/
+      {
+          {BOOKMARKS, false},
+          {DEVICE_INFO, true},
+      });
+  InitializeForFirstSync();
+
+  // In this test, BOOKMARKS doesn't support transport mode, so it should *not*
+  // be included.
+  // Note: Even though NIGORI technically isn't registered, it should always be
+  // considered part of the interested data types.
+  // Note2: InitializeForFirstSync() issued a first SetInterestedDataTypes()
+  // with sync-the-feature enabled, which we don't care about. That's why this
+  // expectation is set afterwards.
+  EXPECT_CALL(*sync_invalidations_service(),
+              SetInterestedDataTypes(AllOf(ContainsDataType(NIGORI),
+                                           Not(ContainsDataType(BOOKMARKS)),
+                                           ContainsDataType(DEVICE_INFO))));
+
+  // Sync-the-feature is normally enabled in Ash. Triggering a dashboard reset
+  // is one way to achieve otherwise.
+  SyncProtocolError client_cmd;
+  client_cmd.action = DISABLE_SYNC_ON_CLIENT;
+  service()->OnActionableProtocolError(client_cmd);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(service()->IsSyncFeatureActive());
+  EXPECT_TRUE(engine()->started_handling_invalidations());
+}
+#endif
 
 TEST_F(SyncServiceImplTest, ShouldEnableAndDisableInvalidationsForSessions) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START,
-                {{SESSIONS, false}, {TYPED_URLS, false}});
+  CreateService({{SESSIONS, false}, {TYPED_URLS, false}});
   InitializeForNthSync();
 
   EXPECT_CALL(*sync_invalidations_service(),
@@ -1229,12 +1261,12 @@ TEST_F(SyncServiceImplTest, ShouldEnableAndDisableInvalidationsForSessions) {
 
 TEST_F(SyncServiceImplTest, ShouldNotSubscribeToProxyTypes) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START,
-                /*registered_types_and_transport_mode_support=*/
-                {
-                    {BOOKMARKS, false},
-                    {DEVICE_INFO, true},
-                });
+  CreateService(
+      /*registered_types_and_transport_mode_support=*/
+      {
+          {BOOKMARKS, false},
+          {DEVICE_INFO, true},
+      });
   get_controller(BOOKMARKS)
       ->model()
       ->EnableSkipEngineConnectionForActivationResponse();
@@ -1247,7 +1279,7 @@ TEST_F(SyncServiceImplTest, ShouldNotSubscribeToProxyTypes) {
 TEST_F(SyncServiceImplTest,
        ShouldActivateSyncInvalidationsServiceWhenSyncIsInitialized) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
 
   // Invalidations may start listening twice. The first one during
   // initialization, the second once everything is configured.
@@ -1266,7 +1298,7 @@ TEST_F(SyncServiceImplTest,
 TEST_F(SyncServiceImplTest,
        ShouldNotStopListeningPermanentlyOnShutdownBrowserAndKeepData) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForFirstSync();
   EXPECT_CALL(*sync_invalidations_service(), StopListeningPermanently())
       .Times(0);
@@ -1276,7 +1308,7 @@ TEST_F(SyncServiceImplTest,
 TEST_F(SyncServiceImplTest,
        ShouldStopListeningPermanentlyOnDisableSyncAndClearData) {
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForFirstSync();
   EXPECT_CALL(*sync_invalidations_service(), StopListeningPermanently());
   service()->StopAndClear();
@@ -1291,7 +1323,7 @@ TEST_F(SyncServiceImplTest, ShouldCallStopUponResetEngineIfAlreadyShutDown) {
 
   // Sign in and enable sync.
   SignIn();
-  CreateService(SyncServiceImpl::MANUAL_START);
+  CreateService();
   InitializeForNthSync();
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());

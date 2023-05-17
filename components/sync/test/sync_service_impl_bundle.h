@@ -33,11 +33,9 @@ class SyncServiceImplBundle {
   // Creates a mock sync client that leverages the dependencies in this bundle.
   std::unique_ptr<SyncClientMock> CreateSyncClientMock();
 
-  // Creates an InitParams instance with the specified |start_behavior| and
-  // |sync_client|, and fills the rest with dummy values and objects owned by
-  // the bundle.
+  // Creates an InitParams instance with the specified |sync_client|, and fills
+  // the rest with dummy values and objects owned by the bundle.
   SyncServiceImpl::InitParams CreateBasicInitParams(
-      SyncServiceImpl::StartBehavior start_behavior,
       std::unique_ptr<SyncClient> sync_client);
 
   // Accessors

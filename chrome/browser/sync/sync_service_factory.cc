@@ -141,8 +141,6 @@ std::unique_ptr<KeyedService> BuildSyncService(
     if (local_sync_backend_folder.empty()) {
       return nullptr;
     }
-
-    init_params.start_behavior = syncer::SyncServiceImpl::AUTO_START;
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS_LACROS))
@@ -159,12 +157,6 @@ std::unique_ptr<KeyedService> BuildSyncService(
 
     init_params.identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    init_params.start_behavior = syncer::SyncServiceImpl::AUTO_START;
-#else
-    init_params.start_behavior = syncer::SyncServiceImpl::MANUAL_START;
-#endif
   }
 
   auto sync_service =
