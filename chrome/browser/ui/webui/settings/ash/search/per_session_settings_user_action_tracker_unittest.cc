@@ -181,6 +181,22 @@ TEST_F(PerSessionSettingsUserActionTrackerTest, TestBlurAndFocus) {
       /*count=*/1);
 }
 
+TEST_F(PerSessionSettingsUserActionTrackerTest, TestEndSessionWithBlur) {
+  // fast forward the time by 30 seconds. Total window active time does not get
+  // changed as we have not blurred the session.
+  tracker_->RecordPageFocus();
+  task_environment_.FastForwardBy(base::Seconds(30));
+  EXPECT_EQ(base::TimeDelta(), tracker_->GetTotalTimeSessionActiveForTesting());
+
+  // Total window active time changes to 30 seconds as the page is no longer in
+  // focus.
+  tracker_->RecordPageBlur();
+  EXPECT_EQ(base::Seconds(30), tracker_->GetTotalTimeSessionActiveForTesting());
+  // the window is no longer active, so the timer resets.
+  EXPECT_EQ(base::TimeTicks(),
+            tracker_->GetWindowLastActiveTimeStampForTesting());
+}
+
 TEST_F(PerSessionSettingsUserActionTrackerTest, TestUniqueChangedSettings) {
   std::set<chromeos::settings::mojom::Setting> expected_set;
 
@@ -252,6 +268,111 @@ TEST_F(PerSessionSettingsUserActionTrackerTest, TestUniqueChangedSettings) {
       "ChromeOS.Settings.NumUniqueSettingsChanged.PerSession",
       /*sample=*/1,
       /*count=*/1);
+}
+
+TEST_F(PerSessionSettingsUserActionTrackerTest,
+       TestNoTimeDeltaOpenCloseSettings) {
+  // Focus on page, close the page immediately. total_time_session_active_
+  // should be 0 seconds.
+  tracker_->RecordPageFocus();
+
+  // Destruct tracker_ to trigger recording the data to the histogram.
+  tracker_.reset();
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "ChromeOS.Settings.WindowTotalActiveDuration",
+      /*sample=*/base::Seconds(0),
+      /*count=*/1);
+}
+
+TEST_F(PerSessionSettingsUserActionTrackerTest,
+       TestTotalTimeSessionActiveWithBlurAndFocus) {
+  // Focus on page, wait for 16 seconds to pass, and blur the page.
+  // total active time should be 16 seconds.
+  tracker_->RecordPageFocus();
+  task_environment_.FastForwardBy(base::Seconds(16));
+  tracker_->RecordPageBlur();
+  EXPECT_EQ(base::TimeTicks(),
+            tracker_->GetWindowLastActiveTimeStampForTesting());
+  EXPECT_EQ(base::Seconds(16), tracker_->GetTotalTimeSessionActiveForTesting());
+
+  // When the page is blurred, fast forwarding the time would not increase the
+  // total active time as the session is not active.
+  task_environment_.FastForwardBy(base::Seconds(59));
+  EXPECT_EQ(base::TimeTicks(),
+            tracker_->GetWindowLastActiveTimeStampForTesting());
+  EXPECT_EQ(base::Seconds(16), tracker_->GetTotalTimeSessionActiveForTesting());
+
+  // Focus back on the page, the timer should start up again. wait for 1 minute,
+  // now total active time should accumulate to 16 + 60 = 76 seconds.
+  tracker_->RecordPageFocus();
+  task_environment_.FastForwardBy(base::Minutes(1));
+  tracker_->RecordPageBlur();
+  EXPECT_EQ(base::TimeTicks(),
+            tracker_->GetWindowLastActiveTimeStampForTesting());
+  EXPECT_EQ(base::Seconds(76), tracker_->GetTotalTimeSessionActiveForTesting());
+  tracker_->RecordPageFocus();
+
+  // Destruct tracker_ to trigger recording the data to the histogram.
+  tracker_.reset();
+
+  // Histogram should have 1 count in the 76 seconds bucket.
+  histogram_tester_.ExpectTimeBucketCount(
+      "ChromeOS.Settings.WindowTotalActiveDuration",
+      /*sample=*/base::Seconds(76),
+      /*count=*/1);
+}
+
+TEST_F(PerSessionSettingsUserActionTrackerTest,
+       TestMultipleTotalTimeSessionActive) {
+  // Focus on page, wait for 22 seconds to pass.
+  tracker_->RecordPageFocus();
+  task_environment_.FastForwardBy(base::Seconds(22));
+
+  // Destruct tracker_ to trigger recording the data to the histogram.
+  tracker_.reset();
+
+  // Histogram should have 1 count in the 22 seconds bucket.
+  histogram_tester_.ExpectTimeBucketCount(
+      "ChromeOS.Settings.WindowTotalActiveDuration",
+      /*sample=*/base::Seconds(22),
+      /*count=*/1);
+
+  // Create a new tracker, focus on page, wait for another 22 seconds to
+  // pass.
+  tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>();
+  tracker_->RecordPageFocus();
+  task_environment_.FastForwardBy(base::Seconds(22));
+
+  // Destruct tracker_ to trigger recording the data to the histogram.
+  tracker_.reset();
+
+  // Histogram should have 2 counts in the 22 seconds bucket.
+  histogram_tester_.ExpectTimeBucketCount(
+      "ChromeOS.Settings.WindowTotalActiveDuration",
+      /*sample=*/base::Seconds(22),
+      /*count=*/2);
+
+  // Create a new tracker, focus on page, this time wait for 3 seconds to
+  // pass.
+  tracker_ = std::make_unique<PerSessionSettingsUserActionTracker>();
+  tracker_->RecordPageFocus();
+  task_environment_.FastForwardBy(base::Seconds(3));
+
+  // Destruct tracker_ to trigger recording the data to the histogram.
+  tracker_.reset();
+
+  // Histogram should have 1 count in the 3 seconds bucket, 2 counts in 22
+  // seconds bucket.
+  histogram_tester_.ExpectTimeBucketCount(
+      "ChromeOS.Settings.WindowTotalActiveDuration",
+      /*sample=*/base::Seconds(3),
+      /*count=*/1);
+
+  histogram_tester_.ExpectTimeBucketCount(
+      "ChromeOS.Settings.WindowTotalActiveDuration",
+      /*sample=*/base::Seconds(22),
+      /*count=*/2);
 }
 
 }  // namespace ash::settings

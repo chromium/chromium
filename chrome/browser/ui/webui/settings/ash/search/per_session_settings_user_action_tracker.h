@@ -26,6 +26,7 @@ class PerSessionSettingsUserActionTracker {
       const PerSessionSettingsUserActionTracker& other) = delete;
   ~PerSessionSettingsUserActionTracker();
 
+  void RecordPageActiveTime();
   void RecordPageFocus();
   void RecordPageBlur();
   void RecordClick();
@@ -38,9 +39,16 @@ class PerSessionSettingsUserActionTracker {
   // will be set to nullopt to indicate that it has not been initialized.
   void RecordSettingChange(absl::optional<chromeos::settings::mojom::Setting>
                                setting = absl::nullopt);
+
   const std::set<chromeos::settings::mojom::Setting>&
   GetChangedSettingsForTesting() {
     return changed_settings_;
+  }
+  const base::TimeDelta& GetTotalTimeSessionActiveForTesting() {
+    return total_time_session_active_;
+  }
+  const base::TimeTicks& GetWindowLastActiveTimeStampForTesting() {
+    return window_last_active_timestamp_;
   }
 
  private:
@@ -73,6 +81,13 @@ class PerSessionSettingsUserActionTracker {
 
   // Tracks which settings have been changed in this user session
   std::set<chromeos::settings::mojom::Setting> changed_settings_;
+
+  // Total time the Settings page has been active and in focus from the opening
+  // of the page to closing. Blur events pause the timer.
+  base::TimeDelta total_time_session_active_;
+
+  // The point in time which the Settings page was last active and in focus.
+  base::TimeTicks window_last_active_timestamp_;
 };
 
 }  // namespace ash::settings
