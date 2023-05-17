@@ -7,8 +7,8 @@
 #include <memory>
 #include <vector>
 
-#include "ash/webui/projector_app/projector_screencast.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "ash/webui/projector_app/public/mojom/projector_types.mojom.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -38,7 +38,7 @@ namespace {
 constexpr int kOneSecondInMillisecond = 1000;
 
 void OnMediaMetadataParsed(
-    std::unique_ptr<ProjectorScreencastVideo> video,
+    projector::mojom::VideoInfoPtr video,
     ProjectorAppClient::OnGetVideoCallback callback,
     const base::FilePath& video_path,
     std::unique_ptr<SafeMediaMetadataParser> parser_keep_alive,
@@ -49,38 +49,36 @@ void OnMediaMetadataParsed(
   if (!parse_success || !metadata || !metadata->duration) {
     // TODO(b/242748137): Add test to cover this error message.
     std::move(callback).Run(
-        /*video=*/nullptr,
-        base::StringPrintf(
+        projector::mojom::GetVideoResult::NewErrorMessage(base::StringPrintf(
             "Failed get media metadata or duration with video file id=%s",
-            video->file_id.c_str()));
+            video->file_id.c_str())));
     return;
   }
 
   if (metadata->duration < 0) {
     // The video file might be malformed if duration is -1.
-    std::move(callback).Run(
-        /*video=*/nullptr,
+    std::move(callback).Run(projector::mojom::GetVideoResult::NewErrorMessage(
         base::StringPrintf("Media might be malformed with video file id=%s",
-                           video->file_id.c_str()));
+                           video->file_id.c_str())));
     return;
   }
 
-  video->duration_millis =
-      base::NumberToString(metadata->duration * kOneSecondInMillisecond);
+  video->duration_millis = metadata->duration * kOneSecondInMillisecond;
   // Launches app on UI thread when duration is valid.
 
   // Even though the video file id is not a file path, we need to pass it to the
   // launch event to match up with the original request.
   base::FilePath video_id_as_path(video->file_id);
   SendFilesToProjectorApp({video_id_as_path, video_path});
-  std::move(callback).Run(std::move(video), /*error_message=*/std::string());
+  std::move(callback).Run(
+      projector::mojom::GetVideoResult::NewVideo(std::move(video)));
 }
 
 // Caller of this method requires a sequenced context. Gets video metadata for
 // `video_path`, triggers the flow to set `duration_millis` in the given video
 // object and triggers the callback. Should not be called on UI thread.
 void GetVideoMetadata(const base::FilePath& video_path,
-                      std::unique_ptr<ProjectorScreencastVideo> video,
+                      projector::mojom::VideoInfoPtr video,
                       ProjectorAppClient::OnGetVideoCallback callback) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   int64_t size_in_byte;
@@ -88,12 +86,13 @@ void GetVideoMetadata(const base::FilePath& video_path,
       !base::GetFileSize(video_path, &size_in_byte)) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       /*video=*/nullptr,
-                       base::StringPrintf(
-                           "Path does not exist or cannot read video size with "
-                           "video file id=%s",
-                           video->file_id.c_str())));
+        base::BindOnce(
+            std::move(callback),
+            projector::mojom::GetVideoResult::NewErrorMessage(
+                base::StringPrintf(
+                    "Path does not exist or cannot read video size with "
+                    "video file id=%s",
+                    video->file_id.c_str()))));
     return;
   }
 
@@ -122,7 +121,7 @@ ScreencastManager::~ScreencastManager() = default;
 
 void ScreencastManager::GetVideo(
     const std::string& video_file_id,
-    const std::string& resource_key,
+    const absl::optional<std::string>& resource_key,
     ProjectorAppClient::OnGetVideoCallback callback) const {
   // TODO(b/237089852): Handle the resource key once LocateFilesByItemIds()
   // supports it.
@@ -145,29 +144,27 @@ void ScreencastManager::OnVideoFilePathLocated(
     ProjectorAppClient::OnGetVideoCallback callback,
     absl::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths) {
   if (!paths || paths.value().size() != 1u) {
-    std::move(callback).Run(
-        /*video=*/nullptr,
+    std::move(callback).Run(projector::mojom::GetVideoResult::NewErrorMessage(
         base::StringPrintf("Failed to find DriveFS path with video file id=%s",
-                           video_id.c_str()));
+                           video_id.c_str())));
+
     return;
   }
 
   const auto& path_or_error = paths.value()[0];
   if (path_or_error->is_error() || !path_or_error->is_path()) {
-    std::move(callback).Run(
-        /*video=*/nullptr,
+    std::move(callback).Run(projector::mojom::GetVideoResult::NewErrorMessage(
         base::StringPrintf("Failed to fetch DriveFS file with video file id=%s "
                            "and error code=%d",
-                           video_id.c_str(), path_or_error->get_error()));
+                           video_id.c_str(), path_or_error->get_error())));
     return;
   }
 
   const base::FilePath& relative_drivefs_path = path_or_error->get_path();
   if (!relative_drivefs_path.MatchesExtension(kProjectorMediaFileExtension)) {
-    std::move(callback).Run(
-        /*video=*/nullptr,
+    std::move(callback).Run(projector::mojom::GetVideoResult::NewErrorMessage(
         base::StringPrintf("Failed to fetch video file with video file id=%s",
-                           video_id.c_str()));
+                           video_id.c_str())));
     return;
   }
 
@@ -187,7 +184,7 @@ void ScreencastManager::OnVideoFilePathLocated(
   // validation.
   // 2. If the duration is valid, trigger LaunchProjectorAppWithFiles().
   // 3. Trigger `callback`.
-  auto video = std::make_unique<ProjectorScreencastVideo>();
+  auto video = projector::mojom::VideoInfo::New();
   video->file_id = video_id;
   video_metadata_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&GetVideoMetadata, video_path, std::move(video),

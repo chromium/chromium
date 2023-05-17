@@ -3,9 +3,6 @@
 // found in the LICENSE file.
 
 import {PostMessageAPIClient} from 'chrome://resources/ash/common/post_message_api/post_message_api_client.js';
-import {RequestHandler} from 'chrome://resources/ash/common/post_message_api/post_message_api_request_handler.js';
-
-import {ProjectorBrowserProxy, ProjectorBrowserProxyImpl} from './projector_browser_proxy.js';
 
 const TARGET_URL = 'chrome-untrusted://projector/';
 
@@ -31,30 +28,6 @@ export class UntrustedAppClient extends PostMessageAPIClient {
 }
 
 /**
- * Class that implements the RequestHandler inside the Projector trusted scheme
- * for the Projector App.
- */
-export class TrustedAppRequestHandler extends RequestHandler {
-  /*
-   * @param {!Element} iframeElement The <iframe> element to listen to as a
-   *     client.
-   * @param {ProjectorBrowserProxy} browserProxy The browser proxy that will be
-   *     used to handle the messages.
-   */
-  constructor(iframeElement, browserProxy) {
-    super(iframeElement, TARGET_URL, TARGET_URL);
-    this.browserProxy_ = browserProxy;
-
-    this.registerMethod('getVideo', (args) => {
-      if (!args || args.length != 2) {
-        return Promise.reject('Incorrect args for getVideo');
-      }
-      return this.browserProxy_.getVideo(args[0], args[1]);
-    });
-  }
-}
-
-/**
  * This is a class that is used to setup the duplex communication
  * channels between this origin, chrome://projector/* and the iframe embedded
  * inside the document.
@@ -73,9 +46,6 @@ export class AppTrustedCommFactory {
 
     AppTrustedCommFactory.client_ =
         new UntrustedAppClient(iframeElement.contentWindow);
-
-    AppTrustedCommFactory.requestHandler_ = new TrustedAppRequestHandler(
-        iframeElement, ProjectorBrowserProxyImpl.getInstance());
   }
 
   /**

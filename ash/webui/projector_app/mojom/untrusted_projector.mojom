@@ -71,6 +71,14 @@ interface UntrustedProjectorPageHandler {
   // secondary accounts) in the current session. The list of accounts will be
   // used in the account picker in the SWA.
   GetAccounts() => (array<Account> accounts);
+
+  // Requested by the Projector SWA to fetch a single video from DriveFS.
+  // Launches the given DriveFS video file with `video_file_id` into the
+  // Projector app. The `resource_key` is an additional security token needed to
+  // gain access to link-shared files. Since the `resource_key` is currently
+  // only used by Googlers, the `resource_key` might be empty.
+  GetVideo(string video_file_id, string? resource_key) =>
+    (GetVideoResult result);
 };
 
 // Implemented in Javascript to handle requests from the browser process.

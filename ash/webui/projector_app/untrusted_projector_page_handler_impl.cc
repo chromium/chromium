@@ -226,6 +226,22 @@ void UntrustedProjectorPageHandlerImpl::GetAccounts(
   std::move(callback).Run(std::move(mojo_accounts));
 }
 
+void UntrustedProjectorPageHandlerImpl::GetVideo(
+    const std::string& video_file_id,
+    const absl::optional<std::string>& resource_key,
+    GetVideoCallback callback) {
+  ProjectorAppClient::Get()->GetVideo(
+      video_file_id, resource_key,
+      base::BindOnce(&UntrustedProjectorPageHandlerImpl::OnVideoLocated,
+                     GetWeakPtr(), std::move(callback)));
+}
+
+void UntrustedProjectorPageHandlerImpl::OnVideoLocated(
+    projector::mojom::UntrustedProjectorPageHandler::GetVideoCallback callback,
+    projector::mojom::GetVideoResultPtr result) {
+  std::move(callback).Run(std::move(result));
+}
+
 base::WeakPtr<UntrustedProjectorPageHandlerImpl>
 UntrustedProjectorPageHandlerImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

@@ -7,13 +7,14 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/buildflags.h"
 #include "ash/webui/projector_app/projector_app_client.h"
-#include "ash/webui/projector_app/projector_screencast.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "ash/webui/projector_app/public/mojom/projector_types.mojom.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/webui/web_applications/test/sandboxed_web_ui_test_base.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
@@ -48,7 +49,7 @@ constexpr char kTestFileContents[] = "This is some test content.";
 
 // Name and duration of a real video file located at //media/test/data.
 constexpr char kTestVideoFile[] = "tulip2.webm";
-constexpr char kTestVideoDurationMilliesecond[] = "16682";
+constexpr double kTestVideoDurationMillisecond = 16682;
 
 #if !BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)
 
@@ -67,7 +68,8 @@ void VerifyResponse(const content::EvalJsResult& result) {
   EXPECT_EQ(src_url->rfind("blob:chrome-untrusted://projector/", 0), 0u);
   const std::string* duration_millis = dict.FindString("durationMillis");
   ASSERT_TRUE(duration_millis);
-  EXPECT_EQ(*duration_millis, kTestVideoDurationMilliesecond);
+  EXPECT_EQ(*duration_millis,
+            base::NumberToString(kTestVideoDurationMillisecond));
 }
 
 #endif  // !BUILDFLAG(ENABLE_CROS_PROJECTOR_APP)
@@ -212,9 +214,8 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTest, NoDriveFsMountPoint) {
   ProjectorAppClient::Get()->GetVideo(
       kVideoFileId, /*resource_key=*/"",
       base::BindLambdaForTesting(
-          [&run_loop](std::unique_ptr<ProjectorScreencastVideo> video,
-                      const std::string& error_message) {
-            EXPECT_EQ(error_message,
+          [&run_loop](ash::projector::mojom::GetVideoResultPtr result) {
+            EXPECT_EQ(result->get_error_message(),
                       base::StringPrintf(
                           "Failed to find DriveFS path with video file id=%s",
                           kVideoFileId));
@@ -232,10 +233,9 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, FileNotFound) {
   ProjectorAppClient::Get()->GetVideo(
       kVideoFileId, kResourceKey,
       base::BindLambdaForTesting(
-          [&run_loop](std::unique_ptr<ProjectorScreencastVideo> video,
-                      const std::string& error_message) {
+          [&run_loop](ash::projector::mojom::GetVideoResultPtr result) {
             EXPECT_EQ(
-                error_message,
+                result->get_error_message(),
                 base::StringPrintf("Failed to fetch DriveFS file with video "
                                    "file id=%s and error code=%d",
                                    kVideoFileId, drive::FILE_ERROR_NOT_FOUND));
@@ -255,9 +255,8 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, NotAVideo) {
   ProjectorAppClient::Get()->GetVideo(
       kVideoFileId, /*resource_key=*/"",
       base::BindLambdaForTesting(
-          [&run_loop](std::unique_ptr<ProjectorScreencastVideo> video,
-                      const std::string& error_message) {
-            EXPECT_EQ(error_message,
+          [&run_loop](ash::projector::mojom::GetVideoResultPtr result) {
+            EXPECT_EQ(result->get_error_message(),
                       base::StringPrintf(
                           "Failed to fetch video file with video file id=%s",
                           kVideoFileId));
@@ -279,11 +278,10 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs, GetVideoSuccess) {
   ProjectorAppClient::Get()->GetVideo(
       kVideoFileId, kResourceKey,
       base::BindLambdaForTesting(
-          [&](std::unique_ptr<ProjectorScreencastVideo> video,
-              const std::string& error_message) {
+          [&](ash::projector::mojom::GetVideoResultPtr result) {
+            const auto& video = result->get_video();
             EXPECT_EQ(video->file_id, kVideoFileId);
-            EXPECT_EQ(video->duration_millis, kTestVideoDurationMilliesecond);
-            EXPECT_TRUE(error_message.empty());
+            EXPECT_EQ(video->duration_millis, kTestVideoDurationMillisecond);
 
             // Simulates both Projector test files and another unrelated file
             // are syncing.:
@@ -319,9 +317,8 @@ IN_PROC_BROWSER_TEST_P(ScreencastManagerTestWithDriveFs,
   ProjectorAppClient::Get()->GetVideo(
       kVideoFileId, kResourceKey,
       base::BindLambdaForTesting(
-          [&](std::unique_ptr<ProjectorScreencastVideo> video,
-              const std::string& error_message) {
-            EXPECT_EQ(error_message,
+          [&](ash::projector::mojom::GetVideoResultPtr result) {
+            EXPECT_EQ(result->get_error_message(),
                       base::StringPrintf(
                           "Media might be malformed with video file id=%s",
                           kVideoFileId));

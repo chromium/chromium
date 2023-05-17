@@ -8,6 +8,7 @@
 #include <set>
 
 #include "ash/webui/projector_app/pending_screencast.h"
+#include "ash/webui/projector_app/public/mojom/projector_types.mojom.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/observer_list_types.h"
@@ -28,7 +29,6 @@ namespace ash {
 
 class UntrustedAnnotatorPageHandlerImpl;
 struct AnnotatorTool;
-struct ProjectorScreencastVideo;
 struct NewScreencastPrecondition;
 
 // Defines interface to access Browser side functionalities for the
@@ -37,8 +37,7 @@ class ProjectorAppClient {
  public:
   // The callback used by the GetVideo() API.
   using OnGetVideoCallback =
-      base::OnceCallback<void(std::unique_ptr<ProjectorScreencastVideo> video,
-                              const std::string& error_message)>;
+      base::OnceCallback<void(projector::mojom::GetVideoResultPtr result)>;
 
   // Interface for observing events on the ProjectorAppClient.
   class Observer : public base::CheckedObserver {
@@ -113,7 +112,7 @@ class ProjectorAppClient {
   // gain access to link-shared files. Since the `resource_key` is currently
   // only used by Googlers, the `resource_key` might be empty.
   virtual void GetVideo(const std::string& video_file_id,
-                        const std::string& resource_key,
+                        const absl::optional<std::string>& resource_key,
                         OnGetVideoCallback callback) const = 0;
 
   // Registers the AnnotatorPageHandlerImpl that is owned by the WebUI that

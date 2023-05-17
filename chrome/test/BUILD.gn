@@ -7846,6 +7846,7 @@ test("unit_tests") {
       "//ash/webui/personalization_app/mojom:mojom",
       "//ash/webui/projector_app:test_support",
       "//ash/webui/projector_app/public/cpp",
+      "//ash/webui/projector_app/public/mojom:projector_mojo_bindings",
       "//ash/webui/scanning",
       "//chrome/browser/apps/almanac_api_client:unit_tests",
       "//chrome/browser/apps/app_deduplication_service/proto",

@@ -150,7 +150,7 @@ void ProjectorAppClientImpl::OpenFeedbackDialog() const {
 
 void ProjectorAppClientImpl::GetVideo(
     const std::string& video_file_id,
-    const std::string& resource_key,
+    const absl::optional<std::string>& resource_key,
     ash::ProjectorAppClient::OnGetVideoCallback callback) const {
   screencast_manager_.GetVideo(video_file_id, resource_key,
                                std::move(callback));

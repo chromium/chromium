@@ -12,7 +12,6 @@ js_library("trusted_app") {
   sources = [
     "embedder.js",
     "launch.js",
-    "projector_browser_proxy.js",
     "trusted_app_comm_factory.js",
   ]
   deps = [
@@ -32,7 +31,6 @@ generate_grd("build_trusted_grd") {
   input_files = [
     "launch.js",
     "trusted_app_comm_factory.js",
-    "projector_browser_proxy.js",
     "embedder.html",
     "embedder.css",
     "embedder.js",

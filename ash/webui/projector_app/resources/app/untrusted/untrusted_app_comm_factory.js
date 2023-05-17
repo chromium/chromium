@@ -192,15 +192,16 @@ const CLIENT_DELEGATE = {
    */
   async getVideo(videoFileId, resourceKey) {
     try {
-      const video =
-          await AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-              'getVideo', [videoFileId, resourceKey]);
+      const video = await browserProxy.getVideo(videoFileId, resourceKey);
       const videoFile = await getOrCreateLoadFilePromise(videoFileId).promise;
-      // The streaming url must be generated in the untrusted context.
-      // The corresponding cleanup call to URL.revokeObjectURL() happens in
-      // ProjectorViewer::maybeResetUI() in Google3.
-      video.srcUrl = URL.createObjectURL(videoFile);
-      return video;
+      return {
+        fileId: videoFileId,
+        durationMillis: video.durationMillis.toString(),
+        // The streaming url must be generated in the untrusted context.
+        // The corresponding cleanup call to URL.revokeObjectURL() happens in
+        // ProjectorViewer::maybeResetUI() in Google3.
+        srcUrl: URL.createObjectURL(videoFile),
+      };
     } catch (e) {
       return Promise.reject(e);
     } finally {

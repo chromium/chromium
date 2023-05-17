@@ -71,8 +71,14 @@ class UntrustedProjectorPageHandlerImpl
       const absl::optional<std::string>& account_email,
       SendXhrCallback callback) override;
   void GetAccounts(GetAccountsCallback callback) override;
+  void GetVideo(const std::string& video_file_id,
+                const absl::optional<std::string>& resource_key,
+                GetVideoCallback callback) override;
 
  protected:
+  void OnVideoLocated(GetVideoCallback callback,
+                      projector::mojom::GetVideoResultPtr result);
+
   base::WeakPtr<UntrustedProjectorPageHandlerImpl> GetWeakPtr();
 
   // Called when the XHR request is completed. Runs the callback with the

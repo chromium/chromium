@@ -96,3 +96,16 @@ struct Account {
     // Whether the account is the primary user account.
     bool is_primary_user;
 };
+
+// Video information sent from the browser process to JS webui.
+struct VideoInfo {
+    double duration_millis;
+    string file_id;
+};
+
+// Get video result sent from the browser process to JS webui.
+// The result returns either an error message or video result.
+union GetVideoResult {
+    VideoInfo video;
+    string error_message;
+};
