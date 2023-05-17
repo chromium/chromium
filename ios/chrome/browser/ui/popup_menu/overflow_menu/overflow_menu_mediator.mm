@@ -62,6 +62,7 @@
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ui/popup_menu//overflow_menu/overflow_menu_orderer.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/destination_usage_history.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
@@ -148,59 +149,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                           handler:handler];
 }
 
-// Sorts badged destinations using a local heuristic when the usage history
-// isn't available (e.g. when on an incognito tab). Destionations that need
-// highlight and that are at a position of kNewDestinationsInsertionIndex
-// or worst are re-inserted at kNewDestinationsInsertionIndex. Destionations
-// that are at a better position than kNewDestinationsInsertionIndex aren't
-// moved.
-NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
-    NSArray<OverflowMenuDestination*>* carouselDestinations) {
-  NSMutableSet<OverflowMenuDestination*>* destinationsToSort =
-      [NSMutableSet setWithArray:carouselDestinations];
-  NSMutableArray<OverflowMenuDestination*>* sortedDestinations =
-      [NSMutableArray array];
-
-  // Keep the ranking of badged destination as is up to
-  // kNewDestinationsInsertionIndex and keep the ranking as is for all
-  // destinations without a badge.
-  for (OverflowMenuDestination* destination in carouselDestinations) {
-    const bool dontSort =
-        [sortedDestinations count] < kNewDestinationsInsertionIndex ||
-        destination.badge == BadgeTypeNone;
-    if (dontSort) {
-      [destinationsToSort removeObject:destination];
-      [sortedDestinations addObject:destination];
-    }
-  }
-
-  // Put the destinations with non-error badges in the middle.
-  for (OverflowMenuDestination* destination in carouselDestinations) {
-    if ([destinationsToSort containsObject:destination] &&
-        destination.badge != BadgeTypeError) {
-      [destinationsToSort removeObject:destination];
-      [sortedDestinations insertObject:destination
-                               atIndex:kNewDestinationsInsertionIndex];
-    }
-  }
-
-  // Put the destinations with error badges in the middle before the
-  // destinations with non-error badges.
-  for (OverflowMenuDestination* destination in carouselDestinations) {
-    if ([destinationsToSort containsObject:destination]) {
-      [destinationsToSort removeObject:destination];
-      [sortedDestinations insertObject:destination
-                               atIndex:kNewDestinationsInsertionIndex];
-    }
-  }
-
-  // Verify that all the carousel destinations are in the sorted result.
-  DCHECK_EQ([destinationsToSort count], 0u);
-  DCHECK_EQ([sortedDestinations count], [carouselDestinations count]);
-
-  return sortedDestinations;
-}
-
 }  // namespace
 
 @interface OverflowMenuMediator () <BookmarkModelBridgeObserver,
@@ -229,9 +177,8 @@ NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
   std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
 }
 
-// The destination usage history, which (1) tracks which items from the carousel
-// are clicked, and (2) suggests a sorted order for carousel menu items.
-@property(nonatomic, strong) DestinationUsageHistory* destinationUsageHistory;
+// The Orderer to control the order of the overflow menu.
+@property(nonatomic, strong) OverflowMenuOrderer* menuOrderer;
 
 // The current web state.
 @property(nonatomic, assign) web::WebState* webState;
@@ -336,8 +283,8 @@ NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
 
   self.followBrowserAgent = nullptr;
 
-  [self.destinationUsageHistory stop];
-  self.destinationUsageHistory = nil;
+  [self.menuOrderer disconnect];
+  self.menuOrderer = nil;
 
   self.webState = nullptr;
   self.webStateList = nullptr;
@@ -361,7 +308,16 @@ NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
 
 - (void)setIsIncognito:(BOOL)isIncognito {
   _isIncognito = isIncognito;
+  if (!self.menuOrderer) {
+    self.menuOrderer =
+        [[OverflowMenuOrderer alloc] initWithIsIncognito:self.isIncognito];
+  }
   [self updateModel];
+}
+
+- (void)setVisibleDestinationsCount:(int)visibleDestinationsCount {
+  _visibleDestinationsCount = visibleDestinationsCount;
+  self.menuOrderer.visibleDestinationsCount = self.visibleDestinationsCount;
 }
 
 - (void)setWebState:(web::WebState*)webState {
@@ -438,13 +394,7 @@ NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
 - (void)setLocalStatePrefs:(PrefService*)localStatePrefs {
   _localStatePrefs = localStatePrefs;
 
-  if (!self.isIncognito) {
-    self.destinationUsageHistory =
-        [[DestinationUsageHistory alloc] initWithPrefService:localStatePrefs];
-    self.destinationUsageHistory.visibleDestinationsCount =
-        self.visibleDestinationsCount;
-    [self.destinationUsageHistory start];
-  }
+  self.menuOrderer.localStatePrefs = self.localStatePrefs;
 }
 
 - (void)setEngagementTracker:(feature_engagement::Tracker*)engagementTracker {
@@ -800,7 +750,7 @@ NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
   auto handlerWithMetrics = ^{
     overflow_menu::RecordUmaActionForDestination(destination);
 
-    [weakSelf.destinationUsageHistory recordClickForDestination:destination];
+    [weakSelf.menuOrderer recordClickForDestination:destination];
 
     handler();
   };
@@ -936,12 +886,8 @@ NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
 
   NSArray<OverflowMenuDestination*>* baseDestinations = [self baseDestinations];
 
-  if (self.destinationUsageHistory) {
-    baseDestinations = [self.destinationUsageHistory
-        sortedDestinationsFromCarouselDestinations:baseDestinations];
-  } else {
-    baseDestinations = SortBadgedDestinations(baseDestinations);
-  }
+  baseDestinations = [self.menuOrderer
+      sortedDestinationsFromCarouselDestinations:baseDestinations];
 
   if (IsSpotlightDebuggingEnabled()) {
     baseDestinations =
