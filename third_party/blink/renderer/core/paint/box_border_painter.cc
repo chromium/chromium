@@ -367,11 +367,11 @@ struct OpacityGroup {
   DISALLOW_NEW();
 
  public:
-  explicit OpacityGroup(unsigned alpha) : edge_flags(0), alpha(alpha) {}
+  explicit OpacityGroup(float alpha) : edge_flags(0), alpha(alpha) {}
 
   Vector<BoxSide, 4> sides;
   BorderEdgeFlags edge_flags;
-  unsigned alpha;
+  float alpha;
 };
 
 void ClipPolygon(GraphicsContext& context,
@@ -839,8 +839,8 @@ struct BoxBorderPainter::ComplexBorderInfo {
                 const BorderEdge& edge_a = border_painter.Edge(a);
                 const BorderEdge& edge_b = border_painter.Edge(b);
 
-                const unsigned alpha_a = edge_a.GetColor().AlphaAsInteger();
-                const unsigned alpha_b = edge_b.GetColor().AlphaAsInteger();
+                const float alpha_a = edge_a.GetColor().Alpha();
+                const float alpha_b = edge_b.GetColor().Alpha();
                 if (alpha_a != alpha_b)
                   return alpha_a < alpha_b;
 
@@ -882,8 +882,7 @@ struct BoxBorderPainter::ComplexBorderInfo {
       // is clearly un-tested and caused some serious regressions when touched.
       // See crbug.com/1445288
       if (edge_alpha != current_alpha) {
-        opacity_groups.push_back(
-            OpacityGroup(edge.GetColor().AlphaAsInteger()));
+        opacity_groups.push_back(OpacityGroup(edge_alpha));
         current_alpha = edge_alpha;
       }
 
@@ -1189,26 +1188,25 @@ BorderEdgeFlags BoxBorderPainter::PaintOpacityGroup(
 
   // Adjust this group's paint opacity to account for ancestor transparency
   // layers (needed in case we avoid creating a layer below).
-  unsigned paint_alpha = group.alpha / effective_opacity;
-  DCHECK_LE(paint_alpha, 255u);
+  float paint_alpha = group.alpha / effective_opacity;
+  DCHECK_LE(paint_alpha, 1.0f);
 
   // For the last (bottom) group, we can skip the layer even in the presence of
   // opacity iff it contains no adjecent edges (no in-group overdraw
   // possibility).
   bool needs_layer =
-      group.alpha != 255 && (IncludesAdjacentEdges(group.edge_flags) ||
-                             (index + 1 < border_info.opacity_groups.size()));
+      group.alpha != 1.0f && (IncludesAdjacentEdges(group.edge_flags) ||
+                              (index + 1 < border_info.opacity_groups.size()));
 
   if (needs_layer) {
-    const float group_opacity = static_cast<float>(group.alpha) / 255;
-    DCHECK_LT(group_opacity, effective_opacity);
+    DCHECK_LT(group.alpha, effective_opacity);
 
-    context_.BeginLayer(group_opacity / effective_opacity);
-    effective_opacity = group_opacity;
+    context_.BeginLayer(group.alpha / effective_opacity);
+    effective_opacity = group.alpha;
 
     // Group opacity is applied via a layer => we draw the members using opaque
     // paint.
-    paint_alpha = 255;
+    paint_alpha = 1.0f;
   }
 
   // Recursion may seem unpalatable here, but
@@ -1233,12 +1231,13 @@ BorderEdgeFlags BoxBorderPainter::PaintOpacityGroup(
 
 void BoxBorderPainter::PaintSide(const ComplexBorderInfo& border_info,
                                  BoxSide side,
-                                 unsigned alpha,
+                                 float alpha,
                                  BorderEdgeFlags completed_edges) const {
   const BorderEdge& edge = Edge(side);
   DCHECK(edge.ShouldRender());
-  const Color color(edge.GetColor().Red(), edge.GetColor().Green(),
-                    edge.GetColor().Blue(), alpha);
+  const Color color = Color::FromColorSpace(
+      edge.GetColor().GetColorSpace(), edge.GetColor().Param0(),
+      edge.GetColor().Param1(), edge.GetColor().Param2(), alpha);
 
   gfx::Rect side_rect = gfx::ToRoundedRect(outer_.Rect());
   const Path* path = nullptr;
