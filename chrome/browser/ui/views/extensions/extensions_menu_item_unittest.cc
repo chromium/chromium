@@ -47,9 +47,6 @@ class ExtensionMenuItemViewTest : public ExtensionsToolbarUnitTest {
 void ExtensionMenuItemViewTest::SetUp() {
   ExtensionsToolbarUnitTest::SetUp();
 
-  // TODO(crbug.com/1263310): This widget only tests behavior of
-  // MenuItemType::kExtensions. Once MenuItemType::kSiteAccess is implemented,
-  // add a separate widget and test accordingly.
   widget_ = std::make_unique<views::Widget>();
   views::Widget::InitParams init_params(views::Widget::InitParams::TYPE_POPUP);
   init_params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
