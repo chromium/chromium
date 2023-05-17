@@ -502,6 +502,11 @@ void FederatedAuthRequestImpl::RequestToken(
     mojo::ReportBadMessage("idp_get_params_ptrs is empty.");
     return;
   }
+  if (!render_frame_host().GetPage().IsPrimary()) {
+    mojo::ReportBadMessage(
+        "FedCM should not be allowed in nested frame trees.");
+    return;
+  }
   // It should not be possible to receive multiple IDPs when the
   // `kFedCmMultipleIdentityProviders` flag is disabled. But such a message
   // could be received from a compromised renderer.
@@ -576,7 +581,8 @@ void FederatedAuthRequestImpl::RequestToken(
   }
 
   if (HasPendingRequest()) {
-    fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kTooManyRequests);
+    fedcm_metrics_->RecordRequestTokenStatus(TokenStatus::kTooManyRequests,
+                                             requirement);
     std::move(callback).Run(RequestTokenStatus::kErrorTooManyRequests,
                             absl::nullopt, "");
     return;
@@ -672,7 +678,7 @@ void FederatedAuthRequestImpl::RequestToken(
       if (ShouldFailBeforeFetchingAccounts(
               idp_ptr->get_federated()->config_url)) {
         CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                                 /*token_status=*/absl::nullopt,
+                                 TokenStatus::kSilentMediationFailure,
                                  /*should_delay_callback=*/false);
         return;
       }
@@ -702,6 +708,11 @@ void FederatedAuthRequestImpl::RequestUserInfo(
     // This could happen with a compromised renderer. Exit early such that we
     // don't proceed when the flag is off or crash the browser.
     std::move(callback).Run(RequestUserInfoStatus::kError, absl::nullopt);
+    return;
+  }
+  if (!render_frame_host().GetPage().IsPrimary()) {
+    mojo::ReportBadMessage(
+        "FedCM should not be allowed in nested frame trees.");
     return;
   }
 
@@ -1166,7 +1177,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       // 2. Not to show any UI to respect `mediation: silent`
       // TODO(crbug.com/1441436): validate the statement above with stakeholders
       CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                               /*token_status=*/absl::nullopt,
+                               TokenStatus::kSilentMediationFailure,
                                /*should_delay_callback=*/false);
       return;
     }
@@ -1267,7 +1278,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
   // TODO(crbug.com/1441436): validate the statement above with stakeholders
   if (mediation_requirement_ == MediationRequirement::kSilent) {
     CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                             /*token_status=*/absl::nullopt,
+                             TokenStatus::kSilentMediationFailure,
                              /*should_delay_callback=*/false);
     return;
   }
@@ -1775,8 +1786,10 @@ void FederatedAuthRequestImpl::CompleteRequest(
     return;
   }
 
-  if (token_status)
-    fedcm_metrics_->RecordRequestTokenStatus(*token_status);
+  if (token_status) {
+    fedcm_metrics_->RecordRequestTokenStatus(*token_status,
+                                             mediation_requirement_);
+  }
 
   if (!errors_logged_to_console_ &&
       result != FederatedAuthRequestResult::kSuccess) {
@@ -2086,6 +2099,23 @@ void FederatedAuthRequestImpl::SetRequiresUserMediation(
 void FederatedAuthRequestImpl::PreventSilentAccess(
     PreventSilentAccessCallback callback) {
   SetRequiresUserMediation(true);
+  if (permission_delegate_->HasSharingPermission(GetEmbeddingOrigin())) {
+    PreventSilentAccessFrameType frame_type =
+        PreventSilentAccessFrameType::kMainFrame;
+    RenderFrameHost* main_rfh = render_frame_host().GetMainFrame();
+    if (main_rfh != &render_frame_host()) {
+      std::string site =
+          FormatUrlWithDomain(origin().GetURL(), /*for_display=*/false);
+      std::string embedder = FormatUrlWithDomain(GetEmbeddingOrigin().GetURL(),
+                                                 /*for_display=*/false);
+      if (site == embedder) {
+        frame_type = PreventSilentAccessFrameType::kSameSiteIframe;
+      } else {
+        frame_type = PreventSilentAccessFrameType::kCrossSiteIframe;
+      }
+    }
+    RecordPreventSilentAccess(render_frame_host(), frame_type);
+  }
 
   // Send acknowledge response back.
   std::move(callback).Run();

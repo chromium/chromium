@@ -70,6 +70,8 @@ class ShellFederatedPermissionContext
       const url::Origin& relying_party_embedder,
       const url::Origin& identity_provider,
       const absl::optional<std::string>& account_id) override;
+  bool HasSharingPermission(
+      const url::Origin& relying_party_requester) override;
   void GrantSharingPermission(const url::Origin& relying_party_requester,
                               const url::Origin& relying_party_embedder,
                               const url::Origin& identity_provider,

@@ -1143,6 +1143,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.PreventSilentAccessFrameType"
+    enum="FedCmPreventSilentAccessFrameType" expires_after="2023-11-10">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the type of frame that invokes preventSilentAccess(). Records only
+    when there is an existing FedCM sharing permission on the main frame, and
+    some frame in the page invokes the preventSilentAccess() JavaScript call.
+    Possible values are: main frame, same-site iframe, and cross-site iframe,
+    where the site of the iframe is compared with the site of the main frame.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.SignInStatusSetToSignout.NetError"
     enum="NetErrorCodes" expires_after="2023-11-04">
   <owner>npm@chromium.org</owner>
@@ -1191,6 +1204,17 @@ chromium-metrics-reviews@google.com.
     information returned by the accounts endpoint. Recorded at most once per
     navigator.credentials.get() call after sending the request to the accounts
     endpoint.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.Status.MediationRequirement"
+    enum="CredentialManagerMediationRequirement" expires_after="2023-11-10">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the mediation requirement of a request token call to the FedCM API.
+    Records a sample when the FedCM call is completed, i.e. at the same time as
+    Blink.FedCm.Status.RequestIdToken.
   </summary>
 </histogram>
 

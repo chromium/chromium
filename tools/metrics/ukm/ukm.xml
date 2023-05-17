@@ -3822,6 +3822,24 @@ be describing additional metrics about the same event.
       which helps group UKM events by the session id.
     </summary>
   </metric>
+  <metric name="PreventSilentAccessFrameType"
+      enum="FedCmPreventSilentAccessFrameType">
+    <summary>
+      Records the type of frame that invokes preventSilentAccess(). Records only
+      when there is an existing FedCM sharing permission on the main frame, and
+      some frame in the page invokes the preventSilentAccess() JavaScript call.
+      Possible values are: main frame, same-site iframe, and cros-site iframe,
+      where the site of the iframe is compared with the site of the main frame.
+    </summary>
+  </metric>
+  <metric name="Status.MediationRequirement"
+      enum="CredentialManagerMediationRequirement">
+    <summary>
+      Records the the mediation requirement of a request token call to the FedCM
+      API. Records a sample when the call is completed, i.e. at the same time as
+      Status.RequestIdToken.
+    </summary>
+  </metric>
   <metric name="Status.RequestIdToken" enum="FedCmRequestIdTokenStatus">
     <summary>
       Records the status of a request id token call to the FedCM API.
@@ -3883,6 +3901,14 @@ be describing additional metrics about the same event.
       Records the session ID associated to the FedCM call for which this event
       is recording metrics. Each FedCM call gets a random integer session id,
       which helps group UKM events by the session id.
+    </summary>
+  </metric>
+  <metric name="Status.MediationRequirement"
+      enum="CredentialManagerMediationRequirement">
+    <summary>
+      Records the the mediation requirement of a request token call to the FedCM
+      API. Records a sample when the call is completed, i.e. at the same time as
+      Status.RequestIdToken.
     </summary>
   </metric>
   <metric name="Status.RequestIdToken" enum="FedCmRequestIdTokenStatus">

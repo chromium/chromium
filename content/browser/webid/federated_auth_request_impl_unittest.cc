@@ -45,7 +45,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -973,13 +972,20 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
   ukm::TestAutoSetUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
 
-  void ExpectRequestTokenStatusUKM(TokenStatus status) {
-    ExpectRequestTokenStatusUKMInternal(status, FedCmEntry::kEntryName);
-    ExpectRequestTokenStatusUKMInternal(status, FedCmIdpEntry::kEntryName);
+  void ExpectStatusMetrics(
+      TokenStatus status,
+      MediationRequirement requirement = MediationRequirement::kOptional) {
+    histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
+                                         status, 1);
+    histogram_tester_.ExpectUniqueSample(
+        "Blink.FedCm.Status.MediationRequirement", requirement, 1);
+    ExpectStatusUKMInternal(status, requirement, FedCmEntry::kEntryName);
+    ExpectStatusUKMInternal(status, requirement, FedCmIdpEntry::kEntryName);
   }
 
-  void ExpectRequestTokenStatusUKMInternal(TokenStatus status,
-                                           const char* entry_name) {
+  void ExpectStatusUKMInternal(TokenStatus status,
+                               MediationRequirement requirement,
+                               const char* entry_name) {
     auto entries = ukm_recorder()->GetEntriesByName(entry_name);
 
     ASSERT_FALSE(entries.empty())
@@ -1340,9 +1346,7 @@ TEST_F(FederatedAuthRequestImplTest, ProviderNotTrustworthy) {
   RunAuthTest(request, expectations, configuration);
   EXPECT_FALSE(DidFetchAnyEndpoint());
 
-  histogram_tester_.ExpectUniqueSample(
-      "Blink.FedCm.Status.RequestIdToken",
-      TokenStatus::kIdpNotPotentiallyTrustworthy, 1);
+  ExpectStatusMetrics(TokenStatus::kIdpNotPotentiallyTrustworthy);
 }
 
 // Test that request fails if accounts endpoint cannot be reached.
@@ -1750,6 +1754,7 @@ TEST_F(FederatedAuthRequestImplTest,
   ASSERT_EQ(displayed_accounts().size(), 1u);
   EXPECT_EQ(CountNumLoginStateIsSignin(), 1);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
+  ExpectStatusMetrics(TokenStatus::kSuccess, MediationRequirement::kRequired);
 }
 
 // Test that auto re-authn with multiple accounts and a single returning user
@@ -1998,6 +2003,9 @@ TEST_F(FederatedAuthRequestImplTest,
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 
   EXPECT_FALSE(DidFetchAnyEndpoint());
+
+  ExpectStatusMetrics(TokenStatus::kSilentMediationFailure,
+                      MediationRequirement::kSilent);
 }
 
 // Test that no network request is sent if `mediation: silent` is used and auto
@@ -2033,6 +2041,9 @@ TEST_F(FederatedAuthRequestImplTest,
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 
   EXPECT_FALSE(DidFetchAnyEndpoint());
+
+  ExpectStatusMetrics(TokenStatus::kSilentMediationFailure,
+                      MediationRequirement::kSilent);
 }
 
 // Test that no network request is sent if `mediation: silent` is used and user
@@ -2067,6 +2078,9 @@ TEST_F(FederatedAuthRequestImplTest,
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 
   EXPECT_FALSE(DidFetchAnyEndpoint());
+
+  ExpectStatusMetrics(TokenStatus::kSilentMediationFailure,
+                      MediationRequirement::kSilent);
 }
 
 // Test that no network request is sent if `mediation: silent` is used and user
@@ -2101,6 +2115,9 @@ TEST_F(FederatedAuthRequestImplTest,
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 
   EXPECT_FALSE(DidFetchAnyEndpoint());
+
+  ExpectStatusMetrics(TokenStatus::kSilentMediationFailure,
+                      MediationRequirement::kSilent);
 }
 
 // Test `mediation: silent` could fail silently after fetching accounts
@@ -2166,6 +2183,9 @@ TEST_F(FederatedAuthRequestImplTest,
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 
   EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
+
+  ExpectStatusMetrics(TokenStatus::kSilentMediationFailure,
+                      MediationRequirement::kSilent);
 }
 
 // Test that `mediation: required` sets the sign-in mode to explicit even though
@@ -2192,6 +2212,8 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnMediationRequired) {
   ASSERT_EQ(displayed_accounts().size(), 1u);
   EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignIn);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
+
+  ExpectStatusMetrics(TokenStatus::kSuccess, MediationRequirement::kRequired);
 }
 
 TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
@@ -2219,9 +2241,6 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 1);
 
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
-                                       TokenStatus::kSuccess, 1);
-
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.IsSignInUser", 1, 1);
 
   ExpectTimingUKM("Timing.ShowAccountsDialog");
@@ -2230,7 +2249,7 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   ExpectTimingUKM("Timing.TurnaroundTime");
   ExpectNoTimingUKM("Timing.CancelOnDialog");
 
-  ExpectRequestTokenStatusUKM(TokenStatus::kSuccess);
+  ExpectStatusMetrics(TokenStatus::kSuccess);
   CheckAllFedCmSessionIDs();
 }
 
@@ -2265,16 +2284,13 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForUIExplicitlyDismissed) {
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 0);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 0);
 
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
-                                       TokenStatus::kShouldEmbargo, 1);
-
   ExpectTimingUKM("Timing.ShowAccountsDialog");
   ExpectTimingUKM("Timing.CancelOnDialog");
   ExpectNoTimingUKM("Timing.ContinueOnDialog");
   ExpectNoTimingUKM("Timing.IdTokenResponse");
   ExpectNoTimingUKM("Timing.TurnaroundTime");
 
-  ExpectRequestTokenStatusUKM(TokenStatus::kShouldEmbargo);
+  ExpectStatusMetrics(TokenStatus::kShouldEmbargo);
   CheckAllFedCmSessionIDs();
 }
 
@@ -2383,10 +2399,7 @@ TEST_F(FederatedAuthRequestImplTest, DisabledWhenThirdPartyCookiesBlocked) {
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
   EXPECT_FALSE(DidFetchAnyEndpoint());
 
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
-                                       TokenStatus::kThirdPartyCookiesBlocked,
-                                       1);
-  ExpectRequestTokenStatusUKM(TokenStatus::kThirdPartyCookiesBlocked);
+  ExpectStatusMetrics(TokenStatus::kThirdPartyCookiesBlocked);
   CheckAllFedCmSessionIDs();
 }
 
@@ -2402,9 +2415,7 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForFeatureIsDisabled) {
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
   EXPECT_FALSE(DidFetchAnyEndpoint());
 
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
-                                       TokenStatus::kDisabledInFlags, 1);
-  ExpectRequestTokenStatusUKM(TokenStatus::kDisabledInFlags);
+  ExpectStatusMetrics(TokenStatus::kDisabledInFlags);
   CheckAllFedCmSessionIDs();
 }
 
@@ -2422,9 +2433,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // If double counted, these samples would not be unique so the following
   // checks will fail.
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
-                                       TokenStatus::kDisabledInFlags, 1);
-  ExpectRequestTokenStatusUKM(TokenStatus::kDisabledInFlags);
+  ExpectStatusMetrics(TokenStatus::kDisabledInFlags);
   CheckAllFedCmSessionIDs();
 }
 
@@ -2442,9 +2451,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // If double counted, these samples would not be unique so the following
   // checks will fail.
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
-                                       TokenStatus::kDisabledInFlags, 1);
-  ExpectRequestTokenStatusUKM(TokenStatus::kDisabledInFlags);
+  ExpectStatusMetrics(TokenStatus::kDisabledInFlags);
   CheckAllFedCmSessionIDs();
 }
 
@@ -2739,15 +2746,12 @@ TEST_F(FederatedAuthRequestImplTest, ApiDisabledAfterAccountsDialogShown) {
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 0);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 0);
 
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
-                                       TokenStatus::kDisabledInSettings, 1);
-
   ExpectTimingUKM("Timing.ShowAccountsDialog");
   ExpectNoTimingUKM("Timing.ContinueOnDialog");
   ExpectNoTimingUKM("Timing.IdTokenResponse");
   ExpectNoTimingUKM("Timing.TurnaroundTime");
 
-  ExpectRequestTokenStatusUKM(TokenStatus::kDisabledInSettings);
+  ExpectStatusMetrics(TokenStatus::kDisabledInSettings);
   CheckAllFedCmSessionIDs();
 }
 
@@ -3851,11 +3855,7 @@ TEST_F(FederatedAuthRequestImplTest, WellKnownInvalidContentType) {
   EXPECT_FALSE(did_show_accounts_dialog());
   EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
 
-  histogram_tester_.ExpectUniqueSample(
-      "Blink.FedCm.Status.RequestIdToken",
-      TokenStatus::kWellKnownInvalidContentType, 1);
-
-  ExpectRequestTokenStatusUKM(TokenStatus::kWellKnownInvalidContentType);
+  ExpectStatusMetrics(TokenStatus::kWellKnownInvalidContentType);
   CheckAllFedCmSessionIDs();
 }
 
@@ -3878,11 +3878,7 @@ TEST_F(FederatedAuthRequestImplTest, ConfigInvalidContentType) {
   EXPECT_FALSE(did_show_accounts_dialog());
   EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
 
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
-                                       TokenStatus::kConfigInvalidContentType,
-                                       1);
-
-  ExpectRequestTokenStatusUKM(TokenStatus::kConfigInvalidContentType);
+  ExpectStatusMetrics(TokenStatus::kConfigInvalidContentType);
   CheckAllFedCmSessionIDs();
 }
 
@@ -3903,10 +3899,7 @@ TEST_F(FederatedAuthRequestImplTest, ClientMetadataInvalidContentType) {
   EXPECT_TRUE(did_show_accounts_dialog());
   EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
 
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
-                                       TokenStatus::kSuccess, 1);
-
-  ExpectRequestTokenStatusUKM(TokenStatus::kSuccess);
+  ExpectStatusMetrics(TokenStatus::kSuccess);
   CheckAllFedCmSessionIDs();
 }
 
@@ -3929,11 +3922,7 @@ TEST_F(FederatedAuthRequestImplTest, AccountsInvalidContentType) {
   EXPECT_FALSE(did_show_accounts_dialog());
   EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
 
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
-                                       TokenStatus::kAccountsInvalidContentType,
-                                       1);
-
-  ExpectRequestTokenStatusUKM(TokenStatus::kAccountsInvalidContentType);
+  ExpectStatusMetrics(TokenStatus::kAccountsInvalidContentType);
   CheckAllFedCmSessionIDs();
 }
 
@@ -3956,11 +3945,7 @@ TEST_F(FederatedAuthRequestImplTest, IdTokenInvalidContentType) {
   EXPECT_TRUE(did_show_accounts_dialog());
   EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
 
-  histogram_tester_.ExpectUniqueSample("Blink.FedCm.Status.RequestIdToken",
-                                       TokenStatus::kIdTokenInvalidContentType,
-                                       1);
-
-  ExpectRequestTokenStatusUKM(TokenStatus::kIdTokenInvalidContentType);
+  ExpectStatusMetrics(TokenStatus::kIdTokenInvalidContentType);
   CheckAllFedCmSessionIDs();
 }
 

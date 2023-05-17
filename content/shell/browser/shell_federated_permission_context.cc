@@ -130,6 +130,15 @@ bool ShellFederatedPermissionContext::HasSharingPermission(
                       }) != sharing_permissions_.end();
 }
 
+bool ShellFederatedPermissionContext::HasSharingPermission(
+    const url::Origin& relying_party_requester) {
+  return std::find_if(sharing_permissions_.begin(), sharing_permissions_.end(),
+                      [&](const auto& entry) {
+                        return relying_party_requester.Serialize() ==
+                               std::get<0>(entry);
+                      }) != sharing_permissions_.end();
+}
+
 void ShellFederatedPermissionContext::GrantSharingPermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,

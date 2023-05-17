@@ -10,12 +10,15 @@
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom.h"
 
 namespace base {
 class TimeDelta;
 }
 
 namespace content {
+
+using MediationRequirement = ::password_manager::CredentialMediationRequirement;
 
 // This enum describes the status of a request id token call to the FedCM API.
 enum class FedCmRequestIdTokenStatus {
@@ -60,8 +63,9 @@ enum class FedCmRequestIdTokenStatus {
   kConfigInvalidContentType,
   kAccountsInvalidContentType,
   kIdTokenInvalidContentType,
+  kSilentMediationFailure,
 
-  kMaxValue = kIdTokenInvalidContentType
+  kMaxValue = kSilentMediationFailure
 };
 
 // This enum describes whether user sign-in states between IDP and browser
@@ -92,6 +96,17 @@ enum class FedCmIdpSigninMatchStatus {
   kMismatchWithUnexpectedAccounts,
 
   kMaxValue = kMismatchWithUnexpectedAccounts
+};
+
+// This enum describes the type of frame that invokes preventSilentAccess.
+enum class PreventSilentAccessFrameType {
+  // Do not change the meaning or order of these values since they are being
+  // recorded in metrics and in sync with the counterpart in enums.xml.
+  kMainFrame,
+  kSameSiteIframe,
+  kCrossSiteIframe,
+
+  kMaxValue = kCrossSiteIframe
 };
 
 class CONTENT_EXPORT FedCmMetrics {
@@ -129,7 +144,8 @@ class CONTENT_EXPORT FedCmMetrics {
                                             base::TimeDelta turnaround_time);
 
   // Records the status of the |RequestToken| call.
-  void RecordRequestTokenStatus(FedCmRequestIdTokenStatus status);
+  void RecordRequestTokenStatus(FedCmRequestIdTokenStatus status,
+                                MediationRequirement requirement);
 
   // Records whether user sign-in states between IDP and browser match.
   void RecordSignInStateMatchStatus(FedCmSignInStateMatchStatus status);
@@ -185,6 +201,12 @@ class CONTENT_EXPORT FedCmMetrics {
   // Whether metrics recording is disabled for the request.
   bool is_disabled_{false};
 };
+
+// The following metric is recorded for UMA and UKM, but does not require an
+// existing FedCM call. Records metrics associated with a preventSilentAccess()
+// call from the given RenderFrameHost.
+void RecordPreventSilentAccess(RenderFrameHost& rfh,
+                               PreventSilentAccessFrameType frame_type);
 
 // The following are UMA-only recordings, hence do not need to be in the
 // FedCmMetrics class.

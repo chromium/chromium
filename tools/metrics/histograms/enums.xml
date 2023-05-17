@@ -22153,6 +22153,12 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
              autofill-assistant mode"/>
 </enum>
 
+<enum name="CredentialManagerMediationRequirement">
+  <int value="0" label="Optional"/>
+  <int value="1" label="Silent"/>
+  <int value="2" label="Required"/>
+</enum>
+
 <enum name="CredentialPhishedStatus">
   <int value="0" label="Marked as phished"/>
   <int value="1" label="Site marked as legitimate"/>
@@ -42691,6 +42697,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="7"
       label="Browser has signed-out IDP status, accounts endpoint returned
              accounts."/>
+</enum>
+
+<enum name="FedCmPreventSilentAccessFrameType">
+  <int value="0" label="Main frame"/>
+  <int value="1" label="Iframe which is same-site as main frame"/>
+  <int value="2" label="Iframe which is cross-site as main frame"/>
 </enum>
 
 <enum name="FedCmRequestIdTokenStatus">

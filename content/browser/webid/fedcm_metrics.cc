@@ -113,7 +113,8 @@ void FedCmMetrics::RecordTokenResponseAndTurnaroundTime(
                                 turnaround_time);
 }
 
-void FedCmMetrics::RecordRequestTokenStatus(FedCmRequestIdTokenStatus status) {
+void FedCmMetrics::RecordRequestTokenStatus(FedCmRequestIdTokenStatus status,
+                                            MediationRequirement requirement) {
   if (is_disabled_)
     return;
   // If the request has failed but we have not yet rejected the promise,
@@ -128,6 +129,7 @@ void FedCmMetrics::RecordRequestTokenStatus(FedCmRequestIdTokenStatus status) {
 
   auto RecordUkm = [&](auto& ukm_builder) {
     ukm_builder.SetStatus_RequestIdToken(static_cast<int>(status));
+    ukm_builder.SetStatus_MediationRequirement(static_cast<int>(requirement));
     ukm_builder.SetFedCmSessionID(session_id_);
     ukm_builder.Record(ukm::UkmRecorder::Get());
   };
@@ -138,6 +140,8 @@ void FedCmMetrics::RecordRequestTokenStatus(FedCmRequestIdTokenStatus status) {
   RecordUkm(fedcm_idp_builder);
 
   base::UmaHistogramEnumeration("Blink.FedCm.Status.RequestIdToken", status);
+  base::UmaHistogramEnumeration("Blink.FedCm.Status.MediationRequirement",
+                                requirement);
 }
 
 void FedCmMetrics::RecordSignInStateMatchStatus(
@@ -257,6 +261,16 @@ void FedCmMetrics::RecordAutoReauthnMetrics(
       is_auto_reauthn_setting_blocked);
   ukm_builder.SetAutoReauthn_BlockedByEmbargo(is_auto_reauthn_embargoed);
   ukm_builder.SetFedCmSessionID(session_id_);
+  ukm_builder.Record(ukm::UkmRecorder::Get());
+}
+
+void RecordPreventSilentAccess(RenderFrameHost& rfh,
+                               PreventSilentAccessFrameType frame_type) {
+  base::UmaHistogramEnumeration("Blink.FedCm.PreventSilentAccessFrameType",
+                                frame_type);
+
+  ukm::builders::Blink_FedCm ukm_builder(rfh.GetPageUkmSourceId());
+  ukm_builder.SetPreventSilentAccessFrameType(static_cast<int>(frame_type));
   ukm_builder.Record(ukm::UkmRecorder::Get());
 }
 

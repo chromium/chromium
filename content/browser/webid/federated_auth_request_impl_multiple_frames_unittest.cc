@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/test/federated_auth_request_request_token_callback_helper.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
@@ -46,6 +47,7 @@ using ApiPermissionStatus =
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
 using AuthRequestCallbackHelper =
     content::FederatedAuthRequestRequestTokenCallbackHelper;
+using FedCmEntry = ukm::builders::Blink_FedCm;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 using RequestTokenCallback =
     content::FederatedAuthRequestImpl::RequestTokenCallback;
@@ -202,6 +204,7 @@ class FederatedAuthRequestImplMultipleFramesTest
 
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL(kTopFrameUrl), ui::PAGE_TRANSITION_LINK);
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
   // Does token request and waits for result.
@@ -274,6 +277,7 @@ class FederatedAuthRequestImplMultipleFramesTest
   std::unique_ptr<NiceMock<MockModalDialogViewDelegate>>
       mock_modal_dialog_view_delegate_;
   std::unique_ptr<NiceMock<MockIdentityRegistry>> mock_identity_registry_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
 // Test that test harness can execute successful FedCM flow for iframe.
@@ -396,6 +400,189 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest, CrossSiteIframe) {
   EXPECT_TRUE(iframe_dialog_state.did_show_accounts_dialog);
   EXPECT_EQ("top-frame.example", iframe_dialog_state.top_frame_for_display);
   EXPECT_EQ("cross-site.example", iframe_dialog_state.iframe_for_display);
+}
+
+// Tests that preventSilentAccess UKM is not recorded if the embedder does not
+// have sharing permissions.
+TEST_F(FederatedAuthRequestImplMultipleFramesTest,
+       IframePreventSilentAccessNoSharingPermission) {
+  const char kSameSiteIframeUrl[] =
+      "https://subdomain.top-frame.example/iframe.html";
+  RenderFrameHost* same_site_iframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL(kSameSiteIframeUrl),
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+              ->AppendChild("same_site_iframe"));
+
+  mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
+  TestDialogController::State iframe_dialog_state;
+  auto* federated_auth_request_impl = CreateFederatedAuthRequestImpl(
+      *same_site_iframe, iframe_request_remote,
+      TestDialogController::AccountsDialogAction::kSelectAccount,
+      &iframe_dialog_state);
+
+  // Assume that the embeddder does not have a sharing permission, and hence UKM
+  // should not be recorded.
+  EXPECT_CALL(*mock_permission_delegate_,
+              HasSharingPermission(url::Origin::Create(GURL(kTopFrameUrl))))
+      .WillOnce(testing::Return(false));
+
+  base::RunLoop ukm_loop;
+  ukm_recorder_->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                       ukm_loop.QuitClosure());
+  federated_auth_request_impl->PreventSilentAccess(base::DoNothing());
+
+  // Perform an actual FedCM request to log some metrics and flush the ukm
+  // recorder.
+  AuthRequestCallbackHelper iframe_callback_helper;
+  DoRequestTokenAndWait(iframe_request_remote, iframe_callback_helper);
+
+  ukm_loop.Run();
+
+  auto entries = ukm_recorder_->GetEntriesByName(FedCmEntry::kEntryName);
+  ASSERT_FALSE(entries.empty());
+  for (const auto* entry : entries) {
+    const int64_t* metric =
+        ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
+    EXPECT_FALSE(metric);
+  }
+}
+
+// Tests the preventSilentAccess UKM recorded when invoked from the main frame.
+TEST_F(FederatedAuthRequestImplMultipleFramesTest,
+       MainFramePreventSilentAccess) {
+  // We add an iframe but it should not affect the UKM recording since we will
+  // call preventSilentAccess() from the main frame.
+  const char kSameSiteIframeUrl[] =
+      "https://subdomain.top-frame.example/iframe.html";
+  NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL(kSameSiteIframeUrl),
+      RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+          ->AppendChild("same_site_iframe"));
+
+  mojo::Remote<blink::mojom::FederatedAuthRequest> main_frame_request_remote;
+  TestDialogController::State main_frame_dialog_state;
+  auto* federated_auth_request_impl = CreateFederatedAuthRequestImpl(
+      *main_rfh(), main_frame_request_remote,
+      TestDialogController::AccountsDialogAction::kNone,
+      &main_frame_dialog_state);
+
+  // Assume that the embeddder does has a sharing permission so that UKM is
+  // recorded.
+  EXPECT_CALL(*mock_permission_delegate_,
+              HasSharingPermission(url::Origin::Create(GURL(kTopFrameUrl))))
+      .WillOnce(testing::Return(true));
+
+  base::RunLoop ukm_loop;
+  ukm_recorder_->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                       ukm_loop.QuitClosure());
+  federated_auth_request_impl->PreventSilentAccess(base::DoNothing());
+  ukm_loop.Run();
+
+  auto entries = ukm_recorder_->GetEntriesByName(FedCmEntry::kEntryName);
+  ASSERT_FALSE(entries.empty());
+  bool metric_found = false;
+  for (const auto* entry : entries) {
+    const int64_t* metric =
+        ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
+    if (metric) {
+      metric_found = true;
+      EXPECT_EQ(*metric,
+                static_cast<int>(PreventSilentAccessFrameType::kMainFrame));
+    }
+  }
+  EXPECT_TRUE(metric_found);
+}
+
+// Tests the preventSilentAccess UKM recorded when invoked from a same site
+// iframe.
+TEST_F(FederatedAuthRequestImplMultipleFramesTest,
+       SameSiteIframePreventSilentAccess) {
+  const char kSameSiteIframeUrl[] =
+      "https://subdomain.top-frame.example/iframe.html";
+  RenderFrameHost* same_site_iframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL(kSameSiteIframeUrl),
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+              ->AppendChild("same_site_iframe"));
+
+  mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
+  TestDialogController::State iframe_dialog_state;
+  auto* federated_auth_request_impl = CreateFederatedAuthRequestImpl(
+      *same_site_iframe, iframe_request_remote,
+      TestDialogController::AccountsDialogAction::kSelectAccount,
+      &iframe_dialog_state);
+
+  // Assume that the embeddder does has a sharing permission so that UKM is
+  // recorded.
+  EXPECT_CALL(*mock_permission_delegate_,
+              HasSharingPermission(url::Origin::Create(GURL(kTopFrameUrl))))
+      .WillOnce(testing::Return(true));
+
+  base::RunLoop ukm_loop;
+  ukm_recorder_->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                       ukm_loop.QuitClosure());
+  federated_auth_request_impl->PreventSilentAccess(base::DoNothing());
+  ukm_loop.Run();
+
+  auto entries = ukm_recorder_->GetEntriesByName(FedCmEntry::kEntryName);
+  ASSERT_FALSE(entries.empty());
+  bool metric_found = false;
+  for (const auto* entry : entries) {
+    const int64_t* metric =
+        ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
+    if (metric) {
+      metric_found = true;
+      EXPECT_EQ(*metric, static_cast<int>(
+                             PreventSilentAccessFrameType::kSameSiteIframe));
+    }
+  }
+  EXPECT_TRUE(metric_found);
+}
+
+// Tests the preventSilentAccess UKM recorded when invoked from a cross site
+// iframe.
+TEST_F(FederatedAuthRequestImplMultipleFramesTest,
+       CrossSiteIframePreventSilentAccess) {
+  const char kCrossSiteIframeUrl[] = "https://cross-site.example/iframe.html";
+  RenderFrameHost* cross_site_iframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL(kCrossSiteIframeUrl),
+          RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
+              ->AppendChild("cross_site_iframe"));
+
+  mojo::Remote<blink::mojom::FederatedAuthRequest> iframe_request_remote;
+  TestDialogController::State iframe_dialog_state;
+  auto* federated_auth_request_impl = CreateFederatedAuthRequestImpl(
+      *cross_site_iframe, iframe_request_remote,
+      TestDialogController::AccountsDialogAction::kSelectAccount,
+      &iframe_dialog_state);
+
+  // Assume that the embeddder does has a sharing permission so that UKM is
+  // recorded.
+  EXPECT_CALL(*mock_permission_delegate_,
+              HasSharingPermission(url::Origin::Create(GURL(kTopFrameUrl))))
+      .WillOnce(testing::Return(true));
+
+  base::RunLoop ukm_loop;
+  ukm_recorder_->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                       ukm_loop.QuitClosure());
+  federated_auth_request_impl->PreventSilentAccess(base::DoNothing());
+  ukm_loop.Run();
+
+  auto entries = ukm_recorder_->GetEntriesByName(FedCmEntry::kEntryName);
+  ASSERT_FALSE(entries.empty());
+  bool metric_found = false;
+  for (const auto* entry : entries) {
+    const int64_t* metric =
+        ukm_recorder_->GetEntryMetric(entry, "PreventSilentAccessFrameType");
+    if (metric) {
+      metric_found = true;
+      EXPECT_EQ(*metric, static_cast<int>(
+                             PreventSilentAccessFrameType::kCrossSiteIframe));
+    }
+  }
+  EXPECT_TRUE(metric_found);
 }
 
 }  // namespace content

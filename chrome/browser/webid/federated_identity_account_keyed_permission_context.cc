@@ -67,6 +67,18 @@ FederatedIdentityAccountKeyedPermissionContext::
       idp_origin_key_(idp_origin_key) {}
 
 bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
+    const url::Origin& relying_party_requester) {
+  for (const auto& object : GetGrantedObjects(relying_party_requester)) {
+    const base::Value::List* account_list =
+        object->value.FindList(kAccountIdsKey);
+    if (account_list) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
     const url::Origin& relying_party_requester,
     const url::Origin& relying_party_embedder,
     const url::Origin& identity_provider,
