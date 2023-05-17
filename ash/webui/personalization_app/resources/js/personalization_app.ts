@@ -141,6 +141,10 @@ if (isPersonalizationJellyEnabled()) {
   link.rel = 'stylesheet';
   link.href = 'chrome://theme/colors.css?sets=legacy,sys';
   document.head.appendChild(link);
+  const fontLink = document.createElement('link');
+  fontLink.rel = 'stylesheet';
+  fontLink.href = 'chrome://theme/typography.css';
+  document.head.appendChild(fontLink);
   document.body.classList.add('jelly-enabled');
   startColorChangeUpdater();
 }

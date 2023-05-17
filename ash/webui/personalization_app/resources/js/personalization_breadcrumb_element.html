@@ -25,6 +25,10 @@
     width: 100%;
   }
 
+  :host-context(body.jelly-enabled) #selector {
+    font: var(--cros-title-1-font);
+  }
+
   /**
    * TODO: After Jelly is launched, remove the cr-icon-button-fill-color
    * references from #homeButton. The color will be inherited from

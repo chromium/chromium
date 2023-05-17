@@ -28,8 +28,7 @@
   /* copied from |AshColorProvider| |kSecondToneOpacity| constant. */
   --personalization-app-second-tone-opacity: 0.3;
 
-  --personalization-app-label-font: 500 13px/20px
-      var(--cros-font-family-google-sans);
+  --personalization-app-label-font: var(--cros-button-2-font);
 }
 
 :host-context(body.jelly-enabled) {
