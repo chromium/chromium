@@ -306,7 +306,7 @@ const LocalizedErrorMap net_error_options[] = {
   {net::ERR_BLOCKED_BY_ADMINISTRATOR,
    IDS_ERRORPAGES_HEADING_BLOCKED,
    IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_ADMINISTRATOR,
-   SUGGEST_CONTACT_ADMINISTRATOR,
+   SUGGEST_NONE,
    SHOW_NO_BUTTONS,
   },
   {net::ERR_SSL_VERSION_OR_CIPHER_MISMATCH,
@@ -528,7 +528,8 @@ const char* GetIconClassForError(const std::string& error_domain,
                                  int error_code) {
   return LocalizedError::IsOfflineError(error_domain, error_code)
              ? "icon-offline"
-             : "icon-generic";
+         : error_code == net::ERR_BLOCKED_BY_ADMINISTRATOR ? "icon-info"
+                                                           : "icon-generic";
 }
 
 base::Value::Dict SingleEntryDictionary(base::StringPiece path,
@@ -1036,7 +1037,9 @@ LocalizedError::PageState LocalizedError::GetPageState(
   std::u16string error_string;
   if (error_domain == Error::kNetErrorDomain) {
     // Non-internationalized error string, for debugging Chrome itself.
-    error_string = base::ASCIIToUTF16(net::ErrorToShortString(error_code));
+    if (error_code != net::ERR_BLOCKED_BY_ADMINISTRATOR) {
+      error_string = base::ASCIIToUTF16(net::ErrorToShortString(error_code));
+    }
   } else if (error_domain == Error::kDnsProbeErrorDomain) {
     std::string ascii_error_string =
         error_page::DnsProbeStatusToString(error_code);

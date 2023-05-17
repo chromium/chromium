@@ -266,7 +266,7 @@
     This page has been blocked by an extension
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_ADMINISTRATOR" desc="Summary in the error page when an administrator policy blocks a request.">
-    The person who set up this computer has chosen to block this site.
+    Your organization doesn’t allow you to view this site
   </message>
 
   <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_SECURITY" desc="Summary in the error page when the request has been blocked because of some security configuration of the site.">

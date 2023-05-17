@@ -38,6 +38,12 @@ a {
       url(../../resources/default_200_percent/neterror/error_network_generic.png) 2x);
 }
 
+.icon-info {
+  content: -webkit-image-set(
+      url(../../security_interstitials/core/browser/resources/images/1x/info.png) 1x,
+      url(../../security_interstitials/core/browser/resources/images/2x/info.png) 2x);
+}
+
 .icon-offline {
   content: -webkit-image-set(
       url(images/default_100_percent/offline/100-error-offline.png) 1x,

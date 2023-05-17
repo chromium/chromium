@@ -59,12 +59,14 @@ source_set("eg2_tests") {
   sources = [ "supervised_user_url_filter_egtest.mm" ]
   deps = [
     "//base",
+    "//components/strings",
     "//components/supervised_user/core/common",
     "//ios/chrome/browser/policy:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/public/test/http_server",
     "//net:test_support",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

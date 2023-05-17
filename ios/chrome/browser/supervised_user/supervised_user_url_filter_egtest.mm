@@ -5,6 +5,7 @@
 #import <string>
 
 #import "base/feature_list.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -13,6 +14,7 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/base/net_errors.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -43,9 +45,9 @@
 // Tests that a page load is blocked when the URL is filtered.
 - (void)testBlockedSiteDisplaysErrorOnPageLoad {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/filtered")];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:net::ErrorToShortString(
-                                        net::ERR_BLOCKED_BY_ADMINISTRATOR)];
+  [ChromeEarlGrey waitForWebStateContainingText:
+                      l10n_util::GetStringUTF8(
+                          IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_ADMINISTRATOR)];
 }
 
 // Tests that unfiltered sites are loaded normally.
