@@ -91,6 +91,8 @@ else:
 
 USER_SESSION_PATH = os.path.join(SCRIPT_DIR, "user-session")
 
+CRASH_UPLOADER_PATH = os.path.join(SCRIPT_DIR, "crash-uploader")
+
 CHROME_REMOTING_GROUP_NAME = "chrome-remote-desktop"
 
 HOME_DIR = os.environ["HOME"]
@@ -136,6 +138,10 @@ HOST_OFFLINE_REASON_SESSION_RETRIES_EXCEEDED = "SESSION_RETRIES_EXCEEDED"
 # Host offline reason if the host retry count is exceeded. (Note: It may or may
 # not be possible to send this, depending on why the host is failing.)
 HOST_OFFLINE_REASON_HOST_RETRIES_EXCEEDED = "HOST_RETRIES_EXCEEDED"
+
+# Host offline reason if the crash-uploader retry count is exceeded.
+HOST_OFFLINE_REASON_CRASH_UPLOADER_RETRIES_EXCEEDED = (
+  "CRASH_UPLOADER_RETRIES_EXCEEDED")
 
 # This is the file descriptor used to pass messages to the user_session binary
 # during startup. It must be kept in sync with kMessageFd in
@@ -271,6 +277,14 @@ def is_supported_platform():
 
   # The session chooser expects a Debian-style Xsession script.
   return os.path.isfile(DEBIAN_XSESSION_PATH);
+
+
+def is_googler_owned(config):
+  try:
+    host_owner = config["host_owner"]
+    return host_owner.endswith("@google.com")
+  except KeyError:
+    return False
 
 
 class Config:
@@ -445,6 +459,10 @@ class Desktop(abc.ABC):
         self.session_inhibitor: HOST_OFFLINE_REASON_SESSION_RETRIES_EXCEEDED,
         self.host_inhibitor: HOST_OFFLINE_REASON_HOST_RETRIES_EXCEEDED
     }
+    # Crash reporting is disabled by default.
+    self.crash_reporting_enabled = False
+    self.crash_uploader_proc = None
+    self.crash_uploader_inhibitor = None
 
   def _init_child_env(self):
     self.child_env = dict(os.environ)
@@ -559,11 +577,35 @@ class Desktop(abc.ABC):
       self.host_proc.stdin.close()
     self.host_inhibitor.record_started(MINIMUM_PROCESS_LIFETIME, backoff_time)
 
+  def enable_crash_reporting(self):
+    logging.info("Configuring crash reporting")
+    self.crash_reporting_enabled = True
+    self.crash_uploader_inhibitor = RelaunchInhibitor("Crash uploader")
+    self.inhibitors[self.crash_uploader_inhibitor] = (
+        HOST_OFFLINE_REASON_CRASH_UPLOADER_RETRIES_EXCEEDED
+    )
+
+  def launch_crash_uploader(self, backoff_time):
+    if not self.crash_reporting_enabled:
+      return
+
+    logging.info("Launching crash uploader")
+
+    args = [CRASH_UPLOADER_PATH]
+    self.crash_uploader_proc = subprocess.Popen(args, env=self.child_env)
+
+    if not self.crash_uploader_proc.pid:
+      raise Exception("Could not start crash-uploader")
+
+    self.crash_uploader_inhibitor.record_started(MINIMUM_PROCESS_LIFETIME,
+                                               backoff_time)
+
   def cleanup(self):
     """Send SIGTERM to all procs and wait for them to exit. Will fallback to
     SIGKILL if a process doesn't exit within 10 seconds.
     """
     for proc, name in [(self.host_proc, "host"),
+                       (self.crash_uploader_proc, "crash-uploader"),
                        (self.session_proc, "session"),
                        (self.pre_session_proc, "pre-session"),
                        (self.server_proc, "display server")]:
@@ -586,6 +628,7 @@ class Desktop(abc.ABC):
     self.pre_session_proc = None
     self.session_proc = None
     self.host_proc = None
+    self.crash_uploader_proc = None
 
   def report_offline_reason(self, host_config, reason):
     """Attempt to report the specified offline reason to the registry. This
@@ -692,6 +735,15 @@ class Desktop(abc.ABC):
         self.server_inhibitor.record_stopped(expected=False)
         # Only tear down if the display server isn't responding.
         tear_down = True
+
+    if (self.crash_uploader_proc is not None and
+            pid == self.crash_uploader_proc.pid):
+      logging.info("Crash uploader process terminated")
+      self.crash_uploader_proc = None
+      self.crash_uploader_inhibitor.record_stopped(expected=False)
+      # Don't tear down the host if the uploader is killed or crashes.
+      tear_down = False
+
     return tear_down
 
   def aggregate_failure_count(self):
@@ -952,8 +1004,7 @@ class WaylandDesktop(Desktop):
         logging.error("Error terminating process")
       self.host_proc = None
 
-    # We currently only support gnome-session (which is currently managed)
-    # by CRD itself.
+    # We only support gnome-session, which is currently managed by CRD itself.
     logging.info("Executing %s" % GNOME_SESSION_QUIT)
     if shutil.which(GNOME_SESSION_QUIT):
       cleanup_proc = subprocess.Popen(
@@ -1086,8 +1137,7 @@ class XDesktop(Desktop):
 
   # Returns child environment not containing TMPDIR.
   # Certain values of TMPDIR can break the X server (crbug.com/672684), so we
-  # want to make sure it isn't set in the envirionment we use to start the
-  # server.
+  # want to make sure it isn't set in the environment used to start the server.
   def _x_env(self):
     if "TMPDIR" not in self.child_env:
       return self.child_env
@@ -2234,6 +2284,9 @@ def main():
   else:
     desktop = XDesktop(sizes)
 
+  if is_googler_owned(host_config):
+    desktop.enable_crash_reporting()
+
   # Whether we are tearing down because the display server and/or session
   # exited. This keeps us from counting processes exiting because we've
   # terminated them as errors.
@@ -2287,6 +2340,8 @@ def main():
         desktop.launch_session(options.args, backoff_time)
       if desktop.host_proc is None:
         desktop.launch_host(host_config, extra_start_host_args, backoff_time)
+      if desktop.crash_uploader_proc is None:
+        desktop.launch_crash_uploader(backoff_time)
 
     deadline = max(relaunch_times) if relaunch_times else 0
     pid, status = waitpid_handle_exceptions(-1, deadline)
