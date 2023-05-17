@@ -557,7 +557,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="409109920254068737">Puedes usar esta tablet para iniciar sesión en el dispositivo donde se muestra este código QR.</translation>
 <translation id="4095146165863963773">¿Eliminar datos de la aplicación?</translation>
 <translation id="4096227151372679484">Flujo para guardar marcador abierto a media altura</translation>
-<translation id="4101475238162928417">Activa la sincronización para recibir tus contraseñas, marcadores, etc., en tus otros dispositivos</translation>
+<translation id="4101475238162928417">Sincroniza para recibir tus contraseñas, marcadores, etc., en tus otros dispositivos</translation>
 <translation id="410351446219883937">Reproducción automática</translation>
 <translation id="4106587138345390261">Chrome está explorando nuevas funciones que permitan a los sitios ofrecer la misma experiencia de navegación usando menos información tuya.</translation>
 <translation id="4108314971463891922">Seguir</translation>
@@ -895,7 +895,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5855546874025048181">Acotar: <ph name="REFINE_TEXT" /></translation>
 <translation id="5857447844686706637">Se ha producido un error. No se ha podido actualizar Seguir precio.</translation>
 <translation id="5859968346865909126">Puedes activarlo o desactivarlo en los ajustes</translation>
-<translation id="5860033963881614850">Desactivado</translation>
+<translation id="5860033963881614850">Desactivada</translation>
 <translation id="5860491529813859533">Activar</translation>
 <translation id="5864419784173784555">Esperando otra descarga…</translation>
 <translation id="5865733239029070421">Envía automáticamente estadísticas de uso e informes sobre fallos a Google</translation>

@@ -1623,7 +1623,7 @@
 <translation id="2336228925368920074">將所有分頁加入書籤...</translation>
 <translation id="2336376423977300504">一律在視窗關閉時清除 Cookie</translation>
 <translation id="2336381494582898602">Powerwash</translation>
-<translation id="2337236196941929873">預先載入 Chrome 認為你可能造訪的網頁。為此，Chrome 可能會使用 Cookie (如果你允許的話)，也可能加密網頁並透過 Google 傳送，以便向網站隱藏你的身分。</translation>
+<translation id="2337236196941929873">預先載入 Chrome 認為你可能造訪的網頁。因此，Chrome 可能會使用 Cookie (如果你允許的話)，也可能加密網頁並透過 Google 傳送，向網站隱藏你的身分。</translation>
 <translation id="2340239562261172947">無法安全下載「<ph name="FILE_NAME" />」</translation>
 <translation id="2342180549977909852">你的孩子可以使用一組數字 (PIN 碼) 來解鎖這部裝置，這組數字與密碼不同。如要稍後再設定 PIN 碼，請前往「設定」。</translation>
 <translation id="2342740338116612727">已新增書籤</translation>
@@ -5963,7 +5963,7 @@
 <translation id="6202304368170870640">你可以使用 PIN 碼登入裝置，或將裝置解鎖。</translation>
 <translation id="6203247599828309566">你已儲存這個網站的某個密碼的附註。如要查看該附註，請按一下鑰匙圖示。</translation>
 <translation id="6205314730813004066">廣告隱私權設定</translation>
-<translation id="6206199626856438589">系統會將你登出這些目前顯示的網站，包含已開啟的分頁</translation>
+<translation id="6206199626856438589">系統會將你登出所顯示的網站，包含已開啟的分頁</translation>
 <translation id="6206311232642889873">複製圖片(&amp;Y)</translation>
 <translation id="6206521455877863927">包括同一網域中的網站，例如 google.com 和 mail.google.com。你目前瀏覽的網站可將資料儲存到你的裝置。</translation>
 <translation id="6207200176136643843">重設為預設縮放等級</translation>
@@ -8445,7 +8445,7 @@
 <translation id="8366396658833131068">你的網路連線已恢復。請選取其他網路，或按底下的 [繼續] 按鈕啟動 Kiosk 應用程式。</translation>
 <translation id="8366694425498033255">選字鍵</translation>
 <translation id="8368859634510605990">開啟所有書籤(&amp;O)</translation>
-<translation id="8369028061188107403">這會清除目前顯示的網站所儲存的資料 (共 <ph name="TOTAL_USAGE" />)，以及所安裝的應用程式</translation>
+<translation id="8369028061188107403">這項操作會清除所顯示網站與已安裝應用程式儲存的資料 (共 <ph name="TOTAL_USAGE" />)</translation>
 <translation id="8370294614544004647">闔上筆電時進入休眠狀態</translation>
 <translation id="8371695176452482769">請說話</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{關閉網站音訊}other{關閉多個網站的音訊}}</translation>

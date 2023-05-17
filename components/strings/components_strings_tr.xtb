@@ -1706,7 +1706,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5135404736266831032">Adresleri yönet...</translation>
 <translation id="5136841603454277753">Doğru kodu girin</translation>
 <translation id="5137761395480718572">Bu uygulama kablosuz ağ kimlik bilgileri yüklemek için izin istiyor. Kurulumdan sonra <ph name="DEVICE_TYPE" /> cihazınız katılımcı kablosuz ağlara otomatik olarak bağlanacaktır. Bu kimlik bilgilerini kaldırmak için uygulamayı kaldırın. <ph name="LEARN_MORE" /></translation>
-<translation id="5138014172396933048">Sanal kart şu anda kullanılamıyor. Lütfen bankanızla iletişim kurun</translation>
+<translation id="5138014172396933048">Sanal kart şu anda kullanılamıyor. Lütfen bankanızla iletişim kurun.</translation>
 <translation id="5138227688689900538">Daha az göster</translation>
 <translation id="5145883236150621069">Politika yanıtında hata kodu var</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> için bildirimler engellendi</translation>
@@ -2309,7 +2309,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6687335167692595844">Yazı tipi boyutu istendi</translation>
 <translation id="6687696737818665306">Oyunculuk ve tiyatro</translation>
 <translation id="6688743156324860098">Güncelle…</translation>
-<translation id="6688775486821967877">Sanal kart şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin</translation>
+<translation id="6688775486821967877">Sanal kart şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin.</translation>
 <translation id="6689249931105087298">Siyah nokta sıkıştırma ile göreli</translation>
 <translation id="6689271823431384964">Chrome, oturumunuz açık olduğu için kartlarınızı Google Hesabınıza kaydetmeyi öneriyor. Bu davranışı ayarlardan değiştirebilirsiniz. Kart sahibinin adı hesabınızdan gelir.</translation>
 <translation id="6691397311652656001">En az <ph name="REQUIRED_FREE_DISK_SPACE" /> yer açın</translation>
@@ -3148,7 +3148,7 @@ Ek ayrıntılar:
 <translation id="8718314106902482036">Ödeme işlemi tamamlanmadı</translation>
 <translation id="8719263113926255150"><ph name="ENTITY" />, <ph name="DESCRIPTION" />, arama önerisi</translation>
 <translation id="8719528812645237045">Üstte çoklu delik</translation>
-<translation id="8723535127346307411">Doğrulama Kodunu Girin</translation>
+<translation id="8723535127346307411">Doğrulama kodunu girin</translation>
 <translation id="8724824364712796726">Zarf B6</translation>
 <translation id="8725066075913043281">Yeniden dene</translation>
 <translation id="8726549941689275341">Sayfa boyutu:</translation>

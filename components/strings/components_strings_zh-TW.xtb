@@ -1477,7 +1477,7 @@
 <translation id="4607603470419975064">查看 Chrome 提示的按鈕；按下 Enter 鍵即可瞭解 Chrome 功能</translation>
 <translation id="4607608436550361748">查看 Chrome 提示</translation>
 <translation id="460848736049414407">已遭管理員封鎖</translation>
-<translation id="4610279718074907952">這個網站屬於由 <ph name="SET_OWNER" /> 定義的群組，因此可以查看你的活動</translation>
+<translation id="4610279718074907952">這個網站屬於由 <ph name="SET_OWNER" /> 定義的群組，群組擁有者可以查看你的活動</translation>
 <translation id="4617273035598175554">繪圖與動畫軟體</translation>
 <translation id="4622292761762557753">仍要轉移</translation>
 <translation id="4627675673814409125">這項政策無法在 Chrome 設定檔層級設定，因此將遭到忽略。</translation>
@@ -3001,7 +3001,7 @@
 <translation id="829335040383910391">音訊</translation>
 <translation id="8294431847097064396">來源</translation>
 <translation id="8296205692406981542">地區公園與花園</translation>
-<translation id="8297545700510100061">系統會使用 Cookie 和其他網站資料來記住你，以便將你登入帳戶或是提供個人化廣告等服務。如要管理所有網站的 Cookie，請查看<ph name="SETTINGS" />。</translation>
+<translation id="8297545700510100061">系統會使用 Cookie 和其他網站資料來記住你，用於登入帳戶或是放送個人化廣告等服務。如要管理所有網站的 Cookie，請查看<ph name="SETTINGS" />。</translation>
 <translation id="8298115750975731693">目前使用的 Wi-Fi 網路 (<ph name="WIFI_NAME" />) 可能會要求您造訪 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
 <translation id="8303854710873047864">已顯示「<ph name="SECTION" />」區段</translation>
 <translation id="830498451218851433">對折</translation>

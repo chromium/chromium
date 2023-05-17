@@ -1002,7 +1002,7 @@
 <translation id="1930094135927166199">停用 USB 電力共享功能</translation>
 <translation id="1930127294345368978">單一列印工作可使用的紙張數量上限</translation>
 <translation id="1933378685401357864">桌布圖片</translation>
-<translation id="1935409768874953955">一律啟用輸入網址匿名資料收集功能</translation>
+<translation id="1935409768874953955">一律啟用輸入網址繫結匿名資料收集功能</translation>
 <translation id="1942626390957213764">停用桌面分享中心</translation>
 <translation id="194407941132272412">停用所有網站的網站隔離功能，但允許使用者啟用</translation>
 <translation id="1945994447126139909">這項企業政策只是暫時性措施，將在 <ph name="PRODUCT_NAME" /> 第 88 版中移除。
@@ -5348,7 +5348,7 @@
 <translation id="6093156968240188330">允許遠端使用者在遠端協助工作階段中操控權限較高的視窗</translation>
 <translation id="6094314311474620462">停用列印功能</translation>
 <translation id="6095048925836115505">在登入畫面上啟用虛擬鍵盤</translation>
-<translation id="6097601282776163274">啟用輸入網址匿名資料收集功能</translation>
+<translation id="6097601282776163274">啟用網址繫結匿名資料收集功能</translation>
 <translation id="6099853574908182288">預設列印色彩模式</translation>
 <translation id="6102342563050263313">啟用捲動至網址片段所指定文字的功能</translation>
 <translation id="6102449843040973938">允許在裝置上執行 <ph name="BOREALIS_NAME" /></translation>
@@ -5496,7 +5496,7 @@
       如果不設定這項政策，系統不會向受管理的使用者建議可探索的新內容，但會為其他使用者啟用這項設定。
       </translation>
 <translation id="6233173491898450179">設定下載目錄</translation>
-<translation id="6234167788423986573">一律停用輸入網址匿名資料收集功能</translation>
+<translation id="6234167788423986573">一律停用輸入網址繫結匿名資料收集功能</translation>
 <translation id="6234177445959386333">設定企業登入網址清單，密碼保護服務會從這些網址擷取密碼的加料式雜湊值。</translation>
 <translation id="6236880578835238059">設定當裝置從螢幕鎖定狀態返回一般使用狀態時，可保持全螢幕模式且不顯示通知的網址清單。
 
@@ -7029,9 +7029,9 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 
       如果將這項政策設為啟用或不設定，系統會啟用快速解答的單位轉換功能。
       如果停用這項政策，系統會停用快速解答的單位轉換功能。</translation>
-<translation id="7582095958259051083">如果將這項政策設為啟用，系統會一律開啟輸入網址匿名資料收集功能。這項功能會將使用者造訪的網頁網址傳送給 Google，協助改善搜尋與瀏覽服務。
+<translation id="7582095958259051083">如果將這項政策設為啟用，系統會一律開啟輸入網址繫結匿名資料收集功能。這項功能會將使用者造訪的網頁網址傳送給 Google，協助改善搜尋與瀏覽服務。
 
-      如果將這項政策設為停用，輸入網址匿名資料收集功能就會關閉。
+      如果將這項政策設為停用，輸入網址繫結匿名資料收集功能就會關閉。
 
       如果不設定這項政策，使用者將可手動變更這項設定。</translation>
 <translation id="7587345076013230465">每當自動選取政策與多個憑證相符時，在登入畫面中提示使用者選取用戶端憑證</translation>

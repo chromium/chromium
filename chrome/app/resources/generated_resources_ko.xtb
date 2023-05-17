@@ -2996,7 +2996,7 @@
 <translation id="3541823293333232175">할당됨</translation>
 <translation id="3543393733900874979">업데이트 실패(오류: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">SHA-512를 포함한 X9.62 ECDSA 서명</translation>
-<translation id="3544058026430919413">회사는 쿠키를 사용하여 내 그룹 활동을 공유하는 사이트 그룹을 정의할 수 있습니다. 시크릿 모드에서는 이 기능이 사용 중지되어 있습니다.</translation>
+<translation id="3544058026430919413">쿠키를 사용하여 내 그룹 활동을 공유할 수 있는 사이트 그룹을 회사가 정의할 수 있습니다. 시크릿 모드에서는 이 기능이 사용 중지되어 있습니다.</translation>
 <translation id="3544879808695557954">사용자 이름(선택사항)</translation>
 <translation id="354602065659584722">유해한 소프트웨어가 삭제됨</translation>
 <translation id="3547954654003013442">프록시 설정</translation>
@@ -3052,7 +3052,7 @@
 <translation id="3593152357631900254">퍼지 병음 모드 사용</translation>
 <translation id="3593965109698325041">인증서 이름 제약조건</translation>
 <translation id="3596012367874587041">앱 설정</translation>
-<translation id="3596414637720633074">시크릿 모드에서 타사 쿠키 차단</translation>
+<translation id="3596414637720633074">시크릿 모드에서 서드 파티 쿠키 차단</translation>
 <translation id="3598010454707842106">'Chrome 맞춤설정'을 클릭합니다.</translation>
 <translation id="3599221874935822507">양각</translation>
 <translation id="3600051066689725006">웹 요청 정보</translation>
@@ -8932,7 +8932,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <ph name="DOMAIN" />에서 스마트 카드를 삽입해 둔 상태로 둘 것을 요청합니다.}}</translation>
 <translation id="8776294611668764629">파일이 너무 커서 보안 확인이 불가능하기 때문에 조직에서 파일을 차단했습니다. 최대 50MB 크기의 파일을 열 수 있습니다.</translation>
 <translation id="8777628254805677039">루트 비밀번호</translation>
-<translation id="8778393144535275552">표시된 데이터 지우기</translation>
+<translation id="8778393144535275552">표시된 데이터 삭제</translation>
 <translation id="8779944680596936487">사이트는 사용자의 사이트 내 탐색 활동을 보기 위해서만 쿠키를 사용할 수 있습니다.</translation>
 <translation id="8780123805589053431">Google에서 이미지 설명 가져오기</translation>
 <translation id="8780443667474968681">음성 검색이 사용 중지되었습니다.</translation>

@@ -3871,7 +3871,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4305402730127028764">Copiar para <ph name="DEVICE_NAME" /></translation>
 <translation id="4305817255990598646">Alternar</translation>
 <translation id="4306119971288449206">Os apps precisam ser veiculados com o tipo de conteúdo "<ph name="CONTENT_TYPE" />"</translation>
-<translation id="4307992518367153382">Básico</translation>
+<translation id="4307992518367153382">Básicas</translation>
 <translation id="4309165024397827958">Permitir que apps e serviços do Android com permissão de localização usem o local do dispositivo. O Google pode coletar dados de local periodicamente e os usar de forma anônima para melhorar a precisão de local e os serviços com base em localização.</translation>
 <translation id="4309183709806093061">Compartilhar também o áudio do sistema. Este dispositivo vai ser silenciado para evitar feedback.</translation>
 <translation id="4309420042698375243"><ph name="NUM_KILOBYTES" /> K (<ph name="NUM_KILOBYTES_LIVE" /> K ativos)</translation>
@@ -4835,7 +4835,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5177549709747445269">Você está usando dados móveis</translation>
 <translation id="5178667623289523808">Localizar anterior</translation>
 <translation id="5181140330217080051">Fazendo download</translation>
-<translation id="5181172023548002891">Para o Gerenciador de senhas do Google da conta <ph name="ACCOUNT" /></translation>
+<translation id="5181172023548002891">No Gerenciador de senhas do Google da conta <ph name="ACCOUNT" /></translation>
 <translation id="5183344263225877832">Redefinir todas as permissões de dispositivos HID?</translation>
 <translation id="5184063094292164363">&amp;Console JavaScript</translation>
 <translation id="5184209580557088469">Já existe um tíquete com esse nome de usuário</translation>
@@ -5592,7 +5592,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5857693745746757503">Economize US$ 50 ou mais em um novo Chromebook fazendo upgrade hoje mesmo</translation>
 <translation id="5858490737742085133">Terminal</translation>
 <translation id="585979798156957858">Meta externa</translation>
-<translation id="5860033963881614850">Desativado</translation>
+<translation id="5860033963881614850">Desativada</translation>
 <translation id="5860254591544742609">Mostrar barra de título</translation>
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="5860494867054883682">Atualizando seu dispositivo para o canal <ph name="CHANNEL_NAME" /> (<ph name="PROGRESS_PERCENT" />)</translation>
@@ -6199,7 +6199,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6404187344102273690">Jogos no Chromebook</translation>
 <translation id="6404511346730675251">Editar favorito</translation>
 <translation id="6406303162637086258">Simular reinicialização do navegador</translation>
-<translation id="6406506848690869874">Sincronizar</translation>
+<translation id="6406506848690869874">Sincronização</translation>
 <translation id="6406708970972405507">Configurações: <ph name="SECTION_TITLE" /></translation>
 <translation id="6407398811519202484">Com permissão para salvar dados no dispositivo</translation>
 <translation id="6408118934673775994">Ler e alterar seus dados em <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> e <ph name="WEBSITE_3" /></translation>

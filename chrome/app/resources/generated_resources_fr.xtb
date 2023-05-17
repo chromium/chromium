@@ -2569,7 +2569,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3160928651883997588">Préférences VPN</translation>
 <translation id="3161522574479303604">Toutes les langues</translation>
 <translation id="3162853326462195145">Compte scolaire</translation>
-<translation id="3162899666601560689">Les sites peuvent utiliser des cookies pour améliorer votre expérience de navigation, par exemple pour maintenir votre connexion ou mémoriser les articles de votre panier</translation>
+<translation id="3162899666601560689">Les sites peuvent utiliser des cookies pour améliorer votre expérience de navigation, par exemple pour vous maintenir connecté ou se souvenir des articles de votre panier</translation>
 <translation id="3163201441334626963">Produit inconnu <ph name="PRODUCT_ID" /> du fournisseur <ph name="VENDOR_ID" /></translation>
 <translation id="3163511056918491211">Restaurez vos données ou changez d'appareil, facilement et à tout moment. Vos sauvegardes sont importées dans Google et chiffrées à l'aide du mot de passe de votre compte Google.</translation>
 <translation id="3164329792803560526">Partage de l'onglet avec <ph name="APP_NAME" />…</translation>
@@ -3557,7 +3557,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Copier les détails de la version</translation>
 <translation id="4021941025609472374">Fermer les onglets à gauche</translation>
-<translation id="402211067068791756">Cette action effacera <ph name="TOTAL_USAGE" /> des données stockées par les sites affichés</translation>
+<translation id="402211067068791756"><ph name="TOTAL_USAGE" /> de données stockées par les sites affichés seront effacées</translation>
 <translation id="4022426551683927403">&amp;Ajouter au dictionnaire</translation>
 <translation id="4025039777635956441">Bloquer le site sélectionné</translation>
 <translation id="402707738228916911">Instruction <ph name="AUTHORIZE_INSTRUCTION_NAME" /> reçue</translation>
@@ -4926,7 +4926,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5278823018825269962">ID d'état</translation>
 <translation id="5279600392753459966">Tout bloquer</translation>
 <translation id="5280064835262749532">Mettre à jour les identifiants pour <ph name="SHARE_PATH" /></translation>
-<translation id="5280243692621919988">Effacer les cookies et les données des sites à la fermeture du navigateur</translation>
+<translation id="5280243692621919988">Effacer les cookies et les données des sites quand vous fermez toutes les fenêtres</translation>
 <translation id="5280335021886535443">Appuyez sur |<ph name="ACCELERATOR" />| pour sélectionner cette info-bulle.</translation>
 <translation id="5280426389926346830">Créer un raccourci ?</translation>
 <translation id="5281013262333731149">S'ouvre dans : <ph name="OPEN_BROWSER" /></translation>
@@ -5969,7 +5969,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6202304368170870640">Vous pouvez utiliser votre code pour vous connecter à votre appareil ou le déverrouiller.</translation>
 <translation id="6203247599828309566">Vous avez enregistré une note concernant un mot de passe sur ce site. Pour l'afficher, cliquez sur l'icône représentant une clé.</translation>
 <translation id="6205314730813004066">Confidentialité des annonces</translation>
-<translation id="6206199626856438589">Vous allez être déconnecté des sites affichés, y compris dans les onglets ouverts</translation>
+<translation id="6206199626856438589">Vous serez déconnecté des sites affichés, y compris dans les onglets ouverts</translation>
 <translation id="6206311232642889873">Cop&amp;ier l'image</translation>
 <translation id="6206521455877863927">Y compris les sites appartenant au même domaine, par exemple google.com et mail.google.com. Les sites que vous consultez peuvent enregistrer des données sur votre appareil.</translation>
 <translation id="6207200176136643843">Réinitialiser le niveau de zoom par défaut</translation>
@@ -9405,7 +9405,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="9199695835892108985">Réinitialiser toutes les autorisations de port série ?</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> pourra modifier les fichiers du dossier <ph name="FOLDERNAME" /></translation>
 <translation id="920045321358709304">Rechercher avec <ph name="SEARCH_ENGINE" /></translation>
-<translation id="9201023452444595544">Toutes les données hors connexion vont être effacées</translation>
+<translation id="9201023452444595544">Les éventuelles données hors connexion seront effacées</translation>
 <translation id="9201117361710210082">Consulté précédemment</translation>
 <translation id="9201220332032049474">Options de verrouillage de l'écran</translation>
 <translation id="9201842707396338580">Une erreur s'est produite. Veuillez contacter le propriétaire ou l'administrateur de l'appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>

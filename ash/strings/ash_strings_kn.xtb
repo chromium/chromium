@@ -741,7 +741,7 @@
 <translation id="4435022394553622295">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ನಿಮ್ಮ ಫೋನ್‌ನ ಅಧಿಸೂಚನೆಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="4441283832827406317">ಆ್ಯಪ್‌ಗಳನ್ನು ಹೆಸರಿನ ಪ್ರಕಾರವಾಗಿ ವಿಂಗಡಿಸಲಾಗಿದೆ</translation>
 <translation id="4445159312344259901">ಅನ್‌ಲಾಕ್ ಮಾಡಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
-<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 ಪ್ರಮುಖ ಅಧಿಸೂಚನೆ}one{# ಪ್ರಮುಖ ಅಧಿಸೂಚನೆಗಳು}other{# ಪ್ರಮುಖ ಅಧಿಸೂಚನೆಗಳು}}</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 ಪ್ರಮುಖ ನೋಟಿಫಿಕೇಶನ್}one{# ಪ್ರಮುಖ ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}other{# ಪ್ರಮುಖ ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}}</translation>
 <translation id="4450893287417543264">ಮತ್ತೊಮ್ಮೆ ತೋರಿಸಬೇಡಿ</translation>
 <translation id="4451374464530248585">Alt + ಡೌನ್ ಆ್ಯರೋ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬದಲಿಸಲಾಗಿದೆ. Page Down ಕೀ ಬಳಸಲು, <ph name="LAUNCHER_KEY_NAME" /> ಕೀ + ಡೌನ್ ಆ್ಯರೋ ಒತ್ತಿ.</translation>
 <translation id="4455051983450390249">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ನಿಮ್ಮ ಫೋನ್‌ನ ಅಧಿಸೂಚನೆಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
@@ -906,7 +906,7 @@
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ಈವೆಂಟ್‌ಗಳು</translation>
 <translation id="5198715732953550718">ಹೊಸ ಫೋಲ್ಡರ್ ಅನ್ನು ರಚಿಸಲು <ph name="MOVED_APP_NAME" /> ಆ್ಯಪ್, <ph name="IN_PLACE_APP" /> ಆ್ಯಪ್ ಜೊತೆಗೆ ಸಂಯೋಜಿತವಾಗಿದೆ.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
-<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{ಇತರ 1 ಅಧಿಸೂಚನೆ}one{ಇತರ # ಅಧಿಸೂಚನೆಗಳು}other{ಇತರ # ಅಧಿಸೂಚನೆಗಳು}}</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{ಇತರ 1 ನೋಟಿಫಿಕೇಶನ್}one{ಇತರ # ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}other{ಇತರ # ನೋಟಿಫಿಕೇಶನ್‌ಗಳು}}</translation>
 <translation id="5207949376430453814">ಪಠ್ಯದಲ್ಲಿ ಕೆರೆಟ್ ಅನ್ನು ಎದ್ದುಗಾಣಿಸಿ</translation>
 <translation id="5208059991603368177">ಆನ್ ಮಾಡಿ</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> ವರೆಗೆ ಆಫ್ ಆಗಿರುತ್ತದೆ</translation>

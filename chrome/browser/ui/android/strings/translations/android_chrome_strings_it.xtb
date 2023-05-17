@@ -1240,7 +1240,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7612989789287281429">Accesso in corso…</translation>
 <translation id="7616551326690708776">Seleziona un modello per i tuoi contenuti in evidenza.</translation>
 <translation id="7619072057915878432">Download di <ph name="FILE_NAME" /> non riuscito a causa di errori di rete.</translation>
-<translation id="7626032353295482388">Benvenuto in Chrome</translation>
+<translation id="7626032353295482388">Ti diamo il benvenuto in Chrome</translation>
 <translation id="7630202231528827509">URL del fornitore</translation>
 <translation id="7634280112532283638">Riduzione di spam e attività fraudolente</translation>
 <translation id="7638584964844754484">Passphrase sbagliata</translation>
@@ -1472,7 +1472,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="874726034427945498">Per vedere suggerimenti migliori nella barra degli indirizzi, sincronizza le schede e la cronologia</translation>
 <translation id="8748850008226585750">Contenuti nascosti</translation>
 <translation id="8756969031206844760">Aggiornare la password?</translation>
-<translation id="8765470054473112089">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chrome invia ciò che digiti al tuo motore di ricerca predefinito per ricevere suggerimenti migliori. Questa opzione è disattivata in incognito.</translation>
+<translation id="8765470054473112089">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chrome invia ciò che digiti al tuo motore di ricerca predefinito per ricevere suggerimenti migliori. Questa opzione è disattivata nella modalità di navigazione in incognito.</translation>
 <translation id="8766529642647037772">Vuoi creare un link evidenziato come questo?</translation>
 <translation id="8773160212632396039">Elaborazione della richiesta in corso…</translation>
 <translation id="8788265440806329501">La cronologia di navigazione è chiusa</translation>
