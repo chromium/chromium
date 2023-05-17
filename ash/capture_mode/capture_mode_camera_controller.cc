@@ -232,6 +232,8 @@ gfx::Rect GetCollisionAvoidanceRect(aura::Window* root_window) {
 
   gfx::Rect collision_avoidance_rect = tray->GetBubbleBoundsInScreen();
 
+  // TODO(b/282943613): Handle collisions with the new notification center that
+  // QsRevamp view introduced.
   if (!features::IsQsRevampEnabled()) {
     auto* message_center_bubble = tray->message_center_bubble();
 
