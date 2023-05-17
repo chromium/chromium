@@ -539,7 +539,7 @@ public class MediaNotificationController {
         if (mMediaNotificationInfo.isPrivate) return metadataBuilder.build();
 
         metadataBuilder.putString(
-                MediaMetadataCompat.METADATA_KEY_TITLE, mMediaNotificationInfo.metadata.getTitle());
+                MediaMetadataCompat.METADATA_KEY_TITLE, getSafeNotificationTitle());
         metadataBuilder.putString(
                 MediaMetadataCompat.METADATA_KEY_ARTIST, mMediaNotificationInfo.origin);
 
@@ -798,7 +798,7 @@ public class MediaNotificationController {
             return;
         }
 
-        builder.setContentTitle(mMediaNotificationInfo.metadata.getTitle());
+        builder.setContentTitle(getSafeNotificationTitle());
         String artistAndAlbumText = getArtistAndAlbumText(mMediaNotificationInfo.metadata);
         builder.setContentText(artistAndAlbumText);
         builder.setSubText(mMediaNotificationInfo.origin);
@@ -916,5 +916,15 @@ public class MediaNotificationController {
 
     private static Context getContext() {
         return ContextUtils.getApplicationContext();
+    }
+
+    // Return a non-blank string for use as the notification title, to avoid issues on some
+    // versions of Android.
+    private String getSafeNotificationTitle() {
+        String title = mMediaNotificationInfo.metadata.getTitle();
+        if (title != null && title.toString().trim().length() > 0) {
+            return title;
+        }
+        return getContext().getPackageName();
     }
 }
