@@ -274,7 +274,6 @@ component("gpu") {
     ]
     deps += [
       "//gpu/ipc/common:common",
-      "//media/base/win:color_space_util_win",
       "//media/parsers",
       "//third_party/angle:includes",
       "//third_party/libvpx:libvpxrc",

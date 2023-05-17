@@ -122,6 +122,7 @@ crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_copyTo_camera [ F
 # finder:enable-unused
 
 # Temporary expectation while hardware encoder color spaces are added.
+crbug.com/1377842 [ win ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
 crbug.com/1377842 [ android ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
 crbug.com/1377842 [ android ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-software [ Failure ]
 crbug.com/1377842 [ android ] WebCodecs_EncodeColorSpace_vp09.00.10.08_prefer-hardware [ Failure ]

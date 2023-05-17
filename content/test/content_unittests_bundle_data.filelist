@@ -79,11 +79,11 @@ data/attribution_reporting/page_with_conversion_measurement_disabled.html
 data/attribution_reporting/page_with_conversion_measurement_disabled.html.mock-http-headers
 data/attribution_reporting/page_with_conversion_redirect.html
 data/attribution_reporting/page_with_disallowed_iframe.html
+data/attribution_reporting/page_with_source_registration_and_conversion.html
+data/attribution_reporting/page_with_source_registration_and_conversion.html.mock-http-headers
 data/attribution_reporting/page_with_impression_creator.html
 data/attribution_reporting/page_with_impression_creator.html.mock-http-headers
 data/attribution_reporting/page_with_impression_creator_no_referrer.html
-data/attribution_reporting/page_with_source_registration_and_conversion.html
-data/attribution_reporting/page_with_source_registration_and_conversion.html.mock-http-headers
 data/attribution_reporting/page_without_ads_apis_ot.html
 data/attribution_reporting/register_attribution_src.js
 data/attribution_reporting/register_conversion.js
@@ -782,7 +782,6 @@ data/gpu/webcodecs/buffer-read-and-reply-worker.js
 data/gpu/webcodecs/copyTo.html
 data/gpu/webcodecs/draw-image.html
 data/gpu/webcodecs/encode-color-space.html
-data/gpu/webcodecs/encode-color-space.js
 data/gpu/webcodecs/encode-decode.html
 data/gpu/webcodecs/encode.html
 data/gpu/webcodecs/encoding-modes.html

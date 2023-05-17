@@ -183,10 +183,6 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   std::unique_ptr<MediaLog> media_log_;
 
-  // Attempts to set the current frame color space on `imf_input_media_type_`
-  // and `imf_output_media_type_` and update `encoder_`.
-  void SetEncoderColorSpace();
-
   // Bitstream buffers ready to be used to return encoded output as a FIFO.
   base::circular_deque<std::unique_ptr<BitstreamBufferRef>>
       bitstream_buffer_queue_;
@@ -284,9 +280,6 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Bitrate controller for CBR encoding.
   std::unique_ptr<VideoRateControlWrapper> rate_ctrl_;
-
-  // Color space of the first frame sent to Encode().
-  absl::optional<gfx::ColorSpace> encoder_color_space_;
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.
