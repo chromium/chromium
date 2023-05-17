@@ -303,8 +303,6 @@ public class OmniboxMetrics {
                 return ActionInSuggestUmaType.CALL;
             case ActionType.DIRECTIONS_VALUE:
                 return ActionInSuggestUmaType.DIRECTIONS;
-            case ActionType.WEBSITE_VALUE:
-                return ActionInSuggestUmaType.WEBSITE;
             case ActionType.REVIEWS_VALUE:
                 return ActionInSuggestUmaType.REVIEWS;
             default:

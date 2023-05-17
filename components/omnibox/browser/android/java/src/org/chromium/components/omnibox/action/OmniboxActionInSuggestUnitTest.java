@@ -45,8 +45,7 @@ public class OmniboxActionInSuggestUnitTest {
     private static final List<Integer> sKnownActionTypes =
             List.of(EntityInfoProto.ActionInfo.ActionType.CALL_VALUE,
                     EntityInfoProto.ActionInfo.ActionType.DIRECTIONS_VALUE,
-                    EntityInfoProto.ActionInfo.ActionType.REVIEWS_VALUE,
-                    EntityInfoProto.ActionInfo.ActionType.WEBSITE_VALUE);
+                    EntityInfoProto.ActionInfo.ActionType.REVIEWS_VALUE);
     private static final EntityInfoProto.ActionInfo EMPTY_INFO =
             EntityInfoProto.ActionInfo.getDefaultInstance();
 

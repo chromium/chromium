@@ -47,8 +47,6 @@ constexpr ActionInSuggestUmaType ToUmaActionType(
       return ActionInSuggestUmaType::kCall;
     case omnibox::ActionInfo_ActionType_DIRECTIONS:
       return ActionInSuggestUmaType::kDirections;
-    case omnibox::ActionInfo_ActionType_WEBSITE:
-      return ActionInSuggestUmaType::kWebsite;
     case omnibox::ActionInfo_ActionType_REVIEWS:
       return ActionInSuggestUmaType::kReviews;
   }
@@ -63,8 +61,6 @@ constexpr int ToActionHint(omnibox::ActionInfo::ActionType action_type) {
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_HINT;
     case omnibox::ActionInfo_ActionType_REVIEWS:
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_HINT;
-    case omnibox::ActionInfo_ActionType_WEBSITE:
-      return IDS_OMNIBOX_ACTION_IN_SUGGEST_WEBSITE_HINT;
   }
   NOTREACHED() << "Unrecognized action type: " << action_type;
 }
@@ -77,8 +73,6 @@ constexpr int ToActionContents(omnibox::ActionInfo::ActionType action_type) {
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_CONTENTS;
     case omnibox::ActionInfo_ActionType_REVIEWS:
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS;
-    case omnibox::ActionInfo_ActionType_WEBSITE:
-      return IDS_OMNIBOX_ACTION_IN_SUGGEST_WEBSITE_CONTENTS;
   }
   NOTREACHED() << "Unrecognized action type: " << action_type;
 }

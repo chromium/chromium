@@ -234,19 +234,19 @@ public class OmniboxActionsTest {
         // None of these actions have a linked intent, so no action will be taken.
         setSuggestions(createDummySuggestion(null),
                 createDummyActionInSuggest(ActionInfo.ActionType.CALL,
-                        ActionInfo.ActionType.DIRECTIONS, ActionInfo.ActionType.WEBSITE));
+                        ActionInfo.ActionType.DIRECTIONS, ActionInfo.ActionType.REVIEWS));
 
         var histogramWatcher = HistogramWatcher.newBuilder()
                                        .expectIntRecord("Omnibox.ActionInSuggest.Shown",
                                                ActionInSuggestUmaType.CALL)
                                        .expectIntRecord("Omnibox.ActionInSuggest.Shown",
                                                ActionInSuggestUmaType.DIRECTIONS)
-                                       .expectIntRecord("Omnibox.ActionInSuggest.Shown",
-                                               ActionInSuggestUmaType.WEBSITE)
                                        .expectIntRecord("Omnibox.ActionInSuggest.Used",
-                                               ActionInSuggestUmaType.WEBSITE)
+                                               ActionInSuggestUmaType.DIRECTIONS)
+                                       .expectIntRecord("Omnibox.ActionInSuggest.Shown",
+                                               ActionInSuggestUmaType.REVIEWS)
                                        .build();
-        clickOnAction(2);
+        clickOnAction(1);
         histogramWatcher.assertExpected();
     }
 }

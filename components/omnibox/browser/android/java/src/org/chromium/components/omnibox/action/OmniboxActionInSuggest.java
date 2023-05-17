@@ -55,8 +55,6 @@ public class OmniboxActionInSuggest extends OmniboxAction {
                 new ChipIcon(R.drawable.action_call, true));
         map.put(EntityInfoProto.ActionInfo.ActionType.DIRECTIONS_VALUE,
                 new ChipIcon(R.drawable.action_directions, true));
-        map.put(EntityInfoProto.ActionInfo.ActionType.WEBSITE_VALUE,
-                new ChipIcon(R.drawable.action_web, true));
         map.put(EntityInfoProto.ActionInfo.ActionType.REVIEWS_VALUE,
                 new ChipIcon(R.drawable.action_reviews, true));
         return map;
@@ -84,13 +82,6 @@ public class OmniboxActionInSuggest extends OmniboxAction {
         }
 
         switch (actionType) {
-            case WEBSITE:
-                // Rather than invoking an intent that opens a new tab, load the page in the
-                // current tab.
-                delegate.loadPageInCurrentTab(intent.getDataString());
-                actionStarted = true;
-                break;
-
             case REVIEWS:
                 assert false : "Pending implementation";
                 break;
@@ -136,7 +127,6 @@ public class OmniboxActionInSuggest extends OmniboxAction {
 
                 case CALL:
                 case REVIEWS:
-                case WEBSITE:
                     // Give up. Don't add the `default` clause though, capture missed variants.
                     break;
             }
