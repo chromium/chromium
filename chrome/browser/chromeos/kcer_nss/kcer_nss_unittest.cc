@@ -20,6 +20,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/scoped_test_nss_db.h"
+#include "crypto/signature_verifier.h"
 #include "net/cert/pem.h"
 #include "net/test/cert_builder.h"
 #include "net/test/test_data_directory.h"
@@ -359,6 +360,9 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   base::test::TestFuture<base::expected<bool, Error>> does_key_exist_waiter;
   kcer->DoesPrivateKeyExist(PrivateKeyHandle(PublicKeySpki()),
                             does_key_exist_waiter.GetCallback());
+  base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+  kcer->Sign(PrivateKeyHandle(PublicKeySpki()), SigningScheme::kRsaPkcs1Sha512,
+             DataToSign({1, 2, 3}), sign_waiter.GetCallback());
   base::test::TestFuture<base::expected<TokenInfo, Error>>
       get_token_info_waiter;
   kcer->GetTokenInfo(Token::kUser, get_token_info_waiter.GetCallback());
@@ -410,6 +414,8 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   ASSERT_FALSE(does_key_exist_waiter.Get().has_value());
   EXPECT_EQ(does_key_exist_waiter.Get().error(),
             Error::kTokenInitializationFailed);
+  ASSERT_FALSE(sign_waiter.Get().has_value());
+  EXPECT_EQ(sign_waiter.Get().error(), Error::kTokenInitializationFailed);
   ASSERT_FALSE(get_token_info_waiter.Get().has_value());
   EXPECT_EQ(get_token_info_waiter.Get().error(),
             Error::kTokenInitializationFailed);
@@ -428,6 +434,112 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   ASSERT_FALSE(generate_rsa_waiter_2.Get().has_value());
   EXPECT_EQ(generate_rsa_waiter_2.Get().error(),
             Error::kTokenInitializationFailed);
+}
+
+// Test that Kcer::Sign() works correctly for RSA keys with different signing
+// schemes.
+// TODO(miersh): Expand crypto::SignatureVerifier to work with more signature
+// schemes and add them to the test.
+TEST_F(KcerNssTest, SignRsa) {
+  TokenHolder user_token(Token::kUser);
+  user_token.Initialize();
+
+  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
+      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> generate_key_waiter;
+  kcer->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
+                       /*hardware_backed=*/true,
+                       generate_key_waiter.GetCallback());
+  ASSERT_TRUE(generate_key_waiter.Get().has_value());
+  const PublicKey& public_key = generate_key_waiter.Get().value();
+
+  DataToSign data_to_sign({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+
+  // Test kRsaPkcs1Sha1 signature.
+  {
+    base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+    kcer->Sign(PrivateKeyHandle(public_key), SigningScheme::kRsaPkcs1Sha1,
+               data_to_sign, sign_waiter.GetCallback());
+    ASSERT_TRUE(sign_waiter.Get().has_value());
+    const Signature& signature = sign_waiter.Get().value();
+
+    crypto::SignatureVerifier signature_verifier;
+    ASSERT_TRUE(signature_verifier.VerifyInit(
+        crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1,
+        signature.value(), public_key.GetSpki().value()));
+    signature_verifier.VerifyUpdate(data_to_sign.value());
+    EXPECT_TRUE(signature_verifier.VerifyFinal());
+  }
+
+  // Test kRsaPkcs1Sha256 signature.
+  {
+    base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+    kcer->Sign(PrivateKeyHandle(public_key), SigningScheme::kRsaPkcs1Sha256,
+               data_to_sign, sign_waiter.GetCallback());
+    ASSERT_TRUE(sign_waiter.Get().has_value());
+    const Signature& signature = sign_waiter.Get().value();
+
+    crypto::SignatureVerifier signature_verifier;
+    ASSERT_TRUE(signature_verifier.VerifyInit(
+        crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
+        signature.value(), public_key.GetSpki().value()));
+    signature_verifier.VerifyUpdate(data_to_sign.value());
+    EXPECT_TRUE(signature_verifier.VerifyFinal());
+  }
+
+  // Test kRsaPssRsaeSha256 signature.
+  {
+    base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+    kcer->Sign(PrivateKeyHandle(public_key), SigningScheme::kRsaPssRsaeSha256,
+               data_to_sign, sign_waiter.GetCallback());
+    ASSERT_TRUE(sign_waiter.Get().has_value());
+    const Signature& signature = sign_waiter.Get().value();
+
+    crypto::SignatureVerifier signature_verifier;
+    ASSERT_TRUE(signature_verifier.VerifyInit(
+        crypto::SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256,
+        signature.value(), public_key.GetSpki().value()));
+    signature_verifier.VerifyUpdate(data_to_sign.value());
+    EXPECT_TRUE(signature_verifier.VerifyFinal());
+  }
+}
+
+// Test that Kcer::Sign() works correctly for ECC keys.
+// TODO(miersh): Expand crypto::SignatureVerifier to work with more signature
+// schemes and add them to the test.
+TEST_F(KcerNssTest, SignEcc) {
+  TokenHolder user_token(Token::kUser);
+  user_token.Initialize();
+
+  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
+      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> generate_key_waiter;
+  kcer->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
+                      /*hardware_backed=*/true,
+                      generate_key_waiter.GetCallback());
+  ASSERT_TRUE(generate_key_waiter.Get().has_value());
+  const PublicKey& public_key = generate_key_waiter.Get().value();
+
+  DataToSign data_to_sign({1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+
+  // Test kEcdsaSecp256r1Sha256 signature.
+  {
+    base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
+    kcer->Sign(PrivateKeyHandle(public_key),
+               SigningScheme::kEcdsaSecp256r1Sha256, data_to_sign,
+               sign_waiter.GetCallback());
+    ASSERT_TRUE(sign_waiter.Get().has_value());
+    const Signature& signature = sign_waiter.Get().value();
+
+    crypto::SignatureVerifier signature_verifier;
+    ASSERT_TRUE(signature_verifier.VerifyInit(
+        crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
+        signature.value(), public_key.GetSpki().value()));
+    signature_verifier.VerifyUpdate(data_to_sign.value());
+    EXPECT_TRUE(signature_verifier.VerifyFinal());
+  }
 }
 
 // Test that Kcer::GetTokenInfo() method returns meaningful values.

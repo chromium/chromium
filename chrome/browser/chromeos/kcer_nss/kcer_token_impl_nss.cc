@@ -301,6 +301,169 @@ void RemoveCertOnWorkerThread(crypto::ScopedPK11Slot slot,
   std::move(callback).Run({});
 }
 
+bool DoesKeySupportSigningScheme(
+    SigningScheme kcer_signing_scheme,
+    const crypto::ScopedSECKEYPrivateKey& sec_private_key) {
+  switch (kcer_signing_scheme) {
+    case SigningScheme::kRsaPkcs1Sha1:
+    case SigningScheme::kRsaPkcs1Sha256:
+    case SigningScheme::kRsaPkcs1Sha384:
+    case SigningScheme::kRsaPkcs1Sha512:
+    case SigningScheme::kRsaPssRsaeSha256:
+    case SigningScheme::kRsaPssRsaeSha384:
+    case SigningScheme::kRsaPssRsaeSha512:
+      return (sec_private_key->keyType == ::KeyType::rsaKey);
+    case SigningScheme::kEcdsaSecp256r1Sha256:
+    case SigningScheme::kEcdsaSecp384r1Sha384:
+    case SigningScheme::kEcdsaSecp521r1Sha512:
+      return (sec_private_key->keyType == ::KeyType::ecKey);
+  }
+}
+
+// TODO(b/244408117): This method is mostly a copy of Sign() from
+// net/ssl/ssl_platform_key_nss.cc . The original method should be replaced
+// during the upcoming refactoring to remove direct usages of NSS.
+void SignOnWorkerThread(crypto::ScopedPK11Slot slot,
+                        PrivateKeyHandle key,
+                        SigningScheme kcer_signing_scheme,
+                        DataToSign data_to_sign,
+                        Kcer::SignCallback callback) {
+  base::expected<crypto::ScopedSECKEYPrivateKey, Error> private_key =
+      GetSECKEYPrivateKey(slot, key);
+  if (!private_key.has_value()) {
+    return std::move(callback).Run(base::unexpected(private_key.error()));
+  }
+
+  const crypto::ScopedSECKEYPrivateKey& sec_private_key = private_key.value();
+  if (!DoesKeySupportSigningScheme(kcer_signing_scheme, sec_private_key)) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kKeyDoesNotSupportSigningScheme));
+  }
+  uint16_t ssl_algorithm = static_cast<uint16_t>(kcer_signing_scheme);
+
+  const EVP_MD* digest_method =
+      SSL_get_signature_algorithm_digest(ssl_algorithm);
+  uint8_t digest[EVP_MAX_MD_SIZE];
+  unsigned digest_len;
+  if (!digest_method ||
+      !EVP_Digest(data_to_sign->data(), data_to_sign->size(), digest,
+                  &digest_len, digest_method, nullptr)) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kFailedToSignFailedToDigest));
+  }
+  SECItem digest_item;
+  digest_item.data = digest;
+  digest_item.len = digest_len;
+
+  CK_MECHANISM_TYPE mechanism = PK11_MapSignKeyType(sec_private_key->keyType);
+  SECItem param = {siBuffer, nullptr, 0};
+  CK_RSA_PKCS_PSS_PARAMS pss_params;
+  bssl::UniquePtr<uint8_t> free_digest_info;
+  if (SSL_is_signature_algorithm_rsa_pss(ssl_algorithm)) {
+    switch (EVP_MD_type(digest_method)) {
+      case NID_sha256:
+        pss_params.hashAlg = CKM_SHA256;
+        pss_params.mgf = CKG_MGF1_SHA256;
+        break;
+      case NID_sha384:
+        pss_params.hashAlg = CKM_SHA384;
+        pss_params.mgf = CKG_MGF1_SHA384;
+        break;
+      case NID_sha512:
+        pss_params.hashAlg = CKM_SHA512;
+        pss_params.mgf = CKG_MGF1_SHA512;
+        break;
+      default:
+        return std::move(callback).Run(
+            base::unexpected(Error::kUnexpectedSigningScheme));
+    }
+    // Use the hash length for the salt length.
+    pss_params.sLen = EVP_MD_size(digest_method);
+    mechanism = CKM_RSA_PKCS_PSS;
+    param.data = reinterpret_cast<unsigned char*>(&pss_params);
+    param.len = sizeof(pss_params);
+  } else if (SSL_get_signature_algorithm_key_type(ssl_algorithm) ==
+             EVP_PKEY_RSA) {
+    // PK11_SignWithMechanism expects the caller to prepend the DigestInfo for
+    // PKCS #1.
+    int hash_nid =
+        EVP_MD_type(SSL_get_signature_algorithm_digest(ssl_algorithm));
+    int is_alloced;
+    size_t prefix_len;
+    if (!RSA_add_pkcs1_prefix(&digest_item.data, &prefix_len, &is_alloced,
+                              hash_nid, digest_item.data, digest_item.len)) {
+      return std::move(callback).Run(
+          base::unexpected(Error::kFailedToSignFailedToAddPrefix));
+    }
+    digest_item.len = prefix_len;
+    if (is_alloced) {
+      free_digest_info.reset(digest_item.data);
+    }
+  }
+
+  std::vector<uint8_t> signature;
+
+  {
+    const int len = PK11_SignatureLen(sec_private_key.get());
+    if (len <= 0) {
+      return std::move(callback).Run(
+          base::unexpected(Error::kFailedToSignFailedToGetSignatureLength));
+    }
+
+    signature.resize(len);
+    SECItem signature_item;
+    signature_item.data = signature.data();
+    signature_item.len = signature.size();
+
+    SECStatus rv =
+        PK11_SignWithMechanism(sec_private_key.get(), mechanism, &param,
+                               &signature_item, &digest_item);
+    if (rv != SECSuccess) {
+      return std::move(callback).Run(base::unexpected(Error::kFailedToSign));
+    }
+    signature.resize(signature_item.len);
+  }
+
+  // NSS emits raw ECDSA signatures, but BoringSSL expects a DER-encoded
+  // ECDSA-Sig-Value.
+  if (SSL_get_signature_algorithm_key_type(ssl_algorithm) == EVP_PKEY_EC) {
+    if (signature.size() % 2 != 0) {
+      return std::move(callback).Run(
+          base::unexpected(Error::kFailedToSignBadSignatureLength));
+    }
+    size_t order_len = signature.size() / 2;
+
+    // Convert the RAW ECDSA signature to a DER-encoded ECDSA-Sig-Value.
+    bssl::UniquePtr<ECDSA_SIG> sig(ECDSA_SIG_new());
+    if (!sig || !BN_bin2bn(signature.data(), order_len, sig->r) ||
+        !BN_bin2bn(signature.data() + order_len, order_len, sig->s)) {
+      return std::move(callback).Run(
+          base::unexpected(Error::kFailedToDerEncode));
+    }
+
+    {
+      const int len = i2d_ECDSA_SIG(sig.get(), nullptr);
+      if (len <= 0) {
+        return std::move(callback).Run(
+            base::unexpected(Error::kFailedToSignBadSignatureLength));
+      }
+      signature.resize(len);
+    }
+
+    {
+      uint8_t* ptr = signature.data();
+      const int len = i2d_ECDSA_SIG(sig.get(), &ptr);
+      if (len <= 0) {
+        return std::move(callback).Run(
+            base::unexpected(Error::kFailedToDerEncode));
+      }
+      signature.resize(len);
+    }
+  }
+
+  return std::move(callback).Run(Signature(std::move(signature)));
+}
+
 std::vector<SigningScheme> GetSigningSchemes(bool supports_pss,
                                              KeyType key_type) {
   std::vector<SigningScheme> result;
@@ -795,7 +958,26 @@ void KcerTokenImplNss::Sign(PrivateKeyHandle key,
                             DataToSign data,
                             Kcer::SignCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  // TODO(244408716): Implement.
+
+  if (UNLIKELY(state_ == State::kInitializationFailed)) {
+    return HandleInitializationFailed(std::move(callback));
+  }
+  if (is_blocked_) {
+    return task_queue_.push(base::BindOnce(
+        &KcerTokenImplNss::Sign, weak_factory_.GetWeakPtr(), std::move(key),
+        signing_scheme, std::move(data), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = std::move(callback).Then(BlockQueueGetUnblocker());
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&SignOnWorkerThread,
+                     crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
+                     std::move(key), signing_scheme, std::move(data),
+                     std::move(unblocking_callback)));
 }
 
 void KcerTokenImplNss::SignRsaPkcs1Raw(PrivateKeyHandle key,
