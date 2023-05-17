@@ -397,8 +397,7 @@ ZeroSuggestProvider* ZeroSuggestProvider::Create(
 void ZeroSuggestProvider::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(omnibox::kZeroSuggestCachedResults,
                                std::string());
-  registry->RegisterDictionaryPref(omnibox::kZeroSuggestCachedResultsWithURL,
-                                   base::Value::Dict());
+  registry->RegisterDictionaryPref(omnibox::kZeroSuggestCachedResultsWithURL);
 }
 
 bool ZeroSuggestProvider::AllowZeroPrefixSuggestions(

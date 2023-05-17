@@ -21,8 +21,8 @@
 // Subclass of TtsController with a public ctor and dtor.
 class MockTtsControllerDelegate : public TtsControllerDelegateImpl {
  public:
-  MockTtsControllerDelegate() {}
-  ~MockTtsControllerDelegate() override {}
+  MockTtsControllerDelegate() = default;
+  ~MockTtsControllerDelegate() override = default;
 
   raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
 
@@ -109,10 +109,9 @@ TEST(TtsControllerDelegateImplTest, GetPreferredVoiceIdsForUtterance) {
   // Uses default pref voices.
   auto lang_to_voices =
       base::Value::Dict()
-          .Set("es", base::Value("{\"name\":\"Voice7\",\"extension\":\"id7\"}"))
-          .Set("he", base::Value("{\"name\":\"Voice8\",\"extension\":\"id8\"}"))
-          .Set("noLanguageCode",
-               base::Value("{\"name\":\"Android\",\"extension\":\"x\"}"));
+          .Set("es", "{\"name\":\"Voice7\",\"extension\":\"id7\"}")
+          .Set("he", "{\"name\":\"Voice8\",\"extension\":\"id8\"}")
+          .Set("noLanguageCode", "{\"name\":\"Android\",\"extension\":\"x\"}");
   pref_service.registry()->RegisterDictionaryPref(
       prefs::kTextToSpeechLangToVoiceName, std::move(lang_to_voices));
   delegate.pref_service_ = &pref_service;

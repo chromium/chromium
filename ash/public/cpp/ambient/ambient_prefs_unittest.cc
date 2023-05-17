@@ -24,8 +24,7 @@ class AmbientPrefsTest : public ::testing::Test {
   AmbientPrefsTest() {
     test_pref_service_.registry()->RegisterIntegerPref(
         kAmbientTheme, static_cast<int>(kDefaultAmbientTheme));
-    test_pref_service_.registry()->RegisterDictionaryPref(kAmbientUiSettings,
-                                                          base::Value::Dict());
+    test_pref_service_.registry()->RegisterDictionaryPref(kAmbientUiSettings);
   }
 
   TestingPrefServiceSimple test_pref_service_;

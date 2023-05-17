@@ -78,10 +78,7 @@ void PushNotificationService::UnregisterAccount(
 
 void PushNotificationService::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  base::Value::Dict feature_push_notification_permission = base::Value::Dict();
-  registry->RegisterDictionaryPref(
-      prefs::kFeaturePushNotificationPermissions,
-      std::move(feature_push_notification_permission));
+  registry->RegisterDictionaryPref(prefs::kFeaturePushNotificationPermissions);
 }
 
 void PushNotificationService::SetPreferences(

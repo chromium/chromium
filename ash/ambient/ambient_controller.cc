@@ -236,8 +236,7 @@ void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // version of these settings.
   registry->RegisterIntegerPref(ambient::prefs::kAmbientTheme,
                                 static_cast<int>(kDefaultAmbientTheme));
-  registry->RegisterDictionaryPref(ambient::prefs::kAmbientUiSettings,
-                                   base::Value::Dict());
+  registry->RegisterDictionaryPref(ambient::prefs::kAmbientUiSettings);
 
   registry->RegisterDoublePref(
       ambient::prefs::kAmbientModeAnimationPlaybackSpeed,

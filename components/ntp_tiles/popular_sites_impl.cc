@@ -231,12 +231,12 @@ void SetDefaultResourceForSite(size_t index,
 #endif
 
 // Creates the list of popular sites based on a snapshot available for mobile.
-base::Value DefaultPopularSites(absl::optional<std::string> country) {
+base::Value::List DefaultPopularSites(absl::optional<std::string> country) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  return base::Value(base::Value::Type::LIST);
+  return base::Value::List();
 #else
   if (!base::FeatureList::IsEnabled(kPopularSitesBakedInContentFeature))
-    return base::Value(base::Value::Type::LIST);
+    return base::Value::List();
 
   int popular_sites_json = IDR_DEFAULT_POPULAR_SITES_JSON;
 
@@ -249,8 +249,10 @@ base::Value DefaultPopularSites(absl::optional<std::string> country) {
   absl::optional<base::Value> sites = base::JSONReader::Read(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           popular_sites_json));
-  for (base::Value& site : sites->GetList())
+  base::Value::List& sites_list = sites->GetList();
+  for (base::Value& site : sites_list) {
     site.GetDict().Set("baked_in", true);
+  }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   static constexpr int default_popular_sites_icons[] = {
@@ -280,10 +282,10 @@ base::Value DefaultPopularSites(absl::optional<std::string> country) {
 
   size_t index = 0;
   for (int icon_resource : icon_list) {
-    SetDefaultResourceForSite(index++, icon_resource, sites->GetList());
+    SetDefaultResourceForSite(index++, icon_resource, sites_list);
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return std::move(sites.value());
+  return std::move(sites_list);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 }
 
@@ -304,7 +306,7 @@ PopularSites::Site::Site(const std::u16string& title,
 
 PopularSites::Site::Site(const Site& other) = default;
 
-PopularSites::Site::~Site() {}
+PopularSites::Site::~Site() = default;
 
 PopularSitesImpl::PopularSitesImpl(
     PrefService* prefs,
@@ -320,7 +322,7 @@ PopularSitesImpl::PopularSitesImpl(
           ParseSites(prefs->GetList(prefs::kPopularSitesJsonPref),
                      prefs_->GetInteger(prefs::kPopularSitesVersionPref))) {}
 
-PopularSitesImpl::~PopularSitesImpl() {}
+PopularSitesImpl::~PopularSitesImpl() = default;
 
 bool PopularSitesImpl::MaybeStartFetch(bool force_download,
                                        FinishedCallback callback) {

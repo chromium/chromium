@@ -178,7 +178,7 @@ class FakeHomepageClient : public MostVisitedSites::HomepageClient {
  public:
   FakeHomepageClient()
       : homepage_tile_enabled_(false), homepage_url_(kHomepageUrl) {}
-  ~FakeHomepageClient() override {}
+  ~FakeHomepageClient() override = default;
 
   bool IsHomepageTileEnabled() const override { return homepage_tile_enabled_; }
 
@@ -380,11 +380,10 @@ class MostVisitedSitesTest : public ::testing::TestWithParam<bool> {
 
     // Updating list value in pref with default gmail URL for unit testing.
     // Also adding migration feature to be enabled for unit test.
-    base::Value::List defaults;
-    defaults.Append("pjkljhegncpnkpknbcohdijeoejaedia");
+    auto defaults =
+        base::Value::List().Append("pjkljhegncpnkpknbcohdijeoejaedia");
     pref_service_.registry()->RegisterListPref(
-        webapps::kWebAppsMigratedPreinstalledApps,
-        base::Value(std::move(defaults)));
+        webapps::kWebAppsMigratedPreinstalledApps, std::move(defaults));
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
     if (IsPopularSitesFeatureEnabled())

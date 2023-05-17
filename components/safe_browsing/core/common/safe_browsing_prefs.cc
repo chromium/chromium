@@ -268,10 +268,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
   registry->RegisterTimePref(prefs::kExtensionTelemetryLastUploadTime,
                              base::Time::Now());
-  registry->RegisterDictionaryPref(prefs::kExtensionTelemetryConfig,
-                                   base::Value::Dict());
-  registry->RegisterDictionaryPref(prefs::kExtensionTelemetryFileData,
-                                   base::Value::Dict());
+  registry->RegisterDictionaryPref(prefs::kExtensionTelemetryConfig);
+  registry->RegisterDictionaryPref(prefs::kExtensionTelemetryFileData);
   registry->RegisterBooleanPref(
       prefs::kRealTimeDownloadProtectionRequestAllowedByPolicy, true);
   registry->RegisterBooleanPref(

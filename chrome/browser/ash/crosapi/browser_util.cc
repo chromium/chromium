@@ -49,8 +49,7 @@ using user_manager::User;
 using user_manager::UserManager;
 using version_info::Channel;
 
-namespace crosapi {
-namespace browser_util {
+namespace crosapi::browser_util {
 namespace {
 
 bool g_profile_migration_completed_for_test = false;
@@ -302,15 +301,12 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kDataVerPref);
-  registry->RegisterDictionaryPref(kProfileMigrationCompletedForUserPref,
-                                   base::Value::Dict());
-  registry->RegisterDictionaryPref(kProfileMoveMigrationCompletedForUserPref,
-                                   base::Value::Dict());
+  registry->RegisterDictionaryPref(kProfileMigrationCompletedForUserPref);
+  registry->RegisterDictionaryPref(kProfileMoveMigrationCompletedForUserPref);
   registry->RegisterDictionaryPref(
-      kProfileDataBackwardMigrationCompletedForUserPref, base::Value::Dict());
+      kProfileDataBackwardMigrationCompletedForUserPref);
   registry->RegisterListPref(kGotoFilesPref);
-  registry->RegisterDictionaryPref(kProfileMigrationCompletionTimeForUserPref,
-                                   base::Value::Dict());
+  registry->RegisterDictionaryPref(kProfileMigrationCompletionTimeForUserPref);
 }
 
 base::FilePath GetUserDataDir() {
@@ -1255,5 +1251,4 @@ SetLacrosPrimaryBrowserForTest(  // IN-TEST
       &g_lacros_primary_browser_for_test, value);
 }
 
-}  // namespace browser_util
-}  // namespace crosapi
+}  // namespace crosapi::browser_util
