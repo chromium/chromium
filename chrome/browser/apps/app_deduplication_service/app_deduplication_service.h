@@ -102,7 +102,7 @@ class AppDeduplicationService : public KeyedService,
 
   // Calls server connector to make a request to the Fondue server to retrieve
   // duplicate app group data.
-  void GetDeduplicateDataFromServer();
+  void GetDeduplicateDataFromServer(DeviceInfo device_info);
 
   // Processes data retrieved by server connector and stores in disk.
   void OnGetDeduplicateDataFromServerCompleted(
@@ -142,6 +142,7 @@ class AppDeduplicationService : public KeyedService,
       app_registry_cache_observation_{this};
 
   std::unique_ptr<AppDeduplicationServerConnector> server_connector_;
+  std::unique_ptr<DeviceInfoManager> device_info_manager_;
   std::unique_ptr<AppDeduplicationCache> cache_;
 
   // For testing

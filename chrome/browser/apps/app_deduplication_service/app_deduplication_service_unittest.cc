@@ -20,6 +20,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -478,6 +479,7 @@ class AppDeduplicationServiceAlmanacTest : public testing::Test {
   // BrowserTaskEnvironment has to be the first member or test will break.
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   std::unique_ptr<TestingProfile> profile_;
 };
 
