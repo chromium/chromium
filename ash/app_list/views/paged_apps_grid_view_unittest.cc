@@ -839,6 +839,58 @@ TEST_P(PagedAppsGridViewTest, DestroyLayersOnDragLastItemFromFolder) {
   EXPECT_FALSE(GetPagedAppsGridView()->IsItemAnimationRunning());
 }
 
+// Test that when quickly dragging an item into a second page, and then into the
+// search box while the reorder animation is running, does not results in a
+// crash.
+TEST_P(PagedAppsGridViewTest, EnterSearchBoxDuringDragNoCrash) {
+  const size_t kTotalApps = grid_test_api_->TilesPerPageInPagedGrid(0) + 1;
+  GetAppListTestHelper()->model()->PopulateApps(kTotalApps);
+  UpdateLayout();
+
+  PaginationModel* pagination_model =
+      GetAppListTestHelper()->GetRootPagedAppsGridView()->pagination_model();
+  EXPECT_EQ(0, pagination_model->selected_page());
+  EXPECT_EQ(2, pagination_model->total_pages());
+
+  auto* generator = GetEventGenerator();
+
+  AppListItemView* item_view = GetPagedAppsGridView()->GetItemViewAt(0);
+
+  StartDragOnItemView(item_view);
+
+  std::list<base::OnceClosure> tasks;
+
+  // Move to the second page.
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    generator->MoveMouseTo(
+        GetPagedAppsGridView()->GetBoundsInScreen().bottom_left() +
+        gfx::Vector2d(0, -1));
+    EXPECT_TRUE(GetPagedAppsGridView()->cardified_state_for_testing());
+    auto page_flip_waiter = std::make_unique<PageFlipWaiter>(pagination_model);
+    page_flip_waiter->Wait();
+    // Second page should be selected.
+    EXPECT_EQ(1, pagination_model->selected_page());
+  }));
+  // Trigger animation for reordering, and move to the search box while it is
+  // still animating.
+  tasks.push_back(base::BindLambdaForTesting([&]() {
+    ui::ScopedAnimationDurationScaleMode scope_duration(
+        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    generator->MoveMouseTo(
+        GetPagedAppsGridView()->GetBoundsInScreen().CenterPoint());
+    ASSERT_TRUE(GetPagedAppsGridView()->reorder_timer_for_test()->IsRunning());
+    GetPagedAppsGridView()->reorder_timer_for_test()->FireNow();
+    generator->MoveMouseTo(GetAppListTestHelper()
+                               ->GetSearchBoxView()
+                               ->GetBoundsInScreen()
+                               .CenterPoint());
+  }));
+  // Release drag, required by the drag and drop controller
+  tasks.push_back(base::BindLambdaForTesting(
+      [&]() { GetEventGenerator()->ReleaseLeftButton(); }));
+  MaybeRunDragAndDropSequence(&tasks);
+}
+
 // Test the case of beginning an item drag and then immediately ending the drag.
 // This will cause the entering cardified state animations to get interrupted by
 // the exiting animations. It could be possible that this animation interrupt

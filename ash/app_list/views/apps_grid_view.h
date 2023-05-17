@@ -455,6 +455,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Ends the "cardified" state if the subclass supports it.
   virtual void MaybeEndCardifiedView() {}
 
+  // Ends the "cardified" state if the subclass supports it.
+  virtual bool IsAnimatingCardifiedState() const;
+
   // Starts a page flip if the subclass supports it.
   virtual bool MaybeStartPageFlip();
 
