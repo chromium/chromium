@@ -20,4 +20,22 @@ void FakeSwapManagementClient::SwapZramEnableWriteback(
   std::move(callback).Run(true);
 }
 
+void FakeSwapManagementClient::SwapZramSetWritebackLimit(
+    uint32_t limit,
+    chromeos::VoidDBusMethodCallback callback) {
+  std::move(callback).Run(true);
+}
+
+void FakeSwapManagementClient::SwapZramMarkIdle(
+    uint32_t age,
+    chromeos::VoidDBusMethodCallback callback) {
+  std::move(callback).Run(true);
+}
+
+void FakeSwapManagementClient::InitiateSwapZramWriteback(
+    swap_management::ZramWritebackMode mode,
+    chromeos::VoidDBusMethodCallback callback) {
+  std::move(callback).Run(true);
+}
+
 }  // namespace ash

@@ -18,7 +18,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/swap_management/swap_management_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -97,26 +96,16 @@ class ZramWritebackBackendImpl : public ZramWritebackBackend {
                              weak_factory_.GetWeakPtr(), std::move(cb)));
   }
 
-  void OnMarkIdle(BoolCallback cb, absl::optional<std::string> resp) {
-    if (!resp) {
-      std::move(cb).Run(false);
-      return;
-    }
-
-    if ((*resp).find("SUCCESS") == std::string::npos) {
-      LOG(ERROR) << "Zram mark idle returned: " << *resp;
-      std::move(cb).Run(false);
-      return;
-    }
-
-    std::move(cb).Run(true);
+  void OnMarkIdle(BoolCallback cb, bool res) {
+    LOG_IF(ERROR, !res) << "Error marking zram idle.";
+    std::move(cb).Run(res);
   }
 
   void MarkIdle(base::TimeDelta age, BoolCallback cb) override {
-    DebugDaemonClient* debugd_client = DebugDaemonClient::Get();
-    CHECK(debugd_client);
+    SwapManagementClient* swap_management_client = SwapManagementClient::Get();
+    CHECK(swap_management_client);
 
-    debugd_client->SwapZramMarkIdle(
+    swap_management_client->SwapZramMarkIdle(
         age.InSeconds(),
         base::BindOnce(&ZramWritebackBackendImpl::OnMarkIdle,
                        weak_factory_.GetWeakPtr(), std::move(cb)));
@@ -130,59 +119,32 @@ class ZramWritebackBackendImpl : public ZramWritebackBackend {
     return ReadFileAsInt64(kZramPath.Append(kZramWritebackLimitFile));
   }
 
-  void OnSetWritebackLimitResponse(BoolIntCallback cb,
-                                   absl::optional<std::string> resp) {
-    if (!resp) {
-      std::move(cb).Run(false, 0);
-      return;
-    }
-
-    if ((*resp).find("SUCCESS") == std::string::npos) {
-      LOG(ERROR) << "Zram Set Writeback Limit returned: " << *resp;
-      std::move(cb).Run(false, 0);
-      return;
-    }
-
-    std::move(cb).Run(true, GetCurrentWritebackLimitPages());
+  void OnSetWritebackLimitResponse(BoolIntCallback cb, bool res) {
+    LOG_IF(ERROR, !res) << "Error setting zram writeback Limit.";
+    std::move(cb).Run(res, res ? GetCurrentWritebackLimitPages() : 0);
   }
 
   void SetWritebackLimit(uint64_t size_pages, BoolIntCallback cb) override {
-    DebugDaemonClient* debugd_client = DebugDaemonClient::Get();
-    CHECK(debugd_client);
+    SwapManagementClient* swap_management_client = SwapManagementClient::Get();
+    CHECK(swap_management_client);
 
-    debugd_client->SwapZramSetWritebackLimit(
+    swap_management_client->SwapZramSetWritebackLimit(
         size_pages,
         base::BindOnce(&ZramWritebackBackendImpl::OnSetWritebackLimitResponse,
                        weak_factory_.GetWeakPtr(), std::move(cb)));
   }
 
-  void OnInitiateWritebackResponse(BoolCallback cb,
-                                   absl::optional<std::string> resp) {
-    if (!resp) {
-      std::move(cb).Run(false);
-      return;
-    }
-
-    if ((*resp).find("SUCCESS") == std::string::npos) {
-      // I/O Errors (-EIO) result when we've hit our writeback limit, and thus
-      // are not considered an error, although we won't return true we will not
-      // log an error here.
-      bool io_error =
-          ((*resp).find("Error 5 (Input/output error)") != std::string::npos);
-      LOG_IF(ERROR, !io_error) << "Zram initiate writeback returned: " << *resp;
-      std::move(cb).Run(false);
-      return;
-    }
-
-    std::move(cb).Run(true);
+  void OnInitiateWritebackResponse(BoolCallback cb, bool res) {
+    LOG_IF(ERROR, !res) << "Error initiate zram writeback.";
+    std::move(cb).Run(res);
   }
 
   void InitiateWriteback(ZramWritebackMode mode, BoolCallback cb) override {
-    DebugDaemonClient* debugd_client = DebugDaemonClient::Get();
-    CHECK(debugd_client);
+    SwapManagementClient* swap_management_client = SwapManagementClient::Get();
+    CHECK(swap_management_client);
 
-    debugd_client->InitiateSwapZramWriteback(
-        static_cast<debugd::ZramWritebackMode>(mode),
+    swap_management_client->InitiateSwapZramWriteback(
+        static_cast<swap_management::ZramWritebackMode>(mode),
         base::BindOnce(&ZramWritebackBackendImpl::OnInitiateWritebackResponse,
                        weak_factory_.GetWeakPtr(), std::move(cb)));
   }
