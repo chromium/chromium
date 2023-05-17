@@ -1248,6 +1248,8 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="CardIssuer" variants="Autofill.CreditCardIssuerId"/>
   <token key="FormEventWithMetadata">
+    <variant name="FilledWithMetadata"
+        summary="A card with issuer id was filled"/>
     <variant name="SelectedWithMetadata"
         summary="A card with issuer id was selected"/>
     <variant name="SelectedWithMetadataOnce"
@@ -1257,6 +1259,12 @@ chromium-metrics-reviews@google.com.
         summary="A card with issuer id was shown"/>
     <variant name="ShownWithMetadataOnce"
         summary="A card with issuer id was shown, logged once per page load"/>
+    <variant name="SubmittedWithMetadataOnce"
+        summary="A card with issuer id was submitted. This event can only be
+                 triggered once per page load"/>
+    <variant name="WillSubmitWithMetadataOnce"
+        summary="A card with issuer id will be submitted. This event can only
+                 be triggered once per page load"/>
   </token>
 </histogram>
 

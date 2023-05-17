@@ -39,6 +39,7 @@ class CardMetadataFormEventMetricsTest
   bool card_has_static_art_image() const { return std::get<2>(GetParam()); }
 
   FormData form() { return form_; }
+  const CreditCard& card() const { return card_; }
 
   void SetUp() override {
     SetUpHelper();
@@ -53,29 +54,30 @@ class CardMetadataFormEventMetricsTest
                            .action = ""});
 
     // Add a masked server card.
-    CreditCard card = test::GetMaskedServerCard();
-    card.set_guid(kCardGuid);
+    card_ = test::GetMaskedServerCard();
+    card_.set_guid(kCardGuid);
     if (card_issuer_available()) {
-      card.set_issuer_id(kCapitalOneCardIssuerId);
+      card_.set_issuer_id(kCapitalOneCardIssuerId);
     }
     if (card_has_static_art_image()) {
-      card.set_card_art_url(GURL(kCapitalOneCardArtUrl));
+      card_.set_card_art_url(GURL(kCapitalOneCardArtUrl));
     }
     // Set metadata to card. The `card_art_url` will be overriden with rich card
     // art url regarless of `card_has_static_art_image()` in the test set-up,
     // because rich card art, if available, is preferred by Payments server and
     // will be sent to the client .
     if (card_metadata_available()) {
-      card.set_product_description(u"card_description");
-      card.set_card_art_url(GURL("https://www.example.com/cardart.png"));
+      card_.set_product_description(u"card_description");
+      card_.set_card_art_url(GURL("https://www.example.com/cardart.png"));
     }
-    personal_data().AddServerCreditCard(card);
+    personal_data().AddServerCreditCard(card_);
     personal_data().Refresh();
   }
 
   void TearDown() override { TearDownHelper(); }
 
  private:
+  CreditCard card_;
   FormData form_;
 };
 
@@ -222,6 +224,50 @@ TEST_P(CardMetadataFormEventMetricsTest, LogSelectedMetrics) {
       card_metadata_available(), card_issuer_available() ? 2 : 0);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCard.CapitalOne.SelectedWithMetadataOnce",
+      card_metadata_available(), card_issuer_available() ? 1 : 0);
+}
+
+// Test metadata filled metrics are correctly logged.
+TEST_P(CardMetadataFormEventMetricsTest, LogFilledMetrics) {
+  base::HistogramTester histogram_tester;
+
+  // Simulate filling the card.
+  autofill_manager().FillOrPreviewForm(
+      mojom::RendererFormDataAction::kFill, form(), form().fields.back(),
+      MakeFrontendId({.credit_card_id = kCardGuid}),
+      AutofillTriggerSource::kPopup);
+  autofill_manager().OnCreditCardFetchedForTest(CreditCardFetchResult::kSuccess,
+                                                &card(), u"123");
+
+  // Verify that if the filled card had issuer id, a histogram is logged which
+  // tells if the card from the issuer had metadata.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CreditCard.CapitalOne.FilledWithMetadata",
+      card_metadata_available(), card_issuer_available() ? 1 : 0);
+}
+
+// Test metadata will submit and submitted metrics are correctly logged.
+TEST_P(CardMetadataFormEventMetricsTest, LogSubmitMetrics) {
+  base::HistogramTester histogram_tester;
+
+  // Simulate filling and then submitting the card.
+  autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
+  autofill_manager().FillOrPreviewForm(
+      mojom::RendererFormDataAction::kFill, form(), form().fields.back(),
+      MakeFrontendId({.credit_card_id = kCardGuid}),
+      AutofillTriggerSource::kPopup);
+  autofill_manager().OnCreditCardFetchedForTest(CreditCardFetchResult::kSuccess,
+                                                &card(), u"123");
+  SubmitForm(form());
+
+  // Verify that if the suggestion about to be submitted had a issuer id,
+  // histograms will be logged which tells whether the card from the issuer
+  // had metadata.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CreditCard.CapitalOne.WillSubmitWithMetadataOnce",
+      card_metadata_available(), card_issuer_available() ? 1 : 0);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.CreditCard.CapitalOne.SubmittedWithMetadataOnce",
       card_metadata_available(), card_issuer_available() ? 1 : 0);
 }
 

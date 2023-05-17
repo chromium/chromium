@@ -144,6 +144,24 @@ void LogCardWithMetadataFormEventMetric(
                                     has_metadata);
         }
         break;
+      case CardMetadataLoggingEvent::kFilled:
+        base::UmaHistogramBoolean("Autofill.CreditCard." +
+                                      GetCardIssuerIdSuffix(issuer) +
+                                      ".FilledWithMetadata",
+                                  has_metadata);
+        break;
+      case CardMetadataLoggingEvent::kWillSubmit:
+        base::UmaHistogramBoolean("Autofill.CreditCard." +
+                                      GetCardIssuerIdSuffix(issuer) +
+                                      ".WillSubmitWithMetadataOnce",
+                                  has_metadata);
+        break;
+      case CardMetadataLoggingEvent::kSubmitted:
+        base::UmaHistogramBoolean("Autofill.CreditCard." +
+                                      GetCardIssuerIdSuffix(issuer) +
+                                      ".SubmittedWithMetadataOnce",
+                                  has_metadata);
+        break;
     }
   }
 }

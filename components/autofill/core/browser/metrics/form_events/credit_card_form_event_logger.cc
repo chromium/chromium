@@ -78,7 +78,7 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
             : FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SHOWN_ONCE,
         form);
   }
-  // Log issuer-specific metrics on whether metadata was shown.
+  // Log issuer-specific metrics on whether card suggestions shown had metadata.
   LogCardWithMetadataFormEventMetric(
       autofill_metrics::CardMetadataLoggingEvent::kShown,
       metadata_logging_context_,
@@ -188,6 +188,14 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
       break;
   }
 
+  // Log issuer-specific metrics on whether a card suggestion with metadata
+  // was filled.
+  metadata_logging_context_ =
+      autofill_metrics::GetMetadataLoggingContext({credit_card});
+  LogCardWithMetadataFormEventMetric(
+      autofill_metrics::CardMetadataLoggingEvent::kFilled,
+      metadata_logging_context_, HasBeenLogged());
+
   if (!has_logged_suggestion_filled_) {
     has_logged_suggestion_filled_ = true;
     logged_suggestion_filled_was_server_data_ =
@@ -271,6 +279,14 @@ void CreditCardFormEventLogger::LogWillSubmitForm(const FormStructure& form) {
   } else {
     Log(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, form);
   }
+
+  // Log issuer-specific metrics on whether a card suggestion with metadata
+  // was filled before submission.
+  if (has_logged_suggestion_filled_) {
+    LogCardWithMetadataFormEventMetric(
+        autofill_metrics::CardMetadataLoggingEvent::kWillSubmit,
+        metadata_logging_context_, HasBeenLogged(false));
+  }
 }
 
 void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
@@ -299,6 +315,14 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
   if (has_logged_suggestion_filled_ && has_eligible_offer_) {
     base::UmaHistogramBoolean("Autofill.Offer.SubmittedCardHasOffer",
                               card_selected_has_offer_);
+  }
+
+  // Log issuer-specific metrics on whether a card suggestion with metadata
+  // was filled before submission.
+  if (has_logged_suggestion_filled_) {
+    LogCardWithMetadataFormEventMetric(
+        autofill_metrics::CardMetadataLoggingEvent::kSubmitted,
+        metadata_logging_context_, HasBeenLogged(false));
   }
 }
 
