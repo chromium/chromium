@@ -122,7 +122,7 @@ class WebApkInstallerRunner {
 
     // WebApkInstaller owns itself.
     WebApkInstaller::InstallAsyncForTesting(
-        installer.release(), web_contents, info, SkBitmap(), false,
+        installer.release(), web_contents, info, SkBitmap(),
         base::BindOnce(&WebApkInstallerRunner::OnCompleted,
                        base::Unretained(this)));
 
@@ -141,7 +141,7 @@ class WebApkInstallerRunner {
     // WebApkInstaller owns itself.
     WebApkInstaller::InstallWithProtoAsyncForTesting(
         installer.release(), std::move(serialized_webapk), short_name, source,
-        SkBitmap(), false, manifest_url,
+        SkBitmap(), manifest_url,
         base::BindOnce(&WebApkInstallerRunner::OnCompleted,
                        base::Unretained(this)));
 
@@ -193,9 +193,9 @@ class UpdateRequestStorer {
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
     WebApkInstaller::StoreUpdateRequestToFile(
-        update_request_path, webapps::ShortcutInfo((GURL())), GURL(), "", false,
-        "", "", "", std::map<std::string, webapps::WebApkIconHasher::Icon>(),
-        false, false, {webapps::WebApkUpdateReason::PRIMARY_ICON_HASH_DIFFERS},
+        update_request_path, webapps::ShortcutInfo((GURL())), GURL(), "", "",
+        "", "", std::map<std::string, webapps::WebApkIconHasher::Icon>(), false,
+        false, {webapps::WebApkUpdateReason::PRIMARY_ICON_HASH_DIFFERS},
         base::BindOnce(&UpdateRequestStorer::OnComplete,
                        base::Unretained(this)));
     run_loop.Run();
@@ -299,7 +299,7 @@ class WebApkInstallerTest : public ::testing::Test {
     webapps::ShortcutInfo info(GURL::EmptyGURL());
 
     return webapps::BuildProtoInBackground(
-        info, info.manifest_id, primary_icon_data, false, splash_icon_data,
+        info, info.manifest_id, primary_icon_data, splash_icon_data,
         /*package_name*/ "", /*version*/ "",
         std::move(icon_url_to_murmur2_hash), true /* is_manifest_stale */,
         true /* is_app_identity_update_supported */,

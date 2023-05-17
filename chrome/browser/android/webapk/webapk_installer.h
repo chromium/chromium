@@ -74,7 +74,6 @@ class WebApkInstaller {
                            content::WebContents* web_contents,
                            const webapps::ShortcutInfo& shortcut_info,
                            const SkBitmap& primary_icon,
-                           bool is_primary_icon_maskable,
                            FinishCallback finish_callback);
 
   // Creates a self-owned WebApkInstaller instance and talks to the Chrome
@@ -89,7 +88,6 @@ class WebApkInstaller {
       const std::u16string& short_name,
       webapps::ShortcutInfo::Source source,
       const SkBitmap& primary_icon,
-      bool is_primary_icon_maskable,
       GURL& manifest_url,
       FinishCallback finish_callback);
 
@@ -107,7 +105,6 @@ class WebApkInstaller {
                                      content::WebContents* web_contents,
                                      const webapps::ShortcutInfo& shortcut_info,
                                      const SkBitmap& primary_icon,
-                                     bool is_primary_icon_maskable,
                                      FinishCallback callback);
 
   // Calls the private function |InstallWithProtoAsync| for testing.
@@ -118,7 +115,6 @@ class WebApkInstaller {
       const std::u16string& short_name,
       webapps::ShortcutInfo::Source source,
       const SkBitmap& primary_icon,
-      bool is_primary_icon_maskable,
       GURL& manifest_url,
       FinishCallback callback);
 
@@ -148,7 +144,6 @@ class WebApkInstaller {
       const webapps::ShortcutInfo& shortcut_info,
       const GURL& app_key,
       const std::string& primary_icon_data,
-      bool is_primary_icon_maskable,
       const std::string& splash_icon_data,
       const std::string& package_name,
       const std::string& version,
@@ -189,7 +184,6 @@ class WebApkInstaller {
   void InstallAsync(content::WebContents* web_contents,
                     const webapps::ShortcutInfo& shortcut_info,
                     const SkBitmap& primary_icon,
-                    bool is_primary_icon_maskable,
                     FinishCallback finish_callback);
 
   // Talks to the Chrome WebAPK server to update a WebAPK on the server and to
@@ -206,7 +200,6 @@ class WebApkInstaller {
                              const std::u16string& short_name,
                              webapps::ShortcutInfo::Source source,
                              const SkBitmap& primary_icon,
-                             bool is_primary_icon_maskable,
                              GURL& manifest_url,
                              FinishCallback finish_callback);
 
@@ -269,7 +262,6 @@ class WebApkInstaller {
   std::unique_ptr<webapps::ShortcutInfo> install_shortcut_info_;
 
   SkBitmap install_primary_icon_;
-  bool is_primary_icon_maskable_;
 
   std::u16string short_name_;
 

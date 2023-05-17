@@ -76,7 +76,6 @@ class WebApkInstallService : public KeyedService {
   void InstallAsync(content::WebContents* web_contents,
                     const webapps::ShortcutInfo& shortcut_info,
                     const SkBitmap& primary_icon,
-                    bool is_primary_icon_maskable,
                     webapps::WebappInstallSource install_source);
 
   void RetryInstallAsync(std::unique_ptr<std::string> serialized_web_apk,
@@ -108,7 +107,6 @@ class WebApkInstallService : public KeyedService {
   void OnFinishedInstall(base::WeakPtr<content::WebContents> web_contents,
                          const webapps::ShortcutInfo& shortcut_info,
                          const SkBitmap& primary_icon,
-                         bool is_priamry_icon_maskable,
                          webapps::WebApkInstallResult result,
                          std::unique_ptr<std::string> serialized_webapk,
                          bool relax_updates,

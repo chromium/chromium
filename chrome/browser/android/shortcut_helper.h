@@ -40,7 +40,6 @@ class ShortcutHelper {
       content::WebContents* web_contents,
       const webapps::ShortcutInfo& info,
       const SkBitmap& icon_bitmap,
-      bool is_icon_maskable,
       webapps::InstallableStatusCode installable_status);
 
   // Stores the webapp splash screen in the WebappDataStorage associated with

@@ -46,7 +46,6 @@ void WebApkInstallService::InstallAsync(
     content::WebContents* web_contents,
     const webapps::ShortcutInfo& shortcut_info,
     const SkBitmap& primary_icon,
-    bool is_primary_icon_maskable,
     webapps::WebappInstallSource install_source) {
   if (IsInstallInProgress(shortcut_info.manifest_id)) {
     webapps::WebappsUtils::ShowWebApkInstallResultToast(
@@ -57,19 +56,18 @@ void WebApkInstallService::InstallAsync(
   install_ids_.insert(shortcut_info.manifest_id);
   webapps::InstallableMetrics::TrackInstallEvent(install_source);
 
-  ShowInstallInProgressNotification(shortcut_info.manifest_id,
-                                    shortcut_info.short_name, shortcut_info.url,
-                                    primary_icon, is_primary_icon_maskable);
+  ShowInstallInProgressNotification(
+      shortcut_info.manifest_id, shortcut_info.short_name, shortcut_info.url,
+      primary_icon, shortcut_info.is_primary_icon_maskable);
 
   // We pass an weak ptr to a WebContents to the callback, since the
   // installation may take more than 10 seconds so there is a chance that the
   // WebContents has been destroyed before the install is finished.
   WebApkInstaller::InstallAsync(
       browser_context_, web_contents, shortcut_info, primary_icon,
-      is_primary_icon_maskable,
       base::BindOnce(&WebApkInstallService::OnFinishedInstall,
                      weak_ptr_factory_.GetWeakPtr(), web_contents->GetWeakPtr(),
-                     shortcut_info, primary_icon, is_primary_icon_maskable));
+                     shortcut_info, primary_icon));
 }
 
 void WebApkInstallService::InstallForServiceAsync(
@@ -102,8 +100,7 @@ void WebApkInstallService::InstallForServiceAsync(
 
   WebApkInstaller::InstallWithProtoAsync(
       browser_context_, std::move(serialized_proto), short_name,
-      webapps::ShortcutInfo::SOURCE_CHROME_SERVICE, primary_icon,
-      is_primary_icon_maskable, manifest_url,
+      webapps::ShortcutInfo::SOURCE_CHROME_SERVICE, primary_icon, manifest_url,
       base::BindOnce(&WebApkInstallService::OnFinishedInstallWithProto,
                      weak_ptr_factory_.GetWeakPtr(), manifest_id,
                      manifest_start_url, short_name, primary_icon,
@@ -139,8 +136,7 @@ void WebApkInstallService::RetryInstallAsync(
 
   WebApkInstaller::InstallWithProtoAsync(
       browser_context_, std::move(serialized_proto), short_name,
-      webapps::ShortcutInfo::SOURCE_INSTALL_RETRY, primary_icon,
-      is_primary_icon_maskable, manifest_url,
+      webapps::ShortcutInfo::SOURCE_INSTALL_RETRY, primary_icon, manifest_url,
       base::BindOnce(&WebApkInstallService::OnFinishedInstallWithProto,
                      weak_ptr_factory_.GetWeakPtr(), manifest_id,
                      manifest_start_url, short_name, primary_icon,
@@ -160,7 +156,6 @@ void WebApkInstallService::OnFinishedInstall(
     base::WeakPtr<content::WebContents> web_contents,
     const webapps::ShortcutInfo& shortcut_info,
     const SkBitmap& primary_icon,
-    bool is_primary_icon_maskable,
     webapps::WebApkInstallResult result,
     std::unique_ptr<std::string> serialized_proto,
     bool relax_updates,
@@ -168,8 +163,9 @@ void WebApkInstallService::OnFinishedInstall(
   install_ids_.erase(shortcut_info.manifest_id);
   HandleFinishInstallNotifications(
       shortcut_info.manifest_id, shortcut_info.url, shortcut_info.short_name,
-      primary_icon, is_primary_icon_maskable, shortcut_info.source, result,
-      std::move(serialized_proto), webapk_package_name);
+      primary_icon, shortcut_info.is_primary_icon_maskable,
+      shortcut_info.source, result, std::move(serialized_proto),
+      webapk_package_name);
 
   if (base::FeatureList::IsEnabled(
           webapps::features::kWebApkInstallFailureNotification)) {
@@ -188,7 +184,6 @@ void WebApkInstallService::OnFinishedInstall(
     // TODO(https://crbug.com/861643): Support maskable icons here.
     ShortcutHelper::AddToLauncherWithSkBitmap(
         web_contents.get(), shortcut_info, primary_icon,
-        /*is_icon_maskable=*/false,
         webapps::InstallableStatusCode::WEBAPK_INSTALL_FAILED);
   }
 }

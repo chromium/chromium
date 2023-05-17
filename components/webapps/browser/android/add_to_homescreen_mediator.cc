@@ -80,8 +80,7 @@ void AddToHomescreenMediator::StartForAppBanner(
   }
   // In this code path (show A2HS dialog from app banner), a maskable primary
   // icon isn't padded yet. We'll need to pad it here.
-  SetIcon(params_->primary_icon,
-          params_->has_maskable_primary_icon /*need_to_add_padding*/);
+  SetIcon(params_->primary_icon, params_->HasMaskablePrimaryIcon());
 }
 
 void AddToHomescreenMediator::StartForAppMenu(
@@ -147,7 +146,7 @@ void AddToHomescreenMediator::SetIcon(const SkBitmap& display_icon,
   base::android::ScopedJavaLocalRef<jobject> java_bitmap =
       gfx::ConvertToJavaBitmap(display_icon);
   Java_AddToHomescreenMediator_setIcon(env, java_ref_, java_bitmap,
-                                       params_->has_maskable_primary_icon,
+                                       params_->HasMaskablePrimaryIcon(),
                                        need_to_add_padding);
 }
 
@@ -183,8 +182,6 @@ void AddToHomescreenMediator::OnDataAvailable(
                           : AddToHomescreenParams::AppType::SHORTCUT;
   params_->shortcut_info = std::make_unique<ShortcutInfo>(info);
   params_->primary_icon = data_fetcher_->primary_icon();
-  params_->has_maskable_primary_icon =
-      data_fetcher_->has_maskable_primary_icon();
   params_->install_source = InstallableMetrics::GetInstallSource(
       data_fetcher_->web_contents(), InstallTrigger::MENU);
   params_->installable_status = status_code;

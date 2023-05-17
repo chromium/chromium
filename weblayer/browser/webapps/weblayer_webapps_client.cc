@@ -100,7 +100,6 @@ void WebLayerWebappsClient::InstallWebApk(
   current_install_ids_.insert(params.shortcut_info->manifest_id);
   WebApkInstallScheduler::FetchProtoAndScheduleInstall(
       web_contents, *(params.shortcut_info), params.primary_icon,
-      params.has_maskable_primary_icon,
       base::BindOnce(&WebLayerWebappsClient::OnInstallFinished,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -112,7 +111,7 @@ void WebLayerWebappsClient::InstallShortcut(
 
   webapps::addShortcutToHomescreen(
       base::Uuid::GenerateRandomV4().AsLowercaseString(), info.url,
-      info.user_title, params.primary_icon, params.has_maskable_primary_icon);
+      info.user_title, params.primary_icon, info.is_primary_icon_maskable);
 }
 
 void WebLayerWebappsClient::OnInstallFinished(GURL manifest_id) {

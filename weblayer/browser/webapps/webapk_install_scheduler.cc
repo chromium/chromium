@@ -27,11 +27,9 @@ namespace weblayer {
 WebApkInstallScheduler::WebApkInstallScheduler(
     const webapps::ShortcutInfo& shortcut_info,
     const SkBitmap& primary_icon,
-    bool is_primary_icon_maskable,
     WebApkInstallFinishedCallback callback)
     : webapps_client_callback_(std::move(callback)),
-      primary_icon_(primary_icon),
-      is_primary_icon_maskable_(is_primary_icon_maskable) {
+      primary_icon_(primary_icon) {
   shortcut_info_ = std::make_unique<webapps::ShortcutInfo>(shortcut_info);
 }
 
@@ -42,14 +40,12 @@ void WebApkInstallScheduler::FetchProtoAndScheduleInstall(
     content::WebContents* web_contents,
     const webapps::ShortcutInfo& shortcut_info,
     const SkBitmap& primary_icon,
-    bool is_primary_icon_maskable,
     WebApkInstallFinishedCallback callback) {
   // Self owned WebApkInstallScheduler that destroys itself as soon as its
   // OnResult function is called when the scheduled installation failed or
   // finished.
-  WebApkInstallScheduler* scheduler =
-      new WebApkInstallScheduler(shortcut_info, primary_icon,
-                                 is_primary_icon_maskable, std::move(callback));
+  WebApkInstallScheduler* scheduler = new WebApkInstallScheduler(
+      shortcut_info, primary_icon, std::move(callback));
   scheduler->FetchMurmur2Hashes(web_contents);
 }
 
@@ -91,7 +87,7 @@ void WebApkInstallScheduler::OnGotIconMurmur2HashesBuildProto(
 
   webapps::BuildProto(
       *shortcut_info_.get(), shortcut_info_->manifest_id,
-      std::string() /* primary_icon_data */, is_primary_icon_maskable_,
+      std::string() /* primary_icon_data */,
       std::string() /* splash_icon_data */, "" /* package_name */,
       "" /* version */, std::move(*hashes), false /* is_manifest_stale */,
       false /* is_app_identity_update_supported */,
@@ -102,7 +98,8 @@ void WebApkInstallScheduler::OnGotIconMurmur2HashesBuildProto(
 void WebApkInstallScheduler::ScheduleWithChrome(
     std::unique_ptr<std::string> serialized_proto) {
   WebApkInstallSchedulerBridge::ScheduleWebApkInstallWithChrome(
-      std::move(serialized_proto), primary_icon_, is_primary_icon_maskable_,
+      std::move(serialized_proto), primary_icon_,
+      shortcut_info_->is_primary_icon_maskable,
       base::BindOnce(&WebApkInstallScheduler::OnResult,
                      weak_ptr_factory_.GetWeakPtr()));
 }
