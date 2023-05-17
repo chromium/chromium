@@ -938,23 +938,12 @@
     "extension_types": ["platform_app", "extension"],
     "platforms": ["chromeos", "lacros"]
   },
-  "webAuthenticationProxy": [{
-    "channel": "trunk",
-    "extension_types": ["extension"],
-    "min_manifest_version": 3,
-    "platforms": ["win", "linux", "mac"]
-  }, {
+  "webAuthenticationProxy": {
     "channel": "stable",
     "extension_types": ["extension"],
     "min_manifest_version": 3,
-    "platforms": ["win", "linux", "mac"],
-    "allowlist": [
-      // Chrome Remote Desktop Security Key extension
-      "3CDF65D2CA48FCA9A96B01936FA97049F8332737",
-      // Chrome Remote Desktop Security Key dev extension
-      "2981AC9CF0999EEFFB4599E3C02395054167A521"
-    ]
-  }],
+    "platforms": ["win", "linux", "mac"]
+  },
   "webNavigation": {
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
