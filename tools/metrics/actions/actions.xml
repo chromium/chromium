@@ -27181,6 +27181,7 @@ should be able to be added at any place in this file.
 
 <action name="PhishingInterstitial.Advanced">
   <owner>psarouthakis@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User opened the &quot;Advanced&quot; tab on the Phishing interstitial.
   </description>
@@ -27188,11 +27189,13 @@ should be able to be added at any place in this file.
 
 <action name="PhishingInterstitial.Back">
   <owner>psarouthakis@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>User pressed back on a Phishing interstitial.</description>
 </action>
 
 <action name="PhishingInterstitial.CloseInterstitialWithoutUI">
   <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User exits interstitial page without clicking the back button on a Phishing
     interstitial.
@@ -27201,6 +27204,7 @@ should be able to be added at any place in this file.
 
 <action name="PhishingInterstitial.Diagnostic">
   <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks to show diagnostic on a Phishing interstitial.
   </description>
@@ -27208,6 +27212,7 @@ should be able to be added at any place in this file.
 
 <action name="PhishingInterstitial.EnhancedProtectionMessage">
   <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks to show enhanced protection message on a Phishing interstitial.
   </description>
@@ -27215,6 +27220,7 @@ should be able to be added at any place in this file.
 
 <action name="PhishingInterstitial.EnhancedProtectionSettings">
   <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks to open enhanced protection settings on a Phishing interstitial.
   </description>
@@ -27222,6 +27228,7 @@ should be able to be added at any place in this file.
 
 <action name="PhishingInterstitial.LearnMore">
   <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks to learn more on a Phishing interstitial.
   </description>
@@ -27229,6 +27236,7 @@ should be able to be added at any place in this file.
 
 <action name="PhishingInterstitial.PrivacyPolicy">
   <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks to show privacy policy on a Phishing interstitial.
   </description>
@@ -27236,11 +27244,13 @@ should be able to be added at any place in this file.
 
 <action name="PhishingInterstitial.Proceed">
   <owner>psarouthakis@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>User proceeded on a Phishing interstitial.</description>
 </action>
 
 <action name="PhishingInterstitial.ReportPhishingError">
   <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks to report an error on a Phishing interstitial.
   </description>
@@ -27248,6 +27258,7 @@ should be able to be added at any place in this file.
 
 <action name="PhishingInterstitial.SetExtendedReportingDisabled">
   <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks to disable extended reporting on a Phishing interstitial.
   </description>
@@ -27255,6 +27266,7 @@ should be able to be added at any place in this file.
 
 <action name="PhishingInterstitial.SetExtendedReportingEnabled">
   <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks to enable extended reporting on a Phishing interstitial.
   </description>
@@ -27262,13 +27274,48 @@ should be able to be added at any place in this file.
 
 <action name="PhishingInterstitial.Show">
   <owner>psarouthakis@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>User saw the Phishing interstitial.</description>
 </action>
 
 <action name="PhishingInterstitial.WhitePaper">
   <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <description>
     User clicks to show white paper on a Phishing interstitial.
+  </description>
+</action>
+
+<action name="PhishyPage.FirstClickEvent">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>First user click event within a phishy page.</description>
+</action>
+
+<action name="PhishyPage.FirstKeyEvent">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>First user keyboard entry into a phishy page.</description>
+</action>
+
+<action name="PhishyPage.FirstPasteEvent">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>First user paste event into a phishy page.</description>
+</action>
+
+<action name="PhishyPage.UserStartsInteraction">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>User starts interacting with the phishy page.</description>
+</action>
+
+<action name="PhishyPage.UserStopsInteraction">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <description>
+    User has either closed the phishy page, navigated away, or has had a
+    significant period of inactivity with the page.
   </description>
 </action>
 

@@ -137,6 +137,8 @@ static_library("safe_browsing") {
       "network_context_service.h",
       "network_context_service_factory.cc",
       "network_context_service_factory.h",
+      "phishy_interaction_tracker.cc",
+      "phishy_interaction_tracker.h",
       "safe_browsing_navigation_observer_manager_factory.cc",
       "safe_browsing_navigation_observer_manager_factory.h",
       "safe_browsing_service.cc",

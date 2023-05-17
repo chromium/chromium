@@ -1572,6 +1572,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="SafeBrowsing.PhishySite.{UserEvent}" units="count"
+    expires_after="2024-05-20">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the number of times a user {UserEvent} a site that was flagged as
+    phishy by safe browsing. Logged after 5 minutes of inactivity or when the
+    user leaves the page.
+  </summary>
+  <token key="UserEvent">
+    <variant name="ClickEventCount" summary="clicks within"/>
+    <variant name="KeyEventCount" summary="types into"/>
+    <variant name="PasteEventCount" summary="pastes into"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsing.Pref.Daily.Extended" enum="BooleanEnabled"
     expires_after="2023-11-12">
   <owner>xinghuilu@chromium.org</owner>

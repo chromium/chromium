@@ -29,6 +29,10 @@ BASE_FEATURE(kAddPageLoadTokenToClientSafeBrowsingReport,
              "AddPageLoadTokenToClientSafeBrowsingReport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAntiPhishingTelemetry,
+             "AntiPhishingTelemetry",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClientSideDetectionKillswitch,
              "ClientSideDetectionKillswitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -295,6 +299,7 @@ constexpr struct {
 } kExperimentalFeatures[]{
     {&kAdSamplerTriggerFeature, false},
     {&kAddPageLoadTokenToClientSafeBrowsingReport, false},
+    {&kAntiPhishingTelemetry, false},
     {&kClientSideDetectionKillswitch, true},
     {&kClientSideDetectionModelOptimizationGuide, true},
     {&kClientSideDetectionModelIsFlatBuffer, true},

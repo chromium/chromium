@@ -235,7 +235,9 @@ ChromePasswordReuseDetectionManagerClient::
       content::WebContentsUserData<ChromePasswordReuseDetectionManagerClient>(
           *web_contents),
       password_reuse_detection_manager_(this),
-      profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())) {
+      profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
+      phishy_interaction_tracker_(
+          safe_browsing::PhishyInteractionTracker(web_contents)) {
   log_manager_ = autofill::LogManager::Create(
       password_manager::PasswordManagerLogRouterFactory::GetForBrowserContext(
           profile_),
@@ -251,6 +253,9 @@ void ChromePasswordReuseDetectionManagerClient::PrimaryPageChanged(
 
   AddToWidgetInputEventObservers(page.GetMainDocument().GetRenderWidgetHost(),
                                  this);
+  if (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry)) {
+    phishy_interaction_tracker_.HandlePageChanged();
+  }
 }
 
 void ChromePasswordReuseDetectionManagerClient::RenderFrameCreated(
@@ -299,10 +304,16 @@ void ChromePasswordReuseDetectionManagerClient::OnPaste() {
   }
 
   password_reuse_detection_manager_.OnPaste(std::move(text));
+  if (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry)) {
+    phishy_interaction_tracker_.HandlePasteEvent();
+  }
 }
 
 void ChromePasswordReuseDetectionManagerClient::OnInputEvent(
     const blink::WebInputEvent& event) {
+  if (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry)) {
+    phishy_interaction_tracker_.HandleInputEvent(event);
+  }
 #if BUILDFLAG(IS_ANDROID)
   // On Android, key down events are triggered if a user types in through a
   // number bar on Android keyboard. If text is typed in through other parts of
