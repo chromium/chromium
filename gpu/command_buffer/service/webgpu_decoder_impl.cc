@@ -448,6 +448,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   WebGPUAdapterName use_webgpu_adapter_ = WebGPUAdapterName::kDefault;
   WebGPUPowerPreference use_webgpu_power_preference_ =
       WebGPUPowerPreference::kNone;
+  bool force_webgpu_compat_ = false;
   std::vector<std::string> require_enabled_toggles_;
   std::vector<std::string> require_disabled_toggles_;
   bool allow_unsafe_apis_;
@@ -1104,6 +1105,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
   enable_unsafe_webgpu_ = gpu_preferences.enable_unsafe_webgpu;
   use_webgpu_adapter_ = gpu_preferences.use_webgpu_adapter;
   use_webgpu_power_preference_ = gpu_preferences.use_webgpu_power_preference;
+  force_webgpu_compat_ = gpu_preferences.force_webgpu_compat;
   require_enabled_toggles_ = gpu_preferences.enabled_dawn_features_list;
   require_disabled_toggles_ = gpu_preferences.disabled_dawn_features_list;
 
@@ -1250,9 +1252,9 @@ void WebGPUDecoderImpl::RequestAdapterImpl(
 #endif  // BUILDFLAG(IS_LINUX)
   }
 
-  WGPUAdapter adapter =
-      CreatePreferredAdapter(options->powerPreference, force_fallback_adapter,
-                             options->compatibilityMode);
+  WGPUAdapter adapter = CreatePreferredAdapter(
+      options->powerPreference, force_fallback_adapter,
+      options->compatibilityMode || force_webgpu_compat_);
 
   if (adapter == nullptr) {
     // There are no adapters to return since webgpu is not supported here

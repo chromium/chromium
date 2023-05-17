@@ -105,6 +105,7 @@ struct GpuPreferences {
   bool enable_unsafe_webgpu;
   WebGPUAdapterName use_webgpu_adapter;
   WebGPUPowerPreference use_webgpu_power_preference;
+  bool force_webgpu_compat;
   DawnBackendValidationLevel enable_dawn_backend_validation;
   array<string> enabled_dawn_features_list;
   array<string> disabled_dawn_features_list;

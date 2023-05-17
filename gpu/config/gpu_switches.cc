@@ -58,6 +58,9 @@ GPU_EXPORT extern const char kUseWebGPUAdapter[] = "use-webgpu-adapter";
 GPU_EXPORT extern const char kUseWebGPUPowerPreference[] =
     "use-webgpu-power-preference";
 
+// Force all WebGPU content to run in WebGPU Compatibility mode.
+const char kForceWebGPUCompat[] = "force-webgpu-compat";
+
 // Set the Dawn features(toggles) enabled on the creation of Dawn devices.
 const char kEnableDawnFeatures[] = "enable-dawn-features";
 

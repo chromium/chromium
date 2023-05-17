@@ -162,6 +162,8 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
   gpu_preferences.use_webgpu_adapter = ParseWebGPUAdapterName(command_line);
   gpu_preferences.use_webgpu_power_preference =
       ParseWebGPUPowerPreference(command_line);
+  gpu_preferences.force_webgpu_compat =
+      command_line->HasSwitch(switches::kForceWebGPUCompat);
   if (command_line->HasSwitch(switches::kEnableDawnBackendValidation)) {
     auto value = command_line->GetSwitchValueASCII(
         switches::kEnableDawnBackendValidation);

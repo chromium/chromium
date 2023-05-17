@@ -268,6 +268,9 @@ struct GPU_EXPORT GpuPreferences {
   WebGPUPowerPreference use_webgpu_power_preference =
       WebGPUPowerPreference::kNone;
 
+  // Force the use of WebGPU Compatibility mode for all WebGPU content.
+  bool force_webgpu_compat = false;
+
   // The Dawn features(toggles) enabled on the creation of Dawn devices.
   std::vector<std::string> enabled_dawn_features_list;
 
