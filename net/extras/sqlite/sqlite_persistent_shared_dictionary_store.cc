@@ -13,6 +13,7 @@
 #include "net/extras/sqlite/sqlite_persistent_store_backend_base.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "sql/transaction.h"
 
 namespace net {
 
@@ -22,10 +23,15 @@ constexpr char kHistogramTag[] = "SharedDictionary";
 
 constexpr char kTableName[] = "dictionaries";
 
+// The key for storing the total dictionary size in MetaTable. It is utilized
+// when determining whether cache eviction needs to be performed. We store it as
+// metadata because calculating the total size is an expensive operation.
+constexpr char kTotalDictSizeKey[] = "total_dict_size";
+
 const int kCurrentVersionNumber = 1;
 const int kCompatibleVersionNumber = 1;
 
-bool CreateV1Schema(sql::Database* db) {
+bool CreateV1Schema(sql::Database* db, sql::MetaTable* meta_table) {
   CHECK(!db->DoesTableExist(kTableName));
 
   static constexpr char kCreateTableQuery[] =
@@ -92,7 +98,8 @@ bool CreateV1Schema(sql::Database* db) {
       !db->Execute(kCreateIsolationIndexQuery) ||
       !db->Execute(kCreateTokenIndexQuery) ||
       !db->Execute(kCreateExpirationTimeIndexQuery) ||
-      !db->Execute(kCreateLastUsedTimeIndexQuery)) {
+      !db->Execute(kCreateLastUsedTimeIndexQuery) ||
+      !meta_table->SetValue(kTotalDictSizeKey, 0)) {
     return false;
   }
   return true;
@@ -136,10 +143,12 @@ class SQLitePersistentSharedDictionaryStore::Backend
   Backend(const Backend&) = delete;
   Backend& operator=(const Backend&) = delete;
 
+  void GetTotalDictionarySize(
+      base::OnceCallback<void(Error, uint64_t)> callback);
   void RegisterDictionary(
       const SharedDictionaryStorageIsolationKey& isolation_key,
       SharedDictionaryInfo dictionary_info,
-      base::OnceCallback<void(Error, absl::optional<int64_t>)> callback);
+      base::OnceCallback<void(RegisterDictionaryResult)> callback);
   void GetDictionaries(
       const SharedDictionaryStorageIsolationKey& isolation_key,
       base::OnceCallback<void(Error, std::vector<SharedDictionaryInfo>)>
@@ -154,6 +163,25 @@ class SQLitePersistentSharedDictionaryStore::Backend
  private:
   ~Backend() override = default;
 
+  // If a matching dictionary exists, populates 'size_out' and
+  // 'disk_cache_key_out' with the dictionary's respective values and returns
+  // true. Otherwise returns false.
+  bool GetExistingDictionarySizeAndDiskCacheKeyToken(
+      const SharedDictionaryStorageIsolationKey& isolation_key,
+      const url::SchemeHostPort& host,
+      const std::string& match,
+      int64_t* size_out,
+      absl::optional<base::UnguessableToken>* disk_cache_key_out);
+
+  // Gets the total dictionary size in MetaTable.
+  Error GetTotalDictionarySizeInMetaTable(uint64_t* total_dictionary_size_out);
+
+  // Updates the total dictionary size in MetaTable by `size_delta` and returns
+  // the updated total dictionary size.
+  Error UpdateTotalDictionarySizeInMetaTable(
+      int64_t size_delta,
+      uint64_t* total_dictionary_size_out);
+
   // SQLitePersistentStoreBackendBase implementation
   bool CreateDatabaseSchema() override;
   absl::optional<int> DoMigrateDatabaseSchema() override;
@@ -161,7 +189,8 @@ class SQLitePersistentSharedDictionaryStore::Backend
 };
 
 bool SQLitePersistentSharedDictionaryStore::Backend::CreateDatabaseSchema() {
-  if (!db()->DoesTableExist(kTableName) && !CreateV1Schema(db())) {
+  if (!db()->DoesTableExist(kTableName) &&
+      !CreateV1Schema(db(), meta_table())) {
     return false;
   }
   return true;
@@ -186,10 +215,34 @@ void SQLitePersistentSharedDictionaryStore::Backend::DoCommit() {
   // for updating `last_used_time`.
 }
 
+void SQLitePersistentSharedDictionaryStore::Backend::GetTotalDictionarySize(
+    base::OnceCallback<void(Error, uint64_t)> callback) {
+  if (!background_task_runner()->RunsTasksInCurrentSequence()) {
+    CHECK(client_task_runner()->RunsTasksInCurrentSequence());
+    PostBackgroundTask(FROM_HERE,
+                       base::BindOnce(&Backend::GetTotalDictionarySize, this,
+                                      std::move(callback)));
+    return;
+  }
+
+  if (!InitializeDatabase()) {
+    PostClientTask(FROM_HERE,
+                   base::BindOnce(std::move(callback),
+                                  Error::kFailedToInitializeDatabase, 0));
+    return;
+  }
+  CHECK(background_task_runner()->RunsTasksInCurrentSequence());
+
+  uint64_t total_dictionary_size = 0;
+  Error error = GetTotalDictionarySizeInMetaTable(&total_dictionary_size);
+  PostClientTask(FROM_HERE, base::BindOnce(std::move(callback), error,
+                                           total_dictionary_size));
+}
+
 void SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionary(
     const SharedDictionaryStorageIsolationKey& isolation_key,
     SharedDictionaryInfo dictionary_info,
-    base::OnceCallback<void(Error, absl::optional<int64_t>)> callback) {
+    base::OnceCallback<void(RegisterDictionaryResult)> callback) {
   CHECK(!dictionary_info.primary_key_in_database().has_value());
   if (!background_task_runner()->RunsTasksInCurrentSequence()) {
     CHECK(client_task_runner()->RunsTasksInCurrentSequence());
@@ -201,12 +254,34 @@ void SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionary(
   }
 
   if (!InitializeDatabase()) {
-    PostClientTask(FROM_HERE, base::BindOnce(std::move(callback),
-                                             Error::kFailedToInitializeDatabase,
-                                             absl::nullopt));
+    PostClientTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       RegisterDictionaryResult{
+                           .error = Error::kFailedToInitializeDatabase}));
     return;
   }
   CHECK(background_task_runner()->RunsTasksInCurrentSequence());
+
+  sql::Transaction transaction(db());
+  if (!transaction.Begin()) {
+    PostClientTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       RegisterDictionaryResult{
+                           .error = Error::kFailedToBeginTransaction}));
+    return;
+  }
+
+  int64_t size_of_removed_dict = 0;
+  absl::optional<base::UnguessableToken> disk_cache_key_token_of_removed_dict;
+  int64_t size_delta = dictionary_info.size();
+  if (GetExistingDictionarySizeAndDiskCacheKeyToken(
+          isolation_key, url::SchemeHostPort(dictionary_info.url()),
+          dictionary_info.match(), &size_of_removed_dict,
+          &disk_cache_key_token_of_removed_dict)) {
+    size_delta -= size_of_removed_dict;
+  }
 
   static constexpr char kQuery[] =
       // clang-format off
@@ -229,7 +304,8 @@ void SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionary(
   if (!db()->IsSQLValid(kQuery)) {
     PostClientTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), Error::kInvalidSql, absl::nullopt));
+        base::BindOnce(std::move(callback),
+                       RegisterDictionaryResult{.error = Error::kInvalidSql}));
     return;
   }
 
@@ -256,13 +332,40 @@ void SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionary(
   if (!statement.Run()) {
     PostClientTask(FROM_HERE,
                    base::BindOnce(std::move(callback),
-                                  Error::kFailedToExecuteSql, absl::nullopt));
-
+                                  RegisterDictionaryResult{
+                                      .error = Error::kFailedToExecuteSql}));
     return;
   }
   int64_t id = db()->GetLastInsertRowId();
-  PostClientTask(FROM_HERE,
-                 base::BindOnce(std::move(callback), Error::kOk, id));
+
+  uint64_t total_dictionary_size = 0;
+  Error error =
+      UpdateTotalDictionarySizeInMetaTable(size_delta, &total_dictionary_size);
+  if (error != Error::kOk) {
+    PostClientTask(FROM_HERE,
+                   base::BindOnce(std::move(callback),
+                                  RegisterDictionaryResult{.error = error}));
+    return;
+  }
+
+  if (!transaction.Commit()) {
+    PostClientTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       RegisterDictionaryResult{
+                           .error = Error::kFailedToCommitTransaction}));
+    return;
+  }
+
+  PostClientTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback),
+                     RegisterDictionaryResult{
+                         .error = Error::kOk,
+                         .primary_key_in_database = id,
+                         .disk_cache_key_token_to_be_removed =
+                             disk_cache_key_token_of_removed_dict,
+                         .total_dictionary_size = total_dictionary_size}));
 }
 
 void SQLitePersistentSharedDictionaryStore::Backend::GetDictionaries(
@@ -451,6 +554,13 @@ void SQLitePersistentSharedDictionaryStore::Backend::ClearAllDictionaries(
     return;
   }
 
+  sql::Transaction transaction(db());
+  if (!transaction.Begin()) {
+    PostClientTask(FROM_HERE, base::BindOnce(std::move(callback),
+                                             Error::kFailedToBeginTransaction));
+    return;
+  }
+
   static constexpr char kQuery[] = "DELETE FROM dictionaries";
   if (!db()->IsSQLValid(kQuery)) {
     PostClientTask(FROM_HERE,
@@ -463,7 +573,98 @@ void SQLitePersistentSharedDictionaryStore::Backend::ClearAllDictionaries(
                                              Error::kFailedToExecuteSql));
     return;
   }
+
+  if (!meta_table()->SetValue(kTotalDictSizeKey, 0)) {
+    PostClientTask(FROM_HERE, base::BindOnce(std::move(callback),
+                                             Error::kFailedToSetTotalDictSize));
+    return;
+  }
+
+  if (!transaction.Commit()) {
+    PostClientTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), Error::kFailedToCommitTransaction));
+    return;
+  }
   PostClientTask(FROM_HERE, base::BindOnce(std::move(callback), Error::kOk));
+}
+
+bool SQLitePersistentSharedDictionaryStore::Backend::
+    GetExistingDictionarySizeAndDiskCacheKeyToken(
+        const SharedDictionaryStorageIsolationKey& isolation_key,
+        const url::SchemeHostPort& host,
+        const std::string& match,
+        int64_t* size_out,
+        absl::optional<base::UnguessableToken>* disk_cache_key_out) {
+  CHECK(background_task_runner()->RunsTasksInCurrentSequence());
+
+  static constexpr char kQuery[] =
+      // clang-format off
+      "SELECT "
+          "size,"
+          "token_high,"
+          "token_low FROM dictionaries "
+          "WHERE frame_origin=? AND top_frame_site=? AND host=? AND match=? "
+          "ORDER BY id";
+  // clang-format on
+
+  if (!db()->IsSQLValid(kQuery)) {
+    return false;
+  }
+  sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
+  statement.BindString(0, isolation_key.frame_origin().Serialize());
+  statement.BindString(1, isolation_key.top_frame_site().Serialize());
+  statement.BindString(2, host.Serialize());
+  statement.BindString(3, match);
+
+  if (statement.Step()) {
+    *size_out = statement.ColumnInt64(0);
+    *disk_cache_key_out =
+        ToUnguessableToken(statement.ColumnInt64(1), statement.ColumnInt64(2));
+    return true;
+  }
+  return false;
+}
+
+SQLitePersistentSharedDictionaryStore::Error
+SQLitePersistentSharedDictionaryStore::Backend::
+    GetTotalDictionarySizeInMetaTable(uint64_t* total_dictionary_size_out) {
+  int64_t unsigned_total_dictionary_size = 0;
+  if (!meta_table()->GetValue(kTotalDictSizeKey,
+                              &unsigned_total_dictionary_size)) {
+    return Error::kFailedToGetTotalDictSize;
+  }
+
+  // There is no `sql::Statement::ColumnUint64()` method. So we cast to
+  // uint64_t.
+  *total_dictionary_size_out =
+      static_cast<uint64_t>(unsigned_total_dictionary_size);
+  return Error::kOk;
+}
+
+SQLitePersistentSharedDictionaryStore::Error
+SQLitePersistentSharedDictionaryStore::Backend::
+    UpdateTotalDictionarySizeInMetaTable(int64_t size_delta,
+                                         uint64_t* total_dictionary_size_out) {
+  CHECK(background_task_runner()->RunsTasksInCurrentSequence());
+  uint64_t total_dictionary_size = 0;
+  Error error = GetTotalDictionarySizeInMetaTable(&total_dictionary_size);
+  if (error != Error::kOk) {
+    return error;
+  }
+
+  base::CheckedNumeric<uint64_t> checked_total_dictionary_size =
+      total_dictionary_size;
+  checked_total_dictionary_size += size_delta;
+  if (!checked_total_dictionary_size.IsValid()) {
+    LOG(ERROR) << "Invalid total_dict_size detected.";
+    return Error::kInvalidTotalDictSize;
+  }
+  *total_dictionary_size_out = checked_total_dictionary_size.ValueOrDie();
+  if (!meta_table()->SetValue(kTotalDictSizeKey, *total_dictionary_size_out)) {
+    return Error::kFailedToSetTotalDictSize;
+  }
+  return Error::kOk;
 }
 
 SQLitePersistentSharedDictionaryStore::SQLitePersistentSharedDictionaryStore(
@@ -480,21 +681,36 @@ SQLitePersistentSharedDictionaryStore::
   backend_->Close();
 }
 
+void SQLitePersistentSharedDictionaryStore::GetTotalDictionarySize(
+    base::OnceCallback<void(Error, uint64_t)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  backend_->GetTotalDictionarySize(base::BindOnce(
+      [](base::WeakPtr<SQLitePersistentSharedDictionaryStore> weak_ptr,
+         base::OnceCallback<void(Error, uint64_t)> callback, Error error,
+         uint64_t total_dictionary_size) {
+        if (!weak_ptr) {
+          return;
+        }
+        std::move(callback).Run(error, total_dictionary_size);
+      },
+      GetWeakPtr(), std::move(callback)));
+}
+
 void SQLitePersistentSharedDictionaryStore::RegisterDictionary(
     const SharedDictionaryStorageIsolationKey& isolation_key,
     SharedDictionaryInfo dictionary_info,
-    base::OnceCallback<void(Error, absl::optional<int64_t>)> callback) {
+    base::OnceCallback<void(RegisterDictionaryResult)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   backend_->RegisterDictionary(
       isolation_key, std::move(dictionary_info),
       base::BindOnce(
           [](base::WeakPtr<SQLitePersistentSharedDictionaryStore> weak_ptr,
-             base::OnceCallback<void(Error, absl::optional<int64_t>)> callback,
-             Error error, absl::optional<int64_t> primary_key_in_database) {
+             base::OnceCallback<void(RegisterDictionaryResult)> callback,
+             RegisterDictionaryResult result) {
             if (!weak_ptr) {
               return;
             }
-            std::move(callback).Run(error, primary_key_in_database);
+            std::move(callback).Run(std::move(result));
           },
           GetWeakPtr(), std::move(callback)));
 }

@@ -5,11 +5,20 @@
 #ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_MANAGER_ON_DISK_H_
 #define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_MANAGER_ON_DISK_H_
 
+#include <string>
+
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "net/extras/shared_dictionary/shared_dictionary_info.h"
 #include "net/extras/sqlite/sqlite_persistent_shared_dictionary_store.h"
 #include "services/network/shared_dictionary/shared_dictionary_disk_cache.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
+#include "services/network/shared_dictionary/shared_dictionary_writer_on_disk.h"
+
+class GURL;
 
 namespace base {
 namespace android {
@@ -53,7 +62,33 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
     return metadata_store_;
   }
 
+  scoped_refptr<SharedDictionaryWriter> CreateWriter(
+      const net::SharedDictionaryStorageIsolationKey& isolation_key,
+      const GURL& url,
+      base::Time response_time,
+      base::TimeDelta expiration,
+      const std::string& match,
+      base::OnceCallback<void(net::SharedDictionaryInfo)> callback);
+
  private:
+  void OnDictionaryWrittenInDiskCache(
+      const net::SharedDictionaryStorageIsolationKey& isolation_key,
+      const GURL& url,
+      base::Time response_time,
+      base::TimeDelta expiration,
+      const std::string& match,
+      const base::UnguessableToken& disk_cache_key_token,
+      base::OnceCallback<void(net::SharedDictionaryInfo)> callback,
+      SharedDictionaryWriterOnDisk::Result result,
+      size_t size,
+      const net::SHA256HashValue& hash);
+
+  void OnDictionaryWrittenInDatabase(
+      net::SharedDictionaryInfo info,
+      base::OnceCallback<void(net::SharedDictionaryInfo)> callback,
+      net::SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult
+          result);
+
   SharedDictionaryDiskCache disk_cache_;
   net::SQLitePersistentSharedDictionaryStore metadata_store_;
 

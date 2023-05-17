@@ -46,4 +46,70 @@ SharedDictionaryManagerOnDisk::CreateStorage(
                          GetWeakPtr(), isolation_key)));
 }
 
+scoped_refptr<SharedDictionaryWriter>
+SharedDictionaryManagerOnDisk::CreateWriter(
+    const net::SharedDictionaryStorageIsolationKey& isolation_key,
+    const GURL& url,
+    base::Time response_time,
+    base::TimeDelta expiration,
+    const std::string& match,
+    base::OnceCallback<void(net::SharedDictionaryInfo)> callback) {
+  const base::UnguessableToken disk_cache_key_token =
+      base::UnguessableToken::Create();
+  auto writer = base::MakeRefCounted<SharedDictionaryWriterOnDisk>(
+      disk_cache_key_token,
+      base::BindOnce(
+          &SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDiskCache,
+          weak_factory_.GetWeakPtr(), isolation_key, url, response_time,
+          expiration, match, disk_cache_key_token, std::move(callback)),
+      disk_cache_.GetWeakPtr());
+  writer->Initialize();
+  return writer;
+}
+
+void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDiskCache(
+    const net::SharedDictionaryStorageIsolationKey& isolation_key,
+    const GURL& url,
+    base::Time response_time,
+    base::TimeDelta expiration,
+    const std::string& match,
+    const base::UnguessableToken& disk_cache_key_token,
+    base::OnceCallback<void(net::SharedDictionaryInfo)> callback,
+    SharedDictionaryWriterOnDisk::Result result,
+    size_t size,
+    const net::SHA256HashValue& hash) {
+  if (result != SharedDictionaryWriterOnDisk::Result::kSuccess) {
+    return;
+  }
+  base::Time last_used_time = base::Time::Now();
+  net::SharedDictionaryInfo info(url, response_time, expiration, match,
+                                 last_used_time, size, hash,
+                                 disk_cache_key_token,
+                                 /*primary_key_in_database=*/absl::nullopt);
+  metadata_store_.RegisterDictionary(
+      isolation_key, info,
+      base::BindOnce(
+          &SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDatabase,
+          weak_factory_.GetWeakPtr(), info, std::move(callback)));
+}
+
+void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDatabase(
+    net::SharedDictionaryInfo info,
+    base::OnceCallback<void(net::SharedDictionaryInfo)> callback,
+    net::SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult
+        result) {
+  if (result.error != net::SQLitePersistentSharedDictionaryStore::Error::kOk) {
+    disk_cache_.DoomEntry(info.disk_cache_key_token().ToString(),
+                          base::DoNothing());
+    return;
+  }
+  CHECK(result.primary_key_in_database.has_value());
+  info.set_primary_key_in_database(*result.primary_key_in_database);
+  if (result.disk_cache_key_token_to_be_removed) {
+    disk_cache_.DoomEntry(result.disk_cache_key_token_to_be_removed->ToString(),
+                          base::DoNothing());
+  }
+  std::move(callback).Run(std::move(info));
+}
+
 }  // namespace network

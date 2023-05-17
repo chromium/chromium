@@ -59,20 +59,7 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
 
   void OnDatabaseRead(net::SQLitePersistentSharedDictionaryStore::Error error,
                       std::vector<net::SharedDictionaryInfo> info_list);
-  void OnDictionaryWrittenInDiskCache(
-      const GURL& url,
-      base::Time response_time,
-      base::TimeDelta expiration,
-      const std::string& match,
-      SharedDictionaryWriterOnDisk::Result result,
-      size_t size,
-      const net::SHA256HashValue& hash,
-      const base::UnguessableToken& disk_cache_key_token);
-  void OnDictionaryWrittenInDatabase(
-      net::SharedDictionaryInfo info,
-      net::SQLitePersistentSharedDictionaryStore::Error error,
-      absl::optional<int64_t> primary_key_in_database);
-
+  void OnDictionaryWritten(net::SharedDictionaryInfo info);
   void OnRefCountedSharedDictionaryDeleted(
       const base::UnguessableToken& disk_cache_key_token);
 
