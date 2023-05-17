@@ -869,7 +869,7 @@ IDBKeyRange* NativeValueTraits<IDBKeyRange*>::NativeValue(
     v8::Isolate* isolate,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
-  return V8IDBKeyRange::ToImplWithTypeCheck(isolate, value);
+  return V8IDBKeyRange::ToWrappable(isolate, value);
 }
 
 #if DCHECK_IS_ON()

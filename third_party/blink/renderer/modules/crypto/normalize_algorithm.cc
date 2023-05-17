@@ -884,8 +884,7 @@ bool GetPeerPublicKey(const Dictionary& raw,
     return false;
   }
 
-  CryptoKey* crypto_key =
-      V8CryptoKey::ToImplWithTypeCheck(raw.GetIsolate(), v8_value);
+  CryptoKey* crypto_key = V8CryptoKey::ToWrappable(raw.GetIsolate(), v8_value);
   if (!crypto_key) {
     SetTypeError(context.ToString("public", "Must be a CryptoKey"),
                  exception_state);

@@ -34,11 +34,6 @@ class V8InterfaceBridge : public V8InterfaceBridgeBase {
   static T* ToImpl(v8::Local<v8::Object> value) {
     return ToWrappableUnsafe(value);
   }
-
-  static T* ToImplWithTypeCheck(v8::Isolate* isolate,
-                                v8::Local<v8::Value> value) {
-    return ToWrappable(isolate, value);
-  }
 };
 
 }  // namespace bindings

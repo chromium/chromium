@@ -253,7 +253,7 @@ TEST_F(ReadableStreamTest, GetBYOBReader) {
   ScriptValue byte_stream =
       EvalWithPrintingError(&scope, "new ReadableStream({type: 'bytes'})");
   ReadableStream* stream{
-      V8ReadableStream::ToImplWithTypeCheck(isolate, byte_stream.V8Value())};
+      V8ReadableStream::ToWrappable(isolate, byte_stream.V8Value())};
   ASSERT_TRUE(stream);
 
   EXPECT_FALSE(stream->locked());

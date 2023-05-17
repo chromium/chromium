@@ -403,8 +403,9 @@ void MainThreadDebugger::installAdditionalCommandLineAPI(
 static Node* SecondArgumentAsNode(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   if (info.Length() > 1) {
-    if (Node* node = V8Node::ToImplWithTypeCheck(info.GetIsolate(), info[1]))
+    if (Node* node = V8Node::ToWrappable(info.GetIsolate(), info[1])) {
       return node;
+    }
   }
   auto* window = CurrentDOMWindow(info.GetIsolate());
   return window ? window->document() : nullptr;

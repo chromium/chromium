@@ -234,7 +234,7 @@ AudioWorkletProcessor* AudioWorkletGlobalScope::CreateProcessor(
 
   // ToImplWithTypeCheck() may return nullptr when the type does not match.
   AudioWorkletProcessor* processor =
-      V8AudioWorkletProcessor::ToImplWithTypeCheck(isolate, instance.V8Value());
+      V8AudioWorkletProcessor::ToWrappable(isolate, instance.V8Value());
 
   return processor;
 }

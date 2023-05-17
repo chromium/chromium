@@ -290,7 +290,7 @@ TEST(OutgoingStreamTest, DataPipeClosed) {
   closed_tester.WaitUntilSettled();
   EXPECT_TRUE(closed_tester.IsRejected());
 
-  DOMException* closed_exception = V8DOMException::ToImplWithTypeCheck(
+  DOMException* closed_exception = V8DOMException::ToWrappable(
       scope.GetIsolate(), closed_tester.Value().V8Value());
   ASSERT_TRUE(closed_exception);
   EXPECT_EQ(closed_exception->name(), "NetworkError");
@@ -306,7 +306,7 @@ TEST(OutgoingStreamTest, DataPipeClosed) {
 
   EXPECT_TRUE(write_tester.IsRejected());
 
-  DOMException* write_exception = V8DOMException::ToImplWithTypeCheck(
+  DOMException* write_exception = V8DOMException::ToWrappable(
       scope.GetIsolate(), write_tester.Value().V8Value());
   ASSERT_TRUE(write_exception);
   EXPECT_EQ(write_exception->name(), "NetworkError");
@@ -345,7 +345,7 @@ TEST(OutgoingStreamTest, DataPipeClosedDuringAsyncWrite) {
 
   EXPECT_TRUE(write_tester.IsRejected());
 
-  DOMException* write_exception = V8DOMException::ToImplWithTypeCheck(
+  DOMException* write_exception = V8DOMException::ToWrappable(
       scope.GetIsolate(), write_tester.Value().V8Value());
   ASSERT_TRUE(write_exception);
   EXPECT_EQ(write_exception->name(), "NetworkError");
@@ -356,7 +356,7 @@ TEST(OutgoingStreamTest, DataPipeClosedDuringAsyncWrite) {
 
   EXPECT_TRUE(closed_tester.IsRejected());
 
-  DOMException* closed_exception = V8DOMException::ToImplWithTypeCheck(
+  DOMException* closed_exception = V8DOMException::ToWrappable(
       scope.GetIsolate(), write_tester.Value().V8Value());
   ASSERT_TRUE(closed_exception);
   EXPECT_EQ(closed_exception->name(), "NetworkError");

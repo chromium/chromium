@@ -6683,9 +6683,9 @@ class CompositedSelectionBoundsTest
     ASSERT_NE(selection.start, cc::LayerSelectionBound());
     ASSERT_NE(selection.end, cc::LayerSelectionBound());
 
-    blink::Node* layer_owner_node_for_start = V8Node::ToImplWithTypeCheck(
-        web_view_helper_.GetAgentGroupScheduler().Isolate(),
-        expected_result.Get(context, 0).ToLocalChecked());
+    blink::Node* layer_owner_node_for_start =
+        V8Node::ToWrappable(web_view_helper_.GetAgentGroupScheduler().Isolate(),
+                            expected_result.Get(context, 0).ToLocalChecked());
     // Hidden selection does not always have a layer (might be hidden due to not
     // having been painted.
     ASSERT_TRUE(layer_owner_node_for_start || selection.start.hidden);
@@ -6712,9 +6712,9 @@ class CompositedSelectionBoundsTest
     EXPECT_NEAR(start_edge_start_in_layer_y, selection.start.edge_start.y(), 1);
     EXPECT_NEAR(start_edge_end_in_layer_x, selection.start.edge_end.x(), 1);
 
-    blink::Node* layer_owner_node_for_end = V8Node::ToImplWithTypeCheck(
-        web_view_helper_.GetAgentGroupScheduler().Isolate(),
-        expected_result.Get(context, 5).ToLocalChecked());
+    blink::Node* layer_owner_node_for_end =
+        V8Node::ToWrappable(web_view_helper_.GetAgentGroupScheduler().Isolate(),
+                            expected_result.Get(context, 5).ToLocalChecked());
     // Hidden selection does not always have a layer (might be hidden due to not
     // having been painted.
     ASSERT_TRUE(layer_owner_node_for_end || selection.end.hidden);

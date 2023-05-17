@@ -52,8 +52,7 @@
 namespace blink {
 
 WebElement WebElement::FromV8Value(v8::Local<v8::Value> value) {
-  Element* element =
-      V8Element::ToImplWithTypeCheck(v8::Isolate::GetCurrent(), value);
+  Element* element = V8Element::ToWrappable(v8::Isolate::GetCurrent(), value);
   return WebElement(element);
 }
 

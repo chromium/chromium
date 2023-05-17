@@ -205,9 +205,8 @@ class ScopedWebTransport {
     tester.WaitUntilSettled();
 
     EXPECT_TRUE(tester.IsFulfilled());
-    auto* bidirectional_stream =
-        V8WebTransportBidirectionalStream::ToImplWithTypeCheck(
-            scope.GetIsolate(), tester.Value().V8Value());
+    auto* bidirectional_stream = V8WebTransportBidirectionalStream::ToWrappable(
+        scope.GetIsolate(), tester.Value().V8Value());
     EXPECT_TRUE(bidirectional_stream);
     return bidirectional_stream;
   }
@@ -220,8 +219,8 @@ class ScopedWebTransport {
     v8::Local<v8::Value> v8value = ReadValueFromStream(scope, streams);
 
     BidirectionalStream* bidirectional_stream =
-        V8WebTransportBidirectionalStream::ToImplWithTypeCheck(
-            scope.GetIsolate(), v8value);
+        V8WebTransportBidirectionalStream::ToWrappable(scope.GetIsolate(),
+                                                       v8value);
     EXPECT_TRUE(bidirectional_stream);
 
     return bidirectional_stream;

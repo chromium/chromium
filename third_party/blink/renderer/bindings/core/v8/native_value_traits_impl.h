@@ -464,7 +464,7 @@ struct NativeValueTraits<IDLStringStringContextTrustedHTMLBase<mode>>
                             ExceptionState& exception_state,
                             ExecutionContext* execution_context) {
     if (TrustedHTML* trusted_html =
-            V8TrustedHTML::ToImplWithTypeCheck(isolate, value)) {
+            V8TrustedHTML::ToWrappable(isolate, value)) {
       return trusted_html->toString();
     }
 
@@ -500,7 +500,7 @@ struct NativeValueTraits<IDLStringStringContextTrustedScriptBase<mode>>
                             ExceptionState& exception_state,
                             ExecutionContext* execution_context) {
     if (TrustedScript* trusted_script =
-            V8TrustedScript::ToImplWithTypeCheck(isolate, value)) {
+            V8TrustedScript::ToWrappable(isolate, value)) {
       return trusted_script->toString();
     }
 
@@ -537,7 +537,7 @@ struct NativeValueTraits<IDLUSVStringStringContextTrustedScriptURLBase<mode>>
                             ExceptionState& exception_state,
                             ExecutionContext* execution_context) {
     if (TrustedScriptURL* trusted_script_url =
-            V8TrustedScriptURL::ToImplWithTypeCheck(isolate, value)) {
+            V8TrustedScriptURL::ToWrappable(isolate, value)) {
       return trusted_script_url->toString();
     }
 

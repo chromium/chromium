@@ -143,7 +143,7 @@ testing::AssertionResult HadDOMExceptionInCoreTest(
     ExceptionState& exception_state) {
   if (!exception_state.HadException())
     return testing::AssertionFailure() << "no exception thrown";
-  DOMException* dom_exception = V8DOMException::ToImplWithTypeCheck(
+  DOMException* dom_exception = V8DOMException::ToWrappable(
       script_state->GetIsolate(), exception_state.GetException());
   if (!dom_exception)
     return testing::AssertionFailure()

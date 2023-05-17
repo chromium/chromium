@@ -97,7 +97,7 @@ testing::AssertionResult HadDOMExceptionInModulesTest(
     ExceptionState& exception_state) {
   if (!exception_state.HadException())
     return testing::AssertionFailure() << "no exception thrown";
-  DOMException* dom_exception = V8DOMException::ToImplWithTypeCheck(
+  DOMException* dom_exception = V8DOMException::ToWrappable(
       script_state->GetIsolate(), exception_state.GetException());
   if (!dom_exception) {
     return testing::AssertionFailure()
@@ -270,7 +270,7 @@ T ConvertCryptoResult(v8::Isolate*, const ScriptValue&);
 template <>
 CryptoKey* ConvertCryptoResult<CryptoKey*>(v8::Isolate* isolate,
                                            const ScriptValue& value) {
-  return V8CryptoKey::ToImplWithTypeCheck(isolate, value.V8Value());
+  return V8CryptoKey::ToWrappable(isolate, value.V8Value());
 }
 template <>
 CryptoKeyPair ConvertCryptoResult<CryptoKeyPair>(v8::Isolate* isolate,
@@ -280,13 +280,13 @@ CryptoKeyPair ConvertCryptoResult<CryptoKeyPair>(v8::Isolate* isolate,
   v8::Local<v8::Value> private_key, public_key;
   EXPECT_TRUE(dictionary.Get("publicKey", public_key));
   EXPECT_TRUE(dictionary.Get("privateKey", private_key));
-  return std::make_pair(V8CryptoKey::ToImplWithTypeCheck(isolate, public_key),
-                        V8CryptoKey::ToImplWithTypeCheck(isolate, private_key));
+  return std::make_pair(V8CryptoKey::ToWrappable(isolate, public_key),
+                        V8CryptoKey::ToWrappable(isolate, private_key));
 }
 template <>
 DOMException* ConvertCryptoResult<DOMException*>(v8::Isolate* isolate,
                                                  const ScriptValue& value) {
-  return V8DOMException::ToImplWithTypeCheck(isolate, value.V8Value());
+  return V8DOMException::ToWrappable(isolate, value.V8Value());
 }
 template <>
 WebVector<unsigned char> ConvertCryptoResult<WebVector<unsigned char>>(

@@ -159,8 +159,8 @@ TEST_F(MLGraphTestMojo, CreateWebNNGraphTest) {
     ScriptPromiseTester tester(script_state, BuildSimpleGraph(scope, options));
     tester.WaitUntilSettled();
     EXPECT_TRUE(tester.IsRejected());
-    auto* exception = V8DOMException::ToImplWithTypeCheck(
-        scope.GetIsolate(), tester.Value().V8Value());
+    auto* exception = V8DOMException::ToWrappable(scope.GetIsolate(),
+                                                  tester.Value().V8Value());
     EXPECT_NE(exception, nullptr);
     EXPECT_EQ(exception->name(), "NotSupportedError");
     EXPECT_EQ(exception->message(), "Not implemented");

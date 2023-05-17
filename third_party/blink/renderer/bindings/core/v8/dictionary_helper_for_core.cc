@@ -203,7 +203,7 @@ bool DictionaryHelper::Get(const Dictionary& dictionary,
 
   // FIXME: this will need to be changed so it can also return an AudioTrack
   // or a VideoTrack once we add them.
-  value = V8TextTrack::ToImplWithTypeCheck(dictionary.GetIsolate(), v8_value);
+  value = V8TextTrack::ToWrappable(dictionary.GetIsolate(), v8_value);
   return true;
 }
 

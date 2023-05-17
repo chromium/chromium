@@ -37,9 +37,8 @@ ScriptPromise RTCEncodedVideoUnderlyingSink::write(
     WritableStreamDefaultController* controller,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  RTCEncodedVideoFrame* encoded_frame =
-      V8RTCEncodedVideoFrame::ToImplWithTypeCheck(script_state->GetIsolate(),
-                                                  chunk.V8Value());
+  RTCEncodedVideoFrame* encoded_frame = V8RTCEncodedVideoFrame::ToWrappable(
+      script_state->GetIsolate(), chunk.V8Value());
   if (!encoded_frame) {
     exception_state.ThrowTypeError("Invalid frame");
     return ScriptPromise();

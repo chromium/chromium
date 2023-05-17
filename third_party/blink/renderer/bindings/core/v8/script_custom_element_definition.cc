@@ -173,8 +173,7 @@ Element* ScriptCustomElementDefinition::CallConstructor() {
     return nullptr;
   }
 
-  return V8Element::ToImplWithTypeCheck(constructor_->GetIsolate(),
-                                        result.V8Value());
+  return V8Element::ToWrappable(constructor_->GetIsolate(), result.V8Value());
 }
 
 v8::Local<v8::Object> ScriptCustomElementDefinition::Constructor() const {

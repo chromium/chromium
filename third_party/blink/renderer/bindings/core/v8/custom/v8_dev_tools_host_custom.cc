@@ -160,7 +160,7 @@ void V8DevToolsHost::ShowContextMenuAtPointMethodCustom(
 
   Document* document = nullptr;
   if (info.Length() >= 4 && info[3]->IsObject()) {
-    document = V8HTMLDocument::ToImplWithTypeCheck(isolate, info[3]);
+    document = V8HTMLDocument::ToWrappable(isolate, info[3]);
   } else {
     LocalDOMWindow* window = EnteredDOMWindow(isolate);
     document = window ? window->document() : nullptr;

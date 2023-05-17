@@ -547,7 +547,7 @@ TEST_F(PictureInPictureControllerTestWithWidget,
 
   // Verify rejected with DOMExceptionCode::kInvalidStateError.
   EXPECT_EQ(v8::Promise::kRejected, promise.V8Promise()->State());
-  DOMException* dom_exception = V8DOMException::ToImplWithTypeCheck(
+  DOMException* dom_exception = V8DOMException::ToWrappable(
       promise.GetIsolate(), promise.V8Promise()->Result());
   ASSERT_NE(dom_exception, nullptr);
   EXPECT_EQ(static_cast<int>(DOMExceptionCode::kInvalidStateError),
