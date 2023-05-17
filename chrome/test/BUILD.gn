@@ -9303,6 +9303,7 @@ test("unit_tests") {
       ]
     }
     if (is_chromeos_ash) {
+      sources += [ "../browser/supervised_user/chromeos/supervised_user_web_content_handler_ash_impl_unittest.cc" ]
       deps += [ "//chrome/browser/ash/crosapi" ]
     }
     if (is_android) {
