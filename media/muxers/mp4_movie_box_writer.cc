@@ -50,27 +50,26 @@ void WriteLowHigh(BoxByteStream& writer, uint32_t value) {
 }  // namespace
 
 // Mp4MovieBoxWriter class.
-Mp4MovieBoxWriter::Mp4MovieBoxWriter(const Mp4MuxerContext& input_context,
+Mp4MovieBoxWriter::Mp4MovieBoxWriter(const Mp4MuxerContext& context,
                                      const mp4::writable_boxes::Movie& box)
-    : Mp4BoxWriter(input_context), box_(box) {
+    : Mp4BoxWriter(context), box_(box) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  AddChildBox(
-      std::make_unique<Mp4MovieHeaderBoxWriter>(context(), box_.header));
+  AddChildBox(std::make_unique<Mp4MovieHeaderBoxWriter>(context, box_.header));
 
-  if (auto video_index = context().GetVideoIndex()) {
+  if (auto video_index = context.GetVideoIndex()) {
     DCHECK_LE(*video_index, box_.tracks.size());
     AddChildBox(std::make_unique<Mp4MovieTrackBoxWriter>(
-        context(), box_.tracks[*video_index]));
+        context, box_.tracks[*video_index]));
   }
 
-  if (auto audio_index = context().GetAudioIndex()) {
+  if (auto audio_index = context.GetAudioIndex()) {
     DCHECK_LE(*audio_index, box_.tracks.size());
     AddChildBox(std::make_unique<Mp4MovieTrackBoxWriter>(
-        context(), box_.tracks[*audio_index]));
+        context, box_.tracks[*audio_index]));
   }
 
   AddChildBox(
-      std::make_unique<Mp4MovieExtendsBoxWriter>(context(), box_.extends));
+      std::make_unique<Mp4MovieExtendsBoxWriter>(context, box_.extends));
 }
 
 Mp4MovieBoxWriter::~Mp4MovieBoxWriter() = default;
@@ -129,21 +128,21 @@ void Mp4MovieHeaderBoxWriter::Write(BoxByteStream& writer) {
 
 // Mp4MovieExtendsBoxWriter (`mvex`) class.
 Mp4MovieExtendsBoxWriter::Mp4MovieExtendsBoxWriter(
-    const Mp4MuxerContext& input_context,
+    const Mp4MuxerContext& context,
     const mp4::writable_boxes::MovieExtends& box)
-    : Mp4BoxWriter(input_context), box_(box) {
+    : Mp4BoxWriter(context), box_(box) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (auto video_index = context().GetVideoIndex()) {
+  if (auto video_index = context.GetVideoIndex()) {
     DCHECK_LE(*video_index, box_.track_extends.size());
     AddChildBox(std::make_unique<Mp4MovieTrackExtendsBoxWriter>(
-        context(), box_.track_extends[*video_index]));
+        context, box_.track_extends[*video_index]));
   }
 
-  if (auto audio_index = context().GetAudioIndex()) {
+  if (auto audio_index = context.GetAudioIndex()) {
     DCHECK_LE(*audio_index, box_.track_extends.size());
     AddChildBox(std::make_unique<Mp4MovieTrackExtendsBoxWriter>(
-        context(), box_.track_extends[*audio_index]));
+        context, box_.track_extends[*audio_index]));
   }
 }
 
@@ -327,15 +326,7 @@ void Mp4MovieMediaHandlerBoxWriter::Write(BoxByteStream& writer) {
   writer.WriteU32(0);  // reserved;
   writer.WriteU32(0);  // reserved;
 
-  // zero-terminated C-style string for name.
-  if (!box_.name.empty()) {
-    writer.WriteBytes(box_.name.c_str(), box_.name.size());
-    if (box_.name.back() != 0) {
-      writer.WriteU8(0);
-    }
-  } else {
-    writer.WriteU8(0);
-  }
+  writer.WriteString(box_.name);
 
   WriteChildren(writer);
 
@@ -348,6 +339,16 @@ Mp4MovieMediaInformationBoxWriter::Mp4MovieMediaInformationBoxWriter(
     const mp4::writable_boxes::MediaInformation& box)
     : Mp4BoxWriter(context), box_(box) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (box_.video_header.has_value()) {
+    AddChildBox(std::make_unique<Mp4MovieVideoHeaderBoxWriter>(context));
+  } else if (box_.sound_header.has_value()) {
+    AddChildBox(std::make_unique<Mp4MovieSoundHeaderBoxWriter>(context));
+  }
+
+  AddChildBox(std::make_unique<Mp4MovieDataInformationBoxWriter>(
+      context, box_.data_information));
+
   AddChildBox(std::make_unique<Mp4MovieSampleTableBoxWriter>(
       context, box_.sample_table));
 }
@@ -365,12 +366,125 @@ void Mp4MovieMediaInformationBoxWriter::Write(BoxByteStream& writer) {
   writer.EndBox();
 }
 
+// Mp4MovieVideoHeaderBoxWriter (`vmhd`) class.
+Mp4MovieVideoHeaderBoxWriter::Mp4MovieVideoHeaderBoxWriter(
+    const Mp4MuxerContext& context)
+    : Mp4BoxWriter(context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+Mp4MovieVideoHeaderBoxWriter::~Mp4MovieVideoHeaderBoxWriter() = default;
+
+void Mp4MovieVideoHeaderBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartFullBox(mp4::FOURCC_VMHD);
+
+  writer.WriteU16(0);  // graphics_mode.
+  writer.WriteU16(0);  // op_color[0].
+  writer.WriteU16(0);  // op_color[1]..
+  writer.WriteU16(0);  // op_color[2]..
+
+  writer.EndBox();
+}
+
+// Mp4MovieSoundHeaderBoxWriter (`smhd`) class.
+Mp4MovieSoundHeaderBoxWriter::Mp4MovieSoundHeaderBoxWriter(
+    const Mp4MuxerContext& context)
+    : Mp4BoxWriter(context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+Mp4MovieSoundHeaderBoxWriter::~Mp4MovieSoundHeaderBoxWriter() = default;
+
+void Mp4MovieSoundHeaderBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartFullBox(mp4::FOURCC_SMHD);
+
+  writer.WriteU16(0);  // balance.
+  writer.WriteU16(0);  // reserved.
+
+  writer.EndBox();
+}
+
+// Mp4MovieDataInformationBoxWriter (`dinf`) class.
+Mp4MovieDataInformationBoxWriter::Mp4MovieDataInformationBoxWriter(
+    const Mp4MuxerContext& context,
+    const mp4::writable_boxes::DataInformation& box)
+    : Mp4BoxWriter(context), box_(box) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  AddChildBox(std::make_unique<Mp4MovieDataReferenceBoxWriter>(
+      context, box_.data_reference));
+}
+
+Mp4MovieDataInformationBoxWriter::~Mp4MovieDataInformationBoxWriter() = default;
+
+void Mp4MovieDataInformationBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartBox(mp4::FOURCC_DINF);
+
+  WriteChildren(writer);
+
+  writer.EndBox();
+}
+
+// Mp4MovieDataReferenceBoxWriter (`dref`) class.
+Mp4MovieDataReferenceBoxWriter::Mp4MovieDataReferenceBoxWriter(
+    const Mp4MuxerContext& context,
+    const mp4::writable_boxes::DataReference& box)
+    : Mp4BoxWriter(context), box_(box) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (size_t i = 0; i < box_.entries.size(); ++i) {
+    AddChildBox(std::make_unique<Mp4MovieDataUrlEntryBoxWriter>(context));
+  }
+}
+
+Mp4MovieDataReferenceBoxWriter::~Mp4MovieDataReferenceBoxWriter() = default;
+
+void Mp4MovieDataReferenceBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartFullBox(mp4::FOURCC_DREF);
+
+  writer.WriteU32(box_.entries.size());
+
+  WriteChildren(writer);
+
+  writer.EndBox();
+}
+
+// Mp4MovieDataUrlEntryBoxWriter (`url`) class.
+Mp4MovieDataUrlEntryBoxWriter::Mp4MovieDataUrlEntryBoxWriter(
+    const Mp4MuxerContext& context)
+    : Mp4BoxWriter(context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+Mp4MovieDataUrlEntryBoxWriter::~Mp4MovieDataUrlEntryBoxWriter() = default;
+
+void Mp4MovieDataUrlEntryBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartFullBox(mp4::FOURCC_URL);
+
+  // We use empty Url location to prevent accidental PII leak.
+  writer.WriteString("");
+
+  writer.EndBox();
+}
+
 // Mp4MovieSampleTableBoxWriter (`stbl`) class.
 Mp4MovieSampleTableBoxWriter::Mp4MovieSampleTableBoxWriter(
     const Mp4MuxerContext& context,
     const mp4::writable_boxes::SampleTable& box)
     : Mp4BoxWriter(context), box_(box) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  AddChildBox(std::make_unique<Mp4MovieSampleToChunkBoxWriter>(context));
+  AddChildBox(std::make_unique<Mp4MovieDecodingTimeToSampleBoxWriter>(context));
+  AddChildBox(std::make_unique<Mp4MovieSampleSizeBoxWriter>(context));
+  AddChildBox(std::make_unique<Mp4MovieSampleChunkOffsetBoxWriter>(context));
   AddChildBox(std::make_unique<Mp4MovieSampleDescriptionBoxWriter>(
       context, box_.sample_description));
 }
@@ -383,6 +497,85 @@ void Mp4MovieSampleTableBoxWriter::Write(BoxByteStream& writer) {
   writer.StartBox(mp4::FOURCC_STBL);
 
   WriteChildren(writer);
+
+  writer.EndBox();
+}
+
+// Mp4MovieSampleToChunkBoxWriter (`stsc`) class.
+Mp4MovieSampleToChunkBoxWriter::Mp4MovieSampleToChunkBoxWriter(
+    const Mp4MuxerContext& context)
+    : Mp4BoxWriter(context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+Mp4MovieSampleToChunkBoxWriter::~Mp4MovieSampleToChunkBoxWriter() = default;
+
+void Mp4MovieSampleToChunkBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartFullBox(mp4::FOURCC_STSC);
+
+  writer.WriteU32(0);  // entry_count.
+
+  writer.EndBox();
+}
+
+// Mp4MovieDecodingTimeToSampleBoxWriter (`stts`) class.
+Mp4MovieDecodingTimeToSampleBoxWriter::Mp4MovieDecodingTimeToSampleBoxWriter(
+    const Mp4MuxerContext& context)
+    : Mp4BoxWriter(context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+Mp4MovieDecodingTimeToSampleBoxWriter::
+    ~Mp4MovieDecodingTimeToSampleBoxWriter() = default;
+
+void Mp4MovieDecodingTimeToSampleBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartFullBox(mp4::FOURCC_STTS);
+
+  writer.WriteU32(0);  // entry_count.
+
+  writer.EndBox();
+}
+
+// Mp4MovieSampleSizeBoxWriter (`stsz`) class.
+Mp4MovieSampleSizeBoxWriter::Mp4MovieSampleSizeBoxWriter(
+    const Mp4MuxerContext& context)
+    : Mp4BoxWriter(context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+Mp4MovieSampleSizeBoxWriter::~Mp4MovieSampleSizeBoxWriter() = default;
+
+void Mp4MovieSampleSizeBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartFullBox(mp4::FOURCC_STSZ);
+
+  writer.WriteU32(0);  // sample_size.
+  writer.WriteU32(0);  // sample_count.
+
+  writer.EndBox();
+}
+
+// Mp4MovieSampleChunkOffsetBoxWriter (`stco`) class.
+Mp4MovieSampleChunkOffsetBoxWriter::Mp4MovieSampleChunkOffsetBoxWriter(
+    const Mp4MuxerContext& context)
+    : Mp4BoxWriter(context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+Mp4MovieSampleChunkOffsetBoxWriter::~Mp4MovieSampleChunkOffsetBoxWriter() =
+    default;
+
+void Mp4MovieSampleChunkOffsetBoxWriter::Write(BoxByteStream& writer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  writer.StartFullBox(mp4::FOURCC_STCO);
+
+  writer.WriteU32(0);  // entry_count.
 
   writer.EndBox();
 }

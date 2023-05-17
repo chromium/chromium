@@ -17,6 +17,19 @@ namespace media {
 
 class Mp4MuxerContext;
 
+#define DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(class_name) \
+  class MEDIA_EXPORT class_name : public Mp4BoxWriter {  \
+   public:                                               \
+    explicit class_name(const Mp4MuxerContext& context); \
+    ~class_name() override;                              \
+    class_name(const class_name&) = delete;              \
+    class_name& operator=(const class_name&) = delete;   \
+    void Write(BoxByteStream& writer) override;          \
+                                                         \
+   private:                                              \
+    SEQUENCE_CHECKER(sequence_checker_);                 \
+  }
+
 #define DECLARE_MP4_BOX_WRITER_CLASS(class_name, box_type)           \
   class MEDIA_EXPORT class_name : public Mp4BoxWriter {              \
    public:                                                           \
@@ -54,6 +67,17 @@ DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieSampleTableBoxWriter,
                              mp4::writable_boxes::SampleTable);
 DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieSampleDescriptionBoxWriter,
                              mp4::writable_boxes::SampleDescription);
+DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(Mp4MovieVideoHeaderBoxWriter);
+DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(Mp4MovieSoundHeaderBoxWriter);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieDataInformationBoxWriter,
+                             mp4::writable_boxes::DataInformation);
+DECLARE_MP4_BOX_WRITER_CLASS(Mp4MovieDataReferenceBoxWriter,
+                             mp4::writable_boxes::DataReference);
+DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(Mp4MovieDataUrlEntryBoxWriter);
+DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(Mp4MovieSampleToChunkBoxWriter);
+DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(Mp4MovieDecodingTimeToSampleBoxWriter);
+DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(Mp4MovieSampleSizeBoxWriter);
+DECLARE_MP4_BOX_WRITER_CLASS_NO_DATA(Mp4MovieSampleChunkOffsetBoxWriter);
 }  // namespace media
 
 #endif  // MEDIA_MUXERS_MP4_MOVIE_BOX_WRITER_H_

@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/formats/mp4/fourccs.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media::mp4::writable_boxes {
@@ -36,16 +37,66 @@ struct MEDIA_EXPORT SampleDescription : FullBox {
   // TODO: add optional `avc1` or `mp4a` box.
 };
 
+// `stco`, `stsz`, `stts`, `stsc`' are mandatory boxes.
+// They have 0 child entries in the fragment MP4.
+
+// Media sample table (`stco`) box.
+struct MEDIA_EXPORT SampleChunkOffset : FullBox {};
+
+// Media sample table (`stsz`) box.
+struct MEDIA_EXPORT SampleSize : FullBox {};
+
+// Decoding Time to Sample (`stts`) box.
+struct MEDIA_EXPORT DecodingTimeToSample : FullBox {};
+
+// Media sample table (`stsc`) box.
+struct MEDIA_EXPORT SampleToChunk : FullBox {};
+
 // Media sample table (`stbl`) box.
 struct MEDIA_EXPORT SampleTable : Box {
+  SampleToChunk sample_to_chunk;
+  DecodingTimeToSample decoding_time_to_sample;
+  SampleSize sample_size;
+  SampleChunkOffset sample_chunk_offset;
   SampleDescription sample_description;
-  // TODO: add `stsc`, `stts`, `stsz`, `stco` box.
+};
+
+// Data Url Entry (`url`) box.
+struct MEDIA_EXPORT DataUrlEntry : FullBox {};
+
+// Data Reference (`dref`) box.
+struct MEDIA_EXPORT DataReference : FullBox {
+  DataReference();
+  ~DataReference();
+  DataReference(const DataReference&);
+  DataReference& operator=(const DataReference&);
+
+  std::vector<DataUrlEntry> entries;
+};
+
+// Data Information (`dinf`) box.
+struct MEDIA_EXPORT DataInformation : Box {
+  DataReference data_reference;
+};
+
+// Sound Media Information Header (`smdh`) box.
+struct MEDIA_EXPORT SoundMediaHeader : FullBox {
+  // It has `balance` and `reserved` fields that
+  // has `0` as a default value.
+};
+
+// Video Media Information Header (`vmhd`) box.
+struct MEDIA_EXPORT VideoMediaHeader : FullBox {
+  // It has `graphics_mode` and `op_color[3]` that
+  // has `0` as a default value.
 };
 
 // Media information (`minf`) box.
 struct MEDIA_EXPORT MediaInformation : Box {
+  absl::optional<VideoMediaHeader> video_header;
+  absl::optional<SoundMediaHeader> sound_header;
+  DataInformation data_information;
   SampleTable sample_table;
-  // TODO: add `vmhd`, `dinf` box.
 };
 
 // Media Handler (`hdlr`) box.

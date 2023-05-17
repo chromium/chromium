@@ -44,6 +44,7 @@ class MEDIA_EXPORT BoxByteStream {
   void WriteU32(uint32_t value);
   void WriteU64(uint64_t value);
   void WriteBytes(const void* buf, size_t len);
+  void WriteString(base::StringPiece value);
 
   // Ends a writing session. All pending placeholder values in `size_offsets_`
   // are filled in based on their distance from `position_`.

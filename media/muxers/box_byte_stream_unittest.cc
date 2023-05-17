@@ -20,6 +20,7 @@ enum class DataType {
   kType_32 = 4,
   kType_64 = 5,
   kType_Bytes = 6,
+  kType_String = 7,
 };
 
 struct DataOrder {
@@ -31,17 +32,20 @@ TEST(BoxByteStreamTest, Default) {
   // Test basic Write APIs of the BoxByteStream.
   BoxByteStream box_byte_stream;
 
-  DataOrder test_data[] = {{DataType::kType_8, 0x48},
-                           {DataType::kPlaceHolder, 47},
-                           {DataType::kType_16, 0x1617},
-                           {DataType::kType_24, 0x242526},
-                           {DataType::kType_32, 0x32333435},
-                           {DataType::kType_64, 0x64646667686970},
-                           {DataType::kType_Bytes, 0x12345678901234},
-                           {DataType::kPlaceHolder, 15},
-                           {DataType::kType_8, 0x28},
-                           {DataType::kType_16, 0x0},
-                           {DataType::kType_32, 0x0}};
+  DataOrder test_data[] = {
+      {DataType::kType_8, 0x48},
+      {DataType::kPlaceHolder, /*total_size=*/57},
+      {DataType::kType_16, 0x1617},
+      {DataType::kType_24, 0x242526},
+      {DataType::kType_32, 0x32333435},
+      {DataType::kType_64, 0x64646667686970},
+      {DataType::kType_Bytes, 0x12345678901234},
+      {DataType::kPlaceHolder, /*total_size=*/25},
+      {DataType::kType_8, 0x28},
+      {DataType::kType_16, 0x0},
+      {DataType::kType_32, 0x0},
+      {DataType::kType_String, reinterpret_cast<uint64_t>("")},
+      {DataType::kType_String, reinterpret_cast<uint64_t>("abcdabcd")}};
   for (auto& data : test_data) {
     switch (data.type) {
       case DataType::kPlaceHolder:
@@ -64,6 +68,9 @@ TEST(BoxByteStreamTest, Default) {
         break;
       case DataType::kType_Bytes:
         box_byte_stream.WriteBytes(&data.value, 7);
+        break;
+      case DataType::kType_String:
+        box_byte_stream.WriteString(reinterpret_cast<char*>(data.value));
         break;
     }
   }
@@ -102,6 +109,21 @@ TEST(BoxByteStreamTest, Default) {
       case DataType::kType_Bytes:
         EXPECT_TRUE(reader.ReadBytes(&ret_value, 7));
         EXPECT_EQ(data.value, ret_value);
+        break;
+      case DataType::kType_String:
+        std::string expected_string = reinterpret_cast<char*>(data.value);
+        if (expected_string.empty()) {
+          EXPECT_TRUE(reader.ReadBytes(&ret_value, 1));
+          EXPECT_EQ(ret_value, 0u);
+        } else {
+          std::vector<uint8_t> ret_string;
+          ret_string.resize(expected_string.size());
+          EXPECT_TRUE(
+              reader.ReadBytes(ret_string.data(), expected_string.size()));
+          EXPECT_EQ(expected_string,
+                    std::string(ret_string.begin(), ret_string.end()));
+        }
+
         break;
     }
   }

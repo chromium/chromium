@@ -37,6 +37,10 @@ constexpr uint32_t kAudioSampleFlags = 0x113u;
 constexpr uint16_t kAudioVolume = 0x0100;
 constexpr char kVideoHandlerName[] = "VideoHandler";
 constexpr char kAudioHandlerName[] = "SoundHandler";
+constexpr uint32_t kTotalSizeLength = 4u;
+constexpr uint32_t kFlagsAndVersionLength = 4u;
+constexpr uint32_t kEntryCountLength = 4u;
+constexpr uint32_t kSampleSizeAndCount = 8u;
 
 uint64_t ConvertTo1904TimeInSeconds(base::Time time) {
   base::Time time1904;
@@ -92,8 +96,6 @@ class Mp4MuxerBoxWriterTest : public testing::Test {
 
 TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieAndHeader) {
   // Tests `moov/mvhd` box writer.
-  base::RunLoop run_loop;
-
   std::vector<uint8_t> written_data;
   CreateContext(written_data);
 
@@ -143,8 +145,6 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieAndHeader) {
 
 TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieExtends) {
   // Tests `mvex/trex` box writer.
-  base::RunLoop run_loop;
-
   std::vector<uint8_t> written_data;
   CreateContext(written_data);
 
@@ -161,7 +161,6 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieExtends) {
     context()->SetVideoIndex(0);
 
     mp4::writable_boxes::Track video_track = {};
-    // Minimum value.
     mp4_moov_box.tracks.push_back(std::move(video_track));
   }
 
@@ -176,8 +175,6 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieExtends) {
     context()->SetAudioIndex(1);
 
     mp4::writable_boxes::Track audio_track = {};
-
-    // Minimum value.
     mp4_moov_box.tracks.push_back(std::move(audio_track));
   }
 
@@ -222,8 +219,6 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieExtends) {
 
 TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieTrackAndMediaHeader) {
   // Tests `tkhd/mdhd` box writer.
-  base::RunLoop run_loop;
-
   std::vector<uint8_t> written_data;
   CreateContext(written_data);
 
@@ -364,4 +359,138 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieTrackAndMediaHeader) {
   // Once Flush, it needs to reset the internal objects of context and buffer.
   Reset();
 }
+
+TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieMediaDataInformation) {
+  // Tests `tkhd/mdhd` box writer.
+  std::vector<uint8_t> written_data;
+  CreateContext(written_data);
+
+  // Populates the boxes during Mp4Muxer::OnEncodedVideo.
+  const std::string kUrl = "";
+  mp4::writable_boxes::DataUrlEntry entry;
+  mp4::writable_boxes::MediaInformation media_information;
+  media_information.video_header = mp4::writable_boxes::VideoMediaHeader();
+  media_information.data_information.data_reference.entries.push_back(
+      std::move(entry));
+
+  // Flush at requested.
+  Mp4MovieMediaInformationBoxWriter box_writer(*context(), media_information);
+  FlushAndWait(&box_writer);
+
+  // Validation of the written boxes.
+
+  // `written_data` test.
+  std::unique_ptr<mp4::BoxReader> box_reader(
+      mp4::BoxReader::ReadConcatentatedBoxes(written_data.data(),
+                                             written_data.size(), nullptr));
+  // `minf`.
+  uint32_t fourcc;
+  EXPECT_TRUE(box_reader->SkipBytes(kTotalSizeLength));
+  EXPECT_TRUE(box_reader->Read4(&fourcc));
+  EXPECT_EQ(mp4::FOURCC_MINF, static_cast<mp4::FourCC>(fourcc));
+
+  // `vmhd`
+  EXPECT_TRUE(box_reader->SkipBytes(kTotalSizeLength));
+  EXPECT_TRUE(box_reader->Read4(&fourcc));
+  EXPECT_EQ(mp4::FOURCC_VMHD, static_cast<mp4::FourCC>(fourcc));
+  EXPECT_TRUE(box_reader->SkipBytes(kFlagsAndVersionLength));
+
+  uint16_t value16;
+
+  // graphics_mode.
+  EXPECT_TRUE(box_reader->Read2(&value16));
+  EXPECT_EQ(0, value16);
+  // op_color
+  EXPECT_TRUE(box_reader->Read2(&value16));
+  EXPECT_EQ(0, value16);
+  EXPECT_TRUE(box_reader->Read2(&value16));
+  EXPECT_EQ(0, value16);
+  EXPECT_TRUE(box_reader->Read2(&value16));
+  EXPECT_EQ(0, value16);
+
+  // `dinf`.
+  EXPECT_TRUE(box_reader->SkipBytes(kTotalSizeLength));
+  EXPECT_TRUE(box_reader->Read4(&fourcc));
+  EXPECT_EQ(mp4::FOURCC_DINF, static_cast<mp4::FourCC>(fourcc));
+
+  // `dref`
+  uint32_t value;
+  EXPECT_TRUE(box_reader->SkipBytes(kTotalSizeLength));
+  EXPECT_TRUE(box_reader->Read4(&fourcc));
+  EXPECT_EQ(mp4::FOURCC_DREF, static_cast<mp4::FourCC>(fourcc));
+  EXPECT_TRUE(box_reader->SkipBytes(kFlagsAndVersionLength));
+  EXPECT_TRUE(box_reader->Read4(&value));
+  EXPECT_EQ(1u, value);  // entry_count.
+
+  // `url`.
+  EXPECT_TRUE(box_reader->SkipBytes(kTotalSizeLength));
+  EXPECT_TRUE(box_reader->Read4(&fourcc));
+  EXPECT_EQ(mp4::FOURCC_URL, static_cast<mp4::FourCC>(fourcc));
+  EXPECT_TRUE(box_reader->SkipBytes(kFlagsAndVersionLength));
+
+  std::vector<uint8_t> value_bytes;
+  EXPECT_TRUE(box_reader->ReadVec(&value_bytes, kUrl.size()));
+  std::string location = std::string(value_bytes.begin(), value_bytes.end());
+  EXPECT_EQ(kUrl, location);
+
+  // Once Flush, it needs to reset the internal objects of context and buffer.
+  Reset();
+}
+
+TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieMediaMultipleSampleBoxes) {
+  // Tests `dinf` and its children box writer.
+  std::vector<uint8_t> written_data;
+  CreateContext(written_data);
+
+  mp4::writable_boxes::SampleTable sample_table;
+
+  Mp4MovieSampleTableBoxWriter box_writer(*context(), sample_table);
+  FlushAndWait(&box_writer);
+
+  // MediaInformation will have multiple sample boxes even though they
+  // not added exclusively.
+  std::unique_ptr<mp4::BoxReader> box_reader(
+      mp4::BoxReader::ReadConcatentatedBoxes(written_data.data(),
+                                             written_data.size(), nullptr));
+
+  // `stbl`.
+  uint32_t fourcc;
+  EXPECT_TRUE(box_reader->SkipBytes(kTotalSizeLength));
+  EXPECT_TRUE(box_reader->Read4(&fourcc));
+  EXPECT_EQ(mp4::FOURCC_STBL, static_cast<mp4::FourCC>(fourcc));
+
+  // `stsc`.
+  EXPECT_TRUE(box_reader->SkipBytes(kTotalSizeLength));
+  EXPECT_TRUE(box_reader->Read4(&fourcc));
+  EXPECT_EQ(mp4::FOURCC_STSC, static_cast<mp4::FourCC>(fourcc));
+  EXPECT_TRUE(box_reader->SkipBytes(kFlagsAndVersionLength));
+  EXPECT_TRUE(box_reader->SkipBytes(kEntryCountLength));
+
+  // `stts`.
+  EXPECT_TRUE(box_reader->SkipBytes(kTotalSizeLength));
+  EXPECT_TRUE(box_reader->Read4(&fourcc));
+  EXPECT_EQ(mp4::FOURCC_STTS, static_cast<mp4::FourCC>(fourcc));
+  EXPECT_TRUE(box_reader->SkipBytes(kFlagsAndVersionLength));
+  EXPECT_TRUE(box_reader->SkipBytes(kEntryCountLength));
+
+  // `stsz`.
+  EXPECT_TRUE(box_reader->SkipBytes(kTotalSizeLength));
+  EXPECT_TRUE(box_reader->Read4(&fourcc));
+  EXPECT_EQ(mp4::FOURCC_STSZ, static_cast<mp4::FourCC>(fourcc));
+  EXPECT_TRUE(box_reader->SkipBytes(kFlagsAndVersionLength));
+  EXPECT_TRUE(box_reader->SkipBytes(kSampleSizeAndCount));
+
+  // `stco`.
+  EXPECT_TRUE(box_reader->SkipBytes(kTotalSizeLength));
+  EXPECT_TRUE(box_reader->Read4(&fourcc));
+  EXPECT_EQ(mp4::FOURCC_STCO, static_cast<mp4::FourCC>(fourcc));
+  EXPECT_TRUE(box_reader->SkipBytes(kFlagsAndVersionLength));
+  EXPECT_TRUE(box_reader->SkipBytes(kEntryCountLength));
+
+  // `stsd`.
+  EXPECT_TRUE(box_reader->SkipBytes(kTotalSizeLength));
+  EXPECT_TRUE(box_reader->Read4(&fourcc));
+  EXPECT_EQ(mp4::FOURCC_STSD, static_cast<mp4::FourCC>(fourcc));
+}
+
 }  // namespace media

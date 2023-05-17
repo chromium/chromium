@@ -15,4 +15,9 @@ MovieExtends::~MovieExtends() = default;
 MovieHeader::MovieHeader() = default;
 MovieHeader::~MovieHeader() = default;
 
+DataReference::DataReference() = default;
+DataReference::~DataReference() = default;
+DataReference::DataReference(const DataReference&) = default;
+DataReference& DataReference::operator=(const DataReference&) = default;
+
 }  // namespace media::mp4::writable_boxes
