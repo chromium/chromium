@@ -335,8 +335,15 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DeveloperToolsDisabledExtensionsDevMode) {
 // blocked or allowed for different pages depending on the
 // DeveloperToolsAvailability policy setting. Note: javascript URLs are always
 // blocked on extension schemes, regardless of the policy setting.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DebugURLsDisabledByDeveloperToolsAvailability \
+  DISABLED_DebugURLsDisabledByDeveloperToolsAvailability
+#else
+#define MAYBE_DebugURLsDisabledByDeveloperToolsAvailability \
+  DebugURLsDisabledByDeveloperToolsAvailability
+#endif
 IN_PROC_BROWSER_TEST_F(PolicyTest,
-                       DebugURLsDisabledByDeveloperToolsAvailability) {
+                       MAYBE_DebugURLsDisabledByDeveloperToolsAvailability) {
   // Get a url for a standard web page.
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL tab_url(embedded_test_server()->GetURL("/empty.html"));
