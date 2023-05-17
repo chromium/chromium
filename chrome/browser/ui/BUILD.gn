@@ -767,8 +767,6 @@ static_library("ui") {
       "android/autofill/save_update_address_profile_prompt_view_android.h",
       "android/autofill/snackbar/autofill_snackbar_view_android.cc",
       "android/autofill/snackbar/autofill_snackbar_view_android.h",
-      "android/autofill/virtual_card_enrollment_view_android.cc",
-      "android/autofill/virtual_card_enrollment_view_android.h",
       "android/autofill/virtual_card_utils.cc",
       "android/autofill/virtual_card_utils.h",
       "android/chrome_http_auth_handler.cc",
