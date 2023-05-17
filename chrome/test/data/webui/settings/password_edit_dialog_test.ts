@@ -410,22 +410,6 @@ suite('PasswordEditDialog', function() {
   });
 
   test('hasCorrectInitialStateWhenAddPassword', function() {
-    loadTimeData.overrideValues({enablePasswordNotes: false});
-    const addDialog = elementFactory.createPasswordEditDialog();
-    assertAddDialogParts(addDialog);
-    assertEquals(true, addDialog.$.websiteInput.autofocus);
-    assertEquals('', addDialog.$.websiteInput.value);
-    assertEquals('', addDialog.$.usernameInput.value);
-    assertEquals('', addDialog.$.passwordInput.value);
-    assertEquals('password', addDialog.$.passwordInput.type);
-    assertEquals(
-        addDialog.i18n('addPasswordFootnote'),
-        addDialog.$.footnote.innerText.trim());
-    assertFalse(!!addDialog.shadowRoot!.querySelector('cr-textarea'));
-  });
-
-  test('hasCorrectInitialStateWhenAddPasswordWithNotes', function() {
-    loadTimeData.overrideValues({enablePasswordNotes: true});
     const addDialog = elementFactory.createPasswordEditDialog();
     assertAddDialogParts(addDialog);
     assertEquals(true, addDialog.$.websiteInput.autofocus);
@@ -697,8 +681,7 @@ suite('PasswordEditDialog', function() {
     });
   });
 
-  test('hasCorrectInitialStateWhenEditModeWhenNotesEnabled', async function() {
-    loadTimeData.overrideValues({enablePasswordNotes: true});
+  test('hasCorrectInitialStateWhenEditMode', async function() {
     const commonEntry =
         createPasswordEntry({url: 'goo.gl', username: 'bart', id: 42});
     const passwordDialog = elementFactory.createPasswordEditDialog(commonEntry);
@@ -716,7 +699,6 @@ suite('PasswordEditDialog', function() {
           testCase => test(
               `changesPasswordWithNote "${testCase.newNote}"`,
               async function() {
-                loadTimeData.overrideValues({enablePasswordNotes: true});
                 loadTimeData.overrideValues({enablePasswordViewPage: true});
                 const entry = createPasswordEntry({
                   url: 'goo.gl',
@@ -773,7 +755,6 @@ suite('PasswordEditDialog', function() {
       .forEach(
           testCase =>
               test(`changePasswordWithNotesForMetrics`, async function() {
-                loadTimeData.overrideValues({enablePasswordNotes: true});
                 loadTimeData.overrideValues({enablePasswordViewPage: true});
                 const entry = createPasswordEntry({
                   url: 'goo.gl',
@@ -814,18 +795,7 @@ suite('PasswordEditDialog', function() {
                 await dispatchedEvent;
               }));
 
-  test('noChangesWhenNotesIsNotEnabled', async function() {
-    loadTimeData.overrideValues({enablePasswordNotes: false});
-    const commonEntry =
-        createPasswordEntry({url: 'goo.gl', username: 'bart', id: 42});
-    const passwordDialog = elementFactory.createPasswordEditDialog(commonEntry);
-    assertEditDialogParts(passwordDialog);
-    assertFalse(
-        !!passwordDialog.shadowRoot!.querySelector<CrTextareaElement>('#note'));
-  });
-
   test('federatedCredentialDoesntHaveNotes', async function() {
-    loadTimeData.overrideValues({enablePasswordNotes: true});
     const federationEntry = createPasswordEntry(
         {federationText: 'with chromium.org', username: 'bart', id: 42});
     const passwordDialog =
@@ -836,7 +806,6 @@ suite('PasswordEditDialog', function() {
   });
 
   test('showNoteWarningInEditModeWhen900Characters', async function() {
-    loadTimeData.overrideValues({enablePasswordNotes: true});
     const commonEntry = createPasswordEntry({
       url: 'goo.gl',
       username: 'bart',
@@ -859,7 +828,6 @@ suite('PasswordEditDialog', function() {
   });
 
   test('disableActionButtonWhenNoteIsLargerThan1000Chars', async function() {
-    loadTimeData.overrideValues({enablePasswordNotes: true});
     const commonEntry = createPasswordEntry({
       url: 'goo.gl',
       username: 'bart',
@@ -876,7 +844,6 @@ suite('PasswordEditDialog', function() {
   });
 
   test('changingTheTextInTextareaChangesActionButtonStatus', async function() {
-    loadTimeData.overrideValues({enablePasswordNotes: true});
     const commonEntry = createPasswordEntry({
       url: 'goo.gl',
       username: 'bart',

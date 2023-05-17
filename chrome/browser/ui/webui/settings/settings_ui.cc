@@ -301,11 +301,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       !enable_new_password_manager_page &&
           base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
 
-  html_source->AddBoolean(
-      "enablePasswordNotes",
-      !enable_new_password_manager_page &&
-          base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
-
   html_source->AddBoolean("enableSendPasswords",
                           !enable_new_password_manager_page &&
                               base::FeatureList::IsEnabled(
