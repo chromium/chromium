@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, ReloadBypassingCache) {
     PendingTaskWaiter waiter(web_contents());
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, WindowOpenDisposition::CURRENT_TAB,
-        ui_test_utils::BROWSER_TEST_NONE);
+        ui_test_utils::BROWSER_TEST_NO_WAIT);
     waiter.Wait();
   }
   ASSERT_TRUE(url_loader_interceptor.was_loaded(icon_url));
@@ -487,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, ReloadBypassingCache) {
     PendingTaskWaiter waiter(web_contents());
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, WindowOpenDisposition::CURRENT_TAB,
-        ui_test_utils::BROWSER_TEST_NONE);
+        ui_test_utils::BROWSER_TEST_NO_WAIT);
     waiter.Wait();
   }
   EXPECT_FALSE(url_loader_interceptor.did_bypass_cache(icon_url));
@@ -530,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
   waiter.AlsoRequireTitle(u"OK");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   waiter.Wait();
 
   EXPECT_EQ(
@@ -549,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, ChangeTouchIconViaJavascript) {
   waiter.AlsoRequireTitle(u"OK");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   waiter.Wait();
 
   EXPECT_NE(
@@ -569,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, RemoveTouchIconViaJavascript) {
   waiter.AlsoRequireTitle(u"OK");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   waiter.Wait();
 
   EXPECT_EQ(nullptr,
@@ -608,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, DoNotRemoveMappingIfStopped) {
   PendingTaskWaiter waiter(web_contents());
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   waiter.Wait();
 
   // The whole purpose of this test is due to the fact that Content returns a
@@ -634,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, LoadIconFromWebManifest) {
   PendingTaskWaiter waiter(web_contents());
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   waiter.Wait();
 
 #if BUILDFLAG(IS_ANDROID)
@@ -663,7 +663,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
   waiter.AlsoRequireUrl(landing_url);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   waiter.Wait();
 
   EXPECT_NE(
@@ -692,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(
     PendingTaskWaiter waiter(web_contents());
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), landing_url, WindowOpenDisposition::CURRENT_TAB,
-        ui_test_utils::BROWSER_TEST_NONE);
+        ui_test_utils::BROWSER_TEST_NO_WAIT);
     waiter.Wait();
   }
   ASSERT_NE(nullptr,
@@ -703,7 +703,7 @@ IN_PROC_BROWSER_TEST_F(
   waiter.AlsoRequireUrl(landing_url);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url_with_meta_refresh_tag, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   waiter.Wait();
 
   EXPECT_NE(nullptr, GetFaviconForPageURL(url_with_meta_refresh_tag,
@@ -731,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(
   waiter.AlsoRequireUrl(landing_url);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   waiter.Wait();
 
   EXPECT_NE(
@@ -760,7 +760,7 @@ IN_PROC_BROWSER_TEST_F(
   waiter.AlsoRequireUrl(landing_url);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   waiter.Wait();
 
   EXPECT_NE(
@@ -786,7 +786,7 @@ IN_PROC_BROWSER_TEST_F(
   waiter.AlsoRequireUrl(landing_url);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   waiter.Wait();
 
   EXPECT_NE(
@@ -813,7 +813,7 @@ IN_PROC_BROWSER_TEST_F(
   waiter.AlsoRequireUrl(landing_url);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   waiter.Wait();
 
   EXPECT_NE(
@@ -838,7 +838,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
   waiter.AlsoRequireUrl(replacestate_url);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   waiter.Wait();
 
   EXPECT_NE(
@@ -863,7 +863,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
   waiter.AlsoRequireUrl(pushstate_url);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   waiter.Wait();
 
   EXPECT_NE(
@@ -889,7 +889,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
   waiter.AlsoRequireUrl(landing_url);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   waiter.Wait();
 
   ASSERT_NE(nullptr,
@@ -913,7 +913,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
   waiter.AlsoRequireUrl(pushstate_url);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   waiter.Wait();
 
   EXPECT_NE(nullptr,
@@ -1038,7 +1038,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
     PendingTaskWaiter waiter(web_contents());
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, WindowOpenDisposition::CURRENT_TAB,
-        ui_test_utils::BROWSER_TEST_NONE);
+        ui_test_utils::BROWSER_TEST_NO_WAIT);
     waiter.Wait();
   }
   ASSERT_TRUE(url_loader_interceptor.was_loaded(icon_url));
@@ -1051,7 +1051,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
     PendingTaskWaiter waiter(web_contents());
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, WindowOpenDisposition::CURRENT_TAB,
-        ui_test_utils::BROWSER_TEST_NONE);
+        ui_test_utils::BROWSER_TEST_NO_WAIT);
     waiter.Wait();
   }
   ASSERT_FALSE(url_loader_interceptor.was_loaded(icon_url));
@@ -1076,7 +1076,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
     PendingTaskWaiter waiter(web_contents());
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, WindowOpenDisposition::CURRENT_TAB,
-        ui_test_utils::BROWSER_TEST_NONE);
+        ui_test_utils::BROWSER_TEST_NO_WAIT);
     waiter.Wait();
   }
   ASSERT_TRUE(url_loader_interceptor.was_loaded(icon_url));
@@ -1097,7 +1097,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
     PendingTaskWaiter waiter(web_contents());
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, WindowOpenDisposition::CURRENT_TAB,
-        ui_test_utils::BROWSER_TEST_NONE);
+        ui_test_utils::BROWSER_TEST_NO_WAIT);
     waiter.Wait();
   }
   ASSERT_TRUE(url_loader_interceptor.was_loaded(icon_url));
@@ -1115,7 +1115,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
         incognito->tab_strip_model()->GetActiveWebContents());
     ui_test_utils::NavigateToURLWithDisposition(
         incognito, url, WindowOpenDisposition::CURRENT_TAB,
-        ui_test_utils::BROWSER_TEST_NONE);
+        ui_test_utils::BROWSER_TEST_NO_WAIT);
     waiter.Wait();
   }
   ASSERT_TRUE(url_loader_interceptor.was_loaded(icon_url));

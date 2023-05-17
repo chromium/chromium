@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(FastShutdown, DISABLED_SlowTermination) {
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   ui_test_utils::WaitForBrowserToOpen();
 
   // Close the new window, removing the one and only beforeunload handler.

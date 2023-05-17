@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, JavascriptBlocklistable) {
   // Without blocklist policy value is incremented properly.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("javascript:increment()"),
-      WindowOpenDisposition::CURRENT_TAB, ui_test_utils::BROWSER_TEST_NONE);
+      WindowOpenDisposition::CURRENT_TAB, ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   EXPECT_EQ(JSIncrementerFetch(contents), 2);
 
@@ -474,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, JavascriptBlocklistable) {
   // unchanged.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("javascript:increment()"),
-      WindowOpenDisposition::CURRENT_TAB, ui_test_utils::BROWSER_TEST_NONE);
+      WindowOpenDisposition::CURRENT_TAB, ui_test_utils::BROWSER_TEST_NO_WAIT);
   EXPECT_EQ(JSIncrementerFetch(contents), 2);
 
   // But in-page links still work even if they are javascript-links.

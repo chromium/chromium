@@ -598,7 +598,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
       embedded_test_server()->GetURL("/set-cookie?cookieName=cookieValue"));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   // Check that `Network.responseReceived` contains the response header added
   // by the extension
@@ -667,7 +667,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
       embedded_test_server()->GetURL("/set-cookie?cookieName=cookieValue"));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   base::Value::Dict request_paused_result =
       WaitForNotification("Fetch.requestPaused", true);
   std::string* request_id = request_paused_result.FindString("requestId");

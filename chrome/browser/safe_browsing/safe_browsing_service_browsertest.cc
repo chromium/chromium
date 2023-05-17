@@ -836,7 +836,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
   // respond.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), third_url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   // While the top-level navigation is pending, run javascript
   // function in the page which loads the malware image.

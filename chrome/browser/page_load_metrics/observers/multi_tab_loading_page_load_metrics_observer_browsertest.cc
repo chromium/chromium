@@ -27,7 +27,7 @@ class MultiTabLoadingPageLoadMetricsBrowserTest : public InProcessBrowserTest {
   void NavigateToURLWithoutWaiting(GURL url) {
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, WindowOpenDisposition::CURRENT_TAB,
-        ui_test_utils::BROWSER_TEST_NONE);
+        ui_test_utils::BROWSER_TEST_NO_WAIT);
   }
 
   void SetUpOnMainThread() override {

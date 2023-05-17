@@ -47,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   const GURL script_url("javascript:void(document.title='Bad Title')");
   NavigateToURLWithDisposition(browser(), script_url,
                                WindowOpenDisposition::CURRENT_TAB,
-                               ui_test_utils::BROWSER_TEST_NONE);
+                               ui_test_utils::BROWSER_TEST_NO_WAIT);
   // Force serialization with the renderer by executing a no-op script.
   EXPECT_EQ(true, content::EvalJs(web_contents, "true"));
 

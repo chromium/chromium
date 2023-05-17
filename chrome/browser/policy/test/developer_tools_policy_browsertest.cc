@@ -78,13 +78,13 @@ PolicyMap MakeDeveloperToolsAvailabilityMap(int value) {
 
 // Navigates the current tab of the browser to the given URL without any
 // waiting after the navigation is triggered. Note: the
-// ui_test_utils::BROWSER_TEST_NONE flag passed in results this returning
+// ui_test_utils::BROWSER_TEST_NO_WAIT flag passed in results this returning
 // right after the Browser::OpenURL() call without waiting for any load
 // events.
 void NavigateToURLNoWait(Browser* browser, const GURL& url) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser, url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
 }
 
 // Utility to navigate the current tab of the browser to the specified page and

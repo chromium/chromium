@@ -1302,7 +1302,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_IncognitoRegular) {
   // correctly.
   DownloadAndWaitWithDisposition(browser(), url,
                                  WindowOpenDisposition::CURRENT_TAB,
-                                 ui_test_utils::BROWSER_TEST_NONE);
+                                 ui_test_utils::BROWSER_TEST_NO_WAIT);
   GetDownloads(browser(), &download_items);
   ASSERT_EQ(1UL, download_items.size());
   ASSERT_EQ(base::FilePath(FILE_PATH_LITERAL("a_zip_file.zip")),
@@ -1330,7 +1330,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_IncognitoRegular) {
   // correctly.
   DownloadAndWaitWithDisposition(incognito, url,
                                  WindowOpenDisposition::CURRENT_TAB,
-                                 ui_test_utils::BROWSER_TEST_NONE);
+                                 ui_test_utils::BROWSER_TEST_NO_WAIT);
   GetDownloads(incognito, &download_items);
   ASSERT_EQ(1UL, download_items.size());
   ASSERT_EQ(base::FilePath(FILE_PATH_LITERAL("a_zip_file (1).zip")),
@@ -1438,7 +1438,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DontCloseNewTab3) {
 
   DownloadAndWaitWithDisposition(browser(), url,
                                  WindowOpenDisposition::CURRENT_TAB,
-                                 ui_test_utils::BROWSER_TEST_NONE);
+                                 ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   // When the download finishes, we should have two tabs.
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
@@ -3706,7 +3706,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_Remove) {
   // Download a file.
   DownloadAndWaitWithDisposition(browser(), url,
                                  WindowOpenDisposition::CURRENT_TAB,
-                                 ui_test_utils::BROWSER_TEST_NONE);
+                                 ui_test_utils::BROWSER_TEST_NO_WAIT);
   GetDownloads(browser(), &download_items);
   ASSERT_EQ(1UL, download_items.size());
   base::FilePath downloaded(download_items[0]->GetTargetFilePath());
@@ -3776,7 +3776,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_DownloadTest_PercentComplete) {
   // Start downloading a file, wait for it to be created.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   progress_waiter->WaitForFinished();
   EXPECT_EQ(1u, progress_waiter->NumDownloadsSeenInState(
       DownloadItem::IN_PROGRESS));
@@ -4499,7 +4499,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest,
       new DisableSafeBrowsingOnInProgressDownload(browser()));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), download_url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   in_progress_observer->WaitForFinished();
 
   // SafeBrowsing should have been disabled by our observer.
@@ -4533,7 +4533,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DangerousFileWithSBDisabledBeforeStart) {
           content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_QUIT));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), download_url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   dangerous_observer->WaitForFinished();
 
   std::vector<DownloadItem*> downloads;
@@ -4587,7 +4587,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, FeedbackServiceDiscardDownload) {
           content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_QUIT));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), download_url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   observer->WaitForFinished();
 
   // Get the download from the DownloadManager.
@@ -4653,7 +4653,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_FeedbackServiceKeepDownload) {
           content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_IGNORE));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), download_url, WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   interruption_observer->WaitForFinished();
 
   // Get the download from the DownloadManager.
@@ -4969,7 +4969,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_NewWindow) {
   // Download a file in a new window and wait.
   DownloadAndWaitWithDisposition(browser(), url,
                                  WindowOpenDisposition::NEW_WINDOW,
-                                 ui_test_utils::BROWSER_TEST_NONE);
+                                 ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   // When the download finishes, the download surface SHOULD NOT be visible in
   // the first window.

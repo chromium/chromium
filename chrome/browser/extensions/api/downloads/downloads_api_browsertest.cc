@@ -574,7 +574,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
     const GURL url = embedded_test_server()->GetURL(path);
     ui_test_utils::NavigateToURLWithDisposition(
         current_browser(), url, WindowOpenDisposition::CURRENT_TAB,
-        ui_test_utils::BROWSER_TEST_NONE);
+        ui_test_utils::BROWSER_TEST_NO_WAIT);
 
     response->WaitForRequest();
     response->Send(
@@ -4347,7 +4347,7 @@ IN_PROC_BROWSER_TEST_F(
         // NetworkService shipping.
         // TODO(https://crbug.com/700382): Fix or delete this test.
         GURL(), WindowOpenDisposition::CURRENT_TAB,
-        ui_test_utils::BROWSER_TEST_NONE);
+        ui_test_utils::BROWSER_TEST_NO_WAIT);
     observer->WaitForFinished();
     EXPECT_EQ(1u, observer->NumDownloadsSeenInState(DownloadItem::IN_PROGRESS));
     DownloadManager::DownloadVector items;

@@ -212,7 +212,7 @@ class ContentVerifierTest : public ExtensionBrowserTest {
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), extension_resource,
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_NONE);
+        ui_test_utils::BROWSER_TEST_NO_WAIT);
     EXPECT_TRUE(unload_observer.WaitForExtensionUnloaded());
     ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
     int reasons = prefs->GetDisableReasons(extension_id);
@@ -793,7 +793,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), extension->GetResourceURL(kLargeResource),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
 }
 
 IN_PROC_BROWSER_TEST_F(ContentVerifierTest,

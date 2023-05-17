@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, InvalidOrEmptyURL) {
 
   NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUICreditsURL),
                                WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                               ui_test_utils::BROWSER_TEST_NONE);
+                               ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   ASSERT_EQ(2, tsm()->count());
 

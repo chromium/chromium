@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, CloseParentWindow) {
   // Open a second browser window so we don't trigger shutdown.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_WINDOW,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   // TestWebDialogDelegate defaults to window-modal, so closing the browser
   // Window (as opposed to closing merely the tab) should close the dialog.
@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, CloseDialogOnEscapeEnabled) {
   // Open a second browser window so we don't trigger shutdown.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_WINDOW,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   // If ShouldCloseDialogOnEscape() is true, pressing Escape should close the
   // dialog.
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, CloseDialogOnEscapeDisabled) {
   // Open a second browser window so we don't trigger shutdown.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_WINDOW,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   // If ShouldCloseDialogOnEscape() is false, pressing Escape does nothing.
   delegate_->SetCloseOnEscape(false);

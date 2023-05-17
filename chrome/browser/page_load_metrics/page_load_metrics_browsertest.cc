@@ -4305,13 +4305,13 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBackForwardCacheBrowserTest,
   // Switch back to the tab for url_a.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url_a, WindowOpenDisposition::SWITCH_TO_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   // And then switch back to url_b's tab. This should call OnHidden for the
   // url_a tab again, but no new foreground duration should be logged.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url_b, WindowOpenDisposition::SWITCH_TO_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   int64_t bf_count_after_switch = CountForMetricForURL(
       HistoryNavigation::kEntryName,
@@ -4328,7 +4328,7 @@ IN_PROC_BROWSER_TEST_P(PageLoadMetricsBackForwardCacheBrowserTest,
   // a new foreground duration to be logged.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url_a, WindowOpenDisposition::SWITCH_TO_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   CloseBrowserSynchronously(browser());
 
   // Neither of the metrics for url_a should have moved.

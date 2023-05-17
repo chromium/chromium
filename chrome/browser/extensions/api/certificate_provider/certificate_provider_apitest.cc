@@ -398,7 +398,7 @@ class CertificateProviderApiMockedExtensionTest
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GetHttpsClientCertUrl(),
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_NONE);
+        ui_test_utils::BROWSER_TEST_NO_WAIT);
 
     content::WebContents* const https_contents =
         browser()->tab_strip_model()->GetActiveWebContents();

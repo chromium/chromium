@@ -2303,7 +2303,7 @@ void TestRecipeReplayer::NavigateAwayAndDismissBeforeUnloadDialog() {
   content::PrepContentsForBeforeUnloadTest(GetWebContents());
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_NONE);
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   javascript_dialogs::AppModalDialogController* alert =
       ui_test_utils::WaitForAppModalDialog();
   alert->view()->AcceptAppModalDialog();
