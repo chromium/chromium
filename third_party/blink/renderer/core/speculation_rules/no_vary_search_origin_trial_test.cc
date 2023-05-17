@@ -82,6 +82,10 @@ TEST(PrefetchNoVarySearchOriginTrialTest, CanEnableFromToken) {
       RuntimeEnabledFeatures::NoVarySearchPrefetchEnabled(frame.DomWindow()));
   EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesPrefetchProxyEnabled(
       frame.DomWindow()));
+  EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesNoVarySearchHintEnabled(
+      frame.DomWindow()));
+  EXPECT_TRUE(RuntimeEnabledFeatures::SpeculationRulesEagernessEnabled(
+      frame.DomWindow()));
 }
 
 TEST(PrefetchNoVarySearchOriginTrialTest, DoesNotEnableWithoutToken) {

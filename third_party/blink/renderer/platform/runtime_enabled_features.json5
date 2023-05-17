@@ -3266,6 +3266,7 @@
       origin_trial_feature_name: "SpeculationRulesPrefetchFuture",
       origin_trial_allows_third_party: true,
       status: "experimental",
+      implied_by: ["SpeculationRulesNoVarySearchHint"],
     },
     {
       name: "SpeculationRulesFetchFromHeader",
@@ -3277,6 +3278,7 @@
     {
       name: "SpeculationRulesNoVarySearchHint",
       base_feature: "none",
+      origin_trial_feature_name: "NoVarySearchPrefetch",
     },
     {
       name: "SpeculationRulesPointerDownHeuristics",
