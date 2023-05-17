@@ -131,6 +131,7 @@ crbug.com/1377842 [ android ] WebCodecs_EncodeColorSpace_vp09.00.10.08_prefer-ha
 crbug.com/1429736 [ chromeos chromeos-board-kevin ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
 
 crbug.com/1444151 [ mac apple-apple-m2 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_constant_* [ Failure ]
+crbug.com/1444151 [ mac apple-apple-m2 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_1500000 [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
