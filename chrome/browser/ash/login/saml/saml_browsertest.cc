@@ -1114,6 +1114,9 @@ class SAMLPolicyTest : public SamlTestBase {
   void EnableTransferSAMLCookiesPolicy();
   void SetLoginBehaviorPolicyToSAMLInterstitial();
   void SetLoginVideoCaptureAllowedUrls(const std::vector<GURL>& allowed);
+  // SSO_profile in device policy blob is responsible for per-OU IdP
+  // configuration.
+  void SetSSOProfile(const std::string& sso_profile);
 
   void ShowGAIALoginForm();
   void ShowSAMLLoginForm();
@@ -1128,12 +1131,6 @@ class SAMLPolicyTest : public SamlTestBase {
   void GetCookies();
 
  protected:
-  policy::DevicePolicyCrosTestHelper test_helper_;
-  // TODO(b/270930387): refactor to do device policy updates through
-  // `device_state_` from `SamlTestBase` instead. Right now we have two ways to
-  // do device policy updates in this fixture and they are not interchangeable
-  // as they update different policy blobs.
-  raw_ptr<policy::DevicePolicyBuilder, ExperimentalAsh> device_policy_;
   NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   net::CookieList cookie_list_;
 
@@ -1146,8 +1143,7 @@ class SAMLPolicyTest : public SamlTestBase {
           AccountId::FromUserEmailGaiaId("user@gmail.com", "1111"))}};
 };
 
-SAMLPolicyTest::SAMLPolicyTest()
-    : device_policy_(test_helper_.device_policy()) {
+SAMLPolicyTest::SAMLPolicyTest() {
   device_state_.SetState(
       DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED);
   device_state_.set_skip_initial_policy_setup(true);
@@ -1160,11 +1156,11 @@ void SAMLPolicyTest::SetUpInProcessBrowserTestFixture() {
 
   SamlTestBase::SetUpInProcessBrowserTestFixture();
 
-  // Initialize device policy.
-  auto affiliation_helper = policy::AffiliationTestHelper::CreateForCloud(
-      FakeSessionManagerClient::Get());
-  ASSERT_NO_FATAL_FAILURE(affiliation_helper.SetDeviceAffiliationIDs(
-      &test_helper_, std::array{base::StringPiece(kAffiliationID)}));
+  // Add device affiliation id.
+  std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
+      device_state_.RequestDevicePolicyUpdate();
+  device_policy_update->policy_data()->add_device_affiliation_ids(
+      kAffiliationID);
 
   // Initialize user policy.
   provider_.SetDefaultReturns(/*is_initialization_complete_return=*/true,
@@ -1228,52 +1224,34 @@ void SAMLPolicyTest::SetSAMLOfflineSigninTimeLimitPolicy(int limit) {
 }
 
 void SAMLPolicyTest::EnableTransferSAMLCookiesPolicy() {
-  em::ChromeDeviceSettingsProto& proto(device_policy_->payload());
+  std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
+      device_state_.RequestDevicePolicyUpdate();
+  em::ChromeDeviceSettingsProto& proto(*device_policy_update->policy_payload());
   proto.mutable_saml_settings()->set_transfer_saml_cookies(true);
-
-  base::RunLoop run_loop;
-  base::CallbackListSubscription subscription =
-      CrosSettings::Get()->AddSettingsObserver(kAccountsPrefTransferSAMLCookies,
-                                               run_loop.QuitClosure());
-  device_policy_->SetDefaultSigningKey();
-  device_policy_->Build();
-  FakeSessionManagerClient::Get()->set_device_policy(device_policy_->GetBlob());
-  FakeSessionManagerClient::Get()->OnPropertyChangeComplete(true);
-  run_loop.Run();
 }
 
 void SAMLPolicyTest::SetLoginBehaviorPolicyToSAMLInterstitial() {
-  em::ChromeDeviceSettingsProto& proto(device_policy_->payload());
+  std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
+      device_state_.RequestDevicePolicyUpdate();
+  em::ChromeDeviceSettingsProto& proto(*device_policy_update->policy_payload());
   proto.mutable_login_authentication_behavior()
       ->set_login_authentication_behavior(
           em::LoginAuthenticationBehaviorProto_LoginBehavior_SAML_INTERSTITIAL);
-
-  base::RunLoop run_loop;
-  base::CallbackListSubscription subscription =
-      CrosSettings::Get()->AddSettingsObserver(kLoginAuthenticationBehavior,
-                                               run_loop.QuitClosure());
-  device_policy_->SetDefaultSigningKey();
-  device_policy_->Build();
-  FakeSessionManagerClient::Get()->set_device_policy(device_policy_->GetBlob());
-  FakeSessionManagerClient::Get()->OnPropertyChangeComplete(true);
-  run_loop.Run();
 }
 
 void SAMLPolicyTest::SetLoginVideoCaptureAllowedUrls(
     const std::vector<GURL>& allowed) {
-  em::ChromeDeviceSettingsProto& proto(device_policy_->payload());
+  std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
+      device_state_.RequestDevicePolicyUpdate();
+  em::ChromeDeviceSettingsProto& proto(*device_policy_update->policy_payload());
   for (const GURL& url : allowed)
     proto.mutable_login_video_capture_allowed_urls()->add_urls(url.spec());
+}
 
-  base::RunLoop run_loop;
-  base::CallbackListSubscription subscription =
-      CrosSettings::Get()->AddSettingsObserver(kLoginVideoCaptureAllowedUrls,
-                                               run_loop.QuitClosure());
-  device_policy_->SetDefaultSigningKey();
-  device_policy_->Build();
-  FakeSessionManagerClient::Get()->set_device_policy(device_policy_->GetBlob());
-  FakeSessionManagerClient::Get()->OnPropertyChangeComplete(true);
-  run_loop.Run();
+void SAMLPolicyTest::SetSSOProfile(const std::string& sso_profile) {
+  std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
+      device_state_.RequestDevicePolicyUpdate();
+  device_policy_update->policy_data()->set_sso_profile(sso_profile);
 }
 
 void SAMLPolicyTest::ShowGAIALoginForm() {
@@ -1731,6 +1709,31 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, TestLockMediaPermission) {
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE));
 }
 
+// Tests that we land on 3P IdP page corresponding to sso_profile from the
+// device policy blob during "add user" flow.
+IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SsoProfileInAddNewUserFlow) {
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
+
+  // Set wrong redirect url for domain-based saml redirection. This ensures that
+  // for test to finish successfully it should perform redirection based on sso
+  // profile.
+  const GURL wrong_redirect_url("https://wrong.com");
+  fake_gaia_.fake_gaia()->RegisterSamlDomainRedirectUrl(
+      fake_saml_idp()->GetIdpDomain(), wrong_redirect_url);
+
+  SetLoginBehaviorPolicyToSAMLInterstitial();
+  SetSSOProfile(fake_saml_idp()->GetIdpSsoProfile());
+
+  // Launch "add user" flow.
+  ShowSAMLLoginForm();
+
+  SigninFrameJS().TypeIntoPath("fake_user", {"Email"});
+  SigninFrameJS().TypeIntoPath("fake_password", {"Password"});
+
+  SigninFrameJS().TapOn("Submit");
+  test::WaitForPrimaryUserSessionStart();
+}
+
 // Pushes DeviceLoginScreenLocales into the device policy.
 class SAMLLocalesTest : public SamlTestBase {
  public:
@@ -1745,65 +1748,16 @@ class SAMLLocalesTest : public SamlTestBase {
   }
 };
 
-// Tests that DeviceLoginLocales policy propagates to the 3rd-party IdP.
+// Tests that DeviceLoginLocales policy propagates to the 3rd-party IdP. We use
+// a separate `SAMLLocalesTest` test fixture for this instead of expanding
+// `SAMLPolicyTest` because dynamically reloading the language on policy change
+// is hard.
 IN_PROC_BROWSER_TEST_F(SAMLLocalesTest, PropagatesToIdp) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFirstUserCorpExampleComEmail);
 
   SigninFrameJS().ExpectEQ("navigator.language", std::string(kLoginLocale));
-}
-
-// For tests relying on sso_profile in device policy blob which is responcible
-// for per-OU IdP configuration.
-class SsoProfileTest : public SamlTestBase {
- public:
-  SsoProfileTest();
-
-  SsoProfileTest(const SsoProfileTest&) = delete;
-  SsoProfileTest& operator=(const SsoProfileTest&) = delete;
-
-  ~SsoProfileTest() override = default;
-};
-
-SsoProfileTest::SsoProfileTest() {
-  device_state_.SetState(
-      DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED);
-  std::unique_ptr<ScopedDevicePolicyUpdate> policy_update =
-      device_state_.RequestDevicePolicyUpdate();
-  // Set LoginAuthenticationBehavior policy to go directly to 3P IdP login page
-  em::ChromeDeviceSettingsProto& proto(*policy_update->policy_payload());
-  proto.mutable_login_authentication_behavior()
-      ->set_login_authentication_behavior(
-          em::LoginAuthenticationBehaviorProto_LoginBehavior_SAML_INTERSTITIAL);
-  // Set SSO Profile corresponding to `fake_saml_idp()`
-  policy_update->policy_data()->set_sso_profile(
-      fake_saml_idp()->GetIdpSsoProfile());
-}
-
-// Tests that we land on 3P IdP page corresponding to sso_profile from the
-// device policy blob during "add user" flow.
-IN_PROC_BROWSER_TEST_F(SsoProfileTest, AddNewUser) {
-  fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
-
-  // Set wrong redirect url for domain-based saml redirection. This ensures that
-  // for test to finish successfully it should perform redirection based on sso
-  // profile.
-  const GURL wrong_redirect_url("https://wrong.com");
-  fake_gaia_.fake_gaia()->RegisterSamlDomainRedirectUrl(
-      fake_saml_idp()->GetIdpDomain(), wrong_redirect_url);
-
-  // Launch "add user" flow.
-  ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
-  OobeScreenWaiter(GaiaView::kScreenId).Wait();
-  test::OobeJS().CreateVisibilityWaiter(true, kSigninFrameDialog)->Wait();
-  test::OobeJS().CreateVisibilityWaiter(false, kGaiaLoading)->Wait();
-
-  SigninFrameJS().TypeIntoPath("fake_user", {"Email"});
-  SigninFrameJS().TypeIntoPath("fake_password", {"Password"});
-
-  SigninFrameJS().TapOn("Submit");
-  test::WaitForPrimaryUserSessionStart();
 }
 
 class SAMLPasswordAttributesTest : public SAMLPolicyTest,
