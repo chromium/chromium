@@ -374,6 +374,7 @@ class SizeInfo(BaseSizeInfo):
   """
   __slots__ = (
       'size_path',
+      'is_sparse',
   )
 
   def __init__(self,
@@ -381,9 +382,11 @@ class SizeInfo(BaseSizeInfo):
                containers,
                raw_symbols,
                symbols=None,
-               size_path=None):
+               size_path=None,
+               is_sparse=False):
     super().__init__(build_config, containers, raw_symbols, symbols=symbols)
     self.size_path = size_path
+    self.is_sparse = is_sparse
 
   @property
   def metadata_legacy(self):
@@ -415,6 +418,10 @@ class DeltaSizeInfo(BaseSizeInfo):
     super().__init__(None, containers, raw_symbols)
     self.before = before
     self.after = after
+
+  @property
+  def is_sparse(self):
+    return self.before.is_sparse and self.after.is_sparse
 
 
 class BaseSymbol:
