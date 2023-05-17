@@ -381,7 +381,6 @@ void PreloadHandler::DidUpdatePrefetchStatus(
 
 void PreloadHandler::DidUpdatePrerenderStatus(
     const base::UnguessableToken& initiator_devtools_navigation_token,
-    const std::string& initiating_frame_id,
     const GURL& prerender_url,
     PreloadingTriggeringOutcome status,
     absl::optional<PrerenderFinalStatus> prerender_status) {
@@ -401,8 +400,8 @@ void PreloadHandler::DidUpdatePrerenderStatus(
           : Maybe<Preload::PrerenderFinalStatus>();
   if (PreloadingTriggeringOutcomeSupportedByPrerender(status)) {
     frontend_->PrerenderStatusUpdated(
-        std::move(preloading_attempt_key), initiating_frame_id,
-        prerender_url.spec(), PreloadingTriggeringOutcomeToProtocol(status),
+        std::move(preloading_attempt_key),
+        PreloadingTriggeringOutcomeToProtocol(status),
         std::move(protocol_prerender_status));
   }
 }

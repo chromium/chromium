@@ -11095,9 +11095,6 @@ experimental domain Preload
   event prerenderStatusUpdated
     parameters
       PreloadingAttemptKey key
-      # The frame id of the frame initiating prerender.
-      Page.FrameId initiatingFrameId
-      string prerenderingUrl
       PreloadingStatus status
       optional PrerenderFinalStatus prerenderStatus
 

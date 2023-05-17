@@ -52,7 +52,6 @@ class PreloadHandler : public DevToolsDomainHandler, public Preload::Backend {
       PrefetchStatus prefetch_status);
   void DidUpdatePrerenderStatus(
       const base::UnguessableToken& initiator_devtools_navigation_token,
-      const std::string& initiating_frame_id,
       const GURL& prerender_url,
       PreloadingTriggeringOutcome status,
       absl::optional<PrerenderFinalStatus> prerender_status);
