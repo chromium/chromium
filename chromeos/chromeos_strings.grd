@@ -294,6 +294,9 @@
       <message name="IDS_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_NAME_TEMPLATE" desc="A11y retry label name template for the Quick Answers view.">
         <ph name="DESC_TEXT">$1<ex>Cannot connect to the internet. Click to try again.</ex></ph>: Retry
       </message>
+      <message name="IDS_QUICK_ANSWERS_VIEW_EXPANSION_INDICATOR_LABEL" desc="Description text of the expansion affordance indicator for the Quick Answers view.">
+        more
+      </message>
       <message name="IDS_QUICK_ANSWERS_VIEW_REPORT_QUERY_INTERNAL_LABEL" desc="Description text of the report query button for the Quick Answers view.">
         Internal only
       </message>
