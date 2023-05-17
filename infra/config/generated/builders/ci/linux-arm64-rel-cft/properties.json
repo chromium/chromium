@@ -22,6 +22,9 @@
                 "target_platform": "linux"
               },
               "legacy_gclient_config": {
+                "apply_configs": [
+                  "arm64"
+                ],
                 "config": "chromium"
               }
             }
