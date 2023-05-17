@@ -280,7 +280,7 @@ class FuchsiaSystemCerts {
           bssl::UpRef(cert->cert_buffer()),
           x509_util::DefaultParseCertificateOptions(), &errors);
       CHECK(parsed) << errors.ToDebugString();
-      system_trust_store_.AddTrustAnchor(parsed);
+      system_trust_store_.AddTrustAnchor(std::move(parsed));
     }
   }
 

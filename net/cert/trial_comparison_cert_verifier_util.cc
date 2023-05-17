@@ -35,14 +35,14 @@ ParsedCertificateList ParsedCertificateListFromX509Certificate(
       ParsedCertificateFromBuffer(cert->cert_buffer(), &parsing_errors);
   if (!target)
     return {};
-  certs.push_back(target);
+  certs.push_back(std::move(target));
 
   for (const auto& buf : cert->intermediate_buffers()) {
     std::shared_ptr<const ParsedCertificate> intermediate =
         ParsedCertificateFromBuffer(buf.get(), &parsing_errors);
     if (!intermediate)
       return {};
-    certs.push_back(intermediate);
+    certs.push_back(std::move(intermediate));
   }
 
   return certs;

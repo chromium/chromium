@@ -239,7 +239,7 @@ CertIssuersIter::CertIssuersIter(
     CertIssuerSources* cert_issuer_sources,
     TrustStore* trust_store,
     base::SupportsUserData* debug_data)
-    : cert_(in_cert),
+    : cert_(std::move(in_cert)),
       cert_issuer_sources_(cert_issuer_sources),
       trust_store_(trust_store),
       debug_data_(debug_data) {

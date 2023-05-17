@@ -78,9 +78,9 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-std::string GetName(std::shared_ptr<const net::ParsedCertificate> cert) {
+std::string GetName(const net::ParsedCertificate& cert) {
   net::RDNSequence subject_rdn;
-  if (!net::ParseName(cert->subject_tlv(), &subject_rdn)) {
+  if (!net::ParseName(cert.subject_tlv(), &subject_rdn)) {
     return "UNKNOWN";
   }
   std::string subject_string;
@@ -90,9 +90,9 @@ std::string GetName(std::shared_ptr<const net::ParsedCertificate> cert) {
   return subject_string;
 }
 
-std::string GetHash(std::shared_ptr<const net::ParsedCertificate> cert) {
+std::string GetHash(const net::ParsedCertificate& cert) {
   net::SHA256HashValue hash =
-      net::X509Certificate::CalculateFingerprint256(cert->cert_buffer());
+      net::X509Certificate::CalculateFingerprint256(cert.cert_buffer());
   return base::HexEncode(hash.data, std::size(hash.data));
 }
 #endif
@@ -225,13 +225,13 @@ void CertVerifierServiceFactoryImpl::GetChromeRootStoreInfo(
     info_ptr->version = proc_params_.root_store_data->version();
     for (auto cert : proc_params_.root_store_data->anchors()) {
       info_ptr->root_cert_info.push_back(
-          mojom::ChromeRootCertInfo::New(GetName(cert), GetHash(cert)));
+          mojom::ChromeRootCertInfo::New(GetName(*cert), GetHash(*cert)));
     }
   } else {
     info_ptr->version = net::CompiledChromeRootStoreVersion();
     for (auto cert : net::CompiledChromeRootStoreAnchors()) {
       info_ptr->root_cert_info.push_back(
-          mojom::ChromeRootCertInfo::New(GetName(cert), GetHash(cert)));
+          mojom::ChromeRootCertInfo::New(GetName(*cert), GetHash(*cert)));
     }
   }
   std::move(callback).Run(std::move(info_ptr));

@@ -34,7 +34,7 @@ class TrustStoreAndroid::Impl
         LOG(ERROR) << "Error parsing certificate:\n" << errors.ToDebugString();
         continue;
       }
-      trust_store_.AddTrustAnchor(parsed);
+      trust_store_.AddTrustAnchor(std::move(parsed));
     }
   }
 

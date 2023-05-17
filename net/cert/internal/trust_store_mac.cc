@@ -415,7 +415,7 @@ class TrustDomainCacheFullCerts {
         LOG(ERROR) << "Error parsing certificate:\n" << errors.ToDebugString();
         continue;
       }
-      cert_issuer_source_.AddCert(parsed_cert);
+      cert_issuer_source_.AddCert(std::move(parsed_cert));
       trust_status_vector.emplace_back(x509_util::CalculateFingerprint256(cert),
                                        TrustStatusDetails());
     }
