@@ -418,12 +418,22 @@ crbug.com/1152599 [ win amd-0x7340 angle-d3d11 ] conformance/rendering/polygon-o
 
 ## D3D9 / AMD RX 5500 XT / Passthrough command decoder ##
 
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/glsl/misc/shader-with-non-reserved-words-5-of-8.html [ Failure ]
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/glsl/misc/shader-with-too-many-uniforms.html [ Failure ]
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/glsl/misc/uninitialized-local-global-variables.html [ Failure ]
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/ogles/GL/* [ RetryOnFailure ]
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/reading/read-pixels-test.html [ Failure ]
 crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms/* [ RetryOnFailure ]
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/misc/texture-active-bind.html [ Failure ]
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/misc/texture-draw-with-2d-and-cube.html [ Failure ]
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/misc/texture-npot-video.html [ Failure ]
 crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/webgl_canvas/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
 crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
 crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms/uniform-values-per-program.html [ Failure ]
 crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms/uniform-default-values.html [ Failure ]
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] deqp/data/gles2/shaders/conversions_scalar_to_scalar.html [ Failure ]
+crbug.com/1361088 [ win amd-0x7340 angle-d3d9 passthrough ] deqp/data/gles2/shaders/swizzles_bvec4.html [ Failure ]
 
 ## win10 / angle-d3d11 / Passthrough command decoder failures ##
 
