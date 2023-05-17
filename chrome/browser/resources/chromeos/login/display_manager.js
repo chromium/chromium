@@ -8,6 +8,7 @@
 
 import {assert} from '//resources/ash/common/assert.js';
 import {$, ensureTransitionEndEvent} from '//resources/ash/common/util.js';
+import {afterNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DISPLAY_TYPE, OOBE_UI_STATE, SCREEN_DEVICE_DISABLED, SCREEN_WELCOME} from './components/display_manager_types.js';
 import {globalOobeKeyboard} from './components/keyboard_utils_oobe.js';
@@ -226,6 +227,8 @@ export function invokePolymerMethod(element, name, ...args) {
       const nextStepId = this.screens_[nextStepIndex];
       const oldStep = $(currentStepId);
       const newStep = $(nextStepId);
+      const innerContainer = $('inner-container');
+      const isOobeSimonEnabled = loadTimeData.getBoolean('isOobeSimonEnabled');
 
       invokePolymerMethod(oldStep, 'onBeforeHide');
 
@@ -260,7 +263,6 @@ export function invokePolymerMethod(element, name, ...args) {
       // Default control to be focused (if specified).
       const defaultControl = newStep.defaultControl;
 
-      const innerContainer = $('inner-container');
       if (this.currentStep_ != nextStepIndex &&
           !oldStep.classList.contains('hidden')) {
         oldStep.classList.add('hidden');
@@ -270,8 +272,6 @@ export function invokePolymerMethod(element, name, ...args) {
         }
       } else {
         // First screen on OOBE launch.
-        const isOobeSimonEnabled =
-            loadTimeData.getBoolean('isOobeSimonEnabled');
         if (this.isOobeUI() && innerContainer.classList.contains('down')) {
           if (isOobeSimonEnabled) {
             setTimeout(this.triggerDown.bind(this), TRIGGERDOWN_FALLBACK_DELAY);
@@ -293,7 +293,22 @@ export function invokePolymerMethod(element, name, ...args) {
       $('oobe').dispatchEvent(
           new CustomEvent('screenchanged', {detail: this.currentScreen.id}));
       chrome.send('updateCurrentScreen', [this.currentScreen.id]);
+
+      // Post a task to finish initial animation once a frame is rendered.
+      // Posting the task makes sure it will be executed after all other
+      // pending calls happening in JS that might delay the paint event.
+      if (isOobeSimonEnabled && innerContainer.classList.contains('down')) {
+        afterNextRender(this, () => this.sendBackdropLoaded());
+      }
     }
+
+    /**
+     * Notify browser that backdrop is ready.
+     */
+    sendBackdropLoaded() {
+      chrome.send('backdropLoaded');
+    }
+
 
     /**
      * Show screen of given screen id.

@@ -51,7 +51,8 @@ export class Oobe extends DisplayManager {
    * Does the initial transition to the OOBE flow after booting animation.
    */
   static triggerDown() {
-    Oobe.getInstance().triggerDown();
+    // Delay this call to reduce the load during animation.
+    setTimeout(Oobe.getInstance().triggerDown, 0);
   }
 
   /**

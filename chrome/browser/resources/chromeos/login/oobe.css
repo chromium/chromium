@@ -219,11 +219,13 @@ Styles related to the `md-screen-container`
 
 #welcome-backdrop {
   background-color: var(--oobe-bg-color);
-  background-position: center;
-  background-size: cover;
   display: none;
+  height: 100%;
   inset: 0;
+  object-fit: cover;
+  object-position: center;
   position: absolute;
+  width: 100%;
   z-index: -1;
 }
 :root.simon-enabled[dir=rtl] #oobe.connect #welcome-backdrop {

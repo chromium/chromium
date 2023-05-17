@@ -67,7 +67,9 @@ void BootingAnimationController::Show() {
       Shell::GetPrimaryRootWindow(), kShellWindowId_BootingAnimationContainer);
   params.parent = animation_window;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params.opacity = views::Widget::InitParams::WindowOpacity::kOpaque;
+  // Make the opacity `kTranslucent` so the OOBE WebUI will be rendered in the
+  // background.
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   widget_->Init(std::move(params));
 
   if (animation_data_.empty()) {
