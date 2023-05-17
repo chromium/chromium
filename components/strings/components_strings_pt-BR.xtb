@@ -177,7 +177,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1363819917331173092">Não oferecer a opção de traduzir páginas em <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Esta política está bloqueada. O valor dela será ignorado.</translation>
 <translation id="1368318639262510626">Jogo do dinossauro. Um dinossauro pixelado corre por uma paisagem desolada desviando de cactos e pterodátilos. Quando você ouvir o sinal, pressione a barra de espaço para pular os obstáculos.</translation>
-<translation id="136907351928231527">Pode levar até uma semana para que uma lista de temas apareça com base no seu histórico de navegação recente.</translation>
 <translation id="1374468813861204354">sugestões</translation>
 <translation id="1375198122581997741">Sobre a versão</translation>
 <translation id="1376836354785490390">Mostrar menos</translation>
@@ -1078,7 +1077,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3646643500201740985">Medir a performance de um anúncio</translation>
 <translation id="3647286794400715637">Cada entrada de string de URL precisa conter entre um e dois URLs.</translation>
 <translation id="3650584904733503804">Validação bem-sucedida</translation>
-<translation id="3650594806107685466">Para manter seu cartão seguro, insira o CVC que fica na <ph name="SIDE_OF_CARD" /></translation>
+<translation id="3650594806107685466">Por questões de segurança, insira o CVC que fica na <ph name="SIDE_OF_CARD" /></translation>
 <translation id="3653033846669030038">Parques temáticos</translation>
 <translation id="3655241534245626312">Acessar configurações de permissão</translation>
 <translation id="3655670868607891010">Caso veja esta página com frequência, tente <ph name="HELP_LINK" />.</translation>
@@ -1198,7 +1197,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3962859241508114581">Faixa anterior</translation>
 <translation id="3963721102035795474">Modo leitor</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Nenhum}=1{1 site }one{# site }other{# sites }}</translation>
-<translation id="3969052498612555048">Não encontrou o código? <ph name="BEGIN_LINK" />Gerar novo código<ph name="END_LINK" /></translation>
+<translation id="3969052498612555048">Não encontrou o código? <ph name="BEGIN_LINK" />Gerar outro<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
 <translation id="3984581365661308170">Envelope 11</translation>
@@ -1966,7 +1965,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5838278095973806738">É recomendado não fornecer informações confidenciais a esse site (por exemplo, senhas ou cartões de crédito), porque elas podem ser roubadas por invasores.</translation>
 <translation id="5851548754964597211">Lista de guias</translation>
 <translation id="5852909432155870672">RA4</translation>
-<translation id="5860033963881614850">Desativado</translation>
+<translation id="5860033963881614850">Desativada</translation>
 <translation id="5862579898803147654">Empilhador 8</translation>
 <translation id="5863847714970149516">A página que você está prestes a acessar pode tentar cobrar pagamentos</translation>
 <translation id="5866257070973731571">Adicione um Número de Telefone</translation>
@@ -2286,7 +2285,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6687335167692595844">Tamanho da fonte solicitado</translation>
 <translation id="6687696737818665306">Atuação e teatro</translation>
 <translation id="6688743156324860098">Atualizar…</translation>
-<translation id="6688775486821967877">O cartão virtual não está disponível no momento. Tente novamente mais tarde</translation>
+<translation id="6688775486821967877">O cartão virtual não está disponível no momento. Tente de novo mais tarde.</translation>
 <translation id="6689249931105087298">Relativa com compressão de pontos pretos</translation>
 <translation id="6689271823431384964">A opção de salvar seus cartões na Conta do Google está disponível no Chrome porque você fez login. É possível alterar esse comportamento nas configurações. O nome do titular do cartão vem da sua conta.</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter" para encontrar seu dispositivo com a Conta do Google</translation>

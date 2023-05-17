@@ -177,7 +177,6 @@
 <translation id="1363819917331173092"><ph name="SOURCE_LANGUAGE" /> のページを翻訳するか尋ねない</translation>
 <translation id="1364822246244961190">このポリシーはブロックされているため、値は無視されます。</translation>
 <translation id="1368318639262510626">Dino ゲーム。ピクセル画像の恐竜がサボテンやプテロダクティルスをよけながら、荒地を走り抜けます。合図の音が聞こえたら、Space キーを押して障害物を飛び越えましょう。</translation>
-<translation id="136907351928231527">最近の閲覧履歴に基づいてトピックのリストがここに表示されるようになるまで 1 週間ほどかかる場合があります</translation>
 <translation id="1374468813861204354">ヒント</translation>
 <translation id="1375198122581997741">バージョン情報</translation>
 <translation id="1376836354785490390">折りたたむ</translation>
@@ -1035,7 +1034,7 @@
 <translation id="3550112004925580947">サービス業</translation>
 <translation id="3552297013052089404">Sans Serif フォント</translation>
 <translation id="3558573058928565255">日中</translation>
-<translation id="3560824484345057728">関連サイトを表示</translation>
+<translation id="3560824484345057728">関連サイトを表示する</translation>
 <translation id="3566021033012934673">この接続ではプライバシーが保護されません</translation>
 <translation id="3566336457819493938">215x315 mm</translation>
 <translation id="3567778190852720481">企業アカウントでは登録できません（企業アカウントは利用できません）。</translation>
@@ -1465,7 +1464,7 @@
 <translation id="4607603470419975064">[Chrome のヒントを表示] ボタンです。Enter キーを押して、Chrome の機能を確認します</translation>
 <translation id="4607608436550361748">Chrome のヒントを表示</translation>
 <translation id="460848736049414407">管理者によりブロック済み</translation>
-<translation id="4610279718074907952">このサイトは、アクティビティを確認できる <ph name="SET_OWNER" /> により定義されたグループに属しています</translation>
+<translation id="4610279718074907952">このサイトは、<ph name="SET_OWNER" /> により定義され、アクティビティを確認できるグループに属しています</translation>
 <translation id="4617273035598175554">グラフィック、アニメーション ソフトウェア</translation>
 <translation id="4622292761762557753">このまま転送</translation>
 <translation id="4627675673814409125">このポリシーは、Chrome プロフィール単位では設定できないため、無視されます。</translation>

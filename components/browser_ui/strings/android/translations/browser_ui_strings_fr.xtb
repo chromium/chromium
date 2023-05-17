@@ -118,7 +118,7 @@
 <translation id="3115898365077584848">Afficher les informations</translation>
 <translation id="3123473560110926937">Bloqué sur certains sites</translation>
 <translation id="3143754809889689516">Lire depuis le début</translation>
-<translation id="3162899666601560689">Les sites peuvent utiliser des cookies pour améliorer votre expérience de navigation, par exemple pour maintenir votre connexion ou mémoriser les articles de votre panier</translation>
+<translation id="3162899666601560689">Les sites peuvent utiliser des cookies pour améliorer votre expérience de navigation, par exemple pour vous maintenir connecté ou se souvenir des articles de votre panier</translation>
 <translation id="3165022941318558018">Autorisez un site à utiliser des cookies tiers</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> de données stockées</translation>
 <translation id="3203366800380907218">Sur le Web</translation>
@@ -451,7 +451,7 @@
 <translation id="913657688200966289">Activez les autorisations pour <ph name="APP_NAME" /> dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Le zoom actuel est de <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Cette page est dangereuse</translation>
-<translation id="9201023452444595544">Toutes les données hors connexion vont être effacées</translation>
+<translation id="9201023452444595544">Les éventuelles données hors connexion seront effacées</translation>
 <translation id="930525582205581608">Effacer pour ce site ?</translation>
 <translation id="967624055006145463">Données stockées</translation>
 </translationbundle>

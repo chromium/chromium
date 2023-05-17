@@ -177,7 +177,6 @@
 <translation id="1363819917331173092">पेजचे <ph name="SOURCE_LANGUAGE" /> मध्ये भाषांतर करणे ऑफर करू नका</translation>
 <translation id="1364822246244961190">हे धोरण ब्लॉक केले आहे, त्याचे मूल्य दुर्लक्षित केले जाईल.</translation>
 <translation id="1368318639262510626">Dino गेम. पिक्सलेट झालेला डायनासोर हा काट्यांपासून आणि टेरोडॅक्टिलपासून स्वतःचे रक्षण करत एका ओसाड जागेतून धावत आहे. तुम्ही ऑडिओ संकेत ऐकता तेव्हा, अडथळे आल्यावर उडी मारण्यासाठी स्पेस प्रेस करा.</translation>
-<translation id="136907351928231527">तुमच्या अलीकडील ब्राउझिंग इतिहासावर आधारित विषयांची सूची येथे दिसण्यासाठी कमाल एक आठवडा लागू शकतो</translation>
 <translation id="1374468813861204354">सूचना</translation>
 <translation id="1375198122581997741">आवृत्तीबद्दल</translation>
 <translation id="1376836354785490390">कमी दर्शवा</translation>
@@ -1902,10 +1901,10 @@
 <translation id="5659593005791499971">ई-मेल</translation>
 <translation id="5663955426505430495">या डिव्हाइसच्या अ‍ॅडमिनिस्ट्रेटरने अतिरिक्त फंक्शनसाठी एक्स्टेंशन इंस्टॉल केले आहे. एक्स्टेंशनकडे तुमच्या काही डेटाचा अ‍ॅक्सेस आहे.</translation>
 <translation id="5666606186680807225">समुद्रकिनारे आणि बेटे</translation>
-<translation id="5675650730144413517">हे पृष्ठ कार्य करीत नाही</translation>
+<translation id="5675650730144413517">हे पेज काम करत नाही</translation>
 <translation id="568292603005599551">इमेज X स्थिती</translation>
 <translation id="5684277895745049190">सूची</translation>
-<translation id="5684874026226664614">अरेरे. हे पृष्‍ठ भाषांतरित केले जाऊ शकले नाही.</translation>
+<translation id="5684874026226664614">अरेरे. हे पेज भाषांतरित करता आले नाही.</translation>
 <translation id="5685654322157854305">पाठवण्याचा पत्ता जोडा</translation>
 <translation id="5689199277474810259">JSON वर एक्सपोर्ट करा</translation>
 <translation id="5689516760719285838">स्थान</translation>
@@ -2830,7 +2829,7 @@
 <translation id="7981129096182302364">नृत्य आणि इलेक्ट्रॉनिक संगीत</translation>
 <translation id="798134797138789862">आभासी वास्तविकता डिव्हाइस आणि डेटा वापरण्याची विनंती करू शकते</translation>
 <translation id="7983008347525536475">SUVs</translation>
-<translation id="7984945080620862648">Chrome प्रक्रिया करू शकत नसलेले न समजणारे क्रेडेन्शियल वेबसाइटने पाठविल्यामुळे तुम्ही आत्ता <ph name="SITE" /> ला भेट देऊ शकत नाही. नेटवर्क एरर आणि आक्रमणकर्ते सामान्यतः तात्पुरते असतात, यामुळे हे पृष्ठ कदाचित नंतर कार्य करेल.</translation>
+<translation id="7984945080620862648">Chrome प्रक्रिया करू शकत नसलेली स्क्रॅंबल केलेली क्रेडेंशियल वेबसाइटने पाठवल्यामुळे तुम्ही आत्ता <ph name="SITE" /> ला भेट देऊ शकत नाही. नेटवर्क एरर आणि आक्रमणकर्ते सामान्यतः तात्पुरते असतात, यामुळे हे पेज नंतर व्यवस्थित काम करेल.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
 <translation id="799149739215780103">बाइंड</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> सोबत स्क्रीन शेअर करणे पुन्हा सुरू केले</translation>
@@ -2852,7 +2851,7 @@
 <translation id="8027077570865220386">ट्रे १५</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms मध्ये नवीन फॉर्म झटपट तयार करण्यासाठी टॅब आणि त्यानंतर एंटर प्रेस करा</translation>
 <translation id="8028960012888758725">जॉबनंतर ट्रिम करा</translation>
-<translation id="8034522405403831421">हे पृष्‍ठ <ph name="SOURCE_LANGUAGE" /> मध्ये आहे. त्यास <ph name="TARGET_LANGUAGE" /> मध्ये भाषांतरीत करायचे?</translation>
+<translation id="8034522405403831421">हे पेज <ph name="SOURCE_LANGUAGE" /> मध्ये आहे. त्याला <ph name="TARGET_LANGUAGE" /> मध्ये भाषांतरित करायचे?</translation>
 <translation id="8035152190676905274">पेन</translation>
 <translation id="8037117624646282037">डिव्हाइस अलीकडे कोणी वापरले</translation>
 <translation id="8037357227543935929">विचारा (डीफॉल्ट)</translation>
