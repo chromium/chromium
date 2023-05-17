@@ -289,6 +289,34 @@ ColorProvider CreateColorProviderFromRendererColorMap(
   return color_provider;
 }
 
+ColorProvider CreateEmulatedForcedColorsColorProvider(bool dark_mode) {
+  ColorProvider color_provider;
+  ui::ColorMixer& mixer = color_provider.AddMixer();
+  // These three colors correspond to the colors kButtonText, kHighlight, and
+  // kButtonFace (in order), defined in
+  // WebThemeEngineDefault::OverrideForcedColorsTheme.
+  mixer[kColorScrollbarArrowForeground] = {dark_mode ? SK_ColorWHITE
+                                                     : SK_ColorBLACK};
+  mixer[kColorScrollbarArrowForegroundPressed] = {
+      dark_mode ? SkColorSetRGB(0x1A, 0xEB, 0xFF)
+                : SkColorSetRGB(0x37, 0x00, 0x6E)};
+  mixer[kColorScrollbarCorner] = {dark_mode ? SK_ColorBLACK : SK_ColorWHITE};
+  CompleteFluentScrollbarColorsDefinition(mixer);
+  color_provider.GenerateColorMap();
+  return color_provider;
+}
+
+void CompleteFluentScrollbarColorsDefinition(ui::ColorMixer& mixer) {
+  mixer[kColorScrollbarArrowBackgroundHovered] = {kColorScrollbarCorner};
+  mixer[kColorScrollbarArrowBackgroundPressed] = {
+      kColorScrollbarArrowBackgroundHovered};
+  mixer[kColorScrollbarThumb] = {kColorScrollbarArrowForeground};
+  mixer[kColorScrollbarThumbHovered] = {kColorScrollbarArrowForegroundPressed};
+  mixer[kColorScrollbarThumbInactive] = {kColorScrollbarThumb};
+  mixer[kColorScrollbarThumbPressed] = {kColorScrollbarThumbHovered};
+  mixer[kColorScrollbarTrack] = {kColorScrollbarCorner};
+}
+
 bool IsRendererColorMappingEquivalent(
     const ColorProvider& color_provider,
     const RendererColorMap& renderer_color_map) {

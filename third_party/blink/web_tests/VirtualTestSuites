@@ -928,6 +928,16 @@
     "expires": "Jul 1, 2023"
   },
   {
+    "prefix": "fluent-non-overlay-scrollbar-hc",
+    "platforms": ["Win"],
+    "bases": ["virtual/fluent-non-overlay-scrollbar/composited",
+              "virtual/fluent-non-overlay-scrollbar/hover-over-scrollbar-thumb.html"],
+    "args": ["--enable-features=FluentScrollbar",
+             "--enable-threaded-compositing",
+             "--force-high-contrast"],
+    "expires": "Jul 1, 2023"
+  },
+  {
     "prefix": "fluent-non-overlay-scrollbar-dark-mode",
     "platforms": ["Win"],
     "bases": ["fast/forms/color-scheme/scrollbar"],
