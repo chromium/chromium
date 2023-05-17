@@ -153,74 +153,6 @@ chromium-metrics-reviews@google.com.
   <summary>Various user actions performed in the translate infobar.</summary>
 </histogram>
 
-<histogram name="Translate.CompactInfobar.Language.AlwaysTranslate"
-    enum="LocaleCodeISO639" expires_after="2023-10-08">
-  <obsolete>
-    This predates the Translate metrics redesign. Metrics are now logged at a
-    translation-level and a page-load level.
-  </obsolete>
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Records the hashcode of the source language when always translate this
-    language option is clicked in the menu.
-  </summary>
-</histogram>
-
-<histogram name="Translate.CompactInfobar.Language.MoreLanguages"
-    enum="LocaleCodeISO639" expires_after="2023-04-23">
-  <obsolete>
-    This predates the Translate metrics redesign. Metrics are now logged at a
-    translation-level and a page-load level.
-  </obsolete>
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Records the hashcode of the language clicked on the more languages menu.
-  </summary>
-</histogram>
-
-<histogram name="Translate.CompactInfobar.Language.NeverTranslate"
-    enum="LocaleCodeISO639" expires_after="2023-08-13">
-  <obsolete>
-    This predates the Translate metrics redesign. Metrics are now logged at a
-    translation-level and a page-load level.
-  </obsolete>
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Records the hashcode of the source language when never translate this
-    language option is clicked in the menu.
-  </summary>
-</histogram>
-
-<histogram name="Translate.CompactInfobar.Language.PageNotIn"
-    enum="LocaleCodeISO639" expires_after="2023-09-17">
-  <obsolete>
-    This predates the Translate metrics redesign. Metrics are now logged at a
-    translation-level and a page-load level.
-  </obsolete>
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Records the hashcode of the language clicked on the menu to indicate the
-    page is not in the selected language.
-  </summary>
-</histogram>
-
-<histogram name="Translate.CompactInfobar.Language.Translate"
-    enum="LocaleCodeISO639" expires_after="2023-08-31">
-  <obsolete>
-    This predates the Translate metrics redesign. Metrics are now logged at a
-    translation-level and a page-load level.
-  </obsolete>
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Records the hashcode of the language clicked on the infobar.
-  </summary>
-</histogram>
-
 <histogram name="Translate.DeclineTranslate" units="units"
     expires_after="2023-10-08">
   <owner>megjablon@google.com</owner>
@@ -778,23 +710,6 @@ chromium-metrics-reviews@google.com.
     Chrome Translate shows an error UI (infobar or bubble) when an error happens
     on translation and the UI message depends on what kind of error happens.
     This metric counts how often each error message is shown.
-  </summary>
-</histogram>
-
-<histogram name="Translate.SimilarLanguageMatch" enum="BooleanMatched"
-    expires_after="2023-08-31">
-  <obsolete>
-    Replaced by Translate.LanguageDetection.LanguageVerification in M114.
-  </obsolete>
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    This metric is logged whenever a page is loaded. The logged value is
-    &quot;Matched&quot; when the model-detected language differs from the page
-    language code, and the two languages are such similar languages. In that
-    case, Chrome ignore the model-determined language and instead uses the page
-    language code. The page language code is decided by its Content-Language and
-    HTML lang attribute.
   </summary>
 </histogram>
 
