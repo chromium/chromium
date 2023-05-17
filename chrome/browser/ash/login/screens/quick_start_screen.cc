@@ -43,8 +43,9 @@ bool QuickStartScreen::MaybeSkip(WizardContext& context) {
 }
 
 void QuickStartScreen::ShowImpl() {
-  if (!view_)
+  if (!view_) {
     return;
+  }
 
   view_->Show();
   bootstrap_controller_ =
@@ -54,8 +55,9 @@ void QuickStartScreen::ShowImpl() {
 }
 
 void QuickStartScreen::HideImpl() {
-  if (!bootstrap_controller_)
+  if (!bootstrap_controller_) {
     return;
+  }
   bootstrap_controller_->StopAdvertising();
   UnbindFromBootstrapController();
 }
@@ -71,8 +73,9 @@ void QuickStartScreen::OnStatusChanged(
   switch (status.step) {
     case Step::QR_CODE_VERIFICATION: {
       CHECK(absl::holds_alternative<QRCodePixelData>(status.payload));
-      if (!view_)
+      if (!view_) {
         return;
+      }
       const auto& code = absl::get<QRCodePixelData>(status.payload);
       base::Value::List qr_code_list;
       for (const auto& it : code) {
@@ -85,27 +88,34 @@ void QuickStartScreen::OnStatusChanged(
       SavePhoneInstanceID();
       return;
     }
-    case Step::PIN_VERIFICATION:
-    case Step::NONE:
     case Step::ERROR:
-    case Step::ADVERTISING:
-    case Step::CONNECTED:
     case Step::CONNECTING_TO_WIFI:
     case Step::CONNECTED_TO_WIFI:
       NOTIMPLEMENTED();
+      return;
+    case Step::NONE:
+    case Step::ADVERTISING:
+    case Step::CONNECTED:
+    case Step::PIN_VERIFICATION:
+      // TODO(b/282934168): Implement these screens fully
+      quick_start::QS_LOG(INFO)
+          << "Hit screen which is not implemented. Continuing";
+      return;
   }
 }
 
 void QuickStartScreen::UnbindFromBootstrapController() {
-  if (!bootstrap_controller_)
+  if (!bootstrap_controller_) {
     return;
+  }
   bootstrap_controller_->RemoveObserver(this);
   bootstrap_controller_.reset();
 }
 
 void QuickStartScreen::SendRandomFiguresForTesting() const {
-  if (!view_)
+  if (!view_) {
     return;
+  }
 
   std::string token = base::UTF16ToASCII(
       base::TimeFormatWithPattern(base::Time::Now(), "MMMMdjmmss"));

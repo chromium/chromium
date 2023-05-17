@@ -143,7 +143,8 @@ void TargetDeviceBootstrapController::OnQRCodeVerificationRequested(
 void TargetDeviceBootstrapController::OnConnectionAuthenticated(
     base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
         authenticated_connection) {
-  constexpr Step kPossibleSteps[] = {Step::QR_CODE_VERIFICATION};
+  constexpr Step kPossibleSteps[] = {Step::QR_CODE_VERIFICATION,
+                                     Step::PIN_VERIFICATION};
   CHECK(base::Contains(kPossibleSteps, status_.step));
 
   authenticated_connection_ = authenticated_connection;
