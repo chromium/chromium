@@ -836,6 +836,14 @@ void CompositorImpl::OnDisplayMetricsChanged(const display::Display& display,
       display::DisplayObserver::DisplayMetric::DISPLAY_METRIC_ROTATION) {
     OnUpdateOverlayTransform();
   }
+
+  if (changed_metrics &
+      display::DisplayObserver::DisplayMetric::DISPLAY_METRIC_COLOR_SPACE) {
+    display_color_spaces_ = display.color_spaces();
+    if (display_private_) {
+      display_private_->SetDisplayColorSpaces(display_color_spaces_);
+    }
+  }
 }
 
 bool CompositorImpl::IsDrawingFirstVisibleFrame() const {

@@ -328,6 +328,9 @@ public class DisplayAndroid {
         if (isDisplayServerWideColorGamutChanged) {
             mIsDisplayServerWideColorGamut = isDisplayServerWideColorGamut;
         }
+        if (hdrMaxLuninanceRatioChanged) {
+            mHdrMaxLuminanceRatio = hdrMaxLuminanceRatio;
+        }
         if (isRefreshRateChanged) mRefreshRate = refreshRate;
         if (displayModesChanged) mDisplayModes = supportedModes;
         if (currentModeChanged) mCurrentDisplayMode = currentMode;
