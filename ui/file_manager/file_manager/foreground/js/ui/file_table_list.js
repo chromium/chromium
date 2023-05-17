@@ -591,7 +591,9 @@ filelist.updateListItemExternalProps =
           let progress = externalProps.progress ?? 0;
           const {syncCompletedTime} = externalProps;
 
-          // Hold "completed" state for 300ms to give users a chance to see it.
+          // The UX spec determines completed sync status should be displayed
+          // for 300ms before transitioning to other statuses. Let's hold the
+          // "completed" state for at least 300ms.
           if (syncCompletedTime && Date.now() - syncCompletedTime < 300) {
             syncStatus = chrome.fileManagerPrivate.SyncStatus.COMPLETED;
             progress = 1.0;
