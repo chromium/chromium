@@ -61,6 +61,7 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"bookmarkCopied", IDS_BOOKMARK_MANAGER_TOAST_ITEM_COPIED},
       {"bookmarkDeleted", IDS_BOOKMARK_MANAGER_TOAST_ITEM_DELETED},
       {"bookmarkCreated", IDS_BOOKMARK_SCREEN_READER_CREATED},
+      {"bookmarkFolderCreated", IDS_BOOKMARK_SCREEN_READER_FOLDER_CREATED},
       {"bookmarkReordered", IDS_BOOKMARK_SCREEN_READER_REORDERED},
       {"bookmarkMoved", IDS_BOOKMARK_SCREEN_READER_MOVED},
       {"tooltipClose", IDS_CLOSE},

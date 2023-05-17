@@ -552,8 +552,11 @@
   <!-- End of Bookmark Star button strings. -->
 
   <!-- Begin of screen reader message strings. -->
-  <message name="IDS_BOOKMARK_SCREEN_READER_CREATED" desc="Screen reader message that is read when a bookmark is created.">
-    '<ph name="BOOKMARK_TITLE">$1<ex>Google</ex></ph>' created.
+  <message name="IDS_BOOKMARK_SCREEN_READER_CREATED" is_accessibility_with_no_ui="true" desc="Screen reader message that is read when a bookmark is created.">
+    '<ph name="BOOKMARK_TITLE">$1<ex>Google</ex></ph>' bookmark created.
+  </message>
+  <message name="IDS_BOOKMARK_SCREEN_READER_FOLDER_CREATED" is_accessibility_with_no_ui="true" desc="Screen reader message that is read when a bookmark folder is created.">
+    '<ph name="BOOKMARK_TITLE">$1<ex>Google</ex></ph>' bookmark folder created.
   </message>
   <message name="IDS_BOOKMARK_SCREEN_READER_REORDERED" desc="Screen reader message that is read when a bookmark is reordered.">
     '<ph name="BOOKMARK_TITLE">$1<ex>Google</ex></ph>' moved.

@@ -329,8 +329,13 @@ export class PowerBookmarksListElement extends PolymerElement {
       this.shownBookmarks_ = this.shownBookmarks_.slice();
       const bookmarkIndex = this.shownBookmarks_.indexOf(bookmarksToShow[0]);
       this.$.shownBookmarksIronList.scrollToIndex(bookmarkIndex);
-      getAnnouncerInstance().announce(loadTimeData.getStringF(
-          'bookmarkCreated', getBookmarkName(bookmark)));
+      if (bookmark.url) {
+        getAnnouncerInstance().announce(loadTimeData.getStringF(
+            'bookmarkCreated', getBookmarkName(bookmark)));
+      } else {
+        getAnnouncerInstance().announce(loadTimeData.getStringF(
+            'bookmarkFolderCreated', getBookmarkName(bookmark)));
+      }
     }
     this.updateShoppingData_();
   }
