@@ -65,10 +65,15 @@ void HistoryClientImpl::NotifyProfileError(sql::InitStatus init_status,
 
 std::unique_ptr<history::HistoryBackendClient>
 HistoryClientImpl::CreateBackendClient() {
-  return std::make_unique<HistoryBackendClientImpl>(
-      local_or_syncable_bookmark_model_
-          ? local_or_syncable_bookmark_model_->model_loader()
-          : nullptr);
+  std::vector<scoped_refptr<bookmarks::ModelLoader>> model_loaders;
+  if (local_or_syncable_bookmark_model_ &&
+      local_or_syncable_bookmark_model_->model_loader()) {
+    model_loaders.push_back(local_or_syncable_bookmark_model_->model_loader());
+  }
+  if (account_bookmark_model_ && account_bookmark_model_->model_loader()) {
+    model_loaders.push_back(account_bookmark_model_->model_loader());
+  }
+  return std::make_unique<HistoryBackendClientImpl>(std::move(model_loaders));
 }
 
 void HistoryClientImpl::UpdateBookmarkLastUsedTime(
