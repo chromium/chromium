@@ -196,6 +196,35 @@ void CopyOrMoveIOTaskImpl::Execute(IOTask::ProgressCallback progress_callback,
   VerifyTransfer();
 }
 
+void CopyOrMoveIOTaskImpl::Pause(PauseParams params) {
+  progress_->state = State::kPaused;
+  progress_->pause_params = params;
+  std::move(progress_callback_).Run(*progress_);
+}
+
+void CopyOrMoveIOTaskImpl::Resume(ResumeParams params) {
+  LOG_IF(ERROR, !resume_callback_) << "Resume but no resume_callback_";
+
+  if (resume_callback_) {
+    std::move(resume_callback_).Run(std::move(params));
+  }
+}
+
+void CopyOrMoveIOTaskImpl::Cancel() {
+  progress_->state = State::kCancelled;
+  // Any in-flight operation will be cancelled when the task is destroyed.
+}
+
+// Calls the completion callback for the task. |progress_| should not be
+// accessed after calling this.
+void CopyOrMoveIOTaskImpl::Complete(State state) {
+  completed_ = true;
+  progress_->state = state;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(complete_callback_), std::move(*progress_)));
+}
+
 void CopyOrMoveIOTaskImpl::VerifyTransfer() {
   // TODO(b/280947989) remove this code once Multi-user sign-in is deprecated.
   // Prevent files being copied or moved to ODFS if there is a managed user
@@ -224,21 +253,6 @@ void CopyOrMoveIOTaskImpl::StartTransfer() {
   for (size_t i = 0; i < progress_->sources.size(); i++) {
     GetFileSize(i);
   }
-}
-
-void CopyOrMoveIOTaskImpl::Cancel() {
-  progress_->state = State::kCancelled;
-  // Any in-flight operation will be cancelled when the task is destroyed.
-}
-
-// Calls the completion callback for the task. |progress_| should not be
-// accessed after calling this.
-void CopyOrMoveIOTaskImpl::Complete(State state) {
-  completed_ = true;
-  progress_->state = state;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(complete_callback_), std::move(*progress_)));
 }
 
 // Computes the total size of all source files and stores it in
@@ -541,7 +555,7 @@ void CopyOrMoveIOTaskImpl::CopyOrMoveFile(
 
   // Setup the resume callback prior to entering state::PAUSED. ResumeIOTask
   // will invoke this callback, once the user has resolved the conflict. See
-  // CopyOrMoveIOTaskImpl::Resume() below.
+  // CopyOrMoveIOTaskImpl::Resume().
   DCHECK(!resume_callback_);
   resume_callback_ = google_apis::CreateRelayCallback(
       base::BindOnce(&CopyOrMoveIOTaskImpl::ResumeCopyOrMoveFile,
@@ -563,14 +577,6 @@ void CopyOrMoveIOTaskImpl::CopyOrMoveFile(
   progress_->pause_params.conflict_target_url =
       destination_folder.ToGURL().spec();
   progress_callback_.Run(*progress_);
-}
-
-void CopyOrMoveIOTaskImpl::Resume(ResumeParams params) {
-  LOG_IF(ERROR, !resume_callback_) << "Resume but no resume_callback_";
-
-  if (resume_callback_) {
-    std::move(resume_callback_).Run(std::move(params));
-  }
 }
 
 void CopyOrMoveIOTaskImpl::ResumeCopyOrMoveFile(

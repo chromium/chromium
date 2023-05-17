@@ -16,7 +16,11 @@
 
 namespace file_manager::io_task {
 
+void IOTask::Pause(PauseParams params) {}
+
 void IOTask::Resume(ResumeParams) {}
+
+void IOTask::CompleteWithError(PolicyErrorType policy_error) {}
 
 EntryStatus::EntryStatus(storage::FileSystemURL file_url,
                          absl::optional<base::File::Error> file_error)

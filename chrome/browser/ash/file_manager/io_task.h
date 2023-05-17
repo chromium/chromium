@@ -233,6 +233,9 @@ class IOTask {
   virtual void Execute(ProgressCallback progress_callback,
                        CompleteCallback complete_callback) = 0;
 
+  // Pauses a task.
+  virtual void Pause(PauseParams params);
+
   // Resumes a task.
   virtual void Resume(ResumeParams params);
 
@@ -240,6 +243,10 @@ class IOTask {
   // but not call any of Execute()'s callbacks. The task will be deleted
   // synchronously after this call returns.
   virtual void Cancel() = 0;
+
+  // Aborts the task because of policy error. This should set `policy_error` in
+  // the progress and complete the task setting the progress state to |kError|.
+  virtual void CompleteWithError(PolicyErrorType policy_error);
 
   // Gets the current progress status of the task.
   const ProgressStatus& progress() { return progress_; }

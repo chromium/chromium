@@ -50,12 +50,18 @@ class CopyOrMoveIOTask : public IOTask {
   void Execute(ProgressCallback progress_callback,
                CompleteCallback complete_callback) override;
 
+  // Pauses the copy or move.
+  void Pause(PauseParams params) override;
+
   // Resumes the copy or move.
   // TODO(b/281973963): Adapt for policy warnings.
   void Resume(ResumeParams params) override;
 
   // Cancels the copy or move.
   void Cancel() override;
+
+  // Aborts the copy or move because of policy error.
+  void CompleteWithError(PolicyErrorType policy_error) override;
 
  private:
   raw_ptr<Profile, ExperimentalAsh> profile_;
