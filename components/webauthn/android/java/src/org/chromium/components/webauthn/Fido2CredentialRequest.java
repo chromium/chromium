@@ -921,6 +921,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 String errorType = getCredManExceptionType(getCredentialException);
                 Log.e(TAG, "CredMan getCredential call failed: %s",
                         errorType + " (" + getCredentialException.getMessage() + ")");
+                notifyBrowserOnCredManClosed(false);
                 if (errorType.equals(CRED_MAN_EXCEPTION_TYPE_USER_CANCEL)) {
                     returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
                 } else {
@@ -953,6 +954,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                         Fido2CredentialRequestJni.get().getCredentialResponseFromJson(json);
                 if (responseSerialized == null) {
                     Log.e(TAG, "Failed to convert response from CredMan to Mojo object: %s", json);
+                    notifyBrowserOnCredManClosed(false);
                     returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
                     return;
                 }
@@ -962,6 +964,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                                 ByteBuffer.wrap(responseSerialized));
                 if (response == null) {
                     Log.e(TAG, "Failed to parse Mojo object");
+                    notifyBrowserOnCredManClosed(false);
                     returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
                     return;
                 }
@@ -969,6 +972,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 if (mAppIdExtensionUsed) {
                     response.echoAppidExtension = mAppIdExtensionUsed;
                 }
+                notifyBrowserOnCredManClosed(true);
                 mGetAssertionCallback.onSignResponse(AuthenticatorStatus.SUCCESS, response);
                 mGetAssertionCallback = null;
             }
@@ -1188,6 +1192,11 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         }
         messageDigest.update(mClientDataJson.getBytes());
         return messageDigest.digest();
+    }
+
+    private void notifyBrowserOnCredManClosed(boolean success) {
+        if (mConditionalUiState != ConditionalUiState.WAITING_FOR_SELECTION) return;
+        mBrowserBridge.onCredManUiClosed(mFrameHost, success);
     }
 
     @VisibleForTesting

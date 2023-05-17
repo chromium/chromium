@@ -35,6 +35,11 @@ class WebAuthnBrowserBridge {
       jboolean jhas_results,
       const base::android::JavaParamRef<jobject>& jfull_request_runnable);
 
+  void OnCredManUiClosed(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jframe_host,
+      jboolean jsuccess);
+
  private:
   // Java object that owns this WebAuthnBrowserBridge.
   base::android::ScopedJavaGlobalRef<jobject> owner_;

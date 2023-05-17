@@ -42,4 +42,13 @@ void WebAuthnClientAndroid::OnCredManConditionalRequestPending(
   return;
 }
 
+void WebAuthnClientAndroid::OnCredManUiClosed(
+    content::RenderFrameHost* render_frame_host,
+    bool success) {
+  auto* cred_man_delegate = WebAuthnCredManDelegate::GetRequestDelegate(
+      content::WebContents::FromRenderFrameHost(render_frame_host));
+  cred_man_delegate->OnCredManUiClosed(success);
+  return;
+}
+
 }  // namespace components

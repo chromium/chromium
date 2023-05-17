@@ -22,7 +22,7 @@ class WebAuthnCredManDelegateTest : public testing::Test {
   std::unique_ptr<WebAuthnCredManDelegate> delegate_;
 };
 
-TEST_F(WebAuthnCredManDelegateTest, CallbackNotRunAfterCleanup) {
+TEST_F(WebAuthnCredManDelegateTest, FullRequestNotRunAfterCleanup) {
   base::MockRepeatingClosure closure;
   EXPECT_CALL(closure, Run()).Times(0);
   delegate()->OnCredManConditionalRequestPending(nullptr, true, closure.Get());
@@ -34,5 +34,34 @@ TEST_F(WebAuthnCredManDelegateTest, CallbackNotRunAfterCleanup) {
   delegate()->CleanUpConditionalRequest();
 
   EXPECT_CALL(closure, Run()).Times(0);
+  delegate()->TriggerFullRequest();
+}
+
+TEST_F(WebAuthnCredManDelegateTest, RequestCompletionCallbackRun) {
+  base::MockCallback<base::RepeatingCallback<void(bool)>>
+      mock_request_completion_callback;
+  base::MockRepeatingClosure mock_full_request;
+  delegate()->SetRequestCompletionCallback(
+      mock_request_completion_callback.Get());
+
+  EXPECT_CALL(mock_request_completion_callback, Run(false)).Times(1);
+  delegate()->OnCredManUiClosed(false);
+
+  // Cleaning up conditional request should not clean the request completion
+  // callback.
+  EXPECT_CALL(mock_request_completion_callback, Run(true)).Times(1);
+  delegate()->CleanUpConditionalRequest();
+  delegate()->OnCredManConditionalRequestPending(nullptr, true,
+                                                 mock_full_request.Get());
+  delegate()->OnCredManUiClosed(true);
+}
+
+TEST_F(WebAuthnCredManDelegateTest,
+       TriggerFullRequestCallsRequestCompletionCallbackImmediately) {
+  base::MockCallback<base::RepeatingCallback<void(bool)>>
+      mock_request_completion_callback;
+  delegate()->SetRequestCompletionCallback(
+      mock_request_completion_callback.Get());
+  EXPECT_CALL(mock_request_completion_callback, Run(false)).Times(1);
   delegate()->TriggerFullRequest();
 }

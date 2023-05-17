@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -455,6 +456,15 @@ void ContentPasswordManagerDriver::ShowKeyboardReplacingSurface(
             content::WebContents::FromRenderFrameHost(render_frame_host_));
     // webauthn forms without passkeys should show TouchToFill bottom sheet.
     if (cred_man_delegate->HasResults()) {
+      auto cred_man_request_completion_cb =
+          base::BindRepeating(
+              [](bool success) { return ShowVirtualKeyboard(!success); })
+              .Then(base::BindRepeating(
+                  &ContentPasswordManagerDriver::KeyboardReplacingSurfaceClosed,
+                  weak_factory_.GetWeakPtr()));
+
+      cred_man_delegate->SetRequestCompletionCallback(
+          std::move(cred_man_request_completion_cb));
       cred_man_delegate->TriggerFullRequest();
       return;
     }

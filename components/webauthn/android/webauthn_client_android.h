@@ -49,6 +49,12 @@ class WebAuthnClientAndroid {
       content::RenderFrameHost* render_frame_host,
       bool has_results,
       base::RepeatingClosure full_assertion_request);
+
+  // Called when a CredMan sheet is closed. This can happen if the user
+  // dismissed the UI, selected a credential, or if there are errors. Android U+
+  // only.
+  void OnCredManUiClosed(content::RenderFrameHost* render_frame_host,
+                         bool success);
 };
 
 }  // namespace components
