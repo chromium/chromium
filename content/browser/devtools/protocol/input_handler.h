@@ -22,6 +22,7 @@
 #include "content/common/input/synthetic_pointer_action_list_params.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
 #include "content/public/browser/render_widget_host.h"
+#include "third_party/blink/public/common/input/pointer_id.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 
@@ -257,7 +258,7 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
   const bool allow_sending_input_to_browser_ = false;
   std::set<int> pointer_ids_;
   std::unique_ptr<SyntheticPointerDriver> synthetic_pointer_driver_;
-  base::flat_map<int, blink::WebTouchPoint> touch_points_;
+  base::flat_map<blink::PointerId, blink::WebTouchPoint> touch_points_;
   base::WeakPtrFactory<InputHandler> weak_factory_{this};
 };
 
