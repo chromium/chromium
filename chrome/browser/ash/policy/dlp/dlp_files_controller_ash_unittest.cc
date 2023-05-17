@@ -2118,8 +2118,7 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
                     OnDlpRestrictionCheckedCallback callback,
                     const std::vector<DlpConfidentialFile>& confidential_files,
                     const DlpFileDestination& destination,
-                    DlpFilesController::FileAction action,
-                    gfx::NativeWindow modal_parent) {
+                    DlpFilesController::FileAction action) {
         std::move(callback).Run(choice_result);
         return nullptr;
       });
@@ -2386,12 +2385,11 @@ TEST_P(DlpFilesWarningDialogContentTest,
               ShowDlpFilesWarningDialog(
                   base::test::IsNotNullCallback(), expected_files,
                   DlpFileDestination(data_controls::Component::kUsb),
-                  transfer_info.files_action, _))
+                  transfer_info.files_action))
       .WillOnce([](OnDlpRestrictionCheckedCallback callback,
                    const std::vector<DlpConfidentialFile>& confidential_files,
                    const DlpFileDestination& destination,
-                   DlpFilesController::FileAction action,
-                   gfx::NativeWindow modal_parent) {
+                   DlpFilesController::FileAction action) {
         std::move(callback).Run(false);
         return nullptr;
       });

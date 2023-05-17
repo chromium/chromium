@@ -16,10 +16,9 @@ MockDlpWarnNotifier::MockDlpWarnNotifier() : should_proceed_(true) {
   // Propagate to the real object.
   ON_CALL(*this, ShowDlpWarningDialog)
       .WillByDefault([this](OnDlpRestrictionCheckedCallback callback,
-                            DlpWarnDialog::DlpWarnDialogOptions options,
-                            gfx::NativeWindow modal_parent) {
-        return this->DlpWarnNotifier::ShowDlpWarningDialog(
-            std::move(callback), options, modal_parent);
+                            DlpWarnDialog::DlpWarnDialogOptions options) {
+        return this->DlpWarnNotifier::ShowDlpWarningDialog(std::move(callback),
+                                                           options);
       });
 
   ON_CALL(*this, ShowDlpFilesWarningDialog)
@@ -27,11 +26,9 @@ MockDlpWarnNotifier::MockDlpWarnNotifier() : should_proceed_(true) {
           [this](OnDlpRestrictionCheckedCallback callback,
                  const std::vector<DlpConfidentialFile>& confidential_files,
                  const DlpFileDestination& destination,
-                 DlpFilesController::FileAction action,
-                 gfx::NativeWindow modal_parent) {
+                 DlpFilesController::FileAction action) {
             return this->DlpWarnNotifier::ShowDlpFilesWarningDialog(
-                std::move(callback), confidential_files, destination, action,
-                modal_parent);
+                std::move(callback), confidential_files, destination, action);
           });
 }
 
@@ -40,8 +37,7 @@ MockDlpWarnNotifier::MockDlpWarnNotifier(bool should_proceed)
   // Simulate proceed or cancel.
   ON_CALL(*this, ShowDlpWarningDialog)
       .WillByDefault([this](OnDlpRestrictionCheckedCallback callback,
-                            DlpWarnDialog::DlpWarnDialogOptions options,
-                            gfx::NativeWindow modal_parent) {
+                            DlpWarnDialog::DlpWarnDialogOptions options) {
         std::move(callback).Run(should_proceed_);
         return nullptr;
       });

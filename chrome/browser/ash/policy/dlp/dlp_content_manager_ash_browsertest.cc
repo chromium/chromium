@@ -865,13 +865,11 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
 
   DlpConfidentialContents expected_contents;
   expected_contents.Add(web_contents);
-  EXPECT_CALL(
-      *mock_dlp_warn_notifier,
-      ShowDlpWarningDialog(
-          testing::_,
-          DlpWarnDialog::DlpWarnDialogOptions(
-              DlpWarnDialog::Restriction::kVideoCapture, expected_contents),
-          testing::_))
+  EXPECT_CALL(*mock_dlp_warn_notifier,
+              ShowDlpWarningDialog(
+                  testing::_, DlpWarnDialog::DlpWarnDialogOptions(
+                                  DlpWarnDialog::Restriction::kVideoCapture,
+                                  expected_contents)))
       .Times(1);
 
   ASSERT_TRUE(helper_->GetRunningVideoCaptureInfo().has_value());
@@ -1562,16 +1560,14 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
               ShowDlpWarningDialog(testing::_,
                                    DlpWarnDialog::DlpWarnDialogOptions(
                                        DlpWarnDialog::Restriction::kScreenShare,
-                                       expected_contents, kApplicationTitle),
-                                   testing::_))
+                                       expected_contents, kApplicationTitle)))
       .Times(1);
   expected_contents.GetContents().begin()->title = u"New Title";
   EXPECT_CALL(*mock_dlp_warn_notifier,
               ShowDlpWarningDialog(testing::_,
                                    DlpWarnDialog::DlpWarnDialogOptions(
                                        DlpWarnDialog::Restriction::kScreenShare,
-                                       expected_contents, kApplicationTitle),
-                                   testing::_))
+                                       expected_contents, kApplicationTitle)))
       .Times(1);
 
   helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);

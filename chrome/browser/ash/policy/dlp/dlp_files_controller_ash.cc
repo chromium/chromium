@@ -995,13 +995,6 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
         views::Widget::ClosedReason::kUnspecified);
   }
 
-  // Get the last active Files app window to use as parent.
-  // TODO(b/277032725): Pass the Files app window.
-  Browser* browser =
-      FindSystemWebAppBrowser(profile, ash::SystemWebAppType::FILE_MANAGER);
-  gfx::NativeWindow modal_parent =
-      browser ? browser->window()->GetNativeWindow() : nullptr;
-
   warn_dialog_widget_ = warn_notifier_->ShowDlpFilesWarningDialog(
       base::BindOnce(&DlpFilesControllerAsh::OnDlpWarnDialogReply,
                      weak_ptr_factory_.GetWeakPtr(), std::move(files_levels),
@@ -1009,7 +1002,7 @@ void DlpFilesControllerAsh::IsFilesTransferRestricted(
                      std::move(warned_rules_metadata), actual_dst,
                      destination_pattern, files_action,
                      std::move(result_callback)),
-      std::move(dialog_files), actual_dst, files_action, modal_parent);
+      std::move(dialog_files), actual_dst, files_action);
 }
 
 std::vector<DlpFilesControllerAsh::DlpFileRestrictionDetails>
