@@ -4075,20 +4075,20 @@ void Element::setEditContext(EditContext* edit_context) {
   // If an element is in focus when being attached to a new EditContext,
   // its old EditContext, if it has any, will get blurred,
   // and the new EditContext will automatically get focused.
-  if (edit_context && IsFocusedElementInDocument()) {
-    if (auto* old_edit_context = editContext()) {
+  if (auto* old_edit_context = editContext()) {
+    if (IsFocusedElementInDocument()) {
       old_edit_context->Blur();
     }
 
-    edit_context->Focus();
-  }
-
-  if (auto* old_edit_context = editContext()) {
     old_edit_context->DetachElement(this);
   }
 
   if (edit_context) {
     edit_context->AttachElement(this);
+
+    if (IsFocusedElementInDocument()) {
+      edit_context->Focus();
+    }
   }
 
   EnsureElementRareData().SetEditContext(edit_context);
