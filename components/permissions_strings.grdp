@@ -250,6 +250,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     <message name="IDS_CLIPBOARD_PERMISSION_CHIP" desc="Button text representing a request for reading data from the system clipboard from a website. When clicked, shows a permission prompt bubble with more information.">
       Share clipboard?
     </message>
+    <message name="IDS_SAA_PERMISSION_CHIP" desc="Button text representing a request for using Storage Access API from a website embedded in another website. When clicked, shows a permission prompt bubble with more information.">
+      Allow embedded content?
+    </message>
     <message name="IDS_VR_PERMISSION_CHIP" desc="Button text representing a request for using VR from a website. When clicked, shows a permission prompt bubble with more information.">
       Allow VR?
     </message>
@@ -317,6 +320,12 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     </message>
       <message name="IDS_PERMISSIONS_CAMERA_AND_MICROPHONE_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a microphone and camera permission requested has been denied.">
         Camera and microphone not allowed
+    </message>
+      <message name="IDS_PERMISSIONS_SAA_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that the Storage Access API permission requested has been granted.">
+        Embedded content allowed
+    </message>
+    <message name="IDS_PERMISSIONS_SAA_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that the Storage Access API permission requested has been denied.">
+        Embedded content not allowed
     </message>
   </if>
 
