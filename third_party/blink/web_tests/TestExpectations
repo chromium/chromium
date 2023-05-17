@@ -6645,7 +6645,7 @@ crbug.com/952717 [ Win10.20h2 ] http/tests/xmlhttprequest/redirect-cross-origin-
 crbug.com/1427455 virtual/fenced-frame-mparch/external/wpt/fenced-frame/nested-opaque-ad-sizes.https.html [ Failure Pass Timeout ]
 
 # Sheriff 2023-03-27
-crbug.com/1427936 external/wpt/js-self-profiling/function-expression-names.https.html [ Failure Pass ]
+crbug.com/1427936 external/wpt/js-self-profiling/function-expression-names.https.html [ Crash Failure Pass ]
 
 # Flaky on Mac14.10
 crbug.com/1384162 [ Mac10.14 ] external/wpt/css/css-fonts/matching/range-descriptor-reversed.html [ Pass Timeout ]
