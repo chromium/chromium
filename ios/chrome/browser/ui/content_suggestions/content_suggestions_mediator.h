@@ -28,6 +28,7 @@ class PrefRegistrySyncable;
 }  // namespace user_prefs
 
 @protocol ApplicationCommands;
+class AuthenticationService;
 class Browser;
 @protocol BrowserCoordinatorCommands;
 @class ContentSuggestionsMetricsRecorder;
@@ -55,6 +56,7 @@ class WebStateList;
                  readingListModel:(ReadingListModel*)readingListModel
                       prefService:(PrefService*)prefService
     isGoogleDefaultSearchProvider:(BOOL)isGoogleDefaultSearchProvider
+            authenticationService:(AuthenticationService*)authService
                           browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

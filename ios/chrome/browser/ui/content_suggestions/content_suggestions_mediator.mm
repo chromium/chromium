@@ -21,6 +21,7 @@
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/ntp_tiles/ntp_tile.h"
 #import "components/pref_registry/pref_registry_syncable.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
 #import "components/search_engines/search_terms_data.h"
@@ -31,6 +32,11 @@
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/set_up_list.h"
+#import "ios/chrome/browser/ntp/set_up_list_delegate.h"
+#import "ios/chrome/browser/ntp/set_up_list_item.h"
+#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
+#import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/most_visited_sites_observer_bridge.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -61,7 +67,10 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_tile_saver.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/start_suggest_service_factory.h"
+#import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_metrics.h"
+#import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/ntp/feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
@@ -80,16 +89,29 @@
 
 namespace {
 
+using credential_provider_promo::IOSCredentialProviderPromoAction;
 using CSCollectionViewItem = CollectionViewItem<SuggestedContent>;
 using RequestSource = SearchTermsData::RequestSource;
 
 // Maximum number of most visited tiles fetched.
 const NSInteger kMaxNumMostVisitedTiles = 4;
 
+// Checks the last action the user took on the Credential Provider Promo to
+// determine if it was completed.
+bool CredentialProviderPromoCompleted(PrefService* local_state) {
+  IOSCredentialProviderPromoAction last_action =
+      static_cast<IOSCredentialProviderPromoAction>(local_state->GetInteger(
+          prefs::kIosCredentialProviderPromoLastActionTaken));
+  return last_action == IOSCredentialProviderPromoAction::kGoToSettings ||
+         last_action == IOSCredentialProviderPromoAction::kNo;
+}
+
 }  // namespace
 
 @interface ContentSuggestionsMediator () <MostVisitedSitesObserving,
-                                          ReadingListModelBridgeObserver> {
+                                          ReadingListModelBridgeObserver,
+                                          PrefObserverDelegate,
+                                          SetUpListDelegate> {
   std::unique_ptr<ntp_tiles::MostVisitedSites> _mostVisitedSites;
   std::unique_ptr<ntp_tiles::MostVisitedSitesObserverBridge> _mostVisitedBridge;
   std::unique_ptr<ReadingListModelBridge> _readingListModelBridge;
@@ -147,10 +169,19 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 @property(nonatomic, assign) BOOL incognitoAvailable;
 // Browser reference.
 @property(nonatomic, assign) Browser* browser;
+// The SetUpList, a list of tasks a new user might want to complete.
+@property(nonatomic, strong) SetUpList* setUpList;
 
 @end
 
-@implementation ContentSuggestionsMediator
+@implementation ContentSuggestionsMediator {
+  // Bridge to listen to pref changes.
+  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
+  // Registrar for pref changes notifications.
+  PrefChangeRegistrar _prefChangeRegistrar;
+  // Local State prefs.
+  PrefService* _localState;
+}
 
 #pragma mark - Public
 
@@ -162,9 +193,11 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
                  readingListModel:(ReadingListModel*)readingListModel
                       prefService:(PrefService*)prefService
     isGoogleDefaultSearchProvider:(BOOL)isGoogleDefaultSearchProvider
+            authenticationService:(AuthenticationService*)authenticationService
                           browser:(Browser*)browser {
   self = [super init];
   if (self) {
+    _localState = GetApplicationContext()->GetLocalState();
     _incognitoAvailable = !IsIncognitoModeDisabled(prefService);
     _articleForYouEnabled =
         prefService->FindPreference(prefs::kArticlesForYouEnabled);
@@ -186,6 +219,21 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
     _readingListModelBridge =
         std::make_unique<ReadingListModelBridge>(self, readingListModel);
+
+    if (IsIOSSetUpListEnabled()) {
+      _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
+      _prefChangeRegistrar.Init(_localState);
+      _prefObserverBridge->ObserveChangesForPreference(
+          prefs::kIosCredentialProviderPromoLastActionTaken,
+          &_prefChangeRegistrar);
+      if (CredentialProviderPromoCompleted(_localState)) {
+        set_up_list_prefs::MarkItemComplete(_localState,
+                                            SetUpListItemType::kAutofill);
+      }
+      _setUpList = [SetUpList buildFromPrefs:prefService
+                                  localState:_localState
+                       authenticationService:authenticationService];
+    }
     _browser = browser;
   }
   return self;
@@ -200,6 +248,15 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   _mostVisitedBridge.reset();
   _mostVisitedSites.reset();
   _readingListModelBridge.reset();
+  if (IsIOSSetUpListEnabled()) {
+    if (_prefObserverBridge) {
+      _prefChangeRegistrar.RemoveAll();
+      _prefObserverBridge.reset();
+    }
+    [_setUpList disconnect];
+    _setUpList = nil;
+  }
+  _localState = nullptr;
 }
 
 - (void)refreshMostVisitedTiles {
@@ -219,7 +276,10 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   if ([self.mostVisitedItems count] && ![self shouldHideMVTForTileAblation]) {
     [self.consumer setMostVisitedTilesWithConfigs:self.mostVisitedItems];
   }
-  if (![self shouldHideShortcutsForTileAblation]) {
+  if ([self shouldShowSetUpList]) {
+    self.setUpList.delegate = self;
+    [self.consumer showSetUpListWithItems:[self setUpListItems]];
+  } else if (![self shouldHideShortcutsForTileAblation]) {
     [self.consumer setShortcutTilesWithConfigs:self.actionButtonItems];
   }
   if (IsMagicStackEnabled()) {
@@ -285,6 +345,12 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     self.returnToRecentTabItem = nil;
     [self.consumer hideReturnToRecentTabTile];
   }
+}
+
+#pragma mark - SetUpListDelegate
+
+- (void)setUpListItemDidComplete:(SetUpListItem*)item {
+  [self.consumer markSetUpListItemComplete:item.type];
 }
 
 #pragma mark - ContentSuggestionsCommands
@@ -476,15 +542,11 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 // remaining New Tab Page displays that include synced history in the Most
 // Visited Tiles.
 - (void)recordMostVisitedTilesDisplayed {
-  PrefService* local_state = GetApplicationContext()->GetLocalState();
-
-  CHECK(local_state != nullptr);
-
   const int displayCount =
-      local_state->GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount) +
+      _localState->GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount) +
       1;
 
-  local_state->SetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount,
+  _localState->SetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount,
                           displayCount);
 }
 
@@ -661,6 +723,44 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   }
 }
 
+// Returns YES if the conditions are right to display the Set Up List.
+- (BOOL)shouldShowSetUpList {
+  if (!IsIOSSetUpListEnabled()) {
+    return NO;
+  }
+  // check if we are within 14 days of FRE
+  absl::optional<base::Time> firstRunTime = GetFirstRunTime();
+  if (!firstRunTime) {
+    // If this is the first time the app has been opened, First Run will not
+    // have been completed yet. In this case, we will wait until the next run.
+    return NO;
+  }
+  base::Time expiryTime = firstRunTime.value() + base::Days(14);
+  if (base::Time::Now() > expiryTime) {
+    return NO;
+  }
+
+  SetUpList* setUpList = self.setUpList;
+  if (!setUpList || setUpList.items.count == 0) {
+    return NO;
+  }
+
+  return YES;
+}
+
+// Returns an array of items to display in the Set Up List.
+- (NSArray<SetUpListItemViewData*>*)setUpListItems {
+  // Map the model objects to view objects.
+  NSMutableArray<SetUpListItemViewData*>* items = [[NSMutableArray alloc] init];
+  for (SetUpListItem* model in self.setUpList.items) {
+    SetUpListItemViewData* item =
+        [[SetUpListItemViewData alloc] initWithType:model.type
+                                           complete:model.complete];
+    [items addObject:item];
+  }
+  return items;
+}
+
 #pragma mark - Properties
 
 - (NSArray<ContentSuggestionsMostVisitedActionItem*>*)actionButtonItems {
@@ -703,6 +803,17 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 - (BOOL)contentSuggestionsEnabled {
   return self.articleForYouEnabled->GetValue()->GetBool() &&
          self.contentSuggestionsPolicyEnabled->GetValue()->GetBool();
+}
+
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (IsIOSSetUpListEnabled() &&
+      preferenceName == prefs::kIosCredentialProviderPromoLastActionTaken &&
+      CredentialProviderPromoCompleted(_localState)) {
+    set_up_list_prefs::MarkItemComplete(_localState,
+                                        SetUpListItemType::kAutofill);
+  }
 }
 
 #pragma mark - ReadingListModelBridgeObserver

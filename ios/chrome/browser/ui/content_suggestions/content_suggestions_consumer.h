@@ -9,6 +9,8 @@
 @class ContentSuggestionsMostVisitedItem;
 @class ContentSuggestionsReturnToRecentTabItem;
 @class ContentSuggestionsWhatsNewItem;
+enum class SetUpListItemType;
+@class SetUpListItemViewData;
 @class QuerySuggestionConfig;
 
 // Supports adding/removing/updating UI elements to the ContentSuggestions
@@ -48,6 +50,13 @@
 // Indicates to the consumer to set the Magic Stack module order as listed in
 // `order`.
 - (void)setMagicStackOrder:(NSArray<NSNumber*>*)order;
+
+// Indicates to the consumer to display the SetUpList - a list of tasks that
+// a new user may want to complete.
+- (void)showSetUpListWithItems:(NSArray<SetUpListItemViewData*>*)items;
+
+// Marks a Set Up List item complete with an animation and updated appearance.
+- (void)markSetUpListItemComplete:(SetUpListItemType)type;
 
 @end
 

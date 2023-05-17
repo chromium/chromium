@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
+#import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/action_list_module.h"
@@ -31,6 +32,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
@@ -58,6 +61,9 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
 
 // The spacing between modules in the Magic Stack.
 const float kMagicStackSpacing = 10.0f;
+
+// The margin on the left and right of the Set Up List.
+const CGFloat kSetUpListHorizontalMargin = 10;
 
 }  // namespace
 
@@ -100,6 +106,8 @@ const float kMagicStackSpacing = 10.0f;
 // List of all of the Shortcut views.
 @property(nonatomic, strong)
     NSMutableArray<ContentSuggestionsShortcutTileView*>* shortcutsViews;
+// The SetUpListView, if it is currently being displayed.
+@property(nonatomic, strong) SetUpListView* setUpListView;
 @end
 
 @implementation ContentSuggestionsViewController {
@@ -108,6 +116,7 @@ const float kMagicStackSpacing = 10.0f;
   BOOL _shouldShowMagicStack;
   NSArray<NSNumber*>* _magicStackModuleOrder;
   NSLayoutConstraint* _magicStackScrollViewWidthAnchor;
+  NSArray<SetUpListItemViewData*>* _savedSetUpListItems;
 }
 
 - (instancetype)init {
@@ -174,7 +183,9 @@ const float kMagicStackSpacing = 10.0f;
     [self createAndInsertMostVisitedModule];
     [self populateMostVisitedModule];
   }
-  if (self.shortcutsViews) {
+  if (_savedSetUpListItems) {
+    [self showSetUpListWithItems:_savedSetUpListItems];
+  } else if (self.shortcutsViews) {
     self.shortcutsStackView = [self createShortcutsStackView];
     if (!_shouldShowMagicStack) {
       [self addUIElement:self.shortcutsStackView
@@ -382,6 +393,40 @@ const float kMagicStackSpacing = 10.0f;
 - (void)setMagicStackOrder:(NSArray<NSNumber*>*)order {
   _shouldShowMagicStack = YES;
   _magicStackModuleOrder = order;
+}
+
+- (void)showSetUpListWithItems:(NSArray<SetUpListItemViewData*>*)items {
+  if (!self.viewLoaded) {
+    _savedSetUpListItems = items;
+    return;
+  }
+  NSUInteger index = [self.verticalStackView.arrangedSubviews
+      indexOfObject:self.mostVisitedStackView];
+  if (index == NSNotFound && self.returnToRecentTabTile) {
+    index = [self.verticalStackView.arrangedSubviews
+        indexOfObject:self.returnToRecentTabTile];
+  }
+  if (index == NSNotFound) {
+    index = 0;
+  } else {
+    index++;
+  }
+  SetUpListView* setUpListView = [[SetUpListView alloc] initWithItems:items];
+  setUpListView.delegate = self.setUpListViewDelegate;
+  self.setUpListView = setUpListView;
+  [self.verticalStackView insertArrangedSubview:setUpListView atIndex:index];
+  [NSLayoutConstraint activateConstraints:@[
+    [setUpListView.leadingAnchor
+        constraintEqualToAnchor:self.verticalStackView.leadingAnchor
+                       constant:kSetUpListHorizontalMargin],
+    [setUpListView.trailingAnchor
+        constraintEqualToAnchor:self.verticalStackView.trailingAnchor
+                       constant:-kSetUpListHorizontalMargin],
+  ]];
+}
+
+- (void)markSetUpListItemComplete:(SetUpListItemType)type {
+  [self.setUpListView markItemComplete:type];
 }
 
 - (CGFloat)contentSuggestionsHeight {

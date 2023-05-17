@@ -13,6 +13,7 @@
 @protocol ContentSuggestionsMenuProvider;
 @class ContentSuggestionsMetricsRecorder;
 @protocol ContentSuggestionsViewControllerAudience;
+@protocol SetUpListViewDelegate;
 class UrlLoadingBrowserAgent;
 
 // CollectionViewController to display the suggestions items.
@@ -41,6 +42,9 @@ class UrlLoadingBrowserAgent;
 // Recorder for content suggestions metrics.
 @property(nonatomic, assign)
     ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
+
+// Delegate for SetUpListView events.
+@property(nonatomic, weak) id<SetUpListViewDelegate> setUpListViewDelegate;
 
 @end
 

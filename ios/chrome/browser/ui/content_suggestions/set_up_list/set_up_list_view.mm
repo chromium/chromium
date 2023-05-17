@@ -89,6 +89,17 @@ constexpr NSString* const kSetUpListMenuButtonID = @"kSetUpListMenuButtonID";
   [self createSubviews];
 }
 
+#pragma mark - Public
+
+- (void)markItemComplete:(SetUpListItemType)type {
+  for (SetUpListItemView* item in _items) {
+    if (item.type == type) {
+      [item markComplete];
+      break;
+    }
+  }
+}
+
 #pragma mark - SetUpListItemViewTapDelegate methods
 
 - (void)didTapSetUpListItemView:(SetUpListItemView*)view {

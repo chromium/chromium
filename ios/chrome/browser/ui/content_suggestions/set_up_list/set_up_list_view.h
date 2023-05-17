@@ -32,6 +32,9 @@ enum class SetUpListItemType;
 // The object that should handle delegate events.
 @property(nonatomic, weak) id<SetUpListViewDelegate> delegate;
 
+// Marks an item complete with an animation and updated appearance.
+- (void)markItemComplete:(SetUpListItemType)type;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SET_UP_LIST_SET_UP_LIST_VIEW_H_
