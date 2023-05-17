@@ -85,10 +85,12 @@ bool ClipboardApiTest::ExecuteCommandInIframeInSelectedTab(
   const char kScript[] =
       "var ifr = document.createElement('iframe');\n"
       "document.body.appendChild(ifr);\n"
-      "ifr.contentDocument.write('<script>parent.domAutomationController.send("
-          "document.execCommand(\"%s\"))</script>');";
-  return ExecuteScriptInSelectedTab(base::StringPrintf(kScript, command),
-                                    content::EXECUTE_SCRIPT_USE_MANUAL_REPLY);
+      "new Promise(res => {\n"
+      "  window.resolve = res;\n"
+      "  ifr.contentDocument.write('<script>parent.resolve("
+      "    document.execCommand(\"%s\"))</script>');\n"
+      "});";
+  return ExecuteScriptInSelectedTab(base::StringPrintf(kScript, command));
 }
 
 bool ClipboardApiTest::ExecuteScriptInSelectedTab(const std::string& script,
