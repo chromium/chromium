@@ -5,8 +5,6 @@
 #ifndef CHROME_APP_SHIM_APP_SHIM_DELEGATE_H_
 #define CHROME_APP_SHIM_APP_SHIM_DELEGATE_H_
 
-#include "base/memory/raw_ptr.h"
-
 #import <Cocoa/Cocoa.h>
 
 class AppShimController;
@@ -14,10 +12,7 @@ class AppShimController;
 // An application delegate to catch user interactions and send the appropriate
 // IPC messages to Chrome.
 @interface AppShimDelegate
-    : NSObject<NSApplicationDelegate, NSUserInterfaceValidations> {
- @private
-  raw_ptr<AppShimController> _appShimController;  // Weak, owns |this|
-}
+    : NSObject <NSApplicationDelegate, NSUserInterfaceValidations>
 - (instancetype)initWithController:(AppShimController*)controller;
 @end
 

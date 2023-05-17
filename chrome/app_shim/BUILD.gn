@@ -21,6 +21,8 @@ source_set("app_shim") {
     "chrome_main_app_mode_mac.mm",
   ]
 
+  configs += [ "//build/config/compiler:enable_arc" ]
+
   deps = [
     "//base/allocator:early_zone_registration_mac",
     "//build:chromeos_buildflags",
@@ -94,6 +96,8 @@ executable("app_mode_loader") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
   ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
 
   frameworks = [
     "AppKit.framework",

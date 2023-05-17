@@ -10,7 +10,6 @@
 #import <AppKit/AppKit.h>
 
 #include "base/files/file_path.h"
-#include "base/mac/scoped_nsobject.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -19,6 +18,10 @@
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "url/gurl.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace apps {
 class MachBootstrapAcceptorTest;
@@ -152,8 +155,8 @@ class AppShimController : public chrome::mojom::AppShim {
 
   // Helper function to search for the Chrome instance holding
   // chrome::kSingletonLockFilename in the specified |user_data_dir|.
-  static base::scoped_nsobject<NSRunningApplication>
-  FindChromeFromSingletonLock(const base::FilePath& user_data_dir);
+  static NSRunningApplication* FindChromeFromSingletonLock(
+      const base::FilePath& user_data_dir);
 
   static void CreateRenderWidgetHostNSView(
       uint64_t view_id,
@@ -179,14 +182,14 @@ class AppShimController : public chrome::mojom::AppShim {
   // This process is determined by either:
   // - The pid specified to the app's command line (if it exists).
   // - The pid specified in the chrome::kSingletonLockFilename file.
-  base::scoped_nsobject<NSRunningApplication> chrome_to_connect_to_;
+  NSRunningApplication* __strong chrome_to_connect_to_;
 
   // The Chrome process that was launched by this app in FindOrLaunchChrome.
   // Note that the app is not compelled to connect to this process (consider the
   // case where multiple apps launch at the same time, and all launch their own
   // Chrome -- only one will grab the chrome::kSingletonLockFilename, and all
   // apps should connect to that).
-  base::scoped_nsobject<NSRunningApplication> chrome_launched_by_app_;
+  NSRunningApplication* __strong chrome_launched_by_app_;
 
   mojo::IsolatedConnection bootstrap_mojo_connection_;
   mojo::Remote<chrome::mojom::AppShimHostBootstrap> host_bootstrap_;
@@ -195,16 +198,15 @@ class AppShimController : public chrome::mojom::AppShim {
   mojo::Remote<chrome::mojom::AppShimHost> host_;
   mojo::PendingReceiver<chrome::mojom::AppShimHost> host_receiver_;
 
-  base::scoped_nsobject<AppShimDelegate> delegate_;
+  AppShimDelegate* __strong delegate_;
 
   InitState init_state_ = InitState::kWaitingForAppToFinishLaunch;
 
   // The target for NSMenuItems in the profile menu.
-  base::scoped_nsobject<ProfileMenuTarget> profile_menu_target_;
+  ProfileMenuTarget* __strong profile_menu_target_;
 
   // The target for NSMenuItems in the application dock menu.
-  base::scoped_nsobject<ApplicationDockMenuTarget>
-      application_dock_menu_target_;
+  ApplicationDockMenuTarget* __strong application_dock_menu_target_;
 
   // The screen object used in the app sim.
   std::unique_ptr<display::ScopedNativeScreen> screen_;
