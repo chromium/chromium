@@ -14,11 +14,13 @@
 #import "content/public/browser/page.h"
 #import "content/public/browser/web_contents.h"
 #import "ios/web/content/js_messaging/content_java_script_feature_manager.h"
+#import "ios/web/content/js_messaging/content_java_script_feature_util.h"
 #import "ios/web/content/js_messaging/content_web_frame.h"
 #import "ios/web/content/js_messaging/ios_web_message_host_factory.h"
 #import "ios/web/content/web_state/content_web_state.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/web_client.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -68,15 +70,17 @@ ContentWebFramesManager::ContentWebFramesManager(
       std::move(message_host_factory), u"webkitMessageHandler", {"*"});
 
   std::vector<JavaScriptFeature*> java_script_features;
-  java_script_features.push_back(
-      java_script_features::GetBaseJavaScriptFeature());
   java_script_features.push_back(GetSendWebKitMessageJavaScriptFeature());
-  java_script_features.push_back(
-      java_script_features::GetCommonJavaScriptFeature());
-  java_script_features.push_back(
-      java_script_features::GetMessageJavaScriptFeature());
+  for (JavaScriptFeature* feature :
+       java_script_features::GetBuiltInJavaScriptFeaturesForContent(
+           content_web_state->GetBrowserState())) {
+    java_script_features.push_back(feature);
+  }
+  for (JavaScriptFeature* feature : GetWebClient()->GetJavaScriptFeatures(
+           content_web_state->GetBrowserState())) {
+    java_script_features.push_back(feature);
+  }
 
-  // TODO(crbug.com/1423527): Insert other JavaScriptFeatures.
   js_feature_manager_ = std::make_unique<ContentJavaScriptFeatureManager>(
       std::move(java_script_features));
   js_feature_manager_->AddDocumentStartScripts(js_communication_host_.get());

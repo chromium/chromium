@@ -14,6 +14,8 @@ source_set("content") {
     "content_browser_context.mm",
     "js_messaging/content_java_script_feature_manager.h",
     "js_messaging/content_java_script_feature_manager.mm",
+    "js_messaging/content_java_script_feature_util.h",
+    "js_messaging/content_java_script_feature_util.mm",
     "js_messaging/content_web_frame.h",
     "js_messaging/content_web_frame.mm",
     "js_messaging/content_web_frames_manager.h",
@@ -39,8 +41,12 @@ source_set("content") {
     "//build:blink_buildflags",
     "//components/js_injection/browser",
     "//content/public/browser",
+    "//ios/web/annotations",
+    "//ios/web/common",
     "//ios/web/common:user_agent",
     "//ios/web/find_in_page:find_in_page",
+    "//ios/web/js_features/context_menu",
+    "//ios/web/js_features/error_page",
     "//ios/web/js_messaging",
     "//ios/web/navigation:core",
     "//ios/web/public",
@@ -49,6 +55,7 @@ source_set("content") {
     "//ios/web/public/security:security",
     "//ios/web/public/session:session",
     "//ios/web/text_fragments:text_fragments",
+    "//ios/web/webui",
   ]
 }
 
