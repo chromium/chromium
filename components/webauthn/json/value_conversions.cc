@@ -102,9 +102,9 @@ base::Value ToValue(const device::PublicKeyCredentialUserEntity& user) {
   // `PublicKeyCredentialEntity.name` is required in the IDL but optional on the
   // mojo struct.
   value.Set("name", user.name.value_or(""));
-  if (user.display_name) {
-    value.Set("displayName", *user.display_name);
-  }
+  // `PublicKeyCredentialUserEntity.displayName` is required in the IDL but
+  // optional on the mojo struct.
+  value.Set("displayName", user.display_name.value_or(""));
   return base::Value(std::move(value));
 }
 
@@ -330,8 +330,7 @@ base::Value ToValue(
   }
   value.Set("attestation", ToValue(options->attestation));
 
-  base::Value::Dict& extensions =
-      value.Set("extensions", base::Value::Dict())->GetDict();
+  base::Value::Dict extensions;
 
   if (options->hmac_create_secret) {
     extensions.Set("hmacCreateSecret", true);
@@ -376,6 +375,10 @@ base::Value ToValue(
 
   DCHECK(!options->prf_enable);
 
+  if (!extensions.empty()) {
+    value.Set("extensions", std::move(extensions));
+  }
+
   return base::Value(std::move(value));
 }
 
@@ -394,8 +397,7 @@ base::Value ToValue(
 
   value.Set("userVerification", ToValue(options->user_verification));
 
-  base::Value::Dict& extensions =
-      value.Set("extensions", base::Value::Dict())->GetDict();
+  base::Value::Dict extensions;
 
   if (options->appid) {
     extensions.Set("appid", *options->appid);
@@ -432,6 +434,10 @@ base::Value ToValue(
   }
 
   DCHECK(!options->prf);
+
+  if (!extensions.empty()) {
+    value.Set("extensions", std::move(extensions));
+  }
 
   return base::Value(std::move(value));
 }
