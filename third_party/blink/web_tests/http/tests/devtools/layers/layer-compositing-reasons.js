@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {LayersTestRunner} from 'layers_test_runner';
+
 (async function() {
   TestRunner.addResult(`Tests layer compositing reasons in Layers Panel`);
-  await TestRunner.loadTestModule('layers_test_runner');
   await TestRunner.navigatePromise(TestRunner.url('resources/compositing-reasons.html'));
 
   async function dumpCompositingReasons(layer) {
