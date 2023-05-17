@@ -56,7 +56,7 @@ callback UnderlyingSourceStartCallback = any (ReadableStreamController controlle
 callback UnderlyingSourcePullCallback = Promise<undefined> (ReadableStreamController controller);
 callback UnderlyingSourceCancelCallback = Promise<undefined> (optional any reason);
 
-enum ReadableStreamType { "bytes", "owning" };
+enum ReadableStreamType { "bytes" };
 
 interface mixin ReadableStreamGenericReader {
   readonly attribute Promise<undefined> closed;
