@@ -474,6 +474,10 @@ class NET_EXPORT HttpServerProperties
     return server_info_map_;
   }
 
+  // This will invalidate the start-up properties if called before
+  // initialization.
+  void FlushWritePropertiesForTesting(base::OnceClosure callback);
+
   const BrokenAlternativeServices& broken_alternative_services_for_testing()
       const {
     return broken_alternative_services_;

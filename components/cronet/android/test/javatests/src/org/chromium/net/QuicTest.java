@@ -23,12 +23,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.Log;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.concurrent.Executors;
@@ -110,19 +108,7 @@ public class QuicTest {
         // headers.
         assertThat(callback.mResponseInfo.getReceivedByteCount())
                 .isGreaterThan((long) expectedContent.length());
-        // This test takes a long time, since the update will only be scheduled
-        // after kUpdatePrefsDelayMs in http_server_properties_manager.cc.
-        while (true) {
-            Log.i(TAG, "Still waiting for pref file update.....");
-            Thread.sleep(10000);
-            boolean contains = false;
-            try {
-                if (fileContainsString("local_prefs.json", "quic")) break;
-            } catch (FileNotFoundException e) {
-                // Ignored this exception since the file will only be created when updates are
-                // flushed to the disk.
-            }
-        }
+        CronetTestUtil.nativeFlushWritePropertiesForTesting(cronetEngine);
         assertTrue(fileContainsString("local_prefs.json",
                 QuicTestServer.getServerHost() + ":" + QuicTestServer.getServerPort()));
         cronetEngine.shutdown();
@@ -230,19 +216,7 @@ public class QuicTest {
         assertThat(cronetEngine.getTransportRttMs()).isAtLeast(0);
         assertThat(cronetEngine.getDownstreamThroughputKbps()).isAtLeast(0);
 
-        // Verify that the cached estimates were written to the prefs.
-        while (true) {
-            Log.i(TAG, "Still waiting for pref file update.....");
-            Thread.sleep(10000);
-            try {
-                if (fileContainsString("local_prefs.json", "network_qualities")) {
-                    break;
-                }
-            } catch (FileNotFoundException e) {
-                // Ignored this exception since the file will only be created when updates are
-                // flushed to the disk.
-            }
-        }
+        CronetTestUtil.nativeFlushWritePropertiesForTesting(cronetEngine);
         assertTrue(fileContainsString("local_prefs.json", "network_qualities"));
         cronetEngine.shutdown();
     }
