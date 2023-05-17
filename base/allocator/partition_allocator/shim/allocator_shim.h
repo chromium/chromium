@@ -198,6 +198,7 @@ BASE_EXPORT void ConfigurePartitions(
     EnableBrpPartitionMemoryReclaimer enable_brp_memory_reclaimer,
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
+    size_t ref_count_size,
     AlternateBucketDistribution use_alternate_bucket_distribution);
 
 #if BUILDFLAG(USE_STARSCAN)

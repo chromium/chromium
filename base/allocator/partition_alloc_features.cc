@@ -143,6 +143,18 @@ const base::FeatureParam<BackupRefPtrEnabledProcesses>
       &kBackupRefPtrEnabledProcessesOptions
 };
 
+constexpr FeatureParam<BackupRefPtrRefCountSize>::Option
+    kBackupRefPtrRefCountSizeOptions[] = {
+        {BackupRefPtrRefCountSize::kNatural, "natural"},
+        {BackupRefPtrRefCountSize::k4B, "4B"},
+        {BackupRefPtrRefCountSize::k8B, "8B"},
+        {BackupRefPtrRefCountSize::k16B, "16B"}};
+
+const base::FeatureParam<BackupRefPtrRefCountSize>
+    kBackupRefPtrRefCountSizeParam{
+        &kPartitionAllocBackupRefPtr, "ref-count-size",
+        BackupRefPtrRefCountSize::kNatural, &kBackupRefPtrRefCountSizeOptions};
+
 constexpr FeatureParam<BackupRefPtrMode>::Option kBackupRefPtrModeOptions[] = {
     {BackupRefPtrMode::kDisabled, "disabled"},
     {BackupRefPtrMode::kEnabled, "enabled"},

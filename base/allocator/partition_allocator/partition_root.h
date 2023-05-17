@@ -192,6 +192,7 @@ struct PartitionOptions {
   BackupRefPtr backup_ref_ptr = BackupRefPtr::kDisabled;
   BackupRefPtrZapping backup_ref_ptr_zapping = BackupRefPtrZapping::kDisabled;
   UseConfigurablePool use_configurable_pool = UseConfigurablePool::kNo;
+  size_t ref_count_size;
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
   ThreadIsolationOption thread_isolation;
 #endif

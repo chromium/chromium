@@ -106,6 +106,22 @@ enum class BackupRefPtrMode {
   kDisabledButSplitPartitions3Way,
 };
 
+// Decides the amount of memory uses for BRP ref-count. The actual ref-count may
+// be smaller, in which case extra padding is added.
+enum class BackupRefPtrRefCountSize {
+  // Whatever sizeof(PartitionRefCount) happens to be, which is influence by
+  // buildflags.
+  // The remaining options require sizeof(PartitionRefCount) not to exceed the
+  // desired size, which will be asserted.
+  kNatural,
+  // 4 bytes.
+  k4B,
+  // 8 bytes
+  k8B,
+  // 16 bytes.
+  k16B,
+};
+
 enum class AlternateBucketDistributionMode : uint8_t {
   kDefault,
   kDenser,
@@ -116,6 +132,8 @@ extern const BASE_EXPORT base::FeatureParam<BackupRefPtrEnabledProcesses>
     kBackupRefPtrEnabledProcessesParam;
 extern const BASE_EXPORT base::FeatureParam<BackupRefPtrMode>
     kBackupRefPtrModeParam;
+extern const BASE_EXPORT base::FeatureParam<BackupRefPtrRefCountSize>
+    kBackupRefPtrRefCountSizeParam;
 extern const BASE_EXPORT base::FeatureParam<bool>
     kBackupRefPtrAsanEnableDereferenceCheckParam;
 extern const BASE_EXPORT base::FeatureParam<bool>

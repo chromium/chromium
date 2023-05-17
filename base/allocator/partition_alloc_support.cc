@@ -898,6 +898,7 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
   bool use_dedicated_aligned_partition = false;
   bool process_affected_by_brp_flag = false;
   bool enable_memory_reclaimer = false;
+  size_t ref_count_size = 0;
 
 #if (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&  \
      BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) || \
@@ -972,6 +973,23 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
         use_dedicated_aligned_partition = true;
         break;
     }
+
+    if (enable_brp) {
+      switch (base::features::kBackupRefPtrRefCountSizeParam.Get()) {
+        case base::features::BackupRefPtrRefCountSize::kNatural:
+          ref_count_size = 0;
+          break;
+        case base::features::BackupRefPtrRefCountSize::k4B:
+          ref_count_size = 4;
+          break;
+        case base::features::BackupRefPtrRefCountSize::k8B:
+          ref_count_size = 8;
+          break;
+        case base::features::BackupRefPtrRefCountSize::k16B:
+          ref_count_size = 16;
+          break;
+      }
+    }
   }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -985,13 +1003,16 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
                         base::features::kPartitionAllocBackupRefPtrForAsh);
 #endif
 
-  return {enable_brp,
-          enable_brp_for_ash,
-          enable_brp_zapping,
-          enable_memory_reclaimer,
-          split_main_partition,
-          use_dedicated_aligned_partition,
-          process_affected_by_brp_flag};
+  return {
+      enable_brp,
+      enable_brp_for_ash,
+      enable_brp_zapping,
+      enable_memory_reclaimer,
+      split_main_partition,
+      use_dedicated_aligned_partition,
+      process_affected_by_brp_flag,
+      ref_count_size,
+  };
 }
 
 void PartitionAllocSupport::ReconfigureEarlyish(
@@ -1133,6 +1154,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       allocator_shim::SplitMainPartition(brp_config.split_main_partition),
       allocator_shim::UseDedicatedAlignedPartition(
           brp_config.use_dedicated_aligned_partition),
+      brp_config.ref_count_size,
       allocator_shim::AlternateBucketDistribution(bucket_distribution));
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 

@@ -108,7 +108,6 @@ namespace partition_alloc {
 #if PA_CONFIG(USE_PARTITION_ROOT_ENUMERATOR)
 
 namespace {
-
 internal::Lock g_root_enumerator_lock;
 }
 
@@ -938,7 +937,12 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
       // TODO(tasak): In the PUT_REF_COUNT_IN_PREVIOUS_SLOT case, ref-count is
       // stored out-of-line for single-slot slot spans, so no need to
       // add/subtract its size in this case.
-      flags.extras_size += internal::kPartitionRefCountSizeAdjustment;
+      size_t ref_count_size = opts.ref_count_size;
+      if (!ref_count_size) {
+        ref_count_size = internal::kPartitionRefCountSizeAdjustment;
+      }
+      PA_CHECK(internal::kPartitionRefCountSizeAdjustment <= ref_count_size);
+      flags.extras_size += ref_count_size;
       flags.extras_offset += internal::kPartitionRefCountOffsetAdjustment;
     }
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)

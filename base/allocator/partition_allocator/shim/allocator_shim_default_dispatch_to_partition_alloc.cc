@@ -552,6 +552,7 @@ void ConfigurePartitions(
     EnableBrpPartitionMemoryReclaimer enable_brp_memory_reclaimer,
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
+    size_t ref_count_size,
     AlternateBucketDistribution use_alternate_bucket_distribution) {
   // BRP cannot be enabled without splitting the main partition. Furthermore, in
   // the "before allocation" mode, it can't be enabled without further splitting
@@ -616,6 +617,7 @@ void ConfigurePartitions(
                                               BackupRefPtrZapping::kEnabled
                                         : partition_alloc::PartitionOptions::
                                               BackupRefPtrZapping::kDisabled,
+          .ref_count_size = ref_count_size,
       });
   partition_alloc::ThreadSafePartitionRoot* new_root = new_main_partition.get();
 
