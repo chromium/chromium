@@ -234,6 +234,13 @@ Color Color::FromColorMix(Color::ColorSpace interpolation_space,
 
   result.alpha_ *= alpha_multiplier;
 
+  // Legacy colors that are the result of color-mix should serialize as
+  // color(srgb ... ).
+  // See: https://github.com/mozilla/wg-decisions/issues/1125
+  if (result.IsLegacyColor()) {
+    result.ConvertToColorSpace(Color::ColorSpace::kSRGB);
+  }
+
   return result;
 }
 
@@ -344,8 +351,8 @@ Color Color::InterpolateColors(
     Color color1,
     Color color2,
     float percentage) {
-  // TODO(juanmihd): Add unit tests that cover "none" values for hue, hsl and
-  // hwb colorspaces.
+  // TODO(crbug.com/1445171): Add unit tests that cover "none" values for hue,
+  // hsl and hwb colorspaces.
   DCHECK(percentage >= 0.0f && percentage <= 1.0f);
 
   const auto color1_prev_color_space = color1.GetColorSpace();
