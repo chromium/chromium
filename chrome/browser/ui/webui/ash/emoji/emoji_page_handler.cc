@@ -81,7 +81,7 @@ void CopyGifToClipboard(const GURL& gif_to_copy) {
   clipboard->WriteHTML(base::UTF8ToUTF16(BuildGifHTML(gif_to_copy)), "",
                        ui::ClipboardContentType::kSanitized);
 
-  // Show a toast that says "GIF copied to clipboard".
+  // Show a toast that says "GIF not supported. Copied to clipboard.".
   ToastManager::Get()->Show(ToastData(
       kEmojiPickerToastId, ToastCatalogName::kCopyGifToClipboardAction,
       l10n_util::GetStringUTF16(IDS_ASH_EMOJI_PICKER_COPY_GIF_TO_CLIPBOARD)));

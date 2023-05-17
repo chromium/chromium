@@ -6380,7 +6380,7 @@ You can manage this account’s settings by installing the Family Link app on yo
     Emoji Picker
   </message>
   <message name="IDS_ASH_EMOJI_PICKER_COPY_GIF_TO_CLIPBOARD" translateable="false" desc="Message shown to users when they click a gif in emoji picker.">
-    GIF copied to clipboard
+    GIF not supported. Copied to clipboard.
   </message>
 
   <!-- Strings for Custom Tab UI -->
