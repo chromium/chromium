@@ -23,6 +23,8 @@ namespace {
 static const ax::mojom::Role kContentRoles[]{
     ax::mojom::Role::kHeading,
     ax::mojom::Role::kParagraph,
+    ax::mojom::Role::kListItem,
+    ax::mojom::Role::kNote,
 };
 
 // TODO: Consider moving this to AXNodeProperties.
