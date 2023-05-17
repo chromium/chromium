@@ -4,19 +4,62 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/history/core/browser/history_backend.h"
+#include "components/history/core/browser/history_db_task.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
+#include "url/gurl.h"
+
+namespace {
+
+class AddSyncedVisitTask : public history::HistoryDBTask {
+ public:
+  AddSyncedVisitTask(base::RunLoop* run_loop,
+                     const GURL& url,
+                     const history::VisitRow& visit)
+      : run_loop_(run_loop), url_(url), visit_(visit) {}
+
+  AddSyncedVisitTask(const AddSyncedVisitTask&) = delete;
+  AddSyncedVisitTask& operator=(const AddSyncedVisitTask&) = delete;
+
+  ~AddSyncedVisitTask() override = default;
+
+  bool RunOnDBThread(history::HistoryBackend* backend,
+                     history::HistoryDatabase* db) override {
+    history::VisitID visit_id = backend->AddSyncedVisit(
+        url_, u"Title", /*hidden=*/false, visit_, absl::nullopt, absl::nullopt);
+    EXPECT_NE(visit_id, history::kInvalidVisitID);
+    return true;
+  }
+
+  void DoneRunOnMainThread() override { run_loop_->QuitWhenIdle(); }
+
+ private:
+  raw_ptr<base::RunLoop> run_loop_;
+
+  GURL url_;
+  history::VisitRow visit_;
+};
+
+}  // namespace
 
 namespace extensions {
 
@@ -52,6 +95,42 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          HistoryApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
+class SyncEnabledHistoryApiTest : public HistoryApiTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    HistoryApiTest::SetUpInProcessBrowserTestFixture();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &SyncEnabledHistoryApiTest::OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
+  }
+
+ private:
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    // Set up a fake SyncService that'll pretend Sync is enabled (without
+    // actually talking to the server, or syncing anything). This is required
+    // for tests exercising "foreign" (aka synced) visits - without this, the
+    // HistoryBackend will notice that Sync isn't enabled and delete all foreign
+    // visits.
+    SyncServiceFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindRepeating(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<syncer::TestSyncService>();
+            }));
+  }
+
+  base::CallbackListSubscription create_services_subscription_;
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         SyncEnabledHistoryApiTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         SyncEnabledHistoryApiTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
 IN_PROC_BROWSER_TEST_P(HistoryApiTest, MiscSearch) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular/misc_search")) << message_;
@@ -78,6 +157,69 @@ IN_PROC_BROWSER_TEST_P(HistoryApiTest, DeleteProhibited) {
 IN_PROC_BROWSER_TEST_P(HistoryApiTest, GetVisits) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("history/regular/get_visits")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(SyncEnabledHistoryApiTest, GetVisits_Foreign) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Setup: Add a foreign (aka synced) history entry to the DB.
+  history::VisitRow visit;
+  visit.visit_time = base::Time::Now() - base::Minutes(1);
+  visit.originator_cache_guid = "some_originator";
+  visit.transition = ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                               ui::PAGE_TRANSITION_CHAIN_START |
+                                               ui::PAGE_TRANSITION_CHAIN_END);
+  visit.is_known_to_sync = true;
+
+  base::CancelableTaskTracker tracker;
+  base::RunLoop run_loop;
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(browser()->profile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  history_service->ScheduleDBTask(
+      FROM_HERE,
+      std::make_unique<AddSyncedVisitTask>(
+          &run_loop, GURL("https://www.synced.com/"), visit),
+      &tracker);
+  run_loop.Run();
+
+  static constexpr char kManifest[] =
+      R"({
+        "name": "chrome.history",
+        "version": "0.1",
+        "manifest_version": 2,
+        "permissions": ["history"],
+        "background": {
+          "scripts": ["get_visits_foreign.js"],
+          "persistent": true
+        }
+      })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+        function getVisits() {
+          var query = {text: ''};
+          chrome.history.search(query, function(results) {
+            chrome.test.assertEq(1, results.length);
+            chrome.test.assertEq('https://www.synced.com/', results[0].url);
+
+            var id = results[0].id;
+            chrome.history.getVisits(
+                {url: results[0].url}, function(results) {
+                  chrome.test.assertEq(1, results.length);
+                  chrome.test.assertEq(id, results[0].id);
+                  // The visit is *not* local!
+                  chrome.test.assertFalse(results[0].isLocal);
+
+                  chrome.test.succeed();
+                });
+          });
+        }
+      ]);)";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("get_visits_foreign.js"), kBackgroundJs);
+
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
 }
 
 IN_PROC_BROWSER_TEST_P(HistoryApiTest, SearchAfterAdd) {

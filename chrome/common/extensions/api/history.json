@@ -31,14 +31,15 @@
         "type": "object",
         "description": "An object encapsulating one visit to a URL.",
         "properties": {
-          "id": {"type": "string", "minimum": 0, "description": "The unique identifier for the item."},
+          "id": {"type": "string", "minimum": 0, "description": "The unique identifier for the corresponding $(ref:history.HistoryItem)."},
           "visitId": {"type": "string", "description": "The unique identifier for this visit."},
           "visitTime": {"type": "number", "optional": true, "description": "When this visit occurred, represented in milliseconds since the epoch."},
           "referringVisitId": {"type": "string", "description": "The visit ID of the referrer."},
           "transition": {
             "$ref": "TransitionType",
             "description": "The <a href='#transition_types'>transition type</a> for this visit from its referrer."
-          }
+          },
+          "isLocal": { "type": "boolean", "description": "True if the visit originated on this device. False if it was synced from a different device." }
         }
       },
       {

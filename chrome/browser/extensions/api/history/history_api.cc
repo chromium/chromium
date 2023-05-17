@@ -123,6 +123,8 @@ VisitItem GetVisitItem(const history::VisitRow& row) {
 
   visit_item.transition = transition;
 
+  visit_item.is_local = row.originator_cache_guid.empty();
+
   return visit_item;
 }
 
