@@ -5739,10 +5739,10 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledA-2",
+                    "name": "EnabledA-3",
                     "params": {
                         "close_should_proceed": "false",
-                        "group_name": "EnabledA-2",
+                        "group_name": "EnabledA-3",
                         "signin_promo_variant": "sign-in"
                     },
                     "enable_features": [
