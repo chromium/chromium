@@ -192,8 +192,8 @@ struct CORE_EXPORT NGLogicalAnchorReference
                            bool is_out_of_flow)
       : rect(rect), fragment(&fragment), is_out_of_flow(is_out_of_flow) {}
 
-  // Insert |this| into the given singly linked list in the pre-order.
-  void InsertInPreOrderInto(Member<NGLogicalAnchorReference>* head_ptr);
+  // Insert |this| into the given singly linked list in the reverse tree order.
+  void InsertInReverseTreeOrderInto(Member<NGLogicalAnchorReference>* head_ptr);
 
   void Trace(Visitor* visitor) const;
 
@@ -202,7 +202,8 @@ struct CORE_EXPORT NGLogicalAnchorReference
   // stored fragment, and it's semantically incorrect when the stored rect is
   // united from fragments.
   Member<const NGPhysicalFragment> fragment;
-  // A singly linked list in the order of the pre-order DFS.
+  // A singly linked list in the reverse tree order. There can be at most one
+  // in-flow reference, which if exists must be at the end of the list.
   Member<NGLogicalAnchorReference> next;
   bool is_out_of_flow = false;
 };
@@ -221,10 +222,8 @@ class CORE_EXPORT NGLogicalAnchorQuery
       const NGAnchorKey&) const;
 
   enum class SetOptions {
-    // An in-flow  entry. The call order is in the tree order.
-    kInFlowInOrder,
-    // An in-flow entry but the call order may not be in the tree order.
-    kInFlowOutOfOrder,
+    // An in-flow entry.
+    kInFlow,
     // An out-of-flow entry.
     kOutOfFlow,
   };
@@ -232,9 +231,7 @@ class CORE_EXPORT NGLogicalAnchorQuery
            const NGPhysicalFragment& fragment,
            const LogicalRect& rect,
            SetOptions);
-  void Set(const NGAnchorKey&,
-           NGLogicalAnchorReference* reference,
-           bool maybe_out_of_order = false);
+  void Set(const NGAnchorKey&, NGLogicalAnchorReference* reference);
   void SetFromPhysical(const NGPhysicalAnchorQuery& physical_query,
                        const WritingModeConverter& converter,
                        const LogicalOffset& additional_offset,

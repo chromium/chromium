@@ -65,20 +65,25 @@ NGPhysicalAnchorReference::NGPhysicalAnchorReference(
       fragment(logical_reference.fragment),
       is_out_of_flow(logical_reference.is_out_of_flow) {}
 
-void NGLogicalAnchorReference::InsertInPreOrderInto(
+void NGLogicalAnchorReference::InsertInReverseTreeOrderInto(
     Member<NGLogicalAnchorReference>* head_ptr) {
   const LayoutObject* const object = fragment->GetLayoutObject();
   for (;;) {
     NGLogicalAnchorReference* const head = *head_ptr;
     DCHECK(!head || head->fragment->GetLayoutObject());
     if (!head ||
-        object->IsBeforeInPreOrder(*head->fragment->GetLayoutObject())) {
-      next = head;
+        head->fragment->GetLayoutObject()->IsBeforeInPreOrder(*object)) {
+      // An in-flow reference has higher precedence than any other reference
+      // before it in tree order, in which case there's no need to keep the
+      // other references.
+      if (is_out_of_flow) {
+        next = head;
+      }
       *head_ptr = this;
       break;
     }
 
-    // Skip adding if there is already an in-flow reference that is before in
+    // Skip adding if there is already an in-flow reference that is after in
     // the tree order, which always has higher precedence than |this|.
     if (!head->is_out_of_flow) {
       break;
@@ -132,10 +137,9 @@ NGAnchorEvaluatorImpl NGAnchorEvaluatorImpl::BuildFromLayoutResult(
 
   NGLogicalAnchorQuery* logical_query =
       MakeGarbageCollected<NGLogicalAnchorQuery>();
-  logical_query->SetFromPhysical(
-      *physical_query, container_converter,
-      LogicalOffset() /* additional_offset */,
-      NGLogicalAnchorQuery::SetOptions::kInFlowInOrder);
+  logical_query->SetFromPhysical(*physical_query, container_converter,
+                                 LogicalOffset() /* additional_offset */,
+                                 NGLogicalAnchorQuery::SetOptions::kInFlow);
 
   Element* element = DynamicTo<Element>(layout_object.GetNode());
   Element* implicit_anchor =
@@ -180,7 +184,7 @@ const NGLogicalAnchorReference* NGLogicalAnchorQuery::AnchorReference(
     for (const NGLogicalAnchorReference* result = reference; result;
          result = result->next) {
       if (!result->is_out_of_flow ||
-          reference->fragment->GetLayoutObject()->IsBeforeInPreOrder(
+          result->fragment->GetLayoutObject()->IsBeforeInPreOrder(
               query_object)) {
         return result;
       }
@@ -194,15 +198,12 @@ void NGLogicalAnchorQuery::Set(const NGAnchorKey& key,
                                const LogicalRect& rect,
                                SetOptions options) {
   DCHECK(fragment.GetLayoutObject());
-  Set(key,
-      MakeGarbageCollected<NGLogicalAnchorReference>(
-          fragment, rect, options == SetOptions::kOutOfFlow),
-      options == SetOptions::kInFlowOutOfOrder);
+  Set(key, MakeGarbageCollected<NGLogicalAnchorReference>(
+               fragment, rect, options == SetOptions::kOutOfFlow));
 }
 
 void NGLogicalAnchorQuery::Set(const NGAnchorKey& key,
-                               NGLogicalAnchorReference* reference,
-                               bool maybe_out_of_order) {
+                               NGLogicalAnchorReference* reference) {
   DCHECK(reference);
   DCHECK(!reference->next);
   const auto result = Base::insert(key, reference);
@@ -214,7 +215,6 @@ void NGLogicalAnchorQuery::Set(const NGAnchorKey& key,
       result.stored_value;
   NGLogicalAnchorReference* const existing_head = *existing_head_ptr;
   DCHECK(existing_head);
-  const NGLogicalAnchorReference* last_in_flow_existing = nullptr;
   const LayoutObject* new_object = reference->fragment->GetLayoutObject();
   DCHECK(new_object);
   for (NGLogicalAnchorReference* existing = existing_head; existing;
@@ -225,24 +225,11 @@ void NGLogicalAnchorQuery::Set(const NGAnchorKey& key,
       existing->rect.Unite(reference->rect);
       return;
     }
-    if (!existing->is_out_of_flow) {
-      last_in_flow_existing = existing;
-    }
-  }
-
-  // Ignore the new value if both new and existing values are in-flow, and the
-  // call order is in the tree order.
-  if (!maybe_out_of_order && !reference->is_out_of_flow &&
-      last_in_flow_existing) {
-    DCHECK(
-        last_in_flow_existing->fragment->GetLayoutObject()->IsBeforeInPreOrder(
-            *new_object));
-    return;
   }
 
   // When out-of-flow objects are involved, callers can't guarantee the call
-  // order. Insert into the list in the tree order.
-  reference->InsertInPreOrderInto(existing_head_ptr);
+  // order. Insert into the list in the reverse tree order.
+  reference->InsertInReverseTreeOrderInto(existing_head_ptr);
 }
 
 void NGPhysicalAnchorQuery::SetFromLogical(
@@ -252,7 +239,7 @@ void NGPhysicalAnchorQuery::SetFromLogical(
   // references is not supported.
   DCHECK(IsEmpty());
   for (const auto entry : logical_query) {
-    // For each key, only the first one in the tree order, in or out of flow, is
+    // For each key, only the last one in the tree order, in or out of flow, is
     // needed to be propagated, because whether it's in flow is re-computed for
     // each containing block. Please see |SetFromPhysical|.
     const auto result =
@@ -272,8 +259,7 @@ void NGLogicalAnchorQuery::SetFromPhysical(
     rect.offset += additional_offset;
     Set(entry.key,
         MakeGarbageCollected<NGLogicalAnchorReference>(
-            *entry.value->fragment, rect, options == SetOptions::kOutOfFlow),
-        options == SetOptions::kInFlowOutOfOrder);
+            *entry.value->fragment, rect, options == SetOptions::kOutOfFlow));
   }
 }
 

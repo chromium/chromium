@@ -35,7 +35,9 @@
 }
 .fixedpos {
   position: fixed;
-  margin-left: 20px;
+  margin-left: 0;
+  left: 20px;
+  top: 20px;
   width: 20px;
   height: 30px;
 }
@@ -58,8 +60,8 @@
         <div class="spacer" style="height: 20px"></div>
         <div class="transform">
           <div class="spacer" style="height: 20px"></div>
-          <div class="anchor fixedpos"></div>
           <div class="anchor"></div>
+          <div class="anchor fixedpos"></div>
           <div class="target"
                data-offset-x="10" data-offset-y="20"
                data-expected-width=130 data-expected-height=50></div>

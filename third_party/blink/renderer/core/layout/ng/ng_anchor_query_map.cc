@@ -94,10 +94,10 @@ struct NGStitchedAnchorQuery
   }
 
   enum class Conflict {
-    // The first entry wins. The calls must be in the tree order.
-    kFirstInCallOrder,
+    // The last entry wins. The calls must be in the tree order.
+    kLastInCallOrder,
     // Overwrite existing entry if the new one is before the existing one.
-    kOverwriteIfBefore,
+    kOverwriteIfAfter,
   };
 
   void AddAnchorQuery(const NGPhysicalFragment& fragment,
@@ -110,7 +110,7 @@ struct NGStitchedAnchorQuery
       DCHECK(entry.value->fragment);
       AddAnchorReference(entry.key, *entry.value->fragment,
                          entry.value->rect + offset_from_fragmentainer,
-                         fragmentainer, Conflict::kFirstInCallOrder);
+                         fragmentainer, Conflict::kLastInCallOrder);
     }
   }
 
@@ -138,17 +138,19 @@ struct NGStitchedAnchorQuery
       return;
     }
 
-    // If this is the same anchor-name on a different box, the first one in the
+    // If this is the same anchor-name on a different box, the last one in the
     // pre-order wins. Normally, the call order is in the layout-order, which is
     // pre-order of the box tree. But OOFs may be laid out later, check the tree
     // order in such case.
     switch (conflict) {
-      case Conflict::kFirstInCallOrder:
+      case Conflict::kLastInCallOrder:
         DCHECK(existing_object->IsBeforeInPreOrder(*new_object));
+        *existing = *new_value;
         break;
-      case Conflict::kOverwriteIfBefore:
-        if (new_object->IsBeforeInPreOrder(*existing_object))
+      case Conflict::kOverwriteIfAfter:
+        if (!new_object->IsBeforeInPreOrder(*existing_object)) {
           *existing = *new_value;
+        }
         break;
     }
   }
@@ -329,13 +331,13 @@ struct NGStitchedAnchorQueries {
         query.AddAnchorReference(
             fragment.Style().AnchorName(), fragment,
             {offset_from_fragmentainer, fragment.Size()}, fragmentainer,
-            NGStitchedAnchorQuery::Conflict::kOverwriteIfBefore);
+            NGStitchedAnchorQuery::Conflict::kOverwriteIfAfter);
       }
       if (fragment.IsImplicitAnchor()) {
         query.AddAnchorReference(
             layout_object, fragment,
             {offset_from_fragmentainer, fragment.Size()}, fragmentainer,
-            NGStitchedAnchorQuery::Conflict::kOverwriteIfBefore);
+            NGStitchedAnchorQuery::Conflict::kOverwriteIfAfter);
       }
       query.AddAnchorQuery(fragment, offset_from_fragmentainer, fragmentainer);
       containing_block = containing_block->Container(&skip_info);

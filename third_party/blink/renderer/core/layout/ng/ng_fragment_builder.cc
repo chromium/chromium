@@ -26,7 +26,7 @@ NGLogicalAnchorQuery::SetOptions AnchorQuerySetOptions(
   // If the |fragment| is not absolutely positioned, it's an in-flow anchor.
   // https://drafts.csswg.org/css-anchor-1/#determining
   if (!fragment.IsOutOfFlowPositioned()) {
-    return NGLogicalAnchorQuery::SetOptions::kInFlowInOrder;
+    return NGLogicalAnchorQuery::SetOptions::kInFlow;
   }
 
   // If the OOF |fragment| is not in a block fragmentation context, it's a child
@@ -51,8 +51,8 @@ NGLogicalAnchorQuery::SetOptions AnchorQuerySetOptions(
     return NGLogicalAnchorQuery::SetOptions::kOutOfFlow;
   }
   // Otherwise its containing block is a descendant of the block fragmentation
-  // context, so it's in-flow, but the call order is not in the tree order.
-  return NGLogicalAnchorQuery::SetOptions::kInFlowOutOfOrder;
+  // context, so it's in-flow.
+  return NGLogicalAnchorQuery::SetOptions::kInFlow;
 }
 
 }  // namespace
