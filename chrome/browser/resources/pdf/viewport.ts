@@ -55,9 +55,14 @@ interface FitToBoundingBoxParams {
   page: number;
 }
 
+interface FitToBoundingBoxDimensionParams extends FitToBoundingBoxParams {
+  viewPosition?: number;
+  fitToWidth: boolean;
+}
+
 type FitToWidthParams = FitToHeightParams;
-type FittingTypeParams =
-    FitToPageParams|FitToHeightParams|FitToWidthParams|FitToBoundingBoxParams;
+type FittingTypeParams = FitToPageParams|FitToHeightParams|FitToWidthParams|
+    FitToBoundingBoxParams|FitToBoundingBoxDimensionParams;
 
 /** @return The area of the intersection of the rects */
 function getIntersectionArea(rect1: ViewportRect, rect2: ViewportRect): number {
@@ -950,6 +955,14 @@ export class Viewport implements ViewportInterface {
       case FittingType.FIT_TO_BOUNDING_BOX:
         this.fitToBoundingBox(params as FitToBoundingBoxParams);
         return;
+      case FittingType.FIT_TO_BOUNDING_BOX_WIDTH:
+        this.fitToBoundingBoxDimension(
+            params as FitToBoundingBoxDimensionParams);
+        return;
+      case FittingType.FIT_TO_BOUNDING_BOX_HEIGHT:
+        this.fitToBoundingBoxDimension(
+            params as FitToBoundingBoxDimensionParams);
+        return;
       case FittingType.NONE:
         // Does not take any params.
         this.fittingType_ = fittingType;
@@ -1125,6 +1138,7 @@ export class Viewport implements ViewportInterface {
       x: pageInsetDimensions.x + boundingBox.x,
       y: pageInsetDimensions.y + boundingBox.y,
     };
+
     // Center the bounding box in the dimension that isn't fully zoomed in.
     if (newZoom !== zoomFitToWidth) {
       screenPosition.x -=
@@ -1134,6 +1148,91 @@ export class Viewport implements ViewportInterface {
       screenPosition.y -=
           ((viewportSize.height / newZoom) - boundingBox.height) / 2;
     }
+
+    this.mightZoom_(() => {
+      this.setZoomInternal_(newZoom, screenPosition);
+    });
+  }
+
+  /**
+   * If params.viewPosition is defined, use it as the x offset of the given
+   * page.
+   */
+  private getBoundingBoxHeightPosition_(
+      params: FitToBoundingBoxDimensionParams, zoomFitToDimension: number,
+      newZoom: number): Point {
+    const boundingBox = params.boundingBox;
+    const pageInsetDimensions = this.getPageInsetDimensions(params.page);
+    const screenPosition: Point = {
+      x: pageInsetDimensions.x,
+      y: pageInsetDimensions.y + boundingBox.y,
+    };
+
+    // Center the bounding box in the y dimension if not fully zoomed in.
+    if (newZoom !== zoomFitToDimension) {
+      screenPosition.y -=
+          ((this.size.height / newZoom) - boundingBox.height) / 2;
+    }
+
+    if (params.viewPosition !== undefined) {
+      screenPosition.x += params.viewPosition;
+    }
+
+    return screenPosition;
+  }
+
+  /**
+   * If params.viewPosition is defined, use it as the y offset of the given
+   * page.
+   */
+  private getBoundingBoxWidthPosition_(
+      params: FitToBoundingBoxDimensionParams, zoomFitToDimension: number,
+      newZoom: number): Point {
+    const boundingBox = params.boundingBox;
+    const pageInsetDimensions = this.getPageInsetDimensions(params.page);
+    const screenPosition: Point = {
+      x: pageInsetDimensions.x + boundingBox.x,
+      y: pageInsetDimensions.y,
+    };
+
+    // Center the bounding box in the x dimension if not fully zoomed in.
+    if (newZoom !== zoomFitToDimension) {
+      screenPosition.x -= ((this.size.width / newZoom) - boundingBox.width) / 2;
+    }
+
+    if (params.viewPosition !== undefined) {
+      screenPosition.y += params.viewPosition;
+    }
+
+    return screenPosition;
+  }
+
+  /**
+   * Zoom the viewport so that the given dimension of the bounding box of a page
+   * consumes the entire viewport.
+   * @param params Required params containing the bounding box to fit to, the
+   *     page to scroll to, and the dimension to fit to. Optionally contains the
+   *     offset of the given page.
+   */
+  fitToBoundingBoxDimension(params: FitToBoundingBoxDimensionParams) {
+    const boundingBox = params.boundingBox;
+    const fitToWidth = params.fitToWidth;
+    // Ignore invalid bounding boxes, which can occur if the plugin fails to
+    // give a valid box.
+    if (!boundingBox.width || !boundingBox.height) {
+      return;
+    }
+
+    this.fittingType_ = fitToWidth ? FittingType.FIT_TO_BOUNDING_BOX_WIDTH :
+                                     FittingType.FIT_TO_BOUNDING_BOX_HEIGHT;
+
+    const zoomFitToDimension =
+        this.computeFittingZoom_(boundingBox, fitToWidth, !fitToWidth);
+    const newZoom = this.clampZoom_(zoomFitToDimension);
+
+    const screenPosition = fitToWidth ?
+        this.getBoundingBoxWidthPosition_(params, zoomFitToDimension, newZoom) :
+        this.getBoundingBoxHeightPosition_(params, zoomFitToDimension, newZoom);
 
     this.mightZoom_(() => {
       this.setZoomInternal_(newZoom, screenPosition);

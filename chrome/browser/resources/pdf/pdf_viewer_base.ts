@@ -446,6 +446,7 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
         boundingBox: params.boundingBox,
         page: params.page || 0,
         viewPosition: params.viewPosition,
+        fitToWidth: params.view === FittingType.FIT_TO_BOUNDING_BOX_WIDTH,
       };
       this.viewport_.setFittingType(params.view, fittingTypeParams);
       this.forceFit(params.view);

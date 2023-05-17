@@ -335,9 +335,22 @@ const tests = [
     documentDimensions.addPage(0, 0);
     viewport.setDocumentDimensions(documentDimensions);
 
-    const params = {page: 0, boundingBox: {x: 0, y: 0, width: 1, height: 1}};
+    const params = {
+      page: 0,
+      boundingBox: {x: 0, y: 0, width: 1, height: 1},
+      fitToWidth: true,
+    };
     viewport.setFittingType(FittingType.FIT_TO_BOUNDING_BOX, params);
     chrome.test.assertEq(FittingType.FIT_TO_BOUNDING_BOX, viewport.fittingType);
+
+    viewport.setFittingType(FittingType.FIT_TO_BOUNDING_BOX_WIDTH, params);
+    chrome.test.assertEq(
+        FittingType.FIT_TO_BOUNDING_BOX_WIDTH, viewport.fittingType);
+
+    params.fitToWidth = false;
+    viewport.setFittingType(FittingType.FIT_TO_BOUNDING_BOX_HEIGHT, params);
+    chrome.test.assertEq(
+        FittingType.FIT_TO_BOUNDING_BOX_HEIGHT, viewport.fittingType);
 
     viewport.setFittingType(FittingType.NONE);
     chrome.test.assertEq(FittingType.NONE, viewport.fittingType);
@@ -833,6 +846,197 @@ const tests = [
 
     chrome.test.succeed();
   },
+
+  function testFitToBoundingBoxDimensionWidth() {
+    const mockWindow = new MockElement(100, 100, null);
+    const mockSizer = new MockSizer();
+    const mockCallback = new MockViewportChangedCallback();
+    const viewport = getZoomableViewport(mockWindow, mockSizer, 0, 1);
+    viewport.setViewportChangedCallback(mockCallback.callback);
+    const documentDimensions = new MockDocumentDimensions();
+    documentDimensions.addPage(200, 200);
+    documentDimensions.addPage(200, 200);
+    viewport.setDocumentDimensions(documentDimensions);
+
+    function assertPositionAndZoom(
+        expectedPosition: Point, expectedZoom: number) {
+      chrome.test.assertEq(
+          FittingType.FIT_TO_BOUNDING_BOX_WIDTH, viewport.fittingType);
+      chrome.test.assertTrue(mockCallback.wasCalled);
+      chrome.test.assertEq(expectedPosition, viewport.position);
+      chrome.test.assertEq(expectedZoom, viewport.getZoom());
+    }
+
+    function testForVisibleBoundingBoxWidth(
+        boundingBox: Rect, page: number, viewPosition: number|undefined,
+        expectedX: number, expectedY: number, expectedZoom: number) {
+      viewport.setZoom(0.1);
+      viewport.setPosition({
+        x: 0,
+        y: 0,
+      });
+      mockCallback.reset();
+      viewport.fitToBoundingBoxDimension(
+          {boundingBox, page, viewPosition, fitToWidth: true});
+      assertPositionAndZoom({x: expectedX, y: expectedY}, expectedZoom);
+    }
+
+    // Test that the zoom matches the height of the bounding box and not the
+    // width.
+
+    // Bounding box is smaller than window size with larger height.
+    let boundingBox = {x: 20, y: 25, width: 50, height: 80};
+    testForVisibleBoundingBoxWidth(boundingBox, 0, undefined, 50, 6, 2);
+    testForVisibleBoundingBoxWidth(boundingBox, 0, 20, 50, 46, 2);
+    testForVisibleBoundingBoxWidth(boundingBox, 1, undefined, 50, 406, 2);
+    testForVisibleBoundingBoxWidth(boundingBox, 1, 20, 50, 446, 2);
+
+    // Bounding box is smaller than window size with larger width.
+    boundingBox = {x: 25, y: 20, width: 80, height: 50};
+    testForVisibleBoundingBoxWidth(boundingBox, 0, undefined, 37.5, 3.75, 1.25);
+    testForVisibleBoundingBoxWidth(boundingBox, 0, 30, 37.5, 41.25, 1.25);
+    testForVisibleBoundingBoxWidth(
+        boundingBox, 1, undefined, 37.5, 253.75, 1.25);
+    testForVisibleBoundingBoxWidth(boundingBox, 1, 30, 37.5, 291.25, 1.25);
+
+    // Bounding box height is the same size as window size with larger height.
+    boundingBox = {x: 0, y: 0, width: 100, height: 120};
+    testForVisibleBoundingBoxWidth(boundingBox, 0, undefined, 5, 3, 1);
+    testForVisibleBoundingBoxWidth(boundingBox, 0, 97, 5, 100, 1);
+    testForVisibleBoundingBoxWidth(boundingBox, 1, undefined, 5, 203, 1);
+    testForVisibleBoundingBoxWidth(boundingBox, 1, 97, 5, 300, 1);
+
+    // Bounding box height is the same size as window size with larger width.
+    boundingBox = {x: 0, y: 0, width: 100, height: 80};
+    testForVisibleBoundingBoxWidth(boundingBox, 0, undefined, 5, 3, 1);
+    testForVisibleBoundingBoxWidth(boundingBox, 0, 20, 5, 23, 1);
+    testForVisibleBoundingBoxWidth(boundingBox, 1, undefined, 5, 203, 1);
+    testForVisibleBoundingBoxWidth(boundingBox, 1, 20, 5, 223, 1);
+
+    // Bounding box height is larger than window size with larger height.
+    boundingBox = {x: 10, y: 20, width: 120, height: 150};
+    testForVisibleBoundingBoxWidth(
+        boundingBox, 0, undefined, 12.5, 2.5, 0.8333333333333334);
+    testForVisibleBoundingBoxWidth(
+        boundingBox, 0, 100, 12.5, 85.83333333333334, 0.8333333333333334);
+    testForVisibleBoundingBoxWidth(
+        boundingBox, 1, undefined, 12.5, 169.16666666666669,
+        0.8333333333333334);
+    testForVisibleBoundingBoxWidth(
+        boundingBox, 1, 100, 12.5, 252.5, 0.8333333333333334);
+
+    // Bounding box height is larger than window size with larger width.
+    boundingBox = {x: 10, y: 20, width: 120, height: 20};
+    testForVisibleBoundingBoxWidth(
+        boundingBox, 0, undefined, 12.5, 2.5, 0.8333333333333334);
+    testForVisibleBoundingBoxWidth(
+        boundingBox, 0, 100, 12.5, 85.83333333333334, 0.8333333333333334);
+    testForVisibleBoundingBoxWidth(
+        boundingBox, 1, undefined, 12.5, 169.16666666666669,
+        0.8333333333333334);
+    testForVisibleBoundingBoxWidth(
+        boundingBox, 1, 100, 12.5, 252.5, 0.8333333333333334);
+
+
+    chrome.test.succeed();
+  },
+
+  function testFitToBoundingBoxDimensionHeight() {
+    const mockWindow = new MockElement(100, 100, null);
+    const mockSizer = new MockSizer();
+    const mockCallback = new MockViewportChangedCallback();
+    const viewport = getZoomableViewport(mockWindow, mockSizer, 0, 1);
+    viewport.setViewportChangedCallback(mockCallback.callback);
+    const documentDimensions = new MockDocumentDimensions();
+    documentDimensions.addPage(200, 200);
+    documentDimensions.addPage(200, 200);
+    viewport.setDocumentDimensions(documentDimensions);
+
+    function assertPositionAndZoom(
+        expectedPosition: Point, expectedZoom: number) {
+      chrome.test.assertEq(
+          FittingType.FIT_TO_BOUNDING_BOX_HEIGHT, viewport.fittingType);
+      chrome.test.assertTrue(mockCallback.wasCalled);
+      chrome.test.assertEq(expectedPosition, viewport.position);
+      chrome.test.assertEq(expectedZoom, viewport.getZoom());
+    }
+
+    function testForVisibleBoundingBoxHeight(
+        boundingBox: Rect, page: number, viewPosition: number|undefined,
+        expectedX: number, expectedY: number, expectedZoom: number) {
+      viewport.setZoom(0.1);
+      viewport.setPosition({
+        x: 0,
+        y: 0,
+      });
+      mockCallback.reset();
+      viewport.fitToBoundingBoxDimension(
+          {boundingBox, page, viewPosition, fitToWidth: false});
+      assertPositionAndZoom({x: expectedX, y: expectedY}, expectedZoom);
+    }
+
+    // Test that the zoom matches the height of the bounding box and not the
+    // width.
+
+    // Bounding box is smaller than window size with larger width.
+    let boundingBox = {x: 20, y: 25, width: 80, height: 50};
+    testForVisibleBoundingBoxHeight(boundingBox, 0, undefined, 10, 56, 2);
+    testForVisibleBoundingBoxHeight(boundingBox, 0, 20, 50, 56, 2);
+    testForVisibleBoundingBoxHeight(boundingBox, 1, undefined, 10, 456, 2);
+    testForVisibleBoundingBoxHeight(boundingBox, 1, 20, 50, 456, 2);
+
+    // Bounding box is smaller than window size with larger height.
+    boundingBox = {x: 25, y: 20, width: 50, height: 80};
+    testForVisibleBoundingBoxHeight(
+        boundingBox, 0, undefined, 6.25, 28.75, 1.25);
+    testForVisibleBoundingBoxHeight(boundingBox, 0, 30, 43.75, 28.75, 1.25);
+    testForVisibleBoundingBoxHeight(
+        boundingBox, 1, undefined, 6.25, 278.75, 1.25);
+    testForVisibleBoundingBoxHeight(boundingBox, 1, 30, 43.75, 278.75, 1.25);
+
+    // Bounding box height is the same size as window size with larger width.
+    boundingBox = {x: 0, y: 0, width: 120, height: 100};
+    testForVisibleBoundingBoxHeight(boundingBox, 0, undefined, 5, 3, 1);
+    testForVisibleBoundingBoxHeight(boundingBox, 0, 95, 100, 3, 1);
+    testForVisibleBoundingBoxHeight(boundingBox, 1, undefined, 5, 203, 1);
+    testForVisibleBoundingBoxHeight(boundingBox, 1, 95, 100, 203, 1);
+
+    // Bounding box height is the same size as window size with larger height.
+    boundingBox = {x: 0, y: 0, width: 80, height: 100};
+    testForVisibleBoundingBoxHeight(boundingBox, 0, undefined, 5, 3, 1);
+    testForVisibleBoundingBoxHeight(boundingBox, 0, 20, 25, 3, 1);
+    testForVisibleBoundingBoxHeight(boundingBox, 1, undefined, 5, 203, 1);
+    testForVisibleBoundingBoxHeight(boundingBox, 1, 20, 25, 203, 1);
+
+    // Bounding box height is larger than window size with larger width.
+    boundingBox = {x: 10, y: 20, width: 200, height: 150};
+    testForVisibleBoundingBoxHeight(
+        boundingBox, 0, undefined, 3.333333333333333, 15.333333333333332,
+        0.6666666666666666);
+    testForVisibleBoundingBoxHeight(
+        boundingBox, 0, 100, 70, 15.333333333333332, 0.6666666666666666);
+    testForVisibleBoundingBoxHeight(
+        boundingBox, 1, undefined, 3.333333333333333, 148.66666666666666,
+        0.6666666666666666);
+    testForVisibleBoundingBoxHeight(
+        boundingBox, 1, 100, 70, 148.66666666666666, 0.6666666666666666);
+
+    // Bounding box height is larger than window size with larger height.
+    boundingBox = {x: 10, y: 20, width: 100, height: 150};
+    testForVisibleBoundingBoxHeight(
+        boundingBox, 0, undefined, 3.333333333333333, 15.333333333333332,
+        0.6666666666666666);
+    testForVisibleBoundingBoxHeight(
+        boundingBox, 0, 100, 70, 15.333333333333332, 0.6666666666666666);
+    testForVisibleBoundingBoxHeight(
+        boundingBox, 1, undefined, 3.333333333333333, 148.66666666666666,
+        0.6666666666666666);
+    testForVisibleBoundingBoxHeight(
+        boundingBox, 1, 100, 70, 148.66666666666666, 0.6666666666666666);
+
+    chrome.test.succeed();
+  },
+
   async function testPinchZoomInWithGestureEvent() {
     const mockWindow = new MockElement(100, 100, null);
     const viewport = getZoomableViewport(mockWindow, new MockSizer(), 0, 1);
