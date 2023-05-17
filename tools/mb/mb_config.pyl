@@ -603,7 +603,7 @@
       'Linux Builder (Wayland)': 'gpu_tests_wayland_release_bot_reclient',
       'Linux Builder (dbg)': 'gpu_tests_debug_bot_reclient',
       'Network Service Linux': 'release_bot_reclient',
-      'linux-bfcache-rel': 'release_bot_blink_reclient',
+      'linux-bfcache-rel': 'release_bot_blink',
       'linux-extended-tracing-rel': 'release_bot_extended_tracing_reclient',
       'linux-gcc-rel': 'release_bot_minimal_symbols_no_clang',
     },
@@ -629,9 +629,9 @@
       'Linux MSan Builder': 'msan_release_bot_reclient',
       'Linux TSan Builder': 'tsan_disable_nacl_release_bot_reclient',
       'Mac ASan 64 Builder': 'asan_minimal_symbols_disable_nacl_release_bot_dcheck_always_on_reclient',
-      'WebKit Linux ASAN': 'asan_lsan_release_bot_blink_reclient',
-      'WebKit Linux Leak': 'release_bot_blink_reclient',
-      'WebKit Linux MSAN': 'msan_release_bot_blink_reclient',
+      'WebKit Linux ASAN': 'asan_lsan_release_bot_blink',
+      'WebKit Linux Leak': 'release_bot_blink',
+      'WebKit Linux MSAN': 'msan_release_bot_blink',
       'android-asan': 'android_clang_asan_release_bot_reclient',
       'ios-asan': 'ios_simulator_release_static_asan_bot_xctest_reclient',
       'linux-lacros-asan-lsan-rel': 'asan_lsan_lacros_release_bot_dcheck_always_on_reclient',
@@ -853,16 +853,16 @@
     'client.v8.fyi': {
       'Android V8 FYI Release (Nexus 5X)': 'gpu_tests_android_release_trybot_arm64_reclient',
       'Linux ASAN Builder': 'asan_lsan_release_trybot_reclient',
-      'Linux Debug Builder': 'debug_bot_blink_reclient',
+      'Linux Debug Builder': 'debug_bot_blink',
       'Linux V8 FYI Release (NVIDIA)': 'gpu_tests_release_trybot_minimal_symbols_reclient',
       'Linux V8 FYI Release - pointer compression (NVIDIA)': 'gpu_tests_release_trybot_ptr_comp_reclient',
       'Mac V8 FYI Release (Intel)': 'gpu_tests_release_trybot_minimal_symbols_reclient',
       'V8 Android GN (dbg)': 'android_debug_bot_reclient',
-      'V8 Blink Linux': 'release_bot_blink_reclient',
+      'V8 Blink Linux': 'release_bot_blink',
       'V8 Blink Linux Debug': 'release_bot_blink_v8_debug_reclient',
-      'V8 Blink Linux Future': 'release_bot_blink_reclient',
-      'V8 Blink Mac': 'release_bot_blink_reclient',
-      'V8 Blink Win': 'release_bot_blink_reclient',
+      'V8 Blink Linux Future': 'release_bot_blink',
+      'V8 Blink Mac': 'release_bot_blink',
+      'V8 Blink Win': 'release_bot_blink',
       'V8 Linux GN': 'release_bot_reclient',
       'Win V8 FYI Release (NVIDIA)': 'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting_reclient',
     },
@@ -1186,7 +1186,7 @@
       'linux-afl-asan-rel': 'afl_asan_release_trybot_reclient',
       'linux-annotator-rel': 'release_trybot_reclient',
       'linux-arm64-castos': 'cast_arm64_release_bot_reclient',
-      'linux-bfcache-rel': 'release_bot_blink_reclient',
+      'linux-bfcache-rel': 'release_bot_blink',
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_tsan',
       'linux-blink-heap-verification-try': 'release_trybot_enable_blink_heap_verification_reclient',
       'linux-centipede-asan-rel': 'centipede_asan_release_trybot_reclient',
@@ -1426,7 +1426,7 @@
     },
 
     'tryserver.v8': {
-      'v8_linux_blink_rel': 'release_trybot_blink_reclient',
+      'v8_linux_blink_rel': 'release_trybot_blink',
       'v8_linux_chromium_gn_rel': 'release_trybot_reclient',
     },
 
@@ -1435,7 +1435,7 @@
       'linux_chromium_compile': 'release_trybot_reclient',
       'linux_chromium_compile_dbg': 'debug_bot_reclient',
       'mac_chromium_compile': 'gpu_tests_release_trybot_reclient',
-      'webrtc_linux_chromium': 'release_trybot_blink_reclient',
+      'webrtc_linux_chromium': 'release_trybot_blink',
       'win_chromium_compile': 'gpu_tests_release_trybot_resource_allowlisting_reclient',
       'win_chromium_compile_dbg': 'gpu_tests_debug_bot_x86_no_symbols_reclient',
     },
@@ -1938,8 +1938,8 @@
       'asan', 'lsan', 'release_bot',
     ],
 
-    'asan_lsan_release_bot_blink_reclient': [
-      'asan', 'lsan', 'release_bot_blink_reclient',
+    'asan_lsan_release_bot_blink': [
+      'asan', 'lsan', 'release_bot_blink',
     ],
 
     'asan_lsan_release_trybot_reclient': [
@@ -2534,8 +2534,8 @@
       'debug_bot_reclient', 'arm64',
     ],
 
-    'debug_bot_blink_reclient': [
-      'debug_bot_blink_reclient',
+    'debug_bot_blink': [
+      'debug_bot_blink',
     ],
 
     'debug_bot_enable_blink_animation_use_time_delta_reclient': [
@@ -3155,8 +3155,8 @@
       'msan_no_origins', 'release_bot_reclient',
     ],
 
-    'msan_release_bot_blink_reclient': [
-      'msan', 'release_bot_blink_reclient',
+    'msan_release_bot_blink': [
+      'msan', 'release_bot_blink',
     ],
 
     'msan_release_bot_reclient': [
@@ -3401,42 +3401,42 @@
       'release_bot',
     ],
 
+    'release_bot_blink': [
+      'release_bot_blink',
+    ],
+
     'release_bot_blink_accessibility_reclient': [
-      'release_bot_blink_reclient', 'dcheck_always_on',
+      'release_bot_blink', 'dcheck_always_on',
     ],
 
     'release_bot_blink_arm64_minimal_symbols_reclient': [
-      'release_bot_blink_reclient', 'arm64', 'minimal_symbols',
+      'release_bot_blink', 'arm64', 'minimal_symbols',
     ],
 
     'release_bot_blink_minimal_symbols_no_nacl_reclient': [
-      'release_bot_blink_reclient',
+      'release_bot_blink',
       'minimal_symbols',
       'disable_nacl',
     ],
 
     'release_bot_blink_minimal_symbols_reclient': [
-      'release_bot_blink_reclient', 'minimal_symbols',
-    ],
-
-    'release_bot_blink_reclient': [
-      'release_bot_blink_reclient',
+      'release_bot_blink', 'minimal_symbols',
     ],
 
     'release_bot_blink_v8_debug_reclient': [
-      'release_bot_blink_reclient', 'v8_enable_debugging_features',
+      'release_bot_blink', 'v8_enable_debugging_features',
     ],
 
     'release_bot_blink_x64_minimal_symbols_reclient': [
-      'release_bot_blink_reclient', 'x64', 'minimal_symbols',
+      'release_bot_blink', 'x64', 'minimal_symbols',
     ],
 
     'release_bot_blink_x86_minimal_symbols_reclient': [
-      'release_bot_blink_reclient', 'x86', 'minimal_symbols',
+      'release_bot_blink', 'x86', 'minimal_symbols',
     ],
 
     'release_bot_enable_blink_heap_verification_dcheck_always_on_reclient': [
-      'release_bot_blink_reclient', 'enable_blink_heap_verification', 'dcheck_always_on',
+      'release_bot_blink', 'enable_blink_heap_verification', 'dcheck_always_on',
     ],
 
     'release_bot_extended_tracing_reclient': [
@@ -3539,16 +3539,12 @@
       'release_trybot_blink', 'devtools_do_typecheck',
     ],
 
-    'release_trybot_blink_reclient': [
-      'release_trybot_blink_reclient',
-    ],
-
     'release_trybot_dcheck_off_reclient': [
       'release_trybot_dcheck_off_reclient',
     ],
 
     'release_trybot_enable_blink_heap_verification_reclient': [
-      'release_trybot_blink_reclient', 'enable_blink_heap_verification',
+      'release_trybot_blink', 'enable_blink_heap_verification',
     ],
 
     'release_trybot_extended_tracing_reclient': [
@@ -4061,7 +4057,7 @@
       'mixins': ['debug', 'shared', 'goma', 'minimal_symbols'],
     },
 
-    'debug_bot_blink_reclient': {
+    'debug_bot_blink': {
       'mixins': ['debug', 'shared', 'reclient', 'minimal_symbols', 'chrome_with_codecs'],
     },
 
@@ -4532,10 +4528,6 @@
     # All bots that run the WPT test suite must have H.264 compiled in,
     # in order to give consistent results for WebRTC codec-dependent tests.
     'release_bot_blink': {
-      'mixins': ['release', 'static', 'goma', 'chrome_with_codecs'],
-    },
-
-    'release_bot_blink_reclient': {
       'mixins': ['release', 'static', 'reclient', 'chrome_with_codecs'],
     },
 
@@ -4559,8 +4551,8 @@
       'mixins': ['release_bot_blink', 'minimal_symbols', 'dcheck_always_on'],
     },
 
-    'release_trybot_blink_reclient': {
-      'mixins': ['release_bot_blink_reclient', 'minimal_symbols', 'dcheck_always_on'],
+    'release_trybot_blink': {
+      'mixins': ['release_bot_blink', 'minimal_symbols', 'dcheck_always_on'],
     },
 
     'release_trybot_dcheck_off_reclient': {
