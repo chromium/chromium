@@ -1348,7 +1348,7 @@ protocol::Response InspectorDOMAgent::NodeForRemoteObjectId(
     return protocol::Response::ServerError(
         "Object id doesn't reference a Node");
   }
-  node = V8Node::ToImpl(v8::Local<v8::Object>::Cast(value));
+  node = V8Node::ToWrappableUnsafe(v8::Local<v8::Object>::Cast(value));
   if (!node) {
     return protocol::Response::ServerError(
         "Couldn't convert object with given objectId to Node");
@@ -2724,7 +2724,7 @@ protocol::Response InspectorDOMAgent::getFileInfo(const String& object_id,
     return protocol::Response::ServerError(
         "Object id doesn't reference a File");
   }
-  File* file = V8File::ToImpl(v8::Local<v8::Object>::Cast(value));
+  File* file = V8File::ToWrappableUnsafe(v8::Local<v8::Object>::Cast(value));
   if (!file) {
     return protocol::Response::ServerError(
         "Couldn't convert object with given objectId to File");

@@ -895,8 +895,8 @@ TEST_F(MediaDevicesTest, ProduceCropIdStringFormat) {
   EXPECT_TRUE(tester.IsFulfilled());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-  const CropTarget* const crop_target =
-      V8CropTarget::ToImpl(tester.Value().V8Value().As<v8::Object>());
+  const CropTarget* const crop_target = V8CropTarget::ToWrappableUnsafe(
+      tester.Value().V8Value().As<v8::Object>());
   const WTF::String& crop_id = crop_target->GetCropId();
   EXPECT_TRUE(crop_id.ContainsOnlyASCIIOrEmpty());
   EXPECT_TRUE(base::Uuid::ParseLowercase(crop_id.Ascii()).is_valid());

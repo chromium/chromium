@@ -79,7 +79,7 @@ bool V8ScriptValueSerializerForModules::ExtractTransferable(
 
   if (V8VideoFrame::HasInstance(isolate, object)) {
     VideoFrame* video_frame =
-        V8VideoFrame::ToImpl(v8::Local<v8::Object>::Cast(object));
+        V8VideoFrame::ToWrappableUnsafe(v8::Local<v8::Object>::Cast(object));
     VideoFrameTransferList* transfer_list =
         transferables.GetOrCreateTransferList<VideoFrameTransferList>();
     if (transfer_list->video_frames.Contains(video_frame)) {
@@ -95,7 +95,7 @@ bool V8ScriptValueSerializerForModules::ExtractTransferable(
 
   if (V8AudioData::HasInstance(isolate, object)) {
     AudioData* audio_data =
-        V8AudioData::ToImpl(v8::Local<v8::Object>::Cast(object));
+        V8AudioData::ToWrappableUnsafe(v8::Local<v8::Object>::Cast(object));
     AudioDataTransferList* transfer_list =
         transferables.GetOrCreateTransferList<AudioDataTransferList>();
     if (transfer_list->audio_data_collection.Contains(audio_data)) {
@@ -112,8 +112,8 @@ bool V8ScriptValueSerializerForModules::ExtractTransferable(
   if (V8MediaStreamTrack::HasInstance(isolate, object) &&
       RuntimeEnabledFeatures::MediaStreamTrackTransferEnabled(
           CurrentExecutionContext(isolate))) {
-    MediaStreamTrack* track =
-        V8MediaStreamTrack::ToImpl(v8::Local<v8::Object>::Cast(object));
+    MediaStreamTrack* track = V8MediaStreamTrack::ToWrappableUnsafe(
+        v8::Local<v8::Object>::Cast(object));
     if (transferables.media_stream_tracks.Contains(track)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
@@ -127,7 +127,8 @@ bool V8ScriptValueSerializerForModules::ExtractTransferable(
 
   if (V8MediaSourceHandle::HasInstance(isolate, object)) {
     MediaSourceHandleImpl* media_source_handle =
-        V8MediaSourceHandle::ToImpl(v8::Local<v8::Object>::Cast(object));
+        V8MediaSourceHandle::ToWrappableUnsafe(
+            v8::Local<v8::Object>::Cast(object));
     MediaSourceHandleTransferList* transfer_list =
         transferables.GetOrCreateTransferList<MediaSourceHandleTransferList>();
     if (transfer_list->media_source_handles.Contains(media_source_handle)) {

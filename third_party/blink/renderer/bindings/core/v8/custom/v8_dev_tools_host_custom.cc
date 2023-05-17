@@ -168,7 +168,8 @@ void V8DevToolsHost::ShowContextMenuAtPointMethodCustom(
   if (!document || !document->GetFrame())
     return;
 
-  DevToolsHost* devtools_host = V8DevToolsHost::ToImpl(info.Holder());
+  DevToolsHost* devtools_host =
+      V8DevToolsHost::ToWrappableUnsafe(info.Holder());
   devtools_host->ShowContextMenu(document->GetFrame(), x, y, std::move(items));
 }
 

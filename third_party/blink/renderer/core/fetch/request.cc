@@ -144,7 +144,7 @@ static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
   v8::Isolate* isolate = script_state->GetIsolate();
 
   if (V8Blob::HasInstance(isolate, body)) {
-    Blob* blob = V8Blob::ToImpl(body.As<v8::Object>());
+    Blob* blob = V8Blob::ToWrappableUnsafe(body.As<v8::Object>());
     return_buffer = BodyStreamBuffer::Create(
         script_state,
         MakeGarbageCollected<BlobBytesConsumer>(execution_context,
@@ -189,7 +189,8 @@ static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
         nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr);
   } else if (V8FormData::HasInstance(isolate, body)) {
     scoped_refptr<EncodedFormData> form_data =
-        V8FormData::ToImpl(body.As<v8::Object>())->EncodeMultiPartFormData();
+        V8FormData::ToWrappableUnsafe(body.As<v8::Object>())
+            ->EncodeMultiPartFormData();
     // Here we handle formData->boundary() as a C-style string. See
     // FormDataEncoder::generateUniqueBoundaryString.
     content_type = AtomicString("multipart/form-data; boundary=") +
@@ -201,7 +202,8 @@ static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
         nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr);
   } else if (V8URLSearchParams::HasInstance(isolate, body)) {
     scoped_refptr<EncodedFormData> form_data =
-        V8URLSearchParams::ToImpl(body.As<v8::Object>())->ToEncodedFormData();
+        V8URLSearchParams::ToWrappableUnsafe(body.As<v8::Object>())
+            ->ToEncodedFormData();
     return_buffer = BodyStreamBuffer::Create(
         script_state,
         MakeGarbageCollected<FormDataBytesConsumer>(execution_context,
@@ -212,7 +214,7 @@ static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
                  execution_context) &&
              V8ReadableStream::HasInstance(isolate, body)) {
     ReadableStream* readable_stream =
-        V8ReadableStream::ToImpl(body.As<v8::Object>());
+        V8ReadableStream::ToWrappableUnsafe(body.As<v8::Object>());
     // This is implemented in Request::CreateRequestWithRequestOrString():
     //   "If the |keepalive| flag is set, then throw a TypeError."
 

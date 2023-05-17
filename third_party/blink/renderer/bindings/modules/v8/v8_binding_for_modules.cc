@@ -423,11 +423,12 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
 
     if (V8Blob::HasInstance(isolate, object)) {
       if (element == "size") {
-        v8_value = v8::Number::New(isolate, V8Blob::ToImpl(object)->size());
+        v8_value =
+            v8::Number::New(isolate, V8Blob::ToWrappableUnsafe(object)->size());
         continue;
       }
       if (element == "type") {
-        v8_value = V8String(isolate, V8Blob::ToImpl(object)->type());
+        v8_value = V8String(isolate, V8Blob::ToWrappableUnsafe(object)->type());
         continue;
       }
       // Fall through.
@@ -435,16 +436,16 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
 
     if (V8File::HasInstance(isolate, object)) {
       if (element == "name") {
-        v8_value = V8String(isolate, V8File::ToImpl(object)->name());
+        v8_value = V8String(isolate, V8File::ToWrappableUnsafe(object)->name());
         continue;
       }
       if (element == "lastModified") {
-        v8_value =
-            v8::Number::New(isolate, V8File::ToImpl(object)->lastModified());
+        v8_value = v8::Number::New(
+            isolate, V8File::ToWrappableUnsafe(object)->lastModified());
         continue;
       }
       if (element == "lastModifiedDate") {
-        v8_value = V8File::ToImpl(object)
+        v8_value = V8File::ToWrappableUnsafe(object)
                        ->lastModifiedDate(ScriptState::From(context))
                        .V8Value();
         continue;

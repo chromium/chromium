@@ -30,10 +30,6 @@ class V8InterfaceBridge : public V8InterfaceBridgeBase {
     return V8PerIsolateData::From(isolate)->HasInstance(
         V8T::GetWrapperTypeInfo(), value);
   }
-
-  static T* ToImpl(v8::Local<v8::Object> value) {
-    return ToWrappableUnsafe(value);
-  }
 };
 
 }  // namespace bindings

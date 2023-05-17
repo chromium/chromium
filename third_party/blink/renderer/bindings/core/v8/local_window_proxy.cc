@@ -486,7 +486,8 @@ static void Getter(v8::Local<v8::Name> property,
     return;
   // FIXME: Consider passing StringImpl directly.
   AtomicString name = ToCoreAtomicString(property.As<v8::String>());
-  HTMLDocument* html_document = V8HTMLDocument::ToImpl(info.Holder());
+  HTMLDocument* html_document =
+      V8HTMLDocument::ToWrappableUnsafe(info.Holder());
   DCHECK(html_document);
   v8::Local<v8::Value> result =
       GetNamedProperty(html_document, name, info.Holder(), info.GetIsolate());

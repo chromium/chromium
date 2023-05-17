@@ -147,7 +147,7 @@ Response* Response::Create(ScriptState* script_state,
     // Note: The IDL processor cannot handle this situation. See
     // https://crbug.com/335871.
   } else if (V8Blob::HasInstance(isolate, body)) {
-    Blob* blob = V8Blob::ToImpl(body.As<v8::Object>());
+    Blob* blob = V8Blob::ToWrappableUnsafe(body.As<v8::Object>());
     body_buffer = BodyStreamBuffer::Create(
         script_state,
         MakeGarbageCollected<BlobBytesConsumer>(execution_context,
@@ -195,7 +195,8 @@ Response* Response::Create(ScriptState* script_state,
     }
   } else if (V8FormData::HasInstance(isolate, body)) {
     scoped_refptr<EncodedFormData> form_data =
-        V8FormData::ToImpl(body.As<v8::Object>())->EncodeMultiPartFormData();
+        V8FormData::ToWrappableUnsafe(body.As<v8::Object>())
+            ->EncodeMultiPartFormData();
     // Here we handle formData->boundary() as a C-style string. See
     // FormDataEncoder::generateUniqueBoundaryString.
     content_type = AtomicString("multipart/form-data; boundary=") +
@@ -207,7 +208,8 @@ Response* Response::Create(ScriptState* script_state,
         nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr);
   } else if (V8URLSearchParams::HasInstance(isolate, body)) {
     scoped_refptr<EncodedFormData> form_data =
-        V8URLSearchParams::ToImpl(body.As<v8::Object>())->ToEncodedFormData();
+        V8URLSearchParams::ToWrappableUnsafe(body.As<v8::Object>())
+            ->ToEncodedFormData();
     body_buffer = BodyStreamBuffer::Create(
         script_state,
         MakeGarbageCollected<FormDataBytesConsumer>(execution_context,
@@ -218,7 +220,8 @@ Response* Response::Create(ScriptState* script_state,
     UseCounter::Count(execution_context,
                       WebFeature::kFetchResponseConstructionWithStream);
     body_buffer = MakeGarbageCollected<BodyStreamBuffer>(
-        script_state, V8ReadableStream::ToImpl(body.As<v8::Object>()),
+        script_state,
+        V8ReadableStream::ToWrappableUnsafe(body.As<v8::Object>()),
         /*cached_metadata_handler=*/nullptr);
   } else {
     String string = NativeValueTraits<IDLUSVString>::NativeValue(

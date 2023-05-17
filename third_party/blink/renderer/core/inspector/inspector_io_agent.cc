@@ -33,7 +33,7 @@ protocol::Response InspectorIOAgent::resolveBlob(const String& object_id,
         "Object id doesn't reference a Blob");
   }
 
-  Blob* blob = V8Blob::ToImpl(v8::Local<v8::Object>::Cast(value));
+  Blob* blob = V8Blob::ToWrappableUnsafe(v8::Local<v8::Object>::Cast(value));
   if (!blob) {
     return protocol::Response::ServerError(
         "Couldn't convert object with given objectId to Blob");

@@ -52,7 +52,7 @@ WebDOMFileSystem WebDOMFileSystem::FromV8Value(v8::Local<v8::Value> value) {
     return WebDOMFileSystem();
   }
   v8::Local<v8::Object> object = v8::Local<v8::Object>::Cast(value);
-  DOMFileSystem* dom_file_system = V8DOMFileSystem::ToImpl(object);
+  DOMFileSystem* dom_file_system = V8DOMFileSystem::ToWrappableUnsafe(object);
   DCHECK(dom_file_system);
   return WebDOMFileSystem(dom_file_system);
 }

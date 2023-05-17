@@ -20,7 +20,8 @@ ReadableStreamDefaultControllerWithScriptScope::
     : script_state_(script_state) {
   v8::Local<v8::Object> controller_object =
       controller.V8Value().As<v8::Object>();
-  controller_ = V8ReadableStreamDefaultController::ToImpl(controller_object);
+  controller_ =
+      V8ReadableStreamDefaultController::ToWrappableUnsafe(controller_object);
 
   DCHECK(controller_);
 }

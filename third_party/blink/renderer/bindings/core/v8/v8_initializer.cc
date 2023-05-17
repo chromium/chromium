@@ -113,7 +113,7 @@ static String ExtractMessageForConsole(v8::Isolate* isolate,
     v8::Local<v8::Object> obj = v8::Local<v8::Object>::Cast(data);
     const WrapperTypeInfo* type = ToWrapperTypeInfo(obj);
     if (V8DOMException::GetWrapperTypeInfo()->IsSubclass(type)) {
-      DOMException* exception = V8DOMException::ToImpl(obj);
+      DOMException* exception = V8DOMException::ToWrappableUnsafe(obj);
       if (exception && !exception->MessageForConsole().empty())
         return exception->ToStringForConsole();
     }

@@ -65,7 +65,7 @@ namespace blink {
 template <typename CallbackInfo>
 static void LocationAttributeGet(const CallbackInfo& info) {
   v8::Local<v8::Object> holder = info.Holder();
-  DOMWindow* window = V8Window::ToImpl(holder);
+  DOMWindow* window = V8Window::ToWrappableUnsafe(holder);
   window->ReportCoopAccess("location");
   Location* location = window->location();
   DCHECK(location);
@@ -112,7 +112,8 @@ void V8Window::LocationAttributeGetterCustom(
 
 void V8Window::FrameElementAttributeGetterCustom(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
-  LocalDOMWindow* impl = To<LocalDOMWindow>(V8Window::ToImpl(info.Holder()));
+  LocalDOMWindow* impl =
+      To<LocalDOMWindow>(V8Window::ToWrappableUnsafe(info.Holder()));
   Element* frameElement = impl->frameElement();
 
   if (!BindingSecurity::ShouldAllowAccessTo(CurrentDOMWindow(info.GetIsolate()),
@@ -185,7 +186,7 @@ void V8Window::OpenerAttributeSetterCustom(
 void V8Window::NamedPropertyGetterCustom(
     const AtomicString& name,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
-  DOMWindow* window = V8Window::ToImpl(info.Holder());
+  DOMWindow* window = V8Window::ToWrappableUnsafe(info.Holder());
   if (!window)
     return;
 
