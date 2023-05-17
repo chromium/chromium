@@ -124,11 +124,16 @@ class FakeSocketClient : public mojom::P2PSocketClient {
   ~FakeSocketClient() override;
 
   // mojom::P2PSocketClient interface.
-  MOCK_METHOD2(SocketCreated,
-               void(const net::IPEndPoint&, const net::IPEndPoint&));
-  MOCK_METHOD1(SendComplete, void(const P2PSendPacketMetrics&));
-  MOCK_METHOD1(DataReceived,
-               void(const std::vector<network::mojom::P2PReceivedPacketPtr>));
+  MOCK_METHOD(void,
+              SocketCreated,
+              (const net::IPEndPoint&, const net::IPEndPoint&));
+  MOCK_METHOD(void, SendComplete, (const P2PSendPacketMetrics&));
+  MOCK_METHOD(void,
+              DataReceived,
+              (const std::vector<network::mojom::P2PReceivedPacketPtr>));
+  MOCK_METHOD(void,
+              SendBatchComplete,
+              (const std::vector<P2PSendPacketMetrics>&));
 
   bool connection_error() { return disconnect_error_; }
 

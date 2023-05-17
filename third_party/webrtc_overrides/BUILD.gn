@@ -39,6 +39,7 @@ webrtc_public_deps = [
   "//third_party/webrtc/api:rtp_packet_info",
   "//third_party/webrtc/api:rtp_parameters",
   "//third_party/webrtc/api:scoped_refptr",
+  "//third_party/webrtc/api:transport_api",
   "//third_party/webrtc/api:turn_customizer",
   "//third_party/webrtc/api/adaptation:resource_adaptation_api",
   "//third_party/webrtc/api/audio:aec3_config",

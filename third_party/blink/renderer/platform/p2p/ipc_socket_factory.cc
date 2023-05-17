@@ -147,6 +147,11 @@ class IpcPacketSocket : public rtc::AsyncPacketSocket,
                       const base::TimeTicks& timestamp) override;
 
  private:
+  int SendToInternal(const void* pv,
+                     size_t cb,
+                     const rtc::SocketAddress& addr,
+                     const rtc::PacketOptions& options);
+
   enum InternalState {
     kIsUninitialized,
     kIsOpening,
@@ -375,6 +380,18 @@ int IpcPacketSocket::SendTo(const void* data,
                             size_t data_size,
                             const rtc::SocketAddress& address,
                             const rtc::PacketOptions& options) {
+  int result = SendToInternal(data, data_size, address, options);
+  // Ensure a batch is sent in case the packet in the batch has been dropped.
+  if (result < 0 && options.last_packet_in_batch) {
+    client_->FlushBatch();
+  }
+  return result;
+}
+
+int IpcPacketSocket::SendToInternal(const void* data,
+                                    size_t data_size,
+                                    const rtc::SocketAddress& address,
+                                    const rtc::PacketOptions& options) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   switch (state_) {
@@ -445,7 +462,6 @@ int IpcPacketSocket::SendTo(const void* data,
   // Ensure packet_id is not 0. It can't be the case according to
   // P2PSocketClientImpl::Send().
   DCHECK_NE(packet_id, 0uL);
-
   in_flight_packet_records_.push_back(
       InFlightPacketRecord(packet_id, data_size));
   TraceSendThrottlingState();
@@ -743,8 +759,10 @@ void AsyncAddressResolverImpl::OnAddressResolved(
 
 IpcPacketSocketFactory::IpcPacketSocketFactory(
     P2PSocketDispatcher* socket_dispatcher,
-    const net::NetworkTrafficAnnotationTag& traffic_annotation)
-    : socket_dispatcher_(socket_dispatcher),
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    bool batch_udp_packets)
+    : batch_udp_packets_(batch_udp_packets),
+      socket_dispatcher_(socket_dispatcher),
       traffic_annotation_(traffic_annotation) {}
 
 IpcPacketSocketFactory::~IpcPacketSocketFactory() {}
@@ -755,7 +773,8 @@ rtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateUdpSocket(
     uint16_t max_port) {
   auto socket_dispatcher = socket_dispatcher_.Lock();
   DCHECK(socket_dispatcher);
-  auto socket_client = std::make_unique<P2PSocketClientImpl>();
+  auto socket_client =
+      std::make_unique<P2PSocketClientImpl>(batch_udp_packets_);
   std::unique_ptr<IpcPacketSocket> socket(new IpcPacketSocket());
   if (!socket->Init(socket_dispatcher, traffic_annotation_,
                     network::P2P_SOCKET_UDP, std::move(socket_client),
@@ -800,7 +819,8 @@ rtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateClientTcpSocket(
   }
   auto socket_dispatcher = socket_dispatcher_.Lock();
   DCHECK(socket_dispatcher);
-  auto socket_client = std::make_unique<P2PSocketClientImpl>();
+  auto socket_client =
+      std::make_unique<P2PSocketClientImpl>(/*batch_packets=*/false);
   std::unique_ptr<IpcPacketSocket> socket(new IpcPacketSocket());
   if (!socket->Init(socket_dispatcher, traffic_annotation_, type,
                     std::move(socket_client), local_address, 0, 0,

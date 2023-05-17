@@ -320,8 +320,8 @@ bool P2PSocketUdp::DoSend(const PendingPacket& packet) {
       // The renderer expects P2PMsg_OnSendComplete for all packets it generates
       // and in the same order it generates them, so we need to respond even
       // when the packet is dropped.
-      client_->SendComplete(P2PSendPacketMetrics(
-          packet.id, packet.packet_options.packet_id, send_time_us / 1000));
+      send_completions_.emplace_back(packet.id, packet.packet_options.packet_id,
+                                     send_time_us / 1000);
       // Do not reset the socket.
       return true;
     }
@@ -425,20 +425,31 @@ bool P2PSocketUdp::HandleSendResult(uint64_t packet_id,
             << GetTransientErrorName(result) << ". Dropping the packet.";
   }
 
-  client_->SendComplete(
-      P2PSendPacketMetrics(packet_id, transport_sequence_number, send_time_ms));
+  send_completions_.emplace_back(packet_id, transport_sequence_number,
+                                 send_time_ms);
 
   return true;
 }
 
 void P2PSocketUdp::Send(base::span<const uint8_t> data,
                         const P2PPacketInfo& packet_info) {
+  TRACE_EVENT0("net", "P2PSocketUdp::Send");
+  // If there's an error in SendPacket, `this` is destroyed by the internal call
+  // to P2PSocket::OnError, so do not reference this after SendPacket returns
+  // false.
+  if (SendPacket(data, packet_info)) {
+    ProcessSendCompletions();
+  }
+}
+
+bool P2PSocketUdp::SendPacket(base::span<const uint8_t> data,
+                              const P2PPacketInfo& packet_info) {
   if (data.size() > kMaximumPacketSize) {
     NOTREACHED();
     OnError();
-    return;
+    return false;
   }
-
+  bool result = true;
   if (send_pending_) {
     send_queue_.push_back(PendingPacket(packet_info.destination, data,
                                         packet_info.packet_options,
@@ -446,10 +457,23 @@ void P2PSocketUdp::Send(base::span<const uint8_t> data,
   } else {
     PendingPacket packet(packet_info.destination, data,
                          packet_info.packet_options, packet_info.packet_id);
-
-    // We are not going to use |this| again, so it's safe to ignore the result.
-    std::ignore = DoSend(packet);
+    result = DoSend(packet);
   }
+  return result;
+}
+
+void P2PSocketUdp::SendBatch(
+    std::vector<mojom::P2PSendPacketPtr> packet_batch) {
+  TRACE_EVENT0("net", "P2PSocketUdp::SendBatch");
+  for (auto& packet : packet_batch) {
+    // If there's an error in SendPacket, this object is destroyed by the
+    // internal call to P2PSocket::OnError, so do not reference this after
+    // SendPacket returns false.
+    if (!SendPacket(packet->data, packet->packet_info)) {
+      return;
+    }
+  }
+  ProcessSendCompletions();
 }
 
 void P2PSocketUdp::SetOption(P2PSocketOption option, int32_t value) {
@@ -467,6 +491,19 @@ void P2PSocketUdp::SetOption(P2PSocketOption option, int32_t value) {
     default:
       NOTREACHED();
   }
+}
+
+void P2PSocketUdp::ProcessSendCompletions() {
+  TRACE_EVENT0("net", "P2PSocketUdp::ProcessSendCompletions");
+  if (send_completions_.empty()) {
+    return;
+  }
+  if (send_completions_.size() == 1) {
+    client_->SendComplete(send_completions_[0]);
+  } else {
+    client_->SendBatchComplete(send_completions_);
+  }
+  send_completions_.clear();
 }
 
 int P2PSocketUdp::SetSocketDiffServCodePointInternal(

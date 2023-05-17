@@ -105,6 +105,11 @@ const base::FeatureParam<base::TimeDelta>
     kVSyncDecodingHiddenOccludedTickDuration{
         &kVSyncDecoding, "occluded_tick_duration", base::Hertz(10)};
 
+// Feature flag for batching send packets.
+BASE_FEATURE(kWebRtcSendPacketBatch,
+             "WebRtcSendPacketBatch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 using PassKey = base::PassKey<PeerConnectionDependencyFactory>;
@@ -595,7 +600,8 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
         }
     )");
   socket_factory_ = std::make_unique<IpcPacketSocketFactory>(
-      p2p_socket_dispatcher_.Get(), traffic_annotation);
+      p2p_socket_dispatcher_.Get(), traffic_annotation, /*batch_udp_packets=*/
+      base::FeatureList::IsEnabled(kWebRtcSendPacketBatch));
 
   gpu_factories_ = gpu_factories;
   // base::Unretained is safe below, because

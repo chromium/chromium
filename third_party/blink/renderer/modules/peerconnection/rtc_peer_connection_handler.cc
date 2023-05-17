@@ -1093,6 +1093,9 @@ bool RTCPeerConnectionHandler::Initialize(
   CopyConstraintsIntoRtcConfiguration(context, media_constraints,
                                       &configuration_);
 
+  configuration_.media_config.video.enable_send_packet_batching =
+      base::FeatureList::IsEnabled(kWebRtcSendPacketBatch);
+
   peer_connection_observer_ =
       MakeGarbageCollected<Observer>(weak_factory_.GetWeakPtr(), task_runner_);
   native_peer_connection_ = dependency_factory_->CreatePeerConnection(

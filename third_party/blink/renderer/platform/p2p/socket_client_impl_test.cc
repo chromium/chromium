@@ -11,14 +11,25 @@
 #include "third_party/blink/renderer/platform/p2p/socket_client_delegate.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+namespace network {
+bool operator==(const P2PSendPacketMetrics& a, const P2PSendPacketMetrics& b) {
+  return a.packet_id == b.packet_id && a.rtc_packet_id == b.rtc_packet_id &&
+         a.send_time_ms == b.send_time_ms;
+}
+}  // namespace network
+
 namespace blink {
 namespace {
 
 using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::InSequence;
 using ::testing::NiceMock;
+using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::SaveArg;
+using ::testing::Values;
 using ::testing::WithArgs;
 
 class MockSocketService : public network::mojom::blink::P2PSocket {
@@ -26,6 +37,10 @@ class MockSocketService : public network::mojom::blink::P2PSocket {
   MOCK_METHOD(void,
               Send,
               (base::span<const uint8_t>, const network::P2PPacketInfo&),
+              (override));
+  MOCK_METHOD(void,
+              SendBatch,
+              (WTF::Vector<network::mojom::blink::P2PSendPacketPtr>),
               (override));
   MOCK_METHOD(void,
               SetOption,
@@ -52,14 +67,15 @@ class MockDelegate : public P2PSocketClientDelegate {
               (override));
 };
 
-class SocketClientImplTest : public ::testing::Test {
+class SocketClientImplTestBase {
  public:
-  SocketClientImplTest() {
+  explicit SocketClientImplTestBase(bool batch_packets)
+      : client_(batch_packets) {
     receiver_.Bind(client_.CreatePendingReceiver());
     remote_.Bind(client_.CreatePendingRemote());
     client_.Init(&delegate_);
   }
-  ~SocketClientImplTest() override { client_.Close(); }
+  virtual ~SocketClientImplTestBase() { client_.Close(); }
 
   void Open() {
     ON_CALL(delegate_, OnOpen).WillByDefault(Return());
@@ -75,13 +91,19 @@ class SocketClientImplTest : public ::testing::Test {
   NiceMock<MockDelegate> delegate_;
 };
 
-TEST_F(SocketClientImplTest, OnOpenCalled) {
+class SocketClientImplParametrizedTest : public SocketClientImplTestBase,
+                                         public ::testing::TestWithParam<bool> {
+ public:
+  SocketClientImplParametrizedTest() : SocketClientImplTestBase(GetParam()) {}
+};
+
+TEST_P(SocketClientImplParametrizedTest, OnOpenCalled) {
   EXPECT_CALL(delegate_, OnOpen);
   remote_->SocketCreated(net::IPEndPoint(), net::IPEndPoint());
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(SocketClientImplTest, OnDataReceivedCalled) {
+TEST_P(SocketClientImplParametrizedTest, OnDataReceivedCalled) {
   using network::mojom::blink::P2PReceivedPacket;
   using network::mojom::blink::P2PReceivedPacketPtr;
   Open();
@@ -98,21 +120,21 @@ TEST_F(SocketClientImplTest, OnDataReceivedCalled) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(SocketClientImplTest, OnSendCompleteCalled) {
+TEST_P(SocketClientImplParametrizedTest, OnSendCompleteCalled) {
   Open();
   EXPECT_CALL(delegate_, OnSendComplete);
   remote_->SendComplete(network::P2PSendPacketMetrics());
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(SocketClientImplTest, OnConnectionErrorCalled) {
+TEST_P(SocketClientImplParametrizedTest, OnConnectionErrorCalled) {
   Open();
   EXPECT_CALL(delegate_, OnError);
   remote_.reset();
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(SocketClientImplTest, SendsWithIncreasingPacketId) {
+TEST_P(SocketClientImplParametrizedTest, SendsWithIncreasingPacketId) {
   Open();
   network::P2PPacketInfo first_info;
   InSequence s;
@@ -128,7 +150,7 @@ TEST_F(SocketClientImplTest, SendsWithIncreasingPacketId) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(SocketClientImplTest, SetsOption) {
+TEST_P(SocketClientImplParametrizedTest, SetsOption) {
   Open();
   InSequence s;
   EXPECT_CALL(socket_,
@@ -137,6 +159,123 @@ TEST_F(SocketClientImplTest, SetsOption) {
               SetOption(network::P2PSocketOption::P2P_SOCKET_OPT_RCVBUF, 2));
   client_.SetOption(network::P2PSocketOption::P2P_SOCKET_OPT_DSCP, 1);
   client_.SetOption(network::P2PSocketOption::P2P_SOCKET_OPT_RCVBUF, 2);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_P(SocketClientImplParametrizedTest, OnSendBatchCompleteCalled) {
+  Open();
+  network::P2PSendPacketMetrics metrics1 = {0, 1, 2};
+  network::P2PSendPacketMetrics metrics2 = {0, 1, 2};
+  InSequence s;
+  EXPECT_CALL(delegate_, OnSendComplete(metrics1));
+  EXPECT_CALL(delegate_, OnSendComplete(metrics2));
+  remote_->SendBatchComplete({metrics1, metrics2});
+  task_environment_.RunUntilIdle();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SocketClientImplParametrizedTest,
+                         Values(false, true),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WithBatching"
+                                             : "WithoutBatching";
+                         });
+
+class SocketClientImplBatchingTest : public SocketClientImplTestBase,
+                                     public ::testing::Test {
+ public:
+  SocketClientImplBatchingTest()
+      : SocketClientImplTestBase(/*batch_packets=*/true) {}
+};
+
+TEST_F(SocketClientImplBatchingTest, OnePacketBatchUsesSend) {
+  Open();
+  EXPECT_CALL(socket_, Send);
+  rtc::PacketOptions options;
+  options.batchable = true;
+  options.last_packet_in_batch = true;
+  client_.Send(net::IPEndPoint(), std::vector<uint8_t>(1), options);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(SocketClientImplBatchingTest, TwoPacketBatchUsesSendBatch) {
+  Open();
+
+  rtc::PacketOptions options;
+  options.batchable = true;
+  options.packet_id = 1;
+  client_.Send(net::IPEndPoint(), std::vector<uint8_t>(1), options);
+
+  EXPECT_CALL(
+      socket_,
+      SendBatch(ElementsAre(
+          Pointee(Field(&network::mojom::blink::P2PSendPacket::packet_info,
+                        Field(&network::P2PPacketInfo::packet_options,
+                              Field(&rtc::PacketOptions::packet_id, 1)))),
+          Pointee(Field(&network::mojom::blink::P2PSendPacket::packet_info,
+                        Field(&network::P2PPacketInfo::packet_options,
+                              Field(&rtc::PacketOptions::packet_id, 2)))))));
+
+  options.last_packet_in_batch = true;
+  options.packet_id = 2;
+  client_.Send(net::IPEndPoint(), std::vector<uint8_t>(1), options);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(SocketClientImplBatchingTest,
+       TwoPacketBatchWithNonbatchableInterleavedUsesSendBatch) {
+  Open();
+
+  rtc::PacketOptions batchable_options;
+  batchable_options.batchable = true;
+  batchable_options.packet_id = 1;
+  client_.Send(net::IPEndPoint(), std::vector<uint8_t>(1), batchable_options);
+  rtc::PacketOptions interleaved_options;  // Not batchable.
+  interleaved_options.packet_id = 2;
+  client_.Send(net::IPEndPoint(), std::vector<uint8_t>(1), interleaved_options);
+
+  // The expectation is placed after the initial sends to fail the test in case
+  // the first sends would create a batch.
+  EXPECT_CALL(
+      socket_,
+      SendBatch(ElementsAre(
+          Pointee(Field(&network::mojom::blink::P2PSendPacket::packet_info,
+                        Field(&network::P2PPacketInfo::packet_options,
+                              Field(&rtc::PacketOptions::packet_id, 1)))),
+          Pointee(Field(&network::mojom::blink::P2PSendPacket::packet_info,
+                        Field(&network::P2PPacketInfo::packet_options,
+                              Field(&rtc::PacketOptions::packet_id, 2)))),
+          Pointee(Field(&network::mojom::blink::P2PSendPacket::packet_info,
+                        Field(&network::P2PPacketInfo::packet_options,
+                              Field(&rtc::PacketOptions::packet_id, 3)))))));
+
+  batchable_options.last_packet_in_batch = true;
+  batchable_options.packet_id = 3;
+  client_.Send(net::IPEndPoint(), std::vector<uint8_t>(1), batchable_options);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(SocketClientImplBatchingTest, PacketBatchCompletedWithFlush) {
+  Open();
+
+  rtc::PacketOptions batchable_options;
+  batchable_options.batchable = true;
+  batchable_options.packet_id = 1;
+  client_.Send(net::IPEndPoint(), std::vector<uint8_t>(1), batchable_options);
+  batchable_options.packet_id = 2;
+  client_.Send(net::IPEndPoint(), std::vector<uint8_t>(1), batchable_options);
+
+  // Expects packets to be sent on FlushBatch.
+  EXPECT_CALL(
+      socket_,
+      SendBatch(ElementsAre(
+          Pointee(Field(&network::mojom::blink::P2PSendPacket::packet_info,
+                        Field(&network::P2PPacketInfo::packet_options,
+                              Field(&rtc::PacketOptions::packet_id, 1)))),
+          Pointee(Field(&network::mojom::blink::P2PSendPacket::packet_info,
+                        Field(&network::P2PPacketInfo::packet_options,
+                              Field(&rtc::PacketOptions::packet_id, 2)))))));
+  client_.FlushBatch();
   task_environment_.RunUntilIdle();
 }
 
