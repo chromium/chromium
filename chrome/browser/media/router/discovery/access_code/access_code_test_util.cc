@@ -82,40 +82,55 @@ MockAccessCodeCastPrefUpdater::MockAccessCodeCastPrefUpdater() = default;
 MockAccessCodeCastPrefUpdater::~MockAccessCodeCastPrefUpdater() = default;
 
 void MockAccessCodeCastPrefUpdater::UpdateDevicesDict(
-    const MediaSinkInternal& sink) {
+    const MediaSinkInternal& sink,
+    base::OnceClosure on_updated_callback) {
   devices_dict_.Set(sink.id(), CreateValueDictFromMediaSinkInternal(sink));
+  std::move(on_updated_callback).Run();
 }
 
 void MockAccessCodeCastPrefUpdater::UpdateDeviceAddedTimeDict(
-    const MediaSink::Id sink_id) {
+    const MediaSink::Id sink_id,
+    base::OnceClosure on_updated_callback) {
   device_added_time_dict_.Set(sink_id, base::TimeToValue(base::Time::Now()));
+  std::move(on_updated_callback).Run();
 }
 
-const base::Value::Dict& MockAccessCodeCastPrefUpdater::GetDevicesDict() {
-  return devices_dict_;
+void MockAccessCodeCastPrefUpdater::GetDevicesDict(
+    base::OnceCallback<void(base::Value::Dict)> get_devices_callback) {
+  std::move(get_devices_callback).Run(devices_dict_.Clone());
 }
 
-const base::Value::Dict&
-MockAccessCodeCastPrefUpdater::GetDeviceAddedTimeDict() {
-  return device_added_time_dict_;
+void MockAccessCodeCastPrefUpdater::GetDeviceAddedTimeDict(
+    base::OnceCallback<void(base::Value::Dict)>
+        get_device_added_time_callback) {
+  std::move(get_device_added_time_callback)
+      .Run(device_added_time_dict_.Clone());
 }
 
 void MockAccessCodeCastPrefUpdater::RemoveSinkIdFromDevicesDict(
-    const MediaSink::Id sink_id) {
+    const MediaSink::Id sink_id,
+    base::OnceClosure on_sink_removed_callback) {
   devices_dict_.Remove(sink_id);
+  std::move(on_sink_removed_callback).Run();
 }
 
 void MockAccessCodeCastPrefUpdater::RemoveSinkIdFromDeviceAddedTimeDict(
-    const MediaSink::Id sink_id) {
+    const MediaSink::Id sink_id,
+    base::OnceClosure on_sink_removed_callback) {
   device_added_time_dict_.Remove(sink_id);
+  std::move(on_sink_removed_callback).Run();
 }
 
-void MockAccessCodeCastPrefUpdater::ClearDevicesDict() {
+void MockAccessCodeCastPrefUpdater::ClearDevicesDict(
+    base::OnceClosure on_cleared_callback) {
   devices_dict_.clear();
+  std::move(on_cleared_callback).Run();
 }
 
-void MockAccessCodeCastPrefUpdater::ClearDeviceAddedTimeDict() {
+void MockAccessCodeCastPrefUpdater::ClearDeviceAddedTimeDict(
+    base::OnceClosure on_cleared_callback) {
   device_added_time_dict_.clear();
+  std::move(on_cleared_callback).Run();
 }
 
 void MockAccessCodeCastPrefUpdater::set_devices_dict(base::Value::Dict dict) {

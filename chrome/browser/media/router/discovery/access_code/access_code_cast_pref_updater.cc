@@ -11,50 +11,43 @@ namespace media_router {
 
 AccessCodeCastPrefUpdater::~AccessCodeCastPrefUpdater() = default;
 
-const base::Value::List AccessCodeCastPrefUpdater::GetSinkIdsFromDevicesDict() {
-  auto sink_ids = base::Value::List();
-
-  const auto& devices_dict = GetDevicesDict();
-  for (auto sink_id_keypair : devices_dict) {
-    sink_ids.Append(sink_id_keypair.first);
-  }
-  return sink_ids;
+void AccessCodeCastPrefUpdater::GetMediaSinkInternalValueBySinkId(
+    const MediaSink::Id sink_id,
+    base::OnceCallback<void(base::Value::Dict)> get_sink_callback) {
+  GetDevicesDict(base::BindOnce(
+      [](const MediaSink::Id sink_id,
+         base::OnceCallback<void(base::Value::Dict)> get_sink_callback,
+         base::Value::Dict dict) {
+        auto* device_dict = dict.FindDict(sink_id);
+        std::move(get_sink_callback)
+            .Run(device_dict ? std::move(*device_dict) : base::Value::Dict());
+      },
+      sink_id, std::move(get_sink_callback)));
 }
 
-const base::Value* AccessCodeCastPrefUpdater::GetMediaSinkInternalValueBySinkId(
-    const MediaSink::Id sink_id) {
-  const auto& device_dict = GetDevicesDict();
-
-  // If found, it returns a pointer to the element. Otherwise it returns
-  // nullptr.
-  const auto* device_value = device_dict.Find(sink_id);
-
-  if (!device_value) {
-    return nullptr;
-  }
-  return device_value;
+void AccessCodeCastPrefUpdater::GetDeviceAddedTime(
+    const MediaSink::Id sink_id,
+    base::OnceCallback<void(absl::optional<base::Time>)>
+        get_device_added_time_callback) {
+  GetDeviceAddedTimeDict(base::BindOnce(
+      [](const MediaSink::Id sink_id,
+         base::OnceCallback<void(absl::optional<base::Time>)>
+             get_device_added_time_callback,
+         base::Value::Dict device_added_time_dict) {
+        auto* device_added_time_value = device_added_time_dict.Find(sink_id);
+        std::move(get_device_added_time_callback)
+            .Run(device_added_time_value
+                     ? base::ValueToTime(device_added_time_value)
+                     : absl::nullopt);
+      },
+      sink_id, std::move(get_device_added_time_callback)));
 }
 
-absl::optional<base::Time> AccessCodeCastPrefUpdater::GetDeviceAddedTime(
-    const MediaSink::Id sink_id) {
-  const auto& device_Added_dict = GetDeviceAddedTimeDict();
-
-  // If found, it returns a pointer to the element. Otherwise it returns
-  // nullptr.
-  auto* device_Added_value = device_Added_dict.Find(sink_id);
-
-  if (!device_Added_value) {
-    return absl::nullopt;
-  }
-  return base::ValueToTime(device_Added_value);
-}
-
+// static
 std::vector<MediaSink::Id> AccessCodeCastPrefUpdater::GetMatchingIPEndPoints(
+    const base::Value::Dict& devices_dict,
     net::IPEndPoint ip_endpoint) {
   std::vector<MediaSink::Id> duplicate_sinks;
-
-  const auto& devices_dict = GetDevicesDict();
-
   // Iterate through device dictionaries, fetch ip_endpoints, and then check if
   // these ip_endpoint match the ip_endpoint argument.
   for (auto sink_id_keypair : devices_dict) {

@@ -6,7 +6,6 @@
 
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
-#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_impl.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_media_sink_util.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -86,8 +85,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
 
   // The device should not be stored in the pref service and not in the media
   // router.
-  EXPECT_FALSE(
-      GetPrefUpdater()->GetMediaSinkInternalValueBySinkId("cast:<1234>"));
+  EXPECT_FALSE(HasSinkInDevicesDict("cast:<1234>"));
 }
 
 IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
@@ -95,8 +93,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
   // This test is run after an instant expiration device was successfully
   // added to the browser. Upon restart it should not exists in prefs nor should
   // it be added to the media router.
-  EXPECT_FALSE(
-      GetPrefUpdater()->GetMediaSinkInternalValueBySinkId("cast:<1234>"));
+  EXPECT_FALSE(HasSinkInDevicesDict("cast:<1234>"));
 
   mock_cast_media_sink_service_impl()
       ->task_runner()
@@ -158,8 +155,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest, PRE_SavedDevice) {
 
   // The device should be stored in the pref service and still in the media
   // router.
-  EXPECT_TRUE(
-      GetPrefUpdater()->GetMediaSinkInternalValueBySinkId("cast:<1234>"));
+  EXPECT_TRUE(HasSinkInDevicesDict("cast:<1234>"));
 }
 
 IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest, SavedDevice) {
@@ -169,8 +165,7 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest, SavedDevice) {
   AddScreenplayTag(AccessCodeCastIntegrationBrowserTest::
                        kAccessCodeCastSavedDeviceScreenplayTag);
 
-  EXPECT_TRUE(
-      GetPrefUpdater()->GetMediaSinkInternalValueBySinkId("cast:<1234>"));
+  EXPECT_TRUE(HasSinkInDevicesDict("cast:<1234>"));
 
   mock_cast_media_sink_service_impl()
       ->task_runner()
@@ -184,8 +179,8 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest, SavedDevice) {
               weak_ptr_factory_.GetWeakPtr()));
   // Verify that the saved devices sink added time isn't reset after it has been
   // successfully opened and exists in the media router.
-  EXPECT_EQ(GetPrefUpdater()->GetDeviceAddedTime("cast:<1234>").value(),
-            GetDeviceAddedTime());
+  EXPECT_EQ(GetDeviceAddedTimeFromDict("cast:<1234>").value(),
+            device_added_time());
 }
 
 }  // namespace media_router

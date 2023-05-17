@@ -84,9 +84,13 @@ class AccessCodeCastIntegrationBrowserTest
   // This function spins the run loop until an error code is surfaced.
   int WaitForAddSinkErrorCode(content::WebContents* dialog_contents);
 
-  // This function spins the run loop until we detect the given sink_id in the
-  // pref service.
+  // This function spins the run loop until the given sink_id is not in the pref
+  // service.
   void WaitForPrefRemoval(const MediaSink::Id& sink_id);
+
+  bool HasSinkInDevicesDict(const MediaSink::Id& sink_id);
+  absl::optional<base::Time> GetDeviceAddedTimeFromDict(
+      const MediaSink::Id& sink_id);
 
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
@@ -159,7 +163,7 @@ class AccessCodeCastIntegrationBrowserTest
   static constexpr char kAccessCodeCastSavedDeviceScreenplayTag[] =
       "screenplay-5aba818e-1cca-4c41-811a-4bf704cbe820";
 
-  base::Time GetDeviceAddedTime() { return device_added_time_; }
+  base::Time device_added_time() { return device_added_time_; }
 
   void UpdateDeviceAddedTime(const MediaSinkInternal& cast_sink);
 
