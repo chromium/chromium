@@ -65,6 +65,13 @@ class BookmarkSyncService : public KeyedService {
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetBookmarkSyncControllerDelegate(favicon::FaviconService* favicon_service);
 
+  // Returns true if sync metadata is being tracked. This means sync is enabled
+  // and the initial download of data is completed, which implies that the
+  // relevant BookmarkModel already reflects remote data. Note however that this
+  // doesn't mean bookmarks are actively sync-ing at the moment, for example
+  // sync could be paused due to an auth error.
+  bool IsTrackingMetadata() const;
+
   // For integration tests.
   void SetBookmarksLimitForTesting(size_t limit);
 

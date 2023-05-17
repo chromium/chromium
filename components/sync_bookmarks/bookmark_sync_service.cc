@@ -38,6 +38,10 @@ BookmarkSyncService::GetBookmarkSyncControllerDelegate(
   return bookmark_model_type_processor_.GetWeakPtr();
 }
 
+bool BookmarkSyncService::IsTrackingMetadata() const {
+  return bookmark_model_type_processor_.IsTrackingMetadata();
+}
+
 void BookmarkSyncService::SetBookmarksLimitForTesting(size_t limit) {
   bookmark_model_type_processor_
       .SetMaxBookmarksTillSyncEnabledForTest(  // IN-TEST

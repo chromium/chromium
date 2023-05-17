@@ -276,6 +276,10 @@ void BookmarkModelTypeProcessor::StorePendingInvalidations(
   schedule_save_closure_.Run();
 }
 
+bool BookmarkModelTypeProcessor::IsTrackingMetadata() const {
+  return bookmark_tracker_.get() != nullptr;
+}
+
 const SyncedBookmarkTracker* BookmarkModelTypeProcessor::GetTrackerForTest()
     const {
   return bookmark_tracker_.get();

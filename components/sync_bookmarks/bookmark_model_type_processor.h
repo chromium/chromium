@@ -99,6 +99,8 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // Returns the estimate of dynamically allocated memory in bytes.
   size_t EstimateMemoryUsage() const;
 
+  bool IsTrackingMetadata() const;
+
   const SyncedBookmarkTracker* GetTrackerForTest() const;
   bool IsConnectedForTest() const;
 

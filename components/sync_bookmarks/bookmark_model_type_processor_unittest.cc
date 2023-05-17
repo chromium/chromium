@@ -286,7 +286,7 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
     processor_->ModelReadyToSync(model_metadata.SerializeAsString(),
                                  schedule_save_closure_.Get(),
                                  bookmark_model_.get());
-    ASSERT_THAT(processor_->GetTrackerForTest(), NotNull());
+    ASSERT_TRUE(processor()->IsTrackingMetadata());
   }
 
   void SimulateModelReadyToSyncWithoutLocalMetadata() {
@@ -376,12 +376,12 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDoInitialMerge) {
   syncer::UpdateResponseDataList updates =
       CreateUpdateResponseDataListForPermanentNodes();
 
-  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+  ASSERT_FALSE(processor()->IsTrackingMetadata());
 
   base::HistogramTester histogram_tester;
   processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
                                 /*gc_directive=*/absl::nullopt);
-  EXPECT_THAT(processor()->GetTrackerForTest(), NotNull());
+  EXPECT_TRUE(processor()->IsTrackingMetadata());
 
   histogram_tester.ExpectUniqueSample(
       "Sync.ModelTypeInitialUpdateReceived",
@@ -563,15 +563,15 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldDecodeEncodedSyncMetadata) {
   DestroyBookmarkModel();
   EXPECT_FALSE(processor()->IsConnectedForTest());
   EXPECT_FALSE(new_processor.IsConnectedForTest());
-  EXPECT_THAT(processor()->GetTrackerForTest(), NotNull());
-  EXPECT_THAT(new_processor.GetTrackerForTest(), NotNull());
+  EXPECT_TRUE(processor()->IsTrackingMetadata());
+  EXPECT_TRUE(new_processor.IsTrackingMetadata());
 }
 
 TEST_F(BookmarkModelTypeProcessorTest, ShouldDecodeEmptyMetadata) {
   // No save should be scheduled.
   EXPECT_CALL(*schedule_save_closure(), Run()).Times(0);
   SimulateModelReadyToSyncWithoutLocalMetadata();
-  EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
 }
 
 TEST_F(BookmarkModelTypeProcessorTest,
@@ -600,7 +600,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   new_processor.ModelReadyToSync(metadata_str, new_schedule_save_closure.Get(),
                                  bookmark_model());
   // Metadata are corrupted, so no tracker should have been created.
-  EXPECT_THAT(new_processor.GetTrackerForTest(), IsNull());
+  EXPECT_FALSE(new_processor.IsTrackingMetadata());
 }
 
 TEST_F(BookmarkModelTypeProcessorTest,
@@ -630,7 +630,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
                                  bookmark_model());
 
   // Metadata are corrupted, so no tracker should have been created.
-  EXPECT_THAT(new_processor.GetTrackerForTest(), IsNull());
+  EXPECT_FALSE(new_processor.IsTrackingMetadata());
 }
 
 // Verifies that the model type state stored in the tracker gets
@@ -737,24 +737,24 @@ TEST_F(BookmarkModelTypeProcessorTest,
 TEST_F(BookmarkModelTypeProcessorTest, ShouldStopBeforeReceivingRemoteUpdates) {
   SimulateModelReadyToSyncWithoutLocalMetadata();
   SimulateOnSyncStarting();
-  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+  ASSERT_FALSE(processor()->IsTrackingMetadata());
   processor()->OnSyncStopping(syncer::CLEAR_METADATA);
-  EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
 }
 
 TEST_F(BookmarkModelTypeProcessorTest, ShouldStopAfterReceivingRemoteUpdates) {
   // Initialize the process to make sure the tracker has been created.
   SimulateModelReadyToSyncWithInitialSyncDone();
   SimulateOnSyncStarting();
-  ASSERT_THAT(processor()->GetTrackerForTest(), NotNull());
+  ASSERT_TRUE(processor()->IsTrackingMetadata());
   processor()->OnSyncStopping(syncer::CLEAR_METADATA);
-  EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
 }
 
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldReportNoCountersWhenModelIsNotLoaded) {
   SimulateOnSyncStarting();
-  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+  ASSERT_FALSE(processor()->IsTrackingMetadata());
   syncer::TypeEntitiesCount count(syncer::BOOKMARKS);
   // Assign an arbitrary non-zero number of entities to be able to check that
   // actually a 0 has been written to it later.
@@ -904,7 +904,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
   SimulateOnSyncStarting();
   SimulateConnectSync();
 
-  ASSERT_THAT(processor()->GetTrackerForTest(), NotNull());
+  ASSERT_TRUE(processor()->IsTrackingMetadata());
   const SyncedBookmarkTrackerEntity* entity =
       processor()->GetTrackerForTest()->GetEntityForSyncId(server_id);
   ASSERT_THAT(entity, NotNull());
@@ -960,7 +960,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   EXPECT_FALSE(processor()->IsConnectedForTest());
   // Expect tracking to still be enabled.
-  EXPECT_THAT(processor()->GetTrackerForTest(), NotNull());
+  EXPECT_TRUE(processor()->IsTrackingMetadata());
 }
 
 TEST_F(
@@ -1007,12 +1007,12 @@ TEST_F(
   processor()->ModelReadyToSync(metadata_str, schedule_save_closure()->Get(),
                                 bookmark_model());
   // Metadata matches model, so tracker should be not null.
-  EXPECT_THAT(processor()->GetTrackerForTest(), NotNull());
+  EXPECT_TRUE(processor()->IsTrackingMetadata());
   // Should invoke error_handler::Run and schedule_save_closure::Run.
   SimulateOnSyncStarting();
 
   // Expect tracking to still be enabled.
-  EXPECT_THAT(processor()->GetTrackerForTest(), NotNull());
+  EXPECT_TRUE(processor()->IsTrackingMetadata());
 }
 
 TEST_F(
@@ -1047,7 +1047,7 @@ TEST_F(
   processor()->SetMaxBookmarksTillSyncEnabledForTest(3);
   SimulateModelReadyToSyncWithoutLocalMetadata();
   // Metadata does not match model, so tracker should be null.
-  EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
   // Should invoke error_handler::Run and schedule_save_closure::Run.
   SimulateOnSyncStarting();
 }
@@ -1162,7 +1162,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
       bookmark_model()->bookmark_bar_node();
 
   // Ensures that OnInitialUpdateReceived will be called.
-  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+  ASSERT_FALSE(processor()->IsTrackingMetadata());
   ASSERT_TRUE(bookmark_bar->children().empty());
   ASSERT_TRUE(processor()->IsConnectedForTest());
 
@@ -1212,7 +1212,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
       bookmark_model()->bookmark_bar_node();
 
   // Ensures that path for incremental updates will be called.
-  ASSERT_THAT(processor()->GetTrackerForTest(), NotNull());
+  ASSERT_TRUE(processor()->IsTrackingMetadata());
   ASSERT_TRUE(bookmark_bar->children().empty());
   ASSERT_TRUE(processor()->IsConnectedForTest());
 
@@ -1221,7 +1221,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
                                 /*gc_directive=*/absl::nullopt);
   EXPECT_TRUE(error_reported);
   EXPECT_FALSE(processor()->IsConnectedForTest());
-  EXPECT_THAT(processor()->GetTrackerForTest(), NotNull());
+  EXPECT_TRUE(processor()->IsTrackingMetadata());
   // New bookmark gets added though. Note that this is as per the current
   // behaviour but is not a requirement.
   EXPECT_FALSE(bookmark_bar->children().empty());
@@ -1273,7 +1273,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
       bookmark_model()->bookmark_bar_node();
 
   // Ensures that OnInitialUpdateReceived will be called.
-  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+  ASSERT_FALSE(processor()->IsTrackingMetadata());
   ASSERT_TRUE(bookmark_bar->children().empty());
   ASSERT_TRUE(processor()->IsConnectedForTest());
 
@@ -1283,7 +1283,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   EXPECT_TRUE(error_reported);
   EXPECT_FALSE(processor()->IsConnectedForTest());
   // Tracker should remain null and bookmark model unchanged.
-  EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
   EXPECT_TRUE(bookmark_bar->children().empty());
 }
 
@@ -1323,13 +1323,13 @@ TEST_F(BookmarkModelTypeProcessorTest,
                                kRandomPosition, /*response_version=*/0));
 
   // Ensures that OnInitialUpdateReceived will be called.
-  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+  ASSERT_FALSE(processor()->IsTrackingMetadata());
   ASSERT_TRUE(processor()->IsConnectedForTest());
 
   processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
                                 /*gc_directive=*/absl::nullopt);
 
-  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+  ASSERT_FALSE(processor()->IsTrackingMetadata());
   ASSERT_FALSE(processor()->IsConnectedForTest());
 
   // Metadata should contain the relevant field.
@@ -1383,13 +1383,13 @@ TEST_F(BookmarkModelTypeProcessorTest,
                                kRandomPosition, /*response_version=*/0));
 
   // Ensures that OnInitialUpdateReceived will be called.
-  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+  ASSERT_FALSE(processor()->IsTrackingMetadata());
 
   ASSERT_FALSE(error_reported);
   processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
                                 /*gc_directive=*/absl::nullopt);
   ASSERT_TRUE(error_reported);
-  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+  ASSERT_FALSE(processor()->IsTrackingMetadata());
   ASSERT_FALSE(processor()->IsConnectedForTest());
 
   sync_pb::BookmarkModelMetadata model_metadata;
@@ -1408,7 +1408,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   EXPECT_TRUE(error_reported);
   // Tracker would not be initialised.
-  EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
 
   // Metadata remains unchanged on this failure.
   metadata_str = processor()->EncodeSyncMetadata();
@@ -1459,14 +1459,14 @@ TEST_F(BookmarkModelTypeProcessorTest,
                                kRandomPosition, /*response_version=*/0));
 
   // Ensures that OnInitialUpdateReceived will be called.
-  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+  ASSERT_FALSE(processor()->IsTrackingMetadata());
 
   ASSERT_FALSE(error_reported);
   processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
                                 /*gc_directive=*/absl::nullopt);
   ASSERT_TRUE(error_reported);
 
-  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+  ASSERT_FALSE(processor()->IsTrackingMetadata());
 
   sync_pb::BookmarkModelMetadata model_metadata;
   std::string metadata_str = processor()->EncodeSyncMetadata();
@@ -1484,7 +1484,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   SimulateOnSyncStarting();
   EXPECT_TRUE(error_reported);
   // Tracker would not be initialised.
-  EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
 
   // Metadata remains unchanged on this failure.
   metadata_str = processor()->EncodeSyncMetadata();
@@ -1502,7 +1502,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   SimulateOnSyncStarting();
   EXPECT_TRUE(error_reported);
   // Tracker would not be initialised.
-  EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
 
   // Metadata remains unchanged on this failure as well.
   metadata_str = processor()->EncodeSyncMetadata();
@@ -1515,7 +1515,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 TEST_F(BookmarkModelTypeProcessorTest, ShouldClearMetadataWhileStopped) {
   SimulateModelReadyToSyncWithInitialSyncDone();
   processor()->OnSyncStopping(syncer::KEEP_METADATA);
-  ASSERT_THAT(processor()->GetTrackerForTest(), NotNull());
+  ASSERT_TRUE(processor()->IsTrackingMetadata());
 
   base::HistogramTester histogram_tester;
 
@@ -1524,7 +1524,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldClearMetadataWhileStopped) {
 
   processor()->ClearMetadataWhileStopped();
   // Should clear the tracker even if already stopped.
-  EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
   // Expect an entry to the histogram.
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 1);
@@ -1532,7 +1532,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldClearMetadataWhileStopped) {
 
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldClearMetadataWhileStoppedUponModelReadyToSync) {
-  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+  ASSERT_FALSE(processor()->IsTrackingMetadata());
 
   base::HistogramTester histogram_tester;
 
@@ -1558,7 +1558,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
                                 schedule_save_closure()->Get(),
                                 bookmark_model());
   // Tracker should have not been set.
-  EXPECT_THAT(processor()->GetTrackerForTest(), IsNull());
+  EXPECT_FALSE(processor()->IsTrackingMetadata());
   // Expect recording of the delayed clear.
   histogram_tester.ExpectTotalCount(
       "Sync.ClearMetadataWhileStopped.ImmediateClear", 0);
@@ -1571,7 +1571,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   SimulateModelReadyToSyncWithInitialSyncDone();
   SimulateOnSyncStarting();
   processor()->OnSyncStopping(syncer::CLEAR_METADATA);
-  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+  ASSERT_FALSE(processor()->IsTrackingMetadata());
 
   // Expect no call to save metadata upon ClearMetadataWhileStopped().
   EXPECT_CALL(*schedule_save_closure(), Run).Times(0);
@@ -1622,7 +1622,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 TEST_F(BookmarkModelTypeProcessorTest,
        ShouldNotClearMetadataWhileStoppedWithoutMetadataInitially) {
   SimulateModelReadyToSyncWithoutLocalMetadata();
-  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+  ASSERT_FALSE(processor()->IsTrackingMetadata());
 
   base::HistogramTester histogram_tester;
 
@@ -1647,7 +1647,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
   processor()->ClearMetadataWhileStopped();
 
   SimulateModelReadyToSyncWithoutLocalMetadata();
-  ASSERT_THAT(processor()->GetTrackerForTest(), IsNull());
+  ASSERT_FALSE(processor()->IsTrackingMetadata());
 
   // Nothing recorded to the histograms.
   histogram_tester.ExpectTotalCount(
