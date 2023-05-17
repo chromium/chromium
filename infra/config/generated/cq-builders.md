@@ -545,13 +545,6 @@ These builders are run on some percentage of builds. Their results are ignored
 by CQ. These are often used to test new configurations before they are added
 as required builders.
 
-### chrome
-* [chromeos-jacuzzi-nearby-chrome-fyi](https://ci.chromium.org/p/chrome/builders/try/chromeos-jacuzzi-nearby-chrome-fyi) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""chromeos-jacuzzi-nearby-chrome-fyi""))
-  * Experiment percentage: 100.0
-
-  Location filters:
-  * [`//third_party/nearby/README.chromium`](https://cs.chromium.org/search?q=+file:third_party/nearby/README.chromium)
-
 ### chromium
 * [dawn-android-arm64-deps-rel](https://ci.chromium.org/p/chromium/builders/try/dawn-android-arm64-deps-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""dawn-android-arm64-deps-rel""))
   * Experiment percentage: 100.0
