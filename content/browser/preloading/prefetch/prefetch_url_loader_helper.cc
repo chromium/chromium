@@ -216,7 +216,9 @@ void OnGotPrefetchToServe(
     std::move(get_prefetch_callback).Run(nullptr);
     return;
   }
-  if (origin_prober->ShouldProbeOrigins()) {
+  if (prefetch_container->IsIsolatedNetworkContextRequiredForURL(
+          tentative_resource_request.url) &&
+      origin_prober->ShouldProbeOrigins()) {
     origin_prober->Probe(
         url::SchemeHostPort(tentative_resource_request.url).GetURL(),
         base::BindOnce(

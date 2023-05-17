@@ -898,7 +898,8 @@ void PrefetchService::StartSinglePrefetch(
 
   PrefetchDocumentManager* prefetch_document_manager =
       prefetch_container->GetPrefetchDocumentManager();
-  if (!prefetch_container->IsDecoy() &&
+  if (prefetch_container->GetPrefetchType().IsProxyRequiredWhenCrossOrigin() &&
+      !prefetch_container->IsDecoy() &&
       (!prefetch_document_manager ||
        !prefetch_document_manager->HaveCanaryChecksStarted())) {
     // Make sure canary checks have run so we know the result by the time we
