@@ -78,7 +78,7 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
 
   const AtomicString& name() const { return name_; }
   DOMHighResTimeStamp startTime() const;
-  uint32_t navigationId() const;
+  String navigationId() const;
   // source() will return null if the PerformanceEntry did not originate from a
   // Window context.
   DOMWindow* source() const;
@@ -135,7 +135,7 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
     return valid_timeline_entry_types.Contains(entry_type);
   }
 
-  static uint32_t GetNavigationId(ScriptState* script_state);
+  static String GetNavigationId(ScriptState* script_state);
 
   // PerformanceMark/Measure override this and it returns Mojo structure pointer
   // which has all members of PerformanceMark/Measure. Common data members are
@@ -171,7 +171,7 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   const AtomicString name_;
   const double start_time_;
   const int index_;
-  const uint32_t navigation_id_;
+  const String navigation_id_;
   // source_ will be null if the PerformanceEntry did not originate from a
   // Window context.
   const Member<DOMWindow> source_;

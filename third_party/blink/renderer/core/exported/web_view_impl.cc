@@ -2465,7 +2465,7 @@ void WebViewImpl::SetPageLifecycleStateInternal(
       auto* local_frame = DynamicTo<LocalFrame>(frame);
       if (local_frame && local_frame->View()) {
         DCHECK(local_frame->DomWindow());
-        local_frame->DomWindow()->IncrementNavigationId();
+        local_frame->DomWindow()->GenerateNewNavigationId();
       }
     }
 
