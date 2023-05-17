@@ -291,7 +291,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   private defaultInitializePrefs(): void {
     this.set('fakeAltPref.value', this.defaultRemappings[ModifierKey.kAlt]);
     this.set(
-        'fakeAssitantPref.value',
+        'fakeAssistantPref.value',
         this.defaultRemappings[ModifierKey.kAssistant]);
     this.set(
         'fakeBackspacePref.value',
