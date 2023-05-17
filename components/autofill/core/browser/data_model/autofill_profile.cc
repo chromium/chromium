@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
@@ -1064,6 +1065,8 @@ std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
       ADDRESS_HOME_ZIP,
       ADDRESS_HOME_SORTING_CODE,
       ADDRESS_HOME_COUNTRY,
+      ADDRESS_HOME_LANDMARK,
+      ADDRESS_HOME_BETWEEN_STREETS,
       PHONE_HOME_WHOLE_NUMBER};
 
   base::ranges::for_each(field_types_to_print, print_values_lambda);
