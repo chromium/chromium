@@ -3473,15 +3473,18 @@ bool NavigationRequest::IsOriginAgentClusterOptInRequested() {
   // We explicitly do not honor Origin-Agent-Cluster headers in redirects and
   // may only consider them in final responses, according to spec.
   // https://crbug.com/1329061
-  if (state_ < WILL_PROCESS_RESPONSE)
+  if (state_ < WILL_PROCESS_RESPONSE || state_ == WILL_FAIL_REQUEST) {
     return false;
+  }
 
-  if (!response())
+  if (!response()) {
     return false;
+  }
 
   // Do not attempt isolation if the feature is not enabled.
-  if (!SiteIsolationPolicy::IsOriginAgentClusterEnabled())
+  if (!SiteIsolationPolicy::IsOriginAgentClusterEnabled()) {
     return false;
+  }
 
   return response_head_->parsed_headers->origin_agent_cluster ==
          network::mojom::OriginAgentClusterValue::kTrue;
@@ -3491,11 +3494,13 @@ bool NavigationRequest::IsOriginAgentClusterOptOutRequested() {
   // We explicitly do not honor Origin-Agent-Cluster headers in redirects and
   // may only consider them in final responses, according to spec.
   // https://crbug.com/1329061
-  if (state_ < WILL_PROCESS_RESPONSE)
+  if (state_ < WILL_PROCESS_RESPONSE || state_ == WILL_FAIL_REQUEST) {
     return false;
+  }
 
-  if (!response())
+  if (!response()) {
     return false;
+  }
 
   // We only allow explicit opt-outs when OAC-by-default is enabled. The
   // following check will be false if IsOriginAgentClusterEnabled() is false.
