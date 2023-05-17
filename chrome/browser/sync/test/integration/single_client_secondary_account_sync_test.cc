@@ -30,6 +30,7 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
       syncer::AUTOFILL_WALLET_DATA, syncer::SHARING_MESSAGE};
   allowed_types.PutAll(syncer::ControlTypes());
   allowed_types.Put(syncer::SEND_TAB_TO_SELF);
+  allowed_types.Put(syncer::READING_LIST);
   return allowed_types;
 }
 

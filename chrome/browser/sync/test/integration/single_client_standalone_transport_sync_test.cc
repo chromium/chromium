@@ -38,6 +38,7 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
       syncer::CONTACT_INFO,    syncer::SHARING_MESSAGE};
   allowed_types.PutAll(syncer::ControlTypes());
   allowed_types.Put(syncer::SEND_TAB_TO_SELF);
+  allowed_types.Put(syncer::READING_LIST);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // OS sync types run in transport mode.
   allowed_types.PutAll(
