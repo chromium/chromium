@@ -1094,6 +1094,32 @@
           'gtest_tests': 'android_12_emulator_fyi_gtests',
         }
       },
+      'android-12l-x64-fyi-dbg': {
+        'mixins': [
+          '12l-x64-emulator-experimental',
+          'emulator-8-cores',
+          'has_native_resultdb_integration',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'android_12l_emulator_gtests',
+        }
+      },
+      'android-13-x64-fyi-rel': {
+        'mixins': [
+          '13-x64-emulator-experimental',
+          'emulator-8-cores',
+          'has_native_resultdb_integration',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'android_13_emulator_gtests',
+        }
+      },
       'android-annotator-rel': {
           'test_suites': {
             'scripts': 'test_traffic_annotation_auditor_script',
