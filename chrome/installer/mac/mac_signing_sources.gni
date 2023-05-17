@@ -8,6 +8,7 @@ mac_signing_sources = [
   "signing/commands.py",
   "signing/config.py",
   "signing/config_factory.py",
+  "signing/driver.py",
   "signing/model.py",
   "signing/modification.py",
   "signing/notarize.py",

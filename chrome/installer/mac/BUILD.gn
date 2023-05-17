@@ -155,6 +155,7 @@ script_test("mac_signing_tests") {
 
   data = mac_signing_sources + [
            "signing/commands_test.py",
+           "signing/driver_test.py",
            "signing/model_test.py",
            "signing/modification_test.py",
            "signing/notarize_test.py",
