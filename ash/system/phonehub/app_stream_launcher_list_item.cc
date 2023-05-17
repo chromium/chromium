@@ -4,6 +4,7 @@
 
 #include "ash/system/phonehub/app_stream_launcher_list_item.h"
 
+#include "app_stream_launcher_list_item.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
@@ -33,6 +34,22 @@ constexpr double kAlphaValueForInhibitedIconOpacity = 0.3;
 
 }  // namespace
 
+AppStreamLauncherListItem::AppButton::AppButton(
+    views::LabelButton::PressedCallback callback,
+    const std::u16string& text)
+    : views::LabelButton(std::move(callback), text) {
+  if (chromeos::features::IsJellyrollEnabled()) {
+    TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
+                                          *label());
+  }
+}
+
+AppStreamLauncherListItem::AppButton::~AppButton() = default;
+
+const char* AppStreamLauncherListItem::AppButton::GetClassName() const {
+  return "AppStreamLauncherListItemAppButton";
+}
+
 AppStreamLauncherListItem::AppStreamLauncherListItem(
     views::LabelButton::PressedCallback callback,
     const phonehub::Notification::AppMetadata& app_metadata) {
@@ -52,9 +69,8 @@ AppStreamLauncherListItem::AppStreamLauncherListItem(
 
   std::u16string accessible_name = GetAppAccessibleName(app_metadata);
 
-  // TODO(b/254874005): Migrate the |app_button_->label()| font to Google Sans.
-  app_button_ = AddChildView(std::make_unique<views::LabelButton>(
-      callback, app_metadata.visible_app_name));
+  app_button_ = AddChildView(
+      std::make_unique<AppButton>(callback, app_metadata.visible_app_name));
 
   gfx::ImageSkia resized_app_icon =
       gfx::ImageSkiaOperations::CreateResizedImage(
