@@ -597,13 +597,14 @@ def _boot_device_ffx(target_id: Optional[str], serial_num: Optional[str],
 
     logging.debug('FFX reboot with command [%s]', ' '.join(cmd))
     if current_state == TargetState.FASTBOOT:
-
         run_ffx_command(cmd,
                         target_id=serial_num,
+                        configs = ['product.reboot.use_dm=true'],
                         check=False)
     else:
         run_ffx_command(cmd,
                         target_id=target_id,
+                        configs = ['product.reboot.use_dm=true'],
                         check=False)
 
 
