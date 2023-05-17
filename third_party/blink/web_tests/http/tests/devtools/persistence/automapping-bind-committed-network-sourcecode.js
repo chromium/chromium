@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {BindingsTestRunner} from 'bindings_test_runner';
+
 (async function() {
   TestRunner.addResult(`Verify that committed network uiSourceCode gets bound to
       fileSystem, making fileSystem dirty with its content`);
-  await TestRunner.loadTestModule('bindings_test_runner');
   BindingsTestRunner.overrideNetworkModificationTime(
       {'http://127.0.0.1:8000/devtools/persistence/resources/foo.js': null});
   TestRunner.addScriptTag('resources/foo.js');
