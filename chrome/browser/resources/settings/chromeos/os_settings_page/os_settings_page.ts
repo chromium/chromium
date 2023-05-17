@@ -77,8 +77,6 @@ export class OsSettingsPageElement extends OsSettingsPageElementBase {
 
       showPluginVm: Boolean,
 
-      havePlayStoreApp: Boolean,
-
       androidAppsInfo: Object,
 
       /**

@@ -23,7 +23,7 @@
       </cr-link-row>
     </template>
     <template is="dom-if" if="[[showAndroidApps]]">
-      <template is="dom-if" if="[[havePlayStoreApp]]" restamp>
+      <template is="dom-if" if="[[isPlayStoreAvailable_]]" restamp>
         <div id="android-apps" class="settings-box first"
             actionable$="[[androidAppsInfo.playStoreEnabled]]"
             on-click="onAndroidAppsSubpageClick_">
@@ -58,7 +58,7 @@
           </template>
         </div>
       </template>
-      <template is="dom-if" if="[[!havePlayStoreApp]]" restamp>
+      <template is="dom-if" if="[[!isPlayStoreAvailable_]]" restamp>
         <cr-link-row id="manageApps" label="$i18n{androidAppsManageApps}"
             on-click="onManageAndroidAppsClick_"
             external

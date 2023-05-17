@@ -29,6 +29,10 @@ export function isKerberosEnabled(): boolean {
   return loadTimeData.getBoolean('isKerberosEnabled');
 }
 
+export function isPlayStoreAvailable(): boolean {
+  return loadTimeData.getBoolean('isPlayStoreAvailable');
+}
+
 export function isPowerwashAllowed(): boolean {
   return loadTimeData.getBoolean('allowPowerwash');
 }

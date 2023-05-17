@@ -445,7 +445,7 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   // visible once settings app is registered.
   html_source->AddBoolean("androidAppsVisible",
                           arc::IsArcAllowedForProfile(profile()));
-  html_source->AddBoolean("havePlayStoreApp", arc::IsPlayStoreAvailable());
+  html_source->AddBoolean("isPlayStoreAvailable", arc::IsPlayStoreAvailable());
 
   html_source->AddBoolean(
       "showOsSettingsAppNotificationsRow",

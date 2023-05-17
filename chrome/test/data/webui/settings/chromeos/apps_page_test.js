@@ -204,8 +204,8 @@ suite('<os-apps-page> available settings rows', () => {
   let appsPage;
 
   function initPage() {
+    loadTimeData.overrideValues({isPlayStoreAvailable: true});
     appsPage = document.createElement('os-settings-apps-page');
-    appsPage.havePlayStoreApp = true;
     appsPage.prefs = getFakePrefs();
     document.body.appendChild(appsPage);
   }
@@ -286,7 +286,10 @@ suite('AppsPageTests', function() {
   }
 
   setup(async () => {
-    loadTimeData.overrideValues({showOsSettingsAppNotificationsRow: true});
+    loadTimeData.overrideValues({
+      showOsSettingsAppNotificationsRow: true,
+      isPlayStoreAvailable: true,
+    });
     androidAppsBrowserProxy = new TestAndroidAppsBrowserProxy();
     AndroidAppsBrowserProxyImpl.setInstanceForTesting(androidAppsBrowserProxy);
     PolymerTest.clearBody();
@@ -308,7 +311,6 @@ suite('AppsPageTests', function() {
   suite('Main Page', function() {
     setup(function() {
       appsPage.showAndroidApps = true;
-      appsPage.havePlayStoreApp = true;
       appsPage.prefs = getFakePrefs();
       appsPage.androidAppsInfo = {
         playStoreEnabled: false,
@@ -400,7 +402,8 @@ suite('AppsPageTests', function() {
     });
 
     test('Deep link to manage android prefs', async () => {
-      appsPage.havePlayStoreApp = false;
+      // Simulate showing manage apps link
+      appsPage.set('isPlayStoreAvailable_', false);
       flush();
 
       const params = new URLSearchParams();
