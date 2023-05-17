@@ -74,23 +74,11 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorDropdownForegroundSelected] = {kColorPrimaryForeground};
   mixer[kColorFocusableBorderFocused] = {kColorItemHighlight};
   mixer[kColorFocusableBorderUnfocused] = {kColorMidground};
-#if BUILDFLAG(IS_CHROMEOS)
-  // TODO(b/267817808): Replace cros_tokens::kCrosRefSecondary20 with
-  // cros_tokens::kCrosRefSecondary15 once it's added.
-  mixer[kColorFrameActive] = {dark_mode ? kColorRefSecondary20
-                                        : kColorSysHeader};
-#else
   mixer[kColorFrameActive] = {kColorFrameActiveUnthemed};
-#endif  // BUILDFLAG(IS_CHROMEOS)
   mixer[kColorFrameActiveUnthemed] = {
       dark_mode ? gfx::kGoogleGrey900 : SkColorSetRGB(0xDE, 0xE1, 0xE6)};
-#if BUILDFLAG(IS_CHROMEOS)
-  mixer[kColorFrameInactive] = {dark_mode ? kColorSysSurface1
-                                          : kColorSysSurface3};
-#else
   mixer[kColorFrameInactive] = {dark_mode ? gfx::kGoogleGrey800
                                           : gfx::kGoogleGrey200};
-#endif  // BUILDFLAG(IS_CHROMEOS)
   mixer[kColorHelpIconActive] = {kColorPrimaryForeground};
   mixer[kColorHelpIconInactive] = {kColorSecondaryForeground};
   mixer[kColorIcon] = {kColorSecondaryForeground};
