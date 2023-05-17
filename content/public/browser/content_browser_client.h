@@ -2111,7 +2111,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // debug URLs, as other requests are handled via NavigationThrottlers and
   // blocklist policies are applied there.
   virtual bool ShouldBlockRendererDebugURL(const GURL& url,
-                                           BrowserContext* context);
+                                           BrowserContext* context,
+                                           RenderFrameHost* render_frame_host);
 
   // Returns the default accessibility mode for the given browser context.
   virtual ui::AXMode GetAXModeForBrowserContext(

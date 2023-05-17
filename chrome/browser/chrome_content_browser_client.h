@@ -716,8 +716,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsBuiltinComponent(content::BrowserContext* browser_context,
                           const url::Origin& origin) override;
 
-  bool ShouldBlockRendererDebugURL(const GURL& url,
-                                   content::BrowserContext* context) override;
+  bool ShouldBlockRendererDebugURL(
+      const GURL& url,
+      content::BrowserContext* context,
+      content::RenderFrameHost* render_frame_host) override;
 
   ui::AXMode GetAXModeForBrowserContext(
       content::BrowserContext* browser_context) override;

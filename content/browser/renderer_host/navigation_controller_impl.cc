@@ -3566,9 +3566,9 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
     SetPendingEntry(std::move(entry));
   }
 
-  // Renderer-debug URLs are sent to the renderer process immediately for
-  // processing and don't need to create a NavigationRequest.
-  // Note: this includes navigations to JavaScript URLs, which are considered
+  // Renderer-debug URLs are sent to the current renderer process immediately
+  // for processing and don't need to create a NavigationRequest. Note: this
+  // includes navigations to JavaScript URLs, which are considered
   // renderer-debug URLs.
   // Note: we intentionally leave the pending entry in place for renderer debug
   // URLs, unlike the cases below where we clear it if the navigation doesn't
@@ -3577,7 +3577,7 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
     // Renderer-debug URLs won't go through NavigationThrottlers so we have to
     // check them explicitly. See bug 913334.
     if (GetContentClient()->browser()->ShouldBlockRendererDebugURL(
-            params.url, browser_context_)) {
+            params.url, browser_context_, node->current_frame_host())) {
       DiscardPendingEntry(false);
       return nullptr;
     }
