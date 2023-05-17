@@ -28,7 +28,6 @@ source_set("tab_helper") {
     "//ios/chrome/browser/overlays/public/infobar_banner",
     "//ios/chrome/browser/overlays/public/infobar_modal/permissions",
     "//ios/chrome/browser/overlays/public/web_content_area",
-    "//ios/web/common",
     "//ios/web/public",
   ]
 }
@@ -46,7 +45,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/infobars/overlays",
     "//ios/chrome/browser/permissions:infobar_delegate",
     "//ios/chrome/test:test_support",
-    "//ios/web/common",
     "//ios/web/public/permissions",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

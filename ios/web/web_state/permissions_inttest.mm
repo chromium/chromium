@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 
 #import "base/test/ios/wait_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "ios/testing/scoped_block_swizzler.h"
-#import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/reload_type.h"
 #import "ios/web/public/permissions/permissions.h"
@@ -59,19 +57,14 @@ class PermissionsInttest : public WebTestWithWebController {
  public:
   void SetUp() override {
     WebTestWithWebState::SetUp();
-    if (@available(iOS 15.0, *)) {
-      // Turn on media permissions feature.
-      scoped_feature_list_.InitWithFeatures(
-          {features::kMediaPermissionsControl}, {});
-      web_state()->AddObserver(&observer_);
-      web_state()->SetDelegate(&delegate_);
+    web_state()->AddObserver(&observer_);
+    web_state()->SetDelegate(&delegate_);
 
-      // Set up test server.
-      test_server_ = std::make_unique<net::EmbeddedTestServer>();
-      test_server_->ServeFilesFromSourceDirectory(
-          base::FilePath("ios/testing/data/http_server_files/permissions"));
-      ASSERT_TRUE(test_server_->Start());
-    }
+    // Set up test server.
+    test_server_ = std::make_unique<net::EmbeddedTestServer>();
+    test_server_->ServeFilesFromSourceDirectory(
+        base::FilePath("ios/testing/data/http_server_files/permissions"));
+    ASSERT_TRUE(test_server_->Start());
   }
 
   void TearDown() override {
@@ -95,7 +88,6 @@ class PermissionsInttest : public WebTestWithWebController {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ScopedBlockSwizzler> swizzler_;
   std::unique_ptr<net::EmbeddedTestServer> test_server_;
   testing::NiceMock<WebStateObserverMock> observer_;

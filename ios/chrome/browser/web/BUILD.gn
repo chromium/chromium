@@ -102,7 +102,6 @@ source_set("delegate") {
     "//ios/chrome/browser/url_loading:url_loading_params_header",
     "//ios/chrome/browser/web_state_list:agents",
     "//ios/components/security_interstitials",
-    "//ios/web/common",
     "//ios/web/public",
     "//url",
   ]

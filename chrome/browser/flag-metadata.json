@@ -4641,11 +4641,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "ios-media-permissions-control",
-    "owners": ["ginnyhuang","bling-flags@google.com"],
-    "expiry_milestone": 115
-  },
-  {
     "name": "ios-new-post-restore-experience",
     "owners": [ "scottyoder@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 115

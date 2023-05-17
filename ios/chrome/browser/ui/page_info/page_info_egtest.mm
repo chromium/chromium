@@ -9,7 +9,6 @@
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_chromium_strings.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_constants.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
 #import "ios/chrome/browser/ui/permissions/permissions_app_interface.h"
 #import "ios/chrome/browser/ui/permissions/permissions_constants.h"
@@ -21,7 +20,6 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/common/features.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -53,14 +51,6 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
 @end
 
 @implementation PageInfoTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  if (@available(iOS 15.0, *)) {
-    config.features_enabled.push_back(web::features::kMediaPermissionsControl);
-  }
-  return config;
-}
 
 // Checks that if the alert for site permissions pops up, and allow it.
 - (void)checkAndAllowPermissionAlerts {

@@ -520,11 +520,6 @@ extern const char kLogBreadcrumbsDescription[];
 extern const char kMagicStackName[];
 extern const char kMagicStackDescription[];
 
-// Title and description for the flag to control camera and/or microphone access
-// for a specific site through site settings during its lifespan.
-extern const char kMediaPermissionsControlName[];
-extern const char kMediaPermissionsControlDescription[];
-
 // Title and description for the flag that controls sending metrickit non-crash
 // reports.
 extern const char kMetrickitNonCrashReportName[];
