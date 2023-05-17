@@ -703,6 +703,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Time when the lacros process was launched.
   base::TimeTicks lacros_launch_time_;
 
+  // Time when the lacros process was resumed (when pre-launching at login
+  // screen).
+  base::TimeTicks lacros_resume_time_;
+
   // Process handle for the lacros-chrome process.
   base::Process lacros_process_;
 

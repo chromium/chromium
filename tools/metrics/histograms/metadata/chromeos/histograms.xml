@@ -1763,6 +1763,18 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Lacros.ResumeTime" units="ms"
+    expires_after="2023-10-01">
+  <owner>andreaorru@chromium.org</owner>
+  <owner>lacros-team@google.com</owner>
+  <summary>
+    Time to resume the lacros binary after being prelaunched at login screen,
+    specifically the time between when the process is resumed and the mojo
+    connection is established between ash and lacros. Recorded by ash each time
+    the lacros binary is resumed.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Lacros.StartTime" units="ms"
     expires_after="2023-10-01">
   <owner>erikchen@chromium.org</owner>

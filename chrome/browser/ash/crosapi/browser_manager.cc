@@ -1255,8 +1255,20 @@ void BrowserManager::OnBrowserServiceConnected(
   DCHECK(!browser_service_.has_value());
   browser_service_ =
       BrowserServiceInfo{mojo_id, browser_service, browser_service_version};
-  base::UmaHistogramMediumTimes("ChromeOS.Lacros.StartTime",
-                                base::TimeTicks::Now() - lacros_launch_time_);
+
+  if (!lacros_resume_time_.is_null()) {
+    // When pre-launching Lacros at login screen, it would be misleading to
+    // measure the start time from when the moment the binary was launched,
+    // as that would include the time spent idle at login screen.
+    // We record a different metric instead, which measures the time from
+    // when Lacros is resumed to when the browser service is connected.
+    base::UmaHistogramMediumTimes("ChromeOS.Lacros.ResumeTime",
+                                  base::TimeTicks::Now() - lacros_resume_time_);
+  } else {
+    base::UmaHistogramMediumTimes("ChromeOS.Lacros.StartTime",
+                                  base::TimeTicks::Now() - lacros_launch_time_);
+  }
+
   // Set the launch-on-login pref every time lacros-chrome successfully starts,
   // instead of once during ash-chrome shutdown, so we have the right value
   // even if ash-chrome crashes.
@@ -1522,6 +1534,7 @@ void BrowserManager::ResumeLaunch() {
   // the following action will be executed.
   pending_actions_.Push(BrowserAction::GetActionForSessionStart());
 
+  lacros_resume_time_ = base::TimeTicks::Now();
   // Write post-login parameters into the anonymous pipe.
   bool write_success = browser_util::WritePostLoginData(
       postlogin_pipe_fd_.get(), environment_provider_.get(),
