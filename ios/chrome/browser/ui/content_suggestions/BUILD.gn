@@ -158,6 +158,10 @@ source_set("constants") {
     "content_suggestions_constants.h",
     "content_suggestions_constants.mm",
   ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ntp:set_up_list_item_type",
+  ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
@@ -185,6 +189,7 @@ source_set("content_suggestions_ui") {
     "//components/strings",
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/ntp",
+    "//ios/chrome/browser/ntp:set_up_list",
     "//ios/chrome/browser/ntp:set_up_list_item_type",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",

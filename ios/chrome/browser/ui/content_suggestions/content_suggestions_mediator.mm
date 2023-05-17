@@ -279,7 +279,13 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
   if ([self shouldShowSetUpList]) {
     self.setUpList.delegate = self;
     [self.consumer showSetUpListWithItems:[self setUpListItems]];
-  } else if (![self shouldHideShortcutsForTileAblation]) {
+  }
+  // Show Shortcuts if the Tile Ablation is not enabled and either:
+  // 1) Magic Stack is enabled (always show shortcuts in Magic Stack).
+  // 2) The Set Up List and Magic Stack are not enabled (Set Up List replaced
+  // Shortcuts).
+  if (![self shouldHideShortcutsForTileAblation] &&
+      (IsMagicStackEnabled() || ![self shouldShowSetUpList])) {
     [self.consumer setShortcutTilesWithConfigs:self.actionButtonItems];
   }
   if (IsMagicStackEnabled()) {
@@ -713,14 +719,21 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
 // Returns an array that represents the order of the modules to be shown in the
 // Magic Stack.
 - (NSArray<NSNumber*>*)magicStackOrder {
-  if (ShouldPutMostVisitedSitesInMagicStack()) {
-    return @[
-      @(int(ContentSuggestionsModuleType::kMostVisited)),
-      @(int(ContentSuggestionsModuleType::kShortcuts))
-    ];
-  } else {
-    return @[ @(int(ContentSuggestionsModuleType::kShortcuts)) ];
+  NSMutableArray* magicStackModules = [NSMutableArray array];
+  if ([self shouldShowSetUpList]) {
+    for (SetUpListItem* model in self.setUpList.items) {
+      [magicStackModules
+          addObject:@(int(SetUpListModuleTypeForSetUpListType(model.type)))];
+    }
   }
+  if (ShouldPutMostVisitedSitesInMagicStack()) {
+    [magicStackModules
+        addObject:@(int(ContentSuggestionsModuleType::kMostVisited))];
+  }
+  [magicStackModules
+      addObject:@(int(ContentSuggestionsModuleType::kShortcuts))];
+
+  return magicStackModules;
 }
 
 // Returns YES if the conditions are right to display the Set Up List.

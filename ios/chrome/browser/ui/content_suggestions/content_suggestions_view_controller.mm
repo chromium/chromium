@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
+#import "ios/chrome/browser/ntp/set_up_list_item.h"
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -32,6 +33,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
@@ -70,6 +72,7 @@ const CGFloat kSetUpListHorizontalMargin = 10;
 @interface ContentSuggestionsViewController () <
     UIGestureRecognizerDelegate,
     ContentSuggestionsSelectionActions,
+    SetUpListItemViewTapDelegate,
     URLDropDelegate,
     UIScrollViewDelegate,
     UIScrollViewAccessibilityDelegate>
@@ -117,6 +120,9 @@ const CGFloat kSetUpListHorizontalMargin = 10;
   NSArray<NSNumber*>* _magicStackModuleOrder;
   NSLayoutConstraint* _magicStackScrollViewWidthAnchor;
   NSArray<SetUpListItemViewData*>* _savedSetUpListItems;
+  SetUpListItemView* _setUpListSyncItemView;
+  SetUpListItemView* _setUpListDefaultBrowserItemView;
+  SetUpListItemView* _setUpListAutofillItemView;
 }
 
 - (instancetype)init {
@@ -185,7 +191,8 @@ const CGFloat kSetUpListHorizontalMargin = 10;
   }
   if (_savedSetUpListItems) {
     [self showSetUpListWithItems:_savedSetUpListItems];
-  } else if (self.shortcutsViews) {
+  }
+  if (self.shortcutsViews) {
     self.shortcutsStackView = [self createShortcutsStackView];
     if (!_shouldShowMagicStack) {
       [self addUIElement:self.shortcutsStackView
@@ -411,22 +418,70 @@ const CGFloat kSetUpListHorizontalMargin = 10;
   } else {
     index++;
   }
-  SetUpListView* setUpListView = [[SetUpListView alloc] initWithItems:items];
-  setUpListView.delegate = self.setUpListViewDelegate;
-  self.setUpListView = setUpListView;
-  [self.verticalStackView insertArrangedSubview:setUpListView atIndex:index];
-  [NSLayoutConstraint activateConstraints:@[
-    [setUpListView.leadingAnchor
-        constraintEqualToAnchor:self.verticalStackView.leadingAnchor
-                       constant:kSetUpListHorizontalMargin],
-    [setUpListView.trailingAnchor
-        constraintEqualToAnchor:self.verticalStackView.trailingAnchor
-                       constant:-kSetUpListHorizontalMargin],
-  ]];
+  if (IsMagicStackEnabled()) {
+    for (SetUpListItemViewData* data in items) {
+      SetUpListItemView* view = [[SetUpListItemView alloc] initWithData:data];
+      view.tapDelegate = self;
+      ContentSuggestionsModuleType type =
+          SetUpListModuleTypeForSetUpListType(data.type);
+      switch (type) {
+        case ContentSuggestionsModuleType::kSetUpListSync:
+          _setUpListSyncItemView = view;
+          break;
+        case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
+          _setUpListDefaultBrowserItemView = view;
+          break;
+        case ContentSuggestionsModuleType::kSetUpListAutofill:
+          _setUpListAutofillItemView = view;
+          break;
+        default:
+          break;
+      }
+      // Only add it to the Magic Stack here if it is after the inital
+      // construction of the Magic Stack.
+      if (_magicStack) {
+        ActionListModule* setUpListModule =
+            [[ActionListModule alloc] initWithContentView:view type:type];
+        [_magicStack
+            insertArrangedSubview:setUpListModule
+                          atIndex:[self indexForMagicStackModule:type]];
+      }
+    }
+
+  } else {
+    SetUpListView* setUpListView = [[SetUpListView alloc] initWithItems:items];
+    setUpListView.delegate = self.setUpListViewDelegate;
+    self.setUpListView = setUpListView;
+    [self.verticalStackView insertArrangedSubview:setUpListView atIndex:index];
+    [NSLayoutConstraint activateConstraints:@[
+      [setUpListView.leadingAnchor
+          constraintEqualToAnchor:self.verticalStackView.leadingAnchor
+                         constant:kSetUpListHorizontalMargin],
+      [setUpListView.trailingAnchor
+          constraintEqualToAnchor:self.verticalStackView.trailingAnchor
+                         constant:-kSetUpListHorizontalMargin],
+    ]];
+  }
 }
 
 - (void)markSetUpListItemComplete:(SetUpListItemType)type {
-  [self.setUpListView markItemComplete:type];
+  if (IsMagicStackEnabled()) {
+    switch (type) {
+      case SetUpListItemType::kSignInSync:
+        [_setUpListSyncItemView markComplete];
+        break;
+      case SetUpListItemType::kDefaultBrowser:
+        [_setUpListDefaultBrowserItemView markComplete];
+        break;
+      case SetUpListItemType::kAutofill:
+        [_setUpListAutofillItemView markComplete];
+        break;
+      default:
+        break;
+    }
+  } else {
+    [self.setUpListView markItemComplete:type];
+  }
 }
 
 - (CGFloat)contentSuggestionsHeight {
@@ -452,6 +507,12 @@ const CGFloat kSetUpListHorizontalMargin = 10;
     height += ReturnToRecentTabHeight();
   }
   return height;
+}
+
+#pragma mark - SetUpListItemViewTapDelegate methods
+
+- (void)didTapSetUpListItemView:(SetUpListItemView*)view {
+  [self.audience didSelectSetUpListItem:view.type];
 }
 
 #pragma mark - ContentSuggestionsSelectionActions
@@ -657,6 +718,8 @@ const CGFloat kSetUpListHorizontalMargin = 10;
   [_magicStackScrollView setShowsHorizontalScrollIndicator:NO];
   _magicStackScrollView.clipsToBounds = NO;
   _magicStackScrollView.delegate = self;
+  _magicStackScrollView.accessibilityIdentifier =
+      kMagicStackScrollViewAccessibilityIdentifier;
   [self addUIElement:_magicStackScrollView
       withCustomBottomSpacing:kMostVisitedBottomMargin];
 
@@ -673,17 +736,41 @@ const CGFloat kSetUpListHorizontalMargin = 10;
     ContentSuggestionsModuleType type =
         (ContentSuggestionsModuleType)[moduleType intValue];
     switch (type) {
-      case ContentSuggestionsModuleType::kShortcuts:
+      case ContentSuggestionsModuleType::kShortcuts: {
         self.shortcutsModuleContainer = [[ActionListModule alloc]
             initWithContentView:self.shortcutsStackView
                            type:type];
         [_magicStack addArrangedSubview:self.shortcutsModuleContainer];
         break;
-      case ContentSuggestionsModuleType::kMostVisited:
+      }
+      case ContentSuggestionsModuleType::kMostVisited: {
         if (ShouldPutMostVisitedSitesInMagicStack()) {
           [_magicStack addArrangedSubview:self.mostVisitedModuleContainer];
         }
         break;
+      }
+      case ContentSuggestionsModuleType::kSetUpListSync: {
+        ActionListModule* setUpListSyncModule =
+            [[ActionListModule alloc] initWithContentView:_setUpListSyncItemView
+                                                     type:type];
+        [_magicStack addArrangedSubview:setUpListSyncModule];
+        break;
+      }
+      case ContentSuggestionsModuleType::kSetUpListDefaultBrowser: {
+        ActionListModule* setUpListDefaultBrowserModule =
+            [[ActionListModule alloc]
+                initWithContentView:_setUpListDefaultBrowserItemView
+                               type:type];
+        [_magicStack addArrangedSubview:setUpListDefaultBrowserModule];
+        break;
+      }
+      case ContentSuggestionsModuleType::kSetUpListAutofill: {
+        ActionListModule* setUpListAutofillModule = [[ActionListModule alloc]
+            initWithContentView:_setUpListAutofillItemView
+                           type:type];
+        [_magicStack addArrangedSubview:setUpListAutofillModule];
+        break;
+      }
       default:
         break;
     }

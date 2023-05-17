@@ -63,6 +63,10 @@ const int kModuleWidthRegular = 382;
             IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE);
       }
       return @"";
+    case ContentSuggestionsModuleType::kSetUpListSync:
+    case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
+    case ContentSuggestionsModuleType::kSetUpListAutofill:
+      return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE);
     default:
       NOTREACHED();
       return @"";

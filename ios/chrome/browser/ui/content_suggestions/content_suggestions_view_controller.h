@@ -33,8 +33,9 @@ class UrlLoadingBrowserAgent;
 // Handler for the commands sent by the ContentSuggestionsViewController.
 @property(nonatomic, weak) id<ContentSuggestionsCommands>
     suggestionCommandHandler;
-@property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
-    audience;
+@property(nonatomic, weak)
+    id<ContentSuggestionsViewControllerAudience, SetUpListViewDelegate>
+        audience;
 // Provider of menu configurations for the contentSuggestions component.
 @property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider;
 @property(nonatomic, assign) UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
