@@ -611,6 +611,7 @@ artifact_zip("updater_zip") {
     "$root_build_dir/Updater Packaging/signing/notarize.py",
     "$root_build_dir/Updater Packaging/signing/pkg-dmg",
     "$root_build_dir/Updater Packaging/signing/__init__.py",
+    "$root_build_dir/Updater Packaging/signing/driver.py",
     "$root_build_dir/Updater Packaging/signing/model.py",
     "$root_build_dir/Updater Packaging/signing/unbranded_config.py",
     "$root_build_dir/Updater Packaging/signing/pipeline.py",
