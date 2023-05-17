@@ -49,6 +49,15 @@ namespace {
 using KeyboardTopRowLayout = KeyboardCapability::KeyboardTopRowLayout;
 using DeviceType = KeyboardCapability::DeviceType;
 
+struct VendorProductId {
+  uint16_t vendor_id;
+  uint16_t product_id;
+  constexpr bool operator<(const VendorProductId& other) const {
+    return vendor_id == other.vendor_id ? product_id < other.product_id
+                                        : vendor_id < other.vendor_id;
+  }
+};
+
 // Represents scancode value seen in scan code mapping which denotes that the
 // FKey is missing on the physical device.
 const int kCustomAbsentScanCode = 0x00;
@@ -94,6 +103,12 @@ constexpr auto kVKeyToTopRowActionKeyMap =
         {VKEY_ALL_APPLICATIONS, TopRowActionKey::kAllApplications},
         {VKEY_EMOJI_PICKER, TopRowActionKey::kEmojiPicker},
         {VKEY_DICTATE, TopRowActionKey::kDictation},
+    });
+
+// Some ChromeOS compatible keyboards have a capslock key.
+constexpr auto kChromeOSKeyboardsWithCapsLock =
+    base::MakeFixedFlatSet<VendorProductId>({
+        {0x046d, 0xb370}  // Logitech Signature K650
     });
 
 class StubKeyboardCapabilityDelegate : public KeyboardCapability::Delegate {
@@ -973,7 +988,9 @@ bool KeyboardCapability::HasAssistantKeyOnAnyKeyboard() const {
 }
 
 bool KeyboardCapability::HasCapsLockKey(const KeyboardDevice& keyboard) const {
-  return !IsChromeOSKeyboard(keyboard);
+  return !IsChromeOSKeyboard(keyboard) ||
+         kChromeOSKeyboardsWithCapsLock.contains(
+             {keyboard.vendor_id, keyboard.product_id});
 }
 
 void KeyboardCapability::OnDeviceListsComplete() {
