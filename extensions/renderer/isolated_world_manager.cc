@@ -26,6 +26,11 @@ IsolatedWorldManager::IsolatedWorldInfo::~IsolatedWorldInfo() = default;
 IsolatedWorldManager::IsolatedWorldInfo::IsolatedWorldInfo(
     IsolatedWorldInfo&&) = default;
 
+IsolatedWorldManager::PendingWorldInfo::PendingWorldInfo() = default;
+IsolatedWorldManager::PendingWorldInfo::~PendingWorldInfo() = default;
+IsolatedWorldManager::PendingWorldInfo::PendingWorldInfo(PendingWorldInfo&&) =
+    default;
+
 IsolatedWorldManager::IsolatedWorldManager() = default;
 IsolatedWorldManager::~IsolatedWorldManager() = default;
 
@@ -57,9 +62,13 @@ void IsolatedWorldManager::RemoveIsolatedWorlds(const std::string& host_id) {
   });
 }
 
-void IsolatedWorldManager::SetUserScriptWorldCsp(std::string host_id,
-                                                 std::string csp) {
-  user_script_world_csps_.emplace(host_id, csp);
+void IsolatedWorldManager::SetUserScriptWorldProperties(
+    const std::string& host_id,
+    absl::optional<std::string> csp,
+    bool enable_messaging) {
+  auto& pending_info = pending_worlds_info_[host_id];
+  pending_info.csp = std::move(csp);
+  pending_info.enable_messaging = enable_messaging;
 
   // Check if there are currently isolated worlds associated with the host. If
   // there are, we need to manually update them. This *won't* update already-
@@ -68,6 +77,10 @@ void IsolatedWorldManager::SetUserScriptWorldCsp(std::string host_id,
   // happens. Otherwise, new windows may eagerly create CSP for isolated worlds
   // (before the scripts have a chance to inject), resulting in stale values
   // even though the CSP should be updated.
+  if (!pending_info.csp) {
+    return;
+  }
+
   for (const auto& [world_id, world_info] : isolated_worlds_) {
     if (world_info.host_id == host_id &&
         world_info.execution_world == mojom::ExecutionWorld::kUserScript) {
@@ -75,10 +88,17 @@ void IsolatedWorldManager::SetUserScriptWorldCsp(std::string host_id,
       info.security_origin = blink::WebSecurityOrigin::Create(world_info.url);
       info.human_readable_name = blink::WebString::FromUTF8(world_info.name);
       info.stable_id = blink::WebString::FromUTF8(host_id);
-      info.content_security_policy = blink::WebString::FromUTF8(csp);
+      info.content_security_policy =
+          blink::WebString::FromUTF8(*pending_info.csp);
       blink::SetIsolatedWorldInfo(world_id, info);
     }
   }
+}
+
+bool IsolatedWorldManager::IsMessagingEnabledInUserScriptWorlds(
+    const std::string& host_id) {
+  auto iter = pending_worlds_info_.find(host_id);
+  return iter != pending_worlds_info_.end() && iter->second.enable_messaging;
 }
 
 int IsolatedWorldManager::GetOrCreateIsolatedWorldForHost(
@@ -124,9 +144,10 @@ int IsolatedWorldManager::GetOrCreateIsolatedWorldForHost(
   // user script CSP.
   const std::string* csp = nullptr;
   if (execution_world == mojom::ExecutionWorld::kUserScript) {
-    auto user_script_iter = user_script_world_csps_.find(host_id);
-    if (user_script_iter != user_script_world_csps_.end()) {
-      csp = &user_script_iter->second;
+    auto user_script_iter = pending_worlds_info_.find(host_id);
+    if (user_script_iter != pending_worlds_info_.end() &&
+        user_script_iter->second.csp) {
+      csp = &(*user_script_iter->second.csp);
     }
   }
 

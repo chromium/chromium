@@ -60,8 +60,11 @@ struct UserScriptWorldInfo {
   // The corresponding extension ID.
   string extension_id;
 
-  // A custom CSP for the user script world.
-  string csp;
+  // A custom CSP for the user script world, if any.
+  string? csp;
+
+  // Whether to enable messaging APIs in the isolated world.
+  bool enable_messaging;
 };
 
 // This should be used for implementing browser-to-renderer control messages
