@@ -336,7 +336,7 @@ void OffscreenCanvasRenderingContext2D::ValidateStateStackWithCanvas(
 #if DCHECK_IS_ON()
   if (canvas) {
     DCHECK_EQ(static_cast<size_t>(canvas->getSaveCount()),
-              state_stack_.size() + 1);
+              state_stack_.size() + layer_extra_saves_ + 1);
   }
 #endif
 }

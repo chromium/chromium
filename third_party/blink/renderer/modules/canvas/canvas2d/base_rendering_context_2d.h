@@ -469,6 +469,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   unsigned max_state_stack_depth_ = 1;
   // Counts how many states have been pushed with BeginLayer.
   int layer_count_ = 0;
+#if DCHECK_IS_ON()
+  int layer_extra_saves_ = 0;
+#endif
   AntiAliasingMode clip_antialiasing_;
 
   virtual void FinalizeFrame(CanvasResourceProvider::FlushReason) {}
@@ -536,7 +539,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   // PaintCanvas, and validates the state stack. Helper for Restore and
   // EndLayer.
   void PopAndRestore();
-  void pushLayerStack(CanvasRenderingContext2DState::SaveType save_type);
 
   bool ShouldDrawImageAntialiased(const gfx::RectF& dest_rect) const;
 

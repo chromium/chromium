@@ -49,8 +49,8 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   // 'states', we use the kExtraState for that.
   enum class SaveType {
     kSaveRestore,
-    kBeginEndLayer,
-    kInternalLayer,
+    kBeginEndLayerOneSave,
+    kBeginEndLayerTwoSaves,
     kInitial
   };
 
@@ -281,6 +281,10 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
                                  ImageType = kNoImage) const;
 
   SaveType GetSaveType() const { return save_type_; }
+  bool IsLayerSaveType() const {
+    return save_type_ == SaveType::kBeginEndLayerOneSave ||
+           save_type_ == SaveType::kBeginEndLayerTwoSaves;
+  }
 
   sk_sp<PaintFilter>& ShadowAndForegroundImageFilter() const;
 

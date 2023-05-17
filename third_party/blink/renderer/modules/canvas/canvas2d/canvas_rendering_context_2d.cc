@@ -177,7 +177,7 @@ void CanvasRenderingContext2D::ValidateStateStackWithCanvas(
 
     if (context_lost_mode_ == kNotLostContext) {
       DCHECK_EQ(static_cast<size_t>(canvas->getSaveCount()),
-                state_stack_.size() + 1);
+                state_stack_.size() + layer_extra_saves_ + 1);
     }
   }
 #endif
