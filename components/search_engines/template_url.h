@@ -269,9 +269,10 @@ class TemplateURLRef {
     // Source of the search or suggest request.
     RequestSource request_source = RequestSource::SEARCHBOX;
 
-    // Whether the query is being fetched as a prefetch request before the user
-    // actually searches for the search terms.
-    bool is_prefetch = false;
+    // When the query is being fetched as a prefetch request, this is the value
+    // corresponding to the GOOGLE_PREFETCH_SOURCE ("pf") query param. Prefetch
+    // query params are not added if this is an empty string.
+    std::string prefetch_param;
 
     ContextualSearchParams contextual_search_params;
 

@@ -132,7 +132,7 @@ SearchPrefetchBaseBrowserTest::GetSearchPrefetchAndNonPrefetch(
 
   TemplateURLRef::SearchTermsArgs search_terms_args =
       TemplateURLRef::SearchTermsArgs(base::ASCIIToUTF16(search_terms));
-  search_terms_args.is_prefetch = false;
+  search_terms_args.prefetch_param = "";
 
   GURL search_url =
       GURL(template_url_service->GetDefaultSearchProvider()
@@ -141,7 +141,7 @@ SearchPrefetchBaseBrowserTest::GetSearchPrefetchAndNonPrefetch(
                                    template_url_service->search_terms_data(),
                                    nullptr));
 
-  search_terms_args.is_prefetch = true;
+  search_terms_args.prefetch_param = "cs";
 
   GURL prefetch_url =
       GURL(template_url_service->GetDefaultSearchProvider()

@@ -67,6 +67,12 @@ BASE_FEATURE(kSearchNavigationPrefetch,
              "SearchNavigationPrefetch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<std::string> kSuggestPrefetchParam{
+    &kSearchNavigationPrefetch, "suggest_prefetch_param", "cs"};
+
+const base::FeatureParam<std::string> kNavigationPrefetchParam{
+    &kSearchNavigationPrefetch, "navigation_prefetch_param", "cs"};
+
 bool IsSearchNavigationPrefetchEnabled() {
   return base::FeatureList::IsEnabled(kSearchNavigationPrefetch);
 }
