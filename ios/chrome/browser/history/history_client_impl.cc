@@ -74,15 +74,20 @@ HistoryClientImpl::CreateBackendClient() {
 void HistoryClientImpl::UpdateBookmarkLastUsedTime(
     const base::Uuid& bookmark_node_uuid,
     base::Time time) {
-  if (!local_or_syncable_bookmark_model_) {
-    return;
+  for (bookmarks::BookmarkModel* bookmark_model :
+       {local_or_syncable_bookmark_model_, account_bookmark_model_}) {
+    if (!bookmark_model) {
+      continue;
+    }
+    const bookmarks::BookmarkNode* node =
+        bookmarks::GetBookmarkNodeByUuid(bookmark_model, bookmark_node_uuid);
+    if (!node) {
+      continue;
+    }
+    // In the unlikely scenario where the two bookmark models have a bookmark
+    // node with the same UUID, they are both updated.
+    bookmark_model->UpdateLastUsedTime(node, time);
   }
-  const bookmarks::BookmarkNode* node = bookmarks::GetBookmarkNodeByUuid(
-      local_or_syncable_bookmark_model_, bookmark_node_uuid);
-  // This call is async so the BookmarkNode could have already been deleted.
-  if (!node)
-    return;
-  local_or_syncable_bookmark_model_->UpdateLastUsedTime(node, time);
 }
 
 void HistoryClientImpl::BookmarkModelChanged() {
