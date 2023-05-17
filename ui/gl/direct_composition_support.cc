@@ -30,7 +30,7 @@ bool g_supports_overlays = false;
 // Whether the GPU can support hardware overlays or not.
 bool g_supports_hardware_overlays = false;
 // Whether the DecodeSwapChain is disabled or not.
-bool g_decode_swap_chain_disabled = false;
+bool g_disable_decode_swap_chain = false;
 // Whether to force the nv12 overlay support.
 bool g_force_nv12_overlay_support = false;
 // Whether software overlays have been disabled.
@@ -494,25 +494,17 @@ bool DirectCompositionHardwareOverlaysSupported() {
 }
 
 bool DirectCompositionDecodeSwapChainSupported() {
-  if (!g_decode_swap_chain_disabled) {
+  if (!g_disable_decode_swap_chain) {
     UpdateOverlaySupport();
     return GetDirectCompositionSDROverlayFormat() == DXGI_FORMAT_NV12;
   }
   return false;
 }
 
-void DisableDirectCompositionDecodeSwapChain() {
-  g_decode_swap_chain_disabled = true;
-}
-
 void DisableDirectCompositionOverlays() {
   SetSupportsOverlays(false);
   DirectCompositionOverlayCapsMonitor::GetInstance()
       ->NotifyOverlayCapsChanged();
-}
-
-void DisableDirectCompositionSoftwareOverlays() {
-  g_disable_sw_overlays = true;
 }
 
 bool DirectCompositionScaledOverlaysSupported() {
@@ -728,6 +720,8 @@ void SetDirectCompositionOverlayWorkarounds(
     const DirectCompositionOverlayWorkarounds& workarounds) {
   // This has to be set before initializing overlay caps.
   DCHECK(!OverlayCapsValid());
+  g_disable_sw_overlays = workarounds.disable_sw_video_overlays;
+  g_disable_decode_swap_chain = workarounds.disable_decode_swap_chain;
   g_enable_bgra8_overlays_with_yuv_overlay_support =
       workarounds.enable_bgra8_overlays_with_yuv_overlay_support;
   g_force_nv12_overlay_support = workarounds.force_nv12_overlay_support;

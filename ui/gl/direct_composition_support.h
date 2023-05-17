@@ -48,12 +48,8 @@ GL_EXPORT bool DirectCompositionHardwareOverlaysSupported();
 // process' lifetime.
 GL_EXPORT void DisableDirectCompositionOverlays();
 
-// Similar to the above but disables software overlay support.
-GL_EXPORT void DisableDirectCompositionSoftwareOverlays();
-
 // Returns true if zero copy decode swap chain is supported.
 GL_EXPORT bool DirectCompositionDecodeSwapChainSupported();
-GL_EXPORT void DisableDirectCompositionDecodeSwapChain();
 
 // Returns true if scaled hardware overlays are supported.
 GL_EXPORT bool DirectCompositionScaledOverlaysSupported();
@@ -90,6 +86,14 @@ GL_EXPORT gfx::mojom::DXGIInfoPtr GetDirectCompositionHDRMonitorDXGIInfo();
 GL_EXPORT void SetDirectCompositionSwapChainFailed();
 
 struct DirectCompositionOverlayWorkarounds {
+  // Whether software video overlays i.e. swap chains used without hardware
+  // overlay/MPO support are used or not.
+  bool disable_sw_video_overlays = false;
+
+  // Whether decode swap chains i.e. zero copy swap chains created from video
+  // decoder textures are used or not.
+  bool disable_decode_swap_chain = false;
+
   // On Intel GPUs where YUV overlays are supported, BGRA8 overlays are
   // supported as well but IDXGIOutput3::CheckOverlaySupport() returns
   // unsupported. So allow manually enabling BGRA8 overlay support.
