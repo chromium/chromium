@@ -143,6 +143,7 @@ sheriff_rotations = struct(
     ANGLE = _rotation("angle"),
     CHROMIUM = _rotation("chromium"),
     CFT = _rotation("cft"),
+    DAWN = _rotation("dawn"),
     FUCHSIA = _rotation("fuchsia"),
     CHROMIUM_CLANG = _rotation("chromium.clang"),
     CHROMIUM_GPU = _rotation("chromium.gpu"),
