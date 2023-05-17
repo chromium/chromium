@@ -65,6 +65,8 @@ bool BrowserLoader::WillLoadStatefulComponentBuilds() {
 
 void BrowserLoader::SelectRootfsLacros(LoadCompletionCallback callback,
                                        bool load_stateful_lacros) {
+  LOG(WARNING) << "rootfs lacros is selected";
+
   rootfs_lacros_loader_->Load(
       base::BindOnce(&BrowserLoader::OnLoadComplete, weak_factory_.GetWeakPtr(),
                      std::move(callback), LacrosSelection::kRootfs));
@@ -74,6 +76,8 @@ void BrowserLoader::SelectRootfsLacros(LoadCompletionCallback callback,
 }
 
 void BrowserLoader::SelectStatefulLacros(LoadCompletionCallback callback) {
+  LOG(WARNING) << "stateful lacros is selected";
+
   stateful_lacros_loader_->Load(
       base::BindOnce(&BrowserLoader::OnLoadComplete, weak_factory_.GetWeakPtr(),
                      std::move(callback), LacrosSelection::kStateful));
@@ -197,12 +201,10 @@ void BrowserLoader::OnLoadVersionSelection(
 
   switch (selection) {
     case LacrosSelection::kRootfs: {
-      LOG(WARNING) << "rootfs lacros is selected";
       SelectRootfsLacros(std::move(callback), /*load_stateful_lacros=*/true);
       break;
     }
     case LacrosSelection::kStateful: {
-      LOG(WARNING) << "stateful lacros is selected";
       SelectStatefulLacros(std::move(callback));
       break;
     }
