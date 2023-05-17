@@ -69,6 +69,7 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // SavedTabGroupModelObserver
   void SavedTabGroupAddedLocally(const base::Uuid& guid) override;
   void SavedTabGroupRemovedLocally(const SavedTabGroup* removed_group) override;
+  void SavedTabGroupLocalIdChanged(const base::Uuid& saved_group_id) override;
   void SavedTabGroupUpdatedLocally(
       const base::Uuid& group_guid,
       const absl::optional<base::Uuid>& tab_guid = absl::nullopt) override;

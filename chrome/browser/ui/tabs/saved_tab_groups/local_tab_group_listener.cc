@@ -31,9 +31,8 @@ LocalTabGroupListener::LocalTabGroupListener(
     web_contents_to_tab_id_map_.try_emplace(contents, contents, local_tab_id,
                                             model_);
 
-    SavedTabGroupTab tab(*saved_group()->GetTab(saved_tab_guid));
-    tab.SetLocalTabID(local_tab_id);
-    model_->UpdateTabInGroup(saved_group()->saved_guid(), std::move(tab));
+    const SavedTabGroupTab tab(*saved_group()->GetTab(saved_tab_guid));
+    model_->UpdateLocalTabId(saved_group()->saved_guid(), tab, local_tab_id);
   }
 }
 
@@ -220,8 +219,7 @@ void LocalTabGroupListener::OpenWebContentsFromSync(SavedTabGroupTab tab,
 
   // Listen to navigations.
   base::Token token = base::Token::CreateRandom();
-  tab.SetLocalTabID(token);
-  model_->UpdateTabInGroup(tab.saved_group_guid(), tab);
+  model_->UpdateLocalTabId(tab.saved_group_guid(), tab, token);
   web_contents_to_tab_id_map_.try_emplace(opened_contents, opened_contents,
                                           token, model_);
 }

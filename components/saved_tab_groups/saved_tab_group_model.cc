@@ -278,6 +278,16 @@ void SavedTabGroupModel::UpdateTabInGroup(const base::Uuid& group_id,
   }
 }
 
+void SavedTabGroupModel::UpdateLocalTabId(
+    const base::Uuid& group_id,
+    SavedTabGroupTab tab,
+    absl::optional<base::Token> local_id) {
+  absl::optional<int> group_index = GetIndexOf(group_id);
+  CHECK(group_index.has_value());
+  tab.SetLocalTabID(local_id);
+  saved_tab_groups_[group_index.value()].UpdateTab(tab);
+}
+
 void SavedTabGroupModel::RemoveTabFromGroup(const base::Uuid& group_id,
                                             const base::Uuid& tab_id,
                                             bool update_tab_positions) {
@@ -494,7 +504,7 @@ void SavedTabGroupModel::OnGroupClosedInTabStrip(
   saved_group.SetLocalGroupId(absl::nullopt);
 
   for (auto& observer : observers_) {
-    observer.SavedTabGroupUpdatedLocally(saved_group.saved_guid());
+    observer.SavedTabGroupLocalIdChanged(saved_group.saved_guid());
   }
 
   base::RecordAction(
@@ -512,7 +522,7 @@ void SavedTabGroupModel::OnGroupOpenedInTabStrip(
   saved_group.SetLocalGroupId(tab_group_id);
 
   for (auto& observer : observers_) {
-    observer.SavedTabGroupUpdatedLocally(saved_group.saved_guid());
+    observer.SavedTabGroupLocalIdChanged(saved_group.saved_guid());
   }
 }
 

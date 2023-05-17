@@ -408,6 +408,11 @@ void SavedTabGroupBar::SavedTabGroupRemovedLocally(
   SavedTabGroupRemoved(removed_group->saved_guid());
 }
 
+void SavedTabGroupBar::SavedTabGroupLocalIdChanged(
+    const base::Uuid& saved_group_id) {
+  SavedTabGroupUpdated(saved_group_id);
+}
+
 void SavedTabGroupBar::SavedTabGroupUpdatedLocally(
     const base::Uuid& group_guid,
     const absl::optional<base::Uuid>& tab_guid) {
