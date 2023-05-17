@@ -78,11 +78,11 @@ class TestWebUI : public WebUI {
     const base::Value* arg3() const { return arg_nth(2); }
     const base::Value* arg4() const { return arg_nth(3); }
 
-    const std::vector<base::Value>& args() const { return args_; }
+    const base::Value::List& args() const { return args_; }
 
    private:
     std::string function_name_;
-    std::vector<base::Value> args_;
+    base::Value::List args_;
   };
 
   const std::vector<std::unique_ptr<CallData>>& call_data() const {

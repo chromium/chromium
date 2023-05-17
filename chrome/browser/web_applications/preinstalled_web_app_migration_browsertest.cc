@@ -234,7 +234,7 @@ class PreinstalledWebAppMigrationBrowserTest
           run_loop.Quit();
         });
 
-    std::vector<base::Value> app_configs;
+    base::Value::List app_configs;
     if (pass_config) {
       std::string app_config_string = base::ReplaceStringPlaceholders(
           R"({
@@ -246,7 +246,7 @@ class PreinstalledWebAppMigrationBrowserTest
           })",
           {GetWebAppUrl().spec(), kMigrationFlag, uninstall_and_replace_},
           nullptr);
-      app_configs.push_back(*base::JSONReader::Read(app_config_string));
+      app_configs.Append(*base::JSONReader::Read(app_config_string));
     }
     PreinstalledWebAppManager::SetConfigsForTesting(&app_configs);
 

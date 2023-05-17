@@ -34,7 +34,7 @@ class TestWebUIListenerObserver : public TestWebUI::JavascriptCallObserver {
 
   // Only callable after Wait() has returned. Contains the arguments passed to
   // the listener.
-  std::vector<base::Value>& args() { return call_args_.value(); }
+  base::Value::List& args() { return call_args_.value(); }
 
  private:
   void OnJavascriptFunctionCalled(
@@ -45,7 +45,7 @@ class TestWebUIListenerObserver : public TestWebUI::JavascriptCallObserver {
   base::RunLoop run_loop_;
 
   // Only filled when a matching listener call has been observed.
-  absl::optional<std::vector<base::Value>> call_args_;
+  absl::optional<base::Value::List> call_args_;
 };
 
 }  // namespace content

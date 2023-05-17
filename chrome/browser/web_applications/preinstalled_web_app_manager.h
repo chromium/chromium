@@ -84,7 +84,7 @@ class PreinstalledWebAppManager {
   static void OverridePreviousUserUninstallConfigForTesting();
   static void SetConfigDirForTesting(const base::FilePath* config_dir);
 
-  static void SetConfigsForTesting(const std::vector<base::Value>* configs);
+  static void SetConfigsForTesting(const base::Value::List* configs);
   static void SetFileUtilsForTesting(FileUtilsWrapper* file_utils);
 
   explicit PreinstalledWebAppManager(Profile* profile);

@@ -210,7 +210,7 @@ class PreinstalledWebAppManagerBrowserTestBase
   }
 
   void SyncEmptyConfigs() {
-    std::vector<base::Value> app_configs;
+    base::Value::List app_configs;
     PreinstalledWebAppManager::SetConfigsForTesting(&app_configs);
 
     base::RunLoop run_loop;
@@ -246,14 +246,14 @@ class PreinstalledWebAppManagerBrowserTestBase
           test_icon_path}});
     PreinstalledWebAppManager::SetFileUtilsForTesting(file_utils.get());
 
-    std::vector<base::Value> app_configs;
+    base::Value::List app_configs;
     auto json_parse_result =
         base::JSONReader::ReadAndReturnValueWithError(app_config_string);
     EXPECT_TRUE(json_parse_result.has_value())
         << "JSON parse error: " << json_parse_result.error().message;
     if (!json_parse_result.has_value())
       return absl::nullopt;
-    app_configs.push_back(std::move(*json_parse_result));
+    app_configs.Append(std::move(*json_parse_result));
     PreinstalledWebAppManager::SetConfigsForTesting(&app_configs);
 
     absl::optional<webapps::InstallResultCode> code;

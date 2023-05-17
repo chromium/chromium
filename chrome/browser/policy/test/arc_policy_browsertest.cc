@@ -136,21 +136,19 @@ IN_PROC_BROWSER_TEST_F(ArcPolicyTest, ArcGoogleLocationServicesEnabled) {
   PrefService* const pref = browser()->profile()->GetPrefs();
 
   // Values of the ArcGoogleLocationServicesEnabled policy to be tested.
-  std::vector<base::Value> test_policy_values;
-  test_policy_values.emplace_back();  // unset
-  test_policy_values.emplace_back(
-      static_cast<int>(ArcServicePolicyValue::kDisabled));
-  test_policy_values.emplace_back(
-      static_cast<int>(ArcServicePolicyValue::kUnderUserControl));
-  test_policy_values.emplace_back(
-      static_cast<int>(ArcServicePolicyValue::kEnabled));
+  auto test_policy_values =
+      base::Value::List()
+          .Append(base::Value())
+          .Append(static_cast<int>(ArcServicePolicyValue::kDisabled))
+          .Append(static_cast<int>(ArcServicePolicyValue::kUnderUserControl))
+          .Append(static_cast<int>(ArcServicePolicyValue::kEnabled));
 
   // Values of the DefaultGeolocationSetting policy to be tested.
-  std::vector<base::Value> test_default_geo_policy_values;
-  test_default_geo_policy_values.emplace_back();   // unset
-  test_default_geo_policy_values.emplace_back(1);  // 'AllowGeolocation'
-  test_default_geo_policy_values.emplace_back(2);  // 'BlockGeolocation'
-  test_default_geo_policy_values.emplace_back(3);  // 'AskGeolocation'
+  auto test_default_geo_policy_values = base::Value::List()
+                                            .Append(base::Value())  // unset
+                                            .Append(1)   // 'AllowGeolocation'
+                                            .Append(2)   // 'BlockGeolocation'
+                                            .Append(3);  // 'AskGeolocation'
 
   // Switch on the pref in user prefs.
   pref->SetBoolean(arc::prefs::kArcLocationServiceEnabled, true);
