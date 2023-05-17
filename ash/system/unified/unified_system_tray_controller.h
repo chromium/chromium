@@ -114,6 +114,8 @@ class ASH_EXPORT UnifiedSystemTrayController
   // Show the detailed view of network. If |force| is true, it shows the
   // detailed view even if it's collapsed. Called from the view.
   void ShowNetworkDetailedView(bool force);
+  // Show the detailed view of hotspot. Called from the view.
+  void ShowHotspotDetailedView();
   // Show the detailed view of bluetooth. If collapsed, it doesn't show the
   // detailed view. Called from the view.
   void ShowBluetoothDetailedView();

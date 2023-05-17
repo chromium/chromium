@@ -104,6 +104,16 @@ class HotspotFeaturePodControllerTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  void ExpectHotspotDetailedViewShown() {
+    auto* quick_settings_view =
+        GetPrimaryUnifiedSystemTray()->bubble()->quick_settings_view();
+    ASSERT_TRUE(quick_settings_view->detailed_view());
+    const views::View::Views& children =
+        quick_settings_view->detailed_view()->children();
+    EXPECT_EQ(1u, children.size());
+    EXPECT_STREQ("HotspotDetailedView", children.at(0)->GetClassName());
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<hotspot_config::CrosHotspotConfigTestHelper>
@@ -116,7 +126,7 @@ TEST_F(HotspotFeaturePodControllerTest, HotspotNotUsedBefore) {
   EXPECT_FALSE(hotspot_feature_tile_->GetVisible());
 }
 
-TEST_F(HotspotFeaturePodControllerTest, HotspotEnabled) {
+TEST_F(HotspotFeaturePodControllerTest, PressLabelWhenHotspotEnabled) {
   EnableAndDisableHotspotOnce();
   UpdateHotspotInfo(HotspotState::kEnabled, HotspotAllowStatus::kAllowed);
 
@@ -133,6 +143,28 @@ TEST_F(HotspotFeaturePodControllerTest, HotspotEnabled) {
   EXPECT_EQ(u"Toggle Hotspot. Hotspot is on, 2 devices connected.",
             hotspot_feature_tile_->icon_button()->GetTooltipText());
 
+  // Press on the label should navigate to the detailed page without toggle
+  // hotspot.
+  PressLabel();
+  ExpectHotspotDetailedViewShown();
+  EXPECT_TRUE(hotspot_feature_tile_->IsToggled());
+}
+
+TEST_F(HotspotFeaturePodControllerTest, PressIconWhenHotspotEnabled) {
+  EnableAndDisableHotspotOnce();
+  UpdateHotspotInfo(HotspotState::kEnabled, HotspotAllowStatus::kAllowed);
+
+  EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
+  EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+  EXPECT_TRUE(hotspot_feature_tile_->IsToggled());
+  EXPECT_EQ(u"Hotspot", hotspot_feature_tile_->label()->GetText());
+  EXPECT_EQ(u"On", hotspot_feature_tile_->sub_label()->GetText());
+  EXPECT_EQ(u"Toggle Hotspot. Hotspot is on, no device connected.",
+            hotspot_feature_tile_->icon_button()->GetTooltipText());
+  EXPECT_EQ(u"Show hotspot details. Hotspot is on.",
+            hotspot_feature_tile_->GetTooltipText());
+
+  // Press on the icon should toggle hotspot.
   PressIcon();
   EXPECT_FALSE(hotspot_feature_tile_->IsToggled());
   EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
@@ -153,10 +185,14 @@ TEST_F(HotspotFeaturePodControllerTest, HotspotEnabling) {
             hotspot_feature_tile_->icon_button()->GetTooltipText());
   EXPECT_EQ(u"Show hotspot details. Hotspot is enabling.",
             hotspot_feature_tile_->GetTooltipText());
+
+  // Press on the icon should navigate to the detailed page but not to toggle
+  // hotspot.
   PressIcon();
   EXPECT_TRUE(hotspot_feature_tile_->IsToggled());
   EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
   EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+  ExpectHotspotDetailedViewShown();
 }
 
 TEST_F(HotspotFeaturePodControllerTest, HotspotDisabling) {
@@ -172,13 +208,18 @@ TEST_F(HotspotFeaturePodControllerTest, HotspotDisabling) {
             hotspot_feature_tile_->icon_button()->GetTooltipText());
   EXPECT_EQ(u"Show hotspot details. Hotspot is disabling.",
             hotspot_feature_tile_->GetTooltipText());
+
+  // Press on the icon should navigate to the detailed page but not to toggle
+  // hotspot.
   PressIcon();
   EXPECT_TRUE(hotspot_feature_tile_->IsToggled());
   EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
   EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+  ExpectHotspotDetailedViewShown();
 }
 
-TEST_F(HotspotFeaturePodControllerTest, HotspotDisabledAllowEnable) {
+TEST_F(HotspotFeaturePodControllerTest,
+       PressIconWhenHotspotDisabledAndAllowEnable) {
   EnableAndDisableHotspotOnce();
   UpdateHotspotInfo(HotspotState::kDisabled, HotspotAllowStatus::kAllowed);
 
@@ -191,10 +232,38 @@ TEST_F(HotspotFeaturePodControllerTest, HotspotDisabledAllowEnable) {
             hotspot_feature_tile_->icon_button()->GetTooltipText());
   EXPECT_EQ(u"Toggle Hotspot. Hotspot is off.",
             hotspot_feature_tile_->GetTooltipText());
+
+  // Press on the icon should toggle hotspot and navigate to the detailed page.
   PressIcon();
   EXPECT_TRUE(hotspot_feature_tile_->IsToggled());
   EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
   EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+  ExpectHotspotDetailedViewShown();
+}
+
+TEST_F(HotspotFeaturePodControllerTest,
+       PressLabelWhenHotspotDisabledAndAllowEnable) {
+  EnableAndDisableHotspotOnce();
+  UpdateHotspotInfo(HotspotState::kDisabled, HotspotAllowStatus::kAllowed);
+
+  EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
+  EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+  EXPECT_FALSE(hotspot_feature_tile_->IsToggled());
+  EXPECT_EQ(u"Hotspot", hotspot_feature_tile_->label()->GetText());
+  EXPECT_EQ(u"Off", hotspot_feature_tile_->sub_label()->GetText());
+  EXPECT_EQ(u"Toggle Hotspot. Hotspot is off.",
+            hotspot_feature_tile_->icon_button()->GetTooltipText());
+  EXPECT_EQ(u"Toggle Hotspot. Hotspot is off.",
+            hotspot_feature_tile_->GetTooltipText());
+
+  // Press on the drive in label should toggle hotspot and navigate to the
+  // detailed page.
+  UpdateHotspotInfo(HotspotState::kDisabled, HotspotAllowStatus::kAllowed);
+  PressLabel();
+  EXPECT_TRUE(hotspot_feature_tile_->IsToggled());
+  EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
+  EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+  ExpectHotspotDetailedViewShown();
 }
 
 TEST_F(HotspotFeaturePodControllerTest, HotspotDisabledNoMobileNetwork) {
@@ -211,10 +280,12 @@ TEST_F(HotspotFeaturePodControllerTest, HotspotDisabledNoMobileNetwork) {
             hotspot_feature_tile_->icon_button()->GetTooltipText());
   EXPECT_EQ(u"Show hotspot details. Hotspot is off.",
             hotspot_feature_tile_->GetTooltipText());
+
   PressIcon();
   EXPECT_FALSE(hotspot_feature_tile_->IsToggled());
   EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
   EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+  ExpectHotspotDetailedViewShown();
 }
 
 TEST_F(HotspotFeaturePodControllerTest,
@@ -233,8 +304,14 @@ TEST_F(HotspotFeaturePodControllerTest,
       hotspot_feature_tile_->icon_button()->GetTooltipText());
   EXPECT_EQ(u"Show hotspot details. Hotspot is off.",
             hotspot_feature_tile_->GetTooltipText());
+
+  // Press on the icon should navigate to the detailed page but not to toggle
+  // hotspot.
   PressIcon();
   EXPECT_FALSE(hotspot_feature_tile_->IsToggled());
+  EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
+  EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+  ExpectHotspotDetailedViewShown();
 }
 
 TEST_F(HotspotFeaturePodControllerTest, HotspotDisabledBlockedByPolicy) {
@@ -251,10 +328,14 @@ TEST_F(HotspotFeaturePodControllerTest, HotspotDisabledBlockedByPolicy) {
             hotspot_feature_tile_->icon_button()->GetTooltipText());
   EXPECT_EQ(u"Show hotspot details. Hotspot is off.",
             hotspot_feature_tile_->GetTooltipText());
+
+  // Press on the icon should navigate to the detailed page but not to toggle
+  // hotspot.
   PressIcon();
   EXPECT_FALSE(hotspot_feature_tile_->IsToggled());
   EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
   EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+  ExpectHotspotDetailedViewShown();
 }
 
 TEST_F(HotspotFeaturePodControllerTest, LockScreen) {
@@ -271,10 +352,13 @@ TEST_F(HotspotFeaturePodControllerTest, LockScreen) {
             hotspot_feature_tile_->icon_button()->GetTooltipText());
   EXPECT_EQ(u"Toggle Hotspot. Hotspot is off.",
             hotspot_feature_tile_->GetTooltipText());
+
+  // Press on the icon should toggle hotspot and navigate to the detailed page.
   PressIcon();
   EXPECT_TRUE(hotspot_feature_tile_->IsToggled());
   EXPECT_TRUE(hotspot_feature_tile_->GetVisible());
   EXPECT_TRUE(hotspot_feature_tile_->GetEnabled());
+  ExpectHotspotDetailedViewShown();
 }
 
 TEST_F(HotspotFeaturePodControllerTest, LabelUMATracking) {
