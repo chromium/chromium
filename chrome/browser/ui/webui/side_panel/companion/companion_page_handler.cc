@@ -70,8 +70,16 @@ void CompanionPageHandler::DidFinishNavigation(
     return;
   }
 
+  bool is_reload_or_explicit_navigation =
+      (navigation_handle->GetReloadType() != content::ReloadType::NONE) ||
+      (navigation_handle->GetPageTransition() &
+       ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+
+  // If the URL didn't change and it's not a manual reload, no need to refresh
+  // the companion.
   if (page_url_.GetWithoutRef() ==
-      web_contents()->GetLastCommittedURL().GetWithoutRef()) {
+          web_contents()->GetLastCommittedURL().GetWithoutRef() &&
+      !is_reload_or_explicit_navigation) {
     return;
   }
 

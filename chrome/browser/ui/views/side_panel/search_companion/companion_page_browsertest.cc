@@ -510,7 +510,10 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   EXPECT_FALSE(proto.has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, SamePageNavigation) {
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       SamePageNavigationsAreSkipped) {
+  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
+
   // Load a page on the active tab and open companion side panel
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl3)));
@@ -522,6 +525,28 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, SamePageNavigation) {
       ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl4)));
   auto proto = GetLastCompanionProtoFromPostMessage();
   EXPECT_FALSE(proto.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, ReloadWillRefreshCompanion) {
+  EnableSignInMsbbExps(/*signed_in=*/true, /*msbb=*/true, /*exps=*/true);
+
+  // Load a page on the active tab and open companion side panel
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  WaitForCompanionToBeLoaded();
+  auto proto = GetLastCompanionProtoFromUrlLoad();
+  EXPECT_TRUE(proto.has_value());
+  EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
+
+  // Reload the page. It should refresh the companion via postmessage.
+  content::TestNavigationObserver nav_observer(web_contents(), 1);
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  nav_observer.Wait();
+
+  proto = GetLastCompanionProtoFromPostMessage();
+  EXPECT_TRUE(proto.has_value());
+  EXPECT_EQ(proto->page_url(), CreateUrl(kHost, kRelativeUrl1));
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
