@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -117,20 +116,15 @@ class AppViewTest : public AppShellTest {
     ExtensionTestMessageListener launch_listener("LAUNCHED");
     ASSERT_TRUE(launch_listener.WaitUntilSatisfied());
 
-    embedder_web_contents_ = GetFirstAppWindowWebContents();
-
     ExtensionTestMessageListener done_listener("TEST_PASSED");
     done_listener.set_failure_message("TEST_FAILED");
     ASSERT_TRUE(content::ExecJs(
-        embedder_web_contents_.get(),
+        GetFirstAppWindowWebContents(),
         base::StringPrintf("runTest('%s', '%s')", test_name.c_str(),
                            app_embedded->id().c_str())))
         << "Unable to start test.";
     ASSERT_TRUE(done_listener.WaitUntilSatisfied());
   }
-
- private:
-  raw_ptr<content::WebContents, DanglingUntriaged> embedder_web_contents_;
 };
 
 // Tests that <appview> correctly processes parameters passed on connect.
