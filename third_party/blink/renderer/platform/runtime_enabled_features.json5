@@ -2008,7 +2008,7 @@
     {
       // If enabled, setting innerHTML will use a special fast-path parser.
       name: "InnerHTMLParserFastpath",
-      status: "experimental",
+      status: "stable",
     },
     {
       // If enabled, and the inner html parser is unable to successfully
