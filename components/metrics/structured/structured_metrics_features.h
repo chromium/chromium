@@ -6,6 +6,7 @@
 #define COMPONENTS_METRICS_STRUCTURED_STRUCTURED_METRICS_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace metrics::structured {
 
@@ -23,6 +24,15 @@ BASE_DECLARE_FEATURE(kFastPairMetrics);
 // Controls whether the structured metrics service is recorder instead of the
 // provider.
 BASE_DECLARE_FEATURE(kEnabledStructuredMetricsService);
+
+// Controls the minimum number of logs to be stored.
+extern const base::FeatureParam<int> kMinLogQueueCount;
+
+// Controls the minimum size of all logs that can be stored in bytes.
+extern const base::FeatureParam<int> kMinLogQueueSizeBytes;
+
+// Controls the maximum size of a single log in bytes.
+extern const base::FeatureParam<int> kMaxLogSizeBytes;
 
 // TODO(crbug.com/1148168): This is a temporary switch to revert structured
 // metrics upload to its old behaviour. Old behaviour:
@@ -49,6 +59,9 @@ int GetFileSizeByteLimit();
 // Returns the parameter used to control what projects are allowed to be
 // recorded.
 std::string GetDisabledProjects();
+
+// Retrieves the Structured Metrics upload interval (defaults to 40 minutes).
+int GetUploadInterval();
 
 }  // namespace metrics::structured
 
