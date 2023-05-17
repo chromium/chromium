@@ -121,6 +121,9 @@ class SharedImageFormat {
   // if size in bytes overflows. Includes all planes for multiplanar formats.
   size_t EstimatedSizeInBytes(const gfx::Size& size) const;
 
+  // Returns true if the size in bytes doesn't overflow size_t.
+  bool VerifySizeInBytes(const gfx::Size& size) const;
+
   // Returns number of channels for a plane for multiplanar formats.
   int NumChannelsInPlane(int plane_index) const;
 

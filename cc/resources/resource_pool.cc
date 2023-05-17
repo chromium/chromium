@@ -165,8 +165,7 @@ ResourcePool::PoolResource* ResourcePool::CreateResource(
     const gfx::Size& size,
     viz::SharedImageFormat format,
     const gfx::ColorSpace& color_space) {
-  DCHECK(viz::ResourceSizes::VerifySizeInBytes<size_t>(
-      size, format.resource_format()));
+  DCHECK(format.VerifySizeInBytes(size));
 
   auto pool_resource = std::make_unique<PoolResource>(
       this, next_resource_unique_id_++, size, format, color_space);

@@ -192,6 +192,9 @@ TEST_F(SharedImageFormatTest, EstimatedSizeInBytesOverflow) {
 
   // EstimatedSizeInBytes() will return 0 on overflow.
   EXPECT_EQ(format.EstimatedSizeInBytes(max_size), 0u);
+
+  // VerifySizeInBytes() should return false on overflow.
+  EXPECT_FALSE(format.VerifySizeInBytes(max_size));
 }
 
 }  // namespace
