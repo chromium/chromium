@@ -92,13 +92,23 @@ message StructuredEventProto {
   //      The event_key is a per-profile, per-client, per-project secret 32-byte
   //      key used only for signing hashed values for this event. Keys should
   //      never leave the device, and are rotated at least every 90 days.
+  //
+  //    - int64 array: This client supplies an array of int64 values for the
+  //      metric. Each metric will have an max defined by the metric definition.
   message Metric {
     optional fixed64 name_hash = 1;
+
+    // Wrapper of repeated integer fields.
+    message RepeatedInt64 {
+      repeated int64 values = 1 [packed = true];
+    }
+
     oneof value {
       fixed64 value_hmac = 2;
       int64 value_int64 = 3;
       string value_string = 4;
       double value_double = 5;
+      RepeatedInt64 value_repeated_int64 = 6;
     }
   }
   repeated Metric metrics = 3;
