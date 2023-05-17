@@ -36,6 +36,10 @@
 #include "components/viz/service/frame_sinks/external_begin_frame_source_ios.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "components/viz/service/frame_sinks/external_begin_frame_source_mac.h"
+#endif
+
 namespace viz {
 
 class RootCompositorFrameSinkImpl::StandaloneBeginFrameObserver
@@ -139,6 +143,11 @@ RootCompositorFrameSinkImpl::Create(
     hw_support_for_multiple_refresh_rates = true;
     external_begin_frame_source =
         std::make_unique<ExternalBeginFrameSourceIOS>(restart_id);
+#elif BUILDFLAG(IS_MAC)
+    external_begin_frame_source = std::make_unique<ExternalBeginFrameSourceMac>(
+        std::make_unique<DelayBasedTimeSource>(
+            base::SingleThreadTaskRunner::GetCurrentDefault().get()),
+        restart_id);
 #else
     if (params->disable_frame_rate_limit) {
       synthetic_begin_frame_source =

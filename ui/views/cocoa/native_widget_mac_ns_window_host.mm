@@ -1163,32 +1163,18 @@ void NativeWidgetMacNSWindowHost::OnWindowZoomedChanged(bool zoomed) {
 
 void NativeWidgetMacNSWindowHost::OnWindowDisplayChanged(
     const display::Display& new_display) {
-  bool display_id_changed = display_.id() != new_display.id();
   display_ = new_display;
-  if (compositor_) {
-    // Mac device scale factor is always an integer so the result here is an
-    // integer pixel size.
-    gfx::Size content_bounds_in_pixels =
-        gfx::ToRoundedSize(gfx::ConvertSizeToPixels(
-            content_bounds_in_screen_.size(), display_.device_scale_factor()));
-    compositor_->UpdateSurface(content_bounds_in_pixels,
-                               display_.device_scale_factor(),
-                               display_.color_spaces(), display_.id());
+  if (!compositor_) {
+    return;
   }
-
-  if (display_id_changed) {
-    display_link_ = ui::DisplayLinkMac::GetForDisplay(
-        base::checked_cast<CGDirectDisplayID>(display_.id()));
-    if (!display_link_) {
-      // Note that on some headless systems, the display link will fail to be
-      // created, so this should not be a fatal error.
-      LOG(ERROR) << "Failed to create display link.";
-    }
-
-    if (compositor_) {
-      RequestVSyncParametersUpdate();
-    }
-  }
+  // Mac device scale factor is always an integer so the result here is an
+  // integer pixel size.
+  gfx::Size content_bounds_in_pixels =
+      gfx::ToRoundedSize(gfx::ConvertSizeToPixels(
+          content_bounds_in_screen_.size(), display_.device_scale_factor()));
+  compositor_->UpdateSurface(content_bounds_in_pixels,
+                             display_.device_scale_factor(),
+                             display_.color_spaces(), display_.id());
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowWillClose() {
@@ -1615,32 +1601,6 @@ void NativeWidgetMacNSWindowHost::UpdateVisualState() {
 void NativeWidgetMacNSWindowHost::AcceleratedWidgetCALayerParamsUpdated() {
   if (const auto* ca_layer_params = compositor_->widget()->GetCALayerParams())
     GetNSWindowMojo()->SetCALayerParams(*ca_layer_params);
-
-  // The VSync parameters skew over time (astonishingly quickly -- 0.1 msec per
-  // second). If too much time has elapsed since the last time the vsync
-  // parameters were calculated, re-calculate them.
-  if (base::TimeTicks::Now() >= display_link_next_update_time_) {
-    RequestVSyncParametersUpdate();
-  }
-}
-
-void NativeWidgetMacNSWindowHost::RequestVSyncParametersUpdate() {
-  if (!display_link_ || display_link_updater_) {
-    return;
-  }
-  display_link_updater_ = display_link_->RegisterCallback(base::BindRepeating(
-      &NativeWidgetMacNSWindowHost::OnVSyncParametersUpdated,
-      weak_factory_for_vsync_update_.GetWeakPtr()));
-}
-
-void NativeWidgetMacNSWindowHost::OnVSyncParametersUpdated(
-    ui::VSyncParamsMac params) {
-  if (compositor_ && params.display_times_valid) {
-    compositor_->compositor()->SetDisplayVSyncParameters(
-        params.display_timebase, params.display_interval);
-    display_link_next_update_time_ = base::TimeTicks::Now() + base::Seconds(10);
-  }
-  display_link_updater_ = nullptr;
 }
 
 }  // namespace views

@@ -324,6 +324,12 @@ viz_component("service") {
 
       frameworks += [ "CoreGraphics.framework" ]
     }
+    if (is_mac) {
+      sources += [
+        "frame_sinks/external_begin_frame_source_mac.cc",
+        "frame_sinks/external_begin_frame_source_mac.h",
+      ]
+    }
   }
 
   if (is_android || use_ozone) {
