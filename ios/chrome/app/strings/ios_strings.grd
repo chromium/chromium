@@ -867,6 +867,12 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_PRIMARY_BUTTON_TEXT" desc="Text of button that will take users to settings, where they can change the default browser. Used in tailored default browser promo [iOS only]">
         Switch in Settings…
       </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_PRIMARY_BUTTON_TEXT" desc="Text of button that will take users to iOS settings, where they can change the default browser. Used in the video default browser promo [iOS only]">
+        Open Settings
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_SECONDARY_BUTTON_TEXT" desc="Text of button that will dismiss the video default browser promo [iOS only]">
+        No, Thanks
+      </message>
       <message name="IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE" desc="The title of the continue button on the disconnect dialog [Length: 20em].">
         Sign Out
       </message>

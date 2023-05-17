@@ -276,6 +276,12 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_BUILT_FOR_IOS_DESCRIPTION" desc="Description of the 'Built for iOS' default browser promotion modal. [iOS only]">
         Use Chrome by default to open links, search from widgets, and autofill passwords in other apps
       </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TITLE_TEXT" desc="Title for the default browser video promo. [iOS only]">
+        Open Chrome From Any App
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_SUBTITLE_TEXT" desc="Subtitle for the default browser video promo. [iOS only]">
+        Open Chrome Settings in iOS, then tap on "Browser Default APP" and select Chrome.
+      </message>
       <message name="IDS_IOS_DISCONNECT_DIALOG_TITLE" desc="The title of the disconnect dialog [Length: 30em].">
         Sign out of Chrome?
       </message>

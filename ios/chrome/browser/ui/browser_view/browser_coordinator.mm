@@ -723,6 +723,7 @@ enum class ToolbarKind {
     @protocol(PriceNotificationsCommands),
     @protocol(TextZoomCommands),
     @protocol(WebContentCommands),
+    @protocol(DefaultBrowserPromoCommands),
   ];
 
   for (Protocol* protocol in protocols) {
