@@ -53,10 +53,7 @@ namespace ash {
 
 // WelcomeScreenHandler, public: -----------------------------------------------
 
-WelcomeScreenHandler::WelcomeScreenHandler(CoreOobeView* core_oobe_view)
-    : BaseScreenHandler(kScreenId), core_oobe_view_(core_oobe_view) {
-  DCHECK(core_oobe_view_);
-}
+WelcomeScreenHandler::WelcomeScreenHandler() : BaseScreenHandler(kScreenId) {}
 
 WelcomeScreenHandler::~WelcomeScreenHandler() = default;
 
@@ -80,8 +77,7 @@ void WelcomeScreenHandler::Show() {
 
 void WelcomeScreenHandler::SetLanguageList(base::Value::List language_list) {
   language_list_ = std::move(language_list);
-  base::Value::Dict localized_strings = GetOobeUI()->GetLocalizedStrings();
-  core_oobe_view_->ReloadContent(std::move(localized_strings));
+  GetOobeUI()->GetCoreOobe()->ReloadContent();
 }
 
 void WelcomeScreenHandler::SetInputMethodId(

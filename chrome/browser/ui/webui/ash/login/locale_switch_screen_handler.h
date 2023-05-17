@@ -31,7 +31,7 @@ class LocaleSwitchScreenHandler : public BaseScreenHandler,
  public:
   using TView = LocaleSwitchView;
 
-  explicit LocaleSwitchScreenHandler(CoreOobeView* core_oobe_view);
+  LocaleSwitchScreenHandler();
   ~LocaleSwitchScreenHandler() override;
 
   // LocaleSwitchView:
@@ -40,9 +40,6 @@ class LocaleSwitchScreenHandler : public BaseScreenHandler,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-
- private:
-  raw_ptr<CoreOobeView> core_oobe_view_;
 };
 
 }  // namespace ash

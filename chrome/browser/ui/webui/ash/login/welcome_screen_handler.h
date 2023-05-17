@@ -15,7 +15,6 @@
 
 namespace ash {
 
-class CoreOobeView;
 class WelcomeScreen;
 
 // Interface for WelcomeScreenHandler.
@@ -65,7 +64,7 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
  public:
   using TView = WelcomeView;
 
-  explicit WelcomeScreenHandler(CoreOobeView* core_oobe_view);
+  WelcomeScreenHandler();
 
   WelcomeScreenHandler(const WelcomeScreenHandler&) = delete;
   WelcomeScreenHandler& operator=(const WelcomeScreenHandler&) = delete;
@@ -97,8 +96,6 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
 
   // Returns available timezones.
   static base::Value::List GetTimezoneList();
-
-  const raw_ptr<CoreOobeView> core_oobe_view_;
 };
 
 }  // namespace ash
