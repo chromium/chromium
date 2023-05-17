@@ -5,8 +5,14 @@
 #ifndef CHROME_BROWSER_MEDIA_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_CONTEXT_H_
 #define CHROME_BROWSER_MEDIA_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_CONTEXT_H_
 
+#include "build/chromeos_buildflags.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_id.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/values.h"
+#include "chromeos/lacros/crosapi_pref_observer.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Manages protected media identifier permissions flow, and delegates UI
 // handling via PermissionQueueController.
@@ -42,6 +48,14 @@ class ProtectedMediaIdentifierPermissionContext
   // it can be disabled by a switch in content settings, in incognito or guest
   // mode, or by the device policy.
   bool IsProtectedMediaIdentifierEnabled() const;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void OnAttestationEnabledChanged(base::Value value);
+  // We synchronize this property with ash-chrome so that we can check it
+  // synchronously and not disturb the existing flow here.
+  std::unique_ptr<CrosapiPrefObserver> attestation_enabled_observer_;
+  bool attestation_enabled_{true};
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 #endif  // CHROME_BROWSER_MEDIA_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_CONTEXT_H_

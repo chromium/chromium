@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
@@ -127,9 +128,7 @@ void PrefsAsh::BindReceiver(mojo::PendingReceiver<mojom::Prefs> receiver) {
 }
 
 void PrefsAsh::GetPref(mojom::PrefPath path, GetPrefCallback callback) {
-  auto state = GetState(path);
-  const base::Value* value =
-      state ? &state->pref_service->GetValue(state->path) : nullptr;
+  const base::Value* value = GetValueForState(GetState(path));
   std::move(callback).Run(value ? absl::optional<base::Value>(value->Clone())
                                 : absl::nullopt);
 }
@@ -138,20 +137,19 @@ void PrefsAsh::GetExtensionPrefWithControl(
     mojom::PrefPath path,
     GetExtensionPrefWithControlCallback callback) {
   auto state = GetState(path);
+  const base::Value* value = GetValueForState(state);
 
-  if (!state) {
+  if (!state || !value) {
     // Not a valid prefpath
     std::move(callback).Run(absl::nullopt,
                             mojom::PrefControlState::kDefaultUnknown);
     return;
   }
 
-  const base::Value& value = state->pref_service->GetValue(state->path);
-
-  if (!state->is_extension_controlled_pref) {
+  if (state->pref_source != AshPrefSource::kExtensionControlled) {
     // Not extension controlled
     std::move(callback).Run(
-        absl::optional<base::Value>(value.Clone()),
+        absl::optional<base::Value>(value->Clone()),
         mojom::PrefControlState::kNotExtensionControlledPrefPath);
     return;
   }
@@ -171,7 +169,7 @@ void PrefsAsh::GetExtensionPrefWithControl(
     // Lacros could control this.
     pref_control_state = mojom::PrefControlState::kLacrosExtensionControllable;
   }
-  std::move(callback).Run(absl::optional<base::Value>(value.Clone()),
+  std::move(callback).Run(absl::optional<base::Value>(value->Clone()),
                           pref_control_state);
 }
 
@@ -179,12 +177,14 @@ void PrefsAsh::SetPref(mojom::PrefPath path,
                        base::Value value,
                        SetPrefCallback callback) {
   auto state = GetState(path);
-  if (state) {
-    if (state->is_extension_controlled_pref) {
+  if (state && state->pref_source != AshPrefSource::kCrosSettings) {
+    if (state->pref_source == AshPrefSource::kExtensionControlled) {
       state->pref_service->SetStandaloneBrowserPref(state->path, value);
     } else {
       state->pref_service->Set(state->path, value);
     }
+  } else {
+    LOG(WARNING) << "CrosSettings can't be changed via PrefsAsh";
   }
   std::move(callback).Run();
 }
@@ -193,7 +193,7 @@ void PrefsAsh::ClearExtensionControlledPref(
     mojom::PrefPath path,
     ClearExtensionControlledPrefCallback callback) {
   auto state = GetState(path);
-  if (state && state->is_extension_controlled_pref) {
+  if (state && state->pref_source == AshPrefSource::kExtensionControlled) {
     state->pref_service->RemoveStandaloneBrowserPref(state->path);
   } else {
     // Only logging to be robust against version skew (lacros ahead of ash)
@@ -205,8 +205,7 @@ void PrefsAsh::ClearExtensionControlledPref(
 void PrefsAsh::AddObserver(mojom::PrefPath path,
                            mojo::PendingRemote<mojom::PrefObserver> observer) {
   auto state = GetState(path);
-  const base::Value* value =
-      state ? &state->pref_service->GetValue(state->path) : nullptr;
+  const base::Value* value = GetValueForState(state);
   if (!value) {
     return;
   }
@@ -215,13 +214,31 @@ void PrefsAsh::AddObserver(mojom::PrefPath path,
   mojo::Remote<mojom::PrefObserver> remote(std::move(observer));
   remote->OnPrefChanged(value->Clone());
 
-  DCHECK(state->registrar);
-  if (!state->registrar->IsObserved(state->path)) {
-    // Unretained() is safe since PrefChangeRegistrar and RemoteSet within
-    // observers_ are owned by this and wont invoke if PrefsAsh is destroyed.
-    state->registrar->Add(state->path,
-                          base::BindRepeating(&PrefsAsh::OnPrefChanged,
-                                              base::Unretained(this), path));
+  bool did_register = false;
+  if (state->pref_source == AshPrefSource::kCrosSettings) {
+    if (cros_settings_subs_.find(path) == cros_settings_subs_.end()) {
+      // Unretained() is safe since CrosSettings is destroyed after all the
+      // threads are stopped and PrefsAsh is destroyed while stopping all the
+      // threads.
+      cros_settings_subs_.emplace(
+          path,
+          ash::CrosSettings::Get()->AddSettingsObserver(
+              state->path, base::BindRepeating(&PrefsAsh::OnPrefChanged,
+                                               base::Unretained(this), path)));
+      did_register = true;
+    }
+  } else {
+    DCHECK(state->registrar);
+    if (!state->registrar->IsObserved(state->path)) {
+      // Unretained() is safe since PrefChangeRegistrar and RemoteSet within
+      // observers_ are owned by this and wont invoke if PrefsAsh is destroyed.
+      state->registrar->Add(state->path,
+                            base::BindRepeating(&PrefsAsh::OnPrefChanged,
+                                                base::Unretained(this), path));
+      did_register = true;
+    }
+  }
+  if (did_register) {
     observers_[path].set_disconnect_handler(base::BindRepeating(
         &PrefsAsh::OnDisconnect, base::Unretained(this), path));
   }
@@ -242,7 +259,8 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
       LOG(WARNING) << "Unknown pref path: " << path;
       return absl::nullopt;
     case mojom::PrefPath::kMetricsReportingEnabled:
-      return State{local_state_, &local_state_registrar_, false,
+      return State{local_state_, &local_state_registrar_,
+                   AshPrefSource::kNormal,
                    metrics::prefs::kMetricsReportingEnabled};
     case mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled:
     case mojom::PrefPath::kGeolocationAllowed:
@@ -264,22 +282,25 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
       }
       std::string pref_name = GetProfilePrefNameForPref(path);
       return State{profile_prefs_registrar_->prefs(),
-                   profile_prefs_registrar_.get(), false, pref_name};
+                   profile_prefs_registrar_.get(), AshPrefSource::kNormal,
+                   pref_name};
     }
     case mojom::PrefPath::kDeviceSystemWideTracingEnabled:
-      return State{local_state_, &local_state_registrar_, false,
+      return State{local_state_, &local_state_registrar_,
+                   AshPrefSource::kNormal,
                    ash::prefs::kDeviceSystemWideTracingEnabled};
     case mojom::PrefPath::kDnsOverHttpsMode:
-      return State{local_state_, &local_state_registrar_, false,
-                   prefs::kDnsOverHttpsMode};
+      return State{local_state_, &local_state_registrar_,
+                   AshPrefSource::kNormal, prefs::kDnsOverHttpsMode};
     case mojom::PrefPath::kDnsOverHttpsSalt:
-      return State{local_state_, &local_state_registrar_, false,
-                   prefs::kDnsOverHttpsSalt};
+      return State{local_state_, &local_state_registrar_,
+                   AshPrefSource::kNormal, prefs::kDnsOverHttpsSalt};
     case mojom::PrefPath::kDnsOverHttpsTemplates:
-      return State{local_state_, &local_state_registrar_, false,
-                   prefs::kDnsOverHttpsTemplates};
+      return State{local_state_, &local_state_registrar_,
+                   AshPrefSource::kNormal, prefs::kDnsOverHttpsTemplates};
     case mojom::PrefPath::kDnsOverHttpsTemplatesWithIdentifiers:
-      return State{local_state_, &local_state_registrar_, false,
+      return State{local_state_, &local_state_registrar_,
+                   AshPrefSource::kNormal,
                    prefs::kDnsOverHttpsTemplatesWithIdentifiers};
     case mojom::PrefPath::kDockedMagnifierEnabled:
     case mojom::PrefPath::kAccessibilityAutoclickEnabled:
@@ -303,9 +324,26 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
       }
       std::string pref_name = GetExtensionPrefNameForPref(path);
       return State{profile_prefs_registrar_->prefs(),
-                   profile_prefs_registrar_.get(), true, pref_name};
+                   profile_prefs_registrar_.get(),
+                   AshPrefSource::kExtensionControlled, pref_name};
+    }
+    case mojom::PrefPath::kAttestationForContentProtectionEnabled: {
+      return State{nullptr, nullptr, AshPrefSource::kCrosSettings,
+                   ash::kAttestationForContentProtectionEnabled};
     }
   }
+}
+
+const base::Value* PrefsAsh::GetValueForState(absl::optional<State> state) {
+  if (!state) {
+    return nullptr;
+  }
+
+  if (state->pref_source == AshPrefSource::kCrosSettings) {
+    return ash::CrosSettings::Get()->GetPref(state->path);
+  }
+
+  return &state->pref_service->GetValue(state->path);
 }
 
 void PrefsAsh::OnProfileManagerDestroying() {
@@ -319,8 +357,7 @@ void PrefsAsh::OnProfileWillBeDestroyed(Profile* profile) {
 
 void PrefsAsh::OnPrefChanged(mojom::PrefPath path) {
   auto state = GetState(path);
-  const base::Value* value =
-      state ? &state->pref_service->GetValue(state->path) : nullptr;
+  const base::Value* value = GetValueForState(state);
   if (value) {
     for (auto& observer : observers_[path]) {
       observer->OnPrefChanged(value->Clone());
@@ -332,7 +369,11 @@ void PrefsAsh::OnDisconnect(mojom::PrefPath path, mojo::RemoteSetElementId id) {
   const auto& it = observers_.find(path);
   if (it != observers_.end() && it->second.empty()) {
     if (auto state = GetState(path)) {
-      state->registrar->Remove(state->path);
+      if (state->pref_source == AshPrefSource::kCrosSettings) {
+        cros_settings_subs_.erase(path);
+      } else {
+        state->registrar->Remove(state->path);
+      }
     }
     observers_.erase(it);
   }
