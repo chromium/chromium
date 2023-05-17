@@ -11,6 +11,7 @@
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/metrics/cellular_network_metrics_logger.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -301,6 +302,9 @@ void ApnMigrator::OnGetManagedProperties(
       pre_revamp_custom_apn->state = ApnState::kEnabled;
       pre_revamp_custom_apn->apn_types =
           GetMigratedApnTypes(pre_revamp_custom_apn);
+      CellularNetworkMetricsLogger::LogManagedCustomApnMigrationType(
+          CellularNetworkMetricsLogger::ManagedApnMigrationType::
+              kMatchesSelectedApn);
       remote_cros_network_config_->CreateCustomApn(
           guid, std::move(pre_revamp_custom_apn));
     } else {
@@ -308,6 +312,9 @@ void ApnMigrator::OnGetManagedProperties(
           << "Managed network's selected APN doesn't match the saved custom "
           << "APN, setting Shill with empty list for network: " << guid;
       base::Value::List empty_apn_list;
+      CellularNetworkMetricsLogger::LogManagedCustomApnMigrationType(
+          CellularNetworkMetricsLogger::ManagedApnMigrationType::
+              kDoesNotMatchSelectedApn);
       SetShillCustomApnListForNetwork(*network, &empty_apn_list);
     }
   } else {
@@ -331,6 +338,9 @@ void ApnMigrator::OnGetManagedProperties(
         // Ensure the APN is enabled when it's migrated so that it's
         // attempted to be used by the new UI.
         pre_revamp_custom_apn->state = ApnState::kEnabled;
+        CellularNetworkMetricsLogger::LogUnmanagedCustomApnMigrationType(
+            CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
+                kMatchesLastGoodApn);
       } else {
         NET_LOG(EVENT) << "Network's last good APN does not match the saved "
                        << "custom APN, migrating APN: " << guid
@@ -339,6 +349,9 @@ void ApnMigrator::OnGetManagedProperties(
         // off. Preserve the details of the custom APN but with a state of
         // Disabled.
         pre_revamp_custom_apn->state = ApnState::kDisabled;
+        CellularNetworkMetricsLogger::LogUnmanagedCustomApnMigrationType(
+            CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
+                kDoesNotMatchLastGoodApn);
         // TODO(b/162365553): Surface a notification to the user indicating that
         // their APN configuration was changed.
       }
@@ -358,6 +371,9 @@ void ApnMigrator::OnGetManagedProperties(
 
       pre_revamp_custom_apn->state = ApnState::kEnabled;
       pre_revamp_custom_apn->apn_types = {ApnType::kAttach, ApnType::kDefault};
+      CellularNetworkMetricsLogger::LogUnmanagedCustomApnMigrationType(
+          CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
+              kMatchesLastConnectedAttachAndDefault);
       remote_cros_network_config_->CreateCustomApn(
           guid, std::move(pre_revamp_custom_apn));
     } else if (last_connected_attach_apn && last_connected_default_apn &&
@@ -382,6 +398,9 @@ void ApnMigrator::OnGetManagedProperties(
         (*last_connected_default_apn)->state = ApnState::kEnabled;
         (*last_connected_default_apn)->apn_types = {ApnType::kDefault};
 
+        CellularNetworkMetricsLogger::LogUnmanagedCustomApnMigrationType(
+            CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
+                kMatchesLastConnectedAttachHasMatchingDatabaseApn);
         remote_cros_network_config_->CreateCustomApn(
             guid, last_connected_default_apn->Clone());
       } else {
@@ -394,6 +413,10 @@ void ApnMigrator::OnGetManagedProperties(
             << guid << " in the Disabled state";
         (*last_connected_attach_apn)->state = ApnState::kDisabled;
         (*last_connected_attach_apn)->apn_types = {ApnType::kAttach};
+
+        CellularNetworkMetricsLogger::LogUnmanagedCustomApnMigrationType(
+            CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
+                kMatchesLastConnectedAttachHasNoMatchingDatabaseApn);
       }
 
       remote_cros_network_config_->CreateCustomApn(
@@ -408,6 +431,10 @@ void ApnMigrator::OnGetManagedProperties(
 
       pre_revamp_custom_apn->state = ApnState::kEnabled;
       pre_revamp_custom_apn->apn_types = {ApnType::kDefault};
+
+      CellularNetworkMetricsLogger::LogUnmanagedCustomApnMigrationType(
+          CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
+              kMatchesLastConnectedDefaultNoLastConnectedAttach);
       remote_cros_network_config_->CreateCustomApn(
           guid, std::move(pre_revamp_custom_apn));
     } else {
@@ -418,6 +445,10 @@ void ApnMigrator::OnGetManagedProperties(
       pre_revamp_custom_apn->state = ApnState::kDisabled;
       pre_revamp_custom_apn->apn_types =
           GetMigratedApnTypes(pre_revamp_custom_apn);
+
+      CellularNetworkMetricsLogger::LogUnmanagedCustomApnMigrationType(
+          CellularNetworkMetricsLogger::UnmanagedApnMigrationType::
+              kNoMatchingConnectedApn);
       remote_cros_network_config_->CreateCustomApn(
           guid, std::move(pre_revamp_custom_apn));
     }

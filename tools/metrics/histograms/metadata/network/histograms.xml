@@ -159,6 +159,18 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result of an attempt to enable a custom APN.</summary>
 </histogram>
 
+<histogram name="Network.Ash.Cellular.Apn.Managed.MigrationType"
+    enum="ManagedApnMigrationType" expires_after="2023-12-31">
+  <owner>hsuregan@google.com</owner>
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the type of migration that occurs for each APN that's migrated for
+    managed devices. This metric is emitted when a managed network is migrated
+    from the old APN UI to new APN UI.
+  </summary>
+</histogram>
+
 <histogram name="Network.Ash.Cellular.Apn.ModifyCustomApn.ApnTypes"
     enum="ApnTypes" expires_after="2023-12-31">
   <owner>gordonseto@google.com</owner>
@@ -191,6 +203,18 @@ chromium-metrics-reviews@google.com.
   <owner>gordonseto@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>Records the result of an attempt to remove a custom APN.</summary>
+</histogram>
+
+<histogram name="Network.Ash.Cellular.Apn.Unmanaged.MigrationType"
+    enum="UnmanagedApnMigrationType" expires_after="2023-12-31">
+  <owner>hsuregan@google.com</owner>
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the type of migration that occurs for each APN that's migrated for
+    unmanaged devices. This metric is emitted when an unmanaged network is
+    migrated from the old APN UI to new APN UI.
+  </summary>
 </histogram>
 
 <histogram name="Network.Ash.Cellular.ConfigurationFailure.Type"

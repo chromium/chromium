@@ -67361,6 +67361,11 @@ from previous Chrome versions.
   <int value="2" label="Other failure"/>
 </enum>
 
+<enum name="ManagedApnMigrationType">
+  <int value="0" label="Matches selected APN"/>
+  <int value="1" label="Does not match selected APN"/>
+</enum>
+
 <enum name="ManagedModeBlockingCommand">
   <int value="0" label="Preview"/>
   <int value="1" label="Back"/>
@@ -105504,6 +105509,26 @@ Full version information for the fingerprint enum values:
   <int value="1" label="Pin"/>
   <int value="2" label="Fingerprint"/>
   <int value="3" label="Challenge-response security token"/>
+</enum>
+
+<enum name="UnmanagedApnMigrationType">
+  <int value="0"
+      label="No last connected attach or default APN, but matches last good
+             APN"/>
+  <int value="1"
+      label="No last connected attach or default APN, and does not match last
+             good APN"/>
+  <int value="2" label="Matches last connected attach and default APN"/>
+  <int value="3"
+      label="Matches last connected attach APN, but not the connected default
+             APN; last connected default APN matches a database APN"/>
+  <int value="4"
+      label="Matches last connected attach APN, but not the connected default
+             APN; last connected default APN does not match a database APN"/>
+  <int value="5"
+      label="No last connected attach APN, but matches last connected default
+             APN"/>
+  <int value="6" label="Default case where there is no matching connected APN"/>
 </enum>
 
 <enum name="UNNotificationPermissionRequestResult">
