@@ -113,8 +113,6 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("block_cleanup_test") {
-  # TODO(crbug.com/733237): Replace this comment with an explicit disable_arc config.
-  # The files in this target depend on non-ARC memory management.
   testonly = true
   sources = [
     "block_cleanup_test.h",
@@ -125,6 +123,7 @@ source_set("block_cleanup_test") {
     "//base",
     "//testing/gtest",
   ]
+  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("ios_chrome_unit_test_suite") {
