@@ -67,7 +67,8 @@ export class BaseSetupPageElement extends HTMLElement {
 
     const dotsElement =
         this.shadowRoot?.querySelector('#dots') as HTMLDivElement;
-    dotsElement.innerHTML = '';
+    assert(window.trustedTypes);
+    dotsElement.innerHTML = window.trustedTypes.emptyHTML;
     const pages = parseInt(this.getAttribute('total-pages')!) || 0;
     const curPage = parseInt(this.getAttribute('page-number')!) || 0;
 

@@ -39,7 +39,6 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, base::make_span(kCloudUploadResources, kCloudUploadResourcesSize),
       IDR_CLOUD_UPLOAD_MAIN_HTML);
-  source->DisableTrustedTypesCSP();
   // Required for lottie animations.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc,
