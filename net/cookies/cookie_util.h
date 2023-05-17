@@ -267,6 +267,10 @@ ComputeSameSiteContextForSubresource(const GURL& url,
                                      const SiteForCookies& site_for_cookies,
                                      bool force_ignore_site_for_cookies);
 
+NET_EXPORT bool IsPortBoundCookiesEnabled();
+
+NET_EXPORT bool IsSchemeBoundCookiesEnabled();
+
 // Returns whether the respective feature is enabled.
 NET_EXPORT bool IsSchemefulSameSiteEnabled();
 

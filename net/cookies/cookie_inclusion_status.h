@@ -102,14 +102,25 @@ class NET_EXPORT CookieInclusionStatus {
     // Special case for when a cookie is blocked by third-party cookie blocking
     // but the two sites are in the same First-Party Set.
     EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET = 22,
+    // Cookie's source_port did not match the port of the request.
+    EXCLUDE_PORT_MISMATCH = 23,
+    // Cookie's source_scheme did not match the scheme of the request.
+    EXCLUDE_SCHEME_MISMATCH = 24,
 
     // This should be kept last.
     NUM_EXCLUSION_REASONS
   };
 
-  // Reason to warn about a cookie. Any information contained in WarningReason
-  // of an included cookie may be passed to an untrusted renderer.
-  // If you add one, please update GetDebugString().
+  // Mojom and some tests assume that all the exclusion reasons will fit within
+  // a uint32_t. Once that's not longer true those assumptions need to be
+  // updated (along with this assert).
+  static_assert(ExclusionReason::NUM_EXCLUSION_REASONS <= 32,
+                "Expanding ExclusionReasons past 32 reasons requires updating "
+                "usage assumptions.");
+
+  // Reason to warn about a cookie. Any information contained in
+  // WarningReason of an included cookie may be passed to an untrusted
+  // renderer. If you add one, please update GetDebugString().
   enum WarningReason {
     // Of the following 3 SameSite warnings, there will be, at most, a single
     // active one.
@@ -214,10 +225,21 @@ class NET_EXPORT CookieInclusionStatus {
 
     // Cookie was set with a Domain attribute containing non ASCII characters.
     WARN_DOMAIN_NON_ASCII = 14,
+    // Cookie's source_port did not match the port of the request.
+    WARN_PORT_MISMATCH = 15,
+    // Cookie's source_scheme did not match the scheme of the request.
+    WARN_SCHEME_MISMATCH = 16,
 
     // This should be kept last.
     NUM_WARNING_REASONS
   };
+
+  // Mojom and some tests assume that all the warning reasons will fit within
+  // a uint32_t. Once that's not longer true those assumptions need to be
+  // updated (along with this assert).
+  static_assert(WarningReason::NUM_WARNING_REASONS <= 32,
+                "Expanding WarningReasons past 32 reasons requires updating "
+                "usage assumptions.");
 
   // These enums encode the context downgrade warnings + the secureness of the
   // url sending/setting the cookie. They're used for metrics only. The format

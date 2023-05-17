@@ -3692,8 +3692,8 @@ TEST_F(CookieMonsterTest, SecureCookieLocalhost) {
   // status.
   {
     auto cookie = CanonicalCookie::Create(
-        insecure_localhost, "from_secure_localhost=1; Secure",
-        base::Time::Now(), absl::nullopt /* server_time */,
+        secure_localhost, "from_secure_localhost=1; Secure", base::Time::Now(),
+        absl::nullopt /* server_time */,
         absl::nullopt /* cookie_partition_key */);
     ASSERT_TRUE(cookie);
     CookieInclusionStatus status =

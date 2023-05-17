@@ -1322,7 +1322,7 @@ TEST_F(CookieManagerTest, SecureCookieNonCryptographicPotentiallyTrustworthy) {
                                        net::CookiePartitionKeyCollection());
   ASSERT_EQ(1u, http_localhost_cookies.size());
   EXPECT_EQ("http_localhost", http_localhost_cookies[0].Name());
-  EXPECT_EQ(net::CookieSourceScheme::kNonSecure,
+  EXPECT_EQ(net::CookieSourceScheme::kSecure,
             http_localhost_cookies[0].SourceScheme());
   EXPECT_TRUE(http_localhost_cookies[0].IsSecure());
 
@@ -1366,7 +1366,7 @@ TEST_F(CookieManagerTest, SecureCookieNonCryptographicPotentiallyTrustworthy) {
                                        net::CookiePartitionKeyCollection());
   ASSERT_EQ(1u, http_other_cookies.size());
   EXPECT_EQ("http_other", http_other_cookies[0].Name());
-  EXPECT_EQ(net::CookieSourceScheme::kNonSecure,
+  EXPECT_EQ(net::CookieSourceScheme::kSecure,
             http_other_cookies[0].SourceScheme());
   EXPECT_TRUE(http_other_cookies[0].IsSecure());
 }
