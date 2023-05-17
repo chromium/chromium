@@ -35,7 +35,6 @@ class TestDriverExecution(unittest.TestCase):
                 mock.ANY,
                 mock.ANY,
                 disable_packaging=mock.ANY,
-                notarization=mock.ANY,
                 skip_brands=mock.ANY,
                 channels=mock.ANY),
         ])
@@ -97,8 +96,7 @@ class TestCommandLine(unittest.TestCase):
         self.assertTrue(config.run_spctl_assess)
         self.assertFalse(config.inject_get_task_allow_entitlement)
         self.assertFalse(sign_all.call_args.kwargs['disable_packaging'])
-        self.assertEquals(model.NotarizeAndStapleLevel.NONE,
-                          sign_all.call_args.kwargs['notarization'])
+        self.assertEquals(model.NotarizeAndStapleLevel.NONE, config.notarize)
         self.assertEquals([], sign_all.call_args.kwargs['skip_brands'])
         self.assertEquals([], sign_all.call_args.kwargs['channels'])
 
@@ -163,8 +161,7 @@ class TestCommandLine(unittest.TestCase):
         ])
         self.assertEquals(1, sign_all.call_count)
         config = sign_all.call_args.args[1]
-        self.assertEquals(model.NotarizeAndStapleLevel.STAPLE,
-                          sign_all.call_args.kwargs['notarization'])
+        self.assertEquals(model.NotarizeAndStapleLevel.STAPLE, config.notarize)
         self.assertEquals('Notary-User', config.notary_user)
         self.assertEquals('@env:NOTARY', config.notary_password)
 
@@ -176,8 +173,7 @@ class TestCommandLine(unittest.TestCase):
         ])
         self.assertEquals(1, sign_all.call_count)
         config = sign_all.call_args.args[1]
-        self.assertEquals(model.NotarizeAndStapleLevel.NOWAIT,
-                          sign_all.call_args.kwargs['notarization'])
+        self.assertEquals(model.NotarizeAndStapleLevel.NOWAIT, config.notarize)
         self.assertEquals('Notary-User', config.notary_user)
         self.assertEquals('@env:NOTARY', config.notary_password)
 
@@ -213,8 +209,7 @@ class TestCommandLine(unittest.TestCase):
         ])
         self.assertEquals(1, sign_all.call_count)
         config = sign_all.call_args.args[1]
-        self.assertEquals(model.NotarizeAndStapleLevel.STAPLE,
-                          sign_all.call_args.kwargs['notarization'])
+        self.assertEquals(model.NotarizeAndStapleLevel.STAPLE, config.notarize)
         self.assertEquals('Notary-User', config.notary_user)
         self.assertEquals('@env:NOTARY', config.notary_password)
         self.assertEquals('Team1', config.notary_team_id)

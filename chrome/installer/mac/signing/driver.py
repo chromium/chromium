@@ -144,9 +144,10 @@ def main(args):
     parser.add_argument(
         '--notarize',
         nargs='?',
-        choices=model.NotarizeAndStapleLevel.valid_strings(),
+        choices=list(model.NotarizeAndStapleLevel),
         const='staple',
         default='none',
+        type=model.NotarizeAndStapleLevel.from_string,
         help='Specifies the requested notarization actions to be taken. '
         '`none` causes no notarization tasks to be performed. '
         '`nowait` submits the signed application and packaging to Apple for '
@@ -164,12 +165,6 @@ def main(args):
 
     args = parser.parse_args(args)
 
-    notarization = model.NotarizeAndStapleLevel.from_string(args.notarize)
-    if notarization.should_notarize():
-        if not args.notary_user or not args.notary_password:
-            parser.error('The `--notary-user` and `--notary-password` '
-                         'arguments are required if notarizing.')
-
     config = _create_config(
         model.pick(args, (
             'identity',
@@ -179,7 +174,13 @@ def main(args):
             'notary_asc_provider',
             'notary_team_id',
             'notarization_tool',
+            'notarize',
         )), args.development)
+
+    if config.notarize.should_notarize():
+        if not args.notary_user or not args.notary_password:
+            parser.error('The `--notary-user` and `--notary-password` '
+                         'arguments are required if notarizing.')
 
     if config.notarization_tool == model.NotarizationTool.NOTARYTOOL:
         # Let the config override notary_team_id, including a potentially
@@ -199,6 +200,5 @@ def main(args):
         paths,
         config,
         disable_packaging=args.disable_packaging,
-        notarization=notarization,
         skip_brands=args.skip_brands,
         channels=args.channels)

@@ -112,7 +112,6 @@ class TestSignPart(unittest.TestCase):
             '/$W/Test.app'
         ])
 
-
     def test_sign_part_needs_force(self, run_command,
                                    linker_signed_arm64_needs_force):
         linker_signed_arm64_needs_force.return_value = True
@@ -138,7 +137,8 @@ class TestSignPart(unittest.TestCase):
 
     def test_sign_part_no_notary(self, run_command,
                                  linker_signed_arm64_needs_force):
-        config = test_config.TestConfig(notary_user=None, notary_password=None)
+        config = test_config.TestConfig(
+            notarize=model.NotarizeAndStapleLevel.NONE)
         part = model.CodeSignedProduct('Test.app', 'test.signing.app')
         signing.sign_part(self.paths, config, part)
         run_command.assert_called_once_with(

@@ -372,7 +372,7 @@ def _package_and_sign_pkg(paths, dist_config):
             distribution_path, '--package-path', pkg_paths.work, '--sign',
             dist_config.installer_identity
         ]
-        if dist_config.notary_user:
+        if dist_config.notarize.should_notarize():
             # Assume if the config has notary authentication information that
             # the products will be notarized, which requires a secure
             # timestamp.
@@ -645,7 +645,6 @@ def _filter_distributions(distributions, skip_brands, channels):
 def sign_all(orig_paths,
              config,
              disable_packaging=False,
-             notarization=model.NotarizeAndStapleLevel.STAPLE,
              skip_brands=[],
              channels=[]):
     """For each distribution in |config|, performs customization, signing, and
@@ -659,9 +658,6 @@ def sign_all(orig_paths,
             unpackaged signed app bundle will be copied to |paths.output|. If
             False, the packaging specified in the distribution will be
             performed.
-        notarization: The level of notarization to be performed. If
-            |disable_packaging| is False, the packages (dmg/pkg) will undergo
-            the same notarization.
         skip_brands: A list of brand code strings. If a distribution has a brand
             code in this list, or if a distribution has a brand code and
             |skip_brands| contains *, that distribution will be skipped.
@@ -687,7 +683,7 @@ def sign_all(orig_paths,
 
                 # If not packaging and not notarizing, then simply drop the
                 # signed bundle in the output directory when done signing.
-                if not do_packaging and not notarization.should_notarize():
+                if not do_packaging and not config.notarize.should_notarize():
                     dest_dir = paths.output
                 else:
                     dest_dir = notary_paths.work
@@ -708,7 +704,7 @@ def sign_all(orig_paths,
 
                 # If the build products are to be notarized, ZIP the app bundle
                 # and submit it for notarization.
-                if notarization.should_notarize():
+                if config.notarize.should_notarize():
                     zip_file = os.path.join(
                         notary_paths.work,
                         dist_config.packaging_basename + '.zip')
@@ -722,10 +718,10 @@ def sign_all(orig_paths,
 
         # If needed, wait for app notarization results to come back, and staple
         # if required.
-        if notarization.should_wait():
+        if config.notarize.should_wait():
             for result in notarize.wait_for_results(uuids_to_config.keys(),
                                                     config):
-                if notarization.should_staple():
+                if config.notarize.should_staple():
                     dist_config = uuids_to_config[result]
                     dest_dir = os.path.join(
                         notary_paths.work,
@@ -754,23 +750,23 @@ def sign_all(orig_paths,
                 if dist.package_as_dmg:
                     dmg_path = _package_and_sign_dmg(paths, dist_config)
 
-                    if notarization.should_notarize():
+                    if config.notarize.should_notarize():
                         uuid = notarize.submit(dmg_path, dist_config)
                         uuids_to_package_path[uuid] = dmg_path
 
                 if dist.package_as_pkg:
                     pkg_path = _package_and_sign_pkg(paths, dist_config)
 
-                    if notarization.should_notarize():
+                    if config.notarize.should_notarize():
                         uuid = notarize.submit(pkg_path, dist_config)
                         uuids_to_package_path[uuid] = pkg_path
 
             # If needed, wait for package notarization results to come back, and
             # staple if required.
-            if notarization.should_wait():
+            if config.notarize.should_wait():
                 for result in notarize.wait_for_results(
                         uuids_to_package_path.keys(), config):
-                    if notarization.should_staple():
+                    if config.notarize.should_staple():
                         package_path = uuids_to_package_path[result]
                         notarize.staple(package_path)
 

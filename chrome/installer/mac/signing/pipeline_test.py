@@ -1319,11 +1319,9 @@ class TestSignAll(unittest.TestCase):
         kwargs[
             '_package_and_sign_dmg'].return_value = '/$O/AppProduct-99.0.9999.99.dmg'
 
-        config = test_config.TestConfig()
-        pipeline.sign_all(
-            self.paths,
-            config,
-            notarization=model.NotarizeAndStapleLevel.NOWAIT)
+        config = test_config.TestConfig(
+            notarize=model.NotarizeAndStapleLevel.NOWAIT)
+        pipeline.sign_all(self.paths, config)
 
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
@@ -1366,11 +1364,9 @@ class TestSignAll(unittest.TestCase):
         kwargs[
             '_package_and_sign_dmg'].return_value = '/$O/AppProduct-99.0.9999.99.dmg'
 
-        config = test_config.TestConfig()
-        pipeline.sign_all(
-            self.paths,
-            config,
-            notarization=model.NotarizeAndStapleLevel.WAIT_NOSTAPLE)
+        config = test_config.TestConfig(
+            notarize=model.NotarizeAndStapleLevel.WAIT_NOSTAPLE)
+        pipeline.sign_all(self.paths, config)
 
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
@@ -1406,9 +1402,9 @@ class TestSignAll(unittest.TestCase):
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
 
-        config = test_config.TestConfig()
-        pipeline.sign_all(
-            self.paths, config, notarization=model.NotarizeAndStapleLevel.NONE)
+        config = test_config.TestConfig(
+            notarize=model.NotarizeAndStapleLevel.NONE)
+        pipeline.sign_all(self.paths, config)
 
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
 
@@ -1431,12 +1427,9 @@ class TestSignAll(unittest.TestCase):
         for attr in kwargs:
             manager.attach_mock(kwargs[attr], attr)
 
-        config = test_config.TestConfig()
-        pipeline.sign_all(
-            self.paths,
-            config,
-            disable_packaging=True,
-            notarization=model.NotarizeAndStapleLevel.NONE)
+        config = test_config.TestConfig(
+            notarize=model.NotarizeAndStapleLevel.NONE)
+        pipeline.sign_all(self.paths, config, disable_packaging=True)
 
         manager.assert_has_calls([
             # First customize the distribution and sign it.
@@ -1480,9 +1473,8 @@ class TestSignAll(unittest.TestCase):
                         package_as_pkg=True),
                 ]
 
-        config = Config()
-        pipeline.sign_all(
-            self.paths, config, notarization=model.NotarizeAndStapleLevel.NONE)
+        config = Config(notarize=model.NotarizeAndStapleLevel.NONE)
+        pipeline.sign_all(self.paths, config)
 
         self.assertEqual(1, kwargs['_package_installer_tools'].call_count)
         self.assertEqual(3, kwargs['_customize_and_sign_chrome'].call_count)
@@ -1534,11 +1526,10 @@ class TestSignAll(unittest.TestCase):
                     model.Distribution(),
                 ]
 
-        config = Config()
+        config = Config(notarize=model.NotarizeAndStapleLevel.NONE)
         pipeline.sign_all(
             self.paths,
             config,
-            notarization=model.NotarizeAndStapleLevel.NONE,
             skip_brands=skip_brands,
             channels=include_channels)
 
