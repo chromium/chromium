@@ -683,4 +683,11 @@ void FakeDriveFs::ClearOfflineFiles(
   std::move(callback).Run(drive::FILE_ERROR_OK);
 }
 
+void FakeDriveFs::GetDocsOfflineStats(
+    drivefs::mojom::DriveFs::GetDocsOfflineStatsCallback callback) {
+  drivefs::mojom::DocsOfflineStatsPtr stats =
+      drivefs::mojom::DocsOfflineStats::New();
+  std::move(callback).Run(drive::FILE_ERROR_OK, std::move(stats));
+}
+
 }  // namespace drivefs

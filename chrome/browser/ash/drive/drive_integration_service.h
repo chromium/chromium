@@ -322,6 +322,10 @@ class DriveIntegrationService : public KeyedService,
       mojo::PendingRemote<crosapi::mojom::DriveFsNativeMessageHostBridge>
           bridge);
 
+  // Gets counts of files in docs offline extension.
+  void GetDocsOfflineStats(
+      drivefs::mojom::DriveFs::GetDocsOfflineStatsCallback callback);
+
  private:
   enum State {
     NOT_INITIALIZED,

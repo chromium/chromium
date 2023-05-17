@@ -344,6 +344,59 @@ chromium-metrics-reviews@google.com.
   <summary>Tracks success rate of pinning hosted files in Drive.</summary>
 </histogram>
 
+<histogram
+    name="FileBrowser.DriveOfflineHostedCount.{OpenIsAvailable}.AvailablePercent"
+    units="%" expires_after="2023-10-08">
+  <owner>joelhockey@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Percent of total Drive hosted files that are available offline, recorded
+    when a hosted Drive file is opened.
+  </summary>
+  <token key="OpenIsAvailable">
+    <variant name="OpenFileAvailable"/>
+    <variant name="OpenFileUnavailable"/>
+  </token>
+</histogram>
+
+<histogram
+    name="FileBrowser.DriveOfflineHostedCount.{OpenIsAvailable}.{DocsOfflineCounts}"
+    units="Files" expires_after="2023-10-08">
+  <owner>joelhockey@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Count of Drive hosted files that are or are not available offline, recorded
+    when a hosted Drive file is opened. Zero represents errors when docs offline
+    extension was not available to query. All values are increased by 1 so we
+    can differentiate between errors (0-bucket) and zero count (1-bucket), but
+    this will make little difference after the first few buckets since bucket
+    size grows large for this 100K histogram with 50 buckets.
+  </summary>
+  <token key="OpenIsAvailable">
+    <variant name="OpenFileAvailable"/>
+    <variant name="OpenFileUnavailable"/>
+  </token>
+  <token key="DocsOfflineCounts">
+    <variant name="Available"/>
+    <variant name="Total"/>
+    <variant name="Unavailable"/>
+  </token>
+</histogram>
+
+<histogram name="FileBrowser.DriveOfflineOpen.{OpenIsAvailable}"
+    enum="ViewFileType" expires_after="2023-10-08">
+  <owner>joelhockey@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    File types that are or are not available offline when opened, recorded when
+    a Drive file is opened.
+  </summary>
+  <token key="OpenIsAvailable">
+    <variant name="Available"/>
+    <variant name="Unavailable"/>
+  </token>
+</histogram>
+
 <histogram name="FileBrowser.DrivePinSuccess" enum="BooleanSuccess"
     expires_after="2023-10-08">
   <owner>austinct@chromium.org</owner>
