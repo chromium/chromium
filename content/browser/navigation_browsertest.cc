@@ -6311,6 +6311,145 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(final_url, results[1].url);
 }
 
+// Tests when a navigation is pending commit, two new navigations start one
+// after another in the same frame.
+IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
+                       BeginTwoNavigationsDuringCommitNavigation) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  // Prior to implementing the UndoCommitNavigation() workaround, the race
+  // condition being tested would result in a crash in the b.com renderer. Open
+  // another b.com window in the same browsing instance to verify that the b.com
+  // renderer does not unexpectedly crash even if the b.com speculative
+  // RenderFrameHost is discarded.
+  ASSERT_TRUE(ExecJs(
+      shell(), JsReplace("window.open($1)", embedded_test_server()->GetURL(
+                                                "b.com", "/title1.html"))));
+  ASSERT_EQ(2u, Shell::windows().size());
+  WebContentsImpl* new_web_contents =
+      static_cast<WebContentsImpl*>(Shell::windows()[1]->web_contents());
+  WaitForLoadStop(new_web_contents);
+  RenderProcessHost* const b_com_render_process_host =
+      new_web_contents->GetPrimaryMainFrame()->GetProcess();
+
+  NavigationLogger logger(shell()->web_contents());
+
+  // Start a navigation that will create a speculative RFH in the existing
+  // render process for b.com.
+  const GURL url_b =
+      embedded_test_server()->GetURL("b.com", "/infinitely_loading_image.html");
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(shell(), url_b));
+
+  // Ensure the speculative RFH is in the expected process (i.e. the b.com
+  // process that was created for the navigation in the new window earlier).
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* speculative_render_frame_host =
+      root->render_manager()->speculative_frame_host();
+  ASSERT_TRUE(speculative_render_frame_host);
+  EXPECT_EQ(b_com_render_process_host,
+            speculative_render_frame_host->GetProcess());
+
+  // Pause (and potentially ignore, if navigation queueing is disabled) the next
+  // `DidCommitProvisionalLoad()` for b.com.
+  CommitNavigationPauser commit_pauser(speculative_render_frame_host);
+  commit_pauser.WaitForCommitAndPause();
+
+  // Now begin a new navigation to c.com while the previous b.com navigation
+  // above is paused in the pending commit state.
+  absl::optional<ResumeCommitClosureSetWaiter>
+      url_c_resume_commit_closure_set_waiter;
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    // If navigation queueing is enabled, the test should verify that a resume
+    // commit closure is actually set. Install a watcher now, before beginning
+    // the `url_c` navigation, since the resume commit closure may be
+    // synchronously set while handling the `BeginNavigation()` IPC in the
+    // browser.
+    OnNextDidStartNavigation(web_contents, [&](NavigationHandle* handle) {
+      url_c_resume_commit_closure_set_waiter.emplace(handle);
+    });
+  }
+
+  const GURL url_c = embedded_test_server()->GetURL("c.com", "/title1.html");
+  TestNavigationManager url_c_nav(web_contents, url_c);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, url_c));
+  ASSERT_TRUE(url_c_nav.WaitForRequestStart());
+  EXPECT_EQ(url_c, root->navigation_request()->GetURL());
+
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    // The navigation to c.com should be queued.
+    url_c_nav.ResumeNavigation();
+    url_c_resume_commit_closure_set_waiter->Wait();
+  }
+
+  // Now begin another navigation to d.com, which will cancel the navigation to
+  // c.com.
+  absl::optional<ResumeCommitClosureSetWaiter>
+      url_d_resume_commit_closure_set_waiter;
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    // Install a commit closure watched for the `url_d` navigation too.
+    OnNextDidStartNavigation(web_contents, [&](NavigationHandle* handle) {
+      url_d_resume_commit_closure_set_waiter.emplace(handle);
+    });
+  }
+  const GURL url_d = embedded_test_server()->GetURL("d.com", "/title1.html");
+  TestNavigationManager url_d_nav(web_contents, url_d);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(web_contents, url_d));
+  ASSERT_TRUE(url_d_nav.WaitForRequestStart());
+  EXPECT_EQ(url_d, root->navigation_request()->GetURL());
+
+  // The navigation to c.com didn't commit as it was replaced by the d.com
+  // navigation.
+  EXPECT_TRUE(url_c_nav.WaitForNavigationFinished());
+  EXPECT_FALSE(url_c_nav.was_committed());
+
+  // Continue the d.com navigation.
+  url_d_nav.ResumeNavigation();
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    // Wait for the `url_d` navigation to be queued, and finish the pending
+    // commit b.com navigation.
+    url_d_resume_commit_closure_set_waiter->Wait();
+    commit_pauser.ResumePausedCommit();
+  }
+
+  // After all the navigations finished, we will end up in d.com.
+  EXPECT_TRUE(url_d_nav.WaitForNavigationFinished());
+  EXPECT_EQ(url_d, web_contents->GetLastCommittedURL());
+
+  // Check the order of navigations finishing.
+  auto results = logger.results();
+  ASSERT_EQ(3u, results.size());
+
+  EXPECT_FALSE(results[0].committed);
+  EXPECT_EQ(absl::nullopt, results[0].origin);
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    // When navigation queueing is enabled, the pending commit navigation to
+    // b.com won't get canceled when the c.com navigation starts. Then when the
+    // d.com navigation starts, the c.com navigation will get canceled and
+    // finishes first without commmitting (while the b.com navigation stays as
+    // it is pending commit).
+    EXPECT_EQ(url_c, results[0].url);
+    EXPECT_TRUE(results[1].committed);
+    // After continuing b.com's commit, it finishes and commits succesfully.
+    EXPECT_EQ(url_b, results[1].url);
+    EXPECT_EQ(embedded_test_server()->GetOrigin("b.com"), results[1].origin);
+  } else {
+    // When navigation queueing is disabled, the pending commit navigation to
+    // b.com gets canceled when the c.com navigation starts. Then when the
+    // d.com navigation starts, the c.com navigation will get canceled too.
+    EXPECT_EQ(url_b, results[0].url);
+    EXPECT_FALSE(results[1].committed);
+    EXPECT_EQ(url_c, results[1].url);
+    EXPECT_EQ(absl::nullopt, results[1].origin);
+  }
+  // Finally, the d.com navigation finishes and commits last.
+  EXPECT_TRUE(results[2].committed);
+  EXPECT_EQ(url_d, results[2].url);
+  EXPECT_EQ(embedded_test_server()->GetOrigin("d.com"), results[2].origin);
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          CommitNavigationRaceBrowserTest,
                          ::testing::Bool(),
