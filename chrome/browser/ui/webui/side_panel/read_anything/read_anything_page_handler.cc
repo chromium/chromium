@@ -180,7 +180,7 @@ void ReadAnythingPageHandler::StateChanged(
   if (state == screen_ai::ScreenAIInstallState::State::kDownloaded) {
     screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
         browser_->profile())
-        ->LaunchIfNotRunning();
+        ->InitializeMainContentExtractionIfNeeded();
     return;
   }
   if (state == screen_ai::ScreenAIInstallState::State::kReady) {

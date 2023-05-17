@@ -31,20 +31,17 @@ namespace screen_ai {
 // snapshots and extracting the main content of a page.
 // See more in: google3/chrome/chromeos/accessibility/machine_intelligence/
 // chrome_screen_ai/README.md
-class ScreenAIService : public mojom::ScreenAIService,
+class ScreenAIService : public mojom::ScreenAIServiceFactory,
+                        public mojom::OCRService,
+                        public mojom::MainContentExtractionService,
                         public mojom::ScreenAIAnnotator,
                         public mojom::Screen2xMainContentExtractor {
  public:
   explicit ScreenAIService(
-      mojo::PendingReceiver<mojom::ScreenAIService> receiver);
+      mojo::PendingReceiver<mojom::ScreenAIServiceFactory> receiver);
   ScreenAIService(const ScreenAIService&) = delete;
   ScreenAIService& operator=(const ScreenAIService&) = delete;
   ~ScreenAIService() override;
-
-  // Calls `success_callback` function and tells it if `library` has value.
-  // Kills the current process if `library` does not has value .
-  void SetLibraryOrDie(LoadAndInitializeLibraryCallback success_callback,
-                       std::unique_ptr<ScreenAILibraryWrapper> library);
 
   static void RecordMetrics(ukm::SourceId ukm_source_id,
                             ukm::UkmRecorder* ukm_recorder,
@@ -74,31 +71,49 @@ class ScreenAIService : public mojom::ScreenAIService,
                           ukm::SourceId ukm_source_id,
                           ExtractMainContentCallback callback) override;
 
-  // mojom::ScreenAIService:
-  void LoadAndInitializeLibrary(
+  // mojom::ScreenAIServiceFactory:
+  void InitializeMainContentExtraction(
       base::File model_config,
       base::File model_tflite,
       const base::FilePath& library_path,
-      LoadAndInitializeLibraryCallback callback) override;
+      mojo::PendingReceiver<mojom::MainContentExtractionService>
+          main_content_extractor_service_receiver,
+      InitializeMainContentExtractionCallback callback) override;
 
-  // mojom::ScreenAIService:
+  // mojom::ScreenAIServiceFactory:
+  void InitializeOCR(
+      const base::FilePath& library_path,
+      mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
+      InitializeOCRCallback callback) override;
+
+  // mojom::OCRService:
   void BindAnnotator(
       mojo::PendingReceiver<mojom::ScreenAIAnnotator> annotator) override;
 
-  // mojom::ScreenAIService:
+  // mojom::OCRService:
   void BindAnnotatorClient(mojo::PendingRemote<mojom::ScreenAIAnnotatorClient>
                                annotator_client) override;
 
-  // mojom::ScreenAIService:
+  // mojom::MainContentExtractionService:
   void BindMainContentExtractor(
       mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>
           main_content_extractor) override;
+
+  void InitializeMainContentExtractionInternal(
+      mojo::PendingReceiver<mojom::MainContentExtractionService>
+          main_content_extractor_service_receiver,
+      InitializeMainContentExtractionCallback callback,
+      std::unique_ptr<ScreenAILibraryWrapper::MainContentExtractionModelData>
+          model_data);
 
   // Wrapper to call `PerformOcr` library function and record metrics.
   absl::optional<chrome_screen_ai::VisualAnnotation> PerformOcrAndRecordMetrics(
       const SkBitmap& image);
 
-  mojo::Receiver<mojom::ScreenAIService> receiver_;
+  mojo::Receiver<mojom::ScreenAIServiceFactory> factory_receiver_;
+  mojo::Receiver<mojom::OCRService> ocr_receiver_;
+  mojo::Receiver<mojom::MainContentExtractionService>
+      main_content_extraction_receiver_;
 
   // The set of receivers used to receive messages from annotators.
   mojo::ReceiverSet<mojom::ScreenAIAnnotator> screen_ai_annotators_;

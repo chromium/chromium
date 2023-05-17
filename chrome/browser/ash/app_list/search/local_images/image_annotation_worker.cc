@@ -77,7 +77,7 @@ void ImageAnnotationWorker::Initialize(AnnotationStorage* annotation_storage) {
 
   if (!use_fake_annotator_for_tests_) {
     DVLOG(1) << "Initializing OCR DLC.";
-    screen_ai_service_router_.LaunchIfNotRunning();
+    screen_ai_service_router_.InitializeOCRIfNeeded();
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
