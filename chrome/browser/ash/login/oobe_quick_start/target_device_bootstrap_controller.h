@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -45,6 +46,7 @@ class TargetDeviceBootstrapController
     CONNECTION_REJECTED,
     CONNECTION_CLOSED,
     WIFI_CREDENTIALS_NOT_RECEIVED,
+    USER_VERIFICATION_FAILED,
   };
 
   using QRCodePixelData = std::vector<uint8_t>;
@@ -108,6 +110,11 @@ class TargetDeviceBootstrapController
   void NotifyObservers();
   void OnStartAdvertisingResult(bool success);
   void OnStopAdvertising();
+
+  void WaitForUserVerification(base::OnceClosure on_verification);
+  void OnUserVerificationResult(base::OnceClosure on_verification,
+                                absl::optional<mojom::UserVerificationResponse>
+                                    user_verification_response);
 
   // If the target device successfully receives an ack message within a
   // specified timeout, it prepares to automatically resume Quick Start after

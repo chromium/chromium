@@ -50,10 +50,21 @@ void FakeConnection::RequestWifiCredentials(
   wifi_credentials_callback_ = std::move(callback);
 }
 
+void FakeConnection::WaitForUserVerification(
+    AwaitUserVerificationCallback callback) {
+  await_user_verification_callback_ = std::move(callback);
+}
+
 void FakeConnection::SendWifiCredentials(
     absl::optional<mojom::WifiCredentials> credentials) {
   CHECK(wifi_credentials_callback_);
   std::move(wifi_credentials_callback_).Run(credentials);
+}
+
+void FakeConnection::VerifyUser(
+    absl::optional<mojom::UserVerificationResponse> response) {
+  CHECK(await_user_verification_callback_);
+  std::move(await_user_verification_callback_).Run(response);
 }
 
 bool FakeConnection::WasHandshakeInitiated() {

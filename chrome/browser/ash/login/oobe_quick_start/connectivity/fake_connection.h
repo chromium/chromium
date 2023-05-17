@@ -43,14 +43,17 @@ class FakeConnection : public Connection {
                          HandshakeSuccessCallback callback) override;
   void RequestWifiCredentials(int32_t session_id,
                               RequestWifiCredentialsCallback callback) override;
+  void WaitForUserVerification(AwaitUserVerificationCallback callback) override;
 
   bool WasHandshakeInitiated();
   void SendWifiCredentials(absl::optional<mojom::WifiCredentials> credentials);
+  void VerifyUser(absl::optional<mojom::UserVerificationResponse> response);
 
  private:
   bool handshake_initiated_ = false;
   HandshakeSuccessCallback handshake_success_callback_;
   RequestWifiCredentialsCallback wifi_credentials_callback_;
+  AwaitUserVerificationCallback await_user_verification_callback_;
 
   base::WeakPtrFactory<FakeConnection> weak_ptr_factory_{this};
 };

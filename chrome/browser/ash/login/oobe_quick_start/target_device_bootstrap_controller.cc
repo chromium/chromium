@@ -211,15 +211,40 @@ void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
           kTargetDeviceUpdate);
 }
 
+void TargetDeviceBootstrapController::WaitForUserVerification(
+    base::OnceClosure on_verification) {
+  authenticated_connection_->WaitForUserVerification(base::BindOnce(
+      &TargetDeviceBootstrapController::OnUserVerificationResult,
+      weak_ptr_factory_.GetWeakPtr(), std::move(on_verification)));
+}
+
+void TargetDeviceBootstrapController::OnUserVerificationResult(
+    base::OnceClosure on_verification,
+    absl::optional<mojom::UserVerificationResponse>
+        user_verification_response) {
+  if (!user_verification_response.has_value() ||
+      user_verification_response->result ==
+          mojom::UserVerificationResult::kUserNotVerified) {
+    status_.step = Step::ERROR;
+    status_.payload = ErrorCode::USER_VERIFICATION_FAILED;
+    NotifyObservers();
+    return;
+  }
+
+  std::move(on_verification).Run();
+}
+
 void TargetDeviceBootstrapController::AttemptWifiCredentialTransfer() {
   status_.step = Step::CONNECTING_TO_WIFI;
   status_.payload.emplace<absl::monostate>();
 
-  authenticated_connection_->RequestWifiCredentials(
-      session_id_,
+  WaitForUserVerification(base::BindOnce(
+      &TargetDeviceConnectionBroker::AuthenticatedConnection::
+          RequestWifiCredentials,
+      authenticated_connection_, session_id_,
       base::BindOnce(
           &TargetDeviceBootstrapController::OnWifiCredentialsReceived,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr())));
 
   NotifyObservers();
 }
