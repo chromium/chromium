@@ -86,13 +86,20 @@ public abstract class BaseNotificationController
     }
 
     private void updateNotificationMetadata() {
-        MediaMetadata notificationMetadata = new MediaMetadata("", "", "");
+        // We use a placeholder title here to comply with the requirement for non-empty
+        // notification titles. See crbug.com/1445673 for more details.
+        MediaMetadata notificationMetadata = new MediaMetadata("Chromecast", "", "");
         mNotificationBuilder.setMetadata(notificationMetadata);
 
         if (!mSessionController.isConnected()) return;
 
         CastDevice castDevice = mSessionController.getSession().getCastDevice();
-        if (castDevice != null) notificationMetadata.setTitle(castDevice.getFriendlyName());
+        if (castDevice != null) {
+            String friendlyName = castDevice.getFriendlyName();
+            if (friendlyName != null && !friendlyName.isEmpty()) {
+                notificationMetadata.setTitle(friendlyName);
+            }
+        }
 
         RemoteMediaClient remoteMediaClient = mSessionController.getRemoteMediaClient();
 
@@ -103,7 +110,7 @@ public abstract class BaseNotificationController
         if (metadata == null) return;
 
         String title = metadata.getString(com.google.android.gms.cast.MediaMetadata.KEY_TITLE);
-        if (title != null) notificationMetadata.setTitle(title);
+        if (title != null && !title.isEmpty()) notificationMetadata.setTitle(title);
 
         String artist = metadata.getString(com.google.android.gms.cast.MediaMetadata.KEY_ARTIST);
         if (artist == null) {
