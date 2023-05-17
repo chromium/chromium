@@ -6693,8 +6693,7 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Use your Google Account on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
   <message name="IDS_GAIA_INFO_DESCRIPTION" desc="Description of the Gaia Info screen.">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>On the next screen, sign in with your Google Account.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>This is the same account you use for Gmail, YouTube, Chrome, and other Google services. Use your account for a personalized experience and easy access to all of your information.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>If you don't have a Google Account, you'll be able to create one on the next screen.<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
+    Your Google Account is the same account you use for Gmail, YouTube, Chrome, and other Google products.
+    Use your account to easily access all of your bookmarks, files, and more. If you don't have an account, you can create one on the next screen.
   </message>
 </grit-part>
