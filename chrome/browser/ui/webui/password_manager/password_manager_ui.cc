@@ -110,8 +110,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
      IDS_PASSWORD_MANAGER_UI_BACK_TO_PASSWORDS_ARIA_DESCRIPTION},
     {"blockedSitesDescription",
      IDS_PASSWORD_MANAGER_UI_BLOCKED_SITES_DESCRIPTION},
-    {"blockedSitesEmptyDescription",
-     IDS_PASSWORD_MANAGER_UI_NO_BLOCKED_SITES_DESCRIPTION},
     {"blockedSitesTitle", IDS_PASSWORD_MANAGER_UI_BLOCKED_SITES_TITLE},
     {"cancel", IDS_CANCEL},
     {"changePassword", IDS_PASSWORD_MANAGER_UI_CHANGE_PASSWORD_BUTTON},
