@@ -135,6 +135,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // ID of the last item to be inserted. This is used to track if the active tab
 // was newly created when building the animation layout for transitions.
 @property(nonatomic, copy) NSString* lastInsertedItemID;
+// Identifier of the lastest dragged item. This property is set when the item is
+// long pressed which does not always result in a drag action.
+@property(nonatomic, copy) NSString* draggedItemID;
 // Animator to show or hide the empty state.
 @property(nonatomic, strong) UIViewPropertyAnimator* emptyStateAnimator;
 // The current layout for the tab switcher.
@@ -881,6 +884,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
     dragSessionWillBegin:(id<UIDragSession>)session {
+  [self.dragDropHandler dragWillBeginForItemWithID:_draggedItemID];
   self.dragEndAtNewIndex = NO;
   self.localDragActionInProgress = YES;
   base::UmaHistogramEnumeration(kUmaGridViewDragDropTabs,
@@ -942,7 +946,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   }
   if (_mode != TabGridModeSelection) {
     TabSwitcherItem* item = self.items[indexPath.item];
-    return @[ [self.dragDropHandler dragItemForItemWithID:item.identifier] ];
+    _draggedItemID = item.identifier;
+    return @[ [self.dragDropHandler dragItemForItemWithID:_draggedItemID] ];
   }
 
   // Make sure that the long pressed cell is selected before initiating a drag

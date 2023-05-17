@@ -874,13 +874,16 @@ void RecordTabGridCloseTabsCount(int count) {
 #pragma mark - TabCollectionDragDropHandler
 
 - (UIDragItem*)dragItemForItemWithID:(NSString*)itemID {
-  _dragItemID = itemID;
   web::WebState* webState = GetWebState(
       self.webStateList, WebStateSearchCriteria{
                              .identifier = itemID,
                              .pinned_state = PinnedState::kNonPinned,
                          });
   return CreateTabDragItem(webState);
+}
+
+- (void)dragWillBeginForItemWithID:(NSString*)itemID {
+  _dragItemID = [itemID copy];
 }
 
 - (void)dragSessionDidEnd {

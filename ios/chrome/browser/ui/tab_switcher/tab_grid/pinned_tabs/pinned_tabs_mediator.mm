@@ -391,7 +391,6 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
 #pragma mark - TabCollectionDragDropHandler
 
 - (UIDragItem*)dragItemForItemWithID:(NSString*)itemID {
-  _dragItemID = [itemID copy];
   web::WebState* webState =
       GetWebState(self.webStateList, WebStateSearchCriteria{
                                          .identifier = itemID,
@@ -399,6 +398,10 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
                                      });
 
   return CreateTabDragItem(webState);
+}
+
+- (void)dragWillBeginForItemWithID:(NSString*)itemID {
+  _dragItemID = [itemID copy];
 }
 
 - (void)dragSessionDidEnd {
