@@ -64770,6 +64770,8 @@ from previous Chrome versions.
   <int value="1185424279" label="enable-media-router"/>
   <int value="1185669166" label="AlwaysAbandonScheduledTask:disabled"/>
   <int value="1187103825" label="OmniboxSuggestionsWrapAround:enabled"/>
+  <int value="1187248580"
+      label="CrOSLateBootLongBluetoothAutosuspend:disabled"/>
   <int value="1188109510" label="AssistantAudioEraser:enabled"/>
   <int value="1190035852" label="MediaRemoting:enabled"/>
   <int value="1191531211" label="RawClipboard:disabled"/>
@@ -66101,6 +66103,7 @@ from previous Chrome versions.
   <int value="1883558610" label="GalleryAppPdfEditNotification:disabled"/>
   <int value="1883856892" label="SupportToolCopyTokenButton:disabled"/>
   <int value="1883998150" label="WebAppsCrosapi:disabled"/>
+  <int value="1884218080" label="CrOSLateBootLongBluetoothAutosuspend:enabled"/>
   <int value="1887031213" label="AutofillManualFallbackAndroid:disabled"/>
   <int value="1887085478" label="WallpaperGooglePhotosSharedAlbums:enabled"/>
   <int value="1887882558" label="RTCUnifiedPlanByDefault:enabled"/>

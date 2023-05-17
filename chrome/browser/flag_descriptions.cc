@@ -5266,6 +5266,14 @@ const char kBluetoothUseLLPrivacyDescription[] =
     "Enable address resolution offloading to Bluetooth Controller if "
     "supported. Modifying this flag will cause Bluetooth Controller to reset.";
 
+const char kBluetoothLongAutosuspendName[] =
+    "Use longer autosuspend delay for Bluetooth";
+const char kBluetoothLongAutosuspendDescription[] =
+    "Bluetooth will suspend-to-idle if there is no traffic for a set amount of "
+    "time. When this flag is set, this autosuspend delay will be increased to "
+    "several minutes when mice/keyboards are connected. This will impact power "
+    "usage.";
+
 const char kCalendarJellyName[] = "Enable Calendar Jelly features";
 const char kCalendarJellyDescription[] =
     "Enables Jelly changes for the sys tray Calendar views.";
