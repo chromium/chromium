@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_QUOTA_ERROR_OR_H_
 #define COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_QUOTA_ERROR_OR_H_
 
+#include <tuple>
+
 #include "base/types/expected.h"
 
 namespace storage {
@@ -25,13 +27,29 @@ enum class QuotaError {
 };
 
 struct DetailedQuotaError {
-  DetailedQuotaError(QuotaError error) : quota_error(error) {}
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr DetailedQuotaError(QuotaError error) : quota_error(error) {}
 
-  bool operator==(QuotaError error) const { return quota_error == error; }
+  bool operator==(const DetailedQuotaError& error) const {
+    return std::tie(quota_error, sqlite_error) ==
+           std::tie(error.quota_error, error.sqlite_error);
+  }
+  bool operator!=(const DetailedQuotaError& error) const {
+    return !operator==(error);
+  }
 
   QuotaError quota_error;
   int sqlite_error = 0;
 };
+
+constexpr bool operator==(QuotaError error,
+                          const DetailedQuotaError& detailed_error) {
+  return DetailedQuotaError(error) == detailed_error;
+}
+constexpr bool operator!=(QuotaError error,
+                          const DetailedQuotaError& detailed_error) {
+  return !operator==(error, detailed_error);
+}
 
 // Helper for methods which perform database operations which may fail. Objects
 // of this type can on either a QuotaError or a result value of arbitrary type.
