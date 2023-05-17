@@ -374,4 +374,7 @@ tast_disabled_tests_from_lacros_all = [
 
   # https://crbug.com/1440735
   "mlservice.WebHandwritingRecognition.lacros",
+
+  # https://crbug.com/1446233
+  "tast.arc.IntentForward.lacros_vm",
 ]
