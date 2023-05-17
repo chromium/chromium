@@ -7715,7 +7715,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <ph name="FOLDER_TITLE">$1<ex>All Bookmarks</ex></ph> folder
       </message>
       <message name="IDS_BOOKMARK_OPTIONS_LABEL" is_accessibility_with_no_ui="true" desc="Accessible label for the bookmarks side panel context menu button">
-        Bookmark options
+        More options for <ph name="FOLDER_TITLE">$1<ex>All Bookmarks</ex></ph> bookmark
+      </message>
+      <message name="IDS_FOLDER_OPTIONS_LABEL" is_accessibility_with_no_ui="true" desc="Accessible label for the bookmark folder side panel context menu button">
+        More options for <ph name="FOLDER_TITLE">$1<ex>All Bookmarks</ex></ph> bookmark folder
       </message>
       <message name="IDS_BOOKMARKS_OPEN_FOLDER_LABEL" is_accessibility_with_no_ui="true" desc="Accessible label for a bookmarks side panel folder list item">
         Open folder <ph name="FOLDER_TITLE">$1<ex>All Bookmarks</ex></ph>

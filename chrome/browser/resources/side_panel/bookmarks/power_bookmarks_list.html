@@ -231,7 +231,7 @@
                               compactDescriptions_.*, expandedDescriptions_.*,
                               compact_)]]"
               compact="[[compact_]]" trailing-icon="cr:more-vert"
-              trailing-icon-aria-label="$i18n{bookmarkOptionsA11yLabel}"
+              trailing-icon-aria-label="[[getBookmarkMenuA11yLabel_(item)]]"
               trailing-icon-tooltip="$i18n{tooltipMore}"
               has-checkbox="[[editing_]]"
               checkbox-disabled="[[!canEdit_(item)]]"

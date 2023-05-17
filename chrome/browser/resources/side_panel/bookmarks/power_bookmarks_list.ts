@@ -528,6 +528,15 @@ export class PowerBookmarksListElement extends PolymerElement {
     }
   }
 
+  private getBookmarkMenuA11yLabel_(
+      bookmark: chrome.bookmarks.BookmarkTreeNode): string {
+    if (bookmark.url) {
+      return loadTimeData.getStringF('bookmarkMenuLabel', bookmark.title);
+    } else {
+      return loadTimeData.getStringF('folderMenuLabel', bookmark.title);
+    }
+  }
+
   private getBookmarkAllyLabel_(bookmark: chrome.bookmarks.BookmarkTreeNode):
       string {
     if (bookmark.url) {
