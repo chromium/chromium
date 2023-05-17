@@ -257,8 +257,7 @@ void LoadStreamTask::LoadFromNetwork1(
     bool need_to_read_pending_actions) {
   // Don't consume quota if refreshed by user.
   LaunchResult should_make_request = stream_->ShouldMakeFeedQueryRequest(
-      options_.stream_type, options_.load_type,
-      /*consume_quota=*/options_.load_type != LoadType::kManualRefresh);
+      options_.stream_type, options_.load_type);
   if (should_make_request.load_stream_status != LoadStreamStatus::kNoStatus) {
     return Done(should_make_request);
   }
@@ -278,7 +277,7 @@ void LoadStreamTask::LoadFromNetwork2(
 
   // If no pending action exists in the store, go directly to send query
   // request.
-  if (pending_actions_from_store.empty()) {
+  if (!need_to_read_pending_actions && pending_actions_from_store.empty()) {
     SendFeedQueryRequest();
   } else {
     UploadActions(std::move(pending_actions_from_store));

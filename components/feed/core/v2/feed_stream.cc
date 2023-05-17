@@ -565,6 +565,7 @@ void FeedStream::LoadMore(const FeedStreamSurface& surface,
     DLOG(ERROR) << "Ignoring LoadMore() before the model is loaded";
     return std::move(callback).Run(false);
   }
+
   // We want to abort early to avoid showing a loading spinner if it's not
   // necessary.
   if (ShouldMakeFeedQueryRequest(surface.GetStreamType(), LoadType::kLoadMore,
@@ -620,6 +621,12 @@ void FeedStream::ManualRefresh(const StreamType& stream_type,
   if (stream.model_loading_in_progress || stream.surfaces.empty()) {
     return std::move(callback).Run(false);
   }
+
+  // The user has manually pulled to refresh. In this case we allow resetting
+  // the request throttler. Without this, it's likely the user will hit a
+  // request limit.
+  feed::prefs::SetThrottlerRequestCounts({}, *profile_prefs_);
+
   stream.model_loading_in_progress = true;
 
   stream.surface_updater->LoadStreamStarted(/*manual_refreshing=*/true);

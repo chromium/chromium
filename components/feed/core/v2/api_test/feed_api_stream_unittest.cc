@@ -2866,6 +2866,41 @@ TEST_F(FeedStreamTestForAllStreamTypes, ManualRefreshInterestFeedSuccess) {
   EXPECT_EQ("", surface2.DescribeUpdates());
 }
 
+TEST_F(FeedApiTest, ManualRefreshResetsRequestThrottlerQuota) {
+  Config config;
+  // Small number to make test faster.
+  config.max_action_upload_requests_per_day = 3;
+  SetFeedConfigForTesting(config);
+
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  // Exhaust upload action request throttler quota.
+  for (;;) {
+    CallbackReceiver<UploadActionsTask::Result> callback;
+    stream_->UploadAction(MakeFeedAction(42ul), CreateLoggingParameters(), true,
+                          callback.Bind());
+    if (callback.RunAndGetResult().upload_attempt_count == 0ul) {
+      break;
+    }
+  }
+
+  // Do a manual refresh, it should upload the queued action immediately, and
+  // allow further upload actions.
+  int action_requests_before =
+      network_.GetApiRequestCount<UploadActionsDiscoverApi>();
+  response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  stream_->ManualRefresh(surface.GetStreamType(), base::DoNothing());
+  WaitForIdleTaskQueue();
+  EXPECT_GT(network_.GetApiRequestCount<UploadActionsDiscoverApi>(),
+            action_requests_before);
+
+  CallbackReceiver<UploadActionsTask::Result> callback;
+  stream_->UploadAction(MakeFeedAction(42ul), CreateLoggingParameters(), true,
+                        callback.Bind());
+  EXPECT_GT(callback.RunAndGetResult().upload_attempt_count, 0ul);
+}
+
 TEST_F(FeedStreamTestForAllStreamTypes, ManualRefreshWebFeedSuccess) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestWebFeedSurface surface(stream_.get());
