@@ -20,6 +20,8 @@ namespace {
 
 constexpr char kFakeProfileId[] = "fake-profile-id";
 constexpr char kFakeChallengeResponse[] = "fake_challenge_response";
+constexpr char kFakeCustomerId[] = "fake_obfuscated_customer_id";
+constexpr char kFakeGaiaId[] = "fake_obfuscated_gaia_id";
 
 std::unique_ptr<KeyedService> CreateProfileIDService(
     content::BrowserContext* context) {
@@ -28,23 +30,39 @@ std::unique_ptr<KeyedService> CreateProfileIDService(
 
 }  // namespace
 
-class ProfileAttesterTest : public testing::Test {
+class ProfileAttesterTest
+    : public ::testing::TestWithParam<std::tuple<bool, bool>> {
  protected:
   ProfileAttesterTest() : profile_manager_(TestingBrowserProcess::GetGlobal()) {
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");
-    enterprise::ProfileIdServiceFactory::GetInstance()->SetTestingFactory(
-        profile_, base::BindRepeating(&CreateProfileIDService));
   }
 
   void SetUp() override {
-    testing::Test::SetUp();
+    enterprise::ProfileIdServiceFactory::GetInstance()->SetTestingFactory(
+        profile_, base::BindRepeating(&CreateProfileIDService));
 
     profile_attester_ = std::make_unique<ProfileAttester>(
         enterprise::ProfileIdServiceFactory::GetForProfile(profile_),
         &mock_profile_cloud_policy_store_);
 
     levels_.insert(DTCPolicyLevel::kUser);
+  }
+
+  bool has_customer_id() { return std::get<0>(GetParam()); }
+  bool has_gaia_id() { return std::get<1>(GetParam()); }
+
+  void SetFakeUserPolicyData() {
+    auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+    if (has_customer_id()) {
+      policy_data->set_obfuscated_customer_id(kFakeCustomerId);
+    }
+    if (has_gaia_id()) {
+      policy_data->set_gaia_id(kFakeGaiaId);
+    }
+
+    mock_profile_cloud_policy_store_.set_policy_data_for_testing(
+        std::move(policy_data));
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -58,26 +76,47 @@ class ProfileAttesterTest : public testing::Test {
   std::set<DTCPolicyLevel> levels_;
 };
 
-// Tests that no details are added when the profile attester decorates the key
-// info.
-TEST_F(ProfileAttesterTest, DecorateKeyInfo_NoKeyDetails) {
+// Tests that the correct device details are added when the profile attester
+// decorates the key info.
+TEST_P(ProfileAttesterTest, DecorateKeyInfo_Success) {
+  SetFakeUserPolicyData();
+
   profile_attester_->DecorateKeyInfo(levels_, key_info_,
                                      run_loop_.QuitClosure());
   run_loop_.Run();
 
-  EXPECT_FALSE(key_info_.has_key_type());
-  EXPECT_FALSE(key_info_.has_domain());
-  EXPECT_FALSE(key_info_.has_device_id());
-  EXPECT_FALSE(key_info_.has_certificate());
-  EXPECT_FALSE(key_info_.has_signed_public_key_and_challenge());
-  EXPECT_FALSE(key_info_.has_customer_id());
-  EXPECT_FALSE(key_info_.has_browser_instance_public_key());
-  EXPECT_FALSE(key_info_.has_signing_scheme());
-  EXPECT_FALSE(key_info_.has_device_trust_signals_json());
-  EXPECT_FALSE(key_info_.has_dm_token());
+  EXPECT_EQ(key_info_.profile_id(), kFakeProfileId);
+  EXPECT_EQ(key_info_.user_customer_id(),
+            has_customer_id() ? kFakeCustomerId : "");
+  EXPECT_EQ(key_info_.obfuscated_gaia_id(), has_gaia_id() ? kFakeGaiaId : "");
 }
 
-// Tests that no profile level signature is added to the signature map.
+// Tests that no policy data is added when the user cloud policy store is
+// null.
+TEST_F(ProfileAttesterTest, DecorateKeyInfo_MissingUserCloudPolicyStore) {
+  profile_attester_->DecorateKeyInfo(levels_, key_info_,
+                                     run_loop_.QuitClosure());
+  run_loop_.Run();
+
+  EXPECT_EQ(key_info_.profile_id(), kFakeProfileId);
+  EXPECT_FALSE(key_info_.has_user_customer_id());
+  EXPECT_FALSE(key_info_.has_obfuscated_gaia_id());
+}
+
+// Tests that no user details are added when the user policy level is missing.
+TEST_P(ProfileAttesterTest, DecorateKeyInfo__MissingUserPolicyLevel) {
+  SetFakeUserPolicyData();
+
+  profile_attester_->DecorateKeyInfo(std::set<DTCPolicyLevel>(), key_info_,
+                                     run_loop_.QuitClosure());
+  run_loop_.Run();
+
+  EXPECT_FALSE(key_info_.has_profile_id());
+  EXPECT_FALSE(key_info_.has_user_customer_id());
+  EXPECT_FALSE(key_info_.has_obfuscated_gaia_id());
+}
+
+// Tests that no profile level signature is added to the signed data.
 TEST_F(ProfileAttesterTest, SignResponse_NoSignature) {
   profile_attester_->SignResponse(levels_, kFakeChallengeResponse, signed_data_,
                                   run_loop_.QuitClosure());
@@ -86,4 +125,7 @@ TEST_F(ProfileAttesterTest, SignResponse_NoSignature) {
   EXPECT_FALSE(signed_data_.has_signature());
 }
 
+INSTANTIATE_TEST_SUITE_P(,
+                         ProfileAttesterTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 }  // namespace enterprise_connectors

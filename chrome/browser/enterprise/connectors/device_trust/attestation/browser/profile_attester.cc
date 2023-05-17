@@ -26,8 +26,19 @@ ProfileAttester::~ProfileAttester() = default;
 void ProfileAttester::DecorateKeyInfo(const std::set<DTCPolicyLevel>& levels,
                                       KeyInfo& key_info,
                                       base::OnceClosure done_closure) {
-  // TODO(b:279063303): Populate this with profile specific key info once the DT
-  // proto changes occur.
+  if (levels.find(DTCPolicyLevel::kUser) == levels.end()) {
+    std::move(done_closure).Run();
+    return;
+  }
+
+  key_info.set_profile_id(profile_id_service_->GetProfileId().value_or(""));
+
+  if (user_cloud_policy_store_ && user_cloud_policy_store_->has_policy()) {
+    const auto* policy = user_cloud_policy_store_->policy();
+    key_info.set_user_customer_id(policy->obfuscated_customer_id());
+    key_info.set_obfuscated_gaia_id(policy->gaia_id());
+  }
+
   std::move(done_closure).Run();
 }
 
