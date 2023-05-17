@@ -1,1 +1,1 @@
-chromeos-chrome-orderfile-field-115-5735.12-1683543901-benchmark-115.0.5769.0-r1.orderfile.xz
+chromeos-chrome-orderfile-field-115-5735.12-1683543901-benchmark-115.0.5770.0-r1.orderfile.xz
