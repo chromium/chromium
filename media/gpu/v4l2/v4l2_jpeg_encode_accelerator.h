@@ -145,127 +145,10 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
     base::WritableSharedMemoryMapping exif_mapping;
   };
 
-  // TODO(wtlee): To be deprecated. (crbug.com/944705)
-  //
-  // Encode Instance. One EncodedInstance is used for a specific set of jpeg
-  // parameters. The stored parameters are jpeg quality and resolutions of input
-  // image.
-  // We execute all EncodedInstance methods on |encoder_task_runner_|.
-  class EncodedInstance {
-   public:
-    EncodedInstance(V4L2JpegEncodeAccelerator* parent);
-    ~EncodedInstance();
-
-    bool Initialize();
-
-    // Create V4L2 buffers for input and output.
-    bool CreateBuffers(gfx::Size input_coded_size, size_t output_buffer_size);
-
-    // Set up JPEG related parameters in V4L2 device.
-    bool SetUpJpegParameters(int quality, gfx::Size coded_size);
-
-    // Dequeue last frame and enqueue next frame.
-    void ServiceDevice();
-
-    // Destroy input and output buffers.
-    void DestroyTask();
-
-    base::queue<std::unique_ptr<JobRecord>> input_job_queue_;
-    base::queue<std::unique_ptr<JobRecord>> running_job_queue_;
-
-   private:
-    // Prepare full JPEG markers except SOI and EXIF/APP0 markers in
-    // |jpeg_markers_|.
-    void PrepareJpegMarkers(gfx::Size coded_size);
-
-    // Copy the encoded data from |output_buffer| to the |dst_ptr| provided by
-    // the client. Add JPEG Marks if needed. Add EXIF section by |exif_shm|.
-    size_t FinalizeJpegImage(uint8_t* dst_ptr,
-                             const JpegBufferRecord& output_buffer,
-                             size_t buffer_size,
-                             base::WritableSharedMemoryMapping exif_mapping);
-
-    bool SetInputBufferFormat(gfx::Size coded_size);
-    bool SetOutputBufferFormat(gfx::Size coded_size, size_t buffer_size);
-    bool RequestInputBuffers();
-    bool RequestOutputBuffers();
-
-    void EnqueueInput();
-    void EnqueueOutput();
-    void Dequeue();
-    bool EnqueueInputRecord();
-    bool EnqueueOutputRecord();
-
-    void DestroyInputBuffers();
-    void DestroyOutputBuffers();
-
-    // Return the number of input/output buffers enqueued to the device.
-    size_t InputBufferQueuedCount();
-    size_t OutputBufferQueuedCount();
-
-    void NotifyError(int32_t task_id, Status status);
-
-    // Fill the quantization table into |dst_table|. The value is scaled by
-    // the |quality| and |basic_table|.
-    // We use the the Independent JPEG Group's formula to scale scale table.
-    // http://www.ijg.org/
-    static void FillQuantizationTable(int quality,
-                                      const uint8_t* basic_table,
-                                      uint8_t* dst_table);
-
-    // The number of input buffers and output buffers.
-    const size_t kBufferCount = 2;
-
-    // Pointer back to the parent.
-    V4L2JpegEncodeAccelerator* parent_;
-
-    // The V4L2Device this class is operating upon.
-    scoped_refptr<V4L2Device> device_;
-
-    // Input queue state.
-    bool input_streamon_;
-    // Mapping of int index to an input buffer record.
-    std::vector<I420BufferRecord> input_buffer_map_;
-    // Indices of input buffers ready to use; LIFO since we don't care about
-    // ordering.
-    std::vector<int> free_input_buffers_;
-
-    // Output queue state.
-    bool output_streamon_;
-    // Mapping of int index to an output buffer record.
-    std::vector<JpegBufferRecord> output_buffer_map_;
-    // Indices of output buffers ready to use; LIFO since we don't care about
-    // ordering.
-    std::vector<int> free_output_buffers_;
-
-    // Pixel format of input buffer.
-    uint32_t input_buffer_pixelformat_;
-
-    // Number of physical planes the input buffers have.
-    size_t input_buffer_num_planes_;
-
-    // Pixel format of output buffer.
-    uint32_t output_buffer_pixelformat_;
-
-    // Height of input buffer returned by driver.
-    uint32_t input_buffer_height_;
-
-    // Bytes per line for each plane.
-    uint32_t bytes_per_line_[kMaxI420Plane];
-
-    // JPEG Quantization table for V4L2_PIX_FMT_JPEG_RAW.
-    JpegQuantizationTable quantization_table_[2];
-
-    // JPEG markers for V4L2_PIX_FMT_JPEG_RAW.
-    // We prepare markers in the EncodedInstance setup stage, and reuse it for
-    // every encoding.
-    std::vector<uint8_t> jpeg_markers_;
-  };
-
-  // Encode Instance. One EncodedInstance is used for a specific set of jpeg
-  // parameters. The stored parameters are jpeg quality and resolutions of input
-  // image.
-  // We execute all EncodedInstance methods on |encoder_task_runner_|.
+  // Encode Instance. One EncodedInstanceDmaBuf is used for a specific set of
+  // jpeg parameters. The stored parameters are jpeg quality and resolutions of
+  // input image. We execute all EncodedInstanceDmaBuf methods on
+  // |encoder_task_runner_|.
   class EncodedInstanceDmaBuf {
    public:
     EncodedInstanceDmaBuf(V4L2JpegEncodeAccelerator* parent);
@@ -291,10 +174,6 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
     base::queue<std::unique_ptr<JobRecord>> running_job_queue_;
 
    private:
-    // Prepare full JPEG markers except SOI and EXIF/APP0 markers in
-    // |jpeg_markers_|.
-    void PrepareJpegMarkers(gfx::Size coded_size);
-
     // Combined the encoded data from |output_frame| with the JFIF/EXIF data.
     // Add JPEG Marks if needed. Add EXIF section by |exif_shm|.
     size_t FinalizeJpegImage(scoped_refptr<VideoFrame> output_frame,
@@ -321,14 +200,6 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
     size_t OutputBufferQueuedCount();
 
     void NotifyError(int32_t task_id, Status status);
-
-    // Fill the quantization table into |dst_table|. The value is scaled by
-    // the |quality| and |basic_table|.
-    // We use the the Independent JPEG Group's formula to scale scale table.
-    // http://www.ijg.org/
-    static void FillQuantizationTable(int quality,
-                                      const uint8_t* basic_table,
-                                      uint8_t* dst_table);
 
     // The number of input buffers and output buffers.
     const size_t kBufferCount = 2;
@@ -367,14 +238,6 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
 
     // sizeimage of output buffer.
     uint32_t output_buffer_sizeimage_;
-
-    // JPEG Quantization table for V4L2_PIX_FMT_JPEG_RAW.
-    JpegQuantizationTable quantization_table_[2];
-
-    // JPEG markers for V4L2_PIX_FMT_JPEG_RAW.
-    // We prepare markers in the EncodedInstance setup stage, and reuse it for
-    // every encoding.
-    std::vector<uint8_t> jpeg_markers_;
   };
 
   void VideoFrameReady(int32_t task_id, size_t encoded_picture_size);
@@ -382,13 +245,9 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
 
   // Enqueue the incoming frame.
   void EncodeTask(std::unique_ptr<JobRecord> job_record);
-  // TODO(wtlee): To be deprecated. (crbug.com/944705)
-  void EncodeTaskLegacy(std::unique_ptr<JobRecord> job_record);
 
-  // Trigger ServiceDevice of EncodedInstance class.
+  // Trigger ServiceDevice of EncodedInstanceDmaBuf class.
   void ServiceDeviceTask();
-  // TODO(wtlee): To be deprecated. (crbug.com/944705)
-  void ServiceDeviceTaskLegacy();
 
   // Destroy input and output buffers.
   void DestroyTask(base::WaitableEvent* waiter);
@@ -406,21 +265,15 @@ class MEDIA_GPU_EXPORT V4L2JpegEncodeAccelerator
   // |encoder_task_runner_| only (if it's running).
 
   // The |latest_input_buffer_coded_size_| and |latest_quality_| are used to
-  // check if we need to open new EncodedInstance.
+  // check if we need to open new EncodedInstanceDmaBuf.
   // Latest coded size of input buffer.
   gfx::Size latest_input_buffer_coded_size_
       GUARDED_BY_CONTEXT(encoder_sequence_);
-  // TODO(wtlee): To be deprecated. (crbug.com/944705)
-  gfx::Size latest_input_buffer_coded_size_legacy_
-      GUARDED_BY_CONTEXT(encoder_sequence_);
   // Latest encode quality.
   int latest_quality_ GUARDED_BY_CONTEXT(encoder_sequence_);
-  // TODO(wtlee): To be deprecated. (crbug.com/944705)
-  int latest_quality_legacy_ GUARDED_BY_CONTEXT(encoder_sequence_);
   // JEA may open multiple devices for different input parameters.
-  // We handle the |encoded_instances_| by order for keeping user's input order.
-  std::queue<std::unique_ptr<EncodedInstance>> encoded_instances_
-      GUARDED_BY_CONTEXT(encoder_sequence_);
+  // We handle the |encoded_instances_dma_buf_| by order for keeping user's
+  // input order.
   std::queue<std::unique_ptr<EncodedInstanceDmaBuf>> encoded_instances_dma_buf_
       GUARDED_BY_CONTEXT(encoder_sequence_);
 
