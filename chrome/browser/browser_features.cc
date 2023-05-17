@@ -150,14 +150,13 @@ BASE_FEATURE(kTriggerNetworkDataMigration,
 //
 // TODO(crbug.com/1251999): Remove this flag once we confirm that blue border
 // works fine on ChromeOS.
+//
+// b/279051234: We suspect the tab sharing blue border may cause a bad issue
+// on ChromeOS where a window can not be interacted at all. Disable the feature
+// on ChromeOS.
 BASE_FEATURE(kTabCaptureBlueBorderCrOS,
              "TabCaptureBlueBorderCrOS",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Enables runtime detection of USB devices which provide a WebUSB landing page
