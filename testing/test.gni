@@ -335,7 +335,6 @@ template("test") {
         "android_manifest_template",
         "app_as_shared_lib",
         "enable_multidex",
-        "generate_final_jni",
         "product_config_java_packages",
         "loadable_modules",
         "loadable_module_deps",
@@ -381,9 +380,15 @@ template("test") {
         }
       }
 
+      _generate_final_jni =
+          !defined(invoker.generate_final_jni) || invoker.generate_final_jni
       mixed_test(_library_target_name) {
-        target_type = "shared_library_with_jni"
-        java_targets = [ ":$_apk_target_name" ]
+        if (_generate_final_jni) {
+          target_type = "shared_library_with_jni"
+          java_targets = [ ":$_apk_target_name" ]
+        } else {
+          target_type = "shared_library"
+        }
 
         # Configs will always be defined since we set_defaults in
         # BUILDCONFIG.gn.
@@ -425,7 +430,13 @@ template("test") {
       unittest_apk(_apk_target_name) {
         forward_variables_from(invoker, _apk_specific_vars)
         shared_library = ":$_library_target_name"
-        srcjar_deps = [ "${shared_library}__jni_registration" ]
+        if (_generate_final_jni) {
+          srcjar_deps = [ "${shared_library}__jni_registration" ]
+        } else {
+          # TODO(smaier) delete this once we clean up our apk targets to never
+          # have the fallback path of __final_jni.
+          generate_final_jni = _generate_final_jni
+        }
         apk_name = invoker.target_name
         if (defined(invoker.output_name)) {
           apk_name = invoker.output_name
