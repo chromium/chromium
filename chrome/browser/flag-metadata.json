@@ -7790,7 +7790,7 @@
   {
     "name": "windows-scrolling-personality",
     "owners": [ "arakeri@microsoft.com", "gastonr@microsoft.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 130
   },
   {
     "name": "xsurface-metrics-reporting",
