@@ -263,7 +263,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1553358976309200471">Aggiorna Chrome</translation>
 <translation id="1555130319947370107">Blu</translation>
 <translation id="1559447966090556585">Ricevere notifiche?</translation>
-<translation id="1559486004335285648">Compilazione automatica delle informazioni di pagamento</translation>
+<translation id="1559486004335285648">Compilazione automatica dei dati di pagamento</translation>
 <translation id="1559528461873125649">Nessun file o directory corrispondente</translation>
 <translation id="1559572115229829303">&lt;p&gt;Impossibile stabilire una connessione privata con il sito <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> perché data e ora del dispositivo (<ph name="DATE_AND_TIME" />) non sono corrette.&lt;/p&gt;
 
