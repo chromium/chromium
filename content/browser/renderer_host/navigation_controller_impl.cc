@@ -2628,7 +2628,9 @@ void NavigationControllerImpl::NotifyUserActivation() {
 
 bool NavigationControllerImpl::StartHistoryNavigationInNewSubframe(
     RenderFrameHostImpl* render_frame_host,
-    mojo::PendingAssociatedRemote<mojom::NavigationClient>* navigation_client) {
+    mojo::PendingAssociatedRemote<mojom::NavigationClient>* navigation_client,
+    blink::LocalFrameToken initiator_frame_token,
+    int initiator_process_id) {
   NavigationEntryImpl* entry =
       GetEntryWithUniqueID(render_frame_host->nav_entry_id());
   if (!entry)
@@ -2639,14 +2641,11 @@ bool NavigationControllerImpl::StartHistoryNavigationInNewSubframe(
   if (!frame_entry)
     return false;
 
-  // |is_browser_initiated| is false here because a navigation in a new subframe
-  // always begins with renderer action (i.e., an HTML element being inserted
-  // into the DOM), so it is always renderer-initiated.
   std::unique_ptr<NavigationRequest> request = CreateNavigationRequestFromEntry(
       render_frame_host->frame_tree_node(), entry, frame_entry,
       ReloadType::NONE, false /* is_same_document_history_load */,
-      true /* is_history_navigation_in_new_child */,
-      false /* is_browser_initiated */);
+      true /* is_history_navigation_in_new_child */, initiator_frame_token,
+      initiator_process_id);
 
   if (!request)
     return false;
@@ -2699,7 +2698,8 @@ bool NavigationControllerImpl::ReloadFrame(FrameTreeNode* frame_tree_node) {
       frame_tree_node, entry, frame_entry, reload_type,
       false /* is_same_document_history_load */,
       false /* is_history_navigation_in_new_child */,
-      true /* is_browser_initiated */);
+      absl::nullopt /* initiator_frame_token */,
+      ChildProcessHost::kInvalidUniqueID /* initiator_process_id */);
   if (!request)
     return false;
   frame_tree_node->navigator().Navigate(std::move(request), reload_type);
@@ -3101,7 +3101,6 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
   needs_reload_ = false;
   FrameTreeNode* root = frame_tree_->root();
   int nav_entry_id = pending_entry_->GetUniqueID();
-  bool is_browser_initiated = !initiator_rfh;
   // Only pass down the soft_navigation_heuristics_task_id when the initiator is
   // the same as the top level frame being navigated.
   if (root->current_frame_host() != initiator_rfh) {
@@ -3123,13 +3122,21 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
     return;
   }
 
+  absl::optional<blink::LocalFrameToken> initiator_frame_token;
+  int initiator_process_id = ChildProcessHost::kInvalidUniqueID;
+  if (initiator_rfh) {
+    initiator_frame_token = initiator_rfh->GetFrameToken();
+    initiator_process_id = initiator_rfh->GetProcess()->GetID();
+    DCHECK(initiator_frame_token);
+  }
+
   // Compare FrameNavigationEntries to see which frames in the tree need to be
   // navigated.
   std::vector<std::unique_ptr<NavigationRequest>> same_document_loads;
   std::vector<std::unique_ptr<NavigationRequest>> different_document_loads;
-  FindFramesToNavigate(root, reload_type, is_browser_initiated,
-                       soft_navigation_heuristics_task_id, &same_document_loads,
-                       &different_document_loads);
+  FindFramesToNavigate(root, reload_type, initiator_frame_token,
+                       initiator_process_id, soft_navigation_heuristics_task_id,
+                       &same_document_loads, &different_document_loads);
 
   if (same_document_loads.empty() && different_document_loads.empty()) {
     // We were unable to match any frames to navigate.  This can happen if a
@@ -3155,7 +3162,7 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
             ReloadType::NONE /* reload_type */,
             true /* is_same_document_history_load */,
             false /* is_history_navigation_in_new_child */,
-            is_browser_initiated);
+            initiator_frame_token, initiator_process_id);
     if (!navigation_request) {
       // If this navigation cannot start, delete the pending NavigationEntry.
       DiscardPendingEntry(false);
@@ -3230,7 +3237,8 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
     auto navigation_request = CreateNavigationRequestFromEntry(
         root, pending_entry_, pending_entry_->GetFrameEntry(root),
         ReloadType::NONE, false /* is_same_document_history_load */,
-        false /* is_history_navigation_in_new_child */, is_browser_initiated);
+        false /* is_history_navigation_in_new_child */, initiator_frame_token,
+        initiator_process_id);
     root->navigator().Navigate(std::move(navigation_request), ReloadType::NONE);
 
     return;
@@ -3460,7 +3468,8 @@ NavigationControllerImpl::DetermineActionForHistoryNavigation(
 void NavigationControllerImpl::FindFramesToNavigate(
     FrameTreeNode* frame,
     ReloadType reload_type,
-    bool is_browser_initiated,
+    const absl::optional<blink::LocalFrameToken>& initiator_frame_token,
+    int initiator_process_id,
     absl::optional<blink::scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id,
     std::vector<std::unique_ptr<NavigationRequest>>* same_document_loads,
@@ -3476,7 +3485,8 @@ void NavigationControllerImpl::FindFramesToNavigate(
             frame, pending_entry_, new_item, reload_type,
             /*is_same_document_history_load=*/true,
             /*is_history_navigation_in_new_child_frame=*/false,
-            is_browser_initiated, soft_navigation_heuristics_task_id);
+            initiator_frame_token, initiator_process_id,
+            soft_navigation_heuristics_task_id);
     if (navigation_request) {
       // Only add the request if was properly created. It's possible for the
       // creation to fail in certain cases, e.g. when the URL is invalid.
@@ -3488,7 +3498,7 @@ void NavigationControllerImpl::FindFramesToNavigate(
             frame, pending_entry_, new_item, reload_type,
             false /* is_same_document_history_load */,
             false /* is_history_navigation_in_new_child */,
-            is_browser_initiated);
+            initiator_frame_token, initiator_process_id);
     if (navigation_request) {
       // Only add the request if was properly created. It's possible for the
       // creation to fail in certain cases, e.g. when the URL is invalid.
@@ -3505,7 +3515,8 @@ void NavigationControllerImpl::FindFramesToNavigate(
   // we currently only support soft navigation heuristics for the top level
   // frame.
   for (size_t i = 0; i < frame->child_count(); i++) {
-    FindFramesToNavigate(frame->child_at(i), reload_type, is_browser_initiated,
+    FindFramesToNavigate(frame->child_at(i), reload_type, initiator_frame_token,
+                         initiator_process_id,
                          /*soft_navigation_heuristics_task_id=*/absl::nullopt,
                          same_document_loads, different_document_loads);
   }
@@ -3996,7 +4007,8 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
     ReloadType reload_type,
     bool is_same_document_history_load,
     bool is_history_navigation_in_new_child_frame,
-    bool is_browser_initiated,
+    const absl::optional<blink::LocalFrameToken>& initiator_frame_token,
+    int initiator_process_id,
     absl::optional<blink::scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id) {
   DCHECK(frame_entry);
@@ -4100,13 +4112,13 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
     // instead.
     commit_params->srcdoc_value = frame_tree_node->srcdoc_value();
   }
+  const bool is_browser_initiated = !initiator_frame_token;
   return NavigationRequest::Create(
       frame_tree_node, std::move(common_params), std::move(commit_params),
       is_browser_initiated, false /* was_opener_suppressed */,
-      absl::nullopt /* initiator_frame_token */,
-      ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
-      entry->extra_headers(), frame_entry, entry, is_form_submission,
-      nullptr /* navigation_ui_data */, absl::nullopt /* impression */,
+      initiator_frame_token, initiator_process_id, entry->extra_headers(),
+      frame_entry, entry, is_form_submission, nullptr /* navigation_ui_data */,
+      absl::nullopt /* impression */,
       blink::mojom::NavigationInitiatorActivationAndAdStatus::
           kDidNotStartWithTransientActivation,
       false /* is_pdf */);

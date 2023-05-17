@@ -180,8 +180,9 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // navigation to the default src URL for the frame instead.
   bool StartHistoryNavigationInNewSubframe(
       RenderFrameHostImpl* render_frame_host,
-      mojo::PendingAssociatedRemote<mojom::NavigationClient>*
-          navigation_client);
+      mojo::PendingAssociatedRemote<mojom::NavigationClient>* navigation_client,
+      blink::LocalFrameToken initiator_frame_token,
+      int initiator_process_id);
 
   // Reloads the |frame_tree_node| and returns true. In some rare cases, there
   // is no history related to the frame, nothing happens and this returns false.
@@ -622,7 +623,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   void FindFramesToNavigate(
       FrameTreeNode* frame,
       ReloadType reload_type,
-      bool is_browser_initiated,
+      const absl::optional<blink::LocalFrameToken>& initiator_frame_token,
+      int initiator_process_id,
       absl::optional<blink::scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id,
       std::vector<std::unique_ptr<NavigationRequest>>* same_document_loads,
@@ -689,7 +691,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       ReloadType reload_type,
       bool is_same_document_history_load,
       bool is_history_navigation_in_new_child_frame,
-      bool is_browser_initiated,
+      const absl::optional<blink::LocalFrameToken>& initiator_frame_token,
+      int initiator_process_id,
       absl::optional<blink::scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id = absl::nullopt);
 

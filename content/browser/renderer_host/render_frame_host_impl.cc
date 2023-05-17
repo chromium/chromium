@@ -3523,12 +3523,16 @@ void RenderFrameHostImpl::Init() {
       });
 
   if (pending_navigate_) {
+    // `pending_navigate_` is set only by BeginNavigation(), and
+    // BeginNavigation() should only be triggered when the navigation is
+    // initiated by a document in the same process.
+    const int initiator_process_id = GetProcess()->GetID();
     frame_tree_node()->navigator().OnBeginNavigation(
         frame_tree_node(), std::move(pending_navigate_->common_params),
         std::move(pending_navigate_->begin_navigation_params),
         std::move(pending_navigate_->blob_url_loader_factory),
         std::move(pending_navigate_->navigation_client),
-        EnsurePrefetchedSignedExchangeCache(),
+        EnsurePrefetchedSignedExchangeCache(), initiator_process_id,
         std::move(pending_navigate_->renderer_cancellation_listener));
     pending_navigate_.reset();
   }
@@ -8509,7 +8513,7 @@ void RenderFrameHostImpl::BeginNavigation(
   }
 
   // BeginNavigation() should only be triggered when the navigation is
-  // initiated by a frame in the same process.
+  // initiated by a document in the same process.
   int initiator_process_id = GetProcess()->GetID();
   if (!VerifyNavigationInitiator(this, begin_params->initiator_frame_token,
                                  initiator_process_id)) {
@@ -8662,7 +8666,7 @@ void RenderFrameHostImpl::BeginNavigation(
       frame_tree_node(), std::move(validated_common_params),
       std::move(begin_params), std::move(blob_url_loader_factory),
       std::move(navigation_client), EnsurePrefetchedSignedExchangeCache(),
-      std::move(renderer_cancellation_listener));
+      initiator_process_id, std::move(renderer_cancellation_listener));
 }
 
 void RenderFrameHostImpl::SubresourceResponseStarted(
