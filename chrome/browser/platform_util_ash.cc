@@ -104,7 +104,12 @@ void OpenExternal(Profile* profile, const GURL& url) {
   // previously been accepted with "Always allow ..." and this is called from
   // ChromeContentBrowserClient::HandleExternalProtocol.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  guest_os::Launch(profile, url);
+
+  absl::optional<guest_os::GuestOsUrlHandler> handler =
+      guest_os::GuestOsUrlHandler::GetForUrl(profile, url);
+  if (handler) {
+    handler->Handle(profile, url);
+  }
 }
 
 bool IsBrowserLockedFullscreen(const Browser* browser) {

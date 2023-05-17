@@ -19,6 +19,7 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_external_protocol_handler.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -165,6 +166,9 @@ class GuestOsRegistryService : public KeyedService {
   // Return null if |app_id| is not found in the registry.
   absl::optional<GuestOsRegistryService::Registration> GetRegistration(
       const std::string& app_id) const;
+
+  // Return the preferred handler for the given URL, if any.
+  absl::optional<GuestOsUrlHandler> GetHandler(const GURL& url) const;
 
   // Constructs path to app icon for specific scale factor.
   base::FilePath GetIconPath(const std::string& app_id,
