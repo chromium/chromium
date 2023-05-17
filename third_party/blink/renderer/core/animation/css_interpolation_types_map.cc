@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/animation/css_length_pair_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_number_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_offset_rotate_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_overlay_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_paint_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_path_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_percentage_interpolation_type.h"
@@ -429,6 +430,11 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
         applicable_types->push_back(
             std::make_unique<CSSContentVisibilityInterpolationType>(
                 used_property));
+        break;
+      case CSSPropertyID::kOverlay:
+        DCHECK(RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled());
+        applicable_types->push_back(
+            std::make_unique<CSSOverlayInterpolationType>(used_property));
         break;
       default:
         DCHECK(!css_property.IsInterpolable());
