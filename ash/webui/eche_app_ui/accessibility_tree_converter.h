@@ -9,6 +9,7 @@
 
 #include "ash/components/arc/mojom/accessibility_helper.mojom.h"
 #include "ash/webui/eche_app_ui/proto/accessibility_mojom.pb.h"
+#include "ui/accessibility/ax_action_data.h"
 
 namespace {
 
@@ -53,6 +54,9 @@ class AccessibilityTreeConverter {
   // Proto is ash/webui/eche_app_ui/proto/accessibility_mojom.proto
   mojo::StructPtr<AXEventData> ConvertEventDataProtoToMojom(
       const std::vector<uint8_t>& serialized_proto);
+
+  absl::optional<proto::AccessibilityActionData> ConvertActionDataToProto(
+      const ui::AXActionData& data);
 
  private:
   // Utility Functions

@@ -74,6 +74,18 @@ interface AccessibilityProvider {
   // the browser.
   // Proto from: ash/webui/eche_app_ui/proto/accessibility_mojom.proto
   HandleAccessibilityEventReceived(array<uint8> serialized_proto);
+
+  // Sets the observer for when accessibility actions need to be send to the
+  // SWA from the browser.
+  SetAccessibilityObserver(pending_remote<AccessibilityObserver> observer);
+};
+
+// Observer for accessibility provider. Should be created using
+// SetAccessibilityObserver in AccessibilityProvider.
+interface AccessibilityObserver {
+  // Sends the accessibility action to the SWA for processing.
+  // Proto from: ash/webui/eche_app_ui/proto/accessibility_mojom.proto
+  PerformAction(array<uint8> serialized_proto);
 };
 
 // Interface for generating uid. The uid is unique and persistent.
