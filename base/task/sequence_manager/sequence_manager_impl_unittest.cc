@@ -4260,46 +4260,6 @@ TEST_P(SequenceManagerTest,
   Mock::VerifyAndClearExpectations(&throttler);
 }
 
-TEST_P(SequenceManagerTest, GracefulShutdown) {
-  std::vector<TimeTicks> run_times;
-  scoped_refptr<TestTaskQueue> main_tq = CreateTaskQueue();
-  WeakPtr<TestTaskQueue> main_tq_weak_ptr = main_tq->GetWeakPtr();
-
-  EXPECT_EQ(1u, sequence_manager()->ActiveQueuesCount());
-  EXPECT_EQ(0u, sequence_manager()->QueuesToShutdownCount());
-  EXPECT_EQ(0u, sequence_manager()->QueuesToDeleteCount());
-
-  for (int i = 1; i <= 5; ++i) {
-    main_tq->task_runner()->PostDelayedTask(
-        FROM_HERE, BindOnce(&RecordTimeTask, &run_times, mock_tick_clock()),
-        Milliseconds(i * 100));
-  }
-  FastForwardBy(Milliseconds(250));
-
-  main_tq = nullptr;
-  // Ensure that task queue went away.
-  EXPECT_FALSE(main_tq_weak_ptr.get());
-
-  FastForwardBy(Milliseconds(1));
-
-  EXPECT_EQ(1u, sequence_manager()->ActiveQueuesCount());
-  EXPECT_EQ(1u, sequence_manager()->QueuesToShutdownCount());
-  EXPECT_EQ(0u, sequence_manager()->QueuesToDeleteCount());
-
-  FastForwardUntilNoTasksRemain();
-
-  // Even with TaskQueue gone, tasks are executed.
-  EXPECT_THAT(run_times, ElementsAre(FromStartAligned(Milliseconds(100)),
-                                     FromStartAligned(Milliseconds(200)),
-                                     FromStartAligned(Milliseconds(300)),
-                                     FromStartAligned(Milliseconds(400)),
-                                     FromStartAligned(Milliseconds(500))));
-
-  EXPECT_EQ(0u, sequence_manager()->ActiveQueuesCount());
-  EXPECT_EQ(0u, sequence_manager()->QueuesToShutdownCount());
-  EXPECT_EQ(0u, sequence_manager()->QueuesToDeleteCount());
-}
-
 TEST_P(SequenceManagerTest, GracefulShutdown_ManagerDeletedInFlight) {
   std::vector<TimeTicks> run_times;
   scoped_refptr<TestTaskQueue> control_tq = CreateTaskQueue();
@@ -4345,15 +4305,13 @@ TEST_P(SequenceManagerTest, GracefulShutdown_ManagerDeletedInFlight) {
                                      FromStartAligned(Milliseconds(200))));
 }
 
-TEST_P(SequenceManagerTest,
-       GracefulShutdown_ManagerDeletedWithQueuesToShutdown) {
+TEST_P(SequenceManagerTest, SequenceManagerDeletedWithQueuesToDelete) {
   std::vector<TimeTicks> run_times;
   scoped_refptr<TestTaskQueue> main_tq = CreateTaskQueue();
   WeakPtr<TestTaskQueue> main_tq_weak_ptr = main_tq->GetWeakPtr();
   RefCountedCallbackFactory counter;
 
   EXPECT_EQ(1u, sequence_manager()->ActiveQueuesCount());
-  EXPECT_EQ(0u, sequence_manager()->QueuesToShutdownCount());
   EXPECT_EQ(0u, sequence_manager()->QueuesToDeleteCount());
 
   for (int i = 1; i <= 5; ++i) {
@@ -4369,11 +4327,8 @@ TEST_P(SequenceManagerTest,
   // Ensure that task queue went away.
   EXPECT_FALSE(main_tq_weak_ptr.get());
 
-  FastForwardBy(Milliseconds(1));
-
-  EXPECT_EQ(1u, sequence_manager()->ActiveQueuesCount());
-  EXPECT_EQ(1u, sequence_manager()->QueuesToShutdownCount());
-  EXPECT_EQ(0u, sequence_manager()->QueuesToDeleteCount());
+  EXPECT_EQ(0u, sequence_manager()->ActiveQueuesCount());
+  EXPECT_EQ(1u, sequence_manager()->QueuesToDeleteCount());
 
   // Ensure that all queues-to-gracefully-shutdown are properly unregistered.
   DestroySequenceManager();
@@ -4437,66 +4392,52 @@ TEST_P(SequenceManagerTest, CanceledTasksInQueueCantMakeOtherTasksSkipAhead) {
   EXPECT_THAT(run_order, ElementsAre(1u, 2u));
 }
 
-TEST_P(SequenceManagerTest, TaskRunnerDeletedOnAnotherThread) {
+TEST_P(SequenceManagerTest, TaskQueueDeleted) {
   std::vector<TimeTicks> run_times;
   scoped_refptr<TestTaskQueue> main_tq = CreateTaskQueue();
-  scoped_refptr<TaskRunner> task_runner =
+  scoped_refptr<TaskRunner> main_task_runner =
       main_tq->CreateTaskRunner(kTaskTypeNone);
+
+  scoped_refptr<TestTaskQueue> other_tq = CreateTaskQueue();
+  scoped_refptr<TaskRunner> other_task_runner =
+      other_tq->CreateTaskRunner(kTaskTypeNone);
 
   int start_counter = 0;
   int complete_counter = 0;
   SetOnTaskHandlers(main_tq, &start_counter, &complete_counter);
 
-  EXPECT_EQ(1u, sequence_manager()->ActiveQueuesCount());
-  EXPECT_EQ(0u, sequence_manager()->QueuesToShutdownCount());
+  EXPECT_EQ(2u, sequence_manager()->ActiveQueuesCount());
   EXPECT_EQ(0u, sequence_manager()->QueuesToDeleteCount());
 
   for (int i = 1; i <= 5; ++i) {
-    task_runner->PostDelayedTask(
+    main_task_runner->PostDelayedTask(
         FROM_HERE, BindOnce(&RecordTimeTask, &run_times, mock_tick_clock()),
         Milliseconds(i * 100));
   }
+
+  other_task_runner->PostDelayedTask(
+      FROM_HERE, BindOnce(&RecordTimeTask, &run_times, mock_tick_clock()),
+      Milliseconds(600));
 
   // TODO(altimin): do not do this after switching to weak pointer-based
   // task handlers.
   UnsetOnTaskHandlers(main_tq);
 
-  // Make |task_runner| the only reference to |main_tq|.
+  WeakPtr<TestTaskQueue> main_tq_weak_ptr = main_tq->GetWeakPtr();
   main_tq = nullptr;
-
-  WaitableEvent task_queue_deleted(WaitableEvent::ResetPolicy::MANUAL,
-                                   WaitableEvent::InitialState::NOT_SIGNALED);
-  std::unique_ptr<Thread> thread = std::make_unique<Thread>("test thread");
-  thread->StartAndWaitForTesting();
-
-  thread->task_runner()->PostTask(
-      FROM_HERE, BindOnce(
-                     [](scoped_refptr<TaskRunner> task_runner,
-                        WaitableEvent* task_queue_deleted) {
-                       task_runner = nullptr;
-                       task_queue_deleted->Signal();
-                     },
-                     std::move(task_runner), &task_queue_deleted));
-  task_queue_deleted.Wait();
+  EXPECT_FALSE(main_tq_weak_ptr.get());
 
   EXPECT_EQ(1u, sequence_manager()->ActiveQueuesCount());
-  EXPECT_EQ(1u, sequence_manager()->QueuesToShutdownCount());
-  EXPECT_EQ(0u, sequence_manager()->QueuesToDeleteCount());
+  EXPECT_EQ(1u, sequence_manager()->QueuesToDeleteCount());
 
   FastForwardUntilNoTasksRemain();
 
-  // Even with TaskQueue gone, tasks are executed.
-  EXPECT_THAT(run_times, ElementsAre(FromStartAligned(Milliseconds(100)),
-                                     FromStartAligned(Milliseconds(200)),
-                                     FromStartAligned(Milliseconds(300)),
-                                     FromStartAligned(Milliseconds(400)),
-                                     FromStartAligned(Milliseconds(500))));
+  // Only tasks on `other_tq` will run, which will also trigger deleting the
+  // `main_tq`'s impl.
+  EXPECT_THAT(run_times, ElementsAre(FromStartAligned(Milliseconds(600))));
 
-  EXPECT_EQ(0u, sequence_manager()->ActiveQueuesCount());
-  EXPECT_EQ(0u, sequence_manager()->QueuesToShutdownCount());
+  EXPECT_EQ(1u, sequence_manager()->ActiveQueuesCount());
   EXPECT_EQ(0u, sequence_manager()->QueuesToDeleteCount());
-
-  thread->Stop();
 }
 
 namespace {

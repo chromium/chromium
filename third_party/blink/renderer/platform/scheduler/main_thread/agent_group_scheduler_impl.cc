@@ -55,8 +55,8 @@ AgentGroupSchedulerImpl::AgentGroupSchedulerImpl(
 }
 
 void AgentGroupSchedulerImpl::Dispose() {
-  default_task_queue_->DetachFromMainThreadScheduler();
-  compositor_task_queue_->DetachFromMainThreadScheduler();
+  default_task_queue_->DetachTaskQueue();
+  compositor_task_queue_->DetachTaskQueue();
 }
 
 std::unique_ptr<PageScheduler> AgentGroupSchedulerImpl::CreatePageScheduler(

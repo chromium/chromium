@@ -230,7 +230,6 @@ SequenceManagerImpl::~SequenceManagerImpl() {
   controller_->RestoreDefaultTaskRunner();
 
   main_thread_only().active_queues.clear();
-  main_thread_only().queues_to_gracefully_shutdown.clear();
   main_thread_only().selector.SetTaskQueueSelectorObserver(nullptr);
 
   // In the case of an early startup exits or in some tests a NestingObserver
@@ -422,12 +421,6 @@ bool SequenceManagerImpl::GetAddQueueTimeToTasks() {
 
 void SequenceManagerImpl::SetObserver(Observer* observer) {
   main_thread_only().observer = observer;
-}
-
-void SequenceManagerImpl::ShutdownTaskQueueGracefully(
-    std::unique_ptr<internal::TaskQueueImpl> task_queue) {
-  main_thread_only().queues_to_gracefully_shutdown[task_queue.get()] =
-      std::move(task_queue);
 }
 
 void SequenceManagerImpl::UnregisterTaskQueueImpl(
@@ -1019,9 +1012,6 @@ Value::Dict SequenceManagerImpl::AsValueWithSelectorResult(
     active_queues.Append(queue->AsValue(now, force_verbose));
   state.Set("active_queues", std::move(active_queues));
   Value::List shutdown_queues;
-  for (const auto& pair : main_thread_only().queues_to_gracefully_shutdown)
-    shutdown_queues.Append(pair.first->AsValue(now, force_verbose));
-  state.Set("queues_to_gracefully_shutdown", std::move(shutdown_queues));
   Value::List queues_to_delete;
   for (const auto& pair : main_thread_only().queues_to_delete)
     queues_to_delete.Append(pair.first->AsValue(now, force_verbose));
@@ -1069,25 +1059,9 @@ void SequenceManagerImpl::ReclaimMemory() {
     auto* const queue = *it++;
     ReclaimMemoryFromQueue(queue, &lazy_now);
   }
-  for (auto it = main_thread_only().queues_to_gracefully_shutdown.begin();
-       it != main_thread_only().queues_to_gracefully_shutdown.end();) {
-    auto* const queue = it->first;
-    it++;
-    ReclaimMemoryFromQueue(queue, &lazy_now);
-  }
 }
 
 void SequenceManagerImpl::CleanUpQueues() {
-  for (auto it = main_thread_only().queues_to_gracefully_shutdown.begin();
-       it != main_thread_only().queues_to_gracefully_shutdown.end();) {
-    if (it->first->IsEmpty()) {
-      UnregisterTaskQueueImpl(std::move(it->second));
-      main_thread_only().active_queues.erase(it->first);
-      main_thread_only().queues_to_gracefully_shutdown.erase(it++);
-    } else {
-      ++it;
-    }
-  }
   main_thread_only().queues_to_delete.clear();
 }
 

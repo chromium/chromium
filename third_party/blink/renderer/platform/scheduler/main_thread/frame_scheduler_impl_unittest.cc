@@ -1786,6 +1786,25 @@ TEST_F(FrameSchedulerImplTest, FeatureUpload_FrameDestruction) {
   testing::Mock::VerifyAndClearExpectations(frame_scheduler_delegate_.get());
 }
 
+TEST_F(FrameSchedulerImplTest, TasksRunAfterDetach) {
+  int counter = 0;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      frame_scheduler_->GetTaskRunner(TaskType::kJavascriptTimerImmediate);
+  task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
+  task_runner->PostDelayedTask(
+      FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)),
+      base::Milliseconds(100));
+  frame_scheduler_.reset();
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  EXPECT_EQ(counter, 2);
+
+  task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(counter, 2);
+}
+
 class WebSchedulingTaskQueueTest : public FrameSchedulerImplTest,
                                    public WebSchedulingTestHelper::Delegate {
  public:
@@ -2948,14 +2967,13 @@ TEST_F(FrameSchedulerImplTest, ImmediateWebSchedulingTasksAreNotThrottled) {
   // Hide the page to start throttling timers.
   page_scheduler_->SetPageVisible(false);
 
+  std::unique_ptr<WebSchedulingTaskQueue> queue =
+      frame_scheduler_->CreateWebSchedulingTaskQueue(
+          WebSchedulingQueueType::kTaskQueue,
+          WebSchedulingPriority::kUserVisiblePriority);
   // Post a non-delayed task to a web scheduling task queue.
-  const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      frame_scheduler_
-          ->CreateWebSchedulingTaskQueue(
-              WebSchedulingQueueType::kTaskQueue,
-              WebSchedulingPriority::kUserVisiblePriority)
-          ->GetTaskRunner();
-  task_runner->PostTask(FROM_HERE, base::BindOnce(&RecordRunTime, &run_times));
+  queue->GetTaskRunner()->PostTask(FROM_HERE,
+                                   base::BindOnce(&RecordRunTime, &run_times));
 
   // Run any ready tasks, which includes our non-delayed non-throttled web
   // scheduling task. If we are throttled, our task will not run.

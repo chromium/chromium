@@ -96,9 +96,5 @@ size_t SequenceManagerForTest::QueuesToDeleteCount() const {
   return main_thread_only().queues_to_delete.size();
 }
 
-size_t SequenceManagerForTest::QueuesToShutdownCount() {
-  return main_thread_only().queues_to_gracefully_shutdown.size();
-}
-
 }  // namespace sequence_manager
 }  // namespace base
