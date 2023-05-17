@@ -5,9 +5,11 @@
 #include "extensions/common/manifest_handlers/web_file_handlers_info.h"
 
 #include "base/strings/string_split.h"
+#include "base/strings/utf_string_conversions.h"
 #include "extensions/common/api/file_handlers.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/install_warning.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 
@@ -199,11 +201,19 @@ WebFileHandlersParser::WebFileHandlersParser() = default;
 WebFileHandlersParser::~WebFileHandlersParser() = default;
 
 bool WebFileHandlersParser::Parse(Extension* extension, std::u16string* error) {
-  // Guard against incompatible extension manifest versions.
   DCHECK(extension);
-  DCHECK(
-      WebFileHandlers::SupportsWebFileHandlers(extension->manifest_version()));
 
+  // Only parse if Web File Handlers supported in this session. If they are not,
+  // the install will succeed with a warning, and the key won't be parsed.
+  // TODO(crbug.com/1446007): Remove this after launching web file handlers.
+  if (!WebFileHandlers::SupportsWebFileHandlers(
+          extension->manifest_version())) {
+    extension->AddInstallWarning(InstallWarning(ErrorUtils::FormatErrorMessage(
+        manifest_errors::kUnrecognizedManifestKey, "file_handlers")));
+    return true;
+  }
+
+  // Parse the manifest key as a Web File Handler.
   auto info = ParseFromList(*extension, error);
   if (!info) {
     return false;
