@@ -498,7 +498,7 @@ vars = {
   'libcxx_revision':       'f8279b01085b800724f5c5629dc365b9f040dc53',
 
   # GN CIPD package version.
-  'gn_version': 'git_revision:63c225c698d63b4b724361e0c8cdcf48e2cbd704',
+  'gn_version': 'git_revision:6975103d9f59ed9f3cfbc6d2201298f2c2fde046',
 
   # ninja CIPD package version.
   # https://chrome-infra-packages.appspot.com/p/infra/3pp/tools/ninja
