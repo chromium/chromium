@@ -35,6 +35,15 @@ const std::string kSimpleMediaPlaylist =
     "http://media.example.com/third.ts\n"
     "#EXT-X-ENDLIST\n";
 
+const std::string kUnsupportedCodecs =
+    "#EXTM3U\n"
+    "#EXT-X-STREAM-INF:BANDWIDTH=65000,CODECS=\"vvc1.00.00\"\n"
+    "http://example.com/audio-only.m3u8\n"
+    "#EXT-X-STREAM-INF:BANDWIDTH=65000,CODECS=\"sheet.music\"\n"
+    "http://example.com/audio-only.m3u8\n"
+    "#EXT-X-STREAM-INF:BANDWIDTH=65000,CODECS=\"av02.00.00\"\n"
+    "http://example.com/audio-only.m3u8\n";
+
 const std::string kSimpleMultivariantPlaylist =
     "#EXTM3U\n"
     "#EXT-X-STREAM-INF:BANDWIDTH=1280000,AVERAGE-BANDWIDTH=1000000\n"
@@ -214,6 +223,17 @@ TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantPlaylistWithAlternates) {
 
   EXPECT_CALL(*this,
               MockInitComplete(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
+  InitializeEngine();
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsManifestDemuxerEngineTest, TestMultivariantWithNoSupportedCodecs) {
+  EXPECT_CALL(*mock_mdeh_, AddRole(_, _, _)).Times(0);
+  EXPECT_CALL(*mock_mdeh_, SetSequenceMode(_, _)).Times(0);
+  BindUrlToDataSource<StringHlsDataSource>(
+      "http://media.example.com/manifest.m3u8", kUnsupportedCodecs);
+  EXPECT_CALL(*mock_mdeh_,
+              OnError(HasStatusCode(DEMUXER_ERROR_COULD_NOT_PARSE)));
   InitializeEngine();
   task_environment_.RunUntilIdle();
 }

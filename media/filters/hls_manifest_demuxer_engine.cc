@@ -11,9 +11,12 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "media/base/audio_codecs.h"
 #include "media/base/media_log.h"
 #include "media/base/media_track.h"
 #include "media/base/pipeline_status.h"
+#include "media/base/supported_types.h"
+#include "media/base/video_codecs.h"
 #include "media/filters/manifest_demuxer.h"
 #include "media/formats/hls/audio_rendition.h"
 #include "media/formats/hls/media_playlist.h"
@@ -30,13 +33,75 @@ namespace {
 constexpr const char* kPrimary = "primary";
 constexpr const char* kAudioOverride = "audio-override";
 
-hls::RenditionSelector::IsTypeSupportedCallback GetIsTypeSupportedCallback() {
-  return base::BindRepeating(
-      [](base::StringPiece, base::span<const std::string>) {
-        // TODO(crbug/1266991): Replace with a call to IsSupportedVideoType and
-        // IsSupportedAudioType for each entry.
-        return hls::RenditionSelector::CodecSupportType::kSupportedAudioVideo;
-      });
+bool ParseAudioCodec(const std::string& codec, AudioType* audio_type) {
+  audio_type->codec = StringToAudioCodec(codec);
+  audio_type->profile = AudioCodecProfile::kUnknown;
+  audio_type->spatial_rendering = false;
+  return audio_type->codec != AudioCodec::kUnknown;
+}
+
+bool AreAllAudioCodecsSupported(std::vector<AudioType> audio_types) {
+  if (audio_types.empty()) {
+    return false;
+  }
+  for (const auto& type : audio_types) {
+    if (!IsSupportedAudioType(type)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool AreAllVideoCodecsSupported(std::vector<VideoType> video_types) {
+  if (video_types.empty()) {
+    return false;
+  }
+  for (const auto& type : video_types) {
+    if (!IsSupportedVideoType(type)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+hls::RenditionSelector::CodecSupportType GetSupportedTypes(
+    base::StringPiece container,
+    base::span<const std::string> codecs) {
+  std::vector<VideoType> video_formats;
+  std::vector<AudioType> audio_formats;
+  for (const std::string& codec : codecs) {
+    // Try parsing it as a video codec first, which will set `video.codec`
+    // to unknown if it fails.
+    VideoType video;
+    uint8_t video_level;
+    video.hdr_metadata_type = gfx::HdrMetadataType::kNone;
+    ParseCodec(codec, video.codec, video.profile, video_level,
+               video.color_space);
+    if (video.codec != VideoCodec::kUnknown) {
+      video.level = video_level;
+      video_formats.push_back(video);
+      continue;
+    }
+
+    AudioType audio;
+    if (ParseAudioCodec(codec, &audio)) {
+      audio_formats.push_back(audio);
+    }
+  }
+
+  bool audio_support = AreAllAudioCodecsSupported(std::move(audio_formats));
+  bool video_support = AreAllVideoCodecsSupported(std::move(video_formats));
+
+  if (audio_support && video_support) {
+    return hls::RenditionSelector::CodecSupportType::kSupportedAudioVideo;
+  }
+  if (audio_support) {
+    return hls::RenditionSelector::CodecSupportType::kSupportedAudioOnly;
+  }
+  if (video_support) {
+    return hls::RenditionSelector::CodecSupportType::kSupportedVideoOnly;
+  }
+  return hls::RenditionSelector::CodecSupportType::kUnsupported;
 }
 
 }  // namespace
@@ -260,7 +325,7 @@ void HlsManifestDemuxerEngine::OnMultivariantPlaylist(
   CHECK(!rendition_selector_);
   multivariant_root_ = std::move(playlist);
   rendition_selector_ = std::make_unique<hls::RenditionSelector>(
-      multivariant_root_, GetIsTypeSupportedCallback());
+      multivariant_root_, base::BindRepeating(&GetSupportedTypes));
 
   hls::RenditionSelector::PreferredVariants streams =
       rendition_selector_->GetPreferredVariants(video_preferences_,
