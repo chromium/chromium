@@ -556,10 +556,6 @@
     "label": "//:chromiumos_preflight",
     "type": "additional_compile_target",
   },
-  "clank_finch_smoke_tests": {
-    "label": "//clank/java:clank_finch_smoke_tests",
-    "type": "generated_script",
-  },
   "color_unittests": {
     "label": "//ui/color:color_unittests",
     "type": "console_test_launcher",

@@ -690,11 +690,6 @@ targets.compile_target(
     label = "//:chromiumos_preflight",
 )
 
-targets.generated_script(
-    name = "clank_finch_smoke_tests",
-    label = "//clank/java:clank_finch_smoke_tests",
-)
-
 targets.console_test_launcher(
     name = "color_unittests",
     label = "//ui/color:color_unittests",
