@@ -26,11 +26,12 @@ import {WaitableEvent} from './waitable_event.js';
 
 /**
  * The tracker ID of the GA metrics and the measurement ID of GA4 events. Make
- * sure to replace both of them when debugging (see
- * go/cros-camera:dd:cca-ga-migration).
+ * sure to set `PRODUCTION` to `false` when developing/debugging metrics. See
+ * Debugging section in go/cros-camera:dd:cca-ga-migration.
  */
-const GA_ID = 'UA-134822711-1';
-const GA4_ID = 'G-TRQS261G6E';
+const PRODUCTION = true;
+const GA_ID = PRODUCTION ? 'UA-134822711-1' : 'UA-134822711-2';
+const GA4_ID = PRODUCTION ? 'G-TRQS261G6E' : 'G-J03LBPJBGD';
 
 let baseDimen: Map<number, number|string>|null = null;
 
@@ -71,7 +72,7 @@ async function sendEvent(
   await ready.wait();
 
   // This value reflects the logging consent option in OS settings.
-  const canSendMetrics =
+  const canSendMetrics = !PRODUCTION ||
       await ChromeHelper.getInstance().isMetricsAndCrashReportingEnabled();
   if (canSendMetrics) {
     const gaHelper = await getGAHelper();
