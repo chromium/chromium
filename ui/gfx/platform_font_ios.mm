@@ -123,7 +123,29 @@ const FontRenderParams& PlatformFontIOS::GetFontRenderParams() {
 CTFontRef PlatformFontIOS::GetCTFont() const {
   UIFont* font = [UIFont fontWithName:base::SysUTF8ToNSString(font_name_)
                                  size:font_size_];
-  return base::mac::NSToCFCast(font);
+
+  UIFontDescriptor* descriptor = [font fontDescriptor];
+
+  uint32_t traits = 0;
+  if (weight_ >= Font::Weight::BOLD) {
+    traits |= UIFontDescriptorTraitBold;
+  }
+  if (style_ == Font::ITALIC) {
+    traits |= UIFontDescriptorTraitItalic;
+  }
+  descriptor = [descriptor fontDescriptorWithSymbolicTraits:traits];
+
+  // 0.0 size means that the original size of the font specified in the
+  // descriptor should be kept.
+  UIFont* font_with_traits = [UIFont fontWithDescriptor:descriptor size:0.0];
+
+  // UIFont's fontWithDescriptor:size: method can return nil if it cannot find a
+  // font that matches the given descriptor.
+  if (font_with_traits) {
+    return base::mac::NSToCFCast(font_with_traits);
+  } else {
+    return base::mac::NSToCFCast(font);
+  }
 }
 
 sk_sp<SkTypeface> PlatformFontIOS::GetNativeSkTypeface() const {
