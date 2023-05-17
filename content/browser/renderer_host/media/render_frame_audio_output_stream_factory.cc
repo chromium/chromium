@@ -298,7 +298,6 @@ RenderFrameAudioOutputStreamFactory::Core::Core(
       frame_id_(frame->GetRoutingID()),
       authorization_handler_(audio_system, media_stream_manager, process_id_) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  SendLogMessage(base::StringPrintf("%s()", __func__));
 
   ForwardingAudioStreamFactory::Core* tmp_factory =
       ForwardingAudioStreamFactory::CoreForFrame(frame);
