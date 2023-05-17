@@ -171,7 +171,7 @@ class TargetPage {
     this._session;
   }
 
-  static async createAndNavigate(browserSession, url) {
+  static async create(browserSession) {
     const targetPage = new TargetPage(browserSession);
 
     const dp = browserSession.protocol();
@@ -189,8 +189,6 @@ class TargetPage {
                       })).result.sessionId;
     targetPage._session = browserSession.createSession(sessionId);
 
-    await targetPage._navigate(url);
-
     return targetPage;
   }
 
@@ -202,12 +200,7 @@ class TargetPage {
     return this._session;
   }
 
-  async close() {
-    const dp = this._session.protocol();
-    dp.Target.closeTarget({targetId: this._targetId});
-  }
-
-  async _navigate(url) {
+  async load(url) {
     const dp = this._session.protocol();
     await dp.Page.enable();
     await dp.Page.setLifecycleEventsEnabled({enabled: true});
@@ -215,6 +208,11 @@ class TargetPage {
     await dp.Page.onceLifecycleEvent(
         event =>
             event.params.name === 'load' && event.params.frameId === frameId);
+  }
+
+  async close() {
+    const dp = this._session.protocol();
+    dp.Target.closeTarget({targetId: this._targetId});
   }
 }
 
@@ -287,37 +285,50 @@ function sendDevToolsMessage(json) {
 //
 async function executeCommands(commands) {
   const browserSession = new CDPSession();
-  const targetPage =
-      await TargetPage.createAndNavigate(browserSession, commands.targetUrl);
+  const targetPage = await TargetPage.create(browserSession);
   const dp = targetPage.session().protocol();
+
+  const promises = [];
+  let pageLoadTimedOut;
+  if ('timeout' in commands) {
+    const timeoutPromise = new Promise(resolve => {
+      setTimeout(() => {
+        if (pageLoadTimedOut === undefined) {
+          pageLoadTimedOut = true;
+          dp.Page.stopLoading();
+        }
+        resolve();
+      }, commands.timeout);
+    });
+    promises.push(timeoutPromise);
+  }
+
+  promises.push(targetPage.load(commands.targetUrl));
+  await Promise.race(promises);
+
+  if (pageLoadTimedOut === undefined) {
+    pageLoadTimedOut = false;
+  }
 
   if ('defaultBackgroundColor' in commands) {
     await dp.Emulation.setDefaultBackgroundColorOverride(
         {color: commands.defaultBackgroundColor});
   }
 
-  const promises = [];
-  if ('timeout' in commands) {
-    const timeoutPromise = new Promise(resolve => {
-      setTimeout(resolve, commands.timeout);
-    });
-    promises.push(timeoutPromise);
-  }
-
-  if ('virtualTimeBudget' in commands) {
+  if ('virtualTimeBudget' in commands && !pageLoadTimedOut) {
     await dp.Emulation.setVirtualTimePolicy({
       budget: commands.virtualTimeBudget,
       maxVirtualTimeTaskStarvationCount: 9999,
       policy: 'pauseIfNetworkFetchesPending',
     });
-    promises.push(dp.Emulation.onceVirtualTimeBudgetExpired());
-  }
-
-  if (promises.length > 0) {
-    await Promise.race(promises);
+    await dp.Emulation.onceVirtualTimeBudgetExpired();
   }
 
   const result = await handleCommands(dp, commands);
+
+  if (pageLoadTimedOut) {
+    result.pageLoadTimedOut = true;
+  }
 
   await targetPage.close();
 

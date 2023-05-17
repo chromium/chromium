@@ -34,6 +34,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace headless {
@@ -358,6 +359,11 @@ void HeadlessCommandHandler::OnTargetCrashed(const base::Value::Dict&) {
 }
 
 void HeadlessCommandHandler::OnCommandsResult(base::Value::Dict result) {
+  if (absl::optional<bool> timeout =
+          result.FindBoolByDottedPath("result.result.value.pageLoadTimedOut")) {
+    LOG(ERROR) << "Page load timed out.";
+  }
+
   if (std::string* dom_dump =
           result.FindStringByDottedPath("result.result.value.dumpDomResult")) {
     std::cout << *dom_dump << std::endl;
