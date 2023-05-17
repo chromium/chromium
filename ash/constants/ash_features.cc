@@ -916,6 +916,13 @@ BASE_FEATURE(kFeatureManagement16Desks,
              "FeatureManagement16Desks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allows borealis on certain boards whose features are determined by
+// FeatureManagement. This feature does not apply to all boards, and does not
+// guarantee borealis will be available (due to additional hardware checks).
+BASE_FEATURE(kFeatureManagementSteamOnChromebook,
+             "FeatureManagementSteamOnChromebook",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Restricts the time-of-day wallpaper/screensaver features to the intended
 // target population, whereas the `kTimeOfDayScreenSaver|Wallpaper` flags
 // control the feature's rollout within said target population. These flags are

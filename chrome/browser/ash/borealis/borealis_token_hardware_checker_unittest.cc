@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/borealis/borealis_token_hardware_checker.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_features_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,6 +65,21 @@ TEST(BorealisTokenHardwareCheckerTest, GuybrushMajolica) {
 
 TEST(BorealisTokenHardwareCheckerTest, Draco) {
   EXPECT_EQ(check("draco", "", "", 0, ""), AllowStatus::kAllowed);
+}
+
+TEST(BorealisTokenHardwareCheckerTest, Nissa) {
+  // Nissa without FeatureManagement's flag are disallowed
+  EXPECT_EQ(check("nissa", "",
+                  "42nd Gen Intel(R) Core(TM) i5-42700kf @ 2.60THz", 8, ""),
+            AllowStatus::kUnsupportedModel);
+
+  // With FeatureManagement's flag, they are allowed
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatureState(
+      ash::features::kFeatureManagementSteamOnChromebook, /*enabled=*/true);
+  EXPECT_EQ(check("nissa", "",
+                  "42nd Gen Intel(R) Core(TM) i5-42700kf @ 2.60THz", 8, ""),
+            AllowStatus::kAllowed);
 }
 
 // Procedure for adding and new token:

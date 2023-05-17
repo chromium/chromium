@@ -44,6 +44,10 @@ class BorealisTokenHardwareChecker : public TokenHardwareChecker {
   bool HasNamedToken(const char* name,
                      const char* salt,
                      const char* expected) const;
+
+  // Determines if this hardware has the correct segmentation parameters (see
+  // b/274537000 for details).
+  bool InTargetSegment() const;
 };
 
 }  // namespace borealis
