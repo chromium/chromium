@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
@@ -68,7 +69,6 @@ namespace blink {
 
 class BlobDataHandle;
 class FetchParameters;
-class ResourceClient;
 class ResourceFinishObserver;
 class ResourceLoader;
 class ResponseBodyLoaderDrainableInterface;
