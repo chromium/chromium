@@ -338,9 +338,9 @@ void XRCompositorCommon::ExitPresent(ExitXrPresentReason reason) {
   // Don't call StopRuntime until this thread has finished the rest of the work.
   // This is to prevent the OpenXrApiWrapper from being deleted before its
   // cleanup work has finished.
-  task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&XRCompositorCommon::StopRuntime, base::Unretained(this)));
+  task_runner()->PostTask(FROM_HERE,
+                          base::BindOnce(&XRCompositorCommon::StopRuntime,
+                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void XRCompositorCommon::SetVisibilityState(

@@ -6,6 +6,7 @@
 #define DEVICE_VR_WINDOWS_COMPOSITOR_BASE_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -238,6 +239,8 @@ class XRCompositorCommon : public base::Thread,
       mojom::XRVisibilityState::VISIBLE;
   mojom::VRStageParametersPtr current_stage_parameters_;
   uint32_t stage_parameters_id_;
+
+  base::WeakPtrFactory<XRCompositorCommon> weak_ptr_factory_{this};
 };
 
 }  // namespace device

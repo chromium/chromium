@@ -127,7 +127,8 @@ void OpenXrRenderLoop::StartRuntime(
   openxr_ = OpenXrApiWrapper::Create(instance_);
   if (!openxr_) {
     DVLOG(1) << __func__ << " Could not create OpenXrApiWrapper";
-    return std::move(start_runtime_callback).Run(false);
+    std::move(start_runtime_callback).Run(false);
+    return;
   }
 
   // TODO(https://crbug.com/1441073): Consolidate to a single, cross-platform
@@ -179,8 +180,24 @@ void OpenXrRenderLoop::OnOpenXrSessionStarted(
     // Still call it to log the failure reason; but also explicitly call
     // StopRuntime, which should be resilient to duplicate calls.
     ExitPresent(ExitXrPresentReason::kOpenXrStartFailed);
-    StopRuntime();
-    std::move(start_runtime_callback).Run(false);
+
+    // We're only called from the OpenXrApiWrapper, which StopRuntime will
+    // destroy. To prevent some re-entrant behavior, yield to let it finish
+    // anything it's doing from before it called us before we stop the runtime.
+    task_runner()->PostTask(FROM_HERE,
+                            base::BindOnce(&OpenXrRenderLoop::StopRuntime,
+                                           weak_ptr_factory_.GetWeakPtr()));
+
+    // Technically until the StopRuntime task is called we can't service another
+    // session request, which theoretically could come in once we run this
+    // callback. Post a task to run it so that it runs after StopRuntime to
+    // avoid this potential (albeit unlikely) race.
+    task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](StartRuntimeCallback start_runtime_callback) {
+                         std::move(start_runtime_callback).Run(false);
+                       },
+                       std::move(start_runtime_callback)));
     return;
   }
 
