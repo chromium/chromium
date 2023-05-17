@@ -1,4 +1,4 @@
 Tests that console preserves log on oopif navigation
-oopif-console-preser…me-navigation.js:12 Before navigation
-oopif-console-preser…me-navigation.js:14 After navigation
+oopif-console-preser…me-navigation.js:15 Before navigation
+oopif-console-preser…me-navigation.js:17 After navigation
 
