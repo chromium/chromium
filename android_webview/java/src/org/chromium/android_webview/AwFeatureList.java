@@ -6,13 +6,10 @@ package org.chromium.android_webview;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Java accessor for base/feature_list.h state.
  */
-@JNINamespace("android_webview")
 public final class AwFeatureList {
     // Do not instantiate this class.
     private AwFeatureList() {}
@@ -44,13 +41,13 @@ public final class AwFeatureList {
      * Returns whether the specified feature is enabled or not.
      *
      * Note: Features queried through this API must be added to the array
-     * |kFeaturesExposedToJava| in android_webview/browser/aw_feature_list.cc
+     * |kFeaturesExposedToJava| in android_webview/browser/aw_feature_map.cc
      *
      * @param featureName The name of the feature to query.
      * @return Whether the feature is enabled or not.
      */
     public static boolean isEnabled(String featureName) {
-        return AwFeatureListJni.get().isEnabled(featureName);
+        return AwFeatureMap.getInstance().isEnabled(featureName);
     }
 
     /**
@@ -63,7 +60,7 @@ public final class AwFeatureList {
      * in base/metrics/field_trial_params.h
      *
      * Note: Features queried through this API must be added to the array
-     * |kFeaturesExposedToJava| in android_webview/browser/aw_feature_list.cc
+     * |kFeaturesExposedToJava| in android_webview/browser/aw_feature_map.cc
      *
      * @param featureName The name of the feature to query.
      * @param paramName The name of the feature parameter to query.
@@ -72,16 +69,7 @@ public final class AwFeatureList {
      */
     public static int getFeatureParamValueAsInt(
             String featureName, String paramName, int defaultValue) {
-        assert featureName != null : "featureName should not be null";
-        assert paramName != null : "paramName should not be null";
-
-        return AwFeatureListJni.get().getFeatureParamValueAsInt(
+        return AwFeatureMap.getInstance().getFieldTrialParamByFeatureAsInt(
                 featureName, paramName, defaultValue);
-    }
-
-    @NativeMethods
-    interface Natives {
-        boolean isEnabled(String featureName);
-        int getFeatureParamValueAsInt(String featureName, String paramName, int defaultValue);
     }
 }
