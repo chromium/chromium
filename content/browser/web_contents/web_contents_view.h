@@ -126,7 +126,7 @@ class WebContentsView {
 std::unique_ptr<WebContentsView> CreateWebContentsView(
     WebContentsImpl* web_contents,
     std::unique_ptr<WebContentsViewDelegate> delegate,
-    RenderViewHostDelegateView** render_view_host_delegate_view);
+    raw_ptr<RenderViewHostDelegateView>* render_view_host_delegate_view);
 
 }  // namespace content
 
