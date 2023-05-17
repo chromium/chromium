@@ -3535,6 +3535,9 @@ extern const char kOobeHidDetectionRevampDescription[];
 extern const char kOsSettingsAppBadgingToggleName[];
 extern const char kOsSettingsAppBadgingToggleDescription[];
 
+extern const char kOsSettingsRevampWayfindingName[];
+extern const char kOsSettingsRevampWayfindingDescription[];
+
 extern const char kOsSettingsSearchFeedbackName[];
 extern const char kOsSettingsSearchFeedbackDescription[];
 

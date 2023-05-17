@@ -6182,6 +6182,11 @@ const char kOsSettingsAppBadgingToggleDescription[] =
     "Enables app badging toggle to be displayed in app notification page in"
     "ChromeOS Settings.";
 
+const char kOsSettingsRevampWayfindingName[] =
+    "ChromeOS Settings Revamp: Wayfinding Improvements";
+const char kOsSettingsRevampWayfindingDescription[] =
+    "Enables wayfinding improvements in the ChromeOS Settings UI.";
+
 const char kOsSettingsSearchFeedbackName[] =
     "ChromeOS Settings Search Feedback";
 const char kOsSettingsSearchFeedbackDescription[] =

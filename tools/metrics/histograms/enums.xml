@@ -61542,6 +61542,7 @@ from previous Chrome versions.
   <int value="-606696801" label="TabGroupsUiImprovementsAndroid:enabled"/>
   <int value="-606431158" label="DrawVerticallyEdgeToEdge:enabled"/>
   <int value="-605720512" label="JourneysZeroStateFiltering:enabled"/>
+  <int value="-605117040" label="OsSettingsRevampWayfinding:disabled"/>
   <int value="-604814313" label="enable-pinch"/>
   <int value="-604269405"
       label="ContentSuggestionsFaviconsFromNewServer:enabled"/>
@@ -65797,6 +65798,7 @@ from previous Chrome versions.
   <int value="1690248203" label="HelpAppV2:enabled"/>
   <int value="1690415951" label="PrivacySandboxSettings4:disabled"/>
   <int value="1690837904" label="save-previous-document-resources"/>
+  <int value="1691291249" label="OsSettingsRevampWayfinding:enabled"/>
   <int value="1691568199" label="AndroidSpellCheckerNonLowEnd:disabled"/>
   <int value="1691853573" label="PersonalizationHub:enabled"/>
   <int value="1692847616" label="ArcEnableWebAppShare:enabled"/>

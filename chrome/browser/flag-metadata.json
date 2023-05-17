@@ -5890,6 +5890,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "os-settings-revamp-wayfinding",
+    "owners": [ "wesokuhara", "cros-settings@google.com" ],
+    "expiry_milestone": 128
+  },
+  {
     "name": "os-settings-search-feedback",
     "owners": [ "wesokuhara", "cros-settings@google.com" ],
     "expiry_milestone": 114
