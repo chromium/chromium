@@ -10,7 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
-#include "base/scoped_observation.h"
+#include "base/scoped_multi_source_observation.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/history/core/browser/history_client.h"
 #include "components/history/core/browser/history_service.h"
@@ -35,7 +35,7 @@ class HistoryClientImpl : public history::HistoryClient,
   ~HistoryClientImpl() override;
 
  private:
-  void StopObservingBookmarkModel();
+  void StopObservingBookmarkModels();
 
   // history::HistoryClient implementation.
   void OnHistoryServiceCreated(
@@ -70,11 +70,8 @@ class HistoryClientImpl : public history::HistoryClient,
   void HandleBookmarksRemovedFromModel(bookmarks::BookmarkModel* model,
                                        const std::set<GURL>& removed_urls);
 
-  // BookmarkModel instances providing access to bookmarks. May be null during
-  // testing, and is null while shutting down.
+  // BookmarkModel instances providing access to bookmarks. May be null.
   bookmarks::BookmarkModel* local_or_syncable_bookmark_model_ = nullptr;
-  // `account_bookmark_model_` is always nullptr.
-  // TODO(crbug.com/1425458): use the actual bookmark model.
   bookmarks::BookmarkModel* account_bookmark_model_ = nullptr;
 
   // Callback invoked when URLs are removed from BookmarkModel.
@@ -83,12 +80,9 @@ class HistoryClientImpl : public history::HistoryClient,
   // Subscription for notifications of changes to favicons.
   base::CallbackListSubscription favicons_changed_subscription_;
 
-  base::ScopedObservation<bookmarks::BookmarkModel,
-                          bookmarks::BaseBookmarkModelObserver>
-      local_or_syncable_bookmark_model_observation_{this};
-  base::ScopedObservation<bookmarks::BookmarkModel,
-                          bookmarks::BaseBookmarkModelObserver>
-      account_bookmark_model_observation_{this};
+  base::ScopedMultiSourceObservation<bookmarks::BookmarkModel,
+                                     bookmarks::BaseBookmarkModelObserver>
+      bookmark_model_observations_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_HISTORY_HISTORY_CLIENT_IMPL_H_

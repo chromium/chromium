@@ -19,24 +19,24 @@
 
 HistoryClientImpl::HistoryClientImpl(
     bookmarks::BookmarkModel* local_or_syncable_bookmark_model,
-    bookmarks::BookmarkModel* /*account_bookmark_model*/)
-    : local_or_syncable_bookmark_model_(local_or_syncable_bookmark_model) {
+    bookmarks::BookmarkModel* account_bookmark_model)
+    : local_or_syncable_bookmark_model_(local_or_syncable_bookmark_model),
+      account_bookmark_model_(account_bookmark_model) {
   if (local_or_syncable_bookmark_model_) {
-    local_or_syncable_bookmark_model_observation_.Observe(
+    bookmark_model_observations_.AddObservation(
         local_or_syncable_bookmark_model_);
   }
   if (account_bookmark_model_) {
-    account_bookmark_model_observation_.Observe(account_bookmark_model_);
+    bookmark_model_observations_.AddObservation(account_bookmark_model_);
   }
 }
 
 HistoryClientImpl::~HistoryClientImpl() = default;
 
-void HistoryClientImpl::StopObservingBookmarkModel() {
+void HistoryClientImpl::StopObservingBookmarkModels() {
   local_or_syncable_bookmark_model_ = nullptr;
   account_bookmark_model_ = nullptr;
-  local_or_syncable_bookmark_model_observation_.Reset();
-  account_bookmark_model_observation_.Reset();
+  bookmark_model_observations_.RemoveAllObservations();
 }
 
 void HistoryClientImpl::OnHistoryServiceCreated(
@@ -51,7 +51,7 @@ void HistoryClientImpl::OnHistoryServiceCreated(
 
 void HistoryClientImpl::Shutdown() {
   favicons_changed_subscription_ = {};
-  StopObservingBookmarkModel();
+  StopObservingBookmarkModels();
 }
 
 history::CanAddURLCallback HistoryClientImpl::GetThreadSafeCanAddURLCallback()
@@ -99,8 +99,7 @@ void HistoryClientImpl::BookmarkModelChanged() {
 
 void HistoryClientImpl::BookmarkModelBeingDeleted(
     bookmarks::BookmarkModel* model) {
-  DCHECK_EQ(model, local_or_syncable_bookmark_model_);
-  StopObservingBookmarkModel();
+  StopObservingBookmarkModels();
 }
 
 void HistoryClientImpl::BookmarkNodeRemoved(
