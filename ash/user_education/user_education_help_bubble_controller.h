@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 class ElementContext;
@@ -54,6 +55,15 @@ class ASH_EXPORT UserEducationHelpBubbleController {
                         ui::ElementIdentifier element_id,
                         ui::ElementContext element_context,
                         base::OnceClosure close_callback = base::DoNothing());
+
+  // Returns the unique identifier for the help bubble currently being shown for
+  // the tracked element associated with the specified `element_id` in the
+  // specified `element_context`. If no help bubble is currently being shown for
+  // the tracked element or if the tracked element does not exist, an absent
+  // value is returned.
+  absl::optional<HelpBubbleId> GetHelpBubbleId(
+      ui::ElementIdentifier element_id,
+      ui::ElementContext element_context) const;
 
  private:
   // The delegate owned by the `UserEducationController` which facilitates

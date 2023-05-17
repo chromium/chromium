@@ -289,7 +289,8 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
     user_education::HelpBubbleParams params)
     : BubbleDialogDelegateView(anchor.view,
                                TranslateArrow(params.arrow),
-                               views::BubbleBorder::STANDARD_SHADOW) {
+                               views::BubbleBorder::STANDARD_SHADOW),
+      id_(id) {
   if (anchor.rect.has_value()) {
     SetForceAnchorRect(anchor.rect.value());
   } else {

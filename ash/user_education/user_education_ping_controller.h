@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace views {
 class View;
@@ -43,6 +44,11 @@ class ASH_EXPORT UserEducationPingController {
   // (b) a ping already exists for the specified `view`;
   // (c) the specified `view` is not drawn.
   bool CreatePing(PingId ping_id, views::View* view);
+
+  // Returns the unique identifier for the ping currently being shown for the
+  // specified `view`. If no ping is currently being shown for `view`, an absent
+  // value is returned.
+  absl::optional<PingId> GetPingId(const views::View* view) const;
 
  private:
   class Ping;

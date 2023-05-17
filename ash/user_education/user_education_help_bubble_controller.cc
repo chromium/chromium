@@ -9,11 +9,14 @@
 #include "ash/user_education/user_education_delegate.h"
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
+#include "ash/user_education/views/help_bubble_factory_views_ash.h"
+#include "ash/user_education/views/help_bubble_view_ash.h"
 #include "base/check_op.h"
 #include "components/account_id/account_id.h"
 #include "components/user_education/common/help_bubble.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/interaction/element_tracker_views.h"
 
 namespace ash {
 namespace {
@@ -84,6 +87,30 @@ bool UserEducationHelpBubbleController::CreateHelpBubble(
 
   // Indicate success.
   return true;
+}
+
+absl::optional<HelpBubbleId> UserEducationHelpBubbleController::GetHelpBubbleId(
+    ui::ElementIdentifier element_id,
+    ui::ElementContext element_context) const {
+  if (help_bubble_ && help_bubble_->IsA<HelpBubbleViewsAsh>()) {
+    // Cache the `bubble_view` with its associated anchor.
+    auto* bubble_view = help_bubble_->AsA<HelpBubbleViewsAsh>()->bubble_view();
+    auto* anchor_view = bubble_view->GetAnchorView();
+
+    // Find all `tracked_views` matching `element_id` and `element_context`.
+    const views::ElementTrackerViews::ViewList tracked_views =
+        views::ElementTrackerViews::GetInstance()->GetAllMatchingViews(
+            element_id, element_context);
+
+    // A help bubble exists for a `tracked_view` if the `tracked_view` is the
+    // `anchor_view` for the help bubble.
+    for (const auto* tracked_view : tracked_views) {
+      if (tracked_view == anchor_view) {
+        return bubble_view->id();
+      }
+    }
+  }
+  return absl::nullopt;
 }
 
 }  // namespace ash

@@ -81,6 +81,8 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
 
   void SetForceAnchorRect(gfx::Rect force_anchor_rect);
 
+  HelpBubbleId id() const { return id_; }
+
  protected:
   // views::BubbleDialogDelegateView:
   void OnAnchorBoundsChanged() override;
@@ -105,6 +107,8 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
   // its anchor. When the help bubble is not center aligned with its anchor, the
   // corner closest to the anchor has a smaller radius.
   void UpdateRoundedCorners();
+
+  const HelpBubbleId id_;
 
   // If set, overrides the anchor bounds within the anchor view.
   absl::optional<gfx::Rect> local_anchor_bounds_;
