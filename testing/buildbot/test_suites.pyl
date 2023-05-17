@@ -112,6 +112,15 @@
     },
 
     'android_finch_smoke_tests': {
+      'clank_finch_smoke_tests': {
+        'args': [
+          '--finch-seed-path',
+          '../../variations_seed',
+        ],
+        'mixins': [
+          'skia_gold_test',
+        ],
+      },
       'monochrome_finch_smoke_tests': {
         'args': [
           '--finch-seed-path',
