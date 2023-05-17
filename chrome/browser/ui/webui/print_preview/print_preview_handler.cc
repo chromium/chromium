@@ -114,8 +114,7 @@ mojom::PrinterType GetPrinterTypeForUserAction(UserActionBuckets user_action) {
     case UserActionBuckets::kOpenInMacPreview:
       return mojom::PrinterType::kLocal;
     default:
-      NOTREACHED();
-      return mojom::PrinterType::kLocal;
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -229,8 +228,7 @@ UserActionBuckets DetermineUserAction(const base::Value::Dict& settings) {
     case mojom::PrinterType::kLocal:
       break;
     default:
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
   }
 
   if (settings.FindBool(kSettingShowSystemDialog).value_or(false))
@@ -597,13 +595,9 @@ void PrintPreviewHandler::HandleGetPrinters(const base::Value::List& args) {
     return;
   }
 
-  PrinterHandler* handler = GetPrinterHandler(printer_type);
-  if (!handler) {
-    RejectJavascriptCallback(base::Value(callback_id), base::Value());
-    return;
-  }
   // Make sure all in progress requests are canceled before new printer search
   // starts.
+  PrinterHandler* handler = GetPrinterHandler(printer_type);
   handler->Reset();
   handler->StartGetPrinters(
       base::BindRepeating(&PrintPreviewHandler::OnAddedPrinters,
@@ -640,11 +634,6 @@ void PrintPreviewHandler::HandleGetPrinterCapabilities(
   }
 
   PrinterHandler* handler = GetPrinterHandler(printer_type);
-  if (!handler) {
-    RejectJavascriptCallback(base::Value(callback_id), base::Value());
-    return;
-  }
-
   handler->StartGetCapability(
       *printer_name,
       base::BindOnce(&PrintPreviewHandler::SendPrinterCapabilities,
@@ -799,10 +788,6 @@ void PrintPreviewHandler::FinishHandlePrint(
     const std::string& callback_id) {
   PrinterHandler* handler =
       GetPrinterHandler(GetPrinterTypeForUserAction(user_action));
-  if (!handler) {
-    RejectJavascriptCallback(base::Value(callback_id), base::Value());
-    return;
-  }
   handler->StartPrint(print_preview_ui()->initiator_title(),
                       std::move(settings), data,
                       base::BindOnce(&PrintPreviewHandler::OnPrintResult,
@@ -1166,8 +1151,7 @@ PrinterHandler* PrintPreviewHandler::GetPrinterHandler(
     }
     return local_printer_handler_.get();
   }
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 PdfPrinterHandler* PrintPreviewHandler::GetPdfPrinterHandler() {
