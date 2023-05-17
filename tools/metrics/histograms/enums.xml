@@ -88922,6 +88922,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="WRITE_STATUS_MSG_TOO_BIG"/>
 </enum>
 
+<enum name="QuotaDatabaseDisabledReason">
+  <int value="0" label="The first step of bootstrapping failed"/>
+  <int value="1" label="The second step of bootstrapping failed"/>
+  <int value="2"
+      label="Tried and failed to raze database after a catastrophic error"/>
+</enum>
+
 <enum name="QuotaDatabaseResetReason">
   <int value="0" label="Failed to open/create database for path"/>
   <int value="1" label="Failed to create in-memory database"/>
@@ -88941,6 +88948,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="File Operation Error"/>
   <int value="6" label="Invalid Expiration Error"/>
   <int value="7" label="Quota Exceeded Error"/>
+  <int value="8" label="Database Disabled">
+    The database failed to bootstrap.
+  </int>
 </enum>
 
 <enum name="QuotaOriginTypes">

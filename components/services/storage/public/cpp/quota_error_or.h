@@ -23,7 +23,8 @@ enum class QuotaError {
   kFileOperationError = 5,
   kInvalidExpiration = 6,
   kQuotaExceeded = 7,
-  kMaxValue = kQuotaExceeded
+  kDatabaseDisabled = 8,
+  kMaxValue = kDatabaseDisabled,
 };
 
 struct DetailedQuotaError {

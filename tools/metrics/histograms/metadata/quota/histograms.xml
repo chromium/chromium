@@ -204,6 +204,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Quota.QuotaDatabaseDisabled"
+    enum="QuotaDatabaseDisabledReason" expires_after="2023-11-12">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records at which step the QuotaDatabase failed to bootstrap.
+  </summary>
+</histogram>
+
 <histogram name="Quota.QuotaDatabaseError" enum="SqliteLoggedResultCode"
     expires_after="2023-09-17">
   <owner>ayui@chromium.org</owner>
