@@ -119,7 +119,8 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
     // too.
     switch (lacros_selection.value()) {
       case browser_util::LacrosSelection::kRootfs:
-        SelectRootfsLacros(std::move(callback));
+        SelectRootfsLacros(std::move(callback),
+                           /*load_stateful_lacros=*/false);
         return;
       case browser_util::LacrosSelection::kStateful:
         SelectStatefulLacros(std::move(callback));

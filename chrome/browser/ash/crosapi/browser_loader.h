@@ -89,7 +89,7 @@ class BrowserLoader {
   // `load_stateful_lacros` specifies whether we should start the installation
   // of stateful lacros in the background.
   void SelectRootfsLacros(LoadCompletionCallback callback,
-                          bool load_stateful_lacros = false);
+                          bool load_stateful_lacros);
   void SelectStatefulLacros(LoadCompletionCallback callback);
 
   // Called when stateful lacros version is calculated.
