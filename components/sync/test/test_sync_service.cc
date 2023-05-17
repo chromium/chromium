@@ -301,6 +301,11 @@ void TestSyncService::RemoveProtocolEventObserver(
 void TestSyncService::GetAllNodesForDebugging(
     base::OnceCallback<void(base::Value::List)> callback) {}
 
+SyncService::ModelTypeDownloadStatus TestSyncService::GetDownloadStatusFor(
+    ModelType type) const {
+  return ModelTypeDownloadStatus::kUpToDate;
+}
+
 void TestSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
 
 void TestSyncService::AddTrustedVaultDecryptionKeysFromWeb(

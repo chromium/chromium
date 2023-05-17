@@ -66,6 +66,7 @@ class FakeSyncService : public SyncService {
   void RemoveProtocolEventObserver(ProtocolEventObserver* observer) override;
   void GetAllNodesForDebugging(
       base::OnceCallback<void(base::Value::List)> callback) override;
+  ModelTypeDownloadStatus GetDownloadStatusFor(ModelType type) const override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
   void AddTrustedVaultDecryptionKeysFromWeb(
       const std::string& gaia_id,

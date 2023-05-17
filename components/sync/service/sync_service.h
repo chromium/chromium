@@ -204,6 +204,22 @@ class SyncService : public KeyedService {
     kGenericUnrecoverableError,
   };
 
+  enum class ModelTypeDownloadStatus {
+    // State is unknown or there are updates to download from the server.
+    kWaitingForUpdates = 0,
+
+    // There are no known server-side changes to download (local data is
+    // up-to-date). Note that there is no guarantee that there are no new
+    // updates (e.g. due to no internet connection, sync errors, etc).
+    kUpToDate = 1,
+
+    // This status includes any issues with the data type, e.g. if there are
+    // bridge errors or it's throttled. In general, it means that the data
+    // type is *not* necessarily up-to-date and the caller should not expect
+    // this will be changed soon.
+    kError = 2,
+  };
+
   SyncService(const SyncService&) = delete;
   SyncService& operator=(const SyncService&) = delete;
 
@@ -492,6 +508,9 @@ class SyncService : public KeyedService {
   // scoped_refptr<>.
   virtual void GetAllNodesForDebugging(
       base::OnceCallback<void(base::Value::List)> callback) = 0;
+
+  virtual ModelTypeDownloadStatus GetDownloadStatusFor(
+      ModelType type) const = 0;
 
  protected:
   SyncService() = default;

@@ -160,6 +160,11 @@ void FakeSyncService::RemoveProtocolEventObserver(
 void FakeSyncService::GetAllNodesForDebugging(
     base::OnceCallback<void(base::Value::List)> callback) {}
 
+SyncService::ModelTypeDownloadStatus FakeSyncService::GetDownloadStatusFor(
+    ModelType type) const {
+  return ModelTypeDownloadStatus::kUpToDate;
+}
+
 void FakeSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
 
 void FakeSyncService::AddTrustedVaultDecryptionKeysFromWeb(

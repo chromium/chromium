@@ -1836,6 +1836,12 @@ void SyncServiceImpl::GetAllNodesForDebugging(
   }
 }
 
+SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusFor(
+    ModelType type) const {
+  NOTREACHED() << "Download status API is not implemented.";
+  return ModelTypeDownloadStatus::kWaitingForUpdates;
+}
+
 CoreAccountInfo SyncServiceImpl::GetAccountInfo() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!auth_manager_) {

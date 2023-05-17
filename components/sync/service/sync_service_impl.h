@@ -149,6 +149,7 @@ class SyncServiceImpl : public SyncService,
   void RemoveProtocolEventObserver(ProtocolEventObserver* observer) override;
   void GetAllNodesForDebugging(
       base::OnceCallback<void(base::Value::List)> callback) override;
+  ModelTypeDownloadStatus GetDownloadStatusFor(ModelType type) const override;
 
   // SyncEngineHost implementation.
   void OnEngineInitialized(bool success,
