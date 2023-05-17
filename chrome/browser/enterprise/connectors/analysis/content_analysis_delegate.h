@@ -111,14 +111,12 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
     // Page to be printed to scan.
     base::ReadOnlySharedMemoryRegion page;
 
-    // TODO(b/280457160): Set printer name once scan after printer preview
-    // is done.
     // Printer name of the page being sent to, empty for non-print actions.
     std::string printer_name;
 
-    // TODO(b/280457160): Set printer type once scan after printer preview
-    // is done.
-    // Printer type of the page being sent to, the default value is UNKNOWN.
+    // TODO(b/283108167): Delete or send printer type information to local
+    // service partner.
+    //  Printer type of the page being sent to, the default value is UNKNOWN.
     ContentMetaData::PrintMetadata::PrinterType printer_type =
         ContentMetaData::PrintMetadata::UNKNOWN;
 

@@ -11,7 +11,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/web_contents.h"
 #include "printing/printing_features.h"
@@ -56,6 +55,7 @@ namespace enterprise_connectors {
 
 void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
                             content::WebContents* initiator,
+                            const std::string& printer_name,
                             base::OnceCallback<void(bool)> on_verdict,
                             base::OnceClosure hide_preview) {
   ContentAnalysisDelegate::Data scanning_data;
@@ -67,6 +67,9 @@ void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
       base::FeatureList::IsEnabled(
           printing::features::kEnablePrintScanAfterPreview) &&
       scanning_data.settings.cloud_or_local_settings.is_local_analysis()) {
+    // Populate print metadata.
+    scanning_data.printer_name = printer_name;
+
     // Hide the preview dialog so it doesn't cover the content analysis dialog
     // showing the status of the scanning.
     // TODO(b/281087582): May need to be handled differently when the scan

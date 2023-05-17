@@ -756,6 +756,10 @@ void PrintPreviewHandler::HandlePrint(const base::Value::List& args) {
   ReportUserActionHistogram(user_action);
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+  const std::string* printer_name_ptr =
+      settings.FindString(kSettingPrinterName);
+  const std::string printer_name = printer_name_ptr ? *printer_name_ptr : "";
+
   auto on_verdict =
       base::BindOnce(&PrintPreviewHandler::OnVerdictByEnterprisePolicy,
                      weak_factory_.GetWeakPtr(), user_action,
@@ -765,7 +769,8 @@ void PrintPreviewHandler::HandlePrint(const base::Value::List& args) {
                                      print_preview_ui()->GetWeakPointer());
 
   enterprise_connectors::PrintIfAllowedByPolicy(
-      data, GetInitiator(), std::move(on_verdict), std::move(hide_preview));
+      data, GetInitiator(), printer_name, std::move(on_verdict),
+      std::move(hide_preview));
 
 #else
   FinishHandlePrint(user_action, std::move(settings), data, callback_id);

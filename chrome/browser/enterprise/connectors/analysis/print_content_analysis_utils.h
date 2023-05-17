@@ -18,13 +18,15 @@ class WebContents;
 namespace enterprise_connectors {
 
 // This function takes something to print (`data`) and scans it if the policy is
-// enabled on a managed browser. It `hides_preview` for local content scans.
-// On receiving the verdict after the scan this function calls
-// `on_verdict` with true or false. In the non enterprise case where no scan is
-// required, this function directly calls `on_verdict` with true. This function
-// can return asynchronously.
+// enabled on a managed browser. It also passes on print metadata (e.g.
+// `printer_name`) to content scans and `hides_preview` for the local ones. On
+// receiving the verdict after the scan this function calls `on_verdict` with
+// true or false. In the non enterprise case where no scan is required, this
+// function directly calls `on_verdict` with true. This function can return
+// asynchronously.
 void PrintIfAllowedByPolicy(scoped_refptr<base::RefCountedMemory> data,
                             content::WebContents* initiator,
+                            const std::string& printer_name,
                             base::OnceCallback<void(bool)> on_verdict,
                             base::OnceClosure hide_preview);
 
