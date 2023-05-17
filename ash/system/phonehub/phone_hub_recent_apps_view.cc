@@ -164,6 +164,8 @@ PhoneHubRecentAppsView::HeaderView::HeaderView(
         AshColorProvider::Get()->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kIconColorWarning));
     error_button_->SetImage(views::Button::STATE_NORMAL, image);
+    error_button_->SetAccessibleName(l10n_util::GetStringUTF16(
+        IDS_ASH_ECHE_APP_STREMING_ERROR_DIALOG_TITLE));
     error_button_->SetVisible(false);
   }
 }
