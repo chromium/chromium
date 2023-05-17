@@ -2485,7 +2485,9 @@ bool ChromeContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     return false;
   }
 
-  if (url.SchemeIs(chrome::kIsolatedAppScheme)) {
+  // Convert |url| to an origin to resolve blob: URLs.
+  auto origin = url::Origin::Create(url);
+  if (origin.scheme() == chrome::kIsolatedAppScheme) {
     return true;
   }
 #endif
