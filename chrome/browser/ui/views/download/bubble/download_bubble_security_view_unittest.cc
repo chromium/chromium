@@ -134,7 +134,8 @@ TEST_F(DownloadBubbleSecurityViewTest,
        UpdateSecurityView_WillHaveAppropriateDialogButtons) {
   // Two buttons, one prominent
   row_view_->SetUIInfoForTesting(
-      DownloadUIModel::BubbleUIInfo(std::u16string())
+      DownloadUIModel::BubbleUIInfo()
+          .AddSubpageSummary(std::u16string())
           .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
           .AddPrimaryButton(DownloadCommands::Command::KEEP)
           // OK button
@@ -151,7 +152,8 @@ TEST_F(DownloadBubbleSecurityViewTest,
 
   // Two buttons, none prominent
   DownloadUIModel::BubbleUIInfo info =
-      DownloadUIModel::BubbleUIInfo(std::u16string())
+      DownloadUIModel::BubbleUIInfo()
+          .AddSubpageSummary(std::u16string())
           .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
           .AddPrimaryButton(DownloadCommands::Command::KEEP)
           // OK button
@@ -170,7 +172,8 @@ TEST_F(DownloadBubbleSecurityViewTest,
   EXPECT_EQ(bubble_delegate_->GetDefaultDialogButton(), ui::DIALOG_BUTTON_NONE);
 
   // One button, none prominent
-  info = DownloadUIModel::BubbleUIInfo(std::u16string())
+  info = DownloadUIModel::BubbleUIInfo()
+             .AddSubpageSummary(std::u16string())
              .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
              .AddPrimaryButton(DownloadCommands::Command::KEEP)
              // OK button
@@ -185,7 +188,9 @@ TEST_F(DownloadBubbleSecurityViewTest,
 
   // No buttons, none prominent
   row_view_->SetUIInfoForTesting(
-      DownloadUIModel::BubbleUIInfo(std::u16string())
+      DownloadUIModel::BubbleUIInfo()
+          .AddSubpageSummary(std::u16string())
+
           .AddIconAndColor(views::kInfoIcon, ui::kColorAlertHighSeverity)
           .AddPrimaryButton(DownloadCommands::Command::KEEP));
   security_view_->UpdateSecurityView(row_view_.get());
