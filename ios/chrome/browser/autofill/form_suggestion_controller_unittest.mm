@@ -79,11 +79,13 @@ using autofill::PopupType;
                      displayDescription:nil
                                    icon:@""
                              identifier:0
+                      backendIdentifier:nil
                          requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
                                    icon:@""
                              identifier:1
+                      backendIdentifier:nil
                          requiresReauth:NO]
   ];
   return [[TestSuggestionProvider alloc] initWithSuggestions:suggestions];
@@ -384,11 +386,13 @@ TEST_F(FormSuggestionControllerTest,
                      displayDescription:nil
                                    icon:@""
                              identifier:0
+                      backendIdentifier:nil
                          requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
                                    icon:@""
                              identifier:1
+                      backendIdentifier:nil
                          requiresReauth:NO]
   ];
   TestSuggestionProvider* provider1 =
@@ -434,6 +438,7 @@ TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
                      displayDescription:nil
                                    icon:@""
                              identifier:0
+                      backendIdentifier:nil
                          requiresReauth:NO],
   ];
   TestSuggestionProvider* provider =
@@ -470,6 +475,7 @@ TEST_F(FormSuggestionControllerTest, AutofillSuggestionIPH) {
                                                 displayDescription:nil
                                                               icon:@""
                                                         identifier:0
+                                                 backendIdentifier:nil
                                                     requiresReauth:NO];
   suggestion.featureForIPH = @"YES";
   NSArray* suggestions = @[ suggestion ];

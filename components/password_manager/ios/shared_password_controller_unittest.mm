@@ -443,6 +443,7 @@ TEST_F(SharedPasswordControllerTest, ReturnsSuggestionsIfAvailable) {
                        displayDescription:@"display-description"
                                      icon:@"icon"
                                identifier:0
+                        backendIdentifier:nil
                            requiresReauth:NO];
 
   auto web_frame =
@@ -567,6 +568,7 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
        displayDescription:@"test-description"
                      icon:nil
                identifier:autofill::PopupItemId::kGeneratePasswordEntry
+        backendIdentifier:nil
            requiresReauth:NO];
 
   [[delegate_ expect] sharedPasswordController:controller_
@@ -635,6 +637,7 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
        displayDescription:@"test-description"
                      icon:nil
                identifier:autofill::PopupItemId::kGeneratePasswordEntry
+        backendIdentifier:nil
            requiresReauth:NO];
 
   id decision_handler_arg =

@@ -466,6 +466,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                          displayDescription:rawSuggestion.displayDescription
                                        icon:nil
                                  identifier:0
+                          backendIdentifier:nil
                              requiresReauth:YES];
     [suggestions addObject:suggestion];
   }
@@ -485,6 +486,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
          displayDescription:nil
                        icon:nil
                  identifier:autofill::PopupItemId::kGeneratePasswordEntry
+          backendIdentifier:nil
              requiresReauth:NO];
 
     [suggestions addObject:suggestion];

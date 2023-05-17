@@ -83,11 +83,13 @@
                      displayDescription:nil
                                    icon:@""
                              identifier:0
+                      backendIdentifier:nil
                          requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
                                    icon:@""
                              identifier:1
+                      backendIdentifier:nil
                          requiresReauth:NO]
   ];
   return [[PasswordSuggestionBottomSheetMediatorTestSuggestionProvider alloc]

@@ -80,6 +80,7 @@ using base::NumberToString;
 using base::SysNSStringToUTF16;
 using base::SysNSStringToUTF8;
 using base::SysUTF16ToNSString;
+using base::SysUTF8ToNSString;
 
 namespace {
 
@@ -473,7 +474,13 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
       autofill_suggestion.main_text.value =
           SysNSStringToUTF16(suggestion.value);
       autofill_suggestion.frontend_id = frontend_id;
-      autofill_suggestion.payload = autofill::Suggestion::BackendId();
+      if (!suggestion.backendIdentifier.length) {
+        autofill_suggestion.payload = autofill::Suggestion::BackendId();
+      } else {
+        autofill_suggestion.payload = autofill::Suggestion::BackendId(
+            SysNSStringToUTF8(suggestion.backendIdentifier));
+      }
+
       _popupDelegate->DidAcceptSuggestion(autofill_suggestion, 0);
     }
     return;
@@ -672,6 +679,11 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
                 displayDescription:displayDescription
                               icon:icon
                         identifier:popup_suggestion.frontend_id.as_int()
+                 backendIdentifier:
+                     SysUTF8ToNSString(
+                         popup_suggestion
+                             .GetPayload<autofill::Suggestion::BackendId>()
+                             .value())
                     requiresReauth:NO
         acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
 

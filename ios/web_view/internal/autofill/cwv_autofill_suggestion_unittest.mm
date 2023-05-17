@@ -29,6 +29,7 @@ TEST_F(CWVAutofillSuggestionTest, Initialization) {
                        displayDescription:@"TestDisplayDescription"
                                      icon:@"TestIcon"
                                identifier:1337
+                        backendIdentifier:nil
                            requiresReauth:NO];
   CWVAutofillSuggestion* suggestion =
       [[CWVAutofillSuggestion alloc] initWithFormSuggestion:formSuggestion
