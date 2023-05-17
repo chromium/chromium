@@ -253,8 +253,8 @@ extern const char kAutofillEnableRemadeDownstreamMetricsDescription[];
 extern const char kAutofillEnableStickyManualFallbackForCardsName[];
 extern const char kAutofillEnableStickyManualFallbackForCardsDescription[];
 
-extern const char kAutofillEnableNewStreetLevelFieldTypesName[];
-extern const char kAutofillEnableNewStreetLevelFieldTypesDescription[];
+extern const char kAutofillEnableSupportForLandmarkName[];
+extern const char kAutofillEnableSupportForLandmarkDescription[];
 
 extern const char kAutofillEnableUpdateVirtualCardEnrollmentName[];
 extern const char kAutofillEnableUpdateVirtualCardEnrollmentDescription[];

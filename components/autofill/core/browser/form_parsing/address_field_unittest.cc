@@ -138,8 +138,7 @@ TEST_P(AddressFieldTest, ParseDependentLocality) {
 TEST_P(AddressFieldTest, ParseLandmark) {
   // TODO(crbug.com/1441904): Remove once launched.
   base::test::ScopedFeatureList enabled;
-  enabled.InitAndEnableFeature(
-      features::kAutofillEnableNewStreetLevelFieldTypes);
+  enabled.InitAndEnableFeature(features::kAutofillEnableSupportForLandmark);
 
   AddTextFormFieldData("landmark", "Landmark", ADDRESS_HOME_LANDMARK);
   ClassifyAndVerify();
@@ -191,7 +190,7 @@ TEST_P(AddressFieldTest,
   // TODO(crbug.com/1157405): Remove once launched.
   base::test::ScopedFeatureList enabled;
   enabled.InitWithFeatures({features::kAutofillEnableDependentLocalityParsing,
-                            features::kAutofillEnableNewStreetLevelFieldTypes},
+                            features::kAutofillEnableSupportForLandmark},
                            {});
 
   AddTextFormFieldData("neighborhood", "Neighborhood",

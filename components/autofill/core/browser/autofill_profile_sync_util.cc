@@ -179,7 +179,7 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   specifics->set_address_home_country(
       TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_COUNTRY))));
   if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewStreetLevelFieldTypes)) {
+          features::kAutofillEnableSupportForLandmark)) {
     specifics->set_address_home_landmark(
         TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_LANDMARK))));
   }
@@ -224,7 +224,7 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(ADDRESS_HOME_COUNTRY)));
   if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewStreetLevelFieldTypes)) {
+          features::kAutofillEnableSupportForLandmark)) {
     specifics->set_address_home_landmark_status(
         ConvertProfileToSpecificsVerificationStatus(
             entry.GetVerificationStatus(ADDRESS_HOME_LANDMARK)));
@@ -436,7 +436,7 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
           specifics.address_home_country_status()));
 
   if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewStreetLevelFieldTypes)) {
+          features::kAutofillEnableSupportForLandmark)) {
     profile->SetRawInfoWithVerificationStatus(
         ADDRESS_HOME_LANDMARK, UTF8ToUTF16(specifics.address_home_landmark()),
         ConvertSpecificsToProfileVerificationStatus(

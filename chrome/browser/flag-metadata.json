@@ -547,7 +547,7 @@
     "expiry_milestone": 116
   },
   {
-    "name": "autofill-enable-support-for-new-street-level-fields",
+    "name": "autofill-enable-support-for-landmark",
     "owners": [ "vizcay","koerber" ],
     "expiry_milestone": 120
   },

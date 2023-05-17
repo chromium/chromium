@@ -176,7 +176,7 @@ class AutofillTableProfileTest
       // Only enable support for new setting visible features for kAccount
       // source.
       features_.InitAndEnableFeature(
-          features::kAutofillEnableNewStreetLevelFieldTypes);
+          features::kAutofillEnableSupportForLandmark);
     }
   }
   AutofillProfile::Source profile_source() const { return GetParam(); }
@@ -965,7 +965,7 @@ TEST_P(AutofillTableProfileTest, AutofillProfile) {
       ADDRESS_HOME_PREMISE_NAME, u"Premise", VerificationStatus::kUserVerified);
   ASSERT_EQ(home_profile.GetRawInfo(ADDRESS_HOME_STREET_NAME), u"Street Name");
   if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewStreetLevelFieldTypes)) {
+          features::kAutofillEnableSupportForLandmark)) {
     home_profile.SetRawInfoWithVerificationStatus(
         ADDRESS_HOME_LANDMARK, u"Red tree", VerificationStatus::kObserved);
   }
@@ -1218,7 +1218,7 @@ TEST_P(AutofillTableProfileTest, UpdateAutofillProfile) {
   profile.SetRawInfo(ADDRESS_HOME_ZIP, u"90025");
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableNewStreetLevelFieldTypes)) {
+          features::kAutofillEnableSupportForLandmark)) {
     profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Red tree");
   }
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");

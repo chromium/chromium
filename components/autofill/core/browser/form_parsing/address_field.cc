@@ -529,8 +529,8 @@ bool AddressField::ParseState(AutofillScanner* scanner,
 bool AddressField::ParseLandmark(AutofillScanner* scanner,
                                  const LanguageCode& page_language,
                                  PatternSource pattern_source) {
-  const bool is_enabled_landmark_parsing = base::FeatureList::IsEnabled(
-      features::kAutofillEnableNewStreetLevelFieldTypes);
+  const bool is_enabled_landmark_parsing =
+      base::FeatureList::IsEnabled(features::kAutofillEnableSupportForLandmark);
   // TODO(crbug.com/1441904) Remove feature check when launched.
   if (landmark_ || !is_enabled_landmark_parsing) {
     return false;
@@ -828,8 +828,8 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForLandmark(
     AutofillScanner* scanner,
     const LanguageCode& page_language,
     PatternSource pattern_source) {
-  const bool is_enabled_landmark_parsing = base::FeatureList::IsEnabled(
-      features::kAutofillEnableNewStreetLevelFieldTypes);
+  const bool is_enabled_landmark_parsing =
+      base::FeatureList::IsEnabled(features::kAutofillEnableSupportForLandmark);
   // TODO(crbug.com/1441904) Remove feature check when launched.
   if (landmark_ || !is_enabled_landmark_parsing) {
     return RESULT_MATCH_NONE;

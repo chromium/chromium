@@ -279,8 +279,7 @@ class AutofillProfileSyncUtilTest : public testing::Test {
   AutofillProfileSyncUtilTest() {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
     test_clock_.SetNow(kJune2017);
-    features_.InitAndEnableFeature(
-        features::kAutofillEnableNewStreetLevelFieldTypes);
+    features_.InitAndEnableFeature(features::kAutofillEnableSupportForLandmark);
   }
 
  private:

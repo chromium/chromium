@@ -218,8 +218,7 @@ ContactInfoSpecifics ConstructCompleteSpecifics() {
 class ContactInfoSyncUtilTest : public testing::Test {
  public:
   ContactInfoSyncUtilTest() {
-    features_.InitAndEnableFeature(
-        features::kAutofillEnableNewStreetLevelFieldTypes);
+    features_.InitAndEnableFeature(features::kAutofillEnableSupportForLandmark);
   }
 
  private:
