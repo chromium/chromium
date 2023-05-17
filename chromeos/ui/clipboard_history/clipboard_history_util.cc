@@ -6,7 +6,9 @@
 
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/ui/base/file_icon_util.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
@@ -58,10 +60,10 @@ void PasteClipboardItemById(
   GetPasteClipboardItemByIdImpl().Run(id, event_flags, show_source);
 }
 
-ui::ImageModel GetIconForDisplayFormat(
-    crosapi::mojom::ClipboardHistoryDisplayFormat display_format) {
+ui::ImageModel GetIconForDescriptor(
+    const crosapi::mojom::ClipboardHistoryItemDescriptor& descriptor) {
   const gfx::VectorIcon* icon = nullptr;
-  switch (display_format) {
+  switch (descriptor.display_format) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
       icon = &kTextIcon;
       break;
@@ -71,9 +73,16 @@ ui::ImageModel GetIconForDisplayFormat(
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
       icon = &vector_icons::kCodeIcon;
       break;
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
-      // TODO(b/281568172): Add menu item icons for other display formats.
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile: {
+      // If `display_text` is the name of a single file, use the icon
+      // corresponding to the file type, if any; otherwise, use a generic
+      // multi-file icon.
+      icon = descriptor.file_count == 1
+                 ? &chromeos::GetIconForPath(base::FilePath(
+                       base::UTF16ToASCII(descriptor.display_text)))
+                 : &vector_icons::kContentCopyIcon;
       break;
+    }
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
       NOTREACHED_NORETURN();
   }
@@ -85,7 +94,7 @@ ui::ImageModel GetIconForDisplayFormat(
                                           kIconSize);
   }
 
-  return ui::ImageModel();
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace chromeos::clipboard_history

@@ -18,6 +18,7 @@ component("clipboard_history") {
 
   deps = [
     "//chromeos/crosapi/mojom",
+    "//chromeos/ui/base",
     "//chromeos/ui/vector_icons/",
     "//components/vector_icons",
     "//ui/base",

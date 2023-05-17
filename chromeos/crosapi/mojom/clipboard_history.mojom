@@ -64,10 +64,15 @@ struct DeprecatedClipboardHistoryItemDescriptor {
 // history menu. The `display_format` field indicates the format of the
 // clipboard data.
 //
+// The `file_count` indicates the number of files in the corresponding clipboard
+// history item.
+//
+[Stable]
 struct ClipboardHistoryItemDescriptor {
   mojo_base.mojom.UnguessableToken item_id@0;
   ClipboardHistoryDisplayFormat display_format@1;
   mojo_base.mojom.String16 display_text@2;
+  uint32 file_count@3;
 };
 
 // This interface is implemented by Ash-Chrome.

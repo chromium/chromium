@@ -40,9 +40,8 @@ ClipboardHistorySubmenuModel::ClipboardHistorySubmenuModel(
     : ui::SimpleMenuModel(this), source_(source) {
   for (size_t index = 0; index < item_descriptors.size(); ++index) {
     const size_t command_id = start_command_id + index;
-    AddItemWithIcon(
-        command_id, item_descriptors[index].display_text,
-        GetIconForDisplayFormat(item_descriptors[index].display_format));
+    AddItemWithIcon(command_id, item_descriptors[index].display_text,
+                    GetIconForDescriptor(item_descriptors[index]));
     item_ids_by_command_ids_.emplace(command_id,
                                      item_descriptors[index].item_id);
   }

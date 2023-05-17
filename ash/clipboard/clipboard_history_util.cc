@@ -29,6 +29,8 @@ namespace ash::clipboard_history_util {
 
 namespace {
 
+// Constants -------------------------------------------------------------------
+
 constexpr char16_t kFileSystemSourcesType[] = u"fs/sources";
 
 constexpr int kPlaceholderImageWidth = 234;
@@ -46,6 +48,8 @@ constexpr ui::ClipboardInternalFormat kPrioritizedFormats[] = {
     ui::ClipboardInternalFormat::kBookmark,
     ui::ClipboardInternalFormat::kWeb,
     ui::ClipboardInternalFormat::kCustom};
+
+// Helper classes --------------------------------------------------------------
 
 // Used to draw a placeholder HTML preview to be shown while the real HTML is
 // rendering.
@@ -241,7 +245,7 @@ GetItemDescriptorsFrom(const std::list<ClipboardHistoryItem>& items) {
   std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor> item_descriptors;
   for (const auto& item : items) {
     item_descriptors.emplace_back(item.id(), item.display_format(),
-                                  item.display_text());
+                                  item.display_text(), item.file_count());
   }
   return item_descriptors;
 }
