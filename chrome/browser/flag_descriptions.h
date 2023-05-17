@@ -1967,9 +1967,6 @@ extern const char kWebrtcHwEncodingDescription[];
 extern const char kWebRtcRemoteEventLogName[];
 extern const char kWebRtcRemoteEventLogDescription[];
 
-extern const char kWebrtcSrtpAesGcmName[];
-extern const char kWebrtcSrtpAesGcmDescription[];
-
 extern const char kWebrtcUseMinMaxVEADimensionsName[];
 extern const char kWebrtcUseMinMaxVEADimensionsDescription[];
 

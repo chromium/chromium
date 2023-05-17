@@ -3643,11 +3643,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "enable-webrtc-srtp-aes-gcm",
-    "owners": [ "hta" ],
-    "expiry_milestone": 84
-  },
-  {
     "name": "enable-webrtc-use-min-max-vea-dimensions",
     "owners": [ "mcasas", "chromeos-gfx-video@google.com" ],
     "expiry_milestone": 88

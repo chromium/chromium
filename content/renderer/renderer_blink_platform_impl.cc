@@ -605,11 +605,6 @@ bool RendererBlinkPlatformImpl::IsWebRtcHWDecodingEnabled() {
       switches::kDisableWebRtcHWDecoding);
 }
 
-bool RendererBlinkPlatformImpl::IsWebRtcSrtpAesGcmEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableWebRtcSrtpAesGcm);
-}
-
 bool RendererBlinkPlatformImpl::IsWebRtcSrtpEncryptedHeadersEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kEnableWebRtcSrtpEncryptedHeaders);
