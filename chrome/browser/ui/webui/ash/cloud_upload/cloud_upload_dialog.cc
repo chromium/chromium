@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -42,8 +44,12 @@
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace ash::cloud_upload {
 namespace {
@@ -56,6 +62,7 @@ using file_manager::file_tasks::OfficeTaskResult;
 
 const char kAndroidOneDriveAuthority[] =
     "com.microsoft.skydrive.content.StorageAccessProvider";
+constexpr char kNotificationId[] = "cloud_upload_open_failure";
 
 std::vector<ProvidedFileSystemInfo> GetODFSFileSystems(Profile* profile) {
   Service* service = Service::Get(profile);
@@ -98,8 +105,58 @@ void OpenAlreadyHostedDriveUrl(drive::FileError error,
   }
 }
 
+// Handle system error notification "Sign in" click.
+void HandleSignInClick(Profile* profile, absl::optional<int> button_index) {
+  // If the "Sign in" button was pressed, rather than a click to somewhere
+  // else in the notification.
+  if (button_index) {
+    // TODO(b/282619291) decide what callback should be.
+    // Request an ODFS mount which will trigger reauthentication.
+    CloudUploadDialog::RequestODFSMount(profile, base::DoNothing());
+  }
+  NotificationDisplayService* notification_service =
+      NotificationDisplayServiceFactory::GetForProfile(profile);
+  notification_service->Close(NotificationHandler::Type::TRANSIENT,
+                              kNotificationId);
+}
+
+// Show system authentication error notification to prompt the user to
+// reauthenticate to ODFS via a "Sign in" button and to communicate why their
+// file can't be opened.
+void ShowUnableToOpenNotification(Profile* profile) {
+  // TODO(b/254586358): i18n these strings.
+  auto notification = ash::CreateSystemNotificationPtr(
+      /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
+      /*id=*/kNotificationId, /*title=*/u"Can't open file",
+      /*message=*/
+      u"Sign in to your Microsoft account and then try again",
+      /*display_source=*/
+      l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES),
+      /*origin_url=*/GURL(),
+      /*notifier_id=*/message_center::NotifierId(),
+      /*optional_fields=*/{},
+      /*delegate=*/
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(&HandleSignInClick, profile)),
+      /*small_image=*/ash::kFolderIcon,
+      /*warning_level=*/
+      message_center::SystemNotificationWarningLevel::WARNING);
+
+  //  Add "Sign in" button.
+  std::vector<message_center::ButtonInfo> notification_buttons = {
+      message_center::ButtonInfo(u"Sign in")};
+  notification->set_buttons(notification_buttons);
+
+  notification->set_never_timeout(true);
+  NotificationDisplayService* notification_service =
+      NotificationDisplayServiceFactory::GetForProfile(profile);
+  notification_service->Display(NotificationHandler::Type::TRANSIENT,
+                                *notification,
+                                /*metadata=*/nullptr);
+}
+
 // Open file with |file_path| from ODFS |file_system|. Open in the OneDrive PWA
-// without link captruing.
+// without link capturing.
 void OpenFileFromODFS(
     Profile* profile,
     file_system_provider::ProvidedFileSystemInterface* file_system,
@@ -110,11 +167,15 @@ void OpenFileFromODFS(
           [](base::WeakPtr<Profile> profile_weak_ptr,
              const file_system_provider::Actions& actions,
              base::File::Error result) {
-            if (result != base::File::Error::FILE_OK) {
-              return;
-            }
             Profile* profile = profile_weak_ptr.get();
             if (!profile) {
+              return;
+            }
+            if (result == base::File::Error::FILE_ERROR_ACCESS_DENIED) {
+              ShowUnableToOpenNotification(profile);
+              return;
+            }
+            if (result != base::File::Error::FILE_OK) {
               return;
             }
             for (const file_system_provider::Action& action : actions) {
@@ -940,6 +1001,15 @@ void CloudOpenTask::ConstructEntriesAndFindTasks(
 void CloudOpenTask::SetTasksForTest(
     const std::vector<file_manager::file_tasks::TaskDescriptor>& tasks) {
   local_tasks_ = tasks;
+}
+
+void CloudUploadDialog::RequestODFSMount(
+    Profile* profile,
+    file_system_provider::RequestMountCallback callback) {
+  Service* service = Service::Get(profile);
+  ProviderId provider_id = ProviderId::CreateFromExtensionId(
+      file_manager::file_tasks::GetODFSExtensionId(profile));
+  service->RequestMount(provider_id, std::move(callback));
 }
 
 bool CloudUploadDialog::IsODFSMounted(Profile* profile) {

@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
+#include "chrome/browser/ash/file_system_provider/provider_interface.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
@@ -245,6 +246,11 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
                     const mojom::DialogPage dialog_page,
                     bool office_move_confirmation_shown);
 
+  // Request ODFS be mounted. If there is an existing mount, ODFS will unmount
+  // that one after authentication of the new mount.
+  static void RequestODFSMount(
+      Profile* profile,
+      file_system_provider::RequestMountCallback callback);
   static bool IsODFSMounted(Profile* profile);
   static bool IsOfficeWebAppInstalled(Profile* profile);
 
