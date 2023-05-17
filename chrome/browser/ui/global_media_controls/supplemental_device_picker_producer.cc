@@ -83,8 +83,8 @@ void SupplementalDevicePickerProducer::ShowItem() {
     return;
   }
   if (!is_item_shown_) {
-    item_manager_->ShowItem(item_->id());
     is_item_shown_ = true;
+    item_manager_->ShowItem(item_->id());
   }
 }
 

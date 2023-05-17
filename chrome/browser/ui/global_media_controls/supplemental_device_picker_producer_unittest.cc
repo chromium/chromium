@@ -71,6 +71,16 @@ TEST_F(SupplementalDevicePickerProducerTest, ShowItem) {
   EXPECT_FALSE(notification_producer_.IsItemActivelyPlaying(id));
 }
 
+TEST_F(SupplementalDevicePickerProducerTest, HasActiveItemOnItemShown) {
+  notification_producer_.CreateItem(base::UnguessableToken::Create());
+  EXPECT_CALL(item_manager_, ShowItem).WillOnce([&]() {
+    // MediaItemManager::ShowItem() leads to showing the media UI, at which
+    // point `notification_producer_` should claim that it has an item to show.
+    EXPECT_EQ(1u, notification_producer_.GetActiveControllableItemIds().size());
+  });
+  notification_producer_.ShowItem();
+}
+
 TEST_F(SupplementalDevicePickerProducerTest, HideItem) {
   std::string id = ShowItem();
   notification_producer_.HideItem();
