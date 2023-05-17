@@ -879,6 +879,7 @@ generate_jni("cronet_tests_jni_headers") {
 
 shared_library("cronet_tests") {
   testonly = true
+  assert_no_deps = [ ":cronet_static" ]
   sources = [
     # While "cronet_tests" cannot depend on "cronet_static", and hence cannot
     # call any Cronet functions, it can access fields of Cronet objects, so add
@@ -905,7 +906,6 @@ shared_library("cronet_tests") {
   ]
 
   deps = [
-    ":cronet",
     ":cronet_tests_jni_headers",
     "//base",
     "//base:i18n",
