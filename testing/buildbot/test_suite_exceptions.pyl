@@ -2151,6 +2151,8 @@
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
+      'Dawn Android arm64 DEPS Release (Pixel 6)',
+      'Dawn Android arm64 Release (Pixel 6)',
     ],
   },
   'dawn_end2end_validation_layers_tests': {
@@ -2159,6 +2161,8 @@
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
+      'Dawn Android arm64 DEPS Release (Pixel 6)',
+      'Dawn Android arm64 Release (Pixel 6)',
     ],
   },
   'dawn_end2end_wire_tests': {
@@ -2167,6 +2171,8 @@
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
+      'Dawn Android arm64 DEPS Release (Pixel 6)',
+      'Dawn Android arm64 Release (Pixel 6)',
     ],
   },
   'dawn_perf_tests': {
@@ -2175,6 +2181,8 @@
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
+      'Dawn Android arm64 DEPS Release (Pixel 6)',
+      'Dawn Android arm64 Release (Pixel 6)',
     ],
   },
   'device_unittests': {
@@ -2308,6 +2316,8 @@
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
+      'Dawn Android arm64 DEPS Release (Pixel 6)',
+      'Dawn Android arm64 Release (Pixel 6)',
       # Can't run on MSAN because gl_tests uses the hardware driver,
       # which isn't instrumented.
       'Linux MSan Tests',
@@ -2445,6 +2455,8 @@
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
+      'Dawn Android arm64 DEPS Release (Pixel 6)',
+      'Dawn Android arm64 Release (Pixel 6)',
       # Can't run on MSAN because gl_unittests uses the hardware driver,
       # which isn't instrumented.
       'Linux MSan Tests',
@@ -4163,6 +4175,8 @@
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
+      'Dawn Android arm64 DEPS Release (Pixel 6)',
+      'Dawn Android arm64 Release (Pixel 6)',
     ],
     'modifications': {
       # Increase the timeout with ASAN (crbug.com/1208253)
@@ -4223,6 +4237,8 @@
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
+      'Dawn Android arm64 DEPS Release (Pixel 6)',
+      'Dawn Android arm64 Release (Pixel 6)',
       # Remove from bots where capacity is constrained.
       'Dawn Win10 x64 DEPS Release (Intel)',
       'Dawn Win10 x64 Release (Intel)',
@@ -4237,6 +4253,8 @@
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
+      'Dawn Android arm64 DEPS Release (Pixel 6)',
+      'Dawn Android arm64 Release (Pixel 6)',
     ],
     'modifications': {
       'Dawn Mac x64 DEPS Release (AMD)': {
@@ -4297,6 +4315,8 @@
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
+      'Dawn Android arm64 DEPS Release (Pixel 6)',
+      'Dawn Android arm64 Release (Pixel 6)',
       # Remove from bots where capacity is constrained.
       'Dawn Win10 x64 DEPS Release (Intel)',
       'Dawn Win10 x64 Release (Intel)',
