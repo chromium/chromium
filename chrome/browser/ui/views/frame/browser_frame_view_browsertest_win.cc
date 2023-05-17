@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/win/titlebar_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -66,6 +67,10 @@ class BrowserFrameViewWinTest : public InProcessBrowserTest {
     return static_cast<const WindowsCaptionButton*>(
         caption_button_container->GetViewByID(VIEW_ID_MAXIMIZE_BUTTON));
   }
+  bool BrowserUsingCustomDrawTitlebar() const {
+    return ShouldBrowserCustomDrawTitlebar(
+        BrowserView::GetBrowserViewForBrowser(browser()));
+  }
 };
 
 // Test that in touch mode, the maximize button is enabled for a non-maximized
@@ -74,8 +79,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewWinTest,
                        NonMaximizedTouchMaximizeButtonState) {
   ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_{true};
   auto* maximize_button = GetMaximizeButton();
-  if (!maximize_button) {
-    GTEST_SKIP();
+  if (!maximize_button || !BrowserUsingCustomDrawTitlebar()) {
+    GTEST_SKIP() << "No maximize button or not using a custom titlebar";
   }
 
   EXPECT_TRUE(maximize_button->GetVisible());
@@ -88,8 +93,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewWinTest,
                        MaximizedTouchMaximizeButtonState) {
   ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_{true};
   auto* frame_view = GetBrowserFrameViewWin();
-  if (!frame_view) {
-    GTEST_SKIP();
+  if (!frame_view || !BrowserUsingCustomDrawTitlebar()) {
+    GTEST_SKIP() << "Chrome is not using a custom titlebar";
   }
 
   frame_view->frame()->Maximize();
@@ -107,8 +112,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewWinTest,
                        NonTouchNonMaximizedMaximizeButtonState) {
   ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_{false};
   auto* maximize_button = GetMaximizeButton();
-  if (!maximize_button) {
-    GTEST_SKIP();
+  if (!maximize_button || !BrowserUsingCustomDrawTitlebar()) {
+    GTEST_SKIP() << "No maximize button or not using a custom titlebar";
   }
 
   EXPECT_TRUE(maximize_button->GetVisible());
@@ -121,8 +126,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewWinTest,
                        NonTouchMaximizedMaximizeButtonState) {
   ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_{false};
   auto* frame_view = GetBrowserFrameViewWin();
-  if (!frame_view) {
-    GTEST_SKIP();
+  if (!frame_view || !BrowserUsingCustomDrawTitlebar()) {
+    GTEST_SKIP() << "Chrome is not using a custom titlebar";
   }
 
   frame_view->frame()->Maximize();
