@@ -323,7 +323,7 @@ vars = {
   #
   # Note this revision should be updated with
   # third_party/boringssl/roll_boringssl.py, not roll-dep.
-  'boringssl_revision': 'b92fcfdc17f3ad794c220a86f4ae6695d0a0fb61',
+  'boringssl_revision': 'dd5219451c3ce26221762a15d867edf43b463bb2',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Fuchsia sdk
   # and whatever else without interference from each other.
