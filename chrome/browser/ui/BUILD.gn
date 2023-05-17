@@ -30,6 +30,54 @@ import("//third_party/protobuf/proto_library.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/views/features.gni")
 
+if (is_mac) {
+  # TODO(https://crbug.com/1280317): Merge back into the `ui` target once all
+  # .mm files are ARCed.
+  source_set("ui_arc") {
+    sources = [
+      "cocoa/applescript/apple_event_util.h",
+      "cocoa/applescript/apple_event_util.mm",
+      "cocoa/applescript/bookmark_folder_applescript.h",
+      "cocoa/applescript/bookmark_folder_applescript.mm",
+      "cocoa/applescript/bookmark_item_applescript.h",
+      "cocoa/applescript/bookmark_item_applescript.mm",
+      "cocoa/applescript/bookmark_node_applescript.h",
+      "cocoa/applescript/bookmark_node_applescript.mm",
+      "cocoa/applescript/browsercrapplication+applescript.h",
+      "cocoa/applescript/browsercrapplication+applescript.mm",
+      "cocoa/applescript/constants_applescript.h",
+      "cocoa/applescript/constants_applescript.mm",
+      "cocoa/applescript/element_applescript.h",
+      "cocoa/applescript/element_applescript.mm",
+      "cocoa/applescript/error_applescript.h",
+      "cocoa/applescript/error_applescript.mm",
+      "cocoa/applescript/tab_applescript.h",
+      "cocoa/applescript/tab_applescript.mm",
+      "cocoa/applescript/window_applescript.h",
+      "cocoa/applescript/window_applescript.mm",
+    ]
+
+    configs += [ "//build/config/compiler:enable_arc" ]
+    deps = [
+      "//base",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/common",
+      "//chrome/common:constants",
+      "//components/bookmarks/browser",
+      "//components/bookmarks/common",
+      "//components/prefs",
+      "//components/sessions:session_id",
+      "//components/sessions:sessions",
+      "//content/public/browser",
+      "//skia",
+      "//ui/base:base",
+      "//url",
+    ]
+  }
+}
+
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 static_library("ui") {
@@ -3910,26 +3958,6 @@ static_library("ui") {
       "cocoa/accelerator_utils_cocoa.mm",
       "cocoa/accelerators_cocoa.h",
       "cocoa/accelerators_cocoa.mm",
-      "cocoa/applescript/apple_event_util.h",
-      "cocoa/applescript/apple_event_util.mm",
-      "cocoa/applescript/bookmark_folder_applescript.h",
-      "cocoa/applescript/bookmark_folder_applescript.mm",
-      "cocoa/applescript/bookmark_item_applescript.h",
-      "cocoa/applescript/bookmark_item_applescript.mm",
-      "cocoa/applescript/bookmark_node_applescript.h",
-      "cocoa/applescript/bookmark_node_applescript.mm",
-      "cocoa/applescript/browsercrapplication+applescript.h",
-      "cocoa/applescript/browsercrapplication+applescript.mm",
-      "cocoa/applescript/constants_applescript.h",
-      "cocoa/applescript/constants_applescript.mm",
-      "cocoa/applescript/element_applescript.h",
-      "cocoa/applescript/element_applescript.mm",
-      "cocoa/applescript/error_applescript.h",
-      "cocoa/applescript/error_applescript.mm",
-      "cocoa/applescript/tab_applescript.h",
-      "cocoa/applescript/tab_applescript.mm",
-      "cocoa/applescript/window_applescript.h",
-      "cocoa/applescript/window_applescript.mm",
       "cocoa/apps/app_shim_menu_controller_mac.h",
       "cocoa/apps/app_shim_menu_controller_mac.mm",
       "cocoa/apps/quit_with_apps_controller_mac.cc",
@@ -4065,9 +4093,13 @@ static_library("ui") {
       ]
     }
 
-    allow_circular_includes_from += [ "//chrome/browser/apps/app_shim" ]
+    allow_circular_includes_from += [
+      ":ui_arc",
+      "//chrome/browser/apps/app_shim",
+    ]
 
     deps += [
+      ":ui_arc",
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/mac:keystone_glue",
       "//chrome/browser/updater:browser_updater_client",

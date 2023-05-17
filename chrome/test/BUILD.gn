@@ -1313,11 +1313,20 @@ if (!is_android) {
     # .mm files are ARCed.
     source_set("browser_tests_arc") {
       testonly = true
-      sources =
-          [ "../browser/apps/app_shim/app_shim_listener_browsertest_mac.mm" ]
+      sources = [
+        "../browser/apps/app_shim/app_shim_listener_browsertest_mac.mm",
+        "../browser/ui/cocoa/applescript/bookmark_applescript_test_utils.h",
+        "../browser/ui/cocoa/applescript/bookmark_applescript_test_utils.mm",
+        "../browser/ui/cocoa/applescript/bookmark_folder_applescript_browsertest.mm",
+        "../browser/ui/cocoa/applescript/bookmark_item_applescript_browsertest.mm",
+        "../browser/ui/cocoa/applescript/browsercrapplication+applescript_browsertest.mm",
+        "../browser/ui/cocoa/applescript/tab_applescript_browsertest.mm",
+        "../browser/ui/cocoa/applescript/window_applescript_browsertest.mm",
+      ]
       configs += [ "//build/config/compiler:enable_arc" ]
       defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
       deps = [
+        "//base",
         "//base/test:test_support",
         "//chrome/app_shim",
         "//chrome/browser",
@@ -1325,14 +1334,21 @@ if (!is_android) {
         "//chrome/browser/apps/app_shim",
         "//chrome/browser/profiles:profile",
         "//chrome/browser/ui",
+        "//chrome/browser/ui:test_support",
+        "//chrome/browser/ui:ui_arc",
         "//chrome/common:app_mode_app_support",
         "//chrome/common:constants",
         "//chrome/common:mojo_bindings",
+        "//chrome/test:test_support",
         "//chrome/test:test_support_ui",
+        "//components/bookmarks/browser",
+        "//components/bookmarks/test",
+        "//components/prefs",
         "//components/version_info",
         "//content/test:test_support",
         "//ipc",
         "//mojo/core/embedder",
+        "//skia",
         "//third_party/abseil-cpp:absl",
       ]
     }
@@ -2780,13 +2796,6 @@ if (!is_android) {
         "../browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper_browsertest.mm",
         "../browser/spellchecker/spell_check_host_chrome_impl_mac_browsertest.cc",
         "../browser/ui/cocoa/accelerators_cocoa_browsertest.mm",
-        "../browser/ui/cocoa/applescript/bookmark_applescript_test_utils.h",
-        "../browser/ui/cocoa/applescript/bookmark_applescript_test_utils.mm",
-        "../browser/ui/cocoa/applescript/bookmark_folder_applescript_browsertest.mm",
-        "../browser/ui/cocoa/applescript/bookmark_item_applescript_browsertest.mm",
-        "../browser/ui/cocoa/applescript/browsercrapplication+applescript_browsertest.mm",
-        "../browser/ui/cocoa/applescript/tab_applescript_browsertest.mm",
-        "../browser/ui/cocoa/applescript/window_applescript_browsertest.mm",
         "../browser/ui/cocoa/apps/app_shim_menu_controller_mac_browsertest.mm",
         "../browser/ui/cocoa/apps/native_app_window_cocoa_browsertest.mm",
         "../browser/ui/cocoa/browser_window_mac_browsertest.mm",
@@ -5526,13 +5535,18 @@ if (is_mac) {
     sources = [
       "../browser/apps/app_shim/mach_bootstrap_acceptor_unittest.mm",
       "../browser/mac/keystone_glue_unittest.mm",
+      "../browser/ui/cocoa/applescript/apple_event_util_unittest.mm",
     ]
     configs += [ "//build/config/compiler:enable_arc" ]
     deps = [
+      "//base",
       "//base/test:test_support",
       "//chrome/app_shim:app_shim",
       "//chrome/browser/apps/app_shim:app_shim",
       "//chrome/browser/mac:keystone_glue",
+      "//chrome/browser/ui:test_support",
+      "//chrome/browser/ui:ui_arc",
+      "//content/test:test_support",
       "//skia",
       "//testing/gtest",
       "//third_party/abseil-cpp:absl",
@@ -6598,7 +6612,6 @@ test("unit_tests") {
       "../browser/notifications/stub_notification_dispatcher_mac.h",
       "../browser/policy/browser_dm_token_storage_mac_unittest.cc",
       "../browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper_unit_test.mm",
-      "../browser/ui/cocoa/applescript/apple_event_util_unittest.mm",
       "../browser/ui/cocoa/bookmarks/bookmark_menu_bridge_unittest.mm",
       "../browser/ui/cocoa/bookmarks/bookmark_menu_cocoa_controller_unittest.mm",
       "../browser/ui/cocoa/confirm_quit_panel_controller_unittest.mm",

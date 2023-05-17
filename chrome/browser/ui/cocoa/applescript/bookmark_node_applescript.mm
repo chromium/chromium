@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #import "base/mac/foundation_util.h"
-#import "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/uuid.h"
 #import "chrome/browser/app_controller_mac.h"
@@ -20,6 +19,10 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
@@ -52,7 +55,7 @@ using bookmarks::BookmarkNode;
 
 - (instancetype)initWithBookmarkNode:(const BookmarkNode*)bookmarkNode {
   if (!bookmarkNode) {
-    [self release];
+    self = nil;
     return nil;
   }
 
@@ -62,11 +65,6 @@ using bookmarks::BookmarkNode;
         stringWithFormat:@"%s", _bookmarkGUID.AsLowercaseString().c_str()];
   }
   return self;
-}
-
-- (void)dealloc {
-  [_tempTitle release];
-  [super dealloc];
 }
 
 - (base::Uuid)bookmarkGUID {

@@ -5,7 +5,6 @@
 #import <Foundation/Foundation.h>
 
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -20,6 +19,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "ui/gfx/geometry/size.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 using BrowserCrApplicationAppleScriptTest = InProcessBrowserTest;
 
@@ -51,17 +54,16 @@ IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest,
   // Emulate a script like:
   //
   //   set var to make new window with properties {visible:false}|.
-  base::scoped_nsobject<WindowAppleScript> aWindow(
-      [[WindowAppleScript alloc] init]);
-  base::scoped_nsobject<NSString> unique_id([aWindow.get().uniqueID copy]);
-  [aWindow.get() setValue:@YES forKey:@"visible"];
+  WindowAppleScript* aWindow = [[WindowAppleScript alloc] init];
+  NSString* unique_id = [aWindow.uniqueID copy];
+  [aWindow setValue:@YES forKey:@"visible"];
 
-  [NSApp insertInAppleScriptWindows:aWindow.get()];
+  [NSApp insertInAppleScriptWindows:aWindow];
   chrome::testing::NSRunLoopRunAllPending();
 
   // Represents the window after it is added.
   WindowAppleScript* window = [NSApp appleScriptWindows][0];
-  EXPECT_NSEQ(@YES, [aWindow.get() valueForKey:@"visible"]);
+  EXPECT_NSEQ(@YES, [aWindow valueForKey:@"visible"]);
   EXPECT_EQ(window.container, NSApp);
   EXPECT_NSEQ(AppleScript::kWindowsProperty, window.containerProperty);
   EXPECT_NSEQ(unique_id, window.uniqueID);
@@ -70,13 +72,13 @@ IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest,
 // Inserting and deleting windows.
 IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest,
                        InsertAndDeleteWindows) {
-  base::scoped_nsobject<WindowAppleScript> aWindow;
+  WindowAppleScript* aWindow;
   NSUInteger count;
   // Create a bunch of windows.
   for (NSUInteger i = 0; i < 5; ++i) {
     for (NSUInteger j = 0; j < 3; ++j) {
-      aWindow.reset([[WindowAppleScript alloc] init]);
-      [NSApp insertInAppleScriptWindows:aWindow.get()];
+      aWindow = [[WindowAppleScript alloc] init];
+      [NSApp insertInAppleScriptWindows:aWindow];
     }
     count = 3 * i + 4;
     EXPECT_EQ(count, [NSApp appleScriptWindows].count);

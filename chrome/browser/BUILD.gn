@@ -6023,6 +6023,7 @@ static_library("browser") {
       "//chrome/app_shim",
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/renderer_host:history_swiper",
+      "//chrome/browser/ui:ui_arc",
       "//chrome/browser/updater:browser_updater_client",
       "//chrome/browser/updater:scheduler",
       "//chrome/browser/webshare:storage",
@@ -6040,6 +6041,7 @@ static_library("browser") {
       "//third_party/crashpad/crashpad/client",
       "//third_party/google_toolbox_for_mac",
     ]
+    allow_circular_includes_from += [ "//chrome/browser/ui:ui_arc" ]
     frameworks = [
       "Accelerate.framework",
       "AudioUnit.framework",

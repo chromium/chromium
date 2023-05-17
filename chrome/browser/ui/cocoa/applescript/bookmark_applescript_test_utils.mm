@@ -12,6 +12,10 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // Represents the current fake command that is executing.
 static FakeScriptCommand* gFakeCurrentCommand;
 
@@ -35,7 +39,6 @@ static FakeScriptCommand* gFakeCurrentCommand;
 - (void)dealloc {
   swizzler.reset();
   gFakeCurrentCommand = nil;
-  [super dealloc];
 }
 
 @end
@@ -52,8 +55,8 @@ void BookmarkAppleScriptTest::SetUpOnMainThread() {
   const bookmarks::BookmarkNode* root = model->bookmark_bar_node();
   const std::string model_string("a f1:[ b d c ] d f2:[ e f g ] h ");
   bookmarks::test::AddNodesFromModelString(model, root, model_string);
-  bookmark_bar_.reset([[BookmarkFolderAppleScript alloc]
-      initWithBookmarkNode:model->bookmark_bar_node()]);
+  bookmark_bar_ = [[BookmarkFolderAppleScript alloc]
+      initWithBookmarkNode:model->bookmark_bar_node()];
 }
 
 Profile* BookmarkAppleScriptTest::profile() const {
