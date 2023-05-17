@@ -302,12 +302,6 @@ class ASH_EXPORT CaptureModeController
   // video recording right away for testing purposes.
   void StartVideoRecordingImmediatelyForTesting();
 
-  // Restores the capture mode configurations that include the `type_`,
-  // `source_`, `audio_recording_mode_`, `recording_type_` and
-  // `enable_demo_tools_` if any of them gets overridden in the
-  // projector-initiated capture mode session.
-  void MaybeRestoreCachedCaptureConfigurations();
-
   // Called when the "Share to YouTube" button is pressed to
   // open the YouTube share video page.
   // TODO(b/276982457): Hook this function with the "Share to YouTube" button to

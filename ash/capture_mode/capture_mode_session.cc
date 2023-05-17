@@ -587,8 +587,9 @@ void CaptureModeSession::Shutdown() {
   if (!is_stopping_to_start_video_recording_) {
     // Kill the camera preview when the capture mode session ends without
     // starting any recording. Note that we need to kill the camera preview
-    // before aborting the projector session to avoid repareting the camera
-    // preview widget which will lead to crash.
+    // before aborting the client initiated capture mode session that requires
+    // the camera to avoid repareting the camera preview widget which will lead
+    // to crash.
     if (!controller_->is_recording_in_progress()) {
       controller_->camera_controller()->SetShouldShowPreview(false);
     }

@@ -18,7 +18,6 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
-#include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/capture_mode/recording_overlay_view.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -1285,9 +1284,9 @@ void CaptureModeController::TerminateRecordingUiElements() {
       IDS_ASH_SCREEN_CAPTURE_ALERT_RECORDING_STOPPED);
 
   // Reset the camera selection if it was auto-selected in the
-  // projector-initiated capture mode session after video recording is completed
+  // client-initiated capture mode session after video recording is completed
   // to avoid the camera selection settings of the normal capture mode session
-  // being overridden by the projector-initiated capture mode session.
+  // being overridden by the client-initiated capture mode session.
   camera_controller_->MaybeRevertAutoCameraSelection();
 
   video_recording_watcher_->ShutDown();
@@ -1431,8 +1430,8 @@ void CaptureModeController::OnVideoFileSaved(
                               saved_video_file_path);
       }
 
-      // We only record the file size histogram if it's not a projector-
-      // initiated recording.
+      // We only record the file size histogram if the recording is not saved on
+      // DriveFs.
       blocking_task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE, base::BindOnce(&GetFileSizeInKB, saved_video_file_path),
           base::BindOnce(&RecordVideoFileSizeKB, is_gif));
@@ -1699,9 +1698,8 @@ void CaptureModeController::BeginVideoRecording(
   LaunchRecordingServiceAndStartRecording(
       capture_params, std::move(cursor_overlay_receiver), effective_audio_mode);
 
-  // Intentionally record the metrics before
-  // `MaybeRestoreCachedCaptureConfigurations` as `enable_demo_tools_` may be
-  // overwritten otherwise.
+  // Intentionally record the metrics before `DetachFromSession` as
+  // `enable_demo_tools_` may be overwritten otherwise.
   RecordRecordingStartsWithDemoTools(enable_demo_tools_, active_behavior);
 
   // Restore the cached capture mode configs when the capture mode session ends
@@ -1810,8 +1808,8 @@ void CaptureModeController::OnDlpRestrictionCheckedAtCountDownFinished(
     return;
   }
 
-  // In Projector mode, the creation of the DriveFS folder that will host the
-  // video is asynchronous. We don't want the user to be able to bail out of the
+  // The creation of the required capture folder that will host the video is
+  // asynchronous. We don't want the user to be able to bail out of the
   // session at this point, since we don't want to create that folder in vain.
   capture_mode_session_->set_can_exit_on_escape(false);
 
