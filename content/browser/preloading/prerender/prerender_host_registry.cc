@@ -1297,7 +1297,13 @@ void PrerenderHostRegistry::ScheduleToDeleteAbandonedHost(
 
 void PrerenderHostRegistry::DeleteAbandonedHosts() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  to_be_deleted_hosts_.clear();
+  // Swap the vector and let it scope out instead of directly destructing the
+  // hosts in the vector, for example, by `to_be_deleted_hosts_.clear()`. This
+  // avoids potential cases where a host being deleted indirectly modifies
+  // `to_be_deleted_hosts_` while the vector is being cleared up. See
+  // https://crbug.com/1431744 for contexts.
+  std::vector<std::unique_ptr<PrerenderHost>> hosts;
+  to_be_deleted_hosts_.swap(hosts);
 }
 
 void PrerenderHostRegistry::NotifyTrigger(const GURL& url) {
