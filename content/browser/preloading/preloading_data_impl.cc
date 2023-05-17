@@ -275,7 +275,8 @@ void PreloadingDataImpl::ResetRecallStats() {
 
 void PreloadingDataImpl::RecordRecallStatsToUMA(
     NavigationHandle* navigation_handle) {
-  constexpr PreloadingType kPreloadingTypes[] = {PreloadingType::kPrefetch,
+  constexpr PreloadingType kPreloadingTypes[] = {PreloadingType::kPreconnect,
+                                                 PreloadingType::kPrefetch,
                                                  PreloadingType::kPrerender};
   for (const auto& [predictor_type, is_navigation_in_domain_callback] :
        is_navigation_in_predictor_domain_callbacks_) {
