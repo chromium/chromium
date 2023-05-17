@@ -2081,6 +2081,11 @@
           ],
         },
       },
+      'win10-code-coverage': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
     },
   },
   'context_lost_validating_tests': {
