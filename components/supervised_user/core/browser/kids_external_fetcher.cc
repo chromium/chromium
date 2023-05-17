@@ -209,17 +209,19 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
         !HasHttpOkResponse(*simple_url_loader_)) {
       std::move(callback).Run(KidsExternalFetcherStatus::NetOrHttpError(
                                   CombineNetAndHttpErrors(*simple_url_loader_)),
-                              std::make_unique<Response>());
+                              nullptr);
       return;
     }
 
     std::unique_ptr<Response> response = std::make_unique<Response>();
     if (!response->ParseFromString(*response_body)) {
       std::move(callback).Run(KidsExternalFetcherStatus::InvalidResponse(),
-                              std::move(response));
+                              nullptr);
       return;
     }
 
+    CHECK(response) << "KidsExternalFetcherStatus::Ok implies non-empty "
+                       "response (which is always a valid message).";
     std::move(callback).Run(std::move(KidsExternalFetcherStatus::Ok()),
                             std::move(response));
   }
