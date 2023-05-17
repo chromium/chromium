@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/no_destructor.h"
+#include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
 #include "chrome/common/extensions/api/side_panel.h"
 #include "chrome/common/extensions/api/side_panel/side_panel_info.h"
 #include "components/sessions/core/session_id.h"
@@ -200,6 +201,11 @@ void SidePanelService::SetOpenSidePanelOnIconClick(
   ExtensionPrefs::Get(browser_context_)
       ->SetBooleanPref(extension_id, kOpenSidePanelOnIconClickPref,
                        open_side_panel_on_icon_click);
+}
+
+void SidePanelService::OpenSidePanel(const Extension& extension,
+                                     Browser& browser) {
+  side_panel_util::OpenExtensionSidePanel(browser, extension.id());
 }
 
 void SidePanelService::AddObserver(Observer* observer) {

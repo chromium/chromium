@@ -16,6 +16,8 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
 
+class Browser;
+
 namespace extensions {
 
 // The single responsibility of this service is to be the source of truth for
@@ -77,6 +79,9 @@ class SidePanelService : public BrowserContextKeyedAPI,
   // in the toolbar is clicked.
   void SetOpenSidePanelOnIconClick(const ExtensionId& extension_id,
                                    bool open_side_panel_on_icon_click);
+
+  // Opens the `extension`'s side panel in the specified `browser`.
+  void OpenSidePanel(const Extension& extension, Browser& browser);
 
   // Adds or removes observers.
   void AddObserver(Observer* observer);

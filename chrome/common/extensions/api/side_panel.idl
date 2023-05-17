@@ -45,6 +45,18 @@ namespace sidePanel {
     long? tabId;
   };
 
+  // Options for opening the side panel.
+  // At least one of `tabId` and `windowId` must be specified.
+  [nodoc] dictionary OpenOptions {
+    // TODO(https://crbug.com/1446022): Add support for this and make both
+    // `windowId` and `tabId` optional.
+    // The window in which to open the side panel.
+    // long? windowId;
+
+    // The tab in which to open the side panel.
+    long tabId;
+  };
+
   callback VoidCallback = void();
   callback PanelOptionsCallback = void(PanelOptions options);
   callback PanelBehaviorCallback = void(PanelBehavior behavior);
@@ -74,5 +86,12 @@ namespace sidePanel {
     // |callback|: Called with the extension's side panel behavior.
     [supportsPromises] static void getPanelBehavior(
         PanelBehaviorCallback callback);
+
+    // Opens the side panel for the extension.
+    // This may only be called in response to a user action.
+    // |options|: Specifies the context in which to open the side panel.
+    // |callback|: Called when the side panel has been opened.
+    [nodoc, supportsPromises] static void open(OpenOptions options,
+                                               VoidCallback callback);
   };
 };

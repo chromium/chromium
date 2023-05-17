@@ -35,4 +35,13 @@ void ToggleExtensionSidePanel(Browser* browser,
   }
 }
 
+// Declared in extension_side_panel_utils.h
+void OpenExtensionSidePanel(Browser& browser, const ExtensionId& extension_id) {
+  SidePanelCoordinator* coordinator =
+      BrowserView::GetBrowserViewForBrowser(&browser)->side_panel_coordinator();
+
+  coordinator->Show(
+      SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension_id));
+}
+
 }  // namespace extensions::side_panel_util

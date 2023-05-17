@@ -20,9 +20,16 @@ namespace extensions::side_panel_util {
 void CreateSidePanelManagerForWebContents(Profile* profile,
                                           content::WebContents* web_contents);
 
+// Toggles the side panel for the given `extension_id` in `browser`, opening
+// the panel if it is closed and closing it if it is open.
 // Implemented by extension_side_panel_utils.cc in views/.
 void ToggleExtensionSidePanel(Browser* browser,
                               const ExtensionId& extension_id);
+
+// Opens the side panel for the given `extension_id` in `browser`. No-op (and
+// safe to call) if the panel is already open.
+// Implemented by extension_side_panel_utils.cc in views/.
+void OpenExtensionSidePanel(Browser& browser, const ExtensionId& extension_id);
 
 }  // namespace extensions::side_panel_util
 

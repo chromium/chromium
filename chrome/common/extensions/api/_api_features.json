@@ -794,6 +794,9 @@
     "dependencies": ["permission:sidePanel"],
     "contexts": ["blessed_extension"]
   },
+  "sidePanel.open": {
+    "feature_flag": "ApiSidePanelOpen"
+  },
   "smartCardProviderPrivate": {
     "dependencies": ["permission:smartCardProviderPrivate"],
     "contexts": ["blessed_extension"]

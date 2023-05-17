@@ -36207,6 +36207,7 @@ Called by update_extension_histograms.py.-->
   <int value="1787"
       label="AUTOFILLPRIVATE_AUTHENTICATEUSERANDFLIPMANDATORYAUTHTOGGLE"/>
   <int value="1788" label="FILEMANAGERPRIVATE_SHOWPOLICYDIALOG"/>
+  <int value="1789" label="SIDEPANEL_OPEN"/>
 </enum>
 
 <enum name="ExtensionIconState">
