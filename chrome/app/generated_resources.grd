@@ -10887,8 +10887,8 @@ If you choose not to share signals, this profile will be closed.
       </message>
 
       <if expr="chromeos_lacros">
-        <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC_WITH_ASH_SETTINGS_LINK" translateable="false" desc="This string appears in the footer on a screen that asks users if they want to turn on sync if Apps data type sync is enabled. This string informs the user that apps sync is managed separately in device settings">
-          *You can always choose what to sync in settings. Google may personalize Search and other services based on your history. Keep in mind that device sync, which includes apps sync, is managed separately in <ph name="LINK_BEGIN">&lt;a href='#'&gt;</ph>device settings<ph name="LINK_END">&lt;/a&gt;</ph>.*
+        <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC_WITH_ASH_SETTINGS_LINK" desc="This string appears in the footer on a screen that asks users if they want to turn on browser sync. It lets the user know that browser data is controlled in Chrome settings. If Apps data type sync is enabled, it lets the user know that app sync is controlled in ChromeOS device settings. We use the same message IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC at the end.">
+          You can always choose what browser data to sync in Chrome settings. In <ph name="LINK_BEGIN">&lt;a href='#'&gt;</ph>device settings<ph name="LINK_END">&lt;/a&gt;</ph>, you can control sync for web apps installed from Chrome browser. Google may personalize Search and other services based on your history.
         </message>
       </if>
 
