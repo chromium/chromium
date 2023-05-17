@@ -116,11 +116,10 @@ class TargetDeviceBootstrapController
                                 absl::optional<mojom::UserVerificationResponse>
                                     user_verification_response);
 
-  // If the target device successfully receives an ack message within a
-  // specified timeout, it prepares to automatically resume Quick Start after
-  // the update and closes the connection. If ack_successful is 'false', it
-  // closes the connection without preparing to automatically resume Quick Start
-  // after the update.
+  // If the target device successfully receives an ack message, it prepares to
+  // automatically resume Quick Start after the update and closes the
+  // connection. If ack_successful is 'false', it closes the connection without
+  // preparing to automatically resume Quick Start after the update.
   void OnNotifySourceOfUpdateResponse(bool ack_successful);
 
   void OnWifiCredentialsReceived(

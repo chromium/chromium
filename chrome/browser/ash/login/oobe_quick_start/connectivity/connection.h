@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
@@ -160,6 +161,8 @@ class Connection
   void OnConnectionClosed(
       TargetDeviceConnectionBroker::ConnectionClosedReason reason);
 
+  void OnResponseTimeout();
+
   template <typename T>
   using DecoderResponseCallback =
       base::OnceCallback<void(mojo::InlinedStructPtr<T>,
@@ -182,6 +185,7 @@ class Connection
                   OnDecodingCompleteCallback<T> on_decoding_complete,
                   absl::optional<std::vector<uint8_t>> data);
 
+  base::OneShotTimer response_timeout_timer_;
   raw_ptr<NearbyConnection, ExperimentalAsh> nearby_connection_;
   RandomSessionId random_session_id_;
   SharedSecret shared_secret_;

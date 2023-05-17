@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
+#include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
@@ -107,8 +108,6 @@ void TargetDeviceBootstrapController::PrepareForUpdate() {
     return;
   }
 
-  // TODO(b/234655072): Implement 3 second timeout for invocation of
-  // OnNotifySourceOfUpdateResponse() callback.
   authenticated_connection_->NotifySourceOfUpdate(
       session_id_,
       base::BindOnce(
@@ -169,6 +168,7 @@ void TargetDeviceBootstrapController::OnConnectionClosed(
     TargetDeviceConnectionBroker::ConnectionClosedReason reason) {
   status_.step = Step::ERROR;
   status_.payload = ErrorCode::CONNECTION_CLOSED;
+  authenticated_connection_.reset();
   NotifyObservers();
 }
 
@@ -201,6 +201,8 @@ void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
   CHECK(authenticated_connection_);
 
   if (ack_successful) {
+    QS_LOG(INFO) << "Update ack sucessfully received. Preparing to resume "
+                    "Quick Start after the update.";
     PrefService* prefs = g_browser_process->local_state();
     prefs->SetBoolean(prefs::kShouldResumeQuickStartAfterReboot, true);
     base::Value::Dict info = connection_broker_->GetPrepareForUpdateInfo();

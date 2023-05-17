@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
@@ -24,6 +25,13 @@
 #include "crypto/random.h"
 
 namespace ash::quick_start {
+
+namespace {
+
+constexpr base::TimeDelta kNotifySourceOfUpdateResponseTimeout =
+    base::Seconds(3);
+
+}  // namespace
 
 Connection::Factory::~Factory() = default;
 
@@ -83,7 +91,12 @@ Connection::State Connection::GetState() {
 
 void Connection::Close(
     TargetDeviceConnectionBroker::ConnectionClosedReason reason) {
-  CHECK(connection_state_ == State::kOpen);
+  if (response_timeout_timer_.IsRunning()) {
+    response_timeout_timer_.Stop();
+  }
+  if (connection_state_ != State::kOpen) {
+    return;
+  }
 
   connection_state_ = State::kClosing;
 
@@ -120,6 +133,9 @@ void Connection::NotifySourceOfUpdate(int32_t session_id,
   std::string shared_secret_str(secondary_shared_secret_.begin(),
                                 secondary_shared_secret_.end());
 
+  response_timeout_timer_.Start(FROM_HERE, kNotifySourceOfUpdateResponseTimeout,
+                                base::BindOnce(&Connection::OnResponseTimeout,
+                                               weak_ptr_factory_.GetWeakPtr()));
   SendMessage(
       requests::BuildNotifySourceOfUpdateMessage(session_id, shared_secret_str),
       base::BindOnce(&Connection::OnNotifySourceOfUpdateResponse,
@@ -153,6 +169,8 @@ void Connection::RequestAccountTransferAssertion(
 void Connection::OnNotifySourceOfUpdateResponse(
     NotifySourceOfUpdateCallback callback,
     absl::optional<std::vector<uint8_t>> response_bytes) {
+  response_timeout_timer_.Stop();
+
   if (!response_bytes.has_value()) {
     QS_LOG(ERROR)
         << "No response bytes received for notify source of update message";
@@ -327,6 +345,11 @@ void Connection::OnConnectionClosed(
     TargetDeviceConnectionBroker::ConnectionClosedReason reason) {
   connection_state_ = Connection::State::kClosed;
   std::move(on_connection_closed_).Run(reason);
+}
+
+void Connection::OnResponseTimeout() {
+  QS_LOG(ERROR) << "Timed out waiting for a response from source device.";
+  Close(TargetDeviceConnectionBroker::ConnectionClosedReason::kResponseTimeout);
 }
 
 }  // namespace ash::quick_start

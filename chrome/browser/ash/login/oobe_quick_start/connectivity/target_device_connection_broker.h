@@ -45,6 +45,7 @@ class TargetDeviceConnectionBroker {
     kConnectionLost,
     kRequestTimedOut,
     kTargetDeviceUpdate,
+    kResponseTimeout,
     kUnknownError,
   };
 
