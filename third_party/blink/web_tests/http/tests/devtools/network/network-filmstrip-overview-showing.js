@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {NetworkTestRunner} from 'network_test_runner';
+
 (async function() {
   TestRunner.addResult(
       `Tests to make sure film strip and overview pane show if the other does not exist. http://crbug.com/723659\n`);
-  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   NetworkTestRunner.recordNetwork();

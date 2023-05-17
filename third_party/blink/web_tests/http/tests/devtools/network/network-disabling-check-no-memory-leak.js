@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {NetworkTestRunner} from 'network_test_runner';
+
 (async function() {
   TestRunner.addResult(
       `Tests that after disabling network domain, content saved on backend is removed. https://bugs.webkit.org/show_bug.cgi?id=67995`);
-  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   NetworkTestRunner.recordNetwork();

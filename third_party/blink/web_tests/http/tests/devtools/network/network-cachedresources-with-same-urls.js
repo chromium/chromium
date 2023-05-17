@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestRunner} from 'test_runner';
+import {NetworkTestRunner} from 'network_test_runner';
+import {ConsoleTestRunner} from 'console_test_runner';
+
 (async function() {
   TestRunner.addResult(
       `Tests that when we load two different images from the same url (e.g. counters), their content is different in network panel as well.\n`);
-  await TestRunner.loadTestModule('network_test_runner');
-  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console');
   await TestRunner.showPanel('network');
   await TestRunner.evaluateInPagePromise(`
       function loadImages()

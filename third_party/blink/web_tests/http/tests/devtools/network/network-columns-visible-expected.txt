@@ -8,7 +8,7 @@ scheme: http
 domain: 127.0.0.1
 remoteaddress: 127.0.0.1:8000
 type: xhr
-initiator: network-columns-visible.js:13Script
+initiator: network-columns-visible.js:15Script
 cookies: 0
 setcookies: 0
 priority: High
