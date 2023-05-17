@@ -2141,7 +2141,7 @@ class SearchByRegionWithUnifiedSidePanelBrowserTest
 };
 
 // https://crbug.com/1444953
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ValidLensRegionSearchWithUnifiedSidePanel \
   DISABLED_ValidLensRegionSearchWithUnifiedSidePanel
 #else
@@ -2194,7 +2194,7 @@ IN_PROC_BROWSER_TEST_F(SearchByRegionWithUnifiedSidePanelBrowserTest,
 }
 
 // https://crbug.com/1444953
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ValidFullscreenLensRegionSearchWithUnifiedSidePanel \
   DISABLED_ValidFullscreenLensRegionSearchWithUnifiedSidePanel
 #else

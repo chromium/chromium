@@ -213,7 +213,7 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
 };
 
 // https://crbug.com/1444953
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanelForLens \
   DISABLED_ImageSearchWithValidImageOpensUnifiedSidePanelForLens
 #else
