@@ -590,8 +590,6 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   virtual bool IsWebRtcEncryptionEnabled() { return true; }
 
-  virtual bool IsWebRtcStunOriginEnabled() { return false; }
-
   virtual bool IsWebRtcSrtpEncryptedHeadersEnabled() { return false; }
 
   // TODO(qingsi): Consolidate the legacy |ip_handling_policy| with
