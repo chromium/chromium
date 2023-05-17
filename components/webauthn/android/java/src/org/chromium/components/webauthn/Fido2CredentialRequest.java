@@ -1076,14 +1076,9 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                     mBrowserBridge = new WebAuthnBrowserBridge();
                 }
                 mConditionalUiState = ConditionalUiState.WAITING_FOR_SELECTION;
-                // TODO: Wire `hasPublicKeyCredentials`, `hasPublicKeyCredentials`,
-                // `hasRemoteResults` and `pendingGetCredentialHandle` instead of
-                // calling `onCredentialsDetailsListReceived`.
-                mBrowserBridge.onCredentialsDetailsListReceived(mFrameHost,
-                        new ArrayList<WebAuthnCredentialDetails>(), options.isConditional,
-                        (selectedCredentialId)
-                                -> maybeDispatchGetAssertionRequest(options, callerOriginString,
-                                        clientDataHash, selectedCredentialId));
+                mBrowserBridge.onCredManConditionalRequestPending(mFrameHost,
+                        hasPasswordCredentials || hasPublicKeyCredentials || hasRemoteResults,
+                        () -> getCredentialViaCredMan(options, origin));
             }
         };
 

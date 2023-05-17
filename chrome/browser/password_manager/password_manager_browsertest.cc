@@ -4217,7 +4217,7 @@ class MockPrerenderPasswordManagerDriver
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void,
               ShowKeyboardReplacingSurface,
-              (autofill::mojom::SubmissionReadinessState),
+              (autofill::mojom::SubmissionReadinessState, bool),
               (override));
 #endif
   MOCK_METHOD(void,
@@ -4291,7 +4291,8 @@ class MockPrerenderPasswordManagerDriver
     ON_CALL(*this, ShowKeyboardReplacingSurface)
         .WillByDefault([this](autofill::mojom::SubmissionReadinessState
                                   submission_readiness) {
-          impl_->ShowKeyboardReplacingSurface(submission_readiness);
+          impl_->ShowKeyboardReplacingSurface(submission_readiness,
+                                              /*is_webauthn=*/false);
         });
 #endif
     ON_CALL(*this, CheckSafeBrowsingReputation)

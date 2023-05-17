@@ -76,8 +76,8 @@ class PasswordManagerDriverFactory::PasswordManagerDriver
 
 #if BUILDFLAG(IS_ANDROID)
   void ShowKeyboardReplacingSurface(
-      autofill::mojom::SubmissionReadinessState submission_readiness) override {
-  }
+      autofill::mojom::SubmissionReadinessState submission_readiness,
+      bool is_webauthn_form) override {}
 #endif
 
   void CheckSafeBrowsingReputation(const GURL& form_action,

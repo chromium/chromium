@@ -362,7 +362,10 @@ static_library("browser") {
       "unified_password_manager_proto_utils.cc",
       "unified_password_manager_proto_utils.h",
     ]
-    deps += [ ":unified_password_manager_proto" ]
+    deps += [
+      ":unified_password_manager_proto",
+      "//components/webauthn/android",
+    ]
   }
 
   if (!is_ios) {
