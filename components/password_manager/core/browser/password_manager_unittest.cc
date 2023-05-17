@@ -3106,7 +3106,7 @@ TEST_F(PasswordManagerTest, ProvisionallySaveFailure) {
   manager()->OnPasswordFormSubmitted(nullptr, unobserved_form_data);
 
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.ProvisionalSaveFailure",
+      "PasswordManager.ProvisionalSaveFailure2",
       PasswordManagerMetricsRecorder::NO_MATCHING_FORM, 1);
   // Flush the UKM reports.
   EXPECT_CALL(client_, GetMetricsRecorder()).WillRepeatedly(Return(nullptr));

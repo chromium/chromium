@@ -87553,19 +87553,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="ProvisionalSaveFailure">
-  <summary>
-    Reason why a provisional save failed. Note that the labeling is off for data
-    recorded before Nov 4, 2014 due to a re-assignment of enum values to
-    different meanings.
-  </summary>
+  <summary>Reason why a provisional save failed.</summary>
   <int value="0" label="SAVING_DISABLED"/>
   <int value="1" label="EMPTY_PASSWORD"/>
   <int value="2" label="NO_MATCHING_FORM"/>
   <int value="3" label="MATCHING_NOT_COMPLETE"/>
-  <int value="4" label="FORM_BLACKLISTED"/>
-  <int value="5" label="INVALID_FORM"/>
-  <int value="6" label="SYNC_CREDENTIALS"/>
-  <int value="7" label="SAVING_ON_HTTP_AFTER_HTTPS"/>
+  <int value="4" label="INVALID_FORM"/>
+  <int value="5" label="SYNC_CREDENTIALS"/>
+  <int value="6" label="SAVING_ON_HTTP_AFTER_HTTPS"/>
 </enum>
 
 <enum name="ProximityAuth_BleWeaveConnectionResult">

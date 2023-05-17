@@ -3152,6 +3152,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ProvisionalSaveFailure"
+    enum="ProvisionalSaveFailure" expires_after="M115">
+  <obsolete>
+    Replaced in M115 by PasswordManager.ProvisionalSaveFailure2.
+  </obsolete>
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    NOTE: M85 and older versions record incorrect buckets. For accurate
+    analysis, consider filtering by milestone or looking at at metric
+    PasswordManager.ProvisionalSaveFailure2 instead.
+
+    Breakdown of cases where a password is submitted, but we don't even try and
+    save it. Recorded for every password form submit.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ProvisionalSaveFailure2"
     enum="ProvisionalSaveFailure" expires_after="2023-10-31">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
