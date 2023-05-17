@@ -279,6 +279,7 @@ void VotesUploader::SendVotesOnSave(
       UploadPasswordVote(*username_correction_vote_, submitted_form,
                          autofill::USERNAME,
                          FormStructure(observed).FormSignatureAsStr());
+      username_correction_vote_.reset();
     }
   } else {
     SendVoteOnCredentialsReuse(observed, submitted_form, pending_credentials);
@@ -726,8 +727,6 @@ void VotesUploader::SetKnownValueFlag(
 bool VotesUploader::FindUsernameInOtherAlternativeUsernames(
     const PasswordForm& match,
     const std::u16string& username) {
-  DCHECK(!username_correction_vote_);
-
   for (const AlternativeElement& element : match.all_alternative_usernames) {
     if (element.value == username) {
       username_correction_vote_ = match;
@@ -742,6 +741,8 @@ bool VotesUploader::FindCorrectedUsernameElement(
     const std::vector<const PasswordForm*>& matches,
     const std::u16string& username,
     const std::u16string& password) {
+  // As the username may have changed, re-compute |username_correction_vote_|.
+  username_correction_vote_.reset();
   if (username.empty())
     return false;
   for (const PasswordForm* match : matches) {
