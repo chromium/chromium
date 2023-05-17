@@ -212,7 +212,8 @@ crbug.com/1402261 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_* [ F
 crbug.com/1442337 [ chromeos chromeos-board-kevin ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
 crbug.com/1442337 [ chromeos chromeos-board-kevin ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
 
-
+# Win AMD failure since test added
+crbug.com/1446057 [ win10 amd-0x7340 angle-d3d11 ] VideoPathTraceTest_DirectComposition_Video_SW_Decode [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
