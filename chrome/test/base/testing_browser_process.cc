@@ -29,6 +29,7 @@
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process_platform_part.h"
+#include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/metrics/metrics_service.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/permissions/permissions_client.h"
@@ -213,6 +214,15 @@ metrics::MetricsService* TestingBrowserProcess::metrics_service() {
 
 device::GeolocationManager* TestingBrowserProcess::geolocation_manager() {
   return geolocation_manager_.get();
+}
+
+embedder_support::OriginTrialsSettingsStorage*
+TestingBrowserProcess::GetOriginTrialsSettingsStorage() {
+  if (!origin_trials_settings_storage_) {
+    origin_trials_settings_storage_ =
+        std::make_unique<embedder_support::OriginTrialsSettingsStorage>();
+  }
+  return origin_trials_settings_storage_.get();
 }
 
 SystemNetworkContextManager*

@@ -264,9 +264,10 @@ IN_PROC_BROWSER_TEST_F(ChromeOriginTrialsTest, NoDisabledFeatures) {
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeOriginTrialsTest, NoDisabledTokens) {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  EXPECT_FALSE(
-      command_line->HasSwitch(embedder_support::kOriginTrialDisabledTokens));
+  blink::OriginTrialPolicy* policy =
+      content::GetContentClientForTesting()->GetOriginTrialPolicy();
+  ASSERT_TRUE(policy);
+  ASSERT_EQ(policy->GetDisabledTokensForTesting()->size(), 0UL);
 }
 
 // Tests to verify that the public key is correctly read from prefs and

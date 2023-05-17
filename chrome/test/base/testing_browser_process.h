@@ -95,6 +95,8 @@ class TestingBrowserProcess : public BrowserProcess {
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory()
       override;
   network::NetworkQualityTracker* network_quality_tracker() override;
+  embedder_support::OriginTrialsSettingsStorage*
+  GetOriginTrialsSettingsStorage() override;
   ProfileManager* profile_manager() override;
   PrefService* local_state() override;
   variations::VariationsService* variations_service() override;
@@ -215,6 +217,9 @@ class TestingBrowserProcess : public BrowserProcess {
   std::unique_ptr<NotificationPlatformBridge> notification_platform_bridge_;
   std::unique_ptr<SystemNotificationHelper> system_notification_helper_;
   scoped_refptr<DownloadRequestLimiter> download_request_limiter_;
+
+  std::unique_ptr<embedder_support::OriginTrialsSettingsStorage>
+      origin_trials_settings_storage_;
 
 #if BUILDFLAG(ENABLE_PRINTING)
   std::unique_ptr<printing::PrintJobManager> print_job_manager_;

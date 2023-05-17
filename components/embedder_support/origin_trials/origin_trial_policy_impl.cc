@@ -19,6 +19,7 @@
 #include "components/embedder_support/switches.h"
 #include "content/public/common/content_features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h"
 
 namespace embedder_support {
 
@@ -46,10 +47,13 @@ OriginTrialPolicyImpl::OriginTrialPolicyImpl() {
       SetDisabledFeatures(
           command_line->GetSwitchValueASCII(kOriginTrialDisabledFeatures));
     }
-    if (command_line->HasSwitch(kOriginTrialDisabledTokens)) {
-      SetDisabledTokens(
-          command_line->GetSwitchValueASCII(kOriginTrialDisabledTokens));
-    }
+  }
+
+  blink::mojom::OriginTrialsSettingsPtr settings =
+      blink::OriginTrialsSettingsProvider::Get()->GetSettings();
+
+  if (!settings.is_null()) {
+    SetDisabledTokens(settings->disabled_tokens);
   }
 }
 
@@ -139,13 +143,12 @@ bool OriginTrialPolicyImpl::SetDisabledFeatures(
 }
 
 bool OriginTrialPolicyImpl::SetDisabledTokens(
-    const std::string& disabled_token_list) {
+    const std::vector<std::string>& tokens) {
   std::set<std::string> new_disabled_tokens;
-  const std::vector<std::string> tokens =
-      base::SplitString(disabled_token_list, "|", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
   for (const std::string& ascii_token : tokens) {
     std::string token_signature;
+    // TODO(crbug.com/1431177): Investigate storing the decoded strings. If so,
+    // this decode logic can be removed.
     if (!base::Base64Decode(ascii_token, &token_signature))
       continue;
     if (token_signature.size() != 64)

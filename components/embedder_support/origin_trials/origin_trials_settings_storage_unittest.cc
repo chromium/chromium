@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/embedder_support/origin_trials/origin_trials_settings_manager.h"
+#include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -13,14 +13,14 @@
 
 namespace embedder_support {
 
-// Matches kOriginMaxDisabledTrialTokens in origin_trials_settings_manager.cc
+// Matches kOriginMaxDisabledTrialTokens in origin_trials_settings_storage.cc
 const unsigned long kOriginMaxDisabledTrialTokens = 11;
-class OriginTrialsSettingsManagerTest : public testing::Test {
+class OriginTrialsSettingsStorageTest : public testing::Test {
  protected:
-  OriginTrialsSettingsManagerTest()
-      : manager_(base::WrapUnique(new OriginTrialsSettingsManager())) {}
+  OriginTrialsSettingsStorageTest()
+      : storage_(base::WrapUnique(new OriginTrialsSettingsStorage())) {}
 
-  OriginTrialsSettingsManager* manager() { return manager_.get(); }
+  OriginTrialsSettingsStorage* storage() { return storage_.get(); }
 
   base::Value::List CreateMaxTokensList(uint16_t initial_number) {
     base::Value::List max_tokens_list =
@@ -33,59 +33,55 @@ class OriginTrialsSettingsManagerTest : public testing::Test {
   }
 
  private:
-  std::unique_ptr<OriginTrialsSettingsManager> manager_;
+  std::unique_ptr<OriginTrialsSettingsStorage> storage_;
 };
 
-TEST_F(OriginTrialsSettingsManagerTest, EnsureEmptyValidSettingsOnCreation) {
-  EXPECT_EQ(manager()->GetSettings().is_null(), false);
-  EXPECT_EQ(manager()->GetSettings()->disabled_tokens.size(), 0UL);
+TEST_F(OriginTrialsSettingsStorageTest, EnsureEmptyValidSettingsOnCreation) {
+  EXPECT_EQ(storage()->GetSettings().is_null(), false);
+  EXPECT_EQ(storage()->GetSettings()->disabled_tokens.size(), 0UL);
 }
 
-TEST_F(OriginTrialsSettingsManagerTest, DisabledTokensPopulatedInSettings) {
-  manager()->PopulateFromOriginTrialsConfig(
-      base::Value::List().Append("token 1"));
-  EXPECT_EQ(manager()->GetSettings()->disabled_tokens,
+TEST_F(OriginTrialsSettingsStorageTest, DisabledTokensPopulatedInSettings) {
+  storage()->PopulateSettings(base::Value::List().Append("token 1"));
+  EXPECT_EQ(storage()->GetSettings()->disabled_tokens,
             std::vector<std::string>({"token 1"}));
 }
 
-TEST_F(OriginTrialsSettingsManagerTest,
+TEST_F(OriginTrialsSettingsStorageTest,
        PopulateEmptyConfigResetsExistingConfig) {
-  manager()->PopulateFromOriginTrialsConfig(
-      base::Value::List().Append("token 1"));
-  EXPECT_EQ(manager()->GetSettings()->disabled_tokens,
+  storage()->PopulateSettings(base::Value::List().Append("token 1"));
+  EXPECT_EQ(storage()->GetSettings()->disabled_tokens,
             std::vector<std::string>({"token 1"}));
-  manager()->PopulateFromOriginTrialsConfig(base::Value::List());
-  EXPECT_EQ(manager()->GetSettings()->disabled_tokens,
+  storage()->PopulateSettings(base::Value::List());
+  EXPECT_EQ(storage()->GetSettings()->disabled_tokens,
             std::vector<std::string>({}));
 }
 
-TEST_F(OriginTrialsSettingsManagerTest, CloneDoesNotAffectedSettingsInManager) {
-  manager()->PopulateFromOriginTrialsConfig(
-      base::Value::List().Append("token 1"));
+TEST_F(OriginTrialsSettingsStorageTest, CloneDoesNotAffectedSettingsInstorage) {
+  storage()->PopulateSettings(base::Value::List().Append("token 1"));
   // Get the clone of the initial settings
-  blink::mojom::OriginTrialsSettingsPtr settings1 = manager()->GetSettings();
+  blink::mojom::OriginTrialsSettingsPtr settings1 = storage()->GetSettings();
   // Add new settings
-  manager()->PopulateFromOriginTrialsConfig(
-      base::Value::List().Append("token a"));
+  storage()->PopulateSettings(base::Value::List().Append("token a"));
   // Get the clone of the new settings
-  blink::mojom::OriginTrialsSettingsPtr settings2 = manager()->GetSettings();
+  blink::mojom::OriginTrialsSettingsPtr settings2 = storage()->GetSettings();
   // Settings should be different
   EXPECT_EQ(settings1->disabled_tokens, std::vector<std::string>({"token 1"}));
   EXPECT_EQ(settings2->disabled_tokens, std::vector<std::string>({"token a"}));
 }
 
-TEST_F(OriginTrialsSettingsManagerTest, MaxDisabledTokensExistInSettings) {
-  manager()->PopulateFromOriginTrialsConfig(CreateMaxTokensList(0));
-  EXPECT_EQ(manager()->GetSettings()->disabled_tokens.size(),
+TEST_F(OriginTrialsSettingsStorageTest, MaxDisabledTokensExistInSettings) {
+  storage()->PopulateSettings(CreateMaxTokensList(0));
+  EXPECT_EQ(storage()->GetSettings()->disabled_tokens.size(),
             kOriginMaxDisabledTrialTokens);
 }
 
-TEST_F(OriginTrialsSettingsManagerTest,
+TEST_F(OriginTrialsSettingsStorageTest,
        PopulateWithOverMaxDisabledTokensDoesNotChangeSettings) {
   base::Value::List disabled_tokens_list_within_limit = CreateMaxTokensList(0);
-  manager()->PopulateFromOriginTrialsConfig(disabled_tokens_list_within_limit);
+  storage()->PopulateSettings(disabled_tokens_list_within_limit);
   std::vector<std::string> initial_disabled_tokens =
-      manager()->GetSettings()->disabled_tokens;
+      storage()->GetSettings()->disabled_tokens;
 
   // Populate with a new list of disabled tokens. This list has
   // |kOriginMaxDisabledTrialTokens| + 1 items.
@@ -93,10 +89,10 @@ TEST_F(OriginTrialsSettingsManagerTest,
       CreateMaxTokensList(kOriginMaxDisabledTrialTokens);
   disabled_tokens_list_over_limit.Append("-1");
   EXPECT_NE(disabled_tokens_list_within_limit, disabled_tokens_list_over_limit);
-  manager()->PopulateFromOriginTrialsConfig(disabled_tokens_list_over_limit);
+  storage()->PopulateSettings(disabled_tokens_list_over_limit);
 
   std::vector<std::string> disabled_tokens_after_repopulate =
-      manager()->GetSettings()->disabled_tokens;
+      storage()->GetSettings()->disabled_tokens;
   EXPECT_EQ(initial_disabled_tokens, disabled_tokens_after_repopulate);
   EXPECT_EQ(initial_disabled_tokens.size(), kOriginMaxDisabledTrialTokens);
 }

@@ -18,7 +18,7 @@ namespace embedder_support {
 // accessed from any thread.
 class OriginTrialPolicyImpl : public blink::OriginTrialPolicy {
  public:
-  OriginTrialPolicyImpl();
+  explicit OriginTrialPolicyImpl();
 
   OriginTrialPolicyImpl(const OriginTrialPolicyImpl&) = delete;
   OriginTrialPolicyImpl& operator=(const OriginTrialPolicyImpl&) = delete;
@@ -36,7 +36,7 @@ class OriginTrialPolicyImpl : public blink::OriginTrialPolicy {
 
   bool SetPublicKeysFromASCIIString(const std::string& ascii_public_key);
   bool SetDisabledFeatures(const std::string& disabled_feature_list);
-  bool SetDisabledTokens(const std::string& disabled_token_list);
+  bool SetDisabledTokens(const std::vector<std::string>& tokens);
 
   const std::set<std::string>* GetDisabledTokensForTesting() const override;
 

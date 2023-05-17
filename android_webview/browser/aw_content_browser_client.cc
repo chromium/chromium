@@ -56,6 +56,7 @@
 #include "build/build_config.h"
 #include "components/cdm/browser/cdm_message_filter_android.h"
 #include "components/crash/content/browser/crash_handler_host_linux.h"
+#include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/embedder_support/switches.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
@@ -1099,6 +1100,13 @@ void AwContentBrowserClient::OnDisplayInsecureContent(
 // static
 void AwContentBrowserClient::DisableCreatingThreadPool() {
   g_should_create_thread_pool = false;
+}
+
+blink::mojom::OriginTrialsSettingsPtr
+AwContentBrowserClient::GetOriginTrialsSettings() {
+  return AwBrowserProcess::GetInstance()
+      ->GetOriginTrialsSettingsStorage()
+      ->GetSettings();
 }
 
 bool AwContentBrowserClient::IsAttributionReportingOperationAllowed(

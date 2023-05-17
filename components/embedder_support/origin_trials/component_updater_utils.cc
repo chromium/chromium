@@ -10,8 +10,10 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/embedder_support/origin_trials/pref_names.h"
 #include "components/embedder_support/switches.h"
 #include "components/prefs/pref_service.h"
@@ -59,16 +61,10 @@ void ReadOriginTrialsConfigAndPopulateLocalState(PrefService* local_state,
   }
 }
 
-void SetupOriginTrialsCommandLine(PrefService* local_state) {
-  // TODO(crbug.com/1211739): Temporary workaround to prevent an overly large
-  // config from crashing by exceeding command-line length limits. Set the limit
-  // to 1KB, which is far less than the known limits:
-  //  - Linux: kZygoteMaxMessageLength = 12288;
-  // This will still allow for critical updates to the public key or disabled
-  // features, but the disabled token list will be ignored.
-  const size_t kMaxAppendLength = 1024;
-  size_t appended_length = 0;
-
+void SetupOriginTrialsCommandLineAndSettings(
+    PrefService* local_state,
+    OriginTrialsSettingsStorage* settings_storage) {
+  CHECK(settings_storage);
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(kOriginTrialPublicKey)) {
     std::string new_public_key =
@@ -77,9 +73,6 @@ void SetupOriginTrialsCommandLine(PrefService* local_state) {
       command_line->AppendSwitchASCII(
           kOriginTrialPublicKey,
           local_state->GetString(prefs::kOriginTrialPublicKey));
-
-      // Public key is 32 bytes
-      appended_length += 32;
     }
   }
   if (!command_line->HasSwitch(kOriginTrialDisabledFeatures)) {
@@ -95,28 +88,26 @@ void SetupOriginTrialsCommandLine(PrefService* local_state) {
           base::JoinString(disabled_features, "|");
       command_line->AppendSwitchASCII(kOriginTrialDisabledFeatures,
                                       override_disabled_features);
-      appended_length += override_disabled_features.length();
     }
   }
+  // TODO(crbug.com/1216609): Should revisit if we want to continue allowing
+  // users to override the disabled tokens list via a CLI flag or remove that
+  // functionality and populate the settings only from the PrefService.
   if (!command_line->HasSwitch(kOriginTrialDisabledTokens)) {
     const base::Value::List& disabled_token_list =
         local_state->GetList(prefs::kOriginTrialDisabledTokens);
-    std::vector<base::StringPiece> disabled_tokens;
-    for (const auto& item : disabled_token_list) {
-      if (item.is_string())
-        disabled_tokens.push_back(item.GetString());
+    settings_storage->PopulateSettings(std::move(disabled_token_list));
+  } else {
+    const std::string& disabled_token_value =
+        command_line->GetSwitchValueASCII(kOriginTrialDisabledTokens);
+    const std::vector<std::string> tokens =
+        base::SplitString(disabled_token_value, "|", base::TRIM_WHITESPACE,
+                          base::SPLIT_WANT_NONEMPTY);
+    base::Value::List disabled_token_list;
+    for (auto& ascii_token : tokens) {
+      disabled_token_list.Append(std::move(ascii_token));
     }
-    if (!disabled_tokens.empty()) {
-      const std::string disabled_token_switch =
-          base::JoinString(disabled_tokens, "|");
-      // Do not append the disabled token list if will exceed a reasonable
-      // length. See above.
-      if (appended_length + disabled_token_switch.length() <=
-          kMaxAppendLength) {
-        command_line->AppendSwitchASCII(kOriginTrialDisabledTokens,
-                                        disabled_token_switch);
-      }
-    }
+    settings_storage->PopulateSettings(std::move(disabled_token_list));
   }
 }
 

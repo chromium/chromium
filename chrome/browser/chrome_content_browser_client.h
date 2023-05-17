@@ -800,6 +800,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                             const GURL& site_url) override;
   ukm::UkmService* GetUkmService() override;
 
+  blink::mojom::OriginTrialsSettingsPtr GetOriginTrialsSettings() override;
+
   void OnKeepaliveRequestStarted(
       content::BrowserContext* browser_context) override;
   void OnKeepaliveRequestFinished() override;

@@ -50,6 +50,10 @@ namespace device {
 class GeolocationManager;
 }
 
+namespace embedder_support {
+class OriginTrialsSettingsStorage;
+}
+
 namespace network {
 class NetworkQualityTracker;
 class SharedURLLoaderFactory;
@@ -135,6 +139,10 @@ class BrowserProcess {
   // if necessary.
   virtual metrics_services_manager::MetricsServicesManager*
   GetMetricsServicesManager() = 0;
+
+  // Gets the OriginTrialsSettingsStorage, constructing it if necessary.
+  virtual embedder_support::OriginTrialsSettingsStorage*
+  GetOriginTrialsSettingsStorage() = 0;
 
   // Services: any of these getters may return NULL
   virtual metrics::MetricsService* metrics_service() = 0;

@@ -226,7 +226,6 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
     // Please keep this in alphabetical order.
     static const char* const kSwitchNames[] = {
         embedder_support::kOriginTrialDisabledFeatures,
-        embedder_support::kOriginTrialDisabledTokens,
         embedder_support::kOriginTrialPublicKey,
     };
     command_line->CopySwitchesFrom(old_command_line, kSwitchNames,

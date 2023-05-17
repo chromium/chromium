@@ -264,6 +264,7 @@ source_set("headers") {
     "origin_trials/origin_trial_policy.h",
     "origin_trials/origin_trial_public_key.h",
     "origin_trials/origin_trials.h",
+    "origin_trials/origin_trials_settings_provider.h",
     "origin_trials/trial_token.h",
     "origin_trials/trial_token_result.h",
     "origin_trials/trial_token_validator.h",

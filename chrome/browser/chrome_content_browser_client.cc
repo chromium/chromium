@@ -208,6 +208,7 @@
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/embedder_support/content_settings_utils.h"
+#include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/embedder_support/switches.h"
 #include "components/enterprise/content/clipboard_restriction_service.h"
 #include "components/enterprise/content/pref_names.h"
@@ -2911,7 +2912,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
       switches::kJavaScriptHarmony,
       switches::kEnableExperimentalWebAssemblyFeatures,
       embedder_support::kOriginTrialDisabledFeatures,
-      embedder_support::kOriginTrialDisabledTokens,
       embedder_support::kOriginTrialPublicKey,
       switches::kReaderModeHeuristics,
       translate::switches::kTranslateSecurityOrigin,
@@ -7226,6 +7226,11 @@ bool ChromeContentBrowserClient::IsJitDisabledForSite(
 
 ukm::UkmService* ChromeContentBrowserClient::GetUkmService() {
   return g_browser_process->GetMetricsServicesManager()->GetUkmService();
+}
+
+blink::mojom::OriginTrialsSettingsPtr
+ChromeContentBrowserClient::GetOriginTrialsSettings() {
+  return g_browser_process->GetOriginTrialsSettingsStorage()->GetSettings();
 }
 
 void ChromeContentBrowserClient::OnKeepaliveRequestStarted(

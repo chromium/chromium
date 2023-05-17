@@ -12,8 +12,8 @@ source_set("origin_trials") {
     "origin_trial_policy_impl.h",
     "origin_trial_prefs.cc",
     "origin_trial_prefs.h",
-    "origin_trials_settings_manager.cc",
-    "origin_trials_settings_manager.h",
+    "origin_trials_settings_storage.cc",
+    "origin_trials_settings_storage.h",
     "pref_names.cc",
     "pref_names.h",
   ]
@@ -21,7 +21,27 @@ source_set("origin_trials") {
     "//base",
     "//components/embedder_support",
     "//components/prefs",
+    "//content/public/browser",
     "//content/public/common",
     "//third_party/blink/public/common",
   ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_origin_trials_settings_storage.cc",
+    "mock_origin_trials_settings_storage.h",
+  ]
+
+  deps = [
+    ":origin_trials",
+    "//testing/gmock",
+  ]
+
+  # fuchsia explicitly needs this for lib/zx.
+  if (is_fuchsia) {
+    deps += [ "//mojo/public/cpp/bindings" ]
+  }
 }

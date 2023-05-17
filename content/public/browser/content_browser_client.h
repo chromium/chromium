@@ -63,6 +63,7 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom-forward.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -2300,6 +2301,11 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Returns the URL-Keyed Metrics service for chrome:ukm.
   virtual ukm::UkmService* GetUkmService();
+
+  // Returns the Origin Trials Settings. If the embedder does not support Origin
+  // Trials, the method will return a null
+  // blink::mojom::OriginTrialsSettingsPtr.
+  virtual blink::mojom::OriginTrialsSettingsPtr GetOriginTrialsSettings();
 
   // Called when a keepalive request
   // (https://fetch.spec.whatwg.org/#request-keepalive-flag) is requested.
