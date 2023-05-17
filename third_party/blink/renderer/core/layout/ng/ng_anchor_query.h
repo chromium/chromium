@@ -160,6 +160,9 @@ struct CORE_EXPORT NGPhysicalAnchorReference
   // stored fragment, and it's semantically incorrect when the stored rect is
   // united from fragments.
   Member<const NGPhysicalFragment> fragment;
+  // A singly linked list in the reverse tree order. There can be at most one
+  // in-flow reference, which if exists must be at the end of the list.
+  Member<NGPhysicalAnchorReference> next;
   bool is_out_of_flow = false;
 };
 

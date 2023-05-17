@@ -158,10 +158,13 @@ const NGPhysicalAnchorReference* NGPhysicalAnchorQuery::AnchorReference(
     const LayoutObject& query_object,
     const NGAnchorKey& key) const {
   if (const NGPhysicalAnchorReference* reference = Base::AnchorReference(key)) {
-    if (!reference->is_out_of_flow ||
-        reference->fragment->GetLayoutObject()->IsBeforeInPreOrder(
-            query_object)) {
-      return reference;
+    for (const NGPhysicalAnchorReference* result = reference; result;
+         result = result->next) {
+      if (!result->is_out_of_flow ||
+          result->fragment->GetLayoutObject()->IsBeforeInPreOrder(
+              query_object)) {
+        return result;
+      }
     }
   }
   return nullptr;
@@ -239,12 +242,17 @@ void NGPhysicalAnchorQuery::SetFromLogical(
   // references is not supported.
   DCHECK(IsEmpty());
   for (const auto entry : logical_query) {
-    // For each key, only the last one in the tree order, in or out of flow, is
-    // needed to be propagated, because whether it's in flow is re-computed for
-    // each containing block. Please see |SetFromPhysical|.
-    const auto result =
-        Base::insert(entry.key, MakeGarbageCollected<NGPhysicalAnchorReference>(
-                                    *entry.value, converter));
+    NGPhysicalAnchorReference* head =
+        MakeGarbageCollected<NGPhysicalAnchorReference>(*entry.value,
+                                                        converter);
+    NGPhysicalAnchorReference* tail = head;
+    for (NGLogicalAnchorReference* runner = entry.value->next; runner;
+         runner = runner->next) {
+      tail->next =
+          MakeGarbageCollected<NGPhysicalAnchorReference>(*runner, converter);
+      tail = tail->next;
+    }
+    const auto result = Base::insert(entry.key, head);
     DCHECK(result.is_new_entry);
   }
 }
@@ -255,6 +263,9 @@ void NGLogicalAnchorQuery::SetFromPhysical(
     const LogicalOffset& additional_offset,
     SetOptions options) {
   for (auto entry : physical_query) {
+    // For each key, only the last one in the tree order, in or out of flow, is
+    // needed to be propagated, because whether it's in flow is re-computed for
+    // each containing block.
     LogicalRect rect = converter.ToLogical(entry.value->rect);
     rect.offset += additional_offset;
     Set(entry.key,
@@ -475,6 +486,7 @@ void NGLogicalAnchorReference::Trace(Visitor* visitor) const {
 
 void NGPhysicalAnchorReference::Trace(Visitor* visitor) const {
   visitor->Trace(fragment);
+  visitor->Trace(next);
 }
 
 }  // namespace blink
