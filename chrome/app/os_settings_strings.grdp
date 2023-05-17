@@ -323,7 +323,7 @@
     Desktop backgrounds match across devices
   </message>
   <message name="IDS_OS_SETTINGS_SYNC_APPS_TOOLTIP" desc="Tooltip shown next to the apps toggle in OS sync settings.">
-    Once turned on, your apps will be available on any ChromeOS devices after you sign in with your Google Account. Web apps will be synced through Chrome even if other browser sync features are turned off.
+    Once turned on, your apps will be available on any ChromeOS devices after you sign in with your Google Account. Web apps installed from Chrome browser will be synced even if browser sync is turned off.
   </message>
   <message name="IDS_OS_SETTINGS_SYNC_PRINTERS_CHECKBOX_LABEL" desc="Label for the checkbox which enables syncing of printers across devices.">
     Printers
