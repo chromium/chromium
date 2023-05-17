@@ -326,9 +326,10 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
     shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
   switch (itemType) {
-    case ItemTypeExportPasswordsButton: {
+    case ItemTypeExportPasswordsButton:
       return self.canExportPasswords;
-    }
+    case ItemTypeSavePasswordsSwitch:
+      return NO;
   }
   return YES;
 }
