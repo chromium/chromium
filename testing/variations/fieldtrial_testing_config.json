@@ -14180,6 +14180,24 @@
             ]
         }
     ],
+    "VariationsGoogleGroupFiltering": [
+        {
+            "platforms": [
+                "android",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230511",
+                    "enable_features": [
+                        "VariationsGoogleGroupFiltering"
+                    ]
+                }
+            ]
+        }
+    ],
     "VerifyDidCommitParams": [
         {
             "platforms": [
