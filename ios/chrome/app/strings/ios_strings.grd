@@ -2275,10 +2275,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PINNED_TAB_OVERFLOW_ACTION_IPH_TEXT" desc="Text for the In Product Help displayed after the user pinned a tab using the overflow menu indicating where the pinned tab is.">
         You can find your pinned tabs here.
       </message>
-      <message name="IDS_IOS_PINNED_TAB_OVERFLOW_ACTION_IPH_VOICE_OVER_ANNOUNCEMENT" desc="Voiceover announcement for the In Product Help displayed after the user pinned a tab using the overflow menu indicating where the pinned tab is.">
-        You can find your pinned tabs by tapping Show Tabs button.
-      </message>
-       <message name="IDS_IOS_PHOTO_LIBRARY_ADD_USAGE_DESCRIPTION" desc="Specifies the reason for writing to the user's photo library while the app is in use [Length: unlimited] [iOS only].">
+      <message name="IDS_IOS_PHOTO_LIBRARY_ADD_USAGE_DESCRIPTION" desc="Specifies the reason for writing to the user's photo library while the app is in use [Length: unlimited] [iOS only].">
         This lets you save photos to your photo library.
       </message>
       <message name="IDS_IOS_PLACEHOLDER_FIND_IN_PAGE" desc="The iOS placeholder for searching in the current page [Length: 30em] [iOS only]">

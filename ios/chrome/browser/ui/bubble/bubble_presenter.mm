@@ -336,8 +336,6 @@ const CGFloat kBubblePresentationDelay = 1;
   BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
   NSString* text =
       l10n_util::GetNSString(IDS_IOS_PINNED_TAB_OVERFLOW_ACTION_IPH_TEXT);
-  NSString* voiceOverAnnouncement = l10n_util::GetNSString(
-      IDS_IOS_PINNED_TAB_OVERFLOW_ACTION_IPH_VOICE_OVER_ANNOUNCEMENT);
   CGPoint tabGridAnchor = [self anchorPointToGuide:kTabSwitcherGuide
                                          direction:arrowDirection];
 
@@ -349,7 +347,7 @@ const CGFloat kBubblePresentationDelay = 1;
                           direction:arrowDirection
                           alignment:BubbleAlignmentTrailing
                                text:text
-              voiceOverAnnouncement:voiceOverAnnouncement
+              voiceOverAnnouncement:text
                         anchorPoint:tabGridAnchor];
   if (!presenter) {
     return;
