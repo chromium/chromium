@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.flags;
 
 import org.chromium.base.FeatureMap;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -583,4 +584,80 @@ public abstract class ChromeFeatureList {
             new CachedFlag(USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID, false);
     public static final CachedFlag sWebApkTrampolineOnInitialIntent =
             new CachedFlag(WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT, true);
+
+    public static final List<CachedFlag> sFlagsCachedFullBrowser = List.of(
+            // clang-format off
+        sAppMenuMobileSiteOption,
+        sBackGestureActivityTabProvider,
+        sBackGestureRefactorActivityAndroid,
+        sBackGestureRefactorAndroid,
+        sBaselineGm3SurfaceColors,
+        sBottomSheetGtsSupport,
+        sCctAutoTranslate,
+        sCctBottomBarSwipeUpGesture,
+        sCctBrandTransparency,
+        sCctFeatureUsage,
+        sCctIncognito,
+        sCctIncognitoAvailableToThirdParty,
+        sCctIntentFeatureOverrides,
+        sCctRemoveRemoteViewIds,
+        sCctResizable90MaximumHeight,
+        sCctResizableForThirdParties,
+        sCctResizableSideSheet,
+        sCctResizableSideSheetDiscoverFeedSettings,
+        sCctResizableSideSheetForThirdParties,
+        sCctRetainableStateInMemory,
+        sCctToolbarCustomizations,
+        sCloseTabSuggestions,
+        sCloseTabSaveTabList,
+        sCommandLineOnNonRooted,
+        sCriticalPersistedTabData,
+        sDelayTempStripRemoval,
+        sDiscoverMultiColumn,
+        sEarlyLibraryLoad,
+        sFeedLoadingPlaceholder,
+        sFoldableJankFix,
+        sHideNonDisplayableAccountEmail,
+        sIncognitoReauthenticationForAndroid,
+        sInstanceSwitcher,
+        sInstantStart,
+        sInterestFeedV2,
+        sOmniboxMatchToolbarAndStatusBarColor,
+        sOmniboxModernizeVisualUpdate,
+        sOmniboxMostVisitedTilesAddRecycledViewPool,
+        sOptimizationGuidePushNotifications,
+        sPaintPreviewDemo,
+        sQueryTiles,
+        sQueryTilesOnStart,
+        sShouldIgnoreIntentSkipInternalCheck,
+        sSpareTab,
+        sStartSurfaceAndroid,
+        sStartSurfaceDisabledFeedImprovement,
+        sStartSurfaceOnTablet,
+        sStartSurfaceRefactor,
+        sStartSurfaceReturnTime,
+        sStartSurfaceWithAccessibility,
+        sStoreHoursAndroid,
+        sSwapPixelFormatToFixConvertFromTranslucent,
+        sTabGridLayoutAndroid,
+        sTabGroupsAndroid,
+        sTabGroupsContinuationAndroid,
+        sTabGroupsForTablets,
+        sTabStripRedesign,
+        sTabToGTSAnimation,
+        sToolbarUseHardwareBitmapDraw,
+        sUseChimeAndroidSdk,
+        sUseLibunwindstackNativeUnwinderAndroid,
+        sWebApkTrampolineOnInitialIntent
+            // clang-format on
+    );
+
+    public static final List<CachedFlag> sFlagsCachedInMinimalBrowser =
+            List.of(sExperimentsForAgsa);
+
+    public static final List<CachedFlag> sTestCachedFlags =
+            List.of(sTestDefaultDisabled, sTestDefaultEnabled);
+
+    static final Map<String, CachedFlag> sAllCachedFlags = CachedFlag.createCachedFlagMap(
+            List.of(sFlagsCachedFullBrowser, sFlagsCachedInMinimalBrowser, sTestCachedFlags));
 }

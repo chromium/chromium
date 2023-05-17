@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.CachedFieldTrialParameter;
-import org.chromium.chrome.browser.flags.CachedFlag;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.chime.ChimeFeatures;
 import org.chromium.chrome.browser.omaha.VersionNumberGetter;
@@ -66,71 +65,7 @@ public class ChromeCachedFlags {
         if (mIsFinishedCachingNativeFlags) return;
         FirstRunUtils.cacheFirstRunPrefs();
 
-        // clang-format off
-        List<CachedFlag> featuresToCache = List.of(ChromeFeatureList.sAppMenuMobileSiteOption,
-                ChromeFeatureList.sBackGestureActivityTabProvider,
-                ChromeFeatureList.sBackGestureRefactorActivityAndroid,
-                ChromeFeatureList.sBackGestureRefactorAndroid,
-                ChromeFeatureList.sBaselineGm3SurfaceColors,
-                ChromeFeatureList.sBottomSheetGtsSupport,
-                ChromeFeatureList.sCctAutoTranslate,
-                ChromeFeatureList.sCctBottomBarSwipeUpGesture,
-                ChromeFeatureList.sCctBrandTransparency,
-                ChromeFeatureList.sCctFeatureUsage,
-                ChromeFeatureList.sCctIncognito,
-                ChromeFeatureList.sCctIncognitoAvailableToThirdParty,
-                ChromeFeatureList.sCctIntentFeatureOverrides,
-                ChromeFeatureList.sCctRemoveRemoteViewIds,
-                ChromeFeatureList.sCctResizable90MaximumHeight,
-                ChromeFeatureList.sCctResizableForThirdParties,
-                ChromeFeatureList.sCctResizableSideSheet,
-                ChromeFeatureList.sCctResizableSideSheetDiscoverFeedSettings,
-                ChromeFeatureList.sCctResizableSideSheetForThirdParties,
-                ChromeFeatureList.sCctRetainableStateInMemory,
-                ChromeFeatureList.sCctToolbarCustomizations,
-                ChromeFeatureList.sCloseTabSuggestions,
-                ChromeFeatureList.sCloseTabSaveTabList,
-                ChromeFeatureList.sCommandLineOnNonRooted,
-                ChromeFeatureList.sCriticalPersistedTabData,
-                ChromeFeatureList.sDelayTempStripRemoval,
-                ChromeFeatureList.sDiscoverMultiColumn,
-                ChromeFeatureList.sTabStripRedesign,
-                ChromeFeatureList.sEarlyLibraryLoad,
-                ChromeFeatureList.sFeedLoadingPlaceholder,
-                ChromeFeatureList.sFoldableJankFix,
-                ChromeFeatureList.sHideNonDisplayableAccountEmail,
-                ChromeFeatureList.sIncognitoReauthenticationForAndroid,
-                ChromeFeatureList.sInstanceSwitcher,
-                ChromeFeatureList.sInstantStart,
-                ChromeFeatureList.sInterestFeedV2,
-                ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor,
-                ChromeFeatureList.sOmniboxModernizeVisualUpdate,
-                ChromeFeatureList.sOmniboxMostVisitedTilesAddRecycledViewPool,
-                ChromeFeatureList.sOptimizationGuidePushNotifications,
-                ChromeFeatureList.sPaintPreviewDemo,
-                ChromeFeatureList.sQueryTiles,
-                ChromeFeatureList.sQueryTilesOnStart,
-                ChromeFeatureList.sShouldIgnoreIntentSkipInternalCheck,
-                ChromeFeatureList.sSpareTab,
-                ChromeFeatureList.sStartSurfaceAndroid,
-                ChromeFeatureList.sStartSurfaceDisabledFeedImprovement,
-                ChromeFeatureList.sStartSurfaceReturnTime,
-                ChromeFeatureList.sStartSurfaceRefactor,
-                ChromeFeatureList.sStartSurfaceOnTablet,
-                ChromeFeatureList.sStartSurfaceWithAccessibility,
-                ChromeFeatureList.sStoreHoursAndroid,
-                ChromeFeatureList.sSwapPixelFormatToFixConvertFromTranslucent,
-                ChromeFeatureList.sTabGridLayoutAndroid,
-                ChromeFeatureList.sTabGroupsAndroid,
-                ChromeFeatureList.sTabGroupsContinuationAndroid,
-                ChromeFeatureList.sTabGroupsForTablets,
-                ChromeFeatureList.sTabToGTSAnimation,
-                ChromeFeatureList.sToolbarUseHardwareBitmapDraw,
-                ChromeFeatureList.sUseChimeAndroidSdk,
-                ChromeFeatureList.sUseLibunwindstackNativeUnwinderAndroid,
-                ChromeFeatureList.sWebApkTrampolineOnInitialIntent);
-
-        CachedFeatureFlags.cacheNativeFlags(featuresToCache);
+        CachedFeatureFlags.cacheNativeFlags(ChromeFeatureList.sFlagsCachedFullBrowser);
         CachedFeatureFlags.cacheAdditionalNativeFlags();
 
         List<CachedFieldTrialParameter> fieldTrialsToCache = List.of(
@@ -217,11 +152,7 @@ public class ChromeCachedFlags {
      */
     public void cacheMinimalBrowserFlags() {
         CachedFeatureFlags.cacheMinimalBrowserFlagsTimeFromNativeTime();
-
-        // TODO(crbug.com/995355): Move other related flags from cacheNativeFlags() to here.
-        List<CachedFlag> featuresToCache = List.of(ChromeFeatureList.sExperimentsForAgsa);
-        CachedFeatureFlags.cacheNativeFlags(featuresToCache);
-
+        CachedFeatureFlags.cacheNativeFlags(ChromeFeatureList.sFlagsCachedInMinimalBrowser);
         CachedFeatureFlags.cacheFieldTrialParameters(MINIMAL_BROWSER_FIELD_TRIALS);
     }
 }

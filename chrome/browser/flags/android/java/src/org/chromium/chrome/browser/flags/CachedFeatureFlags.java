@@ -80,11 +80,12 @@ public class CachedFeatureFlags {
      *    it is returned.
      * 5. The default value passed as a parameter is returned.
      */
-    @CalledByNative
     @AnyThread
-    static boolean isEnabled(String featureName, boolean defaultValue) {
+    static boolean isEnabled(CachedFlag cachedFlag) {
         sSafeMode.onFlagChecked();
 
+        String featureName = cachedFlag.getFeatureName();
+        boolean defaultValue = cachedFlag.getDefaultValue();
         String preferenceName = getPrefForFeatureFlag(featureName);
 
         Boolean flag;
@@ -107,6 +108,15 @@ public class CachedFeatureFlags {
             sValuesReturned.boolValues.put(preferenceName, flag);
         }
         return flag;
+    }
+
+    @CalledByNative
+    @AnyThread
+    static boolean isEnabled(String featureName) {
+        CachedFlag cachedFlag = ChromeFeatureList.sAllCachedFlags.get(featureName);
+        assert cachedFlag != null : String.format("%s not found in ChromeFeatureList", featureName);
+
+        return isEnabled(cachedFlag);
     }
 
     /**
