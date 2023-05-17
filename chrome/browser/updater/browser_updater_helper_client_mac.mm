@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
+#include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -19,28 +20,24 @@
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #include "chrome/updater/mac/privileged_helper/service_protocol.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 const int kPrivilegedHelperConnectionFailed = -10000;
 }
 
 BrowserUpdaterHelperClientMac::BrowserUpdaterHelperClientMac() {
-  xpc_connection_ = [[NSXPCConnection alloc]
+  xpc_connection_.reset([[NSXPCConnection alloc]
       initWithMachServiceName:base::SysUTF8ToNSString(kPrivilegedHelperName)
-                      options:NSXPCConnectionPrivileged];
+                      options:NSXPCConnectionPrivileged]);
 
-  xpc_connection_.remoteObjectInterface = [NSXPCInterface
+  xpc_connection_.get().remoteObjectInterface = [NSXPCInterface
       interfaceWithProtocol:@protocol(PrivilegedHelperServiceProtocol)];
 
-  xpc_connection_.interruptionHandler = ^{
+  xpc_connection_.get().interruptionHandler = ^{
     LOG(WARNING)
         << "PrivilegedHelperServiceProtocolImpl: XPC connection interrupted.";
   };
 
-  xpc_connection_.invalidationHandler = ^{
+  xpc_connection_.get().invalidationHandler = ^{
     LOG(WARNING)
         << "PrivilegedHelperServiceProtocolImpl: XPC connection invalidated.";
   };
@@ -50,7 +47,7 @@ BrowserUpdaterHelperClientMac::BrowserUpdaterHelperClientMac() {
 
 BrowserUpdaterHelperClientMac::~BrowserUpdaterHelperClientMac() {
   [xpc_connection_ invalidate];
-  xpc_connection_ = nil;
+  xpc_connection_.reset();
 }
 
 void BrowserUpdaterHelperClientMac::SetupSystemUpdater(
