@@ -38,6 +38,16 @@
 #include "third_party/widevine/cdm/buildflags.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/dbus/constants/dbus_switches.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if BUILDFLAG(IS_ANDROID)
 #error This file needs to be updated to run on Android.
 #endif
@@ -567,6 +577,61 @@ class EncryptedMediaSupportedTypesWidevineTest
         switches::kUnsafelyAllowProtectedMediaIdentifierForDomain, "127.0.0.1");
   }
 };
+
+#if BUILDFLAG(IS_CHROMEOS)
+class EncryptedMediaSupportedTypesDevModeTest
+    : public EncryptedMediaSupportedTypesTest {
+ public:
+  EncryptedMediaSupportedTypesDevModeTest(
+      const EncryptedMediaSupportedTypesDevModeTest&) = delete;
+  EncryptedMediaSupportedTypesDevModeTest& operator=(
+      const EncryptedMediaSupportedTypesDevModeTest&) = delete;
+
+ protected:
+  EncryptedMediaSupportedTypesDevModeTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EncryptedMediaSupportedTypesTest::SetUpCommandLine(command_line);
+    // Expect Persistent licences to not be supported since switch for dev mode
+    // is turned on.
+    command_line->AppendSwitch(chromeos::switches::kSystemDevMode);
+  }
+};
+
+class EncryptedMediaSupportedTypesRAAllowedTest
+    : public EncryptedMediaSupportedTypesTest {
+ public:
+  EncryptedMediaSupportedTypesRAAllowedTest(
+      const EncryptedMediaSupportedTypesRAAllowedTest&) = delete;
+  EncryptedMediaSupportedTypesRAAllowedTest& operator=(
+      const EncryptedMediaSupportedTypesRAAllowedTest&) = delete;
+
+ protected:
+  EncryptedMediaSupportedTypesRAAllowedTest() = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EncryptedMediaSupportedTypesTest::SetUpCommandLine(command_line);
+    // Expect Persistent licences to be supported since switch for dev mode
+    // is turned on alongside the AllowRAinDevMode
+    command_line->AppendSwitch(chromeos::switches::kSystemDevMode);
+    command_line->AppendSwitch(switches::kAllowRAInDevMode);
+  }
+};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class EncryptedMediaSupportedTypesRAForContentBlockedTest
+    : public EncryptedMediaSupportedTypesTest {
+ public:
+  EncryptedMediaSupportedTypesRAForContentBlockedTest(
+      const EncryptedMediaSupportedTypesRAForContentBlockedTest&) = delete;
+  EncryptedMediaSupportedTypesRAForContentBlockedTest& operator=(
+      const EncryptedMediaSupportedTypesRAForContentBlockedTest&) = delete;
+
+ protected:
+  EncryptedMediaSupportedTypesRAForContentBlockedTest() = default;
+};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class EncryptedMediaSupportedTypesWidevineHwSecureTest
     : public EncryptedMediaSupportedTypesWidevineTest {
@@ -1384,6 +1449,54 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
   EXPECT_UNSUPPORTED(IsAudioEncryptionSchemeSupported(kWidevine, ""));
   EXPECT_UNSUPPORTED(IsVideoEncryptionSchemeSupported(kWidevine, ""));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesDevModeTest, SessionType) {
+  // Temporary session always supported.
+  EXPECT_WV(IsSessionTypeSupported(kWidevine, SessionType::kTemporary));
+
+  // Persistent license session should not be supported while system is
+  // on dev mode.
+  EXPECT_UNSUPPORTED(
+      IsSessionTypeSupported(kWidevine, SessionType::kPersistentLicense));
+}
+
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesRAAllowedTest, SessionType) {
+  // Temporary session always supported.
+  EXPECT_WV(IsSessionTypeSupported(kWidevine, SessionType::kTemporary));
+
+  // Persistent license session should be supported if the flag
+  // `kAllowRAInDevMode` is attached while the system is on dev mode.
+  EXPECT_WV_SW_SECURE_PERSISTENT_SESSION(
+      IsSessionTypeSupported(kWidevine, SessionType::kPersistentLicense));
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesRAForContentBlockedTest,
+                       SessionType) {
+  // Temporary session always supported.
+  EXPECT_WV(IsSessionTypeSupported(kWidevine, SessionType::kTemporary));
+
+  auto settings_helper =
+      std::make_unique<ash::ScopedCrosSettingsTestHelper>(false);
+  settings_helper->ReplaceDeviceSettingsProviderWithStub();
+
+  // Persistent license session should be supported as long as the policy
+  // 'kAttestationForContentProtectionEnabled' is set to true.
+  settings_helper->SetBoolean(ash::kAttestationForContentProtectionEnabled,
+                              true);
+  EXPECT_WV_SW_SECURE_PERSISTENT_SESSION(
+      IsSessionTypeSupported(kWidevine, SessionType::kPersistentLicense));
+
+  // Persistent license session should be not supported as long as the policy
+  // 'kAttestationForContentProtectionEnabled' is set to false.
+  settings_helper->SetBoolean(ash::kAttestationForContentProtectionEnabled,
+                              false);
+  EXPECT_UNSUPPORTED(
+      IsSessionTypeSupported(kWidevine, SessionType::kPersistentLicense));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // EncryptedMediaSupportedTypesWidevineHwSecureTest tests Widevine with hardware
 // secure decryption support.
