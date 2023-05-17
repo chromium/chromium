@@ -47,6 +47,25 @@ static_assert(net::CERT_STATUS_REV_CHECKING_ENABLED == 1 << 17,
               "The value of CERT_STATUS_REV_CHECKING_ENABLED changed!");
 
 namespace web {
+namespace {
+
+// Returns the leaf certificate in the certificate chain from `certificate`.
+scoped_refptr<net::X509Certificate> ExtractLeafCertificate(
+    const scoped_refptr<net::X509Certificate>& certificate) {
+  // Nothing to do if `certificate` is already a leaf certificate.
+  if (certificate->intermediate_buffers().empty()) {
+    return certificate;
+  }
+
+  scoped_refptr<net::X509Certificate> leaf_certificate =
+      net::X509Certificate::CreateFromBuffer(
+          bssl::UpRef(certificate->cert_buffer()), {});
+  DCHECK(leaf_certificate);
+  DCHECK(leaf_certificate->intermediate_buffers().empty());
+  return leaf_certificate;
+}
+
+}  // anonymous namespace
 
 SessionCertificatePolicyCacheImpl::SessionCertificatePolicyCacheImpl(
     BrowserState* browser_state)
@@ -55,23 +74,21 @@ SessionCertificatePolicyCacheImpl::SessionCertificatePolicyCacheImpl(
 
 SessionCertificatePolicyCacheImpl::~SessionCertificatePolicyCacheImpl() {}
 
-void SessionCertificatePolicyCacheImpl::UpdateCertificatePolicyCache(
-    const scoped_refptr<web::CertificatePolicyCache>& cache) const {
+void SessionCertificatePolicyCacheImpl::UpdateCertificatePolicyCache() const {
   DCHECK_CURRENTLY_ON(WebThread::UI);
-  DCHECK(cache.get());
   NSSet* allowed_certs = [NSSet setWithSet:allowed_certs_];
-  const scoped_refptr<CertificatePolicyCache> cache_copy = cache;
+  const scoped_refptr<CertificatePolicyCache> cache =
+      GetCertificatePolicyCache();
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(^{
         for (CRWSessionCertificateStorage* cert in allowed_certs) {
-          cache_copy->AllowCertForHost(cert.certificate, cert.host,
-                                       cert.status);
+          cache->AllowCertForHost(cert.certificate, cert.host, cert.status);
         }
       }));
 }
 
 void SessionCertificatePolicyCacheImpl::RegisterAllowedCertificate(
-    scoped_refptr<net::X509Certificate> certificate,
+    const scoped_refptr<net::X509Certificate>& certificate,
     const std::string& host,
     net::CertStatus status) {
   DCHECK_CURRENTLY_ON(WebThread::UI);
@@ -80,15 +97,11 @@ void SessionCertificatePolicyCacheImpl::RegisterAllowedCertificate(
   // `webView:didReceiveAuthenticationChallenge:completionHandler:`,
   // but the server-supplied chain in
   // `webView:didFailProvisionalNavigation:withError:`.
-  if (!certificate->intermediate_buffers().empty()) {
-    certificate = net::X509Certificate::CreateFromBuffer(
-        bssl::UpRef(certificate->cert_buffer()), {});
-    DCHECK(certificate);
-  }
-  DCHECK(certificate->intermediate_buffers().empty());
+  scoped_refptr<net::X509Certificate> leaf_certificate =
+      ExtractLeafCertificate(certificate);
 
   [allowed_certs_ addObject:[[CRWSessionCertificateStorage alloc]
-                                initWithCertificate:certificate
+                                initWithCertificate:leaf_certificate
                                                host:host
                                              status:status]];
   const scoped_refptr<CertificatePolicyCache> cache =
@@ -96,14 +109,16 @@ void SessionCertificatePolicyCacheImpl::RegisterAllowedCertificate(
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&CertificatePolicyCache::AllowCertForHost, cache,
-                     base::RetainedRef(certificate.get()), host, status));
+                     base::RetainedRef(leaf_certificate.get()), host, status));
 }
 
-void SessionCertificatePolicyCacheImpl::SetAllowedCerts(NSSet* allowed_certs) {
+void SessionCertificatePolicyCacheImpl::SetAllowedCerts(
+    NSSet<CRWSessionCertificateStorage*>* allowed_certs) {
   allowed_certs_ = [allowed_certs mutableCopy];
 }
 
-NSSet* SessionCertificatePolicyCacheImpl::GetAllowedCerts() const {
+NSSet<CRWSessionCertificateStorage*>*
+SessionCertificatePolicyCacheImpl::GetAllowedCerts() const {
   return allowed_certs_;
 }
 

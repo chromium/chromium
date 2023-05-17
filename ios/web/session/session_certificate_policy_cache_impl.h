@@ -9,6 +9,8 @@
 
 #include "ios/web/public/session/session_certificate_policy_cache.h"
 
+@class CRWSessionCertificateStorage;
+
 namespace net {
 class X509Certificate;
 }
@@ -16,32 +18,26 @@ class X509Certificate;
 namespace web {
 
 // Concrete implementation of SessionCertificatePolicyCache.
-class SessionCertificatePolicyCacheImpl : public SessionCertificatePolicyCache {
+class SessionCertificatePolicyCacheImpl final
+    : public SessionCertificatePolicyCache {
  public:
-  SessionCertificatePolicyCacheImpl(BrowserState* browser_state);
-
-  SessionCertificatePolicyCacheImpl(const SessionCertificatePolicyCacheImpl&) =
-      delete;
-  SessionCertificatePolicyCacheImpl& operator=(
-      const SessionCertificatePolicyCacheImpl&) = delete;
-
-  ~SessionCertificatePolicyCacheImpl() override;
+  explicit SessionCertificatePolicyCacheImpl(BrowserState* browser_state);
+  ~SessionCertificatePolicyCacheImpl() final;
 
   // SessionCertificatePolicyCache:
-  void UpdateCertificatePolicyCache(
-      const scoped_refptr<web::CertificatePolicyCache>& cache) const override;
+  void UpdateCertificatePolicyCache() const final;
   void RegisterAllowedCertificate(
-      scoped_refptr<net::X509Certificate> certificate,
+      const scoped_refptr<net::X509Certificate>& certificate,
       const std::string& host,
-      net::CertStatus status) override;
+      net::CertStatus status) final;
 
   // Allows for batch updating the allowed certificate storages.
-  void SetAllowedCerts(NSSet* allowed_certs);
-  NSSet* GetAllowedCerts() const;
+  void SetAllowedCerts(NSSet<CRWSessionCertificateStorage*>* allowed_certs);
+  NSSet<CRWSessionCertificateStorage*>* GetAllowedCerts() const;
 
  private:
-  // An set of CRWSessionCertificateStorages representing allowed certs.
-  NSMutableSet* allowed_certs_;
+  // Represents the allowed certificates.
+  NSMutableSet<CRWSessionCertificateStorage*>* allowed_certs_;
 };
 
 }  // namespace web

@@ -113,8 +113,7 @@ void WebStateImpl::RealizedWebState::Init(const CreateParams& params,
     // Update the BrowserState's CertificatePolicyCache with the newly
     // restored policy cache entries.
     DCHECK(certificate_policy_cache_);
-    certificate_policy_cache_->UpdateCertificatePolicyCache(
-        web::BrowserState::GetCertificatePolicyCache(params.browser_state));
+    certificate_policy_cache_->UpdateCertificatePolicyCache();
 
     // Restore the last active time, even if it is null, as that would mean
     // the session predates M-99 (when the last active time started to be
