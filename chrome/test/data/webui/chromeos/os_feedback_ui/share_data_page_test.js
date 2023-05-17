@@ -14,9 +14,9 @@ import {ShareDataPageElement} from 'chrome://os-feedback/share_data_page.js';
 import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {eventToPromise, isVisible} from '../test_util.js';
 
 /** @type {string} */
@@ -872,9 +872,12 @@ export function shareDataPageTestSuite() {
    * Test that openAutofillDialog and recordPreSubmitAction are called when
    * #autofillMetadataUrl ("autofill metadata") link is clicked.
    */
-  // TODO(crbug.com/1401615): Flaky.
-  test.skip('openAutofillDialog', async () => {
+  test('openAutofillDialog', async () => {
     await initializePage();
+
+    page.feedbackContext = fakeInternalUserFeedbackContext;
+    page.feedbackContext.fromAutofill = true;
+    page.feedbackContext.autofillMetadata = '{}';
 
     assertEquals(0, feedbackServiceProvider.getOpenAutofillDialogCallCount());
     verifyRecordPreSubmitActionCallCount(
