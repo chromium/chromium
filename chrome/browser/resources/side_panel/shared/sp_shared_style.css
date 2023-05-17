@@ -59,6 +59,11 @@
   margin-inline-end: calc(-1 * var(--sp-body-padding));
 }
 
+:host-context([chrome-refresh-2023]) .sp-scroller .sp-card,
+:host-context([chrome-refresh-2023]):host-context(.sp-scroller) .sp-card {
+  margin-inline-end: 0; /* sp-scroller's scrollbar takes the space instead. */
+}
+
 :host-context([chrome-refresh-2023]) .sp-labelless-input {
   --cr-input-background-color: transparent;
   --cr-input-border: 1px solid var(--color-side-panel-textfield-border);

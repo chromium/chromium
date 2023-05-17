@@ -1,5 +1,11 @@
 <style include="sp-shared-style">
-  :host-context([chrome-refresh-2023]):host {
+  #container {
+    box-sizing: border-box;
+    height: 100%;
+    overflow: auto;
+  }
+
+  :host-context([chrome-refresh-2023]) #container {
     display: block;
     padding: var(--sp-body-padding) 0;
   }
@@ -45,7 +51,8 @@
     width: 100%;
   }
 </style>
-<iron-pages selected="[[page_]]" attr-for-selected="page-name">
+<iron-pages id="container" class="sp-scroller"
+    selected="[[page_]]" attr-for-selected="page-name">
   <div page-name="overview" id="overviewPage">
     <div id="appearance" class="section sp-card">
       <sp-heading hide-back-button>
