@@ -73,6 +73,7 @@ WGPURequestAdapterOptions AsDawnType(
 
   WGPURequestAdapterOptions dawn_options = {};
   dawn_options.forceFallbackAdapter = webgpu_options->forceFallbackAdapter();
+  dawn_options.compatibilityMode = webgpu_options->compatibilityMode();
   if (webgpu_options->hasPowerPreference()) {
     dawn_options.powerPreference =
         AsDawnType(webgpu_options->powerPreference());

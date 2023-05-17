@@ -384,7 +384,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   void DiscoverAdapters();
 
   WGPUAdapter CreatePreferredAdapter(WGPUPowerPreference power_preference,
-                                     bool force_fallback) const;
+                                     bool force_fallback,
+                                     bool compatibility_mode) const;
 
   // Decide if a device feature is exposed to render process.
   bool IsFeatureExposed(WGPUAdapter adapter, WGPUFeatureName feature) const;
@@ -1250,7 +1251,8 @@ void WebGPUDecoderImpl::RequestAdapterImpl(
   }
 
   WGPUAdapter adapter =
-      CreatePreferredAdapter(options->powerPreference, force_fallback_adapter);
+      CreatePreferredAdapter(options->powerPreference, force_fallback_adapter,
+                             options->compatibilityMode);
 
   if (adapter == nullptr) {
     // There are no adapters to return since webgpu is not supported here
@@ -1557,7 +1559,8 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
 
 WGPUAdapter WebGPUDecoderImpl::CreatePreferredAdapter(
     WGPUPowerPreference power_preference,
-    bool force_fallback) const {
+    bool force_fallback,
+    bool compatibility_mode) const {
   // Build the list of available adapters.
   std::vector<dawn::native::Adapter> adapters;
   for (dawn::native::Adapter& adapter : dawn_instance_->GetAdapters()) {
@@ -1579,6 +1582,10 @@ WGPUAdapter WebGPUDecoderImpl::CreatePreferredAdapter(
     // SwiftShader adapter. For SwiftShader, we will perform a manual
     // upload/readback to/from shared images.
     if (!(adapter.SupportsExternalImages() || is_fallback_adapter)) {
+      continue;
+    }
+
+    if (compatibility_mode != adapterProperties.compatibilityMode) {
       continue;
     }
 

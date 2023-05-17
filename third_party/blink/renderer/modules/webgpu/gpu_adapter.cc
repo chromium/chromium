@@ -95,6 +95,7 @@ GPUAdapter::GPUAdapter(
   GetProcs().adapterGetProperties(handle_, &properties);
   is_fallback_adapter_ = properties.adapterType == WGPUAdapterType_CPU;
   backend_type_ = properties.backendType;
+  is_compatibility_mode_ = properties.compatibilityMode;
 
   vendor_ = properties.vendorName;
   architecture_ = properties.architecture;
@@ -149,6 +150,10 @@ WGPUBackendType GPUAdapter::backendType() const {
 bool GPUAdapter::SupportsMultiPlanarFormats() const {
   return GetProcs().adapterHasFeature(handle_,
                                       WGPUFeatureName_DawnMultiPlanarFormats);
+}
+
+bool GPUAdapter::isCompatibilityMode() const {
+  return is_compatibility_mode_;
 }
 
 void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,
