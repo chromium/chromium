@@ -140,7 +140,6 @@ void WebAppInstallFinalizer::FinalizeInstall(
   } else {
     // TODO(b/280862254): After the manifest id constructor is required, this
     // can be removed.
-    CHECK_IS_TEST();
     manifest_id = GenerateManifestIdFromStartUrlOnly(web_app_info.start_url);
   }
 
