@@ -27,6 +27,7 @@
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/page_info/core/features.h"
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
@@ -362,6 +363,11 @@ ChromePageInfoDelegate::GetVisibleSecurityState() {
   auto* helper = SecurityStateTabHelper::FromWebContents(web_contents_);
   DCHECK(helper);
   return *helper->GetVisibleSecurityState();
+}
+
+void ChromePageInfoDelegate::OnCookiesPageOpened() {
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kInContextCookieControlsOpened,
+                                       true);
 }
 
 std::unique_ptr<content_settings::PageSpecificContentSettings::Delegate>

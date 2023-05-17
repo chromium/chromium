@@ -83,6 +83,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   bool IsContentDisplayedInVrHeadset() override;
   security_state::SecurityLevel GetSecurityLevel() override;
   security_state::VisibleSecurityState GetVisibleSecurityState() override;
+  void OnCookiesPageOpened() override;
   std::unique_ptr<content_settings::PageSpecificContentSettings::Delegate>
   GetPageSpecificContentSettingsDelegate() override;
 

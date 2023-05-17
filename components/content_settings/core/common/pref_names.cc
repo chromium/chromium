@@ -164,6 +164,11 @@ const char kQuietNotificationPermissionUiEnablingMethod[] =
 const char kQuietNotificationPermissionUiDisabledTime[] =
     "profile.content_settings.disable_quiet_permission_ui_time.notifications";
 
+// Boolean that indicates whether the user has ever opened any of the in-context
+// cookie controls, i.e. the Page Info cookies subpage, or ChromeGuard.
+const char kInContextCookieControlsOpened[] =
+    "profile.content_settings.in_content_cookies_controls_opened";
+
 #if BUILDFLAG(IS_ANDROID)
 // Enable vibration for web notifications.
 const char kNotificationsVibrateEnabled[] = "notifications.vibrate_enabled";
