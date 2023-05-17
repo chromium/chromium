@@ -84,6 +84,16 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
     bootstrap_controller_->AddObserver(fake_observer_.get());
   }
 
+  void BootstrapConnection() {
+    bootstrap_controller_->StartAdvertising();
+    fake_target_device_connection_broker_->on_start_advertising_callback().Run(
+        /*success=*/true);
+    fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
+    fake_target_device_connection_broker_->AuthenticateConnection(
+        kSourceDeviceId);
+    ASSERT_EQ(fake_observer_->last_status.step, Step::CONNECTED);
+  }
+
   void NotifySourceOfUpdateResponse(bool ack_successful) {
     bootstrap_controller_->OnNotifySourceOfUpdateResponse(ack_successful);
   }
@@ -170,14 +180,7 @@ TEST_F(TargetDeviceBootstrapControllerTest, InitiateConnection_Pin) {
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, AuthenticateConnection) {
-  bootstrap_controller_->StartAdvertising();
-  fake_target_device_connection_broker_->on_start_advertising_callback().Run(
-      /*success=*/true);
-  fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
-  fake_target_device_connection_broker_->AuthenticateConnection(
-      kSourceDeviceId);
-
-  EXPECT_EQ(fake_observer_->last_status.step, Step::CONNECTED);
+  BootstrapConnection();
   EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
       fake_observer_->last_status.payload));
 }
@@ -248,14 +251,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   ASSERT_TRUE(GetLocalState()
                   ->GetDict(prefs::kResumeQuickStartAfterRebootInfo)
                   .empty());
-
-  bootstrap_controller_->StartAdvertising();
-  fake_target_device_connection_broker_->on_start_advertising_callback().Run(
-      /*success=*/true);
-  fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
-  fake_target_device_connection_broker_->AuthenticateConnection(
-      kSourceDeviceId);
-  ASSERT_EQ(fake_observer_->last_status.step, Step::CONNECTED);
+  BootstrapConnection();
 
   NotifySourceOfUpdateResponse(/*ack_successful=*/true);
 
@@ -277,14 +273,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   ASSERT_TRUE(GetLocalState()
                   ->GetDict(prefs::kResumeQuickStartAfterRebootInfo)
                   .empty());
-
-  bootstrap_controller_->StartAdvertising();
-  fake_target_device_connection_broker_->on_start_advertising_callback().Run(
-      /*success=*/true);
-  fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
-  fake_target_device_connection_broker_->AuthenticateConnection(
-      kSourceDeviceId);
-  ASSERT_EQ(fake_observer_->last_status.step, Step::CONNECTED);
+  BootstrapConnection();
 
   NotifySourceOfUpdateResponse(/*ack_successful=*/false);
 
