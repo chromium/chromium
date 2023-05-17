@@ -413,6 +413,10 @@ function(absl_cc_test)
       DEPS ${ABSL_CC_TEST_DEPS}
       OUTPUT ABSL_CC_TEST_DEPS
     )
+    absl_internal_dll_targets(
+      DEPS ${ABSL_CC_TEST_LINKOPTS}
+      OUTPUT ABSL_CC_TEST_LINKOPTS
+    )
   else()
     target_compile_definitions(${_NAME}
       PUBLIC

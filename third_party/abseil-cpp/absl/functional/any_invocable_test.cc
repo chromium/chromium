@@ -1418,7 +1418,7 @@ TYPED_TEST_P(AnyInvTestRvalue, NonConstCrashesOnSecondCall) {
   // Ensure we're still valid
   EXPECT_TRUE(static_cast<bool>(fun));  // NOLINT(bugprone-use-after-move)
 
-#if !defined(NDEBUG) || ABSL_OPTION_HARDENED == 1
+#if !defined(NDEBUG)
   EXPECT_DEATH_IF_SUPPORTED(std::move(fun)(7, 8, 9), "");
 #endif
 }

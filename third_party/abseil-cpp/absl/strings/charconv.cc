@@ -21,6 +21,7 @@
 #include <limits>
 
 #include "absl/base/casts.h"
+#include "absl/base/config.h"
 #include "absl/numeric/bits.h"
 #include "absl/numeric/int128.h"
 #include "absl/strings/internal/charconv_bigint.h"
@@ -118,10 +119,17 @@ struct FloatTraits<double> {
   static constexpr int kEiselLemireMaxExclusiveExp10 = 309;
 
   static double MakeNan(const char* tagp) {
+#if ABSL_HAVE_BUILTIN(__builtin_nan)
+    // Use __builtin_nan() if available since it has a fix for
+    // https://bugs.llvm.org/show_bug.cgi?id=37778
+    // std::nan may use the glibc implementation.
+    return __builtin_nan(tagp);
+#else
     // Support nan no matter which namespace it's in.  Some platforms
     // incorrectly don't put it in namespace std.
     using namespace std;  // NOLINT
     return nan(tagp);
+#endif
   }
 
   // Builds a nonzero floating point number out of the provided parts.
@@ -184,10 +192,17 @@ struct FloatTraits<float> {
   static constexpr int kEiselLemireMaxExclusiveExp10 = 39;
 
   static float MakeNan(const char* tagp) {
+#if ABSL_HAVE_BUILTIN(__builtin_nanf)
+    // Use __builtin_nanf() if available since it has a fix for
+    // https://bugs.llvm.org/show_bug.cgi?id=37778
+    // std::nanf may use the glibc implementation.
+    return __builtin_nanf(tagp);
+#else
     // Support nanf no matter which namespace it's in.  Some platforms
     // incorrectly don't put it in namespace std.
     using namespace std;  // NOLINT
-    return nanf(tagp);
+    return std::nanf(tagp);
+#endif
   }
 
   static float Make(mantissa_t mantissa, int exponent, bool sign) {
@@ -350,7 +365,8 @@ bool HandleEdgeCase(const strings_internal::ParsedFloat& input, bool negative,
     // https://bugs.llvm.org/show_bug.cgi?id=37778
     // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=86113
     constexpr ptrdiff_t kNanBufferSize = 128;
-#if defined(__GNUC__) || (defined(__clang__) && __clang_major__ < 7)
+#if (defined(__GNUC__) && !defined(__clang__)) || \
+    (defined(__clang__) && __clang_major__ < 7)
     volatile char n_char_sequence[kNanBufferSize];
 #else
     char n_char_sequence[kNanBufferSize];

@@ -722,6 +722,7 @@ EXPORTS
     ?IsAborted@absl@@YA_NABVStatus@1@@Z
     ?IsAlreadyExists@absl@@YA_NABVStatus@1@@Z
     ?IsCancelled@absl@@YA_NABVStatus@1@@Z
+    ?IsCordBtreeExhaustiveValidationEnabled@cord_internal@absl@@YA_NXZ
     ?IsDataLoss@absl@@YA_NABVStatus@1@@Z
     ?IsDeadlineExceeded@absl@@YA_NABVStatus@1@@Z
     ?IsFailedPrecondition@absl@@YA_NABVStatus@1@@Z
@@ -906,7 +907,6 @@ EXPORTS
     ?RegisterMutexProfiler@absl@@YAXP6AX_J@Z@Z
     ?RegisterMutexTracer@absl@@YAXP6AXPBDPBX_J@Z@Z
     ?RegisterSpinLockProfiler@base_internal@absl@@YAXP6AXPBX_J@Z@Z
-    ?RegisterSymbolizer@absl@@YAXP6A_NPBXPADH@Z@Z
     ?Release@ReleasableMutexLock@absl@@QAEXXZ
     ?Remove@CondVar@absl@@AAEXPAUPerThreadSynch@base_internal@2@@Z
     ?RemoveCrc32cPrefix@absl@@YA?AVcrc32c_t@1@V21@0I@Z
@@ -932,6 +932,7 @@ EXPORTS
     ?SendToLog@LogMessage@log_internal@absl@@AAEXXZ
     ?SetAndroidNativeTag@absl@@YAXPBD@Z
     ?SetCapacityForTesting@CordRepRing@cord_internal@absl@@QAEXI@Z
+    ?SetCordBtreeExhaustiveValidation@cord_internal@absl@@YAX_N@Z
     ?SetCrcCordState@Cord@absl@@AAEXVCrcCordState@crc_internal@2@@Z
     ?SetCurrentThreadIdentity@base_internal@absl@@YAXPAUThreadIdentity@12@P6AXPAX@Z@Z
     ?SetExitOnDFatal@log_internal@absl@@YAX_N@Z
@@ -987,6 +988,7 @@ EXPORTS
     ?StackTraceWorksForTest@debugging_internal@absl@@YA_NXZ
     ?StartsWithIgnoreCase@absl@@YA_NV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@0@Z
     ?StatusCodeToString@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@W4StatusCode@1@@Z
+    ?StatusMessageAsCStr@absl@@YAPBDABVStatus@1@@Z
     ?StderrThreshold@absl@@YA?AW4LogSeverityAtLeast@1@XZ
     ?SteadyClockNow@KernelTimeout@synchronization_internal@absl@@CA_JXZ
     ?StrAppend@absl@@YAXPAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@ABVAlphaNum@1@111@Z
@@ -1156,7 +1158,6 @@ EXPORTS
     ?clear@?$__hash_table@U?$__hash_value_type@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@PBVImpl@time_zone@cctz@time_internal@absl@@@__Cr@std@@V?$__unordered_map_hasher@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@U?$__hash_value_type@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@PBVImpl@time_zone@cctz@time_internal@absl@@@23@U?$hash@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@23@U?$equal_to@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@23@$00@23@V?$__unordered_map_equal@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@U?$__hash_value_type@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@PBVImpl@time_zone@cctz@time_internal@absl@@@23@U?$equal_to@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@23@U?$hash@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@23@$00@23@V?$allocator@U?$__hash_value_type@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@PBVImpl@time_zone@cctz@time_internal@absl@@@__Cr@std@@@23@@__Cr@std@@QAEXXZ
     ?code@Status@absl@@QBE?AW4StatusCode@2@XZ
     ?combine_contiguous@MixingHashState@hash_internal@absl@@SA?AV123@V123@PBEI@Z
-    ?cord_btree_exhaustive_validation@cord_internal@absl@@3U?$atomic@_N@__Cr@std@@A
     ?cord_ring_buffer_enabled@cord_internal@absl@@3U?$atomic@_N@__Cr@std@@A
     ?cycle_clock_source_@CycleClock@base_internal@absl@@0U?$atomic@P6A_JXZ@__Cr@std@@A
     ?day_difference@impl@detail@cctz@time_internal@absl@@YA_J_JCC0CC@Z

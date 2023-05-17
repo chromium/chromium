@@ -103,9 +103,6 @@ ABSL_INTERNAL_ATOMIC_HOOK_ATTRIBUTES absl::base_internal::AtomicHook<void (*)(
 ABSL_INTERNAL_ATOMIC_HOOK_ATTRIBUTES
     absl::base_internal::AtomicHook<void (*)(const char *msg, const void *cv)>
         cond_var_tracer;
-ABSL_INTERNAL_ATOMIC_HOOK_ATTRIBUTES absl::base_internal::AtomicHook<
-    bool (*)(const void *pc, char *out, int out_size)>
-    symbolizer(absl::Symbolize);
 
 }  // namespace
 
@@ -124,10 +121,6 @@ void RegisterMutexTracer(void (*fn)(const char *msg, const void *obj,
 
 void RegisterCondVarTracer(void (*fn)(const char *msg, const void *cv)) {
   cond_var_tracer.Store(fn);
-}
-
-void RegisterSymbolizer(bool (*fn)(const void *pc, char *out, int out_size)) {
-  symbolizer.Store(fn);
 }
 
 namespace {
@@ -1289,7 +1282,7 @@ static inline void DebugOnlyLockLeave(Mutex *mu) {
 
 static char *StackString(void **pcs, int n, char *buf, int maxlen,
                          bool symbolize) {
-  static const int kSymLen = 200;
+  static constexpr int kSymLen = 200;
   char sym[kSymLen];
   int len = 0;
   for (int i = 0; i != n; i++) {
@@ -1297,7 +1290,7 @@ static char *StackString(void **pcs, int n, char *buf, int maxlen,
       return buf;
     size_t count = static_cast<size_t>(maxlen - len);
     if (symbolize) {
-      if (!symbolizer(pcs[i], sym, kSymLen)) {
+      if (!absl::Symbolize(pcs[i], sym, kSymLen)) {
         sym[0] = '\0';
       }
       snprintf(buf + len, count, "%s\t@ %p %s\n", (i == 0 ? "\n" : ""), pcs[i],

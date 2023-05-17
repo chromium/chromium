@@ -32,6 +32,14 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace cord_internal {
 
+// `SetCordBtreeExhaustiveValidation()` can be set to force exhaustive
+// validation in debug assertions, and code that calls `IsValid()`
+// explicitly. By default, assertions should be relatively cheap and
+// AssertValid() can easily lead to O(n^2) complexity as recursive / full tree
+// validation is O(n).
+void SetCordBtreeExhaustiveValidation(bool do_exaustive_validation);
+bool IsCordBtreeExhaustiveValidationEnabled();
+
 class CordRepBtreeNavigator;
 
 // CordRepBtree is as the name implies a btree implementation of a Cordrep tree.
