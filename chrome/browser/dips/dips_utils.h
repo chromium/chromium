@@ -203,4 +203,20 @@ enum class DIPSErrorCode {
   kMaxValue = kRead_BounceTimesIsntSupersetOfStatefulBounces,
 };
 
+// DIPSDeletionAction is used in UMA enum histograms to record the actual
+// deletion action taken on DIPS-eligible (incidental) site.
+//
+// When adding an action to this enum, update the DIPSDeletionAction enum in
+// tools/metrics/histograms/enums.xml as well.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DIPSDeletionAction {
+  kDisallowed = 0,
+  kExceptedAs1p = 1,
+  kExceptedAs3p = 2,
+  kEnforced = 3,
+  kMaxValue = kEnforced,
+};
+
 #endif  // CHROME_BROWSER_DIPS_DIPS_UTILS_H_

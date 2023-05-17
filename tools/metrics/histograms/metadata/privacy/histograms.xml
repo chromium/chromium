@@ -244,9 +244,11 @@ reviewer.
   <summary>
     The number of sites that may have had their storage cleared by DIPS.
 
-    If DIPS deletion is on, this is the number of sites that have had storage
-    cleared by DIPS. Otherwise, this number is the sites that would've had their
-    storage cleared if the DIPS deletion feature was on.
+    If DIPS deletion is on, third-party cookies are blocked, and there are no
+    url-specific exemptions by the user for the latter, then, this is the number
+    of sites that have had storage cleared by DIPS. Otherwise, this number is
+    the sites that would've had their storage cleared if the above conditions
+    were met for all the sites.
 
     This is recorded every time the DIPS timer is fired, which is determined by
     the `timer_delay` parameter of the DIPS feature.
@@ -333,6 +335,20 @@ reviewer.
     of DIPS-eligible sites. This metric will be the result of |time when DIPS
     deletion completed - time when DIPS deletion begins|.
   </summary>
+</histogram>
+
+<histogram name="Privacy.DIPS.Deletion{DIPSCookieMode}"
+    enum="DIPSDeletionAction" expires_after="2023-11-01">
+  <owner>njeunje@chromium.org</owner>
+  <owner>src/chrome/browser/dips/OWNERS</owner>
+  <summary>
+    This is recorded each time we initiate a possible deletion of state on
+    DIPS-eligible (incidental) sites. This metric will represents the action
+    taken based on multiple conditions gating the actual deletion.
+
+    This is recorded with {DIPSCookieMode} profiles.
+  </summary>
+  <token key="DIPSCookieMode" variants="DIPSCookieMode"/>
 </histogram>
 
 <histogram name="Privacy.DIPS.DIPSErrorCodes" enum="DIPSErrorCode"

@@ -27570,6 +27570,13 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="3" label="Primary accounts present but different"/>
 </enum>
 
+<enum name="DIPSDeletionAction">
+  <int value="0" label="Disallowed"/>
+  <int value="1" label="ExceptedAs1p"/>
+  <int value="2" label="ExceptedAs3p"/>
+  <int value="3" label="Enforced"/>
+</enum>
+
 <enum name="DIPSErrorCode">
   <int value="0" label="No DIPSDatabase::Read error was encountered"/>
   <int value="1"

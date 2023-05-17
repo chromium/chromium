@@ -102,6 +102,19 @@ inline void UmaHistogramDeletionLatency(base::Time deletion_start) {
                                  base::Time::Now() - deletion_start);
 }
 
+inline void UmaHistogramClearedSitesCount(DIPSCookieMode mode, int size) {
+  base::UmaHistogramCounts1000(base::StrCat({"Privacy.DIPS.ClearedSitesCount",
+                                             GetHistogramSuffix(mode)}),
+                               size);
+}
+
+inline void UmaHistogramDeletion(DIPSCookieMode mode,
+                                 DIPSDeletionAction action) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Privacy.DIPS.Deletion", GetHistogramSuffix(mode)}),
+      action);
+}
+
 void OnDeletionFinished(base::OnceClosure finished_callback,
                         base::Time deletion_start) {
   UmaHistogramDeletionLatency(deletion_start);
@@ -353,6 +366,15 @@ void DIPSService::RecordBounce(const GURL& url,
   // deleting its storage. The exemption overrides any bounces from non-exempted
   // sites.
   if (Has3PCExceptionAs1P(initial_url) || Has3PCExceptionAs1P(final_url)) {
+    // These records indicate sites that could've had their state deleted
+    // provided their grace period expired. But are at the moment excepted
+    // following `Has3PCExceptionAs1P()` of either `initial_url` or `final_url`.
+    if ((dips::kTriggeringAction.Get() == DIPSTriggeringAction::kStatefulBounce
+             ? stateful
+             : true)) {
+      UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kExceptedAs1p);
+    }
+
     const std::set<std::string> site_to_clear{GetSiteForDIPS(url)};
     // Don't clear the row if the tracker has interaction history, since we
     // should preserve that context for future bounces.
@@ -434,15 +456,17 @@ void DIPSService::DeleteDIPSEligibleState(
     DeletedSitesCallback callback,
     base::Time deletion_start,
     std::vector<std::string> sites_to_clear) {
-  base::UmaHistogramCounts1000(
-      base::StrCat({"Privacy.DIPS.ClearedSitesCount",
-                    GetHistogramSuffix(GetCookieMode())}),
-      sites_to_clear.size());
-
   if (sites_to_clear.empty()) {
+    UmaHistogramClearedSitesCount(GetCookieMode(), sites_to_clear.size());
     std::move(callback).Run(std::vector<std::string>());
     return;
   }
+
+  if (IsShuttingDown()) {
+    return;
+  }
+
+  UmaHistogramClearedSitesCount(GetCookieMode(), sites_to_clear.size());
 
   for (const auto& site : sites_to_clear) {
     const ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForDipsSite(
@@ -452,19 +476,17 @@ void DIPSService::DeleteDIPSEligibleState(
   }
 
   base::OnceClosure finish_callback;
-
   if (ShouldBlockThirdPartyCookies() && dips::kDeletionEnabled.Get()) {
-    if (IsShuttingDown()) {
-      return;
-    }
-
     std::vector<std::string> excepted_sites;
     std::vector<std::string> non_excepted_sites;
 
     for (const auto& site : sites_to_clear) {
       if (Has3PCExceptionAs3P(site)) {
+        UmaHistogramDeletion(GetCookieMode(),
+                             DIPSDeletionAction::kExceptedAs3p);
         excepted_sites.push_back(site);
       } else {
+        UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kEnforced);
         non_excepted_sites.push_back(site);
       }
     }
@@ -485,6 +507,10 @@ void DIPSService::DeleteDIPSEligibleState(
                                std::move(non_excepted_sites)));
     }
   } else {
+    for (auto it = sites_to_clear.begin(); it != sites_to_clear.end(); it++) {
+      UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kDisallowed);
+    }
+
     finish_callback = base::BindOnce(std::move(callback),
                                      std::vector<std::string>(sites_to_clear));
 
