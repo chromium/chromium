@@ -76,6 +76,9 @@ using RemoteObjectIdTypeRaw = std::u16string;
 // The more convenient type that we use
 using RemoteObjectIdType = WTF::String;
 
+static const char REPLAY_CDT_PAUSE_OBJECT_GROUP[] =
+    "REPLAY_CDT_PAUSE_OBJECT_GROUP";
+
 // Script which defines handlers for recorder commands, and is only loaded while
 // replaying.
 const char* gReplayScript = R""""(
@@ -110,6 +113,9 @@ const {
   // network
   getCurrentNetworkRequestEvent,
   getCurrentNetworkStreamData,
+
+  // constants
+  REPLAY_CDT_PAUSE_OBJECT_GROUP
 } = __RECORD_REPLAY_ARGUMENTS__;
 
 const gSourceMapData = new Map();
@@ -482,7 +488,9 @@ function Target_topFrameLocation() {
  */
 function getStackFrames() {
   // NOTE: this is a custom command we added in `src/inspector/v8-debugger-agent-impl.cc`
-  const { callFrames } = sendMessage("Debugger.getCallFrames");
+  const { callFrames } = sendMessage("Debugger.getCallFrames", {
+    objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
+  });
   return callFrames;
 }
 
@@ -549,6 +557,7 @@ function Pause_evaluateInFrame({ frameId, expression }) {
       {
         callFrameId: frame.callFrameId,
         expression,
+        objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
       }
     );
   }
@@ -557,7 +566,10 @@ function Pause_evaluateInFrame({ frameId, expression }) {
 function Pause_evaluateInGlobal({ expression }) {
   let rv = null;
   try {
-    rv = sendMessage("Runtime.evaluate", { expression });
+    rv = sendMessage("Runtime.evaluate", {
+      expression,
+      objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
+    });
   }
   catch (err) {
     log(`[RuntimeError] evaluateInGlobal err: ${err?.stack || err}`);
@@ -578,7 +590,9 @@ function Pause_getAllFrames() {
 }
 
 function Pause_getExceptionValue() {
-  const rv = sendMessage("Debugger.getPendingException", {});
+  const rv = sendMessage("Debugger.getPendingException", {
+    objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
+  });
   return { exception: buildRrpObjectFromCdpObject(rv.exception), data: {} };
 }
 
@@ -594,6 +608,7 @@ function Pause_getObjectProperty({ object, name }) {
     {
       functionDeclaration: `function() { return this["${name}"] }`,
       objectId: cdpObj.objectId,
+      objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
     }
   );
   return buildRrpObjectResult(rv);
@@ -719,6 +734,11 @@ function clearPauseDataCallback() {
     gLastBoundingClientRectsByNodeRrpId.clear();
     gCssRulesByNodeRrpId.clear();
     gLastRrpId = 0;
+
+    // RUN-1832
+    sendMessage("Runtime.releaseObjectGroup", {
+      objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP,
+    });
   } catch (e) {
     log(`[RuntimeError] clearPauseDataCallback exception: ${e}`);
   }
@@ -1180,7 +1200,8 @@ ProtocolObjectPreview.prototype = {
         ownProperties: false,
         generatePreview: false,
         pageIndex: this.pageIndex,
-        pageSize: this.pageSize
+        pageSize: this.pageSize,
+        objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
       });
     }
     else {
@@ -1441,7 +1462,8 @@ function previewSetMap(cdpProperties) {
     ownProperties: true,
     generatePreview: false,
     pageIndex: this.pageIndex,
-    pageSize: this.pageSize
+    pageSize: this.pageSize,
+    objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
   }).result;
 
   for (const entry of entries) {
@@ -1449,7 +1471,8 @@ function previewSetMap(cdpProperties) {
       const entryProperties = sendMessage("Runtime.getProperties", {
         objectId: entry.value.objectId,
         ownProperties: true,
-        generatePreview: false
+        generatePreview: false,
+        objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
       }).result;
       const key = entryProperties.find(eprop => eprop.name == "key");
       const value = entryProperties.find(eprop => eprop.name == "value");
@@ -1643,6 +1666,7 @@ function createRrpScope(scopeId) {
       objectId: cdpScope.object.objectId,
       ownProperties: true,
       generatePreview: false,
+      objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
     }).result;
     for (const { name, value: cdpProp } of properties) {
       const rrpProp = buildRrpObjectFromCdpObject(cdpProp);
@@ -3788,8 +3812,7 @@ static void fromJsMakeDebuggeeValue(
   auto context = isolate->GetCurrentContext();
   auto value = args[0];
 
-  const String object_group(
-      "console");  // NOTE: object_group is used for cleaning up
+  const String object_group(REPLAY_CDT_PAUSE_OBJECT_GROUP);
   auto generatePreview = false;
 
   // NOTE: `wrapObject` always creates a new `RemoteObject` and binds it
@@ -4704,8 +4727,10 @@ void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
   v8::Local<v8::Object> args = v8::Object::New(isolate);
   DefineProperty(isolate, context->Global(), "__RECORD_REPLAY_ARGUMENTS__", args);
 
-  SetFunctionProperty(isolate, args, "log",
-                      LogCallback);
+  DefineProperty(isolate, args, "REPLAY_CDT_PAUSE_OBJECT_GROUP",
+                 ToV8String(isolate, REPLAY_CDT_PAUSE_OBJECT_GROUP));
+
+  SetFunctionProperty(isolate, args, "log", LogCallback);
 
   // CDP debugger functionality
   SetFunctionProperty(isolate, args, "setCDPMessageCallback",
