@@ -368,6 +368,8 @@ static constexpr const char* const kChromeUrls[] = {
     // TODO(crbug.com/1400799): Add CrOS-only WebUI URLs here as TrustedTypes
     // are deployed to more WebUIs.
 
+    "chrome://account-manager-error",
+    "chrome://account-migration-welcome",
     // TODO(crbug.com/1102129): DCHECK failure in
     // ArcGraphicsTracingHandler::ArcGraphicsTracingHandler.
     // "chrome://arc-graphics-tracing",
