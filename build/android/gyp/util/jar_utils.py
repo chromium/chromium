@@ -3,11 +3,12 @@
 # found in the LICENSE file.
 """Methods to run tools over jars and cache their output."""
 
+import dataclasses
+import functools
 import logging
-import os
 import pathlib
 import zipfile
-from typing import List, Optional, Set
+from typing import List, Optional
 
 from util import build_utils
 
@@ -19,13 +20,6 @@ _IGNORED_JAR_PATHS = [
     # which fail jdeps (not sure why).
     'third_party/android_deps/libs/org_ow2_asm_asm',
 ]
-
-
-def _should_ignore(jar_path: pathlib.Path) -> bool:
-  for ignored_jar_path in _IGNORED_JAR_PATHS:
-    if ignored_jar_path in str(jar_path):
-      return True
-  return False
 
 
 def _is_relative_to(path: pathlib.Path, other_path: pathlib.Path):
@@ -42,33 +36,58 @@ def _is_relative_to(path: pathlib.Path, other_path: pathlib.Path):
     return False
 
 
-def _calculate_cache_path(filepath: pathlib.Path, src_path: pathlib.Path,
-                          build_output_dir: pathlib.Path) -> pathlib.Path:
-  """Return a cache path for jdeps that is always in the output dir.
+@dataclasses.dataclass
+class CacheFile:
+  jar_path: pathlib.Path
+  cache_suffix: str
+  build_output_dir: pathlib.Path
+  src_dir: pathlib.Path = _SRC_PATH
 
-    Also ensures that the cache file's parent directories exist if the original
-    file was not already in the output dir.
+  @functools.cached_property
+  def cache_path(self):
+    """Return a cache path for the jar that is always in the output dir.
 
-    Example:
-    - Given:
-      src_path = /cr/src
-      build_output_dir = /cr/src/out/Debug
-    - filepath = /cr/src/out/Debug/a/d/file.jar
-      Returns: /cr/src/out/Debug/a/d/file.jdeps_cache
-    - filepath = /cr/src/out/Debug/../../b/c/file.jar
-      Returns: /cr/src/out/Debug/jdeps_cache/b/c/file.jdeps_cache
-    """
-  filepath = filepath.resolve(strict=True)
-  if _is_relative_to(filepath, build_output_dir):
-    return filepath.with_suffix('.jdeps_cache')
-  assert src_path in filepath.parents, f'Jar file not under src: {filepath}'
-  jdeps_cache_dir = build_output_dir / 'jdeps_cache'
-  relpath = filepath.relative_to(src_path)
-  cache_path = jdeps_cache_dir / relpath.with_suffix('.jdeps_cache')
-  # The parent dirs may not exist since this path is re-parented from //src to
-  # //src/out/Dir.
-  cache_path.parent.mkdir(parents=True, exist_ok=True)
-  return cache_path
+      Example:
+      - Given:
+        src_path = /cr/src
+        build_output_dir = /cr/src/out/Debug
+        cache_suffix = .jdeps
+      - filepath = /cr/src/out/Debug/a/d/file.jar
+        Returns: /cr/src/out/Debug/a/d/file.jar.jdeps
+      - filepath = /cr/src/out/b/c/file.jar
+        Returns: /cr/src/out/Debug/gen/b/c/file.jar.jdeps
+      - filepath = /random/path/file.jar
+        Returns: /cr/src/out/Debug/gen/abs/random/path/file.jar.jdeps
+      """
+    path = self.jar_path.with_suffix(self.jar_path.suffix + self.cache_suffix)
+    if _is_relative_to(path, self.build_output_dir):
+      # already in the outdir, no need to adjust cache path
+      return path
+    if _is_relative_to(self.jar_path, _SRC_PATH):
+      return self.build_output_dir / 'gen' / path.relative_to(_SRC_PATH)
+    return self.build_output_dir / 'gen/abs' / path.relative_to(path.anchor)
+
+  def is_valid(self):
+    return (self.cache_path.exists() and self.jar_path.exists()
+            and self.cache_path.stat().st_mtime > self.jar_path.stat().st_mtime)
+
+  def read(self):
+    with open(self.cache_path) as f:
+      return f.read()
+
+  def write(self, content: str):
+    # If the jar file is in //src but not in the output dir or outside //src
+    # then the reparented dirs within the output dir need to be created first.
+    self.cache_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(self.cache_path, 'w') as f:
+      f.write(content)
+
+
+def _should_ignore(jar_path: pathlib.Path) -> bool:
+  for ignored_jar_path in _IGNORED_JAR_PATHS:
+    if ignored_jar_path in str(jar_path):
+      return True
+  return False
 
 
 def run_jdeps(filepath: pathlib.Path,
@@ -91,11 +110,12 @@ def run_jdeps(filepath: pathlib.Path,
   if not filepath.exists() or _should_ignore(filepath):
     return None
 
-  cache_path = _calculate_cache_path(filepath, src_path, build_output_dir)
-  if (cache_path.exists()
-      and cache_path.stat().st_mtime > filepath.stat().st_mtime):
-    with cache_path.open() as f:
-      return f.read()
+  cache_file = CacheFile(jar_path=filepath,
+                         cache_suffix='.jdeps_cache',
+                         build_output_dir=build_output_dir,
+                         src_dir=src_path)
+  if cache_file.is_valid():
+    return cache_file.read()
 
   # Cache either doesn't exist or is older than the jar file.
   output = build_utils.CheckOutput([
@@ -105,60 +125,39 @@ def run_jdeps(filepath: pathlib.Path,
       'base',
       str(filepath),
   ])
-  logging.debug('Writing output to cache.')
-  with cache_path.open('w') as f:
-    f.write(output)
+
+  cache_file.write(output)
   return output
 
 
-def _read_jar_namelist(abs_build_output_dir: pathlib.Path,
-                       abs_jar_path: pathlib.Path) -> List[str]:
-  """Returns list of jar members by name."""
-
-  # Caching namelist speeds up lookup_dep.py runtime by 1.5s.
-  cache_path = abs_jar_path.with_suffix(abs_jar_path.suffix + '.namelist_cache')
-  if _is_relative_to(cache_path, abs_build_output_dir):
-    # already in the outdir, no need to adjust cache path
-    pass
-  elif _is_relative_to(abs_jar_path, _SRC_PATH):
-    cache_path = (abs_build_output_dir / 'gen' /
-                  cache_path.relative_to(_SRC_PATH))
-  else:
-    cache_path = (abs_build_output_dir / 'gen' / 'abs' /
-                  cache_path.relative_to(cache_path.anchor))
-
-  if (cache_path.exists()
-      and os.path.getmtime(cache_path) > os.path.getmtime(abs_jar_path)):
-    with open(cache_path) as f:
-      return [s.strip() for s in f.readlines()]
-
-  with zipfile.ZipFile(abs_jar_path) as z:
-    namelist = z.namelist()
-
-  cache_path.parent.mkdir(parents=True, exist_ok=True)
-  with open(cache_path, 'w') as f:
-    f.write('\n'.join(namelist))
-
-  return namelist
-
-
 def extract_full_class_names_from_jar(abs_build_output_dir: pathlib.Path,
-                                      abs_jar_path: pathlib.Path) -> Set[str]:
+                                      abs_jar_path: pathlib.Path) -> List[str]:
   """Returns set of fully qualified class names in passed-in jar."""
+
+  cache_file = CacheFile(jar_path=abs_jar_path,
+                         cache_suffix='.class_name_cache',
+                         build_output_dir=abs_build_output_dir)
+  if cache_file.is_valid():
+    return cache_file.read().splitlines()
+
   out = set()
-  jar_namelist = _read_jar_namelist(abs_build_output_dir, abs_jar_path)
-  for zip_entry_name in jar_namelist:
-    if not zip_entry_name.endswith('.class'):
-      continue
-    # Remove .class suffix
-    full_java_class = zip_entry_name[:-6]
+  with zipfile.ZipFile(abs_jar_path) as z:
+    for zip_entry_name in z.namelist():
+      if not zip_entry_name.endswith('.class'):
+        continue
+      # Remove .class suffix
+      full_java_class = zip_entry_name[:-6]
 
-    full_java_class = full_java_class.replace('/', '.')
-    dollar_index = full_java_class.find('$')
-    if dollar_index >= 0:
-      full_java_class = full_java_class[0:dollar_index]
+      # Remove inner class names after the first $.
+      full_java_class = full_java_class.replace('/', '.')
+      dollar_index = full_java_class.find('$')
+      if dollar_index >= 0:
+        full_java_class = full_java_class[0:dollar_index]
 
-    out.add(full_java_class)
+      out.add(full_java_class)
+  out = list(out)
+
+  cache_file.write('\n'.join(out))
   return out
 
 
@@ -168,7 +167,7 @@ def parse_full_java_class(source_path: pathlib.Path) -> str:
     logging.warning('"%s" does not end in .java or .kt.', source_path)
     return ''
 
-  directory_path: pathlib.Path = source_path.parent
+  directory_path = source_path.parent
   package_list_reversed = []
   for part in reversed(directory_path.parts):
     if part == 'java':
