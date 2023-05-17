@@ -1,6 +1,6 @@
 (async function(testRunner) {
   const {session, dp, page} = await testRunner.startBlank(
-      `Tests setting a regexp breakpoint and disconnect.`);
+      `Tests debugger disconnect while removing a regexp breakpoint.`);
 
   await dp.Target.setDiscoverTargets({discover: true});
   await dp.Debugger.enable();
@@ -10,15 +10,18 @@
     await session.evaluateAsync(`//# sourceURL=${name}${i}.js`);
   }
 
-  // [crbug.com/1422830] Disconnecting the debugger while
-  // in setBreakpointByUrl should not crash. Note that setBreakpointUrl
-  // with regexp can be interrupted in v8; let us try to disconnect
-  // during that interrupt.
-  dp.Debugger.setBreakpointByUrl(
+  const {result: {breakpointId}} = await dp.Debugger.setBreakpointByUrl(
       {lineNumber: 5, columnNumber: 0, urlRegex: '^(0+)*x$'});
   testRunner.log('Called setBreakpointByUrl (with regex)');
 
-  session.disconnect();
+  // [crbug.com/1426163] Disconnecting the debugger while
+  // in removeBreakpoint should not crash. Note that removeBreakpoint
+  // with regexp can be interrupted in v8; let us try to disconnect
+  // during that interrupt.
+  dp.Debugger.removeBreakpoint({breakpointId});
+  testRunner.log('Called removeBreakpoint (with regex)');
+
+  await session.disconnect();
   testRunner.log('Disconnected');
 
   // Let's try to connect to the page to make sure it is still alive.
