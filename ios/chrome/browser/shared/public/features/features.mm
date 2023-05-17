@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/shared/public/features/features.h"
 
+#import "ui/base/device_form_factor.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -239,6 +241,10 @@ BASE_FEATURE(kBottomOmniboxSteadyState,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsBottomOmniboxSteadyStateEnabled() {
+  // Bottom omnibox is only available on phones.
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
+    return false;
+  }
   return base::FeatureList::IsEnabled(kBottomOmniboxSteadyState);
 }
 

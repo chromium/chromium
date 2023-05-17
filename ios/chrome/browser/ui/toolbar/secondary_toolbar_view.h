@@ -15,6 +15,13 @@
 // containing the controls displayed only on specific size classes.
 @interface SecondaryToolbarView : UIView<AdaptiveToolbarView>
 
+// StackView containing the navigation buttons from `ToolbarButtons`.
+@property(nonatomic, strong, readonly) UIStackView* buttonStackView;
+
+// Constraint for the top of the location bar.
+@property(nonatomic, strong, readwrite)
+    NSLayoutConstraint* locationBarTopConstraint;
+
 // Initialize this View with the button `factory`.
 - (instancetype)initWithButtonFactory:(ToolbarButtonFactory*)factory
     NS_DESIGNATED_INITIALIZER;
