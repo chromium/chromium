@@ -17,7 +17,7 @@ Refer to README.md for content description and update process.
  <item id="android_web_socket" added_in_milestone="65" content_hash_code="00bbd661" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/device/android_web_socket.cc" />
  <item id="auction_downloader" added_in_milestone="92" content_hash_code="0713f212" os_list="linux,windows,chromeos,android" file_path="content/services/auction_worklet/auction_downloader.cc" />
  <item id="auction_report_sender" added_in_milestone="92" content_hash_code="029b766e" os_list="linux,windows,chromeos,android" file_path="content/browser/interest_group/interest_group_manager_impl.cc" />
- <item id="autofill_image_fetcher_card_art_image" added_in_milestone="93" content_hash_code="0177b54c" os_list="linux,windows,chromeos,android" file_path="chrome/browser/autofill/autofill_image_fetcher_impl.cc" />
+ <item id="autofill_image_fetcher_card_art_image" added_in_milestone="93" content_hash_code="038b8696" os_list="linux,windows,chromeos,android" file_path="components/autofill/core/browser/ui/autofill_image_fetcher.cc" />
  <item id="autofill_query" added_in_milestone="62" content_hash_code="00ed7a4b" os_list="linux,windows,chromeos,android" file_path="components/autofill/core/browser/autofill_download_manager.cc" />
  <item id="autofill_upload" added_in_milestone="62" content_hash_code="0698270b" os_list="linux,windows,chromeos,android" file_path="components/autofill/core/browser/autofill_download_manager.cc" />
  <item id="backdrop_collection_images_download" added_in_milestone="68" content_hash_code="03c0de0e" os_list="linux,windows,chromeos" file_path="chrome/browser/search/background/ntp_background_service.cc" />

@@ -7,19 +7,7 @@
 
 #include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
 
-#include "base/barrier_callback.h"
-#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace gfx {
-class Image;
-}  // namespace gfx
-
-namespace image_fetcher {
-class ImageFetcher;
-struct RequestMetadata;
-}  // namespace image_fetcher
 
 class ProfileKey;
 
@@ -36,18 +24,11 @@ class AutofillImageFetcherImpl : public AutofillImageFetcher,
   ~AutofillImageFetcherImpl() override;
 
   // AutofillImageFetcher:
-  void FetchImagesForURLs(
-      base::span<const GURL> card_art_urls,
-      base::OnceCallback<void(const CardArtImageData&)> callback) override;
-
-  // Called when an image is fetched for the `operation` instance.
-  void OnCardArtImageFetched(
-      base::OnceCallback<void(std::unique_ptr<CreditCardArtImage>)>
-          barrier_callback,
-      const GURL& card_art_url,
-      const absl::optional<base::TimeTicks>& fetch_image_request_timestamp,
-      const gfx::Image& card_art_image,
-      const image_fetcher::RequestMetadata& metadata);
+  image_fetcher::ImageFetcher* GetImageFetcher() override;
+  base::WeakPtr<AutofillImageFetcher> GetWeakPtr() override;
+  GURL ResolveCardArtURL(const GURL& card_art_url) override;
+  gfx::Image ResolveCardArtImage(const GURL& card_art_url,
+                                 const gfx::Image& card_art_image) override;
 
   // Returns the image with a grey overlay mask.
   static gfx::Image ApplyGreyOverlay(const gfx::Image& image);
@@ -57,12 +38,6 @@ class AutofillImageFetcherImpl : public AutofillImageFetcher,
   raw_ptr<image_fetcher::ImageFetcher> image_fetcher_ = nullptr;
 
  private:
-  // Helper function to fetch art image for card given the `card_art_url`.
-  virtual void FetchImageForURL(
-      base::OnceCallback<void(std::unique_ptr<CreditCardArtImage>)>
-          barrier_callback,
-      const GURL& card_art_url);
-
   void InitializeImageFetcher();
 
   raw_ptr<ProfileKey> key_;
