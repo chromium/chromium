@@ -59,6 +59,7 @@ class VideoConferenceManagerClientImpl;
 namespace ash {
 
 class AccessibilityEventRewriterDelegateImpl;
+class ApnMigrator;
 class ArcKioskAppManager;
 class AudioSurveyHandler;
 class AuthParts;
@@ -293,6 +294,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<CameraGeneralSurveyHandler> camera_general_survey_handler_;
 
   std::unique_ptr<memory::ZramWritebackController> zram_writeback_controller_;
+
+  std::unique_ptr<ApnMigrator> apn_migrator_;
 
   // Only temporarily owned, will be null after PostCreateMainMessageLoop().
   // The Accessor is constructed before initialization of FeatureList and should
