@@ -316,6 +316,17 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.NumUniqueSettingsChanged.PerSession"
+    units="UniqueChanges" expires_after="2024-05-15">
+  <owner>moteva@google.com</owner>
+  <owner>wesokuhara@google.com</owner>
+  <owner>cros-settings@google.com</owner>
+  <summary>
+    Records the number of unique settings changed by a user between opening and
+    closing the settings app. Records on each window close.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.OsBannerInteraction"
     enum="CrosSettingsOsBannerInteraction" expires_after="2020-12-20">
   <obsolete>

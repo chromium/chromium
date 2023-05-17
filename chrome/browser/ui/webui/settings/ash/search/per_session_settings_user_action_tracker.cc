@@ -35,8 +35,11 @@ void LogDurationMetric(const char* metric_name, base::TimeDelta duration) {
 PerSessionSettingsUserActionTracker::PerSessionSettingsUserActionTracker()
     : metric_start_time_(base::TimeTicks::Now()) {}
 
-PerSessionSettingsUserActionTracker::~PerSessionSettingsUserActionTracker() =
-    default;
+PerSessionSettingsUserActionTracker::~PerSessionSettingsUserActionTracker() {
+  base::UmaHistogramCounts1000(
+      "ChromeOS.Settings.NumUniqueSettingsChanged.PerSession",
+      changed_settings_.size());
+}
 
 void PerSessionSettingsUserActionTracker::RecordPageFocus() {
   if (last_blur_timestamp_.is_null())
@@ -73,7 +76,11 @@ void PerSessionSettingsUserActionTracker::RecordSearch() {
   ++num_searches_since_start_time_;
 }
 
-void PerSessionSettingsUserActionTracker::RecordSettingChange() {
+void PerSessionSettingsUserActionTracker::RecordSettingChange(
+    absl::optional<chromeos::settings::mojom::Setting> setting) {
+  if (setting.has_value()) {
+    changed_settings_.insert(setting.value());
+  }
   base::TimeTicks now = base::TimeTicks::Now();
 
   if (!last_record_setting_changed_timestamp_.is_null()) {

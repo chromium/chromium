@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_PER_SESSION_SETTINGS_USER_ACTION_TRACKER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SEARCH_PER_SESSION_SETTINGS_USER_ACTION_TRACKER_H_
 
+#include <set>
+
 #include "base/time/time.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::settings {
 
@@ -27,7 +31,17 @@ class PerSessionSettingsUserActionTracker {
   void RecordClick();
   void RecordNavigation();
   void RecordSearch();
-  void RecordSettingChange();
+  // TODO (b/282233232): make 'setting' a required parameter once the
+  // corresponding function 'RecordSettingChange()' in ts files have been
+  // backfilled with the information on what specific Setting has been changed.
+  // In the meantime, this parameter is optional, and if it is not provided, it
+  // will be set to nullopt to indicate that it has not been initialized.
+  void RecordSettingChange(absl::optional<chromeos::settings::mojom::Setting>
+                               setting = absl::nullopt);
+  const std::set<chromeos::settings::mojom::Setting>&
+  GetChangedSettingsForTesting() {
+    return changed_settings_;
+  }
 
  private:
   friend class PerSessionSettingsUserActionTrackerTest;
@@ -56,6 +70,9 @@ class PerSessionSettingsUserActionTracker {
   // The last time at which a page blur event was received; if no blur events
   // have been received, this field is_null().
   base::TimeTicks last_blur_timestamp_;
+
+  // Tracks which settings have been changed in this user session
+  std::set<chromeos::settings::mojom::Setting> changed_settings_;
 };
 
 }  // namespace ash::settings
