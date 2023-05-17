@@ -157,14 +157,15 @@ def _GenerateStubsAndAssert(options, native_sources, java_sources,
   java_only = java_sources - native_sources
   # Using stub_only because we just need this to do a boolean check to see if
   # the files have JNI - we don't need any actual output.
-  java_only = {
-      f
-      for f in java_only
+  java_only = [
+      f for f in java_only
       if _DictForPath(options,
                       f,
                       stub_only=True,
                       cached_results_for_stubs=cached_results_for_stubs)[0]
-  }
+  ]
+  # Sorting is required for determinism: crbug.com/1446011.
+  java_only = sorted(java_only)
   failed = False
   if not options.add_stubs_for_missing_native and java_only:
     failed = True

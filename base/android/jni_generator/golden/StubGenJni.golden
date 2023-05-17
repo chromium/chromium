@@ -52,6 +52,26 @@ public class GEN_JNI {
       // Hashed name: Java_J_N_MaWxcVuD
       public static native void org_chromium_example_jni_1generator_TinySample2_test();
 
+    public static void org_chromium_example_jni_1generator_SampleProxyEdgeCases_foo_1_1weirdly_1_1escaped_1name1() {
+        throw new RuntimeException("Stub - not implemented!");
+    }
+
+    public static String[][] org_chromium_example_jni_1generator_SampleProxyEdgeCases_crazyTypes(int[] a, Object[][] b) {
+        throw new RuntimeException("Stub - not implemented!");
+    }
+
+    public static void org_chromium_example_jni_1generator_SampleProxyEdgeCases_addStructB(Object caller, Object b) {
+        throw new RuntimeException("Stub - not implemented!");
+    }
+
+    public static void org_chromium_example_jni_1generator_SampleProxyEdgeCases_setStringBuilder(Object sb) {
+        throw new RuntimeException("Stub - not implemented!");
+    }
+
+    public static void org_chromium_example_jni_1generator_SampleProxyEdgeCases_setBool(Object b, Object i) {
+        throw new RuntimeException("Stub - not implemented!");
+    }
+
     public static void org_chromium_example_jni_1generator_TinySample_foo() {
         throw new RuntimeException("Stub - not implemented!");
     }

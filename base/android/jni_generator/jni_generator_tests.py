@@ -261,7 +261,9 @@ class Tests(BaseTest):
 
   def testStubRegistration(self):
     input_java_files = ['SampleForAnnotationProcessor.java']
-    stubs_java_files = input_java_files + ['TinySample.java']
+    stubs_java_files = input_java_files + [
+        'TinySample.java', 'SampleProxyEdgeCases.java'
+    ]
     extra_input_java_files = ['TinySample2.java']
     options = JniRegistrationGeneratorOptions()
     options.add_stubs_for_missing_native = True
