@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -312,7 +313,9 @@ KeyboardCapability::DeviceType IdentifyKeyboardType(
   if (keyboard_device.type == INPUT_DEVICE_INTERNAL) {
     VLOG(1) << "Internal keyboard '" << keyboard_device.name
             << "' connected: id=" << keyboard_device.id;
-    return KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
+    return ash::switches::IsRevenBranding()
+               ? KeyboardCapability::DeviceType::kDeviceInternalRevenKeyboard
+               : KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
   }
 
   if (has_chromeos_top_row) {
@@ -750,16 +753,7 @@ std::vector<mojom::ModifierKey> KeyboardCapability::GetModifierKeys(
       mojom::ModifierKey::kAlt,
   };
 
-  const KeyboardInfo* keyboard_info = GetKeyboardInfo(keyboard);
-  if (!keyboard_info) {
-    return modifier_keys;
-  }
-
-  // CapsLock exists on all non-chromeos keyboards.
-  if (keyboard_info->device_type !=
-          KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard &&
-      keyboard_info->device_type !=
-          KeyboardCapability::DeviceType::kDeviceInternalKeyboard) {
+  if (HasCapsLockKey(keyboard)) {
     modifier_keys.push_back(mojom::ModifierKey::kCapsLock);
   }
 
@@ -976,6 +970,10 @@ bool KeyboardCapability::HasAssistantKeyOnAnyKeyboard() const {
     }
   }
   return false;
+}
+
+bool KeyboardCapability::HasCapsLockKey(const KeyboardDevice& keyboard) const {
+  return !IsChromeOSKeyboard(keyboard);
 }
 
 void KeyboardCapability::OnDeviceListsComplete() {

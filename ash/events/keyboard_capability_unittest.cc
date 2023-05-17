@@ -8,11 +8,13 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/events/keyboard_capability_delegate_impl.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/ranges/algorithm.h"
@@ -453,6 +455,21 @@ TEST_F(KeyboardCapabilityTest, TestRemoveDevicesFromList) {
 
   ui::DeviceDataManagerTestApi().SetKeyboardDevices({});
   ASSERT_EQ(0u, keyboard_capability_->keyboard_info_map().size());
+}
+
+TEST_F(KeyboardCapabilityTest, TestIdentifyRevenKeyboard) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kRevenBranding);
+
+  ui::KeyboardDevice internal_keyboard(
+      /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/"internal keyboard");
+  internal_keyboard.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard,
+                                          kKbdTopRowLayoutUnspecified);
+
+  EXPECT_EQ(ui::KeyboardCapability::DeviceType::kDeviceInternalRevenKeyboard,
+            keyboard_capability_->GetDeviceType(internal_keyboard));
 }
 
 TEST_F(KeyboardCapabilityTest, TestIsTopRowKey) {

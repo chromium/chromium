@@ -33,8 +33,10 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/known_user.h"
+#include "device/udev_linux/fake_udev_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
@@ -50,7 +52,7 @@ const ui::KeyboardDevice kSampleKeyboardInternal(5,
                                                  ui::INPUT_DEVICE_INTERNAL,
                                                  "kSampleKeyboardInternal",
                                                  "",
-                                                 base::FilePath(),
+                                                 base::FilePath("path5"),
                                                  0x1111,
                                                  0x1111,
                                                  0);
@@ -61,7 +63,7 @@ const ui::KeyboardDevice kSampleKeyboardUsb(15,
                                             ui::INPUT_DEVICE_USB,
                                             "kSampleKeyboardUsb",
                                             "",
-                                            base::FilePath(),
+                                            base::FilePath("path15"),
                                             0x1111,
                                             0x2222,
                                             0);
@@ -69,7 +71,7 @@ const ui::KeyboardDevice kSampleKeyboardUsb2(20,
                                              ui::INPUT_DEVICE_USB,
                                              "kSampleKeyboardUsb2",
                                              "",
-                                             base::FilePath(),
+                                             base::FilePath("path20"),
                                              0x1111,
                                              0x3333,
                                              0);
@@ -105,6 +107,45 @@ const AccountId account_id_1 =
     AccountId::FromUserEmailGaiaId(kUserEmail1, kUserEmail1);
 const AccountId account_id_2 =
     AccountId::FromUserEmailGaiaId(kUserEmail2, kUserEmail2);
+
+constexpr char kKbdTopRowPropertyName[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
+constexpr char kKbdTopRowLayout1Tag[] = "1";
+
+class FakeDeviceManager {
+ public:
+  FakeDeviceManager() = default;
+  FakeDeviceManager(const FakeDeviceManager&) = delete;
+  FakeDeviceManager& operator=(const FakeDeviceManager&) = delete;
+  ~FakeDeviceManager() = default;
+
+  // Add a fake keyboard to DeviceDataManagerTestApi and provide layout info to
+  // fake udev.
+  void AddFakeKeyboard(const ui::KeyboardDevice& fake_keyboard,
+                       const std::string& layout) {
+    fake_keyboard_devices_.push_back(fake_keyboard);
+
+    std::map<std::string, std::string> sysfs_properties;
+    std::map<std::string, std::string> sysfs_attributes;
+    sysfs_properties[kKbdTopRowPropertyName] = layout;
+    fake_udev_.AddFakeDevice(fake_keyboard.name, fake_keyboard.sys_path.value(),
+                             /*subsystem=*/"input", /*devnode=*/absl::nullopt,
+                             /*devtype=*/absl::nullopt,
+                             std::move(sysfs_attributes),
+                             std::move(sysfs_properties));
+
+    ui::DeviceDataManagerTestApi().SetKeyboardDevices(fake_keyboard_devices_);
+  }
+
+  void RemoveAllDevices() {
+    fake_udev_.Reset();
+    fake_keyboard_devices_.clear();
+  }
+
+ private:
+  testing::FakeUdevLoader fake_udev_;
+  std::vector<ui::KeyboardDevice> fake_keyboard_devices_;
+};
+
 }  // namespace
 
 class FakeKeyboardPrefHandler : public KeyboardPrefHandler {
@@ -218,6 +259,7 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
     scoped_feature_list_.InitAndEnableFeature(
         features::kInputDeviceSettingsSplit);
     NoSessionAshTestBase::SetUp();
+    fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
 
     // Resetter must be created before the controller is initialized.
     scoped_resetter_ = std::make_unique<
@@ -277,7 +319,7 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
 
  protected:
   std::unique_ptr<InputDeviceSettingsControllerImpl> controller_;
-
+  std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
   std::vector<ui::InputDevice> sample_keyboards_;
   std::unique_ptr<FakeInputDeviceSettingsControllerObserver> observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -431,7 +473,8 @@ TEST_F(InputDeviceSettingsControllerTest, UpdateLoginScreenSettings) {
 }
 
 TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsAreValid) {
-  ui::DeviceDataManagerTestApi().SetKeyboardDevices({kSampleKeyboardInternal});
+  fake_keyboard_manager_->AddFakeKeyboard(kSampleKeyboardInternal,
+                                          kKbdTopRowLayout1Tag);
   EXPECT_EQ(observer_->num_keyboards_connected(), 1u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 1u);
   const mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
@@ -442,9 +485,10 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsAreValid) {
   EXPECT_EQ(observer_->num_keyboards_settings_updated(), 0u);
   EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_updated(), 0u);
 
-  // The keyboard is internal and it doesn't have capslock remapping.
+  // The keyboard does not have an assistant key so therefore, it cannot be
+  // remapped.
   settings->suppress_meta_fkey_rewrites = kDefaultSuppressMetaFKeyRewrites;
-  settings->modifier_remappings[ui::mojom::ModifierKey::kCapsLock] =
+  settings->modifier_remappings[ui::mojom::ModifierKey::kAssistant] =
       ui::mojom::ModifierKey::kAlt;
   controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
                                    settings.Clone());
@@ -456,7 +500,8 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsAreValid) {
 TEST_F(InputDeviceSettingsControllerTest,
        RecordSetKeyboardSettingsValidMetric) {
   base::HistogramTester histogram_tester;
-  ui::DeviceDataManagerTestApi().SetKeyboardDevices({kSampleKeyboardInternal});
+  fake_keyboard_manager_->AddFakeKeyboard(kSampleKeyboardInternal,
+                                          kKbdTopRowLayout1Tag);
   controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
                                    mojom::KeyboardSettings::New());
   histogram_tester.ExpectBucketCount(
@@ -577,21 +622,26 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdateMultiple) {
 }
 
 TEST_F(InputDeviceSettingsControllerTest, RecordsMetricsSettings) {
-  // Initially expect no user preferences recorded.
   base::HistogramTester histogram_tester;
-  controller_->OnKeyboardListUpdated({kSampleKeyboardUsb, kSampleKeyboardUsb2},
-                                     {});
+  fake_keyboard_manager_->AddFakeKeyboard(kSampleKeyboardUsb,
+                                          kKbdTopRowLayout1Tag);
+  fake_keyboard_manager_->AddFakeKeyboard(kSampleKeyboardUsb2,
+                                          kKbdTopRowLayout1Tag);
+
+  // Initially expect no user preferences recorded.
+  // Two input device settings controllers publish this metric at the same time,
+  // so we expect 2 times the number of devices for the initial count.
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Keyboard.ExternalChromeOS.TopRowAreFKeys."
       "Initial",
-      /*expected_count=*/2u);
+      /*expected_count=*/4u);
   SimulateUserLogin(account_id_2);
   task_runner_->RunUntilIdle();
 
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Keyboard.ExternalChromeOS.TopRowAreFKeys."
       "Initial",
-      /*expected_count=*/4u);
+      /*expected_count=*/6u);
 
   // Test Metrics Updates when setKeyboardSettings is called.
   auto updated_settings = mojom::KeyboardSettings::New();

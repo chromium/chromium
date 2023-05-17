@@ -290,6 +290,7 @@ const ModifierRemapping* GetSearchRemappedKey(
 
     case KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard:
     case KeyboardCapability::DeviceType::kDeviceInternalKeyboard:
+    case KeyboardCapability::DeviceType::kDeviceInternalRevenKeyboard:
     case KeyboardCapability::DeviceType::kDeviceHotrodRemote:
     case KeyboardCapability::DeviceType::kDeviceVirtualCoreKeyboard:
     case KeyboardCapability::DeviceType::kDeviceUnknown:
@@ -1060,6 +1061,7 @@ void EventRewriterAsh::RecordModifierKeyPressedAfterRemapping(
 
   switch (keyboard_capability_->GetDeviceType(device_id)) {
     case KeyboardCapability::DeviceType::kDeviceInternalKeyboard:
+    case KeyboardCapability::DeviceType::kDeviceInternalRevenKeyboard:
       UMA_HISTOGRAM_ENUMERATION(
           "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.Internal",
           modifier_key_usage_mapping->modifier_key_enum);
@@ -1104,6 +1106,7 @@ void EventRewriterAsh::RecordModifierKeyPressedBeforeRemapping(
 
   switch (keyboard_capability_->GetDeviceType(device_id)) {
     case KeyboardCapability::DeviceType::kDeviceInternalKeyboard:
+    case KeyboardCapability::DeviceType::kDeviceInternalRevenKeyboard:
       UMA_HISTOGRAM_ENUMERATION(
           "ChromeOS.Inputs.Keyboard.ModifierPressed.Internal",
           modifier_key_usage_mapping->modifier_key_enum);

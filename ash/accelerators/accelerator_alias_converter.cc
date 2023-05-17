@@ -47,6 +47,7 @@ absl::optional<ui::KeyboardDevice> GetPriorityExternalKeyboard() {
     switch (device_type) {
       case DeviceType::kDeviceUnknown:
       case DeviceType::kDeviceInternalKeyboard:
+      case DeviceType::kDeviceInternalRevenKeyboard:
         break;
       case DeviceType::kDeviceExternalChromeOsKeyboard:
       case DeviceType::kDeviceExternalAppleKeyboard:
@@ -71,6 +72,7 @@ absl::optional<ui::KeyboardDevice> GetInternalKeyboard() {
     switch (device_type) {
       case DeviceType::kDeviceUnknown:
       case DeviceType::kDeviceInternalKeyboard:
+      case DeviceType::kDeviceInternalRevenKeyboard:
         return keyboard;
       case DeviceType::kDeviceExternalChromeOsKeyboard:
       case DeviceType::kDeviceExternalAppleKeyboard:
