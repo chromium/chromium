@@ -741,4 +741,32 @@ TEST_F(InputDeviceSettingsControllerTest,
       Shell::Get()->session_controller()->GetActivePrefService());
 }
 
+TEST_F(InputDeviceSettingsControllerTest,
+       RestoreDefaultKeyboardModifierRemappings) {
+  base::HistogramTester histogram_tester;
+
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices({kSampleKeyboardInternal});
+  const mojom::KeyboardSettingsPtr settings = mojom::KeyboardSettings::New();
+  settings->top_row_are_fkeys = kDefaultTopRowAreFKeys;
+  settings->modifier_remappings[ui::mojom::ModifierKey::kMeta] =
+      ui::mojom::ModifierKey::kAlt;
+  controller_->SetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id,
+                                   settings->Clone());
+
+  EXPECT_EQ(observer_->num_keyboards_connected(), 1u);
+  EXPECT_EQ(keyboard_pref_handler_->num_keyboard_settings_initialized(), 1u);
+  EXPECT_EQ(
+      controller_->GetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id)
+          ->modifier_remappings.size(),
+      1u);
+  controller_->RestoreDefaultKeyboardModifierRemappings(
+      (DeviceId)kSampleKeyboardInternal.id);
+  EXPECT_EQ(
+      controller_->GetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id)
+          ->modifier_remappings.size(),
+      0u);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers.NumberOfKeysReset",
+      /*sample=*/1u, /*expected_bucket_count=*/1u);
+}
 }  // namespace ash

@@ -203,6 +203,33 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardChangedMetrics(
   }
 }
 
+void InputDeviceSettingsMetricsManager::RecordKeyboardNumberOfKeysReset(
+    const mojom::Keyboard& keyboard,
+    const mojom::KeyboardSettings& default_settings) {
+  int num_keys_reset = 0;
+  const auto& old_remappings = keyboard.settings->modifier_remappings;
+  const auto& default_remappings = default_settings.modifier_remappings;
+
+  for (const auto& [remapped_from, remapped_to] : old_remappings) {
+    if (!default_remappings.contains(remapped_from) ||
+        default_remappings.at(remapped_from) != remapped_to) {
+      num_keys_reset++;
+    }
+  }
+
+  for (const auto& [remapped_from, remapped_to] : default_remappings) {
+    if (!old_remappings.contains(remapped_from)) {
+      num_keys_reset++;
+    }
+  }
+
+  if (num_keys_reset != 0) {
+    const std::string keyboard_metrics = base::StrCat(
+        {GetKeyboardMetricsPrefix(keyboard), "Modifiers.NumberOfKeysReset"});
+    base::UmaHistogramCounts100(keyboard_metrics, num_keys_reset);
+  }
+}
+
 void InputDeviceSettingsMetricsManager::RecordMouseInitialMetrics(
     const mojom::Mouse& mouse) {
   // Only record the metrics once for each mouse.

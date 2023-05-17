@@ -926,6 +926,22 @@ void InputDeviceSettingsControllerImpl::OnPointingStickListUpdated(
   RefreshStoredLoginScreenPointingStickSettings();
 }
 
+void InputDeviceSettingsControllerImpl::
+    RestoreDefaultKeyboardModifierRemappings(DeviceId id) {
+  DCHECK(base::Contains(keyboards_, id));
+  auto& keyboard = *keyboards_.at(id);
+  mojom::KeyboardSettingsPtr new_settings = keyboard.settings->Clone();
+  new_settings->modifier_remappings = {};
+  if (keyboard.meta_key == mojom::MetaKey::kCommand) {
+    new_settings->modifier_remappings[ui::mojom::ModifierKey::kControl] =
+        ui::mojom::ModifierKey::kMeta;
+    new_settings->modifier_remappings[ui::mojom::ModifierKey::kMeta] =
+        ui::mojom::ModifierKey::kControl;
+  }
+  metrics_manager_->RecordKeyboardNumberOfKeysReset(keyboard, *new_settings);
+  SetKeyboardSettings(id, std::move(new_settings));
+}
+
 void InputDeviceSettingsControllerImpl::InitializeKeyboardSettings(
     mojom::Keyboard* keyboard) {
   if (active_pref_service_) {

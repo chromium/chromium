@@ -463,4 +463,34 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
       "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers.Hash", 2u);
 }
 
+TEST_F(InputDeviceSettingsMetricsManagerTest,
+       ResetKeyboardModifierRemappingsMetrics) {
+  mojom::KeyboardPtr keyboard = mojom::Keyboard::New();
+  keyboard->device_key = kExternalKeyboardId;
+  keyboard->is_external = true;
+  keyboard->meta_key = mojom::MetaKey::kCommand;
+  keyboard->modifier_keys = {
+      ui::mojom::ModifierKey::kMeta,      ui::mojom::ModifierKey::kControl,
+      ui::mojom::ModifierKey::kAlt,       ui::mojom::ModifierKey::kCapsLock,
+      ui::mojom::ModifierKey::kEscape,    ui::mojom::ModifierKey::kBackspace,
+      ui::mojom::ModifierKey::kAssistant,
+  };
+  keyboard->settings = mojom::KeyboardSettings::New();
+  keyboard->settings->modifier_remappings = {
+      {ui::mojom::ModifierKey::kAlt, ui::mojom::ModifierKey::kCapsLock},
+      {ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kAssistant}};
+
+  base::HistogramTester histogram_tester;
+  const auto default_settings = mojom::KeyboardSettings::New();
+  default_settings->modifier_remappings = {
+      {ui::mojom::ModifierKey::kControl, ui::mojom::ModifierKey::kMeta},
+      {ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kControl}};
+  SimulateUserLogin(kUser1);
+  manager_.get()->RecordKeyboardNumberOfKeysReset(*keyboard, *default_settings);
+  // Test the number of reset keys is correct.
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.Keyboard.External.Modifiers.NumberOfKeysReset",
+      /*sample=*/3u, /*expected_bucket_count=*/1u);
+}
+
 }  // namespace ash

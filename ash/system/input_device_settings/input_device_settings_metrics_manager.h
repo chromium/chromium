@@ -26,6 +26,9 @@ class ASH_EXPORT InputDeviceSettingsMetricsManager {
   void RecordKeyboardChangedMetrics(
       const mojom::Keyboard& keyboard,
       const mojom::KeyboardSettings& old_settings);
+  void RecordKeyboardNumberOfKeysReset(
+      const mojom::Keyboard& keyboard,
+      const mojom::KeyboardSettings& default_settings);
   void RecordModifierRemappingHash(const mojom::Keyboard& keyboard);
   void RecordMouseInitialMetrics(const mojom::Mouse& mouse);
   void RecordMouseChangedMetrics(const mojom::Mouse& mouse,
