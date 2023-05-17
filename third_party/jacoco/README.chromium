@@ -10,4 +10,6 @@ Description:
 JaCoCo is a Java code coverage tool.
 
 Local Modifications:
-* Added jacoco-agent.properties for use on Android.
+* To avoid violating strict mode restrictions: use jacoco agent property
+`output=None` which is patched into jacoco code; do not read host address.
+See `3pp/patches/0001-hardcode-properties.patch`.
