@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
   {
     WidgetFocusWaiter waiter(bubble_view->GetWidget());
     waiter.WaitAfter(base::BindLambdaForTesting(
-        [&]() { help_bubble->ToggleFocusForAccessibility(); }));
+        [&]() { ASSERT_TRUE(help_bubble->ToggleFocusForAccessibility()); }));
     EXPECT_TRUE(bubble_view->GetDefaultButtonForTesting()->HasFocus());
   }
 
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsUiTest,
   {
     WidgetFocusWaiter waiter(GetAnchorElement()->view()->GetWidget());
     waiter.WaitAfter(base::BindLambdaForTesting(
-        [&]() { help_bubble->ToggleFocusForAccessibility(); }));
+        [&]() { ASSERT_TRUE(help_bubble->ToggleFocusForAccessibility()); }));
   }
 #endif
   EXPECT_TRUE(GetAnchorElement()->view()->HasFocus());
