@@ -221,9 +221,7 @@ class WebTransportVisitorProxy : public quic::WebTransportVisitor {
   explicit WebTransportVisitorProxy(quic::WebTransportVisitor* visitor)
       : visitor_(visitor) {}
 
-  void OnSessionReady(const spdy::Http2HeaderBlock& block) override {
-    visitor_->OnSessionReady(block);
-  }
+  void OnSessionReady() override { visitor_->OnSessionReady(); }
   void OnSessionClosed(quic::WebTransportSessionError error_code,
                        const std::string& error_message) override {
     visitor_->OnSessionClosed(error_code, error_message);
@@ -752,8 +750,7 @@ void DedicatedWebTransportHttp3Client::SetErrorIfNecessary(
   }
 }
 
-void DedicatedWebTransportHttp3Client::OnSessionReady(
-    const spdy::Http2HeaderBlock& /*spdy_headers*/) {
+void DedicatedWebTransportHttp3Client::OnSessionReady() {
   session_ready_ = true;
   RecordNegotiatedHttpDatagramSupport(session_->http_datagram_support());
 }
