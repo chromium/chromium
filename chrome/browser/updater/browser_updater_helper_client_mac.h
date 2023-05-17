@@ -8,12 +8,15 @@
 #import <Foundation/Foundation.h>
 
 #include "base/functional/callback_forward.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/updater/mac/privileged_helper/service_protocol.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 // Client that will create a connection between the browser and the privileged
 // helper for the Chromium updater. Helps with setting up the system-level
@@ -35,7 +38,7 @@ class BrowserUpdaterHelperClientMac
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
-  base::scoped_nsobject<NSXPCConnection> xpc_connection_;
+  NSXPCConnection* __strong xpc_connection_;
 
   void SetupSystemUpdaterDone(base::OnceCallback<void(int)> callback,
                               int result);

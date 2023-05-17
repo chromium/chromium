@@ -44,6 +44,7 @@ source_set("browser_updater_client") {
       sources += [ "browser_updater_client_util_no_updater.cc" ]
     }
 
+    configs += [ "//build/config/compiler:enable_arc" ]
     deps += [
       "//chrome/app:chromium_strings_grit",
       "//chrome/app:generated_resources_grit",
