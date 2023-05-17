@@ -162,24 +162,25 @@ void StartDisconnectFailureCallback(
 
 void HostVpnErrorCallback(const std::string& operation,
                           const std::string& error_name) {
-  NET_LOG(ERROR) << "HostVpnErrorCallback: " << operation << ": " << error_name;
+  NET_LOG(ERROR) << __func__ << ": " << operation << ": " << error_name;
 }
 
 void ArcVpnErrorCallback(const std::string& operation,
                          const std::string& error_name) {
-  NET_LOG(ERROR) << "ArcVpnErrorCallback: " << operation << ": " << error_name;
+  NET_LOG(ERROR) << __func__ << ": " << operation << ": " << error_name;
 }
 
 void AddPasspointCredentialsFailureCallback(const std::string& error_name,
                                             const std::string& error_message) {
-  NET_LOG(ERROR) << "Failed to add passpoint credentials, error:" << error_name
-                 << ", message: " << error_message;
+  NET_LOG(ERROR) << __func__ << ": Failed to add passpoint credentials, error:"
+                 << error_name << ", message: " << error_message;
 }
 
 void RemovePasspointCredentialsFailureCallback(
     const std::string& error_name,
     const std::string& error_message) {
-  NET_LOG(ERROR) << "Failed to remove passpoint credentials, error:"
+  NET_LOG(ERROR) << __func__
+                 << ": Failed to remove passpoint credentials, error:"
                  << error_name << ", message: " << error_message;
 }
 
@@ -192,7 +193,7 @@ void SetLohsEnabledFailureCallback(
     arc::ArcNetHostImpl::StartLohsCallback callback,
     const std::string& dbus_error_name,
     const std::string& dbus_error_message) {
-  NET_LOG(ERROR) << "SetLohsEnabledFailureCallback, error: " << dbus_error_name
+  NET_LOG(ERROR) << __func__ << ": error: " << dbus_error_name
                  << ", message: " << dbus_error_message;
   std::move(callback).Run(arc::mojom::LohsStatus::kErrorConfiguringPlatform);
 }
@@ -212,14 +213,14 @@ void SetLohsConfigPropertyFailureCallback(
     arc::ArcNetHostImpl::StartLohsCallback callback,
     const std::string& dbus_error_name,
     const std::string& dbus_error_message) {
-  NET_LOG(ERROR) << "SetLohsConfigPropertyFailureCallback, error: "
-                 << dbus_error_name << ", message: " << dbus_error_message;
+  NET_LOG(ERROR) << __func__ << ": error: " << dbus_error_name
+                 << ", message: " << dbus_error_message;
   std::move(callback).Run(arc::mojom::LohsStatus::kErrorConfiguringPlatform);
 }
 
 void StopLohsFailureCallback(const std::string& error_name,
                              const std::string& error_message) {
-  NET_LOG(ERROR) << "StopLohsFailureCallback, error:" << error_name
+  NET_LOG(ERROR) << __func__ << ": error:" << error_name
                  << ", message: " << error_message;
 }
 
@@ -414,7 +415,7 @@ void ArcNetHostImpl::CreateNetworkSuccessCallback(
 void ArcNetHostImpl::CreateNetworkFailureCallback(
     base::OnceCallback<void(const std::string&)> callback,
     const std::string& error_name) {
-  NET_LOG(ERROR) << "CreateNetworkFailureCallback: " << error_name;
+  NET_LOG(ERROR) << __func__ << ": " << error_name;
   std::move(callback).Run(std::string());
 }
 
@@ -441,8 +442,8 @@ void ArcNetHostImpl::CreateNetworkWithEapTranslated(
     CreateNetworkCallback callback,
     base::Value::Dict eap_dict) {
   if (!cfg->hexssid.has_value() || !cfg->details) {
-    NET_LOG(ERROR)
-        << "Cannot create WiFi network without hex ssid or WiFi properties";
+    NET_LOG(ERROR) << __func__ << ": Cannot create WiFi network without hex"
+                   << " ssid or WiFi properties";
     std::move(callback).Run(std::string());
     return;
   }
@@ -450,7 +451,8 @@ void ArcNetHostImpl::CreateNetworkWithEapTranslated(
   mojom::ConfiguredNetworkDetailsPtr details =
       std::move(cfg->details->get_configured());
   if (!details) {
-    NET_LOG(ERROR) << "Cannot create WiFi network without WiFi properties";
+    NET_LOG(ERROR) << __func__
+                   << ": Cannot create WiFi network without WiFi properties";
     std::move(callback).Run(std::string());
     return;
   }
@@ -562,7 +564,8 @@ void ArcNetHostImpl::ForgetNetwork(const std::string& guid,
                                    ForgetNetworkCallback callback) {
   std::string path;
   if (!GetNetworkPathFromGuid(guid, &path)) {
-    NET_LOG(ERROR) << "Could not retrieve Service path from GUID " << guid;
+    NET_LOG(ERROR) << __func__ << ": Could not retrieve Service path from GUID "
+                   << guid;
     std::move(callback).Run(mojom::NetworkResult::FAILURE);
     return;
   }
@@ -584,7 +587,8 @@ void ArcNetHostImpl::UpdateWifiNetwork(const std::string& guid,
                                        UpdateWifiNetworkCallback callback) {
   std::string path;
   if (!GetNetworkPathFromGuid(guid, &path)) {
-    NET_LOG(ERROR) << "Could not retrieve Service path from GUID " << guid;
+    NET_LOG(ERROR) << __func__ << ": Could not retrieve Service path from GUID "
+                   << guid;
     std::move(callback).Run(mojom::NetworkResult::FAILURE);
     return;
   }
@@ -614,7 +618,8 @@ void ArcNetHostImpl::StartConnect(const std::string& guid,
                                   StartConnectCallback callback) {
   std::string path;
   if (!GetNetworkPathFromGuid(guid, &path)) {
-    NET_LOG(ERROR) << "Could not retrieve Service path from GUID " << guid;
+    NET_LOG(ERROR) << __func__ << ": Could not retrieve Service path from GUID "
+                   << guid;
     std::move(callback).Run(mojom::NetworkResult::FAILURE);
     return;
   }
@@ -635,7 +640,8 @@ void ArcNetHostImpl::StartDisconnect(const std::string& guid,
                                      StartDisconnectCallback callback) {
   std::string path;
   if (!GetNetworkPathFromGuid(guid, &path)) {
-    NET_LOG(ERROR) << "Could not retrieve Service path from GUID " << guid;
+    NET_LOG(ERROR) << __func__ << ": Could not retrieve Service path from GUID "
+                   << guid;
     std::move(callback).Run(mojom::NetworkResult::FAILURE);
     return;
   }
@@ -666,12 +672,12 @@ void ArcNetHostImpl::SetWifiEnabledState(bool is_enabled,
   if ((state == ash::NetworkStateHandler::TECHNOLOGY_PROHIBITED) ||
       (state == ash::NetworkStateHandler::TECHNOLOGY_UNINITIALIZED) ||
       (state == ash::NetworkStateHandler::TECHNOLOGY_UNAVAILABLE)) {
-    NET_LOG(ERROR) << "SetWifiEnabledState failed due to WiFi state: " << state;
+    NET_LOG(ERROR) << __func__ << ": failed due to WiFi state: " << state;
     std::move(callback).Run(false);
     return;
   }
 
-  NET_LOG(USER) << __func__ << ":" << is_enabled;
+  NET_LOG(USER) << __func__ << ": " << is_enabled;
   GetTechnologyStateController()->SetTechnologiesEnabled(
       ash::NetworkTypePattern::WiFi(), is_enabled,
       ash::network_handler::ErrorCallback());
@@ -838,11 +844,11 @@ void ArcNetHostImpl::TranslateEapCredentialsToDict(
     bool is_onc,
     base::OnceCallback<void(base::Value::Dict)> callback) {
   if (!cred) {
-    NET_LOG(ERROR) << "Empty EAP credentials";
+    NET_LOG(ERROR) << __func__ << ": Empty EAP credentials";
     return;
   }
   if (!cert_manager_) {
-    NET_LOG(ERROR) << "CertManager is not initialized";
+    NET_LOG(ERROR) << __func__ << ": CertManager is not initialized";
     return;
   }
   std::string key;
@@ -949,7 +955,7 @@ void ArcNetHostImpl::TranslateEapCredentialsToShillDictWithCertID(
     const absl::optional<std::string>& cert_id,
     const absl::optional<int>& slot_id) {
   if (!cred) {
-    NET_LOG(ERROR) << "Empty EAP credentials";
+    NET_LOG(ERROR) << __func__ << ": Empty EAP credentials";
     return;
   }
 
@@ -1015,11 +1021,12 @@ void ArcNetHostImpl::TranslatePasspointCredentialsToDict(
     mojom::PasspointCredentialsPtr cred,
     base::OnceCallback<void(base::Value::Dict)> callback) {
   if (!cred) {
-    NET_LOG(ERROR) << "Empty passpoint credentials";
+    NET_LOG(ERROR) << __func__ << ": Empty passpoint credentials";
     return;
   }
   if (!cred->eap) {
-    NET_LOG(ERROR) << "mojom::PasspointCredentials has no EAP properties";
+    NET_LOG(ERROR) << __func__
+                   << ": mojom::PasspointCredentials has no EAP properties";
     return;
   }
 
@@ -1037,11 +1044,12 @@ void ArcNetHostImpl::TranslatePasspointCredentialsToDictWithEapTranslated(
     base::OnceCallback<void(base::Value::Dict)> callback,
     base::Value::Dict dict) {
   if (!cred) {
-    NET_LOG(ERROR) << "Empty passpoint credentials";
+    NET_LOG(ERROR) << __func__ << ": Empty passpoint credentials";
     return;
   }
   if (dict.empty()) {
-    NET_LOG(ERROR) << "Failed to translate EapCredentials properties";
+    NET_LOG(ERROR) << __func__
+                   << ": Failed to translate EapCredentials properties";
     return;
   }
 
@@ -1111,14 +1119,14 @@ void ArcNetHostImpl::RequestPasspointAppApproval(
   }
   aura::Window* window = GetActiveWindow();
   if (!window) {
-    NET_LOG(ERROR) << "Failed to get active window";
+    NET_LOG(ERROR) << __func__ << ": Failed to get active window";
     std::move(callback).Run(
         mojom::PasspointApprovalResponse::New(/*allow=*/false));
     return;
   }
   const std::string* app_id = window->GetProperty(ash::kAppIDKey);
   if (!app_id || app_id->empty()) {
-    NET_LOG(ERROR) << "Failed to get app info";
+    NET_LOG(ERROR) << __func__ << ": Failed to get app info";
     std::move(callback).Run(
         mojom::PasspointApprovalResponse::New(/*allow=*/false));
     return;
@@ -1126,7 +1134,8 @@ void ArcNetHostImpl::RequestPasspointAppApproval(
   const std::string package_name =
       app_metadata_provider_->GetAppPackageName(*app_id);
   if (request->package_name != package_name) {
-    NET_LOG(ERROR) << "Unexpected app package name of the active window: "
+    NET_LOG(ERROR) << __func__
+                   << ": Unexpected app package name of the active window: "
                    << package_name;
     std::move(callback).Run(
         mojom::PasspointApprovalResponse::New(/*allow=*/false));
@@ -1138,13 +1147,14 @@ void ArcNetHostImpl::RequestPasspointAppApproval(
 void ArcNetHostImpl::AddPasspointCredentialsWithProperties(
     base::Value::Dict properties) {
   if (properties.empty()) {
-    NET_LOG(ERROR) << "Failed to translate PasspointCredentials properties";
+    NET_LOG(ERROR) << __func__
+                   << ": Failed to translate PasspointCredentials properties";
     return;
   }
 
   const auto* profile = GetNetworkProfile();
   if (!profile || profile->path.empty()) {
-    NET_LOG(ERROR) << "Unable to get network profile path";
+    NET_LOG(ERROR) << __func__ << ": Unable to get network profile path";
     return;
   }
 
@@ -1157,13 +1167,13 @@ void ArcNetHostImpl::AddPasspointCredentialsWithProperties(
 void ArcNetHostImpl::RemovePasspointCredentials(
     mojom::PasspointRemovalPropertiesPtr properties) {
   if (!properties) {
-    NET_LOG(ERROR) << "Empty passpoint removal properties";
+    NET_LOG(ERROR) << __func__ << ": Empty passpoint removal properties";
     return;
   }
 
   const auto* profile = GetNetworkProfile();
   if (!profile || profile->path.empty()) {
-    NET_LOG(ERROR) << "Unable to get network profile path";
+    NET_LOG(ERROR) << __func__ << ": Unable to get network profile path";
     return;
   }
 
@@ -1262,7 +1272,8 @@ void ArcNetHostImpl::ReceiveShillProperties(
     const std::string& service_path,
     absl::optional<base::Value::Dict> shill_properties) {
   if (!shill_properties) {
-    NET_LOG(ERROR) << "Failed to get shill Service properties for "
+    NET_LOG(ERROR) << __func__
+                   << ": Failed to get shill Service properties for "
                    << service_path;
     return;
   }
@@ -1311,11 +1322,12 @@ void ArcNetHostImpl::NetworkListChanged() {
 
 void ArcNetHostImpl::StartLohs(mojom::LohsConfigPtr config,
                                StartLohsCallback callback) {
-  NET_LOG(USER) << "Starting LOHS";
+  NET_LOG(USER) << __func__ << ": Starting LOHS";
   base::Value::Dict dict;
 
   if (config->hexssid.empty()) {
-    NET_LOG(ERROR) << "Cannot create local only hotspot without hex ssid";
+    NET_LOG(ERROR) << __func__
+                   << ": Cannot create local only hotspot without hex ssid";
     std::move(callback).Run(arc::mojom::LohsStatus::kErrorInvalidArgument);
     return;
   }
@@ -1323,7 +1335,8 @@ void ArcNetHostImpl::StartLohs(mojom::LohsConfigPtr config,
 
   if (config->band != arc::mojom::WifiBand::k2Ghz) {
     // TODO(b/257880335): Support 5Ghz band as well
-    NET_LOG(ERROR) << "Unsupported band for LOHS: " << config->band
+    NET_LOG(ERROR) << __func__
+                   << ": Unsupported band for LOHS: " << config->band
                    << "; can only support 2.4GHz";
     std::move(callback).Run(arc::mojom::LohsStatus::kErrorInvalidArgument);
     return;
@@ -1331,21 +1344,22 @@ void ArcNetHostImpl::StartLohs(mojom::LohsConfigPtr config,
   dict.Set(shill::kTetheringConfBandProperty, shill::kBand2GHz);
 
   if (config->security_type != arc::mojom::SecurityType::WPA_PSK) {
-    NET_LOG(ERROR) << "Unsupported security for LOHS: " << config->security_type
-                   << "; can only support WPA_PSK";
+    NET_LOG(ERROR) << __func__ << ": Unsupported security for LOHS: "
+                   << config->security_type << "; can only support WPA_PSK";
     std::move(callback).Run(arc::mojom::LohsStatus::kErrorInvalidArgument);
     return;
   }
   if (!config->passphrase.has_value()) {
-    NET_LOG(ERROR) << "Cannot create local only hotspot without password";
+    NET_LOG(ERROR) << __func__
+                   << ": Cannot create local only hotspot without password";
     std::move(callback).Run(arc::mojom::LohsStatus::kErrorInvalidArgument);
     return;
   }
   dict.Set(shill::kTetheringConfSecurityProperty, shill::kSecurityWpa2);
   dict.Set(shill::kTetheringConfPassphraseProperty, config->passphrase.value());
 
-  NET_LOG(USER) << "Set Shill Manager property: " << shill::kLOHSConfigProperty
-                << ": " << dict;
+  NET_LOG(USER) << __func__ << ": Set Shill Manager property: "
+                << shill::kLOHSConfigProperty << ": " << dict;
   auto callback_split = base::SplitOnceCallback(std::move(callback));
   ash::ShillManagerClient::Get()->SetProperty(
       shill::kLOHSConfigProperty, base::Value(std::move(dict)),
@@ -1356,7 +1370,7 @@ void ArcNetHostImpl::StartLohs(mojom::LohsConfigPtr config,
 }
 
 void ArcNetHostImpl::StopLohs() {
-  NET_LOG(USER) << "Stopping LOHS";
+  NET_LOG(USER) << __func__ << ": Stopping LOHS";
   ash::ShillManagerClient::Get()->SetLOHSEnabled(
       false /* enabled */, base::DoNothing(),
       base::BindOnce(&StopLohsFailureCallback));
