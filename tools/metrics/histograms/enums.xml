@@ -21383,6 +21383,15 @@ Called by update_net_error_codes.py.-->
   <int value="25" label="CRAS_METRICS_DEVICE_ALSA_LOOPBACK"/>
 </enum>
 
+<enum name="CrasDlcManagerDlcStatus">
+  <summary>
+    Availability of CRAS DLC. This list should be aligned with CRAS:
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.h
+  </summary>
+  <int value="0" label="CRAS_METRICS_DLC_STATUS_UNAVAILABLE"/>
+  <int value="1" label="CRAS_METRICS_DLC_STATUS_AVAILABLE"/>
+</enum>
+
 <enum name="CrashExitCodes">
 <!-- These are abs() raw exit codes, so they are always positive. See the
 MapCrashExitCodeForHistogram function and the WindowsExitCode enum.

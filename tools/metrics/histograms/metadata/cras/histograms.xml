@@ -22,6 +22,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="CrasDlcType">
+  <variant name="NcAp" summary="the AP Noise Cancellation DLC"/>
+  <variant name="SrBt" summary="the Bluetooth Super Resolution DLC"/>
+</variants>
+
 <histogram name="Cras.A2dp100msFailureOverStream" units="units"
     expires_after="2024-03-17">
   <owner>hychao@chromium.org</owner>
@@ -262,6 +267,27 @@ chromium-metrics-reviews@google.com.
   <summary>
     The volume of a device, which is recorded when closing a device.
   </summary>
+</histogram>
+
+<histogram name="Cras.DlcManagerStatus.DlcStatus.{DlcType}"
+    enum="CrasDlcManagerDlcStatus" expires_after="2024-05-15">
+  <owner>hunghsienchen@google.com</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    Records if {DlcType} is successfully installed or not (failed all retries).
+  </summary>
+  <token key="DlcType" variants="CrasDlcType"/>
+</histogram>
+
+<histogram name="Cras.DlcManagerStatus.RetriedTimesOnSuccess.{DlcType}"
+    units="count" expires_after="2024-05-15">
+  <owner>hunghsienchen@google.com</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    If the installation of {DlcType} succeeded, records how many times retried
+    until success.
+  </summary>
+  <token key="DlcType" variants="CrasDlcType"/>
 </histogram>
 
 <histogram name="Cras.FetchDelayMilliSeconds" units="ms"
