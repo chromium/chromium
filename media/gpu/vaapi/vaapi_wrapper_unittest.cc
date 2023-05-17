@@ -22,7 +22,7 @@ VaapiWrapper::VABufferDescriptor CreateVABufferDescriptor() {
 
 class MockVaapiWrapper : public VaapiWrapper {
  public:
-  MockVaapiWrapper() : VaapiWrapper(kVideoProcess) {}
+  MockVaapiWrapper() : VaapiWrapper(VADisplayStateHandle(), kVideoProcess) {}
   MOCK_METHOD1(SubmitBuffer_Locked, bool(const VABufferDescriptor&));
   MOCK_METHOD0(DestroyPendingBuffers_Locked, void());
 

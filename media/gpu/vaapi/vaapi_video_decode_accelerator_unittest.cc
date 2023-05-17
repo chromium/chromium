@@ -76,7 +76,8 @@ class MockAcceleratedVideoDecoder : public AcceleratedVideoDecoder {
 
 class MockVaapiWrapper : public VaapiWrapper {
  public:
-  MockVaapiWrapper(CodecMode mode) : VaapiWrapper(mode) {}
+  explicit MockVaapiWrapper(CodecMode mode)
+      : VaapiWrapper(VADisplayStateHandle(), mode) {}
   MOCK_METHOD5(CreateContextAndSurfaces,
                bool(unsigned int,
                     const gfx::Size&,

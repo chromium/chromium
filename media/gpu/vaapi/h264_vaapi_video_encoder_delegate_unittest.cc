@@ -114,7 +114,8 @@ void ValidateTemporalLayerStructure(uint8_t num_temporal_layers,
 
 class MockVaapiWrapper : public VaapiWrapper {
  public:
-  MockVaapiWrapper() : VaapiWrapper(kEncodeConstantBitrate) {}
+  MockVaapiWrapper()
+      : VaapiWrapper(VADisplayStateHandle(), kEncodeConstantBitrate) {}
 
   MOCK_METHOD1(SubmitBuffer_Locked, bool(const VABufferDescriptor&));
 
