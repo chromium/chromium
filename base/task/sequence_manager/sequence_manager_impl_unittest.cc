@@ -5178,42 +5178,6 @@ class MockCrashKeyImplementation : public debug::CrashKeyImplementation {
 
 }  // namespace
 
-TEST_P(SequenceManagerTest, CrashKeys) {
-  testing::InSequence sequence;
-  auto queue = CreateTaskQueue();
-  auto runner = queue->CreateTaskRunner(kTaskTypeNone);
-  auto crash_key_impl = std::make_unique<MockCrashKeyImplementation>();
-  RunLoop run_loop;
-
-  MockCrashKeyImplementation* mock_impl = crash_key_impl.get();
-  debug::SetCrashKeyImplementation(std::move(crash_key_impl));
-
-  // Parent task.
-  auto parent_location = FROM_HERE;
-  auto expected_stack1 = StringPrintf(
-      "0x%zX 0x0",
-      reinterpret_cast<uintptr_t>(parent_location.program_counter()));
-  EXPECT_CALL(*mock_impl, Allocate(_, _)).WillRepeatedly(Return(dummy_key()));
-  EXPECT_CALL(*mock_impl, Set(_, testing::Eq(expected_stack1)));
-
-  // Child task.
-  auto location = FROM_HERE;
-  auto expected_stack2 = StringPrintf(
-      "0x%zX 0x%zX", reinterpret_cast<uintptr_t>(location.program_counter()),
-      reinterpret_cast<uintptr_t>(parent_location.program_counter()));
-  EXPECT_CALL(*mock_impl, Set(_, testing::Eq(expected_stack2)));
-
-  sequence_manager()->EnableCrashKeys("test-async-stack");
-
-  // Run a task that posts another task to establish an asynchronous call stack.
-  runner->PostTask(parent_location, BindLambdaForTesting([&]() {
-                     runner->PostTask(location, run_loop.QuitClosure());
-                   }));
-  run_loop.Run();
-
-  debug::SetCrashKeyImplementation(nullptr);
-}
-
 TEST_P(SequenceManagerTest, CrossQueueTaskPostingWhenQueueDeleted) {
   MockTask task;
   auto queue_1 = CreateTaskQueue();

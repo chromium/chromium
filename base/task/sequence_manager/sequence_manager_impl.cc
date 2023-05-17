@@ -42,6 +42,12 @@ namespace base {
 namespace sequence_manager {
 namespace {
 
+// Whether SequenceManagerImpl records crash keys. Enable via Finch when needed
+// for an investigation. Disabled by default to avoid unnecessary overhead.
+BASE_FEATURE(kRecordSequenceManagerCrashKeys,
+             "RecordSequenceManagerCrashKeys",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ABSL_CONST_INIT thread_local internal::SequenceManagerImpl*
     thread_local_sequence_manager = nullptr;
 
@@ -150,6 +156,10 @@ char* PrependHexAddress(char* output, const void* address) {
 // Note: An atomic is used here because some tests can initialize two different
 //       sequence managers on different threads (e.g. by using base::Thread).
 std::atomic_bool g_no_wake_ups_for_canceled_tasks{true};
+
+// Atomic to avoid TSAN flags when a test  tries to access the value before the
+// feature list is available.
+std::atomic_bool g_record_crash_keys = false;
 
 #if BUILDFLAG(IS_WIN)
 bool g_explicit_high_resolution_timer_win = false;
@@ -295,6 +305,10 @@ void SequenceManagerImpl::InitializeFeatures() {
   g_explicit_high_resolution_timer_win =
       FeatureList::IsEnabled(kExplicitHighResolutionTimerWin);
 #endif  // BUILDFLAG(IS_WIN)
+
+  g_record_crash_keys.store(
+      FeatureList::IsEnabled(kRecordSequenceManagerCrashKeys),
+      std::memory_order_relaxed);
   TaskQueueSelector::InitializeFeatures();
 }
 
@@ -829,7 +843,9 @@ void SequenceManagerImpl::NotifyWillProcessTask(ExecutingTask* executing_task,
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
                "SequenceManagerImpl::NotifyWillProcessTaskObservers");
 
-  RecordCrashKeys(executing_task->pending_task);
+  if (g_record_crash_keys.load(std::memory_order_relaxed)) {
+    RecordCrashKeys(executing_task->pending_task);
+  }
 
   if (executing_task->task_queue->GetQuiescenceMonitored())
     main_thread_only().task_was_run_on_quiescence_monitored_queue = true;
