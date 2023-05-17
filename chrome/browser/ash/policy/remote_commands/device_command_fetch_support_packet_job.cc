@@ -381,6 +381,7 @@ void DeviceCommandFetchSupportPacketJob::EnqueueEvent() {
       exported_path_.value());
   log_upload_event->mutable_upload_settings()->set_upload_parameters(
       GetUploadParameters(exported_path_, unique_id()));
+  log_upload_event->set_command_id(unique_id());
   report_queue_->Enqueue(
       std::move(log_upload_event), reporting::Priority::SLOW_BATCH,
       base::BindOnce(&DeviceCommandFetchSupportPacketJob::OnEventEnqueued,
