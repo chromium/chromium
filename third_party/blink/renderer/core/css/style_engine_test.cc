@@ -5976,6 +5976,7 @@ TEST_F(StyleEngineTest, AnimationShorthandFlags) {
   {
     ScopedScrollTimelineForTest scroll_timeline_enabled(false);
     ScopedCSSAnimationDelayStartEndForTest start_end_enabled(false);
+    ScopedScrollTimelineCurrentTimeForTest current_time_enabled(false);
     const CSSPropertyValueSet* set =
         css_test_helpers::ParseDeclarationBlock(css);
     ASSERT_TRUE(set);
@@ -6066,6 +6067,7 @@ TEST_F(StyleEngineTest, AnimationDurationInitialValueWithScrollTimeline) {
 
 TEST_F(StyleEngineTest, AnimationDurationInitialValueWithoutScrollTimeline) {
   ScopedScrollTimelineForTest scroll_timeline_enabled(false);
+  ScopedScrollTimelineCurrentTimeForTest current_time_enabled(false);
 
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>

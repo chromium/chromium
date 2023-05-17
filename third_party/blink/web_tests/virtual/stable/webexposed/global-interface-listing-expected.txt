@@ -111,7 +111,6 @@ interface AnimationTimeline
     getter currentTime
     getter duration
     method constructor
-    method getCurrentTime
 interface Attr : Node
     attribute @@toStringTag
     getter localName

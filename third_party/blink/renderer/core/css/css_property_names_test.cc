@@ -14,6 +14,7 @@ TEST(CSSPropertyNamesTest, AlternativeAnimationWithTimeline) {
 
   {
     ScopedScrollTimelineForTest scroll_timeline_enabled(false);
+    ScopedScrollTimelineCurrentTimeForTest current_time_enabled(false);
     EXPECT_EQ(
         CSSPropertyID::kAnimation,
         UnresolvedCSSPropertyID(/* execution_context */ nullptr, "animation"));
