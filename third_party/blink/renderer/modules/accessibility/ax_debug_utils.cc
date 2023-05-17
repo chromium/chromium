@@ -35,7 +35,6 @@ std::string TreeToStringWithMarkedObjectHelper(const AXObject* obj,
   }
 
   std::string extra = obj == marked_object ? "*" : " ";
-
   return std::accumulate(
       obj->CachedChildrenIncludingIgnored().begin(),
       obj->CachedChildrenIncludingIgnored().end(),

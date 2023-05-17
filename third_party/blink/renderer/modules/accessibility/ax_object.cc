@@ -598,6 +598,53 @@ AXObject::~AXObject() {
   --number_of_live_ax_objects_;
 }
 
+void AXObject::SetAncestorsHaveDirtyDescendants() const {
+  if (!RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
+    return;
+  }
+  for (auto* obj = CachedParentObject(); obj; obj = obj->CachedParentObject()) {
+    DCHECK(!obj->IsDetached());
+    // We need to to continue setting bits through AX objects for which
+    // LastKnownIsIncludedInTreeValue is false, since those objects are omitted
+    // from the generated tree. However, don't set the bit on unincluded
+    // objects, during the clearing phase in
+    // AXObjectCacheImpl::UpdateTreeIfNeededOnce(), only included nodes are
+    // visited.
+    if (!obj->LastKnownIsIncludedInTreeValue()) {
+      continue;
+    }
+    if (obj->has_dirty_descendants_) {
+      break;
+    }
+    obj->has_dirty_descendants_ = true;
+  }
+#if DCHECK_IS_ON()
+  // Walk up the tree looking for dirty bits that failed to be set. If any
+  // are found, this is a bug.
+  if (!AXObjectCache().UpdatingTree()) {
+    bool fail = false;
+    for (auto* obj = CachedParentObject(); obj;
+         obj = obj->CachedParentObject()) {
+      if (obj->LastKnownIsIncludedInTreeValue() &&
+          !obj->has_dirty_descendants_) {
+        fail = true;
+        break;
+      }
+    }
+    if (fail) {
+      LOG(ERROR) << "Failed to set dirty bits on some objects in the ancestor"
+                    "chain. Bits set: ";
+      for (auto* obj = this; obj; obj = obj->CachedParentObject()) {
+        LOG(ERROR) << "* has_dirty_descendants_: "
+                   << obj->has_dirty_descendants_
+                   << " object: " << obj->ToString(true, true);
+      }
+      DCHECK(false);
+    }
+  }
+#endif
+}
+
 void AXObject::Init(AXObject* parent) {
 #if DCHECK_IS_ON()
   DCHECK(!parent_) << "Should not already have a cached parent:"
@@ -693,6 +740,7 @@ void AXObject::Detach() {
   parent_ = nullptr;
   ax_object_cache_ = nullptr;
   children_dirty_ = false;
+  has_dirty_descendants_ = false;
   id_ = 0;
 }
 
@@ -756,6 +804,7 @@ void AXObject::SetParent(AXObject* new_parent) const {
 
 #endif
   parent_ = new_parent;
+  SetAncestorsHaveDirtyDescendants();
 }
 
 bool AXObject::IsMissingParent() const {
@@ -1106,7 +1155,7 @@ void AXObject::EnsureCorrectParentComputation() {
       << parent_->GetLayoutObject() << "\n**** Child was " << this;
 }
 
-void AXObject::ShowAXTreeForThis() {
+void AXObject::ShowAXTreeForThis() const {
   DLOG(INFO) << "\n"
              << TreeToStringWithMarkedObjectHelper(AXObjectCache().Root(),
                                                    this);
@@ -2950,21 +2999,40 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   bool is_ignored = ComputeAccessibilityIsIgnored();
   bool is_ignored_but_included_in_tree =
       is_ignored && ComputeAccessibilityIsIgnoredButIncludedInTree();
-  bool included_in_tree_changed = false;
+  bool is_included_in_tree = !is_ignored || is_ignored_but_included_in_tree;
+  bool included_in_tree_changed =
+      is_included_in_tree != LastKnownIsIncludedInTreeValue();
+  bool notify_included_in_tree_changed = false;
+  if (included_in_tree_changed) {
+    // If the inclusion bit is changing, we need to repair the
+    // has_dirty_descendants, because it is only set on included nodes.
+    if (is_included_in_tree) {
+      // This is being inserted in the hierarchy as an included node: if the
+      // parent has dirty descendants copy that bit to this as well, so as not
+      // to interrupt the chain of descendant updates.
+      if (AXObject* unignored_parent = ParentObjectUnignored()) {
+        if (unignored_parent->HasDirtyDescendants()) {
+          has_dirty_descendants_ = true;
+        }
+      }
+    } else {
+      // The has dirty descendant bits will only be cleared on included
+      // nodes, so it should not be set on nodes that becomes unincluded.
+      has_dirty_descendants_ = false;
+    }
 
-  // If the child's "included in tree" state changes, we will be notifying the
-  // parent to recompute it's children.
-  // Exceptions:
-  // - Caller passes in |notify_parent_of_ignored_changes = false| -- this
-  //   occurs when this is a new child, or when a parent is in the middle of
-  //   adding this child, and doing this would be redundant.
-  // - Inline text boxes: their "included in tree" state is entirely dependent
-  //   on their static text parent.
-  if (notify_parent_of_ignored_changes &&
-      RoleValue() != ax::mojom::blink::Role::kInlineTextBox) {
-    bool is_included_in_tree = !is_ignored || is_ignored_but_included_in_tree;
-    if (is_included_in_tree != LastKnownIsIncludedInTreeValue())
-      included_in_tree_changed = true;
+    // If the child's "included in tree" state changes, we will be notifying the
+    // parent to recompute its children.
+    // Exceptions:
+    // - Caller passes in |notify_parent_of_ignored_changes = false| -- this
+    //   occurs when this is a new child, or when a parent is in the middle of
+    //   adding this child, and doing this would be redundant.
+    // - Inline text boxes: their "included in tree" state is entirely dependent
+    //   on their static text parent.
+    if (notify_parent_of_ignored_changes &&
+        RoleValue() != ax::mojom::blink::Role::kInlineTextBox) {
+      notify_included_in_tree_changed = true;
+    }
   }
 
   // Presence of inline text children depends on ignored state.
@@ -2978,7 +3046,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   // This must be called before cached_is_ignored_* are updated, otherwise a
   // performance optimization depending on LastKnownIsIncludedInTreeValue()
   // may misfire.
-  if (included_in_tree_changed) {
+  if (notify_included_in_tree_changed) {
     if (AXObject* parent = CachedParentObject()) {
       // Defers a ChildrenChanged() on the first included ancestor.
       // Must defer it, otherwise it can cause reentry into
@@ -5473,6 +5541,7 @@ void AXObject::SetNeedsToUpdateChildren() const {
     return;
   children_dirty_ = true;
   ClearChildren();
+  SetAncestorsHaveDirtyDescendants();
 }
 
 // static

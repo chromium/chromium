@@ -293,6 +293,19 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // root of the tree.
   virtual void Init(AXObject* parent);
 
+  // TODO(chrishtr): these methods are not really const, but there are various
+  // other related methods that need const. Review/fix.
+
+  // Sets, clears or queries the has_dirty_descendants_ bit. This dirty
+  // bit controls whether the object, or a descendant, needs to be visited
+  // a tree walk to update the AX tree via
+  // AXObjectCacheImpl::UpdateTreeIfNeeded. It does not directly indicate
+  // whether children, parent or other pointers are actually out of date; there
+  // are other dirty bits such as children_dirty_ for that.
+  void SetAncestorsHaveDirtyDescendants() const;
+  void ClearHasDirtyDescendants() { has_dirty_descendants_ = false; }
+  bool HasDirtyDescendants() const { return has_dirty_descendants_; }
+
   // When the corresponding WebCore object that this AXObject
   // wraps is deleted, it must be detached.
   virtual void Detach();
@@ -1145,7 +1158,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Prints the entire AX subtree to the screen for debugging, with |this|
   // highlighted via a "*" notation.
-  void ShowAXTreeForThis();
+  void ShowAXTreeForThis() const;
 #endif
 
   // Get or create the first ancestor that's not accessibility ignored.
@@ -1394,7 +1407,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   mutable Member<AXObject> parent_;
   // Only children that are included in tree, maybe rename to children_in_tree_.
   mutable AXObjectVector children_;
-  mutable bool children_dirty_;
+  mutable bool children_dirty_ = false;
+  mutable bool has_dirty_descendants_ = false;
 
   // The final role, taking into account the ARIA role and native role.
   ax::mojom::blink::Role role_;
