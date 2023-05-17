@@ -722,21 +722,15 @@ void RenderViewHostImpl::RenderViewCreated(
 }
 
 RenderFrameHostImpl* RenderViewHostImpl::GetMainRenderFrameHost() {
-  // If the RenderViewHost is active, it should always have a main frame
-  // RenderFrameHostImpl. If it is inactive, it could've been created for a
-  // speculative main frame navigation, in which case it will transition to
-  // active once that navigation commits. In this case, return the speculative
-  // main frame RenderFrameHostImpl, as that's expected by certain code paths,
-  // such as RenderViewHostImpl::SetUIProperty().  If there's no speculative
-  // main frame navigation, return nullptr.
-  //
-  // TODO(alexmos, creis): Migrate these code paths to use RenderFrameHost APIs
-  // and remove this fallback.  See https://crbug.com/763548.
-  if (is_active()) {
-    return RenderFrameHostImpl::FromID(GetProcess()->GetID(),
-                                       main_frame_routing_id_);
+  // Only active RenderViewHosts have a main frame RenderFrameHostImpl.
+  // Inactive RenderViewHosts would have a main frame RenderFrameProxyHost
+  // instead.
+  if (!is_active()) {
+    return nullptr;
   }
-  return frame_tree_->root()->render_manager()->speculative_frame_host();
+
+  return RenderFrameHostImpl::FromID(GetProcess()->GetID(),
+                                     main_frame_routing_id_);
 }
 
 void RenderViewHostImpl::ZoomToFindInPageRect(const gfx::Rect& rect_to_zoom) {
