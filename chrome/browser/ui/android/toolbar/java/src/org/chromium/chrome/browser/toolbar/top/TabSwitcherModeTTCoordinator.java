@@ -110,17 +110,6 @@ class TabSwitcherModeTTCoordinator {
     }
 
     /**
-     * Sets the OnClickListener that will be notified when the TabSwitcher button is pressed.
-     * @param listener The callback that will be notified when the TabSwitcher button is pressed.
-     */
-    void setOnTabSwitcherClickHandler(View.OnClickListener listener) {
-        mTabSwitcherListener = listener;
-        if (mActiveTabSwitcherToolbar != null) {
-            mActiveTabSwitcherToolbar.setOnTabSwitcherClickHandler(listener);
-        }
-    }
-
-    /**
      * Sets the OnClickListener that will be notified when the New Tab button is pressed.
      * @param listener The callback that will be notified when the New Tab button is pressed.
      */
@@ -209,9 +198,6 @@ class TabSwitcherModeTTCoordinator {
         mMenuButtonCoordinator.setMenuButton(toolbar.findViewById(R.id.menu_button_wrapper));
 
         // It's expected that these properties are set by the time the tab switcher is entered.
-        assert mTabSwitcherListener != null;
-        toolbar.setOnTabSwitcherClickHandler(mTabSwitcherListener);
-
         assert mNewTabListener != null;
         toolbar.setOnNewTabClickHandler(mNewTabListener);
 

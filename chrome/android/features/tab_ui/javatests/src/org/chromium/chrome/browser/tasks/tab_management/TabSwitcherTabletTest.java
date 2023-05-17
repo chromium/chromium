@@ -203,9 +203,6 @@ public class TabSwitcherTabletTest {
                 .check(matches(withEffectiveVisibility(GONE)));
         onView(allOf(withId(R.id.new_tab_button), withParent(withId(R.id.tab_switcher_toolbar))))
                 .check(matches(withEffectiveVisibility(GONE)));
-        onView(allOf(withId(R.id.tab_switcher_mode_tab_switcher_button),
-                       withParent(withId(R.id.tab_switcher_switches_and_menu))))
-                .check(matches(withEffectiveVisibility(GONE)));
 
         // Assert visible views.
         onView(allOf(withId(R.id.new_tab_view), withParent(withId(R.id.tab_switcher_toolbar))))
