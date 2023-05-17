@@ -8,10 +8,15 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-namespace metrics::structured {
-
-// This can be used to disable structured metrics as a whole.
+namespace metrics::features {
+// This is forward-declared since this file cannot have a direct dependency on
+// //components/metrics to avoid circular dependencies. This feature is defined
+// in //components/metrics/metrics_features.cc.
 BASE_DECLARE_FEATURE(kStructuredMetrics);
+
+}  // namespace metrics::features
+
+namespace metrics::structured {
 
 // Controls whether event sequence logging is enabled or not.
 BASE_DECLARE_FEATURE(kEventSequenceLogging);
@@ -55,6 +60,14 @@ int GetFileLimitPerScan();
 // Returns the parameter used to control the max size of an event. Any event
 // exceeding this memory limit will be discarded. Defaults to 50KB.
 int GetFileSizeByteLimit();
+
+// Returns the upload cadence in minutes for which events are uploaded to the
+// UMA service to either be persisted as logs or uploaded.
+int GetUploadCadenceMinutes();
+
+// Returns the KiB proto limit per log. Events will not be added if the current
+// log exceeds the proto limit and events will be dropped if exceeded.
+int GetProtoKiBLimit();
 
 // Returns the parameter used to control what projects are allowed to be
 // recorded.

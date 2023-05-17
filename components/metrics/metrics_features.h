@@ -29,6 +29,10 @@ BASE_DECLARE_FEATURE(kReportingServiceFlushPrefsOnUploadInBackground);
 // Whether SubprocessMetricsProvider should be leaky, so that it can listen to
 // subprocesses exiting even after the MetricsService has been destroyed.
 BASE_DECLARE_FEATURE(kSubprocessMetricsProviderLeaky);
+
+// This can be used to disable structured metrics as a whole.
+BASE_DECLARE_FEATURE(kStructuredMetrics);
+
 }  // namespace metrics::features
 
 #endif  // COMPONENTS_METRICS_METRICS_FEATURES_H_

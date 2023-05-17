@@ -11,6 +11,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_log_store.h"
 #include "components/metrics/metrics_log_uploader.h"
@@ -34,6 +35,26 @@ namespace metrics {
 
 class MetricsLogUploader;
 class MetricsService;
+
+// The maximum capacity (bytes) of the queue for logs to be persisted. This
+// will be applied to both log queues (initial/ongoing). This ensures that a
+// reasonable amount of history will be stored even if there is a long series of
+// very small logs.
+extern const base::FeatureParam<int> kMaxLogQueueBytes;
+
+// The maximum number of ongoing logs to persist in the queue to send during
+// this or future sessions.
+//
+// Note that each ongoing log may be pretty large, since "initial" logs must
+// first be sent before any ongoing logs are transmitted. "Initial" logs will
+// not be sent if a user is offline. As a result, the current ongoing log will
+// accumulate until the "initial" log can be transmitted. We don't want to save
+// too many of these mega-logs (this should be capped by kMaxLogQueueBytes).
+//
+// A "standard shutdown" will create a small log, including just the data that
+// was not yet been transmitted, and that is normal (to have exactly one
+// ongoing_log_ at startup).
+extern const base::FeatureParam<int> kMaxOngoingLogQueueCount;
 
 // An abstraction of operations that depend on the embedder's (e.g. Chrome)
 // environment.

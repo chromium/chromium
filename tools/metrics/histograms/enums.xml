@@ -99394,11 +99394,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="Popup blocked"/>
 </enum>
 
-<enum name="StructuredMetricsEventRecordingState">
+<enum name="StructuredMetricsEventRecordingState2">
   <int value="0" label="Recorded"/>
   <int value="1" label="Provider uninitialized"/>
   <int value="2" label="Recording disabled"/>
   <int value="3" label="Provider missing"/>
+  <int value="4" label="Project disallowed"/>
+  <int value="5" label="Max proto size exceeded"/>
 </enum>
 
 <enum name="StructuredMetricsInternalError2">

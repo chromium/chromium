@@ -4,8 +4,6 @@
 
 #include "components/metrics/structured/external_metrics.h"
 
-#include <sys/file.h>
-
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"

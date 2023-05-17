@@ -6,10 +6,6 @@
 
 namespace metrics::structured {
 
-BASE_FEATURE(kStructuredMetrics,
-             "EnableStructuredMetrics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEventSequenceLogging,
              "EnableEventSequenceLogging",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -27,13 +23,13 @@ BASE_FEATURE(kEnabledStructuredMetricsService,
              "EnableStructuredMetricsService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-constexpr base::FeatureParam<int> kLimitFilesPerScanParam{&kStructuredMetrics,
-                                                          "file_limit", 50};
+constexpr base::FeatureParam<int> kLimitFilesPerScanParam{
+    &features::kStructuredMetrics, "file_limit", 50};
 constexpr base::FeatureParam<int> kFileSizeByteLimitParam{
-    &kStructuredMetrics, "file_byte_limit", 50000};
+    &features::kStructuredMetrics, "file_byte_limit", 50000};
 
 constexpr base::FeatureParam<std::string> kDisallowedProjectsParam{
-    &kStructuredMetrics, "disabled_projects", ""};
+    &features::kStructuredMetrics, "disabled_projects", ""};
 
 constexpr base::FeatureParam<int> kMinLogQueueCount{
     &kEnabledStructuredMetricsService, "min_log_queue_count", 10};
@@ -53,9 +49,15 @@ constexpr base::FeatureParam<int> kUploadTimeInSeconds{
     40 * 60  // 40 minutes
 };
 
+constexpr base::FeatureParam<int> kStructuredMetricsUploadCadenceMinutes{
+    &features::kStructuredMetrics, "sm_upload_cadence_minutes", 45};
+
+constexpr base::FeatureParam<int> kMaxProtoKiBSize{
+    &features::kStructuredMetrics, "max_proto_size_kib", 25};
+
 bool IsIndependentMetricsUploadEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      kStructuredMetrics, "enable_independent_metrics_upload", true);
+      features::kStructuredMetrics, "enable_independent_metrics_upload", true);
 }
 
 int GetFileLimitPerScan() {
@@ -64,6 +66,14 @@ int GetFileLimitPerScan() {
 
 int GetFileSizeByteLimit() {
   return kFileSizeByteLimitParam.Get();
+}
+
+int GetUploadCadenceMinutes() {
+  return kStructuredMetricsUploadCadenceMinutes.Get();
+}
+
+int GetProtoKiBLimit() {
+  return kMaxProtoKiBSize.Get();
 }
 
 std::string GetDisabledProjects() {

@@ -14,6 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/current_thread.h"
+#include "components/metrics/metrics_features.h"
 #include "components/metrics/structured/enums.h"
 #include "components/metrics/structured/external_metrics.h"
 #include "components/metrics/structured/histogram_util.h"
@@ -75,7 +76,8 @@ StructuredMetricsRecorder::~StructuredMetricsRecorder() {
 void StructuredMetricsRecorder::EnableRecording() {
   DCHECK(base::CurrentUIThread::IsSet());
   // Enable recording only if structured metrics' feature flag is enabled.
-  recording_enabled_ = base::FeatureList::IsEnabled(kStructuredMetrics);
+  recording_enabled_ =
+      base::FeatureList::IsEnabled(features::kStructuredMetrics);
   if (external_metrics_.get() != nullptr) {
     external_metrics_->EnableRecording();
   }

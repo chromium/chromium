@@ -359,7 +359,7 @@ TEST_F(StructuredMetricsRecorderTest, EventsNotReportedWhenRecordingDisabled) {
 // Ensure that disabling the structured metrics feature flag prevents all
 // structured metrics reporting.
 TEST_F(StructuredMetricsRecorderTest, EventsNotReportedWhenFeatureDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(kStructuredMetrics);
+  scoped_feature_list_.InitAndDisableFeature(features::kStructuredMetrics);
 
   Init();
   // OnRecordingEnabled should not actually enable recording because the flag is

@@ -165,7 +165,8 @@ class StructuredMetricsProviderTest : public testing::Test {
 // flag instead uploads them in the main UMA upload.
 TEST_F(StructuredMetricsProviderTest, DisableIndependentUploads) {
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      kStructuredMetrics, {{"enable_independent_metrics_upload", "false"}});
+      features::kStructuredMetrics,
+      {{"enable_independent_metrics_upload", "false"}});
 
   Init();
 

@@ -871,16 +871,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.StructuredMetrics.EventRecordingState"
-    enum="StructuredMetricsEventRecordingState" expires_after="2024-02-01">
+<histogram name="UMA.StructuredMetrics.EventRecordingState2"
+    enum="StructuredMetricsEventRecordingState2" expires_after="2024-02-01">
   <owner>jongahn@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <summary>
     Emitted when a structured metrics event is sent for recording. This records
-    whether that event was recorded successfully, or otherwise what error
-    occurred.
+    whether that event was recorded successfully, or otherwise why the event was
+    not recorded.
   </summary>
 </histogram>
 

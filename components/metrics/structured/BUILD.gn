@@ -262,13 +262,14 @@ source_set("unit_tests") {
   ]
 }
 
-# Convenience testing target
-test("structured_metrics_unittests") {
-  deps = [
-    ":unit_tests",
-    "//base",
-    "//base/test:test_support",
-    "//components/metrics/structured/mojom:unit_tests",
-    "//components/test:run_all_unittests",
-  ]
+# Structured metrics is only used in ash and lacros.
+if (is_chromeos_ash || is_chromeos_lacros) {
+  # Convenience testing target
+  test("structured_metrics_unittests") {
+    deps = [
+      ":unit_tests",
+      "//components/metrics/structured/mojom:unit_tests",
+      "//components/test:run_all_unittests",
+    ]
+  }
 }

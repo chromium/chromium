@@ -213,7 +213,8 @@ TEST_F(ExternalMetricsTest, FileNumberReadCappedAndDiscarded) {
   base::test::ScopedFeatureList feature_list;
   const int file_limit = 2;
   feature_list.InitAndEnableFeatureWithParameters(
-      kStructuredMetrics, {{"file_limit", base::NumberToString(file_limit)}});
+      features::kStructuredMetrics,
+      {{"file_limit", base::NumberToString(file_limit)}});
 
   Init();
 
