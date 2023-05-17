@@ -17,7 +17,7 @@ found in the LICENSE file.
         android:orientation="vertical">
 
         <ImageView
-            android:layout_marginHorizontal="@dimen/welcome_done_step_illustration_marginHorizontal"
+            android:layout_marginHorizontal="@dimen/standard_illustration_marginHorizontal"
             android:layout_marginBottom="@dimen/welcome_done_step_illustration_marginVertical"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"

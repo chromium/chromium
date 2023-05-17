@@ -18,12 +18,12 @@ found in the LICENSE file.
     <aapt:attr name="android:fillColor">
       <gradient
           android:startX="222.27"
-          android:startY="30.56"
+          android:startY="31.24"
           android:endX="222.27"
           android:endY="42.93"
           android:type="linear">
-        <item android:offset="0" android:color="#FFD2E3FC"/>
-        <item android:offset="1" android:color="#00D2E3FC"/>
+        <item android:offset="0" android:color="#FF174EA6"/>
+        <item android:offset="1" android:color="#00174EA6"/>
       </gradient>
     </aapt:attr>
   </path>
@@ -36,8 +36,8 @@ found in the LICENSE file.
           android:endX="104.56"
           android:endY="71.22"
           android:type="linear">
-        <item android:offset="0" android:color="#FFD2E3FC"/>
-        <item android:offset="1" android:color="#00D2E3FC"/>
+        <item android:offset="0" android:color="#FF174EA6"/>
+        <item android:offset="1" android:color="#00174EA6"/>
       </gradient>
     </aapt:attr>
   </path>
@@ -100,7 +100,7 @@ found in the LICENSE file.
       android:pathData="M101.9,124h95.54"
       android:strokeWidth="2"
       android:fillColor="#00000000"
-      android:strokeColor="#DADCE0"/>
+      android:strokeColor="#5F6368"/>
   <path
       android:pathData="m255.12,81.02 l-8.66,1.45c-0.72,0.12 -1.04,0.95 -0.57,1.49l5.64,6.48c0.47,0.54 1.37,0.39 1.63,-0.27l3.03,-7.93c0.25,-0.66 -0.34,-1.34 -1.06,-1.22Z"
       android:fillColor="#FF7F74"/>
@@ -177,11 +177,11 @@ found in the LICENSE file.
         android:pathData="M47.04,100.88a7.5,7.5 0,1 0,0 -15,7.5 7.5,0 0,0 0,15Z"
         android:strokeWidth="4"
         android:fillColor="#00000000"
-        android:strokeColor="#FBBC04"/>
+        android:strokeColor="#FDD663"/>
   </group>
   <path
       android:pathData="m76.97,16.57 l-2.36,-5.33a1.33,1.33 0,0 1,0.67 -1.75l5.3,-2.37a1.32,1.32 0,0 1,1.74 0.68l2.36,5.33a1.33,1.33 0,0 1,-0.67 1.75l-5.3,2.37a1.32,1.32 0,0 1,-1.74 -0.68Z"
-      android:fillColor="#47A656"/>
+      android:fillColor="#81C995"/>
   <group>
     <clip-path
         android:pathData="M271.13,49.69a5.07,5.07 0,0 1,-6.59 -2.77,5.01 5.01,0 0,1 2.75,-6.55l9.34,-3.79a5.07,5.07 0,0 1,6.59 2.76,5.01 5.01,0 0,1 -2.75,6.55l-9.34,3.79Z"/>
@@ -189,6 +189,6 @@ found in the LICENSE file.
         android:pathData="M271.13,49.69a5.07,5.07 0,0 1,-6.59 -2.77,5.01 5.01,0 0,1 2.75,-6.55l9.34,-3.79a5.07,5.07 0,0 1,6.59 2.76,5.01 5.01,0 0,1 -2.75,6.55l-9.34,3.79Z"
         android:strokeWidth="4"
         android:fillColor="#00000000"
-        android:strokeColor="#FBBC04"/>
+        android:strokeColor="#FDD663"/>
   </group>
 </vector>

@@ -7,9 +7,9 @@ found in the LICENSE file.
 
 <resources>
   <dimen name="all_content_marginHorizontal">16dp</dimen>
-  <dimen name="welcome_done_step_illustration_marginHorizontal">32dp</dimen>
+  <dimen name="welcome_step_illustration_marginHorizontal">32dp</dimen>
   <dimen name="welcome_done_step_illustration_marginVertical">32dp</dimen>
-  <dimen name="setting_step_illustration_marginHorizontal">16dp</dimen>
+  <dimen name="standard_illustration_marginHorizontal">16dp</dimen>
   <dimen name="done_step_explanation_marginBottom">8dp</dimen>
   <dimen name="done_step_link_button_size">48dp</dimen>
   <dimen name="done_step_link_button_padding">12dp</dimen>
