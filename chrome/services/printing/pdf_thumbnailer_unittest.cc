@@ -175,6 +175,36 @@ TEST_F(PdfThumbnailerTest, TooLargeThumbnailSize) {
   run_loop.Run();
   EXPECT_TRUE(bitmap_.isNull());
 }
+
+TEST_F(PdfThumbnailerTest, CreatePdfThumbnailWithSkiaPolicyEnabled) {
+  base::RunLoop run_loop;
+  auto pdf_region = CreatePdfRegion(kPdfContent);
+
+  thumbnailer_.SetUseSkiaRendererPolicy(/*use_skia=*/true);
+  thumbnailer_.GetThumbnail(
+      std::move(params_), std::move(pdf_region),
+      base::BindOnce(&PdfThumbnailerTest::StoreResult,
+                     weak_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_FALSE(bitmap_.isNull());
+  EXPECT_EQ(kThumbWidth, bitmap_.width());
+  EXPECT_EQ(kThumbHeight, bitmap_.height());
+}
+
+TEST_F(PdfThumbnailerTest, CreatePdfThumbnailWithSkiaPolicyDisabled) {
+  base::RunLoop run_loop;
+  auto pdf_region = CreatePdfRegion(kPdfContent);
+
+  thumbnailer_.SetUseSkiaRendererPolicy(/*use_skia=*/false);
+  thumbnailer_.GetThumbnail(
+      std::move(params_), std::move(pdf_region),
+      base::BindOnce(&PdfThumbnailerTest::StoreResult,
+                     weak_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_FALSE(bitmap_.isNull());
+  EXPECT_EQ(kThumbWidth, bitmap_.width());
+  EXPECT_EQ(kThumbHeight, bitmap_.height());
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace printing

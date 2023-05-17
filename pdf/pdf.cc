@@ -132,8 +132,6 @@ absl::optional<gfx::SizeF> GetPDFPageSizeByIndex(
   return engine_exports->GetPDFPageSizeByIndex(pdf_buffer, page_index);
 }
 
-// TODO(crbug.com/1440430): Make sure its callers set
-// `g_use_skia_renderer_enabled_by_policy` before calling this function.
 bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,
                            int page_index,
                            void* bitmap_buffer,

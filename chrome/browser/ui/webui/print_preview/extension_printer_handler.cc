@@ -15,12 +15,14 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "chrome/browser/pdf/pdf_pref_names.h"
 #include "chrome/browser/printing/pwg_raster_converter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "components/cloud_devices/common/cloud_device_description.h"
 #include "components/cloud_devices/common/printer_description.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/prefs/pref_service.h"
 #include "extensions/browser/api/device_permissions_manager.h"
 #include "extensions/browser/api/printer_provider/printer_provider_api.h"
 #include "extensions/browser/api/printer_provider/printer_provider_api_factory.h"
@@ -250,8 +252,14 @@ void ExtensionPrinterHandler::ConvertToPWGRaster(
   PwgRasterSettings bitmap_settings =
       PwgRasterConverter::GetBitmapSettings(printer_description, print_ticket);
 
+  absl::optional<bool> use_skia;
+  const PrefService* prefs = profile_->GetPrefs();
+  if (prefs && prefs->IsManagedPreference(prefs::kPdfUseSkiaRendererEnabled)) {
+    use_skia = prefs->GetBoolean(prefs::kPdfUseSkiaRendererEnabled);
+  }
+
   pwg_raster_converter_->Start(
-      data.get(),
+      use_skia, data.get(),
       PwgRasterConverter::GetConversionSettings(printer_description, page_size,
                                                 bitmap_settings.use_color),
       bitmap_settings,

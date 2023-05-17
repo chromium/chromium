@@ -6061,6 +6061,7 @@ static_library("ui") {
       "webui/print_preview/printer_handler.h",
     ]
     deps += [
+      "//chrome/browser/pdf:pdf_pref_names",
       "//chrome/common/printing",
       "//chrome/services/printing/public/mojom",
       "//components/printing/common:mojo_interfaces",
