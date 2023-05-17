@@ -32,6 +32,8 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
  public:
   // Public for testing
   enum class StorageStatus {
+    // The database initialization process hasn't started yet.
+    kPendingInitialization,
     // The database is in the process of being initialized.
     kInitializing,
     // The database initialization did not succeed.
@@ -138,9 +140,14 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
   virtual void OnStorageDoneInitializing(
       std::unique_ptr<PrivateAggregationBudgetStorage> storage);
 
-  StorageStatus storage_status_ = StorageStatus::kInitializing;
+  StorageStatus storage_status_ = StorageStatus::kPendingInitialization;
 
  private:
+  void EnsureStorageInitializationBegun();
+
+  void InitializeStorage(bool exclusively_run_in_memory,
+                         base::FilePath path_to_db_dir);
+
   void ConsumeBudgetImpl(int additional_budget,
                          const PrivateAggregationBudgetKey& budget_key,
                          base::OnceCallback<void(RequestResult)> on_done);
@@ -175,6 +182,13 @@ class CONTENT_EXPORT PrivateAggregationBudgeter {
   // Holds a closure that will shut down the initializing storage until
   // initialization is complete. After then, it is null.
   base::OnceClosure shutdown_initializing_storage_;
+
+  // When constructing this class, we create a closure that contains the storage
+  // initialization parameters. On the first call to `ConsumeBudget` or
+  // `ClearData`, the closure is run to call `InitializeStorage`. This ensures
+  // that the storage is only initialized when it is needed and avoid incurring
+  // delay on startup. After then, it is null;
+  base::OnceClosure initialize_storage_;
 
   base::WeakPtrFactory<PrivateAggregationBudgeter> weak_factory_{this};
 };

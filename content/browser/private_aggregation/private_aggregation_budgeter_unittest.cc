@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -72,8 +73,9 @@ class PrivateAggregationBudgeterUnderTest : public PrivateAggregationBudgeter {
   void AddBudgetValueAtTimestamp(const PrivateAggregationBudgetKey& budget_key,
                                  int budget_value,
                                  int64_t timestamp) {
-    if (raw_storage_ == nullptr)
+    if (raw_storage_ == nullptr) {
       return;
+    }
 
     std::string origin_key = budget_key.origin().Serialize();
 
@@ -100,8 +102,9 @@ class PrivateAggregationBudgeterUnderTest : public PrivateAggregationBudgeter {
       std::unique_ptr<PrivateAggregationBudgetStorage> storage) override {
     raw_storage_ = storage.get();
     PrivateAggregationBudgeter::OnStorageDoneInitializing(std::move(storage));
-    if (on_storage_done_initializing_)
+    if (on_storage_done_initializing_) {
       std::move(on_storage_done_initializing_).Run();
+    }
   }
 
   base::OnceClosure on_storage_done_initializing_;
@@ -133,18 +136,35 @@ class PrivateAggregationBudgeterTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  void CreateBudgeter(bool exclusively_run_in_memory,
-                      base::OnceClosure on_done_initializing) {
+  void CreateBudgeterWithoutInitializing(
+      bool exclusively_run_in_memory = false,
+      base::OnceClosure on_done_initializing = base::DoNothing()) {
     budgeter_ = std::make_unique<PrivateAggregationBudgeterUnderTest>(
         db_task_runner_, exclusively_run_in_memory, storage_directory(),
         std::move(on_done_initializing));
   }
 
-  void CreateBudgeterAndWait(bool exclusively_run_in_memory = false) {
+  void CreateAndInitializeBudgeterThenWait(
+      bool exclusively_run_in_memory = false) {
     base::RunLoop run_loop;
-    CreateBudgeter(exclusively_run_in_memory,
-                   /*on_done_initializing=*/run_loop.QuitClosure());
+    CreateBudgeterWithoutInitializing(exclusively_run_in_memory);
+    InitializeBudgeter(/*on_done_initializing=*/run_loop.QuitClosure());
     run_loop.Run();
+  }
+
+  // Initializes budgeter's storage by calling `ClearData` (which initiates
+  // storage initialization) on an empty range.
+  void InitializeBudgeter(base::OnceClosure on_done_initializing) {
+    ASSERT_EQ(
+        GetStorageStatus(),
+        PrivateAggregationBudgeter::StorageStatus::kPendingInitialization);
+
+    budgeter()->ClearData(base::Time::Min(), base::Time::Min(),
+                          StoragePartition::StorageKeyMatcherFunction(),
+                          std::move(on_done_initializing));
+    ASSERT_GT(
+        GetStorageStatus(),
+        PrivateAggregationBudgeter::StorageStatus::kPendingInitialization);
   }
 
   void DestroyBudgeter() { budgeter_.reset(); }
@@ -190,19 +210,23 @@ class PrivateAggregationBudgeterTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(PrivateAggregationBudgeterTest, BudgeterCreated_DatabaseInitialized) {
+TEST_F(PrivateAggregationBudgeterTest,
+       BudgeterCreated_DatabaseInitializedLazily) {
   bool is_done_initializing = false;
-  base::RunLoop run_loop;
-  CreateBudgeter(/*exclusively_run_in_memory=*/false,
-                 /*on_done_initializing=*/base::BindLambdaForTesting([&]() {
-                   is_done_initializing = true;
-                   run_loop.Quit();
-                 }));
+  CreateBudgeterWithoutInitializing(
+      /*exclusively_run_in_memory=*/false,
+      /*on_done_initializing=*/base::BindLambdaForTesting(
+          [&is_done_initializing]() { is_done_initializing = true; }));
   EXPECT_EQ(GetStorageStatus(),
-            PrivateAggregationBudgeter::StorageStatus::kInitializing);
+            PrivateAggregationBudgeter::StorageStatus::kPendingInitialization);
   EXPECT_FALSE(is_done_initializing);
 
+  base::RunLoop run_loop;
+  InitializeBudgeter(/*on_done_initializing=*/run_loop.QuitClosure());
+  EXPECT_EQ(GetStorageStatus(),
+            PrivateAggregationBudgeter::StorageStatus::kInitializing);
   run_loop.Run();
+
   EXPECT_TRUE(is_done_initializing);
   EXPECT_EQ(GetStorageStatus(),
             PrivateAggregationBudgeter::StorageStatus::kOpen);
@@ -214,25 +238,15 @@ TEST_F(PrivateAggregationBudgeterTest,
   // exists.
   base::CreateDirectory(db_path());
 
-  base::RunLoop run_loop;
-  CreateBudgeter(/*exclusively_run_in_memory=*/false,
-                 /*on_done_initializing=*/run_loop.QuitClosure());
-  EXPECT_EQ(GetStorageStatus(),
-            PrivateAggregationBudgeter::StorageStatus::kInitializing);
+  CreateAndInitializeBudgeterThenWait();
 
-  run_loop.Run();
   EXPECT_EQ(GetStorageStatus(),
             PrivateAggregationBudgeter::StorageStatus::kInitializationFailed);
 }
 
 TEST_F(PrivateAggregationBudgeterTest, InMemory_StillInitializes) {
-  base::RunLoop run_loop;
-  CreateBudgeter(/*exclusively_run_in_memory=*/true,
-                 /*on_done_initializing=*/run_loop.QuitClosure());
-  EXPECT_EQ(GetStorageStatus(),
-            PrivateAggregationBudgeter::StorageStatus::kInitializing);
+  CreateAndInitializeBudgeterThenWait(/*exclusively_run_in_memory=*/true);
 
-  run_loop.Run();
   EXPECT_EQ(GetStorageStatus(),
             PrivateAggregationBudgeter::StorageStatus::kOpen);
 }
@@ -240,7 +254,7 @@ TEST_F(PrivateAggregationBudgeterTest, InMemory_StillInitializes) {
 TEST_F(PrivateAggregationBudgeterTest, DatabaseReopened_DataPersisted) {
   int num_queries_processed = 0;
 
-  CreateBudgeterAndWait();
+  CreateAndInitializeBudgeterThenWait();
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
@@ -260,7 +274,7 @@ TEST_F(PrivateAggregationBudgeterTest, DatabaseReopened_DataPersisted) {
   EnsureDbFlushes();
 
   DestroyBudgeter();
-  CreateBudgeterAndWait();
+  CreateAndInitializeBudgeterThenWait();
 
   base::RunLoop run_loop;
   budgeter()->ConsumeBudget(
@@ -278,7 +292,7 @@ TEST_F(PrivateAggregationBudgeterTest,
        InMemoryDatabaseReopened_DataNotPersisted) {
   int num_queries_processed = 0;
 
-  CreateBudgeterAndWait(/*exclusively_run_in_memory=*/true);
+  CreateAndInitializeBudgeterThenWait(/*exclusively_run_in_memory=*/true);
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
@@ -298,7 +312,7 @@ TEST_F(PrivateAggregationBudgeterTest,
   EnsureDbFlushes();
 
   DestroyBudgeter();
-  CreateBudgeterAndWait(/*exclusively_run_in_memory=*/true);
+  CreateAndInitializeBudgeterThenWait(/*exclusively_run_in_memory=*/true);
 
   base::RunLoop run_loop;
   budgeter()->ConsumeBudget(
@@ -315,7 +329,7 @@ TEST_F(PrivateAggregationBudgeterTest,
 TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetSameKey) {
   int num_queries_processed = 0;
 
-  CreateBudgeterAndWait();
+  CreateAndInitializeBudgeterThenWait();
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
@@ -360,7 +374,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetSameKey) {
 TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentTimeWindows) {
   int num_queries_processed = 0;
 
-  CreateBudgeterAndWait();
+  CreateAndInitializeBudgeterThenWait();
 
   base::Time reference_time = base::Time::FromJavaTime(1652984901234);
 
@@ -421,7 +435,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentTimeWindows) {
 TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentApis) {
   int num_queries_processed = 0;
 
-  CreateBudgeterAndWait();
+  CreateAndInitializeBudgeterThenWait();
 
   PrivateAggregationBudgetKey fledge_key =
       PrivateAggregationBudgetKey::CreateForTesting(
@@ -462,7 +476,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentApis) {
 TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentOrigins) {
   int num_queries_processed = 0;
 
-  CreateBudgeterAndWait();
+  CreateAndInitializeBudgeterThenWait();
 
   PrivateAggregationBudgetKey key_a =
       PrivateAggregationBudgetKey::CreateForTesting(
@@ -500,7 +514,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetDifferentOrigins) {
 TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetExtremeValues) {
   int num_queries_processed = 0;
 
-  CreateBudgeterAndWait();
+  CreateAndInitializeBudgeterThenWait();
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
@@ -541,7 +555,7 @@ TEST_F(PrivateAggregationBudgeterTest, ConsumeBudgetExtremeValues) {
 }
 
 TEST_F(PrivateAggregationBudgeterTest, BudgetValidityMetricsRecorded) {
-  CreateBudgeterAndWait();
+  CreateAndInitializeBudgeterThenWait();
 
   PrivateAggregationBudgetKey budget_key = CreateBudgetKey();
 
@@ -634,8 +648,7 @@ TEST_F(PrivateAggregationBudgeterTest, BudgetValidityMetricsRecorded) {
 TEST_F(PrivateAggregationBudgeterTest,
        ConsumeBudgetBeforeInitialized_QueriesAreQueued) {
   base::RunLoop run_loop;
-  CreateBudgeter(/*exclusively_run_in_memory=*/false,
-                 /*on_done_initializing=*/run_loop.QuitClosure());
+  CreateBudgeterWithoutInitializing();
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
@@ -665,9 +678,10 @@ TEST_F(PrivateAggregationBudgeterTest,
   budgeter()->ConsumeBudget(
       /*budget=*/1, example_key,
       base::BindLambdaForTesting(
-          [&num_queries_processed](RequestResult result) {
+          [&num_queries_processed, &run_loop](RequestResult result) {
             EXPECT_EQ(result, RequestResult::kInsufficientBudget);
             EXPECT_EQ(++num_queries_processed, 3);
+            run_loop.Quit();
           }));
 
   EXPECT_EQ(num_queries_processed, 0);
@@ -681,14 +695,37 @@ TEST_F(PrivateAggregationBudgeterTest,
 }
 
 TEST_F(PrivateAggregationBudgeterTest,
+       ClearDataBeforeInitialized_QueriesAreQueued) {
+  base::RunLoop run_loop;
+  CreateBudgeterWithoutInitializing();
+
+  bool was_callback_run = false;
+  budgeter()->ClearData(base::Time::Min(), base::Time::Max(),
+                        StoragePartition::StorageKeyMatcherFunction(),
+                        base::BindLambdaForTesting([&]() {
+                          was_callback_run = true;
+                          run_loop.Quit();
+                        }));
+
+  EXPECT_FALSE(was_callback_run);
+  EXPECT_EQ(GetStorageStatus(),
+            PrivateAggregationBudgeter::StorageStatus::kInitializing);
+
+  run_loop.Run();
+
+  EXPECT_TRUE(was_callback_run);
+  EXPECT_EQ(GetStorageStatus(),
+            PrivateAggregationBudgeter::StorageStatus::kOpen);
+}
+
+TEST_F(PrivateAggregationBudgeterTest,
        ConsumeBudgetBeforeFailedInitialization_QueuedQueriesAreRejected) {
   // The database initialization will fail to open if its directory already
   // exists.
   base::CreateDirectory(db_path());
 
   base::RunLoop run_loop;
-  CreateBudgeter(/*exclusively_run_in_memory=*/false,
-                 /*on_done_initializing=*/run_loop.QuitClosure());
+  CreateBudgeterWithoutInitializing();
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
@@ -718,9 +755,10 @@ TEST_F(PrivateAggregationBudgeterTest,
   budgeter()->ConsumeBudget(
       /*budget=*/1, example_key,
       base::BindLambdaForTesting(
-          [&num_queries_processed](RequestResult result) {
+          [&num_queries_processed, &run_loop](RequestResult result) {
             EXPECT_EQ(result, RequestResult::kStorageInitializationFailed);
             EXPECT_EQ(++num_queries_processed, 3);
+            run_loop.Quit();
           }));
 
   EXPECT_EQ(num_queries_processed, 0);
@@ -736,8 +774,7 @@ TEST_F(PrivateAggregationBudgeterTest,
 TEST_F(PrivateAggregationBudgeterTest,
        MaxPendingCallsExceeded_AdditionalConsumeBudgetCallsRejected) {
   base::RunLoop run_loop;
-  CreateBudgeter(/*exclusively_run_in_memory=*/false,
-                 /*on_done_initializing=*/run_loop.QuitClosure());
+  CreateBudgeterWithoutInitializing();
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
@@ -747,14 +784,18 @@ TEST_F(PrivateAggregationBudgeterTest,
 
   int num_queries_succeeded = 0;
 
+  base::RepeatingClosure barrier_quit_closure = base::BarrierClosure(
+      PrivateAggregationBudgeter::kMaxPendingCalls, run_loop.QuitClosure());
   for (int i = 0; i < PrivateAggregationBudgeter::kMaxPendingCalls; ++i) {
     // Queries should be processed in the order they are received.
     budgeter()->ConsumeBudget(
         /*budget=*/1, example_key,
         base::BindLambdaForTesting(
-            [&num_queries_succeeded, i](RequestResult result) {
+            [&num_queries_succeeded, i,
+             &barrier_quit_closure](RequestResult result) {
               EXPECT_EQ(result, RequestResult::kApproved);
               EXPECT_EQ(num_queries_succeeded++, i);
+              barrier_quit_closure.Run();
             }));
   }
 
@@ -783,8 +824,7 @@ TEST_F(PrivateAggregationBudgeterTest,
 TEST_F(PrivateAggregationBudgeterTest,
        MaxPendingCallsExceeded_AdditionalDataClearingCallsAllowed) {
   base::RunLoop run_loop;
-  CreateBudgeter(/*exclusively_run_in_memory=*/false,
-                 /*on_done_initializing=*/base::DoNothing());
+  CreateBudgeterWithoutInitializing();
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
@@ -829,10 +869,26 @@ TEST_F(PrivateAggregationBudgeterTest,
 }
 
 TEST_F(PrivateAggregationBudgeterTest,
+       BudgeterDestroyedImmediatelyAfterCreation_DoesNotCrash) {
+  CreateBudgeterWithoutInitializing(/*exclusively_run_in_memory=*/false);
+  DestroyBudgeter();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PrivateAggregationBudgeterTest,
+       BudgeterDestroyedImmediatelyAfterInitializationStarted_DoesNotCrash) {
+  base::RunLoop run_loop;
+  CreateBudgeterWithoutInitializing(/*exclusively_run_in_memory=*/false);
+  InitializeBudgeter(/*on_done_initializing=*/base::DoNothing());
+  DestroyBudgeter();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(PrivateAggregationBudgeterTest,
        BudgeterDestroyedImmediatelyAfterInitialization_DoesNotCrash) {
   base::RunLoop run_loop;
-  CreateBudgeter(
-      /*exclusively_run_in_memory=*/false,
+  CreateBudgeterWithoutInitializing(/*exclusively_run_in_memory=*/false);
+  InitializeBudgeter(
       /*on_done_initializing=*/base::BindLambdaForTesting([this, &run_loop]() {
         DestroyBudgeter();
         run_loop.Quit();
@@ -840,18 +896,10 @@ TEST_F(PrivateAggregationBudgeterTest,
   run_loop.Run();
 }
 
-TEST_F(PrivateAggregationBudgeterTest,
-       BudgeterDestroyedImmediatelyAfterCreation_DoesNotCrash) {
-  CreateBudgeter(/*exclusively_run_in_memory=*/false,
-                 /*on_done_initializing=*/base::DoNothing());
-  DestroyBudgeter();
-  base::RunLoop().RunUntilIdle();
-}
-
 TEST_F(PrivateAggregationBudgeterTest, ClearDataBasicTest) {
   int num_queries_processed = 0;
 
-  CreateBudgeterAndWait();
+  CreateAndInitializeBudgeterThenWait();
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
@@ -900,7 +948,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataBasicTest) {
 TEST_F(PrivateAggregationBudgeterTest, ClearDataCrossesWindowBoundary) {
   int num_queries_processed = 0;
 
-  CreateBudgeterAndWait();
+  CreateAndInitializeBudgeterThenWait();
 
   PrivateAggregationBudgetKey example_key_1 =
       PrivateAggregationBudgetKey::CreateForTesting(
@@ -971,7 +1019,7 @@ TEST_F(PrivateAggregationBudgeterTest,
        ClearDataDoesntAffectWindowsOutsideRange) {
   int num_queries_processed = 0;
 
-  CreateBudgeterAndWait();
+  CreateAndInitializeBudgeterThenWait();
 
   PrivateAggregationBudgetKey key_to_clear =
       PrivateAggregationBudgetKey::CreateForTesting(
@@ -1056,7 +1104,7 @@ TEST_F(PrivateAggregationBudgeterTest,
 TEST_F(PrivateAggregationBudgeterTest, ClearDataAllApisAffected) {
   int num_queries_processed = 0;
 
-  CreateBudgeterAndWait();
+  CreateAndInitializeBudgeterThenWait();
 
   PrivateAggregationBudgetKey fledge_key =
       PrivateAggregationBudgetKey::CreateForTesting(
@@ -1125,7 +1173,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataAllApisAffected) {
 TEST_F(PrivateAggregationBudgeterTest, ClearAllDataBasicTest) {
   int num_queries_processed = 0;
 
-  CreateBudgeterAndWait();
+  CreateAndInitializeBudgeterThenWait();
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
@@ -1174,7 +1222,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataBasicTest) {
 TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullTimes) {
   int num_queries_processed = 0;
 
-  CreateBudgeterAndWait();
+  CreateAndInitializeBudgeterThenWait();
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
@@ -1223,7 +1271,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullTimes) {
 TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullStartNonNullEndTime) {
   int num_queries_processed = 0;
 
-  CreateBudgeterAndWait();
+  CreateAndInitializeBudgeterThenWait();
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
@@ -1272,7 +1320,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearAllDataNullStartNonNullEndTime) {
 TEST_F(PrivateAggregationBudgeterTest, ClearDataFilterSelectsOrigins) {
   int num_queries_processed = 0;
 
-  CreateBudgeterAndWait();
+  CreateAndInitializeBudgeterThenWait();
 
   const url::Origin kOriginA = url::Origin::Create(GURL("https://a.example/"));
   const url::Origin kOriginB = url::Origin::Create(GURL("https://b.example/"));
@@ -1341,7 +1389,7 @@ TEST_F(PrivateAggregationBudgeterTest, ClearDataFilterSelectsOrigins) {
 TEST_F(PrivateAggregationBudgeterTest, ClearDataAllTimeFilterSelectsOrigins) {
   int num_queries_processed = 0;
 
-  CreateBudgeterAndWait();
+  CreateAndInitializeBudgeterThenWait();
 
   const url::Origin kOriginA = url::Origin::Create(GURL("https://a.example/"));
   const url::Origin kOriginB = url::Origin::Create(GURL("https://b.example/"));
@@ -1412,7 +1460,7 @@ TEST_F(PrivateAggregationBudgeterTest,
        BudgeterDestroyedImmedatelyAfterClearData_CallbackStillRun) {
   int num_queries_processed = 0;
 
-  CreateBudgeterAndWait();
+  CreateAndInitializeBudgeterThenWait();
 
   PrivateAggregationBudgetKey example_key =
       PrivateAggregationBudgetKey::CreateForTesting(
@@ -1451,7 +1499,9 @@ TEST_F(PrivateAggregationBudgeterTest, DifferentMaxScope_StillFunctions) {
 
     int num_queries_processed = 0;
 
-    CreateBudgeterAndWait();
+    // Run in memory so that nothing gets persisted which avoids interactions
+    // between iterations.
+    CreateAndInitializeBudgeterThenWait(/*exclusively_run_in_memory=*/true);
 
     PrivateAggregationBudgetKey example_key =
         PrivateAggregationBudgetKey::CreateForTesting(

@@ -134,11 +134,10 @@ PrivateAggregationBudgeter::PrivateAggregationBudgeter(
     const base::FilePath& path_to_db_dir)
     : db_task_runner_(std::move(db_task_runner)) {
   DCHECK(db_task_runner_);
-  shutdown_initializing_storage_ = PrivateAggregationBudgetStorage::CreateAsync(
-      db_task_runner_, exclusively_run_in_memory, path_to_db_dir,
-      /*on_done_initializing=*/
-      base::BindOnce(&PrivateAggregationBudgeter::OnStorageDoneInitializing,
-                     weak_factory_.GetWeakPtr()));
+
+  initialize_storage_ = base::BindOnce(
+      &PrivateAggregationBudgeter::InitializeStorage,
+      weak_factory_.GetWeakPtr(), exclusively_run_in_memory, path_to_db_dir);
 }
 
 PrivateAggregationBudgeter::PrivateAggregationBudgeter() = default;
@@ -153,10 +152,33 @@ PrivateAggregationBudgeter::~PrivateAggregationBudgeter() {
   }
 }
 
+void PrivateAggregationBudgeter::EnsureStorageInitializationBegun() {
+  if (storage_status_ == StorageStatus::kPendingInitialization) {
+    CHECK(initialize_storage_);
+    std::move(initialize_storage_).Run();
+  }
+}
+
+void PrivateAggregationBudgeter::InitializeStorage(
+    bool exclusively_run_in_memory,
+    base::FilePath path_to_db_dir) {
+  CHECK_EQ(storage_status_, StorageStatus::kPendingInitialization);
+
+  storage_status_ = StorageStatus::kInitializing;
+  shutdown_initializing_storage_ = PrivateAggregationBudgetStorage::CreateAsync(
+      db_task_runner_, exclusively_run_in_memory, std::move(path_to_db_dir),
+      /*on_done_initializing=*/
+      base::BindOnce(&PrivateAggregationBudgeter::OnStorageDoneInitializing,
+                     weak_factory_.GetWeakPtr()));
+  CHECK(initialize_storage_.is_null());
+}
+
 void PrivateAggregationBudgeter::ConsumeBudget(
     int budget,
     const PrivateAggregationBudgetKey& budget_key,
     base::OnceCallback<void(RequestResult)> on_done) {
+  EnsureStorageInitializationBegun();
+
   if (storage_status_ == StorageStatus::kInitializing) {
     if (pending_calls_.size() >= kMaxPendingCalls) {
       std::move(on_done).Run(RequestResult::kTooManyPendingCalls);
@@ -182,6 +204,8 @@ void PrivateAggregationBudgeter::ClearData(
   ++num_pending_clear_data_tasks_;
   db_task_runner_->UpdatePriority(base::TaskPriority::USER_VISIBLE);
 
+  EnsureStorageInitializationBegun();
+
   done = base::BindOnce(&PrivateAggregationBudgeter::OnClearDataComplete,
                         weak_factory_.GetWeakPtr())
              .Then(std::move(done));
@@ -204,8 +228,9 @@ void PrivateAggregationBudgeter::OnClearDataComplete() {
   --num_pending_clear_data_tasks_;
 
   // No more clear data tasks, so we can reset the priority.
-  if (num_pending_clear_data_tasks_ == 0)
+  if (num_pending_clear_data_tasks_ == 0) {
     db_task_runner_->UpdatePriority(base::TaskPriority::BEST_EFFORT);
+  }
 }
 
 void PrivateAggregationBudgeter::OnStorageDoneInitializing(
@@ -242,6 +267,7 @@ void PrivateAggregationBudgeter::ConsumeBudgetImpl(
       blink::features::kPrivateAggregationApiMaxBudgetPerScope.Get();
 
   switch (storage_status_) {
+    case StorageStatus::kPendingInitialization:
     case StorageStatus::kInitializing:
       NOTREACHED();
       break;
@@ -354,6 +380,7 @@ void PrivateAggregationBudgeter::ClearDataImpl(
     StoragePartition::StorageKeyMatcherFunction filter,
     base::OnceClosure done) {
   switch (storage_status_) {
+    case StorageStatus::kPendingInitialization:
     case StorageStatus::kInitializing:
       NOTREACHED();
       break;
@@ -366,11 +393,13 @@ void PrivateAggregationBudgeter::ClearDataImpl(
 
   // Treat null times as unbounded lower or upper range. This is used by
   // browsing data remover.
-  if (delete_begin.is_null())
+  if (delete_begin.is_null()) {
     delete_begin = base::Time::Min();
+  }
 
-  if (delete_end.is_null())
+  if (delete_end.is_null()) {
     delete_end = base::Time::Max();
+  }
 
   bool is_all_time_covered = delete_begin.is_min() && delete_end.is_max();
 
