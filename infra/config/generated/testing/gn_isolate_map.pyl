@@ -341,6 +341,13 @@
     "label": "//chrome/test:chrome_app_unittests",
     "type": "console_test_launcher",
   },
+  "chrome_criticalstaging_tast_tests": {
+    "label": "//chromeos:chrome_criticalstaging_tast_tests",
+    "type": "generated_script",
+    "args": [
+      "--logs-dir=${ISOLATED_OUTDIR}",
+    ],
+  },
   "chrome_elf_unittests": {
     "label": "//chrome/chrome_elf:chrome_elf_unittests",
     "type": "console_test_launcher",
