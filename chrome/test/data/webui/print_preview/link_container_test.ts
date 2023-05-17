@@ -17,12 +17,19 @@ const link_container_test = {
   TestNames: {
     HideInAppKioskMode: 'hide in app kiosk mode',
     SystemDialogLinkClick: 'system dialog link click',
+    SystemDialogLinkProperties: 'system dialog link properties',
     InvalidState: 'invalid state',
     OpenInPreviewLinkClick: 'open in preview link click',
   },
 };
 
 Object.assign(window, {link_container_test: link_container_test});
+
+function assertLinkState(link: HTMLElement, disabled: boolean) {
+  assertFalse(link.hidden);
+  assertEquals(!disabled, link.hasAttribute('actionable'));
+  assertEquals(disabled, link.querySelector('cr-icon-button')!.disabled);
+}
 
 suite(link_container_test.suiteName, function() {
   let linkContainer: PrintPreviewLinkContainerElement;
@@ -67,6 +74,21 @@ suite(link_container_test.suiteName, function() {
   });
 
   /**
+   * Test that the system dialog link properties are as expected.
+   */
+  test(link_container_test.TestNames.SystemDialogLinkProperties, function() {
+    const link = linkContainer.$.systemDialogLink;
+    assertLinkState(link, false);
+
+    // <if expr="is_macosx">
+    assertEquals('Print using system dialog… (⌥⌘P)', link.textContent);
+    // </if>
+    // <if expr="not is_macosx">
+    assertEquals('Print using system dialog… (Ctrl+Shift+P)', link.textContent);
+    // </if>
+  });
+
+  /**
    * Test that if settings are invalid, the open in preview link is disabled
    * (if it exists), and that the system dialog link is disabled on Windows
    * and enabled on other platforms.
@@ -74,25 +96,19 @@ suite(link_container_test.suiteName, function() {
   test(link_container_test.TestNames.InvalidState, function() {
     const systemDialogLink = linkContainer.$.systemDialogLink;
 
-    function validateLinkState(link: HTMLDivElement, disabled: boolean) {
-      assertFalse(link.hidden);
-      assertEquals(!disabled, link.hasAttribute('actionable'));
-      assertEquals(disabled, link.querySelector('cr-icon-button')!.disabled);
-    }
-
-    validateLinkState(systemDialogLink, false);
+    assertLinkState(systemDialogLink, false);
     // <if expr="is_macosx">
     const openInPreviewLink = linkContainer.$.openPdfInPreviewLink;
-    validateLinkState(openInPreviewLink, false);
+    assertLinkState(openInPreviewLink, false);
     // </if>
 
     // Set disabled to true, indicating that there is a validation error or
     // printer error.
     linkContainer.disabled = true;
-    validateLinkState(systemDialogLink, isWindows);
+    assertLinkState(systemDialogLink, isWindows);
     // <if expr="is_macosx">
     assert(openInPreviewLink);
-    validateLinkState(openInPreviewLink, true);
+    assertLinkState(openInPreviewLink, true);
     // </if>
   });
 
