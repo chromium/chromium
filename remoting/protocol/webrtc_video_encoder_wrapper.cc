@@ -139,6 +139,13 @@ WebrtcVideoEncoderWrapper::WebrtcVideoEncoderWrapper(
       absl::optional<int> encoder_speed =
           session_options.GetInt("Av1-Encoder-Speed");
       if (encoder_speed) {
+        {
+          // TODO(joedow): This is temporary code for testing crash uploads.
+          if (*encoder_speed == 42) {
+            int* blargh = nullptr;
+            *blargh = 42;
+          }
+        }
         VLOG(0) << "Setting AV1 encoder speed to " << encoder_speed.value();
         encoder_->SetEncoderSpeed(encoder_speed.value());
       }
