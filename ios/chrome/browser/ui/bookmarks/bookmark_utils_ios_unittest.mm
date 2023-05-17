@@ -82,6 +82,63 @@ class BookmarkIOSUtilsUnitTest : public BookmarkIOSUnitTestSupport,
   }
 };
 
+TEST_P(BookmarkIOSUtilsUnitTest, CreateOrUpdateNoop) {
+  const BookmarkNode* mobile_node = profile_bookmark_model_->mobile_node();
+  std::u16string title = u"title";
+  const BookmarkNode* node = AddBookmark(mobile_node, title);
+
+  GURL url_copy = node->GetTitledUrlNodeUrl();
+  // This call is a no-op, , so `CreateOrUpdateBookmark` should return `false`.
+  EXPECT_FALSE(bookmark_utils_ios::CreateOrUpdateBookmark(
+      node, base::SysUTF16ToNSString(title), url_copy, mobile_node,
+      profile_bookmark_model_, account_bookmark_model_));
+  EXPECT_EQ(node->GetTitle(), title);
+}
+
+TEST_P(BookmarkIOSUtilsUnitTest, CreateOrUpdateWithinModel) {
+  const BookmarkNode* mobile_node = profile_bookmark_model_->mobile_node();
+  const BookmarkNode* node = AddBookmark(mobile_node, u"a");
+  const BookmarkNode* folder = AddFolder(mobile_node, u"f1");
+
+  NSString* new_title = @"b";
+  GURL new_url("http://example.com");
+  EXPECT_TRUE(bookmark_utils_ios::CreateOrUpdateBookmark(
+      node, new_title, new_url, folder, profile_bookmark_model_,
+      account_bookmark_model_));
+
+  ASSERT_THAT(mobile_node->children(),
+              testing::ElementsAre(testing::Pointer(folder)));
+  ASSERT_THAT(folder->children(), testing::ElementsAre(testing::Pointer(node)));
+  EXPECT_EQ(node->GetTitle(), base::SysNSStringToUTF16(new_title));
+  EXPECT_EQ(node->GetTitledUrlNodeUrl(), new_url);
+}
+
+// TODO(crbug.com/1446407): Add tests that call `CreateOrUpdateBookmark` with
+//                          the account storage.
+
+TEST_P(BookmarkIOSUtilsUnitTest, CreateOrUpdateBetweenModels) {
+  if (!IsAccountStorageEnabled()) {
+    GTEST_SKIP() << "Need account storage to move bookmarks between storages";
+  }
+  const BookmarkNode* local_or_syncable_mobile_node =
+      profile_bookmark_model_->mobile_node();
+  const BookmarkNode* node = AddBookmark(local_or_syncable_mobile_node, u"a");
+  const BookmarkNode* account_mobile_node =
+      account_bookmark_model_->mobile_node();
+
+  NSString* new_title = @"b";
+  GURL new_url("http://example.com");
+  EXPECT_TRUE(bookmark_utils_ios::CreateOrUpdateBookmark(
+      node, new_title, new_url, account_mobile_node, profile_bookmark_model_,
+      account_bookmark_model_));
+
+  EXPECT_THAT(local_or_syncable_mobile_node->children(), testing::IsEmpty());
+  ASSERT_THAT(account_mobile_node->children(), testing::SizeIs(1));
+  const BookmarkNode* moved_node = account_mobile_node->children()[0].get();
+  EXPECT_EQ(moved_node->GetTitle(), base::SysNSStringToUTF16(new_title));
+  EXPECT_EQ(moved_node->GetTitledUrlNodeUrl(), new_url);
+}
+
 TEST_P(BookmarkIOSUtilsUnitTest, DeleteNodes) {
   const BookmarkNode* mobileNode = profile_bookmark_model_->mobile_node();
   const BookmarkNode* f1 = AddFolder(mobileNode, u"f1");

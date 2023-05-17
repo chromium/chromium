@@ -275,23 +275,61 @@ MDCSnackbarMessage* CreateUndoToastWithWrapper(UndoManagerWrapper* wrapper,
   return message;
 }
 
+bool CreateOrUpdateBookmark(const BookmarkNode* node,
+                            NSString* title,
+                            const GURL& url,
+                            const BookmarkNode* folder,
+                            bookmarks::BookmarkModel* local_or_syncable_model,
+                            bookmarks::BookmarkModel* account_model) {
+  DCHECK(!node || node->is_url());
+  DCHECK(folder);
+  std::u16string titleString = base::SysNSStringToUTF16(title);
+  if (node && node->GetTitle() == titleString && node->url() == url &&
+      node->parent() == folder) {
+    // Nothing to do.
+    return false;
+  }
+
+  bookmarks::BookmarkModel* folder_model =
+      GetBookmarkModelForNode(folder, local_or_syncable_model, account_model);
+  if (!node) {  // Create a new bookmark.
+    folder_model->client()->RecordAction(
+        base::UserMetricsAction("BookmarkAdded"));
+    node = folder_model->AddNewURL(folder, folder->children().size(),
+                                   titleString, url);
+  } else {  // Update the existing bookmark.
+    bookmarks::BookmarkModel* node_model =
+        GetBookmarkModelForNode(node, local_or_syncable_model, account_model);
+    node_model->SetTitle(node, titleString,
+                         bookmarks::metrics::BookmarkEditSource::kUser);
+    node_model->SetURL(node, url,
+                       bookmarks::metrics::BookmarkEditSource::kUser);
+
+    DCHECK(!folder->HasAncestor(node));
+    if (node->parent() != folder) {
+      if (node_model == folder_model) {
+        // In-model move.
+        node_model->Move(node, folder, folder->children().size());
+      } else {
+        // Cross-model move.
+        node_model->MoveToOtherModelWithNewNodeIdsAndUuids(node, folder_model,
+                                                           folder);
+        // Warning: calling `MoveToOtherModelWithNewNodeIdsAndUuids` invalidates
+        // `node`, so it shouldn't be used after this line.
+      }
+    }
+  }
+  return true;
+}
+
 MDCSnackbarMessage* CreateOrUpdateBookmarkWithUndoToast(
     const BookmarkNode* node,
     NSString* title,
     const GURL& url,
     const BookmarkNode* folder,
-    bookmarks::BookmarkModel* bookmark_model,
+    bookmarks::BookmarkModel* local_or_syncable_model,
+    bookmarks::BookmarkModel* account_model,
     ChromeBrowserState* browser_state) {
-  DCHECK(!node || node->is_url());
-  DCHECK(folder);
-  std::u16string titleString = base::SysNSStringToUTF16(title);
-
-  // If the bookmark has no changes supporting Undo, just bail out.
-  if (node && node->GetTitle() == titleString && node->url() == url &&
-      node->parent() == folder) {
-    return nil;
-  }
-
   // Secondly, create an Undo group for all undoable actions.
   UndoManagerWrapper* wrapper =
       [[UndoManagerWrapper alloc] initWithBrowserState:browser_state];
@@ -299,34 +337,23 @@ MDCSnackbarMessage* CreateOrUpdateBookmarkWithUndoToast(
   // Create or update the bookmark.
   [wrapper startGroupingActions];
 
-  // Save the bookmark information.
-  if (!node) {  // Create a new bookmark.
-    bookmark_model->client()->RecordAction(
-        base::UserMetricsAction("BookmarkAdded"));
-    node = bookmark_model->AddNewURL(folder, folder->children().size(),
-                                     titleString, url);
-  } else {  // Update the information.
-    bookmark_model->SetTitle(node, titleString,
-                             bookmarks::metrics::BookmarkEditSource::kUser);
-    bookmark_model->SetURL(node, url,
-                           bookmarks::metrics::BookmarkEditSource::kUser);
-
-    DCHECK(!folder->HasAncestor(node));
-    if (node->parent() != folder) {
-      bookmark_model->Move(node, folder, folder->children().size());
-    }
-    DCHECK(node->parent() == folder);
-  }
-
-  [wrapper stopGroupingActions];
-  [wrapper resetUndoManagerChanged];
-
+  // The code below might invalidate `node` so grab params for
+  // `CreateUndoToastWithWrapper` early.
   NSString* text =
       l10n_util::GetNSString((node) ? IDS_IOS_BOOKMARK_NEW_BOOKMARK_UPDATED
                                     : IDS_IOS_BOOKMARK_NEW_BOOKMARK_CREATED);
   const char* user_action = (node)
                                 ? "MobileBookmarkManagerUpdatedBookmarkUndone"
                                 : "MobileBookmarkManagerAddedBookmarkUndone";
+  bool did_change_anything = CreateOrUpdateBookmark(
+      node, title, url, folder, local_or_syncable_model, account_model);
+
+  [wrapper stopGroupingActions];
+  [wrapper resetUndoManagerChanged];
+
+  if (!did_change_anything) {
+    return nil;
+  }
   return CreateUndoToastWithWrapper(wrapper, text, user_action);
 }
 

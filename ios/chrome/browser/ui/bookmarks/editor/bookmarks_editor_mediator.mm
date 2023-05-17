@@ -219,7 +219,8 @@
   [self.delegate showSnackbarMessage:
                      bookmark_utils_ios::CreateOrUpdateBookmarkWithUndoToast(
                          [self bookmark], name, url, [self folder],
-                         [self bookmarkModel], _browserState)];
+                         _profileBookmarkModel.get(),
+                         _accountBookmarkModel.get(), _browserState)];
   if (_manuallyChangedTheFolder) {
     bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
         _folder, _profileBookmarkModel.get(), _accountBookmarkModel.get());
