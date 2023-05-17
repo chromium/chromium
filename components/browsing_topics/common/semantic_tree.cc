@@ -5,6 +5,7 @@
 #include "components/browsing_topics/common/semantic_tree.h"
 
 #include "components/strings/grit/components_strings.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace browsing_topics {
 
@@ -444,6 +445,12 @@ std::vector<Topic> SemanticTree::GetAncestorTopics(const Topic& topic) {
     }
   }
   return ancestor_topics;
+}
+
+absl::optional<int> SemanticTree::GetLatestLocalizedNameMessageId(
+    const Topic& topic) {
+  return SemanticTree::GetLocalizedNameMessageId(
+      topic, blink::features::kBrowsingTopicsTaxonomyVersion.Get());
 }
 
 absl::optional<int> SemanticTree::GetLocalizedNameMessageId(

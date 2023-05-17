@@ -91,22 +91,4 @@ TEST_F(CanonicalTopicTest, ValueConversion) {
   EXPECT_FALSE(converted_topic);
 }
 
-using CanonicalTopicDeathTest = testing::Test;
-
-TEST_F(CanonicalTopicDeathTest, OutOfBoundsDeath) {
-  // Confirm that requesting a topics with invalid Taxononmy results in a
-  // CHECK failure.
-  CanonicalTopic too_low_taxonomy(kLowestTopicID,
-                                  kAvailableTaxononmyVersion - 1);
-  CanonicalTopic negative_taxonomy(kLowestTopicID, -1);
-  CanonicalTopic too_high_taxonomy(kLowestTopicID,
-                                   kAvailableTaxononmyVersion + 1);
-
-  std::vector<CanonicalTopic> test_bad_topics = {
-      too_low_taxonomy, negative_taxonomy, too_high_taxonomy};
-
-  for (const auto& topic : test_bad_topics)
-    EXPECT_CHECK_DEATH(topic.GetLocalizedRepresentation());
-}
-
 }  // namespace privacy_sandbox

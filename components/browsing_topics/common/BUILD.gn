@@ -17,6 +17,7 @@ component("common") {
   deps = [
     "//base",
     "//components/strings:components_strings_grit",
+    "//third_party/blink/public/common",
   ]
 }
 
@@ -28,5 +29,6 @@ source_set("unit_tests") {
     ":common",
     "//base/test:test_support",
     "//components/strings:components_strings_grit",
+    "//third_party/blink/public/common",
   ]
 }

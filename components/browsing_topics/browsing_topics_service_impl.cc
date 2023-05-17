@@ -529,8 +529,7 @@ void BrowsingTopicsServiceImpl::ClearTopic(
   if (!browsing_topics_state_loaded_)
     return;
 
-  browsing_topics_state_.ClearTopic(canonical_topic.topic_id(),
-                                    canonical_topic.taxonomy_version());
+  browsing_topics_state_.ClearTopic(canonical_topic.topic_id());
 }
 
 void BrowsingTopicsServiceImpl::ClearTopicsDataForOrigin(
@@ -645,8 +644,7 @@ void BrowsingTopicsServiceImpl::OnBrowsingTopicsStateLoaded() {
   } else if (!decision.topics_to_clear.empty()) {
     for (const privacy_sandbox::CanonicalTopic& canonical_topic :
          decision.topics_to_clear) {
-      browsing_topics_state_.ClearTopic(canonical_topic.topic_id(),
-                                        canonical_topic.taxonomy_version());
+      browsing_topics_state_.ClearTopic(canonical_topic.topic_id());
     }
   }
 

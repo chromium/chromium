@@ -5,8 +5,10 @@
 #include "components/browsing_topics/common/semantic_tree.h"
 
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace browsing_topics {
 
@@ -70,22 +72,25 @@ TEST_F(SemanticTreeUnittest, GetAncestorTopicsMultipleAncestors) {
   EXPECT_EQ(topics, expected_ancestors);
 }
 
-TEST_F(SemanticTreeUnittest, GetLocalizedNameMessageIdValidTopicAndTaxonomy) {
+TEST_F(SemanticTreeUnittest, GetLatestLocalizedNameMessageIdValidTopic) {
   absl::optional<int> message_id =
-      semantic_tree_.GetLocalizedNameMessageId(Topic(100), 1);
+      semantic_tree_.GetLatestLocalizedNameMessageId(Topic(100));
   EXPECT_EQ(message_id.value(),
             IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_100);
 }
 
-TEST_F(SemanticTreeUnittest, GetLocalizedNameMessageIdInvalidTaxonomy) {
+TEST_F(SemanticTreeUnittest, GetLatestLocalizedNameMessageIdInvalidTaxonomy) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kBrowsingTopics, {{"taxonomy_version", "0"}});
   absl::optional<int> message_id =
-      semantic_tree_.GetLocalizedNameMessageId(Topic(100), 4);
+      semantic_tree_.GetLatestLocalizedNameMessageId(Topic(100));
   EXPECT_FALSE(message_id.has_value());
 }
 
-TEST_F(SemanticTreeUnittest, GetLocalizedNameMessageIdInvalidTopic) {
+TEST_F(SemanticTreeUnittest, GetLatestLocalizedNameMessageIdInvalidTopic) {
   absl::optional<int> message_id =
-      semantic_tree_.GetLocalizedNameMessageId(Topic(9999), 1);
+      semantic_tree_.GetLatestLocalizedNameMessageId(Topic(9999));
   EXPECT_FALSE(message_id.has_value());
 }
 }  // namespace browsing_topics

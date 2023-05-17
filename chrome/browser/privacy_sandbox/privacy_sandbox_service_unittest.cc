@@ -1738,6 +1738,9 @@ TEST_F(PrivacySandboxServiceTest, TestFakeTopics) {
     CanonicalTopic topic2(Topic(2), kTestTaxonomyVersion);
     CanonicalTopic topic3(Topic(3), kTestTaxonomyVersion);
     CanonicalTopic topic4(Topic(4), kTestTaxonomyVersion);
+    // Duplicate a topic to test that it doesn't appear in the results in
+    // addition to topic4.
+    CanonicalTopic topic4_duplicate(Topic(4), kTestTaxonomyVersion - 1);
 
     auto* service = privacy_sandbox_service();
     EXPECT_THAT(service->GetCurrentTopTopics(), ElementsAre(topic1, topic2));
@@ -1749,11 +1752,13 @@ TEST_F(PrivacySandboxServiceTest, TestFakeTopics) {
                 ElementsAre(topic1, topic3, topic4));
 
     service->SetTopicAllowed(topic4, true);
+    service->SetTopicAllowed(topic4_duplicate, true);
     EXPECT_THAT(service->GetCurrentTopTopics(), ElementsAre(topic2, topic4));
     EXPECT_THAT(service->GetBlockedTopics(), ElementsAre(topic1, topic3));
 
     service->SetTopicAllowed(topic1, true);
     service->SetTopicAllowed(topic4, false);
+    service->SetTopicAllowed(topic4_duplicate, false);
     EXPECT_THAT(service->GetCurrentTopTopics(), ElementsAre(topic1, topic2));
     EXPECT_THAT(service->GetBlockedTopics(), ElementsAre(topic3, topic4));
   }

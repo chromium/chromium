@@ -17,14 +17,11 @@ constexpr char kTopicId[] = "topicId";
 constexpr char kTaxonomyVersion[] = "taxonomyVersion";
 
 std::u16string GetLocalizedRepresentationInternal(
-    browsing_topics::Topic topic_id,
-    int taxonomy_version) {
-  CHECK_GT(taxonomy_version, 0);
+    browsing_topics::Topic topic_id) {
   browsing_topics::SemanticTree semantic_tree;
-  CHECK_LE(taxonomy_version, semantic_tree.kHighestSupportedTaxonomyVersion);
 
   absl::optional<int> localized_name_message_id =
-      semantic_tree.GetLocalizedNameMessageId(topic_id, taxonomy_version);
+      semantic_tree.GetLatestLocalizedNameMessageId(topic_id);
 
   // Topic IDs  are provided by a categorization model shipped over the network,
   // which could technically  provide Topic IDs outside the expected range, e.g.
@@ -49,7 +46,7 @@ CanonicalTopic::CanonicalTopic(browsing_topics::Topic topic_id,
     : topic_id_(topic_id), taxonomy_version_(taxonomy_version) {}
 
 std::u16string CanonicalTopic::GetLocalizedRepresentation() const {
-  return GetLocalizedRepresentationInternal(topic_id_, taxonomy_version_);
+  return GetLocalizedRepresentationInternal(topic_id_);
 }
 
 base::Value CanonicalTopic::ToValue() const {
@@ -60,29 +57,28 @@ base::Value CanonicalTopic::ToValue() const {
 
 /*static*/ absl::optional<CanonicalTopic> CanonicalTopic::FromValue(
     const base::Value& value) {
-  if (!value.is_dict())
+  if (!value.is_dict()) {
     return absl::nullopt;
+  }
 
   auto topic_id = value.GetDict().FindInt(kTopicId);
-  if (!topic_id)
+  if (!topic_id) {
     return absl::nullopt;
+  }
 
   auto taxonomy_version = value.GetDict().FindInt(kTaxonomyVersion);
-  if (!taxonomy_version)
+  if (!taxonomy_version) {
     return absl::nullopt;
+  }
 
   return CanonicalTopic(browsing_topics::Topic(*topic_id), *taxonomy_version);
 }
 
 bool CanonicalTopic::operator<(const CanonicalTopic& other) const {
-  if (taxonomy_version_ != other.taxonomy_version_)
-    return taxonomy_version_ < other.taxonomy_version_;
   return topic_id_.value() < other.topic_id_.value();
 }
 
 bool CanonicalTopic::operator==(const CanonicalTopic& other) const {
-  if (taxonomy_version_ != other.taxonomy_version_)
-    return false;
   return topic_id_ == other.topic_id_;
 }
 
