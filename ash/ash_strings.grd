@@ -2692,6 +2692,27 @@ Connect your device to power.
       <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_PROHIBITED_BY_POLICY" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is off and is not allowed to turn on due to prohibited by policy.">
         Show hotspot details. Hotspot is blocked by your administrator.
       </message>
+      <message name="IDS_ASH_HOTSPOT_DETAILED_VIEW_SUBLABEL_NO_MOBILE_DATA" desc="The sublabel text in the hotspot detailed view when hotspot is off and not allowed to turn on due to no mobile network connection.">
+        Connect to mobile data to use hotspot
+      </message>
+      <message name="IDS_ASH_HOTSPOT_DETAILED_VIEW_INFO_TOOLTIP_MOBILE_DATA_NOT_SUPPORTED" desc="The tooltip for the info icon in hotspot detailed view when hotspot is off and not allowed to turn on due to the connected mobile data doesn't support hotspot.">
+        Your mobile network doesn't support hotspot
+      </message>
+      <message name="IDS_ASH_HOTSPOT_DETAILED_VIEW_INFO_TOOLTIP_PROHIBITED_BY_POLICY" desc="The tooltip for the info icon in hotspot detailed view when hotspot is off and not allowed to turn on due to enterprise policy.">
+        This setting is managed by your administrator
+      </message>
+      <message name="IDS_ASH_HOTSPOT_DETAILED_VIEW_ON_NO_CONNECTED_DEVICES" desc="The subtext in the hotspot detailed view when hotspot is on and no devices connected to it.">
+        On, no devices connected
+      </message>
+      <message name="IDS_ASH_HOTSPOT_DETAILED_VIEW_TITLE" desc="The label in the hotspot detailed view for the Chromebook Hotspot.">
+        <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph> hotspot
+      </message>
+      <message name="IDS_ASH_HOTSPOT_DETAILED_VIEW_TOGGLE_A11Y_TEXT" desc="Accessiblity text for the toggle in the hotspot detailed view.">
+        Toggle hotspot
+      </message>
+      <message name="IDS_ASH_HOTSPOT_DETAILED_VIEW_HOTSPOT_SETTINGS" desc="The tooltip used for the settings button in hotspot detailed page.">
+        Hotspot settings
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCOVERABLE" desc="Toast shown when a Bluetooth adapter is discoverable.">
         "<ph name="NAME">$1<ex>Chromebook</ex></ph>" visible to Bluetooth devices.
       </message>

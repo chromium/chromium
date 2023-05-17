@@ -133,6 +133,9 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // be any string.
   virtual void ShowNetworkSettings(const std::string& network_id) = 0;
 
+  // Shows the Hotspot subpage.
+  virtual void ShowHotspotSubpage() = 0;
+
   // Shows the MultiDevice setup flow dialog.
   virtual void ShowMultiDeviceSetup() = 0;
 

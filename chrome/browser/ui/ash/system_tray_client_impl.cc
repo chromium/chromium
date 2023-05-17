@@ -639,6 +639,11 @@ void SystemTrayClientImpl::ShowNetworkSettings(const std::string& network_id) {
   ShowNetworkSettingsHelper(network_id, false /* show_configure */);
 }
 
+void SystemTrayClientImpl::ShowHotspotSubpage() {
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kHotspotSubpagePath);
+}
+
 void SystemTrayClientImpl::ShowNetworkSettingsHelper(
     const std::string& network_id,
     bool show_configure) {

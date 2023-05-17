@@ -58,6 +58,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowThirdPartyVpnCreate(const std::string& extension_id) override;
   void ShowArcVpnCreate(const std::string& app_id) override;
   void ShowNetworkSettings(const std::string& network_id) override;
+  void ShowHotspotSubpage() override;
   void ShowMultiDeviceSetup() override;
   void ShowFirmwareUpdate() override;
   void SetLocaleAndExit(const std::string& locale_iso_code) override;
@@ -86,6 +87,8 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   int show_bluetooth_pairing_dialog_count() const {
     return show_bluetooth_pairing_dialog_count_;
   }
+
+  int show_hotspot_subpage_count() const { return show_hotspot_subpage_count_; }
 
   int show_multi_device_setup_count() const {
     return show_multi_device_setup_count_;
@@ -173,6 +176,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   int show_network_settings_count_ = 0;
   int show_bluetooth_settings_count_ = 0;
   int show_bluetooth_pairing_dialog_count_ = 0;
+  int show_hotspot_subpage_count_ = 0;
   int show_multi_device_setup_count_ = 0;
   int show_connected_devices_settings_count_ = 0;
   int show_os_settings_privacy_and_security_count_ = 0;

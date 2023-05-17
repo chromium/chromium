@@ -110,6 +110,10 @@ void TestSystemTrayClient::ShowNetworkSettings(const std::string& network_id) {
   last_network_settings_network_id_ = network_id;
 }
 
+void TestSystemTrayClient::ShowHotspotSubpage() {
+  show_hotspot_subpage_count_++;
+}
+
 void TestSystemTrayClient::ShowMultiDeviceSetup() {
   show_multi_device_setup_count_++;
 }
