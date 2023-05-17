@@ -74353,6 +74353,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="24" label="TOO_MANY_STAS"/>
   <int value="25" label="DISCONNECT_FAILURE"/>
   <int value="26" label="SIM_LOCKED"/>
+  <int value="27" label="NOT_REGISTERED"/>
+  <int value="28" label="INVALID_APN"/>
 </enum>
 
 <enum name="NetworkServiceMemoryCacheBlockedByRequestHeaderReason">
