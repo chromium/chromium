@@ -411,6 +411,9 @@ crbug.com/1445552 [ android android-sm-a135m ] Pixel_OffscreenCanvasWebGLDefault
 # ChromeOS consistent Canvas failure
 crbug.com/1445502 [ chromeos chromeos-board-amd64-generic angle-disabled no-passthrough ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture [ Failure ]
 
+# DrDC Crash on Pixel 4 Webview
+crbug.com/1446429 [ android-pixel-4 android-r android-webview-instrumentation angle-opengles no-passthrough ] Pixel_Video_MP4_FourColors_Rot_180 [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
