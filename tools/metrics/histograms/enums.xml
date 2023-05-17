@@ -56811,6 +56811,16 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="3" label="FoundButNotReported"/>
 </enum>
 
+<enum name="LargestContentfulPaintImageLoadStartLessThanDocumentTtfbCauses">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Image is loaded from memory cache"/>
+  <int value="2"
+      label="Image is preloaded after receiving a 103 (Early Hints) response"/>
+  <int value="3"
+      label="Image is loaded from memory and preloaded after receiving a 103
+             (Early Hints) response"/>
+</enum>
+
 <enum name="LargestContentType">
   <summary>
     Whether the LargestContentfulPaint results from image or text. These are the

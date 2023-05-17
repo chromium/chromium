@@ -208,6 +208,18 @@ WebPerformanceMetricsForReporting::LargestContentfulPaintImageLoadEnd() const {
   return private_->timingForReporting()->LargestContentfulPaintImageLoadEnd();
 }
 
+bool WebPerformanceMetricsForReporting::
+    LargestContentfulPaintImageIsLoadedFromMemoryCache() const {
+  return private_->timingForReporting()
+      ->LargestContentfulPaintImageIsLoadedFromMemoryCache();
+}
+
+bool WebPerformanceMetricsForReporting::
+    LargestContentfulPaintImageIsPreloadedWithEarlyHints() const {
+  return private_->timingForReporting()
+      ->LargestContentfulPaintImageIsPreloadedWithEarlyHints();
+}
+
 double WebPerformanceMetricsForReporting::FirstEligibleToPaint() const {
   return MillisecondsToSeconds(
       private_->timingForReporting()->FirstEligibleToPaint());

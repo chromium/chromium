@@ -244,6 +244,26 @@ PerformanceTimingForReporting::LargestContentfulPaintImageLoadEnd() const {
   return MonotonicTimeToPseudoWallTime(time);
 }
 
+bool PerformanceTimingForReporting::
+    LargestContentfulPaintImageIsLoadedFromMemoryCache() const {
+  PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
+
+  DCHECK(paint_timing_detector);
+
+  return paint_timing_detector
+      ->LargestContentfulPaintImageIsLoadedFromMemoryCache();
+}
+
+bool PerformanceTimingForReporting::
+    LargestContentfulPaintImageIsPreloadedWithEarlyHints() const {
+  PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
+
+  DCHECK(paint_timing_detector);
+
+  return paint_timing_detector
+      ->LargestContentfulPaintImageIsPreloadedWithEarlyHints();
+}
+
 uint64_t PerformanceTimingForReporting::LargestTextPaintForMetrics() const {
   PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
   if (!paint_timing_detector)

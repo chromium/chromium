@@ -2962,6 +2962,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint.ImageLoadStartLessThanDocumentTtfbCauses"
+    enum="LargestContentfulPaintImageLoadStartLessThanDocumentTtfbCauses"
+    expires_after="2024-04-24">
+  <owner>haoliuk@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Records the count of 'causes' of LCP image load timings being less than
+    document Time-To-First-Byte(TTFB) to diagnose crbug.com/1431906. This is
+    recorded at most once per image, only when the image's load start was
+    recorded as being before its associated document's TTFB. Recorded in the
+    page load tracker when the LCP candidate changes. Unexplained instances are
+    recorded in the 'Unknown' bucket, and these are expected to diminish over
+    time as additional causes are uncovered.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2"
     units="ms" expires_after="2023-10-22">
   <owner>npm@chromium.org</owner>

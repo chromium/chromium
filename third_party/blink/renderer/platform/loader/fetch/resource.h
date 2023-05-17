@@ -426,6 +426,14 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   void DidRemoveClientOrObserver();
 
+  void SetIsPreloadedByEarlyHints() { is_preloaded_by_early_hints_ = true; }
+
+  bool IsPreloadedByEarlyHints() { return is_preloaded_by_early_hints_; }
+
+  void SetIsLoadedFromMemoryCache() { is_loaded_from_memory_cache_ = true; }
+
+  bool IsLoadedFromMemoryCache() { return is_loaded_from_memory_cache_; }
+
  protected:
   Resource(const ResourceRequestHead&,
            ResourceType,
@@ -528,6 +536,8 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   bool is_revalidation_start_forbidden_ = false;
   bool is_unused_preload_ = false;
   bool stale_revalidation_started_ = false;
+  bool is_preloaded_by_early_hints_ = false;
+  bool is_loaded_from_memory_cache_ = false;
 
   ResourceIntegrityDisposition integrity_disposition_;
   SubresourceIntegrity::ReportInfo integrity_report_info_;

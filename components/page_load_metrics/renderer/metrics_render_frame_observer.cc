@@ -656,6 +656,14 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
           CreateTimeDeltaFromTimestampsInSeconds(
               (*perf.LargestContentfulPaintImageLoadEnd()).InSecondsF(), start);
     }
+
+    timing->paint_timing->largest_contentful_paint
+        ->is_loaded_from_memory_cache =
+        perf.LargestContentfulPaintImageIsLoadedFromMemoryCache();
+
+    timing->paint_timing->largest_contentful_paint
+        ->is_preloaded_with_early_hints =
+        perf.LargestContentfulPaintImageIsPreloadedWithEarlyHints();
   }
   if (perf.LargestTextPaintSizeForMetrics() > 0) {
     // LargestTextPaint and LargestTextPaintSize should be available at the

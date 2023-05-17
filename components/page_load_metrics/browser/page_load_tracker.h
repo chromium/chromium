@@ -76,6 +76,18 @@ enum class VisibilityAtActivation {
   kMaxValue = kVisible
 };
 
+// These values are recorded into a UMA histogram as causes of irregular LCP
+// image load timings. These entries should not be renumbered and the numeric
+// values should not be reused. These entries should be kept in sync with the
+// definition in tools/metrics/histograms/enums.xml
+enum class ImageLoadStartLessThanDocumentTtfbCause {
+  kUnknown = 0,
+  kLoadedFromMemoryCache = 1,
+  kPreloadedWithEarlyHints = 2,
+  kLoadedFromMemoryCacheAndPreloadedWithEarlyHints = 3,
+  kMaxValue = kLoadedFromMemoryCacheAndPreloadedWithEarlyHints
+};
+
 }  // namespace internal
 
 // These errors are internal to the page_load_metrics subsystem and do not

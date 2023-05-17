@@ -796,6 +796,7 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
     if (!resource_timing_report_timer_.IsActive())
       resource_timing_report_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
   }
+  resource->SetIsLoadedFromMemoryCache();
 }
 
 Resource* ResourceFetcher::CreateResourceForStaticData(
@@ -2730,6 +2731,7 @@ void ResourceFetcher::PopulateAndAddResourceTimingInfo(
         (!response.WasFetchedViaServiceWorker() ||
          response.IsServiceWorkerPassThrough())) {
       initiator_type = AtomicString("early-hints");
+      resource->SetIsPreloadedByEarlyHints();
     }
   }
 
