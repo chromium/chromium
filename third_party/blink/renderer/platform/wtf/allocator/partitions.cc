@@ -84,10 +84,14 @@ bool Partitions::InitializeOnce() {
       base::features::kBackupRefPtrModeParam.Get();
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   const bool process_affected_by_brp_flag =
+#if BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
+      true;
+#else
       base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
           base::features::BackupRefPtrEnabledProcesses::kAllProcesses ||
       base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
           base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer;
+#endif  // BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
   const bool enable_brp =
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocBackupRefPtr) &&

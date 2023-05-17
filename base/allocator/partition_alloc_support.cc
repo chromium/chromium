@@ -363,6 +363,9 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
     if (features::kBackupRefPtrModeParam.Get() !=
         features::BackupRefPtrMode::kDisabled) {
       std::string process_selector;
+#if BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
+      process_selector = "AllProcesses";
+#else
       switch (features::kBackupRefPtrEnabledProcessesParam.Get()) {
         case features::BackupRefPtrEnabledProcesses::kBrowserOnly:
           process_selector = "BrowserOnly";
@@ -377,7 +380,7 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
           process_selector = "AllProcesses";
           break;
       }
-
+#endif  // BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
       brp_group_name += ("_" + process_selector);
     }
   }
@@ -419,6 +422,12 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
   // This value is not surrounded by build flags as it is meant to be updated
   // manually in binary experiment patches.
   trials.emplace("VectorRawPtrExperiment", "Disabled");
+
+#if BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
+  trials.emplace(base::features::kRendererLiveBRPSyntheticTrialName, "Enabled");
+#else
+  trials.emplace(base::features::kRendererLiveBRPSyntheticTrialName, "Control");
+#endif
 
   return trials;
 }
@@ -903,6 +912,9 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
 #if (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&  \
      BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) || \
     BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#if BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
+  process_affected_by_brp_flag = true;
+#else
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocBackupRefPtr)) {
     // No specified process type means this is the Browser process.
@@ -924,6 +936,7 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
         break;
     }
   }
+#endif  // BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
 #endif  // (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) ||
         // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)

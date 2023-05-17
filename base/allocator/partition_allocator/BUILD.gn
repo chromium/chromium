@@ -422,6 +422,14 @@ buildflag_header("partition_alloc_buildflags") {
   _enable_pointer_compression =
       enable_pointer_compression_support && has_64_bit_pointers
 
+  # Force-enable live BRP in all processes, ignoring the canonical
+  # experiment state of `PartitionAllocBackupRefPtr`.
+  #
+  # This is not exposed as a GN arg as it is not meant to be used by
+  # developers - it is simply a compile-time hinge that should be
+  # set in the experimental build and then reverted immediately.
+  _force_all_process_brp = false
+
   # TODO(crbug.com/1151236): Need to refactor the following buildflags.
   # The buildflags (except RECORD_ALLOC_INFO) are used by both chrome and
   # partition alloc. For partition alloc,
@@ -447,6 +455,7 @@ buildflag_header("partition_alloc_buildflags") {
     "USE_ASAN_UNOWNED_PTR=$use_asan_unowned_ptr",
     "USE_HOOKABLE_RAW_PTR=$use_hookable_raw_ptr",
     "ENABLE_GWP_ASAN_SUPPORT=$_enable_gwp_asan_support",
+    "FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES=$_force_all_process_brp",
 
     "FORCE_ENABLE_RAW_PTR_EXCLUSION=$force_enable_raw_ptr_exclusion",
 

@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -156,6 +157,11 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUseAlternateDistribution);
 #if BUILDFLAG(IS_WIN)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPageAllocatorRetryOnCommitFailure);
 #endif
+
+// Name of the synthetic trial associated with forcibly enabling BRP in
+// all processes.
+inline constexpr base::StringPiece kRendererLiveBRPSyntheticTrialName =
+    "BackupRefPtrRendererLive";
 
 }  // namespace features
 }  // namespace base
