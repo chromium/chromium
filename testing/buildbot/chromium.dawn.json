@@ -205,6 +205,8 @@
     ],
     "isolated_scripts": []
   },
+  "Dawn Android arm64 DEPS Release (Pixel 6)": {},
+  "Dawn Android arm64 Release (Pixel 6)": {},
   "Dawn Linux TSAN Release": {
     "gtest_tests": [
       {

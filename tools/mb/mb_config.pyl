@@ -257,6 +257,8 @@
     'chromium.dawn': {
       'Dawn Android arm DEPS Release (Pixel 4)': 'dawn_tests_android_release_trybot_reclient',
       'Dawn Android arm Release (Pixel 4)': 'dawn_tests_android_release_trybot_reclient',
+      'Dawn Android arm64 DEPS Release (Pixel 6)': 'dawn_tests_android_arm64_release_trybot_reclient',
+      'Dawn Android arm64 Release (Pixel 6)': 'dawn_tests_android_arm64_release_trybot_reclient',
 
       'Dawn Linux TSAN Release': 'dawn_tests_tsan_release_bot_dcheck_always_on_reclient',
       'Dawn Linux x64 Builder': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
@@ -1126,7 +1128,9 @@
 
     'tryserver.chromium.dawn': {
       'android-dawn-arm-rel': 'dawn_tests_android_release_trybot_reclient',
+      'android-dawn-arm64-rel': 'dawn_tests_android_arm64_release_trybot_reclient',
       'dawn-android-arm-deps-rel': 'dawn_tests_android_release_trybot_reclient',
+      'dawn-android-arm64-deps-rel': 'dawn_tests_android_arm64_release_trybot_reclient',
       'dawn-linux-x64-deps-rel': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
       'dawn-mac-x64-deps-rel': 'dawn_tests_release_trybot_reclient',
       'dawn-try-linux-tsan-rel': 'dawn_tests_tsan_release_trybot_reclient',
@@ -2460,6 +2464,10 @@
 
     'codesearch_gen_chromium_mac_bot_reclient': [
       'codesearch_reclient', 'mac',
+    ],
+
+    'dawn_tests_android_arm64_release_trybot_reclient': [
+      'dawn_no_gl', 'android', 'arm64', 'release_trybot_minimal_symbols_reclient',
     ],
 
     'dawn_tests_android_release_trybot_reclient': [

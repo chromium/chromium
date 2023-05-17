@@ -13,6 +13,21 @@
       "use_remoteexec": true
     }
   },
+  "android-dawn-arm64-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "debuggable_apks": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_dawn": true,
+      "use_remoteexec": true
+    }
+  },
   "dawn-android-arm-deps-rel": {
     "gn_args": {
       "dcheck_always_on": true,
@@ -22,6 +37,21 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
+      "target_os": "android",
+      "use_dawn": true,
+      "use_remoteexec": true
+    }
+  },
+  "dawn-android-arm64-deps-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "debuggable_apks": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
       "target_os": "android",
       "use_dawn": true,
       "use_remoteexec": true

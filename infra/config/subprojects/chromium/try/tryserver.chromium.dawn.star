@@ -56,6 +56,34 @@ try_.builder(
 )
 
 try_.builder(
+    name = "dawn-android-arm64-deps-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    mirrors = [
+        "ci/Dawn Android arm64 DEPS Release (Pixel 6)",
+    ],
+    main_list_view = "try",
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
+    tryjob = try_.job(
+        experiment_percentage = 100,
+        location_filters = [
+            cq.location_filter(path_regexp = "content/test/gpu/.+"),
+            cq.location_filter(path_regexp = "gpu/.+"),
+            cq.location_filter(path_regexp = "testing/buildbot/chromium.dawn.json"),
+            cq.location_filter(path_regexp = "third_party/blink/renderer/modules/webgpu/.+"),
+            cq.location_filter(path_regexp = "third_party/blink/web_tests/external/wpt/webgpu/.+"),
+            cq.location_filter(path_regexp = "third_party/blink/web_tests/wpt_internal/webgpu/.+"),
+            cq.location_filter(path_regexp = "third_party/blink/web_tests/WebGPUExpectations"),
+            cq.location_filter(path_regexp = "third_party/dawn/.+"),
+            cq.location_filter(path_regexp = "third_party/webgpu-cts/.+"),
+            cq.location_filter(path_regexp = "tools/clang/scripts/update.py"),
+            cq.location_filter(path_regexp = "ui/gl/features.gni"),
+        ],
+    ),
+)
+
+try_.builder(
     name = "dawn-linux-x64-deps-rel",
     branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [
@@ -178,6 +206,16 @@ try_.builder(
     name = "android-dawn-arm-rel",
     mirrors = [
         "ci/Dawn Android arm Release (Pixel 4)",
+    ],
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
+)
+
+try_.builder(
+    name = "android-dawn-arm64-rel",
+    mirrors = [
+        "ci/Dawn Android arm64 Release (Pixel 6)",
     ],
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
