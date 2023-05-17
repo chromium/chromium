@@ -14825,6 +14825,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_HIGH_EFFICIENCY_DIALOG_BODY_WITH_SAVINGS" desc="Body text for a dialog describing how much less memory was used due to Memory Saver mode.">
         While this tab was inactive, Memory Saver freed up <ph name="MEMORY_VALUE">$1<ex>175MB</ex></ph> of memory for other tasks.
       </message>
+      <message name="IDS_HIGH_EFFICIENCY_DIALOG_SAVINGS_ACCNAME" desc="Accessible label for the memory savings shown on the Memory Saver dialog to provide context to the raw number.">
+        <ph name="MEMORY_VALUE">$1<ex>175MB</ex></ph> of memory saved
+      </message>
       <if expr="use_titlecase">
         <message name="IDS_HIGH_EFFICIENCY_DIALOG_BUTTON_ADD_TO_EXCLUSION_LIST" desc="In Title Case: Label for a button on the page action chip that adds the current active site to the exclusion list when clicked">
           Keep Site Active

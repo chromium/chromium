@@ -51,11 +51,10 @@ HighEfficiencyChipView::HighEfficiencyChipView(
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
                          "HighEfficiency"),
-      browser_(browser) {
+      browser_(browser),
+      chip_accessible_label_(
+          l10n_util::GetStringUTF16(IDS_HIGH_EFFICIENCY_CHIP_ACCNAME)) {
   DCHECK(browser_);
-  SetAccessibilityProperties(
-      /*role*/ absl::nullopt,
-      l10n_util::GetStringUTF16(IDS_HIGH_EFFICIENCY_CHIP_ACCNAME));
 
   auto* manager = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();
@@ -134,6 +133,7 @@ void HighEfficiencyChipView::UpdateImpl() {
         RecordHighEfficiencyChipState(
             HighEfficiencyChipState::kExpandedWithSavings);
       } else {
+        SetAccessibleName(chip_accessible_label_);
         RecordHighEfficiencyChipState(HighEfficiencyChipState::kCollapsed);
       }
     } else if (tab_helper->HasChipBeenHidden()) {
