@@ -22,6 +22,8 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/text_constants.h"
@@ -92,8 +94,30 @@ class RequestsAccessSection : public views::BoxLayoutView {
   const RequestsAccessSection& operator=(const RequestsAccessSection&) = delete;
   ~RequestsAccessSection() override = default;
 
+  // Adds an entry in `extensions_container_` for the extension with `id`,
+  // `name` and `icon` at `index`. If the extension is already present, it
+  // updates the entry. Shows the sections if it's the first extension entry.
+  void AddOrUpdateExtension(const extensions::ExtensionId& id,
+                            const std::u16string& name,
+                            const ui::ImageModel& icon,
+                            int index);
+
+  // Removes the entry corresponding to `id`, if existent. Hides the section if
+  // no extension entries are remaining.
+  void RemoveExtension(const extensions::ExtensionId& id);
+
+  // Removes all extension entries.
+  void ClearExtensions();
+
+  // Accessors used by tests:
+  std::vector<extensions::ExtensionId> GetExtensionsForTesting();
+
  private:
-  raw_ptr<views::View> extension_items_;
+  // Container for the entries for all the extensions requesting access..
+  raw_ptr<views::View> extensions_container_;
+
+  // A collection of all the extension entries
+  std::map<extensions::ExtensionId, views::View*> extension_entries_;
 };
 
 BEGIN_VIEW_BUILDER(/* No Export */, RequestsAccessSection, views::BoxLayoutView)
@@ -121,10 +145,64 @@ RequestsAccessSection::RequestsAccessSection() {
           // populated later.
           views::Builder<views::BoxLayoutView>()
               .SetOrientation(views::BoxLayout::Orientation::kVertical)
-              .CopyAddressTo(&extension_items_))
+              .CopyAddressTo(&extensions_container_))
       .BuildChildren();
-  // TODO(crbug.com/1390952): Populate `extension_items_` with extensions
-  // requesting access.
+}
+
+void RequestsAccessSection::AddOrUpdateExtension(
+    const extensions::ExtensionId& id,
+    const std::u16string& name,
+    const ui::ImageModel& icon,
+    int index) {
+  auto extension_iter = extension_entries_.find(id);
+
+  if (extension_iter == extension_entries_.end()) {
+    // Add new extension entry.
+    auto item =
+        views::Builder<views::FlexLayoutView>()
+            .SetOrientation(views::LayoutOrientation::kHorizontal)
+            .AddChildren(views::Builder<views::ImageView>().SetImage(icon),
+                         views::Builder<views::Label>().SetText(name))
+            .Build();
+    extension_entries_.insert({id, item.get()});
+    extensions_container_->AddChildViewAt(std::move(item), index);
+
+    SetVisible(!extension_entries_.empty());
+  } else {
+    // Update extension entry.
+    std::vector<View*> extension_items = extension_iter->second->children();
+    views::AsViewClass<views::ImageView>(extension_items[0])->SetImage(icon);
+    views::AsViewClass<views::Label>(extension_items[1])->SetText(name);
+    extensions_container_->ReorderChildView(extension_iter->second, index);
+  }
+}
+
+void RequestsAccessSection::RemoveExtension(const extensions::ExtensionId& id) {
+  auto extension_iter = extension_entries_.find(id);
+  if (extension_iter == extension_entries_.end()) {
+    return;
+  }
+
+  extensions_container_->RemoveChildViewT(extension_iter->second);
+  extension_entries_.erase(extension_iter);
+
+  SetVisible(!extension_entries_.empty());
+}
+
+void RequestsAccessSection::ClearExtensions() {
+  SetVisible(false);
+  extensions_container_->RemoveAllChildViews();
+  extension_entries_.clear();
+}
+
+std::vector<extensions::ExtensionId>
+RequestsAccessSection::GetExtensionsForTesting() {
+  std::vector<extensions::ExtensionId> extensions;
+  extensions.reserve(extension_entries_.size());
+  for (auto entry : extension_entries_) {
+    extensions.push_back(entry.first);
+  }
+  return extensions;
 }
 
 ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
@@ -235,7 +313,8 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                       .AddChildren(
                           // Request access section.
                           views::Builder<RequestsAccessSection>(
-                              std::make_unique<RequestsAccessSection>()),
+                              std::make_unique<RequestsAccessSection>())
+                              .CopyAddressTo(&requests_access_section_),
                           // Menu items section.
                           views::Builder<views::BoxLayoutView>()
                               .CopyAddressTo(&menu_items_)
@@ -289,9 +368,10 @@ void ExtensionsMenuMainPageView::OnToggleButtonPressed() {
   // a page refresh for the update to take effect.
 }
 
-void ExtensionsMenuMainPageView::Update(std::u16string current_site,
-                                        bool is_site_settings_toggle_visible,
-                                        bool is_site_settings_toggle_on) {
+void ExtensionsMenuMainPageView::UpdateSubheader(
+    const std::u16string& current_site,
+    bool is_site_settings_toggle_visible,
+    bool is_site_settings_toggle_on) {
   subheader_subtitle_->SetText(current_site);
 
   site_settings_toggle_->SetVisible(is_site_settings_toggle_visible);
@@ -302,6 +382,23 @@ void ExtensionsMenuMainPageView::Update(std::u16string current_site,
       GetSiteSettingToggleText(is_site_settings_toggle_on));
 }
 
+void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
+    const extensions::ExtensionId& id,
+    const std::u16string& name,
+    const ui::ImageModel& icon,
+    int index) {
+  requests_access_section_->AddOrUpdateExtension(id, name, icon, index);
+}
+
+void ExtensionsMenuMainPageView::RemoveExtensionRequestingAccess(
+    const extensions::ExtensionId& id) {
+  requests_access_section_->RemoveExtension(id);
+}
+
+void ExtensionsMenuMainPageView::ClearExtensionsRequestingAccess() {
+  requests_access_section_->ClearExtensions();
+}
+
 std::vector<ExtensionMenuItemView*> ExtensionsMenuMainPageView::GetMenuItems()
     const {
   std::vector<ExtensionMenuItemView*> menu_item_views;
@@ -309,6 +406,11 @@ std::vector<ExtensionMenuItemView*> ExtensionsMenuMainPageView::GetMenuItems()
     menu_item_views.push_back(GetAsMenuItem(view));
   }
   return menu_item_views;
+}
+
+std::vector<extensions::ExtensionId>
+ExtensionsMenuMainPageView::GetExtensionsRequestingAccessForTesting() {
+  return requests_access_section_->GetExtensionsForTesting();  // IN-TEST
 }
 
 content::WebContents* ExtensionsMenuMainPageView::GetActiveWebContents() const {
