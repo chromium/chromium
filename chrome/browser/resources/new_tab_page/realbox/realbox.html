@@ -46,7 +46,7 @@
     }
   }
 
-  :host([matches-are-visible]) {
+  :host([dropdown-is-visible]) {
     box-shadow: none;
   }
 
@@ -54,12 +54,12 @@
     box-shadow: none;
   }
 
-  :host([match-searchbox]:not([matches-are-visible]):hover) {
+  :host([match-searchbox]:not([dropdown-is-visible]):hover) {
     border: 1px solid transparent;
     box-shadow: var(--cr-realbox-shadow);
   }
 
-  :host([match-searchbox]:not([is-dark]):not([matches-are-visible]):not(:hover)) {
+  :host([match-searchbox]:not([is-dark]):not([dropdown-is-visible]):not(:hover)) {
     border: 1px solid var(--color-realbox-border);
   }
 
@@ -111,7 +111,7 @@
   }
 
   input:focus,
-  :host([matches-are-visible]) input {
+  :host([dropdown-is-visible]) input {
     background-color: var(--color-realbox-results-background);
   }
 
