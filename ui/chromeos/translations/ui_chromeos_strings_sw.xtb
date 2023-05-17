@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Hakuna video za hivi karibuni</translation>
 <translation id="3634507049637220048">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Unadhibitiwa na Msimamizi wako, Maelezo</translation>
 <translation id="3645233063072417428">Vipengee <ph name="NUMBER_OF_ITEMS" /> vimehamishwa.</translation>
+<translation id="3658269352872031728">Umechagua faili <ph name="SELECTED_FILE_COUNT" /></translation>
 <translation id="3685122418104378273">Usawazishaji wa Hifadhi ya Google umezimwa kwa chaguomsingi wakati wa kutumia data ya kifaa cha mkononi.</translation>
 <translation id="3689865792480713551">Ghairi <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Haijawashwa, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao, asilimia <ph name="SIGNAL_STRENGTH" />, Maelezo</translation>
@@ -577,6 +578,7 @@
 <translation id="5533102081734025921">Picha ya <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Inakokotoa ukubwa</translation>
 <translation id="554153475311314364">Unukuzi wa mfumo wa kuandika Kigiriki</translation>
+<translation id="5554171655917412781">Umechagua folda <ph name="SELECTED_FOLDERS_COUNT" /></translation>
 <translation id="5580591966435005537">mashine pepe</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Upana wa uakifishaji Umejaa</translation>
@@ -599,6 +601,7 @@
 <translation id="5724172041621205163">Kitai kwenye kibodi ya Pattachote</translation>
 <translation id="57383366388012121">Mwezi uliopita</translation>
 <translation id="5756666464756035725">QWERTY ya Kihungaria</translation>
+<translation id="5760252553414789727">Umechagua vipengee <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">Kijerumani (Uswizi)</translation>
 <translation id="5769519078756170258">Seva pangishi au kikoa kitakachotengwa</translation>
 <translation id="5775750595919327203">Kiurdu</translation>

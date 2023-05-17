@@ -196,7 +196,7 @@
 <translation id="2100273922101894616">自動登入</translation>
 <translation id="2100314319871056947">請嘗試將要分享的文字分為數個簡短片段</translation>
 <translation id="2111511281910874386">前往網頁</translation>
-<translation id="2119609734654412418">這裡會顯示你的書籤</translation>
+<translation id="2119609734654412418">這裡會顯示您的書籤</translation>
 <translation id="2122601567107267586">無法開啟應用程式</translation>
 <translation id="2132122640199389833">移除所有已連結的裝置</translation>
 <translation id="213279576345780926">已關閉「<ph name="TAB_TITLE" />」</translation>
@@ -599,7 +599,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="433213510553688132">正在設定為追蹤…</translation>
 <translation id="4335835283689002019">「安全瀏覽」功能已關閉</translation>
 <translation id="4351244548802238354">關閉對話方塊</translation>
-<translation id="4355272626458588338">你可以將重要網頁加入書籤，方便日後查看</translation>
+<translation id="4355272626458588338">您可新增書籤，以便快速返回您認為重要的網頁</translation>
 <translation id="4369735607080757018">網站之間會分享有限種類的資料 (例如系統向您顯示廣告的時段)，以評估廣告的效益</translation>
 <translation id="4378154925671717803">電話號碼</translation>
 <translation id="438319986296050901">只分享資訊卡</translation>
@@ -952,7 +952,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="6232535412751077445">啟用「不追蹤」即表示您的瀏覽流量將包含一個要求，其效用視乎網站會否回應要求，以及如何解讀要求。
 
 舉例來說，部分網站可能會在顯示廣告時，選擇不根據您所瀏覽的網站記錄來顯示廣告。許多網站仍會收集您的瀏覽資料，並將這些資料用於下列目的：提高網站安全性、在網站上提供相關的內容、廣告和推薦項目，以及產生報告統計資料。</translation>
-<translation id="6255794742848779505">我們正在變更密碼儲存在這部裝置上的方式</translation>
+<translation id="6255794742848779505">我們正在變更密碼儲存在此裝置上的方式</translation>
 <translation id="6264376385120300461">仍要下載</translation>
 <translation id="6277522088822131679">列印網頁時發生問題，請再試一次。</translation>
 <translation id="6277722725779679269">無法更新追蹤價格</translation>

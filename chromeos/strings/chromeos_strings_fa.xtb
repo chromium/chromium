@@ -217,6 +217,7 @@
 <translation id="2638662041295312666">تصویر ورود به سیستم</translation>
 <translation id="2640549051766135490">آلبوم <ph name="TITLE" /> <ph name="DESC" /> انتخاب شد</translation>
 <translation id="267442004702508783">بازآوری</translation>
+<translation id="268270014981824665">صفحه‌کلید کم‌نور</translation>
 <translation id="2712812801627182647">کلید اصالت‌سنجی «امنیت لایه انتقال»</translation>
 <translation id="2713444072780614174">سفید</translation>
 <translation id="2717139507051041123">فعال کردن حالت رنگ تیره</translation>
@@ -224,6 +225,7 @@
 <translation id="2744221223678373668">اشتراک‌گذاری شده</translation>
 <translation id="2751739896257479635">‏اصالت‌سنجی مرحله ۲ EAP</translation>
 <translation id="2783010256799387990">موفق</translation>
+<translation id="2787435249130282949">روشن‌تر کردن صفحه‌کلید</translation>
 <translation id="2789486458103222910">تأیید</translation>
 <translation id="2805756323405976993">برنامه‌ها</translation>
 <translation id="28232023175184696">اتصال به اینترنت ممکن نیست. برای امتحان مجدد، کلیک کنید.</translation>
@@ -327,11 +329,13 @@
 <translation id="3749289110408117711">نام فایل</translation>
 <translation id="3771294271822695279">فایل‌های ویدئویی</translation>
 <translation id="3784455785234192852">قفل</translation>
+<translation id="380097101658023925">‏کنترل‌های RGB</translation>
 <translation id="38114475217616659">پاک کردن همه سابقه</translation>
 <translation id="3820172043799983114">پین نامعتبر است.</translation>
 <translation id="3824259034819781947">پیوست فایل</translation>
 <translation id="3838338534323494292">گذرواژه جدید</translation>
 <translation id="3845880861638660475">برای بستن کادر گفتگو، کلیدهای <ph name="ALT_SHORTCUT_START" />دگرساز<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />گریز<ph name="ESC_SHORTCUT_END" /> را فشار دهید.</translation>
+<translation id="3848280697030027394">صفحه‌کلید تاریک‌شده</translation>
 <translation id="385051799172605136">بازگشت</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="3862598938296403232">شرح الزامی است</translation>
@@ -403,6 +407,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">غیر فعال کردن</translation>
 <translation id="439429847087949098">درحال بازراه‌اندازی <ph name="DEVICE_NAME" /></translation>
+<translation id="4395835743215824109">سفارشی‌سازی صفحه‌کلید</translation>
 <translation id="4415951057168511744">چهره‌نمای کنونی</translation>
 <translation id="4422041425070339732">پیکان پایین</translation>
 <translation id="4425149324548788773">My Drive</translation>
@@ -443,6 +448,7 @@
 <translation id="4731797938093519117">دسترسی ولی</translation>
 <translation id="473775607612524610">به‌روزرسانی</translation>
 <translation id="4744944742468440486">اطلاعات مرتبط با انتخاب شما</translation>
+<translation id="4771607256327216405">صفحه‌کلید روشن‌تر</translation>
 <translation id="4773299976671772492">متوقف شد</translation>
 <translation id="4782311465517282004">وقتی روی نوشتار کلیک راست می‌کنید یا آن را لمس می‌کنید و نگه می‌دارید، تعاریف، ترجمه‌ها، یا تبدیل واحدها را دریافت می‌کنید</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> عکس</translation>
@@ -491,6 +497,7 @@
 <translation id="500920857929044050">توقف آزمایش</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">وقتی صفحه‌نمایش بدون فعالیت است، عکس، ساعت، وضعیت آب‌وهوا، و اطلاعات رسانه نمایش داده می‌شود.</translation>
+<translation id="5038292761217083259">صفحه‌کلید چندرنگ</translation>
 <translation id="5039804452771397117">اجازه دادن</translation>
 <translation id="5049856988445523908">سیم‌کارت قفل است (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">نام گروه</translation>
@@ -639,6 +646,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">روشن کردن زمینه تیره</translation>
 <translation id="6285899124799306373">باز کردن راه‌انداز</translation>
+<translation id="629550705077076970">کم‌نور کردن صفحه‌کلید</translation>
 <translation id="6302401976930124515">آزمایش <ph name="TEST_NAME" /> لغو شده است</translation>
 <translation id="631063167932043783">برنامه کاوش</translation>
 <translation id="6319207335391420837">به‌روزرسانی سفت‌افزار در <ph name="DEVICE_NAME" /></translation>
@@ -657,6 +665,7 @@
 <translation id="6401427872449207797">جستجوی مرورگر</translation>
 <translation id="6410257289063177456">فایل‌های تصویری</translation>
 <translation id="641081527798843608">مطابقت موضوع</translation>
+<translation id="6411934471898487866">روشنایی صفحه‌کلید</translation>
 <translation id="6412715219990689313">صفحه‌کلید داخلی</translation>
 <translation id="6417265370957905582">‏دستیار Google</translation>
 <translation id="6423239382391657905">‏باز کردن VPN</translation>
@@ -807,10 +816,12 @@
 <translation id="7656388927906093505">دستگاه موش‌واره است.</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7665800271478495366">تغییر چهره‌نما</translation>
+<translation id="7683228889864052081">رنگ‌مایه صفحه‌کلید</translation>
 <translation id="7690294790491645610">تأیید گذرواژه جدید</translation>
 <translation id="7701040980221191251">هیچ‌کدام</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">میزان نور صفحه‌کلید</translation>
 <translation id="773153675489693198">تعداد چرخه‌ها</translation>
 <translation id="7747039790905080783">کلید ازپیش هم‌رسانی‌شده</translation>
 <translation id="7762130827864645708">گذرواژه‌تان تغییر کرد. لطفاً ازاین‌پس، از گذرواژه جدید استفاده کنید.</translation>
@@ -854,6 +865,7 @@
 <translation id="8075838845814659848">شارژ باقی‌مانده</translation>
 <translation id="8076492880354921740">برگه‌ها</translation>
 <translation id="8082366717211101304">‏نمی‌توان ساناد را از برنامه‌های Android حل‌وفصل کرد</translation>
+<translation id="8082644724189923105">منطقه صفحه‌کلید</translation>
 <translation id="808894953321890993">تغییر گذرواژه</translation>
 <translation id="8094062939584182041">‏اجازه دادن به Google برای ارسال ایمیل درباره این مشکل</translation>
 <translation id="8104083085214006426">از شبکه‌ای باز و ناامن استفاده می‌کنید</translation>
@@ -902,6 +914,7 @@
 <translation id="8456761643544401578">حالت تاریک خودکار</translation>
 <translation id="8461329675984532579">نام ارائه‌دهنده اصلی</translation>
 <translation id="8475690821716466388">‏شبکه Wi-Fi با پروتکل ضعیف WEP PSK ایمن شده است</translation>
+<translation id="8476242415522716722">زیرنور صفحه‌کلید</translation>
 <translation id="8477551185774834963">تأخیر در ساناد اندکی از آستانه مجاز بالاتر است</translation>
 <translation id="8483248364096924578">‏نشانی IP</translation>
 <translation id="8491311378305535241">‏نمی‌توان در برنامه‌های Android ازطریق دیوار آتش به وب‌سایت‌های HTTPS متصل شد</translation>
@@ -945,6 +958,7 @@
 <translation id="8845001906332463065">دریافت راهنمایی</translation>
 <translation id="8855781559874488009">‏نمی‌توان ازطریق دیوار آتش به وب‌سایت‌های HTTP متصل شد</translation>
 <translation id="885701979325669005">فضای ذخیره‌سازی</translation>
+<translation id="885704831271383379">تاریک‌تر کردن صفحه‌کلید</translation>
 <translation id="8863170912498892583">فعال کردن زمینه تیره</translation>
 <translation id="8863888432376731307">دریافت <ph name="INTENT" /> برای «<ph name="QUERY" />» و موارد دیگر</translation>
 <translation id="8864415976656252616">محتوای پیشنهادی وجود ندارد. محتوای راهنمای برتر را ببینید.</translation>

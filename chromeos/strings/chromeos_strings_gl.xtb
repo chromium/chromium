@@ -217,6 +217,7 @@
 <translation id="2638662041295312666">Imaxe de inicio de sesión</translation>
 <translation id="2640549051766135490">Seleccionouse o álbum <ph name="TITLE" /> (<ph name="DESC" />)</translation>
 <translation id="267442004702508783">actualiza</translation>
+<translation id="268270014981824665">atenuar teclado</translation>
 <translation id="2712812801627182647">Clave de autenticación TLS</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2717139507051041123">Activar modo de cores escuras</translation>
@@ -224,6 +225,7 @@
 <translation id="2744221223678373668">Compartidas</translation>
 <translation id="2751739896257479635">Autenticación de fase 2 de EAP</translation>
 <translation id="2783010256799387990">PROBA SUPERADA</translation>
+<translation id="2787435249130282949">teclado máis brillante</translation>
 <translation id="2789486458103222910">Aceptar</translation>
 <translation id="2805756323405976993">Aplicacións</translation>
 <translation id="28232023175184696">Non foi posible conectarse a Internet. Facer clic para tentalo de novo.</translation>
@@ -327,11 +329,13 @@
 <translation id="3749289110408117711">Nome de ficheiro</translation>
 <translation id="3771294271822695279">Ficheiros de vídeo</translation>
 <translation id="3784455785234192852">Bloquear</translation>
+<translation id="380097101658023925">controis rgb</translation>
 <translation id="38114475217616659">Borrar todo o historial</translation>
 <translation id="3820172043799983114">O PIN non é válido.</translation>
 <translation id="3824259034819781947">Anexar ficheiros</translation>
 <translation id="3838338534323494292">Novo contrasinal</translation>
 <translation id="3845880861638660475">Preme <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Escape<ph name="ESC_SHORTCUT_END" /> para pechar o cadro de diálogo.</translation>
+<translation id="3848280697030027394">escurecemento do teclado</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3862598938296403232">A descrición é obrigatoria</translation>
@@ -403,6 +407,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Desactivar</translation>
 <translation id="439429847087949098">Reiniciando dispositivo (<ph name="DEVICE_NAME" />)</translation>
+<translation id="4395835743215824109">personalización do teclado</translation>
 <translation id="4415951057168511744">Avatar actual</translation>
 <translation id="4422041425070339732">frecha cara abaixo</translation>
 <translation id="4425149324548788773">A miña unidade</translation>
@@ -426,6 +431,7 @@
 <translation id="455835558791489930">Batería de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM desbloqueada</translation>
 <translation id="4562494484721939086">Sen servizo</translation>
+<translation id="4573777384450697571">Erro: Certificado caducado</translation>
 <translation id="458794348635939462">Produciuse un erro ao resolver todos os hosts</translation>
 <translation id="4593212453765072419">Requírese autenticación proxy</translation>
 <translation id="4609350030397390689">Reducir brillo do teclado</translation>
@@ -442,6 +448,7 @@
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4744944742468440486">Información relacionada coa túa selección</translation>
+<translation id="4771607256327216405">iluminación do teclado</translation>
 <translation id="4773299976671772492">Detido</translation>
 <translation id="4782311465517282004">Obtén definicións, traducións ou conversións de unidades cando fagas clic co botón dereito sobre un texto ou o manteñas premido</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto/s</translation>
@@ -490,6 +497,7 @@
 <translation id="500920857929044050">Deter proba</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Cando a pantalla está inactiva, nela móstranse fotos, a hora, o tempo e información dos medios de comunicación.</translation>
+<translation id="5038292761217083259">teclado multicolor</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5049856988445523908">SIM bloqueada (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nome do grupo</translation>
@@ -638,6 +646,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Poñer tema escuro</translation>
 <translation id="6285899124799306373">abre o menú de aplicacións</translation>
+<translation id="629550705077076970">atenuación do teclado</translation>
 <translation id="6302401976930124515">Cancelouse a proba de <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Aplicación Explorar</translation>
 <translation id="6319207335391420837">Actualizar o firmware deste dispositivo: <ph name="DEVICE_NAME" /></translation>
@@ -656,6 +665,7 @@
 <translation id="6401427872449207797">busca do navegador</translation>
 <translation id="6410257289063177456">Ficheiros de imaxe</translation>
 <translation id="641081527798843608">Coincidencia do asunto</translation>
+<translation id="6411934471898487866">brillo do teclado</translation>
 <translation id="6412715219990689313">Teclado integrado</translation>
 <translation id="6417265370957905582">Asistente de Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -738,6 +748,7 @@
 <translation id="7130438335435247835">Nome do punto de acceso (APN)</translation>
 <translation id="7131634559772719176">Confirmar a configuración predeterminada</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}other{Servidores de nomes}}</translation>
+<translation id="7135814714616751706">Busca atallos</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Volver tentar</translation>
 <translation id="714876143603641390">Conectividade LAN</translation>
@@ -768,6 +779,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; preme Buscar e Espazo para ver o resultado na Busca de Google.</translation>
 <translation id="7343649194310845056">Dispositivos de rede</translation>
+<translation id="7353413232959255829">Resultado da busca <ph name="LIST_POSITION" /> de <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Preme Introducir para navegar ata o atallo.</translation>
 <translation id="7359657277149375382">Tipo de ficheiro</translation>
 <translation id="73631062356239394">Compartir datos de diagnóstico</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -804,10 +816,12 @@
 <translation id="7656388927906093505">O dispositivo é un rato.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665800271478495366">Cambiar avatar</translation>
+<translation id="7683228889864052081">tonalidade do teclado</translation>
 <translation id="7690294790491645610">Confirmar contrasinal novo</translation>
 <translation id="7701040980221191251">Ningunha</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">luz do teclado</translation>
 <translation id="773153675489693198">Número de ciclos</translation>
 <translation id="7747039790905080783">Clave compartida previamente</translation>
 <translation id="7762130827864645708">Cambiaches o contrasinal correctamente. A partir de agora, utiliza o novo.</translation>
@@ -851,6 +865,7 @@
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="8076492880354921740">Pestanas</translation>
 <translation id="8082366717211101304">Non se puido resolver o DNS desde aplicacións para Android</translation>
+<translation id="8082644724189923105">zona do teclado</translation>
 <translation id="808894953321890993">Cambiar contrasinal</translation>
 <translation id="8094062939584182041">Permitir que Google che envíe correos electrónicos sobre este tema</translation>
 <translation id="8104083085214006426">Estás usando unha rede aberta e non segura</translation>
@@ -899,6 +914,7 @@
 <translation id="8456761643544401578">Modo escuro automático</translation>
 <translation id="8461329675984532579">Nome do fornecedor de orixe</translation>
 <translation id="8475690821716466388">A rede wifi está protexida co protocolo WEP PSK, que non é moi seguro</translation>
+<translation id="8476242415522716722">luz de fondo do teclado</translation>
 <translation id="8477551185774834963">A latencia do DNS supera lixeiramente o límite permitido</translation>
 <translation id="8483248364096924578">Enderezo IP</translation>
 <translation id="8491311378305535241">Non se puido establecer conexión con sitios web HTTP desde aplicacións para Android a través do firewall</translation>
@@ -942,6 +958,7 @@
 <translation id="8845001906332463065">Obter axuda</translation>
 <translation id="8855781559874488009">Non se puido establecer conexión con sitios web HTTP a través do firewall</translation>
 <translation id="885701979325669005">Almacenamento</translation>
+<translation id="885704831271383379">teclado máis escuro</translation>
 <translation id="8863170912498892583">Activar tema escuro</translation>
 <translation id="8863888432376731307">Obtén a <ph name="INTENT" /> de "<ph name="QUERY" />" e moito máis</translation>
 <translation id="8864415976656252616">Non hai contido suxerido. Consulta o contido de axuda destacado.</translation>

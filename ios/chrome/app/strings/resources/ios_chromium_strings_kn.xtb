@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" />, Chromium ಅನ್ನು ಬಳಸುತ್ತಿದ್ದರು ಮತ್ತು ಈ ಸಾಧನದಲ್ಲಿ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಉಳಿಸಿದ್ದಾರೆ.</translation>
 <translation id="372658070733623520">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ Chromium ಡೇಟಾವನ್ನು ಬಳಸಲು ಮತ್ತು ಉಳಿಸಲು, ಇದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಿ.</translation>
 <translation id="3805899903892079518">Chromium ನಿಮ್ಮ ಫೋಟೋಗಳು ಮತ್ತು ವೀಡಿಯೋಗಳಿಗೆ ಪ್ರವೇಶವನ್ನು ಹೊಂದಿಲ್ಲ. iOS ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಗೌಪ್ಯತೆ &gt; ಫೋಟೋಗಳಲ್ಲಿ ಪ್ರವೇಶವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ.</translation>
+<translation id="3955621079070267756">ಯಾವುದೇ ಆ್ಯಪ್‌ನಿಂದ Chromium ತೆರೆಯಿರಿ</translation>
 <translation id="4043291146360695975">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ ಮಾತ್ರ ಉಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="4099085513035183040">Chromium ಬೀಟಾದಲ್ಲಿ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
 <translation id="4432744876818348753">Chromium ನಿಂದ ಹೆಚ್ಚಿನ ಪ್ರಯೋಜನ ಪಡೆದುಕೊಳ್ಳಲು ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
@@ -143,5 +144,6 @@
 <translation id="9089354809943900324">Chromium ನ ಅವಧಿ ಮುಗಿದಿದೆ</translation>
 <translation id="9110075932708282655">ಡಿಫಾಲ್ಟ್ ಆಗಿ Chromium ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="921174536258924340">ಎಲ್ಲಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು Chromium ಗೆ ಸಾಧ್ಯವಾಗಲಿಲ್ಲ ನಾಳೆ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ <ph name="BEGIN_LINK" />ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿರುವ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ<ph name="END_LINK" /></translation>
+<translation id="971488683725792095">ಸಂದೇಶಗಳು, ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳು ಮತ್ತು ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿನ ಲಿಂಕ್‌ಗಳನ್ನು ನೀವು ಟ್ಯಾಪ್ ಮಾಡಿದಾಗ ಸ್ವಯಂಚಾಲಿತವಾಗಿ Chromium ಅನ್ನು ಬಳಸಿ.</translation>
 <translation id="985602178874221306">Chromium ಲೇಖಕರು</translation>
 </translationbundle>

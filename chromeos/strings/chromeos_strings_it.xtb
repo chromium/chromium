@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> gestisce questo dispositivo e potrebbe essere in grado di monitorare le tue attività.</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Invia</translation>
+<translation id="1488850966314959671">Impossibile connettersi a questa rete tramite qualsiasi APN personalizzato abilitato. Per ulteriori informazioni, contatta il tuo operatore di telefonia mobile.</translation>
 <translation id="1491076385728777984">Aggiornamento del firmware su <ph name="DEVICE_NAME" /> in corso…</translation>
 <translation id="1499041187027566160">alza volume</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gestisce questo utente e potrebbe gestire le impostazioni e monitorare l'attività utente da remoto.</translation>
@@ -561,6 +562,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Scansiona di nuovo</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">Impossibile disattivare o rimuovere questo APN. Assicurati che gli APN collegati abilitati siano disattivati o rimossi.</translation>
 <translation id="5600027863942488546">Tasto <ph name="KEY_NAME" /> testato</translation>
 <translation id="5620281292257375798">Solo per uso interno</translation>
 <translation id="5649768706273821470">Ascolta</translation>
@@ -1010,6 +1012,7 @@
 <translation id="9173638680043580060">Manca meno di un minuto</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Il colore della retroilluminazione della tastiera può essere impostato in automatico su quello dello sfondo</translation>
+<translation id="9189000703457422362">Impossibile connettersi a questa rete tramite APN rilevati automaticamente. Per ulteriori informazioni, contatta il tuo operatore di telefonia mobile.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Impossibile contattare il gateway da app Android</translation>
 <translation id="9211490828691860325">Tutte le scrivanie</translation>

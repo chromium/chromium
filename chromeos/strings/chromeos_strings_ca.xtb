@@ -217,6 +217,7 @@
 <translation id="2638662041295312666">Imatge d'inici de sessió</translation>
 <translation id="2640549051766135490">S'ha seleccionat l'àlbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="267442004702508783">actualitza</translation>
+<translation id="268270014981824665">atenuació del teclat</translation>
 <translation id="2712812801627182647">Clau d'autenticació TLS</translation>
 <translation id="2713444072780614174">Blanc</translation>
 <translation id="2717139507051041123">Activa el mode de color fosc</translation>
@@ -224,6 +225,7 @@
 <translation id="2744221223678373668">Compartides</translation>
 <translation id="2751739896257479635">Autenticació de fase 2 d'EAP</translation>
 <translation id="2783010256799387990">SUPERADA</translation>
+<translation id="2787435249130282949">teclat més brillant</translation>
 <translation id="2789486458103222910">D'acord</translation>
 <translation id="2805756323405976993">Aplicacions</translation>
 <translation id="28232023175184696">No es pot connectar a Internet. Fes clic per tornar-ho a provar.</translation>
@@ -327,11 +329,13 @@
 <translation id="3749289110408117711">Nom del fitxer</translation>
 <translation id="3771294271822695279">Fitxers de vídeo</translation>
 <translation id="3784455785234192852">Bloqueja</translation>
+<translation id="380097101658023925">controls RGB</translation>
 <translation id="38114475217616659">Esborra tot l'historial</translation>
 <translation id="3820172043799983114">El PIN no és vàlid.</translation>
 <translation id="3824259034819781947">Adjunta fitxers</translation>
 <translation id="3838338534323494292">Contrasenya nova</translation>
 <translation id="3845880861638660475">Prem <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" />+<ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> per tancar el quadre de diàleg.</translation>
+<translation id="3848280697030027394">enfosquiment del teclat</translation>
 <translation id="385051799172605136">Enrere</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3862598938296403232">La descripció és obligatòria</translation>
@@ -403,6 +407,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Desactiva</translation>
 <translation id="439429847087949098">S'està reiniciant <ph name="DEVICE_NAME" /></translation>
+<translation id="4395835743215824109">personalització del teclat</translation>
 <translation id="4415951057168511744">Avatar actual</translation>
 <translation id="4422041425070339732">fletxa avall</translation>
 <translation id="4425149324548788773">La meva unitat</translation>
@@ -426,6 +431,7 @@
 <translation id="455835558791489930">Bateria de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM desbloquejada</translation>
 <translation id="4562494484721939086">Sense servei</translation>
+<translation id="4573777384450697571">Error: el certificat ha caducat</translation>
 <translation id="458794348635939462">No s'han pogut resoldre tots els amfitrions</translation>
 <translation id="4593212453765072419">Cal l'autenticació del servidor intermediari</translation>
 <translation id="4609350030397390689">Disminueix la brillantor del teclat</translation>
@@ -442,6 +448,7 @@
 <translation id="4731797938093519117">Accés parental</translation>
 <translation id="473775607612524610">Actualitza</translation>
 <translation id="4744944742468440486">Informació relacionada amb la teva selecció</translation>
+<translation id="4771607256327216405">brillantor del teclat</translation>
 <translation id="4773299976671772492">En pausa</translation>
 <translation id="4782311465517282004">Obtén definicions, traduccions o conversions d'unitats quan mantinguis premut el text o quan hi facis clic amb el botó dret</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
@@ -490,6 +497,7 @@
 <translation id="500920857929044050">Atura la prova</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Quan la pantalla està inactiva, mostra fotos, l'hora, el temps i informació multimèdia.</translation>
+<translation id="5038292761217083259">teclat multicolor</translation>
 <translation id="5039804452771397117">Permet</translation>
 <translation id="5049856988445523908">SIM bloquejada (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nom del grup</translation>
@@ -638,6 +646,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Activa el tema fosc</translation>
 <translation id="6285899124799306373">obre el menú d'aplicacions</translation>
+<translation id="629550705077076970">atenuació del teclat</translation>
 <translation id="6302401976930124515">La prova <ph name="TEST_NAME" /> s'ha cancel·lat</translation>
 <translation id="631063167932043783">Aplicació Explora</translation>
 <translation id="6319207335391420837">Actualitza el microprogramari que hi ha a <ph name="DEVICE_NAME" /></translation>
@@ -656,6 +665,7 @@
 <translation id="6401427872449207797">cerca del navegador</translation>
 <translation id="6410257289063177456">Fitxers d'imatge </translation>
 <translation id="641081527798843608">Coincidència d'assumpte</translation>
+<translation id="6411934471898487866">brillantor del teclat</translation>
 <translation id="6412715219990689313">Teclat integrat</translation>
 <translation id="6417265370957905582">Assistent de Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -806,10 +816,12 @@
 <translation id="7656388927906093505">El dispositiu és un ratolí.</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7665800271478495366">Canvia l'avatar</translation>
+<translation id="7683228889864052081">to del teclat</translation>
 <translation id="7690294790491645610">Confirma la contrasenya nova</translation>
 <translation id="7701040980221191251">Cap</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">il·luminació del teclat</translation>
 <translation id="773153675489693198">Nombre de cicles</translation>
 <translation id="7747039790905080783">Clau precompartida</translation>
 <translation id="7762130827864645708">La contrasenya s'ha canviat correctament. Utilitza la contrasenya nova a partir d'ara.</translation>
@@ -853,6 +865,7 @@
 <translation id="8075838845814659848">Càrrega restant</translation>
 <translation id="8076492880354921740">Pestanyes</translation>
 <translation id="8082366717211101304">No es pot resoldre el DNS des d'aplicacions d'Android</translation>
+<translation id="8082644724189923105">zona del teclat</translation>
 <translation id="808894953321890993">Canvia la contrasenya</translation>
 <translation id="8094062939584182041">Permet que Google t'enviï un correu electrònic sobre aquest problema</translation>
 <translation id="8104083085214006426">Estàs utilitzant una xarxa oberta i no segura</translation>
@@ -901,6 +914,7 @@
 <translation id="8456761643544401578">Mode fosc automàtic</translation>
 <translation id="8461329675984532579">Nom del proveïdor domèstic</translation>
 <translation id="8475690821716466388">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP PSK</translation>
+<translation id="8476242415522716722">retroil·luminació del teclat</translation>
 <translation id="8477551185774834963">La latència DNS supera lleugerament el llindar permès</translation>
 <translation id="8483248364096924578">Adreça IP</translation>
 <translation id="8491311378305535241">No es pot establir la connexió amb llocs web HTTPS a través del tallafoc des d'aplicacions d'Android</translation>
@@ -944,6 +958,7 @@
 <translation id="8845001906332463065">Obteniu ajuda</translation>
 <translation id="8855781559874488009">No es pot establir la connexió amb llocs web HTTP a través del tallafoc</translation>
 <translation id="885701979325669005">Emmagatzematge</translation>
+<translation id="885704831271383379">teclat més fosc</translation>
 <translation id="8863170912498892583">Activa el tema fosc</translation>
 <translation id="8863888432376731307">Obtén la <ph name="INTENT" /> per a "<ph name="QUERY" />" i més</translation>
 <translation id="8864415976656252616">No hi ha contingut suggerit. Consulta el contingut d'ajuda principal.</translation>

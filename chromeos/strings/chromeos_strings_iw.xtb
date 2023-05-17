@@ -217,6 +217,7 @@
 <translation id="2638662041295312666">תמונת המשתמש</translation>
 <translation id="2640549051766135490">האלבום <ph name="TITLE" /> <ph name="DESC" /> נבחר</translation>
 <translation id="267442004702508783">רענון</translation>
+<translation id="268270014981824665">עמעום במקלדת</translation>
 <translation id="2712812801627182647">‏מפתח האימות של TLS (אבטחת שכבת התעבורה)</translation>
 <translation id="2713444072780614174">לבן</translation>
 <translation id="2717139507051041123">הפעלה של מצב כהה</translation>
@@ -224,6 +225,7 @@
 <translation id="2744221223678373668">משותף</translation>
 <translation id="2751739896257479635">‏אימות שלב 2 של EAP</translation>
 <translation id="2783010256799387990">ציון 'עובר'</translation>
+<translation id="2787435249130282949">איך להגביר את בהירות המקלדת</translation>
 <translation id="2789486458103222910">אישור</translation>
 <translation id="2805756323405976993">אפליקציות</translation>
 <translation id="28232023175184696">לא ניתן להתחבר לאינטרנט. יש ללחוץ כדי לנסות שוב.</translation>
@@ -327,11 +329,13 @@
 <translation id="3749289110408117711">שם קובץ</translation>
 <translation id="3771294271822695279">קובצי וידאו</translation>
 <translation id="3784455785234192852">נעילה</translation>
+<translation id="380097101658023925">‏פקדים לכוונון RGB</translation>
 <translation id="38114475217616659">ניקוי כל ההיסטוריה</translation>
 <translation id="3820172043799983114">‏PIN לא חוקי.</translation>
 <translation id="3824259034819781947">צירוף קבצים</translation>
 <translation id="3838338534323494292">סיסמה חדשה</translation>
 <translation id="3845880861638660475">‏כדי לסגור את תיבת הדו-שיח, מקישים על <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> +‏ <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
+<translation id="3848280697030027394">מקלדת כהה</translation>
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3858860766373142691">שם</translation>
 <translation id="3862598938296403232">יש להזין תיאור</translation>
@@ -403,6 +407,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">השבתה</translation>
 <translation id="439429847087949098">מתבצעת הפעלה מחדש של <ph name="DEVICE_NAME" /></translation>
+<translation id="4395835743215824109">התאמה אישית של המקלדת</translation>
 <translation id="4415951057168511744">הדמות הנוכחית</translation>
 <translation id="4422041425070339732">חץ למטה</translation>
 <translation id="4425149324548788773">האחסון שלי</translation>
@@ -442,6 +447,7 @@
 <translation id="4731797938093519117">גישת הורים</translation>
 <translation id="473775607612524610">עדכון</translation>
 <translation id="4744944742468440486">מידע בקשר לבחירה שלך</translation>
+<translation id="4771607256327216405">מקלדת בהירה</translation>
 <translation id="4773299976671772492">הופסק</translation>
 <translation id="4782311465517282004">בלחיצה ימנית או בלחיצה ארוכה על טקסט, יוצגו הגדרות, תרגומים או המרת יחידות</translation>
 <translation id="4791000909649665275">מספר התמונות: <ph name="NUMBER" /></translation>
@@ -490,6 +496,7 @@
 <translation id="500920857929044050">הפסקת הבדיקה</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">כשהמסך לא פעיל, יוצגו בו תמונות, השעה הנוכחית, נתוני מזג האוויר ופרטי מדיה נוספים.</translation>
+<translation id="5038292761217083259">כוונון הצבעים במקלדת</translation>
 <translation id="5039804452771397117">זה בסדר</translation>
 <translation id="5049856988445523908">‏כרטיס ה-SIM נעול (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">שם הקבוצה</translation>
@@ -638,6 +645,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">הפעלת העיצוב הכהה</translation>
 <translation id="6285899124799306373">פתיחה של מרכז האפליקציות</translation>
+<translation id="629550705077076970">עמעום התאורה במקלדת</translation>
 <translation id="6302401976930124515">בדיקת ה<ph name="TEST_NAME" /> בוטלה</translation>
 <translation id="631063167932043783">‏האפליקציה 'מה חדש ב-Chromebook'</translation>
 <translation id="6319207335391420837">יש לעדכן את הקושחה של <ph name="DEVICE_NAME" /></translation>
@@ -656,6 +664,7 @@
 <translation id="6401427872449207797">חיפוש בדפדפן</translation>
 <translation id="6410257289063177456">קובצי תמונה</translation>
 <translation id="641081527798843608">התאמת נושא</translation>
+<translation id="6411934471898487866">בהירות המקלדת</translation>
 <translation id="6412715219990689313">מקלדת מובנית</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -804,10 +813,12 @@
 <translation id="7656388927906093505">המכשיר הוא עכבר.</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7665800271478495366">החלפת הדמות</translation>
+<translation id="7683228889864052081">כוונון הגוון במקלדת</translation>
 <translation id="7690294790491645610">אישור הסיסמה החדשה</translation>
 <translation id="7701040980221191251">אין</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">תאורה במקלדת</translation>
 <translation id="773153675489693198">מספר המחזורים</translation>
 <translation id="7747039790905080783">מפתח משותף מראש</translation>
 <translation id="7762130827864645708">שינוי הסיסמה הסתיים בהצלחה. עליך להשתמש בסיסמה החדשה מעתה ואילך.</translation>
@@ -851,6 +862,7 @@
 <translation id="8075838845814659848">אחוז הסוללה שנותר לטעון</translation>
 <translation id="8076492880354921740">כרטיסיות</translation>
 <translation id="8082366717211101304">‏לא ניתן ליצור רזולוציית DNS לאפליקציות ל-Android</translation>
+<translation id="8082644724189923105">אזור ההגדרות של המקלדת</translation>
 <translation id="808894953321890993">שינוי הסיסמה</translation>
 <translation id="8094062939584182041">‏מתן הרשאה ל-Google לשלוח לך אימייל בנוגע לבעיה הזו</translation>
 <translation id="8104083085214006426">הרשת שאליה התחברת פתוחה ואינה מאובטחת</translation>
@@ -899,6 +911,7 @@
 <translation id="8456761643544401578">מצב כהה אוטומטי</translation>
 <translation id="8461329675984532579">שם ספק ביתי</translation>
 <translation id="8475690821716466388">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP PSK חלש</translation>
+<translation id="8476242415522716722">תאורה מתחת למקשי המקלדת</translation>
 <translation id="8477551185774834963">‏זמן האחזור של ה-DNS חורג מעט מהסף המותר</translation>
 <translation id="8483248364096924578">‏כתובת IP</translation>
 <translation id="8491311378305535241">‏לא ניתן להתחבר עם חומת אש לאתרי HTTPS מאפליקציות ל-Android</translation>
@@ -942,6 +955,7 @@
 <translation id="8845001906332463065">קבלת עזרה</translation>
 <translation id="8855781559874488009">‏לא ניתן להתחבר עם חומת אש לאתרי HTTP</translation>
 <translation id="885701979325669005">אחסון</translation>
+<translation id="885704831271383379">איך להכהות את המקלדת</translation>
 <translation id="8863170912498892583">הפעלת העיצוב הכהה</translation>
 <translation id="8863888432376731307">לקבלת ה<ph name="INTENT" /> עבור "<ph name="QUERY" />" ועוד</translation>
 <translation id="8864415976656252616">אין הצעות לתוכן. להצגת תוכן עזרה מוביל.</translation>

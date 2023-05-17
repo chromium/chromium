@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> upravlja ovim uređajem i može da prati vaše aktivnosti.</translation>
 <translation id="1478594628797167447">Skener</translation>
 <translation id="1483493594462132177">Pošalji</translation>
+<translation id="1488850966314959671">Ne možete da se povežete na ovu mrežu pomoću omogućenih prilagođenih naziva pristupne tačke. Zatražite više informacija od mobilnog operatera.</translation>
 <translation id="1491076385728777984">Ažurira se firmver na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">pojačaj zvuk</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> upravlja ovim korisnikom i može daljinski da upravlja podešavanjima i nadgleda aktivnosti korisnika.</translation>
@@ -217,6 +218,7 @@
 <translation id="2638662041295312666">Slika za prijavljivanje</translation>
 <translation id="2640549051766135490">Izabran je album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="267442004702508783">osveži</translation>
+<translation id="268270014981824665">zatamnjenje tastature</translation>
 <translation id="2712812801627182647">Ključ za TLS potvrdu identiteta</translation>
 <translation id="2713444072780614174">Bela</translation>
 <translation id="2717139507051041123">Omogućite režim tamne boje</translation>
@@ -224,6 +226,7 @@
 <translation id="2744221223678373668">Deljeno</translation>
 <translation id="2751739896257479635">EAP potvrda identiteta 2. faze:</translation>
 <translation id="2783010256799387990">PROŠLO</translation>
+<translation id="2787435249130282949">svetlija tastatura</translation>
 <translation id="2789486458103222910">Potvrdi</translation>
 <translation id="2805756323405976993">Aplikacije</translation>
 <translation id="28232023175184696">Povezivanje na internet nije uspelo. Kliknite da biste probali ponovo.</translation>
@@ -327,11 +330,13 @@
 <translation id="3749289110408117711">Naziv datoteke</translation>
 <translation id="3771294271822695279">Video datoteke</translation>
 <translation id="3784455785234192852">Zaključaj</translation>
+<translation id="380097101658023925">RGB kontrole</translation>
 <translation id="38114475217616659">Obriši svu istoriju</translation>
 <translation id="3820172043799983114">Nevažeći PIN.</translation>
 <translation id="3824259034819781947">Priloži fajlove</translation>
 <translation id="3838338534323494292">Nova lozinka</translation>
 <translation id="3845880861638660475">Pritisnite <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> da biste zatvorili dijalog.</translation>
+<translation id="3848280697030027394">potamnjivanje tastature</translation>
 <translation id="385051799172605136">Nazad</translation>
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="3862598938296403232">Opis je obavezan</translation>
@@ -403,6 +408,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Onemogući</translation>
 <translation id="439429847087949098">Restartuje se <ph name="DEVICE_NAME" /></translation>
+<translation id="4395835743215824109">prilagođavanje tastature</translation>
 <translation id="4415951057168511744">Aktuelni avatar</translation>
 <translation id="4422041425070339732">strelica nadole</translation>
 <translation id="4425149324548788773">Moj disk</translation>
@@ -443,6 +449,7 @@
 <translation id="4731797938093519117">Roditeljski pristup</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4744944742468440486">Informacije vezane za vaš izbor</translation>
+<translation id="4771607256327216405">osvetljavanje tastature</translation>
 <translation id="4773299976671772492">Zaustavljeno je</translation>
 <translation id="4782311465517282004">Dobijajte definicije, prevode ili konverzije jedinica kada kliknete desnim tasterom na tekst ili ga dodirnete i zadržite</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> slika</translation>
@@ -491,6 +498,7 @@
 <translation id="500920857929044050">Zaustavi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Kada je ekran neaktivan, prikazuju se slike, vreme, vremenska prognoza i informacije o medijskom sadržaju.</translation>
+<translation id="5038292761217083259">višebojna tastatura</translation>
 <translation id="5039804452771397117">Dozvoli</translation>
 <translation id="5049856988445523908">SIM je zaključan (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Naziv grupe</translation>
@@ -555,6 +563,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skeniraj ponovo</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">Ne možete da onemogućite ni uklonite ovaj naziv pristupne tačke. Uverite se da su omogućeni priloženi nazivi pristupnih tačaka onemogućeni ili uklonjeni.</translation>
 <translation id="5600027863942488546">Taster <ph name="KEY_NAME" /> je testiran</translation>
 <translation id="5620281292257375798">Samo interno</translation>
 <translation id="5649768706273821470">Slušaj</translation>
@@ -639,6 +648,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Uključite tamnu temu</translation>
 <translation id="6285899124799306373">otvorite pokretač</translation>
+<translation id="629550705077076970">zatamnjivanje tastature</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> je otkazan</translation>
 <translation id="631063167932043783">Istražite aplikaciju</translation>
 <translation id="6319207335391420837">Ažurirajte firmver na uređaju <ph name="DEVICE_NAME" /></translation>
@@ -657,6 +667,7 @@
 <translation id="6401427872449207797">pretraga pregledača</translation>
 <translation id="6410257289063177456">Datoteke slika</translation>
 <translation id="641081527798843608">Podudaranje naslova</translation>
+<translation id="6411934471898487866">osvetljenost tastature</translation>
 <translation id="6412715219990689313">Ugrađena tastatura</translation>
 <translation id="6417265370957905582">Google pomoćnik</translation>
 <translation id="6423239382391657905">Otvorena VPN</translation>
@@ -807,10 +818,12 @@
 <translation id="7656388927906093505">Uređaj je miš.</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7665800271478495366">Promenite avatar</translation>
+<translation id="7683228889864052081">nijansa tastature</translation>
 <translation id="7690294790491645610">Potvrdite novu lozinku</translation>
 <translation id="7701040980221191251">Ništa</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">svetlo tastature</translation>
 <translation id="773153675489693198">Broj ciklusa</translation>
 <translation id="7747039790905080783">Tajni ključ</translation>
 <translation id="7762130827864645708">Lozinka je promenjena. Od sada koristite novu lozinku.</translation>
@@ -854,6 +867,7 @@
 <translation id="8075838845814659848">Preostali nivo napunjenosti baterije</translation>
 <translation id="8076492880354921740">Kartice</translation>
 <translation id="8082366717211101304">DNS ne može da se razreši iz Android aplikacija</translation>
+<translation id="8082644724189923105">zona tastature</translation>
 <translation id="808894953321890993">Promeni lozinku</translation>
 <translation id="8094062939584182041">Dozvolite Google-u da vam pošalje imejl o ovom problemu</translation>
 <translation id="8104083085214006426">Koristite otvorenu i neobezbeđenu mrežu</translation>
@@ -902,6 +916,7 @@
 <translation id="8456761643544401578">Automatski tamni režim</translation>
 <translation id="8461329675984532579">Naziv dobavljača za Home</translation>
 <translation id="8475690821716466388">WiFi mreža je obezbeđena slabim protokolom WEP PSK</translation>
+<translation id="8476242415522716722">slabo osvetljenje tastature</translation>
 <translation id="8477551185774834963">Kašnjenje DNS-a u manjoj meri premašuje dozvoljenu graničnu vrednost</translation>
 <translation id="8483248364096924578">IP adresa</translation>
 <translation id="8491311378305535241">Ne možete da se povežete sa HTTP veb-sajtovima iz Android aplikacija kroz zaštitni zid</translation>
@@ -945,6 +960,7 @@
 <translation id="8845001906332463065">Zatražite pomoć</translation>
 <translation id="8855781559874488009">Ne možete da se povežete sa HTTP veb-sajtovima kroz zaštitni zid</translation>
 <translation id="885701979325669005">Memorijski prostor</translation>
+<translation id="885704831271383379">tamnija tastatura</translation>
 <translation id="8863170912498892583">Omogućite tamnu temu</translation>
 <translation id="8863888432376731307">Pronađite <ph name="INTENT" /> za „<ph name="QUERY" />“ i drugo</translation>
 <translation id="8864415976656252616">Nema predloženog sadržaja. Pogledajte najpopularniji sadržaj pomoći.</translation>
@@ -997,6 +1013,7 @@
 <translation id="9173638680043580060">Preostalo je manje od minuta</translation>
 <translation id="917720651393141712">Testiraj</translation>
 <translation id="9188992814426075118">Tastatura može automatski da se podudara sa pozadinom</translation>
+<translation id="9189000703457422362">Povezivanje sa ovom mrežom nije uspelo pomoću automatski otkrivenih naziva pristupne tačke. Zatražite više informacija od mobilnog operatera.</translation>
 <translation id="9193744392140377127">Naziv pristupne tačke*</translation>
 <translation id="9204237731135241582">Kontakt sa mrežnim prolazom ne uspeva iz Android aplikacija</translation>
 <translation id="9211490828691860325">Sve radne površine</translation>

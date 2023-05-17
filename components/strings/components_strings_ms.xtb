@@ -1201,9 +1201,11 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3927932062596804919">Nafikan</translation>
 <translation id="393316646445601645">Internet &amp; telekom</translation>
 <translation id="3939773374150895049">Gunakan WebAuthn dan bukan CVC?</translation>
+<translation id="3941630233824954464">Dayakan pengesahan semula mandatori</translation>
 <translation id="3943857333388298514">Tampal</translation>
 <translation id="3946209740501886391">Sentiasa tanya pada tapak ini</translation>
 <translation id="3947595700203588284">Boleh meminta untuk menyambung kepada peranti MIDI</translation>
+<translation id="3948588869002647271">Aplikasi ini tiada atau rosak</translation>
 <translation id="3949571496842715403">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya tidak menyatakan Nama Alternatif Subjek. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintasi sambungan anda.</translation>
 <translation id="3949601375789751990">Sejarah penyemakan imbas anda dipaparkan di sini</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2204,6 +2206,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6370022303958842211">Tindakan akses peranti seperti log masuk (merangkumi sebab log masuk gagal), log keluar, kunci dan buka kunci</translation>
 <translation id="6374469231428023295">Cuba Lagi</translation>
 <translation id="6374865374745447009">pengurusan tetingkap</translation>
+<translation id="6376881782310775282">Pelayan pembangunan untuk aplikasi ini tidak dapat dicapai</translation>
 <translation id="6377268785556383139">1 hasil carian untuk '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Caj mungkin dikenakan nanti.</translation>
@@ -3013,6 +3016,7 @@ Butiran tambahan:
 <translation id="8286799286781881307">Aplikasi yang dibenarkan oleh pentadbir anda boleh menangkap semua skrin yang dilampirkan pada peranti anda. Maklumat ini boleh diproses secara setempat atau dimuat naik ke pelayan organisasi anda.</translation>
 <translation id="8288807391153049143">Tunjukkan sijil</translation>
 <translation id="8289355894181816810">Hubungi pentadbir rangkaian anda jika anda tidak pasti apa yang dimaksudkan ini.</translation>
+<translation id="8292520987784410870">Sentiasa sahkan?</translation>
 <translation id="8293206222192510085">Tambah Penanda Halaman</translation>
 <translation id="829335040383910391">bunyi</translation>
 <translation id="8294431847097064396">Sumber</translation>
@@ -3113,6 +3117,7 @@ Butiran tambahan:
 <translation id="854892890027593466">Sampul C6/C5</translation>
 <translation id="8553387990086529628">Destinasi pelancong</translation>
 <translation id="8554010658308662631">Muatkan lagi</translation>
+<translation id="8554802735558319842">Untuk keselamatan tambahan pada peranti dikongsi, hidupkan pengesahan setiap kali anda membuat pembayaran menggunakan autolengkap.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Tetapkan semula kebenaran}other{Tetapkan semula kebenaran}}</translation>
 <translation id="8555010941760982128">Gunakan kod ini semasa semak keluar</translation>
 <translation id="8557066899867184262">CVC terletak di belakang kad anda.</translation>

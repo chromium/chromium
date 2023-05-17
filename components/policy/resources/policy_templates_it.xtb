@@ -3355,6 +3355,16 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="4061590579642538878">Segnala informazioni relative ai report sugli arresti anomali.</translation>
+<translation id="4062646759141042418">Attiva <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL.
+
+La configurazione di questo criterio consente di specificare gli URL che <ph name="PRODUCT_NAME" /> offre per avviare il flusso di attestazione per i profili gestiti. Il secondo consente a questi siti web di ricevere dal dispositivo un insieme attestato di indicatori sensibili al contesto.
+Questo criterio può essere configurato solo tramite la pagina Chrome Enterprise Connectors su <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Se questo criterio non viene impostato o se viene lasciato vuoto, nessun sito web potrà avviare un flusso di attestazione a livello di utente e ricevere indicatori dal dispositivo. Tuttavia, se viene attivato il criterio <ph name="BROWSER_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST" />, il flusso di attestazione può essere avviato per il browser gestito e gli indicatori dei dispositivi possono essere raccolti.
+
+Per <ph name="PRODUCT_OS_NAME" />, questo criterio è correlato all'attestazione remota, in cui un certificato viene generato e caricato automaticamente sul server. Per utilizzare il flusso di attestazione nella schermata di accesso del dispositivo, utilizza il criterio <ph name="DEVICE_LOGIN_SCREEN_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
+
+Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4070039109671307724">Varie</translation>
 <translation id="4072225853834793549">Disattiva le scorciatoie di accessibilità nella schermata di accesso</translation>
 <translation id="4075675819066819571">Posiziona la barra delle app sul lato sinistro dello schermo</translation>
@@ -4124,6 +4134,7 @@ Questo criterio è temporaneo e verrà rimosso non appena verrà lanciata la fun
   Se questo criterio viene impostato su true, la cancellazione dell'eco per l'audio di sistema sarà sempre attiva.
 
   Se questo criterio viene impostato su false o se non viene configurato, la cancellazione dell'eco per l'audio di sistema potrebbe comunque essere attivata in base al relativo piano di lancio, ma non verrà applicata in modo forzato da questo criterio.</translation>
+<translation id="4800865664096110749">Attiva flusso di attestazione <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL sui profili gestiti</translation>
 <translation id="4801512016965057443">Consenti roaming dati mobile</translation>
 <translation id="4801647366128872782">Specifica gli URL che consentono la generazione di report sulla tecnologia precedente</translation>
 <translation id="4802744647065138872">Limita il numero di istantanee di dati utente conservate per essere utilizzate in caso di rollback di emergenza</translation>
@@ -5449,6 +5460,14 @@ Se questo criterio viene disattivato, la protezione delle estensioni di <ph name
       Se il criterio non viene impostato, <ph name="PRODUCT_NAME" /> utilizza la directory della cache predefinita, ma gli utenti possono modificare l'impostazione tramite il flag della riga di comando --disk-cache-dir.
 
       <ph name="PRODUCT_NAME" /> gestisce i contenuti della directory principale di un volume. Per prevenire la perdita di dati o altri errori, non impostare questo criterio nella directory principale né sulle directory utilizzate per altri scopi. Vedi le variabili che puoi utilizzare (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
+<translation id="6082391187598394288">Questo criterio può essere usato temporaneamente per forzare l'attivazione del supporto dell'API PPB_VideoDecoder(Dev).
+
+Se il criterio non viene configurato o se viene impostato su Disabled, il browser deciderà se l'API è supportata o meno.
+Se il criterio viene impostato su Enabled, l'API sarà supportata.
+
+Questo criterio può essere usato qualora la nostra procedura in corso di eliminazione del supporto di questa API presenti problemi. Se devi usare il criterio, invia una segnalazione di bug su crbug.com spiegando il tuo caso d'uso e aggiungendo in copia per conoscenza {blundell, vasilyt}@chromium.org. Il criterio è disponibile tramite la versione 114 di <ph name="PRODUCT_NAME" />, dopodiché il supporto per questa API è stato eliminato incondizionatamente.
+
+NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai processi del renderer appena avviati mentre il browser è in esecuzione.</translation>
 <translation id="6083631234867522991">Windows (client Windows):</translation>
 <translation id="608788685013546076">Imposta un valore percentuale per il limite di consumo della batteria per la variazione dei picchi energetici</translation>
 <translation id="6089679180657323464">Consente di stabilire le impostazioni del controller DTC (Diagnostics and Telemetry Controller) wilco.</translation>
@@ -5575,6 +5594,14 @@ Il salvaschermo del dispositivo mostra le immagini a cui fa riferimento il crite
       L'impostazione del criterio su un colore esadecimale valido fa sì che venga automaticamente generato e applicato al browser un tema basato su quel colore. Gli utenti non potranno modificare il tema impostato dal criterio.
 
       Lasciare il criterio non impostato consente agli utenti di modificare il tema del browser come preferiscono.</translation>
+<translation id="6195356309340063061">Attiva <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL.
+
+La configurazione di questo criterio consente di specificare gli URL che <ph name="PRODUCT_NAME" /> offre per avviare il flusso di attestazione per i browser gestiti. Il secondo consente a questi siti web di ricevere dal dispositivo un insieme attestato di indicatori sensibili al contesto.
+Questo criterio può essere configurato solo tramite la pagina Chrome Enterprise Connectors su <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Se questo criterio non viene impostato o se viene lasciato vuoto, nessun sito web potrà avviare un flusso di attestazione a livello di browser e ricevere indicatori dal dispositivo. Tuttavia, se viene attivato il criterio <ph name="USER_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST" />, il flusso di attestazione può essere avviato per il profilo gestito e gli indicatori dei dispositivi possono essere raccolti.
+
+Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="6195802366906945965">Consente di stabilire se verrà utilizzato lo strumento di verifica dei certificati integrato per verificare i certificati dei server</translation>
 <translation id="6198947200418556248">Questo criterio è deprecato. Se hai ancora bisogno del comportamento dei cookie precedente, usa il criterio <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />. Ti consente di ripristinare il comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedente per tutti i cookie. Se ripristini il comportamento precedente, i cookie per cui non è specificato un attributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> vengono considerati come se avessero il valore "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />"; viene rimosso il requisito che richiede che i cookie "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" abbiano l'attributo "<ph name="ATTRIBUTE_SECURE_NAME" />" e viene ignorato il confronto tra schemi nel valutare se due siti sono uno stesso sito. Per una descrizione completa, visita la pagina https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
 
@@ -7181,6 +7208,7 @@ Questo sostituisce il criterio <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLIC
       Se viene impostato su Disattivato, non viene attivata alcuna raccolta di dati anonimizzati con chiave URL.
 
       Se questo criterio non viene configurato, l'utente potrà modificare manualmente questa impostazione.</translation>
+<translation id="7585312329612243723">Attiva flusso di attestazione <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di URL su browser gestiti</translation>
 <translation id="7587345076013230465">Richiedi all'utente di selezionare il certificato client quando il criterio di selezione automatica corrisponde a più certificati nella schermata di accesso</translation>
 <translation id="7587921466180902617">Attiva la versione sperimentale di Registra schermo per gli utenti di Family Link</translation>
 <translation id="759957074386651883">Impostazioni di Navigazione sicura</translation>

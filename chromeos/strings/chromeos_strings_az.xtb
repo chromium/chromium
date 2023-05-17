@@ -217,6 +217,7 @@
 <translation id="2638662041295312666">Daxil olma şəkli</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> albomu seçildi</translation>
 <translation id="267442004702508783">təzələyin</translation>
+<translation id="268270014981824665">qaraldılmış klaviatura</translation>
 <translation id="2712812801627182647">TLS doğrulama açarı</translation>
 <translation id="2713444072780614174">Ağ</translation>
 <translation id="2717139507051041123">Tünd rəng rejimini aktiv edin</translation>
@@ -224,6 +225,7 @@
 <translation id="2744221223678373668">Paylaşılan</translation>
 <translation id="2751739896257479635">EAP Faza 2 doğrulaması</translation>
 <translation id="2783010256799387990">KEÇDİ</translation>
+<translation id="2787435249130282949">daha parlaq klaviatura</translation>
 <translation id="2789486458103222910">Oldu</translation>
 <translation id="2805756323405976993">Tətbiq</translation>
 <translation id="28232023175184696">İnternetə qoşulmaq olmur. Yenidən cəhd etmək üçün klikləyin.</translation>
@@ -327,11 +329,13 @@
 <translation id="3749289110408117711">Fayl adı</translation>
 <translation id="3771294271822695279">Video Fayllar</translation>
 <translation id="3784455785234192852">Kilidləyin</translation>
+<translation id="380097101658023925">rgb nizamlayıcıları</translation>
 <translation id="38114475217616659">Bütün tarixçəni silin</translation>
 <translation id="3820172043799983114">Yanlış PIN.</translation>
 <translation id="3824259034819781947">Fayllar əlavə edin</translation>
 <translation id="3838338534323494292">Yeni parol</translation>
 <translation id="3845880861638660475">Dialoqu bağlamaq üçün <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> düyməsini basın.</translation>
+<translation id="3848280697030027394">klaviaturanın tündləşdirilməsi</translation>
 <translation id="385051799172605136">Geri</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3862598938296403232">Təsvir tələb olunur</translation>
@@ -403,6 +407,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Deaktiv edin</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> yenidən başladılır</translation>
+<translation id="4395835743215824109">klaviatura fərdiləşdirməsi</translation>
 <translation id="4415951057168511744">Cari Avatar</translation>
 <translation id="4422041425070339732">aşağı ox</translation>
 <translation id="4425149324548788773">Diskim</translation>
@@ -426,6 +431,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh Batareya</translation>
 <translation id="4561801978359312462">SIM Kilidi Açılıb</translation>
 <translation id="4562494484721939086">Xidmət yoxdur</translation>
+<translation id="4573777384450697571">Alınmadı - Sertifikatın vaxtı bitib</translation>
 <translation id="458794348635939462">Bütün hostları həll etmək alınmadı</translation>
 <translation id="4593212453765072419">Proksi doğrulama tələb olunur</translation>
 <translation id="4609350030397390689">Klaviatura parlaqlığını azaldın</translation>
@@ -442,6 +448,7 @@
 <translation id="4731797938093519117">Valideyn girişi</translation>
 <translation id="473775607612524610">Güncəlləşdirin</translation>
 <translation id="4744944742468440486">Seçiminizlə əlaqəli məlumat</translation>
+<translation id="4771607256327216405">klaviaturanın parlaqlaşdırılması</translation>
 <translation id="4773299976671772492">Durmuş</translation>
 <translation id="4782311465517282004">Mətnə sağ düymə ilə toxunduqda və ya toxunub saxladıqda izahlar, tərcümələr və ya vahid çevirmələrini əldə edin</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
@@ -490,6 +497,7 @@
 <translation id="500920857929044050">Testi dayandırın</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Ekran durğun olduqda fotolar, vaxt, hava və media məlumatları göstərilsin.</translation>
+<translation id="5038292761217083259">çoxrəngli klaviatura</translation>
 <translation id="5039804452771397117">İcazə verin</translation>
 <translation id="5049856988445523908">SIM Kilidlənib (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Qrup adı</translation>
@@ -638,6 +646,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Qaranlıq temanı aktiv edin</translation>
 <translation id="6285899124799306373">başladıcını açın</translation>
+<translation id="629550705077076970">klaviaturanın qaraldılması</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> testi ləğv edilib</translation>
 <translation id="631063167932043783">Tətbiqi araşdırın</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> cihazında proqramı güncəlləyin</translation>
@@ -656,6 +665,7 @@
 <translation id="6401427872449207797">brauzer axtarışı</translation>
 <translation id="6410257289063177456">Təsvir Faylları</translation>
 <translation id="641081527798843608">Subyekt uyğunluğu</translation>
+<translation id="6411934471898487866">klaviatura parlaqlığı</translation>
 <translation id="6412715219990689313">Quraşdırılmış klaviatura</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -806,10 +816,12 @@
 <translation id="7656388927906093505">Cihaz mausdur.</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7665800271478495366">Avatarı dəyişdirin</translation>
+<translation id="7683228889864052081">klaviatura çaları</translation>
 <translation id="7690294790491645610">Yeni parolu təsdiq edin</translation>
 <translation id="7701040980221191251">Heç biri</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">işıqlı klaviatura</translation>
 <translation id="773153675489693198">Dövrə sayı</translation>
 <translation id="7747039790905080783">Öncədən paylaşılan açar</translation>
 <translation id="7762130827864645708">Parolunuz uğurla dəyişdirildi. Bundan sonra yeni paroldan istifadə edin.</translation>
@@ -853,6 +865,7 @@
 <translation id="8075838845814659848">Qalan şarj</translation>
 <translation id="8076492880354921740">Tablar</translation>
 <translation id="8082366717211101304">Android tətbiqlərindən DNS'i həll etmək olmur</translation>
+<translation id="8082644724189923105">klaviatura zonası</translation>
 <translation id="808894953321890993">Parolu dəyişin</translation>
 <translation id="8094062939584182041">Google'un bu problemlə bağlı sizə e-məktub göndərməsinə icazə verin</translation>
 <translation id="8104083085214006426">Açıq və güvənsiz şəbəkədən istifadə edirsiniz</translation>
@@ -901,6 +914,7 @@
 <translation id="8456761643544401578">Avtomatik qaranlıq rejim</translation>
 <translation id="8461329675984532579">Əsas səhifə provayder adı</translation>
 <translation id="8475690821716466388">WiFi şəbəkəsi zəif protokol WEP PSK ilə qorunur</translation>
+<translation id="8476242415522716722">klaviaturanın altdan parlaqlaşdırılması</translation>
 <translation id="8477551185774834963">DNS gecikməsi icazə verilən həddən azca yuxarıdır</translation>
 <translation id="8483248364096924578">IP ünvanı</translation>
 <translation id="8491311378305535241">Alov divarı aktiv olduqda Android tətbiqlərindən HTTPS vebsaytlarına qoşulmaq olmur</translation>
@@ -944,6 +958,7 @@
 <translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8855781559874488009">Alov divarı aktiv olduqda HTTP vebsaytlarına qoşulmaq olmur</translation>
 <translation id="885701979325669005">Yaddaş</translation>
+<translation id="885704831271383379">daha tünd klaviatura</translation>
 <translation id="8863170912498892583">Qaranlıq temanı aktiv edin</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" və daha çoxu üçün <ph name="INTENT" /> əldə edin</translation>
 <translation id="8864415976656252616">Təklif olunan məzmun yoxdur. Populyar yardım məzmununa baxın.</translation>

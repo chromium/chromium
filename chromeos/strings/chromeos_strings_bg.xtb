@@ -217,6 +217,7 @@
 <translation id="2638662041295312666">Изображение при вход</translation>
 <translation id="2640549051766135490">Избран албум <ph name="TITLE" />, <ph name="DESC" /></translation>
 <translation id="267442004702508783">опресняване</translation>
+<translation id="268270014981824665">затъмняване на клавиатурата</translation>
 <translation id="2712812801627182647">Ключ за удостоверяване за TLS</translation>
 <translation id="2713444072780614174">бяло</translation>
 <translation id="2717139507051041123">Активиране на режима за тъмни цветове</translation>
@@ -224,6 +225,7 @@
 <translation id="2744221223678373668">Споделени</translation>
 <translation id="2751739896257479635">Удостоверяване във фаза 2 през EAP</translation>
 <translation id="2783010256799387990">УСПЕШНО</translation>
+<translation id="2787435249130282949">по-ярка клавиатура</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="28232023175184696">Няма връзка с интернет. Кликнете, за да опитате отново.</translation>
@@ -327,11 +329,13 @@
 <translation id="3749289110408117711">Име на файла</translation>
 <translation id="3771294271822695279">Видеофайлове</translation>
 <translation id="3784455785234192852">Заключване</translation>
+<translation id="380097101658023925">контроли за rgb</translation>
 <translation id="38114475217616659">Изчистване на цялата история</translation>
 <translation id="3820172043799983114">Невалиден ПИН код.</translation>
 <translation id="3824259034819781947">Прикачване на файлове</translation>
 <translation id="3838338534323494292">Нова парола</translation>
 <translation id="3845880861638660475">Натиснете <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />, за да затворите диалоговия прозорец.</translation>
+<translation id="3848280697030027394">потъмняване на клавиатурата</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3862598938296403232">Описанието е задължително</translation>
@@ -403,6 +407,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Деактивиране</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> се рестартира</translation>
+<translation id="4395835743215824109">персонализиране на клавиатурата</translation>
 <translation id="4415951057168511744">Текущ аватар</translation>
 <translation id="4422041425070339732">стрелка за надолу</translation>
 <translation id="4425149324548788773">Моят диск</translation>
@@ -443,6 +448,7 @@
 <translation id="4731797938093519117">Достъп на родител</translation>
 <translation id="473775607612524610">Актуализиране</translation>
 <translation id="4744944742468440486">Информация за избраното от вас</translation>
+<translation id="4771607256327216405">увеличаване на яркостта на клавиатурата</translation>
 <translation id="4773299976671772492">Спряно</translation>
 <translation id="4782311465517282004">Получавайте определения, преводи или преобразувани мерни единици, когато докоснете и задържите текст или кликнете върху него с десния бутон</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> снимка</translation>
@@ -491,6 +497,7 @@
 <translation id="500920857929044050">Спиране на теста</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Показване на снимки, часа, времето и информация за мултимедията, когато екранът е неактивен.</translation>
+<translation id="5038292761217083259">многоцветна клавиатура</translation>
 <translation id="5039804452771397117">Разрешаване</translation>
 <translation id="5049856988445523908">SIM картата е заключена (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Име на групата</translation>
@@ -639,6 +646,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Включване на тъмната тема</translation>
 <translation id="6285899124799306373">отваряне на стартовия панел</translation>
+<translation id="629550705077076970">затъмняване на клавиатурата</translation>
 <translation id="6302401976930124515">Тестът „<ph name="TEST_NAME" />“ бе прекратен</translation>
 <translation id="631063167932043783">Приложение Explore</translation>
 <translation id="6319207335391420837">Актуализиране на фърмуера на <ph name="DEVICE_NAME" /></translation>
@@ -657,6 +665,7 @@
 <translation id="6401427872449207797">търсене в браузъра</translation>
 <translation id="6410257289063177456">Графични файлове</translation>
 <translation id="641081527798843608">Съвпадение на субекта</translation>
+<translation id="6411934471898487866">яркост на клавиатурата</translation>
 <translation id="6412715219990689313">Вградена клавиатура</translation>
 <translation id="6417265370957905582">Google Асистент</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -739,6 +748,7 @@
 <translation id="7130438335435247835">Име на точката за достъп (APN)</translation>
 <translation id="7131634559772719176">Потвърждаване на предварително зададеното</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сървър за имена}other{Сървъри за имена}}</translation>
+<translation id="7135814714616751706">Търсете комбинации</translation>
 <translation id="7143207342074048698">Свързва се</translation>
 <translation id="7144878232160441200">Повторен опит</translation>
 <translation id="714876143603641390">Връзка с LAN</translation>
@@ -769,6 +779,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; За да видите резултата в Google Търсене, натиснете клавиша „търсене“ + интервал.</translation>
 <translation id="7343649194310845056">Мрежови устройства</translation>
+<translation id="7353413232959255829">Резултат от търсенето <ph name="LIST_POSITION" /> от <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Натиснете Enter, за да навигирате към прекия път.</translation>
 <translation id="7359657277149375382">Файлов тип</translation>
 <translation id="73631062356239394">Споделяне на диагностични данни</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -805,10 +816,12 @@
 <translation id="7656388927906093505">Устройството е мишка.</translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7665800271478495366">Промяна на аватара</translation>
+<translation id="7683228889864052081">цвят на клавиатурата</translation>
 <translation id="7690294790491645610">Потвърдете новата парола</translation>
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">осветление на клавиатурата</translation>
 <translation id="773153675489693198">Брой цикли</translation>
 <translation id="7747039790905080783">Предварително споделен ключ</translation>
 <translation id="7762130827864645708">Промяната на паролата ви беше успешна. Моля, използвайте новата парола от сега нататък.</translation>
@@ -852,6 +865,7 @@
 <translation id="8075838845814659848">Оставащ заряд</translation>
 <translation id="8076492880354921740">Раздели</translation>
 <translation id="8082366717211101304">Преобразуването от DNS не е възможно от приложения за Android</translation>
+<translation id="8082644724189923105">зона на клавиатурата</translation>
 <translation id="808894953321890993">Промяна на паролата</translation>
 <translation id="8094062939584182041">Разрешаване на Google да ви изпраща имейли за този проблем</translation>
 <translation id="8104083085214006426">Използвате отворена и незащитена мрежа</translation>
@@ -900,6 +914,7 @@
 <translation id="8456761643544401578">Автоматичен тъмен режим</translation>
 <translation id="8461329675984532579">Име на собствения доставчик</translation>
 <translation id="8475690821716466388">Wi-Fi мрежата е защитена със слабия протокол WEP PSK</translation>
+<translation id="8476242415522716722">подсветка на клавиатурата</translation>
 <translation id="8477551185774834963">Забавянето на DNS е малко над допустимия праг</translation>
 <translation id="8483248364096924578">IP адрес</translation>
 <translation id="8491311378305535241">През защитната стена не може да се установи връзка от приложения за Android с уебсайтове, работещи с HTTP</translation>
@@ -943,6 +958,7 @@
 <translation id="8845001906332463065">Получете помощ</translation>
 <translation id="8855781559874488009">През защитната стена не може да се установи връзка с уебсайтове, работещи с HTTP</translation>
 <translation id="885701979325669005">Хранилище</translation>
+<translation id="885704831271383379">по-тъмна клавиатура</translation>
 <translation id="8863170912498892583">Активиране на тъмната тема</translation>
 <translation id="8863888432376731307">Получете <ph name="INTENT" /> на „<ph name="QUERY" />“ и др.</translation>
 <translation id="8864415976656252616">Няма предложено съдържание. Вижте най-популярното помощно съдържание.</translation>

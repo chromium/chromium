@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Саяхны видео байхгүй байна</translation>
 <translation id="3634507049637220048">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, таны администратор удирддаг, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> зүйлийг зөөсөн.</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> файл сонгосон</translation>
 <translation id="3685122418104378273">Гар утасны мэдээллийг ашиглаж байх үед Google Drive синк нь автоматаар идэвхгүй болно.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" />-г цуцлах.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" />-с <ph name="NETWORK_INDEX" />-р сүлжээ, <ph name="NETWORK_NAME" />, Идэвхжүүлээгүй, <ph name="CONNECTION_STATUS" />, Дохионы хүч <ph name="SIGNAL_STRENGTH" />%, Дэлгэрэнгүй</translation>
@@ -574,6 +575,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> зураг</translation>
 <translation id="5534520101572674276">Хэмжээг тооцоолж байна</translation>
 <translation id="554153475311314364">Грек галиг</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> фолдер сонгосон</translation>
 <translation id="5580591966435005537">виртуал машин</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Цэг таслалын өргөн бүтэн байна</translation>
@@ -596,6 +598,7 @@
 <translation id="5724172041621205163">Pattachote гартай тай</translation>
 <translation id="57383366388012121">Өнгөрсөн сар</translation>
 <translation id="5756666464756035725">Унгарын QWERTY</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> зүйл сонгосон</translation>
 <translation id="5763377084591234761">Герман (Швейцар)</translation>
 <translation id="5769519078756170258">Хасах хост эсвэл домэйн</translation>
 <translation id="5775750595919327203">Урду</translation>

@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> ha utilitzat Chromium en aquest dispositiu i hi ha deixat adreces d'interès, contrasenyes i altres opcions de configuració.</translation>
 <translation id="372658070733623520">Per utilitzar i desar les dades de Chromium al teu Compte de Google, verifica la teva identitat.</translation>
 <translation id="3805899903892079518">Chromium no té accés als vostres vídeos o fotos. Permeteu-li l'accés a iOS, a Configuració &gt; Privadesa &gt; Fotos.</translation>
+<translation id="3955621079070267756">Obre Chromium des de qualsevol aplicació</translation>
 <translation id="4043291146360695975">Les contrasenyes es desen al gestor de contrasenyes només en aquest dispositiu.</translation>
 <translation id="4099085513035183040">No s'admeten a la versió beta de Chromium</translation>
 <translation id="4432744876818348753">Inicia la sessió per treure el màxim profit de Chromium.</translation>
@@ -141,5 +142,6 @@ Aspectes que cal tenir en compte:
 <translation id="9089354809943900324">Chromium no està actualitzat</translation>
 <translation id="9110075932708282655">Utilitza Chromium de manera predeterminada</translation>
 <translation id="921174536258924340">Chromium no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">Utilitza Chromium automàticament quan toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="985602178874221306">Els autors de Chromium</translation>
 </translationbundle>

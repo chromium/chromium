@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> menggunakan Chromium dan meninggalkan bookmark, sandi, serta setelan lainnya di perangkat ini.</translation>
 <translation id="372658070733623520">Untuk menggunakan dan menyimpan data Chromium di Akun Google Anda, verifikasi diri Anda.</translation>
 <translation id="3805899903892079518">Chromium tidak memiliki akses ke foto atau video Anda. Izinkan akses di iOS Settings &gt; Privacy &gt; Photos.</translation>
+<translation id="3955621079070267756">Buka Chromium dari Aplikasi Apa Saja</translation>
 <translation id="4043291146360695975">Sandi hanya disimpan ke Pengelola Sandi di perangkat ini.</translation>
 <translation id="4099085513035183040">Tidak didukung di Chromium Beta</translation>
 <translation id="4432744876818348753">Login untuk mengoptimalkan penggunaan Chromium.</translation>
@@ -143,5 +144,6 @@ Hal-hal yang perlu dipertimbangkan:
 <translation id="9089354809943900324">Chromium terlalu lawas</translation>
 <translation id="9110075932708282655">Gunakan Chromium secara Default</translation>
 <translation id="921174536258924340">Chromium tidak dapat memeriksa semua sandi. Coba lagi besok atau <ph name="BEGIN_LINK" />periksa sandi di Akun Google Anda<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">Otomatis gunakan Chromium saat Anda mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>
 <translation id="985602178874221306">Pengarang Chromium</translation>
 </translationbundle>

@@ -539,6 +539,7 @@
 <translation id="4592368184551360546">Клавиатура</translation>
 <translation id="4606247758155004938">Этим браузером управляет ваша организация.</translation>
 <translation id="461440297010471931">Поиск с помощью Google</translation>
+<translation id="4616391354457235490">Отменить</translation>
 <translation id="4619564267100705184">Подтвердить личность</translation>
 <translation id="4619615317237390068">Вкладки с других устройств</translation>
 <translation id="4620246317052452550">Прочитанные</translation>
@@ -861,6 +862,7 @@
 
 Для каждого сайта желательно использовать уникальный пароль.</translation>
 <translation id="650279896687777322">Подробнее</translation>
+<translation id="6507973708545996744">Войдите в аккаунт, чтобы синхронизировать список для чтения на всех своих устройствах.</translation>
 <translation id="6510072653668207258">Напомнить позже</translation>
 <translation id="651505212789431520">Отключить синхронизацию? Ее можно включить в настройках в любой момент.</translation>
 <translation id="6518133107902771759">Подтвердить</translation>
@@ -1116,6 +1118,7 @@
 <translation id="8197543752516192074">Перевести страницу</translation>
 <translation id="8205564605687841303">Отмена</translation>
 <translation id="8206354486702514201">Этот параметр включен администратором.</translation>
+<translation id="8214293972734702249">Закрепленная вкладка "<ph name="TAB_TITLE" />"</translation>
 <translation id="8225985093977202398">Файлы, сохраненные в кеше</translation>
 <translation id="8237382152611443140">Откройте настройки автозаполнения паролей.</translation>
 <translation id="8248969482078657578">Не отвлекайтесь на лишние вкладки</translation>

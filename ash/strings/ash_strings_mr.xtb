@@ -184,6 +184,7 @@
 <translation id="1774796056689732716">कॅलेंडर, <ph name="CURRENT_MONTH_YEAR" />, सध्या <ph name="DATE" /> निवडली आहे.</translation>
 <translation id="1787955149152357925">बंद करा</translation>
 <translation id="181103072419391116">सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
+<translation id="1815245884418711390">हॉटस्पॉट टॉगल करा. हॉटस्पॉट बंद आहे.</translation>
 <translation id="1816896987747843206">हे कॅमेरा परवानगी असलेल्या सर्व अ‍ॅप्स आणि वेबसाइटना कॅमेराच्या अ‍ॅक्सेसची अनुमती देते</translation>
 <translation id="1823280932251546115">स्टेटस ट्रे, वेळ <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -242,6 +243,7 @@
 <translation id="2023558322300866873">तुम्ही पॅकेट कॅप्चर कधीही थांबवू शकता</translation>
 <translation id="2034971124472263449">तरीही सेव्ह करा</translation>
 <translation id="2049240716062114887">डेस्कचे नाव <ph name="DESK_NAME" /> वर बदलले होते</translation>
+<translation id="206377500836174974">पूर्ण</translation>
 <translation id="2064048859448024834">कॅमेराचे पूर्वावलोकन सुरू आहे</translation>
 <translation id="2067602449040652523">कीबोर्डची चमक</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> टॉगल करा. <ph name="CAPTURE_MEDIUM" /> हा <ph name="CAPTURE_STATE" /></translation>
@@ -294,6 +296,7 @@
 <translation id="2339073806695260576">नोट व स्क्रीनशॉट घेण्यासाठी, तसेच लेझर पॉइंटर किंवा भिंग वापरण्यासाठी शेल्फवरील स्टायलस बटणावर टॅप करा.</translation>
 <translation id="2341729377289034582">उभ्या दिशेने लॉक केले</translation>
 <translation id="2345226652884463045">संपादित करण्यासाठी मजकूर निवडण्याकरिता एंटर किंवा शोधा + स्पेस प्रेस करा.</translation>
+<translation id="2349785431103945039">हॉटस्पॉटचे तपशील दाखवा. हॉटस्पॉट वापरण्यासाठी मोबाइल नेटवर्कशी कनेक्ट करा.</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" /> स्पीचवर आता स्थानिक पातळीवर प्रक्रिया केली जाते आणि ती ऑफलाइन काम करते. तुम्ही तुमच्या डिक्टेशनची भाषा सेटिंग्ज &gt; अ‍ॅक्सेसिबिलिटी यामध्ये बदलू शकता.</translation>
 <translation id="2352467521400612932">स्टायलस सेटिंग्ज</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> सक्रिय करत आहे</translation>
@@ -337,6 +340,7 @@
 <translation id="2531025035050312891">डिव्हाइसचा वेग कमी</translation>
 <translation id="2542089167727451762">तुमच्या प्रोफाइल इमेजवर टॅप करा</translation>
 <translation id="254900897760075745">निवडलेला आशय क्लिपबोर्डवर कॉपी करा</translation>
+<translation id="2549711466868162843">प्रकाशामध्ये सुधारणा करा</translation>
 <translation id="2549985041256363841">रेकॉर्डिंग सुरू करा</translation>
 <translation id="255671100581129685">सार्वजनिक सेशनमध्ये Google असिस्टंट उपलब्ध नाही.</translation>
 <translation id="256712445991462162">डॉक केलेले मॅग्निफायर</translation>
@@ -430,6 +434,7 @@
 <translation id="3009178788565917040">आउटपुट</translation>
 <translation id="3009958530611748826">ज्यामध्ये सेव्ह करायचे आहे ते फोल्डर निवडा</translation>
 <translation id="301282384882049174">तुमच्या अ‍ॅडमिनिस्ट्रेटरने शेअर केलेले</translation>
+<translation id="301584155502740476">हॉटस्पॉटचे तपशील दाखवा. हॉटस्पॉट बंद आहे.</translation>
 <translation id="3018135054368884502">मीडिया फास्ट फॉरवर्ड करा</translation>
 <translation id="3033545621352269033">सुरू</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> सह एकत्र करा</translation>
@@ -490,6 +495,7 @@
 <translation id="3291862315280588024">मागील शब्दाच्या प्रारंभावर हलवा</translation>
 <translation id="3294437725009624529">अतिथी</translation>
 <translation id="3298690094479023523">तुमच्या पिन किंवा पासवर्डची अद्याप पडताळणी करता आली नाही. पुन्हा प्रयत्न करा.</translation>
+<translation id="3300193645498960160">म्यूट केलेले असताना तुम्ही बोलल्यास, तुम्हाला सूचित केले जाईल. ऑडिओ तुमच्या डिव्हाइसमधून कधीही जात नाही.</translation>
 <translation id="3307642347673023554">लॅपटॉप मोडवर स्विच केले</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> नंतरही साइन इन करू शकतो.</translation>
 <translation id="3321628682574733415">चुकीचा पालक कोड</translation>
@@ -574,6 +580,7 @@
 <translation id="3621202678540785336">इनपुट</translation>
 <translation id="3621712662352432595">ऑडिओ सेटिंग्ज</translation>
 <translation id="3626281679859535460">ब्राइटनेस</translation>
+<translation id="3629640897379005903">हॉटस्पॉटचे तपशील दाखवा. हॉटस्पॉट बंद होत आहे.</translation>
 <translation id="3630697955794050612">बंद</translation>
 <translation id="3631369015426612114">यांना सूचना पाठवू द्या</translation>
 <translation id="3633097874324966332">तुमचे डिव्हाइस पेअर करण्यासाठी ब्लूटूथ सेटिंग्ज उघडा</translation>
@@ -705,6 +712,7 @@
 <translation id="423685346499232137">यावेळी आशय कॉपी किंवा पेस्ट करू शकत नाही</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">अवलोकन मोड</translation>
+<translation id="4240756737570479726">बंद करत आहे...</translation>
 <translation id="4242533952199664413">सेटिंग्ज उघडा</translation>
 <translation id="4247123849143712100">अपडेट करून बंद करा</translation>
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
@@ -843,6 +851,7 @@
 <translation id="4864369630010738180">साइन इन करत आहे...</translation>
 <translation id="4864648187878336334">डेस्‍क १५</translation>
 <translation id="4868492592575313542">अ‍ॅक्टिव्हेट केले आहे</translation>
+<translation id="4871905435473761992">हॉटस्पॉटचे तपशील दाखवा. तुमचे मोबाइल नेटवर्क हे हॉटस्पॉटला सपोर्ट करत नाही.</translation>
 <translation id="4872237917498892622">Alt+Search किंवा Shift</translation>
 <translation id="4872852897273142380">बुकमार्क बारवर फोकस करा किंवा हायलाइट करा (दाखवले असल्यास)</translation>
 <translation id="4881695831933465202">उघडा</translation>
@@ -902,6 +911,7 @@
 <translation id="5104236669533825617">स्क्रीनकास्ट तयार करू शकत नाही</translation>
 <translation id="5107522548814527560">वेब</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">बॅकग्राउंड ब्लर</translation>
 <translation id="5117590920725113268">पुढील महिना दर्शवा</translation>
 <translation id="5121628974188116412">पेजच्या तळाशी जा</translation>
 <translation id="5136175204352732067">वेगळा कीबोर्ड कनेक्ट केला आहे</translation>
@@ -914,6 +924,7 @@
 <translation id="5168181903108465623">कास्‍ट डिव्‍हाइसेस उपलब्‍ध</translation>
 <translation id="5170568018924773124">फोल्डरमध्ये दर्शवा</translation>
 <translation id="5176318573511391780">स्क्रीन अंशतः रेकॉर्ड करा</translation>
+<translation id="5187627942836026988">हॉटस्पॉटचे तपशील दाखवा. तुमच्या अ‍ॅडमिनिस्ट्रेटरने हॉटस्पॉट ब्लॉक केला आहे.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> इव्हेंट</translation>
 <translation id="5198715732953550718">नवीन फोल्डर तयार करण्यासाठी <ph name="IN_PLACE_APP" /> सोबत <ph name="MOVED_APP_NAME" /> एकत्रित केले गेले.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1086,6 +1097,7 @@
 <translation id="595202126637698455">कार्यप्रदर्शन ट्रेसिंग सक्षम केले</translation>
 <translation id="5955304353782037793">अ‍ॅप</translation>
 <translation id="5958529069007801266">पर्यवेक्षित वापरकर्ता</translation>
+<translation id="5961960957587052807">फिकट</translation>
 <translation id="5965524703725988602">गडद थीम टॉगल करा. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">विंडो रेकॉर्ड करण्यासाठी एंटर प्रेस करा</translation>
 <translation id="5978382165065462689">दूरस्थ सहाय्याद्वारे आपल्या स्क्रीनचे नियंत्रण शेअर करत आहे.</translation>
@@ -1258,6 +1270,7 @@
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> डेस्क काढून टाकले आणि डेस्क <ph name="RECEIVE_DESK" /> साेबत मर्ज केले</translation>
 <translation id="6753390234084146956">टॅब</translation>
 <translation id="6757237461819837179">कोणताही मीडिया प्‍ले होत नाही</translation>
+<translation id="6759628406555734414">हॉटस्पॉटचे तपशील दाखवा. हॉटस्पॉट सुरू होत आहे.</translation>
 <translation id="6768043681523654438">स्टोरेज</translation>
 <translation id="6777216307882431711">कनेक्ट केलेल्या USB-C डिव्‍हाइसना चार्ज करत आहे</translation>
 <translation id="6781002679438061620">डेस्‍क ९</translation>
@@ -1282,6 +1295,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> सेकंद</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{एक अंक शिल्लक आहे}other{# अंक शिल्लक आहेत}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> चे डाउनलोड थांबले</translation>
+<translation id="6874854809828346832">हॉटस्पॉटचे तपशील दाखवा. हॉटस्पॉट सुरू आहे.</translation>
 <translation id="6878400149835617132">शॉर्टकट बंद केला आहे</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{एक अ‍ॅप}other{# अ‍ॅप्स}}</translation>
 <translation id="6884665277231944629">आजवर जा</translation>
@@ -1291,6 +1305,7 @@
 <translation id="6896758677409633944">कॉपी करा</translation>
 <translation id="6901883536534621389">नेव्हिगेट करण्यासाठी जेश्चर वापरून पहा</translation>
 <translation id="6919251195245069855">तुमचे स्मार्ट कार्ड ओळखू शकलो नाही. पुन्हा प्रयत्न करा.</translation>
+<translation id="6920245099716267363">हॉटस्पॉट टॉगल करा. हॉटस्पॉट सुरू आहे, १ डिव्हाइस कनेक्ट केले आहे.</translation>
 <translation id="6931576957638141829">येथे सेव्ह करा</translation>
 <translation id="6941333068993625698">फीडबॅक सबमिट करा</translation>
 <translation id="6942518653766415536">रेकॉर्डिंग फॉरमॅट मेनू</translation>
@@ -1380,6 +1395,7 @@
 <translation id="7378203170292176219">रेकॉर्ड करायचे असलेले भाग निवडण्यासाठी ड्रॅग करा</translation>
 <translation id="7378594059915113390">मीडिया नियंत्रणे</translation>
 <translation id="7378889811480108604">बॅटरी सेव्हर मोड बंद आहे</translation>
+<translation id="7382640522316003298">हॉटस्पॉट टॉगल करा. हॉटस्पॉट सुरू आहे, <ph name="DEVICECOUNT" /> डिव्हाइस कनेक्ट केली आहेत.</translation>
 <translation id="7382680553121047388">सुरू आहे</translation>
 <translation id="7384028040782072252">तुमची ॲप्स पुन्हा क्रमाने लावण्यासाठी कुठेही राइट-क्लिक करा</translation>
 <translation id="7386767620098596324">नेटवर्क कनेक्शन टॉगल करा. <ph name="STATE_TEXT" />.</translation>
@@ -1430,6 +1446,7 @@
 <translation id="7579778809502851308">स्‍क्रीन कॅप्‍चर</translation>
 <translation id="7593891976182323525">Search किंवा Shift</translation>
 <translation id="7600875258240007829">सर्व सूचना पहा</translation>
+<translation id="7601417191446344542">म्यूट नज सुरू करायचा का?</translation>
 <translation id="7607002721634913082">विराम द्या</translation>
 <translation id="7609951632080598826">कॅलेंडर दृश्य, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">कॅमेरा पुन्हा कनेक्ट केला.</translation>
@@ -1554,6 +1571,7 @@
 <translation id="8131740175452115882">पुष्टी करा</translation>
 <translation id="8131994907636310308">क्रम लावण्यासंबंधित टोस्ट बंद करा</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> शी कनेक्ट केलेले</translation>
+<translation id="8135163608236671037">हॉटस्पॉट टॉगल करा. हॉटस्पॉट सुरू आहे, कोणतेही डिव्हाइस कनेक्ट केलेले नाही.</translation>
 <translation id="8138705869659070104">डिव्हाइस सेटअपनंतर सक्रिय करा</translation>
 <translation id="813913629614996137">सुरू करत आहे…</translation>
 <translation id="8142441511840089262">डबल क्लिक करा</translation>
@@ -1734,6 +1752,7 @@
 <translation id="8990809378771970590"><ph name="IME_NAME" /> वापरत आहे</translation>
 <translation id="8991617137207906966">कलर इन्व्हर्जन मोड सुरू केला आहे. तो बंद वर टॉगल करण्यासाठी पुन्हा Ctrl+Search+H प्रेस करा.</translation>
 <translation id="899350903320462459">सूचनेशी संबंधित क्रिया पार पाडण्यासाठी डिव्हाइस <ph name="LOGIN_ID" /> म्हणून अनलॉक करा</translation>
+<translation id="8993733019280019776">तुम्ही बोलत आहात का? तुमचा माइक बंद आहे. माइक सुरू करण्यासाठी तो निवडा.</translation>
 <translation id="9000771174482730261">स्टोरेज व्यवस्थापित करा</translation>
 <translation id="9005984960510803406">क्रॉश विंडो उघडा</translation>
 <translation id="9017320285115481645">Family Link पालक ॲक्सेस कोड एंटर करा.</translation>

@@ -183,6 +183,7 @@
 <translation id="1774796056689732716">දින දර්ශනය, <ph name="CURRENT_MONTH_YEAR" />, දැනට <ph name="DATE" /> තෝරා ඇත.</translation>
 <translation id="1787955149152357925">ක්‍රියාවිරහිතයි</translation>
 <translation id="181103072419391116">සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි</translation>
+<translation id="1815245884418711390">හොට්ස්පොට් ටොගල් කරන්න. හොට්ස්පොට් ක්‍රියා විරහිතයි.</translation>
 <translation id="1816896987747843206">මෙය කැමරා අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා කැමරා ප්‍රවේශයට ඉඩ දෙයි</translation>
 <translation id="1823280932251546115">තත්ත්ව තැටිය, වේලාව <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -241,6 +242,7 @@
 <translation id="2023558322300866873">ඔබට ඕනෑම වේලාවක පැකට් ග්‍රහණය නැවැත්විය හැකිය</translation>
 <translation id="2034971124472263449">කෙසේ වෙතත් සුරකින්න</translation>
 <translation id="2049240716062114887">ඩෙස්ක් නම <ph name="DESK_NAME" /> ලෙස වෙනස් කරන ලදි</translation>
+<translation id="206377500836174974">පිරී ඇත</translation>
 <translation id="2064048859448024834">කැමරා පෙරදසුන ක්‍රියාත්මකයි</translation>
 <translation id="2067602449040652523">යතුරු පුවරුවේ දීප්තිය</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> ටොගල් කරන්න. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> වේ</translation>
@@ -293,6 +295,7 @@
 <translation id="2339073806695260576">සටහනක්, තිර රුවක් ගැනීමට, ලේසර් දර්ශකය හෝ විශාලක කදාව භාවිතා කිරීමට රක්කයේ පන්හිඳ බොත්තම තට්ටු කරන්න.</translation>
 <translation id="2341729377289034582">සිරසට අගුළු දමා ඇත</translation>
 <translation id="2345226652884463045">සංස්කරණය සඳහා පෙළ තේරීමට enter හෝ search + space ඔබන්න.</translation>
+<translation id="2349785431103945039">හොට්ස්පොට් විස්තර පෙන්වන්න. හොට්ස්පොට් භාවිතා කිරීමට ජංගම ජාලය වෙත සම්බන්ධ කරන්න.</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" /> කථනය දැන් ස්ථානීයව සකසන අතර නොබැඳිව ක්‍රියා කරයි. ඔබට ඔබගේ අනුලේඛන භාෂාව සැකසීම් &gt; ප්‍රවේශ්‍යතාව තුළ වෙනස් කළ හැකිය.</translation>
 <translation id="2352467521400612932">පන්හිඳ සැකසීම්</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> සක්‍රීය කරමින්</translation>
@@ -336,6 +339,7 @@
 <translation id="2531025035050312891">උපාංගය මන්දගාමී වේ</translation>
 <translation id="2542089167727451762">ඔබේ පැතිකඩ රූපයට තට්ටු කරන්න</translation>
 <translation id="254900897760075745">තෝරන ලද අන්තර්ගතය ක්ලිප්බෝඩ් වෙත පිටපත් කරන්න</translation>
+<translation id="2549711466868162843">ආලෝකය වැඩි දියුණු කරන්න</translation>
 <translation id="2549985041256363841">පටිගත කිරීම අරඹන්න</translation>
 <translation id="255671100581129685">ප්‍රසිද්ධ සැසියකදී Google සහකරු නොලැබේ.</translation>
 <translation id="256712445991462162">ඩොක් කළ විශාලකය</translation>
@@ -429,6 +433,7 @@
 <translation id="3009178788565917040">ප්‍රතිදානය</translation>
 <translation id="3009958530611748826">සුරැකීමට ෆෝල්ඩරයක් තෝරන්න</translation>
 <translation id="301282384882049174">ඔබගේ පරිපාලක විසින් බෙදා ගන්නා ලදි</translation>
+<translation id="301584155502740476">හොට්ස්පොට් විස්තර පෙන්වන්න. හොට්ස්පොට් ක්‍රියා විරහිතයි.</translation>
 <translation id="3018135054368884502">වේගයෙන් ඉදිරියට මාධ්‍ය</translation>
 <translation id="3033545621352269033">සක්‍රියයි</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> සමග ඒකාබද්ධ කරන්න</translation>
@@ -489,6 +494,7 @@
 <translation id="3291862315280588024">පෙර වචනයෙහි ආරම්භයට යන්න</translation>
 <translation id="3294437725009624529">ආගන්තුක</translation>
 <translation id="3298690094479023523">ඔබේ PIN හෝ මුරපදය තවමත් සත්‍යාපනය කළ නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
+<translation id="3300193645498960160">ඔබ නිහඬව සිටින අතරේ කතා කළහොත් ඔබට දැනුම් දෙනු ලැබේ. ශ්‍රව්‍ය කිසි විටෙකත් ඔබේ උපාංගයෙන් පිට නොවේ.</translation>
 <translation id="3307642347673023554">ලැප්ටොප් ප්‍රකාරයට මාරු විය</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> හට තවමත් පසුව පිරිය හැක.</translation>
 <translation id="3321628682574733415">වැරදි මාපිය කේතය</translation>
@@ -572,6 +578,7 @@
 <translation id="3621202678540785336">ආදානය</translation>
 <translation id="3621712662352432595">ශ්‍රව්‍ය සැකසුම්</translation>
 <translation id="3626281679859535460">දීප්තිය</translation>
+<translation id="3629640897379005903">හොට්ස්පොට් විස්තර පෙන්වන්න. හොට්ස්පොට් අබල කරයි.</translation>
 <translation id="3630697955794050612">ක්‍රියාවිරහිතයි</translation>
 <translation id="3631369015426612114">පහත ඒවායින් දැනුම්දීම්වලට ඉඩ දෙන්න</translation>
 <translation id="3633097874324966332">ඔබගේ උපාංගය යුගල කිරීමට බ්ලූටූත් සැකසීම් විවෘත කරන්න</translation>
@@ -703,6 +710,7 @@
 <translation id="423685346499232137">මෙම අවස්ථාවේදී අන්තර්ගතය පිටපත් කිරීමට හෝ ඇලවීමට නොහැකිය</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">දළ විශ්ලේෂණ ආකාරය</translation>
+<translation id="4240756737570479726">අබල කරමින්...</translation>
 <translation id="4242533952199664413">සැකසීම් විවෘත කරන්න</translation>
 <translation id="4247123849143712100">යාවත්කාලීන කර වසා දමන්න</translation>
 <translation id="4250229828105606438">තිරරූපය</translation>
@@ -841,6 +849,7 @@
 <translation id="4864369630010738180">පුරමින්...</translation>
 <translation id="4864648187878336334">15 වෙනි මේසය</translation>
 <translation id="4868492592575313542">ක්‍රියාත්මක කළා</translation>
+<translation id="4871905435473761992">හොට්ස්පොට් විස්තර පෙන්වන්න. ඔබේ ජංගම ජාලය හොට්ස්පොට් වෙත සහාය නොදක්වයි.</translation>
 <translation id="4872237917498892622">Alt+Search හෝ Shift</translation>
 <translation id="4872852897273142380">පිටුසන් තීරුව නාභිගත කරන්න හෝ උද්දීපනය කරන්න (පෙන්වන්නේ නම්)</translation>
 <translation id="4881695831933465202">විවෘත කරන්න</translation>
@@ -900,6 +909,7 @@
 <translation id="5104236669533825617">තිරසටහන තැනීමට නොහැක</translation>
 <translation id="5107522548814527560">වෙබය</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">පසුබිම නොපැහැදිලි කිරීම</translation>
 <translation id="5117590920725113268">ඊළඟ මාසය පෙන්වන්න</translation>
 <translation id="5121628974188116412">පිටුවේ පහළට යන්න</translation>
 <translation id="5136175204352732067">වෙනස් යතුරු පුවරුවක් සම්බන්ධ කර ඇත</translation>
@@ -912,6 +922,7 @@
 <translation id="5168181903108465623">විකාශ උපාංග ලබා ගත හැකිය</translation>
 <translation id="5170568018924773124">ෆෝල්ඩරයේ පෙන්වන්න</translation>
 <translation id="5176318573511391780">අර්ධ තිරය පටිගත කරන්න</translation>
+<translation id="5187627942836026988">හොට්ස්පොට් විස්තර පෙන්වන්න. හොට්ස්පොට් ඔබේ පරිපාලක විසින් අවහිර කර ඇත.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, සිදුවීම් <ph name="NUMBER" />ක්</translation>
 <translation id="5198715732953550718">නව ෆෝල්ඩරයක් සෑදීමට <ph name="IN_PLACE_APP" /> සමඟ <ph name="MOVED_APP_NAME" /> සංයුක්ත වේ.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1084,6 +1095,7 @@
 <translation id="595202126637698455">ක්‍රියාකරිත්ව හඹායෑම සබල කෙරිණි</translation>
 <translation id="5955304353782037793">යෙදුම</translation>
 <translation id="5958529069007801266">අධීක්ෂණය කරන ලද භාවිතකරු</translation>
+<translation id="5961960957587052807">ආලෝකය</translation>
 <translation id="5965524703725988602">අඳුරු තේමාව ටොගල් කරන්න. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">කවුළුව පටිගත කිරීමට Enter ඔබන්න</translation>
 <translation id="5978382165065462689">දුරස්ථ සහයක මගින් ඔබේ තිරයේ පාලනය බෙදාගනී.</translation>
@@ -1256,6 +1268,7 @@
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> මේසය ඉවත් කර <ph name="RECEIVE_DESK" /> මේසය සමඟ ඒකාබද්ධ කෙරිණි</translation>
 <translation id="6753390234084146956">ටැබ</translation>
 <translation id="6757237461819837179">මාධ්‍ය වාදනය නොවේ</translation>
+<translation id="6759628406555734414">හොට්ස්පොට් විස්තර පෙන්වන්න. හොට්ස්පොට් සබල කරයි.</translation>
 <translation id="6768043681523654438">ආචයනය</translation>
 <translation id="6777216307882431711">සම්බන්ධිත USB-C උපාංග බල ගැන්වේ</translation>
 <translation id="6781002679438061620">9 වෙනි මේසය</translation>
@@ -1280,6 +1293,7 @@
 <translation id="6857725247182211756">තත් <ph name="SECONDS" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{එක් අංකයක් ඉතිරිය}one{අංක #ක් ඉතිරිය}other{අංක #ක් ඉතිරිය}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> බාගැනීම විරාම කරන ලදි</translation>
+<translation id="6874854809828346832">හොට්ස්පොට් විස්තර පෙන්වන්න. හොට්ස්පොට් ක්‍රියාත්මකයි.</translation>
 <translation id="6878400149835617132">කෙටිමඟ අක්‍රියයි</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 යෙදුමක්}one{යෙදුම් # ක්}other{යෙදුම් # ක්}}</translation>
 <translation id="6884665277231944629">අද දවසට ආපසු යන්න</translation>
@@ -1289,6 +1303,7 @@
 <translation id="6896758677409633944">පිටපත්</translation>
 <translation id="6901883536534621389">සංචාලනය කිරීමට ඉංගිත උත්සාහ කරන්න</translation>
 <translation id="6919251195245069855">ඔබේ ස්මාර්ට් කාඩ්පත හඳුනා ගැනීමට නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
+<translation id="6920245099716267363">හොට්ස්පොට් ටොගල් කරන්න. හොට්ස්පොට් ක්‍රියාත්මකයි, 1 උපාංගයක් සම්බන්ධයි.</translation>
 <translation id="6931576957638141829">සුරකින්නේ</translation>
 <translation id="6941333068993625698">ප්‍රතිපෝෂණ යොමු කරන්න</translation>
 <translation id="6942518653766415536">පටිගත කිරීමේ ආකෘති මෙනුව</translation>
@@ -1378,6 +1393,7 @@
 <translation id="7378203170292176219">පටිගත කිරීමට ප්‍රදේශයක් තේරීමට අදින්න</translation>
 <translation id="7378594059915113390">මාධ්‍ය පාලක</translation>
 <translation id="7378889811480108604">බැටරි සුරැකුම් ප්‍රකාරය ක්‍රියාවිරහිතයි</translation>
+<translation id="7382640522316003298">හොට්ස්පොට් ටොගල් කරන්න. හොට්ස්පොට් ක්‍රියාත්මකයි, උපාංග <ph name="DEVICECOUNT" />ක් සම්බන්ධයි.</translation>
 <translation id="7382680553121047388">සක්‍රීය</translation>
 <translation id="7384028040782072252">ඔබගේ යෙදුම් නැවත අනුපිළිවෙළට සැකසීමට ඕනෑම තැනක දකුණු-ක්ලික් කරන්න</translation>
 <translation id="7386767620098596324">ජාල සබඳතාව ටොගල කරන්න. <ph name="STATE_TEXT" />.</translation>
@@ -1428,6 +1444,7 @@
 <translation id="7579778809502851308">තිර ග්‍රහණය</translation>
 <translation id="7593891976182323525">Search හෝ Shift</translation>
 <translation id="7600875258240007829">සියලු දැනුම්දීම් බලන්න</translation>
+<translation id="7601417191446344542">පෙළඹවීම නිහඬ කිරීම ක්‍රියාත්මක කරන්න ද?</translation>
 <translation id="7607002721634913082">අත්හිටුවන ලදි</translation>
 <translation id="7609951632080598826">දින දර්ශන දසුන, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">කැමරාව යළි සම්බන්ධ කරන ලදි.</translation>
@@ -1551,6 +1568,7 @@
 <translation id="8131740175452115882">තහවුරු කරන්න</translation>
 <translation id="8131994907636310308">අනුපිළිවෙළට සැකසීමේ ටෝස්ට් වසන්න</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> වෙත සබඳව ඇත</translation>
+<translation id="8135163608236671037">හොට්ස්පොට් ටොගල් කරන්න. හොට්ස්පොට් ක්‍රියාත්මකයි, කිසිදු උපාංගයක් සම්බන්ධ නැත.</translation>
 <translation id="8138705869659070104">උපාංග පිහිටුවීමෙන් පසුව ස. ක.</translation>
 <translation id="813913629614996137">මුල පුරමින්…</translation>
 <translation id="8142441511840089262">ද්විත්ව ක්ලික් කරන්න</translation>
@@ -1731,6 +1749,7 @@
 <translation id="8990809378771970590"><ph name="IME_NAME" /> භාවිත කිරීම</translation>
 <translation id="8991617137207906966">වර්ණ අපවර්තන ප්‍රකාරය සබල කර ඇත. එය ක්‍රියාවිරහිත කිරීමට නැවත Ctrl+Search+H ඔබන්න.</translation>
 <translation id="899350903320462459">ක්‍රියාකාරකම් දැනුම්දීම ඉටු කිරීමට, <ph name="LOGIN_ID" /> ලෙස උපාංගය අගුළු අරින්න</translation>
+<translation id="8993733019280019776">ඔබ කතා කරනවා ද? ඔබේ මයිකය ක්‍රියාවිරහිතයි. එය ක්‍රියාත්මක කිරීමට මයිකය තෝරන්න.</translation>
 <translation id="9000771174482730261">ගබඩාව කළමනාකරණය කරන්න</translation>
 <translation id="9005984960510803406">Crosh කවුළුව විවෘත කරන්න</translation>
 <translation id="9017320285115481645">Family Link මාපිය ප්‍රවේශ්‍ය කේතය ඇතුළත් කරන්න.</translation>

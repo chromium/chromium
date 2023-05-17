@@ -183,6 +183,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1774796056689732716">Kalendář, <ph name="CURRENT_MONTH_YEAR" />, je vybráno datum <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Vyp</translation>
 <translation id="181103072419391116">Síla signálu: <ph name="SIGNAL_STRENGTH" />, spravováno vaším administrátorem</translation>
+<translation id="1815245884418711390">Přepnout hotspot. Hotspot je vypnutý.</translation>
 <translation id="1816896987747843206">Umožňuje přístup k fotoaparátu všem aplikacím a webům s příslušným oprávněním</translation>
 <translation id="1823280932251546115">Stavový panel, čas <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -241,6 +242,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2023558322300866873">Záznam paketů lze kdykoli ukončit</translation>
 <translation id="2034971124472263449">Přesto uložit</translation>
 <translation id="2049240716062114887">Název plochy byl změněn na <ph name="DESK_NAME" /></translation>
+<translation id="206377500836174974">Úplné</translation>
 <translation id="2064048859448024834">Je zapnutý náhled kamery</translation>
 <translation id="2067602449040652523">Jas klávesnice</translation>
 <translation id="2075520525463668108">Zapnout nebo vypnout funkci <ph name="CAPTURE_MEDIUM" />. Funkce <ph name="CAPTURE_MEDIUM" /> je <ph name="CAPTURE_STATE" /></translation>
@@ -293,6 +295,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2339073806695260576">Klepnutím na tlačítko dotykového pera na poličce můžete pořídit poznámku nebo snímek obrazovky, případně použít laserové ukazovátko nebo lupu.</translation>
 <translation id="2341729377289034582">Uzamknuto na výšku</translation>
 <translation id="2345226652884463045">Stisknutím klávesy Enter nebo vyhledávacího tlačítka + mezerníku vyberte text, který chcete upravit.</translation>
+<translation id="2349785431103945039">Zobrazit podrobnosti o hotspotu. Pokud chcete používat hotspot, připojte se k mobilní síti.</translation>
 <translation id="2350794187831162545">Řeč v jazyce <ph name="LANGUAGE" /> se teď zpracovává místně a funguje offline. Jazyk diktování můžete změnit v sekci Nastavení &gt; Přístupnost.</translation>
 <translation id="2352467521400612932">Nastavení dotykového pera</translation>
 <translation id="2354174487190027830">Aktivace sítě <ph name="NAME" /></translation>
@@ -336,6 +339,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2531025035050312891">zařízení je pomalé</translation>
 <translation id="2542089167727451762">Klepněte na profilovou fotku</translation>
 <translation id="254900897760075745">Zkopírovat vybraný obsah do schránky</translation>
+<translation id="2549711466868162843">Zlepšit osvětlení</translation>
 <translation id="2549985041256363841">Zahájit nahrávání</translation>
 <translation id="255671100581129685">Asistent Google není ve veřejné relaci k dispozici.</translation>
 <translation id="256712445991462162">zabudovaná lupa</translation>
@@ -429,6 +433,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3009178788565917040">Výstup</translation>
 <translation id="3009958530611748826">Vyberte cílovou složku</translation>
 <translation id="301282384882049174">Sdíleno vaším administrátorem</translation>
+<translation id="301584155502740476">Zobrazit podrobnosti o hotspotu. Hotspot je vypnutý.</translation>
 <translation id="3018135054368884502">Přetočit médium vpřed</translation>
 <translation id="3033545621352269033">Zapnuto</translation>
 <translation id="3033912566804961911">Sloučit s plochou <ph name="DESK_NAME" /></translation>
@@ -489,6 +494,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3291862315280588024">Přesunout na začátek předchozího slova</translation>
 <translation id="3294437725009624529">Host</translation>
 <translation id="3298690094479023523">Váš PIN nebo heslo se stále nepodařilo ověřit. Zkuste to znovu.</translation>
+<translation id="3300193645498960160">Pokud budete mluvit s vypnutým zvukem, zobrazí se vám oznámení. Zvuk nikdy neopustí vaše zařízení.</translation>
 <translation id="3307642347673023554">Přepnuto na režim notebooku</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> se i nadále bude moci přihlásit.</translation>
 <translation id="3321628682574733415">Nesprávný kód rodiče</translation>
@@ -572,6 +578,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3621202678540785336">Vstup</translation>
 <translation id="3621712662352432595">Nastavení zvuku</translation>
 <translation id="3626281679859535460">Jas</translation>
+<translation id="3629640897379005903">Zobrazit podrobnosti o hotspotu. Hotspot se vypíná.</translation>
 <translation id="3630697955794050612">vypnuto</translation>
 <translation id="3631369015426612114">Povolit oznámení z následujících zdrojů</translation>
 <translation id="3633097874324966332">Pokud zařízení chcete spárovat, otevřete nastavení rozhraní Bluetooth</translation>
@@ -703,6 +710,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="423685346499232137">Momentálně nelze kopírovat ani vkládat obsah</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Režim přehledu</translation>
+<translation id="4240756737570479726">Vypínání…</translation>
 <translation id="4242533952199664413">Otevřít Nastavení</translation>
 <translation id="4247123849143712100">Aktualizovat a vypnout</translation>
 <translation id="4250229828105606438">Snímek obrazovky</translation>
@@ -841,6 +849,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="4864369630010738180">Přihlašování...</translation>
 <translation id="4864648187878336334">Plocha 15</translation>
 <translation id="4868492592575313542">aktivovala</translation>
+<translation id="4871905435473761992">Zobrazit podrobnosti o hotspotu. Vaše mobilní síť hotspot nepodporuje.</translation>
 <translation id="4872237917498892622">Alt + Vyhledávání nebo Shift</translation>
 <translation id="4872852897273142380">Vybrat nebo zvýraznit lištu záložek (pokud je zobrazena)</translation>
 <translation id="4881695831933465202">Otevřít</translation>
@@ -900,6 +909,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="5104236669533825617">Záznam obrazovky nelze vytvořit</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">Rozmazání pozadí</translation>
 <translation id="5117590920725113268">Zobrazit další měsíc</translation>
 <translation id="5121628974188116412">Přejít na konec stránky</translation>
 <translation id="5136175204352732067">Je připojena jiná klávesnice</translation>
@@ -912,6 +922,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="5168181903108465623">Dostupná zařízení pro streamování obsahu</translation>
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
 <translation id="5176318573511391780">Zaznamenat část obrazovky</translation>
+<translation id="5187627942836026988">Zobrazit podrobnosti o hotspotu. Administrátor hotspot zakázal.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, počet událostí: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> byla sloučena s aplikací <ph name="IN_PLACE_APP" /> a byla vytvořena nová složka.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1084,6 +1095,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="595202126637698455">Sledování výkonu aktivováno</translation>
 <translation id="5955304353782037793">aplik</translation>
 <translation id="5958529069007801266">Dozorovaný uživatel</translation>
+<translation id="5961960957587052807">Mírné</translation>
 <translation id="5965524703725988602">Přepnout tmavý motiv. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Stisknutím klávesy Enter spustíte nahrávání okna</translation>
 <translation id="5978382165065462689">Ovládání obrazovky je sdíleno prostřednictvím Vzdálené pomoci.</translation>
@@ -1256,6 +1268,7 @@ Nová instalace</translation>
 <translation id="6752912906630585008">Plocha <ph name="REMOVED_DESK" /> byla odstraněna a sloučena s plochou <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">karty</translation>
 <translation id="6757237461819837179">Nepřehrává se žádný mediální obsah</translation>
+<translation id="6759628406555734414">Zobrazit podrobnosti o hotspotu. Probíhá zapínání hotspotu.</translation>
 <translation id="6768043681523654438">úložiště</translation>
 <translation id="6777216307882431711">Napájení připojených zařízení USB-C</translation>
 <translation id="6781002679438061620">Plocha 9</translation>
@@ -1280,6 +1293,7 @@ Nová instalace</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Zbývá jedna číslice}few{Zbývají # číslice}many{Zbývá # číslice}other{Zbývá # číslic}}</translation>
 <translation id="6867938213751067702">Bylo pozastaveno stahování souboru <ph name="FILENAME" /></translation>
+<translation id="6874854809828346832">Zobrazit podrobnosti o hotspotu. Hotspot je zapnutý.</translation>
 <translation id="6878400149835617132">Zkratka je vypnutá</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplikace}few{# aplikace}many{# aplikace}other{# aplikací}}</translation>
 <translation id="6884665277231944629">Zpět na dnešek</translation>
@@ -1289,6 +1303,7 @@ Nová instalace</translation>
 <translation id="6896758677409633944">Kopírovat</translation>
 <translation id="6901883536534621389">Zkuste k procházení použít gesta</translation>
 <translation id="6919251195245069855">Chytrou kartu se nepodařilo rozpoznat. Zkuste to znovu.</translation>
+<translation id="6920245099716267363">Přepnout hotspot. Hotspot je zapnutý, je připojeno 1 zařízení.</translation>
 <translation id="6931576957638141829">Uložit do</translation>
 <translation id="6941333068993625698">Odeslat zpětnou vazbu</translation>
 <translation id="6942518653766415536">Nabídka formátu záznamu</translation>
@@ -1378,6 +1393,7 @@ Nová instalace</translation>
 <translation id="7378203170292176219">Přetažením vyberte oblast, kterou chcete zaznamenat</translation>
 <translation id="7378594059915113390">Ovládání médií</translation>
 <translation id="7378889811480108604">Režim spořiče baterie je vypnutý</translation>
+<translation id="7382640522316003298">Přepnout hotspot. Hotspot je zapnutý, je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="7382680553121047388">Zapnuto</translation>
 <translation id="7384028040782072252">Pokud chcete změnit pořadí aplikací, klikněte kamkoliv pravým tlačítkem</translation>
 <translation id="7386767620098596324">Přepnout připojení k síti. <ph name="STATE_TEXT" />.</translation>
@@ -1428,6 +1444,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7579778809502851308">Snímky obrazovky</translation>
 <translation id="7593891976182323525">Vyhledávání nebo Shift</translation>
 <translation id="7600875258240007829">Zobrazit všechna oznámení</translation>
+<translation id="7601417191446344542">Zapnout připomenutí ztlumení?</translation>
 <translation id="7607002721634913082">Přerušeno</translation>
 <translation id="7609951632080598826">Zobrazení kalendáře, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera byla znovu připojena.</translation>
@@ -1551,6 +1568,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8131740175452115882">Potvrdit</translation>
 <translation id="8131994907636310308">Zavřít zprávu o třídění</translation>
 <translation id="8132793192354020517">Připojeno k síti <ph name="NAME" /></translation>
+<translation id="8135163608236671037">Přepnout hotspot. Hotspot je zapnutý, není připojeno žádné zařízení.</translation>
 <translation id="8138705869659070104">Po nastavení zařízení</translation>
 <translation id="813913629614996137">Probíhá inicializace...</translation>
 <translation id="8142441511840089262">Dvojité kliknutí</translation>
@@ -1730,6 +1748,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8990809378771970590">Metoda zadávání: <ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">Převrácení barev je povoleno. Vypnete ho opětovným stisknutím kombinace kláves Ctrl + vyhledávací tlačítko + H.</translation>
 <translation id="899350903320462459">Chcete-li provést akci s oznámením, odemkněte zařízení jako <ph name="LOGIN_ID" /></translation>
+<translation id="8993733019280019776">Mluvíte? Mikrofon je vypnutý. Zapnete ho tím, že ho vyberete.</translation>
 <translation id="9000771174482730261">SPRAVOVAT ÚLOŽIŠTĚ</translation>
 <translation id="9005984960510803406">Otevřít okno Crosh</translation>
 <translation id="9017320285115481645">Zadejte svůj rodičovský přístupový kód služby Family Link.</translation>

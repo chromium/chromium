@@ -217,6 +217,7 @@
 <translation id="2638662041295312666">Imagine de autentificare</translation>
 <translation id="2640549051766135490">S-a selectat albumul <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="267442004702508783">actualizează</translation>
+<translation id="268270014981824665">redu luminozitatea tastaturii</translation>
 <translation id="2712812801627182647">Cheia de autentificare TLS</translation>
 <translation id="2713444072780614174">Alb</translation>
 <translation id="2717139507051041123">Activează modul de culoare închisă</translation>
@@ -224,6 +225,7 @@
 <translation id="2744221223678373668">Comune</translation>
 <translation id="2751739896257479635">Autentificare EAP din a doua fază</translation>
 <translation id="2783010256799387990">REUȘIT</translation>
+<translation id="2787435249130282949">tastatură mai luminoasă</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Aplicații</translation>
 <translation id="28232023175184696">Nu ne putem conecta la internet. Dă clic pentru a încerca din nou.</translation>
@@ -327,11 +329,13 @@
 <translation id="3749289110408117711">Nume de fișier</translation>
 <translation id="3771294271822695279">Fișiere video</translation>
 <translation id="3784455785234192852">Blochează</translation>
+<translation id="380097101658023925">comenzi pentru rgb</translation>
 <translation id="38114475217616659">Șterge tot istoricul</translation>
 <translation id="3820172043799983114">PIN nevalid.</translation>
 <translation id="3824259034819781947">Atașează fișiere</translation>
 <translation id="3838338534323494292">Parolă nouă</translation>
 <translation id="3845880861638660475">Apasă pe <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> și pe <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> pentru a închide caseta de dialog.</translation>
+<translation id="3848280697030027394">întunecarea tastaturii</translation>
 <translation id="385051799172605136">Înapoi</translation>
 <translation id="3858860766373142691">Nume</translation>
 <translation id="3862598938296403232">Descrierea este obligatorie</translation>
@@ -403,6 +407,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Dezactivează</translation>
 <translation id="439429847087949098">Se repornește <ph name="DEVICE_NAME" /></translation>
+<translation id="4395835743215824109">personalizarea tastaturii</translation>
 <translation id="4415951057168511744">Avatarul actual</translation>
 <translation id="4422041425070339732">săgeată în jos</translation>
 <translation id="4425149324548788773">Contul meu Drive</translation>
@@ -443,6 +448,7 @@
 <translation id="4731797938093519117">Acces pentru părinți</translation>
 <translation id="473775607612524610">Actualizează</translation>
 <translation id="4744944742468440486">Informații legate de selecția ta</translation>
+<translation id="4771607256327216405">mărirea luminozității tastaturii</translation>
 <translation id="4773299976671772492">Oprit</translation>
 <translation id="4782311465517282004">Obții definiții, traduceri sau conversii ale unităților când dai clic dreapta sau apeși lung pe text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotografie</translation>
@@ -491,6 +497,7 @@
 <translation id="500920857929044050">Oprește testul</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Când ecranul este inactiv, se afișează fotografii, ora, vremea și informații despre media.</translation>
+<translation id="5038292761217083259">tastatură multicoloră</translation>
 <translation id="5039804452771397117">Permite</translation>
 <translation id="5049856988445523908">Card SIM blocat (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Numele grupului</translation>
@@ -639,6 +646,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Activează tema întunecată</translation>
 <translation id="6285899124799306373">deschide lansatorul</translation>
+<translation id="629550705077076970">reducerea luminozității tastaturii</translation>
 <translation id="6302401976930124515">Testul <ph name="TEST_NAME" /> a fost anulat</translation>
 <translation id="631063167932043783">Explorează aplicația</translation>
 <translation id="6319207335391420837">Actualizează firmware-ul pentru <ph name="DEVICE_NAME" /></translation>
@@ -657,6 +665,7 @@
 <translation id="6401427872449207797">căutare în browser</translation>
 <translation id="6410257289063177456">Fișiere imagine</translation>
 <translation id="641081527798843608">Potrivirea subiectului</translation>
+<translation id="6411934471898487866">luminozitatea tastaturii</translation>
 <translation id="6412715219990689313">Tastatură integrată</translation>
 <translation id="6417265370957905582">Asistent Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -807,10 +816,12 @@
 <translation id="7656388927906093505">Dispozitivul este un mouse.</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7665800271478495366">Schimbă avatarul</translation>
+<translation id="7683228889864052081">nuanța tastaturii</translation>
 <translation id="7690294790491645610">Confirmă noua parolă</translation>
 <translation id="7701040980221191251">Niciuna</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">iluminarea tastaturii</translation>
 <translation id="773153675489693198">Numărul de cicluri</translation>
 <translation id="7747039790905080783">Cheie predistribuită</translation>
 <translation id="7762130827864645708">Parola a fost schimbată. Folosește noua parolă de acum înainte.</translation>
@@ -854,6 +865,7 @@
 <translation id="8075838845814659848">Nivel de încărcare rămas</translation>
 <translation id="8076492880354921740">File</translation>
 <translation id="8082366717211101304">Nu se poate rezolva solicitarea DNS din aplicații pentru Android</translation>
+<translation id="8082644724189923105">zona tastaturii</translation>
 <translation id="808894953321890993">Schimbă parola</translation>
 <translation id="8094062939584182041">Permite ca Google să-ți trimită e-mail despre această problemă</translation>
 <translation id="8104083085214006426">Folosești o rețea deschisă și nesigură</translation>
@@ -902,6 +914,7 @@
 <translation id="8456761643544401578">Modul întunecat automat</translation>
 <translation id="8461329675984532579">Numele furnizorului local</translation>
 <translation id="8475690821716466388">Rețeaua Wi-Fi este securizată cu protocolul slab WEP PSK</translation>
+<translation id="8476242415522716722">iluminare slabă a tastaturii</translation>
 <translation id="8477551185774834963">Latența DNS depășește ușor pragul permisibil</translation>
 <translation id="8483248364096924578">Adresă IP</translation>
 <translation id="8491311378305535241">Nu se poate conecta la site-uri HTTPS prin firewall din aplicații pentru Android</translation>
@@ -945,6 +958,7 @@
 <translation id="8845001906332463065">Obține ajutor</translation>
 <translation id="8855781559874488009">Nu se poate conecta la site-uri HTTP prin firewall</translation>
 <translation id="885701979325669005">Stocare</translation>
+<translation id="885704831271383379">tastatură mai întunecată</translation>
 <translation id="8863170912498892583">Activează tema întunecată</translation>
 <translation id="8863888432376731307">Vezi <ph name="INTENT" /> pentru <ph name="QUERY" /> și altele</translation>
 <translation id="8864415976656252616">Nu există conținut sugerat. Vezi cel mai popular conținut de ajutor.</translation>

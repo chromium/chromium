@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">ବର୍ତ୍ତମାନର କୌଣସି ଭିଡିଓ ନାହିଁ</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> ଆପଣଙ୍କ ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‌ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ, ବିବରଣୀ</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ ମୁଭ୍ କରାଯାଇଛି।</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" />ଟି ଫାଇଲ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="3685122418104378273">ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବହାର କରିବା ସମୟରେ Google ଡ୍ରାଇଭ୍ ସିଙ୍କ ଡିଫଲ୍ଟ ରୂପେ ଅକ୍ଷମ କରାଯାଇଛି।</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ବାତିଲ୍ କରନ୍ତୁ।</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_NAME" />ର <ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କକୁ ନିଷ୍କ୍ରିୟ କରାଯାଇଛି, <ph name="CONNECTION_STATUS" />, ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ବିବରଣୀ</translation>
@@ -571,6 +572,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> ଛବି</translation>
 <translation id="5534520101572674276">ଆକାର ଗଣନା କରାଯାଉଛି</translation>
 <translation id="554153475311314364">ଗ୍ରୀକ୍ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" />ଟି ଫୋଲ୍ଡର ଚୟନ କରାଯାଇଛି</translation>
 <translation id="5580591966435005537">ଭର୍ଚୁଆଲ ମେସିନ</translation>
 <translation id="5583640892426849032">ପଶ୍ଚାତ୍</translation>
 <translation id="5583664733673201137">ବିରାମ ଚିହ୍ନର ଚଉଡ଼ା ପୂର୍ଣ୍ଣ ଅଛି</translation>
@@ -593,6 +595,7 @@
 <translation id="5724172041621205163">ପାଟ୍ଟାଚୋଟେ କୀବୋର୍ଡ ସହ ଥାଇ</translation>
 <translation id="57383366388012121">ଗତ ମାସ</translation>
 <translation id="5756666464756035725">ହଙ୍ଗେରିଆନ୍ QWERTY</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" />ଟି ଆଇଟମ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="5763377084591234761">ଜର୍ମାନ (ସ୍ୱିଜରଲ୍ୟାଣ୍ଡ)</translation>
 <translation id="5769519078756170258">ବାହାର କରିବାକୁ ହୋଷ୍ଟ କିମ୍ବା ଡୋମେନ୍</translation>
 <translation id="5775750595919327203">ଉର୍ଦ୍ଦୁ</translation>

@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">Оңға</translation>
 <translation id="1351937230027495976">Мәзірді жию</translation>
 <translation id="1360220746312242196">Беттегі іздеу сұрауына сай келетін алдыңғы нәтижеге өту</translation>
+<translation id="1360788414852622716">Профиль өшіріліп жатыр. Бұл бірнеше минутқа созылуы мүмкін.</translation>
 <translation id="1364382257761975320">Chromebook құлпын ашу үшін саусақ ізін пайдаланыңыз.</translation>
 <translation id="1365866993922957110">Автоматты жаңартуларды алу</translation>
 <translation id="1372545819342940910">Жұмыс үстелін сақтау</translation>
@@ -545,6 +546,7 @@
 <translation id="3510164367642747937">Тінтуір курсорын ерекшелеу</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> басқаратын аккаунт</translation>
 <translation id="352245152354538528">{0,plural, =1{Құрылғыны 1 минутта жаңарту керек}other{Құрылғыны # минутта жаңарту керек}}</translation>
+<translation id="3522979239100719575">Қолжетімді профильдер ізделуде. Бұл бірнеше минутқа созылуы мүмкін.</translation>
 <translation id="3526440770046466733">Сілтемені жаңа қойындыда ашу және ағымдағы қойындыда қалу</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> құрылғыға қосылды.</translation>
 <translation id="3533126039236445965">Сөредегі қолданбалар</translation>
@@ -1557,6 +1559,7 @@
 <translation id="8083540854303889870">Кейінге сақталған</translation>
 <translation id="8091153018031979607">Басталу уақыты: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Автоматты жаңартулар</translation>
+<translation id="8092380135549145188">Айналдыруды басқару элементтері</translation>
 <translation id="8098591350844501178">Экран контентін <ph name="RECEIVER_NAME" /> құрылғысына трансляциялауды тоқтату</translation>
 <translation id="810637681351706236">Сөреден қолданбаны босату</translation>
 <translation id="8113423164597455979">Қосулы</translation>

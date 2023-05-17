@@ -94,6 +94,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1346748346194534595">Udesno</translation>
 <translation id="1351937230027495976">Skupi meni</translation>
 <translation id="1360220746312242196">Pri pretraživanju stranice idi na prethodno podudaranje za pretragu</translation>
+<translation id="1360788414852622716">Profil se onemogućava. To može da potraje nekoliko minuta.</translation>
 <translation id="1364382257761975320">Da biste otključali Chromebook, koristite otisak prsta</translation>
 <translation id="1365866993922957110">Automatski preuzimaj ažuriranja</translation>
 <translation id="1372545819342940910">Sačuvaj radnu površinu za kasnije</translation>
@@ -545,6 +546,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3510164367642747937">Istakni kursor miša</translation>
 <translation id="3513798432020909783">Nalogom upravlja <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Ažurirajte uređaj u roku od 1 minuta}one{Ažurirajte uređaj u roku od # minuta}few{Ažurirajte uređaj u roku od # minuta}other{Ažurirajte uređaj u roku od # minuta}}</translation>
+<translation id="3522979239100719575">Traže se dostupni profili. To može da potraje nekoliko minuta.</translation>
 <translation id="3526440770046466733">Otvori link na novoj kartici i ostani na aktuelnoj kartici</translation>
 <translation id="353086728817903341">Povezani ste sa <ph name="NUM_DEVICES" /> uređaja</translation>
 <translation id="3533126039236445965">Aplikacije na polici</translation>
@@ -1558,6 +1560,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8083540854303889870">Sačuvano za kasnije</translation>
 <translation id="8091153018031979607">Počinje u <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatska ažuriranja</translation>
+<translation id="8092380135549145188">Kontrole za skrolovanje</translation>
 <translation id="8098591350844501178">Zaustavi prebacivanje ekrana na <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Otkačite aplikaciju sa police</translation>
 <translation id="8113423164597455979">Uključeno, sve</translation>

@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Aucune vidéo récente</translation>
 <translation id="3634507049637220048">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, géré par votre administrateur, détails</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> éléments déplacés.</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> fichiers sélectionnés</translation>
 <translation id="3685122418104378273">Par défaut, la synchronisation Google Drive est désactivée lors de l'utilisation des données mobiles.</translation>
 <translation id="3689865792480713551">Annulez <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, désactivé, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, détails</translation>
@@ -577,6 +578,7 @@
 <translation id="5533102081734025921">Fichier image <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Calcul de la taille en cours…</translation>
 <translation id="554153475311314364">Grec (translittération)</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> dossiers sélectionnés</translation>
 <translation id="5580591966435005537">machine virtuelle</translation>
 <translation id="5583640892426849032">Retour</translation>
 <translation id="5583664733673201137">Largeur de ponctuation : pleine</translation>
@@ -599,6 +601,7 @@
 <translation id="5724172041621205163">Thaï avec clavier Pattachote</translation>
 <translation id="57383366388012121">Le mois dernier</translation>
 <translation id="5756666464756035725">Clavier QWERTY hongrois</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> éléments sélectionnés</translation>
 <translation id="5763377084591234761">Allemand (Suisse)</translation>
 <translation id="5769519078756170258">Hôte ou domaine à exclure</translation>
 <translation id="5775750595919327203">Ourdou</translation>

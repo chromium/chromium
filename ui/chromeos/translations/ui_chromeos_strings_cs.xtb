@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Žádná nedávná videa</translation>
 <translation id="3634507049637220048">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, spravováno administrátorem, podrobnosti</translation>
 <translation id="3645233063072417428">Přesunuté položky: <ph name="NUMBER_OF_ITEMS" />.</translation>
+<translation id="3658269352872031728">Vybrané soubory: <ph name="SELECTED_FILE_COUNT" /></translation>
 <translation id="3685122418104378273">Když používáte mobilní datové připojení, synchronizace s Diskem Google je ve výchozím nastavení vypnutá.</translation>
 <translation id="3689865792480713551">Zrušit <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, neaktivováno, <ph name="CONNECTION_STATUS" />, síla signálu <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
@@ -576,6 +577,7 @@
 <translation id="5533102081734025921">Obrázek <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Výpočet velikosti</translation>
 <translation id="554153475311314364">řečtina (přepis)</translation>
+<translation id="5554171655917412781">Vybrané složky: <ph name="SELECTED_FOLDERS_COUNT" /></translation>
 <translation id="5580591966435005537">virtuální počítač</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Šířka interpunkce je Plná</translation>
@@ -598,6 +600,7 @@
 <translation id="5724172041621205163">thajština s klávesnicí Pattachote</translation>
 <translation id="57383366388012121">Minulý měsíc</translation>
 <translation id="5756666464756035725">Maďarská klávesnice QWERTY</translation>
+<translation id="5760252553414789727">Vybrané položky: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">němčina (Švýcarsko)</translation>
 <translation id="5769519078756170258">Hostitelský server nebo doména k vyloučení</translation>
 <translation id="5775750595919327203">urdština</translation>

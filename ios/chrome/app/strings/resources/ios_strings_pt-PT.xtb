@@ -220,6 +220,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2423077901494354337">Agora, vai tirar o máximo partido do Chrome no seu dispositivo.</translation>
 <translation id="2434405374328098816">Já guardou uma palavra-passe para "<ph name="USERNAME" />" em <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Mostrar palavra-passe</translation>
+<translation id="2439425774439590">Sites mais visitados</translation>
 <translation id="2451654228769116489">Fixar separador</translation>
 <translation id="2461070143328828326">Definições de palavra-passe</translation>
 <translation id="2469960372084740698">Desativar a Navegação segura?</translation>
@@ -441,6 +442,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3891414008432200754">Preço</translation>
 <translation id="3892144330757387737">O seu histórico será apresentado aqui</translation>
 <translation id="3897092660631435901">Menu</translation>
+<translation id="3899568514738536144">Veja o histórico de navegação</translation>
 <translation id="3904829425754749514">A sua organização desativou a sincronização. Ainda pode ver os seus marcadores, histórico, palavras-passe e outras definições neste dispositivo. Se fizer alterações, estes não serão sincronizadas com a sua conta.</translation>
 <translation id="3913386780052199712">Sessão iniciada no Chrome</translation>
 <translation id="3915450441834151894">Informações do site</translation>
@@ -539,6 +541,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4592368184551360546">Teclado</translation>
 <translation id="4606247758155004938">O seu navegador é gerido pela sua organização.</translation>
 <translation id="461440297010471931">Pesquisar com o Google</translation>
+<translation id="4616391354457235490">Anular</translation>
 <translation id="4619564267100705184">Validar identidade</translation>
 <translation id="4619615317237390068">Separadores de outros dispositivos</translation>
 <translation id="4620246317052452550">Páginas lidas</translation>
@@ -861,6 +864,7 @@ Os seus dados estão encriptados com a sua frase de acesso. Introduza-a para usa
 
 Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
 <translation id="650279896687777322">Saber mais…</translation>
+<translation id="6507973708545996744">Inicie sessão para obter a sua Lista de leitura em todos os dispositivos.</translation>
 <translation id="6510072653668207258">Lembrar-me mais tarde</translation>
 <translation id="651505212789431520">Pretende cancelar a sincronização? Pode ativar a sincronização em qualquer altura nas Definições.</translation>
 <translation id="6518133107902771759">Rever</translation>

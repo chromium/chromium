@@ -49,6 +49,7 @@
 <translation id="3650632991272923014">Корисник <ph name="USER_EMAIL1" /> је користио Chromium и оставио обележиваче, лозинке и друга подешавања на овом уређају.</translation>
 <translation id="372658070733623520">Да бисте користили и чували Chromium податке на Google налогу, потврдите свој идентитет.</translation>
 <translation id="3805899903892079518">Chromium не може да приступа сликама или видео снимцима. Омогућите приступ у iOS Settings (Подешавања iOS-а) &gt; Privacy (Приватност) &gt; Photos (Слике).</translation>
+<translation id="3955621079070267756">Отворите Chromium из било које апликације</translation>
 <translation id="4043291146360695975">Лозинке се чувају у Менаџеру лозинки само на овом уређају.</translation>
 <translation id="4099085513035183040">Није подржано у верзији Chromium бета</translation>
 <translation id="4432744876818348753">Пријавите се да бисте искористили Chromium на најбољи начин.</translation>
@@ -141,5 +142,6 @@
 <translation id="9089354809943900324">Chromium је застарео</translation>
 <translation id="9110075932708282655">Подразумевано користите Chromium</translation>
 <translation id="921174536258924340">Chromium није успео да провери све лозинке. Пробајте поново сутра или <ph name="BEGIN_LINK" />проверите лозинке на Google налогу.<ph name="END_LINK" /></translation>
+<translation id="971488683725792095">Аутоматски користите Chromium када додирнете линкове у порукама, документима и другим апликацијама.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

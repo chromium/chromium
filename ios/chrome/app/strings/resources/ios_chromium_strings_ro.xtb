@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> folosea Chromium și marcajele, parolele și alte setări ale sale au rămas pe acest dispozitiv.</translation>
 <translation id="372658070733623520">Pentru a folosi și a salva datele Chromium în Contul Google, confirmă-ți identitatea.</translation>
 <translation id="3805899903892079518">Chromium nu are acces la fotografii și videoclipuri. Activează accesul din Setări iOS &gt; Confidențialitate &gt; Fotografii.</translation>
+<translation id="3955621079070267756">Deschide Chromium din orice aplicație</translation>
 <translation id="4043291146360695975">Parolele sunt salvate în Managerul de parole numai pe acest dispozitiv.</translation>
 <translation id="4099085513035183040">Nu se acceptă în Chromium Beta</translation>
 <translation id="4432744876818348753">Conectează-te pentru a profita din plin de Chromium.</translation>
@@ -143,5 +144,6 @@ De reținut
 <translation id="9089354809943900324">Chromium nu este actualizat</translation>
 <translation id="9110075932708282655">Folosește Chromium în mod prestabilit</translation>
 <translation id="921174536258924340">Chromium nu a putut verifica toate parolele. Încearcă din nou mâine sau <ph name="BEGIN_LINK" />verifică parolele din Contul Google<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">Folosește automat Chromium când atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

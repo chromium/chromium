@@ -6320,6 +6320,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="657866106756413002">Momentopname status van netwerk</translation>
 <translation id="6579369886355986318">Alle &amp;opties bekijken</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" />: content van bureaublad gedeeld</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% gelezen</translation>
 <translation id="6580203076670148210">Scansnelheid</translation>
 <translation id="6582080224869403177">Reset je <ph name="DEVICE_TYPE" /> om je beveiliging te upgraden.</translation>
 <translation id="6582274660680936615">Je browst momenteel als gast</translation>
@@ -6944,6 +6945,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7114054701490058191">Wachtwoorden komen niet overeen</translation>
 <translation id="7114648273807173152">Als je Smart Lock wilt gebruiken om in te loggen op je Google-account, ga je naar Instellingen &gt; Verbonden apparaten &gt; Je telefoon &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">Geen bereikbare contacten</translation>
+<translation id="7116554090938189816">SSL-certificaat voor printer is verlopen. Start de printer opnieuw op en probeer het nog een keer.</translation>
 <translation id="7117228822971127758">Probeer het later opnieuw</translation>
 <translation id="711840821796638741">Beheerde bookmarks bekijken</translation>
 <translation id="711985611146095797">Via deze pagina kun je je ingelogde Google-accounts beheren. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>

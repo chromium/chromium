@@ -598,6 +598,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Chrome параметрлерінен арнайы мүмкіндіктер құралдарын жекелендіру</translation>
 <translation id="2384307209577226199">Кәсіпорын (әдепкі)</translation>
+<translation id="238459632961158867">Веб-сайт</translation>
 <translation id="2385809941344967209">Chrome браузерін Chrome параметрлерінен жаңартыңыз.</translation>
 <translation id="2386255080630008482">Сервер сертификаты қайтарып алынды.</translation>
 <translation id="239293030466334554">Кабриолеттер</translation>
@@ -1046,6 +1047,7 @@
 <translation id="3566336457819493938">215 x 315 мм</translation>
 <translation id="3567778190852720481">Корпоративтік аккаунтмен тіркелу мүмкін емес (корпоративтік аккаунт сәйкес келмейді).</translation>
 <translation id="3567901620846335314">100 x 150 мм</translation>
+<translation id="3568886473829759308">Ақпаратты, ресурстарды немесе бизнес қамтамасыз еткен қызметтерді көру үшін веб-сайтқа кіріңіз.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Осы сайт үшін рұқсат ету</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1197,9 +1199,11 @@
 <translation id="3927932062596804919">Тыйым салу</translation>
 <translation id="393316646445601645">Интернет және телекоммуникация</translation>
 <translation id="3939773374150895049">CVC орнына WebAuthn қолданасыз ба?</translation>
+<translation id="3941630233824954464">Міндетті қайта аутентификациялауды қосу</translation>
 <translation id="3943857333388298514">Қою</translation>
 <translation id="3946209740501886391">Осы сайтта әрқашан сұралсын</translation>
 <translation id="3947595700203588284">MIDI құрылғыларына қосылуға рұқсат сұрайды</translation>
+<translation id="3948588869002647271">Бұл қолданба жоқ немесе зақымдалған</translation>
 <translation id="3949571496842715403">Бұл сервер <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификаты нысанның балама атауларын көрсетпейді. Бұл дұрыс конфигурацияланбағаннан немесе шабуылдаушының байланысқа кедергі келтіргенінен болуы мүмкін.</translation>
 <translation id="3949601375789751990">Браузер журналы осында шығады</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -1366,6 +1370,7 @@
 <translation id="4300675098767811073">Оң жақтан бірнеше рет тесу</translation>
 <translation id="4302514097724775343">Ойнау үшін динозаврды басыңыз.</translation>
 <translation id="4304049446746819918">{0,plural, =1{Әкімші саясатына сәйкес бұл файлды <ph name="DESTINATION_NAME" /> қалтасына ауыстырмаған жөн.}other{Әкімші саясатына сәйкес бұл файлдарды <ph name="DESTINATION_NAME" /> қалтасына ауыстырмаған жөн.}}</translation>
+<translation id="4304485328308299773">Пікірлер арқылы шешімдер қабылдауға көмектесу үшін өнімдер, қызметтер немесе тәжірибелер туралы тұтынушы бағалауларын оқыңыз.</translation>
 <translation id="4305666528087210886">Файлға кіру мүмкін болмады</translation>
 <translation id="4306529830550717874">Мекенжайды сақтау керек пе?</translation>
 <translation id="4306812610847412719">буфер</translation>
@@ -1530,6 +1535,7 @@
 <translation id="4724144314178270921">Буфердегі мәтін мен кескіндерді көруге рұқсат сұрай алады</translation>
 <translation id="4726672564094551039">Саясаттарды қайта жүктеу</translation>
 <translation id="4728558894243024398">Платформа</translation>
+<translation id="4730977633786878901">Пікірлер</translation>
 <translation id="4731638775147756694">Бұл қолданбаны әкімші бөгеді.</translation>
 <translation id="4733082559415072992"><ph name="URL" /> құрылғыңыздың орналасқан жер деректерін пайдаланғысы келеді</translation>
 <translation id="4736491186715342415">Моторлы көліктер</translation>
@@ -2161,6 +2167,7 @@
 <translation id="6284292079994426700">26 x 38 дюйм</translation>
 <translation id="6284517535531159884">Вариациялар дереккөзінің түрі</translation>
 <translation id="6285507000506177184">"Chrome браузерінде жүктеп алынған файлдарды басқару" түймесі. Chrome браузерінде жүктеп алған файлдарыңызды басқару үшін Enter пернесін басыңыз.</translation>
+<translation id="6287197303017372967">Навигация мүмкіндігін пайдаланып, қадамдық нұсқаулық арқылы баратын жеріңізге бағыттарды алыңыз.</translation>
 <translation id="6289939620939689042">Бет түсі</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
@@ -2184,6 +2191,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> мәні жарамсыз және пайдаланылмайды.</translation>
 <translation id="6340739886198108203">Әкімші саясаты құпия контент көрсетілген кезде, скриншот жасауды немесе жазуды ұсынбайды.</translation>
 <translation id="6341434961864773665">{0,plural, =1{Әкімші саясатына сәйкес бұл файлды <ph name="DESTINATION_NAME" /> жадына жүктеп салу ұсынылмайды.}other{Әкімші саясатына сәйкес бұл файлдарды <ph name="DESTINATION_NAME" /> жадына жүктеп салу ұсынылмайды.}}</translation>
+<translation id="634500758737709758">Бағыттар</translation>
 <translation id="6348220984832452017">Белсенді нұсқалар</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> қолданбасын орнату</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Жоқ}=1{1 құпия сөз (<ph name="DOMAIN_LIST" />, синхрондалды)}=2{2 құпия сөз (<ph name="DOMAIN_LIST" />, синхрондалды)}other{# құпия сөз (<ph name="DOMAIN_LIST" />, синхрондалды)}}</translation>
@@ -2196,6 +2204,7 @@
 <translation id="6370022303958842211">Жүйеге кіру, (сонымен қатар жүйеге кіре алмау себептері), жүйеден шығу, құлыптау және құлыпты ашу сияқты әрекеттер</translation>
 <translation id="6374469231428023295">Әрекетті қайталау</translation>
 <translation id="6374865374745447009">терезені басқару</translation>
+<translation id="6376881782310775282">Бұл қолданбаның әзірлеу серверіне қол жеткізу мүмкін емес</translation>
 <translation id="6377268785556383139">"<ph name="SEARCH_TEXT" />" сұрауы бойынша 1 нәтиже шықты</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Сізден ақы алынуы мүмкін.</translation>
@@ -2371,6 +2380,7 @@
 <translation id="6823746213313229853">Радио арқылы әңгімелесу</translation>
 <translation id="6825578344716086703"><ph name="DOMAIN" /> доменіне қол жеткізуге әрекет еттіңіз, бірақ сервер сенімсіз қолтаңба алгоритмімен (such as SHA-1) қол қойылған сертификатты ұсынды. Сервер ұсынған қауіпсіздік тіркелу деректері жалған болуы және ол сіз күткен сервер болмауы (шабуылшымен байланысқан болуыңыз) мүмкін.</translation>
 <translation id="6826993739343257035">AR режиміне рұқсат етілсін бе?</translation>
+<translation id="6828150717884939426">Қоңырау шалу</translation>
 <translation id="6828866289116430505">Генетика</translation>
 <translation id="6831043979455480757">Аудару</translation>
 <translation id="683108308100148227">Элементті жасыру</translation>
@@ -3004,6 +3014,7 @@
 <translation id="8286799286781881307">Әкімші рұқсат берген қолданбалар құрылғыңызға тіркелген барлық экранды суретке түсіре алады. Бұл ақпаратты жергілікті түрде өңдеуге немесе ұйымыңыздың серверлеріне жүктеп салуға болады.</translation>
 <translation id="8288807391153049143">Сертификатты көрсету</translation>
 <translation id="8289355894181816810">Бұның нені білдіретінін білмесеңіз, желі әкімшісіне хабарласыңыз.</translation>
+<translation id="8292520987784410870">Әрқашан растау керек пе?</translation>
 <translation id="8293206222192510085">Бетбелгі қосу</translation>
 <translation id="829335040383910391">дыбыс</translation>
 <translation id="8294431847097064396">Дереккөз</translation>
@@ -3096,6 +3107,7 @@
 <translation id="8539500321752640291">2 рұқсат берілсін бе?</translation>
 <translation id="8541158209346794904">Bluetooth құрылғысы</translation>
 <translation id="8541410041357371550">Бұл сайт сәйкес жарнамаларды көбірек көрсету үшін Chrome браузерінен сізге қажетті жарнама тақырыптарын алады.</translation>
+<translation id="8541579497401304453">Телефон қоңырауын бастау арқылы компаниямен хабарласыңыз.</translation>
 <translation id="8542014550340843547">Төменгі жағын үш рет қапсыру</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Сіз <ph name="BEGIN_ERROR_LINK" />анықтау мәселесі туралы хабарлай<ph name="END_ERROR_LINK" /> аласыз, қауіпсіздігіңізге төнетін қатерді түсінетін болсаңыз, <ph name="BEGIN_LINK" />қауіпті сайтқа кіріңіз<ph name="END_LINK" />.</translation>
@@ -3103,6 +3115,7 @@
 <translation id="854892890027593466">C6/C5 хатқалтасы</translation>
 <translation id="8553387990086529628">Туристік бағыттар</translation>
 <translation id="8554010658308662631">Тағы жүктеу</translation>
+<translation id="8554802735558319842">Ортақ құрылғыларда қосымша қауіпсіздік үшін автотолтыру көмегімен төлеген сайын растауды қосыңыз.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Рұқсатты бастапқы күйіне қайтару}other{Рұқсаттарды бастапқы күйіне қайтару}}</translation>
 <translation id="8555010941760982128">Төлеу кезінде осы коды пайдаланыңыз</translation>
 <translation id="8557066899867184262">CVC коды картаңыздың артқы жағында орналасқан.</translation>

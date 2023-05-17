@@ -738,6 +738,7 @@
 <translation id="7130438335435247835">Jina la lango la mtandao (APN) (APN)</translation>
 <translation id="7131634559772719176">Thibitisha mipangilio iliyowekwa mapema</translation>
 <translation id="7134436342991564651">{0,plural, =1{Seva ya jina}other{Seva za majina}}</translation>
+<translation id="7135814714616751706">Tafuta njia za mkato</translation>
 <translation id="7143207342074048698">Inaunganisha</translation>
 <translation id="7144878232160441200">Jaribu tena</translation>
 <translation id="714876143603641390">Muunganisho wa LAN</translation>
@@ -768,6 +769,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Bonyeza kitufe cha Utafutaji pamoja na kitufe cha Nafasi ili uone matokeo katika huduma ya Tafuta na Google.</translation>
 <translation id="7343649194310845056">Vifaa vya Mtandao</translation>
+<translation id="7353413232959255829">Tokeo la utafutaji la <ph name="LIST_POSITION" /> kati ya <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Bonyeza "Enter" ili uende kwenye njia ya mkato.</translation>
 <translation id="7359657277149375382">Aina ya faili</translation>
 <translation id="73631062356239394">Shiriki data ya uchunguzi</translation>
 <translation id="7375053625150546623">EAP</translation>

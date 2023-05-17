@@ -426,6 +426,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh батарей</translation>
 <translation id="4561801978359312462">SIM-н түгжээг тайлсан</translation>
 <translation id="4562494484721939086">Үйлчилгээ байхгүй</translation>
+<translation id="4573777384450697571">Амжилтгүй болсон - Сертификатын хугацаа дууссан</translation>
 <translation id="458794348635939462">Бүх хостыг шийдвэрлэж чадсангүй</translation>
 <translation id="4593212453765072419">Проксиг баталгаажуулах шаардлагатай</translation>
 <translation id="4609350030397390689">Гарны гэрэлтүүлгийг багасгах</translation>
@@ -738,6 +739,7 @@
 <translation id="7130438335435247835">Хандах цэгийн нэрс (APN)</translation>
 <translation id="7131634559772719176">Урьдчилсан тохируулгыг баталгаажуулна уу</translation>
 <translation id="7134436342991564651">{0,plural, =1{Нэрийн сервер}other{Нэрийн серверүүд}}</translation>
+<translation id="7135814714616751706">Товчлолууд хайх</translation>
 <translation id="7143207342074048698">Холбож байна</translation>
 <translation id="7144878232160441200">Дахин оролдох</translation>
 <translation id="714876143603641390">Lan-н холболт</translation>
@@ -768,6 +770,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Хайлтад илэрц харахын тулд Search болон Space-г дарна уу.</translation>
 <translation id="7343649194310845056">Сүлжээний төхөөрөмжүүд</translation>
+<translation id="7353413232959255829"><ph name="LIST_SIZE" />-н <ph name="LIST_POSITION" />-р хайлтын илэрц: <ph name="SEARCH_RESULT_TEXT" />. Товчлол руу шилжихийн тулд Enter дарна уу.</translation>
 <translation id="7359657277149375382">Файлын төрөл</translation>
 <translation id="73631062356239394">Оношилгооны өгөгдлийг хуваалцах</translation>
 <translation id="7375053625150546623">EAP</translation>

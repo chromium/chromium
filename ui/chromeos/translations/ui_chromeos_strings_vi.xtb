@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Không có video nào gần đây</translation>
 <translation id="3634507049637220048">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Do quản trị viên của bạn quản lý, Thông tin chi tiết</translation>
 <translation id="3645233063072417428">Đã di chuyển <ph name="NUMBER_OF_ITEMS" /> mục.</translation>
+<translation id="3658269352872031728">Có <ph name="SELECTED_FILE_COUNT" /> tệp được chọn</translation>
 <translation id="3685122418104378273">Tính năng đồng bộ hóa Google Drive được tắt theo mặc định khi sử dụng dữ liệu di động.</translation>
 <translation id="3689865792480713551">Hủy <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Chưa kích hoạt, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu: <ph name="SIGNAL_STRENGTH" />%, Thông tin chi tiết</translation>
@@ -577,6 +578,7 @@
 <translation id="5533102081734025921">Hình ảnh <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Đang tính toán kích thước</translation>
 <translation id="554153475311314364">Tiếng Hy Lạp (chuyển tự)</translation>
+<translation id="5554171655917412781">Có <ph name="SELECTED_FOLDERS_COUNT" /> thư mục được chọn</translation>
 <translation id="5580591966435005537">máy ảo</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Độ rộng dấu câu là Đầy đủ</translation>
@@ -599,6 +601,7 @@
 <translation id="5724172041621205163">Tiếng Thái bằng bàn phím Pattachote</translation>
 <translation id="57383366388012121">Tháng trước</translation>
 <translation id="5756666464756035725">QWERTY dành cho tiếng Hungary</translation>
+<translation id="5760252553414789727">Có <ph name="SELECTED_FILES_COUNT" /> mục được chọn</translation>
 <translation id="5763377084591234761">Tiếng Đức (Thụy Sĩ)</translation>
 <translation id="5769519078756170258">Máy chủ lưu trữ hoặc miền cần loại trừ</translation>
 <translation id="5775750595919327203">Tiếng Urdu</translation>

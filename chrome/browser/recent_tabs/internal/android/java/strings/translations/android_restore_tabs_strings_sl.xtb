@@ -11,5 +11,6 @@
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Odpri <ph name="TABS_COUNT_ONE" /> zavihek}one{Odpri <ph name="TABS_COUNT_MANY" /> zavihek}two{Odpri <ph name="TABS_COUNT_MANY" /> zavihka}few{Odpri <ph name="TABS_COUNT_MANY" /> zavihke}other{Odpri <ph name="TABS_COUNT_MANY" /> zavihkov}}</translation>
 <translation id="4811934403802581334">Vsi izbrani zavihki v trenutno izbrani napravi bodo obnovljeni.</translation>
 <translation id="5336031759968328813">Preglejte vse zavihke</translation>
+<translation id="8019269305087157499">Odpiranje iz:</translation>
 <translation id="8725404154479306799">Pridobivanje zavihkov, ki ste jih pustili v starih napravah</translation>
 </translationbundle>

@@ -220,6 +220,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2423077901494354337">Teraz możesz w pełni korzystać z możliwości Chrome na swoim urządzeniu.</translation>
 <translation id="2434405374328098816">Masz już zapisane hasło do strony <ph name="WEBSITE" /> powiązane z nazwą użytkownika „<ph name="USERNAME" />”</translation>
 <translation id="2435457462613246316">Pokaż hasło</translation>
+<translation id="2439425774439590">Najczęściej odwiedzane witryny</translation>
 <translation id="2451654228769116489">Przypnij kartę</translation>
 <translation id="2461070143328828326">Ustawienia hasła</translation>
 <translation id="2469960372084740698">Wyłączyć Bezpieczne przeglądanie?</translation>
@@ -441,6 +442,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3891414008432200754">Cena</translation>
 <translation id="3892144330757387737">Tu znajdziesz swoją historię</translation>
 <translation id="3897092660631435901">Menu</translation>
+<translation id="3899568514738536144">Wyświetl historię przeglądania</translation>
 <translation id="3904829425754749514">Twoja organizacja wyłączyła synchronizację. Nadal masz dostęp do swoich zakładek, historii, haseł i innych ustawień na tym urządzeniu. Jeśli wprowadzisz zmiany, nie zostaną one zsynchronizowane na Twoim koncie.</translation>
 <translation id="3913386780052199712">Zalogowany w Chrome</translation>
 <translation id="3915450441834151894">Informacje o witrynie</translation>
@@ -539,6 +541,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4592368184551360546">Klawiatura</translation>
 <translation id="4606247758155004938">Przeglądarką zarządza Twoja organizacja.</translation>
 <translation id="461440297010471931">Wyszukiwanie z Google</translation>
+<translation id="4616391354457235490">Cofnij</translation>
 <translation id="4619564267100705184">Potwierdź, że to Ty</translation>
 <translation id="4619615317237390068">Karty z innych urządzeń</translation>
 <translation id="4620246317052452550">Przeczytane strony</translation>
@@ -861,6 +864,7 @@ Dane zostały zaszyfrowane Twoim hasłem. Podaj hasło, aby korzystać z danych
 
 Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="650279896687777322">Więcej informacji…</translation>
+<translation id="6507973708545996744">Zaloguj się, aby pobrać listę Do przeczytania na wszystkich urządzeniach.</translation>
 <translation id="6510072653668207258">Przypomnij później</translation>
 <translation id="651505212789431520">Anulować synchronizację? W każdej chwili możesz włączyć synchronizację w Ustawieniach.</translation>
 <translation id="6518133107902771759">Zweryfikuj</translation>

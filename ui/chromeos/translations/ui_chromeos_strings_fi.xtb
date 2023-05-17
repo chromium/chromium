@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Ei viimeaikaisia videoita</translation>
 <translation id="3634507049637220048">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, järjestelmänvalvojan hallinnoima, lisätietoja</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> kohdetta siirretty</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> tiedostoa valittu.</translation>
 <translation id="3685122418104378273">Google Driven synkronointi on oletuksena pois käytöstä käyttäessäsi mobiilitiedonsiirtoa.</translation>
 <translation id="3689865792480713551">Peru <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ei aktivoitu, <ph name="CONNECTION_STATUS" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> %, tiedot</translation>
@@ -577,6 +578,7 @@
 <translation id="5533102081734025921">Kuva, jonka tyyppi on <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Lasketaan kokoa</translation>
 <translation id="554153475311314364">translitteroitu kreikka</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> kansiota valittu</translation>
 <translation id="5580591966435005537">virtuaalikone</translation>
 <translation id="5583640892426849032">Askelpalautin</translation>
 <translation id="5583664733673201137">Välimerkkileveys on täysleveä</translation>
@@ -599,6 +601,7 @@
 <translation id="5724172041621205163">thai, pattachote-näppäimistö</translation>
 <translation id="57383366388012121">Viime kuukausi</translation>
 <translation id="5756666464756035725">Unkarilainen QWERTY</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> kohdetta valittu</translation>
 <translation id="5763377084591234761">saksa (Sveitsi)</translation>
 <translation id="5769519078756170258">Poissuljettava isäntä tai verkkotunnus</translation>
 <translation id="5775750595919327203">urdu</translation>

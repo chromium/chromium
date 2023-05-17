@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">没有任何近期视频</translation>
 <translation id="3634507049637220048">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，由您的管理员管理，详细信息</translation>
 <translation id="3645233063072417428">已移动 <ph name="NUMBER_OF_ITEMS" /> 项。</translation>
+<translation id="3658269352872031728">已选择 <ph name="SELECTED_FILE_COUNT" /> 个文件</translation>
 <translation id="3685122418104378273">当您使用移动数据网络时，Google 云端硬盘同步功能默认情况下处于停用状态。</translation>
 <translation id="3689865792480713551">取消<ph name="ACTIVITY_DESCRIPTION" />。</translation>
 <translation id="3690128548376345212">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，未激活，<ph name="CONNECTION_STATUS" />，信号强度 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>
@@ -572,6 +573,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> 图片</translation>
 <translation id="5534520101572674276">正在计算大小</translation>
 <translation id="554153475311314364">希腊语音译</translation>
+<translation id="5554171655917412781">已选择 <ph name="SELECTED_FOLDERS_COUNT" /> 个文件夹</translation>
 <translation id="5580591966435005537">虚拟机</translation>
 <translation id="5583640892426849032">退格</translation>
 <translation id="5583664733673201137">标点符号宽度为全角</translation>
@@ -594,6 +596,7 @@
 <translation id="5724172041621205163">泰语 Pattachote 键盘</translation>
 <translation id="57383366388012121">上个月</translation>
 <translation id="5756666464756035725">匈牙利语 QWERTY</translation>
+<translation id="5760252553414789727">已选择 <ph name="SELECTED_FILES_COUNT" /> 项</translation>
 <translation id="5763377084591234761">德语（瑞士）</translation>
 <translation id="5769519078756170258">要排除的主机或域名</translation>
 <translation id="5775750595919327203">乌尔都语</translation>

@@ -738,6 +738,7 @@
 <translation id="7130438335435247835">Ім’я точки доступу (APN)</translation>
 <translation id="7131634559772719176">Підтвердити набір налаштувань</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер імен}one{Сервери імен}few{Сервери імен}many{Сервери імен}other{Сервери імен}}</translation>
+<translation id="7135814714616751706">Пошук комбінацій клавіш</translation>
 <translation id="7143207342074048698">Під’єднання</translation>
 <translation id="7144878232160441200">Повторити спробу</translation>
 <translation id="714876143603641390">З'єднання LAN</translation>
@@ -768,6 +769,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />. Щоб переглянути результат у Пошуку Google, натисніть клавішу пошуку та пробіл.</translation>
 <translation id="7343649194310845056">Мережеві пристрої</translation>
+<translation id="7353413232959255829">Результат пошуку <ph name="LIST_POSITION" /> з <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Натисніть Enter, щоб перейти до комбінації клавіш.</translation>
 <translation id="7359657277149375382">Тип файлу</translation>
 <translation id="73631062356239394">Поділитися даними діагностики</translation>
 <translation id="7375053625150546623">EAP</translation>

@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> administrerer denne enheten og kan muligens overvåke aktiviteten din.</translation>
 <translation id="1478594628797167447">Skanner</translation>
 <translation id="1483493594462132177">Send</translation>
+<translation id="1488850966314959671">Kan ikke koble til dette nettverket med noen aktiverte tilpassede APN-er. Kontakt mobiloperatøren din for å få mer informasjon.</translation>
 <translation id="1491076385728777984">Oppdaterer fastvaren på <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">volum opp</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> administrerer denne brukeren og kan administrere innstillinger og overvåke brukeraktiviteten eksternt.</translation>
@@ -431,6 +432,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-batteri</translation>
 <translation id="4561801978359312462">SIM-kortet er låst opp</translation>
 <translation id="4562494484721939086">Ingen tjeneste</translation>
+<translation id="4573777384450697571">Mislykket – sertifikatet er utløpt</translation>
 <translation id="458794348635939462">Kunne ikke finne tilknytning til alle vertene</translation>
 <translation id="4593212453765072419">Godkjenning av mellomtjener kreves</translation>
 <translation id="4609350030397390689">Tastaturlysstyrke ned</translation>
@@ -561,6 +563,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skann på nytt</translation>
 <translation id="5583640892426849032">Tilbake-tasten</translation>
+<translation id="5584044598279886848">Kan ikke slå av eller fjerne dette APN-et. Sørg for å deaktivere eller fjerne aktiverte APN som er tilknyttet.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" />-tasten er testet</translation>
 <translation id="5620281292257375798">Bare internt</translation>
 <translation id="5649768706273821470">Lytt</translation>
@@ -1010,6 +1013,7 @@
 <translation id="9173638680043580060">Mindre enn et minutt igjen</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Tastaturet kan matche bakgrunnen automatisk</translation>
+<translation id="9189000703457422362">Kan ikke koble til dette nettverket med APN-er som registreres automatisk. Kontakt mobiloperatøren din for å få mer informasjon.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Kan ikke kontakte gatewayen fra Android-apper</translation>
 <translation id="9211490828691860325">Alle skrivebord</translation>

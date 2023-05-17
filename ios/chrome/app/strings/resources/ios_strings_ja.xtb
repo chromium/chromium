@@ -220,6 +220,7 @@
 <translation id="2423077901494354337">お使いのデバイスで Chrome を最大限に活用できるようになりました。</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> の「<ph name="USERNAME" />」のパスワードは保存済みです</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
+<translation id="2439425774439590">アクセス回数の最も多いサイト</translation>
 <translation id="2451654228769116489">タブを固定</translation>
 <translation id="2461070143328828326">パスワードの設定</translation>
 <translation id="2469960372084740698">セーフ ブラウジングをオフにしますか？</translation>
@@ -441,6 +442,7 @@
 <translation id="3891414008432200754">価格</translation>
 <translation id="3892144330757387737">履歴はここに表示されます</translation>
 <translation id="3897092660631435901">メニュー</translation>
+<translation id="3899568514738536144">閲覧履歴を表示</translation>
 <translation id="3904829425754749514">同期は組織によってオフにされています。このデバイスのブックマーク、履歴、パスワードなどの設定は、引き続き使用できます。これらの設定に変更を加えた場合、変更内容はアカウントと同期されません。</translation>
 <translation id="3913386780052199712">Chrome にログイン</translation>
 <translation id="3915450441834151894">サイト情報</translation>
@@ -539,6 +541,7 @@
 <translation id="4592368184551360546">キーボード</translation>
 <translation id="4606247758155004938">お使いのブラウザは組織によって管理されています。</translation>
 <translation id="461440297010471931">Google 検索エンジンを使用</translation>
+<translation id="4616391354457235490">取り消す</translation>
 <translation id="4619564267100705184">本人確認</translation>
 <translation id="4619615317237390068">他のデバイスからのタブ</translation>
 <translation id="4620246317052452550">既読のページ</translation>
@@ -861,6 +864,7 @@
 
 各サイトで個別のパスワードを使用することをご検討ください。</translation>
 <translation id="650279896687777322">詳細を表示...</translation>
+<translation id="6507973708545996744">ログインすると、どのデバイスでもリーディング リストを利用できます。</translation>
 <translation id="6510072653668207258">後で通知する</translation>
 <translation id="651505212789431520">同期をキャンセルしますか？同期は設定でいつでもオンにできます。</translation>
 <translation id="6518133107902771759">確認</translation>

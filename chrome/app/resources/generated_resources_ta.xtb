@@ -6310,6 +6310,7 @@
 <translation id="657866106756413002">நெட்வொர்க் ஹெல்த் ஸ்னாப்ஷாட்</translation>
 <translation id="6579369886355986318">அனைத்துக் &amp;கண்ட்ரோல்களையும் காட்டு</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - டெஸ்க்டாப் உள்ளடக்கம் பகிரப்படுகிறது</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% முடிந்துள்ளது</translation>
 <translation id="6580203076670148210">ஸ்கேனிங் வேகம்</translation>
 <translation id="6582080224869403177">உங்கள் <ph name="DEVICE_TYPE" /> இன் பாதுகாப்பை மேம்படுத்த, அதை மீட்டமைக்கவும்.</translation>
 <translation id="6582274660680936615">கெஸ்ட் பயன்முறையில் உலாவுகிறீர்கள்</translation>
@@ -6931,6 +6932,7 @@
 <translation id="7114054701490058191">கடவுச்சொற்கள் பொருந்தவில்லை</translation>
 <translation id="7114648273807173152">உங்கள் Google கணக்கில் உள்நுழைவதற்கு Smart Lockகைப் பயன்படுத்த, ‘அமைப்புகள்’ &gt; ’இணைக்கப்பட்டுள்ள சாதனங்கள்’ &gt; ’உங்கள் ஃபோன்’ &gt; 'Smart Lock' என்பதற்குச் செல்லவும்.</translation>
 <translation id="7115361495406486998">தொடர்புகொள்ளக்கூடிய தொடர்புகள் எதுவுமில்லை</translation>
+<translation id="7116554090938189816">பிரிண்டர் SSL சான்றிதழ் காலாவதியாகிவிட்டது. பிரிண்டரை மீண்டும் தொடங்கி முயன்று பார்க்கவும்.</translation>
 <translation id="7117228822971127758">பிறகு முயலவும்</translation>
 <translation id="711840821796638741">நிர்வகிக்கப்பட்ட புக்மார்க்குகளைக் காட்டு</translation>
 <translation id="711985611146095797">நீங்கள் உள்நுழைந்துள்ள Google கணக்குகளை இந்தப் பக்கத்தில் நிர்வகிக்கலாம். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>

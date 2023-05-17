@@ -94,6 +94,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1346748346194534595">Dreapta</translation>
 <translation id="1351937230027495976">Restrânge meniul</translation>
 <translation id="1360220746312242196">Când cauți o pagină, accesează potrivirea anterioară pentru căutare</translation>
+<translation id="1360788414852622716">Se dezactivează profilul. Procesul poate dura câteva minute.</translation>
 <translation id="1364382257761975320">Pentru a debloca Chromebookul, folosește amprenta</translation>
 <translation id="1365866993922957110">Primește actualizări automate</translation>
 <translation id="1372545819342940910">Salvează desktopul pentru mai târziu</translation>
@@ -545,6 +546,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3510164367642747937">Evidențiază cursorul mouse-ului</translation>
 <translation id="3513798432020909783">Cont gestionat de <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Actualizează dispozitivul într-un minut}few{Actualizează dispozitivul în # minute}other{Actualizează dispozitivul în # de minute}}</translation>
+<translation id="3522979239100719575">Se caută profiluri disponibile. Procesul poate dura câteva minute.</translation>
 <translation id="3526440770046466733">Deschide linkul într-o filă nouă și rămâi în fila actuală</translation>
 <translation id="353086728817903341">S-a conectat la <ph name="NUM_DEVICES" /> dispozitive</translation>
 <translation id="3533126039236445965">Aplicații pe raft</translation>
@@ -1557,6 +1559,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8083540854303889870">Salvate pentru mai târziu</translation>
 <translation id="8091153018031979607">Începe la <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Actualizări automate</translation>
+<translation id="8092380135549145188">Comenzi de derulare</translation>
 <translation id="8098591350844501178">Nu mai proiecta ecranul pe dispozitivul <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Anulează fixarea aplicației pe raft</translation>
 <translation id="8113423164597455979">Activat, toate</translation>

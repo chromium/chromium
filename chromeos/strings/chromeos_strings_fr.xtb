@@ -426,6 +426,7 @@
 <translation id="455835558791489930">Batterie de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM débloquée</translation>
 <translation id="4562494484721939086">Aucun service</translation>
+<translation id="4573777384450697571">Échec – Certificat expiré</translation>
 <translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>
 <translation id="4593212453765072419">L'authentification du proxy est requise.</translation>
 <translation id="4609350030397390689">Baisser la luminosité du clavier</translation>
@@ -738,6 +739,7 @@
 <translation id="7130438335435247835">Nom du point d'accès (APN)</translation>
 <translation id="7131634559772719176">Confirmer le préréglage</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serveur de noms}one{Serveur de noms}other{Serveurs de noms}}</translation>
+<translation id="7135814714616751706">Raccourcis de recherche</translation>
 <translation id="7143207342074048698">Connexion</translation>
 <translation id="7144878232160441200">Réessayer</translation>
 <translation id="714876143603641390">Connectivité LAN</translation>
@@ -768,6 +770,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" /> ; <ph name="RESULT_TEXT" /> ; Appuyez sur "Rechercher" et sur "Espace" pour voir le résultat dans la recherche Google.</translation>
 <translation id="7343649194310845056">Appareils sur le réseau</translation>
+<translation id="7353413232959255829">Résultat de recherche <ph name="LIST_POSITION" /> sur <ph name="LIST_SIZE" /> : <ph name="SEARCH_RESULT_TEXT" />. Appuyez sur Entrée pour accéder au raccourci.</translation>
 <translation id="7359657277149375382">Type de fichier</translation>
 <translation id="73631062356239394">Partager les données de diagnostic</translation>
 <translation id="7375053625150546623">EAP</translation>

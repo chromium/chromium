@@ -49,6 +49,7 @@
 <translation id="3650632991272923014">Пользователь <ph name="USER_EMAIL1" />, который работал с Chromium на этом устройстве, не удалил свои закладки, пароли и другие настройки</translation>
 <translation id="372658070733623520">Чтобы использовать и сохранять данные Chromium в аккаунте Google, подтвердите свою личность.</translation>
 <translation id="3805899903892079518">У Chromium нет доступа к вашим фото и видео. Чтобы предоставить его, нажмите "Настройки &gt; Конфиденциальность &gt; Фотографии".</translation>
+<translation id="3955621079070267756">Открывайте Chromium из любого приложения</translation>
 <translation id="4043291146360695975">Пароли сохраняются в Менеджере паролей только на этом устройстве.</translation>
 <translation id="4099085513035183040">Проверка не поддерживается в бета-версии Chromium</translation>
 <translation id="4432744876818348753">Чтобы пользоваться всеми возможностями Chromium, войдите в аккаунт.</translation>
@@ -143,5 +144,6 @@
 <translation id="9089354809943900324">Версия Chromium устарела</translation>
 <translation id="9110075932708282655">Используйте Chromium по умолчанию</translation>
 <translation id="921174536258924340">Браузеру Chromium не удается проверить все пароли. Повторите попытку завтра или <ph name="BEGIN_LINK" />проверьте пароли в аккаунте Google<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">При переходе по ссылкам в сообщениях, документах и приложениях страницы могут автоматически открываться в браузере Chromium.</translation>
 <translation id="985602178874221306">Авторы Chromium</translation>
 </translationbundle>

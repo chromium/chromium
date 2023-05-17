@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> gere este dispositivo e pode conseguir monitorizar a sua atividade.</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Enviar</translation>
+<translation id="1488850966314959671">Não é possível estabelecer ligação a esta rede através de APNs (Nomes dos Pontos de Acesso) personalizados ativados. Contacte o seu operador móvel para obter mais informações.</translation>
 <translation id="1491076385728777984">A atualizar o firmware no dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">aumentar o volume</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gere este utilizador e pode gerir remotamente as definições e monitorizar a atividade do utilizador.</translation>
@@ -217,6 +218,7 @@
 <translation id="2638662041295312666">Imagem do início de sessão</translation>
 <translation id="2640549051766135490">Álbum <ph name="TITLE" /> <ph name="DESC" /> selecionado</translation>
 <translation id="267442004702508783">atualizar</translation>
+<translation id="268270014981824665">escurecimento do teclado</translation>
 <translation id="2712812801627182647">Chave de autenticação TLS</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2717139507051041123">Ativar modo de cor escura</translation>
@@ -224,6 +226,7 @@
 <translation id="2744221223678373668">Partilhadas</translation>
 <translation id="2751739896257479635">Autenticação da fase 2 de EAP</translation>
 <translation id="2783010256799387990">APROVADO</translation>
+<translation id="2787435249130282949">teclado mais claro</translation>
 <translation id="2789486458103222910">Ok</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="28232023175184696">Não é possível estabelecer ligação à Internet. Clique para tentar novamente.</translation>
@@ -327,11 +330,13 @@
 <translation id="3749289110408117711">Nome do ficheiro</translation>
 <translation id="3771294271822695279">Ficheiros de vídeo</translation>
 <translation id="3784455785234192852">Bloquear</translation>
+<translation id="380097101658023925">controlos de RGB</translation>
 <translation id="38114475217616659">Limpar todo o histórico</translation>
 <translation id="3820172043799983114">PIN inválido.</translation>
 <translation id="3824259034819781947">Anexar ficheiros</translation>
 <translation id="3838338534323494292">Nova palavra-passe</translation>
 <translation id="3845880861638660475">Prima <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> para fechar a caixa de diálogo.</translation>
+<translation id="3848280697030027394">escurecer o teclado</translation>
 <translation id="385051799172605136">Anterior</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3862598938296403232">É necessária uma descrição</translation>
@@ -403,6 +408,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Desactivar</translation>
 <translation id="439429847087949098">A reiniciar o dispositivo <ph name="DEVICE_NAME" /></translation>
+<translation id="4395835743215824109">personalização do teclado</translation>
 <translation id="4415951057168511744">Avatar atual</translation>
 <translation id="4422041425070339732">seta para baixo</translation>
 <translation id="4425149324548788773">O meu disco</translation>
@@ -443,6 +449,7 @@
 <translation id="4731797938093519117">Acesso parental</translation>
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4744944742468440486">Informações relacionadas com a sua seleção</translation>
+<translation id="4771607256327216405">aumentar o brilho do teclado</translation>
 <translation id="4773299976671772492">Parado</translation>
 <translation id="4782311465517282004">Obtenha definições, traduções ou conversões de unidades quando clicar com o botão direito do rato ou tocar sem soltar no texto</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
@@ -491,6 +498,7 @@
 <translation id="500920857929044050">Parar teste</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Apresente fotos, as horas, a meteorologia e informações de multimédia quando o ecrã está inativo.</translation>
+<translation id="5038292761217083259">teclado multicor</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5049856988445523908">SIM bloqueado (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nome do grupo</translation>
@@ -555,6 +563,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Ler novamente</translation>
 <translation id="5583640892426849032">Retrocesso</translation>
+<translation id="5584044598279886848">Não é possível desativar nem remover este APN. Certifique-se de que os APNs anexados ativados foram desativados ou removidos.</translation>
 <translation id="5600027863942488546">Tecla <ph name="KEY_NAME" /> testada</translation>
 <translation id="5620281292257375798">Apenas interno</translation>
 <translation id="5649768706273821470">Ouvir</translation>
@@ -639,6 +648,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Ativar tema escuro</translation>
 <translation id="6285899124799306373">abrir Launcher</translation>
+<translation id="629550705077076970">redução da luminosidade do teclado</translation>
 <translation id="6302401976930124515">O teste <ph name="TEST_NAME" /> foi cancelado.</translation>
 <translation id="631063167932043783">Explorar app</translation>
 <translation id="6319207335391420837">Atualizar firmware no <ph name="DEVICE_NAME" /></translation>
@@ -657,6 +667,7 @@
 <translation id="6401427872449207797">pesquisa do navegador</translation>
 <translation id="6410257289063177456">Ficheiros de imagem</translation>
 <translation id="641081527798843608">Correspondência de assunto</translation>
+<translation id="6411934471898487866">brilho do teclado</translation>
 <translation id="6412715219990689313">Teclado incorporado</translation>
 <translation id="6417265370957905582">Assistente Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -807,10 +818,12 @@
 <translation id="7656388927906093505">O dispositivo é um rato.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665800271478495366">Alterar avatar</translation>
+<translation id="7683228889864052081">tonalidade do teclado</translation>
 <translation id="7690294790491645610">Confirmar a nova palavra-passe</translation>
 <translation id="7701040980221191251">Nenhuma</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">luz do teclado</translation>
 <translation id="773153675489693198">Número de ciclos</translation>
 <translation id="7747039790905080783">Chave pré-partilhada</translation>
 <translation id="7762130827864645708">A alteração da sua palavra-passe foi efetuada com êxito. A partir de agora, utilize a nova palavra-passe.</translation>
@@ -854,6 +867,7 @@
 <translation id="8075838845814659848">Carregamento restante</translation>
 <translation id="8076492880354921740">Separadores</translation>
 <translation id="8082366717211101304">Não é possível resolver o DNS a partir de apps Android</translation>
+<translation id="8082644724189923105">zona do teclado</translation>
 <translation id="808894953321890993">Alterar palavra-passe</translation>
 <translation id="8094062939584182041">Permitir que a Google lhe envie um email acerca deste problema</translation>
 <translation id="8104083085214006426">Está a utilizar uma rede aberta e insegura</translation>
@@ -902,6 +916,7 @@
 <translation id="8456761643544401578">Modo escuro automático</translation>
 <translation id="8461329675984532579">Nome do fornecedor base</translation>
 <translation id="8475690821716466388">A rede Wi-Fi está protegida com um protocolo pouco seguro WEP PSK.</translation>
+<translation id="8476242415522716722">brilho na parte inferior do teclado</translation>
 <translation id="8477551185774834963">Latência de DNS ligeiramente acima do limite permitido.</translation>
 <translation id="8483248364096924578">Endereço IP</translation>
 <translation id="8491311378305535241">Não é possível estabelecer ligação através de uma firewall a Websites HTTP a partir de apps Android</translation>
@@ -945,6 +960,7 @@
 <translation id="8845001906332463065">Obter ajuda</translation>
 <translation id="8855781559874488009">Não é possível estabelecer ligação através da firewall a Websites HTTP</translation>
 <translation id="885701979325669005">Armazenamento</translation>
+<translation id="885704831271383379">teclado mais escuro</translation>
 <translation id="8863170912498892583">Ativar tema escuro</translation>
 <translation id="8863888432376731307">Obtenha a intenção <ph name="INTENT" /> para a consulta "<ph name="QUERY" />" e muito mais</translation>
 <translation id="8864415976656252616">Nenhum conteúdo sugerido. Veja o conteúdo de ajuda principal.</translation>
@@ -997,6 +1013,7 @@
 <translation id="9173638680043580060">Falta menos de um minuto</translation>
 <translation id="917720651393141712">Testar</translation>
 <translation id="9188992814426075118">O teclado pode corresponder automaticamente à sua imagem de fundo</translation>
+<translation id="9189000703457422362">Não é possível estabelecer ligação a esta rede através de APNs detetados automaticamente. Contacte o seu operador móvel para obter mais informações.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Não é possível contactar o gateway a partir de apps Android</translation>
 <translation id="9211490828691860325">Todos os espaços de trabalho</translation>

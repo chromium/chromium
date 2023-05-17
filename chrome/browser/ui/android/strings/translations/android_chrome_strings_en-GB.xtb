@@ -1119,6 +1119,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="7030304022046916278">Sends URLs to Safe Browsing to check them</translation>
 <translation id="7030585293819777123">Resume your last task?</translation>
+<translation id="7035701931849773472">Other options</translation>
 <translation id="7037830628447527439">Sign in to Chrome with your Google Account</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Get image descriptions?</translation>
@@ -1341,6 +1342,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8110024788458304985">Help improve Chrome\u2019s features and performance</translation>
 <translation id="8110087112193408731">Show your Chrome activity in Digital Wellbeing?</translation>
 <translation id="8118117428362942925">If you need help, ask your parent (<ph name="PARENT_NAME" />)</translation>
+<translation id="8124758083429256800">Your lists of saved passwords for Chrome and Chrome <ph name="ERROR_DESCRIPTION" /> will merge after version 121. You’ll be able to autofill all your saved passwords on both apps.</translation>
 <translation id="8127542551745560481">Edit homepage</translation>
 <translation id="8130309322784422030">Your stored sign-in info might be out of date</translation>
 <translation id="813082847718468539">View site information</translation>

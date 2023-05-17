@@ -94,6 +94,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1346748346194534595">Dereita</translation>
 <translation id="1351937230027495976">Contraer menú</translation>
 <translation id="1360220746312242196">Ir á seguinte coincidencia ao buscar nunha páxina</translation>
+<translation id="1360788414852622716">Desactivando perfil. Esta acción pode tardar uns minutos.</translation>
 <translation id="1364382257761975320">Para desbloquear o Chromebook, utiliza a impresión dixital</translation>
 <translation id="1365866993922957110">Recibir actualizacións automáticas</translation>
 <translation id="1372545819342940910">Gardar escritorio para máis tarde</translation>
@@ -183,6 +184,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1774796056689732716">Calendario, <ph name="CURRENT_MONTH_YEAR" />; nestes momentos está seleccionada a data <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Desactivado</translation>
 <translation id="181103072419391116">Intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
+<translation id="1815245884418711390">Activar ou desactivar a zona wifi. A zona wifi está desactivada.</translation>
 <translation id="1816896987747843206">Desta forma, poderán acceder á cámara todas as aplicacións e sitios web con permiso de acceso á cámara</translation>
 <translation id="1823280932251546115">Bandexa de estado, hora: <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -241,6 +243,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2023558322300866873">Podes deter a captura de paquetes cando queiras</translation>
 <translation id="2034971124472263449">Gardar de todas formas</translation>
 <translation id="2049240716062114887">Cambiouse o nome do escritorio por <ph name="DESK_NAME" /></translation>
+<translation id="206377500836174974">Máximo</translation>
 <translation id="2064048859448024834">A vista previa da cámara está activada</translation>
 <translation id="2067602449040652523">Brillo do teclado</translation>
 <translation id="2075520525463668108">Activar ou desactivar <ph name="CAPTURE_MEDIUM" />. A función <ph name="CAPTURE_MEDIUM" /> está <ph name="CAPTURE_STATE" /></translation>
@@ -293,6 +296,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2339073806695260576">Toca o botón do lapis óptico no estante para crear unha nota, facer unha captura de pantalla, utilizar o punteiro láser ou aplicar a lupa.</translation>
 <translation id="2341729377289034582">Pantalla bloqueada en posición vertical</translation>
 <translation id="2345226652884463045">Premer Intro ou Buscar + Espazo para seleccionar texto e editalo.</translation>
+<translation id="2349785431103945039">Mostrar os detalles da zona wifi. Conéctate á rede de telefonía móbil para usar a zona wifi.</translation>
 <translation id="2350794187831162545">O que se diga neste idioma (<ph name="LANGUAGE" />) procésase de xeito local e funciona sen conexión. Podes cambiar o idioma de ditado en Configuración &gt; Accesibilidade.</translation>
 <translation id="2352467521400612932">Configuración do lapis óptico</translation>
 <translation id="2354174487190027830">Activando <ph name="NAME" /></translation>
@@ -336,6 +340,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2531025035050312891">dispositivo lento</translation>
 <translation id="2542089167727451762">Toca a imaxe do teu perfil</translation>
 <translation id="254900897760075745">Copia o contido seleccionado no portapapeis</translation>
+<translation id="2549711466868162843">Mellorar iluminación</translation>
 <translation id="2549985041256363841">Iniciar gravación</translation>
 <translation id="255671100581129685">O Asistente de Google non está dispoñible cando se utiliza unha sesión pública.</translation>
 <translation id="256712445991462162">a lupa ancorada</translation>
@@ -429,6 +434,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3009178788565917040">Saída</translation>
 <translation id="3009958530611748826">Seleccionar un cartafol para gardar os ficheiros</translation>
 <translation id="301282384882049174">Compartido polo teu administrador</translation>
+<translation id="301584155502740476">Mostrar os detalles da zona wifi. A zona wifi está desactivada.</translation>
 <translation id="3018135054368884502">Avanzar rapidamente o contido multimedia</translation>
 <translation id="3033545621352269033">Activada</translation>
 <translation id="3033912566804961911">Combinar con <ph name="DESK_NAME" /></translation>
@@ -489,6 +495,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3291862315280588024">Móvese ao comezo da palabra anterior</translation>
 <translation id="3294437725009624529">Invitado</translation>
 <translation id="3298690094479023523">Aínda non se puido verificar o teu PIN ou contrasinal. Téntao de novo.</translation>
+<translation id="3300193645498960160">Se falas mentres o dispositivo está silenciado, recibirás unha notificación. O audio non sairá do dispositivo.</translation>
 <translation id="3307642347673023554">Cambiouse ao modo de ordenador portátil</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> segue podendo iniciar sesión máis tarde.</translation>
 <translation id="3321628682574733415">O código de pai ou nai é incorrecto</translation>
@@ -539,6 +546,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3510164367642747937">Destacar o cursor do rato</translation>
 <translation id="3513798432020909783">A conta está xestionada por <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Actualiza o dispositivo en 1 minuto}other{Actualiza o dispositivo en # minutos}}</translation>
+<translation id="3522979239100719575">Buscando perfís dispoñibles. Esta acción pode tardar uns minutos.</translation>
 <translation id="3526440770046466733">Abre a ligazón nunha pestana nova e queda na pestana actual</translation>
 <translation id="353086728817903341">Conexión establecida con <ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="3533126039236445965">Aplicacións no andel</translation>
@@ -572,6 +580,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3621712662352432595">Configuración do audio</translation>
 <translation id="3626281679859535460">Brillo</translation>
+<translation id="3629640897379005903">Mostrar os detalles da zona wifi. Estase desactivando.</translation>
 <translation id="3630697955794050612">desactivado</translation>
 <translation id="3631369015426612114">Permitir notificacións das seguintes fontes:</translation>
 <translation id="3633097874324966332">Abre a configuración de Bluetooth para vincular o teu dispositivo</translation>
@@ -704,6 +713,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="423685346499232137">Non se puido copiar ou pegar o contido neste momento</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modo de visión xeral</translation>
+<translation id="4240756737570479726">Desactivando...</translation>
 <translation id="4242533952199664413">Abrir configuración</translation>
 <translation id="4247123849143712100">Actualizar e apagar</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
@@ -842,6 +852,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4864369630010738180">Iniciando sesión...</translation>
 <translation id="4864648187878336334">Escritorio 15</translation>
 <translation id="4868492592575313542">activou</translation>
+<translation id="4871905435473761992">Mostrar os detalles da zona wifi. A túa rede de telefonía móbil non é compatible co uso da zona wifi.</translation>
 <translation id="4872237917498892622">Alt+Busca ou Maiús</translation>
 <translation id="4872852897273142380">Enfocar ou destacar barra de marcadores (se aparece)</translation>
 <translation id="4881695831933465202">Abrir</translation>
@@ -901,6 +912,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5104236669533825617">Non se puido crear a gravación da pantalla</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">Desenfoque do fondo</translation>
 <translation id="5117590920725113268">Mostrar mes seguinte</translation>
 <translation id="5121628974188116412">Vai á parte inferior da páxina</translation>
 <translation id="5136175204352732067">Conectouse un teclado diferente</translation>
@@ -913,6 +925,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5168181903108465623">Dispositivos de emisión dispoñibles</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5176318573511391780">Gravar pantalla parcial</translation>
+<translation id="5187627942836026988">Mostrar os detalles da zona wifi. A persoa administradora bloqueou a zona wifi.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventos</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combinouse con <ph name="IN_PLACE_APP" /> para crear un cartafol novo.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1085,6 +1098,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="595202126637698455">Seguimento do rendemento activado</translation>
 <translation id="5955304353782037793">aplicación</translation>
 <translation id="5958529069007801266">Usuario supervisado</translation>
+<translation id="5961960957587052807">Suave</translation>
 <translation id="5965524703725988602">Activar/desactivar o tema escuro. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Premer Introducir para gravar a ventá</translation>
 <translation id="5978382165065462689">Control compartido da túa pantalla a través de Asistencia remota.</translation>
@@ -1257,6 +1271,7 @@ Nova instalación</translation>
 <translation id="6752912906630585008">Quitouse o escritorio <ph name="REMOVED_DESK" /> e combinouse co escritorio <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">pestanas</translation>
 <translation id="6757237461819837179">Non se está reproducindo contido multimedia</translation>
+<translation id="6759628406555734414">Mostrar os detalles da zona wifi. Estase activando.</translation>
 <translation id="6768043681523654438">almacenamento</translation>
 <translation id="6777216307882431711">Alimentando dispositivos USB‑C conectados</translation>
 <translation id="6781002679438061620">Escritorio 9</translation>
@@ -1281,6 +1296,7 @@ Nova instalación</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un díxito}other{Faltan # díxitos}}</translation>
 <translation id="6867938213751067702">Púxose en pausa a descarga de <ph name="FILENAME" /></translation>
+<translation id="6874854809828346832">Mostrar os detalles da zona wifi. A zona wifi está activada.</translation>
 <translation id="6878400149835617132">Desactivouse o atallo</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplicación}other{# aplicacións}}</translation>
 <translation id="6884665277231944629">Volver a hoxe</translation>
@@ -1290,6 +1306,7 @@ Nova instalación</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6901883536534621389">Proba a navegar con xestos</translation>
 <translation id="6919251195245069855">Non se puido recoñecer a tarxeta intelixente. Téntao de novo.</translation>
+<translation id="6920245099716267363">Activar ou desactivar a zona wifi. A zona wifi está activada. Hai 1 dispositivo conectado.</translation>
 <translation id="6931576957638141829">Gardar en</translation>
 <translation id="6941333068993625698">Envía comentarios</translation>
 <translation id="6942518653766415536">Menú de formato da gravación</translation>
@@ -1379,6 +1396,7 @@ Nova instalación</translation>
 <translation id="7378203170292176219">Arrastra para seleccionar a zona que queiras gravar</translation>
 <translation id="7378594059915113390">Controis de contido multimedia</translation>
 <translation id="7378889811480108604">Está desactivado o modo de aforro de batería</translation>
+<translation id="7382640522316003298">Activar ou desactivar a zona wifi. A zona wifi está activada. Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="7382680553121047388">Activado</translation>
 <translation id="7384028040782072252">Fai clic co botón dereito en calquera parte da pantalla para reordenar as aplicacións</translation>
 <translation id="7386767620098596324">Activar/desactivar a conexión de rede. <ph name="STATE_TEXT" />.</translation>
@@ -1429,6 +1447,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7579778809502851308">Captura de pantalla</translation>
 <translation id="7593891976182323525">Busca ou Maiús</translation>
 <translation id="7600875258240007829">Ver todas as notificacións</translation>
+<translation id="7601417191446344542">Queres activar o aviso de audio desactivado?</translation>
 <translation id="7607002721634913082">En pausa</translation>
 <translation id="7609951632080598826">Vista de calendario, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Reconectouse a cámara.</translation>
@@ -1541,6 +1560,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8083540854303889870">Elementos gardados para máis tarde</translation>
 <translation id="8091153018031979607">Inicio: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Actualizacións automáticas</translation>
+<translation id="8092380135549145188">Controis de desprazamento</translation>
 <translation id="8098591350844501178">Deter a emisión da pantalla en: <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Deixa de fixar a aplicación no andel</translation>
 <translation id="8113423164597455979">Si, para todas</translation>
@@ -1552,6 +1572,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8131994907636310308">Pechar notificación de ordenar</translation>
 <translation id="8132793192354020517">Conectado a <ph name="NAME" /></translation>
+<translation id="8135163608236671037">Activar ou desactivar a zona wifi. A zona wifi está activada. Non hai ningún dispositivo conectado.</translation>
 <translation id="8138705869659070104">Activar tras a configuración</translation>
 <translation id="813913629614996137">Iniciando...</translation>
 <translation id="8142441511840089262">Dobre clic</translation>
@@ -1732,6 +1753,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8990809378771970590">Usando: <ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">Activouse o modo de inversión da cor. Preme Control + Buscar + H de novo para desactivalo.</translation>
 <translation id="899350903320462459">Desbloquea o dispositivo como <ph name="LOGIN_ID" /> para levar a cabo a acción de notificación</translation>
+<translation id="8993733019280019776">Estás falando? O micrófono está desactivado. Selecciónao para activalo.</translation>
 <translation id="9000771174482730261">XESTIONAR ALMACENAMENTO</translation>
 <translation id="9005984960510803406">Abre unha ventá de Crosh</translation>
 <translation id="9017320285115481645">Introduce o código de acceso parental de Family Link.</translation>

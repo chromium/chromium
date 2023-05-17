@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Немає нещодавніх відео</translation>
 <translation id="3634507049637220048">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />. Мережею керує адміністратор. Докладніше</translation>
 <translation id="3645233063072417428">Переміщено елементів: <ph name="NUMBER_OF_ITEMS" />.</translation>
+<translation id="3658269352872031728">Вибрано файлів: <ph name="SELECTED_FILE_COUNT" /></translation>
 <translation id="3685122418104378273">Коли використовується мобільний Інтернет, синхронізацію Google Диска вимкнено за умовчанням.</translation>
 <translation id="3689865792480713551">Скасувати <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, не активовано, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, відомості</translation>
@@ -577,6 +578,7 @@
 <translation id="5533102081734025921">Зображення <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Обчислення розміру</translation>
 <translation id="554153475311314364">Грецька, транслітерація</translation>
+<translation id="5554171655917412781">Вибрано папок: <ph name="SELECTED_FOLDERS_COUNT" /></translation>
 <translation id="5580591966435005537">віртуальна машина</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Ширина розділових знаків – повна</translation>
@@ -599,6 +601,7 @@
 <translation id="5724172041621205163">Тайська, розкладка Pattachote</translation>
 <translation id="57383366388012121">Останній місяць</translation>
 <translation id="5756666464756035725">Угорська клавіатура QWERTY</translation>
+<translation id="5760252553414789727">Вибрано об’єктів: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">Німецька (Швейцарія)</translation>
 <translation id="5769519078756170258">Хост або домен для виключення</translation>
 <translation id="5775750595919327203">Урду</translation>

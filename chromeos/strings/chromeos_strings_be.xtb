@@ -738,6 +738,7 @@
 <translation id="7130438335435247835">Назва пункта доступу (APN)</translation>
 <translation id="7131634559772719176">Пацвярджэнне набору налад</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер даменных імён}one{Серверы даменных імён}few{Серверы даменных імён}many{Серверы даменных імён}other{Серверы даменных імён}}</translation>
+<translation id="7135814714616751706">Пошук ярлыкоў</translation>
 <translation id="7143207342074048698">Падключэнне</translation>
 <translation id="7144878232160441200">Паўтарыць</translation>
 <translation id="714876143603641390">Магчымасць падключэння LAN</translation>
@@ -768,6 +769,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />. Каб пабачыць вынік у Google Пошуку, націсніце "Пошук" і клавішу прабелу.</translation>
 <translation id="7343649194310845056">Сеткавыя прылады</translation>
+<translation id="7353413232959255829">Вынік пошуку <ph name="LIST_POSITION" /> з <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Каб перайсці да ярлыка, націсніце Enter.</translation>
 <translation id="7359657277149375382">Тып файла</translation>
 <translation id="73631062356239394">Абагуліць даныя дыягностыкі</translation>
 <translation id="7375053625150546623">EAP</translation>

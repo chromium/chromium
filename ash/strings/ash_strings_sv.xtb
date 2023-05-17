@@ -184,6 +184,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, just nu är <ph name="DATE" /> markerat.</translation>
 <translation id="1787955149152357925">Av</translation>
 <translation id="181103072419391116">Signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
+<translation id="1815245884418711390">Aktivera och inaktivera surfzon. Surfzonen är inaktiverad.</translation>
 <translation id="1816896987747843206">Detta ger kameraåtkomst för alla appar och webbplatser med kamerabehörighet</translation>
 <translation id="1823280932251546115">Statusfältet, tid <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -242,6 +243,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2023558322300866873">Du kan avsluta paketanalysen när som helst</translation>
 <translation id="2034971124472263449">Spara ändå</translation>
 <translation id="2049240716062114887">Skrivbordsnamnet ändrades till <ph name="DESK_NAME" /></translation>
+<translation id="206377500836174974">Fullständig</translation>
 <translation id="2064048859448024834">Förhandsgranskning av kamera visas</translation>
 <translation id="2067602449040652523">Ljusstyrka för tangentbordet</translation>
 <translation id="2075520525463668108">Aktivera och inaktivera <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> är <ph name="CAPTURE_STATE" /></translation>
@@ -294,6 +296,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2339073806695260576">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmbild eller använda laserpekaren eller förstoringsglaset.</translation>
 <translation id="2341729377289034582">Låst i stående läge</translation>
 <translation id="2345226652884463045">Tryck på Retur eller Sök + blanksteg för att välja texten som ska redigeras.</translation>
+<translation id="2349785431103945039">Visa information om surfzon. Anslut till mobilnätverket om du vill använda surfzonen</translation>
 <translation id="2350794187831162545">Nu behandlas tal på <ph name="LANGUAGE" /> lokalt och kan användas offline. Du kan ändra dikteringsspråk i Inställningar &gt; Tillgänglighet.</translation>
 <translation id="2352467521400612932">Inställningar för e-penna</translation>
 <translation id="2354174487190027830">Aktiverar <ph name="NAME" /></translation>
@@ -337,6 +340,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2531025035050312891">långsam enhet</translation>
 <translation id="2542089167727451762">Tryck på profilbilden</translation>
 <translation id="254900897760075745">Kopiera markerat innehåll till Urklipp</translation>
+<translation id="2549711466868162843">Förbättra ljus</translation>
 <translation id="2549985041256363841">Börja spela in</translation>
 <translation id="255671100581129685">Google-assistenten är inte tillgänglig i en offentlig session.</translation>
 <translation id="256712445991462162">den dockade skärmförstoraren</translation>
@@ -430,6 +434,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3009178788565917040">Utgång</translation>
 <translation id="3009958530611748826">Välj vilken mapp du vill spara i</translation>
 <translation id="301282384882049174">Delas av administratören</translation>
+<translation id="301584155502740476">Visa information om surfzon. Surfzonen är inaktiverad.</translation>
 <translation id="3018135054368884502">Spola framåt i media</translation>
 <translation id="3033545621352269033">På</translation>
 <translation id="3033912566804961911">Kombinera med <ph name="DESK_NAME" /></translation>
@@ -490,6 +495,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3291862315280588024">Flytta till början av föregående ord</translation>
 <translation id="3294437725009624529">Gäst</translation>
 <translation id="3298690094479023523">Det gick fortfarande inte att verifiera pinkoden eller lösenordet. Försök igen.</translation>
+<translation id="3300193645498960160">Du får en avisering om du pratar när ljudet är av. Ljudet lämnar aldrig enheten.</translation>
 <translation id="3307642347673023554">Bytte till laptopläge</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan ändå logga in igen senare.</translation>
 <translation id="3321628682574733415">Felaktig föräldrakod</translation>
@@ -574,6 +580,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3621202678540785336">Ingång</translation>
 <translation id="3621712662352432595">Ljudinställningar</translation>
 <translation id="3626281679859535460">Ljusstyrka</translation>
+<translation id="3629640897379005903">Visa information om surfzon. Surfzonen inaktiveras.</translation>
 <translation id="3630697955794050612">av</translation>
 <translation id="3631369015426612114">Tillåt aviseringar från följande</translation>
 <translation id="3633097874324966332">Öppna Bluetooth-inställningarna om du vill parkoppla enheten</translation>
@@ -705,6 +712,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="423685346499232137">Det går inte att kopiera eller klistra in innehåll just nu</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Översiktsläge</translation>
+<translation id="4240756737570479726">Inaktiverar …</translation>
 <translation id="4242533952199664413">Öppna Inställningar</translation>
 <translation id="4247123849143712100">Uppdatera och stäng av</translation>
 <translation id="4250229828105606438">Skärmbild</translation>
@@ -843,6 +851,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4864369630010738180">Loggar in ...</translation>
 <translation id="4864648187878336334">Skrivbord 15</translation>
 <translation id="4868492592575313542">aktiverad</translation>
+<translation id="4871905435473761992">Visa information om surfzon. Mobilnätverket har inte stöd för surfzoner.</translation>
 <translation id="4872237917498892622">Alt + Sök eller Skift</translation>
 <translation id="4872852897273142380">Fokusera på eller markera bokmärkesfältet (om det visas)</translation>
 <translation id="4881695831933465202">Öppna</translation>
@@ -902,6 +911,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5104236669533825617">Det går inte att skapa en screencast</translation>
 <translation id="5107522548814527560">Webb</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">Bakgrundsoskärpa</translation>
 <translation id="5117590920725113268">Visa nästa månad</translation>
 <translation id="5121628974188116412">Till längst ned på sidan</translation>
 <translation id="5136175204352732067">Ett annat tangentbord har anslutits</translation>
@@ -914,6 +924,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5168181903108465623">Överföringsenheter finns tillgängliga</translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="5176318573511391780">Spela in en del av skärmen</translation>
+<translation id="5187627942836026988">Visa information om surfzon. Surfzonen blockeras av administratören.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> händelser</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> kombinerades med <ph name="IN_PLACE_APP" /> för att skapa en ny mapp.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1086,6 +1097,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="595202126637698455">Resultatspårning aktiverat</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Kontrollerad användare</translation>
+<translation id="5961960957587052807">Ljus</translation>
 <translation id="5965524703725988602">Aktivera och inaktivera Mörkt tema. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Tryck på retur för att spela in fönstret</translation>
 <translation id="5978382165065462689">Dela kontroll över skärmen via Fjärrhjälp.</translation>
@@ -1258,6 +1270,7 @@ Nyligen installerad</translation>
 <translation id="6752912906630585008">Skrivbordet <ph name="REMOVED_DESK" /> har tagits bort och slagits samman med skrivbordet <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">flikar</translation>
 <translation id="6757237461819837179">Ingen media spelas upp</translation>
+<translation id="6759628406555734414">Visa information om surfzon. Surfzonen aktiveras.</translation>
 <translation id="6768043681523654438">lagringsutrymme</translation>
 <translation id="6777216307882431711">Laddar anslutna USB-C-enheter</translation>
 <translation id="6781002679438061620">Skrivbord 9</translation>
@@ -1282,6 +1295,7 @@ Nyligen installerad</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{En siffra kvar}other{# siffror kvar}}</translation>
 <translation id="6867938213751067702">Nedladdningen pausades <ph name="FILENAME" /></translation>
+<translation id="6874854809828346832">Visa information om surfzon. Surfzonen är aktiverad.</translation>
 <translation id="6878400149835617132">Kortkommandot har inaktiverats.</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 app}other{# appar}}</translation>
 <translation id="6884665277231944629">Återgå till i dag</translation>
@@ -1291,6 +1305,7 @@ Nyligen installerad</translation>
 <translation id="6896758677409633944">Kopiera</translation>
 <translation id="6901883536534621389">Testa att navigera med rörelser</translation>
 <translation id="6919251195245069855">Det smarta kortet kändes inte igen. Försök igen.</translation>
+<translation id="6920245099716267363">Aktivera och inaktivera surfzon. Surfzonen är aktiverad. 1 enhet är ansluten.</translation>
 <translation id="6931576957638141829">Spara i</translation>
 <translation id="6941333068993625698">Skicka feedback</translation>
 <translation id="6942518653766415536">Meny för inspelningsformat</translation>
@@ -1380,6 +1395,7 @@ Nyligen installerad</translation>
 <translation id="7378203170292176219">Välj ett område att spela in genom att dra</translation>
 <translation id="7378594059915113390">Mediereglage</translation>
 <translation id="7378889811480108604">Batterisparläget är avstängt</translation>
+<translation id="7382640522316003298">Aktivera och inaktivera surfzon. Surfzonen är aktiverad. <ph name="DEVICECOUNT" /> enheter är anslutna.</translation>
 <translation id="7382680553121047388">På</translation>
 <translation id="7384028040782072252">Högerklicka var som helst och ändra ordning på apparna</translation>
 <translation id="7386767620098596324">Aktivera och inaktivera nätverksanslutning. <ph name="STATE_TEXT" />.</translation>
@@ -1430,6 +1446,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7579778809502851308">Skärmbild</translation>
 <translation id="7593891976182323525">Sök eller Skift</translation>
 <translation id="7600875258240007829">Visa alla aviseringar</translation>
+<translation id="7601417191446344542">Vill du aktivera puff för avstängt ljud?</translation>
 <translation id="7607002721634913082">Pausad</translation>
 <translation id="7609951632080598826">Kalendervy: <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kameran har återanslutits.</translation>
@@ -1554,6 +1571,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
 <translation id="8131994907636310308">Stäng sorteringspopup</translation>
 <translation id="8132793192354020517">Ansluten till <ph name="NAME" /></translation>
+<translation id="8135163608236671037">Aktivera och inaktivera surfzon. Surfzonen är aktiverad. Ingen enhet är ansluten.</translation>
 <translation id="8138705869659070104">Aktivera efter enhetskonfig.</translation>
 <translation id="813913629614996137">Initierar …</translation>
 <translation id="8142441511840089262">Dubbelklicka</translation>
@@ -1734,6 +1752,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8990809378771970590">Använder <ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">Läget för inverterade färger har aktiverats. Tryck på Ctrl + Sök + H igen för att inaktivera det.</translation>
 <translation id="899350903320462459">Lås upp enheten som <ph name="LOGIN_ID" /> så att aviseringen kan göras</translation>
+<translation id="8993733019280019776">Pratar du? Mikrofonen är inaktiverad. Välj mikrofonen för att aktivera den.</translation>
 <translation id="9000771174482730261">HANTERA LAGRING</translation>
 <translation id="9005984960510803406">Öppna Crosh-fönstret</translation>
 <translation id="9017320285115481645">Ange föräldraåtkomstkoden för Family Link.</translation>

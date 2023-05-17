@@ -217,6 +217,7 @@
 <translation id="2638662041295312666">サインイン画像</translation>
 <translation id="2640549051766135490">アルバム「<ph name="TITLE" />」の <ph name="DESC" />を選択中</translation>
 <translation id="267442004702508783">更新</translation>
+<translation id="268270014981824665">キーボードを薄暗く</translation>
 <translation id="2712812801627182647">TLS 認証鍵</translation>
 <translation id="2713444072780614174">白</translation>
 <translation id="2717139507051041123">ダークカラー モードを有効にする</translation>
@@ -224,6 +225,7 @@
 <translation id="2744221223678373668">共有</translation>
 <translation id="2751739896257479635">EAP フェーズ 2 認証</translation>
 <translation id="2783010256799387990">合格</translation>
+<translation id="2787435249130282949">キーボードを明るくする</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">アプリ</translation>
 <translation id="28232023175184696">インターネットに接続できません。クリックしてもう一度お試しください。</translation>
@@ -327,11 +329,13 @@
 <translation id="3749289110408117711">ファイル名</translation>
 <translation id="3771294271822695279">動画ファイル</translation>
 <translation id="3784455785234192852">ロック</translation>
+<translation id="380097101658023925">RGB 設定</translation>
 <translation id="38114475217616659">履歴をすべて消去</translation>
 <translation id="3820172043799983114">無効な PIN です。</translation>
 <translation id="3824259034819781947">ファイルを添付</translation>
 <translation id="3838338534323494292">新しいパスワード</translation>
 <translation id="3845880861638660475"><ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" />+<ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> キーを押してダイアログを閉じます。</translation>
+<translation id="3848280697030027394">キーボードを暗く</translation>
 <translation id="385051799172605136">戻る</translation>
 <translation id="3858860766373142691">名前</translation>
 <translation id="3862598938296403232">説明は必須です</translation>
@@ -403,6 +407,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">無効にする</translation>
 <translation id="439429847087949098">「<ph name="DEVICE_NAME" />」を再起動しています</translation>
+<translation id="4395835743215824109">キーボードのカスタマイズ</translation>
 <translation id="4415951057168511744">現在のアバター</translation>
 <translation id="4422041425070339732">下矢印</translation>
 <translation id="4425149324548788773">マイドライブ</translation>
@@ -426,6 +431,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh 電池</translation>
 <translation id="4561801978359312462">SIM のロックは解除されています</translation>
 <translation id="4562494484721939086">サービスなし</translation>
+<translation id="4573777384450697571">失敗 - 証明書が期限切れです</translation>
 <translation id="458794348635939462">すべてのホストを解決できませんでした</translation>
 <translation id="4593212453765072419">プロキシ認証が必要です</translation>
 <translation id="4609350030397390689">キーボードの明るさを下げる</translation>
@@ -442,6 +448,7 @@
 <translation id="4731797938093519117">保護者によるアクセス</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4744944742468440486">選択した項目に関連する情報</translation>
+<translation id="4771607256327216405">キーボードを明るく</translation>
 <translation id="4773299976671772492">停止しました</translation>
 <translation id="4782311465517282004">テキストを右クリックまたは長押しすると、定義、翻訳、単位変換を確認できます</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> 枚の写真</translation>
@@ -490,6 +497,7 @@
 <translation id="500920857929044050">テストを停止</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">画面がアイドル状態のときに、写真、時刻、天気、メディア情報を表示します。</translation>
+<translation id="5038292761217083259">キーボードをマルチカラーにする</translation>
 <translation id="5039804452771397117">許可する</translation>
 <translation id="5049856988445523908">SIM はロックされています（<ph name="LOCK_TYPE" />）</translation>
 <translation id="5050042263972837708">グループ名</translation>
@@ -638,6 +646,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">ダークモードをオンにする</translation>
 <translation id="6285899124799306373">ランチャーを開く</translation>
+<translation id="629550705077076970">キーボードを薄暗くする</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> テストがキャンセルされました</translation>
 <translation id="631063167932043783">アプリについてもっと知る</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> のファームウェアをアップデート</translation>
@@ -656,6 +665,7 @@
 <translation id="6401427872449207797">ブラウザ検索</translation>
 <translation id="6410257289063177456">画像ファイル</translation>
 <translation id="641081527798843608">件名の一致</translation>
+<translation id="6411934471898487866">キーボードの明るさ</translation>
 <translation id="6412715219990689313">デバイス内蔵キーボード</translation>
 <translation id="6417265370957905582">Google アシスタント</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -806,10 +816,12 @@
 <translation id="7656388927906093505">デバイスの種類はマウスです。</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7665800271478495366">アバターを変更</translation>
+<translation id="7683228889864052081">キーボードの色調</translation>
 <translation id="7690294790491645610">新しいパスワードの確認入力</translation>
 <translation id="7701040980221191251">なし</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">キーボード ライト</translation>
 <translation id="773153675489693198">サイクル回数</translation>
 <translation id="7747039790905080783">事前共有キー</translation>
 <translation id="7762130827864645708">パスワードを変更しました。今後は新しいパスワードを使用してください。</translation>
@@ -853,6 +865,7 @@
 <translation id="8075838845814659848">バッテリー残量</translation>
 <translation id="8076492880354921740">タブ</translation>
 <translation id="8082366717211101304">Android アプリから DNS を解決できません</translation>
+<translation id="8082644724189923105">キーボード ゾーン</translation>
 <translation id="808894953321890993">パスワードの変更</translation>
 <translation id="8094062939584182041">この問題に関するメールの送信を Google に許可する</translation>
 <translation id="8104083085214006426">保護されていないオープン ネットワークを使用しています</translation>
@@ -901,6 +914,7 @@
 <translation id="8456761643544401578">ダークモードを自動的に設定する</translation>
 <translation id="8461329675984532579">ホーム プロバイダ名</translation>
 <translation id="8475690821716466388">Wi-Fi ネットワークで安全性の低いプロトコル WEP PSK が使用されています</translation>
+<translation id="8476242415522716722">キーボードの光を抑える</translation>
 <translation id="8477551185774834963">DNS の応答時間が許容値を少し超えています</translation>
 <translation id="8483248364096924578">IP アドレス</translation>
 <translation id="8491311378305535241">Android アプリからファイアウォールを介して HTTP ウェブサイトに接続できません</translation>
@@ -944,6 +958,7 @@
 <translation id="8845001906332463065">ヘルプ</translation>
 <translation id="8855781559874488009">ファイアウォールを介して HTTP ウェブサイトに接続できません</translation>
 <translation id="885701979325669005">ストレージ</translation>
+<translation id="885704831271383379">キーボードを暗くする</translation>
 <translation id="8863170912498892583">ダークモードを有効にする</translation>
 <translation id="8863888432376731307">「<ph name="QUERY" />」の <ph name="INTENT" /> の取得など</translation>
 <translation id="8864415976656252616">コンテンツの候補はありません。関連するヘルプ コンテンツをご覧ください。</translation>

@@ -738,6 +738,7 @@
 <translation id="7130438335435247835">ଆକ୍ସେସ ପଏଣ୍ଟ ନାମ (APN)</translation>
 <translation id="7131634559772719176">ପ୍ରିସେଟକୁ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="7134436342991564651">{0,plural, =1{ନାମ ସର୍ଭର୍}other{ନାମ ସର୍ଭର୍}}</translation>
+<translation id="7135814714616751706">ସର୍ଟକଟ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="7143207342074048698">ସଂଯୋଗ କରୁଛି</translation>
 <translation id="7144878232160441200">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="714876143603641390">LAN ସଂଯୋଗ</translation>
@@ -768,6 +769,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchରେ ଫଳାଫଳ ଦେଖିବାକୁ Search ସହିତ Space ଦବାନ୍ତୁ।</translation>
 <translation id="7343649194310845056">ନେଟୱାର୍କ ଡିଭାଇସଗୁଡ଼ିକ</translation>
+<translation id="7353413232959255829"><ph name="LIST_SIZE" />ଟିରୁ <ph name="LIST_POSITION" /> ନମ୍ବର ସର୍ଚ୍ଚ ଫଳାଫଳ: <ph name="SEARCH_RESULT_TEXT" />। ସର୍ଟକଟକୁ ନାଭିଗେଟ କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ।</translation>
 <translation id="7359657277149375382">ଫାଇଲର ପ୍ରକାର</translation>
 <translation id="73631062356239394">ଡାଏଗ୍ନୋଷ୍ଟିକ ଡାଟା ସେୟାର କରନ୍ତୁ</translation>
 <translation id="7375053625150546623">EAP</translation>

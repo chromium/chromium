@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1351937230027495976">Свернуть меню</translation>
 <translation id="1360220746312242196">Перейти к предыдущему результату поиска по странице</translation>
+<translation id="1360788414852622716">Отключение профиля… Это может занять несколько минут.</translation>
 <translation id="1364382257761975320">Чтобы разблокировать Chromebook, используйте отпечаток пальца.</translation>
 <translation id="1365866993922957110">Получать автоматические обновления</translation>
 <translation id="1372545819342940910">Сохранить рабочий стол</translation>
@@ -183,6 +184,7 @@
 <translation id="1774796056689732716">Календарь, <ph name="CURRENT_MONTH_YEAR" />, сейчас выбрано <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Отключено</translation>
 <translation id="181103072419391116">Уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
+<translation id="1815245884418711390">Включить или отключить точку доступа. Точка доступа отключена.</translation>
 <translation id="1816896987747843206">Доступ к камере получат все приложения и сайты с разрешением "Камера".</translation>
 <translation id="1823280932251546115">Строка состояния, время <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -241,6 +243,7 @@
 <translation id="2023558322300866873">Операцию можно прервать в любой момент.</translation>
 <translation id="2034971124472263449">Все равно сохранить</translation>
 <translation id="2049240716062114887">Название рабочего стола изменилось на "<ph name="DESK_NAME" />"</translation>
+<translation id="206377500836174974">Полное</translation>
 <translation id="2064048859448024834">Предварительный просмотр для камеры включен</translation>
 <translation id="2067602449040652523">Яркость клавиатуры</translation>
 <translation id="2075520525463668108">Включить или отключить функцию "<ph name="CAPTURE_MEDIUM" />". Функция "<ph name="CAPTURE_MEDIUM" />" <ph name="CAPTURE_STATE" />.</translation>
@@ -293,6 +296,7 @@
 <translation id="2339073806695260576">Нажмите кнопку стилуса на панели запуска, чтобы создать заметку, сделать скриншот или использовать стилус в качестве лупы или лазерной указки.</translation>
 <translation id="2341729377289034582">Заблокировано в вертикальном положении</translation>
 <translation id="2345226652884463045">Чтобы выбрать текст для редактирования, нажмите Ввод или Поиск + Пробел.</translation>
+<translation id="2349785431103945039">Показать сведения о точке доступа. Чтобы использовать устройство как точку доступа, подключитесь к мобильной сети.</translation>
 <translation id="2350794187831162545">Речь на этом языке (<ph name="LANGUAGE" />) теперь обрабатывается на устройстве и может быть доступна офлайн. Изменить язык голосового ввода можно в разделе "Настройки &gt; Специальные возможности".</translation>
 <translation id="2352467521400612932">Настройки стилуса</translation>
 <translation id="2354174487190027830">Активация <ph name="NAME" /></translation>
@@ -336,6 +340,7 @@
 <translation id="2531025035050312891">устройство работает медленно</translation>
 <translation id="2542089167727451762">Нажмите на фото профиля</translation>
 <translation id="254900897760075745">Скопировать данные в буфер обмена</translation>
+<translation id="2549711466868162843">Улучшить освещенность</translation>
 <translation id="2549985041256363841">Начать запись</translation>
 <translation id="255671100581129685">Google Ассистент не работает в режиме открытого доступа.</translation>
 <translation id="256712445991462162">Закрепленная лупа</translation>
@@ -429,6 +434,7 @@
 <translation id="3009178788565917040">Выход</translation>
 <translation id="3009958530611748826">Выберите папку для сохранения</translation>
 <translation id="301282384882049174">Доступ предоставлен администратором.</translation>
+<translation id="301584155502740476">Показать сведения о точке доступа. Точка доступа отключена.</translation>
 <translation id="3018135054368884502">Перемотать вперед</translation>
 <translation id="3033545621352269033">Включено</translation>
 <translation id="3033912566804961911">Объединить с рабочим столом <ph name="DESK_NAME" /></translation>
@@ -489,6 +495,7 @@
 <translation id="3291862315280588024">Перейти к началу предыдущего слова</translation>
 <translation id="3294437725009624529">Гость</translation>
 <translation id="3298690094479023523">Опять введен неверный PIN-код или пароль. Повторите попытку.</translation>
+<translation id="3300193645498960160">Если вы будете говорить при выключенном микрофоне, появится уведомление. Аудио с устройства никуда не передается.</translation>
 <translation id="3307642347673023554">Вы перешли в режим ноутбука.</translation>
 <translation id="3308453408813785101">Пользователь <ph name="USER_EMAIL_ADDRESS" /> сможет войти в аккаунт позже.</translation>
 <translation id="3321628682574733415">Неверный родительский код доступа</translation>
@@ -539,6 +546,7 @@
 <translation id="3510164367642747937">Выделять указатель мыши</translation>
 <translation id="3513798432020909783">Администратор аккаунта: <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Перезагрузите устройство в течение 1 минуты}one{Перезагрузите устройство в течение # минуты}few{Перезагрузите устройство в течение # минут}many{Перезагрузите устройство в течение # минут}other{Перезагрузите устройство в течение # минуты}}</translation>
+<translation id="3522979239100719575">Поиск доступных профилей… Это может занять несколько минут.</translation>
 <translation id="3526440770046466733">Открыть ссылку в новой вкладке, но не переходить на нее</translation>
 <translation id="353086728817903341">Подключенных устройств: <ph name="NUM_DEVICES" /></translation>
 <translation id="3533126039236445965">Приложения на панели запуска</translation>
@@ -572,6 +580,7 @@
 <translation id="3621202678540785336">Вход</translation>
 <translation id="3621712662352432595">Настройки звука</translation>
 <translation id="3626281679859535460">Яркость</translation>
+<translation id="3629640897379005903">Показать сведения о точке доступа. Точка доступа отключается.</translation>
 <translation id="3630697955794050612">выключена</translation>
 <translation id="3631369015426612114">Разрешить уведомления из следующих источников</translation>
 <translation id="3633097874324966332">Чтобы подключить устройство, откройте настройки Bluetooth.</translation>
@@ -703,6 +712,7 @@
 <translation id="423685346499232137">В настоящий момент нельзя копировать или вставлять содержимое.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Режим обзора</translation>
+<translation id="4240756737570479726">Отключение…</translation>
 <translation id="4242533952199664413">Открыть настройки</translation>
 <translation id="4247123849143712100">Обновить и завершить работу</translation>
 <translation id="4250229828105606438">Скриншот</translation>
@@ -841,6 +851,7 @@
 <translation id="4864369630010738180">Вход в систему...</translation>
 <translation id="4864648187878336334">Рабочий стол 15</translation>
 <translation id="4868492592575313542">включила</translation>
+<translation id="4871905435473761992">Показать сведения о точке доступа. В вашей мобильной сети использовать телефон в качестве точки доступа нельзя.</translation>
 <translation id="4872237917498892622">Alt + Search или Shift</translation>
 <translation id="4872852897273142380">Переключиться на панель закладок или выделить ее (если видна)</translation>
 <translation id="4881695831933465202">Открыть</translation>
@@ -900,6 +911,7 @@
 <translation id="5104236669533825617">Не удалось создать скринкаст</translation>
 <translation id="5107522548814527560">Интернет</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">Размытие фона</translation>
 <translation id="5117590920725113268">Показать следующий месяц</translation>
 <translation id="5121628974188116412">Перейти к нижней части экрана</translation>
 <translation id="5136175204352732067">Подключена другая клавиатура</translation>
@@ -912,6 +924,7 @@
 <translation id="5168181903108465623">Доступны устройства для трансляции</translation>
 <translation id="5170568018924773124">Показать в папке</translation>
 <translation id="5176318573511391780">Запись видео с части экрана</translation>
+<translation id="5187627942836026988">Показать сведения о точке доступа. Точка доступа заблокирована администратором.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, мероприятий: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718">Для создания папки были объединены приложения "<ph name="MOVED_APP_NAME" />" и "<ph name="IN_PLACE_APP" />".</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1084,6 +1097,7 @@
 <translation id="595202126637698455">Включено отслеживание эффективности</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Контролируемый профиль</translation>
+<translation id="5961960957587052807">Слабое</translation>
 <translation id="5965524703725988602">Включить или отключить тёмную тему. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Нажмите Ввод, чтобы записать контент в окне</translation>
 <translation id="5978382165065462689">Доступ к экрану с помощью удаленного помощника</translation>
@@ -1256,6 +1270,7 @@
 <translation id="6752912906630585008">Рабочий стол "<ph name="REMOVED_DESK" />" удален и объединен с рабочим столом "<ph name="RECEIVE_DESK" />".</translation>
 <translation id="6753390234084146956">вкладки</translation>
 <translation id="6757237461819837179">Контент не воспроизводится</translation>
+<translation id="6759628406555734414">Показать сведения о точке доступа. Точка доступа включается.</translation>
 <translation id="6768043681523654438">хранилище</translation>
 <translation id="6777216307882431711">Питание подключенных устройств USB-C</translation>
 <translation id="6781002679438061620">Рабочий стол 9</translation>
@@ -1280,6 +1295,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> сек.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Осталась 1 цифра}one{Осталась # цифра}few{Осталось # цифры}many{Осталось # цифр}other{Осталось # цифры}}</translation>
 <translation id="6867938213751067702">Скачивание файла <ph name="FILENAME" /> приостановлено</translation>
+<translation id="6874854809828346832">Показать сведения о точке доступа. Точка доступа включена.</translation>
 <translation id="6878400149835617132">Быстрые клавиши отключены</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 приложение}one{# приложение}few{# приложения}many{# приложений}other{# приложения}}</translation>
 <translation id="6884665277231944629">Вернуться к сегодняшней дате</translation>
@@ -1289,6 +1305,7 @@
 <translation id="6896758677409633944">Копировать</translation>
 <translation id="6901883536534621389">Используйте жесты для навигации</translation>
 <translation id="6919251195245069855">Не удалось распознать смарт-карту. Повторите попытку.</translation>
+<translation id="6920245099716267363">Включить или отключить точку доступа. Точка доступа работает. К ней подключено одно устройство.</translation>
 <translation id="6931576957638141829">Сохранить в</translation>
 <translation id="6941333068993625698">Отправить отзыв</translation>
 <translation id="6942518653766415536">Меню форматов записи</translation>
@@ -1378,6 +1395,7 @@
 <translation id="7378203170292176219">Выделите область для записи с помощью перетаскивания</translation>
 <translation id="7378594059915113390">Элементы управления медиафайлами</translation>
 <translation id="7378889811480108604">Режим энергосбережения отключен</translation>
+<translation id="7382640522316003298">Включить или отключить точку доступа. Точка доступа работает. К ней подключено несколько устройств (<ph name="DEVICECOUNT" />).</translation>
 <translation id="7382680553121047388">Включено</translation>
 <translation id="7384028040782072252">Чтобы упорядочить приложения, нажмите правой кнопкой мыши в любом месте</translation>
 <translation id="7386767620098596324">Включить или отключить сетевое подключение. <ph name="STATE_TEXT" />.</translation>
@@ -1428,6 +1446,7 @@
 <translation id="7579778809502851308">Запись экрана</translation>
 <translation id="7593891976182323525">Search или Shift</translation>
 <translation id="7600875258240007829">Показать все уведомления</translation>
+<translation id="7601417191446344542">Включить напоминания о том, что микрофон выключен?</translation>
 <translation id="7607002721634913082">Приостановлен</translation>
 <translation id="7609951632080598826">Календарь: <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="7611213136657090146">Камера переподключена.</translation>
@@ -1540,6 +1559,7 @@
 <translation id="8083540854303889870">Сохранено</translation>
 <translation id="8091153018031979607">Начало: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Автоматическое обновление</translation>
+<translation id="8092380135549145188">Элементы управления прокруткой</translation>
 <translation id="8098591350844501178">Остановить трансляцию содержимого экрана на устройство "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="810637681351706236">Открепить приложение с панели запуска</translation>
 <translation id="8113423164597455979">Вкл. для всех</translation>
@@ -1551,6 +1571,7 @@
 <translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8131994907636310308">Закрыть всплывающее окно сортировки</translation>
 <translation id="8132793192354020517">Подключено к сети <ph name="NAME" /></translation>
+<translation id="8135163608236671037">Включить или отключить точку доступа. Точка доступа работает. К ней не подключено ни одно устройство.</translation>
 <translation id="8138705869659070104">Сначала настройте устройство</translation>
 <translation id="813913629614996137">Инициализация...</translation>
 <translation id="8142441511840089262">Двойное нажатие кнопкой мыши</translation>
@@ -1731,6 +1752,7 @@
 <translation id="8990809378771970590">Используется <ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">Режим инверсии цветов включен. Чтобы отключить его, снова нажмите Ctrl + Поиск + H.</translation>
 <translation id="899350903320462459">Чтобы выполнить действие, предложенное в уведомлении, разблокируйте устройство с помощью аккаунта <ph name="LOGIN_ID" />.</translation>
+<translation id="8993733019280019776">Микрофон отключен. Выберите микрофон, чтобы включить его.</translation>
 <translation id="9000771174482730261">ОЧИСТИТЬ ХРАНИЛИЩЕ</translation>
 <translation id="9005984960510803406">Открыть окно Crosh</translation>
 <translation id="9017320285115481645">Введите родительский код доступа Family Link.</translation>

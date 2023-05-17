@@ -738,6 +738,7 @@
 <translation id="7130438335435247835">ઍક્સેસ પૉઇન્ટનું નામ (APN)</translation>
 <translation id="7131634559772719176">પ્રીસેટને કન્ફર્મ કરો</translation>
 <translation id="7134436342991564651">{0,plural, =1{સર્વરનું નામ}one{સર્વરનું નામ}other{સર્વરનું નામ}}</translation>
+<translation id="7135814714616751706">શૉર્ટકટ શોધો</translation>
 <translation id="7143207342074048698">કનેક્ટિંગ</translation>
 <translation id="7144878232160441200">ફરી પ્રયત્ન કરો</translation>
 <translation id="714876143603641390">LAN કનેક્ટિવિટી</translation>
@@ -768,6 +769,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchમાં પરિણામ જોવા માટે, Search અને Space કી દબાવો.</translation>
 <translation id="7343649194310845056">નેટવર્ક ડિવાઇસ</translation>
+<translation id="7353413232959255829">શોધ પરિણામ <ph name="LIST_SIZE" />માંથી <ph name="LIST_POSITION" />: <ph name="SEARCH_RESULT_TEXT" />. શૉર્ટકટ પર નૅવિગેટ કરવા માટે Enter દબાવો.</translation>
 <translation id="7359657277149375382">ફાઇલ પ્રકાર</translation>
 <translation id="73631062356239394">ડાયગ્નોસ્ટિક ડેટા શેર કરો</translation>
 <translation id="7375053625150546623">EAP</translation>

@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> izmantoja pārlūku Chromium un neizdzēsa grāmatzīmes, paroles un citus iestatījumus šajā ierīcē.</translation>
 <translation id="372658070733623520">Lai izmantotu un saglabātu Chromium datus savā Google kontā, apstipriniet savu identitāti.</translation>
 <translation id="3805899903892079518">Chromium nevar piekļūt jūsu fotoattēliem un videoklipiem. Iespējojiet piekļuvi: iOS Settings &gt; Privacy &gt; Photos.</translation>
+<translation id="3955621079070267756">Atveriet Chromium jebkurā lietotnē</translation>
 <translation id="4043291146360695975">Paroles tiek saglabātas tikai šīs ierīces paroļu pārvaldniekā</translation>
 <translation id="4099085513035183040">Netiek atbalstīta pārlūkā Chromium Beta.</translation>
 <translation id="4432744876818348753">Pierakstieties, lai pilnvērtīgi izmantotu pārlūku Chromium.</translation>
@@ -143,5 +144,6 @@ Svarīga informācija
 <translation id="9089354809943900324">Chromium versija ir novecojusi.</translation>
 <translation id="9110075932708282655">Chromium izmantošana pēc noklusējuma</translation>
 <translation id="921174536258924340">Pārlūkprogrammā Chromium nevarēja pārbaudīt visas paroles. Mēģiniet vēlreiz rīt vai <ph name="BEGIN_LINK" />pārbaudiet paroles savā Google kontā<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">Varat automātiski izmantot pārlūku Chromium, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
 <translation id="985602178874221306">Chromium autori</translation>
 </translationbundle>

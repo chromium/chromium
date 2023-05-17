@@ -738,6 +738,7 @@
 <translation id="7130438335435247835">接入点名称 (APN)</translation>
 <translation id="7131634559772719176">确认预设</translation>
 <translation id="7134436342991564651">{0,plural, =1{域名服务器}other{域名服务器}}</translation>
+<translation id="7135814714616751706">搜索快捷键</translation>
 <translation id="7143207342074048698">正在连接</translation>
 <translation id="7144878232160441200">重试</translation>
 <translation id="714876143603641390">LAN 连接性</translation>
@@ -768,6 +769,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />；<ph name="RESULT_TEXT" />；按搜索键 + 空格键即可查看“Google 搜索”中的结果。</translation>
 <translation id="7343649194310845056">网络设备</translation>
+<translation id="7353413232959255829">共 <ph name="LIST_SIZE" /> 条搜索结果，所选结果是第 <ph name="LIST_POSITION" /> 条，内容为：<ph name="SEARCH_RESULT_TEXT" />。按 Enter 键即可进入快捷键。</translation>
 <translation id="7359657277149375382">文件类型</translation>
 <translation id="73631062356239394">分享诊断数据</translation>
 <translation id="7375053625150546623">EAP</translation>

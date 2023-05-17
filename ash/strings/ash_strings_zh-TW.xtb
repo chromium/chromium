@@ -184,6 +184,7 @@
 <translation id="1774796056689732716">日曆，<ph name="CURRENT_MONTH_YEAR" />，目前已選取 <ph name="DATE" />。</translation>
 <translation id="1787955149152357925">關閉</translation>
 <translation id="181103072419391116">訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>
+<translation id="1815245884418711390">切換無線基地台。無線基地台已關閉。</translation>
 <translation id="1816896987747843206">這將允許具有攝影機權限的所有應用程式和網站存取攝影機</translation>
 <translation id="1823280932251546115">狀態匣，時間 <ph name="TIME" />，
         <ph name="BATTERY" />
@@ -242,6 +243,7 @@
 <translation id="2023558322300866873">你隨時可以停止封包擷取作業</translation>
 <translation id="2034971124472263449">繼續儲存</translation>
 <translation id="2049240716062114887">已將桌面名稱變更為「<ph name="DESK_NAME" />」</translation>
+<translation id="206377500836174974">100%</translation>
 <translation id="2064048859448024834">已開啟攝影機預覽畫面</translation>
 <translation id="2067602449040652523">鍵盤亮度</translation>
 <translation id="2075520525463668108">切換<ph name="CAPTURE_MEDIUM" />。<ph name="CAPTURE_MEDIUM" /><ph name="CAPTURE_STATE" /></translation>
@@ -294,6 +296,7 @@
 <translation id="2339073806695260576">輕觸檔案櫃的觸控筆圖示即可做筆記、擷取螢幕畫面，以及使用雷射筆或放大鏡。</translation>
 <translation id="2341729377289034582">已鎖定為垂直畫面</translation>
 <translation id="2345226652884463045">按下 Enter 鍵或搜尋 + 空格鍵即可選取要編輯的文字。</translation>
+<translation id="2349785431103945039">顯示無線基地台詳細資料。連線至行動網路即可使用無線基地台。</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" />語音處理程序已在本機執行，相關內容會離線運作。你可以前往 [設定] &gt; [無障礙中心] 變更語音輸入語言。</translation>
 <translation id="2352467521400612932">觸控筆設定</translation>
 <translation id="2354174487190027830">正在啟用 <ph name="NAME" /></translation>
@@ -337,6 +340,7 @@
 <translation id="2531025035050312891">裝置運作緩慢</translation>
 <translation id="2542089167727451762">輕觸你的個人資料圖片</translation>
 <translation id="254900897760075745">將所選內容複製到剪貼簿</translation>
+<translation id="2549711466868162843">提高亮度</translation>
 <translation id="2549985041256363841">開始錄影</translation>
 <translation id="255671100581129685">Google 助理不適用於公開工作階段。</translation>
 <translation id="256712445991462162">停駐放大鏡</translation>
@@ -430,6 +434,7 @@
 <translation id="3009178788565917040">輸出</translation>
 <translation id="3009958530611748826">選取要儲存掃描檔的資料夾</translation>
 <translation id="301282384882049174">由系統管理員分享</translation>
+<translation id="301584155502740476">顯示無線基地台詳細資料。無線基地台已關閉。</translation>
 <translation id="3018135054368884502">快轉播放媒體</translation>
 <translation id="3033545621352269033">開啟</translation>
 <translation id="3033912566804961911">與「<ph name="DESK_NAME" />」合併</translation>
@@ -490,6 +495,7 @@
 <translation id="3291862315280588024">移至前一個字詞的開頭</translation>
 <translation id="3294437725009624529">訪客</translation>
 <translation id="3298690094479023523">系統仍無法驗證 PIN 碼或密碼，請再試一次。</translation>
+<translation id="3300193645498960160">如果在靜音狀態下說話，系統會傳送通知給你。音訊資料只會儲存在裝置上。</translation>
 <translation id="3307642347673023554">已切換為筆記型電腦模式</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> 日後仍可登入。</translation>
 <translation id="3321628682574733415">家長存取碼不正確</translation>
@@ -573,6 +579,7 @@
 <translation id="3621202678540785336">輸入</translation>
 <translation id="3621712662352432595">音訊設定</translation>
 <translation id="3626281679859535460">亮度</translation>
+<translation id="3629640897379005903">顯示無線基地台詳細資料。正在停用無線基地台。</translation>
 <translation id="3630697955794050612">關閉</translation>
 <translation id="3631369015426612114">允許接收下列來源發出的通知</translation>
 <translation id="3633097874324966332">請開啟藍牙設定以配對裝置</translation>
@@ -702,6 +709,7 @@
 <translation id="423685346499232137">目前無法複製或貼上內容</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">總覽模式</translation>
+<translation id="4240756737570479726">停用中...</translation>
 <translation id="4242533952199664413">開啟設定</translation>
 <translation id="4247123849143712100">更新並關機</translation>
 <translation id="4250229828105606438">螢幕截圖</translation>
@@ -840,6 +848,7 @@
 <translation id="4864369630010738180">登入中...</translation>
 <translation id="4864648187878336334">桌面 15</translation>
 <translation id="4868492592575313542">已啟用</translation>
+<translation id="4871905435473761992">顯示無線基地台詳細資料。你的行動網路不支援無線基地台。</translation>
 <translation id="4872237917498892622">Alt + 搜尋鍵或 Shift 鍵</translation>
 <translation id="4872852897273142380">將焦點移至書籤列或醒目顯示書籤列 (假設不是隱藏狀態)</translation>
 <translation id="4881695831933465202">開啟</translation>
@@ -899,6 +908,7 @@
 <translation id="5104236669533825617">無法建立螢幕側錄工作階段</translation>
 <translation id="5107522548814527560">網頁</translation>
 <translation id="5111318697104479778"><ph name="DESC" />，<ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">背景模糊</translation>
 <translation id="5117590920725113268">顯示下一個月</translation>
 <translation id="5121628974188116412">前往頁面底部</translation>
 <translation id="5136175204352732067">已連接其他鍵盤</translation>
@@ -911,6 +921,7 @@
 <translation id="5168181903108465623">可用的投放裝置</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5176318573511391780">錄製部分螢幕畫面</translation>
+<translation id="5187627942836026988">顯示無線基地台詳細資料。系統管理員已封鎖無線基地台。</translation>
 <translation id="5198413532174090167"><ph name="DATE" />，<ph name="NUMBER" /> 個活動</translation>
 <translation id="5198715732953550718">已將「<ph name="MOVED_APP_NAME" />」與「<ph name="IN_PLACE_APP" />」合併，並建立新資料夾。</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />，<ph name="NOTIFICATION_TITLE" />：<ph name="MESSAGE" />，<ph name="PHONE_NAME" /></translation>
@@ -1083,6 +1094,7 @@
 <translation id="595202126637698455">效能追蹤已啟用</translation>
 <translation id="5955304353782037793">應用程式</translation>
 <translation id="5958529069007801266">受監管的使用者</translation>
+<translation id="5961960957587052807">亮度</translation>
 <translation id="5965524703725988602">切換深色主題。<ph name="STATE_TEXT" />。</translation>
 <translation id="5976112937189445008">按下 Enter 鍵以錄製視窗畫面</translation>
 <translation id="5978382165065462689">透過遠端協助分享螢幕控制功能。</translation>
@@ -1254,6 +1266,7 @@
 <translation id="6752912906630585008">已移除桌面 <ph name="REMOVED_DESK" />，並與桌面 <ph name="RECEIVE_DESK" /> 合併</translation>
 <translation id="6753390234084146956">分頁</translation>
 <translation id="6757237461819837179">目前未播放任何媒體</translation>
+<translation id="6759628406555734414">顯示無線基地台詳細資料。正在啟用無線基地台。</translation>
 <translation id="6768043681523654438">儲存空間</translation>
 <translation id="6777216307882431711">為連接的 USB-C 裝置供電</translation>
 <translation id="6781002679438061620">桌面 9</translation>
@@ -1278,6 +1291,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{剩餘一個位數}other{剩餘 # 個位數}}</translation>
 <translation id="6867938213751067702">已暫停下載 <ph name="FILENAME" /></translation>
+<translation id="6874854809828346832">顯示無線基地台詳細資料。無線基地台已開啟。</translation>
 <translation id="6878400149835617132">已關閉快速鍵功能</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 個應用程式}other{# 個應用程式}}</translation>
 <translation id="6884665277231944629">返回今天</translation>
@@ -1287,6 +1301,7 @@
 <translation id="6896758677409633944">複製</translation>
 <translation id="6901883536534621389">試試手勢瀏覽功能</translation>
 <translation id="6919251195245069855">無法辨識你的智慧型卡片，請再試一次。</translation>
+<translation id="6920245099716267363">切換無線基地台。無線基地台已開啟，有 1 部裝置已連線。</translation>
 <translation id="6931576957638141829">儲存至</translation>
 <translation id="6941333068993625698">提供意見</translation>
 <translation id="6942518653766415536">錄製內容格式選單</translation>
@@ -1376,6 +1391,7 @@
 <translation id="7378203170292176219">拖曳選取要錄影的區域</translation>
 <translation id="7378594059915113390">媒體控制項</translation>
 <translation id="7378889811480108604">省電模式已關閉</translation>
+<translation id="7382640522316003298">切換無線基地台。無線基地台已開啟，有 <ph name="DEVICECOUNT" /> 部裝置已連線。</translation>
 <translation id="7382680553121047388">開啟</translation>
 <translation id="7384028040782072252">在任一處按一下滑鼠右鍵，即可將應用程式重新排序</translation>
 <translation id="7386767620098596324">切換網路連線。<ph name="STATE_TEXT" />。</translation>
@@ -1426,6 +1442,7 @@
 <translation id="7579778809502851308">擷取螢幕畫面</translation>
 <translation id="7593891976182323525">搜尋鍵或 Shift 鍵</translation>
 <translation id="7600875258240007829">查看所有通知</translation>
+<translation id="7601417191446344542">要開啟靜音狀態的自動提醒嗎？</translation>
 <translation id="7607002721634913082">已暫停</translation>
 <translation id="7609951632080598826">日曆檢視畫面，<ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="7611213136657090146">已重新連接攝影機。</translation>
@@ -1550,6 +1567,7 @@
 <translation id="8131740175452115882">確認</translation>
 <translation id="8131994907636310308">關閉排序浮動式訊息</translation>
 <translation id="8132793192354020517">已連線至 <ph name="NAME" /></translation>
+<translation id="8135163608236671037">切換無線基地台。無線基地台已開啟，目前沒有任何裝置連線。</translation>
 <translation id="8138705869659070104">在裝置完成設定後啟用</translation>
 <translation id="813913629614996137">正在初始化...</translation>
 <translation id="8142441511840089262">按兩下</translation>
@@ -1729,6 +1747,7 @@
 <translation id="8990809378771970590">目前使用<ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">色彩反轉模式已啟用，再次按下 Ctrl 鍵 + 搜尋鍵 + H 鍵即可停用。</translation>
 <translation id="899350903320462459">以 <ph name="LOGIN_ID" /> 帳戶解鎖裝置，即可執行通知動作</translation>
+<translation id="8993733019280019776">你在說話嗎？你的麥克風已關閉，只要選取麥克風即可開啟。</translation>
 <translation id="9000771174482730261">管理儲存空間</translation>
 <translation id="9005984960510803406">開啟 Crosh 視窗</translation>
 <translation id="9017320285115481645">請輸入 Family Link 家長存取碼。</translation>

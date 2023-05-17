@@ -431,6 +431,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-batteri</translation>
 <translation id="4561801978359312462">SIM-kortet är upplåst</translation>
 <translation id="4562494484721939086">Ingen täckning</translation>
+<translation id="4573777384450697571">Misslyckades – certifikatet har upphört att gälla</translation>
 <translation id="458794348635939462">DNS-matchningen av alla värdar misslyckades</translation>
 <translation id="4593212453765072419">Proxyautentisering krävs</translation>
 <translation id="4609350030397390689">Tangenten som minskar ljusstyrkan på tangentbordet</translation>
@@ -747,6 +748,7 @@
 <translation id="7130438335435247835">Åtkomstpunktens namn (APN)</translation>
 <translation id="7131634559772719176">Bekräfta förinställning</translation>
 <translation id="7134436342991564651">{0,plural, =1{Namnserver}other{Namnservrar}}</translation>
+<translation id="7135814714616751706">Sök efter kortkommando</translation>
 <translation id="7143207342074048698">Ansluter</translation>
 <translation id="7144878232160441200">Försök igen</translation>
 <translation id="714876143603641390">LAN-anslutningar</translation>
@@ -777,6 +779,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />: <ph name="RESULT_TEXT" />. Om du trycker på Sök och blanksteg visas resultatet på Google Sök.</translation>
 <translation id="7343649194310845056">Nätverksenheter</translation>
+<translation id="7353413232959255829">Sökresultat <ph name="LIST_POSITION" /> av <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Tryck på Retur för att navigera till kortkommandot.</translation>
 <translation id="7359657277149375382">Filtyp</translation>
 <translation id="73631062356239394">Dela diagnostikdata</translation>
 <translation id="7375053625150546623">EAP</translation>

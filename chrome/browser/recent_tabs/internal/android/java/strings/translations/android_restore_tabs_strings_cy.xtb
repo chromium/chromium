@@ -11,5 +11,6 @@
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Agor <ph name="TABS_COUNT_ONE" /> tab}zero{Agor <ph name="TABS_COUNT_MANY" /> tab}two{Agor <ph name="TABS_COUNT_MANY" /> dab}few{Agor <ph name="TABS_COUNT_MANY" /> thab}many{Agor <ph name="TABS_COUNT_MANY" /> thab}other{Agor <ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="4811934403802581334">Bydd yr holl dabiau a ddewisir o'r ddyfais a ddewisir ar hyn o bryd yn cael eu hadfer.</translation>
 <translation id="5336031759968328813">Adolygu'r holl dabiau</translation>
+<translation id="8019269305087157499">Agor o</translation>
 <translation id="8725404154479306799">Cael tabiau y gwnaethoch eu gadael ar hen ddyfeisiau</translation>
 </translationbundle>

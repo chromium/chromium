@@ -426,6 +426,7 @@
 <translation id="455835558791489930">Батареянын кубатынын көлөмү – <ph name="CHARGE_VALUE" />мА/с.</translation>
 <translation id="4561801978359312462">SIM картанын кулпусу ачылды</translation>
 <translation id="4562494484721939086">Тейленбейт</translation>
+<translation id="4573777384450697571">Аткарылган жок — Тастыктаманын мөөнөтү бүттү</translation>
 <translation id="458794348635939462">Бардык башкы түйүндөр чечилген жок</translation>
 <translation id="4593212453765072419">Проксиде аныктыгын текшерүү талап кылынат</translation>
 <translation id="4609350030397390689">Баскычтоптун жарыктыгын азайтуу</translation>
@@ -738,6 +739,7 @@
 <translation id="7130438335435247835">Байланыш түйүнүнүн аталышы (APN)</translation>
 <translation id="7131634559772719176">Алдын ала коюлган параметрлерди ырастоо</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ысым сервери}other{Ысым серверлери}}</translation>
+<translation id="7135814714616751706">Ыкчам баскычтарды издөө</translation>
 <translation id="7143207342074048698">Туташууда</translation>
 <translation id="7144878232160441200">Дагы аракет кылып көрүү</translation>
 <translation id="714876143603641390">LAN байланышы</translation>
@@ -768,6 +770,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Издөөдөгү натыйжаларды көрүү үчүн Издөө жана Боштук баскычтарын басыңыз.</translation>
 <translation id="7343649194310845056">Тармак түзмөктөрү</translation>
+<translation id="7353413232959255829"><ph name="LIST_SIZE" /> ичинен <ph name="LIST_POSITION" /> издөө натыйжасы көрсөтүлүүдө:<ph name="SEARCH_RESULT_TEXT" />. Ыкчам баскычка өтүү үчүн "Enter" баскычын басыңыз.</translation>
 <translation id="7359657277149375382">Файлдын түрү</translation>
 <translation id="73631062356239394">Мүчүлүштүктөрдү аныктоо маалыматын бөлүшүү</translation>
 <translation id="7375053625150546623">EAP</translation>

@@ -217,6 +217,7 @@
 <translation id="2638662041295312666">Изображение на странице входа</translation>
 <translation id="2640549051766135490">Выбран альбом "<ph name="TITLE" />" с описанием "<ph name="DESC" />"</translation>
 <translation id="267442004702508783">обновить</translation>
+<translation id="268270014981824665">клавиатура затемнить</translation>
 <translation id="2712812801627182647">Ключ аутентификации TLS</translation>
 <translation id="2713444072780614174">Белый</translation>
 <translation id="2717139507051041123">Включить режим темных цветов</translation>
@@ -224,6 +225,7 @@
 <translation id="2744221223678373668">Общедоступные</translation>
 <translation id="2751739896257479635">2-й этап аутентификации EAP</translation>
 <translation id="2783010256799387990">ПРОЙДЕНО</translation>
+<translation id="2787435249130282949">увеличить яркость клавиатуры</translation>
 <translation id="2789486458103222910">ОК</translation>
 <translation id="2805756323405976993">Сервисы</translation>
 <translation id="28232023175184696">Ошибка подключения к Интернету. Нажмите, чтобы повторить попытку.</translation>
@@ -327,11 +329,13 @@
 <translation id="3749289110408117711">Название файла</translation>
 <translation id="3771294271822695279">Видеофайлы</translation>
 <translation id="3784455785234192852">Заблокировать</translation>
+<translation id="380097101658023925">настройки RGB</translation>
 <translation id="38114475217616659">Очистить всю историю</translation>
 <translation id="3820172043799983114">Неверный PIN-код.</translation>
 <translation id="3824259034819781947">Прикрепить файлы</translation>
 <translation id="3838338534323494292">Новый пароль</translation>
 <translation id="3845880861638660475">Чтобы закрыть диалоговое окно, нажмите <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
+<translation id="3848280697030027394">клавиатура уменьшение яркости</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858860766373142691">Название</translation>
 <translation id="3862598938296403232">Введите описание.</translation>
@@ -403,6 +407,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Отключить</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" />: перезапуск…</translation>
+<translation id="4395835743215824109">настроить клавиатуру</translation>
 <translation id="4415951057168511744">Текущий аватар</translation>
 <translation id="4422041425070339732">стрелка вниз</translation>
 <translation id="4425149324548788773">Мой диск</translation>
@@ -442,6 +447,7 @@
 <translation id="4731797938093519117">Родительский доступ</translation>
 <translation id="473775607612524610">Обновить</translation>
 <translation id="4744944742468440486">Информация на основе выделенного текста</translation>
+<translation id="4771607256327216405">клавиатура сделать ярче</translation>
 <translation id="4773299976671772492">Остановлено</translation>
 <translation id="4782311465517282004">Получайте определения слов, перевод или значение в других единицах измерения: достаточно нажать на текст правой кнопкой мыши или коснуться его и удерживать.</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> фото</translation>
@@ -490,6 +496,7 @@
 <translation id="500920857929044050">Прекратить проверку</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Показывает фото, время, погоду и новости, когда ваше устройство находится в режиме ожидания</translation>
+<translation id="5038292761217083259">цвета подсветки клавиатуры</translation>
 <translation id="5039804452771397117">Разрешить</translation>
 <translation id="5049856988445523908">SIM-карта заблокирована (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Название группы</translation>
@@ -638,6 +645,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Включить тёмную тему</translation>
 <translation id="6285899124799306373">открыть панель запуска</translation>
+<translation id="629550705077076970">затемнение подсветки клавиатуры</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: тестирование отменено.</translation>
 <translation id="631063167932043783">Приложение "Возможности"</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" />: обновление встроенного ПО</translation>
@@ -656,6 +664,7 @@
 <translation id="6401427872449207797">поиск в браузере</translation>
 <translation id="6410257289063177456">Файлы изображений</translation>
 <translation id="641081527798843608">Совпадение тем</translation>
+<translation id="6411934471898487866">яркость клавиатуры</translation>
 <translation id="6412715219990689313">Встроенная клавиатура</translation>
 <translation id="6417265370957905582">Google Ассистент</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -738,6 +747,7 @@
 <translation id="7130438335435247835">Точка доступа</translation>
 <translation id="7131634559772719176">Подтверждение набора настроек</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер доменных имен}one{Серверы доменных имен}few{Серверы доменных имен}many{Серверы доменных имен}other{Серверы доменных имен}}</translation>
+<translation id="7135814714616751706">Быстрые клавиши для поиска</translation>
 <translation id="7143207342074048698">Подключение</translation>
 <translation id="7144878232160441200">Повторить</translation>
 <translation id="714876143603641390">Подключение к локальной сети</translation>
@@ -768,6 +778,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Чтобы посмотреть результат в Google Поиске, нажмите "Поиск + Пробел".</translation>
 <translation id="7343649194310845056">Сетевые устройства</translation>
+<translation id="7353413232959255829">Результат поиска <ph name="LIST_POSITION" /> из <ph name="LIST_SIZE" />: "<ph name="SEARCH_RESULT_TEXT" />". Нажмите Ввод, чтобы перейти в найденный раздел.</translation>
 <translation id="7359657277149375382">Тип файла</translation>
 <translation id="73631062356239394">Поделиться данными диагностики</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -804,10 +815,12 @@
 <translation id="7656388927906093505">Это мышь.</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7665800271478495366">Изменить аватар</translation>
+<translation id="7683228889864052081">оттенок подсветки клавиатуры</translation>
 <translation id="7690294790491645610">Введите новый пароль ещё раз</translation>
 <translation id="7701040980221191251">Нет</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">подсветка клавиатуры</translation>
 <translation id="773153675489693198">Количество циклов</translation>
 <translation id="7747039790905080783">Общий ключ</translation>
 <translation id="7762130827864645708">Вы установили новый пароль. В дальнейшем используйте его.</translation>
@@ -851,6 +864,7 @@
 <translation id="8075838845814659848">Уровень заряда</translation>
 <translation id="8076492880354921740">Вкладки</translation>
 <translation id="8082366717211101304">Не удается выполнить DNS-преобразование в приложениях для Android.</translation>
+<translation id="8082644724189923105">зона клавиатуры</translation>
 <translation id="808894953321890993">Сменить пароль</translation>
 <translation id="8094062939584182041">Разрешить Google отправлять вам сообщения об этой проблеме по электронной почте</translation>
 <translation id="8104083085214006426">Вы используете открытую небезопасную сеть.</translation>
@@ -899,6 +913,7 @@
 <translation id="8456761643544401578">Автоматическая тёмная тема</translation>
 <translation id="8461329675984532579">Название провайдера</translation>
 <translation id="8475690821716466388">Безопасность сети Wi-Fi обеспечивается недостаточно надежным протоколом WEP PSK</translation>
+<translation id="8476242415522716722">подсветка клавиатуры</translation>
 <translation id="8477551185774834963">Задержка на сервере доменных имен незначительно превышает допустимое значение.</translation>
 <translation id="8483248364096924578">IP-адрес</translation>
 <translation id="8491311378305535241">Не удается подключиться к HTTPS-сайтам из приложений для Android через брандмауэр.</translation>
@@ -942,6 +957,7 @@
 <translation id="8845001906332463065">Справка</translation>
 <translation id="8855781559874488009">Не удается подключиться к HTTP-сайтам через брандмауэр.</translation>
 <translation id="885701979325669005">Хранилище</translation>
+<translation id="885704831271383379">уменьшить яркость клавиатуры</translation>
 <translation id="8863170912498892583">Использовать тёмную тему</translation>
 <translation id="8863888432376731307">Как <ph name="INTENT" /> "<ph name="QUERY" />" и не только</translation>
 <translation id="8864415976656252616">Нет рекомендованных материалов. Посмотрите самый популярный справочный контент.</translation>

@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> จัดการอุปกรณ์นี้และอาจตรวจสอบกิจกรรมของคุณได้</translation>
 <translation id="1478594628797167447">เครื่องสแกน</translation>
 <translation id="1483493594462132177">ส่ง</translation>
+<translation id="1488850966314959671">ไม่สามารถเชื่อมต่อกับเครือข่ายนี้โดยใช้ APN ที่กำหนดเองซึ่งเปิดใช้อยู่ โปรดติดต่อสอบถามข้อมูลเพิ่มเติมจากผู้ให้บริการเครือข่ายมือถือ</translation>
 <translation id="1491076385728777984">กำลังอัปเดตเฟิร์มแวร์ใน <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">เพิ่มระดับเสียง</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> จัดการผู้ใช้รายนี้อยู่และอาจจัดการการตั้งค่าและตรวจสอบกิจกรรมของผู้ใช้จากระยะไกล</translation>
@@ -561,6 +562,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">สแกนอีกครั้ง</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">ปิดใช้หรือนํา APN นี้ออกไม่ได้ ตรวจสอบว่า APN ที่แนบมาและเปิดใช้อยู่ถูกปิดใช้หรือนำออกแล้ว</translation>
 <translation id="5600027863942488546">ทดสอบปุ่ม <ph name="KEY_NAME" /> อยู่</translation>
 <translation id="5620281292257375798">ภายในเท่านั้น</translation>
 <translation id="5649768706273821470">ฟัง</translation>
@@ -747,6 +749,7 @@
 <translation id="7130438335435247835">จุดเข้าใช้งาน (APN)</translation>
 <translation id="7131634559772719176">ยืนยันค่าที่กำหนดล่วงหน้า</translation>
 <translation id="7134436342991564651">{0,plural, =1{เนมเซิร์ฟเวอร์}other{เนมเซิร์ฟเวอร์}}</translation>
+<translation id="7135814714616751706">ค้นหาทางลัด</translation>
 <translation id="7143207342074048698">กำลังเชื่อมต่อ</translation>
 <translation id="7144878232160441200">ลองอีกครั้ง</translation>
 <translation id="714876143603641390">การเชื่อมต่อ LAN</translation>
@@ -777,6 +780,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" /> <ph name="RESULT_TEXT" /> กดแป้นค้นหากับแป้นเว้นวรรคเพื่อดูผลการค้นหาใน Google Search</translation>
 <translation id="7343649194310845056">อุปกรณ์เครือข่าย</translation>
+<translation id="7353413232959255829">ผลการค้นหา <ph name="LIST_POSITION" /> จาก <ph name="LIST_SIZE" /> รายการ: <ph name="SEARCH_RESULT_TEXT" /> กด Enter เพื่อไปยังทางลัด</translation>
 <translation id="7359657277149375382">ประเภทไฟล์</translation>
 <translation id="73631062356239394">แชร์ข้อมูลการวินิจฉัย</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -1008,6 +1012,7 @@
 <translation id="9173638680043580060">เหลืออีกไม่ถึง 1 นาที</translation>
 <translation id="917720651393141712">ทดสอบ</translation>
 <translation id="9188992814426075118">แป้นพิมพ์สามารถจับคู่กับวอลเปเปอร์ได้โดยอัตโนมัติ</translation>
+<translation id="9189000703457422362">ไม่สามารถเชื่อมต่อกับเครือข่ายนี้โดยใช้ APN ที่ตรวจพบโดยอัตโนมัติ โปรดติดต่อสอบถามข้อมูลเพิ่มเติมจากผู้ให้บริการเครือข่ายมือถือ</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">ไม่สามารถติดต่อกับเกตเวย์จากแอป Android</translation>
 <translation id="9211490828691860325">เดสก์ทั้งหมด</translation>

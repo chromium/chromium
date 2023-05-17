@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Ez dago azkenaldiko bideorik</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="CONNECTION_STATUS" />). Administratzaileak kudeatua. Xehetasunak.</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementu mugitu dira.</translation>
+<translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> fitxategi hautatu dira</translation>
 <translation id="3685122418104378273">Datu-konexioa erabiltzean, Google Drive sinkronizazioa modu lehenetsian desaktibatuta dago.</translation>
 <translation id="3689865792480713551">Utzi <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, aktibatu gabe, <ph name="CONNECTION_STATUS" />, seinalearen indarra: ehuneko <ph name="SIGNAL_STRENGTH" />, xehetasunak</translation>
@@ -576,6 +577,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> irudia</translation>
 <translation id="5534520101572674276">Tamaina kalkulatzen</translation>
 <translation id="554153475311314364">Grezieraren transliterazioa</translation>
+<translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> karpeta hautatu dira</translation>
 <translation id="5580591966435005537">makina birtuala</translation>
 <translation id="5583640892426849032">Atzera tekla</translation>
 <translation id="5583664733673201137">Puntuazio-zabalera osoa da</translation>
@@ -598,6 +600,7 @@
 <translation id="5724172041621205163">Thailandiarra, Pattachote teklatuarekin</translation>
 <translation id="57383366388012121">Aurreko hilabetea</translation>
 <translation id="5756666464756035725">QWERTY teklatu hungariarra</translation>
+<translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> elementu hautatu dira</translation>
 <translation id="5763377084591234761">Alemana (Suitza)</translation>
 <translation id="5769519078756170258">Kanpoan utzi beharreko ostalaria edo domeinua</translation>
 <translation id="5775750595919327203">Urdua</translation>
@@ -916,6 +919,7 @@
 <translation id="8264024885325823677">Administratzaileak kudeatzen du ezarpen hau.</translation>
 <translation id="8269755669432358899">Tolestu fitxategien oharren panelak</translation>
 <translation id="8280151743281770066">Armeniar fonetikoa</translation>
+<translation id="8285791779547722821"><ph name="ORIGINAL_MIME_TYPE" /> enkriptatu da</translation>
 <translation id="8294431847097064396">Iturburua</translation>
 <translation id="8297012244086013755">3. hangul-karaktere sorta (balio bikoitzeko teklarik gabe)</translation>
 <translation id="8299269255470343364">Japoniarra</translation>

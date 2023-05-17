@@ -748,6 +748,7 @@
 <translation id="7130438335435247835">存取點名稱 (APN)</translation>
 <translation id="7131634559772719176">確認預設設定</translation>
 <translation id="7134436342991564651">{0,plural, =1{名稱伺服器}other{名稱伺服器}}</translation>
+<translation id="7135814714616751706">搜尋捷徑</translation>
 <translation id="7143207342074048698">連線中</translation>
 <translation id="7144878232160441200">重試</translation>
 <translation id="714876143603641390">LAN 連線狀態</translation>
@@ -778,6 +779,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />；<ph name="RESULT_TEXT" />；按下搜尋鍵加空白鍵即可在 Google 搜尋中查看結果。</translation>
 <translation id="7343649194310845056">網路裝置</translation>
+<translation id="7353413232959255829">第 <ph name="LIST_POSITION" /> 項搜尋結果，共 <ph name="LIST_SIZE" /> 項：<ph name="SEARCH_RESULT_TEXT" />。按下 Enter 鍵即可前往捷徑。</translation>
 <translation id="7359657277149375382">檔案類型</translation>
 <translation id="73631062356239394">分享診斷資料</translation>
 <translation id="7375053625150546623">EAP</translation>

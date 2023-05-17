@@ -184,6 +184,7 @@
 <translation id="1774796056689732716">ปฏิทิน, <ph name="CURRENT_MONTH_YEAR" />, เลือกวันที่ <ph name="DATE" /> อยู่</translation>
 <translation id="1787955149152357925">ปิด</translation>
 <translation id="181103072419391116">ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
+<translation id="1815245884418711390">เปิด/ปิดฮอตสปอต ฮอตสปอตปิดอยู่</translation>
 <translation id="1816896987747843206">การดำเนินการนี้ช่วยให้แอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องได้</translation>
 <translation id="1823280932251546115">ถาดสถานะ เวลา <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -242,6 +243,7 @@
 <translation id="2023558322300866873">คุณหยุดการบันทึกแพ็กเก็ตได้ทุกเมื่อ</translation>
 <translation id="2034971124472263449">บันทึกเลย</translation>
 <translation id="2049240716062114887">เปลี่ยนชื่อเดสก์ท็อปเป็น <ph name="DESK_NAME" /> แล้ว</translation>
+<translation id="206377500836174974">เต็ม</translation>
 <translation id="2064048859448024834">การแสดงตัวอย่างจากกล้องถ่ายรูปเปิดอยู่</translation>
 <translation id="2067602449040652523">ความสว่างของแป้นพิมพ์</translation>
 <translation id="2075520525463668108">เปิด/ปิด<ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_MEDIUM" /><ph name="CAPTURE_STATE" /></translation>
@@ -294,6 +296,7 @@
 <translation id="2339073806695260576">แตะปุ่มสไตลัสในชั้นวางเพื่อจดโน้ต บันทึกภาพหน้าจอ ใช้ตัวชี้เลเซอร์ หรือแว่นขยาย</translation>
 <translation id="2341729377289034582">ล็อกไว้ที่แนวตั้งแล้ว</translation>
 <translation id="2345226652884463045">กด Enter หรือค้นหา + Space เพื่อเลือกข้อความที่จะแก้ไข</translation>
+<translation id="2349785431103945039">แสดงรายละเอียดฮอตสปอต เชื่อมต่อเครือข่ายมือถือเพื่อใช้ฮอตสปอต</translation>
 <translation id="2350794187831162545">คำพูดภาษา<ph name="LANGUAGE" />ได้รับการประมวลผลในเครื่องและทำงานแบบออฟไลน์ได้แล้ว คุณเปลี่ยนภาษาการพิมพ์ตามคำบอกได้ในการตั้งค่า &gt; การช่วยเหลือพิเศษ</translation>
 <translation id="2352467521400612932">การตั้งค่าสไตลัส</translation>
 <translation id="2354174487190027830">กำลังเปิดใช้งาน <ph name="NAME" /></translation>
@@ -337,6 +340,7 @@
 <translation id="2531025035050312891">อุปกรณ์ทำงานช้า</translation>
 <translation id="2542089167727451762">แตะรูปโปรไฟล์</translation>
 <translation id="254900897760075745">คัดลอกเนื้อหาที่เลือกไปยังคลิปบอร์ด</translation>
+<translation id="2549711466868162843">ปรับแสง</translation>
 <translation id="2549985041256363841">เริ่มบันทึก</translation>
 <translation id="255671100581129685">Google Assistant ไม่พร้อมใช้งานในเซสชันสาธารณะ</translation>
 <translation id="256712445991462162">แว่นขยายหน้าจอบางส่วน</translation>
@@ -430,6 +434,7 @@
 <translation id="3009178788565917040">เอาต์พุต</translation>
 <translation id="3009958530611748826">เลือกโฟลเดอร์ที่จะใช้บันทึก</translation>
 <translation id="301282384882049174">แชร์โดยผู้ดูแลระบบ</translation>
+<translation id="301584155502740476">แสดงรายละเอียดฮอตสปอต ฮอตสปอตปิดอยู่</translation>
 <translation id="3018135054368884502">กรอสื่อไปข้างหน้า</translation>
 <translation id="3033545621352269033">เปิด</translation>
 <translation id="3033912566804961911">รวมกับ <ph name="DESK_NAME" /></translation>
@@ -490,6 +495,7 @@
 <translation id="3291862315280588024">ย้ายไปยังจุดเริ่มต้นของคำก่อนหน้า</translation>
 <translation id="3294437725009624529">ผู้มาเยือน</translation>
 <translation id="3298690094479023523">ยังคงยืนยัน PIN หรือรหัสผ่านของคุณไม่ได้ โปรดลองอีกครั้ง</translation>
+<translation id="3300193645498960160">คุณจะได้รับการแจ้งเตือนเมื่อพูดขณะที่ปิดเสียงอยู่ โดยจะไม่มีการส่งออกเสียงไปที่อื่น</translation>
 <translation id="3307642347673023554">เปลี่ยนเป็นโหมดแล็ปท็อปแล้ว</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ยังมีสิทธิ์ลงชื่อเข้าใช้ภายหลังได้</translation>
 <translation id="3321628682574733415">รหัสผู้ปกครองไม่ถูกต้อง</translation>
@@ -574,6 +580,7 @@
 <translation id="3621202678540785336">อินพุต</translation>
 <translation id="3621712662352432595">การตั้งค่าเสียง</translation>
 <translation id="3626281679859535460">ความสว่าง</translation>
+<translation id="3629640897379005903">แสดงรายละเอียดฮอตสปอต ฮอตสปอตปิดใช้อยู่</translation>
 <translation id="3630697955794050612">ปิดอยู่</translation>
 <translation id="3631369015426612114">อนุญาตให้มีการแจ้งเตือนจากรายการต่อไปนี้</translation>
 <translation id="3633097874324966332">เปิดการตั้งค่าบลูทูธเพื่อจับคู่อุปกรณ์</translation>
@@ -701,6 +708,7 @@
 <translation id="423685346499232137">คัดลอกหรือวางเนื้อหาไม่ได้ในขณะนี้</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">โหมดภาพรวม</translation>
+<translation id="4240756737570479726">กำลังปิดใช้...</translation>
 <translation id="4242533952199664413">เปิดการตั้งค่า</translation>
 <translation id="4247123849143712100">อัปเดตและปิด</translation>
 <translation id="4250229828105606438">ภาพหน้าจอ</translation>
@@ -839,6 +847,7 @@
 <translation id="4864369630010738180">กำลังลงชื่อเข้าใช้...</translation>
 <translation id="4864648187878336334">เดสก์ที่ 15</translation>
 <translation id="4868492592575313542">เปิดใช้งานอยู่</translation>
+<translation id="4871905435473761992">แสดงรายละเอียดฮอตสปอต เครือข่ายมือถือของคุณไม่รองรับฮอตสปอต</translation>
 <translation id="4872237917498892622">Alt+ค้นหา หรือ Shift</translation>
 <translation id="4872852897273142380">โฟกัสหรือไฮไลต์แถบบุ๊กมาร์ก (หากแสดงอยู่)</translation>
 <translation id="4881695831933465202">เปิด</translation>
@@ -898,6 +907,7 @@
 <translation id="5104236669533825617">สร้าง Screencast ไม่ได้</translation>
 <translation id="5107522548814527560">เว็บ</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">การเบลอพื้นหลัง</translation>
 <translation id="5117590920725113268">แสดงเดือนถัดไป</translation>
 <translation id="5121628974188116412">ไปที่ด้านล่างสุดของหน้า</translation>
 <translation id="5136175204352732067">เชื่อมต่อกับแป้นพิมพ์อื่นแล้ว</translation>
@@ -910,6 +920,7 @@
 <translation id="5168181903108465623">เครื่องส่งพร้อมใช้งาน</translation>
 <translation id="5170568018924773124">แสดงในโฟลเดอร์</translation>
 <translation id="5176318573511391780">บันทึกหน้าจอบางส่วน</translation>
+<translation id="5187627942836026988">แสดงรายละเอียดฮอตสปอต ผู้ดูแลระบบบล็อกฮอตสปอต</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> กิจกรรม</translation>
 <translation id="5198715732953550718">รวม <ph name="MOVED_APP_NAME" /> กับ <ph name="IN_PLACE_APP" /> เพื่อสร้างโฟลเดอร์ใหม่แล้ว</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1082,6 +1093,7 @@
 <translation id="595202126637698455">เปิดใช้งานการติดตามการปฏิบัติงานแล้ว</translation>
 <translation id="5955304353782037793">แอป</translation>
 <translation id="5958529069007801266">ผู้ใช้ภายใต้การควบคุมดูแล</translation>
+<translation id="5961960957587052807">น้อย</translation>
 <translation id="5965524703725988602">เปิด/ปิดธีมมืด <ph name="STATE_TEXT" /></translation>
 <translation id="5976112937189445008">กด Enter เพื่อบันทึกหน้าต่าง</translation>
 <translation id="5978382165065462689">กำลังแชร์การควบคุมหน้าจอผ่านความช่วยเหลือระยะไกล</translation>
@@ -1254,6 +1266,7 @@
 <translation id="6752912906630585008">นำเดสก์ <ph name="REMOVED_DESK" /> ออกและรวมเข้ากับเดสก์ <ph name="RECEIVE_DESK" /> แล้ว</translation>
 <translation id="6753390234084146956">แท็บ</translation>
 <translation id="6757237461819837179">ไม่มีการเล่นสื่อ</translation>
+<translation id="6759628406555734414">แสดงรายละเอียดฮอตสปอต ฮอตสปอตเปิดใช้อยู่</translation>
 <translation id="6768043681523654438">พื้นที่เก็บข้อมูล</translation>
 <translation id="6777216307882431711">กำลังชาร์จอุปกรณ์ USB-C ที่เชื่อมต่ออยู่</translation>
 <translation id="6781002679438061620">เดสก์ที่ 9</translation>
@@ -1278,6 +1291,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> วินาที</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{เหลือตัวเลขอีก 1 หลัก}other{เหลือตัวเลขอีก # หลัก}}</translation>
 <translation id="6867938213751067702">หยุดดาวน์โหลด <ph name="FILENAME" /> ไว้ชั่วคราว</translation>
+<translation id="6874854809828346832">แสดงรายละเอียดฮอตสปอต ฮอตสปอตเปิดอยู่</translation>
 <translation id="6878400149835617132">ทางลัดปิดอยู่</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 แอป}other{# แอป}}</translation>
 <translation id="6884665277231944629">กลับไปที่วันนี้</translation>
@@ -1287,6 +1301,7 @@
 <translation id="6896758677409633944">คัดลอก</translation>
 <translation id="6901883536534621389">ลองใช้ท่าทางสัมผัสเพื่อไปยังส่วนต่างๆ</translation>
 <translation id="6919251195245069855">ไม่พบสมาร์ทการ์ดของคุณ ลองใหม่</translation>
+<translation id="6920245099716267363">เปิด/ปิดฮอตสปอต ฮอตสปอตเปิดอยู่ เชื่อมต่ออุปกรณ์อยู่ 1 เครื่อง</translation>
 <translation id="6931576957638141829">บันทึกไปยัง</translation>
 <translation id="6941333068993625698">ส่งความคิดเห็น</translation>
 <translation id="6942518653766415536">เมนูรูปแบบการบันทึก</translation>
@@ -1376,6 +1391,7 @@
 <translation id="7378203170292176219">ลากเพื่อเลือกพื้นที่ที่จะบันทึก</translation>
 <translation id="7378594059915113390">การควบคุมสื่อ</translation>
 <translation id="7378889811480108604">โหมดประหยัดแบตเตอรี่ปิดอยู่</translation>
+<translation id="7382640522316003298">เปิด/ปิดฮอตสปอต ฮอตสปอตเปิดอยู่ เชื่อมต่ออุปกรณ์อยู่ <ph name="DEVICECOUNT" /> เครื่อง</translation>
 <translation id="7382680553121047388">เปิด</translation>
 <translation id="7384028040782072252">คลิกขวาที่ใดก็ได้เพื่อเรียงลำดับแอปใหม่</translation>
 <translation id="7386767620098596324">เปิด/ปิดการเชื่อมต่อเครือข่าย <ph name="STATE_TEXT" /></translation>
@@ -1426,6 +1442,7 @@
 <translation id="7579778809502851308">จับภาพหน้าจอ</translation>
 <translation id="7593891976182323525">ค้นหาหรือ Shift</translation>
 <translation id="7600875258240007829">ดูการแจ้งเตือนทั้งหมด</translation>
+<translation id="7601417191446344542">เปิดการกระตุ้นเตือนการปิดเสียงไหม</translation>
 <translation id="7607002721634913082">หยุดชั่วคราว</translation>
 <translation id="7609951632080598826">มุมมองปฏิทิน <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">เชื่อมต่อกล้องอีกครั้งแล้ว</translation>
@@ -1550,6 +1567,7 @@
 <translation id="8131740175452115882">ยืนยัน</translation>
 <translation id="8131994907636310308">ปิดข้อความโทสต์การจัดเรียง</translation>
 <translation id="8132793192354020517">เชื่อมต่อกับ <ph name="NAME" /></translation>
+<translation id="8135163608236671037">เปิด/ปิดฮอตสปอต ฮอตสปอตเปิดอยู่ ไม่มีอุปกรณ์ใดเชื่อมต่อ</translation>
 <translation id="8138705869659070104">เปิดใช้งานหลังตั้งค่าอุปกรณ์</translation>
 <translation id="813913629614996137">กำลังเริ่มดำเนินการ...</translation>
 <translation id="8142441511840089262">ดับเบิลคลิก</translation>
@@ -1730,6 +1748,7 @@
 <translation id="8990809378771970590">กำลังใช้<ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">เปิดใช้โหมดการกลับสีแล้ว กด Ctrl+Search+H อีกครั้งเพื่อสลับเป็นปิด</translation>
 <translation id="899350903320462459">ปลดล็อกอุปกรณ์โดยใช้ <ph name="LOGIN_ID" /> เพื่อดำเนินการแจ้งเตือน</translation>
+<translation id="8993733019280019776">คุณพูดอยู่ใช่ไหม ดูเหมือนว่าไมค์จะปิดอยู่ โปรดเลือกไมโครโฟนเพื่อเปิด</translation>
 <translation id="9000771174482730261">จัดการพื้นที่เก็บข้อมูล</translation>
 <translation id="9005984960510803406">เปิดหน้าต่าง Crosh</translation>
 <translation id="9017320285115481645">ป้อนรหัสการเข้าถึง Family Link ของผู้ปกครอง</translation>

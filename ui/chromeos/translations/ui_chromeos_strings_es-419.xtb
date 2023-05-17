@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">No hay videos recientes.</translation>
 <translation id="3634507049637220048">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, administrada por tu administrador, detalles</translation>
 <translation id="3645233063072417428">Se movieron <ph name="NUMBER_OF_ITEMS" /> elementos.</translation>
+<translation id="3658269352872031728">Se seleccionaron <ph name="SELECTED_FILE_COUNT" /> archivos</translation>
 <translation id="3685122418104378273">La sincronización con Google Drive está inhabilitada de manera predeterminada cuando se usan los datos móviles.</translation>
 <translation id="3689865792480713551">Cancelar <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, no activada, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, detalles</translation>
@@ -577,6 +578,7 @@
 <translation id="5533102081734025921">Imagen de <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Calculando tamaño...</translation>
 <translation id="554153475311314364">Griego (transliteración)</translation>
+<translation id="5554171655917412781">Se seleccionaron <ph name="SELECTED_FOLDERS_COUNT" /> carpetas</translation>
 <translation id="5580591966435005537">máquina virtual</translation>
 <translation id="5583640892426849032">Tecla de retroceso</translation>
 <translation id="5583664733673201137">El ancho de la puntuación es el ancho completo</translation>
@@ -599,6 +601,7 @@
 <translation id="5724172041621205163">Tailandés con teclado pattachote</translation>
 <translation id="57383366388012121">Último mes</translation>
 <translation id="5756666464756035725">QWERTY húngaro</translation>
+<translation id="5760252553414789727">Se seleccionaron <ph name="SELECTED_FILES_COUNT" /> elementos</translation>
 <translation id="5763377084591234761">Alemán (Suiza)</translation>
 <translation id="5769519078756170258">Host o dominio para excluir</translation>
 <translation id="5775750595919327203">Urdu</translation>

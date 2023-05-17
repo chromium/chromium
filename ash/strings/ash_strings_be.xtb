@@ -183,6 +183,7 @@
 <translation id="1774796056689732716">Каляндар, <ph name="CURRENT_MONTH_YEAR" />, дата, якая цяпер выбрана, – <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Выключана</translation>
 <translation id="181103072419391116">Магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />; сетка знаходзіцца пад кіраваннем адміністратара</translation>
+<translation id="1815245884418711390">Уключыць або выключыць хот-спот. Хот-спот выключаны.</translation>
 <translation id="1816896987747843206">Доступ да камеры атрымаюць усе праграмы і вэб-сайты, якія маюць дазвол выкарыстоўваць камеру</translation>
 <translation id="1823280932251546115">Панэль стану, час <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -241,6 +242,7 @@
 <translation id="2023558322300866873">Спыніць захоп пакетаў можна ў любы момант</translation>
 <translation id="2034971124472263449">Усё роўна захаваць</translation>
 <translation id="2049240716062114887">Назва працоўнага стала зменена на наступную: <ph name="DESK_NAME" /></translation>
+<translation id="206377500836174974">Поўнасцю</translation>
 <translation id="2064048859448024834">Паказваецца папярэдні прагляд для камеры</translation>
 <translation id="2067602449040652523">Яркасць клавіятуры</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" />: уключыць/выключыць. <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" />.</translation>
@@ -293,6 +295,7 @@
 <translation id="2339073806695260576">Націсніце кнопку стыла на паліцы, каб зрабіць нататку, здымак экрана, выкарыстаць лазерную ўказку або павелічальнае шкло.</translation>
 <translation id="2341729377289034582">Зафіксаваны вертыкальны фармат</translation>
 <translation id="2345226652884463045">Націсніце Увод або Пошук + Прабел, каб выбраць тэкст, які трэба змяніць.</translation>
+<translation id="2349785431103945039">Паказаць падрабязныя звесткі пра хот-спот. Каб выкарыстоўваць хот-спот, падключыце мабільную сетку.</translation>
 <translation id="2350794187831162545">Галасавы ўвод на гэтай мове (<ph name="LANGUAGE" />) апрацоўваецца толькі на вашай прыладзе. Функцыя працуе па-за сеткай. Задаць іншую мову для галасавога ўводу можна ў раздзеле "Налады &gt; Спецыяльныя магчымасці".</translation>
 <translation id="2352467521400612932">Налады стыла</translation>
 <translation id="2354174487190027830">Ідзе актывацыя сеткі <ph name="NAME" /></translation>
@@ -336,6 +339,7 @@
 <translation id="2531025035050312891">прылада працуе павольна</translation>
 <translation id="2542089167727451762">Націсніце відарыс профілю</translation>
 <translation id="254900897760075745">Капіраваць вылучанае змесціва ў буфер абмену</translation>
+<translation id="2549711466868162843">Удасканаліць святло</translation>
 <translation id="2549985041256363841">Пачаць запіс</translation>
 <translation id="255671100581129685">Памочнік Google недаступны ў агульнадаступным сеансе.</translation>
 <translation id="256712445991462162">прыстыкаваная лупа</translation>
@@ -429,6 +433,7 @@
 <translation id="3009178788565917040">Выхад</translation>
 <translation id="3009958530611748826">Выберыце папку для захавання</translation>
 <translation id="301282384882049174">Абагулена адміністратарам</translation>
+<translation id="301584155502740476">Паказаць падрабязныя звесткі пра хот-спот. Хот-спот выключаны.</translation>
 <translation id="3018135054368884502">Пераматаць медыязмесціва ўперад</translation>
 <translation id="3033545621352269033">Уключана</translation>
 <translation id="3033912566804961911">Аб'яднаць са сталом "<ph name="DESK_NAME" />"</translation>
@@ -489,6 +494,7 @@
 <translation id="3291862315280588024">Перайсці ў пачатак папярэдняга слова</translation>
 <translation id="3294437725009624529">Госць</translation>
 <translation id="3298690094479023523">Уведзены PIN-код або пароль зноў аказаўся несапраўдным. Паўтарыце спробу.</translation>
+<translation id="3300193645498960160">Вы атрымаеце апавяшчэнне, калі будзеце размаўляць з выключаным гукам. Аўдыязапісы вашу прыладу не пакінуць.</translation>
 <translation id="3307642347673023554">Уключаны рэжым ноўтбука</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> зможа ўвайсці пазней.</translation>
 <translation id="3321628682574733415">Няправільны бацькоўскі код</translation>
@@ -572,6 +578,7 @@
 <translation id="3621202678540785336">Увод</translation>
 <translation id="3621712662352432595">Налады аўдыя</translation>
 <translation id="3626281679859535460">Яркасць</translation>
+<translation id="3629640897379005903">Паказаць падрабязныя звесткі пра хот-спот. Хот-спот адключаецца.</translation>
 <translation id="3630697955794050612">выключаны</translation>
 <translation id="3631369015426612114">Дазволіць апавяшчэнні з наступных крыніц</translation>
 <translation id="3633097874324966332">Каб спалучыць прыладу, адкрыйце налады Bluetooth</translation>
@@ -703,6 +710,7 @@
 <translation id="423685346499232137">Не ўдалося скапіраваць або ўставіць змесціва</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Рэжым агляду</translation>
+<translation id="4240756737570479726">Ідзе адключэнне...</translation>
 <translation id="4242533952199664413">Адкрыць налады</translation>
 <translation id="4247123849143712100">Абнавіць і завяршыць працу</translation>
 <translation id="4250229828105606438">Здымак экрана</translation>
@@ -841,6 +849,7 @@
 <translation id="4864369630010738180">Уваход...</translation>
 <translation id="4864648187878336334">Працоўны стол 15</translation>
 <translation id="4868492592575313542">уключыла</translation>
+<translation id="4871905435473761992">Паказаць падрабязныя звесткі пра хот-спот. Ваша мабільная сетка не падтрымлівае хот-спот.</translation>
 <translation id="4872237917498892622">Alt + Search або Shift</translation>
 <translation id="4872852897273142380">Перайсці на панэль закладак або вылучыць яе (калі яна паказваецца)</translation>
 <translation id="4881695831933465202">Адкрыць</translation>
@@ -900,6 +909,7 @@
 <translation id="5104236669533825617">Не ўдалося запусціць скрынкаст</translation>
 <translation id="5107522548814527560">Інтэрнэт</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">Размыванне фону</translation>
 <translation id="5117590920725113268">Паказаць наступны месяц</translation>
 <translation id="5121628974188116412">Перайсці ў ніз старонкі</translation>
 <translation id="5136175204352732067">Падключана іншая клавіятура</translation>
@@ -912,6 +922,7 @@
 <translation id="5168181903108465623">Ёсць даступныя прылады для трансляцыі</translation>
 <translation id="5170568018924773124">Паказаць у папцы</translation>
 <translation id="5176318573511391780">Запіс часткі экрана</translation>
+<translation id="5187627942836026988">Паказаць падрабязныя звесткі пра хот-спот. Хот-спот заблакіраваны адміністратарам.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, падзей: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718">Праграма <ph name="MOVED_APP_NAME" /> была выкарыстана з праграмай <ph name="IN_PLACE_APP" /> для стварэння новай папкі.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1084,6 +1095,7 @@
 <translation id="595202126637698455">Уключана трасіроўка прадукцыйнасці</translation>
 <translation id="5955304353782037793">праграма</translation>
 <translation id="5958529069007801266">Падкантрольны карыстальнік</translation>
+<translation id="5961960957587052807">Крыху</translation>
 <translation id="5965524703725988602">Уключыць або выключыць цёмную тэму. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Каб запісаць акно, націсніце Увод</translation>
 <translation id="5978382165065462689">Абагульванне кантролю над экранам праз Аддаленую дапамогу.</translation>
@@ -1256,6 +1268,7 @@
 <translation id="6752912906630585008">Стол <ph name="REMOVED_DESK" /> быў выдалены і аб'яднаны са Сталом <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">укладкі</translation>
 <translation id="6757237461819837179">Медыяфайлы не прайграюцца</translation>
+<translation id="6759628406555734414">Паказаць падрабязныя звесткі пра хот-спот. Хот-спот уключаецца.</translation>
 <translation id="6768043681523654438">сховішча</translation>
 <translation id="6777216307882431711">Сілкуе падключаныя прылады USB-C</translation>
 <translation id="6781002679438061620">Працоўны стол 9</translation>
@@ -1280,6 +1293,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> с</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Засталася адна лічба}one{Засталася # лічба}few{Засталося # лічбы}many{Засталося # лічбаў}other{Засталося # лічбы}}</translation>
 <translation id="6867938213751067702">Спампоўванне файла "<ph name="FILENAME" />" прыпынена</translation>
+<translation id="6874854809828346832">Паказаць падрабязныя звесткі пра хот-спот. Хот-спот уключаны.</translation>
 <translation id="6878400149835617132">Спалучэнне клавіш выключана</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 праграма}one{# праграма}few{# праграмы}many{# праграм}other{# праграмы}}</translation>
 <translation id="6884665277231944629">Вярнуцца да сённяшняй даты</translation>
@@ -1289,6 +1303,7 @@
 <translation id="6896758677409633944">Капіраваць</translation>
 <translation id="6901883536534621389">Паспрабуйце выкарыстоўваць для навігацыі жэсты</translation>
 <translation id="6919251195245069855">Не ўдалося распазнаць вашу разумную картку. Паўтарыце спробу.</translation>
+<translation id="6920245099716267363">Уключыць або выключыць хот-спот. Хот-спот уключаны, падключана 1 прылада.</translation>
 <translation id="6931576957638141829">Захаваць у</translation>
 <translation id="6941333068993625698">Адправіць водгук</translation>
 <translation id="6942518653766415536">Меню фарматаў запісу</translation>
@@ -1378,6 +1393,7 @@
 <translation id="7378203170292176219">Выберыце вобласць запісу з дапамогай перацягвання</translation>
 <translation id="7378594059915113390">Элементы кіравання мультымедыйным змесцівам</translation>
 <translation id="7378889811480108604">Рэжым эканоміі зараду выключаны</translation>
+<translation id="7382640522316003298">Уключыць або выключыць хот-спот. Хот-спот уключаны. Падключана прылад: <ph name="DEVICECOUNT" />.</translation>
 <translation id="7382680553121047388">Укл.</translation>
 <translation id="7384028040782072252">Каб змяніць парадак размяшчэння праграм, націсніце правай кнопкай мышы ў любым месцы экрана</translation>
 <translation id="7386767620098596324">Уключыць або выключыць падключэнне да сеткі. <ph name="STATE_TEXT" />.</translation>
@@ -1428,6 +1444,7 @@
 <translation id="7579778809502851308">Здымак экрана</translation>
 <translation id="7593891976182323525">"Пошук" або Shift</translation>
 <translation id="7600875258240007829">Паказаць усе апавяшчэнні</translation>
+<translation id="7601417191446344542">Уключыць напамін пра выключаны гук?</translation>
 <translation id="7607002721634913082">Прыпынена</translation>
 <translation id="7609951632080598826">Каляндар, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камера зноў падключана.</translation>
@@ -1551,6 +1568,7 @@
 <translation id="8131740175452115882">Пацвердзіць</translation>
 <translation id="8131994907636310308">Закрыць усплывальнае паведамленне аб сартаванні</translation>
 <translation id="8132793192354020517">Падключана да сеткі "<ph name="NAME" />"</translation>
+<translation id="8135163608236671037">Уключыць або выключыць хот-спот. Хот-спот уключаны, падключаных прылад няма.</translation>
 <translation id="8138705869659070104">Спачатку наладзьце прыладу</translation>
 <translation id="813913629614996137">Ідзе ініцыялізацыя...</translation>
 <translation id="8142441511840089262">Падвойнае націсканне</translation>
@@ -1731,6 +1749,7 @@
 <translation id="8990809378771970590">Выкарыстоўваецца <ph name="IME_NAME" /></translation>
 <translation id="8991617137207906966">Рэжым інверсіі колераў уключаны. Каб выключыць яго, зноў націсніце Ctrl + Пошук + H.</translation>
 <translation id="899350903320462459">Разблакіруйце прыладу як <ph name="LOGIN_ID" />, каб выканаць дзеянне па апавяшчэнні</translation>
+<translation id="8993733019280019776">Вы нешта гаворыце? Мікрафон выключаны. Каб уключыць мікрафон, выберыце яго.</translation>
 <translation id="9000771174482730261">КІРАВАЦЬ СХОВІШЧАМ</translation>
 <translation id="9005984960510803406">Адкрыць старонку-кансоль</translation>
 <translation id="9017320285115481645">Увядзіце бацькоўскі код доступу Family Link.</translation>

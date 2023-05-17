@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">右</translation>
 <translation id="1351937230027495976">メニューを折りたたむ</translation>
 <translation id="1360220746312242196">ページ検索時に前の一致箇所に移動する</translation>
+<translation id="1360788414852622716">プロファイルを無効にしています。この処理には数分かかることがあります。</translation>
 <translation id="1364382257761975320">Chromebook のロックを解除するには、指紋認証を使用します</translation>
 <translation id="1365866993922957110">自動で更新する</translation>
 <translation id="1372545819342940910">後で使用するためにデスクを保存</translation>
@@ -545,6 +546,7 @@
 <translation id="3510164367642747937">マウスカーソルをハイライト表示する</translation>
 <translation id="3513798432020909783">このアカウントは <ph name="MANAGER_EMAIL" /> により管理されています</translation>
 <translation id="352245152354538528">{0,plural, =1{1 分以内にデバイスを更新してください}other{# 分以内にデバイスを更新してください}}</translation>
+<translation id="3522979239100719575">使用可能なプロファイルを検出しています。この処理には数分かかることがあります。</translation>
 <translation id="3526440770046466733">新しいタブでリンクを開いて、現在のタブにとどまる</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> 台のデバイスに接続しています</translation>
 <translation id="3533126039236445965">シェルフのアプリ</translation>
@@ -1558,6 +1560,7 @@
 <translation id="8083540854303889870">後で実行するために保存</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> に開始</translation>
 <translation id="8091387634532529612">自動更新</translation>
+<translation id="8092380135549145188">スクロール設定</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> への画面のキャストを停止する</translation>
 <translation id="810637681351706236">シェルフへのアプリの固定を解除します</translation>
 <translation id="8113423164597455979">オン: 全アプリ</translation>

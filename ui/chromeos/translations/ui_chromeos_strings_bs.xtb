@@ -320,7 +320,7 @@
 <translation id="3619593063686672873">Nema nedavnih videozapisa</translation>
 <translation id="3634507049637220048">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, upravlja vaš administrator, detalji</translation>
 <translation id="3645233063072417428">Broj premještenih stavki: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="3658269352872031728">Odabrano datoteka: <ph name="SELECTED_FILE_COUNT" /></translation>
+<translation id="3658269352872031728">Broj odabranih fajlova: <ph name="SELECTED_FILE_COUNT" /></translation>
 <translation id="3685122418104378273">Sinhroniziranje Google Diska je onemogućeno prema zadanim postavkama kada se koristi prijenos podataka na mobilnoj mreži.</translation>
 <translation id="3689865792480713551">Otkaži <ph name="ACTIVITY_DESCRIPTION" /></translation>
 <translation id="3690128548376345212">Mreže: <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Deaktivirano, <ph name="CONNECTION_STATUS" />, Jačina signala <ph name="SIGNAL_STRENGTH" />%, Detalji</translation>
@@ -578,7 +578,7 @@
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> slika</translation>
 <translation id="5534520101572674276">Izračunavanje veličine</translation>
 <translation id="554153475311314364">grčki (transliteracija)</translation>
-<translation id="5554171655917412781">Odabrano mapa: <ph name="SELECTED_FOLDERS_COUNT" /></translation>
+<translation id="5554171655917412781">Broj odabranih foldera: <ph name="SELECTED_FOLDERS_COUNT" /></translation>
 <translation id="5580591966435005537">virtuelna mašina</translation>
 <translation id="5583640892426849032">Tipka za brisanje</translation>
 <translation id="5583664733673201137">Interpunkcija je u punoj širini</translation>
@@ -601,7 +601,7 @@
 <translation id="5724172041621205163">tajlandski s tastaturom Pattachote</translation>
 <translation id="57383366388012121">Prošli mjesec</translation>
 <translation id="5756666464756035725">Mađarska QWERTY</translation>
-<translation id="5760252553414789727">Odabrano stavki: <ph name="SELECTED_FILES_COUNT" /></translation>
+<translation id="5760252553414789727">Broj odabranih stavki: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">njemački (Švicarska)</translation>
 <translation id="5769519078756170258">Host računar ili domena koju treba izuzeti</translation>
 <translation id="5775750595919327203">urdu</translation>

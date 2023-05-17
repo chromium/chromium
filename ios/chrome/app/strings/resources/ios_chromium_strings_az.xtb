@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> bu cihazda Chromium istifadə edirdi və əlfəcinlər, parollar və digər ayarlar qalıb.</translation>
 <translation id="372658070733623520">Google Hesabında Chromium datasını istifadə etmək və saxlamaq üçün kimliyinizi təsdiq edin.</translation>
 <translation id="3805899903892079518">Chromium məhsulunun foto və videolarınıza girişi yoxdur. iOS Ayarları &gt; Məxfilik &gt; Fotolar bölməsindən girişi aktiv edin.</translation>
+<translation id="3955621079070267756">Chromium-u istənilən tətbiqdən açın</translation>
 <translation id="4043291146360695975">Parollar yalnız bu cihazda Parol Menecerində saxlanılır.</translation>
 <translation id="4099085513035183040">Chromium Beta'da dəstəklənmir</translation>
 <translation id="4432744876818348753">Chromium'dan maksimum yararlanmaq üçün daxil olun.</translation>
@@ -143,5 +144,6 @@ Bunları nəzərə alın:
 <translation id="9089354809943900324">Chromium'un vaxtı keçib</translation>
 <translation id="9110075932708282655">Defolt olaraq Chromium istifadə edin</translation>
 <translation id="921174536258924340">Chromium bütün parolları yoxlaya bilmədi. Sabah yenidən cəhd edin və ya <ph name="BEGIN_LINK" />Google Hesabınızda parolları yoxlayın.<ph name="END_LINK" /></translation>
+<translation id="971488683725792095">Mesaj, sənəd və digər tətbiqlərdə keçidlərə toxunduqda Chromium avtomatik istifadə edilsin.</translation>
 <translation id="985602178874221306">Chromium Müəllifləri</translation>
 </translationbundle>

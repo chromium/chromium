@@ -78,7 +78,7 @@
 <translation id="1061904396131502319">快到休息時間了</translation>
 <translation id="1062407476771304334">取代</translation>
 <translation id="1062628064301375934">協助我們建立更私密的網絡</translation>
-<translation id="1066964438793906105">掃描是否有惡意軟體</translation>
+<translation id="1066964438793906105">掃瞄是否有惡意軟件</translation>
 <translation id="1067048845568873861">已建立</translation>
 <translation id="1067661089446014701">為進一步加強安全性，建議先在裝置上將密碼加密，再儲存至您的 Google 帳戶</translation>
 <translation id="1067922213147265141">其他 Google 服務</translation>
@@ -2903,7 +2903,7 @@
 <translation id="3484869148456018791">取得新憑證</translation>
 <translation id="3486950712960783074">您的行程</translation>
 <translation id="3487007233252413104">匿名函數</translation>
-<translation id="3487649228420469005">掃描完成</translation>
+<translation id="3487649228420469005">掃瞄已完成</translation>
 <translation id="3490695139702884919">正在下載… <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">您子女的帳戶尚未設定 Family Link 家長監控設定。設定完成後，即可新增家長監控設定。您可在「探索」應用程式中找到家長監控設定的相關資料。</translation>
 <translation id="3491678231052507920">網站通常會使用虛擬實境﻿裝置和資料，讓您進入 VR 工作階段</translation>
@@ -4298,7 +4298,7 @@
 <translation id="470644585772471629">色彩反轉</translation>
 <translation id="4707337002099455863">一律在所有網站上執行</translation>
 <translation id="4708849949179781599">離開 <ph name="PRODUCT_NAME" /></translation>
-<translation id="4708892882822652439">一併允許分頁音訊</translation>
+<translation id="4708892882822652439">同時允許分頁音訊</translation>
 <translation id="4711638718396952945">還原設定</translation>
 <translation id="4713409221649555176">在所有視窗關閉後刪除</translation>
 <translation id="4715631922189108923">編輯使用者名稱</translation>
@@ -5322,7 +5322,7 @@
 <translation id="5648166631817621825">最近 7 天</translation>
 <translation id="5651308944918885595">「咫尺共享」可偵測度</translation>
 <translation id="5653154844073528838">你有 <ph name="PRINTER_COUNT" /> 部儲存咗嘅打印機。</translation>
-<translation id="565515993087783098">如果選擇清除這個網路，系統將一併移除 Passpoint 訂閱及其相關網路。</translation>
+<translation id="565515993087783098">如忘記此網絡，系統將一併移除 Passpoint 訂閱及其相關網絡。</translation>
 <translation id="5655296450510165335">裝置註冊</translation>
 <translation id="5656845498778518563">傳送意見給 Google</translation>
 <translation id="5657156137487675418">允許所有 Cookie</translation>
@@ -6565,7 +6565,7 @@
 <translation id="6776589734354015877">取得額外的實用功能</translation>
 <translation id="6776729248872343918">啟用「快速配對」</translation>
 <translation id="6777817260680419853">已禁止重新導向</translation>
-<translation id="6777845730143344223">進一步瞭解 Passpoint 訂閱</translation>
+<translation id="6777845730143344223">進一步了解 Passpoint 訂閱</translation>
 <translation id="6779092717724412415">如要建立其他突顯內容，請選取所需文字後按一下右鍵。</translation>
 <translation id="6779447100905857289">您的購物車</translation>
 <translation id="677965093459947883">非常小</translation>

@@ -216,6 +216,7 @@
 <translation id="1176471985365269981">不得修改您设备上的文件或文件夹</translation>
 <translation id="1177863135347784049">自定义</translation>
 <translation id="1178581264944972037">暂停</translation>
+<translation id="1178601482396475810">管理设备同步</translation>
 <translation id="117916940443676133">您尚未设置 PIN 码来保护您的安全密钥。要管理登录数据，请先创建一个 PIN 码。</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1181366777303791449">位于：<ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
@@ -352,6 +353,7 @@
 <translation id="130097046531636712">开启此设置后，系统会通过限制后台活动和视觉效果（例如流畅滚动）来节省电池电量</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> 可修改以下文件</translation>
 <translation id="1302227299132585524">允许 Apple 事件中的 JavaScript</translation>
+<translation id="1302654693270046655">“<ph name="GROUP_NAME" />”组 - <ph name="OPENED_STATE" /></translation>
 <translation id="1303101771013849280">以前导出的书签（HTML 文件）</translation>
 <translation id="1303671224831497365">未找到任何蓝牙设备</translation>
 <translation id="130491383855577612">已成功替换 Linux 应用和文件</translation>
@@ -1032,6 +1034,7 @@
 <translation id="1877520246462554164">未能获取身份验证令牌。请退出并重新登录，然后重试。</translation>
 <translation id="1877860345998737529">指定开关操作</translation>
 <translation id="1878155070920054810">您的 Chromebook 似乎会在完成更新前耗尽电量。请确保它已在正确充电，以免更新中断。</translation>
+<translation id="1878477879455105085">已打开</translation>
 <translation id="1878885068166344708">当您移动焦点时，所选项会突出显示。按 Tab 键或选择某项内容即可更改焦点。</translation>
 <translation id="1879000426787380528">登录身份</translation>
 <translation id="18802377548000045">将标签页收缩至较大宽度</translation>
@@ -1416,6 +1419,7 @@
 <translation id="2204034823255629767">读取和更改您输入的任何内容</translation>
 <translation id="2204387456724731099">无法翻译所选内容</translation>
 <translation id="2210462644007531147">无法完成安装</translation>
+<translation id="2211245494465528624">管理同步选项</translation>
 <translation id="2212565012507486665">允许使用 Cookie</translation>
 <translation id="2214018885812055163">共享的文件夹</translation>
 <translation id="2214884991347062907">密码不正确，请重试</translation>
@@ -1511,6 +1515,7 @@
 <translation id="2296218178174497398">设备发现</translation>
 <translation id="2297705863329999812">搜索打印机</translation>
 <translation id="2297822946037605517">分享此页</translation>
+<translation id="229871422646860597">取消固定到工具栏</translation>
 <translation id="2299734369537008228">滑块：值范围是从“<ph name="MIN_LABEL" />”至“<ph name="MAX_LABEL" />”</translation>
 <translation id="2299941608784654630">将 debugd 收集的所有日志文件添加为单独的归档。</translation>
 <translation id="2300214399009193026">PCIe</translation>
@@ -2138,6 +2143,7 @@
 <translation id="2811205483104563968">帐号</translation>
 <translation id="2811564570599779918">垃圾内容和欺诈行为削减</translation>
 <translation id="2812049959647166806">Thunderbolt 不受支持</translation>
+<translation id="2812171980080389735">已保存的网络和密码，方便您立即连接</translation>
 <translation id="2813094189969465044">家长控制</translation>
 <translation id="281390819046738856">无法签署该请求。</translation>
 <translation id="2814489978934728345">停止加载此页</translation>
@@ -2177,6 +2183,7 @@
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="2849767214114481738">您的 PIN 码已添加完毕</translation>
 <translation id="2849936225196189499">关键</translation>
+<translation id="285033512555869047">已关闭</translation>
 <translation id="2850541429955027218">添加主题背景</translation>
 <translation id="2850672011315104382">标点样式</translation>
 <translation id="2852385257476173980">当您浏览网页时，此处可能会列出您访问过的网站</translation>
@@ -2220,6 +2227,7 @@
 <translation id="288734198558082692">设备“<ph name="DEVICE" />”以及另外 <ph name="NUMBER_OF_DEVICES" /> 部</translation>
 <translation id="2889043468805635730">未发现问题</translation>
 <translation id="2889064240420137087">链接打开方式...</translation>
+<translation id="2890206081124517553">记住您在各设备上的桌面背景</translation>
 <translation id="2891566119238851894">打开侧边栏中的搜索工具栏。侧边栏中的搜索工具栏未打开。</translation>
 <translation id="2891922230654533301">使用您的设备登录 <ph name="APP_NAME" />？</translation>
 <translation id="2893013536106749396">挑选能及时为您呈现所需信息的卡片</translation>
@@ -2241,6 +2249,7 @@
 <translation id="2907619724991574506">启动网址</translation>
 <translation id="2907798539022650680">无法连接到“<ph name="NAME" />”：<ph name="DETAILS" />
 服务器消息：<ph name="SERVER_MSG" /></translation>
+<translation id="2908005622251445419">共享信号</translation>
 <translation id="2908162660801918428">按目录添加媒体库</translation>
 <translation id="2908358077082926882">再按一次“<ph name="CURRENTKEY" />”键即可撤消分配并<ph name="RESPONSE" /></translation>
 <translation id="2909506265808101667">无法连接到 Google 服务。请检查您的网络连接状况，然后重试。错误代码：<ph name="ERROR_CODE" />。</translation>
@@ -2344,6 +2353,7 @@
 <translation id="3003828226041301643">无法将此设备加入到该网域中。请检查您的帐号以确保您有权添加设备。</translation>
 <translation id="3003967365858406397">您的 <ph name="PHONE_NAME" /> 将创建一个私享的 Wi-Fi 网络连接。</translation>
 <translation id="3004385386820284928">自定义键盘按键</translation>
+<translation id="3005376701115952939">在系统设置中设置应用同步</translation>
 <translation id="3005574332301273731">不显示</translation>
 <translation id="3006881078666935414">无使用情况数据</translation>
 <translation id="3007410324195400631">为此页面添加备注</translation>
@@ -2725,6 +2735,7 @@
 <translation id="3369624026883419694">正在解析主机...</translation>
 <translation id="3370260763947406229">自动更正</translation>
 <translation id="3371140690572404006">USB-C 设备（右侧前端端口）</translation>
+<translation id="3371351218553893534">此行内容过长：<ph name="ERROR_LINE" /></translation>
 <translation id="337286756654493126">读取您在该应用中打开的文件夹</translation>
 <translation id="3373059063088819384">在朗读模式下打开</translation>
 <translation id="3373701465337594448">开启此设置后，这里会列出您访问过的哪些网站会推测您的兴趣</translation>
@@ -2794,6 +2805,9 @@
 <translation id="3434272557872943250">如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 帐号中。您可在 families.google.com 上详细了解这些设置以及如何调整它们。</translation>
 <translation id="3434475275396485144">此设置由您的手机管理员管理</translation>
 <translation id="3434512374684753970">音频和视频</translation>
+<translation id="343517373502662180"><ph name="BEGIN_PARAGRAPH1" />在下一个界面上，登录您的 Google 帐号。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />此帐号即您用于 Gmail、YouTube、Chrome 和其他 Google 服务的帐号。使用您的帐号可畅享个性化体验并轻松访问您的所有信息。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />如果尚无 Google 帐号，可以在下一个界面上创建一个。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3435688026795609344">“<ph name="EXTENSION_NAME" />”正在请求您提供 <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">安全</translation>
 <translation id="343578350365773421">纸张已用完</translation>
@@ -2840,6 +2854,7 @@
 <translation id="346546413339447252">获取<ph name="MERCHANT_NAME_1" />和<ph name="MERCHANT_NAME_2" />等商家的折扣</translation>
 <translation id="3468298837301810372">标签</translation>
 <translation id="3468999815377931311">Android 手机</translation>
+<translation id="3469345458390352459">一旦开启了此设置，您便可在已使用 Google 帐号登录的任何 ChromeOS 设备上使用已同步的应用。即使关闭了其他浏览器同步功能，Web 应用也会通过 Chrome 同步。</translation>
 <translation id="3469583217479686109">选择工具</translation>
 <translation id="3470392222765168737">关注网站</translation>
 <translation id="3471876058939596279">HDMI 端口和 USB C 型端口无法同时用于视频。请另选一个视频端口。</translation>
@@ -3300,6 +3315,7 @@
 <translation id="3855441664322950881">打包扩展程序</translation>
 <translation id="3855676282923585394">导入书签和设置...</translation>
 <translation id="3856096718352044181">请检查并确保这是一个有效的提供商，或者稍后重试</translation>
+<translation id="3856470183388031602">在 <ph name="DEVICE_TYPE" /> 上使用您的 Google 帐号</translation>
 <translation id="3856800405688283469">选择时区</translation>
 <translation id="3857807444929313943">移开手指，然后再次触摸传感器</translation>
 <translation id="3858860766373142691">名称</translation>
@@ -3339,6 +3355,7 @@
 <translation id="3894123633473837029">通过 Sherlog 将最近的 Google 助理历史记录包含在内。这可能包括您的身份、地理位置和调试信息。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3894427358181296146">添加文件夹</translation>
 <translation id="3894770151966614831">移至 Google 帐号？</translation>
+<translation id="3894983081771074056">键盘和鼠标行为、语言偏好设置等等</translation>
 <translation id="3895076768659607631">管理搜索引擎(&amp;M)…</translation>
 <translation id="3895090224522145010">Kerberos 用户名</translation>
 <translation id="389521680295183045">网站可以询问能否了解您何时在主动使用自己的设备</translation>
@@ -3473,6 +3490,7 @@
 <translation id="3994878504415702912">缩放(&amp;Z)</translation>
 <translation id="3995138139523574647">USB-C 设备（右侧后端端口）</translation>
 <translation id="3995963973192100066">播放动画</translation>
+<translation id="399788104667917863">固定到工具栏</translation>
 <translation id="4001540981461989979">在鼠标光标移动时突出显示它</translation>
 <translation id="4002440992267487163">PIN 码设置</translation>
 <translation id="4005817994523282006">时区检测方法</translation>
@@ -3631,12 +3649,16 @@
 <translation id="4147911968024186208">请重试。如果系统仍提示此错误，请与您的支持代表联系。</translation>
 <translation id="4150201353443180367">显示</translation>
 <translation id="4150569944729499860">屏幕上下文</translation>
+<translation id="4151843924968445052">共享设备信号？</translation>
 <translation id="4152011295694446843">您的书签会显示在此处</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 个标签页}other{# 个标签页}}</translation>
 <translation id="4154664944169082762">指纹</translation>
 <translation id="4157869833395312646">Microsoft 服务器网关加密</translation>
 <translation id="4158315983204257156">网站文字大小和字体</translation>
 <translation id="4158364720893025815">通过</translation>
+<translation id="4159501637165962616"><ph name="BEGIN_PARAGRAPH1" />如果您允许 ChromeOS 设备自动发送报告，则可帮助我们确定 ChromeOS 中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：ChromeOS 的崩溃时间、使用的功能、通常占用的内存量、Android 应用诊断数据和使用情况数据，等等。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果同时启用了应用同步，系统还会收集其他应用（包括 Android 应用和 Web 应用）的诊断数据和使用情况数据。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />您随时可在 ChromeOS 设备的设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />如果您已为自己的 Google 帐号开启“网络与应用活动记录”设置，您的 Android 数据可能会被保存到您的 Google 帐号中。您可在 account.google.com 上查看和删除您的数据以及更改您的帐号设置。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4161601078867475601">Google 密码管理工具(&amp;G)</translation>
 <translation id="4163560723127662357">未知键盘</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> 不属于任何有效的组织。请与您的管理员联系。如果您本人就是管理员，则可通过访问 g.co/ChromeEnterpriseAccount 来设置贵组织</translation>
@@ -3958,6 +3980,9 @@
 <translation id="4452898361839215358">或选择 PPD。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">轻触键盘右上角的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="4453946976636652378">在<ph name="SEARCH_ENGINE_NAME" />中搜索，或者输入一个网址</translation>
+<translation id="4454537120672169656"><ph name="BEGIN_PARAGRAPH1" />如果您允许 ChromeOS 设备自动发送报告，则可帮助我们确定 ChromeOS 中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：ChromeOS 的崩溃时间、使用的功能、通常占用的内存量、Android 应用诊断数据和使用情况数据，等等。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果同时启用了应用同步，系统还会收集其他应用（包括 Android 应用和 Web 应用）的诊断数据和使用情况数据。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />您随时可在孩子的 ChromeOS 设备的设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH4" />如果您已为孩子的 Google 帐号开启“网络与应用活动记录”设置，孩子的数据可能会被保存到其 Google 帐号中。访问 families.google.com 可详细了解这些设置及调整方法。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="4457472090507035117">请选择当前的声音：</translation>
 <translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> 天前曾有活动</translation>
 <translation id="4460014764210899310">取消分组</translation>
@@ -4336,6 +4361,7 @@
 <translation id="4806457879608775995">查看这些条款并控制您的数据</translation>
 <translation id="4807098396393229769">持卡人姓名</translation>
 <translation id="4808667324955055115">已拦截弹出式窗口：</translation>
+<translation id="4808711719757110498">{NUM_EXTENSIONS,plural, =1{查看从 Chrome 应用商店中下架的 <ph name="BEGIN_BOLD" />1 款扩展程序<ph name="END_BOLD" />}other{查看从 Chrome 应用商店中下架的 <ph name="BEGIN_BOLD" />{NUM_EXTENSIONS} 款扩展程序<ph name="END_BOLD" />}}</translation>
 <translation id="4809079943450490359">您的设备管理员温馨提示：</translation>
 <translation id="4809447465126035330">删除</translation>
 <translation id="480990236307250886">打开主页</translation>
@@ -4659,6 +4685,7 @@
 <translation id="5101839224773798795">光标停止时自动点击</translation>
 <translation id="5106350808162641062">移除</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> 由 Family Link 监管。您可添加学校帐号，以便在家长监管下访问学校资源。</translation>
+<translation id="5107093668001980925">一律不显示<ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">某个扩展程序关闭了“安全浏览”功能</translation>
 <translation id="5108967062857032718">设置 - 移除 Android 应用</translation>
 <translation id="5109044022078737958">女运动员</translation>
@@ -4669,6 +4696,7 @@
 <translation id="5111794652433847656">在此设备上未发现<ph name="APP_NAME" />的任何通行密钥</translation>
 <translation id="5112577000029535889">开发者工具(&amp;D)</translation>
 <translation id="511313294362309725">开启快速配对</translation>
+<translation id="5113384440341086023">通过 Play 商店安装的应用，以及通过 Chrome 浏览器安装的 Web 应用</translation>
 <translation id="51143538739122961">请插入您的安全密钥并轻触它</translation>
 <translation id="5115309401544567011">请为您的 <ph name="DEVICE_TYPE" /> 接通电源。</translation>
 <translation id="5115338116365931134">SSO</translation>
@@ -4714,6 +4742,7 @@
 <translation id="5154702632169343078">主题背景</translation>
 <translation id="5155327081870541046">在地址栏中，输入与您要用作搜索范围的网站对应的快捷字词，例如“@bookmarks”。然后，按您的首选键盘快捷键，并输入搜索字词。</translation>
 <translation id="5156638757840305347">光标在出现或移动时突出显示</translation>
+<translation id="5157250307065481244">查看网站详细信息</translation>
 <translation id="5157635116769074044">将此页固定到“开始”屏幕…</translation>
 <translation id="5158206172605340248">已关闭重音符号菜单。</translation>
 <translation id="5159094275429367735">设置 Crostini</translation>
@@ -5769,6 +5798,7 @@
 <translation id="6104068876731806426">Google 帐号</translation>
 <translation id="6104311680260824317">无法将此设备加入到该网域中。相应服务器不支持所指定的 Kerberos 加密类型。请前往“更多选项”以检查加密设置。</translation>
 <translation id="6104796831253957966">打印机队列已满</translation>
+<translation id="6106167152849320869">如果您在上一步中还选择了发送诊断数据和使用情况数据，系统就会针对已安装的应用收集这些数据。</translation>
 <translation id="6111972606040028426">启用 Google 助理</translation>
 <translation id="6112294629795967147">触摸即可调整大小</translation>
 <translation id="6112727384379533756">添加票据</translation>
@@ -5899,6 +5929,7 @@
 <translation id="6226777517901268232">私钥文件（选填）</translation>
 <translation id="6227002569366039565">按 |<ph name="ACCELERATOR" />| 可聚焦于此气泡，然后再聚焦于它所指向的元素。</translation>
 <translation id="6227280783235722609">扩展程序</translation>
+<translation id="6229062790325126537">重置 ApnMigrator</translation>
 <translation id="6229849828796482487">断开 WLAN 网络连接</translation>
 <translation id="6231782223312638214">建议</translation>
 <translation id="6231881193380278751">在网址中添加查询参数可自动刷新相应网页：chrome://device-log/?refresh=&lt;sec&gt;</translation>
@@ -6176,6 +6207,7 @@
 <translation id="6478248366783946499">要保留危险文件吗？</translation>
 <translation id="6479881432656947268">访问 Chrome 应用商店</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
+<translation id="6481978993812487794">一旦开启了此设置，您便可在已使用 Google 帐号登录的任何 ChromeOS 设备上使用已同步的应用。即使关闭了其他浏览器同步功能，Web 应用也会通过 Chrome 同步。</translation>
 <translation id="6482559668224714696">全屏放大镜</translation>
 <translation id="6483485061007832714">打开下载的文件</translation>
 <translation id="6483805311199035658">正在打开 <ph name="FILE" />...</translation>
@@ -6190,6 +6222,7 @@
 <translation id="6497784818439587832">更改显示大小以缩小或放大屏幕上的内容</translation>
 <translation id="6497789971060331894">鼠标反向滚动</translation>
 <translation id="6498249116389603658">所选全部语言(&amp;A)</translation>
+<translation id="6498583202177273322">在浏览此网页时获取更多实用信息</translation>
 <translation id="6499143127267478107">正在解析代理脚本中的主机...</translation>
 <translation id="6499764981457476645">在附近找不到任何设备</translation>
 <translation id="6501957628055559556">所有容器</translation>
@@ -6635,6 +6668,7 @@
 <translation id="688312408602122936">通过 Steam 安装的所有游戏和应用也将从此设备上移除</translation>
 <translation id="6883319974225028188">糟糕！系统未能保存设备配置。</translation>
 <translation id="6884474387073389421">确定要删除所选登录数据吗？</translation>
+<translation id="6885122019363983153">各设备上的桌面背景一致</translation>
 <translation id="6885771755599377173">系统信息预览</translation>
 <translation id="6886380424988777998">无法升级 Linux</translation>
 <translation id="6886871292305414135">在新标签页中打开链接(&amp;T)</translation>
@@ -6706,6 +6740,7 @@
 <translation id="6949434160682548041">密码（选填）</translation>
 <translation id="6950627417367801484">还原应用</translation>
 <translation id="6952242901357037157">您还可在此处显示您 <ph name="BEGIN_LINK" />Google 帐号<ph name="END_LINK" />中存储的密码</translation>
+<translation id="6954910832698269894">开启设备同步即可恢复您之前所用 Chromebook 中的应用、设置、Wi-Fi 网络和壁纸。您可随时在“设置”&gt;“帐号”下进行更改。</translation>
 <translation id="6954936693361896459">改为投放此标签页</translation>
 <translation id="6955446738988643816">审查弹出内容</translation>
 <translation id="6955535239952325894">在受管理的浏览器上，此设置已被停用</translation>
@@ -6864,6 +6899,7 @@
 <translation id="7075513071073410194">PKCS #1，带有 RSA 加密的 MD5</translation>
 <translation id="7075625805486468288">管理 HTTPS/SSL 证书和设置</translation>
 <translation id="7076875098323397992">无法开始升级</translation>
+<translation id="7077751457066325012">查看和自定义键盘快捷键</translation>
 <translation id="7077829361966535409">使用当前代理设置无法加载登录页面。请<ph name="GAIA_RELOAD_LINK_START" />尝试重新登录<ph name="GAIA_RELOAD_LINK_END" />，或者使用不同的<ph name="PROXY_SETTINGS_LINK_START" />代理设置<ph name="PROXY_SETTINGS_LINK_END" />。</translation>
 <translation id="7078120482318506217">所有网络</translation>
 <translation id="708060913198414444">复制音频地址(&amp;O)</translation>
@@ -6893,6 +6929,7 @@
 <translation id="7108933416628942903">立即锁定</translation>
 <translation id="7109543803214225826">已移除快捷方式</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{向群组中添加标签页}other{向群组中添加标签页}}</translation>
+<translation id="7110684627876015299">未命名的组 - <ph name="OPENED_STATE" /></translation>
 <translation id="7111822978084196600">为此窗口命名</translation>
 <translation id="7113102733263608554"><ph name="ITEM_COUNT_ONE" /> 件商品</translation>
 <translation id="7113502843173351041">获取您的电子邮件地址</translation>
@@ -7107,6 +7144,7 @@
 <translation id="7328867076235380839">无效的组合</translation>
 <translation id="7329154610228416156">由于已配置为使用不安全的网址 (<ph name="BLOCKED_URL" />)，因此登录失败了。请与管理员联系。</translation>
 <translation id="7332053360324989309">Dedicated Worker：<ph name="SCRIPT_URL" /></translation>
+<translation id="7333669215417470379">备份和恢复您所用的应用和设置</translation>
 <translation id="7335974957018254119">支持拼写检查的语言</translation>
 <translation id="7336799713063880535">已屏蔽通知。</translation>
 <translation id="7338630283264858612">设备序列号无效。</translation>
@@ -7129,6 +7167,7 @@
 <translation id="7348093485538360975">屏幕键盘</translation>
 <translation id="7349010927677336670">视频流畅性</translation>
 <translation id="7352651011704765696">出了点问题</translation>
+<translation id="7352664183151911163">在您所用的各款应用和 Chrome 浏览器上保持同步</translation>
 <translation id="7353261921908507769">附近的所有联系人都可与您分享内容。仅当您接受后，系统才会开始传输内容。</translation>
 <translation id="735361434055555355">正在安装 Linux…</translation>
 <translation id="7354120289251608189">您现在可以随时为浏览器换上全新外观了。</translation>
@@ -7268,6 +7307,8 @@
 <translation id="7458168200501453431">使用 Google 搜索所用的拼写检查工具。您在浏览器中输入的文字会被发送给 Google。</translation>
 <translation id="7458715171471938198">还原应用？</translation>
 <translation id="7458933488302148148">检查您已保存的密码，让您在上网时更安全、更安心</translation>
+<translation id="745988141575685751"><ph name="BEGIN_PARAGRAPH1" />如果您允许 ChromeOS 设备自动发送报告，则可帮助我们确定 ChromeOS 中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：ChromeOS 的崩溃时间、使用的功能、通常占用的内存量，等等。如果同时启用了应用同步，系统还会收集其他应用（包括 Android 应用和 Web 应用）的诊断数据和使用情况数据。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />您随时可在 Chrome 设备的设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7460045493116006516">您已安装的当前主题背景</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746216226901520237">下次，您只需使用手机就能解锁您的 <ph name="DEVICE_TYPE" /> 了。您可在“设置”中关闭 Smart Lock。</translation>
@@ -7501,6 +7542,7 @@
 <translation id="7663719505383602579">接收器：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7663774460282684730">可以使用键盘快捷键</translation>
 <translation id="7663859337051362114">添加 eSIM 卡配置文件</translation>
+<translation id="76641554187607347">未连接任何键盘</translation>
 <translation id="7665082356120621510">预留大小</translation>
 <translation id="7665369617277396874">添加帐号</translation>
 <translation id="766560638707011986">显示域名</translation>
@@ -7548,6 +7590,7 @@
 <translation id="769824636077131955">此文档太大，无法进行安全检查。您只能打印不超过 50 MB 的文档。</translation>
 <translation id="7698507637739331665">某些内容已被屏蔽</translation>
 <translation id="7701040980221191251">无</translation>
+<translation id="7701265686005869308">关闭个人资料</translation>
 <translation id="7701869757853594372">用户句柄</translation>
 <translation id="7702574632857388784">从列表中移除 <ph name="FILE_NAME" /></translation>
 <translation id="7702907602086592255">域名</translation>
@@ -7967,6 +8010,7 @@
 <translation id="8050191834453426339">再次验证</translation>
 <translation id="8051193500142930381">所有需要使用摄像头的功能都将无法正常运行</translation>
 <translation id="8051390370038326517">始终允许 <ph name="HOST" /> 全面控制 MIDI 设备</translation>
+<translation id="8052218774860457016">管理浏览器同步</translation>
 <translation id="8053278772142718589">PKCS #12 文件</translation>
 <translation id="8053390638574070785">重新加载此页</translation>
 <translation id="8054517699425078995">此类型的文件可能会危害您的设备。仍要保留 <ph name="FILE_NAME" /> 吗？</translation>
@@ -8336,6 +8380,7 @@
 <translation id="8376137163494131156">请将 Google Cast 发生的情况告诉我们。</translation>
 <translation id="8376384591331888629">包括此网站上的第三方 Cookie</translation>
 <translation id="8376451933628734023">如果此 Web 应用试图诱骗您认为它是另一款应用，请卸载它。</translation>
+<translation id="8376752431516546391">Google 搜索侧边栏</translation>
 <translation id="8377625247046155446">这个通行密钥只会保存在此设备上。在您关闭所有无痕式窗口后，这个通行密钥会保留在此设备上。</translation>
 <translation id="8378714024927312812">由贵组织管理</translation>
 <translation id="8379878387931047019">此设备不支持该网站要求使用的安全密钥的类型</translation>
@@ -8403,6 +8448,11 @@
 <translation id="8428628598981198790">您的安全密钥无法用于此网站</translation>
 <translation id="84297032718407999">您将在 <ph name="LOGOUT_TIME_LEFT" />后退出登录</translation>
 <translation id="8431190899827883166">显示点按操作反馈</translation>
+<translation id="8431496281632382473">这份个人资料由 <ph name="DOMAIN" /> 管理。根据贵组织的要求，如果想继续使用这份受管理的个人资料，您必须共享设备信号。
+
+设备信号可能包括您的浏览器、操作系统、设备、已安装的软件以及文件的相关信息。
+
+如果您选择不共享信号，系统会关闭这份个人资料。</translation>
 <translation id="8434480141477525001">NaCl调试端口</translation>
 <translation id="8437209419043462667">美国英语</translation>
 <translation id="8438328416656800239">改用智能浏览器</translation>
@@ -8487,6 +8537,8 @@
 <translation id="851263357009351303">始终允许 <ph name="HOST" /> 显示图片</translation>
 <translation id="8513108775083588393">自动屏幕旋转</translation>
 <translation id="8513357934662532537">如需将密码导入 <ph name="USER_EMAIL" /> 的 <ph name="BRAND" />，请选择一个 CSV 文件。</translation>
+<translation id="8513683386591916542"><ph name="BEGIN_PARAGRAPH1" />如果您允许 ChromeOS 设备自动发送报告，则可帮助我们确定 ChromeOS 中需要优先解决的问题和优先改进的方面。这些报告可能包含的内容有：ChromeOS 的崩溃时间、使用的功能、通常占用的内存量，等等。如果同时启用了应用同步，系统还会收集其他应用（包括 Android 应用和 Web 应用）的诊断数据和使用情况数据。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />您随时可在孩子的 ChromeOS 设备的设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8514746246728959655">尝试改用一个不同的安全密钥</translation>
 <translation id="8514955299594277296">不允许网站将数据保存在设备上（不推荐）</translation>
 <translation id="8517759303731677493">修改…</translation>
@@ -8788,7 +8840,7 @@
 <ph name="DOMAIN" /> 要求您使智能卡保持插入状态。}}</translation>
 <translation id="8776294611668764629">贵组织屏蔽了此文件，因为它过大，无法接受安全检查。您只能打开不超过 50 MB 的文件。</translation>
 <translation id="8777628254805677039">根密码</translation>
-<translation id="8778393144535275552">清除显示的数据</translation>
+<translation id="8778393144535275552">清除所显示网站的数据</translation>
 <translation id="8779944680596936487">网站只能使用 Cookie 查看您在相应网站上的浏览活动</translation>
 <translation id="8780123805589053431">从 Google 获取图片说明</translation>
 <translation id="8780443667474968681">已关闭语音搜索功能。</translation>
@@ -8846,6 +8898,7 @@
 <translation id="883062543841130884">替换</translation>
 <translation id="8830779999439981481">正在重启以应用更新</translation>
 <translation id="8830796635868321089">无法使用当前代理设置来检查更新，请调整您的<ph name="PROXY_SETTINGS_LINK_START" />代理设置<ph name="PROXY_SETTINGS_LINK_END" />。</translation>
+<translation id="8830863983385452402">该网站将能看到此标签页上的内容</translation>
 <translation id="8831769650322069887">打开 <ph name="FILE_NAME" /></translation>
 <translation id="8832781841902333794">您的个人资料</translation>
 <translation id="8834039744648160717">网络配置由 <ph name="USER_EMAIL" /> 控制。</translation>
@@ -8977,6 +9030,7 @@
 <translation id="8946359700442089734">此<ph name="IDS_SHORT_PRODUCT_NAME" />设备上未完全启用调试功能。</translation>
 <translation id="894763922177556086">良好</translation>
 <translation id="8948939328578167195"><ph name="WEBSITE" /> 想查看您的安全密钥的品牌和型号</translation>
+<translation id="8949304443659090542">管理 Chrome 浏览器同步</translation>
 <translation id="895054485242522631">网站可以使用移动传感器</translation>
 <translation id="8951256747718668828">发生错误，因此无法完成恢复</translation>
 <translation id="8951465597020890363">仍要退出访客模式？</translation>
@@ -9082,6 +9136,7 @@
 <translation id="9032097289595078011">停用快速配对</translation>
 <translation id="9033765790910064284">仍然继续</translation>
 <translation id="9033857511263905942">粘贴(&amp;P)</translation>
+<translation id="9034408118624208974">初次使用 Chromebook？不妨开启同步功能以便备份您的偏好设置。</translation>
 <translation id="903480517321259405">重新输入 PIN 码</translation>
 <translation id="9037054491984310631">已连接到名为“<ph name="DEVICE" />”的蓝牙设备</translation>
 <translation id="9037640663275993951">不允许此设备运行虚拟机</translation>
@@ -9125,6 +9180,7 @@
 <translation id="9068298336633421551">允许有位置信息权限的 Android 应用和服务使用此设备的位置信息。Google 可能会定期收集位置数据，并以匿名方式使用这类数据，从而提高位置信息精确度并改善基于地理位置的服务。</translation>
 <translation id="9068598199622656904">只需一次按下一个键即可执行键盘快捷操作，而不用同时按住多个键</translation>
 <translation id="9068878141610261315">不支持此文件类型</translation>
+<translation id="9069665781180028115">您将可以在此 Chromebook 上使用所选项。如果您是初次使用 Chromebook，不妨同步所有项以便备份您的偏好设置。您可随时在“设置”&gt;“帐号”下进行更改。</translation>
 <translation id="9070342919388027491">此标签页已移至左侧</translation>
 <translation id="9074739597929991885">蓝牙</translation>
 <translation id="9074836595010225693">USB鼠标已连接</translation>
@@ -9298,6 +9354,7 @@
 <translation id="930268624053534560">详细时间戳</translation>
 <translation id="930551443325541578">重复按键和重音符号</translation>
 <translation id="930893132043726269">目前正在使用漫游服务</translation>
+<translation id="930991362911221750">允许“<ph name="APP_NAME" />”查看此标签页？</translation>
 <translation id="93140074055951850">Android 应用被停止了</translation>
 <translation id="932327136139879170">首页</translation>
 <translation id="932508678520956232">无法开始打印。</translation>

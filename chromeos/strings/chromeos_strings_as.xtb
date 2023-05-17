@@ -738,6 +738,7 @@
 <translation id="7130438335435247835">এক্সেছ পইণ্টৰ নাম (APN)</translation>
 <translation id="7131634559772719176">প্ৰিছেট নিশ্চিত কৰক</translation>
 <translation id="7134436342991564651">{0,plural, =1{নে'ম ছার্ভাৰ}one{নে'ম ছার্ভাৰ}other{নে'ম ছার্ভাৰ}}</translation>
+<translation id="7135814714616751706">সন্ধানৰ শ্বৰ্টকাট</translation>
 <translation id="7143207342074048698">সংযোগ হৈছে</translation>
 <translation id="7144878232160441200">পুনৰ চেষ্টা কৰক</translation>
 <translation id="714876143603641390">LAN সংযোগ</translation>
@@ -768,6 +769,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Google Searchত ফলাফল চাবলৈ ছাৰ্চ আৰু স্পেচ টিপক।</translation>
 <translation id="7343649194310845056">নেটৱৰ্ক ডিভাইচ</translation>
+<translation id="7353413232959255829">সন্ধানৰ ফলাফল <ph name="LIST_SIZE" />ৰ ভিতৰত <ph name="LIST_POSITION" />: <ph name="SEARCH_RESULT_TEXT" />। শ্বৰ্টকাট নেভিগে’ট কৰিবলৈ এণ্টাৰ টিপক।</translation>
 <translation id="7359657277149375382">ফাইলৰ প্রকাৰ</translation>
 <translation id="73631062356239394">ডায়েগন’ষ্টিক্সৰ ডেটা শ্বেয়াৰ কৰক</translation>
 <translation id="7375053625150546623">EAP</translation>

@@ -431,6 +431,7 @@
 <translation id="455835558791489930">Bateria de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">Chip desbloqueado</translation>
 <translation id="4562494484721939086">Sem serviço</translation>
+<translation id="4573777384450697571">Falha: o certificado expirou</translation>
 <translation id="458794348635939462">Falha na resolução de todos os hosts</translation>
 <translation id="4593212453765072419">Autenticação de proxy necessária</translation>
 <translation id="4609350030397390689">Diminuir o brilho do teclado</translation>
@@ -586,7 +587,7 @@
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="5849570051105887917">Código do provedor doméstico</translation>
 <translation id="5859603669299126575">Álbum da galeria de arte</translation>
-<translation id="5860033963881614850">Desativado</translation>
+<translation id="5860033963881614850">Desativada</translation>
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="5866840822086176774">Muito forte</translation>
 <translation id="5876385649737594562">Ative para selecionar opções</translation>

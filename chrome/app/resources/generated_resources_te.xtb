@@ -5,6 +5,7 @@
 <translation id="1002085272681738789">ట్యాబ్ మళ్లీ యాక్టివేట్ చేయబడింది</translation>
 <translation id="1003088604756913841">కొత్త <ph name="APP" /> విండోలో లింక్‍ను తెరువు</translation>
 <translation id="100323615638474026">USB పరికరం (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="1003355351496161312">Google సురక్షిత బ్రౌజింగ్</translation>
 <translation id="1004218526896219317">సైట్ యాక్సెస్</translation>
 <translation id="1005274289863221750">మీ మైక్రోఫోన్ మరియు కెమెరాను ఉపయోగించండి</translation>
 <translation id="1005333234656240382">ADB డీబగ్గింగ్‌ను ఎనేబుల్ చేయాలా?</translation>
@@ -911,6 +912,7 @@
 <translation id="1769104665586091481">లింక్‌ను కొత్త &amp;విండోలో తెరువు</translation>
 <translation id="1770407692401984718">ఇమేజ్‌ను ఇక్కడకు లాగండి లేదా</translation>
 <translation id="177053719077591686">Google Driveకు Android యాప్‌లను బ్యాకప్ చేయండి.</translation>
+<translation id="1771075623623424448">బ్రౌజర్ పరికరం-లాగ్ పేజీ కోసం వెతుకుతున్నారా? <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />‌ను చూడండి.</translation>
 <translation id="177336675152937177">హోస్ట్ చేసిన యాప్‌ డేటా</translation>
 <translation id="1776712937009046120">వినియోగదారును జోడించండి</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
@@ -1698,6 +1700,15 @@
 <translation id="2422125132043002186">Linux పునరుద్ధరణ రద్దయింది</translation>
 <translation id="2423578206845792524">చిత్రాన్ని ఇలా సే&amp;వ్ చేయి...</translation>
 <translation id="2424424966051154874">{0,plural, =1{గెస్ట్}other{గెస్ట్ (#)}}</translation>
+<translation id="242684489663276773">ఈ చర్య కారణంగా:
+          <ph name="LINE_BREAKS" />
+           • కొన్ని Chrome సెట్టింగ్‌లు, Chrome షార్ట్‌కట్‌లు రీసెట్ చేయబడతాయి
+           <ph name="LINE_BREAK" />
+           •ఎక్స్‌టెన్షన్‌లు డిజేబుల్ చేయబడతాయి
+           <ph name="LINE_BREAK" />
+           • కుక్కీలు, అలాగే తాత్కాలిక సైట్ డేటా తొలగించబడుతుంది
+            <ph name="LINE_BREAKS" />
+           బుక్‌మార్క్‌లు, హిస్టరీ, అలాగే సేవ్ చేయబడిన పాస్‌వర్డ్‌లు ప్రభావితం కావు.</translation>
 <translation id="2428510569851653187">ట్యాబ్ క్రాష్ అయిన సమయంలో మీరు ఏం చేస్తున్నారో వివరించండి</translation>
 <translation id="2428939361789119025">Wi-Fiను ఆఫ్ చేయండి</translation>
 <translation id="2428978615149723410">ఈ కార్ట్‌లు</translation>
@@ -4473,6 +4484,7 @@
 <translation id="4876895919560854374">స్క్రీన్‌ను లాక్ చేయండి మరియు అన్‌లాక్ చేయండి</translation>
 <translation id="4877276003880815204">మూలకాలను పర్యవేక్షించు</translation>
 <translation id="4877652723592270843">మీరు ChromeOS Flexకి బిల్ట్-ఇన్ స్క్రీన్ రీడర్ అయిన ChromeVoxను యాక్టివేట్ చేయాలనుకుంటున్నారా? అలా చేయాలనుకుంటే, రెండు వాల్యూమ్ 'కీ'లను ఐదు సెకన్ల పాటు నొక్కి, పట్టుకోండి.</translation>
+<translation id="4878261017150799673">సైట్ యాక్టివ్‌గా ఉంచండి</translation>
 <translation id="4878634973244289103">ఫీడ్‌బ్యాక్‌ను పంపడం సాధ్యపడలేదు. దయచేసి తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="4878653975845355462">మీ నిర్వాహకుడి ద్వారా అనుకూల బ్యాక్‌గ్రౌండ్‌లు ఆపివేయబడ్డాయి</translation>
 <translation id="4878718769565915065">ఈ సెక్యూరిటీ కీకి వేలిముద్రను జోడంచడం విఫలమైంది</translation>
@@ -5261,6 +5273,9 @@
 <translation id="5602765853043467355">ఈ పరికరం నుండి బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు వంటివాటిని తీసివేయండి</translation>
 <translation id="5605758115928394442">మీరేనని నిర్ధారించుకోవడానికి మీ ఫోన్‌కు ఒక నోటిఫికేషన్ పంపబడింది.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{ఈ ఎక్స్‌టెన్షన్ బ్లాక్ చేయబడింది}other{ఈ ఎక్స్‌టెన్షన్‌లు బ్లాక్ చేయబడ్డాయి}}</translation>
+<translation id="560743070587960985">ఈ ఫైల్ వైరస్ లేదా మాల్‌వేర్ కావచ్చు.
+
+ఇది సురక్షితం కాదా అని చెక్ చేయడానికి మీరు దాన్ని Googleకు పంపవచ్చు. స్కాన్స్ చేయడానికి సాధారణంగా కొన్ని సెకన్ల సమయం పడుతుంది.</translation>
 <translation id="560834977503641186">Wi-Fi సింక్, మరింత తెలుసుకోండి</translation>
 <translation id="5608580678041221894">కత్తిరింపు ప్రాంతాన్ని సర్దుబాటు చేయడానికి లేదా తరలించడానికి కింది కీలను నొక్కండి</translation>
 <translation id="5609231933459083978">అప్లికేష‌న్‌ చెల్లనిదిగా కనిపిస్తోంది.</translation>
@@ -5997,6 +6012,7 @@
 <translation id="6254892857036829079">అద్భుతంగా ఉంది</translation>
 <translation id="6257602895346497974">సింక్‌ను ఆన్ చేయి...</translation>
 <translation id="62586649943626337">ట్యాబ్ గ్రూప్‌లతో మీ ట్యాబ్‌లను ఆర్గనైజ్ చేయండి</translation>
+<translation id="6260092874648348841">సైట్ యాక్టివ్‌గా ఉంచండి</translation>
 <translation id="6262371516389954471">మీ బ్యాకప్‌లు Googleకు అప్‌లోడ్ చేయబడతాయి, మీ Google ఖాతా పాస్‌వర్డ్‌ను ఉపయోగించి ఎన్‌క్రిప్ట్ చేయబడతాయి.</translation>
 <translation id="6263082573641595914">Microsoft CA వెర్షన్</translation>
 <translation id="6263284346895336537">క్లిష్టమైనది కాదు</translation>
@@ -7529,6 +7545,7 @@
 <translation id="7634280112532283638">స్పామ్ &amp; మోసాన్ని తగ్గించడం</translation>
 <translation id="7634337648687970851">లోకల్ డేటా రికవర్ చేయడానికి ప్రస్తుతం సపోర్ట్ లేదు.</translation>
 <translation id="7634566076839829401">ఏదో తప్పు జరిగింది. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
+<translation id="763472884969134151"><ph name="LINK" /> ద్వారా విశ్లేషణ జరిగింది</translation>
 <translation id="7635048370253485243">మీ అడ్మినిస్ట్రేటర్ పిన్ చేశారు</translation>
 <translation id="7635711411613274199">మీరు బ్రౌజ్ చేస్తున్నప్పుడు, మీకు కనిపించే యాడ్ ఈ సెట్టింగ్ ఆధారంగా, లేదా <ph name="BEGIN_LINK1" />యాడ్ టాపిక్‌ల<ph name="LINK_END1" /> ఆధారంగా, లేదా మీ <ph name="BEGIN_LINK2" />కుక్కీ సెట్టింగ్‌ల<ph name="LINK_END2" /> ఆధారంగా వ్యక్తిగతీకరించబడవచ్చు, అలాగే మీరు చూసే సైట్ యాడ్‌లను వ్యక్తిగతీకరించవచ్చు</translation>
 <translation id="7636919061354591437">ఈ పరికరంలో ఇన్‌స్టాల్ చేయి</translation>
@@ -8205,6 +8222,7 @@
 <translation id="8195737548602430447">టార్గెట్ భాషకు క్యాప్షన్‌లను ఆటోమేటిక్‌గా అనువదిస్తుంది.</translation>
 <translation id="8197673340773315084">'ఆఫీస్', 'వ్యక్తిగతం' వంటి లేబుల్‌ను లేదా ఏదైనా పేరును జోడించండి</translation>
 <translation id="8198456017687137612">ప్రసారం చేసే ట్యాబ్</translation>
+<translation id="8198457270656084773">సిస్టమ్ పరికరం-లాగ్ పేజీ కోసం వెతుకుతున్నారా? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />‌ను చూడండి.</translation>
 <translation id="8198511718495409170">"<ph name="EXTENSION_NAME" />" కోసం మీ అప్‌డేట్ చేసిన సెట్టింగ్‌లను ఈ సైట్‌కు వర్తింపజేయడానికి, ఈ పేజీని రీలోడ్ చేయండి</translation>
 <translation id="8199300056570174101">నెట్‌వర్క్ (సేవ) మరియు పరికర లక్షణాలు</translation>
 <translation id="8200772114523450471">మ‌ళ్లీ ప్రారంభించండి</translation>

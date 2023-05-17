@@ -320,6 +320,7 @@
 <translation id="3619593063686672873">Нет недавних видео.</translation>
 <translation id="3634507049637220048">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус подключения – "<ph name="CONNECTION_STATUS" />", под управлением администратора, подробная информация</translation>
 <translation id="3645233063072417428">Перемещено объектов: <ph name="NUMBER_OF_ITEMS" />.</translation>
+<translation id="3658269352872031728">Выбрано файлов: <ph name="SELECTED_FILE_COUNT" /></translation>
 <translation id="3685122418104378273">Синхронизация Google Диска по мобильной сети отключена по умолчанию.</translation>
 <translation id="3689865792480713551">Отменить <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, не активирована, <ph name="CONNECTION_STATUS" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подробная информация</translation>
@@ -577,6 +578,7 @@
 <translation id="5533102081734025921">Изображение <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Подсчет размера…</translation>
 <translation id="554153475311314364">Греческий, транслитерация</translation>
+<translation id="5554171655917412781">Выбрано папок: <ph name="SELECTED_FOLDERS_COUNT" /></translation>
 <translation id="5580591966435005537">виртуальная машина</translation>
 <translation id="5583640892426849032">Клавиша возврата (Backspace)</translation>
 <translation id="5583664733673201137">Ширина знаков пунктуации – полная</translation>
@@ -599,6 +601,7 @@
 <translation id="5724172041621205163">Тайский, раскладка Pattachote</translation>
 <translation id="57383366388012121">Последний месяц</translation>
 <translation id="5756666464756035725">Венгерская QWERTY-клавиатура</translation>
+<translation id="5760252553414789727">Выбрано элементов: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">Немецкий (Швейцария)</translation>
 <translation id="5769519078756170258">Хост или домен, который вы хотите исключить</translation>
 <translation id="5775750595919327203">Урду</translation>
@@ -917,6 +920,7 @@
 <translation id="8264024885325823677">Этим параметром управляет администратор.</translation>
 <translation id="8269755669432358899">Свернуть панель с информацией о файлах</translation>
 <translation id="8280151743281770066">Армянская (фонетическая)</translation>
+<translation id="8285791779547722821">Зашифровано (<ph name="ORIGINAL_MIME_TYPE" />)</translation>
 <translation id="8294431847097064396">Источник</translation>
 <translation id="8297012244086013755">Корейская раскладка (Sebeolsik без Shift)</translation>
 <translation id="8299269255470343364">Японский</translation>

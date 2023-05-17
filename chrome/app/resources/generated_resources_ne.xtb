@@ -6322,6 +6322,7 @@
 <translation id="657866106756413002">नेटवर्क हेल्थ स्न्यापसट</translation>
 <translation id="6579369886355986318">सबै नियन्त्रणहरू देखाइऊन्</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - डेस्कटपको सामग्री आदान प्रदान गरियो</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% पूरा भयो</translation>
 <translation id="6580203076670148210">स्क्यान गर्ने गति:</translation>
 <translation id="6582080224869403177">आफ्नो सुरक्षा सेवाको स्तरवृद्धि गर्न आफ्नो <ph name="DEVICE_TYPE" /> रिसेट गर्नुहोस्।</translation>
 <translation id="6582274660680936615">तपाईं गेस्टका रूपमा ब्राउज गर्दै हुनुहुन्छ</translation>
@@ -6947,6 +6948,7 @@
 <translation id="7114054701490058191">पासवर्ड मिलेन</translation>
 <translation id="7114648273807173152">आफ्नो Google खातामा साइन इन गर्नका निम्ति Smart Lock को प्रयोग गर्न सेटिङहरू &gt; कनेक्ट गरिएका डिभाइस &gt; तपाईंको फोन &gt; Smart Lock मा जानुहोस्।</translation>
 <translation id="7115361495406486998">कन्ट्याक्टमा Google खाता भएका कोही पनि हुनुहुन्न</translation>
+<translation id="7116554090938189816">प्रिन्टरको SSL प्रमाणपत्रको म्याद सकिएको छ। प्रिन्टर रिस्टार्ट गरेर फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7117228822971127758">कृपया पछि फेरि प्रयास गर्नुहोस्</translation>
 <translation id="711840821796638741">व्यवस्थित बुकमार्कहरू देखाउनुहोस्</translation>
 <translation id="711985611146095797">तिमी यो पेजमार्फत आफ्ना साइन इन गरिएका Google खाताहरू व्यवस्थापन गर्न सक्छौ। <ph name="LINK_BEGIN" />थप जान<ph name="LINK_END" /></translation>

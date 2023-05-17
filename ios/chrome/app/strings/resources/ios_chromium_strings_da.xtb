@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> brugte Chromium og gemte bogmærker, adgangskoder og andre indstillinger på denne enhed.</translation>
 <translation id="372658070733623520">Verificer din identitet for at bruge og gemme Chromium-data på din Google-konto.</translation>
 <translation id="3805899903892079518">Chromium har ikke adgang til dine billeder eller videoer. Gå til iOS Indstillinger &gt; Privatliv &gt; Billeder for at få adgang.</translation>
+<translation id="3955621079070267756">Åbn Chromium fra en hvilken som helst app</translation>
 <translation id="4043291146360695975">Adgangskoder gemmes kun i Adgangskodeadministrator på denne enhed.</translation>
 <translation id="4099085513035183040">Understøttes ikke i Chromium Beta</translation>
 <translation id="4432744876818348753">Log ind for at få mest muligt ud af Chromium.</translation>
@@ -143,5 +144,6 @@ Ting, du skal overveje:
 <translation id="9089354809943900324">Chromium er forældet</translation>
 <translation id="9110075932708282655">Brug Chromium som standard</translation>
 <translation id="921174536258924340">Chromium kunne ikke tjekke alle adgangskoder. Prøv igen i morgen, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">Brug automatisk Chromium, når du trykker på links i beskeder, dokumenter og andre apps.</translation>
 <translation id="985602178874221306">Forfatterne til Chromium</translation>
 </translationbundle>

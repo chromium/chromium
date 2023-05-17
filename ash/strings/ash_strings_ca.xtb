@@ -94,6 +94,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1346748346194534595">Dreta</translation>
 <translation id="1351937230027495976">Replega el menú</translation>
 <translation id="1360220746312242196">Quan cerquis una pàgina, ves a la coincidència anterior per cercar</translation>
+<translation id="1360788414852622716">S'està desactivant el perfil. Aquest procés pot tardar uns minuts.</translation>
 <translation id="1364382257761975320">Per desbloquejar el Chromebook, utilitza l'empremta digital</translation>
 <translation id="1365866993922957110">Obtén actualitzacions automàtiques</translation>
 <translation id="1372545819342940910">Desa l'escriptori per a més tard</translation>
@@ -545,6 +546,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3510164367642747937">Ressalta el cursor del ratolí</translation>
 <translation id="3513798432020909783">Compte gestionat per <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Actualitza el dispositiu en 1 minut}other{Actualitza el dispositiu en # minuts}}</translation>
+<translation id="3522979239100719575">S'estan cercant perfils disponibles. Aquest procés pot tardar uns minuts.</translation>
 <translation id="3526440770046466733">Obre l'enllaç en una pestanya nova i continua a la pestanya actual</translation>
 <translation id="353086728817903341">Connectat a <ph name="NUM_DEVICES" /> dispositius</translation>
 <translation id="3533126039236445965">Aplicacions del prestatge</translation>
@@ -1554,6 +1556,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8083540854303889870">Desat per a més tard</translation>
 <translation id="8091153018031979607">Inici: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Actualitzacions automàtiques</translation>
+<translation id="8092380135549145188">Controls de desplaçament</translation>
 <translation id="8098591350844501178">Deixa d'emetre la pantalla a <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Deixa de fixar l'aplicació al prestatge</translation>
 <translation id="8113423164597455979">Sí, en totes</translation>

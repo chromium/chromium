@@ -183,6 +183,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1774796056689732716">Takvim, <ph name="CURRENT_MONTH_YEAR" />, şu anda <ph name="DATE" /> seçili.</translation>
 <translation id="1787955149152357925">Kapalı</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor</translation>
+<translation id="1815245884418711390">Hotspot'u aç/kapat. Hotspot kapalı.</translation>
 <translation id="1816896987747843206">Bu işlem, kamera izni olan tüm uygulamaların ve web sitelerinin kameraya erişmesine izin verir</translation>
 <translation id="1823280932251546115">Durum tepsisi, saat <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -241,6 +242,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2023558322300866873">Paket yakalama işlemini dilediğiniz zaman durdurabilirsiniz</translation>
 <translation id="2034971124472263449">Yine de kaydet</translation>
 <translation id="2049240716062114887">Masa adı <ph name="DESK_NAME" /> olarak değiştirildi</translation>
+<translation id="206377500836174974">Tam</translation>
 <translation id="2064048859448024834">Kamera önizlemesi açık</translation>
 <translation id="2067602449040652523">Klavye parlaklığı</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> özelliğini aç/kapat. <ph name="CAPTURE_MEDIUM" /> özelliği <ph name="CAPTURE_STATE" /> durumda</translation>
@@ -293,6 +295,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2339073806695260576">Not veya ekran görüntüsü almak, lazer işaretçi veya büyüteç işlevlerini kullanmak için raftaki ekran kalemi düğmesine dokunun.</translation>
 <translation id="2341729377289034582">Dikey olarak kilitlendi</translation>
 <translation id="2345226652884463045">Düzenlenecek metni seçmek için Enter'a veya arama + boşluk tuşlarına basın.</translation>
+<translation id="2349785431103945039">Hotspot ayrıntılarını göster. Hotspot'u kullanmak için mobil ağa bağlanın.</translation>
 <translation id="2350794187831162545"><ph name="LANGUAGE" /> konuşma artık yerel olarak işlenir ve çevrimdışı olarak çalışır. Dikte dilinizi Ayarlar &gt; Erişilebilirlik bölümünden değiştirebilirsiniz.</translation>
 <translation id="2352467521400612932">Ekran kalemi ayarları</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> etkinleştiriliyor</translation>
@@ -336,6 +339,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2531025035050312891">cihaz yavaş</translation>
 <translation id="2542089167727451762">Profil resminize dokunun</translation>
 <translation id="254900897760075745">Seçili içeriği panoya kopyala</translation>
+<translation id="2549711466868162843">Işığı iyileştir</translation>
 <translation id="2549985041256363841">Kaydı başlat</translation>
 <translation id="255671100581129685">Google Asistan, herkese açık oturumda kullanılamaz.</translation>
 <translation id="256712445991462162">yerleştirilmiş büyüteç</translation>
@@ -429,6 +433,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3009178788565917040">Çıkış</translation>
 <translation id="3009958530611748826">Kaydedilecek bir klasör seçin</translation>
 <translation id="301282384882049174">Yöneticiniz tarafından paylaşıldı</translation>
+<translation id="301584155502740476">Hotspot ayrıntılarını göster. Hotspot kapalı.</translation>
 <translation id="3018135054368884502">Medyayı ileri sarın</translation>
 <translation id="3033545621352269033">Açık</translation>
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> ile birleştir</translation>
@@ -489,6 +494,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3291862315280588024">Önceki kelimenin başına git</translation>
 <translation id="3294437725009624529">Misafir</translation>
 <translation id="3298690094479023523">PIN'iniz veya şifreniz hâlâ doğrulanamadı. Tekrar deneyin.</translation>
+<translation id="3300193645498960160">Mikrofonunuz kapalıyken konuşursanız bildirim alırsınız. Cihazınızdan hiç ses aktarılmaz.</translation>
 <translation id="3307642347673023554">Dizüstü bilgisayar moduna geçildi</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> daha sonra yine oturum açabilir.</translation>
 <translation id="3321628682574733415">Ebeveyn kodu yanlış</translation>
@@ -572,6 +578,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3621202678540785336">Giriş</translation>
 <translation id="3621712662352432595">Ses Ayarları</translation>
 <translation id="3626281679859535460">Parlaklık</translation>
+<translation id="3629640897379005903">Hotspot ayrıntılarını göster. Hotspot devre dışı bırakılıyor.</translation>
 <translation id="3630697955794050612">kapalı</translation>
 <translation id="3631369015426612114">Şunlardan gelen bildirimlere izin ver:</translation>
 <translation id="3633097874324966332">Cihazınızı eşlemek için Bluetooth ayarlarını açın</translation>
@@ -703,6 +710,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="423685346499232137">Şu anda içerik kopyalama veya yapıştırma işlemi yapılamıyor</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Genel bakış modu</translation>
+<translation id="4240756737570479726">Devre dışı bırakılıyor...</translation>
 <translation id="4242533952199664413">Ayarları aç</translation>
 <translation id="4247123849143712100">Güncelle ve kapat</translation>
 <translation id="4250229828105606438">Ekran görüntüsü</translation>
@@ -841,6 +849,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4864369630010738180">Oturum açılıyor...</translation>
 <translation id="4864648187878336334">Masa 15</translation>
 <translation id="4868492592575313542">etkin</translation>
+<translation id="4871905435473761992">Hotspot ayrıntılarını göster. Mobil ağınız hotspot'u desteklemiyor.</translation>
 <translation id="4872237917498892622">Alt+Arama veya Üst Karakter</translation>
 <translation id="4872852897273142380">Yer işaretleri çubuğunu vurgula veya çubuğa odaklan (görünür durumdaysa)</translation>
 <translation id="4881695831933465202">Aç</translation>
@@ -900,6 +909,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5104236669533825617">Ekran video kaydı oluşturulamıyor</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">Arka planı bulanıklaştır</translation>
 <translation id="5117590920725113268">Sonraki ayı göster</translation>
 <translation id="5121628974188116412">Sayfanın sonuna gider</translation>
 <translation id="5136175204352732067">Farklı klavye bağlandı</translation>
@@ -912,6 +922,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5168181903108465623">Yayın cihazları kullanılabilir</translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
 <translation id="5176318573511391780">Kısmi ekranı kaydet</translation>
+<translation id="5187627942836026988">Hotspot ayrıntılarını göster. Hotspot, yöneticiniz tarafından engellendi.</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> etkinlik</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> ile <ph name="IN_PLACE_APP" /> birleştirilerek yeni bir klasör oluşturuldu.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
@@ -1084,6 +1095,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="595202126637698455">Performans izleme etkin</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5958529069007801266">Denetlenen kullanıcı</translation>
+<translation id="5961960957587052807">Hafif</translation>
 <translation id="5965524703725988602">Koyu temayı aç/kapat. <ph name="STATE_TEXT" />.</translation>
 <translation id="5976112937189445008">Pencereyi kaydetmek için enter tuşuna basın</translation>
 <translation id="5978382165065462689">Ekranınızın kontrolü Uzaktan Yardım kullanılarak paylaşılıyor.</translation>
@@ -1256,6 +1268,7 @@ Yeni yüklenmiş</translation>
 <translation id="6752912906630585008">Masa <ph name="REMOVED_DESK" /> kaldırılarak Masa <ph name="RECEIVE_DESK" /> ile birleştirildi</translation>
 <translation id="6753390234084146956">Sekmeler</translation>
 <translation id="6757237461819837179">Medya oynatılmıyor</translation>
+<translation id="6759628406555734414">Hotspot ayrıntılarını göster. Hotspot etkinleştiriliyor.</translation>
 <translation id="6768043681523654438">depolama</translation>
 <translation id="6777216307882431711">Bağlı USB-C cihazlarına güç sağlıyor</translation>
 <translation id="6781002679438061620">Masa 9</translation>
@@ -1280,6 +1293,7 @@ Yeni yüklenmiş</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sn.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Bir rakam kaldı}other{# rakam kaldı}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> dosyasını indirme işlemi duraklatıldı</translation>
+<translation id="6874854809828346832">Hotspot ayrıntılarını göster. Hotspot açık.</translation>
 <translation id="6878400149835617132">Kısayol kapalı</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 uygulama}other{# uygulama}}</translation>
 <translation id="6884665277231944629">Bugüne geri dönün</translation>
@@ -1289,6 +1303,7 @@ Yeni yüklenmiş</translation>
 <translation id="6896758677409633944">Kopyala</translation>
 <translation id="6901883536534621389">Gezinmek için hareketleri kullanmayı deneyin</translation>
 <translation id="6919251195245069855">Akıllı kartınız tanınamadı. Tekrar deneyin.</translation>
+<translation id="6920245099716267363">Hotspot'u aç/kapat. Hotspot açık, 1 cihaz bağlı.</translation>
 <translation id="6931576957638141829">Kaydetme yeri</translation>
 <translation id="6941333068993625698">Geri bildirim gönderir</translation>
 <translation id="6942518653766415536">Kayıt biçimi menüsü</translation>
@@ -1378,6 +1393,7 @@ Yeni yüklenmiş</translation>
 <translation id="7378203170292176219">Kaydedilecek alanı seçmek için sürükleyin</translation>
 <translation id="7378594059915113390">Medya Denetimleri</translation>
 <translation id="7378889811480108604">Pil tasarrufu modu kapalı</translation>
+<translation id="7382640522316003298">Hotspot'u aç/kapat. Hotspot açık, <ph name="DEVICECOUNT" /> cihaz bağlı.</translation>
 <translation id="7382680553121047388">Açık</translation>
 <translation id="7384028040782072252">Uygulamalarınızı yeniden sıralamak için herhangi bir yeri sağ tıklayın</translation>
 <translation id="7386767620098596324">Ağ bağlantısını aç/kapat. <ph name="STATE_TEXT" />.</translation>
@@ -1428,6 +1444,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7579778809502851308">Ekran görüntüsü</translation>
 <translation id="7593891976182323525">Arama veya Üst Karakter</translation>
 <translation id="7600875258240007829">Tüm bildirimleri göster</translation>
+<translation id="7601417191446344542">Mikrofon kapalıyken uyaran otomatik hatırlatma açılsın mı?</translation>
 <translation id="7607002721634913082">Duraklatıldı</translation>
 <translation id="7609951632080598826">Takvim görünümü, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera yeniden bağlandı.</translation>
@@ -1551,6 +1568,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8131740175452115882">Onayla</translation>
 <translation id="8131994907636310308">Sıralama kısa iletisini kapat</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> ağına bağlanıldı</translation>
+<translation id="8135163608236671037">Hotspot'u aç/kapat. Hotspot açık, bağlı bir cihaz yok.</translation>
 <translation id="8138705869659070104">Cihaz kurulumundan sonra etkinleştirin</translation>
 <translation id="813913629614996137">İlk kullanıma hazırlanıyor...</translation>
 <translation id="8142441511840089262">Çift tıklama</translation>
@@ -1731,6 +1749,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8990809378771970590"><ph name="IME_NAME" /> kullanılıyor</translation>
 <translation id="8991617137207906966">Rengi ters çevirme modu etkinleştirildi. Modu kapatmak için tekrar Ctrl+Ara+H tuşlarına basın.</translation>
 <translation id="899350903320462459">Bildirim işlemi gerçekleştirmek için <ph name="LOGIN_ID" /> olarak cihazın kilidini açın</translation>
+<translation id="8993733019280019776">Konuşuyor musunuz? Mikrofonunuz kapalı. Mikrofonu seçerek açın.</translation>
 <translation id="9000771174482730261">DEPOLAMA ALANINI YÖNET</translation>
 <translation id="9005984960510803406">Crosh penceresini açar</translation>
 <translation id="9017320285115481645">Family Link ebeveyn erişim kodunu girin.</translation>

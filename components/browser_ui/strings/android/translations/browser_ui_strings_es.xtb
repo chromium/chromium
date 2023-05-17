@@ -263,7 +263,7 @@
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> bloqueado</translation>
 <translation id="5804241973901381774">Permisos</translation>
 <translation id="5810805850857689118">Esta acción borrará todos los datos y cookies de <ph name="ORIGIN" /> y de todos los sitios que incluya</translation>
-<translation id="5860033963881614850">Desactivado</translation>
+<translation id="5860033963881614850">Desactivada</translation>
 <translation id="5876056640971328065">Pausar vídeo</translation>
 <translation id="5884085660368669834">Preferencia de sitio</translation>
 <translation id="5887687176710214216">Última visita: ayer</translation>
@@ -311,6 +311,7 @@
 <translation id="6612358246767739896">Contenido protegido</translation>
 <translation id="662080504995468778">Seguir aquí</translation>
 <translation id="6643016212128521049">Borrar</translation>
+<translation id="6653342741369270081">Pulsa el botón para volver si quieres salir de la pantalla completa.</translation>
 <translation id="6689172468748959065">Fotos de perfil</translation>
 <translation id="6697925417670533197">Descargas activas</translation>
 <translation id="6722828510648505498">Bloquea las solicitudes de inicio de sesión de servicios de identidad.</translation>

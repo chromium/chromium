@@ -92,6 +92,7 @@
 <translation id="3179665906251668410">Отваряне на връзката в прозорец в режим „инко&amp;гнито“ на Chromium</translation>
 <translation id="3185330573522821672">Персонализирайте новия си потребителски профил в Chromium</translation>
 <translation id="3190315855212034486">О, не! Chromium претърпя срив. Да се стартира ли отново сега?</translation>
+<translation id="3255926992597692024">Chromium се опитва да промени настройките за попълване на начините на плащане.</translation>
 <translation id="3258596308407688501">Chromium не може да чете и записва в директорията си за данни: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3283186697780795848">Инсталирана е версия <ph name="PRODUCT_VERSION" /> на Chromium</translation>
 <translation id="3286538390144397061">Рестартиране сега</translation>
@@ -195,6 +196,7 @@
 <translation id="5653831366781983928">Моля, рестартирайте Chromium сега</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Показване на Chromium на този език</translation>
+<translation id="585620188971323280">промени настройките за попълване на начините на плащане.</translation>
 <translation id="5862307444128926510">Добре дошли в Chromium</translation>
 <translation id="5883558403894052917">Chromium установи, че следните елементи съдържат злонамерен софтуер:</translation>
 <translation id="5895138241574237353">Рестартиране</translation>

@@ -49,6 +49,7 @@
 <translation id="3650632991272923014">‏<ph name="USER_EMAIL1" /> از Chromium استفاده می‌کرده است و نشانک‌ها، گذرواژه‌ها، و تنظیمات دیگری در این دستگاه ذخیره کرده است.</translation>
 <translation id="372658070733623520">‏برای استفاده از داده‌های Chromium و ذخیره کردن این داده‌ها در «حساب Google»، هویت خود را به‌تأیید برسانید.</translation>
 <translation id="3805899903892079518">‏Chromium به عکس‌ها یا ویدیوهای شما دسترسی ندارد. با رفتن به تنظیمات iOS &gt; حریم خصوصی &gt; عکس‌ها دسترسی را فعال کنید.</translation>
+<translation id="3955621079070267756">‏باز کردن Chromium از هر برنامه‌ای</translation>
 <translation id="4043291146360695975">گذرواژه‌ها فقط در «مدیر گذرواژه» در این دستگاه ذخیره می‌شوند.</translation>
 <translation id="4099085513035183040">‏در «Chromium بتا» پشتیبانی نمی‌شود</translation>
 <translation id="4432744876818348753">‏برای اینکه بیشترین بهره را از Chromium ببرید، به سیستم وارد شوید.</translation>
@@ -143,5 +144,6 @@
 <translation id="9089354809943900324">‏نسخه Chromium قدیمی است</translation>
 <translation id="9110075932708282655">‏استفاده از Chromium به‌طور پیش‌فرض</translation>
 <translation id="921174536258924340">‏Chromium نمی‌تواند همه گذرواژه‌هایتان را بررسی کند. فردا دوباره امتحان کنید یا <ph name="BEGIN_LINK" />گذرواژه‌ها را در «حساب Google» خود بررسی کنید<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">‏وقتی روی پیوندهای موجود در پیام‌ها، اسناد، و دیگر برنامه‌ها ضربه بزنید، به‌طور خودکار از Chromebook استفاده می‌شود</translation>
 <translation id="985602178874221306">Chromium Authors</translation>
 </translationbundle>

@@ -217,6 +217,7 @@
 <translation id="2638662041295312666">Innskráningarmynd</translation>
 <translation id="2640549051766135490">Albúmið <ph name="TITLE" /> <ph name="DESC" /> valið</translation>
 <translation id="267442004702508783">endurnýja</translation>
+<translation id="268270014981824665">dekkja lyklaborð</translation>
 <translation id="2712812801627182647">TLS-auðkenningarlykill</translation>
 <translation id="2713444072780614174">Hvítur</translation>
 <translation id="2717139507051041123">Kveikja á dökkri litastillingu</translation>
@@ -224,6 +225,7 @@
 <translation id="2744221223678373668">Deilt</translation>
 <translation id="2751739896257479635">Annars stigs EAP-auðkenning</translation>
 <translation id="2783010256799387990">STÓÐST</translation>
+<translation id="2787435249130282949">ljósara lyklaborð</translation>
 <translation id="2789486458103222910">Í lagi</translation>
 <translation id="2805756323405976993">Forrit</translation>
 <translation id="28232023175184696">Ekki er hægt að tengjast netinu. Smelltu til að reyna aftur.</translation>
@@ -327,11 +329,13 @@
 <translation id="3749289110408117711">Skráarheiti</translation>
 <translation id="3771294271822695279">Myndskeiðsskrár</translation>
 <translation id="3784455785234192852">Læsa</translation>
+<translation id="380097101658023925">rgb-stýringar</translation>
 <translation id="38114475217616659">Hreinsa allan feril</translation>
 <translation id="3820172043799983114">Ógilt PIN-númer.</translation>
 <translation id="3824259034819781947">Hengja skrár við</translation>
 <translation id="3838338534323494292">Nýtt aðgangsorð</translation>
 <translation id="3845880861638660475">Ýttu samtímis á <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> og <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> til að loka glugganum.</translation>
+<translation id="3848280697030027394">dekkja lyklaborð</translation>
 <translation id="385051799172605136">Til baka</translation>
 <translation id="3858860766373142691">Heiti</translation>
 <translation id="3862598938296403232">Lýsing er áskilin</translation>
@@ -403,6 +407,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Slökkva</translation>
 <translation id="439429847087949098">Endurræsir <ph name="DEVICE_NAME" /></translation>
+<translation id="4395835743215824109">sérsníða lyklaborð</translation>
 <translation id="4415951057168511744">Núverandi notandamynd</translation>
 <translation id="4422041425070339732">ör niður</translation>
 <translation id="4425149324548788773">Drifið mitt</translation>
@@ -426,6 +431,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh rafhlaða</translation>
 <translation id="4561801978359312462">SIM opið</translation>
 <translation id="4562494484721939086">Ekkert símasamband</translation>
+<translation id="4573777384450697571">Mistókst – vottorð útrunnið</translation>
 <translation id="458794348635939462">Ekki tókst að leysa úr öllum hýslum</translation>
 <translation id="4593212453765072419">Auðkenningar staðgengilsþjóns krafist</translation>
 <translation id="4609350030397390689">Draga úr birtustigi lyklaborðs</translation>
@@ -442,6 +448,7 @@
 <translation id="4731797938093519117">Foreldraaðgangur</translation>
 <translation id="473775607612524610">Uppfæra</translation>
 <translation id="4744944742468440486">Upplýsingar sem tengjast vali þínu</translation>
+<translation id="4771607256327216405">lýsa lyklaborð</translation>
 <translation id="4773299976671772492">Stöðvað</translation>
 <translation id="4782311465517282004">Fáðu skilgreiningar, þýðingar eða umreikninga mæligilda þegar þú hægrismellir eða heldur texta inni</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> mynd</translation>
@@ -490,6 +497,7 @@
 <translation id="500920857929044050">Stöðva próf</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Sjáðu myndir, klukku, veður og upplýsingar úr fjölmiðlum þegar skjárinn er aðgerðalaus.</translation>
+<translation id="5038292761217083259">lyklaborð í mörgum litum</translation>
 <translation id="5039804452771397117">Leyfa</translation>
 <translation id="5049856988445523908">SIM læst (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Heiti hóps</translation>
@@ -638,6 +646,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Kveikja á dökku þema</translation>
 <translation id="6285899124799306373">opna ræsiforrit</translation>
+<translation id="629550705077076970">lyklaborð dekkt</translation>
 <translation id="6302401976930124515">Hætt var við prófunina: <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Skoða forrit</translation>
 <translation id="6319207335391420837">Uppfæra fastbúnað í <ph name="DEVICE_NAME" /></translation>
@@ -656,6 +665,7 @@
 <translation id="6401427872449207797">vafraleit</translation>
 <translation id="6410257289063177456">Myndaskrár</translation>
 <translation id="641081527798843608">Samsvörun viðfangs</translation>
+<translation id="6411934471898487866">birtustig lyklaborðs</translation>
 <translation id="6412715219990689313">Innbyggt lyklaborð</translation>
 <translation id="6417265370957905582">Google hjálpari</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -738,6 +748,7 @@
 <translation id="7130438335435247835">Heiti aðgangsstaðar (APN)</translation>
 <translation id="7131634559772719176">Staðfesta forstillingu</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nafnaþjónn}one{Nafnaþjónn}other{Nafnaþjónar}}</translation>
+<translation id="7135814714616751706">Leita að flýtileiðum</translation>
 <translation id="7143207342074048698">Tengist</translation>
 <translation id="7144878232160441200">Reyna aftur</translation>
 <translation id="714876143603641390">LAN-tenging</translation>
@@ -768,6 +779,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Ýttu á leitarhnappinn og bilslána til að skoða niðurstöður í Google leit.</translation>
 <translation id="7343649194310845056">Netkerfistæki</translation>
+<translation id="7353413232959255829">Leitarniðurstaða <ph name="LIST_POSITION" /> af <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Ýttu á Enter til að fara í flýtileið.</translation>
 <translation id="7359657277149375382">Skráargerð</translation>
 <translation id="73631062356239394">Deila greiningargögnum</translation>
 <translation id="7375053625150546623">EAP</translation>
@@ -804,10 +816,12 @@
 <translation id="7656388927906093505">Tækið er mús.</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7665800271478495366">Breyta notandamynd</translation>
+<translation id="7683228889864052081">litblær lyklaborðs</translation>
 <translation id="7690294790491645610">Staðfestu nýtt aðgangsorð</translation>
 <translation id="7701040980221191251">Ekkert</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">ljós lyklaborðs</translation>
 <translation id="773153675489693198">Fjöldi endurhleðslna</translation>
 <translation id="7747039790905080783">Samnotalykill</translation>
 <translation id="7762130827864645708">Aðgangsorðinu þínu var breytt. Notaðu nýja aðgangsorðið framvegis.</translation>
@@ -851,6 +865,7 @@
 <translation id="8075838845814659848">Hleðsla eftir</translation>
 <translation id="8076492880354921740">Flipar</translation>
 <translation id="8082366717211101304">Ekki er hægt að leysa úr DNS frá Android forritum</translation>
+<translation id="8082644724189923105">svæði lyklaborðs</translation>
 <translation id="808894953321890993">Breyta aðgangsorði</translation>
 <translation id="8094062939584182041">Leyfa Google að senda þér tölvupóst vegna vandamálsins</translation>
 <translation id="8104083085214006426">Þú ert að nota opið og ótraust netkerfi</translation>
@@ -899,6 +914,7 @@
 <translation id="8456761643544401578">Sjálfvirk dökk stilling</translation>
 <translation id="8461329675984532579">Heiti heimaveitu</translation>
 <translation id="8475690821716466388">Wi-Fi netið er varið með veikum samskiptareglum, WEP PSK</translation>
+<translation id="8476242415522716722">undirlýsing lyklaborðs</translation>
 <translation id="8477551185774834963">DNS-biðtími er aðeins yfir leyfðum þröskuldi</translation>
 <translation id="8483248364096924578">IP-tala</translation>
 <translation id="8491311378305535241">Ekki er hægt að tengjast HTTPS-vefsvæðum úr Android forritum í gegnum eldvegg</translation>
@@ -942,6 +958,7 @@
 <translation id="8845001906332463065">Fá hjálp</translation>
 <translation id="8855781559874488009">Ekki er hægt að tengjast HTTP-vefsvæðum í gegnum eldvegg</translation>
 <translation id="885701979325669005">Geymslurými</translation>
+<translation id="885704831271383379">dekkra lyklaborð</translation>
 <translation id="8863170912498892583">Virkja dökkt þema</translation>
 <translation id="8863888432376731307">Fáðu <ph name="INTENT" /> fyrir „<ph name="QUERY" />“ og fleira</translation>
 <translation id="8864415976656252616">Engar efnistillögur. Skoðaðu helsta hjálparefnið.</translation>

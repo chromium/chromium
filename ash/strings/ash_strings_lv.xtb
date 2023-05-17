@@ -94,6 +94,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1346748346194534595">Pa labi</translation>
 <translation id="1351937230027495976">Sakļaut izvēlni</translation>
 <translation id="1360220746312242196">Veicot meklēšanu lapā, pāriet uz iepriekšējo atbilstošo meklēšanas rezultātu</translation>
+<translation id="1360788414852622716">Notiek profila atspējošana. Tā var ilgt dažas minūtes.</translation>
 <translation id="1364382257761975320">Lai atbloķētu Chromebook datoru, izmantojiet pirksta nospiedumu.</translation>
 <translation id="1365866993922957110">Saņemt automātiskos atjauninājumus</translation>
 <translation id="1372545819342940910">Saglabāt darbvietu vēlākai izmantošanai</translation>
@@ -545,6 +546,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3510164367642747937">Izcelt peles kursoru</translation>
 <translation id="3513798432020909783">Kontu pārvalda <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Ierīce jāatjaunina 1 minūtes laikā}zero{Ierīce jāatjaunina # minūšu laikā}one{Ierīce jāatjaunina # minūtes laikā}other{Ierīce jāatjaunina # minūšu laikā}}</translation>
+<translation id="3522979239100719575">Notiek pieejamu profilu meklēšana… Tā var ilgt dažas minūtes.</translation>
 <translation id="3526440770046466733">Atvērt saiti jaunā cilnē, bet palikt pašreizējā cilnē</translation>
 <translation id="353086728817903341">Izveidots savienojums ar <ph name="NUM_DEVICES" /> ierīcēm</translation>
 <translation id="3533126039236445965">Lietotņu plaukts</translation>
@@ -1557,6 +1559,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8083540854303889870">Saglabāti vēlākai izmantošanai</translation>
 <translation id="8091153018031979607">Sākums: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automātiskie atjauninājumi</translation>
+<translation id="8092380135549145188">Ritināšanas vadīklas</translation>
 <translation id="8098591350844501178">Apturēt ekrāna apraidi uztvērējā “<ph name="RECEIVER_NAME" />”</translation>
 <translation id="810637681351706236">Atspraust lietotni no plaukta</translation>
 <translation id="8113423164597455979">Iesl. v. lietotnēs</translation>

@@ -426,6 +426,7 @@
 <translation id="455835558791489930">Батерија од <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM-картичката е отклучена</translation>
 <translation id="4562494484721939086">Нема услуга</translation>
+<translation id="4573777384450697571">Печатењето на успеа - сертификатот е истечен</translation>
 <translation id="458794348635939462">Неуспешно отворање на сите хостови</translation>
 <translation id="4593212453765072419">Потребна е проверка на прокси</translation>
 <translation id="4609350030397390689">Осветленоста на тастатурата се намали</translation>
@@ -738,6 +739,7 @@
 <translation id="7130438335435247835">Име на пристапна точка (APN)</translation>
 <translation id="7131634559772719176">Потврдување зададена вредност</translation>
 <translation id="7134436342991564651">{0,plural, =1{Именски сервер}one{Именски сервер}other{Именски сервери}}</translation>
+<translation id="7135814714616751706">Пребарувајте кратенки</translation>
 <translation id="7143207342074048698">Се поврзува</translation>
 <translation id="7144878232160441200">Обиди се повторно</translation>
 <translation id="714876143603641390">LAN-поврзливост</translation>
@@ -768,6 +770,7 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; притиснете „Пребарување“ и Space за да видите резултат во „Пребарување на Google“.</translation>
 <translation id="7343649194310845056">Мрежни уреди</translation>
+<translation id="7353413232959255829">Резултат од пребарувањето: <ph name="LIST_POSITION" /> од <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Притиснете Enter за да одите на кратенката.</translation>
 <translation id="7359657277149375382">Вид датотека</translation>
 <translation id="73631062356239394">Споделувај дијагностички податоци</translation>
 <translation id="7375053625150546623">EAP</translation>

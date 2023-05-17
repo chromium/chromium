@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> използва Chromium и запази на това устройство отметки, пароли и други настройки.</translation>
 <translation id="372658070733623520">Потвърдете, че сте вие, за да използвате и запазвате данните от Chromium в профила си в Google.</translation>
 <translation id="3805899903892079518">Chromium няма достъп до снимките или видеоклиповете ви. Активирайте го от „Settings“ &gt; „Privacy“ &gt; „Photos“ в iOS.</translation>
+<translation id="3955621079070267756">Отваряне на Chromium от което и да е приложение</translation>
 <translation id="4043291146360695975">Паролите се запазват в мениджъра на паролите само на това устройство.</translation>
 <translation id="4099085513035183040">Не се поддържа от Chromium бета</translation>
 <translation id="4432744876818348753">Влезте в профила си, за да се възползвате максимално от Chromium.</translation>
@@ -143,5 +144,6 @@
 <translation id="9089354809943900324">Chromium не е актуален</translation>
 <translation id="9110075932708282655">Използване на Chromium по подразбиране</translation>
 <translation id="921174536258924340">Chromium не успя да провери всички пароли. Опитайте отново утре или <ph name="BEGIN_LINK" />ги проверете в профила си в Google<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">Автоматично използване на Chromium, когато докоснете връзки в съобщения, документи и други приложения.</translation>
 <translation id="985602178874221306">Авторите на Chromium</translation>
 </translationbundle>

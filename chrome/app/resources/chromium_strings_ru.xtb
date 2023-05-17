@@ -92,6 +92,7 @@
 <translation id="3179665906251668410">Открыть ссылку в режиме инкогнито браузера Chromium</translation>
 <translation id="3185330573522821672">Настройте новый профиль Chromium</translation>
 <translation id="3190315855212034486">Произошел сбой Chromium. Перезапустить?</translation>
+<translation id="3255926992597692024">Chromium пытается изменить настройки заполнения способов оплаты.</translation>
 <translation id="3258596308407688501">Chromium не может выполнять операции чтения и записи в своем каталоге: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3283186697780795848">Установлен браузер Chromium версии <ph name="PRODUCT_VERSION" />.</translation>
 <translation id="3286538390144397061">Перезапустить сейчас</translation>
@@ -195,6 +196,7 @@
 <translation id="5653831366781983928">Перезапустите Chromium</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Отображать Chromium на этом языке</translation>
+<translation id="585620188971323280">изменить настройки заполнения способов оплаты.</translation>
 <translation id="5862307444128926510">Добро пожаловать в Chromium</translation>
 <translation id="5883558403894052917">Браузер Chromium обнаружил, что эти объекты содержат вредоносное ПО:</translation>
 <translation id="5895138241574237353">Перезапустить</translation>

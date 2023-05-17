@@ -11,5 +11,6 @@
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{פתיחת הכרטיסייה (<ph name="TABS_COUNT_ONE" />)}one{פתיחת <ph name="TABS_COUNT_MANY" /> הכרטיסיות}two{פתיחת <ph name="TABS_COUNT_MANY" /> הכרטיסיות}other{פתיחת <ph name="TABS_COUNT_MANY" /> הכרטיסיות}}</translation>
 <translation id="4811934403802581334">כל הכרטיסיות שבחרת מהמכשיר שמסומן כרגע ישוחזרו.</translation>
 <translation id="5336031759968328813">בדיקת כל הכרטיסיות</translation>
+<translation id="8019269305087157499">פתיחה דרך</translation>
 <translation id="8725404154479306799">שחזור כרטיסיות שנפתחו במכשירים ישנים</translation>
 </translationbundle>

@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> Chromium браузерін қолданған еді, сондықтан осы құрылғыда оның бетбелгілері, құпия сөздері және басқа да параметрлері қалып қойды.</translation>
 <translation id="372658070733623520">Google аккаунтыңызда Chromium деректерін пайдалану және сақтау үшін жеке басыңызды растаңыз.</translation>
 <translation id="3805899903892079518">Chromium сурет пен бейнелерге кіре алмайды. "iOS параметрлері &gt; Құпиялық &gt; Фотосуреттер" арқылы рұқсат беру қажет.</translation>
+<translation id="3955621079070267756">Chromium браузерін кез келген қолданбадан ашу</translation>
 <translation id="4043291146360695975">Құпия сөздер осы құрылғыда ғана Құпия сөздер реттегішіне сақталады.</translation>
 <translation id="4099085513035183040">Chromium (бета нұсқасы) браузерінде қолдау көрсетілмейді.</translation>
 <translation id="4432744876818348753">Chromium-ді толық қолдану үшін аккаунтқа кіріңіз.</translation>
@@ -143,5 +144,6 @@
 <translation id="9089354809943900324">Chromium ескірген</translation>
 <translation id="9110075932708282655">Chromium-ді әдепкі браузер ретінде пайдалану</translation>
 <translation id="921174536258924340">Chromium барлық құпия сөзді тексере алмады. Ертең қайталап көріңіз немесе <ph name="BEGIN_LINK" />құпия сөздерді Google аккаунтында тексеріңіз<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">Хабарларда, құжаттарда және басқа қолданбаларда сілтемелерді түрткен кезде, Chromium браузерін автоматты түрде пайдаланыңыз.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

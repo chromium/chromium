@@ -183,6 +183,7 @@
 <translation id="1774796056689732716">日历，<ph name="CURRENT_MONTH_YEAR" />，目前所选日期为 <ph name="DATE" />。</translation>
 <translation id="1787955149152357925">关闭</translation>
 <translation id="181103072419391116">信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
+<translation id="1815245884418711390">开启/关闭热点。热点已关闭。</translation>
 <translation id="1816896987747843206">如果您开启摄像头，即意味着允许所有具有摄像头使用权限的应用和网站使用摄像头</translation>
 <translation id="1823280932251546115">状态栏，时间为 <ph name="TIME" />，
         <ph name="BATTERY" />
@@ -241,6 +242,7 @@
 <translation id="2023558322300866873">您可随时停止捕获数据包</translation>
 <translation id="2034971124472263449">仍然保存</translation>
 <translation id="2049240716062114887">桌面名称已更改为“<ph name="DESK_NAME" />”</translation>
+<translation id="206377500836174974">完全</translation>
 <translation id="2064048859448024834">已显示相机预览画面</translation>
 <translation id="2067602449040652523">键盘亮度</translation>
 <translation id="2075520525463668108">开启/关闭<ph name="CAPTURE_MEDIUM" />。<ph name="CAPTURE_MEDIUM" />已<ph name="CAPTURE_STATE" /></translation>
@@ -293,6 +295,7 @@
 <translation id="2339073806695260576">点按任务栏中的触控笔按钮即可开始记事、截取屏幕截图以及使用激光笔/放大镜。</translation>
 <translation id="2341729377289034582">已锁定为纵向</translation>
 <translation id="2345226652884463045">按 Enter 键或搜索键 + 空格键即可选择要修改的文字。</translation>
+<translation id="2349785431103945039">显示热点详情。连接到移动网络即可使用热点。</translation>
 <translation id="2350794187831162545">现在，<ph name="LANGUAGE" />语音均在本地处理，且可离线使用。您可在“设置”&gt;“无障碍”下更改语音输入语言。</translation>
 <translation id="2352467521400612932">触控笔设置</translation>
 <translation id="2354174487190027830">正在激活“<ph name="NAME" />”</translation>
@@ -336,6 +339,7 @@
 <translation id="2531025035050312891">设备运行缓慢</translation>
 <translation id="2542089167727451762">请点按您的个人资料图片</translation>
 <translation id="254900897760075745">将所选内容复制到剪贴板</translation>
+<translation id="2549711466868162843">改善光线</translation>
 <translation id="2549985041256363841">开始录制</translation>
 <translation id="255671100581129685">无法在公用自助终端使用 Google 助理。</translation>
 <translation id="256712445991462162">停靠的放大镜</translation>
@@ -429,6 +433,7 @@
 <translation id="3009178788565917040">输出</translation>
 <translation id="3009958530611748826">选择要保存到的文件夹</translation>
 <translation id="301282384882049174">由您的管理员分享</translation>
+<translation id="301584155502740476">显示热点详情。热点已关闭。</translation>
 <translation id="3018135054368884502">让媒体快进</translation>
 <translation id="3033545621352269033">已开启</translation>
 <translation id="3033912566804961911">与“<ph name="DESK_NAME" />”合并</translation>
@@ -489,6 +494,7 @@
 <translation id="3291862315280588024">移动到上一个字词的开头</translation>
 <translation id="3294437725009624529">访客</translation>
 <translation id="3298690094479023523">仍然无法验证您的 PIN 码或密码。请重试。</translation>
+<translation id="3300193645498960160">如果您在静音状态下说话，会收到通知。音频只会存储在您的设备上。</translation>
 <translation id="3307642347673023554">已切换到笔记本电脑模式</translation>
 <translation id="3308453408813785101">日后“<ph name="USER_EMAIL_ADDRESS" />”仍能登录。</translation>
 <translation id="3321628682574733415">家长访问代码不正确</translation>
@@ -572,6 +578,7 @@
 <translation id="3621202678540785336">输入</translation>
 <translation id="3621712662352432595">音频设置</translation>
 <translation id="3626281679859535460">亮度</translation>
+<translation id="3629640897379005903">显示热点详情。正在停用热点。</translation>
 <translation id="3630697955794050612">关闭</translation>
 <translation id="3631369015426612114">允许显示来自以下来源的通知</translation>
 <translation id="3633097874324966332">请打开蓝牙设置为您的设备配对</translation>
@@ -703,6 +710,7 @@
 <translation id="423685346499232137">目前无法复制或粘贴内容</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">概览模式</translation>
+<translation id="4240756737570479726">正在停用…</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
 <translation id="4247123849143712100">更新并关机</translation>
 <translation id="4250229828105606438">屏幕截图</translation>
@@ -841,6 +849,7 @@
 <translation id="4864369630010738180">正在登录…</translation>
 <translation id="4864648187878336334">桌面 15</translation>
 <translation id="4868492592575313542">已启用</translation>
+<translation id="4871905435473761992">显示热点详情。您的移动网络不支持热点。</translation>
 <translation id="4872237917498892622">Alt + 搜索键或 Shift</translation>
 <translation id="4872852897273142380">聚焦于或突出显示书签栏（若显示）</translation>
 <translation id="4881695831933465202">打开</translation>
@@ -900,6 +909,7 @@
 <translation id="5104236669533825617">无法创建抓屏</translation>
 <translation id="5107522548814527560">网页</translation>
 <translation id="5111318697104479778"><ph name="DESC" />，<ph name="STRENGTH" /></translation>
+<translation id="5111930673176965299">背景模糊处理</translation>
 <translation id="5117590920725113268">显示下一个月</translation>
 <translation id="5121628974188116412">转到网页底部</translation>
 <translation id="5136175204352732067">所连接的键盘已不是原来的那个</translation>
@@ -912,6 +922,7 @@
 <translation id="5168181903108465623">有可用的投放设备</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
 <translation id="5176318573511391780">录制部分屏幕</translation>
+<translation id="5187627942836026988">显示热点详情。管理员已禁用热点。</translation>
 <translation id="5198413532174090167"><ph name="DATE" />，<ph name="NUMBER" /> 个事件</translation>
 <translation id="5198715732953550718">将“<ph name="MOVED_APP_NAME" />”和“<ph name="IN_PLACE_APP" />”移到一起创建了一个新文件夹。</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />，<ph name="NOTIFICATION_TITLE" />：<ph name="MESSAGE" />，<ph name="PHONE_NAME" /></translation>
@@ -1084,6 +1095,7 @@
 <translation id="595202126637698455">已启用性能跟踪</translation>
 <translation id="5955304353782037793">应用</translation>
 <translation id="5958529069007801266">受监管用户</translation>
+<translation id="5961960957587052807">轻微</translation>
 <translation id="5965524703725988602">开启/关闭深色主题。<ph name="STATE_TEXT" />。</translation>
 <translation id="5976112937189445008">按 Enter 键即可录制窗口</translation>
 <translation id="5978382165065462689">正在通过远程协助共享您屏幕的控制权限。</translation>
@@ -1256,6 +1268,7 @@
 <translation id="6752912906630585008">桌面“<ph name="REMOVED_DESK" />”已移除并与桌面“<ph name="RECEIVE_DESK" />”合并</translation>
 <translation id="6753390234084146956">标签页</translation>
 <translation id="6757237461819837179">目前未播放任何媒体</translation>
+<translation id="6759628406555734414">显示热点详情。正在启用热点。</translation>
 <translation id="6768043681523654438">存储空间</translation>
 <translation id="6777216307882431711">正在为已连接的 USB-C 设备充电</translation>
 <translation id="6781002679438061620">桌面 9</translation>
@@ -1280,6 +1293,7 @@
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{还差 1 位数字}other{还差 # 位数字}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> 已暂停下载</translation>
+<translation id="6874854809828346832">显示热点详情。热点已开启。</translation>
 <translation id="6878400149835617132">快捷方式已关闭</translation>
 <translation id="6878701771800702153">{NUM_APPS,plural, =1{1 个应用}other{# 个应用}}</translation>
 <translation id="6884665277231944629">返回到今天</translation>
@@ -1289,6 +1303,7 @@
 <translation id="6896758677409633944">复制</translation>
 <translation id="6901883536534621389">尝试使用手势导航</translation>
 <translation id="6919251195245069855">无法识别您的智能卡，请重试。</translation>
+<translation id="6920245099716267363">开启/关闭热点。热点已开启，且已连接 1 部设备。</translation>
 <translation id="6931576957638141829">保存到</translation>
 <translation id="6941333068993625698">提交反馈</translation>
 <translation id="6942518653766415536">录制格式菜单</translation>
@@ -1375,6 +1390,7 @@
 <translation id="7378203170292176219">拖动鼠标指针即可选择要录制的区域</translation>
 <translation id="7378594059915113390">媒体控件</translation>
 <translation id="7378889811480108604">省电模式已关闭</translation>
+<translation id="7382640522316003298">开启/关闭热点。热点已开启，且已连接 <ph name="DEVICECOUNT" /> 部设备。</translation>
 <translation id="7382680553121047388">开启</translation>
 <translation id="7384028040782072252">若要将您的应用重新排序，请右键点击任意位置</translation>
 <translation id="7386767620098596324">开启/关闭网络连接。<ph name="STATE_TEXT" />。</translation>
@@ -1425,6 +1441,7 @@
 <translation id="7579778809502851308">截取屏幕</translation>
 <translation id="7593891976182323525">搜索键或 Shift</translation>
 <translation id="7600875258240007829">查看所有通知</translation>
+<translation id="7601417191446344542">开启静音状态智能推送？</translation>
 <translation id="7607002721634913082">已暂停</translation>
 <translation id="7609951632080598826">日历视图，<ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="7611213136657090146">已重新连接相机。</translation>
@@ -1548,6 +1565,7 @@
 <translation id="8131740175452115882">确认</translation>
 <translation id="8131994907636310308">关闭排序消息框</translation>
 <translation id="8132793192354020517">已连接到 <ph name="NAME" /></translation>
+<translation id="8135163608236671037">开启/关闭热点。热点已开启，但尚未连接任何设备。</translation>
 <translation id="8138705869659070104">在设备完成设置后启用</translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8142441511840089262">双击</translation>
@@ -1728,6 +1746,7 @@
 <translation id="8990809378771970590">目前使用的是“<ph name="IME_NAME" />”</translation>
 <translation id="8991617137207906966">已启用颜色反转模式。再按一次 Ctrl+搜索键+H 可将其停用。</translation>
 <translation id="899350903320462459">以 <ph name="LOGIN_ID" /> 身份解锁设备即可执行通知操作</translation>
+<translation id="8993733019280019776">您正在说话吗？您的麦克风处于关闭状态。选择麦克风即可开启它。</translation>
 <translation id="9000771174482730261">管理存储空间</translation>
 <translation id="9005984960510803406">打开 Crosh 窗口</translation>
 <translation id="9017320285115481645">输入 Family Link 家长访问码。</translation>

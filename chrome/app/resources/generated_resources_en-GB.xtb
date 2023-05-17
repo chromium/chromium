@@ -5,6 +5,7 @@
 <translation id="1002085272681738789">Tab active again</translation>
 <translation id="1003088604756913841">Open Link in New <ph name="APP" /> Window</translation>
 <translation id="100323615638474026">USB device (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="1003355351496161312">Google Safe Browsing</translation>
 <translation id="1004218526896219317">Site access</translation>
 <translation id="1005274289863221750">Use your microphone and camera</translation>
 <translation id="1005333234656240382">Enable ADB debugging?</translation>
@@ -915,6 +916,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1769104665586091481">Open Link in New &amp;Window</translation>
 <translation id="1770407692401984718">Drag an image here or</translation>
 <translation id="177053719077591686">Back up Android apps to Google Drive.</translation>
+<translation id="1771075623623424448">Looking for the browser device-log page? Visit<ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="177336675152937177">Hosted app data</translation>
 <translation id="1776712937009046120">Add user</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
@@ -1703,6 +1705,15 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2422125132043002186">Linux restore cancelled</translation>
 <translation id="2423578206845792524">Sa&amp;ve image as...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Guest}other{Guest (#)}}</translation>
+<translation id="242684489663276773">This action will:
+          <ph name="LINE_BREAKS" />
+           • Reset some Chrome settings and Chrome shortcuts
+           <ph name="LINE_BREAK" />
+           • Disable extensions
+           <ph name="LINE_BREAK" />
+           • Delete cookies and other temporary site data
+            <ph name="LINE_BREAKS" />
+           Bookmarks, history and saved passwords won't be affected.</translation>
 <translation id="2428510569851653187">Describe what you were doing when the tab crashed</translation>
 <translation id="2428939361789119025">Turn off Wi-Fi</translation>
 <translation id="2428978615149723410">these baskets</translation>
@@ -4483,6 +4494,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4876895919560854374">Lock and unlock the screen</translation>
 <translation id="4877276003880815204">Inspect elements</translation>
 <translation id="4877652723592270843">Do you want to activate ChromeVox, the built-in screen reader for Chrome OS Flex? If so, press and hold both volume keys for five seconds.</translation>
+<translation id="4878261017150799673">Keep site active</translation>
 <translation id="4878634973244289103">Unable to send feedback. Please try again later.</translation>
 <translation id="4878653975845355462">Custom backgrounds have been turned off by your administrator</translation>
 <translation id="4878718769565915065">Adding a fingerprint to this security key failed</translation>
@@ -5271,6 +5283,9 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5602765853043467355">Clear bookmarks, history, passwords and more from this device</translation>
 <translation id="5605758115928394442">A notification was sent to your phone to confirm that it's you.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{This extension is blocked}other{These extensions are blocked}}</translation>
+<translation id="560743070587960985">This file might be a virus or malware.
+
+You can send it to Google to check if it's unsafe. Scans usually take a few seconds.</translation>
 <translation id="560834977503641186">Wi-Fi Sync, learn more</translation>
 <translation id="5608580678041221894">Tap the following keys to adjust or move the cropping area</translation>
 <translation id="5609231933459083978">The application appears to be invalid.</translation>
@@ -6008,6 +6023,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6254892857036829079">Perfect</translation>
 <translation id="6257602895346497974">Turn on sync…</translation>
 <translation id="62586649943626337">Organise your tabs with tab groups</translation>
+<translation id="6260092874648348841">Keep Site Active</translation>
 <translation id="6262371516389954471">Your backups are uploaded to Google and encrypted using your Google Account password.</translation>
 <translation id="6263082573641595914">Microsoft CA Version</translation>
 <translation id="6263284346895336537">Not Critical</translation>
@@ -6351,6 +6367,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="657866106756413002">Network health snapshot</translation>
 <translation id="6579369886355986318">Show all controls</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – Desktop content shared</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% completed</translation>
 <translation id="6580203076670148210">Scanning speed</translation>
 <translation id="6582080224869403177">Reset your <ph name="DEVICE_TYPE" /> to upgrade your security.</translation>
 <translation id="6582274660680936615">You're browsing as a guest</translation>
@@ -6977,6 +6994,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7114054701490058191">Passwords don't match</translation>
 <translation id="7114648273807173152">To use Smart Lock to sign in to your Google Account, go to Settings &gt; Connected devices &gt; Your phone &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">No reachable contacts</translation>
+<translation id="7116554090938189816">Printer SSL certificate is expired. Restart printer and try again.</translation>
 <translation id="7117228822971127758">Please try again later</translation>
 <translation id="711840821796638741">Show Managed Bookmarks</translation>
 <translation id="711985611146095797">This page allows you to manage your signed-in Google Accounts. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -7541,6 +7559,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7634280112532283638">Spam and fraud reduction</translation>
 <translation id="7634337648687970851">Local data recovery is currently not supported.</translation>
 <translation id="7634566076839829401">Something went wrong. Please try again.</translation>
+<translation id="763472884969134151">Analysis done by <ph name="LINK" /></translation>
 <translation id="7635048370253485243">Pinned by your Administrator</translation>
 <translation id="7635711411613274199">As you browse, whether an ad that you see is personalised depends on this setting, <ph name="BEGIN_LINK1" />ad topics<ph name="LINK_END1" />, your <ph name="BEGIN_LINK2" />cookie settings<ph name="LINK_END2" />, and if the site that you're viewing personalises ads</translation>
 <translation id="7636919061354591437">Install on this Device</translation>
@@ -8221,6 +8240,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8195737548602430447">Automatically translate captions to a target language.</translation>
 <translation id="8197673340773315084">Add a name or label, like Work or Personal</translation>
 <translation id="8198456017687137612">Cast tab</translation>
+<translation id="8198457270656084773">Looking for the system device-log page? Visit<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8198511718495409170">To apply your updated settings for '<ph name="EXTENSION_NAME" />' to this site, reload this page</translation>
 <translation id="8199300056570174101">Network (Service) and Device properties</translation>
 <translation id="8200772114523450471">Resume</translation>

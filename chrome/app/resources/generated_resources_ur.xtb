@@ -5,6 +5,7 @@
 <translation id="1002085272681738789">ٹیب دوبارہ فعال ہے</translation>
 <translation id="1003088604756913841">لنک کو نئی <ph name="APP" /> ونڈو میں کھولیں</translation>
 <translation id="100323615638474026">‏USB آلہ (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="1003355351496161312">‏Google محفوظ براؤزنگ</translation>
 <translation id="1004218526896219317">سائٹ تک رسائی</translation>
 <translation id="1005274289863221750">اپنا مائیکروفون اور کیمرا استعمال کریں</translation>
 <translation id="1005333234656240382">‏ADB ڈیبگنگ فعال کریں؟</translation>
@@ -904,6 +905,7 @@
 <translation id="1769104665586091481">لنک نئی &amp;ونڈو میں کھولیں</translation>
 <translation id="1770407692401984718">یہاں ایک تصویر گھسیٹیں یا</translation>
 <translation id="177053719077591686">‏Google Drive میں Android ایپس کا بیک اپ لیں۔</translation>
+<translation id="1771075623623424448">براؤزر آلہ کا لاگ صفحہ تلاش کر رہے ہیں؟ <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" /> ملاحظہ کریں۔</translation>
 <translation id="177336675152937177">میزبانی کردہ ایپ کا ڈیٹا</translation>
 <translation id="1776712937009046120">صارف کو شامل کریں</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
@@ -1690,6 +1692,15 @@
 <translation id="2422125132043002186">‏Linux کی بحالی منسوخ ہو گئی</translation>
 <translation id="2423578206845792524">تصویر مح&amp;فوظ کریں بطور…</translation>
 <translation id="2424424966051154874">{0,plural, =1{مہمان}other{مہمان (#)}}</translation>
+<translation id="242684489663276773">‏اس کارروائی سے مندرجہ ذیل ہوگا:
+          <ph name="LINE_BREAKS" />
+           • Chrome کی کچھ ترتیبات اور Chrome شارٹ کٹس کو ری سیٹ کیا جائے گا
+           <ph name="LINE_BREAK" />
+           • ایکسٹینشنز کو غیر فعال کیا جائے گا
+           <ph name="LINE_BREAK" />
+           • کوکیز اور دیگر عارضی سائٹ کے ڈیٹا کو حذف کیا جائے گا
+            <ph name="LINE_BREAKS" />
+           بک مارکس، سرگزشت اور محفوظ کردہ پاس ورڈز متاثر نہیں ہوں گے۔</translation>
 <translation id="2428510569851653187">بتائیں کہ ٹیب کے ناکام ہونے پر آپ کیا کر رہے تھے</translation>
 <translation id="2428939361789119025">‏WiFi آف کریں</translation>
 <translation id="2428978615149723410">یہ کارٹس</translation>
@@ -4469,6 +4480,7 @@
 <translation id="4876895919560854374">اسکرین کو مقفل اور غیر مقفل کریں</translation>
 <translation id="4877276003880815204">عناصر کا معائنہ کریں</translation>
 <translation id="4877652723592270843">‏کیا آپ ChromeOS Flex کے لئے پہلے سے موجود اسکرین ریڈر، ChromeVox کو فعال کرنا چاہتے ہیں؟ اگر ایسا ہے تو والیوم کی دونوں کلیدوں کو 5 سیکنڈ کے لئے چھوئیں اور دبائے رکھیں۔</translation>
+<translation id="4878261017150799673">سائٹ کو فعال رکھیں</translation>
 <translation id="4878634973244289103">تاثرات بھیجنے سے قاصر۔ براہ کرم بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="4878653975845355462">آپ کے منتظم نے حسب ضرورت کے پس مناظر کو آف کر دیا ہے</translation>
 <translation id="4878718769565915065">اس حفاظتی کلید میں فنگر پرنٹ شامل کرنے میں ناکام ہو گیا</translation>
@@ -5256,6 +5268,9 @@
 <translation id="5602765853043467355">بُک مارکس، سرگزشت، پاس ورڈز وغیرہ اس آلہ سے صاف کريں</translation>
 <translation id="5605758115928394442">اس بات کی تصدیق کرنے کیلئے کہ یہ آپ ہی ہیں، آپ کے فون پر ایک اطلاع بھیجی گئی۔</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{یہ ایکسٹینشن مسدود ہے}other{یہ ایکسٹینشنز مسدود ہیں}}</translation>
+<translation id="560743070587960985">‏یہ فائل وائرس یا میلوئیر ہو سکتی ہے۔
+
+آپ اسے Google کو بھیج سکتے ہیں کہ آیا یہ غیر محفوظ ہے۔ اسکینز میں عام طور پر چند سیکنڈ لگتے ہیں۔</translation>
 <translation id="560834977503641186">‏Wi-Fi سِنک، مزید جانیں</translation>
 <translation id="5608580678041221894">تراشنے کے علاقہ کو ایڈجسٹ یا منتقل کرنے کیلئے درج ذیل کلیدوں کو تھپتھپائیں</translation>
 <translation id="5609231933459083978">ایپلیکیشن غلط معلوم پڑتی ہے۔</translation>
@@ -5993,6 +6008,7 @@
 <translation id="6254892857036829079">کامل</translation>
 <translation id="6257602895346497974">مطابقت پذیری آن کریں…</translation>
 <translation id="62586649943626337">ٹیب گروپس کے ساتھ اپنے ٹیبز کو منظم کریں</translation>
+<translation id="6260092874648348841">سائٹ کو فعال رکھیں</translation>
 <translation id="6262371516389954471">‏آپ کے بیک اپس کو Google پر اپ لوڈ کیا جاتا ہے اور آپ کے Google اکاؤنٹ کا پاس ورڈ استعمال کر کے انہیں مرموز کیا جاتا ہے۔</translation>
 <translation id="6263082573641595914">‏Microsoft CA ورژن</translation>
 <translation id="6263284346895336537">اہم نہیں</translation>
@@ -7528,6 +7544,7 @@
 <translation id="7634280112532283638">اسپام اور دھوکہ دہی میں تخفیف</translation>
 <translation id="7634337648687970851">مقامی ڈیٹا کی بازیابی فی الحال تعاون یافتہ نہیں ہے۔</translation>
 <translation id="7634566076839829401">کچھ غلط ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔</translation>
+<translation id="763472884969134151"><ph name="LINK" /> نے تجزیہ کیا</translation>
 <translation id="7635048370253485243">آپ کے منتظم کے ذریعے پن کردہ</translation>
 <translation id="7635711411613274199">براؤز کرتے وقت، آپ جو اشتہار دیکھتے ہیں وہ ذاتی نوعیت کے ہیں یا نہیں اس کا انحصار اس ترتیب پر ہوتا ہے، <ph name="BEGIN_LINK1" />اشتہار کے موضوعات<ph name="LINK_END1" /> آپ کی<ph name="BEGIN_LINK2" /> کوکی کی ترتیبات<ph name="LINK_END2" /> اور آیا آپ جو سائٹ دیکھ رہے ہیں وہ اشتہارات کو ذاتی بناتی ہے یا نہیں</translation>
 <translation id="7636919061354591437">اس آلہ پر انسٹال کریں</translation>
@@ -8207,6 +8224,7 @@
 <translation id="8195737548602430447">کیپشنز کا خودکار طور پر ہدف کی زبان میں ترجمہ کریں۔</translation>
 <translation id="8197673340773315084">کوئی نام یا لیبل شامل کریں جیسے دفتر یا ذاتی</translation>
 <translation id="8198456017687137612">کاسٹنگ ٹیب</translation>
+<translation id="8198457270656084773">سسٹم آلہ کا لاگ صفحہ تلاش کر رہے ہیں؟ <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> ملاحظہ کریں۔</translation>
 <translation id="8198511718495409170">اس سائٹ پر "<ph name="EXTENSION_NAME" />" کے لیے اپنی اپ ڈیٹ کردہ ترتیبات کو لاگو کرنے کی خاطر، اس صفحہ کو دوبارہ لوڈ کریں</translation>
 <translation id="8199300056570174101">نیٹ ورک (سروس) اور آلہ کی خصوصیات</translation>
 <translation id="8200772114523450471">دوبارہ شروع کریں</translation>
