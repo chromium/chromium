@@ -16,6 +16,7 @@
  */
 
 import fs from 'fs';
+
 import {generateReport} from './htmlWptReportFormatter.mjs';
 
 function readReport(filePath) {

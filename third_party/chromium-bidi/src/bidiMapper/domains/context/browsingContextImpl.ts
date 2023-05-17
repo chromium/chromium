@@ -62,7 +62,7 @@ export class BrowsingContextImpl {
   #url = 'about:blank';
   readonly #eventManager: IEventManager;
   readonly #realmStorage: RealmStorage;
-  #loaderId: string | null = null;
+  #loaderId: Protocol.Network.LoaderId | null = null;
   #cdpTarget: CdpTarget;
   #maybeDefaultRealm: Realm | undefined;
   readonly #logger?: LoggerFn;
@@ -256,7 +256,7 @@ export class BrowsingContextImpl {
 
   serializeToBidiValue(
     maxDepth = 0,
-    addParentFiled = true
+    addParentField = true
   ): BrowsingContext.Info {
     return {
       context: this.#id,
@@ -267,7 +267,7 @@ export class BrowsingContextImpl {
               c.serializeToBidiValue(maxDepth - 1, false)
             )
           : null,
-      ...(addParentFiled ? {parent: this.#parentId} : {}),
+      ...(addParentField ? {parent: this.#parentId} : {}),
     };
   }
 
@@ -507,7 +507,7 @@ export class BrowsingContextImpl {
         if (cdpNavigateResult.loaderId === undefined) {
           await this.#defers.Page.navigatedWithinDocument;
         } else {
-          await this.#defers.Page.lifecycleEvent.load;
+          await this.awaitLoaded();
         }
         break;
     }

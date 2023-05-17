@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 /**
  * Copyright 2023 Google LLC.
  * Copyright (c) Microsoft Corporation.
@@ -26,9 +28,10 @@
  *  - `node install-browser.mjs /tmp/cache`
  */
 
+import fs from 'fs/promises';
+
 import {install, computeExecutablePath} from '@puppeteer/browsers';
 import actions from '@actions/core';
-import fs from 'fs/promises';
 
 try {
   const browserSpec = (await fs.readFile('.browser', 'utf-8')).trim();

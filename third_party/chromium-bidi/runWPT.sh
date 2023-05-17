@@ -86,14 +86,16 @@ else
   log "Using pure mapper..."
 fi
 
-echo "Using browser \"$BROWSER_BIN\"..."
+TEST="${*: -1}"
+
+echo "Running \"$TEST\" with \"$BROWSER_BIN\"..."
 
 WPT_RUN_ARGS+=(
   # All arguments except the first one (the command) and the last one (the test) are the flags.
   "${@: 1:$#-1}"
   "$PRODUCT"
   # The last argument is the test.
-  "${@: -1}"
+  "$TEST"
 )
 
 (cd "$(dirname "$0")/" && ./wpt/wpt run "${WPT_RUN_ARGS[@]}")

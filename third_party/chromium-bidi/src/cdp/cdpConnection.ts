@@ -27,9 +27,7 @@ interface CdpCallbacks {
   error: Error;
 }
 
-/**
- * A error that will be thrown if when the connection is closed
- */
+/** A error that will be thrown if/when the connection is closed. */
 export class CloseError extends Error {}
 
 /**

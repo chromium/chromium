@@ -34,13 +34,13 @@ export interface CdpConnection {
 
 export interface CdpClient extends EventEmitter<CdpEvents> {
   /**
-   * Provides an single way to detect if error was because
-   * a Target or Session closed.
+   * Provides an unique way to detect if an error was caused by the closure of a
+   * Target or Session.
    *
    * @example
-   * During creation of sub-Frame we navigate the main-Frame
-   * the sub-Frame Target is closed while initialize command are at flight
-   * we want to swallow such error.
+   * During the creation of a subframe we navigate the main frame.
+   * The subframe Target is closed while initialized commands are in-flight.
+   * In this case we want to swallow the thrown error.
    */
   isCloseError(err: unknown): boolean;
   sendCommand<CdpMethod extends keyof ProtocolMapping.Commands>(

@@ -4,7 +4,7 @@
   "description": "An implementation of the WebDriver BiDi protocol for Chromium implemented as a JavaScript layer translating between BiDi and CDP, running inside a Chrome tab.",
   "scripts": {
     "build": "wireit",
-    "clean": "rimraf lib .wireit",
+    "clean": "rimraf lib .eslintcache .wireit",
     "coverage": "nyc mocha",
     "e2e-headful": "wireit",
     "e2e-headless": "wireit",
@@ -21,7 +21,7 @@
     "server-headless": "wireit",
     "test": "wireit",
     "tsc": "wireit",
-    "yapf": "yapf --in-place --parallel --recursive --exclude=wpt examples/ tests/"
+    "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/"
   },
   "wireit": {
     "build": {
@@ -34,12 +34,20 @@
       "command": "python3 -m pytest",
       "dependencies": [
         "server-headful"
+      ],
+      "files": [
+        "pytest.ini",
+        "tests/**/*.py"
       ]
     },
     "e2e-headless": {
       "command": "python3 -m pytest",
       "dependencies": [
         "server-headless"
+      ],
+      "files": [
+        "pytest.ini",
+        "tests/**/*.py"
       ]
     },
     "eslint": {
@@ -53,7 +61,7 @@
         ".eslintcache"
       ],
       "dependencies": [
-        "build"
+        "tsc"
       ]
     },
     "format": {
@@ -84,7 +92,8 @@
     "server-headful": {
       "command": "./runBiDiServer.sh --headless=false",
       "files": [
-        "lib/cjs/bidiServer/index.js"
+        "lib/cjs/bidiServer/index.js",
+        "runBiDiServer.sh"
       ],
       "service": {
         "readyWhen": {
@@ -92,13 +101,14 @@
         }
       },
       "dependencies": [
-        "build"
+        "rollup"
       ]
     },
     "server-headless": {
       "command": "./runBiDiServer.sh --headless=true",
       "files": [
-        "lib/cjs/bidiServer/index.js"
+        "lib/cjs/bidiServer/index.js",
+        "runBiDiServer.sh"
       ],
       "service": {
         "readyWhen": {
@@ -106,14 +116,14 @@
         }
       },
       "dependencies": [
-        "build"
+        "rollup"
       ]
     },
     "test": {
+      "command": "mocha",
       "dependencies": [
-        "build"
-      ],
-      "command": "mocha"
+        "tsc"
+      ]
     },
     "tsc": {
       "command": "tsc --build src/tsconfig.json --pretty",

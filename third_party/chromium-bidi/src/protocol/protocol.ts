@@ -1142,7 +1142,9 @@ export namespace CDP {
     cdpSession?: string;
   };
 
-  export type SendCommandResult = {result: unknown};
+  export type SendCommandResult = {
+    result: ProtocolMapping.Commands[keyof ProtocolMapping.Commands]['returnType'];
+  };
 
   export type GetSessionCommand = {
     method: 'cdp.getSession';

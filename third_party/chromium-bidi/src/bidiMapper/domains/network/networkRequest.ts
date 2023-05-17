@@ -88,13 +88,13 @@ export class NetworkRequest {
     }
     this.#responseReceivedEvent = responseReceivedEvent;
     if (
-      responseReceivedEvent.hasExtraInfo !== true &&
+      !responseReceivedEvent.hasExtraInfo &&
       !this.#beforeRequestSentDeferred.isFinished
     ) {
       this.#beforeRequestSentDeferred.resolve();
     }
     if (
-      responseReceivedEvent.hasExtraInfo !== true ||
+      !responseReceivedEvent.hasExtraInfo ||
       this.#responseReceivedExtraInfoEvent !== undefined
     ) {
       this.#responseReceivedDeferred.resolve();

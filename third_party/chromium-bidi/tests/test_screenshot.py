@@ -59,7 +59,6 @@ async def test_screenshot(websocket, context_id):
 
     await send_JSON_command(
         websocket, {
-            "id": 1,
             "method": "browsingContext.captureScreenshot",
             "params": {
                 "context": context_id
@@ -68,4 +67,4 @@ async def test_screenshot(websocket, context_id):
 
     resp = await read_JSON_message(websocket)
 
-    assert resp == {'id': 1, 'result': {'data': EXPECTED_IMAGE_BASE_64}}
+    assert resp["result"] == {'data': EXPECTED_IMAGE_BASE_64}
