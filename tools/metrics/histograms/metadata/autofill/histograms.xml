@@ -1260,11 +1260,12 @@ chromium-metrics-reviews@google.com.
     <variant name="ShownWithMetadataOnce"
         summary="A card with issuer id was shown, logged once per page load"/>
     <variant name="SubmittedWithMetadataOnce"
-        summary="A card with issuer id was submitted. This event can only be
-                 triggered once per page load"/>
+        summary="A form was submitted after a card with issuer id was filled.
+                 This event can only be triggered once per page load"/>
     <variant name="WillSubmitWithMetadataOnce"
-        summary="A card with issuer id will be submitted. This event can only
-                 be triggered once per page load"/>
+        summary="A form was about to be submitted after a card with issuer id
+                 was filled. This event can only be triggered once per page
+                 load"/>
   </token>
 </histogram>
 

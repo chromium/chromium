@@ -170,10 +170,20 @@ enum FormEvent {
   // The selected credit card suggestion did not have metadata. Logged once per
   // page load.
   FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SELECTED_ONCE = 67,
+  // The filled credit card suggestion had metadata.
+  FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_FILLED = 68,
+  // The filled credit card suggestion had no metadata.
+  FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_FILLED = 69,
+  // A credit card was submitted after a suggestion was filled,
+  // and the suggested card had metadata. Logged once per page load.
+  FORM_EVENT_CARD_SUGGESTION_WITH_METADATA_SUBMITTED_ONCE = 70,
+  // A credit card was submitted after a suggestion was filled,
+  // and the suggested card had no metadata. Logged once per page load.
+  FORM_EVENT_CARD_SUGGESTION_WITHOUT_METADATA_SUBMITTED_ONCE = 71,
 
   // Next form event should use 62 if possible. One note is that if the newly
   // added events are a group of related events, maybe it is easier to continue
-  // using 68 to make sure they are in the same UKM metric.
+  // using 72 to make sure they are in the same UKM metric.
 
   NUM_FORM_EVENTS,
 };
