@@ -63,6 +63,13 @@ class HistoryClientImpl : public history::HistoryClient,
   void OnFaviconsChanged(const std::set<GURL>& page_urls,
                          const GURL& favicon_url);
 
+  // Called when bookmarks are removed from a model and calls
+  // `on_bookmarks_removed_`. `model` can be either `account_bookmark_model_` or
+  // `local_or_syncable_bookmark_model_`. A bookmark is considered truly removed
+  // only if it's not in any of the models.
+  void HandleBookmarksRemovedFromModel(bookmarks::BookmarkModel* model,
+                                       const std::set<GURL>& removed_urls);
+
   // BookmarkModel instances providing access to bookmarks. May be null during
   // testing, and is null while shutting down.
   bookmarks::BookmarkModel* local_or_syncable_bookmark_model_ = nullptr;
