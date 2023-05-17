@@ -40,11 +40,12 @@ class GPU_EXPORT GpuMemoryBufferSupport {
 
   // Returns the native GPU memory buffer factory type. Returns EMPTY_BUFFER
   // type if native buffers are not supported.
-  gfx::GpuMemoryBufferType GetNativeGpuMemoryBufferType();
+  static gfx::GpuMemoryBufferType GetNativeGpuMemoryBufferType();
 
   // Returns whether the provided buffer format is supported.
-  bool IsNativeGpuMemoryBufferConfigurationSupported(gfx::BufferFormat format,
-                                                     gfx::BufferUsage usage);
+  static bool IsNativeGpuMemoryBufferConfigurationSupported(
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage);
 
 #if BUILDFLAG(IS_OZONE)
   gfx::ClientNativePixmapFactory* client_native_pixmap_factory() {

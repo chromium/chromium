@@ -308,8 +308,7 @@ class HostGpuMemoryBufferManagerTest : public ::testing::Test {
     if (native_pixmap_supported)
       return true;
 
-    gpu::GpuMemoryBufferSupport support;
-    DCHECK(gpu::GetNativeGpuMemoryBufferConfigurations(&support).empty());
+    DCHECK(gpu::GetNativeGpuMemoryBufferConfigurations().empty());
     return false;
   }
 

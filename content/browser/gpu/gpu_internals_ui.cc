@@ -45,7 +45,6 @@
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_lists_version.h"
 #include "gpu/config/gpu_util.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/host/gpu_memory_buffer_support.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "skia/ext/skia_commit_hash.h"
@@ -348,8 +347,6 @@ base::Value::List CompositorInfo() {
 base::Value::List GpuMemoryBufferInfo(const gfx::GpuExtraInfo& gpu_extra_info) {
   base::Value::List gpu_memory_buffer_info;
 
-  gpu::GpuMemoryBufferSupport gpu_memory_buffer_support;
-
   gpu::GpuMemoryBufferConfigurationSet native_config;
 #if defined(USE_OZONE_PLATFORM_X11)
   if (ui::OzonePlatform::GetInstance()
@@ -361,8 +358,7 @@ base::Value::List GpuMemoryBufferInfo(const gfx::GpuExtraInfo& gpu_extra_info) {
   }
 #endif
   if (native_config.empty()) {
-    native_config =
-        gpu::GetNativeGpuMemoryBufferConfigurations(&gpu_memory_buffer_support);
+    native_config = gpu::GetNativeGpuMemoryBufferConfigurations();
   }
   for (size_t format = 0;
        format < static_cast<size_t>(gfx::BufferFormat::LAST) + 1; format++) {

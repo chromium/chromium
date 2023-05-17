@@ -35,11 +35,8 @@ struct hash<gpu::GpuMemoryBufferConfigurationKey> {
 
 namespace gpu {
 
-class GpuMemoryBufferSupport;
-
 // Returns the set of supported configurations.
-GpuMemoryBufferConfigurationSet GetNativeGpuMemoryBufferConfigurations(
-    GpuMemoryBufferSupport* support);
+GpuMemoryBufferConfigurationSet GetNativeGpuMemoryBufferConfigurations();
 
 // Returns true of the OpenGL target to use for the combination of format/usage
 // is not GL_TEXTURE_2D but a platform specific texture target.

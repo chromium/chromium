@@ -12,8 +12,7 @@
 
 namespace gpu {
 
-GpuMemoryBufferConfigurationSet GetNativeGpuMemoryBufferConfigurations(
-    GpuMemoryBufferSupport* support) {
+GpuMemoryBufferConfigurationSet GetNativeGpuMemoryBufferConfigurations() {
   GpuMemoryBufferConfigurationSet configurations;
 
 #if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || \
@@ -53,8 +52,10 @@ GpuMemoryBufferConfigurationSet GetNativeGpuMemoryBufferConfigurations(
 
   for (auto format : kBufferFormats) {
     for (auto usage : kUsages) {
-      if (support->IsNativeGpuMemoryBufferConfigurationSupported(format, usage))
+      if (gpu::GpuMemoryBufferSupport::
+              IsNativeGpuMemoryBufferConfigurationSupported(format, usage)) {
         configurations.insert(gfx::BufferUsageAndFormat(usage, format));
+      }
     }
   }
 #endif  // BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) ||
@@ -69,9 +70,8 @@ bool GetImageNeedsPlatformSpecificTextureTarget(gfx::BufferFormat format,
     return false;
 #if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
-  GpuMemoryBufferSupport support;
   GpuMemoryBufferConfigurationSet native_configurations =
-      GetNativeGpuMemoryBufferConfigurations(&support);
+      GetNativeGpuMemoryBufferConfigurations();
   return base::Contains(native_configurations,
                         gfx::BufferUsageAndFormat(usage, format));
 #else

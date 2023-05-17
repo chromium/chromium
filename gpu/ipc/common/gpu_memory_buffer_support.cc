@@ -44,6 +44,7 @@ GpuMemoryBufferSupport::GpuMemoryBufferSupport() {
 
 GpuMemoryBufferSupport::~GpuMemoryBufferSupport() {}
 
+// static
 gfx::GpuMemoryBufferType
 GpuMemoryBufferSupport::GetNativeGpuMemoryBufferType() {
 #if BUILDFLAG(IS_APPLE)
@@ -59,6 +60,7 @@ GpuMemoryBufferSupport::GetNativeGpuMemoryBufferType() {
 #endif
 }
 
+// static
 bool GpuMemoryBufferSupport::IsNativeGpuMemoryBufferConfigurationSupported(
     gfx::BufferFormat format,
     gfx::BufferUsage usage) {
