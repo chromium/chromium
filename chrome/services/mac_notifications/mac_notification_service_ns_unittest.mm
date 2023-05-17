@@ -65,6 +65,15 @@ namespace mac_notifications {
 
 namespace {
 
+struct NotificationActionParams {
+  NSUserNotificationActivationType activation_type;
+  NSNumber* has_settings_button;
+  NSArray* action_button_titles;
+  NSNumber* alternate_action_index;
+  NotificationOperation operation;
+  int button_index;
+};
+
 class MockNotificationActionHandler
     : public mojom::MacNotificationActionHandler {
  public:
@@ -305,15 +314,6 @@ TEST_F(MacNotificationServiceNSTest, CloseAllNotifications) {
   run_loop.Run();
   [mock_notification_center_ verify];
 }
-
-struct NotificationActionParams {
-  NSUserNotificationActivationType activation_type;
-  NSNumber* has_settings_button;
-  NSArray* action_button_titles;
-  NSNumber* alternate_action_index;
-  NotificationOperation operation;
-  int button_index;
-};
 
 const NotificationActionParams kNotificationActionParams[] = {
     {NSUserNotificationActivationTypeNone,

@@ -38,6 +38,13 @@ namespace mac_notifications {
 
 namespace {
 
+struct NotificationActionParams {
+  NSString* action_identifier;
+  NotificationOperation operation;
+  int button_index;
+  absl::optional<std::u16string> reply;
+};
+
 class MockNotificationActionHandler
     : public mojom::MacNotificationActionHandler {
  public:
@@ -561,20 +568,7 @@ TEST_F(MacNotificationServiceUNTest, InitializeDeliveredNotifications) {
   }
 }
 
-struct NotificationActionParams {
-  NSString* action_identifier;
-  NotificationOperation operation;
-  int button_index;
-  absl::optional<std::u16string> reply;
-};
-
-// TODO(crbug.com/1446289): failing on Mac12-dbg
-#if !defined(NDEBUG)
-#define MAYBE_OnNotificationAction DISABLED_OnNotificationAction
-#else
-#define MAYBE_OnNotificationAction OnNotificationAction
-#endif
-TEST_F(MacNotificationServiceUNTest, MAYBE_OnNotificationAction) {
+TEST_F(MacNotificationServiceUNTest, OnNotificationAction) {
   if (@available(macOS 10.14, *)) {
     // We can't use TEST_P and INSTANTIATE_TEST_SUITE_P as we can't access
     // UNNotificationDefaultActionIdentifier etc. outside an @available block.
