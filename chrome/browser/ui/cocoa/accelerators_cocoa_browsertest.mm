@@ -104,23 +104,22 @@ IN_PROC_BROWSER_TEST_F(AcceleratorsCocoaBrowserTest,
     const ui::Accelerator* accelerator =
         keymap->GetAcceleratorForCommand(item.tag);
     EXPECT_TRUE(accelerator);
-    if (!accelerator)
+    if (!accelerator) {
       continue;
+    }
 
     // Get the Cocoa key_equivalent associated with the accelerator.
-    NSString* keyEquivalent;
-    NSUInteger modifierMask;
-    GetKeyEquivalentAndModifierMaskFromAccelerator(*accelerator, &keyEquivalent,
-                                                   &modifierMask);
+    KeyEquivalentAndModifierMask* equivalent =
+        GetKeyEquivalentAndModifierMaskFromAccelerator(*accelerator);
 
     // Check that the menu item's keyEquivalent matches the one from the
     // Cocoa accelerator map.
-    EXPECT_NSEQ(keyEquivalent, item.keyEquivalent);
+    EXPECT_NSEQ(equivalent.keyEquivalent, item.keyEquivalent);
 
     // Check that the menu item's modifier mask matches the one stored in the
     // accelerator. Ignore the NSEventModifierFlagShift because it's part of
     // the key equivalent (i.e. "a" + NSEventModifierFlagShift = "A").
-    EXPECT_TRUE(MenuItemHasModifierMask(item, modifierMask));
+    EXPECT_TRUE(MenuItemHasModifierMask(item, equivalent.modifierMask));
   }
 }
 
@@ -131,29 +130,28 @@ IN_PROC_BROWSER_TEST_F(AcceleratorsCocoaBrowserTest,
                        MappingAcceleratorsInMainMenu) {
   AcceleratorsCocoa* keymap = AcceleratorsCocoa::GetInstance();
   // The "Share" menu is dynamically populated.
-  NSMenu* mainMenu = [NSApp mainMenu];
+  NSMenu* mainMenu = NSApp.mainMenu;
   NSMenu* fileMenu = [[mainMenu itemWithTag:IDC_FILE_MENU] submenu];
   NSMenu* shareMenu =
       [[fileMenu itemWithTitle:l10n_util::GetNSString(IDS_SHARE_MAC)] submenu];
   [[shareMenu delegate] menuNeedsUpdate:shareMenu];
 
   for (auto& it : keymap->accelerators_) {
-    NSString* keyEquivalent;
-    NSUInteger modifierMask;
-    GetKeyEquivalentAndModifierMaskFromAccelerator(it.second, &keyEquivalent,
-                                                   &modifierMask);
+    KeyEquivalentAndModifierMask* equivalent =
+        GetKeyEquivalentAndModifierMaskFromAccelerator(it.second);
 
     // Check that there exists a corresponding NSMenuItem.
-    NSMenuItem* item =
-        MenuContainsAccelerator([NSApp mainMenu], keyEquivalent, modifierMask);
+    NSMenuItem* item = MenuContainsAccelerator(
+        [NSApp mainMenu], equivalent.keyEquivalent, equivalent.modifierMask);
     EXPECT_TRUE(item);
 
     // If the menu uses a commandDispatch:, the tag must match the command id!
     // Added an exception for IDC_TOGGLE_FULLSCREEN_TOOLBAR, which conflicts
     // with IDC_PRESENTATION_MODE.
-    if (item.action == @selector(commandDispatch:)
-        && item.tag != IDC_TOGGLE_FULLSCREEN_TOOLBAR)
+    if (item.action == @selector(commandDispatch:) &&
+        item.tag != IDC_TOGGLE_FULLSCREEN_TOOLBAR) {
       EXPECT_EQ(item.tag, it.first);
+    }
   }
 }
 

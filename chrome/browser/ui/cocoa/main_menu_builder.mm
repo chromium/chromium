@@ -553,8 +553,10 @@ base::scoped_nsobject<NSMenuItem> MenuItemBuilder::Build() const {
   if (tag_ != 0) {
     if (const ui::Accelerator* accelerator =
             AcceleratorsCocoa::GetInstance()->GetAcceleratorForCommand(tag_)) {
-      GetKeyEquivalentAndModifierMaskFromAccelerator(
-          *accelerator, &key_equivalent, &key_equivalent_flags);
+      KeyEquivalentAndModifierMask* equivalent =
+          GetKeyEquivalentAndModifierMaskFromAccelerator(*accelerator);
+      key_equivalent = equivalent.keyEquivalent;
+      key_equivalent_flags = equivalent.modifierMask;
     }
   }
 

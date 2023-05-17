@@ -253,11 +253,8 @@ bool CanShare() {
   bool found = GetDefaultMacAcceleratorForCommandId(IDC_EMAIL_PAGE_LOCATION,
                                                     &accelerator);
   DCHECK(found);
-  NSString* key_equivalent;
-  NSUInteger modifier_mask;
-  GetKeyEquivalentAndModifierMaskFromAccelerator(accelerator, &key_equivalent,
-                                                 &modifier_mask);
-  return key_equivalent;
+  return GetKeyEquivalentAndModifierMaskFromAccelerator(accelerator)
+      .keyEquivalent;
 }
 
 @end
