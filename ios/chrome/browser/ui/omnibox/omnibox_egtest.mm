@@ -913,6 +913,13 @@ void FocusFakebox() {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.");
   }
 
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1446075): This test fails on iOS 16.4 devices too.
+  if (@available(iOS 16.4, *)) {
+    EARL_GREY_TEST_DISABLED(@"crbug.com/1446075: Fails on iOS 16.4+ devices.");
+  }
+#endif
+
   // Focus omnibox.
   [self focusFakebox];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -1008,6 +1015,13 @@ void FocusFakebox() {
 // If the selected text is the entire omnibox field, select & SelectAll button
 // should be hidden.
 - (void)testSelection {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1446075): This test fails on iOS 16.4 devices.
+  if (@available(iOS 16.4, *)) {
+    EARL_GREY_TEST_DISABLED(@"crbug.com/1446075: Fails on iOS 16.4+ devices.");
+  }
+#endif
+
   // Focus omnibox.
   [self focusFakebox];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -1063,6 +1077,13 @@ void FocusFakebox() {
       !base::ios::IsRunningOnIOS16OrLater()) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.");
   }
+
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/1446075): This test fails on iOS 16.4 devices too.
+  if (@available(iOS 16.4, *)) {
+    EARL_GREY_TEST_DISABLED(@"crbug.com/1446075: Fails on iOS 16.4+ devices.");
+  }
+#endif
 
   NSString* copiedText = @"test no default match1";
 
