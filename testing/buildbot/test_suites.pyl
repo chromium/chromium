@@ -2799,15 +2799,6 @@
     },
 
     'gpu_default_and_optional_win_specific_gtests': {
-      # WebNN DirectML backend unit tests, which currently only run on
-      # Windows OS, and require physical hardware.
-      'services_webnn_unittests': {
-        'args': [
-          '--gtest_filter=WebNN*',
-          '--use-gpu-in-tests'
-        ],
-        'test': 'services_unittests',
-      },
       'xr_browser_tests': {
         # The Windows machines this is run on should always meet all the
         # requirements, so skip the runtime checks to help catch issues, e.g.
@@ -2855,6 +2846,15 @@
           '--disable-gpu-sandbox',
         ],
         'test': 'gles2_conform_test',
+      },
+      # WebNN DirectML backend unit tests, which currently only run on
+      # Windows OS, and require physical hardware.
+      'services_webnn_unittests': {
+        'args': [
+          '--gtest_filter=WebNN*',
+          '--use-gpu-in-tests'
+        ],
+        'test': 'services_unittests',
       },
     },
 
