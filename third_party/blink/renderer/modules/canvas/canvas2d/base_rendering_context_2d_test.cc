@@ -30,6 +30,7 @@ using ::cc::PaintOpEq;
 using ::cc::RestoreOp;
 using ::cc::SaveLayerAlphaOp;
 using ::cc::SaveLayerOp;
+using ::cc::SaveOp;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
@@ -47,6 +48,10 @@ class TestRenderingContext2D final
             scheduler::GetSingleThreadTaskRunnerForTesting()),
         execution_context_(scope.GetExecutionContext()) {
     recorder_.beginRecording();
+
+    // The rendering context always starts with an extra `SaveOp`, to allow
+    // resetting the matrix stack by poping this top save level.
+    GetPaintCanvas()->save();
   }
   ~TestRenderingContext2D() override = default;
 
@@ -85,7 +90,13 @@ class TestRenderingContext2D final
   ExecutionContext* GetTopExecutionContext() const override {
     return execution_context_;
   }
-  void ValidateStateStackWithCanvas(const cc::PaintCanvas*) const override {}
+  void ValidateStateStackWithCanvas(
+      const cc::PaintCanvas* canvas) const override {
+#if DCHECK_IS_ON()
+    CHECK_EQ(static_cast<size_t>(canvas->getSaveCount()),
+             state_stack_.size() + layer_extra_saves_ + 1);
+#endif
+  }
 
   bool HasAlpha() const override { return false; }
 
@@ -131,7 +142,8 @@ TEST(BaseRenderingContextLayerTests, ContextLost) {
                       /*filter_init=*/nullptr, exception_state);
   context->endLayer();
 
-  EXPECT_THAT(context->getRecording(), IsEmpty());
+  EXPECT_THAT(context->getRecording(),
+              ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, ResetsAndRestoresShadowStates) {
@@ -221,7 +233,8 @@ TEST(BaseRenderingContextLayerTests, DefaultRenderingStates) {
 
   EXPECT_THAT(
       context->getRecording(),
-      ElementsAre(PaintOpEq<SaveLayerAlphaOp>(1.0f), PaintOpEq<RestoreOp>()));
+      ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerAlphaOp>(1.0f),
+                  PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, GlobalAlpha) {
@@ -236,7 +249,8 @@ TEST(BaseRenderingContextLayerTests, GlobalAlpha) {
 
   EXPECT_THAT(
       context->getRecording(),
-      ElementsAre(PaintOpEq<SaveLayerAlphaOp>(0.3f), PaintOpEq<RestoreOp>()));
+      ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerAlphaOp>(0.3f),
+                  PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, BlendingOperation) {
@@ -252,9 +266,9 @@ TEST(BaseRenderingContextLayerTests, BlendingOperation) {
   cc::PaintFlags flags;
   flags.setBlendMode(SkBlendMode::kMultiply);
 
-  EXPECT_THAT(
-      context->getRecording(),
-      ElementsAre(PaintOpEq<SaveLayerOp>(flags), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(context->getRecording(),
+              ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(flags),
+                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, CompositeOperation) {
@@ -270,9 +284,9 @@ TEST(BaseRenderingContextLayerTests, CompositeOperation) {
   cc::PaintFlags flags;
   flags.setBlendMode(SkBlendMode::kSrcIn);
 
-  EXPECT_THAT(
-      context->getRecording(),
-      ElementsAre(PaintOpEq<SaveLayerOp>(flags), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(context->getRecording(),
+              ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(flags),
+                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, Shadow) {
@@ -290,9 +304,9 @@ TEST(BaseRenderingContextLayerTests, Shadow) {
   flags.setImageFilter(sk_make_sp<DropShadowPaintFilter>(
       0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
       DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
-  EXPECT_THAT(
-      context->getRecording(),
-      ElementsAre(PaintOpEq<SaveLayerOp>(flags), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(context->getRecording(),
+              ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(flags),
+                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, GlobalAlphaAndBlending) {
@@ -310,9 +324,9 @@ TEST(BaseRenderingContextLayerTests, GlobalAlphaAndBlending) {
   flags.setAlphaf(0.3f);
   flags.setBlendMode(SkBlendMode::kMultiply);
 
-  EXPECT_THAT(
-      context->getRecording(),
-      ElementsAre(PaintOpEq<SaveLayerOp>(flags), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(context->getRecording(),
+              ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(flags),
+                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, GlobalAlphaAndComposite) {
@@ -329,10 +343,11 @@ TEST(BaseRenderingContextLayerTests, GlobalAlphaAndComposite) {
   cc::PaintFlags composite_flags;
   composite_flags.setBlendMode(SkBlendMode::kSrcIn);
 
-  EXPECT_THAT(context->getRecording(),
-              ElementsAre(PaintOpEq<SaveLayerOp>(composite_flags),
-                          PaintOpEq<SaveLayerAlphaOp>(0.3f),
-                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(
+      context->getRecording(),
+      ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(composite_flags),
+                  PaintOpEq<SaveLayerAlphaOp>(0.3f), PaintOpEq<RestoreOp>(),
+                  PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, GlobalAlphaAndShadow) {
@@ -352,10 +367,11 @@ TEST(BaseRenderingContextLayerTests, GlobalAlphaAndShadow) {
       0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
       DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
 
-  EXPECT_THAT(context->getRecording(),
-              ElementsAre(PaintOpEq<SaveLayerOp>(shadow_flags),
-                          PaintOpEq<SaveLayerAlphaOp>(0.5f),
-                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(
+      context->getRecording(),
+      ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(shadow_flags),
+                  PaintOpEq<SaveLayerAlphaOp>(0.5f), PaintOpEq<RestoreOp>(),
+                  PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, GlobalAlphaBlendingAndShadow) {
@@ -377,10 +393,11 @@ TEST(BaseRenderingContextLayerTests, GlobalAlphaBlendingAndShadow) {
       DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
   shadow_flags.setBlendMode(SkBlendMode::kMultiply);
 
-  EXPECT_THAT(context->getRecording(),
-              ElementsAre(PaintOpEq<SaveLayerOp>(shadow_flags),
-                          PaintOpEq<SaveLayerAlphaOp>(0.5f),
-                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(
+      context->getRecording(),
+      ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(shadow_flags),
+                  PaintOpEq<SaveLayerAlphaOp>(0.5f), PaintOpEq<RestoreOp>(),
+                  PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, GlobalAlphaCompositeAndShadow) {
@@ -402,10 +419,11 @@ TEST(BaseRenderingContextLayerTests, GlobalAlphaCompositeAndShadow) {
       DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
   shadow_flags.setBlendMode(SkBlendMode::kSrcIn);
 
-  EXPECT_THAT(context->getRecording(),
-              ElementsAre(PaintOpEq<SaveLayerOp>(shadow_flags),
-                          PaintOpEq<SaveLayerAlphaOp>(0.5f),
-                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(
+      context->getRecording(),
+      ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(shadow_flags),
+                  PaintOpEq<SaveLayerAlphaOp>(0.5f), PaintOpEq<RestoreOp>(),
+                  PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, BlendingAndShadow) {
@@ -426,9 +444,10 @@ TEST(BaseRenderingContextLayerTests, BlendingAndShadow) {
       DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
   shadow_flags.setBlendMode(SkBlendMode::kMultiply);
 
-  EXPECT_THAT(context->getRecording(),
-              ElementsAre(PaintOpEq<SaveLayerOp>(shadow_flags),
-                          PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(
+      context->getRecording(),
+      ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(shadow_flags),
+                  PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, CompositeAndShadow) {
@@ -449,9 +468,10 @@ TEST(BaseRenderingContextLayerTests, CompositeAndShadow) {
       DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
   shadow_flags.setBlendMode(SkBlendMode::kSrcIn);
 
-  EXPECT_THAT(context->getRecording(),
-              ElementsAre(PaintOpEq<SaveLayerOp>(shadow_flags),
-                          PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(
+      context->getRecording(),
+      ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(shadow_flags),
+                  PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, Filter) {
@@ -468,9 +488,9 @@ TEST(BaseRenderingContextLayerTests, Filter) {
   cc::PaintFlags flags;
   flags.setImageFilter(
       sk_make_sp<BlurPaintFilter>(10.0f, 10.0f, SkTileMode::kDecal, nullptr));
-  EXPECT_THAT(
-      context->getRecording(),
-      ElementsAre(PaintOpEq<SaveLayerOp>(flags), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(context->getRecording(),
+              ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(flags),
+                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, FilterAndGlobalAlpha) {
@@ -489,9 +509,9 @@ TEST(BaseRenderingContextLayerTests, FilterAndGlobalAlpha) {
   flags.setAlphaf(0.3f);
   flags.setImageFilter(
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
-  EXPECT_THAT(
-      context->getRecording(),
-      ElementsAre(PaintOpEq<SaveLayerOp>(flags), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(context->getRecording(),
+              ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(flags),
+                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, FilterAndBlending) {
@@ -510,9 +530,9 @@ TEST(BaseRenderingContextLayerTests, FilterAndBlending) {
   flags.setImageFilter(
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
   flags.setBlendMode(SkBlendMode::kMultiply);
-  EXPECT_THAT(
-      context->getRecording(),
-      ElementsAre(PaintOpEq<SaveLayerOp>(flags), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(context->getRecording(),
+              ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(flags),
+                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, FilterAndComposite) {
@@ -534,10 +554,11 @@ TEST(BaseRenderingContextLayerTests, FilterAndComposite) {
   filter_flags.setImageFilter(
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
 
-  EXPECT_THAT(context->getRecording(),
-              ElementsAre(PaintOpEq<SaveLayerOp>(composite_flags),
-                          PaintOpEq<SaveLayerOp>(filter_flags),
-                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(
+      context->getRecording(),
+      ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(composite_flags),
+                  PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
+                  PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, FilterAndShadow) {
@@ -562,10 +583,11 @@ TEST(BaseRenderingContextLayerTests, FilterAndShadow) {
   filter_flags.setImageFilter(
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
 
-  EXPECT_THAT(context->getRecording(),
-              ElementsAre(PaintOpEq<SaveLayerOp>(shadow_flags),
-                          PaintOpEq<SaveLayerOp>(filter_flags),
-                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(
+      context->getRecording(),
+      ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(shadow_flags),
+                  PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
+                  PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, FilterGlobalAlphaAndBlending) {
@@ -586,9 +608,9 @@ TEST(BaseRenderingContextLayerTests, FilterGlobalAlphaAndBlending) {
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
   flags.setAlphaf(0.3f);
   flags.setBlendMode(SkBlendMode::kMultiply);
-  EXPECT_THAT(
-      context->getRecording(),
-      ElementsAre(PaintOpEq<SaveLayerOp>(flags), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(context->getRecording(),
+              ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(flags),
+                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, FilterGlobalAlphaAndComposite) {
@@ -612,10 +634,11 @@ TEST(BaseRenderingContextLayerTests, FilterGlobalAlphaAndComposite) {
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
   filter_flags.setAlphaf(0.3f);
 
-  EXPECT_THAT(context->getRecording(),
-              ElementsAre(PaintOpEq<SaveLayerOp>(composite_flags),
-                          PaintOpEq<SaveLayerOp>(filter_flags),
-                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(
+      context->getRecording(),
+      ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(composite_flags),
+                  PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
+                  PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, FilterGlobalAlphaAndShadow) {
@@ -642,10 +665,11 @@ TEST(BaseRenderingContextLayerTests, FilterGlobalAlphaAndShadow) {
   filter_flags.setImageFilter(
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
 
-  EXPECT_THAT(context->getRecording(),
-              ElementsAre(PaintOpEq<SaveLayerOp>(shadow_flags),
-                          PaintOpEq<SaveLayerOp>(filter_flags),
-                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(
+      context->getRecording(),
+      ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(shadow_flags),
+                  PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
+                  PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, FilterGlobalAlphaBlendingAndShadow) {
@@ -674,10 +698,11 @@ TEST(BaseRenderingContextLayerTests, FilterGlobalAlphaBlendingAndShadow) {
   filter_flags.setImageFilter(
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
 
-  EXPECT_THAT(context->getRecording(),
-              ElementsAre(PaintOpEq<SaveLayerOp>(shadow_flags),
-                          PaintOpEq<SaveLayerOp>(filter_flags),
-                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(
+      context->getRecording(),
+      ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(shadow_flags),
+                  PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
+                  PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, FilterGlobalAlphaCompositeAndShadow) {
@@ -706,10 +731,11 @@ TEST(BaseRenderingContextLayerTests, FilterGlobalAlphaCompositeAndShadow) {
   filter_flags.setImageFilter(
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
 
-  EXPECT_THAT(context->getRecording(),
-              ElementsAre(PaintOpEq<SaveLayerOp>(shadow_flags),
-                          PaintOpEq<SaveLayerOp>(filter_flags),
-                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(
+      context->getRecording(),
+      ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(shadow_flags),
+                  PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
+                  PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, FilterBlendingAndShadow) {
@@ -736,10 +762,11 @@ TEST(BaseRenderingContextLayerTests, FilterBlendingAndShadow) {
   filter_flags.setImageFilter(
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
 
-  EXPECT_THAT(context->getRecording(),
-              ElementsAre(PaintOpEq<SaveLayerOp>(shadow_flags),
-                          PaintOpEq<SaveLayerOp>(filter_flags),
-                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(
+      context->getRecording(),
+      ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(shadow_flags),
+                  PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
+                  PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, FilterCompositeAndShadow) {
@@ -766,10 +793,11 @@ TEST(BaseRenderingContextLayerTests, FilterCompositeAndShadow) {
   filter_flags.setImageFilter(
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
 
-  EXPECT_THAT(context->getRecording(),
-              ElementsAre(PaintOpEq<SaveLayerOp>(shadow_flags),
-                          PaintOpEq<SaveLayerOp>(filter_flags),
-                          PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
+  EXPECT_THAT(
+      context->getRecording(),
+      ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerOp>(shadow_flags),
+                  PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
+                  PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 TEST(BaseRenderingContextLayerTests, BeginLayerIgnoresGlobalFilter) {
@@ -785,7 +813,8 @@ TEST(BaseRenderingContextLayerTests, BeginLayerIgnoresGlobalFilter) {
 
   EXPECT_THAT(
       context->getRecording(),
-      ElementsAre(PaintOpEq<SaveLayerAlphaOp>(1.0f), PaintOpEq<RestoreOp>()));
+      ElementsAre(PaintOpEq<SaveOp>(), PaintOpEq<SaveLayerAlphaOp>(1.0f),
+                  PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }
 
 }  // namespace
