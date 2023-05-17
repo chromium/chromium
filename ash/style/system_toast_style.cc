@@ -137,6 +137,9 @@ SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
     leading_icon_view_ = AddChildView(std::make_unique<views::ImageView>());
     leading_icon_view_->SetPreferredSize(
         gfx::Size(kLeadingIconSize, kLeadingIconSize));
+    leading_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        *leading_icon_, cros_tokens::kCrosSysOnSurface));
+
     auto* icon_padding = AddChildView(std::make_unique<views::View>());
     icon_padding->SetPreferredSize(
         gfx::Size(kLeadingIconRightPadding, kLeadingIconSize));
@@ -145,26 +148,25 @@ SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
   label_ = AddChildView(std::make_unique<SystemToastInnerLabel>(text));
 
   if (!dismiss_text.empty()) {
-    button_ = AddChildView(std::make_unique<PillButton>(
+    dismiss_button_ = AddChildView(std::make_unique<PillButton>(
         std::move(dismiss_callback), dismiss_text,
         PillButton::Type::kAccentFloatingWithoutIcon,
         /*icon=*/nullptr));
-    button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+    dismiss_button_->SetFocusBehavior(
+        views::View::FocusBehavior::ACCESSIBLE_ONLY);
   }
 
   // Requesting size forces layout. Otherwise, we don't know how many lines
   // are needed.
   label_->GetPreferredSize();
-  const bool two_line = label_->GetRequiredLines() > 1;
 
-  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      ComputeInsets(!!button_, two_line, !leading_icon.is_empty())));
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   layout->SetFlexForView(label_, 1);
+  UpdateInsideBorderInsets();
 
-  int toast_height = GetPreferredSize().height();
+  const int toast_height = GetPreferredSize().height();
   const float toast_corner_radius = toast_height / 2.0f;
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(toast_corner_radius));
   SetBorder(std::make_unique<views::HighlightBorder>(
@@ -184,12 +186,12 @@ SystemToastStyle::SystemToastStyle(base::RepeatingClosure dismiss_callback,
 SystemToastStyle::~SystemToastStyle() = default;
 
 bool SystemToastStyle::ToggleA11yFocus() {
-  if (!button_ ||
+  if (!dismiss_button_ ||
       !Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
     return false;
   }
 
-  auto* focus_ring = views::FocusRing::Get(button_);
+  auto* focus_ring = views::FocusRing::Get(dismiss_button_);
   focus_ring->SetHasFocusPredicate(base::BindRepeating(
       [](const SystemToastStyle* style, const views::View* view) {
         return style->is_dismiss_button_highlighted_;
@@ -198,11 +200,13 @@ bool SystemToastStyle::ToggleA11yFocus() {
 
   is_dismiss_button_highlighted_ = !is_dismiss_button_highlighted_;
   scoped_a11y_overrider_->MaybeUpdateA11yOverrideWindow(
-      is_dismiss_button_highlighted_ ? button_->GetWidget()->GetNativeWindow()
-                                     : nullptr);
+      is_dismiss_button_highlighted_
+          ? dismiss_button_->GetWidget()->GetNativeWindow()
+          : nullptr);
 
   if (is_dismiss_button_highlighted_)
-    button_->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+    dismiss_button_->NotifyAccessibilityEvent(ax::mojom::Event::kSelection,
+                                              true);
 
   focus_ring->SetVisible(is_dismiss_button_highlighted_);
   focus_ring->SchedulePaint();
@@ -211,6 +215,17 @@ bool SystemToastStyle::ToggleA11yFocus() {
 
 void SystemToastStyle::SetText(const std::u16string& text) {
   label_->SetText(text);
+}
+
+void SystemToastStyle::AddSecondButton(
+    base::RepeatingClosure second_button_callback,
+    const std::u16string& second_button_text) {
+  CHECK(dismiss_button_);
+  second_button_ = AddChildView(std::make_unique<PillButton>(
+      std::move(second_button_callback), second_button_text,
+      PillButton::Type::kAccentFloatingWithoutIcon));
+  second_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  UpdateInsideBorderInsets();
 }
 
 void SystemToastStyle::AddedToWidget() {
@@ -225,16 +240,12 @@ void SystemToastStyle::AddedToWidget() {
   shadow_->SetContentBounds(gfx::Rect(widget_layer->bounds().size()));
 }
 
-void SystemToastStyle::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  if (leading_icon_view_) {
-    leading_icon_view_->SetImage(gfx::CreateVectorIcon(
-        *leading_icon_,
-        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface)));
-  }
-
-  SchedulePaint();
+void SystemToastStyle::UpdateInsideBorderInsets() {
+  static_cast<views::BoxLayout*>(GetLayoutManager())
+      ->set_inside_border_insets(ComputeInsets(
+          !!dismiss_button_ || !!second_button_, label_->GetRequiredLines() > 1,
+          !leading_icon_->is_empty()));
+  InvalidateLayout();
 }
 
 BEGIN_METADATA(SystemToastStyle, views::View)
