@@ -94,8 +94,6 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
        */
       pageAvailability: Object,
 
-      showAndroidApps: Boolean,
-
       showArcvmManageUsb: Boolean,
 
     };
@@ -105,7 +103,6 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
   advancedToggleExpanded: boolean;
   toolbarSpinnerActive: boolean;
   pageAvailability: OsPageAvailability;
-  showAndroidApps: boolean;
   showArcvmManageUsb: boolean;
   private overscroll_: number;
   private showPages_: MainPageVisibility;

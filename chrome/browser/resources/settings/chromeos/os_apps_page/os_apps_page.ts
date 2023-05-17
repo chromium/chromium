@@ -35,7 +35,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isPlayStoreAvailable} from '../common/load_time_booleans.js';
+import {androidAppsVisible, isPlayStoreAvailable} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {App as AppWithNotifications, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver, Readiness} from '../mojom-webui/app_notification_handler.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -93,10 +93,12 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
 
       searchTerm: String,
 
-      /**
-       * Show ARC++ related settings and sub-page.
-       */
-      showAndroidApps: Boolean,
+      showAndroidApps_: {
+        type: Boolean,
+        value: () => {
+          return androidAppsVisible();
+        },
+      },
 
       /**
        * Show ARCVM Manage USB related settings and sub-page.
@@ -188,7 +190,6 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
 
   androidAppsInfo: AndroidAppsInfo;
   searchTerm: string;
-  showAndroidApps: boolean;
   showArcvmManageUsb: boolean;
   showPluginVm: boolean;
   private app_: App;
@@ -199,6 +200,7 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   private isPlayStoreAvailable_: boolean;
   private mojoInterfaceProvider_: AppNotificationsHandlerInterface;
   private onStartupOptions_: DropdownMenuOptionList;
+  private showAndroidApps_: boolean;
   private showAppNotificationsRow_: boolean;
   private showStartup_: boolean;
 

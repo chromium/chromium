@@ -22,7 +22,7 @@
               appsWithNotifications_.*, isDndEnabled_)]]">
       </cr-link-row>
     </template>
-    <template is="dom-if" if="[[showAndroidApps]]">
+    <template is="dom-if" if="[[showAndroidApps_]]">
       <template is="dom-if" if="[[isPlayStoreAvailable_]]" restamp>
         <div id="android-apps" class="settings-box first"
             actionable$="[[androidAppsInfo.playStoreEnabled]]"
@@ -115,7 +115,7 @@
   </template>
 
   <!-- ANDROID APPS -->
-  <template is="dom-if" if="[[showAndroidApps]]" restamp>
+  <template is="dom-if" if="[[showAndroidApps_]]" restamp>
     <template is="dom-if" route-path="/androidAppsDetails">
       <os-settings-subpage page-title="$i18n{androidAppsPageLabel}">
         <settings-android-apps-subpage

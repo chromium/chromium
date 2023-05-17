@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {isCrostiniSupported, isGuest, isKerberosEnabled, isPowerwashAllowed} from './common/load_time_booleans.js';
+import {androidAppsVisible, isCrostiniSupported, isGuest, isKerberosEnabled, isPowerwashAllowed} from './common/load_time_booleans.js';
 import * as routesMojom from './mojom-webui/routes.mojom-webui.js';
 
 /** Class for navigable routes. */
@@ -374,8 +374,7 @@ function createOsSettingsRoutes(): OsSettingsRoutes {
   r.APP_MANAGEMENT_DETAIL = createSubpage(
       r.APP_MANAGEMENT, routesMojom.APP_DETAILS_SUBPAGE_PATH,
       Subpage.kAppDetails);
-  if (loadTimeData.valueExists('androidAppsVisible') &&
-      loadTimeData.getBoolean('androidAppsVisible')) {
+  if (androidAppsVisible()) {
     r.ANDROID_APPS_DETAILS = createSubpage(
         r.APPS, routesMojom.GOOGLE_PLAY_STORE_SUBPAGE_PATH,
         Subpage.kGooglePlayStore);

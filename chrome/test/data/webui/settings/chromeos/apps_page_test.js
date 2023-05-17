@@ -208,6 +208,7 @@ suite('<os-apps-page> available settings rows', () => {
     appsPage = document.createElement('os-settings-apps-page');
     appsPage.prefs = getFakePrefs();
     document.body.appendChild(appsPage);
+    flush();
   }
 
   setup(async () => {
@@ -231,10 +232,11 @@ suite('<os-apps-page> available settings rows', () => {
       appsPage.shadowRoot.querySelector('#onStartupDropdown');
 
   test('Only App Management is shown', () => {
-    loadTimeData.overrideValues({showStartup: false});
+    loadTimeData.overrideValues({
+      showStartup: false,
+      androidAppsVisible: false,
+    });
     initPage();
-    appsPage.showAndroidApps = false;
-    flush();
 
     assertTrue(!!queryAppManagementRow());
     assertEquals(null, queryAndroidAppsRow());
@@ -242,10 +244,11 @@ suite('<os-apps-page> available settings rows', () => {
   });
 
   test('Android Apps and App Management are shown', () => {
-    loadTimeData.overrideValues({showStartup: false});
+    loadTimeData.overrideValues({
+      showStartup: false,
+      androidAppsVisible: true,
+    });
     initPage();
-    appsPage.showAndroidApps = true;
-    flush();
 
     assertTrue(!!queryAppManagementRow());
     assertTrue(!!queryAndroidAppsRow());
@@ -253,10 +256,11 @@ suite('<os-apps-page> available settings rows', () => {
   });
 
   test('Android Apps, On Startup, and App Management are shown', () => {
-    loadTimeData.overrideValues({showStartup: true});
+    loadTimeData.overrideValues({
+      showStartup: true,
+      androidAppsVisible: true,
+    });
     initPage();
-    appsPage.showAndroidApps = true;
-    flush();
 
     assertTrue(!!queryAppManagementRow());
     assertTrue(!!queryAndroidAppsRow());
@@ -289,6 +293,7 @@ suite('AppsPageTests', function() {
     loadTimeData.overrideValues({
       showOsSettingsAppNotificationsRow: true,
       isPlayStoreAvailable: true,
+      androidAppsVisible: true,
     });
     androidAppsBrowserProxy = new TestAndroidAppsBrowserProxy();
     AndroidAppsBrowserProxyImpl.setInstanceForTesting(androidAppsBrowserProxy);
@@ -310,7 +315,6 @@ suite('AppsPageTests', function() {
 
   suite('Main Page', function() {
     setup(function() {
-      appsPage.showAndroidApps = true;
       appsPage.prefs = getFakePrefs();
       appsPage.androidAppsInfo = {
         playStoreEnabled: false,

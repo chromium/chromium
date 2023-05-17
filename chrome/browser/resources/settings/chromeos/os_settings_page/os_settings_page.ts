@@ -71,8 +71,6 @@ export class OsSettingsPageElement extends OsSettingsPageElementBase {
         notify: true,
       },
 
-      showAndroidApps: Boolean,
-
       showArcvmManageUsb: Boolean,
 
       showPluginVm: Boolean,
