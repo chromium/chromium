@@ -456,17 +456,6 @@ public class PersonalDataManager {
             mLabel = profile.getLabel();
         }
 
-        /** TODO(estade): remove this constructor. */
-        @VisibleForTesting
-        public AutofillProfile(String guid, String honorificPrefix, String fullName,
-                String companyName, String streetAddress, String region, String locality,
-                String dependentLocality, String postalCode, String sortingCode, String countryCode,
-                String phoneNumber, String emailAddress, String languageCode) {
-            this(guid, true /* isLocal */, Source.LOCAL_OR_SYNCABLE, honorificPrefix, fullName,
-                    companyName, streetAddress, region, locality, dependentLocality, postalCode,
-                    sortingCode, countryCode, phoneNumber, emailAddress, languageCode);
-        }
-
         @CalledByNative("AutofillProfile")
         public String getGUID() {
             return mGUID;

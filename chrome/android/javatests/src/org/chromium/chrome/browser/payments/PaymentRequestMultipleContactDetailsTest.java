@@ -39,67 +39,153 @@ public class PaymentRequestMultipleContactDetailsTest {
 
     private static final AutofillProfile[] AUTOFILL_PROFILES = {
             // 0 - Incomplete (no phone) profile.
-            new AutofillProfile("" /* guid */, "" /* honorific prefix */, "Bart Simpson",
-                    "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US", "",
-                    "bart@simpson.com", ""),
+            AutofillProfile.builder()
+                    .setFullName("Bart Simpson")
+                    .setCompanyName("Acme Inc.")
+                    .setStreetAddress("123 Main")
+                    .setRegion("California")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90210")
+                    .setCountryCode("US")
+                    .setEmailAddress("bart@simpson.com")
+                    .build(),
 
             // 1 - Incomplete (no email) profile.
-            new AutofillProfile("" /* guid */, "" /* honorific prefix */, "Homer Simpson",
-                    "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
-                    "555 123-4567", "", ""),
+            AutofillProfile.builder()
+                    .setFullName("Homer Simpson")
+                    .setCompanyName("Acme Inc.")
+                    .setStreetAddress("123 Main")
+                    .setRegion("California")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90210")
+                    .setCountryCode("US")
+                    .setPhoneNumber("555 123-4567")
+                    .build(),
 
             // 2 - Complete profile.
-            new AutofillProfile("" /* guid */, "" /* honorific prefix */, "Lisa Simpson",
-                    "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
-                    "555 123-4567", "lisa@simpson.com", ""),
+            AutofillProfile.builder()
+                    .setFullName("Lisa Simpson")
+                    .setCompanyName("Acme Inc.")
+                    .setStreetAddress("123 Main")
+                    .setRegion("California")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90210")
+                    .setCountryCode("US")
+                    .setPhoneNumber("555 123-4567")
+                    .setEmailAddress("lisa@simpson.com")
+                    .build(),
 
             // 3 - Complete profile.
-            new AutofillProfile("" /* guid */, "" /* honorific prefix */, "Maggie Simpson",
-                    "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
-                    "555 123-4567", "maggie@simpson.com", ""),
+            AutofillProfile.builder()
+                    .setFullName("Maggie Simpson")
+                    .setCompanyName("Acme Inc.")
+                    .setStreetAddress("123 Main")
+                    .setRegion("California")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90210")
+                    .setCountryCode("US")
+                    .setPhoneNumber("555 123-4567")
+                    .setEmailAddress("maggie@simpson.com")
+                    .build(),
 
             // 4 - Incomplete (no phone and email) profile.
-            new AutofillProfile("" /* guid */, "" /* honorific prefix */, "Marge Simpson",
-                    "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US", "",
-                    "", ""),
+            AutofillProfile.builder()
+                    .setFullName("Marge Simpson")
+                    .setCompanyName("Acme Inc.")
+                    .setStreetAddress("123 Main")
+                    .setRegion("California")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90210")
+                    .setCountryCode("US")
+                    .build(),
 
             // 5 - Incomplete (no name) profile.
-            new AutofillProfile("" /* guid */, "" /* honorific prefix */, "", "Acme Inc.",
-                    "123 Main", "California", "Los Angeles", "", "90210", "", "US", "555 123-4567",
-                    "marge@simpson.com", ""),
+            AutofillProfile.builder()
+                    .setCompanyName("Acme Inc.")
+                    .setStreetAddress("123 Main")
+                    .setRegion("California")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90210")
+                    .setCountryCode("US")
+                    .setPhoneNumber("555 123-4567")
+                    .setEmailAddress("marge@simpson.com")
+                    .build(),
 
             // These profiles are used to test the dedupe of subset suggestions. They are based on
             // The Lisa Simpson profile.
 
             // 6 - Same as original, but with no name.
-            new AutofillProfile("" /* guid */, "" /* honorific prefix */, "" /* name */,
-                    "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
-                    "555 123-4567", "lisa@simpson.com", ""),
+            AutofillProfile.builder()
+                    .setCompanyName("Acme Inc.")
+                    .setStreetAddress("123 Main")
+                    .setRegion("California")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90210")
+                    .setCountryCode("US")
+                    .setPhoneNumber("555 123-4567")
+                    .setEmailAddress("lisa@simpson.com")
+                    .build(),
 
             // 7 - Same as original, but with no phone.
-            new AutofillProfile("" /* guid */, "" /* honorific prefix */, "Lisa Simpson",
-                    "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
-                    "" /* phoneNumber */, "lisa@simpson.com", ""),
+            AutofillProfile.builder()
+                    .setFullName("Lisa Simpson")
+                    .setCompanyName("Acme Inc.")
+                    .setStreetAddress("123 Main")
+                    .setRegion("California")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90210")
+                    .setCountryCode("US")
+                    .setEmailAddress("lisa@simpson.com")
+                    .build(),
 
             // 8 - Same as original, but with no email.
-            new AutofillProfile("" /* guid */, "" /* honorific prefix */, "Lisa Simpson",
-                    "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
-                    "555 123-4567", "" /* emailAddress */, ""),
+            AutofillProfile.builder()
+                    .setFullName("Lisa Simpson")
+                    .setCompanyName("Acme Inc.")
+                    .setStreetAddress("123 Main")
+                    .setRegion("California")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90210")
+                    .setCountryCode("US")
+                    .setPhoneNumber("555 123-4567")
+                    .build(),
 
             // 9 - Same as original, but with no phone and no email.
-            new AutofillProfile("" /* guid */, "" /* honorific prefix */, "Lisa Simpson",
-                    "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
-                    "" /* phoneNumber */, "" /* emailAddress */, ""),
+            AutofillProfile.builder()
+                    .setFullName("Lisa Simpson")
+                    .setCompanyName("Acme Inc.")
+                    .setStreetAddress("123 Main")
+                    .setRegion("California")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90210")
+                    .setCountryCode("US")
+                    .build(),
 
             // 10 - Has an email address that is a superset of the original profile's email.
-            new AutofillProfile("" /* guid */, "" /* honorific prefix */, "Lisa Simpson",
-                    "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
-                    "555 123-4567", "fakelisa@simpson.com", ""),
+            AutofillProfile.builder()
+                    .setFullName("Lisa Simpson")
+                    .setCompanyName("Acme Inc.")
+                    .setStreetAddress("123 Main")
+                    .setRegion("California")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90210")
+                    .setCountryCode("US")
+                    .setPhoneNumber("555 123-4567")
+                    .setEmailAddress("fakelisa@simpson.com")
+                    .build(),
 
             // 11 - Has the same name as the original but with no capitalization in the name.
-            new AutofillProfile("" /* guid */, "" /* honorific prefix */, "lisa simpson",
-                    "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
-                    "555 123-4567", "lisa@simpson.com", ""),
+            AutofillProfile.builder()
+                    .setFullName("lisa simpson")
+                    .setCompanyName("Acme Inc.")
+                    .setStreetAddress("123 Main")
+                    .setRegion("California")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90210")
+                    .setCountryCode("US")
+                    .setPhoneNumber("555 123-4567")
+                    .setEmailAddress("lisa@simpson.com")
+                    .build(),
 
     };
 

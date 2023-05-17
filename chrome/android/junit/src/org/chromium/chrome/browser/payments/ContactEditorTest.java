@@ -42,13 +42,19 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ContactEditorTest {
-    private static final AutofillProfile sProfile = new AutofillProfile(/*guid=*/"",
-            /*honorificPrefix=*/"Mr",
-            /*fullName=*/"John Doe", /*companyName=*/"Google", /*streetAddress=*/"Lake Street 123",
-            /*region=*/"Bayern", /*locality=*/"Munich",
-            /*dependentLocality=*/"", /*postalCode=*/"12345", /*sortingCode=*/"",
-            /*countryCode=*/"DE", /*phoneNumber=*/"+49-000-000-00-000",
-            /*emailAddress=*/"email@example.com", /*languageCode=*/"de");
+    private static final AutofillProfile sProfile = AutofillProfile.builder()
+                                                            .setHonorificPrefix("Mr")
+                                                            .setFullName("John Doe")
+                                                            .setCompanyName("Google")
+                                                            .setStreetAddress("Lake Street 123")
+                                                            .setRegion("Bayern")
+                                                            .setLocality("Munich")
+                                                            .setPostalCode("12345")
+                                                            .setCountryCode("DE")
+                                                            .setPhoneNumber("+49-000-000-00-000")
+                                                            .setEmailAddress("email@example.com")
+                                                            .setLanguageCode("de")
+                                                            .build();
 
     @Mock
     private PersonalDataManager mPersonalDataManager;

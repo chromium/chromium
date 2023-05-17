@@ -38,44 +38,101 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
 
     private static final AutofillProfile[] AUTOFILL_PROFILES = {
             // Incomplete profile_0 (missing phone number)
-            new AutofillProfile("" /* guid */, "" /* honorific prefix */, "Bart Simpson",
-                    "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US", "",
-                    "bart@simpson.com", ""),
+            AutofillProfile.builder()
+                    .setFullName("Bart Simpson")
+                    .setCompanyName("Acme Inc.")
+                    .setStreetAddress("123 Main")
+                    .setRegion("California")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90210")
+                    .setCountryCode("US")
+                    .setEmailAddress("bart@simpson.com")
+                    .build(),
 
             // Incomplete profile_1 (missing street address).
-            new AutofillProfile("" /* guid */, "" /* honorific prefix */, "Homer Simpson",
-                    "Acme Inc.", "", "California", "Los Angeles", "", "90210", "", "US",
-                    "555 123-4567", "homer@simpson.com", ""),
+            AutofillProfile.builder()
+                    .setFullName("Homer Simpson")
+                    .setCompanyName("Acme Inc.")
+                    .setRegion("California")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90210")
+                    .setCountryCode("US")
+                    .setPhoneNumber("555 123-4567")
+                    .setEmailAddress("homer@simpson.com")
+                    .build(),
 
             // Complete profile_2.
-            new AutofillProfile("" /* guid */, "" /* honorific prefix */, "Lisa Simpson",
-                    "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "", "US",
-                    "555 123-4567", "lisa@simpson.com", ""),
+            AutofillProfile.builder()
+                    .setFullName("Lisa Simpson")
+                    .setCompanyName("Acme Inc.")
+                    .setStreetAddress("123 Main")
+                    .setRegion("California")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90210")
+                    .setCountryCode("US")
+                    .setPhoneNumber("555 123-4567")
+                    .setEmailAddress("lisa@simpson.com")
+                    .build(),
 
             // Complete profile_3 in another country.
-            new AutofillProfile("" /* guid */, "" /* honorific prefix */, "Maggie Simpson",
-                    "Acme Inc.", "123 Main", "California", "Los Angeles", "", "90210", "",
-                    "Uzbekistan", "555 123-4567", "maggie@simpson.com", ""),
+            AutofillProfile.builder()
+                    .setFullName("Maggie Simpson")
+                    .setCompanyName("Acme Inc.")
+                    .setStreetAddress("123 Main")
+                    .setRegion("California")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90210")
+                    .setCountryCode("Uzbekistan")
+                    .setPhoneNumber("555 123-4567")
+                    .setEmailAddress("maggie@simpson.com")
+                    .build(),
 
             // Incomplete profile_4 (invalid address, missing city name).
-            new AutofillProfile("" /* guid */, "" /* honorific prefix */, "Marge Simpson",
-                    "Acme Inc.", "123 Main", "California", "", "", "90210", "", "US",
-                    "555 123-4567", "marge@simpson.com", ""),
+            AutofillProfile.builder()
+                    .setFullName("Marge Simpson")
+                    .setCompanyName("Acme Inc.")
+                    .setStreetAddress("123 Main")
+                    .setRegion("California")
+                    .setPostalCode("90210")
+                    .setCountryCode("US")
+                    .setPhoneNumber("555 123-4567")
+                    .setEmailAddress("marge@simpson.com")
+                    .build(),
 
             // Incomplete profile_5 (missing recipient name).
-            new AutofillProfile("" /* guid */, "" /* honorific prefix */, "", "Acme Inc.",
-                    "123 Main", "California", "Los Angeles", "", "90210", "", "US", "555 123-4567",
-                    "lisa@simpson.com", ""),
+            AutofillProfile.builder()
+                    .setCompanyName("Acme Inc.")
+                    .setStreetAddress("123 Main")
+                    .setRegion("California")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90210")
+                    .setCountryCode("US")
+                    .setPhoneNumber("555 123-4567")
+                    .setEmailAddress("lisa@simpson.com")
+                    .build(),
 
             // Incomplete profile_6 (need more information: name and address both missing/invalid).
-            new AutofillProfile("" /* guid */, "" /* honorific prefix */, "", "Acme Inc.",
-                    "123 Main", "California", "", "", "90210", "", "US", "555 123-4567",
-                    "lisa@simpson.com", ""),
+            AutofillProfile.builder()
+                    .setCompanyName("Acme Inc.")
+                    .setStreetAddress("123 Main")
+                    .setRegion("California")
+                    .setPostalCode("90210")
+                    .setCountryCode("US")
+                    .setPhoneNumber("555 123-4567")
+                    .setEmailAddress("lisa@simpson.com")
+                    .build(),
 
             // Incomplete profile_7 (missing phone number, different from AutofillProfile[0])
-            new AutofillProfile("" /* guid */, "" /* honorific prefix */, "John Smith", "Acme Inc.",
-                    "123 Main", "California", "Los Angeles", "", "90210", "", "US", "",
-                    "bart@simpson.com", ""),
+            AutofillProfile.builder()
+                    .setFullName("John Smith")
+                    .setCompanyName("Acme Inc.")
+                    .setStreetAddress("123 Main")
+                    .setRegion("California")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90210")
+                    .setCountryCode("US")
+                    .setEmailAddress("bart@simpson.com")
+                    .build(),
     };
 
     private AutofillProfile[] mProfilesToAdd;

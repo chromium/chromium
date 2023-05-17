@@ -74,9 +74,18 @@ public class AddressAccessoryIntegrationTest {
             throws TimeoutException {
         mHelper.loadTestPage("/chrome/test/data/autofill/autofill_test_form.html", false, false,
                 keyboardDelegate);
-        new AutofillTestHelper().setProfile(new AutofillProfile("", "" /* honorific prefix */,
-                "Marcus McSpartangregor", "Acme Inc", "1 Main\nApt A", "CA", "San Francisco", "",
-                "94102", "", "US", "(415) 999-0000", "marc@acme-mail.inc", "en"));
+        new AutofillTestHelper().setProfile(AutofillProfile.builder()
+                                                    .setFullName("Marcus McSpartangregor")
+                                                    .setCompanyName("Acme Inc")
+                                                    .setStreetAddress("1 Main\nApt A")
+                                                    .setRegion("CA")
+                                                    .setLocality("San Francisco")
+                                                    .setPostalCode("94102")
+                                                    .setCountryCode("US")
+                                                    .setPhoneNumber("(415) 999-0000")
+                                                    .setEmailAddress("marc@acme-mail.inc")
+                                                    .setLanguageCode("en")
+                                                    .build());
         DOMUtils.waitForNonZeroNodeBounds(mHelper.getWebContents(), "NAME_FIRST");
     }
 
