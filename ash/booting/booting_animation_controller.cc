@@ -11,6 +11,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "base/files/file_util.h"
+#include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "ui/views/widget/widget.h"
@@ -83,6 +84,12 @@ void BootingAnimationController::Show() {
 void BootingAnimationController::ShowAnimationWithEndCallback(
     base::OnceClosure callback) {
   animation_played_callback_ = std::move(callback);
+
+  // Don't wait for GPU to be ready in non-ChromeOS environment.
+  if (!base::SysInfo::IsRunningOnChromeOS()) {
+    is_gpu_ready_ = true;
+    scoped_display_configurator_observer_.Reset();
+  }
 
   if (!scoped_display_configurator_observer_.IsObserving()) {
     Show();

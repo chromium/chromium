@@ -52,7 +52,7 @@ export class Oobe extends DisplayManager {
    */
   static triggerDown() {
     // Delay this call to reduce the load during animation.
-    setTimeout(Oobe.getInstance().triggerDown, 0);
+    setTimeout(() => Oobe.getInstance().triggerDown(), 0);
   }
 
   /**
