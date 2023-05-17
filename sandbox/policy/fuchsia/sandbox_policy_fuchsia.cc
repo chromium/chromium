@@ -56,18 +56,11 @@ namespace policy {
 namespace {
 
 enum SandboxFeature {
-  // Clones the job. This is required to start new processes (to make it useful
-  // the process will also need access to the fuchsia.process.Launcher service).
-  kCloneJob = 1 << 0,
-
   // Provides access to resources required by Vulkan.
   kProvideVulkanResources = 1 << 1,
 
   // Read only access to /config/ssl, which contains root certs info.
   kProvideSslConfig = 1 << 2,
-
-  // Allows the process to use the ambient mark-vmo-as-executable capability.
-  kAmbientMarkVmoAsExecutable = 1 << 3,
 };
 
 struct SandboxConfig {
@@ -138,7 +131,7 @@ constexpr SandboxConfig kRendererConfig = {
         fuchsia::sysmem::Allocator::Name_,
         fuchsia::ui::composition::Allocator::Name_,
     }),
-    kAmbientMarkVmoAsExecutable,
+    0,
 };
 
 constexpr SandboxConfig kVideoCaptureConfig = {
@@ -152,7 +145,7 @@ constexpr SandboxConfig kVideoCaptureConfig = {
 constexpr SandboxConfig kServiceWithJitConfig = {
     base::make_span(
         (const char* const[]){fuchsia::kernel::VmexResource::Name_}),
-    kAmbientMarkVmoAsExecutable,
+    0,
 };
 
 const SandboxConfig* GetConfigForSandboxType(sandbox::mojom::Sandbox type) {
@@ -282,9 +275,6 @@ void SandboxPolicyFuchsia::UpdateLaunchOptionsForSandbox(
   const SandboxConfig* config = GetConfigForSandboxType(type_);
   CHECK(config);
 
-  if (config->features & kCloneJob)
-    options->spawn_flags |= FDIO_SPAWN_CLONE_JOB;
-
   if (config->features & kProvideSslConfig)
     options->paths_to_clone.push_back(base::FilePath("/config/ssl"));
 
@@ -317,25 +307,6 @@ void SandboxPolicyFuchsia::UpdateLaunchOptionsForSandbox(
   zx_status_t status = zx::job::create(*base::GetDefaultJob(), 0, &job_);
   ZX_CHECK(status == ZX_OK, status) << "zx_job_create";
   options->job_handle = job_.get();
-
-  // Only allow the ambient VMO mark-as-executable capability to be granted
-  // to processes that need to JIT (i.e. run V8/WASM).
-  zx_policy_basic_v2_t ambient_mark_vmo_exec{
-      ZX_POL_AMBIENT_MARK_VMO_EXEC,
-
-      // Kill processes which attempt to execute writable VMOs but lack the
-      // right to do so.
-      (config->features & kAmbientMarkVmoAsExecutable) ? ZX_POL_ACTION_ALLOW
-                                                       : ZX_POL_ACTION_KILL,
-
-      // Only grant spawn-capable processes, such as the browser process, the
-      // ability to override the execution policy.
-      (config->features & kCloneJob) ? ZX_POL_OVERRIDE_ALLOW
-                                     : ZX_POL_OVERRIDE_DENY};
-
-  status = job_.set_policy(ZX_JOB_POL_ABSOLUTE, ZX_JOB_POL_BASIC_V2,
-                           &ambient_mark_vmo_exec, 1);
-  ZX_CHECK(status == ZX_OK, status) << "zx_job_set_policy";
 }
 
 }  // namespace policy

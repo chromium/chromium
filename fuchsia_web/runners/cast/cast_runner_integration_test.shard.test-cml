@@ -15,6 +15,7 @@
     },
     {
       protocol: [
+        "fuchsia.kernel.VmexResource",
         "fuchsia.media.AudioDeviceEnumerator",
         "fuchsia.media.ProfileProvider",
         "fuchsia.memorypressure.Provider",

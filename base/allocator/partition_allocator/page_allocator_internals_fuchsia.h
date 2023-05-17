@@ -12,6 +12,9 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PAGE_ALLOCATOR_INTERNALS_FUCHSIA_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PAGE_ALLOCATOR_INTERNALS_FUCHSIA_H_
 
+#include <fidl/fuchsia.kernel/cpp/fidl.h>
+#include <lib/component/incoming/cpp/protocol.h>
+#include <lib/zx/resource.h>
 #include <lib/zx/vmar.h>
 #include <lib/zx/vmo.h>
 
@@ -19,12 +22,39 @@
 
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/fuchsia/fuchsia_logging.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_notreached.h"
 
 namespace partition_alloc::internal {
 
 namespace {
+
+zx::resource GetVmexResource() {
+  auto vmex_resource_client =
+      component::Connect<fuchsia_kernel::VmexResource>();
+  if (vmex_resource_client.is_error()) {
+    PA_LOG(ERROR) << "Connect(VmexResource):"
+                  << vmex_resource_client.status_string();
+    return {};
+  }
+
+  fidl::SyncClient sync_vmex_resource_client(
+      std::move(vmex_resource_client.value()));
+  auto result = sync_vmex_resource_client->Get();
+  if (result.is_error()) {
+    PA_LOG(ERROR) << "VmexResource.Get():"
+                  << result.error_value().FormatDescription();
+    return {};
+  }
+
+  return std::move(result->resource());
+}
+
+const zx::resource& VmexResource() {
+  static base::NoDestructor<zx::resource> vmex_resource(GetVmexResource());
+  return *vmex_resource;
+}
 
 // Returns VMO name for a PageTag.
 const char* PageTagToName(PageTag tag) {
@@ -94,7 +124,7 @@ uintptr_t SystemAllocPagesInternal(
   if (page_tag == PageTag::kV8) {
     // V8 uses JIT. Call zx_vmo_replace_as_executable() to allow code execution
     // in the new VMO.
-    status = vmo.replace_as_executable(zx::resource(), &vmo);
+    status = vmo.replace_as_executable(VmexResource(), &vmo);
     if (status != ZX_OK) {
       PA_ZX_DLOG(INFO, status) << "zx_vmo_replace_as_executable";
       return 0;

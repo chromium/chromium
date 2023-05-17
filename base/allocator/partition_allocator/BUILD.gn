@@ -323,6 +323,10 @@ component("partition_alloc") {
     deps += [ "//third_party/android_ndk:cpu_features" ]
   }
   if (is_fuchsia) {
+    deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.kernel:fuchsia.kernel_cpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/component_incoming_cpp",
+    ]
     public_deps += [
       "//third_party/fuchsia-sdk/sdk/pkg/fit",
       "//third_party/fuchsia-sdk/sdk/pkg/sync",
