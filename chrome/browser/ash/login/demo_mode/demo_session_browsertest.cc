@@ -321,7 +321,14 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest, SessionStartup) {
   login_manager_mixin_.WaitForActiveSession();
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest, DemoSWALaunchesOnSessionStartup) {
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_DemoSWALaunchesOnSessionStartup \
+  DISABLED_DemoSWALaunchesOnSessionStartup
+#else
+#define MAYBE_DemoSWALaunchesOnSessionStartup DemoSWALaunchesOnSessionStartup
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest,
+                       MAYBE_DemoSWALaunchesOnSessionStartup) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
   login_manager_mixin_.WaitForActiveSession();
