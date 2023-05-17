@@ -105,6 +105,11 @@ NSString* const kTimestampAppLastOpenedViaFirstPartyIntent =
 // valid URL into the omnibox.
 NSString* const kTimestampLastValidURLPasted = @"TimestampLastValidURLPasted";
 
+// Key in storage containing the timestamp of the last time the user opened the
+// app via first-party intent.
+NSString* const kTimestampAppLaunchOnColdStart =
+    @"TimestampAppLaunchedOnColdStart";
+
 const char kDefaultBrowserFullscreenPromoExperimentChangeStringsGroupParam[] =
     "show_switch_description";
 
@@ -130,6 +135,10 @@ constexpr base::TimeDelta kPromosShortCoolDown = base::Days(3);
 
 // Maximum time range between first-party app launches to notify the FET.
 constexpr base::TimeDelta kMaximumTimeBetweenFirstPartyAppLaunches =
+    base::Days(7);
+
+// Maximum time range between app launches on cold start to notify the FET.
+constexpr base::TimeDelta kMaximumTimeBetweenAppColdStartLaunches =
     base::Days(7);
 
 // Maximum time range between valid user URL pastes to notify the FET.
@@ -366,6 +375,11 @@ void LogToFETUserPastedURLIntoOmnibox(feature_engagement::Tracker* tracker) {
 
   if (HasRecentValidURLPastesAndRecordsCurrentPaste()) {
     tracker->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
+
+    if (IsDefaultBrowserVideoPromoEnabled()) {
+      tracker->NotifyEvent(
+          feature_engagement::events::kDefaultBrowserVideoPromoConditionsMet);
+    }
   }
 }
 
@@ -643,6 +657,20 @@ const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting() {
   return keysForTesting;
 }
 
+bool HasAppLaunchedOnColdStartAndRecordsLaunch() {
+  if (HasRecordedEventForKeyLessThanDelay(
+          kTimestampAppLaunchOnColdStart,
+          kMaximumTimeBetweenAppColdStartLaunches)) {
+    SetObjectIntoStorageForKey(kTimestampAppLaunchOnColdStart, [NSDate date]);
+    return YES;
+  }
+
+  // Add a new timestamp if the timestamp was never recorded or if it was
+  // recorded more than the maximum time between app cold starts.
+  SetObjectIntoStorageForKey(kTimestampAppLaunchOnColdStart, [NSDate date]);
+  return NO;
+}
+
 bool ShouldRegisterPromoWithPromoManager(bool is_signed_in) {
   // Consider showing the default browser promo if (1) launch is not after a
   // crash, (2) chrome is not likely set as default browser, (3) the user
@@ -676,4 +704,18 @@ bool IsGeneralPromoEligibleUser(bool is_signed_in) {
        is_signed_in);
   return isGeneralPromoEligibleUser ||
          ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo();
+}
+
+bool IsVideoPromoEligibleUser(feature_engagement::Tracker* tracker) {
+  if (!IsDefaultBrowserVideoPromoEnabled()) {
+    return false;
+  }
+
+  if (!tracker ||
+      !tracker->WouldTriggerHelpUI(
+          feature_engagement::kIPHiOSDefaultBrowserVideoPromoTriggerFeature)) {
+    return false;
+  }
+
+  return true;
 }

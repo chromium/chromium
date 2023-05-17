@@ -14,6 +14,7 @@ source_set("default_browser_scene_agent") {
     "//base",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/default_browser:utils",
+    "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/shared/coordinator/default_browser_promo",

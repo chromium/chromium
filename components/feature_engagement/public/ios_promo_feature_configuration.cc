@@ -117,6 +117,33 @@ absl::optional<FeatureConfig> GetClientSideiOSPromoFeatureConfig(
     return config;
   }
 
+  if (kIPHiOSDefaultBrowserVideoPromoTriggerFeature.name == feature->name) {
+    // A config for a pseudo feature strictly to keep track of some of the
+    // criteria to register the default browser video promo with the promo
+    // manager. This FET does not directly show the promo. Should trigger only
+    // if default_browser_video_promo_conditions_met has been fired 1 or more
+    // times in the last 2 weeks and the user did not see any other default
+    // browser promo in the last 2 weeks.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->trigger =
+        EventConfig("default_browser_video_promo_conditions_met_trigger",
+                    Comparator(ANY, 0), 360, 360);
+    config->used = EventConfig("default_browser_video_promo_shown",
+                               Comparator(EQUAL, 0), 360, 360);
+    config->event_configs.insert(
+        EventConfig("default_browser_video_promo_conditions_met",
+                    Comparator(GREATER_THAN_OR_EQUAL, 1), 14, 360));
+    config->event_configs.insert(EventConfig("default_browser_promo_shown",
+                                             Comparator(EQUAL, 0), 14, 360));
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
+    return config;
+  }
+
   return absl::nullopt;
 }
 

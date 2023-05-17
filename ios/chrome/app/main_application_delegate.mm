@@ -434,9 +434,14 @@ const int kMainIntentCheckDelay = 1;
     return;
   }
 
-  feature_engagement::TrackerFactory::GetForBrowserState(
-      browser->GetBrowserState())
-      ->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          browser->GetBrowserState());
+
+  tracker->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
+
+  tracker->NotifyEvent(
+      feature_engagement::events::kDefaultBrowserVideoPromoConditionsMet);
 }
 
 @end

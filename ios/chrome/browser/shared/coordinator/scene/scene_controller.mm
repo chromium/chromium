@@ -1064,8 +1064,12 @@ void InjectNTP(Browser* browser) {
   }
 
   if (HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch()) {
-    feature_engagement::TrackerFactory::GetForBrowserState(browserState)
-        ->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
+    feature_engagement::Tracker* tracker =
+        feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+
+    tracker->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
+    tracker->NotifyEvent(
+        feature_engagement::events::kDefaultBrowserVideoPromoConditionsMet);
   }
 }
 

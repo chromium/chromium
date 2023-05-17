@@ -172,6 +172,10 @@ bool UserInPromoCooldown();
 // in the NSDictionary stored under `kBrowserDefaultsKey`.
 const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting();
 
+// Returns YES if the app has launched on cold start under
+// `kTimestampAppLaunchOnColdStart`.
+bool HasAppLaunchedOnColdStartAndRecordsLaunch();
+
 // Return true if the default browser promo should be registered with the promo
 // manager to display a default browser promo.
 bool ShouldRegisterPromoWithPromoManager(bool is_signed_in);
@@ -183,5 +187,9 @@ bool IsTailoredPromoEligibleUser(bool is_signed_in);
 // Return true if it was determined that the user is eligible for the
 // general promo.
 bool IsGeneralPromoEligibleUser(bool is_signed_in);
+
+// Return true if it was determined that the user is eligible for the
+// video promo.
+bool IsVideoPromoEligibleUser(feature_engagement::Tracker* tracker);
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_UTILS_H_

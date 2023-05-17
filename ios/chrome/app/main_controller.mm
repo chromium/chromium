@@ -69,6 +69,7 @@
 #import "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
 #import "ios/chrome/browser/crash_report/crash_report_helper.h"
 #import "ios/chrome/browser/credential_provider/credential_provider_buildflags.h"
+#import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/external_files/external_file_remover_factory.h"
 #import "ios/chrome/browser/external_files/external_file_remover_impl.h"
@@ -558,11 +559,19 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   }
   [[PreviousSessionInfo sharedInstance] resetConnectedSceneSessionIDs];
 
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.appState.mainBrowserState);
   // Send "Chrome Opened" event to the feature_engagement::Tracker on cold
   // start.
-  feature_engagement::TrackerFactory::GetForBrowserState(
-      self.appState.mainBrowserState)
-      ->NotifyEvent(feature_engagement::events::kChromeOpened);
+  tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
+
+  // Send "default_browser_video_promo_conditions_met" event to the
+  // feature_engagement::Tracker on cold start.
+  if (HasAppLaunchedOnColdStartAndRecordsLaunch()) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kDefaultBrowserVideoPromoConditionsMet);
+  }
 
   _spotlightManager = [SpotlightManager
       spotlightManagerWithBrowserState:self.appState.mainBrowserState];
