@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/containers/queue.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/input/motion_event_web.h"
@@ -129,7 +131,7 @@ void TouchEmulator::Disable() {
   CancelTouch();
   gesture_provider_.reset();
   base::queue<base::OnceClosure> empty;
-  injected_touch_completion_callbacks_.swap(empty);
+  touch_event_completion_callbacks_.swap(empty);
   client_->SetCursor(ui::mojom::CursorType::kPointer);
   ResetState();
 }
@@ -178,9 +180,12 @@ ui::Cursor TouchEmulator::InitCursorFromResource(int resource_id) {
 }
 
 bool TouchEmulator::HandleMouseEvent(const WebMouseEvent& mouse_event,
-                                     RenderWidgetHostViewBase* target_view) {
+                                     RenderWidgetHostViewBase* target_view,
+                                     base::OnceClosure callback) {
   if (!enabled() || mode_ != Mode::kEmulatingTouchFromMouse)
     return false;
+
+  base::ScopedClosureRunner runner(std::move(callback));
 
   UpdateCursor();
 
@@ -225,7 +230,11 @@ bool TouchEmulator::HandleMouseEvent(const WebMouseEvent& mouse_event,
   if (target_view)
     pos_in_root = target_view->TransformPointToRootCoordSpaceF(pos_in_root);
   FillTouchEventAndPoint(mouse_event, pos_in_root);
-  HandleEmulatedTouchEvent(touch_event_, target_view);
+
+  touch_event_completion_callbacks_.push(std::move(runner).Release());
+  if (HandleEmulatedTouchEvent(touch_event_, target_view)) {
+    OnTouchCompleted();
+  }
 
   // Do not pass mouse events to the renderer.
   return true;
@@ -333,7 +342,7 @@ bool TouchEmulator::HandleTouchEventAck(
           InputEventResultStateIsSetNonBlocking(ack_result));
     }
     if (pending_taps_count_ == taps_count_before)
-      OnInjectedTouchCompleted();
+      OnTouchCompleted();
     return true;
   }
 
@@ -350,7 +359,7 @@ void TouchEmulator::OnGestureEventAck(const WebGestureEvent& event,
     return;
   if (pending_taps_count_) {
     pending_taps_count_--;
-    OnInjectedTouchCompleted();
+    OnTouchCompleted();
   }
 }
 
@@ -457,17 +466,19 @@ void TouchEmulator::InjectTouchEvent(const blink::WebTouchEvent& event,
                                      base::OnceClosure callback) {
   DCHECK(enabled() && mode_ == Mode::kInjectingTouchEvents);
   touch_event_ = event;
-  injected_touch_completion_callbacks_.push(std::move(callback));
+  touch_event_completion_callbacks_.push(std::move(callback));
   if (HandleEmulatedTouchEvent(touch_event_, target_view))
-    OnInjectedTouchCompleted();
+    OnTouchCompleted();
 }
 
-void TouchEmulator::OnInjectedTouchCompleted() {
-  if (injected_touch_completion_callbacks_.empty())
+void TouchEmulator::OnTouchCompleted() {
+  if (touch_event_completion_callbacks_.empty()) {
     return;
-  if (!injected_touch_completion_callbacks_.front().is_null())
-    std::move(injected_touch_completion_callbacks_.front()).Run();
-  injected_touch_completion_callbacks_.pop();
+  }
+  if (!touch_event_completion_callbacks_.front().is_null()) {
+    std::move(touch_event_completion_callbacks_.front()).Run();
+  }
+  touch_event_completion_callbacks_.pop();
 }
 
 void TouchEmulator::CancelTouch() {

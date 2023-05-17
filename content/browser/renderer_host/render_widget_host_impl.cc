@@ -1492,10 +1492,25 @@ void RenderWidgetHostImpl::ForwardMouseEventWithLatencyInfo(
   if (IsIgnoringInputEvents())
     return;
 
-  auto* touch_emulator = GetExistingTouchEmulator();
-  if (touch_emulator &&
-      touch_emulator->HandleMouseEvent(mouse_event, GetView())) {
-    return;
+  if (auto* emulator = GetExistingTouchEmulator()) {
+    if (emulator->HandleMouseEvent(
+            mouse_event, GetView(),
+            base::BindOnce(
+                [](base::WeakPtr<RenderWidgetHostImpl> host,
+                   std::unique_ptr<blink::WebMouseEvent> mouse_event,
+                   ui::LatencyInfo latency) {
+                  if (host) {
+                    host->OnMouseEventAck(
+                        MouseEventWithLatencyInfo(*mouse_event, latency),
+                        blink::mojom::InputEventResultSource(),
+                        blink::mojom::InputEventResultState::kConsumed);
+                  }
+                },
+                weak_factory_.GetWeakPtr(),
+                std::make_unique<blink::WebMouseEvent>(mouse_event),
+                latency))) {
+      return;
+    }
   }
 
   MouseEventWithLatencyInfo mouse_with_latency(mouse_event, latency);
