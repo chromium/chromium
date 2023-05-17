@@ -3213,6 +3213,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.ShowSelectionMenuSourceType" enum="MenuSourceType"
+    expires_after="2023-11-14">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>wbjacksonjr@chromium.org</owner>
+  <summary>
+    Records the menu source type when a selection menu is shown. Android only.
+  </summary>
+</histogram>
+
 <histogram name="Android.SpareTab.FinalStatus" enum="SpareTabFinalStatus"
     expires_after="2023-10-10">
   <owner>sreejakshetty@chromium.org</owner>
