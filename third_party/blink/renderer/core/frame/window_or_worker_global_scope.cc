@@ -97,6 +97,9 @@ static bool IsAllowed(ExecutionContext* execution_context,
 void WindowOrWorkerGlobalScope::reportError(ScriptState* script_state,
                                             EventTarget& event_target,
                                             const ScriptValue& e) {
+  if (!script_state->ContextIsValid()) {
+    return;
+  }
   ScriptState::Scope scope(script_state);
   V8ScriptRunner::ReportException(script_state->GetIsolate(), e.V8Value());
 }
@@ -249,6 +252,9 @@ ScriptValue WindowOrWorkerGlobalScope::structuredClone(
     const ScriptValue& message,
     const StructuredSerializeOptions* options,
     ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    return ScriptValue();
+  }
   ScriptState::Scope scope(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
 
