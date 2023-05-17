@@ -1425,16 +1425,14 @@ void HTMLElement::showPopover(ExceptionState& exception_state) {
 
 void HTMLElement::ShowPopoverInternal(Element* invoker,
                                       ExceptionState* exception_state) {
-  auto& original_document = GetDocument();
   CHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-      original_document.GetExecutionContext()));
+      GetDocument().GetExecutionContext()));
 
   if (GetPopoverData()) {
     GetPopoverData()->setInvoker(invoker);
   }
   if (!IsPopoverReady(PopoverTriggerAction::kShow, exception_state,
-                      /*include_event_handler_text=*/false,
-                      &original_document)) {
+                      /*include_event_handler_text=*/false, /*document=*/nullptr)) {
     CHECK(exception_state)
         << " Callers which aren't supposed to throw exceptions should not call "
            "ShowPopoverInternal when the Popover isn't in a valid state to be "
@@ -1448,6 +1446,8 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
       scoped_was_showing_or_hiding
           ? HidePopoverTransitionBehavior::kNoEventsNoWaiting
           : HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions;
+
+  auto& original_document = GetDocument();
 
   // Fire the "opening" beforetoggle event.
   auto* event = ToggleEvent::Create(
@@ -1719,12 +1719,12 @@ void HTMLElement::HidePopoverInternal(
   CHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
 
-  auto& document = GetDocument();
   if (!IsPopoverReady(PopoverTriggerAction::kHide, exception_state,
-                      /*include_event_handler_text=*/true, &document)) {
+                      /*include_event_handler_text=*/true, /*document=*/nullptr)) {
     return;
   }
 
+  auto& document = GetDocument();
   bool show_warning =
       transition_behavior != HidePopoverTransitionBehavior::kNoEventsNoWaiting;
   PopoverData::ScopedStartShowingOrHiding scoped_was_showing_or_hiding(
