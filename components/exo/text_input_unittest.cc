@@ -552,7 +552,7 @@ TEST_F(TextInputTest, ConfirmCompositionTextKeepSelection) {
   constexpr char16_t kCompositionText[] = u"composition";
   SetCompositionText(kCompositionText);
   text_input()->SetEditableSelectionRange(gfx::Range(2, 3));
-  text_input()->SetSurroundingText(kCompositionText, gfx::Range(2, 3),
+  text_input()->SetSurroundingText(kCompositionText, 0u, gfx::Range(2, 3),
                                    absl::nullopt, absl::nullopt);
 
   EXPECT_CALL(*delegate(), SetCursor(base::StringPiece16(kCompositionText),
@@ -665,7 +665,7 @@ TEST_F(TextInputTest, SurroundingText) {
 
   EXPECT_CALL(observer, OnCaretBoundsChanged(text_input())).Times(1);
   std::u16string text = u"surrounding\u3000text";
-  text_input()->SetSurroundingText(text, gfx::Range(11, 12), absl::nullopt,
+  text_input()->SetSurroundingText(text, 0u, gfx::Range(11, 12), absl::nullopt,
                                    absl::nullopt);
   testing::Mock::VerifyAndClearExpectations(&observer);
 
@@ -694,7 +694,7 @@ TEST_F(TextInputTest, SurroundingText) {
 
 TEST_F(TextInputTest, SetEditableSelectionRange) {
   SetCompositionText(u"text");
-  text_input()->SetSurroundingText(u"text", gfx::Range(4, 4), absl::nullopt,
+  text_input()->SetSurroundingText(u"text", 0u, gfx::Range(4, 4), absl::nullopt,
                                    absl::nullopt);
 
   // Should commit composition text and set selection range.
@@ -709,7 +709,7 @@ TEST_F(TextInputTest, SetEditableSelectionRange) {
 TEST_F(TextInputTest, GetTextFromRange) {
   std::u16string text = u"surrounding text";
   text_input()->SetEditableSelectionRange(gfx::Range(11, 12));
-  text_input()->SetSurroundingText(text, gfx::Range(11, 12), absl::nullopt,
+  text_input()->SetSurroundingText(text, 0u, gfx::Range(11, 12), absl::nullopt,
                                    absl::nullopt);
 
   const struct {
@@ -719,6 +719,32 @@ TEST_F(TextInputTest, GetTextFromRange) {
       {gfx::Range(0, 3), u"sur"},
       {gfx::Range(10, 16), u"g text"},
       {gfx::Range(6, 9), u"ndi"},
+  };
+  for (auto& c : kTestCases) {
+    std::u16string result;
+    EXPECT_TRUE(text_input()->GetTextFromRange(c.range, &result))
+        << c.range.ToString();
+    EXPECT_EQ(c.expected, result) << c.range.ToString();
+  }
+}
+
+TEST_F(TextInputTest, GetTextFromRangeWithOffset) {
+  std::u16string text = u"surrounding text";
+  text_input()->SetEditableSelectionRange(gfx::Range(11, 12));
+  text_input()->SetSurroundingText(text, 5u, gfx::Range(11, 12), absl::nullopt,
+                                   absl::nullopt);
+
+  gfx::Range text_range;
+  ASSERT_TRUE(text_input()->GetTextRange(&text_range));
+  EXPECT_EQ(gfx::Range(5, 21), text_range);
+
+  const struct {
+    gfx::Range range;
+    std::u16string expected;
+  } kTestCases[] = {
+      {gfx::Range(5, 8), u"sur"},
+      {gfx::Range(15, 21), u"g text"},
+      {gfx::Range(11, 14), u"ndi"},
   };
   for (auto& c : kTestCases) {
     std::u16string result;
@@ -738,7 +764,7 @@ TEST_F(TextInputTest, SetCompositionFromExistingText) {
   EXPECT_FALSE(
       text_input()->SetCompositionFromExistingText(gfx::Range(0, 1), {}));
 
-  text_input()->SetSurroundingText(u"surrounding text", gfx::Range(5, 5),
+  text_input()->SetSurroundingText(u"surrounding text", 0u, gfx::Range(5, 5),
                                    absl::nullopt, absl::nullopt);
 
   // Invalid range.
@@ -778,7 +804,7 @@ TEST_F(TextInputTest, SetCompositionFromExistingText) {
 
 TEST_F(TextInputTest,
        CompositionRangeSetFromCursorWhenSetCompositionTextCalled) {
-  text_input()->SetSurroundingText(u"surrounding text", gfx::Range(5, 5),
+  text_input()->SetSurroundingText(u"surrounding text", 0u, gfx::Range(5, 5),
                                    absl::nullopt, absl::nullopt);
 
   std::u16string composition_text = u"composing";
@@ -792,7 +818,7 @@ TEST_F(TextInputTest,
 
 TEST_F(TextInputTest,
        CompositionRangeSetWhenSetCompositionFromExistingTextCalled) {
-  text_input()->SetSurroundingText(u"surrounding text", gfx::Range(5, 5),
+  text_input()->SetSurroundingText(u"surrounding text", 0u, gfx::Range(5, 5),
                                    absl::nullopt, absl::nullopt);
 
   text_input()->SetCompositionFromExistingText(gfx::Range(3, 6),
@@ -812,8 +838,8 @@ TEST_F(TextInputTest, CorrectTextReturnedAfterSetCompositionTextCalled) {
   ui::CompositionText t = GenerateCompositionText(composition_text);
   EXPECT_CALL(*delegate(), SetCompositionText(_)).Times(1);
 
-  text_input()->SetSurroundingText(surrounding_text, cursor_pos, absl::nullopt,
-                                   absl::nullopt);
+  text_input()->SetSurroundingText(surrounding_text, 0u, cursor_pos,
+                                   absl::nullopt, absl::nullopt);
   text_input()->SetCompositionText(t);
 
   // Simulate surrounding text update from wayland.
@@ -821,7 +847,7 @@ TEST_F(TextInputTest, CorrectTextReturnedAfterSetCompositionTextCalled) {
   auto after = surrounding_text.substr(cursor_pos.GetMin());
   auto new_surrounding = before + t.text + after;
   auto new_cursor_pos = cursor_pos.GetMin() + t.text.length();
-  text_input()->SetSurroundingText(new_surrounding,
+  text_input()->SetSurroundingText(new_surrounding, 0u,
                                    gfx::Range(new_cursor_pos, new_cursor_pos),
                                    absl::nullopt, absl::nullopt);
 
@@ -844,14 +870,15 @@ TEST_F(TextInputTest, SetsAndGetsGrammarFragmentAtCursor) {
   ui::GrammarFragment sample_fragment(gfx::Range(1, 5), "sample-suggestion");
 
   EXPECT_EQ(text_input()->GetGrammarFragmentAtCursor(), absl::nullopt);
-  text_input()->SetSurroundingText(u"Sample surrouding text.", gfx::Range(2, 2),
-                                   sample_fragment, absl::nullopt);
+  text_input()->SetSurroundingText(u"Sample surrouding text.", 0u,
+                                   gfx::Range(2, 2), sample_fragment,
+                                   absl::nullopt);
   EXPECT_EQ(text_input()->GetGrammarFragmentAtCursor(), sample_fragment);
 }
 
 TEST_F(TextInputTest, ClearGrammarFragments) {
   std::u16string surrounding_text = u"Sample surrouding text.";
-  text_input()->SetSurroundingText(surrounding_text, gfx::Range(2, 2),
+  text_input()->SetSurroundingText(surrounding_text, 0u, gfx::Range(2, 2),
                                    absl::nullopt, absl::nullopt);
   gfx::Range range(3, 8);
   EXPECT_CALL(*delegate(), ClearGrammarFragments(
@@ -862,7 +889,7 @@ TEST_F(TextInputTest, ClearGrammarFragments) {
 
 TEST_F(TextInputTest, AddGrammarFragments) {
   std::u16string surrounding_text = u"Sample surrouding text.";
-  text_input()->SetSurroundingText(surrounding_text, gfx::Range(2, 2),
+  text_input()->SetSurroundingText(surrounding_text, 0u, gfx::Range(2, 2),
                                    absl::nullopt, absl::nullopt);
   std::vector<ui::GrammarFragment> fragments = {
       ui::GrammarFragment(gfx::Range(0, 5), "one"),
@@ -881,7 +908,7 @@ TEST_F(TextInputTest, AddGrammarFragments) {
 
 TEST_F(TextInputTest, GetAutocorrect) {
   std::u16string surrounding_text = u"Sample surrouding text.";
-  text_input()->SetSurroundingText(surrounding_text, gfx::Range(2, 2),
+  text_input()->SetSurroundingText(surrounding_text, 0u, gfx::Range(2, 2),
                                    absl::nullopt, absl::nullopt);
   std::vector<ui::GrammarFragment> fragments = {
       ui::GrammarFragment(gfx::Range(0, 5), "one"),

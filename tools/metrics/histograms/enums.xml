@@ -63889,6 +63889,7 @@ from previous Chrome versions.
   <int value="682549212" label="ash-enable-cursor-motion-blur"/>
   <int value="682916740" label="PdfUnseasoned:disabled"/>
   <int value="683013217" label="AllowPopupsDuringPageUnload:disabled"/>
+  <int value="683366957" label="ExoSurroundingTextOffset:disabled"/>
   <int value="683433500" label="CommerceMerchantViewer:disabled"/>
   <int value="683746280" label="PrivacyGuideAndroid:disabled"/>
   <int value="684112629" label="BluetoothCoredump:disabled"/>
@@ -64578,6 +64579,7 @@ from previous Chrome versions.
   <int value="1061351122" label="LinkLayerPrivacy:disabled"/>
   <int value="1061947013" label="OmniboxDeferredKeyboardPopup:disabled"/>
   <int value="1062357243" label="remember-cert-error-decisions"/>
+  <int value="1063490936" label="ExoSurroundingTextOffset:enabled"/>
   <int value="1063909131" label="CrOSDspBasedAgcAllowed:disabled"/>
   <int value="1064288458" label="OfflineRecentPages:enabled"/>
   <int value="1064317648" label="UseMojoVideoDecoderForPepper:disabled"/>

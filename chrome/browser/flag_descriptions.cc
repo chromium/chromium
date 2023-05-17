@@ -5806,6 +5806,12 @@ const char kExoOrdinalMotionName[] =
 const char kExoOrdinalMotionDescription[] =
     "Send unaccelerated values as raw motion events to linux applications.";
 
+const char kExoSurroundingTextOffsetName[] =
+    "Supports offset of surrounding_text in exosphere";
+const char kExoSurroundingTextOffsetDescription[] =
+    "On wayland protocol, surrounding text may be trimmed. Enabling this "
+    "supports the cases.";
+
 const char kExperimentalAccessibilityDictationContextCheckingName[] =
     "Experimental accessibility dictation using context checking.";
 const char kExperimentalAccessibilityDictationContextCheckingDescription[] =

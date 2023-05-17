@@ -3315,6 +3315,9 @@ extern const char kExoGamepadVibrationDescription[];
 extern const char kExoOrdinalMotionName[];
 extern const char kExoOrdinalMotionDescription[];
 
+extern const char kExoSurroundingTextOffsetName[];
+extern const char kExoSurroundingTextOffsetDescription[];
+
 extern const char kExperimentalAccessibilityDictationContextCheckingName[];
 extern const char
     kExperimentalAccessibilityDictationContextCheckingDescription[];

@@ -162,6 +162,7 @@ class TextInput : public ui::TextInputClient,
   // text and is relative to the window origin.
   void SetSurroundingText(
       base::StringPiece16 text,
+      uint32_t offset,
       const gfx::Range& cursor_pos,
       const absl::optional<ui::GrammarFragment>& grammar_fragment,
       const absl::optional<ui::AutocorrectInfo>& autocorrect_info);

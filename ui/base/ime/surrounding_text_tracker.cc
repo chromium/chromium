@@ -77,6 +77,27 @@ void EraseString16WithOffset(std::u16string& str,
 
 }  // namespace
 
+gfx::Range SurroundingTextTracker::State::GetSurroundingTextRange() const {
+  return {utf16_offset, utf16_offset + surrounding_text.length()};
+}
+
+absl::optional<base::StringPiece16>
+SurroundingTextTracker::State::GetCompositionText() const {
+  if (composition.is_empty()) {
+    // Represents no composition. Return empty composition text as a valid
+    // result.
+    return base::StringPiece16();
+  }
+
+  if (!composition.IsBoundedBy(GetSurroundingTextRange())) {
+    // composition range is out of the range. Return error.
+    return absl::nullopt;
+  }
+
+  return base::StringPiece16(surrounding_text)
+      .substr(composition.GetMin() - utf16_offset, composition.length());
+}
+
 SurroundingTextTracker::Entry::Entry(State state,
                                      base::RepeatingClosure command)
     : state(std::move(state)), command(std::move(command)) {}
@@ -123,7 +144,7 @@ SurroundingTextTracker::UpdateResult SurroundingTextTracker::Update(
         surrounding_text.substr(compare_begin - utf16_offset);
     base::StringPiece16 history =
         base::StringPiece16(it->state.surrounding_text)
-            .substr(compare_begin - utf16_offset);
+            .substr(compare_begin - it->state.utf16_offset);
 
     if (target != history) {
       continue;

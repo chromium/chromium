@@ -382,9 +382,12 @@ void Server::Initialize() {
 
   zcr_text_input_extension_data_ =
       std::make_unique<WaylandTextInputExtension>();
-  wl_global_create(wl_display_.get(), &zcr_text_input_extension_v1_interface, 9,
-                   zcr_text_input_extension_data_.get(),
-                   bind_text_input_extension);
+  wl_global_create(
+      wl_display_.get(), &zcr_text_input_extension_v1_interface,
+      base::FeatureList::IsEnabled(ash::features::kExoSurroundingTextOffset)
+          ? 10
+          : 9,
+      zcr_text_input_extension_data_.get(), bind_text_input_extension);
 
   zxdg_shell_data_ =
       std::make_unique<WaylandZxdgShell>(display_, serial_tracker_.get());

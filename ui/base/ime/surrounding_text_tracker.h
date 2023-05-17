@@ -27,7 +27,15 @@ struct CompositionText;
 // processed in a common manner.
 class COMPONENT_EXPORT(UI_BASE_IME) SurroundingTextTracker {
  public:
-  struct State {
+  struct COMPONENT_EXPORT(UI_BASE_IME) State {
+    // Returns the range of the surrounding text in UTF-16.
+    gfx::Range GetSurroundingTextRange() const;
+
+    // Returns the string piece of the composition range of the
+    // |surrounding_text|.
+    // If composition is out of the range, nullopt will be returned.
+    absl::optional<base::StringPiece16> GetCompositionText() const;
+
     // Whole surrounding text, specifically this may include composition text.
     std::u16string surrounding_text;
 
