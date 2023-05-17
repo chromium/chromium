@@ -30,6 +30,8 @@ class TestSegmentInfoDatabase : public SegmentInfoDatabase {
                                  MultipleSegmentInfoCallback callback) override;
   void GetSegmentInfo(SegmentId segment_id,
                       SegmentInfoCallback callback) override;
+  absl::optional<SegmentInfo> GetCachedSegmentInfo(
+      SegmentId segment_id) override;
   void UpdateSegment(SegmentId segment_id,
                      absl::optional<proto::SegmentInfo> segment_info,
                      SuccessCallback callback) override;

@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/data_collection/training_data_collector_impl.h"
 #include <cstdint>
 
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/user_metrics.h"
@@ -189,7 +190,7 @@ void TrainingDataCollectorImpl::OnGetSegmentsInfoList(
           OnObservationTrigger(
               absl::nullopt,
               TrainingRequestId::FromUnsafeValue(training_data.request_id()),
-              segment_info);
+              segment_info, base::DoNothing());
         }
       }
     }
@@ -228,7 +229,7 @@ void TrainingDataCollectorImpl::OnHistogramSignalUpdated(
   auto it = immediate_trigger_histograms_.find(hash);
   if (it != immediate_trigger_histograms_.end()) {
     auto segments = it->second;
-    auto param = absl::make_optional<ImmediaCollectionParam>();
+    auto param = absl::make_optional<ImmediateCollectionParam>();
     param->output_metric_hash = hash;
     param->output_value = static_cast<float>(sample);
     for (auto segment : segments) {
@@ -260,7 +261,7 @@ void TrainingDataCollectorImpl::OnUserAction(const std::string& user_action,
 }
 
 void TrainingDataCollectorImpl::OnUmaUpdatedReportForSegmentInfo(
-    const absl::optional<ImmediaCollectionParam>& param,
+    const absl::optional<ImmediateCollectionParam>& param,
     absl::optional<proto::SegmentInfo> segment) {
   if (segment.has_value()) {
     absl::optional<TrainingRequestId> request_id =
@@ -269,7 +270,8 @@ void TrainingDataCollectorImpl::OnUmaUpdatedReportForSegmentInfo(
       RecordTrainingDataCollectionEvent(
           segment.value().segment_id(),
           stats::TrainingDataCollectionEvent::kHistogramTriggerHit);
-      OnObservationTrigger(param, request_id.value(), segment.value());
+      OnObservationTrigger(param, request_id.value(), segment.value(),
+                           base::DoNothing());
     }
   }
 }
@@ -335,7 +337,7 @@ bool TrainingDataCollectorImpl::CanReportTrainingData(
 }
 
 void TrainingDataCollectorImpl::OnGetTrainingTensors(
-    const absl::optional<ImmediaCollectionParam>& param,
+    const absl::optional<ImmediateCollectionParam>& param,
     const proto::SegmentInfo& segment_info,
     bool has_error,
     const ModelProvider::Request& input_tensors,
@@ -421,6 +423,28 @@ void TrainingDataCollectorImpl::ReportCollectedContinuousTrainingData() {
                      proto::TrainingOutputs::TriggerConfig::PERIODIC);
     }
   }
+}
+
+void TrainingDataCollectorImpl::CollectTrainingData(
+    SegmentId segment_id,
+    TrainingRequestId request_id,
+    const TrainingLabels& param,
+    SuccessCallback callback) {
+  auto segment_info = segment_info_database_->GetCachedSegmentInfo(segment_id);
+  if (!segment_info) {
+    return;
+  }
+  absl::optional<TrainingDataCollector::ImmediateCollectionParam>
+      immediate_param;
+  if (param.output_metric) {
+    immediate_param = TrainingDataCollector::ImmediateCollectionParam();
+    immediate_param->output_metric_hash =
+        base::HashMetricName(param.output_metric.value().first);
+    immediate_param->output_value =
+        static_cast<float>(param.output_metric.value().second);
+  }
+  OnObservationTrigger(immediate_param, request_id, segment_info.value(),
+                       std::move(callback));
 }
 
 TrainingRequestId TrainingDataCollectorImpl::OnDecisionTime(
@@ -546,7 +570,7 @@ void TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime(
         FROM_HERE,
         base::BindOnce(&TrainingDataCollectorImpl::OnObservationTrigger,
                        weak_ptr_factory_.GetWeakPtr(), absl::nullopt,
-                       request_id, segment_info),
+                       request_id, segment_info, base::DoNothing()),
         *training_request.observation_delayed_task);
   } else {
     RecordTrainingDataCollectionEvent(
@@ -556,9 +580,10 @@ void TrainingDataCollectorImpl::OnGetTrainingTensorsAtDecisionTime(
 }
 
 void TrainingDataCollectorImpl::OnObservationTrigger(
-    const absl::optional<ImmediaCollectionParam>& param,
+    const absl::optional<ImmediateCollectionParam>& param,
     TrainingRequestId request_id,
-    const proto::SegmentInfo& segment_info) {
+    const proto::SegmentInfo& segment_info,
+    SuccessCallback callback) {
   if (request_id.is_null()) {
     return;
   }
@@ -578,17 +603,20 @@ void TrainingDataCollectorImpl::OnObservationTrigger(
   training_cache_->GetInputsAndDelete(
       segment_info.segment_id(), request_id,
       base::BindOnce(&TrainingDataCollectorImpl::OnGetStoredTrainingData,
-                     weak_ptr_factory_.GetWeakPtr(), param, segment_info));
+                     weak_ptr_factory_.GetWeakPtr(), param, segment_info,
+                     std::move(callback)));
 }
 
 void TrainingDataCollectorImpl::OnGetStoredTrainingData(
-    const absl::optional<ImmediaCollectionParam>& param,
+    const absl::optional<ImmediateCollectionParam>& param,
     const proto::SegmentInfo& segment_info,
+    SuccessCallback callback,
     absl::optional<proto::TrainingData> input) {
   if (!input.has_value()) {
     RecordTrainingDataCollectionEvent(
         segment_info.segment_id(),
         stats::TrainingDataCollectionEvent::kTrainingDataMissing);
+    std::move(callback).Run(/*success*/ false);
     return;
   }
 
@@ -609,10 +637,12 @@ void TrainingDataCollectorImpl::OnGetStoredTrainingData(
           weak_ptr_factory_.GetWeakPtr(), param, segment_info,
           ModelProvider::Response(input.value().inputs().begin(),
                                   input.value().inputs().end())));
+
+  std::move(callback).Run(/*success*/ true);
 }
 
 void TrainingDataCollectorImpl::OnGetOutputsOnObservationTrigger(
-    const absl::optional<ImmediaCollectionParam>& param,
+    const absl::optional<ImmediateCollectionParam>& param,
     const proto::SegmentInfo& segment_info,
     const ModelProvider::Request& cached_input_tensors,
     bool has_error,

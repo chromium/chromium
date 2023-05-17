@@ -59,6 +59,12 @@ void DummySegmentationPlatformService::GetSelectedSegmentOnDemand(
       FROM_HERE, base::BindOnce(std::move(callback), SegmentSelectionResult()));
 }
 
+void DummySegmentationPlatformService::CollectTrainingData(
+    proto::SegmentId segment_id,
+    TrainingRequestId request_id,
+    const TrainingLabels& param,
+    SuccessCallback callback) {}
+
 void DummySegmentationPlatformService::EnableMetrics(
     bool signal_collection_allowed) {}
 

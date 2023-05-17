@@ -62,6 +62,9 @@ class SegmentInfoDatabase {
   virtual void GetSegmentInfo(SegmentId segment_id,
                               SegmentInfoCallback callback);
 
+  virtual absl::optional<SegmentInfo> GetCachedSegmentInfo(
+      SegmentId segment_id);
+
   // Called to get the training data for a given segment and request ID. If
   // delete_from_db is set to true, it will delete the corresponding entry in
   // the cache and in the database.

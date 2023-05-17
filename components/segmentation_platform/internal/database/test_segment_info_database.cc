@@ -38,13 +38,17 @@ void TestSegmentInfoDatabase::GetSegmentInfoForSegments(
 
 void TestSegmentInfoDatabase::GetSegmentInfo(SegmentId segment_id,
                                              SegmentInfoCallback callback) {
+  std::move(callback).Run(GetCachedSegmentInfo(segment_id));
+}
+
+absl::optional<SegmentInfo> TestSegmentInfoDatabase::GetCachedSegmentInfo(
+    SegmentId segment_id) {
   auto result =
       base::ranges::find(segment_infos_, segment_id,
                          &std::pair<SegmentId, proto::SegmentInfo>::first);
 
-  std::move(callback).Run(result == segment_infos_.end()
-                              ? absl::nullopt
-                              : absl::make_optional(result->second));
+  return result == segment_infos_.end() ? absl::nullopt
+                                        : absl::make_optional(result->second);
 }
 
 void TestSegmentInfoDatabase::UpdateSegment(

@@ -215,6 +215,15 @@ void SegmentationPlatformServiceImpl::GetSelectedSegmentOnDemand(
                                        std::move(wrapped_callback));
 }
 
+void SegmentationPlatformServiceImpl::CollectTrainingData(
+    SegmentId segment_id,
+    TrainingRequestId request_id,
+    const TrainingLabels& param,
+    SuccessCallback callback) {
+  execution_service_.training_data_collector()->CollectTrainingData(
+      segment_id, request_id, param, std::move(callback));
+}
+
 void SegmentationPlatformServiceImpl::EnableMetrics(
     bool signal_collection_allowed) {
   signal_handler_.EnableMetrics(signal_collection_allowed);
