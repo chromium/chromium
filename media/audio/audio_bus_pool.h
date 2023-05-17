@@ -50,6 +50,7 @@ class MEDIA_EXPORT AudioBusPoolImpl final : public AudioBusPool {
 
  private:
   friend class AudioBusPoolTest;
+  friend class ReconfigurableAudioBusPoolTest;
 
   using CreateAudioBusCallback =
       base::RepeatingCallback<std::unique_ptr<AudioBus>(

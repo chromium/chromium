@@ -27,6 +27,7 @@ class SingleThreadTaskRunner;
 
 namespace media {
 class SilentSinkSuspender;
+class SpeechRecognitionClient;
 }
 
 namespace content {
@@ -149,6 +150,8 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
 
   // Used to indicate if device is stopped.
   bool is_stopped_ = true;
+
+  std::unique_ptr<media::SpeechRecognitionClient> speech_recognition_client_;
 
   FRIEND_TEST_ALL_PREFIXES(RendererWebAudioDeviceImplTest,
                            CreateSinkAndGetDeviceStatus_HealthyDevice);

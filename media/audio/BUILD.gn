@@ -139,6 +139,8 @@ source_set("audio") {
     "null_audio_sink.h",
     "power_observer_helper.cc",
     "power_observer_helper.h",
+    "reconfigurable_audio_bus_pool.cc",
+    "reconfigurable_audio_bus_pool.h",
     "scoped_task_runner_observer.cc",
     "scoped_task_runner_observer.h",
     "simple_sources.cc",
@@ -430,6 +432,7 @@ source_set("unit_tests") {
     "audio_system_impl_unittest.cc",
     "audio_thread_hang_monitor_unittest.cc",
     "power_observer_helper_unittest.cc",
+    "reconfigurable_audio_bus_pool_unittest.cc",
     "simple_sources_unittest.cc",
   ]
 

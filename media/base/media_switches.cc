@@ -891,6 +891,11 @@ BASE_FEATURE(kLiveCaptionRightClick,
              "LiveCaptionRightClick",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable or disable Live Caption support for WebAudio.
+BASE_FEATURE(kLiveCaptionWebAudio,
+             "LiveCaptionWebAudio",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Live Caption runs system-wide on ChromeOS, as opposed to just in the browser.
 BASE_FEATURE(kLiveCaptionSystemWideOnChromeOS,
              "LiveCaptionSystemWideOnChromeOS",

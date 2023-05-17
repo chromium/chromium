@@ -159,8 +159,7 @@ class ChromeContentRendererClient
       content::RenderFrame* render_frame) override;
 #if BUILDFLAG(ENABLE_SPEECH_SERVICE)
   std::unique_ptr<media::SpeechRecognitionClient> CreateSpeechRecognitionClient(
-      content::RenderFrame* render_frame,
-      media::SpeechRecognitionClient::OnReadyCallback callback) override;
+      content::RenderFrame* render_frame) override;
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
   void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) override;
   bool IsPluginAllowedToUseCameraDeviceAPI(const GURL& url) override;

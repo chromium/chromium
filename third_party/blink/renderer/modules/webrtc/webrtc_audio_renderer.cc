@@ -307,11 +307,7 @@ WebRtcAudioRenderer::WebRtcAudioRenderer(
       on_render_error_callback_(std::move(on_render_error_callback)) {
   if (web_frame.Client()) {
     speech_recognition_client_ =
-        web_frame.Client()->CreateSpeechRecognitionClient(
-            base::BindPostTaskToCurrentDefault(
-                ConvertToBaseOnceCallback(CrossThreadBindOnce(
-                    &WebRtcAudioRenderer::EnableSpeechRecognition,
-                    weak_factory_.GetWeakPtr()))));
+        web_frame.Client()->CreateSpeechRecognitionClient();
   }
 
   SendLogMessage(
@@ -599,14 +595,6 @@ void WebRtcAudioRenderer::SwitchOutputDevice(
   std::move(callback).Run(media::OUTPUT_DEVICE_STATUS_OK);
 }
 
-void WebRtcAudioRenderer::TranscribeAudio(
-    std::unique_ptr<media::AudioBus> audio_bus,
-    int sample_rate,
-    media::ChannelLayout channel_layout) {
-  speech_recognition_client_->AddAudio(std::move(audio_bus), sample_rate,
-                                       channel_layout);
-}
-
 int WebRtcAudioRenderer::Render(base::TimeDelta delay,
                                 base::TimeTicks delay_timestamp,
                                 const media::AudioGlitchInfo& glitch_info,
@@ -632,13 +620,8 @@ int WebRtcAudioRenderer::Render(base::TimeDelta delay,
     audio_stream_tracker_->MeasurePower(*audio_bus, audio_bus->frames());
   }
 
-  if (transcribe_audio_callback_) {
-    auto audio_bus_copy =
-        media::AudioBus::Create(audio_bus->channels(), audio_bus->frames());
-    audio_bus->CopyTo(audio_bus_copy.get());
-    transcribe_audio_callback_.Run(std::move(audio_bus_copy),
-                                   sink_params_.sample_rate(),
-                                   sink_params_.channel_layout());
+  if (speech_recognition_client_) {
+    speech_recognition_client_->AddAudio(*audio_bus);
   }
 
   return (state_ == kPlaying) ? audio_bus->frames() : 0;
@@ -924,6 +907,13 @@ void WebRtcAudioRenderer::PrepareSink() {
   new_sink_params.set_latency_tag(
       Platform::Current()->GetAudioSourceLatencyType(
           WebAudioDeviceSourceType::kWebRtc));
+
+  // Reconfigure() is safe to call, since |sink_| has not started yet, so there
+  // are no AddAudio() calls coming from the rendering thread.
+  if (speech_recognition_client_) {
+    speech_recognition_client_->Reconfigure(new_sink_params);
+  }
+
   sink_->Initialize(new_sink_params, this);
 }
 
@@ -931,16 +921,6 @@ void WebRtcAudioRenderer::SendLogMessage(const WTF::String& message) {
   WebRtcLogMessage(String::Format("WRAR::%s [label=%s]", message.Utf8().c_str(),
                                   media_stream_descriptor_id_.Utf8().c_str())
                        .Utf8());
-}
-
-void WebRtcAudioRenderer::EnableSpeechRecognition() {
-  if (speech_recognition_client_ &&
-      speech_recognition_client_->IsSpeechRecognitionAvailable()) {
-    transcribe_audio_callback_ =
-        base::BindPostTaskToCurrentDefault(ConvertToBaseRepeatingCallback(
-            CrossThreadBindRepeating(&WebRtcAudioRenderer::TranscribeAudio,
-                                     weak_factory_.GetWeakPtr())));
-  }
 }
 
 }  // namespace blink

@@ -8,8 +8,10 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
+#include "base/time/time.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
+#include "media/audio/reconfigurable_audio_bus_pool.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -18,11 +20,12 @@
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 
+// Preallocate 500ms worth of buffers when using a ReconfigurableAudioBusPool.
+constexpr base::TimeDelta kAudioBusPoolDuration = base::Milliseconds(500);
+
 ChromeSpeechRecognitionClient::ChromeSpeechRecognitionClient(
-    content::RenderFrame* render_frame,
-    media::SpeechRecognitionClient::OnReadyCallback callback)
-    : content::RenderFrameObserver(render_frame),
-      on_ready_callback_(std::move(callback)) {
+    content::RenderFrame* render_frame)
+    : content::RenderFrameObserver(render_frame) {
   initialize_callback_ = base::BindPostTaskToCurrentDefault(base::BindRepeating(
       &ChromeSpeechRecognitionClient::Initialize, weak_factory_.GetWeakPtr()));
 
@@ -40,6 +43,13 @@ ChromeSpeechRecognitionClient::ChromeSpeechRecognitionClient(
 
   render_frame->GetBrowserInterfaceBroker()->GetInterface(
       std::move(speech_recognition_client_browser_interface_receiver));
+
+  add_audio_on_main_sequence_callback_ =
+      base::BindPostTaskToCurrentDefault(base::BindRepeating(
+          &ChromeSpeechRecognitionClient::AddAudioBusOnMainSequence,
+          weak_factory_.GetWeakPtr()));
+  audio_bus_pool_ = std::make_unique<media::ReconfigurableAudioBusPoolImpl>(
+      kAudioBusPoolDuration);
 }
 
 ChromeSpeechRecognitionClient::~ChromeSpeechRecognitionClient() = default;
@@ -51,18 +61,38 @@ void ChromeSpeechRecognitionClient::AddAudio(
       ConvertToAudioDataS16(std::move(buffer), is_multichannel_supported_));
 }
 
-void ChromeSpeechRecognitionClient::AddAudio(
-    std::unique_ptr<media::AudioBus> audio_bus,
-    int sample_rate,
-    media::ChannelLayout channel_layout) {
-  DCHECK(audio_bus);
-  send_audio_callback_.Run(ConvertToAudioDataS16(std::move(audio_bus),
-                                                 sample_rate, channel_layout,
-                                                 is_multichannel_supported_));
+void ChromeSpeechRecognitionClient::AddAudio(const media::AudioBus& audio_bus) {
+  // IsSpeechRecognitionAvailable() will return false if there is contention on
+  // is_recognizer_bound_lock_.
+  if (!IsSpeechRecognitionAvailable()) {
+    return;
+  }
+
+  auto audio_bus_copy = audio_bus_pool_->GetAudioBus();
+  CHECK_EQ(audio_bus.channels(), audio_parameters_.channels());
+  CHECK_EQ(audio_bus.frames(), audio_parameters_.frames_per_buffer());
+  CHECK_EQ(audio_bus_copy->channels(), audio_parameters_.channels());
+  CHECK_EQ(audio_bus_copy->frames(), audio_parameters_.frames_per_buffer());
+  audio_bus.CopyTo(audio_bus_copy.get());
+
+  // Since Reconfigure() is not allowed to concurrently run with AddAudio(),
+  // it's safe to access |audio_parameters_| here. We pass the parameters into
+  // the callback rather than accessing them in the callback itself on the
+  // main thread because there may be Reconfigure() pending on the main
+  // thread which would modify |audio_parameters_| before the callback is
+  // executed.
+  add_audio_on_main_sequence_callback_.Run(std::move(audio_bus_copy),
+                                           audio_parameters_.sample_rate(),
+                                           audio_parameters_.channel_layout());
 }
 
 bool ChromeSpeechRecognitionClient::IsSpeechRecognitionAvailable() {
-  return is_recognizer_bound_;
+  base::AutoTryLock try_locker(is_recognizer_bound_lock_);
+  if (try_locker.is_acquired()) {
+    return is_recognizer_bound_;
+  }
+
+  return false;
 }
 
 // The OnReadyCallback is set by the owner of |this| and is executed when speech
@@ -77,10 +107,21 @@ void ChromeSpeechRecognitionClient::SetOnReadyCallback(
     std::move(on_ready_callback_).Run();
 }
 
+void ChromeSpeechRecognitionClient::Reconfigure(
+    const media::AudioParameters& audio_parameters) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  audio_bus_pool_->Reconfigure(audio_parameters);
+  audio_parameters_ = audio_parameters;
+}
+
 void ChromeSpeechRecognitionClient::OnRecognizerBound(
     bool is_multichannel_supported) {
+  {
+    base::AutoLock auto_lock(is_recognizer_bound_lock_);
+    is_recognizer_bound_ = true;
+  }
+
   is_multichannel_supported_ = is_multichannel_supported;
-  is_recognizer_bound_ = true;
 
   if (on_ready_callback_)
     std::move(on_ready_callback_).Run();
@@ -153,11 +194,26 @@ void ChromeSpeechRecognitionClient::Initialize() {
 }
 
 void ChromeSpeechRecognitionClient::Reset() {
+  base::AutoLock auto_lock(is_recognizer_bound_lock_);
   is_recognizer_bound_ = false;
   speech_recognition_context_.reset();
   speech_recognition_recognizer_.reset();
 }
 
+void ChromeSpeechRecognitionClient::AddAudioBusOnMainSequence(
+    std::unique_ptr<media::AudioBus> audio_bus,
+    int sample_rate,
+    media::ChannelLayout channel_layout) {
+  DCHECK(audio_bus);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  send_audio_callback_.Run(ConvertToAudioDataS16(*audio_bus.get(), sample_rate,
+                                                 channel_layout,
+                                                 is_multichannel_supported_));
+
+  if (audio_bus_pool_) {
+    audio_bus_pool_->InsertAudioBus(std::move(audio_bus));
+  }
+}
 void ChromeSpeechRecognitionClient::SendAudioToSpeechRecognitionService(
     media::mojom::AudioDataS16Ptr audio_data) {
   DCHECK(audio_data);
@@ -169,5 +225,6 @@ void ChromeSpeechRecognitionClient::SendAudioToSpeechRecognitionService(
 }
 
 void ChromeSpeechRecognitionClient::OnRecognizerDisconnected() {
+  base::AutoLock auto_lock(is_recognizer_bound_lock_);
   is_recognizer_bound_ = false;
 }

@@ -243,9 +243,12 @@ class AudioRendererImplTest : public ::testing::Test,
 
   // SpeechRecognitionClient implementation.
   MOCK_METHOD1(AddAudio, void(scoped_refptr<AudioBuffer>));
-  MOCK_METHOD3(AddAudio, void(std::unique_ptr<AudioBus>, int, ChannelLayout));
+  MOCK_METHOD3(AddAudioBusOnMainSequence,
+               void(std::unique_ptr<AudioBus>, int, ChannelLayout));
   MOCK_METHOD0(IsSpeechRecognitionAvailable, bool());
   MOCK_METHOD1(SetOnReadyCallback, void(OnReadyCallback));
+  MOCK_METHOD1(AddAudio, void(const media::AudioBus&));
+  MOCK_METHOD1(Reconfigure, void(const media::AudioParameters&));
 
   void InitializeRenderer(DemuxerStream* demuxer_stream,
                           PipelineStatusCallback pipeline_status_cb) {
@@ -1771,7 +1774,8 @@ TEST_F(AudioRendererImplTest,
   EXPECT_CALL(*this, SetOnReadyCallback(_));
   Initialize();
 
-  EXPECT_CALL(*this, AddAudio(_)).Times(0);
+  EXPECT_CALL(*this, AddAudio(testing::An<scoped_refptr<AudioBuffer>>()))
+      .Times(0);
   Preroll();
 
   StartTicking();
@@ -1783,7 +1787,8 @@ TEST_F(AudioRendererImplTest,
   EXPECT_CALL(*this, SetOnReadyCallback(_));
   Initialize();
 
-  EXPECT_CALL(*this, AddAudio(_)).Times(0);
+  EXPECT_CALL(*this, AddAudio(testing::An<scoped_refptr<AudioBuffer>>()))
+      .Times(0);
   Preroll();
 
   StartTicking();
@@ -1796,7 +1801,8 @@ TEST_F(AudioRendererImplTest,
   EXPECT_CALL(*this, SetOnReadyCallback(_));
   Initialize();
 
-  EXPECT_CALL(*this, AddAudio(_)).Times(3);
+  EXPECT_CALL(*this, AddAudio(testing::An<scoped_refptr<AudioBuffer>>()))
+      .Times(3);
   next_timestamp_->SetBaseTimestamp(base::TimeDelta());
   renderer_->SetMediaTime(base::TimeDelta());
   renderer_->StartPlaying();
@@ -1819,7 +1825,8 @@ TEST_F(AudioRendererImplTest,
   EXPECT_CALL(*this, SetOnReadyCallback(_));
   Initialize();
 
-  EXPECT_CALL(*this, AddAudio(_)).Times(3);
+  EXPECT_CALL(*this, AddAudio(testing::An<scoped_refptr<AudioBuffer>>()))
+      .Times(3);
   Preroll();
 
   StartTicking();

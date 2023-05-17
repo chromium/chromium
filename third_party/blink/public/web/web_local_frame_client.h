@@ -191,10 +191,9 @@ class BLINK_EXPORT WebLocalFrameClient {
     return nullptr;
   }
 
-  // May return null.
+  // May return null if speech recognition is not supported.
   virtual std::unique_ptr<media::SpeechRecognitionClient>
-  CreateSpeechRecognitionClient(
-      media::SpeechRecognitionClient::OnReadyCallback callback) {
+  CreateSpeechRecognitionClient() {
     return nullptr;
   }
 

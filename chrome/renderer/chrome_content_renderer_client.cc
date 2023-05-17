@@ -1567,10 +1567,8 @@ ChromeContentRendererClient::CreateWorkerContentSettingsClient(
 #if BUILDFLAG(ENABLE_SPEECH_SERVICE)
 std::unique_ptr<media::SpeechRecognitionClient>
 ChromeContentRendererClient::CreateSpeechRecognitionClient(
-    content::RenderFrame* render_frame,
-    media::SpeechRecognitionClient::OnReadyCallback callback) {
-  return std::make_unique<ChromeSpeechRecognitionClient>(render_frame,
-                                                         std::move(callback));
+    content::RenderFrame* render_frame) {
+  return std::make_unique<ChromeSpeechRecognitionClient>(render_frame);
 }
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
 
