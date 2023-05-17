@@ -52,6 +52,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"  // nogncheck
+#endif
+
 using safe_browsing::BinaryUploadService;
 
 namespace enterprise_connectors {
@@ -533,6 +537,22 @@ void ContentAnalysisDelegate::PageRequestCallback(
 
 bool ContentAnalysisDelegate::UploadData() {
   upload_start_time_ = base::TimeTicks::Now();
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // If this is a local content analysis, check if the local agent is ready.
+  // If not, abort early.  This is to prevent doing a lot of work, like reading
+  // files into memory or calcuating SHA256 hashes and prevent a flash of the
+  // in-progress dialog.
+  const CloudOrLocalAnalysisSettings& cloud_or_local =
+      data_.settings.cloud_or_local_settings;
+  if (cloud_or_local.is_local_analysis()) {
+    auto client = ContentAnalysisSdkManager::Get()->GetClient(
+        {cloud_or_local.local_path(), cloud_or_local.user_specific()});
+    if (!client) {
+      return false;
+    }
+  }
+#endif
 
   // Create a text request, an image request, a page request and a file request
   // for each file.

@@ -4837,6 +4837,7 @@ if (!is_android) {
         "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_mac_win_linux.cc",
       ]
+      deps += [ "../browser/enterprise/connectors/analysis:test_support" ]
     }
 
     if (is_chrome_branded) {
@@ -8888,7 +8889,10 @@ test("unit_tests") {
   }
 
   if (is_win || is_mac || is_linux) {
-    deps += [ "../services/system_signals:unit_tests" ]
+    deps += [
+      "../browser/enterprise/connectors/analysis:test_support",
+      "../services/system_signals:unit_tests",
+    ]
   }
 
   if (enable_pdf) {

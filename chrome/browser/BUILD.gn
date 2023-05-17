@@ -6152,8 +6152,6 @@ static_library("browser") {
     sources += [
       "enterprise/chrome_browser_main_extra_parts_enterprise.cc",
       "enterprise/chrome_browser_main_extra_parts_enterprise.h",
-      "enterprise/connectors/analysis/content_analysis_sdk_manager.cc",
-      "enterprise/connectors/analysis/content_analysis_sdk_manager.h",
       "enterprise/connectors/analysis/local_binary_upload_service.cc",
       "enterprise/connectors/analysis/local_binary_upload_service.h",
       "enterprise/connectors/analysis/local_binary_upload_service_factory.cc",
