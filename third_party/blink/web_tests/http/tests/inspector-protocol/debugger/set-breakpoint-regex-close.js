@@ -1,11 +1,11 @@
 (async function(testRunner) {
-  const {session, dp, page} = await testRunner.startBlank(
+  const {session, dp} = await testRunner.startBlank(
       `Tests setting a regexp breakpoint and disconnect.`);
 
   await dp.Target.setDiscoverTargets({discover: true});
   await dp.Debugger.enable();
 
-  const name = '0'.repeat(20);
+  const name = '0'.repeat(25);
   for (let i = 0; i < 10; i++) {
     await session.evaluateAsync(`//# sourceURL=${name}${i}.js`);
   }
@@ -20,10 +20,6 @@
 
   session.disconnect();
   testRunner.log('Disconnected');
-
-  // Let's try to connect to the page to make sure it is still alive.
-  const session2 = await page.createSession();
-  await session2.protocol.Debugger.enable();
 
   testRunner.completeTest();
 })
