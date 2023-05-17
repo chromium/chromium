@@ -19219,6 +19219,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileInactiveTabGridEntered">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@google.com</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User entered the iOS Inactive Tabs grid (from anywhere).
+  </description>
+</action>
+
+<action name="MobileInactiveTabGridExited">
+  <owner>alionadangla@chromium.org</owner>
+  <owner>lpromero@google.com</owner>
+  <owner>chromeleon@google.com</owner>
+  <description>
+    User exited the iOS Inactive Tabs grid (by any means).
+  </description>
+</action>
+
 <action name="MobileInactiveTabsCloseAll">
   <owner>alionadangla@chromium.org</owner>
   <owner>lpromero@chromium.org</owner>
