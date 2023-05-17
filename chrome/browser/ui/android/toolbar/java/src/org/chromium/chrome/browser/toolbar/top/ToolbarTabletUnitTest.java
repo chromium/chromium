@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinatorTablet;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.R;
@@ -118,8 +117,10 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
-    public void testButtonPosition_TSR() {
+    @EnableFeatures(
+            {ChromeFeatureList.TAB_STRIP_REDESIGN, ChromeFeatureList.TABLET_TOOLBAR_REORDERING})
+    public void
+    testButtonPosition_TSR() {
         mToolbarTablet.onFinishInflate();
         assertEquals("Back button position is not as expected for Tab Strip Redesign", mBackButton,
                 mToolbarTabletLayout.getChildAt(0));
@@ -132,12 +133,8 @@ public final class ToolbarTabletUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_STRIP_REDESIGN)
-    public void testButtonPosition_TSR_DisableToolbarReordering() {
-        OmniboxFeatures.TAB_STRIP_REDESIGN_DISABLE_TOOLBAR_REORDERING.setForTesting(true);
-
-        // Resetup for feature param to enable before Native.
-        setUp();
+    @DisableFeatures({ChromeFeatureList.TABLET_TOOLBAR_REORDERING})
+    public void testButtonPosition_ShutoffToolbarReordering() {
         mToolbarTablet.onFinishInflate();
 
         assertEquals("Home button position is not as expected for TSR disable Toolbar reordering",
@@ -150,8 +147,6 @@ public final class ToolbarTabletUnitTest {
         assertEquals(
                 "Reloading button position is not as expected for TSR disable Toolbar reordering",
                 mReloadingButton, mToolbarTabletLayout.getChildAt(3));
-
-        OmniboxFeatures.TAB_STRIP_REDESIGN_DISABLE_TOOLBAR_REORDERING.setForTesting(false);
     }
 
     @Test

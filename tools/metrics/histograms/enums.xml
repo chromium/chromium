@@ -59931,6 +59931,7 @@ from previous Chrome versions.
   <int value="-1451644187" label="OverviewSwipeToClose:enabled"/>
   <int value="-1450657485" label="EnableHardwareMirrorMode:enabled"/>
   <int value="-1450576851" label="OmniboxUIExperimentVerticalLayout:enabled"/>
+  <int value="-1449928353" label="TabletToolbarReordering:enabled"/>
   <int value="-1449590570" label="RestrictGamepadAccess:enabled"/>
   <int value="-1449358747" label="RemoveStatusBarInWebApps:enabled"/>
   <int value="-1448511207" label="UseMessagesStagingUrl:disabled"/>
@@ -65598,6 +65599,7 @@ from previous Chrome versions.
   <int value="1591780364" label="EcheCustomWidget:disabled"/>
   <int value="1592391721" label="DesktopDetailedLanguageSettings:disabled"/>
   <int value="1592595046" label="HeuristicMemorySaver:enabled"/>
+  <int value="1592642621" label="TabletToolbarReordering:disabled"/>
   <int value="1592843279" label="WebXrSharedBuffers:enabled"/>
   <int value="1593720927" label="GamepadVibration:disabled"/>
   <int value="1593883073" label="OfflineIndicatorV2:disabled"/>

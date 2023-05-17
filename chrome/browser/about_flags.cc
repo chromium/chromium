@@ -3105,14 +3105,6 @@ const FeatureEntry::FeatureParam kTabStripRedesignDisableNtbAnchorFolio[] = {
 const FeatureEntry::FeatureParam kTabStripRedesignDisableNtbAnchorDetached[] = {
     {"disable_ntb_anchor", "true"},
     {"enable_detached", "true"}};
-const FeatureEntry::FeatureParam
-    kTabStripRedesignDisableToolbarReorderingFolio[] = {
-        {"disable_toolbar_reordering", "true"},
-        {"enable_folio", "true"}};
-const FeatureEntry::FeatureParam
-    kTabStripRedesignDisableToolbarReorderingDetached[] = {
-        {"disable_toolbar_reordering", "true"},
-        {"enable_detached", "true"}};
 
 const FeatureEntry::FeatureVariation kTabStripRedesignVariations[] = {
     {"Folio", kTabStripRedesignFolio, std::size(kTabStripRedesignFolio),
@@ -3122,13 +3114,7 @@ const FeatureEntry::FeatureVariation kTabStripRedesignVariations[] = {
     {"Folio NTB Unanchored ", kTabStripRedesignDisableNtbAnchorFolio,
      std::size(kTabStripRedesignDisableNtbAnchorFolio), nullptr},
     {"Detached NTB Unanchored", kTabStripRedesignDisableNtbAnchorDetached,
-     std::size(kTabStripRedesignDisableNtbAnchorDetached), nullptr},
-    {"Folio Shut off Toolbar Reordering ",
-     kTabStripRedesignDisableToolbarReorderingFolio,
-     std::size(kTabStripRedesignDisableToolbarReorderingFolio), nullptr},
-    {"Detached Shut off Toolbar Reordering",
-     kTabStripRedesignDisableToolbarReorderingDetached,
-     std::size(kTabStripRedesignDisableToolbarReorderingDetached), nullptr}};
+     std::size(kTabStripRedesignDisableNtbAnchorDetached), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -6781,6 +6767,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabStripRedesign,
                                     kTabStripRedesignVariations,
                                     "TabStripRedesignAndroid")},
+
+    {"enable-tablet-toolbar-reordering",
+     flag_descriptions::kTabletToolbarReorderingAndroidName,
+     flag_descriptions::kTabletToolbarReorderingAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabletToolbarReordering)},
 
     {"enable-empty-states", flag_descriptions::kEmptyStatesAndroidName,
      flag_descriptions::kEmptyStatesAndroidDescription, kOsAndroid,

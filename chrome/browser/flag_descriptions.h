@@ -1780,6 +1780,9 @@ extern const char kDiscoverFeedMultiColumnAndroidDescription[];
 extern const char kTabStripRedesignAndroidName[];
 extern const char kTabStripRedesignAndroidDescription[];
 
+extern const char kTabletToolbarReorderingAndroidName[];
+extern const char kTabletToolbarReorderingAndroidDescription[];
+
 extern const char kEmptyStatesAndroidName[];
 extern const char kEmptyStatesAndroidDescription[];
 

@@ -3347,6 +3347,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "enable-tablet-toolbar-reordering",
+    "owners": [ "zheliooo@google.com", "twellington@google.com", "nemco@google.com", "clank-app-team@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-tailored-security-integration",
     "owners": ["joemerramos", "ajuma", "bling-flags@google.com"],
     "expiry_milestone": 120
