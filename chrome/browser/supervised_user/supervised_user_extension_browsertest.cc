@@ -21,8 +21,9 @@ constexpr char kGoodCrxId[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
 
 namespace extensions {
 
-// Tests for the interaction between supervised users and extensions.
-class SupervisedUserExtensionTest : public ExtensionBrowserTest {
+// Tests interaction between supervised users and extensions after the optional
+// supervision is removed from the account.
+class SupervisionRemovalExtensionTest : public ExtensionBrowserTest {
  public:
   // We have to essentially replicate what MixinBasedInProcessBrowserTest does
   // here because ExtensionBrowserTest doesn't inherit from that class.
@@ -87,6 +88,8 @@ class SupervisedUserExtensionTest : public ExtensionBrowserTest {
 
  private:
   InProcessBrowserTestMixinHost mixin_host_;
+  // In order to simulate supervision removal and re-authentication use
+  // supervised account in the PRE test and regular account afterwards.
   supervised_user::SupervisionMixin supervision_mixin_{
       mixin_host_,
       this,
@@ -99,8 +102,8 @@ class SupervisedUserExtensionTest : public ExtensionBrowserTest {
 // Removing supervision should also remove associated disable reasons, such as
 // DISABLE_CUSTODIAN_APPROVAL_REQUIRED. Extensions should become enabled again
 // after removing supervision. Prevents a regression to crbug/1045625.
-IN_PROC_BROWSER_TEST_F(SupervisedUserExtensionTest,
-                       PRE_RemovingSupervisionCustodianApprovalRequired) {
+IN_PROC_BROWSER_TEST_F(SupervisionRemovalExtensionTest,
+                       PRE_RemoveCustodianApprovalRequirement) {
   supervised_user_test_util::
       SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
 
@@ -118,8 +121,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserExtensionTest,
   EXPECT_TRUE(IsDisabledForCustodianApproval(kGoodCrxId));
 }
 
-IN_PROC_BROWSER_TEST_F(SupervisedUserExtensionTest,
-                       RemovingSupervisionCustodianApprovalRequired) {
+IN_PROC_BROWSER_TEST_F(SupervisionRemovalExtensionTest,
+                       RemoveCustodianApprovalRequirement) {
   ASSERT_FALSE(profile()->IsChild());
 
   // The extension should still be installed since we are sharing the same data
