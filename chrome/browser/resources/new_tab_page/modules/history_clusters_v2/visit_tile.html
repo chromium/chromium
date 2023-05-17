@@ -1,0 +1,122 @@
+<style include="history-clusters-shared-style">
+  :host {
+    background: var(--color-new-tab-page-module-background);
+    border-radius: var(--ntp-module-border-radius);
+    display: inline-block;
+    width: 100%;
+  }
+
+  a:link,
+  a:visited,
+  a:hover,
+  a:active {
+    text-decoration: none;
+  }
+
+  :host-context(.focus-outline-visible) :focus,
+  :focus-visible {
+    border-radius: var(--ntp-module-item-border-radius);
+    box-shadow: var(--ntp-focus-shadow);
+    outline: none;
+  }
+
+  #content {
+    display: inline-block;
+    margin: 16px;
+  }
+
+  #image {
+    background: var(--color-new-tab-page-module-background);
+    overflow: hidden;
+    position: relative;
+  }
+
+  #image img {
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  #icon {
+    height: 16px;
+    margin-inline-end: 8px;
+    width: 16px;
+  }
+
+  #title {
+    -webkit-box-orient: vertical;
+    color: var(--color-new-tab-page-primary-foreground);
+    display: -webkit-box;
+    font-size: var(--ntp-module-text-size);
+    margin: 16px 0 16px 0;
+    white-space: initial;
+  }
+
+  :host([format='wide']) #title {
+    margin: 24px 0 86px 0;
+  }
+
+  #title {
+    -webkit-line-clamp: 3;
+    height: 60px;
+    line-height: 20px;
+  }
+
+  #label-container {
+    color: var(--color-new-tab-page-secondary-foreground);
+    display: flex;
+    flex-direction: row;
+    font-size: 11px;
+    height: 20px;
+  }
+
+  #date {
+    /*TODO: Update color */
+    color: var(--color-new-tab-page-primary-foreground);
+    min-width: max-content;
+  }
+
+  #annotation {
+    display: none;
+  }
+
+  /*TODO: Fix label size */
+  #label {
+    max-width: 100px;
+  }
+
+  /* Set styles for high contrast mode in Windows. */
+  @media (forced-colors: active) {
+    /* Set focus outline since box-shadow isn't visible in hcm */
+    :host-context(.focus-outline-visible) a:focus {
+      outline: var(--cr-focus-outline-hcm);
+    }
+
+    /* Set outline since background isn't visible in hcm */
+    a {
+      border-radius: 12px;
+      outline: var(--cr-border-hcm);
+    }
+  }
+</style>
+<a id="content" href="[[visit.normalizedUrl.url]]"
+   aria-label$="[[visit.pageTitle]], [[label_]], [[visit.relativeDate]]">
+  <div id="label-container">
+    <page-favicon id="icon" url="[[visit.normalizedUrl]]"
+                  is-known-to-sync="[[visit.isKnownToSync]]">
+    </page-favicon>
+    <div id="label" class="truncate">[[label_]]</div>
+  </div>
+  <div id="image">
+    <template is="dom-if" if="[[imageUrl_]]" restamp>
+      <img is="cr-auto-img" auto-src="[[imageUrl_.url]]"
+          draggable="false" alt="">
+      </img>
+    </template>
+  </div>
+  <div id="title" class="truncate">[[visit.pageTitle]]</div>
+  <template is="dom-if" if="[[annotation_]]">
+        <div id="annotation">[[annotation_]]</div>
+  </template>
+  <div id="date">[[visit.relativeDate]]</div>
+</a>
