@@ -244,7 +244,6 @@ extern const char kMakeChromeDefault[];
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
-extern const char kDisableWindows10CustomTitlebar[];
 extern const char kEnableProfileShortcutManager[];
 extern const char kFromInstaller[];
 extern const char kHideIcons[];

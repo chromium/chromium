@@ -145,8 +145,8 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   // Called when the device enters or exits tablet mode.
   void TabletModeChanged();
 
-  // Sets DWM attributes for rendering the system-drawn titlebar.
-  void SetSystemTitlebarAttributes();
+  // Sets DWM attributes for rendering the system-drawn Mica titlebar.
+  void SetSystemMicaTitlebarAttributes();
 
   // Paint various sub-components of this view.
   void PaintTitlebar(gfx::Canvas* canvas) const;
