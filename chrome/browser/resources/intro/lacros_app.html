@@ -1,4 +1,4 @@
-<style include="tangible-sync-style-shared">
+<style include="tangible-sync-style-shared cr-hidden-style">
   :host {
     --buttons-container-max-width: 45%;
     color: var(--cr-primary-text-color);
@@ -65,13 +65,6 @@
     padding-top: 12px;
     position: relative;
     width: 530px;
-  }
-
-  /* info-box is displayed as a flex-box. Because of that, the hidden property
-    which sets the visibility to hidden doesn't work. We should set the display
-    to none as done below to hide the element. */
-  #info-box[hidden] {
-    display: none;
   }
 
   #info-box>p {
