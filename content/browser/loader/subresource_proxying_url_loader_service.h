@@ -111,7 +111,7 @@ class CONTENT_EXPORT SubresourceProxyingURLLoaderService final
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override;
 
-  void CreateTopicsLoaderAndStart(
+  void CreateSubresourceProxyingLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       int32_t request_id,
       uint32_t options,
@@ -125,7 +125,7 @@ class CONTENT_EXPORT SubresourceProxyingURLLoaderService final
 
   mojo::ReceiverSet<network::mojom::URLLoader,
                     std::unique_ptr<network::mojom::URLLoader>>
-      topics_loader_receivers_;
+      subresource_proxying_loader_receivers_;
 
   std::unique_ptr<PrefetchURLLoaderServiceContext>
       prefetch_url_loader_service_context_;

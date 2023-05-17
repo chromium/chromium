@@ -1,14 +1,13 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_BROWSING_TOPICS_BROWSING_TOPICS_URL_LOADER_H_
-#define CONTENT_BROWSER_BROWSING_TOPICS_BROWSING_TOPICS_URL_LOADER_H_
+#ifndef CONTENT_BROWSER_LOADER_SUBRESOURCE_PROXYING_URL_LOADER_H_
+#define CONTENT_BROWSER_LOADER_SUBRESOURCE_PROXYING_URL_LOADER_H_
 
 #include <memory>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -27,30 +26,33 @@ class SharedURLLoaderFactory;
 
 namespace content {
 
-// A URLLoader for handling a topics request, including
-// fetch(<url>, {browsingTopics: true}).
+// A URLLoader for handling proxied subresource request. Note that prefetch is
+// also proxied but uses a separate loader.
 //
-// This loader works as follows:
-//   1. Before making a network request (i.e. BrowsingTopicsURLLoader()), if the
-//      request is eligible for topics, calculates and adds the topics header.
-//      Starts the request with `loader_`.
-//   2. For any redirect received (i.e. OnReceiveRedirect()), if the previous
-//      request or redirect was eligible for topics, and if the response header
-//      indicates an observation should be recorded, stores the observation.
-//      Forwards the original response back to `forwarding_client_`.
-//   3. For any followed redirect (i.e. FollowRedirect()),  if the redirect is
-//      eligible for topics, calculates and adds/updates the topics header.
-//      Forwards the updated redirect to `loader_`.
-//   4. For the last response (i.e. OnReceiveResponse()),  if the previous
-//      request or redirect was eligible for topics, and if the response header
-//      indicates an observation should be recorded, stores the observation.
-//      Forwards the original response (e.g. hands off fetching the body) back
-//      to `forwarding_client_`.
-class CONTENT_EXPORT BrowsingTopicsURLLoader
+// This loader intercepts requests and responses (including the redirected
+// ones), and forwards the potentially modified requests and responses to the
+// originally intended endpoints (with `loader_` and `forwarding_client_`).
+class CONTENT_EXPORT SubresourceProxyingURLLoader
     : public network::mojom::URLLoader,
       public network::mojom::URLLoaderClient {
  public:
-  BrowsingTopicsURLLoader(
+  class Interceptor {
+   public:
+    virtual void WillStartRequest(net::HttpRequestHeaders& headers) = 0;
+    virtual void WillFollowRedirect(
+        const absl::optional<GURL>& new_url,
+        std::vector<std::string>& removed_headers,
+        net::HttpRequestHeaders& modified_headers) = 0;
+    virtual void OnReceiveRedirect(
+        const net::RedirectInfo& redirect_info,
+        const network::mojom::URLResponseHeadPtr& head) = 0;
+    virtual void OnReceiveResponse(
+        const network::mojom::URLResponseHeadPtr& head) = 0;
+
+    virtual ~Interceptor() = default;
+  };
+
+  SubresourceProxyingURLLoader(
       WeakDocumentPtr document,
       int32_t request_id,
       uint32_t options,
@@ -59,10 +61,11 @@ class CONTENT_EXPORT BrowsingTopicsURLLoader
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory);
 
-  BrowsingTopicsURLLoader(const BrowsingTopicsURLLoader&) = delete;
-  BrowsingTopicsURLLoader& operator=(const BrowsingTopicsURLLoader&) = delete;
+  SubresourceProxyingURLLoader(const SubresourceProxyingURLLoader&) = delete;
+  SubresourceProxyingURLLoader& operator=(const SubresourceProxyingURLLoader&) =
+      delete;
 
-  ~BrowsingTopicsURLLoader() override;
+  ~SubresourceProxyingURLLoader() override;
 
  private:
   // network::mojom::URLLoader overrides:
@@ -92,22 +95,8 @@ class CONTENT_EXPORT BrowsingTopicsURLLoader
 
   void OnNetworkConnectionError();
 
-  // Upon NavigationRequest::DidCommitNavigation(), `document_` will be set to
-  // the document that this `BrowsingTopicsURLLoader` is associated with. It
-  // will become null whenever the document navigates away.
-  WeakDocumentPtr document_;
-
-  // The current request or redirect URL.
-  GURL url_;
-
-  // The initial request state. This will be used to derive the opt-in
-  // permissions policy features for each request/redirect.
-  network::ResourceRequest request_;
-
-  // Whether the ongoing request or redirect is eligible for topics. Set to the
-  // desired state when a request/redirect is made. Reset to false when the
-  // corresponding response is received.
-  bool topics_eligible_ = false;
+  // The initial request state without any modification.
+  const network::ResourceRequest resource_request_;
 
   // For the actual request.
   mojo::Remote<network::mojom::URLLoader> loader_;
@@ -115,9 +104,11 @@ class CONTENT_EXPORT BrowsingTopicsURLLoader
   // The client to forward the response to.
   mojo::Remote<network::mojom::URLLoaderClient> forwarding_client_;
 
+  std::vector<std::unique_ptr<Interceptor>> interceptors_;
+
   mojo::Receiver<network::mojom::URLLoaderClient> client_receiver_{this};
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_BROWSING_TOPICS_BROWSING_TOPICS_URL_LOADER_H_
+#endif  // CONTENT_BROWSER_LOADER_SUBRESOURCE_PROXYING_URL_LOADER_H_

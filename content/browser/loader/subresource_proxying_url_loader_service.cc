@@ -6,8 +6,8 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "content/browser/browsing_topics/browsing_topics_url_loader.h"
 #include "content/browser/loader/prefetch_url_loader_service_context.h"
+#include "content/browser/loader/subresource_proxying_url_loader.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/public/common/content_client.h"
@@ -131,32 +131,33 @@ void SubresourceProxyingURLLoaderService::CreateLoaderAndStart(
     return;
   }
 
-  CHECK(resource_request_in.browsing_topics);
-  CreateTopicsLoaderAndStart(std::move(receiver), request_id, options,
-                             resource_request_in, std::move(client),
-                             traffic_annotation);
+  // For non-prefetch requests, fall back to `SubresourceProxyingURLLoader`.
+  CreateSubresourceProxyingLoaderAndStart(
+      std::move(receiver), request_id, options, resource_request_in,
+      std::move(client), traffic_annotation);
 }
 
-void SubresourceProxyingURLLoaderService::CreateTopicsLoaderAndStart(
-    mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-    int32_t request_id,
-    uint32_t options,
-    const network::ResourceRequest& resource_request_in,
-    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+void SubresourceProxyingURLLoaderService::
+    CreateSubresourceProxyingLoaderAndStart(
+        mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+        int32_t request_id,
+        uint32_t options,
+        const network::ResourceRequest& resource_request_in,
+        mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+        const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   CHECK(resource_request_in.browsing_topics);
 
   const std::unique_ptr<BindContext>& current_context =
       loader_factory_receivers_.current_context();
 
-  auto loader = std::make_unique<BrowsingTopicsURLLoader>(
+  auto loader = std::make_unique<SubresourceProxyingURLLoader>(
       current_context->document, request_id, options, resource_request_in,
       std::move(client), traffic_annotation, current_context->factory);
 
   auto* raw_loader = loader.get();
 
-  topics_loader_receivers_.Add(raw_loader, std::move(receiver),
-                               std::move(loader));
+  subresource_proxying_loader_receivers_.Add(raw_loader, std::move(receiver),
+                                             std::move(loader));
 }
 
 SubresourceProxyingURLLoaderService::~SubresourceProxyingURLLoaderService() =
