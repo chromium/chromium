@@ -375,6 +375,7 @@ crbug.com/1382332 [ android-chromium android-nexus-5x android-nougat angle-disab
 crbug.com/1382332 [ android-chromium android-s android-sm-a135m angle-disabled arm no-passthrough renderer-skia-gl target-cpu-32 ] Pixel_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ android-chromium android-s android-sm-a135m angle-disabled arm no-clang-coverage no-passthrough renderer-skia-gl target-cpu-32 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ android-nexus-5x android-nougat angle-disabled no-passthrough qualcomm renderer-skia-gl target-cpu-64 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
+crbug.com/1382332 [ android-nexus-5x android-nougat android-webview-instrumentation angle-opengles no-passthrough qualcomm renderer-skia-gl target-cpu-64 ] Pixel_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ android-pixel-4 android-r no-clang-coverage qualcomm renderer-skia-gl target-cpu-32 ] Pixel_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ android-pixel-4 android-r no-clang-coverage qualcomm renderer-skia-gl target-cpu-32 ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ fuchsia ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
