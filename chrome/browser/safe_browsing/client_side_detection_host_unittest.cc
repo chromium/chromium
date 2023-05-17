@@ -328,6 +328,9 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
         std::make_unique<StrictMock<MockSafeBrowsingTokenFetcher>>();
     raw_token_fetcher_ = token_fetcher.get();
     csd_host_->set_token_fetcher_for_testing(std::move(token_fetcher));
+    // Commit to a URL for tests that do not explicitly NavigateAndCommit.
+    // Committing to "about:blank" avoids triggering logic irrelevant for tests.
+    NavigateAndCommit(GURL("about:blank"));
 
     testing::DefaultValue<CSDModelType>::Set(CSDModelType::kProtobuf);
   }
