@@ -566,8 +566,7 @@ class WebApp {
   // like is_placeholder and install URLs.
   ExternalConfigMap management_to_external_config_map_;
 
-  // TODO(crbug.com/1381374): Add to AsDebugValue() and
-  // GetManifestDataChanges().
+  // TODO(crbug.com/1381374): Add to GetManifestDataChanges().
   absl::optional<blink::Manifest::TabStrip> tab_strip_;
 
   // Only used on Mac.

@@ -31,6 +31,7 @@
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
+#include "third_party/blink/public/common/url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/color_utils.h"
 #include "url/origin.h"
@@ -214,6 +215,18 @@ base::Value::Dict ImageResourceDebugDict(
   }
   root.Set("purpose", std::move(purpose_json));
   return root;
+}
+
+base::Value::Dict UrlPatternDebugValue(const blink::UrlPattern& pattern) {
+  liburlpattern::Options options = {.delimiter_list = "/",
+                                    .prefix_list = "/",
+                                    .sensitive = true,
+                                    .strict = false};
+  liburlpattern::Pattern pathname(pattern.pathname, options, "[^/]+?");
+
+  base::Value::Dict pattern_dict;
+  pattern_dict.Set("pathname", pathname.GeneratePatternString());
+  return pattern_dict;
 }
 
 }  // namespace
@@ -1091,16 +1104,28 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
                              tab_strip_.value().home_tab)));
     } else {
       base::Value::Dict home_tab_json;
+      const blink::Manifest::HomeTabParams& home_tab_params =
+          absl::get<blink::Manifest::HomeTabParams>(
+              tab_strip_.value().home_tab);
+
       base::Value::List icons_json;
       absl::optional<std::vector<blink::Manifest::ImageResource>> icons =
-          absl::get<blink::Manifest::HomeTabParams>(tab_strip_.value().home_tab)
-              .icons;
+          home_tab_params.icons;
 
       for (auto& icon : *icons) {
         icons_json.Append(ImageResourceDebugDict(icon));
       }
 
+      base::Value::List scope_patterns_json;
+      const std::vector<blink::UrlPattern>& scope_patterns =
+          home_tab_params.scope_patterns;
+
+      for (const auto& scope_pattern : scope_patterns) {
+        scope_patterns_json.Append(UrlPatternDebugValue(scope_pattern));
+      }
+
       home_tab_json.Set("icons", std::move(icons_json));
+      home_tab_json.Set("scope_patterns", std::move(scope_patterns_json));
       tab_strip_json.Set("home_tab", std::move(home_tab_json));
     }
     root.Set("tab_strip", std::move(tab_strip_json));
