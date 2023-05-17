@@ -120,6 +120,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ui/whats_new:util",
     "//ios/chrome/browser/url_loading",
     "//ios/chrome/browser/voice",
+    "//ios/chrome/browser/widget_kit:widget_kit_swift",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/ntp_tile",
     "//ios/chrome/common/ui/favicon",

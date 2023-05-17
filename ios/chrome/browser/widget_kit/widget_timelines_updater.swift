@@ -23,4 +23,12 @@ public final class WidgetTimelinesUpdater: NSObject {
       WidgetCenter.shared.reloadAllTimelines()
     }
   }
+
+  /// Updates timelines of a widget kind.
+  @objc(reloadTimelinesOfKind:)
+  public static func reloadTimelines(ofKind kind: String) {
+    queue.async {
+      WidgetCenter.shared.reloadTimelines(ofKind: kind)
+    }
+  }
 }
