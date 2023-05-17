@@ -14794,6 +14794,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_HIGH_EFFICIENCY_CHIP_ACCNAME" desc="Tooltip text for a page action chip that highlights that the Memory Saver setting is enabled">
         Tab active again
       </message>
+      <message name="IDS_HIGH_EFFICIENCY_CHIP_WITH_SAVINGS_ACCNAME" desc="Accessible label for the memory savings shown on the Memory Saver dialog to provide context to the raw number.">
+        <ph name="MEMORY_VALUE">$1<ex>175MB</ex></ph> of memory saved
+      </message>
       <if expr="use_titlecase">
         <message name="IDS_HIGH_EFFICIENCY_CHIP_SAVINGS_LABEL" desc="In Title Case: Label for a page action chip that highlights the savings from Memory Saver mode">
           <ph name="MEMORY_SAVINGS">$1<ex>300 MB</ex></ph> Saved

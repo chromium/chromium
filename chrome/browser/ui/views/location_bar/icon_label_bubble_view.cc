@@ -214,10 +214,15 @@ void IconLabelBubbleView::SetPaintLabelOverSolidBackground(
 }
 
 void IconLabelBubbleView::SetLabel(const std::u16string& label_text) {
+  SetLabel(label_text, label_text);
+}
+
+void IconLabelBubbleView::SetLabel(const std::u16string& label_text,
+                                   const std::u16string& accessible_name) {
   // TODO(crbug.com/1411342): Under what conditions, if any, will the text be
   // empty? Read the description of the bug and update accordingly.
-  SetAccessibleName(label_text,
-                    label_text.empty()
+  SetAccessibleName(accessible_name,
+                    accessible_name.empty()
                         ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
                         : ax::mojom::NameFrom::kAttribute);
   label()->SetText(label_text);

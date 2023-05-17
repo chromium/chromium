@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_chip_view.h"
+#include <string>
 
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -120,9 +121,13 @@ void HighEfficiencyChipView::UpdateImpl() {
       } else if (ShouldHighlightMemorySavingsWithExpandedChip(tab_helper,
                                                               pref_service)) {
         int const memory_savings = tab_helper->GetMemorySavingsInBytes();
+        std::u16string memory_savings_string = ui::FormatBytes(memory_savings);
         SetLabel(
             l10n_util::GetStringFUTF16(IDS_HIGH_EFFICIENCY_CHIP_SAVINGS_LABEL,
-                                       {ui::FormatBytes(memory_savings)}));
+                                       {memory_savings_string}),
+            l10n_util::GetStringFUTF16(
+                IDS_HIGH_EFFICIENCY_CHIP_WITH_SAVINGS_ACCNAME,
+                {memory_savings_string}));
         AnimateIn(absl::nullopt);
         pref_service->SetTime(prefs::kLastHighEfficiencyChipExpandedTimestamp,
                               base::Time::Now());
