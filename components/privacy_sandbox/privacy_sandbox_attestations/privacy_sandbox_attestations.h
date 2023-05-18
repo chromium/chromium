@@ -41,8 +41,14 @@ class PrivacySandboxAttestations {
   bool IsSiteAttested(net::SchemefulSite site,
                       PrivacySandboxAttestationsGatedAPI invoking_api) const;
 
+  void AddOverride(net::SchemefulSite site) { overrides_.push_back(site); }
+  const std::vector<net::SchemefulSite> GetOverridesForTesting() const {
+    return overrides_;
+  }
+
  private:
   PrivacySandboxAttestationsMap attestations_map_;
+  std::vector<net::SchemefulSite> overrides_;
 };
 
 }  // namespace privacy_sandbox

@@ -598,6 +598,16 @@ void PrivacySandboxSettingsImpl::SetPrivacySandboxAttestationsMapForTesting(
   attestations_ = PrivacySandboxAttestations(attestations_map);
 }
 
+void PrivacySandboxSettingsImpl::AddPrivacySandboxAttestationOverride(
+    const GURL& url) {
+  attestations_.AddOverride(net::SchemefulSite(url));
+}
+
+const std::vector<net::SchemefulSite>
+PrivacySandboxSettingsImpl::GetAttestationOverridesForTesting() const {
+  return attestations_.GetOverridesForTesting();  // IN-TEST
+}
+
 bool PrivacySandboxSettingsImpl::IsPrivacySandboxEnabledForContext(
     const absl::optional<url::Origin>& top_frame_origin,
     const GURL& url) const {
