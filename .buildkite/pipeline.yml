@@ -4,7 +4,7 @@ env:
 
 steps:
   - label: "Build chromium - Linux"
-    key: "build-chromium-linux"
+    key: "build-chromium-linux-x86_64"
     plugins:
       - thedyrt/skip-checkout#v0.1.1: ~
     command: "cd /home/ubuntu/chromium/src && docker build -t chromium-build-new - < Dockerfile.build && git status && node buildLinux.mjs && node replay_build_scripts/upload_build_artifacts.mjs"
@@ -67,4 +67,4 @@ steps:
       - "build_id/windows/x86_64/**"
   - trigger: "testing-runtime-e2e"
     label: ":hammer: Trigger Runtime Tests (Linux)"
-    depends_on: "build-chromium-linux"
+    depends_on: "build-chromium-linux-x86_64"

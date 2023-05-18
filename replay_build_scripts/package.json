@@ -10,5 +10,8 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^18.15.7"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
   }
 }
