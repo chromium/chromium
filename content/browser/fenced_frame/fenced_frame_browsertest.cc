@@ -4643,14 +4643,15 @@ class FencedFrameReportEventBrowserTest
       kNoMeta,
       kNoDestination,
       kNoReportingURL,
-      kInvalidReportingURL
+      kInvalidReportingURL,
+      kExceedMaxEventDataLength
     };
 
     // Outcome of reportEvent.
     Result report_event_result = Result::kSuccess;
   };
 
-  std::string GetConsoleWarningPattern(Step::Result result) {
+  std::string GetErrorPattern(Step::Result result) {
     switch (result) {
       case Step::Result::kModeNotOpaque:
         return "Fenced event reporting is only available in the 'opaque-ads' "
@@ -4669,6 +4670,9 @@ class FencedFrameReportEventBrowserTest
       case Step::Result::kInvalidReportingURL:
         return "This frame registered invalid reporting url for destination * "
                "and event_type *";
+      case Step::Result::kExceedMaxEventDataLength:
+        return "The data provided to reportEvent() exceeds the maximum length, "
+               "which is 64KB.";
       default:
         return "";
     }
@@ -4920,8 +4924,7 @@ class FencedFrameReportEventBrowserTest
           };
       console_observer.SetFilter(base::BindRepeating(filter));
       if (step.report_event_result != Step::Result::kSuccess) {
-        console_observer.SetPattern(
-            GetConsoleWarningPattern(step.report_event_result));
+        console_observer.SetPattern(GetErrorPattern(step.report_event_result));
       }
 
       // Perform the reportEvent call, with a unique body.
@@ -4938,8 +4941,8 @@ class FencedFrameReportEventBrowserTest
                       step.event.type, step.event.reporting_destination)));
       } else {
         // Call reportEvent with `eventData`.
-        EXPECT_TRUE(
-            ExecJs(navigation_target_node,
+        EvalJsResult result =
+            EvalJs(navigation_target_node,
                    JsReplace(R"(
               window.fence.reportEvent({
                 eventType: $1,
@@ -4948,7 +4951,20 @@ class FencedFrameReportEventBrowserTest
               });
             )",
                              step.event.type, step.event.reporting_destination,
-                             step.event.data.value(), navigation_index)));
+                             step.event.data.value(), navigation_index));
+
+        if (step.report_event_result ==
+            Step::Result::kExceedMaxEventDataLength) {
+          // When eventData exceeds the length limit, a security error is thrown
+          // instead of a console error.
+          EXPECT_FALSE(result.error.empty());
+          EXPECT_THAT(
+              result.error,
+              testing::HasSubstr(GetErrorPattern(step.report_event_result)));
+          continue;
+        }
+
+        EXPECT_TRUE(result.error.empty());
       }
 
       // If relevant, check that the event report succeeded.
@@ -5030,7 +5046,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
         return message.log_level == blink::mojom::ConsoleMessageLevel::kError;
       };
   console_observer.SetFilter(base::BindRepeating(filter));
-  console_observer.SetPattern(GetConsoleWarningPattern(Step::Result::kNoMeta));
+  console_observer.SetPattern(GetErrorPattern(Step::Result::kNoMeta));
 
   // Perform the reportEvent call, with a unique body.
   const char report_event_script[] = R"(
@@ -5081,6 +5097,23 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                     /*data=*/absl::nullopt},
           .destination = {"a.test", "/fenced_frames/title1.html"},
           .report_event_result = Step::Result::kSuccess,
+      },
+  };
+  RunTest(config);
+}
+
+// The `eventData` field should not exceed the limit of 64KB.
+IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
+                       FencedFrameReportEventEventDataExceedsLengthLimit) {
+  std::vector<Step> config = {
+      {
+          .is_embedder_initiated = true,
+          .is_opaque = true,
+          .event = {/*type=*/"click", /*reporting_destination=*/"buyer",
+                    /*data=*/
+                    std::string(blink::kFencedFrameMaxBeaconLength + 1, '*')},
+          .destination = {"a.test", "/fenced_frames/title1.html"},
+          .report_event_result = Step::Result::kExceedMaxEventDataLength,
       },
   };
   RunTest(config);
@@ -6337,17 +6370,31 @@ class FencedFrameAutomaticBeaconBrowserTest
                    ad_frame_execjs_options));
       } else {
         // Call `setReportEventDataForAutomaticBeacons()` with `eventData`.
-        EXPECT_TRUE(ExecJs(ad_frame_root_node,
-                           JsReplace(R"(
+        EvalJsResult result =
+            EvalJs(ad_frame_root_node,
+                   JsReplace(R"(
               window.fence.setReportEventDataForAutomaticBeacons({
                 eventType: $1,
                 eventData: $2,
                 destination: ['seller', 'buyer']
               });
             )",
-                                     blink::kFencedFrameTopNavigationBeaconType,
-                                     config.message.value()),
-                           ad_frame_execjs_options));
+                             blink::kFencedFrameTopNavigationBeaconType,
+                             config.message.value()),
+                   ad_frame_execjs_options);
+
+        if (config.message->length() > blink::kFencedFrameMaxBeaconLength) {
+          // When eventData exceeds the length limit, a security error is thrown
+          // instead of a console error.
+          EXPECT_FALSE(result.error.empty());
+          EXPECT_THAT(
+              result.error,
+              testing::HasSubstr("The data provided to "
+                                 "setReportEventDataForAutomaticBeacons() "
+                                 "exceeds the maximum length, which is 64KB."));
+        } else {
+          EXPECT_TRUE(result.error.empty());
+        }
       }
     }
 
@@ -6437,6 +6484,17 @@ IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest, EmptyMessage) {
       .navigation_url = {"b.test", "/fenced_frames/title1.html"},
       .message = "",
       .expected_success = true,
+  };
+  RunTest(config);
+}
+
+IN_PROC_BROWSER_TEST_P(FencedFrameAutomaticBeaconBrowserTest,
+                       MessageExceedsLengthLimit) {
+  Config config = {
+      .starting_url = {"a.test", "/fenced_frames/title1.html"},
+      .navigation_url = {"b.test", "/fenced_frames/title1.html"},
+      .message = std::string(blink::kFencedFrameMaxBeaconLength + 1, '*'),
+      .expected_success = false,
   };
   RunTest(config);
 }
