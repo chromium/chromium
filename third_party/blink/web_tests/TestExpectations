@@ -5924,6 +5924,8 @@ crbug.com/1159586 virtual/post-message-third-party-to-third-party-different-buck
 # /dev/snd/seq failed: Permission denied
 crbug.com/1441622 [ Linux ] external/wpt/webmidi/idlharness.https.window.html [ Failure ]
 
+crbug.com/1446799 external/wpt/pointerevents/pointerevent_attributes_nohover_pointers.html [ Failure Pass ]
+
 # These tests are optional and not reliably supported in Chrome.
 crbug.com/1370307 [ Release Win ] external/wpt/encoding-detection/ar-ISO-8859-6-late.tentative.html [ Failure Pass ]
 crbug.com/1370307 external/wpt/encoding-detection/ar-windows-1256-late.tentative.html [ Failure Pass ]
