@@ -81,7 +81,7 @@ void DeprecationNotificationController::ShowNotificationFromIdWithLauncherKey(
     const std::string& id,
     int message_id) {
   const int launcher_key_name_id =
-      Shell::Get()->keyboard_capability()->HasLauncherButton()
+      Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard()
           ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
           : IDS_ASH_SHORTCUT_MODIFIER_SEARCH;
   const std::u16string launcher_key_name =

@@ -300,9 +300,8 @@ class KeyboardCapability : public InputDeviceEventObserver {
       const KeyboardDevice& keyboard) const;
 
   // Check if a keyboard has a launcher button rather than a search button.
-  // TODO(zhangwenyu): Handle command key and window key cases.
-  bool HasLauncherButton(
-      const absl::optional<KeyboardDevice>& keyboard = absl::nullopt);
+  bool HasLauncherButton(const KeyboardDevice& keyboard) const;
+  bool HasLauncherButtonOnAnyKeyboard() const;
 
   // Check if a keyboard has a six pack key.
   static bool HasSixPackKey(const KeyboardDevice& keyboard);

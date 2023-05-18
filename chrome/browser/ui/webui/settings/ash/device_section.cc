@@ -140,43 +140,42 @@ const std::vector<SearchConcept>& GetDeviceSearchConcepts() {
 }
 
 const std::vector<SearchConcept>& GetKeyboardSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_KEYBOARD,
-       mojom::kKeyboardSubpagePath,
-       mojom::SearchResultIcon::kKeyboard,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kKeyboard}},
-      {IDS_OS_SETTINGS_TAG_KEYBOARD_AUTO_REPEAT,
-       mojom::kKeyboardSubpagePath,
-       mojom::SearchResultIcon::kKeyboard,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kKeyboardAutoRepeat},
-       {IDS_OS_SETTINGS_TAG_KEYBOARD_AUTO_REPEAT_ALT1,
-        SearchConcept::kAltTagEnd}},
-      {IDS_OS_SETTINGS_TAG_KEYBOARD_SHORTCUTS,
-       mojom::kKeyboardSubpagePath,
-       mojom::SearchResultIcon::kKeyboard,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kKeyboardShortcuts}},
-      {IDS_OS_SETTINGS_TAG_KEYBOARD_FUNCTION_KEYS,
-       mojom::kKeyboardSubpagePath,
-       mojom::SearchResultIcon::kKeyboard,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kKeyboardFunctionKeys}},
-      {IDS_OS_SETTINGS_TAG_KEYBOARD_DIACRITIC,
-       mojom::kKeyboardSubpagePath,
-       mojom::SearchResultIcon::kKeyboard,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kShowDiacritic},
-       {IDS_OS_SETTINGS_TAG_KEYBOARD_DIACRITIC1,
-        IDS_OS_SETTINGS_TAG_KEYBOARD_DIACRITIC2,
-        IDS_OS_SETTINGS_TAG_KEYBOARD_DIACRITIC3, SearchConcept::kAltTagEnd}}
-  });
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_KEYBOARD,
+        mojom::kKeyboardSubpagePath,
+        mojom::SearchResultIcon::kKeyboard,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSubpage,
+        {.subpage = mojom::Subpage::kKeyboard}},
+       {IDS_OS_SETTINGS_TAG_KEYBOARD_AUTO_REPEAT,
+        mojom::kKeyboardSubpagePath,
+        mojom::SearchResultIcon::kKeyboard,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kKeyboardAutoRepeat},
+        {IDS_OS_SETTINGS_TAG_KEYBOARD_AUTO_REPEAT_ALT1,
+         SearchConcept::kAltTagEnd}},
+       {IDS_OS_SETTINGS_TAG_KEYBOARD_SHORTCUTS,
+        mojom::kKeyboardSubpagePath,
+        mojom::SearchResultIcon::kKeyboard,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kKeyboardShortcuts}},
+       {IDS_OS_SETTINGS_TAG_KEYBOARD_FUNCTION_KEYS,
+        mojom::kKeyboardSubpagePath,
+        mojom::SearchResultIcon::kKeyboard,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kKeyboardFunctionKeys}},
+       {IDS_OS_SETTINGS_TAG_KEYBOARD_DIACRITIC,
+        mojom::kKeyboardSubpagePath,
+        mojom::SearchResultIcon::kKeyboard,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kShowDiacritic},
+        {IDS_OS_SETTINGS_TAG_KEYBOARD_DIACRITIC1,
+         IDS_OS_SETTINGS_TAG_KEYBOARD_DIACRITIC2,
+         IDS_OS_SETTINGS_TAG_KEYBOARD_DIACRITIC3, SearchConcept::kAltTagEnd}}});
   return *tags;
 }
 
@@ -848,7 +847,7 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(keyboard_strings);
 
-  if (Shell::Get()->keyboard_capability()->HasLauncherButton()) {
+  if (Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard()) {
     html_source->AddLocalizedString(
         "keyboardBlockMetaFunctionKeyRewrites",
         IDS_SETTINGS_KEYBOARD_BLOCK_META_FUNCTION_KEY_REWRITES_LAUNCHER);
@@ -1171,8 +1170,9 @@ DeviceSection::DeviceSection(Profile* profile,
   } else {
     updater.AddSearchTags(GetKeyboardSearchConcepts());
   }
-  if (ShouldShowExternalStorageSettings(profile))
+  if (ShouldShowExternalStorageSettings(profile)) {
     updater.AddSearchTags(GetExternalStorageSearchConcepts());
+  }
 
   if (ash::features::IsAudioSettingsPageEnabled()) {
     updater.AddSearchTags(GetAudioSearchConcepts());
@@ -1185,8 +1185,9 @@ DeviceSection::DeviceSection(Profile* profile,
 
     const absl::optional<power_manager::PowerSupplyProperties>& last_status =
         power_manager_client->GetLastStatus();
-    if (last_status)
+    if (last_status) {
       PowerChanged(*last_status);
+    }
 
     // Determine whether to show laptop lid power settings.
     power_manager_client->GetSwitchStates(base::BindOnce(
@@ -1236,13 +1237,15 @@ DeviceSection::~DeviceSection() {
 
   chromeos::PowerManagerClient* power_manager_client =
       chromeos::PowerManagerClient::Get();
-  if (power_manager_client)
+  if (power_manager_client) {
     power_manager_client->RemoveObserver(this);
+  }
 
   NightLightController* night_light_controller =
       NightLightController::GetInstance();
-  if (night_light_controller)
+  if (night_light_controller) {
     night_light_controller->RemoveObserver(this);
+  }
 }
 
 void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
@@ -1619,16 +1622,18 @@ void DeviceSection::OnGetDisplayLayoutInfo(
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
   // Arrangement UI.
-  if (has_multiple_displays || is_mirrored)
+  if (has_multiple_displays || is_mirrored) {
     updater.AddSearchTags(GetDisplayArrangementSearchConcepts());
-  else
+  } else {
     updater.RemoveSearchTags(GetDisplayArrangementSearchConcepts());
+  }
 
   // Mirror toggle.
-  if (is_mirrored || (!unified_desktop_mode && has_multiple_displays))
+  if (is_mirrored || (!unified_desktop_mode && has_multiple_displays)) {
     updater.AddSearchTags(GetDisplayMirrorSearchConcepts());
-  else
+  } else {
     updater.RemoveSearchTags(GetDisplayMirrorSearchConcepts());
+  }
 
   // Unified Desktop toggle.
   if (unified_desktop_mode ||
@@ -1639,65 +1644,74 @@ void DeviceSection::OnGetDisplayLayoutInfo(
   }
 
   // External display settings.
-  if (has_external_display)
+  if (has_external_display) {
     updater.AddSearchTags(GetDisplayExternalSearchConcepts());
-  else
+  } else {
     updater.RemoveSearchTags(GetDisplayExternalSearchConcepts());
+  }
 
   // Refresh Rate dropdown.
-  if (has_external_display && IsListAllDisplayModesEnabled())
+  if (has_external_display && IsListAllDisplayModesEnabled()) {
     updater.AddSearchTags(GetDisplayExternalWithRefreshSearchConcepts());
-  else
+  } else {
     updater.RemoveSearchTags(GetDisplayExternalWithRefreshSearchConcepts());
+  }
 
   // Orientation settings.
-  if (!unified_desktop_mode)
+  if (!unified_desktop_mode) {
     updater.AddSearchTags(GetDisplayOrientationSearchConcepts());
-  else
+  } else {
     updater.RemoveSearchTags(GetDisplayOrientationSearchConcepts());
+  }
 
   // Ambient color settings.
-  if (DoesDeviceSupportAmbientColor() && has_internal_display)
+  if (DoesDeviceSupportAmbientColor() && has_internal_display) {
     updater.AddSearchTags(GetDisplayAmbientSearchConcepts());
-  else
+  } else {
     updater.RemoveSearchTags(GetDisplayAmbientSearchConcepts());
+  }
 
   // Touch calibration settings.
-  if (IsTouchCalibrationAvailable())
+  if (IsTouchCalibrationAvailable()) {
     updater.AddSearchTags(GetDisplayTouchCalibrationSearchConcepts());
-  else
+  } else {
     updater.RemoveSearchTags(GetDisplayTouchCalibrationSearchConcepts());
+  }
 
   // Night Light on settings.
-  if (NightLightController::GetInstance()->GetEnabled())
+  if (NightLightController::GetInstance()->GetEnabled()) {
     updater.AddSearchTags(GetDisplayNightLightOnSearchConcepts());
-  else
+  } else {
     updater.RemoveSearchTags(GetDisplayNightLightOnSearchConcepts());
+  }
 }
 
 void DeviceSection::OnGotSwitchStates(
     absl::optional<chromeos::PowerManagerClient::SwitchStates> result) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
-  if (result &&
-      result->lid_state != chromeos::PowerManagerClient::LidState::NOT_PRESENT)
+  if (result && result->lid_state !=
+                    chromeos::PowerManagerClient::LidState::NOT_PRESENT) {
     updater.AddSearchTags(GetPowerWithLaptopLidSearchConcepts());
+  }
 }
 
 void DeviceSection::UpdateStylusSearchTags() {
   // If not yet complete, wait for OnDeviceListsComplete() callback.
-  if (!ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete())
+  if (!ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete()) {
     return;
+  }
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
   // TODO(https://crbug.com/1071905): Only show stylus settings if a stylus has
   // been set up. HasStylusInput() will return true for any stylus-compatible
   // device, even if it doesn't have a stylus.
-  if (stylus_utils::HasStylusInput())
+  if (stylus_utils::HasStylusInput()) {
     updater.AddSearchTags(GetStylusSearchConcepts());
-  else
+  } else {
     updater.RemoveSearchTags(GetStylusSearchConcepts());
+  }
 }
 
 void DeviceSection::AddDevicePointersStrings(

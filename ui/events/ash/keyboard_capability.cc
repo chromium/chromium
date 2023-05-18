@@ -659,25 +659,30 @@ KeyboardCapability::GetCorrespondingActionKeyForFKey(
 }
 
 bool KeyboardCapability::HasLauncherButton(
-    const absl::optional<KeyboardDevice>& keyboard) {
-  // Use current implementation. If keyboard is provided, launcher button
-  // depends on if this keyboard is layout2 type. If keyboard is not provided,
-  // launcher button depends on if any keyboard in DeviceDataManager is layout2
-  // type.
-  // TODO(zhangwenyu): Handle edge cases.
-  if (!keyboard.has_value()) {
-    for (const KeyboardDevice& keyboard_iter :
-         DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
-      if (GetTopRowLayout(keyboard_iter) ==
-          KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2) {
-        return true;
-      }
-    }
-    return false;
+    const KeyboardDevice& keyboard) const {
+  // TODO(dpad): This is not entirely correct. Some devices which have custom
+  // top rows have a search icon on their keyboard (ie jinlon).
+  // In general, only chromebooks with layout1 top rows use the search icon.
+  auto top_row_layout = GetTopRowLayout(keyboard);
+  switch (top_row_layout) {
+    case KeyboardTopRowLayout::kKbdTopRowLayout1:
+      return false;
+    case KeyboardTopRowLayout::kKbdTopRowLayout2:
+    case KeyboardTopRowLayout::kKbdTopRowLayoutWilco:
+    case KeyboardTopRowLayout::kKbdTopRowLayoutDrallion:
+    case KeyboardTopRowLayout::kKbdTopRowLayoutCustom:
+      return true;
   }
+}
 
-  return GetTopRowLayout(keyboard.value()) ==
-         KeyboardTopRowLayout::kKbdTopRowLayout2;
+bool KeyboardCapability::HasLauncherButtonOnAnyKeyboard() const {
+  for (const ui::KeyboardDevice& keyboard :
+       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    if (HasLauncherButton(keyboard)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // static

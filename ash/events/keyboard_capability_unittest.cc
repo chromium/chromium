@@ -397,7 +397,7 @@ TEST_F(KeyboardCapabilityTest, TestHasLauncherButton) {
   EXPECT_FALSE(keyboard_capability_->HasLauncherButton(fake_keyboard1));
   // Do not provide specific keyboard. Launcher button depends on if any one
   // of the keyboards is layout2 type.
-  EXPECT_FALSE(keyboard_capability_->HasLauncherButton());
+  EXPECT_FALSE(keyboard_capability_->HasLauncherButtonOnAnyKeyboard());
 
   // Add a layout2 keyboard.
   ui::KeyboardDevice fake_keyboard2(
@@ -408,7 +408,7 @@ TEST_F(KeyboardCapabilityTest, TestHasLauncherButton) {
 
   EXPECT_FALSE(keyboard_capability_->HasLauncherButton(fake_keyboard1));
   EXPECT_TRUE(keyboard_capability_->HasLauncherButton(fake_keyboard2));
-  EXPECT_TRUE(keyboard_capability_->HasLauncherButton());
+  EXPECT_TRUE(keyboard_capability_->HasLauncherButtonOnAnyKeyboard());
 }
 
 TEST_F(KeyboardCapabilityTest, TestHasSixPackKey) {

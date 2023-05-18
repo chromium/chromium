@@ -39,7 +39,7 @@ bool IsAssistantAvailable() {
 // Returns the corresponding vector icon for search or launcher key depending on
 // the keyboard layout and whether the assistant is enabled or not.
 const gfx::VectorIcon* GetVectorIconForSearchOrLauncherIcon() {
-  if (Shell::Get()->keyboard_capability()->HasLauncherButton()) {
+  if (Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard()) {
     return IsAssistantAvailable()
                ? &kCaptureModeDemoToolsLauncherAssistantOnIcon
                : &kCaptureModeDemoToolsLauncherAssistantOffIcon;

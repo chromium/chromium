@@ -393,7 +393,7 @@ void AcceleratorConfigurationProvider::IsMutable(
 void AcceleratorConfigurationProvider::HasLauncherButton(
     HasLauncherButtonCallback callback) {
   std::move(callback).Run(
-      Shell::Get()->keyboard_capability()->HasLauncherButton());
+      Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard());
 }
 
 void AcceleratorConfigurationProvider::GetAccelerators(
