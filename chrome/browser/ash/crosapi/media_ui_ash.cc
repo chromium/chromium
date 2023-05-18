@@ -37,6 +37,10 @@ void MediaUIAsh::RegisterDeviceService(
 }
 
 void MediaUIAsh::ShowDevicePicker(const std::string& item_id) {
+  // The media tray must be pinned to the shelf before it can be shown.
+  if (!ash::MediaTray::IsPinnedToShelf()) {
+    ash::MediaTray::SetPinnedToShelf(true);
+  }
   ash::StatusAreaWidget::ForWindow(ash::Shell::Get()->GetPrimaryRootWindow())
       ->media_tray()
       ->ShowBubbleWithItem(item_id);
