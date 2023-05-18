@@ -54,6 +54,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
       const std::vector<AudioDevice>& connected_devices,
       size_t keep_devices) override;
   bool GetAudioOutputAllowedValue() const override;
+  bool GetSpeakOnMuteDetectionEnabledValue() const override;
   void AddAudioPrefObserver(AudioPrefObserver* observer) override;
   void RemoveAudioPrefObserver(AudioPrefObserver* observer) override;
 
@@ -61,6 +62,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   void SetNoiseCancellationState(bool noise_cancellation_state) override;
 
   void SetAudioOutputAllowedValue(bool is_audio_output_allowed);
+  void SetSpeakOnMuteDetectionEnabledValue(
+      bool is_speak_on_mute_detection_enabled);
 
  protected:
   ~AudioDevicesPrefHandlerStub() override;
@@ -74,6 +77,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   base::ObserverList<AudioPrefObserver>::Unchecked observers_;
 
   bool is_audio_output_allowed_ = true;
+  bool is_speak_on_mute_detection_enabled_ = false;
   bool noise_cancellation_state_ = true;
 };
 

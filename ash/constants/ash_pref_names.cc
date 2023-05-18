@@ -1015,6 +1015,11 @@ const char kUserMicrophoneAllowed[] = "ash.user.microphone_allowed";
 const char kUserSpeakOnMuteDetectionEnabled[] =
     "ash.user.speak_on_mute_detection_enabled";
 
+// A boolean pref indicating whether a user has opted-in the speak-on-mute
+// detection.
+const char kUserSpeakOnMuteDetectionOptIn[] =
+    "ash.user.speak_on_mute_detection_opt_in";
+
 // A boolean pref indicating whether the geolocation is allowed for the user.
 const char kUserGeolocationAllowed[] = "ash.user.geolocation_allowed";
 // An enum pref indicating whether the geolocation is allowed outside user
