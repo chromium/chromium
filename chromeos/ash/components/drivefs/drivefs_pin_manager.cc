@@ -770,9 +770,9 @@ void PinManager::OnSearchResult(const Id dir_id,
   }
 
   if (error == drive::FILE_ERROR_OK_WITH_MORE_RESULTS) {
-    VLOG(2) << "No items returned from " << dir_id << " " << Quote(dir_path)
+    VLOG(2) << "Potentially more than " << items.size() << " items from"
+            << dir_id << " " << Quote(dir_path)
             << ": Need to make a cloud query";
-    DCHECK(items.empty());
   } else {
     VLOG(2) << "Got " << items.size() << " items from " << dir_id << " "
             << Quote(dir_path);
