@@ -866,12 +866,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 // action on selected HTML:option doesn't work, so no events are fired, and
 // the test times out.
 #if BUILDFLAG(IS_MAC)
-#define MAYBE_AccessibilityEventsMenuListNext \
-  DISABLED_AccessibilityEventsMenuListNext
 #define MAYBE_AccessibilityEventsMenuWithOptgroupListNext \
   DISABLED_AccessibilityEventsMenuWithOptgroupListNext
 #else
-#define MAYBE_AccessibilityEventsMenuListNext AccessibilityEventsMenuListNext
 #define MAYBE_AccessibilityEventsMenuWithOptgroupListNext \
   AccessibilityEventsMenuWithOptgroupListNext
 #endif
@@ -888,7 +885,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 
 // TODO(crbug.com/1327652): disabled on UIA
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
-                       MAYBE_AccessibilityEventsMenuListNext) {
+                       // TODO(crbug.com/1446550): Re-enable this test
+                       DISABLED_AccessibilityEventsMenuListNext) {
   RunEventTest(FILE_PATH_LITERAL("menulist-next.html"));
 }
 
