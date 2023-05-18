@@ -4,28 +4,29 @@
 
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 
+#include <memory>
 #include <sstream>
 
 #include "base/check.h"
+#include "base/strings/strcat.h"
+#include "components/crx_file/id_util.h"
 
 namespace apps {
 
 APP_ENUM_TO_STRING(ShortcutSource, kUnknown, kUser, kDeveloper)
 
-Shortcut::Shortcut(const ShortcutId& shortcut_id) : shortcut_id(shortcut_id) {}
+Shortcut::Shortcut(const std::string& host_app_id, const std::string& local_id)
+    : host_app_id(host_app_id),
+      local_id(local_id),
+      shortcut_id(GenerateShortcutId(host_app_id, local_id)) {}
 
 Shortcut::~Shortcut() = default;
 
-Shortcut::Shortcut(Shortcut&&) = default;
-Shortcut& Shortcut::operator=(Shortcut&&) = default;
-
 std::unique_ptr<Shortcut> Shortcut::Clone() const {
-  auto shortcut = std::make_unique<Shortcut>(shortcut_id);
+  auto shortcut = std::make_unique<Shortcut>(host_app_id, local_id);
 
   shortcut->name = name;
   shortcut->shortcut_source = shortcut_source;
-  shortcut->host_app_id = host_app_id;
-  shortcut->local_id = local_id;
 
   return shortcut;
 }
@@ -47,6 +48,12 @@ Shortcuts CloneShortcuts(const Shortcuts& source_shortcuts) {
     shortcuts.push_back(shortcut->Clone());
   }
   return shortcuts;
+}
+
+ShortcutId GenerateShortcutId(const std::string& host_app_id,
+                              const std::string& local_id) {
+  const std::string input = base::StrCat({host_app_id, "#", local_id});
+  return ShortcutId(crx_file::id_util::GenerateId(input));
 }
 
 }  // namespace apps
