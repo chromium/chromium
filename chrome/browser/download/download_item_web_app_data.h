@@ -16,13 +16,14 @@ class DownloadItem;
 // only set if a download was initiated by a web app.
 class DownloadItemWebAppData : public base::SupportsUserData::Data {
  public:
+  // Creates an instance with the given `web_app_id` and attaches it to the
+  // item. Overwrites any existing DownloadItemWebAppData on the item.
+  static void CreateAndAttachToItem(download::DownloadItem* item,
+                                    const web_app::AppId& web_app_id);
+
   // Returns nullptr if no DownloadItemWebAppData is present, which will be the
   // case for most downloads (i.e. those not initiated by web apps).
   static DownloadItemWebAppData* Get(download::DownloadItem* item);
-
-  // Attaches itself to the |item|.
-  DownloadItemWebAppData(download::DownloadItem* item,
-                         const web_app::AppId& web_app_id);
 
   DownloadItemWebAppData(const DownloadItemWebAppData&) = delete;
   DownloadItemWebAppData& operator=(const DownloadItemWebAppData&) = delete;
@@ -31,6 +32,8 @@ class DownloadItemWebAppData : public base::SupportsUserData::Data {
 
  private:
   static const char kKey[];
+
+  explicit DownloadItemWebAppData(const web_app::AppId& web_app_id);
 
   web_app::AppId web_app_id_;
 };

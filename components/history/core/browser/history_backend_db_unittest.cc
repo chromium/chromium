@@ -97,6 +97,7 @@ TEST_F(HistoryBackendDBTest, ClearBrowsingData_Downloads) {
   EXPECT_FALSE(downloads[0].opened);
   EXPECT_EQ("by_ext_id", downloads[0].by_ext_id);
   EXPECT_EQ("by_ext_name", downloads[0].by_ext_name);
+  EXPECT_EQ("by_web_app_id", downloads[0].by_web_app_id);
   EXPECT_EQ("application/vnd.oasis.opendocument.text", downloads[0].mime_type);
   EXPECT_EQ("application/octet-stream", downloads[0].original_mime_type);
 
@@ -902,6 +903,7 @@ TEST_F(HistoryBackendDBTest, DownloadCreateAndQuery) {
   download_A.transient = true;
   download_A.by_ext_id = "extension-id";
   download_A.by_ext_name = "extension-name";
+  download_A.by_web_app_id = "web-app-id";
 
   ASSERT_TRUE(db_->CreateDownload(download_A));
 
@@ -939,6 +941,7 @@ TEST_F(HistoryBackendDBTest, DownloadCreateAndQuery) {
   download_B.transient = true;
   download_B.by_ext_id = "extension-id";
   download_B.by_ext_name = "extension-name";
+  download_B.by_ext_name = "web-app-id";
 
   ASSERT_TRUE(db_->CreateDownload(download_B));
 
@@ -999,6 +1002,7 @@ TEST_F(HistoryBackendDBTest, DownloadCreateAndUpdate_VolatileFields) {
   download.transient = false;
   download.by_ext_id = "extension-id";
   download.by_ext_name = "extension-name";
+  download.by_web_app_id = "web-app-id";
   db_->CreateDownload(download);
 
   download.current_path =
@@ -1017,6 +1021,7 @@ TEST_F(HistoryBackendDBTest, DownloadCreateAndUpdate_VolatileFields) {
   download.transient = !download.transient;
   download.by_ext_id = "by-new-extension-id";
   download.by_ext_name = "by-new-extension-name";
+  download.by_web_app_id = "by-new-web-app-id";
   download.etag = "new-etag";
   download.last_modified = "new-last-modified";
 
@@ -1122,6 +1127,7 @@ TEST_F(HistoryBackendDBTest, DownloadNukeRecordsMissingURLs) {
   download.transient = false;
   download.by_ext_id = "by_ext_id";
   download.by_ext_name = "by_ext_name";
+  download.by_web_app_id = "by_web_app_id";
 
   // Creating records without any urls should fail.
   EXPECT_FALSE(db_->CreateDownload(download));
@@ -1260,6 +1266,7 @@ TEST_F(HistoryBackendDBTest, CreateAndUpdateDownloadingSlice) {
   download.transient = false;
   download.by_ext_id = "extension-id";
   download.by_ext_name = "extension-name";
+  download.by_web_app_id = "web-app-id";
   download.download_slice_info.push_back(
       DownloadSliceInfo(download.id, 500, download.received_bytes, true));
 
@@ -1310,6 +1317,7 @@ TEST_F(HistoryBackendDBTest, UpdateDownloadWithNewSlice) {
   download.transient = true;
   download.by_ext_id = "extension-id";
   download.by_ext_name = "extension-name";
+  download.by_web_app_id = "web-app-id";
 
   ASSERT_TRUE(db_->CreateDownload(download));
 
@@ -1355,6 +1363,7 @@ TEST_F(HistoryBackendDBTest, DownloadSliceDeletedIfEmpty) {
   download.transient = true;
   download.by_ext_id = "extension-id";
   download.by_ext_name = "extension-name";
+  download.by_web_app_id = "web-app-id";
   download.download_slice_info.push_back(
       DownloadSliceInfo(download.id, 0, download.received_bytes, false));
   download.download_slice_info.push_back(
@@ -1378,6 +1387,52 @@ TEST_F(HistoryBackendDBTest, DownloadSliceDeletedIfEmpty) {
   db_->QueryDownloads(&results);
   ASSERT_EQ(1u, results.size());
   EXPECT_EQ(0u, results[0].download_slice_info.size());
+}
+
+// Test that the web app responsible for a download is recorded.
+TEST_F(HistoryBackendDBTest, UpdateDownloadByWebApp) {
+  CreateBackendAndDatabase();
+
+  DownloadRow download;
+  download.current_path = base::FilePath(FILE_PATH_LITERAL("/path/1"));
+  download.target_path = base::FilePath(FILE_PATH_LITERAL("/path/2"));
+  download.url_chain.push_back(GURL("http://example.com/a"));
+  download.referrer_url = GURL("http://example.com/referrer");
+  download.site_url = GURL("http://example.com");
+  download.embedder_download_data = "embedder_download_data";
+  download.tab_url = GURL("http://example.com/tab-url");
+  download.tab_referrer_url = GURL("http://example.com/tab-referrer");
+  download.http_method = "GET";
+  download.mime_type = "mime/type";
+  download.original_mime_type = "original/mime-type";
+  download.start_time = base::Time::Now();
+  download.end_time = download.start_time + base::Hours(1);
+  download.etag = "etag1";
+  download.last_modified = "last_modified_1";
+  download.received_bytes = 0;
+  download.total_bytes = 1500;
+  download.state = DownloadState::INTERRUPTED;
+  download.danger_type = DownloadDangerType::NOT_DANGEROUS;
+  download.interrupt_reason = kTestDownloadInterruptReasonCrash;
+  download.hash = "hash-value1";
+  download.id = 1;
+  download.guid = "FE672168-26EF-4275-A149-FEC25F6A75F9";
+  download.opened = false;
+  download.last_access_time = download.start_time + base::Hours(5);
+  download.transient = true;
+  download.by_ext_id = "extension-id";
+  download.by_ext_name = "extension-name";
+  download.by_web_app_id = "web-app-id";
+
+  ASSERT_TRUE(db_->CreateDownload(download));
+
+  // Add a new web app id and call UpdateDownload().
+  download.by_web_app_id = "new_web_app_id";
+  ASSERT_TRUE(db_->UpdateDownload(download));
+  std::vector<DownloadRow> results;
+  db_->QueryDownloads(&results);
+  ASSERT_EQ(1u, results.size());
+  EXPECT_EQ(download.by_web_app_id, results[0].by_web_app_id);
 }
 
 TEST_F(HistoryBackendDBTest, MigratePresentations) {
@@ -2804,6 +2859,70 @@ TEST_F(HistoryBackendDBTest,
     sql::Database db;
     ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
     EXPECT_TRUE(db.DoesColumnExist("visits", "consider_for_ntp_most_visited"));
+  }
+}
+
+TEST_F(HistoryBackendDBTest, MigrateDownloadByWebApp) {
+  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(63));
+
+  // Precondition: Open the old version of the DB and make sure the new column
+  // doesn't exist yet.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+    ASSERT_FALSE(db.DoesColumnExist("downloads", "by_web_app_id"));
+    {
+      sql::Statement s(db.GetUniqueStatement(
+          "INSERT INTO downloads ("
+          "    id, guid, current_path, target_path, start_time, received_bytes,"
+          "    total_bytes, state, danger_type, interrupt_reason, hash,"
+          "    end_time, opened, last_access_time, transient, referrer, "
+          "    site_url, embedder_download_data, tab_url, tab_referrer_url, "
+          "    http_method, by_ext_id, by_ext_name, etag, last_modified, "
+          "    mime_type, original_mime_type)"
+          "VALUES("
+          "    1, '435A5C7A-F6B7-4DF2-8696-22E4FCBA3EB2', 'foo.txt', 'foo.txt',"
+          "    13104873187307670, 11, 11, 1, 0, 0, X'', 13104873187521021, 0, "
+          "    13104873187521021, 0, 'http://example.com/dl/',"
+          "    'http://example.com', '', '', '', '', 'extension-id',"
+          "    'extension-name', '', '', 'text/plain', 'text/plain')"));
+      ASSERT_TRUE(s.Run());
+    }
+    {
+      sql::Statement s(db.GetUniqueStatement(
+          "INSERT INTO downloads_url_chains (id, chain_index, url) VALUES "
+          "(1, 0, 'https://example.com')"));
+      ASSERT_TRUE(s.Run());
+    }
+  }
+
+  // Re-open the db using the HistoryDatabase, which should migrate to the
+  // current version.
+  CreateBackendAndDatabase();
+  DeleteBackend();
+  {
+    // Re-open the db for manual manipulation.
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+    // The version should have been updated.
+    int cur_version = HistoryDatabase::GetCurrentVersion();
+    ASSERT_LE(64, cur_version);
+    {
+      sql::Statement s(db.GetUniqueStatement(
+          "SELECT value FROM meta WHERE key = 'version'"));
+      EXPECT_TRUE(s.Step());
+      EXPECT_EQ(cur_version, s.ColumnInt(0));
+    }
+    {
+      // The downloads table should have the by_ext_id column unmodified,
+      // and should have the new by_web_app_id column initialized to empty
+      // string.
+      sql::Statement s(db.GetUniqueStatement(
+          "SELECT by_ext_id, by_web_app_id from downloads"));
+      EXPECT_TRUE(s.Step());
+      EXPECT_EQ("extension-id", s.ColumnString(0));
+      EXPECT_EQ("", s.ColumnString(1));
+    }
   }
 }
 

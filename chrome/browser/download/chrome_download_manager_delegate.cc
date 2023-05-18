@@ -1785,7 +1785,8 @@ void ChromeDownloadManagerDelegate::AttachExtraInfo(
   // Attach the info for whether the download came from a web app.
   if (browser && web_app::AppBrowserController::IsWebApp(browser) &&
       browser->app_controller()) {
-    new DownloadItemWebAppData(item, browser->app_controller()->app_id());
+    DownloadItemWebAppData::CreateAndAttachToItem(
+        item, browser->app_controller()->app_id());
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

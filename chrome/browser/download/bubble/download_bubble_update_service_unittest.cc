@@ -217,7 +217,7 @@ class DownloadBubbleUpdateServiceTest : public testing::Test {
         .WillRepeatedly(Return(&item));
     content::DownloadItemUtils::AttachInfoForTesting(&item, profile, nullptr);
     if (web_app_id != nullptr) {
-      new DownloadItemWebAppData(&item, *web_app_id);
+      DownloadItemWebAppData::CreateAndAttachToItem(&item, *web_app_id);
     }
     if (observe) {
       item.AddObserver(&update_service.download_item_notifier_for_testing());
