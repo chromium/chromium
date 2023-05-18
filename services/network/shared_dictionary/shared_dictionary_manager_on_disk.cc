@@ -96,18 +96,19 @@ void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDiskCache(
 void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDatabase(
     net::SharedDictionaryInfo info,
     base::OnceCallback<void(net::SharedDictionaryInfo)> callback,
-    net::SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult
+    net::SQLitePersistentSharedDictionaryStore::RegisterDictionaryResultOrError
         result) {
-  if (result.error != net::SQLitePersistentSharedDictionaryStore::Error::kOk) {
+  if (!result.has_value()) {
     disk_cache_.DoomEntry(info.disk_cache_key_token().ToString(),
                           base::DoNothing());
     return;
   }
-  CHECK(result.primary_key_in_database.has_value());
-  info.set_primary_key_in_database(*result.primary_key_in_database);
-  if (result.disk_cache_key_token_to_be_removed) {
-    disk_cache_.DoomEntry(result.disk_cache_key_token_to_be_removed->ToString(),
-                          base::DoNothing());
+  CHECK(result.value().primary_key_in_database.has_value());
+  info.set_primary_key_in_database(*result.value().primary_key_in_database);
+  if (result.value().disk_cache_key_token_to_be_removed) {
+    disk_cache_.DoomEntry(
+        result.value().disk_cache_key_token_to_be_removed->ToString(),
+        base::DoNothing());
   }
   std::move(callback).Run(std::move(info));
 }

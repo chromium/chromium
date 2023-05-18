@@ -86,8 +86,8 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   void OnDictionaryWrittenInDatabase(
       net::SharedDictionaryInfo info,
       base::OnceCallback<void(net::SharedDictionaryInfo)> callback,
-      net::SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult
-          result);
+      net::SQLitePersistentSharedDictionaryStore::
+          RegisterDictionaryResultOrError result);
 
   SharedDictionaryDiskCache disk_cache_;
   net::SQLitePersistentSharedDictionaryStore metadata_store_;

@@ -133,11 +133,13 @@ SharedDictionaryStorageOnDisk::CreateWriter(const GURL& url,
 }
 
 void SharedDictionaryStorageOnDisk::OnDatabaseRead(
-    net::SQLitePersistentSharedDictionaryStore::Error error,
-    std::vector<net::SharedDictionaryInfo> info_list) {
+    net::SQLitePersistentSharedDictionaryStore::DictionaryListOrError result) {
   CHECK(dictionary_info_map_.empty());
+  if (!result.has_value()) {
+    return;
+  }
   std::set<base::UnguessableToken> deleted_cache_tokens;
-  for (auto& info : info_list) {
+  for (auto& info : result.value()) {
     const url::SchemeHostPort scheme_host_port =
         url::SchemeHostPort(info.url());
     const std::string match = info.match();

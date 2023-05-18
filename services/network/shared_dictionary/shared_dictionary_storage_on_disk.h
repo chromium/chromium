@@ -57,8 +57,8 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage {
   class RefCountedSharedDictionary;
   class WrappedSharedDictionary;
 
-  void OnDatabaseRead(net::SQLitePersistentSharedDictionaryStore::Error error,
-                      std::vector<net::SharedDictionaryInfo> info_list);
+  void OnDatabaseRead(
+      net::SQLitePersistentSharedDictionaryStore::DictionaryListOrError result);
   void OnDictionaryWritten(net::SharedDictionaryInfo info);
   void OnRefCountedSharedDictionaryDeleted(
       const base::UnguessableToken& disk_cache_key_token);
