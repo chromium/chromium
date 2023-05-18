@@ -147,7 +147,7 @@ class TouchEmulatorTest : public testing::Test,
     last_mouse_y_ = y;
     event.SetPositionInWidget(x, y);
     event.SetPositionInScreen(x, y);
-    emulator()->HandleMouseEvent(event, nullptr);
+    emulator()->HandleMouseEvent(event, nullptr, base::DoNothing());
   }
 
   bool SendMouseWheelEvent() {
