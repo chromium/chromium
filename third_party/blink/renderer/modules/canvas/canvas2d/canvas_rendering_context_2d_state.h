@@ -134,6 +134,12 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   void ClearResolvedFilter();
   void ValidateFilterState() const;
 
+  void SetLayerFilter(sk_sp<PaintFilter> filter) {
+    layer_filter_ = std::move(filter);
+  }
+  sk_sp<PaintFilter> GetLayerFilter() const { return layer_filter_; }
+  bool HasLayerFilter() const { return layer_filter_ != nullptr; }
+
   void SetStrokeColor(Color color) {
     if (stroke_style_.SetColor(color)) {
       stroke_style_.ApplyColorToFlags(stroke_flags_, global_alpha_);
@@ -336,6 +342,7 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   String unparsed_css_filter_;
   Member<const CSSValue> css_filter_value_;
   sk_sp<PaintFilter> resolved_filter_;
+  sk_sp<PaintFilter> layer_filter_;
 
   // Text state.
   TextAlign text_align_;

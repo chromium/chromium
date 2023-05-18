@@ -535,6 +535,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   bool ExtractColorFromV8ValueAndUpdateCache(const V8CanvasStyle& v8_style,
                                              Color& color);
 
+  CanvasRenderingContext2DState::SaveType SaveLayerForState(
+      const CanvasRenderingContext2DState& state,
+      cc::PaintCanvas& canvas) const;
+
   // Pops from the top of the state stack, inverts transform, restores the
   // PaintCanvas, and validates the state stack. Helper for Restore and
   // EndLayer.
@@ -561,14 +565,16 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
            image_type == CanvasRenderingContext2DState::kNonOpaqueImage;
   }
 
-  bool BlendModeRequiresCompositedDraw(SkBlendMode blendMode);
+  bool BlendModeRequiresCompositedDraw(
+      const CanvasRenderingContext2DState& state) const;
 
   ALWAYS_INLINE bool ShouldUseCompositedDraw(
       CanvasRenderingContext2DState::PaintType paint_type,
       CanvasRenderingContext2DState::ImageType image_type) {
     const CanvasRenderingContext2DState& state = GetState();
-    if (BlendModeRequiresCompositedDraw(state.GlobalComposite()))
+    if (BlendModeRequiresCompositedDraw(state)) {
       return true;
+    }
     if (StateHasFilter())
       return true;
     if (state.ShouldDrawShadows() &&
@@ -721,15 +727,15 @@ ALWAYS_INLINE bool BlendModeDoesntPreserveOpaqueDestinationAlpha(
 }  // namespace
 
 ALWAYS_INLINE bool BaseRenderingContext2D::BlendModeRequiresCompositedDraw(
-    SkBlendMode blendMode) {
+    const CanvasRenderingContext2DState& state) const {
+  SkBlendMode blend_mode = state.GlobalComposite();
   // Blend modes that require CompositedDraw in every case.
-  if (IsFullCanvasCompositeMode(blendMode)) {
+  if (IsFullCanvasCompositeMode(blend_mode)) {
     return true;
   }
-  const CanvasRenderingContext2DState& state = GetState();
   // Blend modes that require CompositedDraw if shadows are drawn.
   return state.ShouldDrawShadows() &&
-         BlendModeRequiresLayersForShadows(blendMode);
+         BlendModeRequiresLayersForShadows(blend_mode);
 }
 
 ALWAYS_INLINE void BaseRenderingContext2D::ResetAlphaIfNeeded(
@@ -947,7 +953,7 @@ void BaseRenderingContext2D::CompositedDraw(
       draw_func(c, &foreground_flags);
     } else {
       DCHECK(IsFullCanvasCompositeMode(state.GlobalComposite()) ||
-             BlendModeRequiresCompositedDraw(state.GlobalComposite()));
+             BlendModeRequiresCompositedDraw(state));
       c->saveLayer(composite_flags);
       shadow_flags.setBlendMode(SkBlendMode::kSrcOver);
       c->setMatrix(ctm);
