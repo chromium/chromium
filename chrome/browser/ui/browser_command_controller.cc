@@ -561,6 +561,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_RESTORE_WINDOW:
       browser_->window()->Restore();
       break;
+#endif
+
+#if BUILDFLAG(IS_LINUX)
     case IDC_USE_SYSTEM_TITLE_BAR: {
       PrefService* prefs = profile()->GetPrefs();
       prefs->SetBoolean(prefs::kUseCustomChromeFrame,
@@ -1163,6 +1166,8 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_MINIMIZE_WINDOW, true);
   command_updater_.UpdateCommandEnabled(IDC_MAXIMIZE_WINDOW, true);
   command_updater_.UpdateCommandEnabled(IDC_RESTORE_WINDOW, true);
+#endif
+#if BUILDFLAG(IS_LINUX)
   bool use_system_title_bar = true;
 #if BUILDFLAG(IS_OZONE)
   use_system_title_bar = ui::OzonePlatform::GetInstance()

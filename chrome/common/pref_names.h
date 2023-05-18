@@ -398,9 +398,7 @@ extern const char kDefaultBrowserSettingEnabled[];
 #if BUILDFLAG(IS_MAC)
 extern const char kShowUpdatePromotionInfoBar[];
 #endif
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 extern const char kUseCustomChromeFrame[];
 #endif
 extern const char kPartitionDefaultZoomLevel[];
