@@ -693,7 +693,8 @@ void LoginDisplayHostWebUI::OnDisplayMetricsChanged(
   }
 
   if (GetOobeUI()) {
-    GetOobeUI()->GetCoreOobe()->UpdateClientAreaSize(primary_display.size());
+    GetOobeUI()->GetCoreOobeView()->UpdateClientAreaSize(
+        primary_display.size());
     if (changed_metrics & DISPLAY_METRIC_PRIMARY)
       GetOobeUI()->OnDisplayConfigurationChanged();
   }
@@ -719,7 +720,7 @@ void LoginDisplayHostWebUI::OnViewsBootingAnimationPlayed() {
 void LoginDisplayHostWebUI::FinishBootingAnimation() {
   CHECK(features::IsOobeSimonEnabled());
   ash::Shell::Get()->booting_animation_controller()->Finish();
-  GetOobeUI()->GetCoreOobe()->TriggerDown();
+  GetOobeUI()->GetCoreOobeView()->TriggerDown();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -798,7 +799,7 @@ bool LoginDisplayHostWebUI::HandleAccelerator(LoginAcceleratorAction action) {
     if (!GetOobeUI()) {
       return false;
     }
-    GetOobeUI()->GetCoreOobe()->ToggleSystemInfo();
+    GetOobeUI()->GetCoreOobeView()->ToggleSystemInfo();
     return true;
   }
 

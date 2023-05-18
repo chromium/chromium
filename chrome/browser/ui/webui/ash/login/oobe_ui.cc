@@ -50,7 +50,6 @@
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/choobe_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/debug/debug_overlay_handler.h"
@@ -372,7 +371,7 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<UpdateScreenHandler>());
 
   if (display_type_ == kOobeDisplay) {
-    AddScreenHandler(std::make_unique<WelcomeScreenHandler>());
+    AddScreenHandler(std::make_unique<WelcomeScreenHandler>(core_handler_));
 
     AddScreenHandler(std::make_unique<DemoPreferencesScreenHandler>());
 
@@ -405,7 +404,7 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(std::make_unique<EnrollmentScreenHandler>());
 
-  AddScreenHandler(std::make_unique<LocaleSwitchScreenHandler>());
+  AddScreenHandler(std::make_unique<LocaleSwitchScreenHandler>(core_handler_));
 
   AddScreenHandler(std::make_unique<LacrosDataMigrationScreenHandler>());
 
@@ -616,11 +615,10 @@ OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)
   LOG(WARNING) << "OobeUI created";
   display_type_ = GetDisplayType(url);
 
-  auto core_oobe_handler = std::make_unique<CoreOobeHandler>();
-  core_handler_ = core_oobe_handler.get();
-  core_oobe_ =
-      std::make_unique<CoreOobe>(display_type_, core_oobe_handler->AsWeakPtr());
-  web_ui->AddMessageHandler(std::move(core_oobe_handler));
+  auto core_handler = std::make_unique<CoreOobeHandler>(display_type_);
+  core_handler_ = core_handler.get();
+
+  AddWebUIHandler(std::move(core_handler));
 
   ConfigureOobeDisplay();
 
@@ -677,8 +675,8 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source) {
       "worker-src blob: chrome://resources 'self';");
 }
 
-CoreOobe* OobeUI::GetCoreOobe() {
-  return core_oobe_.get();
+CoreOobeView* OobeUI::GetCoreOobeView() {
+  return core_handler_;
 }
 
 ErrorScreen* OobeUI::GetErrorScreen() {
@@ -687,10 +685,8 @@ ErrorScreen* OobeUI::GetErrorScreen() {
 
 base::Value::Dict OobeUI::GetLocalizedStrings() {
   base::Value::Dict localized_strings;
-  core_handler_->GetLocalizedStrings(&localized_strings);
   for (BaseWebUIHandler* handler : webui_handlers_)
     handler->GetLocalizedStrings(&localized_strings);
-
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &localized_strings);
   localized_strings.Set("app_locale", app_locale);

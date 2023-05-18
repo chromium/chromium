@@ -25,7 +25,6 @@ import {commonScreensList, loginScreensList, oobeScreensList} from './screens.js
 
 // Everything has been imported at this point.
 traceExecution(TraceEvent.FIRST_LINE_AFTER_IMPORTS);
-chrome.send('initializeCoreHandler');
 
 // Create the global values attached to `window` that are used
 // for accessing OOBE controls from the browser side.

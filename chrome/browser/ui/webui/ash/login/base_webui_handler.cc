@@ -44,7 +44,7 @@ void BaseWebUIHandler::InitAfterJavascriptAllowed() {}
 void BaseWebUIHandler::ShowScreenDeprecated(OobeScreenId screen) {
   if (!GetOobeUI())
     return;
-  GetOobeUI()->GetCoreOobe()->ShowScreenWithData(screen, absl::nullopt);
+  GetOobeUI()->GetCoreOobeView()->ShowScreenWithData(screen, absl::nullopt);
 }
 
 OobeUI* BaseWebUIHandler::GetOobeUI() {

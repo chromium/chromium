@@ -413,7 +413,7 @@ bool OobeUIDialogDelegate::AcceleratorPressed(
 void OobeUIDialogDelegate::OnViewBoundsChanged(views::View* observed_view) {
   if (!widget_)
     return;
-  GetOobeUI()->GetCoreOobe()->UpdateClientAreaSize(
+  GetOobeUI()->GetCoreOobeView()->UpdateClientAreaSize(
       layout_view_->GetContentsBounds().size());
 }
 

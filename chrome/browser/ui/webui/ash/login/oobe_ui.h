@@ -16,7 +16,6 @@
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ash/login/screens/core_oobe.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -89,7 +88,7 @@ class OobeUI : public ui::MojoWebUIController {
 
   ~OobeUI() override;
 
-  CoreOobe* GetCoreOobe();
+  CoreOobeView* GetCoreOobeView();
   ErrorScreen* GetErrorScreen();
 
   // Collects localized strings from the owned handlers.
@@ -208,7 +207,6 @@ class OobeUI : public ui::MojoWebUIController {
 
   // Reference to CoreOobeHandler that handles common requests of Oobe page.
   raw_ptr<CoreOobeHandler, ExperimentalAsh> core_handler_ = nullptr;
-  std::unique_ptr<CoreOobe> core_oobe_;
 
   std::vector<BaseWebUIHandler*> webui_handlers_;       // Non-owning pointers.
   std::vector<BaseWebUIHandler*> webui_only_handlers_;  // Non-owning pointers.

@@ -476,7 +476,7 @@ bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
     if (!GetOobeUI()) {
       return false;
     }
-    GetOobeUI()->GetCoreOobe()->ForwardCancel();
+    GetOobeUI()->GetCoreOobeView()->ForwardCancel();
     return true;
   }
 
