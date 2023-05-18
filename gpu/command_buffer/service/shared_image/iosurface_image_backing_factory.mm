@@ -226,9 +226,6 @@ bool IOSurfaceImageBackingFactory::IsSupported(
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
     base::span<const uint8_t> pixel_data) {
-  if (!pixel_data.empty() && gr_context_type != GrContextType::kGL) {
-    return false;
-  }
   if (thread_safe) {
     return false;
   }
