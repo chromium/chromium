@@ -7,7 +7,5 @@
 #include "base/feature_list.h"
 
 namespace update_client::features {
-BASE_FEATURE(kPuffinPatches,
-             "PuffinPatches",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPuffinPatches, "PuffinPatches", base::FEATURE_ENABLED_BY_DEFAULT);
 }
