@@ -6,9 +6,8 @@
     overflow-y: auto;
   }
 
-  :host([in-side-panel_]) cr-dialog::part(dialog) {
-    margin: 0 16px;
-    max-width: fit-content;
+  cr-dialog::part(dialog) {
+    --cr-dialog-width: min(calc(100% - 32px), 512px);
   }
 
   :host([in-side-panel_]) cr-toast {
