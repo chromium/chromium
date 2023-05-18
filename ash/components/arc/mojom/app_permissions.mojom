@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 2
+// Next MinVersion: 3
 
 module arc.mojom;
 
@@ -22,7 +22,7 @@ enum AppPermission {
   // - android.manifest.WRITE_CONTACTS
   CONTACTS = 4,
   // - android.manifest.{READ|WRITE}_EXTERNAL_STORAGE
-  // - android.manifest.ACCESS_MEDIA_LOCATION
+  // - android.manifest.ACCESS_MEDIA_LOCATION after API level 29
   // - android.permission.READ_MEDIA_{AUDIO|IMAGES|VIDEO}, which replace
   //     {READ|WRITE}_EXTERNAL_STORAGE after API level 33
   // - android.manifest.MANAGE_EXTERNAL_STORAGE after API level 30
@@ -45,6 +45,12 @@ struct PermissionState {
   // Optional additional human-readable details for the permission state, to be
   // shown in permission management UI surfaces. e.g. "While in use".
   [MinVersion=1] string? details;
+
+  // When true, indicates that the current value applies for one app lifetime
+  // only. The next time the app is launched, the user will be prompted again
+  // about whether to allow/block the permission. This corresponds to
+  // apps::TriState::kAsk in the App Service permission model.
+  [MinVersion=2] bool one_time;
 };
 
 // An interface for Chrome to manipulate app permissions in ARC.

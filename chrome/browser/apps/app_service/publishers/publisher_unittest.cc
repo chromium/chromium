@@ -150,11 +150,11 @@ apps::Permissions MakeFakePermissions() {
   apps::Permissions permissions;
   permissions.push_back(std::make_unique<apps::Permission>(
       apps::PermissionType::kCamera,
-      std::make_unique<apps::PermissionValue>(false),
+      std::make_unique<apps::PermissionValue>(apps::TriState::kBlock),
       /*is_managed*/ false));
   permissions.push_back(std::make_unique<apps::Permission>(
       apps::PermissionType::kLocation,
-      std::make_unique<apps::PermissionValue>(true),
+      std::make_unique<apps::PermissionValue>(apps::TriState::kAllow),
       /*is_managed*/ false));
   return permissions;
 }
