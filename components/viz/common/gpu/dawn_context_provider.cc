@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -19,6 +20,20 @@
 namespace viz {
 
 namespace {
+
+void LogInfo(WGPULoggingType type, char const* message, void* userdata) {
+  VLOG(1) << message;
+}
+
+void LogError(WGPUErrorType type, char const* message, void* userdata) {
+  LOG(ERROR) << message;
+}
+
+void LogFatal(WGPUDeviceLostReason reason,
+              char const* message,
+              void* userdata) {
+  LOG(FATAL) << message;
+}
 
 wgpu::BackendType GetDefaultBackendType() {
 #if BUILDFLAG(IS_WIN)
@@ -84,6 +99,7 @@ wgpu::Device DawnContextProvider::CreateDevice(wgpu::BackendType type) {
   features.push_back(wgpu::FeatureName::DepthClipControl);
   features.push_back(wgpu::FeatureName::Depth32FloatStencil8);
   features.push_back(wgpu::FeatureName::ImplicitDeviceSynchronization);
+  features.push_back(wgpu::FeatureName::SurfaceCapabilities);
 
   descriptor.requiredFeatures = features.data();
   descriptor.requiredFeaturesCount = features.size();
@@ -92,8 +108,15 @@ wgpu::Device DawnContextProvider::CreateDevice(wgpu::BackendType type) {
   for (dawn::native::Adapter adapter : adapters) {
     wgpu::AdapterProperties properties;
     adapter.GetProperties(&properties);
-    if (properties.backendType == type)
-      return adapter.CreateDevice(&descriptor);
+    if (properties.backendType == type) {
+      wgpu::Device device(adapter.CreateDevice(&descriptor));
+      if (device) {
+        device.SetUncapturedErrorCallback(&LogError, nullptr);
+        device.SetDeviceLostCallback(&LogFatal, nullptr);
+        device.SetLoggingCallback(&LogInfo, nullptr);
+      }
+      return device;
+    }
   }
   return nullptr;
 }

@@ -467,8 +467,9 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
     SkImageInfo image_info =
         SkImageInfo::Make(gfx::SizeToSkISize(size_), color_type_,
                           kPremul_SkAlphaType, sk_color_space_);
-    skgpu::graphite::TextureInfo texture_info =
-        gpu::GetGraphiteTextureInfo(dependency_->gr_context_type(), format_);
+    skgpu::graphite::TextureInfo texture_info = gpu::GetGraphiteTextureInfo(
+        dependency_->gr_context_type(), format_, /*plane_index=*/0,
+        /*mipmapped=*/false, /*root_surface=*/true);
     CHECK(texture_info.isValid());
     current_paint_.emplace(graphite_recorder_, image_info, texture_info);
   } else {

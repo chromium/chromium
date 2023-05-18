@@ -22,14 +22,19 @@ namespace viz {
 
 namespace {
 
-// Some Vulkan drivers do not support kRGB_888x_SkColorType. Always use
-// kRGBA_8888_SkColorType instead and initialize surface to opaque as necessary.
+// TODO(crbug.com/dawn/286): Dawn requires that surface format is BGRA8Unorm for
+// desktop and RGBA8Unorm for Android. Use GetPreferredSurfaceFormat when ready.
+#if BUILDFLAG(IS_ANDROID)
 constexpr SkColorType kSurfaceColorType = kRGBA_8888_SkColorType;
 constexpr wgpu::TextureFormat kSwapChainFormat =
     wgpu::TextureFormat::RGBA8Unorm;
+#else
+constexpr SkColorType kSurfaceColorType = kBGRA_8888_SkColorType;
+constexpr wgpu::TextureFormat kSwapChainFormat =
+#endif
 
 constexpr wgpu::TextureUsage kUsage =
-    wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::CopySrc;
+    wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::TextureBinding;
 
 }  // namespace
 
@@ -66,11 +71,18 @@ SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
   hwnd_desc.hwnd = child_window_.window();
   hwnd_desc.hinstance = GetModuleHandle(nullptr);
 
+  CHECK(context_state_->dawn_context_provider() &&
+        context_state_->dawn_context_provider()->GetDevice());
   wgpu::SurfaceDescriptor surface_desc;
   surface_desc.nextInChain = &hwnd_desc;
   surface_ =
       context_state_->dawn_context_provider()->GetInstance().CreateSurface(
           &surface_desc);
+  CHECK(surface_);
+  wgpu::TextureUsage supported_usage = context_state_->dawn_context_provider()
+                                           ->GetDevice()
+                                           .GetSupportedSurfaceUsage(surface_);
+  CHECK_EQ(~supported_usage & kUsage, 0);
 }
 
 SkiaOutputDeviceDawn::~SkiaOutputDeviceDawn() = default;
@@ -135,7 +147,7 @@ SkSurface* SkiaOutputDeviceDawn::BeginPaint(
   auto texture_info = gpu::GetGraphiteTextureInfo(
       gpu::GrContextType::kGraphiteDawn,
       SharedImageFormat::SinglePlane(ResourceFormat::RGBA_8888),
-      /*plane_index=*/0, /*mipmapped=*/false);
+      /*plane_index=*/0, /*mipmapped=*/false, /*root_surface=*/true);
   skgpu::graphite::DawnTextureInfo dawn_texture_info;
   texture_info.getDawnTextureInfo(&dawn_texture_info);
   skgpu::graphite::BackendTexture backend_texture(

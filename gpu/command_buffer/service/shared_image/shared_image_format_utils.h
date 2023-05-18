@@ -117,7 +117,8 @@ GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
     GrContextType gr_context_type,
     viz::SharedImageFormat format,
     int plane_index = 0,
-    bool mipmapped = false);
+    bool mipmapped = false,
+    bool root_surface = false);
 
 }  // namespace gpu
 

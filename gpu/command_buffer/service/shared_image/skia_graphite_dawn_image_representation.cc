@@ -17,11 +17,11 @@
 #include <webgpu/webgpu.h>
 
 namespace {
-
-// TODO(sunnyps): Revisit this when implementing wrapped graphite backings
-// for render passes - do we also need CopySrc and/or CopyDst?
+// This should match the texture usage set by GetGraphiteTextureInfo() - Dawn
+// will validate this on dcheck builds.
 constexpr WGPUTextureUsage kDefaultTextureUsage = static_cast<WGPUTextureUsage>(
-    WGPUTextureUsage_RenderAttachment | WGPUTextureUsage_TextureBinding);
+    WGPUTextureUsage_RenderAttachment | WGPUTextureUsage_TextureBinding |
+    WGPUTextureUsage_CopySrc | WGPUTextureUsage_CopyDst);
 }
 
 namespace gpu {
