@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -495,6 +496,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         // previously tracked Tab.
         if (mHomeSurfaceTracker != null && mHomeSurfaceTracker.isHomeSurfaceTab(mTab)) {
             showHomeSurfaceUi(mHomeSurfaceTracker.getLastActiveTabToTrack());
+            ReturnToChromeUtil.recordHomeSurfaceShown();
         }
 
         TraceEvent.end(TAG);

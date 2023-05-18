@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.features.start_surface;
 
+import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_AT_STARTUP_UMA;
+import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_UMA;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.START_SURFACE_ON_TABLET_TEST_PARAMS;
 
 import android.content.pm.ActivityInfo;
@@ -28,6 +30,7 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -88,6 +91,11 @@ public class StartSurfaceOnTabletTest {
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
     public void testStartSurfaceOnTablet() throws IOException {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(HOME_SURFACE_SHOWN_AT_STARTUP_UMA, true)
+                        .expectBooleanRecord(HOME_SURFACE_SHOWN_UMA, true)
+                        .build();
         StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         StartSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
@@ -95,6 +103,7 @@ public class StartSurfaceOnTabletTest {
         // Verifies that a NTP is created and set as the current Tab.
         verifyTabCountAndActiveTabUrl(mActivityTestRule.getActivity(), 2, UrlConstants.NTP_URL,
                 true /* expectHomeSurfaceUiShown */);
+        histogram.assertExpected();
     }
 
     @Test
@@ -105,6 +114,12 @@ public class StartSurfaceOnTabletTest {
         // The existing NTP isn't the last active Tab.
         String modifiedNtpUrl = UrlConstants.NTP_URL + "/1";
         Assert.assertTrue(UrlUtilities.isNTPUrl(modifiedNtpUrl));
+
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(HOME_SURFACE_SHOWN_AT_STARTUP_UMA, true)
+                        .expectBooleanRecord(HOME_SURFACE_SHOWN_UMA, true)
+                        .build();
         StartSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, modifiedNtpUrl}, 0);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
@@ -113,6 +128,7 @@ public class StartSurfaceOnTabletTest {
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(mActivityTestRule.getActivity(), 3, UrlConstants.NTP_URL,
                 true /* expectHomeSurfaceUiShown */);
+        histogram.assertExpected();
     }
 
     @Test
@@ -123,6 +139,12 @@ public class StartSurfaceOnTabletTest {
         // The existing NTP is set as the last active Tab.
         String modifiedNtpUrl = UrlConstants.NTP_URL + "/1";
         Assert.assertTrue(UrlUtilities.isNTPUrl(modifiedNtpUrl));
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(HOME_SURFACE_SHOWN_AT_STARTUP_UMA, true)
+                        .expectBooleanRecord(HOME_SURFACE_SHOWN_UMA, true)
+                        .build();
+
         StartSurfaceTestUtils.prepareTabStateMetadataFile(
                 new int[] {0, 1}, new String[] {TAB_URL, modifiedNtpUrl}, 1);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
@@ -132,6 +154,7 @@ public class StartSurfaceOnTabletTest {
         // current Tab.
         verifyTabCountAndActiveTabUrl(mActivityTestRule.getActivity(), 2, modifiedNtpUrl,
                 false /* expectHomeSurfaceUiShown */);
+        histogram.assertExpected();
     }
 
     @Test

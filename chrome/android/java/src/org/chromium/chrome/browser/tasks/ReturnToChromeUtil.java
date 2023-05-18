@@ -90,6 +90,10 @@ public final class ReturnToChromeUtil {
             "StartSurface.ShownFromBackNavigation.";
     public static final String START_SHOW_STATE_UMA = "StartSurface.Show.State";
 
+    public static final String HOME_SURFACE_SHOWN_AT_STARTUP_UMA =
+            "NewTabPage.AsHomeSurface.ShownAtStartup";
+    public static final String HOME_SURFACE_SHOWN_UMA = "NewTabPage.AsHomeSurface";
+
     private static final String START_SEGMENTATION_PLATFORM_KEY = "chrome_start_android";
     private static final String START_V2_SEGMENTATION_PLATFORM_KEY = "chrome_start_android_v2";
 
@@ -619,23 +623,30 @@ public final class ReturnToChromeUtil {
         // Early exits if there isn't any Tab, i.e., don't create a home surface.
         if (lastActiveTab == null) return;
 
-        int indexOfFirstNtp = TabModelUtils.getTabIndexByUrl(currentTabModel, UrlConstants.NTP_URL);
-        if (indexOfFirstNtp != TabModel.INVALID_TAB_INDEX) {
-            Tab ntpTab = currentTabModel.getTabAt(indexOfFirstNtp);
-            // The first found NTP is the last active Tab, early return here.
-            if (indexOfFirstNtp == index) {
-                homeSurfaceTracker.updateHomeSurfaceAndTrackingTabs(ntpTab, null);
-                return;
+        // If the last active Tab is a NTP, we continue to show this NTP as it is now.
+        if (UrlUtilities.isNTPUrl(lastActiveTab.getUrl())) {
+            if (!homeSurfaceTracker.isHomeSurfaceTab(lastActiveTab)) {
+                homeSurfaceTracker.updateHomeSurfaceAndTrackingTabs(lastActiveTab, null);
             }
-
-            // The first found NTP isn't the last active Tab, set the found NTP as home surface.
-            TabModelUtils.setIndex(currentTabModel, indexOfFirstNtp, false);
-            showHomeSurfaceUiOnNtp(ntpTab, lastActiveTab, homeSurfaceTracker);
         } else {
-            // There isn't any existing NTP, create one.
-            createNewTabAndShowHomeSurfaceUi(
-                    tabCreator, homeSurfaceTracker, null, null, lastActiveTab);
+            int indexOfFirstNtp =
+                    TabModelUtils.getTabIndexByUrl(currentTabModel, UrlConstants.NTP_URL);
+            if (indexOfFirstNtp != TabModel.INVALID_TAB_INDEX) {
+                Tab ntpTab = currentTabModel.getTabAt(indexOfFirstNtp);
+                assert indexOfFirstNtp != index;
+
+                // Sets the found NTP as home surface.
+                TabModelUtils.setIndex(currentTabModel, indexOfFirstNtp, false);
+                showHomeSurfaceUiOnNtp(ntpTab, lastActiveTab, homeSurfaceTracker);
+            } else {
+                // There isn't any existing NTP, create one.
+                createNewTabAndShowHomeSurfaceUi(
+                        tabCreator, homeSurfaceTracker, null, null, lastActiveTab);
+            }
         }
+
+        recordHomeSurfaceShownAtStartup();
+        recordHomeSurfaceShown();
     }
 
     /*
@@ -768,6 +779,20 @@ public final class ReturnToChromeUtil {
             BrowserUiUtils.recordModuleClickHistogram(HostSurface.NEW_TAB_PAGE,
                     BrowserUiUtils.ModuleTypeOnStartAndNTP.TAB_SWITCHER_BUTTON);
         }
+    }
+
+    /**
+     * Recorded when the home surface NTP is shown at startup.
+     */
+    public static void recordHomeSurfaceShownAtStartup() {
+        RecordHistogram.recordBooleanHistogram(HOME_SURFACE_SHOWN_AT_STARTUP_UMA, true);
+    }
+
+    /**
+     * Records the home surface shown impressions.
+     */
+    public static void recordHomeSurfaceShown() {
+        RecordHistogram.recordBooleanHistogram(HOME_SURFACE_SHOWN_UMA, true);
     }
 
     /**

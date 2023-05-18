@@ -55,6 +55,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.AsHomeSurface" enum="Boolean"
+    expires_after="2023-10-22">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records total impressions of a NTP showing as the home surface, including at
+    startup when users haven't used Chrome for 8 hours and via back operations.
+    Only records true if shows. This histogram is recorded on tablets only.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.AsHomeSurface.ShownAtStartup" enum="Boolean"
+    expires_after="2023-10-22">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Records impressions of a NTP is showing as the home surface at a cold or
+    warm startup when users haven't used Chrome for 8 hours, and only records
+    true if shows. This histogram is recorded on tablets only.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.BackgroundImageSource"
     enum="NTPBackgroundImageSource" expires_after="2023-10-01">
   <owner>danpeng@google.com</owner>

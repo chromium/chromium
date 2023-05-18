@@ -1390,6 +1390,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     mCreatedTabOnStartup = true;
                     mLastActiveTabUrl = null;
                 }
+                ReturnToChromeUtil.recordHomeSurfaceShownAtStartup();
+                ReturnToChromeUtil.recordHomeSurfaceShown();
             }
 
             mTabModelOrchestrator.restoreTabs(activeTabBeingRestored);
