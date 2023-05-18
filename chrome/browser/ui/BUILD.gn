@@ -2424,6 +2424,8 @@ static_library("ui") {
       "ash/crosapi_new_window_delegate.h",
       "ash/default_pinned_apps.cc",
       "ash/default_pinned_apps.h",
+      "ash/desks/admin_template_service_factory.cc",
+      "ash/desks/admin_template_service_factory.h",
       "ash/desks/chrome_desks_util.cc",
       "ash/desks/chrome_desks_util.h",
       "ash/desks/chrome_saved_desk_delegate.cc",

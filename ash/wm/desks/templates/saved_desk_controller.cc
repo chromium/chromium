@@ -5,6 +5,7 @@
 #include "ash/wm/desks/templates/saved_desk_controller.h"
 
 #include "ash/public/cpp/desk_template.h"
+#include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/templates/admin_template_launch_tracker.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
@@ -14,6 +15,9 @@
 #include "base/values.h"
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/restore_data.h"
+#include "components/desks_storage/core/admin_template_model.h"
+#include "components/desks_storage/core/admin_template_service.h"
+#include "components/desks_storage/core/desk_model.h"
 
 namespace ash {
 
@@ -57,11 +61,28 @@ std::unique_ptr<DeskTemplate> CreatePlaceholderTemplate() {
   return desk_template;
 }
 
+void PopulateAdminTemplateMetadata(
+    const desks_storage::DeskModel::GetAllEntriesResult& entries_lookup_result,
+    std::vector<AdminTemplateMetadata>* out_metadata) {
+  // If something goes wrong, log it and exit.
+  if (entries_lookup_result.status !=
+      desks_storage::DeskModel::GetAllEntriesStatus::kOk) {
+    LOG(WARNING) << "Get all entries did not return OK status!";
+    return;
+  }
+
+  for (auto* entry : entries_lookup_result.entries) {
+    out_metadata->push_back(AdminTemplateMetadata{
+        .uuid = entry->uuid(), .name = entry->template_name()});
+  }
+}
+
 // Pointer to the global `SavedDeskController` instance.
 SavedDeskController* g_instance = nullptr;
 
 }  // namespace
 
+// SavedDeskController
 SavedDeskController::SavedDeskController() {
   CHECK(!g_instance);
   g_instance = this;
@@ -77,9 +98,18 @@ SavedDeskController* SavedDeskController::Get() {
 
 std::vector<AdminTemplateMetadata>
 SavedDeskController::GetAdminTemplateMetadata() const {
-  return {AdminTemplateMetadata{
+  std::vector<AdminTemplateMetadata> metadata;
+
+  if (auto* admin_model = GetAdminModel()) {
+    PopulateAdminTemplateMetadata(admin_model->GetAllEntries(), &metadata);
+  }
+
+  // Make sure we always at least have the placeholder.
+  metadata.push_back(AdminTemplateMetadata{
       .uuid = base::Uuid::ParseLowercase(kPlaceholderUuid),
-      .name = base::UTF8ToUTF16(base::StringPiece(kPlaceholderName))}};
+      .name = base::UTF8ToUTF16(base::StringPiece(kPlaceholderName))});
+
+  return metadata;
 }
 
 bool SavedDeskController::LaunchAdminTemplate(const base::Uuid& template_uuid,
@@ -112,7 +142,16 @@ bool SavedDeskController::LaunchAdminTemplate(const base::Uuid& template_uuid,
 
 void SavedDeskController::OnAdminTemplateUpdate(
     const DeskTemplate& admin_template) {
-  // TODO(dandersson): Write to desk model.
+  if (auto* admin_model = GetAdminModel()) {
+    admin_model->UpdateEntry(admin_template.Clone());
+  }
+}
+
+desks_storage::AdminTemplateModel* SavedDeskController::GetAdminModel() const {
+  auto* admin_template_service =
+      ash::Shell::Get()->saved_desk_delegate()->GetAdminTemplateService();
+
+  return admin_template_service->GetAdminModel();
 }
 
 std::unique_ptr<DeskTemplate> SavedDeskController::GetAdminTemplate(
@@ -127,6 +166,18 @@ std::unique_ptr<DeskTemplate> SavedDeskController::GetAdminTemplate(
     return placeholder_template;
   }
 
+  if (auto* admin_model = GetAdminModel()) {
+    auto result = admin_model->GetEntryByUUID(template_uuid);
+
+    if (result.status != desks_storage::DeskModel::GetEntryByUuidStatus::kOk) {
+      LOG(WARNING) << "Entry lookup failure!";
+      return nullptr;
+    }
+
+    return std::move(result.entry);
+  }
+
+  // Failed to get model, return nullptr.
   return nullptr;
 }
 

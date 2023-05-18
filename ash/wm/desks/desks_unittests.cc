@@ -423,7 +423,7 @@ class DesksTest : public AshTestBase,
 
     // Wait for the desk model to have completed its initialization. Not doing
     // this would lead to flaky tests.
-    ash_test_helper()->saved_desk_test_helper()->WaitForDeskModel();
+    ash_test_helper()->saved_desk_test_helper()->WaitForDeskModels();
   }
 
   void TearDown() override {

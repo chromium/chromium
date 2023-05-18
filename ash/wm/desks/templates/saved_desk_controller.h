@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/uuid.h"
+#include "components/desks_storage/core/admin_template_model.h"
 
 namespace ash {
 
@@ -48,6 +49,10 @@ class ASH_EXPORT SavedDeskController {
 
  private:
   friend class SavedDeskControllerTestApi;
+
+  // On success returns AdminTemplateBackend interface.  On failure returns
+  // nullptr.
+  desks_storage::AdminTemplateModel* GetAdminModel() const;
 
   // Invoked when the user has interacted with windows from a launched template.
   void OnAdminTemplateUpdate(const DeskTemplate& admin_template);

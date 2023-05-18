@@ -19,6 +19,7 @@
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/uuid.h"
 #include "components/account_id/account_id.h"
+#include "components/desks_storage/core/admin_template_model.h"
 #include "components/desks_storage/core/desk_model.h"
 
 namespace ash {
@@ -31,7 +32,7 @@ namespace desks_storage {
 // desk templates and save and recall desks.
 //
 // TODO(crbug.com/1227215): add calls to DeskModelObserver
-class LocalDeskDataManager : public DeskModel {
+class LocalDeskDataManager : public DeskModel, public AdminTemplateModel {
  public:
   // This enumerates the possible statuses of the cache and is
   // used by the implementation in order to change the outcomes
@@ -49,8 +50,24 @@ class LocalDeskDataManager : public DeskModel {
     kInvalidPath,
   };
 
-  LocalDeskDataManager(const base::FilePath& user_data_dir_path,
-                       const AccountId& account_id);
+  // Local Desk Data Manager is agnostic towards a specific directory to save
+  // information in, below are the possible locations the cache could be read
+  // an wrote.  KSavedDeskDir is the default parameter for instantiating a
+  // local desk data manager.
+  enum class StorageLocation {
+    // This data manager reads and writes to the standard saved desks template
+    // directory.
+    kSavedDeskDir,
+
+    // This data manager reads and writes to the admin templates directory, also
+    // known as the app launch automation directory.
+    kAppLaunchAutomationDir,
+  };
+
+  LocalDeskDataManager(
+      const base::FilePath& user_data_dir_path,
+      const AccountId& account_id,
+      StorageLocation storage_location = StorageLocation::kSavedDeskDir);
 
   LocalDeskDataManager(const LocalDeskDataManager&) = delete;
   LocalDeskDataManager& operator=(const LocalDeskDataManager&) = delete;
@@ -96,17 +113,20 @@ class LocalDeskDataManager : public DeskModel {
       ash::DeskTemplateType type,
       const base::Uuid& uuid) const override;
 
+  // AdminTemplateModel:
+  void UpdateEntry(std::unique_ptr<ash::DeskTemplate> entry) override;
+
   static void SetDisableMaxTemplateLimitForTesting(bool disabled);
 
  private:
   friend class ash::OverviewTestBase;
 
-  // Loads templates from `user_data_dir_path` into the
+  // Loads templates from `user_data_dir_path` and `sub_directory_name` into the
   // `saved_desks_list_`, based on the template's desk type, if the cache is not
   // loaded yet.
-
   static LoadCacheResult LoadCacheOnBackgroundSequence(
-      const base::FilePath& user_data_dir_path);
+      const base::FilePath& user_data_dir_path,
+      const std::string sub_directory_name);
 
   // Add or update an entry by `new_entry`'s UUID.
   static AddOrUpdateEntryStatus AddOrUpdateEntryTask(

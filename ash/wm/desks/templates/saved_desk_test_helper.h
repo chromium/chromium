@@ -16,6 +16,7 @@ class AppRegistryCache;
 }
 
 namespace desks_storage {
+class AdminTemplateService;
 class DeskModel;
 }
 
@@ -39,16 +40,18 @@ class SavedDeskTestHelper {
   // this isn't done automatically for all tests is that the act of waiting will
   // pump the event loop and a lot of tests apparently cannot handle that.
   // See https://crbug.com/1360638 for more info.
-  void WaitForDeskModel();
+  void WaitForDeskModels();
 
-  desks_storage::DeskModel* desk_model() { return desk_model_.get(); }
+  desks_storage::DeskModel* desk_model() { return saved_desk_model_.get(); }
 
  private:
   AccountId account_id_;
 
   base::ScopedTempDir desk_model_data_dir_;
 
-  std::unique_ptr<desks_storage::DeskModel> desk_model_;
+  std::unique_ptr<desks_storage::AdminTemplateService> admin_template_service_;
+
+  std::unique_ptr<desks_storage::DeskModel> saved_desk_model_;
 
   std::unique_ptr<apps::AppRegistryCache> cache_;
 };

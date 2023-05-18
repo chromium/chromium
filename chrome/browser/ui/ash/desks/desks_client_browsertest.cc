@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/desk_template.h"
+#include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -92,6 +93,7 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_properties.h"
+#include "components/desks_storage/core/admin_template_service.h"
 #include "components/desks_storage/core/desk_template_util.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -3360,6 +3362,28 @@ class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
     return admin_template;
   }
 
+  void WaitForAdminTemplateService() {
+    auto* admin_template_service =
+        ash::Shell::Get()->saved_desk_delegate()->GetAdminTemplateService();
+    if (!admin_template_service) {
+      return;
+    }
+    while (!admin_template_service->IsReady()) {
+      base::RunLoop run_loop;
+      run_loop.RunUntilIdle();
+    }
+  }
+
+  void AddAdminTemplateToModel(
+      std::unique_ptr<ash::DeskTemplate> admin_template) {
+    WaitForAdminTemplateService();
+    ash::AddSavedDeskEntry(ash::Shell::Get()
+                               ->saved_desk_delegate()
+                               ->GetAdminTemplateService()
+                               ->GetFullDeskModel(),
+                           std::move(admin_template));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -3374,10 +3398,9 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, LaunchAdminTemplate) {
   ASSERT_NE(admin_template, nullptr);
 
   base::Uuid template_uuid = admin_template->uuid();
+  AddAdminTemplateToModel(std::move(admin_template));
 
   auto* saved_desk_controller = ash::Shell::Get()->saved_desk_controller();
-  ash::SavedDeskControllerTestApi(saved_desk_controller)
-      .SetAdminTemplate(std::move(admin_template));
 
   saved_desk_controller->LaunchAdminTemplate(
       template_uuid, display::Screen::GetScreen()->GetPrimaryDisplay().id());
@@ -3414,11 +3437,9 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateWindowOffset) {
   ASSERT_NE(admin_template, nullptr);
 
   base::Uuid template_uuid = admin_template->uuid();
+  AddAdminTemplateToModel(std::move(admin_template));
 
   auto* saved_desk_controller = ash::Shell::Get()->saved_desk_controller();
-  ash::SavedDeskControllerTestApi(saved_desk_controller)
-      .SetAdminTemplate(std::move(admin_template));
-
   // Launch the template twice.
   for (int i = 0; i != 2; ++i) {
     saved_desk_controller->LaunchAdminTemplate(

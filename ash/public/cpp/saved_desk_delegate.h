@@ -25,6 +25,7 @@ class CancelableTaskTracker;
 }
 
 namespace desks_storage {
+class AdminTemplateService;
 class DeskModel;
 }
 
@@ -61,6 +62,9 @@ class ASH_PUBLIC_EXPORT SavedDeskDelegate {
   // Returns either the local desk storage backend or Chrome sync desk storage
   // backend depending on the feature flag DeskTemplateSync.
   virtual desks_storage::DeskModel* GetDeskModel() = 0;
+
+  // returns the appropriate AdminTemplateService for the active profile.
+  virtual desks_storage::AdminTemplateService* GetAdminTemplateService() = 0;
 
   // Returns whether `window` is persistable.  If true the window should be
   // tracked and saved as part of the desk.  If false, this window should

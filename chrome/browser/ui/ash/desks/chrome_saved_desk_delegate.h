@@ -20,6 +20,10 @@ namespace base {
 class CancelableTaskTracker;
 }  // namespace base
 
+namespace desks_storage {
+class DeskModel;
+}  // namespace desks_storage
+
 namespace gfx {
 class ImageSkia;
 }  // namespace gfx
@@ -36,6 +40,7 @@ class ChromeSavedDeskDelegate : public ash::SavedDeskDelegate {
       aura::Window* window,
       GetAppLaunchDataCallback callback) const override;
   desks_storage::DeskModel* GetDeskModel() override;
+  desks_storage::AdminTemplateService* GetAdminTemplateService() override;
   bool IsWindowPersistable(aura::Window* window) const override;
   absl::optional<gfx::ImageSkia> MaybeRetrieveIconForSpecialIdentifier(
       const std::string& identifier,

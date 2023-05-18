@@ -6,6 +6,9 @@ static_library("desks_storage") {
   output_name = "desks_storage_lib"
 
   sources = [
+    "core/admin_template_model.h",
+    "core/admin_template_service.cc",
+    "core/admin_template_service.h",
     "core/desk_model.cc",
     "core/desk_model.h",
     "core/desk_model_observer.h",
