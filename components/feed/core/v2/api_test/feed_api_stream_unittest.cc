@@ -4101,16 +4101,18 @@ class SignedOutViewDemotionTest : public FeedApiTest {
 
 TEST_F(SignedOutViewDemotionTest, ViewsAreSent) {
   account_info_ = {};
-  // Simulate loading the feed, viewing one document, and closing Chrome.
+  // Simulate loading the feed, viewing two documents, and closing Chrome.
   {
     response_translator_.InjectResponse(MakeTypicalInitialModelState());
     TestForYouSurface surface(stream_.get());
     WaitForIdleTaskQueue();
 
     stream_->RecordContentViewed(123);
+    stream_->RecordContentViewed(456);
     WaitForIdleTaskQueue();
   }
 
+  base::HistogramTester histograms;
   // Simulate loading the feed again later after restart, triggering a refresh.
   task_environment_.FastForwardBy(GetFeedConfig().stale_content_threshold +
                                   base::Minutes(1));
@@ -4127,23 +4129,29 @@ TEST_F(SignedOutViewDemotionTest, ViewsAreSent) {
   view_demotion_profile {
     tables {
       name: "url_all_ondevice"
-      num_rows: 1
+      num_rows: 2
       columns {
         type: 4
         name: "dimension_key"
         uint64_values: 123
+        uint64_values: 456
       }
       columns {
         type: 4
         name: "FEED_CARD_VIEW"
         uint64_values: 1
+        uint64_values: 1
       }
     }
   }
 })"));
+
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.DocumentViewSendCount100", 2, 1);
 }
 
 TEST_F(SignedOutViewDemotionTest, ViewsAreNotStoredWhenSignedIn) {
+  base::HistogramTester histograms;
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
   WaitForIdleTaskQueue();
@@ -4154,9 +4162,12 @@ TEST_F(SignedOutViewDemotionTest, ViewsAreNotStoredWhenSignedIn) {
   CallbackReceiver<std::vector<feedstore::DocView>> read_callback;
   store_->ReadDocViews(read_callback.Bind());
   EXPECT_THAT(read_callback.RunAndGetResult(), testing::IsEmpty());
+  histograms.ExpectTotalCount(
+      "ContentSuggestions.Feed.DocumentViewSendCount100", 0);
 }
 
 TEST_F(SignedOutViewDemotionTest, ViewsAreNotStoredWhenFeatureIsOff) {
+  base::HistogramTester histograms;
   base::test::ScopedFeatureList features;
   std::vector<base::test::FeatureRef> enabled_features = {},
                                       disabled_features = {
@@ -4174,6 +4185,8 @@ TEST_F(SignedOutViewDemotionTest, ViewsAreNotStoredWhenFeatureIsOff) {
   CallbackReceiver<std::vector<feedstore::DocView>> read_callback;
   store_->ReadDocViews(read_callback.Bind());
   EXPECT_THAT(read_callback.RunAndGetResult(), testing::IsEmpty());
+  histograms.ExpectTotalCount(
+      "ContentSuggestions.Feed.DocumentViewSendCount100", 0);
 }
 
 TEST_F(SignedOutViewDemotionTest, OldViewsAreDeleted) {

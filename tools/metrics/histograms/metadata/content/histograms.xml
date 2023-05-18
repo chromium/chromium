@@ -982,6 +982,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.DocumentViewSendCount100"
+    units="documents" expires_after="2023-10-15">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Number of docids sent when loading the Feed from the network. Reported when
+    the Feed is loaded from the network, when docview sending is allowed. This
+    histogram has a maximum count of 100.
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.DocumentViewSendCount1000"
+    units="documents" expires_after="2023-10-15">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Number of docids sent when loading the Feed from the network. Reported when
+    the Feed is loaded from the network, when docview sending is allowed. This
+    histogram has a maximum count of 1000, see
+    ContentSuggestions.Feed.DocumentViewSendCount100 for a more accurate
+    representation of lower counts.
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.DroppedDocumentViewCount"
+    units="documents" expires_after="2023-10-15">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    If too many document IDs are stored within a short time period, they are
+    dropped rather than recorded in
+    ContentSuggestions.Feed.DocumentViewSendCount. This histogram is recorded
+    when document IDs must be dropped in this way, and reports the number of IDs
+    dropped.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.FeedSignInUI" enum="FeedSignInUI"
     expires_after="2023-10-15">
   <owner>sczs@chromium.org</owner>
@@ -1084,6 +1121,16 @@ chromium-metrics-reviews@google.com.
     <variant name=".MoreArticlesFetchSuccess"
         summary="MoreArticlesFetchSuccess"/>
   </token>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.Network.FeedQueryRequestSize"
+    units="bytes" expires_after="2023-10-15">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: the approximate size in bytes of the FeedQuery GET request.
+    Recorded when a FeedQuery is sent.
+  </summary>
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.RequestSizeKB.Compressed"

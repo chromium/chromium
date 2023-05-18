@@ -89,6 +89,7 @@ class FeedNetworkImpl : public FeedNetwork {
             bool allow_bless_auth,
             const AccountInfo& account_info,
             net::HttpRequestHeaders request_metadata,
+            bool is_feed_query,
             base::OnceCallback<void(FeedNetworkImpl::RawResponse)> callback);
 
   void SendComplete(NetworkFetch* fetch,
