@@ -168,6 +168,9 @@ public class AwSettings {
     private boolean mBuiltInZoomControls;
     private boolean mDisplayZoomControls = true;
 
+    // Cache default user agent string obtained through JNI, since it will not change during the
+    // process lifetime. This saves a JNI call when creating new AwSettings objects after the first
+    // one in the process, and when client code asks for the default UA.
     static class LazyDefaultUserAgent{
         // Lazy Holder pattern
         private static final String sInstance = AwSettingsJni.get().getDefaultUserAgent();
