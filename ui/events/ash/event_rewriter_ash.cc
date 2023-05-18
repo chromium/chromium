@@ -855,6 +855,8 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
       // We remove the CapsLock modifier here because we do not want to
       // turn on the Capslock modifier when the key has been remapped.
       incoming.flags &= ~EF_CAPS_LOCK_ON;
+      base::RecordAction(
+          base::UserMetricsAction("CapsLock_Toggled_Using_CapsLockKey"));
     }
     if (remapped_key->remap_to == ui::mojom::ModifierKey::kCapsLock) {
       characteristic_flag |= EF_CAPS_LOCK_ON;

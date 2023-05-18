@@ -5796,6 +5796,21 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="CapsLock_Toggled">
+  <owner>dpad@google.com</owner>
+  <owner>zentaro@google.com</owner>
+  <description>
+    User toggled capslock via capslock key press or keyboard shortcut (alt +
+    search).
+  </description>
+</action>
+
+<action name="CapsLock_Toggled_Using_CapsLockKey">
+  <owner>dpad@google.com</owner>
+  <owner>zentaro@google.com</owner>
+  <description>User toggled capslock via capslock key press.</description>
+</action>
+
 <action name="Caption_ClickTogglesMaximize">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
