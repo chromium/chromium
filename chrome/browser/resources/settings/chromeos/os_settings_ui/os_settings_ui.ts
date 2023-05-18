@@ -236,32 +236,14 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     this.addEventListener('refresh-pref', this.onRefreshPref_);
     this.addEventListener('user-action-setting-change', this.onSettingChange_);
 
-    // If navigation menu is not shown, do not listen to the drawer.
-    if (!this.showNavMenu_) {
-      return;
-    }
-
-    microTask.run(() => {
-      // Lazy-create the drawer the first time it is opened or swiped into
-      // view.
-      const drawer = this.getDrawer_();
-      listenOnce(drawer, 'cr-drawer-opening', () => {
-        const drawerTemplate = castExists(
-            this.shadowRoot!.querySelector<DomIf>('#drawerTemplate'));
-        drawerTemplate.if = true;
-      });
-
-      window.addEventListener('popstate', () => {
-        drawer.cancel();
-      });
-    });
-
     this.addEventListener(
         'search-changed',
         () => {
           this.osSettingsHatsBrowserProxy_.settingsUsedSearch();
         },
         /*AddEventListenerOptions=*/ {once: true});
+
+    this.listenForDrawerOpening_();
   }
 
   override connectedCallback() {
@@ -366,6 +348,30 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     }
 
     return this.getToolbar_().getSearchField().isSearchFocused();
+  }
+
+  /**
+   * Listen for the drawer opening event and lazily create the drawer the first
+   * time it is opened or swiped into view.
+   */
+  private listenForDrawerOpening_(): void {
+    // If navigation menu is not shown, do not listen for the drawer opening
+    if (!this.showNavMenu_) {
+      return;
+    }
+
+    microTask.run(() => {
+      const drawer = this.getDrawer_();
+      listenOnce(drawer, 'cr-drawer-opening', () => {
+        const drawerTemplate = castExists(
+            this.shadowRoot!.querySelector<DomIf>('#drawerTemplate'));
+        drawerTemplate.if = true;
+      });
+
+      window.addEventListener('popstate', () => {
+        drawer.cancel();
+      });
+    });
   }
 
   private getDrawer_(): CrDrawerElement {
