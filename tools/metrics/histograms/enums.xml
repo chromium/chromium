@@ -10737,7 +10737,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="31" label="OBSOLETE_NMF_NO_PERMISSION_CLOSE"/>
   <int value="32" label="OBSOLETE_NMF_NO_PERMISSION_VERIFY"/>
   <int value="33" label="MH_INVALID_MIDI_PORT"/>
-  <int value="34" label="MH_SYS_EX_PERMISSION"/>
+  <int value="34" label="MH_MIDI_SYSEX_PERMISSION"/>
   <int value="35" label="ACDH_REGISTER"/>
   <int value="36" label="ACDH_UNREGISTER"/>
   <int value="37" label="ACDH_SET_SPAWNING"/>

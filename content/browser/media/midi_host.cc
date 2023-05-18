@@ -224,7 +224,7 @@ void MidiHost::SendData(uint32_t port,
             renderer_process_id_);
     if (!has_midi_sysex_permission_) {
       bad_message::ReceivedBadMessage(renderer_process_id_,
-                                      bad_message::MH_SYS_EX_PERMISSION);
+                                      bad_message::MH_MIDI_SYSEX_PERMISSION);
       return;
     }
   }
