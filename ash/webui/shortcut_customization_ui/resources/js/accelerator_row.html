@@ -32,6 +32,12 @@
     text-align: initial;
   }
 
+  #container:has(text-accelerator) #descriptionText {
+    /* For text accelerator descriptions, adjust height so that the description
+     * is centered in the container. */
+    height: 100%;
+  }
+
   td {
     display: flex;
     flex-direction: column;
