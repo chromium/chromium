@@ -7560,7 +7560,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Side Panel Selector
       </message>
       <message name="IDS_SIDE_PANEL_COMPANION_TITLE" desc="The name of the companion feature in the side panel combo box.">
-        Google
+        Search
       </message>
       <message name="IDS_SIDE_PANEL_COMPANION_TOOLBAR_TOOLTIP" desc="The tooltip for the companion feature toolbar button.">
         Google Search side panel
