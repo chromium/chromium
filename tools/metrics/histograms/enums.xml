@@ -59996,6 +59996,7 @@ from previous Chrome versions.
   <int value="-1419788257" label="enable-experimental-hotwording"/>
   <int value="-1419449681" label="PermissionChipRequestTypeSensitive:enabled"/>
   <int value="-1418200801" label="LauncherLacrosIntegration:enabled"/>
+  <int value="-1418199391" label="FilesInlineSyncStatusProgressEvents:enabled"/>
   <int value="-1417642561" label="AutofillCreditCardUploadFeedback:enabled"/>
   <int value="-1417122729"
       label="AutofillCreditCardAblationExperiment:disabled"/>
@@ -64119,6 +64120,7 @@ from previous Chrome versions.
   <int value="772360813"
       label="enable-fullscreen-handwriting-virtual-keyboard:enabled"/>
   <int value="773070364" label="AlwaysShowServerCardsInSyncTransport:enabled"/>
+  <int value="773244977" label="FilesInlineSyncStatusProgressEvents:disabled"/>
   <int value="773563826" label="CrostiniUsbSupport:disabled"/>
   <int value="773743944" label="show-android-files-in-files-app"/>
   <int value="773919225" label="disable-office-editing-component-extension"/>

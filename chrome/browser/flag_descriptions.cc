@@ -5870,6 +5870,13 @@ const char kFilesInlineSyncStatusDescription[] =
     "Enable displaying the sync status of each file next to its name in Files "
     "app.";
 
+const char kFilesInlineSyncStatusProgressEventsName[] =
+    "Enable inline sync status in Files app to work with a new source of "
+    "progress events.";
+const char kFilesInlineSyncStatusProgressEventsDescription[] =
+    "An improvement for inline sync status that will eventually allow it to "
+    "display progress for downsyncing operations.";
+
 const char kFilesSearchV2Name[] = "V2 generation of file search.";
 const char kFilesSearchV2Description[] = "Enable V2 generation of file search.";
 

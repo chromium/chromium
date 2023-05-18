@@ -985,6 +985,12 @@ BASE_FEATURE(kFilesInlineSyncStatus,
              "FilesInlineSyncStatus",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable inline sync status in Files app to consume events from the new more
+// robust ProgressEvents (enables inline sync status for downsync events).
+BASE_FEATURE(kFilesInlineSyncStatusProgressEvents,
+             "FilesInlineSyncStatusProgressEvents",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables V2 of search functionality in files.
 BASE_FEATURE(kFilesSearchV2,
              "FilesSearchV2",
@@ -2698,6 +2704,10 @@ bool IsDriveFsBulkPinningEnabled() {
 
 bool IsInlineSyncStatusEnabled() {
   return base::FeatureList::IsEnabled(kFilesInlineSyncStatus);
+}
+
+bool IsInlineSyncStatusProgressEventsEnabled() {
+  return base::FeatureList::IsEnabled(kFilesInlineSyncStatusProgressEvents);
 }
 
 bool IsEapGtcWifiAuthenticationEnabled() {

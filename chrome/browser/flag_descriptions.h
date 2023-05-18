@@ -3352,6 +3352,9 @@ extern const char kFilesExtractArchiveDescription[];
 extern const char kFilesInlineSyncStatusName[];
 extern const char kFilesInlineSyncStatusDescription[];
 
+extern const char kFilesInlineSyncStatusProgressEventsName[];
+extern const char kFilesInlineSyncStatusProgressEventsDescription[];
+
 extern const char kFilesSearchV2Name[];
 extern const char kFilesSearchV2Description[];
 
