@@ -36,6 +36,21 @@
             ]
         }
     ],
+    "AdaptiveCharging": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230518",
+                    "enable_features": [
+                        "AdaptiveCharging"
+                    ]
+                }
+            ]
+        }
+    ],
     "AddPageLoadTokenToClientSafeBrowsingReport": [
         {
             "platforms": [
