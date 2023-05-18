@@ -307,22 +307,6 @@ public class CustomTabsConnectionUnitTest {
     }
 
     @Test
-    public void getGreatestScrollPercentage() {
-        initSession();
-        when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted()).thenReturn(true);
-        mConnection.setGreatestScrollPercentageSupplier(mSession, () -> 75);
-        assertEquals(75, mConnection.getGreatestScrollPercentage(mSession, Bundle.EMPTY));
-    }
-
-    @Test(expected = UnsupportedOperationException.class)
-    public void getGreatestScrollPercentage_ThrowsIfNotPermitted() {
-        initSession();
-        when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted()).thenReturn(false);
-        mConnection.setGreatestScrollPercentageSupplier(mSession, () -> 75);
-        mConnection.getGreatestScrollPercentage(mSession, Bundle.EMPTY);
-    }
-
-    @Test
     public void setEngagementSignalsCallback_Available() {
         initSession();
         when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted()).thenReturn(true);

@@ -18,7 +18,6 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 import org.chromium.base.MathUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency;
 import org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.EnumType;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -116,13 +115,11 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         mTabObserverRegistrar.registerActivityTabObserver(this);
 
         mShouldSendRealValues = shouldSendRealValues();
-        initializeGreatestScrollPercentageSupplier();
     }
 
     public void destroy() {
         removeWebContentsDependencies(mWebContents);
         mConnection.setEngagementSignalsAvailableSupplier(mSession, null);
-        mConnection.setGreatestScrollPercentageSupplier(mSession, null);
         mTabObserverRegistrar.unregisterActivityTabObserver(this);
     }
 
@@ -186,17 +183,6 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     public void onDestroyed(Tab tab) {
         removeWebContentsDependencies(tab.getWebContents());
         mConnection.setEngagementSignalsAvailableSupplier(mSession, null);
-    }
-
-    private void initializeGreatestScrollPercentageSupplier() {
-        Supplier<Integer> percentageSupplier = () -> {
-            if (mScrollState != null) {
-                return mShouldSendRealValues ? mScrollState.mMaxReportedScrollPercentage
-                                             : STUB_PERCENT;
-            }
-            return null;
-        };
-        mConnection.setGreatestScrollPercentageSupplier(mSession, percentageSupplier);
     }
 
     /**
