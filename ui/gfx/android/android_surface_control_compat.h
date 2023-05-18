@@ -43,6 +43,14 @@ class GFX_EXPORT SurfaceControl {
   // Returns true if overlays with |color_space| are supported by the platform.
   static bool SupportsColorSpace(const gfx::ColorSpace& color_space);
 
+  // Translate `color_space` and `desired_brightness_ratio` to an ADataSpace and
+  // extended range brightness ratio.
+  static bool ColorSpaceToADataSpace(
+      const gfx::ColorSpace& color_space,
+      float desired_brightness_ratio,
+      uint64_t& out_dataspace,
+      float& out_extended_range_brightness_ratio);
+
   // Returns the usage flags required for using an AHardwareBuffer with the
   // SurfaceControl API, if it is supported.
   static uint64_t RequiredUsage();
