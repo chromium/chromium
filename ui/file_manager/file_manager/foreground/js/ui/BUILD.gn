@@ -130,6 +130,7 @@ js_library("action_model_ui") {
 js_library("actions_submenu") {
   deps = [
     ":command",
+    ":files_menu",
     ":menu",
     ":menu_item",
     "//ui/file_manager/file_manager/common/js:util",
