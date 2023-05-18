@@ -25,6 +25,7 @@ export enum CrUrlListItemSize {
 export interface CrUrlListItemElement {
   $: {
     badges: HTMLSlotElement,
+    content: HTMLSlotElement,
     description: HTMLSlotElement,
     title: HTMLButtonElement,
   };
@@ -62,6 +63,11 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
       hasDescriptions_: {
         type: Boolean,
         computed: 'computeHasDescriptions_(hasBadges_, description)',
+        reflectToAttribute: true,
+      },
+
+      hasSlottedContent_: {
+        type: Boolean,
         reflectToAttribute: true,
       },
 
@@ -116,6 +122,7 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   reverseElideDescription: boolean;
   private hasBadges_: boolean;
   private hasDescription_: boolean;
+  private hasSlottedContent_: boolean;
   private isFolder_: boolean;
   size: CrUrlListItemSize;
   url?: string;
@@ -196,6 +203,11 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   private onBadgesSlotChange_() {
     this.hasBadges_ =
         this.$.badges.assignedElements({flatten: true}).length > 0;
+  }
+
+  private onContentSlotChange_() {
+    this.hasSlottedContent_ =
+        this.$.content.assignedElements({flatten: true}).length > 0;
   }
 
   private onSizeChanged_() {

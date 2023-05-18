@@ -122,8 +122,13 @@ export class PowerBookmarkRowElement extends PolymerElement {
     }
   }
 
-  private onFocus_() {
-    this.$.crUrlListItem.focus();
+  private onFocus_(e: FocusEvent) {
+    if (e.composedPath()[0] === this) {
+      // If trying to directly focus on this row, move the focus to the
+      // <cr-url-list-item>. Otherwise, UI might be trying to directly focus on
+      // a specific child (eg. the input).
+      this.$.crUrlListItem.focus();
+    }
   }
 
   private getItemSize_() {

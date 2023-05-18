@@ -268,6 +268,10 @@
     width: 100%;
   }
 
+  :host([has-slotted-content_]) .metadata {
+    display: none;
+  }
+
   :host([size=compact]) .metadata {
     align-items: center;
     flex-direction: row;
@@ -436,26 +440,25 @@
     <div class="count">[[getDisplayedCount_(count)]]</div>
   </div>
 </div>
-<slot name="content">
-  <div id="metadata" class="metadata">
-    <button id="title" class="title"
-        aria-label="[[getButtonAriaLabel_(title, buttonAriaLabel)]]"
-        aria-description="[[
-            getButtonAriaDescription_(description, buttonAriaDescription)]]">
-      [[title]]
-    </button>
-    <div class="descriptions">
-      <div class="description" hidden$="[[!description]]">
-        <span class="description-text">[[description]]</span>
-        <span class="timestamp" hidden$="[[!timestamp]]">- [[timestamp]]</span>
-      </div>
-      <div class="badges">
-        <slot id="badges" name="badges" on-slotchange="onBadgesSlotChange_">
-        </slot>
-      </div>
+<slot id="content" name="content" on-slotchange="onContentSlotChange_"></slot>
+<div id="metadata" class="metadata">
+  <button id="title" class="title"
+      aria-label="[[getButtonAriaLabel_(title, buttonAriaLabel)]]"
+      aria-description="[[
+          getButtonAriaDescription_(description, buttonAriaDescription)]]">
+    [[title]]
+  </button>
+  <div class="descriptions">
+    <div class="description" hidden$="[[!description]]">
+      <span class="description-text">[[description]]</span>
+      <span class="timestamp" hidden$="[[!timestamp]]">- [[timestamp]]</span>
+    </div>
+    <div class="badges">
+      <slot id="badges" name="badges" on-slotchange="onBadgesSlotChange_">
+      </slot>
     </div>
   </div>
-</slot>
+</div>
 <div class="suffix-icons">
   <slot name="suffix-icon"></slot>
 </div>
