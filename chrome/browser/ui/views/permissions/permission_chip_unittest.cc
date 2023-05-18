@@ -184,7 +184,7 @@ TEST_F(PermissionChipUnitTest, AlreadyDisplayedRequestTest) {
   ASSERT_TRUE(delegate.IsRequestInProgress());
 }
 
-TEST_F(PermissionChipUnitTest, DisplayChipAutoPopupTest) {
+TEST_F(PermissionChipUnitTest, ClickOnRequestChipTest) {
   TestDelegate delegate(GURL("https://test.origin"),
                         {permissions::RequestType::kNotifications}, true,
                         web_contents_);
@@ -214,96 +214,11 @@ TEST_F(PermissionChipUnitTest, DisplayChipAutoPopupTest) {
   EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
   EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
 
-  // The seconds click on the chip hides the popup bubble.
+  // A click on the chip hides the popup bubble and resolves a permission
+  // request.
   ClickOnChip(*chip_controller->chip());
   EXPECT_FALSE(chip_controller->IsBubbleShowing());
-  ASSERT_TRUE(delegate.IsRequestInProgress());
-
-  // After the second click, only dismiss timer should be active.
-  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
-  EXPECT_TRUE(chip_controller->is_dismiss_timer_running_for_testing());
-
-  task_environment()->AdvanceClock(kNormalChipDismissDuration +
-                                   base::Seconds(1));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(delegate.IsRequestInProgress());
-}
-
-TEST_F(PermissionChipUnitTest, MultiClickOnChipAutoPopupTest) {
-  TestDelegate delegate(GURL("https://test.origin"),
-                        {permissions::RequestType::kNotifications}, true,
-                        web_contents_);
-  PermissionPromptChip chip_prompt(browser(), web_contents_, &delegate);
-  ChipController* chip_controller =
-      chip_prompt.get_chip_controller_for_testing();
-
-  EXPECT_FALSE(chip_controller->IsBubbleShowing());
-
-  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
-  EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
-
-  // Animation does not work. Most probably it is unit tests limitations.
-  // `chip.is_fully_collapsed()` will not work as well.
-  EXPECT_TRUE(chip_controller->IsAnimating());
-  chip_controller->stop_animation_for_test();
-  EXPECT_FALSE(chip_controller->IsAnimating());
-
-  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
-  EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
-
-  // The permission prompt bubble is open automatically
-  EXPECT_TRUE(chip_controller->IsBubbleShowing());
-
-  task_environment()->AdvanceClock(kLongerThanAllTimersDuration);
-  base::RunLoop().RunUntilIdle();
-  ASSERT_TRUE(delegate.IsRequestInProgress());
-  EXPECT_TRUE(chip_controller->IsBubbleShowing());
-
-  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
-  EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
-
-  ClickOnChip(*chip_controller->chip());
-
-  // The permission prompt bubble is open automatically, hence the first click
-  // on the chip should close the bubble.
-  EXPECT_FALSE(chip_controller->IsBubbleShowing());
-  EXPECT_TRUE(delegate.IsRequestInProgress());
-
-  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
-  EXPECT_TRUE(chip_controller->is_dismiss_timer_running_for_testing());
-
-  task_environment()->AdvanceClock(kNormalChipDismissDuration -
-                                   base::Seconds(1));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(chip_controller->IsBubbleShowing());
-  ASSERT_TRUE(delegate.IsRequestInProgress());
-
-  ClickOnChip(*chip_controller->chip());
-  EXPECT_TRUE(chip_controller->IsBubbleShowing());
-  ASSERT_TRUE(delegate.IsRequestInProgress());
-
-  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
-  EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
-
-  task_environment()->AdvanceClock(kLongerThanAllTimersDuration);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(chip_controller->IsBubbleShowing());
-  ASSERT_TRUE(delegate.IsRequestInProgress());
-
-  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
-  EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
-
-  ClickOnChip(*chip_controller->chip());
-  EXPECT_FALSE(chip_controller->IsBubbleShowing());
-  ASSERT_TRUE(delegate.IsRequestInProgress());
-
-  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
-  EXPECT_TRUE(chip_controller->is_dismiss_timer_running_for_testing());
-
-  task_environment()->AdvanceClock(kNormalChipDismissDuration +
-                                   base::Seconds(1));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(delegate.IsRequestInProgress());
+  EXPECT_FALSE(delegate.IsRequestInProgress());
 }
 
 TEST_F(PermissionChipUnitTest, DisplayQuietChipNoAbusiveTest) {
@@ -352,7 +267,7 @@ TEST_F(PermissionChipUnitTest, DisplayQuietChipNoAbusiveTest) {
   ASSERT_FALSE(delegate.IsRequestInProgress());
 }
 
-TEST_F(PermissionChipUnitTest, MultiClickOnQuietChipNoAbusiveTest) {
+TEST_F(PermissionChipUnitTest, ClickOnQuietChipNoAbusiveTest) {
   TestDelegate delegate(
       GURL("https://test.origin"), {permissions::RequestType::kNotifications},
       true, permissions::PermissionUiSelector::QuietUiReason::kEnabledInPrefs,
@@ -404,45 +319,7 @@ TEST_F(PermissionChipUnitTest, MultiClickOnQuietChipNoAbusiveTest) {
   // The seconds click on the chip hides the popup bubble.
   ClickOnChip(*chip_controller->chip());
   EXPECT_FALSE(chip_controller->IsBubbleShowing());
-  ASSERT_TRUE(delegate.IsRequestInProgress());
-
-  // After the second click, only dismiss timer should be active.
-  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
-  EXPECT_TRUE(chip_controller->is_dismiss_timer_running_for_testing());
-
-  task_environment()->AdvanceClock(kNormalChipDismissDuration -
-                                   base::Seconds(1));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(chip_controller->IsBubbleShowing());
-  ASSERT_TRUE(delegate.IsRequestInProgress());
-
-  // The third click on the chip opens the popup bubble again.
-  ClickOnChip(*chip_controller->chip());
-  EXPECT_TRUE(chip_controller->IsBubbleShowing());
-  ASSERT_TRUE(delegate.IsRequestInProgress());
-
-  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
-  EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
-
-  task_environment()->AdvanceClock(kLongerThanAllTimersDuration);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(chip_controller->IsBubbleShowing());
-  ASSERT_TRUE(delegate.IsRequestInProgress());
-
-  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
-  EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
-
-  ClickOnChip(*chip_controller->chip());
-  EXPECT_FALSE(chip_controller->IsBubbleShowing());
-  ASSERT_TRUE(delegate.IsRequestInProgress());
-
-  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
-  EXPECT_TRUE(chip_controller->is_dismiss_timer_running_for_testing());
-
-  task_environment()->AdvanceClock(kNormalChipDismissDuration +
-                                   base::Seconds(1));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(delegate.IsRequestInProgress());
+  EXPECT_FALSE(delegate.IsRequestInProgress());
 }
 
 TEST_F(PermissionChipUnitTest, DisplayQuietChipAbusiveTest) {
@@ -480,7 +357,7 @@ TEST_F(PermissionChipUnitTest, DisplayQuietChipAbusiveTest) {
   ASSERT_FALSE(delegate.IsRequestInProgress());
 }
 
-TEST_F(PermissionChipUnitTest, MultiClickOnQuietChipAbusiveTest) {
+TEST_F(PermissionChipUnitTest, ClickOnQuietChipAbusiveTest) {
   TestDelegate delegate(GURL("https://test.origin"),
                         {permissions::RequestType::kNotifications}, true,
                         permissions::PermissionUiSelector::QuietUiReason::
@@ -508,6 +385,7 @@ TEST_F(PermissionChipUnitTest, MultiClickOnQuietChipAbusiveTest) {
   EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
   EXPECT_TRUE(chip_controller->is_dismiss_timer_running_for_testing());
 
+  // Click to open a permission popup bubble.
   ClickOnChip(*chip_controller->chip());
   EXPECT_TRUE(chip_controller->IsBubbleShowing());
 
@@ -522,46 +400,9 @@ TEST_F(PermissionChipUnitTest, MultiClickOnQuietChipAbusiveTest) {
   EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
   EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
 
-  // The seconds click on the chip hides the popup bubble.
+  // The second click on the chip hides the prompt and resolves the permission
+  // request.
   ClickOnChip(*chip_controller->chip());
   EXPECT_FALSE(chip_controller->IsBubbleShowing());
-  ASSERT_TRUE(delegate.IsRequestInProgress());
-
-  // After the second click, only dismiss timer should be active.
-  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
-  EXPECT_TRUE(chip_controller->is_dismiss_timer_running_for_testing());
-
-  task_environment()->AdvanceClock(kQuietChipDismissDuration -
-                                   base::Seconds(1));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(chip_controller->IsBubbleShowing());
-  ASSERT_TRUE(delegate.IsRequestInProgress());
-
-  // The third click on the chip opens the popup bubble again.
-  ClickOnChip(*chip_controller->chip());
-  EXPECT_TRUE(chip_controller->IsBubbleShowing());
-  ASSERT_TRUE(delegate.IsRequestInProgress());
-
-  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
-  EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
-
-  task_environment()->AdvanceClock(kLongerThanAllTimersDuration);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(chip_controller->IsBubbleShowing());
-  ASSERT_TRUE(delegate.IsRequestInProgress());
-
-  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
-  EXPECT_FALSE(chip_controller->is_dismiss_timer_running_for_testing());
-
-  ClickOnChip(*chip_controller->chip());
-  EXPECT_FALSE(chip_controller->IsBubbleShowing());
-  ASSERT_TRUE(delegate.IsRequestInProgress());
-
-  EXPECT_FALSE(chip_controller->is_collapse_timer_running_for_testing());
-  EXPECT_TRUE(chip_controller->is_dismiss_timer_running_for_testing());
-
-  task_environment()->AdvanceClock(kQuietChipDismissDuration +
-                                   base::Seconds(1));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(delegate.IsRequestInProgress());
+  EXPECT_FALSE(delegate.IsRequestInProgress());
 }

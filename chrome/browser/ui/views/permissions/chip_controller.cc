@@ -175,17 +175,19 @@ void ChipController::RestartTimersOnMouseHover() {
 void ChipController::OnWidgetDestroying(views::Widget* widget) {
   DCHECK_EQ(GetBubbleWidget(), widget);
   ResetTimers();
-  if (widget->closed_reason() == views::Widget::ClosedReason::kEscKeyPressed ||
-      widget->closed_reason() ==
-          views::Widget::ClosedReason::kCloseButtonClicked) {
-    OnPromptBubbleDismissed();
-  }
 
   disallowed_custom_cursors_scope_.RunAndReset();
   widget->RemoveObserver(this);
 
-  CollapsePrompt(/*allow_restart=*/false);
   observation_.Reset();
+
+  if (widget->closed_reason() == views::Widget::ClosedReason::kEscKeyPressed ||
+      widget->closed_reason() ==
+          views::Widget::ClosedReason::kCloseButtonClicked) {
+    OnPromptBubbleDismissed();
+  } else {
+    CollapsePrompt(/*allow_restart=*/false);
+  }
 }
 
 void ChipController::OnWidgetActivationChanged(views::Widget* widget,
@@ -573,13 +575,14 @@ void ChipController::OnPromptBubbleDismissed() {
   if (!permission_prompt_model_)
     return;
 
-  permission_prompt_model_->SetShouldDismiss(true);
   if (permission_prompt_model_->GetDelegate().has_value()) {
     permission_prompt_model_->GetDelegate().value()->SetDismissOnTabClose();
     // If the permission prompt bubble is closed, we count it as "Dismissed",
-    // hence it should record the time when the bubble is closed and not when
-    // the permission request is finalized.
+    // hence it should record the time when the bubble is closed.
     permission_prompt_model_->GetDelegate().value()->SetDecisionTime();
+    // If a permission popup bubble is closed/dismissed, a permission request
+    // should be dismissed as well.
+    permission_prompt_model_->GetDelegate().value()->Dismiss();
   }
 }
 
@@ -588,11 +591,7 @@ void ChipController::OnPromptExpired() {
       IDS_PERMISSIONS_EXPIRED_SCREENREADER_ANNOUNCEMENT));
   if (permission_prompt_model_ &&
       permission_prompt_model_->GetDelegate().has_value()) {
-    if (permission_prompt_model_->ShouldDismiss()) {
-      permission_prompt_model_->GetDelegate().value()->Dismiss();
-    } else {
-      permission_prompt_model_->GetDelegate().value()->Ignore();
-    }
+    permission_prompt_model_->GetDelegate().value()->Ignore();
   }
 }
 
