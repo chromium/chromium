@@ -3363,54 +3363,6 @@ TEST_F(WallpaperControllerTest, ShowOneShotWallpaper) {
   EXPECT_EQ(WallpaperType::kCustomized, controller_->GetWallpaperType());
 }
 
-TEST_F(WallpaperControllerTest, ShowOobeWallpaper) {
-  SetBypassDecode();
-
-  controller_->ShowDefaultWallpaperForTesting();
-  RunAllTasksUntilIdle();
-
-  // Verify the OOBE wallpaper is shown during OOBE.
-  SetSessionState(SessionState::OOBE);
-  controller_->ReloadWallpaperForTesting(/*clear_cache=*/false);
-  RunAllTasksUntilIdle();
-  if (ash::features::IsOobeSimonEnabled()) {
-    EXPECT_TRUE(controller_->IsOobeWallpaper());
-  } else {
-    EXPECT_EQ(WallpaperType::kOneShot, controller_->GetWallpaperType());
-    EXPECT_EQ(GetWallpaperColor(), SK_ColorWHITE);
-  }
-
-  SetSessionState(SessionState::OOBE);
-  controller_->ShowSigninWallpaper();
-  RunAllTasksUntilIdle();
-  if (ash::features::IsOobeSimonEnabled()) {
-    EXPECT_TRUE(controller_->IsOobeWallpaper());
-  } else {
-    EXPECT_EQ(WallpaperType::kOneShot, controller_->GetWallpaperType());
-    EXPECT_EQ(GetWallpaperColor(), SK_ColorWHITE);
-  }
-
-  // Verify the OOBE wallpaper is replaced when session state is no
-  // longer OOBE.
-  SetSessionState(SessionState::LOGGED_IN_NOT_ACTIVE);
-  RunAllTasksUntilIdle();
-  EXPECT_FALSE(controller_->IsOobeWallpaper());
-
-  // Verify the OOBE wallpaper never shows up again when session
-  // state changes.
-  SetSessionState(SessionState::ACTIVE);
-  RunAllTasksUntilIdle();
-  EXPECT_FALSE(controller_->IsOobeWallpaper());
-
-  SetSessionState(SessionState::LOCKED);
-  RunAllTasksUntilIdle();
-  EXPECT_FALSE(controller_->IsOobeWallpaper());
-
-  SetSessionState(SessionState::LOGIN_SECONDARY);
-  RunAllTasksUntilIdle();
-  EXPECT_FALSE(controller_->IsOobeWallpaper());
-}
-
 TEST_F(WallpaperControllerTest, OnFirstWallpaperShown) {
   TestWallpaperControllerObserver observer(controller_);
   EXPECT_EQ(0, GetWallpaperCount());
@@ -3487,6 +3439,88 @@ TEST_F(WallpaperControllerTest, ShowWallpaperForEphemeralUser) {
   EXPECT_EQ(0, GetWallpaperCount());
   EXPECT_EQ(WallpaperType::kCustomized, controller_->GetWallpaperType());
   EXPECT_EQ(kWallpaperColor, GetWallpaperColor());
+}
+
+// Base class for `WallpaperControllerTest` parameterized by device properties
+// which OOBE wallpaper flow should be used
+class WallpaperControllerOobeWallpaperTest
+    : public WallpaperControllerTest,
+      public testing::WithParamInterface<
+          std::tuple</*OobeSimon*/ bool, /*OobeJelly*/ bool>> {
+ public:
+  WallpaperControllerOobeWallpaperTest() {
+    std::vector<base::test::FeatureRef> EnabledFeatures;
+    std::vector<base::test::FeatureRef> DisabledFeatures;
+
+    bool OobeSimon = std::get<0>(GetParam());
+    if (OobeSimon) {
+      EnabledFeatures.push_back(ash::features::kFeatureManagementOobeSimon);
+      EnabledFeatures.push_back(ash::features::kOobeSimon);
+    } else {
+      DisabledFeatures.push_back(ash::features::kFeatureManagementOobeSimon);
+      DisabledFeatures.push_back(ash::features::kOobeSimon);
+    }
+
+    bool OobeJelly = std::get<1>(GetParam());
+    if (OobeJelly) {
+      EnabledFeatures.push_back(ash::features::kOobeJelly);
+      EnabledFeatures.push_back(chromeos::features::kJelly);
+    } else {
+      DisabledFeatures.push_back(ash::features::kOobeJelly);
+      DisabledFeatures.push_back(chromeos::features::kJelly);
+    }
+
+    scoped_feature_list_.InitWithFeatures(EnabledFeatures, DisabledFeatures);
+  }
+  ~WallpaperControllerOobeWallpaperTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WallpaperControllerOobeWallpaperTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
+
+TEST_P(WallpaperControllerOobeWallpaperTest, ShowOobeWallpaper) {
+  SetBypassDecode();
+
+  controller_->ShowDefaultWallpaperForTesting();
+  RunAllTasksUntilIdle();
+
+  // Verify the OOBE wallpaper is shown during OOBE.
+  SetSessionState(SessionState::OOBE);
+  controller_->ReloadWallpaperForTesting(/*clear_cache=*/false);
+  RunAllTasksUntilIdle();
+  EXPECT_TRUE(controller_->IsOobeWallpaper());
+
+  controller_->ShowSigninWallpaper();
+  RunAllTasksUntilIdle();
+  EXPECT_TRUE(controller_->IsOobeWallpaper());
+
+  // Verify the OOBE wallpaper is replaced when session state is no
+  // longer OOBE.
+  SimulateUserLogin(kAccountId1);
+  RunAllTasksUntilIdle();
+  EXPECT_FALSE(controller_->IsOobeWallpaper());
+
+  // Verify the OOBE wallpaper never shows up again when session
+  // state changes.
+  SetSessionState(SessionState::LOGGED_IN_NOT_ACTIVE);
+  RunAllTasksUntilIdle();
+  EXPECT_FALSE(controller_->IsOobeWallpaper());
+  SetSessionState(SessionState::ACTIVE);
+  RunAllTasksUntilIdle();
+  EXPECT_FALSE(controller_->IsOobeWallpaper());
+
+  SetSessionState(SessionState::LOCKED);
+  RunAllTasksUntilIdle();
+  EXPECT_FALSE(controller_->IsOobeWallpaper());
+
+  SetSessionState(SessionState::LOGIN_SECONDARY);
+  RunAllTasksUntilIdle();
+  EXPECT_FALSE(controller_->IsOobeWallpaper());
 }
 
 // Base class for `WallpaperControllerTest` parameterized by whether override
