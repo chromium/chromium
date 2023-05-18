@@ -85,8 +85,9 @@ UpdateEngine::UpdateEngine(
     CrxCache::Options options(crx_cache_path.value());
     crx_cache_ = absl::optional<scoped_refptr<CrxCache>>(
         base::MakeRefCounted<CrxCache>(options));
+  } else {
+    crx_cache_ = absl::nullopt;
   }
-  crx_cache_ = absl::nullopt;
 }
 
 UpdateEngine::~UpdateEngine() = default;
