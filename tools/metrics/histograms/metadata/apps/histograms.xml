@@ -901,10 +901,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Scoring.ScoreAboveBestMatchThreshold{Type}"
-    units="BooleanHit" expires_after="2023-06-25">
-  <owner>wrong@chromium.org</owner>
+    units="BooleanHit" expires_after="2023-12-25">
   <owner>amandadeacon@chromium.org</owner>
-  <owner>celiahe@google.com</owner>
+  <owner>laurencom@chromium.org</owner>
   <summary>
     The number of the results above the BestMatch threshold with {Type} case.
     Recorded once per result's score above the BestMatch threshold.
