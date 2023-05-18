@@ -15,6 +15,9 @@
 #include "ui/base/l10n/time_format.h"
 
 namespace {
+constexpr char kGoogleDomain[] = "google.com";
+constexpr char kGoogleStoreHost[] = "store.google.com";
+
 std::string eTLDPlusOne(const GURL& url) {
   return net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
@@ -59,6 +62,14 @@ CartProcessor::CartProcessor(CartService* cart_service)
 
 CartProcessor::~CartProcessor() = default;
 
+bool CartProcessor::IsCartAssociatedWithVisitURL(CartDB::KeyAndValue& cart,
+                                                 GURL visit_url) {
+  if (cart.first == kGoogleDomain && visit_url.host() != kGoogleStoreHost) {
+    return false;
+  }
+  return cart.first == eTLDPlusOne(visit_url);
+}
+
 void CartProcessor::GetCartForCluster(
     history_clusters::mojom::ClusterPtr cluster,
     ntp::history_clusters::mojom::PageHandler::GetCartForClusterCallback
@@ -95,7 +106,7 @@ void CartProcessor::OnLoadCart(
   }
   for (auto cart : carts) {
     for (auto& visit : cluster->visits) {
-      if (cart.first == eTLDPlusOne(visit->normalized_url)) {
+      if (IsCartAssociatedWithVisitURL(cart, visit->normalized_url)) {
         std::move(callback).Run(CartToMojom(cart));
         return;
       }

@@ -302,3 +302,94 @@ TEST_F(CartProcessorTest, TestNoCartWhenFeatureDisabled) {
 
   ASSERT_FALSE(cart_mojom);
 }
+
+TEST_F(CartProcessorTest, TestCartAndVisitURLAssociation) {
+  cart_db::ChromeCartContentProto cart_proto;
+  cart_proto.set_key("google.com");
+  CartDB::KeyAndValue google_cart = {"google.com", cart_proto};
+
+  ASSERT_FALSE(CartProcessor::IsCartAssociatedWithVisitURL(
+      google_cart, GURL("https://www.google.com/search?q=foo")));
+  ASSERT_TRUE(CartProcessor::IsCartAssociatedWithVisitURL(
+      google_cart, GURL("https://store.google.com/")));
+}
+
+TEST_F(CartProcessorTest, TestNotMatchGoogleCartForNonGoogleStoreVisits) {
+  // Create a fake cluster with google.com visits that are not from
+  // store.google.com.
+  auto cluster_mojom = history_clusters::mojom::Cluster::New();
+  auto visit_mojom = history_clusters::mojom::URLVisit::New();
+  visit_mojom->normalized_url = GURL("https://www.google.com/search?q=foo");
+  cluster_mojom->visits.push_back(std::move(visit_mojom));
+
+  // Mock a Google store cart.
+  MockCartService& cart_service = mock_cart_service();
+  cart_db::ChromeCartContentProto cart_proto;
+  cart_proto.set_key("google.com");
+  std::vector<CartDB::KeyAndValue> carts = {{"google.com", cart_proto}};
+  EXPECT_CALL(cart_service, LoadAllActiveCarts(testing::_))
+      .Times(1)
+      .WillOnce(testing::WithArgs<0>(
+          testing::Invoke([&carts](CartDB::LoadCallback callback) -> void {
+            std::move(callback).Run(true, carts);
+          })));
+  EXPECT_CALL(cart_service, IsCartEnabled())
+      .Times(1)
+      .WillOnce(testing::Return(true));
+
+  // Capture the cart mojom that is finally returned.
+  ntp::history_clusters::cart::mojom::CartPtr cart_mojom;
+  base::MockCallback<
+      ntp::history_clusters::mojom::PageHandler::GetCartForClusterCallback>
+      callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&cart_mojom](ntp::history_clusters::cart::mojom::CartPtr cart) {
+            cart_mojom = std::move(cart);
+          }));
+
+  cart_processor().GetCartForCluster(std::move(cluster_mojom), callback.Get());
+
+  ASSERT_FALSE(cart_mojom);
+}
+
+TEST_F(CartProcessorTest, TestOnlyMatchGoogleCartForGoogleStore) {
+  // Create a fake cluster with store.google.com visit.
+  auto cluster_mojom = history_clusters::mojom::Cluster::New();
+  auto visit_mojom = history_clusters::mojom::URLVisit::New();
+  visit_mojom->normalized_url = GURL("https://store.google.com/");
+  cluster_mojom->visits.push_back(std::move(visit_mojom));
+
+  // Mock a Google store cart.
+  MockCartService& cart_service = mock_cart_service();
+  cart_db::ChromeCartContentProto cart_proto;
+  cart_proto.set_key("google.com");
+  std::vector<CartDB::KeyAndValue> carts = {{"google.com", cart_proto}};
+  EXPECT_CALL(cart_service, LoadAllActiveCarts(testing::_))
+      .Times(1)
+      .WillOnce(testing::WithArgs<0>(
+          testing::Invoke([&carts](CartDB::LoadCallback callback) -> void {
+            std::move(callback).Run(true, carts);
+          })));
+  EXPECT_CALL(cart_service, IsCartEnabled())
+      .Times(1)
+      .WillOnce(testing::Return(true));
+
+  // Capture the cart mojom that is finally returned.
+  ntp::history_clusters::cart::mojom::CartPtr cart_mojom;
+  base::MockCallback<
+      ntp::history_clusters::mojom::PageHandler::GetCartForClusterCallback>
+      callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&cart_mojom](ntp::history_clusters::cart::mojom::CartPtr cart) {
+            cart_mojom = std::move(cart);
+          }));
+
+  cart_processor().GetCartForCluster(std::move(cluster_mojom), callback.Get());
+
+  ASSERT_TRUE(cart_mojom);
+  ASSERT_EQ(cart_mojom->domain, "google.com");
+}
