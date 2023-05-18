@@ -6486,4 +6486,64 @@ IN_PROC_BROWSER_TEST_F(
       1);
 }
 
+// Ensure that the first navigation of a subframe away from the initial empty
+// document is recorded correctly. This does not test all possibilities of
+// histogram value, just that the scenario is counted under the correct
+// histogram.
+IN_PROC_BROWSER_TEST_F(
+    NavigationBrowserTest,
+    NavigationSuddenTerminationDisablerTypeRecordUmaInitialEmptyDocument) {
+  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  // Create a subframe with an unload handler.
+  ASSERT_TRUE(ExecJs(web_contents(), R"(
+    var i = document.createElement("iframe");
+    document.body.appendChild(i);
+  )"));
+
+  AddUnloadHandler(DescendantRenderFrameHostImplAt(current_frame_host(), {0}));
+
+  // Navigate the subframe and capture histograms.
+  base::HistogramTester histograms;
+  uint32_t expected_histogram_value =
+      RenderFrameHostImpl::NavigationSuddenTerminationDisablerType::kUnload |
+      RenderFrameHostImpl::NavigationSuddenTerminationDisablerType::
+          kInitialEmptyDocument |
+      RenderFrameHostImpl::NavigationSuddenTerminationDisablerType::kNotHttp;
+  ASSERT_TRUE(NavigateToURLFromRenderer(
+      DescendantRenderFrameHostImplAt(current_frame_host(), {0}), url));
+  histograms.ExpectUniqueSample(
+      "Navigation.SuddenTerminationDisabler.AllOrigins",
+      expected_histogram_value, 1);
+  histograms.ExpectUniqueSample(
+      "Navigation.SuddenTerminationDisabler.SameOrigin",
+      expected_histogram_value, 1);
+}
+
+// Ensure that navigations from non-HTTP(S) pages are recorded correctly.
+IN_PROC_BROWSER_TEST_F(
+    NavigationBrowserTest,
+    NavigationSuddenTerminationDisablerTypeRecordUmaNotHttp) {
+  GURL blank_url("about:blank");
+  GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), blank_url));
+
+  AddUnloadHandler(current_frame_host());
+
+  // Navigate the subframe and capture histograms.
+  base::HistogramTester histograms;
+  uint32_t expected_histogram_value =
+      RenderFrameHostImpl::NavigationSuddenTerminationDisablerType::kMainFrame |
+      RenderFrameHostImpl::NavigationSuddenTerminationDisablerType::kUnload |
+      RenderFrameHostImpl::NavigationSuddenTerminationDisablerType::kNotHttp;
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+  histograms.ExpectUniqueSample(
+      "Navigation.SuddenTerminationDisabler.AllOrigins",
+      expected_histogram_value, 1);
+  histograms.ExpectUniqueSample(
+      "Navigation.SuddenTerminationDisabler.SameOrigin",
+      expected_histogram_value, 1);
+}
+
 }  // namespace content
