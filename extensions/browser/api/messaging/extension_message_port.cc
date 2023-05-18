@@ -388,6 +388,9 @@ void ExtensionMessagePort::DecrementLazyKeepaliveCount(
     }
     std::string request_uuid = std::move(iter->second.back());
     iter->second.pop_back();
+    if (iter->second.empty()) {
+      pending_keepalive_uuids_.erase(iter);
+    }
     pm->DecrementServiceWorkerKeepaliveCount(
         worker_id, request_uuid, activity_type, PortIdToString(port_id_));
   }
