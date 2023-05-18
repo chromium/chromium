@@ -78,7 +78,8 @@ public class OmniboxActionInSuggest extends OmniboxAction {
 
         switch (actionType) {
             case REVIEWS:
-                assert false : "Pending implementation";
+                delegate.loadPageInCurrentTab(intent.getDataString());
+                actionStarted = true;
                 break;
 
             case CALL:

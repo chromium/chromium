@@ -32,6 +32,8 @@ class OmniboxActionInSuggest : public OmniboxAction {
  private:
   FRIEND_TEST_ALL_PREFIXES(OmniboxActionInSuggestTest,
                            ReportMetricsForUnknownType);
+  FRIEND_TEST_ALL_PREFIXES(BaseSearchProviderTest,
+                           CreateActionInSuggest_BuildActionURL);
   ~OmniboxActionInSuggest() override;
 
   omnibox::ActionInfo action_info_{};

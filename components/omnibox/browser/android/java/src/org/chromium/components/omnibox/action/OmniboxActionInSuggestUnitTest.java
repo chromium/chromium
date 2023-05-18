@@ -257,4 +257,30 @@ public class OmniboxActionInSuggestUnitTest {
                         OmniboxMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND));
         verifyNoMoreInteractions(mDelegate);
     }
+
+    @Test
+    public void executeActionInSuggest_executeReviewsInTab() {
+        var intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(UrlConstants.CHROME_DINO_URL));
+
+        buildActionInSuggest(EntityInfoProto.ActionInfo.ActionType.REVIEWS, intent)
+                .execute(mDelegate);
+
+        verify(mDelegate, times(1)).isIncognito();
+
+        assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Android.Omnibox.ActionInSuggest.IntentResult"));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.Omnibox.ActionInSuggest.IntentResult",
+                        OmniboxMetrics.ActionInSuggestIntentResult.SUCCESS));
+
+        verify(mDelegate, times(1)).loadPageInCurrentTab(mUrlCaptor.capture());
+
+        var url = mUrlCaptor.getValue();
+        assertNotNull(url);
+        assertEquals(UrlConstants.CHROME_DINO_URL, url);
+        verifyNoMoreInteractions(mDelegate);
+    }
 }
