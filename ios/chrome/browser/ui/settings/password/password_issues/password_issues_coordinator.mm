@@ -66,6 +66,14 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   // Coordinator for password issues displaying dismissed compromised
   // credentials.
   PasswordIssuesCoordinator* _dismissedPasswordIssuesCoordinator;
+
+  // Flag indicating if the coordinator should dismiss its view controller after
+  // the view controller of a child coordinator is removed from the stack. When
+  // the issues and dismissed warnings are removed by the user, the coordinator
+  // should dismiss its view controller and go back to the previous screen. If
+  // there are child coordinators, this flag is used to dismiss the view
+  // controller after the children are dismissed.
+  BOOL _shouldDismissAfterChildCoordinatorRemoved;
 }
 
 // Main view controller for this coordinator.
@@ -163,8 +171,6 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
                           reauthModule:self.reauthModule
                                context:ComputeDetailsContextFromWarningType(
                                            _warningType)];
-  self.passwordDetails.shouldDismissOnAllPasswordsGone =
-      !self.mediator.hasOneIssueLeft;
   self.passwordDetails.delegate = self;
   [self.passwordDetails start];
 }
@@ -182,25 +188,11 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 }
 
 - (void)dismissAfterAllIssuesGone {
-  UINavigationController* baseNavigationController =
-      self.baseNavigationController;
-  NSInteger indexInNavigationController =
-      [baseNavigationController.viewControllers
-          indexOfObject:self.viewController];
-
-  // Nothing to do if viewController was already removed from the navigation
-  // stack.
-  if (indexInNavigationController == NSNotFound) {
-    return;
+  if (self.baseNavigationController.topViewController == self.viewController) {
+    [self.baseNavigationController popViewControllerAnimated:NO];
+  } else {
+    _shouldDismissAfterChildCoordinatorRemoved = YES;
   }
-
-  CHECK_GT(indexInNavigationController, 0);
-
-  // Go to previous view controller in navigation stack.
-  [baseNavigationController
-      popToViewController:baseNavigationController
-                              .viewControllers[indexInNavigationController - 1]
-                 animated:YES];
 }
 
 #pragma mark - PasswordDetailsCoordinatorDelegate
@@ -211,6 +203,8 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   [self.passwordDetails stop];
   self.passwordDetails.delegate = nil;
   self.passwordDetails = nil;
+
+  [self onChildCoordinatorDidRemove];
 }
 
 #pragma mark - PasswordIssuesCoordinatorDelegate
@@ -219,6 +213,8 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
     (PasswordIssuesCoordinator*)coordinator {
   CHECK_EQ(_dismissedPasswordIssuesCoordinator, coordinator);
   [self stopDismissedPasswordIssuesCoordinator];
+
+  [self onChildCoordinatorDidRemove];
 }
 
 #pragma mark - Private
@@ -228,6 +224,22 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   _dismissedPasswordIssuesCoordinator.reauthModule = nil;
   _dismissedPasswordIssuesCoordinator.delegate = nil;
   _dismissedPasswordIssuesCoordinator = nil;
+}
+
+// Called after the view controller of a child coordinator of `self` was removed
+// from the navigation stack.
+- (void)onChildCoordinatorDidRemove {
+  // If the content of the view controller was gone while a child coordinator
+  // was presenting content, dismiss the view controller now that the child
+  // coordinator's vc was removed.
+  if (_shouldDismissAfterChildCoordinatorRemoved) {
+    CHECK_EQ(self.baseNavigationController.topViewController,
+             self.viewController);
+    _shouldDismissAfterChildCoordinatorRemoved = NO;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self.baseNavigationController popViewControllerAnimated:NO];
+    });
+  }
 }
 
 @end
