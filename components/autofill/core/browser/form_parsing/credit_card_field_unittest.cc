@@ -594,9 +594,16 @@ struct DetermineExpirationDateFormatTestCase {
 class DetermineExpirationDateFormat
     : public testing::TestWithParam<DetermineExpirationDateFormatTestCase> {
  public:
+  DetermineExpirationDateFormat() {
+    scoped_features_.InitAndEnableFeature(
+        features::kAutofillEnableExpirationDateImprovements);
+  }
   const DetermineExpirationDateFormatTestCase& test_case() const {
     return GetParam();
   }
+
+ protected:
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 TEST_P(DetermineExpirationDateFormat, TestDetermineFormat) {
@@ -672,6 +679,10 @@ INSTANTIATE_TEST_SUITE_P(
         DetermineExpirationDateFormatTestCase{"(MM/YYYY)", 4, "", 2},
         // Four digit year label with restrictive maxlength (5).
         DetermineExpirationDateFormatTestCase{"(MM/YYYY)", 5, "/", 2},
+
+        // Spanish format.
+        DetermineExpirationDateFormatTestCase{"MM / AA", 0, " / ", 2},
+        DetermineExpirationDateFormatTestCase{"MM / AAAA", 0, " / ", 4},
 
         // Different separator.
         DetermineExpirationDateFormatTestCase{"MM - YY", 0, " - ", 2},

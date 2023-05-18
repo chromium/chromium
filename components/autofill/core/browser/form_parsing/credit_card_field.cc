@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_filler.h"
@@ -493,8 +494,27 @@ void CreditCardField::AddClassifications(
   if (expiration_date_) {
     DCHECK(!expiration_month_);
     DCHECK(!expiration_year_);
-    AddClassification(expiration_date_, GetExpirationYearType(),
-                      kBaseCreditCardParserScore, field_candidates);
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableExpirationDateImprovements)) {
+      // We try to derive the expiration date from the max-length and label or
+      // placeholder strings. If that's not possible, we fallback to the format
+      // determined in `GetExpirationYearType()`.
+      ServerFieldType fallback_type =
+          GetExpirationYearType() == CREDIT_CARD_EXP_2_DIGIT_YEAR
+              ? CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR
+              : CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR;
+      ExpirationDateFormat format =
+          CreditCardField::DetermineExpirationDateFormat(*expiration_date_,
+                                                         fallback_type);
+      AddClassification(expiration_date_,
+                        format.digits_in_expiration_year == 2
+                            ? CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR
+                            : CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
+                        kBaseCreditCardParserScore, field_candidates);
+    } else {
+      AddClassification(expiration_date_, GetExpirationYearType(),
+                        kBaseCreditCardParserScore, field_candidates);
+    }
   } else {
     AddClassification(expiration_month_, CREDIT_CARD_EXP_MONTH,
                       kBaseCreditCardParserScore, field_candidates);
@@ -561,14 +581,22 @@ bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
     return true;
   }
 
-  // If that fails, look for just MM and/or YY(YY).
+  // If that fails, look for just MM and/or YY(YY) (or the Spanish/Portuguese
+  // MM / AA(AA) version).
   scanner->RewindTo(month_year_saved_cursor);
+
+  std::u16string year_pattern =
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableExpirationDateImprovements)
+          ? u"^(yy|yyyy|aa|aaaa)$"
+          : u"^(yy|yyyy)$";
   if (ParseFieldSpecifics(scanner, u"^mm$", kMatchCCType,
                           cc_exp_month_before_year_patterns, &expiration_month_,
                           {log_manager_, "^mm$"}) &&
-      ParseFieldSpecifics(scanner, u"^(yy|yyyy)$", kMatchCCType,
-                          cc_exp_year_after_month_patterns, &expiration_year_,
-                          {log_manager_, "^(yy|yyyy)$"})) {
+      ParseFieldSpecifics(
+          scanner, year_pattern, kMatchCCType, cc_exp_year_after_month_patterns,
+          &expiration_year_,
+          {log_manager_, base::UTF16ToUTF8(year_pattern).c_str()})) {
     return true;
   }
 
@@ -651,16 +679,28 @@ CreditCardField::DetermineExpirationDateFormat(
   // "mm/yy", "mm/yyyy", "mm / yy", "mm-yyyy", ... in one of the human
   // readable labels. In that case, follow the specified pattern.
   std::vector<std::u16string> groups;
-  static constexpr char16_t kFormatRegEx[] = u"mm(\\s?[/-]?\\s?)?(y{2,4})";
-  //                                              ^^^^ opt white space
-  //                                                  ^^^^^ opt separator
-  //                                                       ^^^ opt white space
-  //                                                         year ^^^^^^^
+  bool matches = false;
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableExpirationDateImprovements)) {
+    static constexpr char16_t kFormatRegex[] =
+        u"mm(\\s?[/-]?\\s?)?(y{2,4}|a{2,4})";
+    //       ^^^^ opt white space
+    //           ^^^^^ opt separator
+    //                ^^^ opt white space
+    //                       ^^^^^^^^^^^^^^ year
+    matches = MatchesRegex<kFormatRegex>(field.placeholder, &groups) ||
+              MatchesRegex<kFormatRegex>(field.label, &groups);
+  } else {
+    static constexpr char16_t kFormatRegEx[] = u"mm(\\s?[/-]?\\s?)?(y{2,4})";
+    //                                              ^^^^ opt white space
+    //                                                  ^^^^^ opt separator
+    //                                                       ^^^ opt white space
+    //                                                         year ^^^^^^^
+    matches = MatchesRegex<kFormatRegEx>(field.placeholder, &groups) ||
+              MatchesRegex<kFormatRegEx>(field.label, &groups);
+  }
   // TODO(crbug/1326244): We should use language specific regex.
-  // Turn this to u"mm(\\s?[/-]?\\s?)?(y{2,4}|a{2,4})" to include hispanic
-  // sites.
-  if (MatchesRegex<kFormatRegEx>(field.placeholder, &groups) ||
-      MatchesRegex<kFormatRegEx>(field.label, &groups)) {
+  if (matches) {
     const std::u16string& separator = groups[1];
     const std::u16string& year_format = groups[2];
     uint8_t year_length = year_format.length();
