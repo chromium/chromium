@@ -1253,6 +1253,7 @@
               "external/wpt/accessibility/",
               "external/wpt/dom/ranges/Range-deleteContents.html",
               "external/wpt/html/semantics/embedded-content/the-iframe-element/iframe-initially-empty-is-updated.html",
+              "external/wpt/html/semantics/interactive-elements/the-dialog-element/inert-svg-hittest.html",
               "editing/text-iterator/auto-expand-details.html",
               "editing/text-iterator/auto-expand-details-shadowdom.html"],
     "args": ["--force-renderer-accessibility"],
