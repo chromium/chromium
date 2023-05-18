@@ -4,4 +4,14 @@ rootWebArea name='done'
 ++++++heading ignored invisible
 ++++++++staticText ignored invisible name='Stay hidden'
 ++++++heading ignored invisible
+++++++++group ignored invisible
+++++++++++mark ignored invisible
+++++++++++++staticText ignored invisible name='xyz'
 ++++++++staticText ignored invisible name='To hidden'
+++++++heading name='From hidden'
+++++++++group
+++++++++++mark
+++++++++++++staticText name='xyz'
+++++++++++++++inlineTextBox name='xyz'
+++++++++staticText name='From hidden'
+++++++++++inlineTextBox name='From hidden'

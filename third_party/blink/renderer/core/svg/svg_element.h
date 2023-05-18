@@ -234,6 +234,8 @@ class CORE_EXPORT SVGElement : public Element {
 
   bool HasSVGParent() const;
 
+  bool HasFocusEventListeners() const;
+
  protected:
   SVGElement(const QualifiedName&,
              Document&,
@@ -276,8 +278,6 @@ class CORE_EXPORT SVGElement : public Element {
   void ReportAttributeParsingError(SVGParsingError,
                                    const QualifiedName&,
                                    const AtomicString&);
-  bool HasFocusEventListeners() const;
-
   void AddedEventListener(const AtomicString& event_type,
                           RegisteredEventListener&) override;
   void RemovedEventListener(const AtomicString& event_type,

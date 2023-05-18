@@ -1000,6 +1000,10 @@ bool AXObject::CanHaveChildren(Element& element) {
     return false;
   }
 
+  if (IsA<HTMLImageElement>(element)) {
+    return GetMapForImage(&element);
+  }
+
   // Placeholder gets exposed as an attribute on the input accessibility node,
   // so there's no need to add its text children. Placeholder text is a separate
   // node that gets removed when it disappears, so this will only be present if
@@ -2942,6 +2946,20 @@ bool AXObject::AccessibilityIsIncludedInTree() const {
   return !AccessibilityIsIgnored() || AccessibilityIsIgnoredButIncludedInTree();
 }
 
+void AXObject::InvalidateCachedValues() {
+#if DCHECK_IS_ON()
+  DCHECK(!is_updating_cached_values_)
+      << "Should not invalidate cached values while updating them.";
+#endif
+
+  last_modification_count_ = -1;
+  focus_attribute_cache_modification_count_ = -1;
+}
+
+bool AXObject::NeedsToUpdateCachedValues() const {
+  return AXObjectCache().ModificationCount() != last_modification_count_;
+}
+
 void AXObject::UpdateCachedAttributeValuesIfNeeded(
     bool notify_parent_of_ignored_changes) const {
   if (IsDetached()) {
@@ -2952,8 +2970,9 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
 
   AXObjectCacheImpl& cache = AXObjectCache();
 
-  if (cache.ModificationCount() == last_modification_count_)
+  if (!NeedsToUpdateCachedValues()) {
     return;
+  }
 
   last_modification_count_ = cache.ModificationCount();
 
@@ -3048,6 +3067,13 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   // may misfire.
   if (notify_included_in_tree_changed) {
     if (AXObject* parent = CachedParentObject()) {
+      SANITIZER_CHECK(!AXObjectCache().IsFrozen())
+          << "Objects cannot change their inclusion state during "
+             "serialization:\n"
+          << "* Object: " << ToString(true, true) << "\n* Ignored will become "
+          << is_ignored << "\n* Included in tree will become "
+          << (!is_ignored || is_ignored_but_included_in_tree)
+          << "\n* Parent: " << parent->ToString(true, true);
       // Defers a ChildrenChanged() on the first included ancestor.
       // Must defer it, otherwise it can cause reentry into
       // UpdateCachedAttributeValuesIfNeeded() on |this|.
@@ -3862,6 +3888,10 @@ bool AXObject::CanSetFocusAttribute() const {
   AXObjectCacheImpl& cache = AXObjectCache();
   auto* document = GetDocument();
 
+  // TODO(accessibility) Try to unify this with the system used for other
+  // cached_ members, e.g. use UpdateCachedAttributeValuesIfNeeded(), without
+  // affecting performance. It should be possible now that our cached value
+  // invalidations are more targeted.
   if (document->StyleVersion() != focus_attribute_style_version_ ||
       document->DomTreeVersion() != focus_attribute_dom_tree_version_ ||
       cache.ModificationCount() != focus_attribute_cache_modification_count_) {
@@ -3920,8 +3950,7 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
   // because UpdateCachedAttributeValuesIfNeeded() can end up calling
   // CanSetFocusAttribute() again, which will then try to return
   // cached_can_set_focus_attribute_, but we haven't set it yet.
-  bool are_cached_attributes_up_to_date =
-      AXObjectCache().ModificationCount() == last_modification_count_;
+  bool are_cached_attributes_up_to_date = !NeedsToUpdateCachedValues();
   if (are_cached_attributes_up_to_date ? cached_is_inert_ : ComputeIsInert())
     return false;
 
@@ -5667,8 +5696,8 @@ void AXObject::ClearChildren() const {
         // Since this code only runs when |map| is set, and therefore
         // |node| is an image outside the map, this only needs to happen for
         // the map descendants, not the image descendants.
-        AXObjectCache().RemoveSubtreeWithFlatTraversal(ax_child_from_node,
-                                                       false);
+        AXObjectCache().RemoveSubtreeWithCleanLayout(ax_child_from_node,
+                                                     /* notify_parent */ false);
       } else {
         ax_child_from_node->DetachFromParent();
       }
@@ -5737,8 +5766,8 @@ void AXObject::ChildrenChangedWithCleanLayout() {
   // all of them, and we don't want to leave any parentless objects around. This
   // will force re-creation of any AXObjects for this subtree.
   if (GetNode() && GetNode()->IsPseudoElement()) {
-    AXObjectCache().RemoveSubtreeWithFlatTraversal(this,
-                                                   /* notify_parent */ false);
+    AXObjectCache().RemoveSubtreeWithCleanLayout(this,
+                                                 /* notify_parent */ false);
   }
 }
 
@@ -7311,6 +7340,10 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
 
     if (!GetDocument())
       string_builder = string_builder + " missingDocument";
+
+    if (NeedsToUpdateCachedValues()) {
+      string_builder = string_builder + " needsToUpdateCachedValues";
+    }
 
     // Add properties of interest that often contribute to errors:
     if (HasARIAOwns(GetElement())) {

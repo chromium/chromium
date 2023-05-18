@@ -72,10 +72,9 @@ async_test((t) => {
     target.getBoundingClientRect();
     axTarget = axElementById("target");
 
-    // Now #target is not locked, but expect the same 9 children ("target" text node, 4 whitespace
-    // nodes between divs, and 4 div nodes). That's because the nodes already exist, they were
-    // updated to become ignored but they are still included in the tree.
-    t.step(() => { assert_equals(axTarget.childrenCount, 9, "Children count when not locked"); });
+    // Now #target is not locked, expect 5 children ("target" text node, 4 divs).
+    // This is the same as it would be if content-visibility had never been used.
+    t.step(() => { assert_equals(axTarget.childrenCount, 5, "Children count when not locked"); });
 
     for (let i = 0; i < axTarget.childrenCount; ++i) {
       const axChild = axTarget.childAtIndex(i);

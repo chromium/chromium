@@ -4758,7 +4758,11 @@ bool AXNodeObject::OnNativeFocusAction() {
   if (!document || !node)
     return false;
 
+  // TODO(accessibility) Determine why UpdateAllLifecyclePhasesExceptPaint() is
+  // not enough for all content-visibility: auto cases.
   document->UpdateStyleAndLayoutTreeForNode(node);
+  document->View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kAccessibility);
 
   if (!CanSetFocusAttribute())
     return false;

@@ -320,6 +320,13 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void UpdateCachedAttributeValuesIfNeeded(
       bool notify_parent_of_ignored_changes = true) const;
 
+  // Invalidates cached_* members on this object only by resetting the
+  // modification count.
+  // To instead invalidate on all objects in a subtree, call
+  // AXObjectCacheImpl::InvalidateCachedValuesOnSubtree().
+  void InvalidateCachedValues();
+  bool NeedsToUpdateCachedValues() const;
+
   // The AXObjectCacheImpl that owns this object, and its unique ID within this
   // cache.
   AXObjectCacheImpl& AXObjectCache() const {
