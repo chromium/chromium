@@ -286,7 +286,6 @@ chrome.fileManagerPrivate.EntryPropertyName = {
   SYNC_STATUS: 'syncStatus',
   PROGRESS: 'progress',
   SHORTCUT: 'shortcut',
-  SYNC_COMPLETED_TIME: 'syncCompletedTime',
 };
 
 /**
@@ -534,7 +533,6 @@ chrome.fileManagerPrivate.ResultingTasks;
  *   isArbitrarySyncFolder: (boolean|undefined),
  *   syncStatus: (!chrome.fileManagerPrivate.SyncStatus|undefined),
  *   progress: (number|undefined),
- *   syncCompletedTime: (number|undefined),
  *   shortcut: (boolean|undefined)
  * }}
  */

@@ -920,11 +920,13 @@ testcase.driveInlineSyncStatusSingleFile = async () => {
 
   // Fake the file starting to sync.
   await sendTestMessage({
-    name: 'setDriveSyncProgress',
+    name: 'setDriveFileSyncStatus',
     path: `/root/${toBeUploaded.targetPath}`,
-    progress: 50,
+    syncStatus: 'in_progress',
   });
 
+  // On `DriveFsTestVolume::SetFileSyncStatus`, the fake event setting the
+  // path's status hardcodes the progress as 50 bytes / 100 bytes transferred.
   // Verify this data reaches the UI as a progress value of 50%.
   const inlineStatus = await remoteCall.waitForElement(
       appId, '[data-sync-status=in_progress] .progress');
@@ -933,9 +935,9 @@ testcase.driveInlineSyncStatusSingleFile = async () => {
 
   // Fake the file finishing syncing.
   await sendTestMessage({
-    name: 'setDriveSyncProgress',
+    name: 'setDriveFileSyncStatus',
     path: `/root/${toBeUploaded.targetPath}`,
-    progress: 100,
+    syncStatus: 'completed',
   });
 
   // Verify the "sync in progress" icon is no longer displayed.
@@ -989,63 +991,52 @@ testcase.driveInlineSyncStatusParentFolder = async () => {
 
   // Fake syncing both files to Drive.
   await sendTestMessage({
-    name: 'setDriveSyncProgress',
+    name: 'setDriveFileSyncStatus',
     path: `/root/${toBeUploaded.targetPath}`,
-    progress: 50,
+    syncStatus: 'in_progress',
   });
   await sendTestMessage({
-    name: 'setDriveSyncProgress',
+    name: 'setDriveFileSyncStatus',
     path: `/root/${toFailUploading.targetPath}`,
-    progress: 50,
-  });
-  await sendTestMessage({
-    name: 'setDriveSyncProgress',
-    path: `/root/${parentDir.targetPath}`,
-    progress: 50,
+    syncStatus: 'in_progress',
   });
   // States:
-  // some_folder - syncing in progress
-  // some_folder/toBeUploaded - syncing in progress
-  // some_folder/toFailUploading - syncing in progress
+  // toBeUploaded - syncing in progress
+  // toFailUploading - syncing in progress
 
   const syncInProgressQuery = '[data-sync-status=in_progress]';
-  const syncQueuedQuery = '[data-sync-status=queued]';
+  const syncFailedQuery = '[data-sync-status=error]';
 
-  // Verify the "sync in progress" icon is displayed in the parent "some_folder"
-  // folder.
+  // Verify the "sync in progress" icon is displayed in the parent folder.
   await remoteCall.waitForElement(appId, syncInProgressQuery);
-
-  // Go inside the some_folder folder.
-  await navigateWithDirectoryTree(appId, '/My Drive/some_folder');
 
   // Fake toFailUploading.ogv failing to sync to Drive.
   await sendTestMessage({
-    name: 'setDriveSyncError',
+    name: 'setDriveFileSyncStatus',
     path: `/root/${toFailUploading.targetPath}`,
+    syncStatus: 'error',
   });
   // States:
-  // some_folder - syncing in progress
-  // some_folder/toBeUploaded - syncing in progress
-  // some_folder/toFailUploading - syncing failed (when file fail to sync, their status
-  // changes back to "queued")
+  // toBeUploaded - syncing in progress
+  // toFailUploading - syncing failed
 
-  // Verify the "sync queued" icon is displayed.
+  // Verify the "sync failed" icon is displayed in the parent folder.
   // (failed > in progress)
-  await remoteCall.waitForElement(appId, syncQueuedQuery);
+  await remoteCall.waitForElement(appId, syncFailedQuery);
 
-  // Fake root/some_folder/world.ogv finishing syncing.
+  // Fake some/path/world.ogv finishing syncing.
   await sendTestMessage({
-    name: 'setDriveSyncProgress',
+    name: 'setDriveFileSyncStatus',
     path: `/root/${toBeUploaded.targetPath}`,
-    progress: 100,
+    syncStatus: 'completed',
   });
   // States:
   // toBeUploaded - syncing completed
   // toFailUploading - syncing failed
 
-  // Verify the "sync queued" icon is still displayed in the parent folder.
+  // Verify the "sync failed" icon is still displayed in the parent folder.
   // (failed > completed)
-  await remoteCall.waitForElement(appId, syncQueuedQuery);
+  await remoteCall.waitForElement(appId, syncFailedQuery);
 };
 
 /**
