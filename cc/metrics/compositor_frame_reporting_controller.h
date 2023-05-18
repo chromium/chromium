@@ -18,6 +18,7 @@
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/predictor_jank_tracker.h"
+#include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
 
 namespace viz {
 struct FrameTimingDetails;
@@ -200,6 +201,8 @@ class CC_EXPORT CompositorFrameReportingController {
   // must outlive the objects in |submitted_compositor_frames_|.
   std::unique_ptr<LatencyUkmReporter> latency_ukm_reporter_;
   std::unique_ptr<PredictorJankTracker> predictor_jank_tracker_;
+  std::unique_ptr<ScrollJankDroppedFrameTracker>
+      scroll_jank_dropped_frame_tracker_;
 
   std::unique_ptr<CompositorFrameReporter>
       reporters_[PipelineStage::kNumPipelineStages];

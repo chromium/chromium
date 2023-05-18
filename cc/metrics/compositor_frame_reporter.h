@@ -23,6 +23,7 @@
 #include "cc/metrics/frame_info.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/predictor_jank_tracker.h"
+#include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
 #include "cc/scheduler/scheduler.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_timing_details.h"
@@ -45,6 +46,8 @@ struct GlobalMetricsTrackers {
   raw_ptr<EventLatencyTracker, DanglingUntriaged> event_latency_tracker =
       nullptr;
   raw_ptr<PredictorJankTracker> predictor_jank_tracker = nullptr;
+  raw_ptr<ScrollJankDroppedFrameTracker> scroll_jank_dropped_frame_tracker =
+      nullptr;
 };
 
 // This is used for tracing and reporting the duration of pipeline stages within

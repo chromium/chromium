@@ -13,6 +13,7 @@
 #include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/metrics/latency_ukm_reporter.h"
+#include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
@@ -40,6 +41,8 @@ CompositorFrameReportingController::CompositorFrameReportingController(
       layer_tree_host_id_(layer_tree_host_id),
       latency_ukm_reporter_(std::make_unique<LatencyUkmReporter>()),
       predictor_jank_tracker_(std::make_unique<PredictorJankTracker>()),
+      scroll_jank_dropped_frame_tracker_(
+          std::make_unique<ScrollJankDroppedFrameTracker>()),
       previous_latency_predictions_main_(base::Microseconds(-1)),
       previous_latency_predictions_impl_(base::Microseconds(-1)),
       event_latency_predictions_(
@@ -51,6 +54,8 @@ CompositorFrameReportingController::CompositorFrameReportingController(
     global_trackers_.latency_ukm_reporter = latency_ukm_reporter_.get();
   }
   global_trackers_.predictor_jank_tracker = predictor_jank_tracker_.get();
+  global_trackers_.scroll_jank_dropped_frame_tracker =
+      scroll_jank_dropped_frame_tracker_.get();
 }
 
 CompositorFrameReportingController::~CompositorFrameReportingController() {
