@@ -445,7 +445,7 @@ InsecureDownloadStatus GetInsecureDownloadStatusForDownload(
   // When enabled, show a visible (bypassable) warning on insecure downloads.
   // Since mixed download blocking is more severe, exclude mixed downloads from
   // this early-return to let the mixed download logic below apply.
-  if (base::FeatureList::IsEnabled(features::kBlockInsecureDownloads) &&
+  if (base::FeatureList::IsEnabled(features::kInsecureDownloadWarnings) &&
       data.is_insecure_download_ && !data.is_mixed_content_) {
     PrintConsoleMessage(data, true);
     return InsecureDownloadStatus::BLOCK;

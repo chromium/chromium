@@ -1490,7 +1490,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, InsecureDownloadsBlocked) {
 #endif
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kBlockInsecureDownloads);
+  feature_list.InitAndEnableFeature(features::kInsecureDownloadWarnings);
 
   for (const auto& test_case : kTestCases) {
     std::unique_ptr<download::MockDownloadItem> download_item =
@@ -1526,7 +1526,7 @@ TEST_F(ChromeDownloadManagerDelegateTest,
       .WillByDefault(Return(download::DownloadSource::CONTEXT_MENU));
   DetermineDownloadTargetResult result;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kBlockInsecureDownloads);
+  feature_list.InitAndEnableFeature(features::kInsecureDownloadWarnings);
 
   DetermineDownloadTarget(download_item.get(), &result);
 

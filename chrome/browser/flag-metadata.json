@@ -738,11 +738,6 @@
     "expiry_milestone": 117
   },
   {
-    "name": "block-insecure-downloads",
-    "owners": [ "jdeblasio", "trusty-transport@chromium.org" ],
-    "expiry_milestone": 118
-  },
-  {
     "name": "block-insecure-private-network-requests",
     "owners": [ "titouan", "lyf", "chrome-security-owp-team@google.com" ],
     "expiry_milestone": 118
@@ -4567,6 +4562,11 @@
     "name": "infobar-scroll-optimization",
     "owners": [ "lazzzis@google.com", "mdjones", "twellington" ],
     "expiry_milestone": 121
+  },
+  {
+    "name": "insecure-download-warnings",
+    "owners": [ "jdeblasio", "trusty-transport@chromium.org" ],
+    "expiry_milestone": 118
   },
   {
     "name": "install-isolated-web-app-from-url",

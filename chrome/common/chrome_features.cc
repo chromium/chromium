@@ -1148,9 +1148,9 @@ BASE_FEATURE(kTreatUnsafeDownloadsAsActive,
              "TreatUnsafeDownloadsAsActive",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Block downloads delivered over insecure transports (i.e. not over HTTPS).
-BASE_FEATURE(kBlockInsecureDownloads,
-             "BlockInsecureDownloads",
+// Show warnings on downloads not delivered over HTTPS.
+BASE_FEATURE(kInsecureDownloadWarnings,
+             "InsecureDownloadWarnings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TrustSafetySentimentSurvey

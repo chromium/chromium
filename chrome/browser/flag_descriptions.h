@@ -93,9 +93,6 @@ extern const char kAppDeduplicationServiceFondueDescription[];
 extern const char kBackgroundResourceFetchName[];
 extern const char kBackgroundResourceFetchDescription[];
 
-extern const char kBlockInsecureDownloadsName[];
-extern const char kBlockInsecureDownloadsDescription[];
-
 extern const char kBrokerFileOperationsOnDiskCacheInNetworkServiceName[];
 extern const char kBrokerFileOperationsOnDiskCacheInNetworkServiceDescription[];
 
@@ -1034,6 +1031,9 @@ extern const char kInProductHelpSnoozeDescription[];
 
 extern const char kInProductHelpUseClientConfigName[];
 extern const char kInProductHelpUseClientConfigDescription[];
+
+extern const char kInsecureDownloadWarningsName[];
+extern const char kInsecureDownloadWarningsDescription[];
 
 extern const char kInstallIsolatedWebAppFromUrl[];
 extern const char kInstallIsolatedWebAppFromUrlDescription[];

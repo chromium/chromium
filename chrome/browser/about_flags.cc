@@ -8291,9 +8291,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIncognitoNtpRevampDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kIncognitoNtpRevamp)},
 
-    {"block-insecure-downloads", flag_descriptions::kBlockInsecureDownloadsName,
-     flag_descriptions::kBlockInsecureDownloadsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kBlockInsecureDownloads)},
+    {"insecure-download-warnings",
+     flag_descriptions::kInsecureDownloadWarningsName,
+     flag_descriptions::kInsecureDownloadWarningsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kInsecureDownloadWarnings)},
 
     {"show-performance-metrics-hud",
      flag_descriptions::kShowPerformanceMetricsHudName,
