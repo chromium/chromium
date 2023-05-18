@@ -104,6 +104,19 @@ TEST_F(UserDelegateImplTest, IsManagedUser_True) {
   EXPECT_TRUE(user_delegate_->IsManagedUser());
 }
 
+// Tests that IsSameUser returns false when the identity manager
+// is a nullptr.
+TEST_F(UserDelegateImplTest, IsSameUser_NullManager) {
+  // Instantiate all of the dependencies and reset the delegate.
+  CreateDelegate();
+  user_delegate_ = std::make_unique<UserDelegateImpl>(
+      testing_profile_.get(), nullptr, fake_dt_connector_service_.get());
+
+  auto account = identity_test_env_.MakePrimaryAccountAvailable(
+      kUserEmail, signin::ConsentLevel::kSignin);
+  EXPECT_FALSE(user_delegate_->IsSameUser(account.gaia));
+}
+
 // Tests that IsSameUser returns false when given a different user.
 TEST_F(UserDelegateImplTest, IsSameManagedUser_DifferentUser) {
   auto account = identity_test_env_.MakePrimaryAccountAvailable(

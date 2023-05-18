@@ -44,12 +44,7 @@ UserPermissionServiceFactory::GetForProfile(Profile* profile) {
 UserPermissionServiceFactory::UserPermissionServiceFactory()
     : ProfileKeyedServiceFactory(
           "UserPermissionService",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
-              .Build()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(policy::ManagementServiceFactory::GetInstance());
   DependsOn(
@@ -62,14 +57,20 @@ KeyedService* UserPermissionServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
 
+  auto* device_trust_connector_service =
+      enterprise_connectors::DeviceTrustConnectorServiceFactory::GetForProfile(
+          profile);
+
+  if (!device_trust_connector_service) {
+    // Unsupported configuration (e.g. CrOS login Profile supported, but not
+    // incognito).
+    return nullptr;
+  }
+
   auto* management_service =
       policy::ManagementServiceFactory::GetForProfile(profile);
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-
-  auto* device_trust_connector_service =
-      enterprise_connectors::DeviceTrustConnectorServiceFactory::GetForProfile(
-          profile);
 
   auto user_delegate = std::make_unique<UserDelegateImpl>(
       profile, identity_manager, device_trust_connector_service);
@@ -82,12 +83,9 @@ KeyedService* UserPermissionServiceFactory::BuildServiceInstanceFor(
       management_service, std::move(user_delegate), profile->GetPrefs());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  if (device_trust_connector_service) {
-    device_trust_connector_service->AddObserver(
-        std::make_unique<enterprise_connectors::ConsentPolicyObserver>(
-            user_permission_service->GetWeakPtr()));
-  }
-
+  device_trust_connector_service->AddObserver(
+      std::make_unique<enterprise_connectors::ConsentPolicyObserver>(
+          user_permission_service->GetWeakPtr()));
   return user_permission_service;
 }
 

@@ -46,7 +46,6 @@ UserDelegateImpl::UserDelegateImpl(
       identity_manager_(identity_manager),
       device_trust_connector_service_(device_trust_connector_service) {
   CHECK(profile_);
-  CHECK(identity_manager_);
 }
 
 UserDelegateImpl::~UserDelegateImpl() = default;
@@ -72,9 +71,11 @@ bool UserDelegateImpl::IsManagedUser() const {
 }
 
 bool UserDelegateImpl::IsSameUser(const std::string& gaia_id) const {
-  return identity_manager_->GetPrimaryAccountId(
+  return identity_manager_ &&
+         identity_manager_->GetPrimaryAccountId(
              signin::ConsentLevel::kSignin) ==
-         identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id).account_id;
+             identity_manager_->FindExtendedAccountInfoByGaiaId(gaia_id)
+                 .account_id;
 }
 
 std::set<policy::PolicyScope> UserDelegateImpl::GetPolicyScopesNeedingSignals()
