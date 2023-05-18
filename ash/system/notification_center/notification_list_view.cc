@@ -1164,11 +1164,11 @@ void NotificationListView::UpdateClearAllAnimation() {
     const auto non_visible_notification_ids =
         GetNonVisibleNotificationIdsInViewHierarchy();
     if (view && non_visible_notification_ids.size() > 0) {
-      // Immediately remove all notifications that are outside of the scrollable
-      // window.
+      // Immediately remove all notifications (if removable/not pinned) that are
+      // outside of the scrollable window.
       for (const auto& id : non_visible_notification_ids) {
         auto* message_view_container = GetNotificationById(id);
-        if (message_view_container) {
+        if (message_view_container && !message_view_container->IsPinned()) {
           message_view_container->set_is_removed();
         }
       }
