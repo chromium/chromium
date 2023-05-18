@@ -6793,7 +6793,7 @@ crbug.com/1444368 [ Win ] fast/selectors/specificity-overflow.html [ Crash Pass 
 crbug.com/1446184 [ Mac ] external/wpt/editing/other/typing-space-in-editable-summary.tentative.html [ Failure ]
 crbug.com/1446184 [ Mac ] external/wpt/streams/readable-streams/owning-type.any.html [ Failure ]
 crbug.com/1446184 [ Mac ] external/wpt/streams/readable-streams/owning-type.any.worker.html [ Failure ]
-crbug.com/1368767 [ Debug Linux ] wpt_internal/webmidi/requestmidiaccess-basic.https.html [ Failure Pass ]
+crbug.com/1368767 [ Linux ] wpt_internal/webmidi/requestmidiaccess-basic.https.html [ Failure Pass ]
 crbug.com/1427936 [ Debug Linux ] external/wpt/js-self-profiling/function-declaration-names.https.html [ Crash Pass ]
 
 # Failures on Mac13 2023-05-18
