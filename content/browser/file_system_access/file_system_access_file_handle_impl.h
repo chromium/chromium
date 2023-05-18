@@ -104,16 +104,25 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
                                     CreateFileWriterCallback callback,
                                     bool can_write);
   storage::FileSystemURL GetSwapURL(const base::FilePath& swap_path);
-  void CreateSwapFile(
+  // Find an unused swap file. We cannot use a swap file which is locked or
+  // which already exists on disk.
+  void StartCreateSwapFile(
       int count,
       bool keep_existing_data,
       bool auto_close,
       scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
       CreateFileWriterCallback callback);
-  void CreateEmptySwapFile(
+  void DidCheckSwapFileExists(
       int count,
       const storage::FileSystemURL& swap_url,
-      bool keep_existing_data,
+      bool auto_close,
+      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,
+      CreateFileWriterCallback callback,
+      base::File::Error result);
+  void CreateSwapFileFromCopy(
+      int count,
+      const storage::FileSystemURL& swap_url,
       bool auto_close,
       scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
       scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,
@@ -129,14 +138,6 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
       scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
       scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,
       CreateFileWriterCallback callback);
-  void DoCloneSwapFile(
-      int count,
-      const storage::FileSystemURL& swap_url,
-      bool auto_close,
-      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
-      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,
-      CreateFileWriterCallback callback,
-      base::File::Error result);
   void DidCloneSwapFile(
       int count,
       const storage::FileSystemURL& swap_url,
@@ -150,13 +151,6 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
       int count,
       const storage::FileSystemURL& swap_url,
       bool keep_existing_data,
-      bool auto_close,
-      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
-      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,
-      CreateFileWriterCallback callback,
-      base::File::Error result);
-  void DidCopySwapFile(
-      const storage::FileSystemURL& swap_url,
       bool auto_close,
       scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
       scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> swap_lock,

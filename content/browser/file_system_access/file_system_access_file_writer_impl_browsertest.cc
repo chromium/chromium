@@ -277,6 +277,37 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
+                       EachWriterHasUniqueSwapFileRacyKeepExistingData) {
+  auto [test_file, base_swap_file] = CreateTestFilesAndEntry("");
+
+  int num_writers = 5;
+  for (int index = 0; index < num_writers; index++) {
+    EXPECT_EQ(
+        nullptr,
+        EvalJs(shell(), JsReplace("(async () => {"
+                                  "  for(let i = 0; i < $1; i++ ) {"
+                                  "self.writers.push(self.entry.createWritable("
+                                  "{keepExistingData: true}));"
+                                  "  }"
+                                  "  await Promise.all(self.writers);"
+                                  "})()",
+                                  num_writers)));
+  }
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    for (int index = 0; index < num_writers; index++) {
+      base::FilePath swap_file = base_swap_file;
+      if (index != 0) {
+        swap_file = base::FilePath(test_file).AddExtensionASCII(
+            base::StringPrintf(".%d.crswap", index));
+      }
+      EXPECT_TRUE(base::PathExists(swap_file));
+    }
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        WriteOffsetAndSeekInSameWritable) {
   // Performing a second write operation with a valid offset, after performing
   // a seek operation occurs at the expected index (https://crbug.com/1427819).
