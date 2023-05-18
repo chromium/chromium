@@ -382,7 +382,6 @@ body[type='open-multi-file'].check-select .dialog-header {
   height: 36px;
   min-width: 48px;
   position: relative;
-  text-transform: uppercase;
   z-index: 1;
 }
 
