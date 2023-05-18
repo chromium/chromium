@@ -110,7 +110,24 @@ promise_test(async t => {
   assert_element_states(elements, [1, 0, 0, 1, 0, 1, 0, 1], "after final mutation");
 }, "mutually exclusive details across multiple names and multiple tree scopes");
 
+// The next two tests test characteristics of the design that are only
+// exposed via mutation events.  If mutation events (for attribute
+// addition/removal) are removed from the web, these tests could be
+// removed, and some small simplifications could be made to the code
+// implementing this feature.
+function mutation_events_for_attribute_removal_supported() {
+  container.innerHTML = `<div id="event-removal-test"></div>`;
+  let element = container.firstChild;
+  let event_fired = false;
+  element.addEventListener("DOMSubtreeModified", event => event_fired = true);
+  element.removeAttribute("id");
+  return event_fired;
+}
+
 promise_test(async t => {
+  if (!mutation_events_for_attribute_removal_supported()) {
+    return;
+  }
   container.innerHTML = `
     <details name="a" id="e0" open></details>
     <details name="a" id="e1"></details>
@@ -146,6 +163,9 @@ promise_test(async t => {
 }, "mutation event order matches order of insertion in set of named elements");
 
 promise_test(async t => {
+  if (!mutation_events_for_attribute_removal_supported()) {
+    return;
+  }
   container.innerHTML = `
     <details name="a" id="e0" open></details>
     <details name="a" id="e1"></details>
