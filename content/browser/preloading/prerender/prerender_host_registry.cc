@@ -211,6 +211,201 @@ bool IsDevToolsOpen(WebContents& web_contents) {
   return DevToolsAgentHost::HasFor(&web_contents);
 }
 
+PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
+  switch (status) {
+    case PrerenderFinalStatus::kActivated:
+    case PrerenderFinalStatus::kDestroyed:
+      NOTREACHED_NORETURN();
+    case PrerenderFinalStatus::kLowEndDevice:
+      return PreloadingEligibility::kLowMemory;
+    case PrerenderFinalStatus::kInvalidSchemeRedirect:
+    case PrerenderFinalStatus::kInvalidSchemeNavigation:
+    case PrerenderFinalStatus::kInProgressNavigation:
+    case PrerenderFinalStatus::kNavigationRequestBlockedByCsp:
+    case PrerenderFinalStatus::kMainFrameNavigation:
+    case PrerenderFinalStatus::kMojoBinderPolicy:
+    case PrerenderFinalStatus::kRendererProcessCrashed:
+    case PrerenderFinalStatus::kRendererProcessKilled:
+    case PrerenderFinalStatus::kDownload:
+    case PrerenderFinalStatus::kTriggerDestroyed:
+    case PrerenderFinalStatus::kNavigationNotCommitted:
+    case PrerenderFinalStatus::kNavigationBadHttpStatus:
+    case PrerenderFinalStatus::kClientCertRequested:
+    case PrerenderFinalStatus::kNavigationRequestNetworkError:
+    case PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded:
+    case PrerenderFinalStatus::kCancelAllHostsForTesting:
+    case PrerenderFinalStatus::kDidFailLoad:
+    case PrerenderFinalStatus::kStop:
+    case PrerenderFinalStatus::kSslCertificateError:
+    case PrerenderFinalStatus::kLoginAuthRequested:
+    case PrerenderFinalStatus::kUaChangeRequiresReload:
+    case PrerenderFinalStatus::kBlockedByClient:
+    case PrerenderFinalStatus::kAudioOutputDeviceRequested:
+    case PrerenderFinalStatus::kMixedContent:
+      NOTREACHED_NORETURN();
+    case PrerenderFinalStatus::kTriggerBackgrounded:
+      return PreloadingEligibility::kHidden;
+    case PrerenderFinalStatus::kEmbedderTriggeredAndCrossOriginRedirected:
+    case PrerenderFinalStatus::kMemoryLimitExceeded:
+    case PrerenderFinalStatus::kFailToGetMemoryUsage:
+      NOTREACHED_NORETURN();
+    case PrerenderFinalStatus::kDataSaverEnabled:
+      return PreloadingEligibility::kDataSaverEnabled;
+    case PrerenderFinalStatus::kHasEffectiveUrl:
+      return PreloadingEligibility::kHasEffectiveUrl;
+    case PrerenderFinalStatus::kActivatedBeforeStarted:
+    case PrerenderFinalStatus::kInactivePageRestriction:
+    case PrerenderFinalStatus::kStartFailed:
+    case PrerenderFinalStatus::kTimeoutBackgrounded:
+    case PrerenderFinalStatus::kCrossSiteRedirectInInitialNavigation:
+      NOTREACHED_NORETURN();
+    case PrerenderFinalStatus::kCrossSiteNavigationInInitialNavigation:
+      return PreloadingEligibility::kCrossOrigin;
+    case PrerenderFinalStatus::
+        kSameSiteCrossOriginRedirectNotOptInInInitialNavigation:
+    case PrerenderFinalStatus::
+        kSameSiteCrossOriginNavigationNotOptInInInitialNavigation:
+    case PrerenderFinalStatus::kActivationNavigationParameterMismatch:
+    case PrerenderFinalStatus::kActivatedInBackground:
+    case PrerenderFinalStatus::kEmbedderHostDisallowed:
+    case PrerenderFinalStatus::kActivationNavigationDestroyedBeforeSuccess:
+    case PrerenderFinalStatus::kTabClosedByUserGesture:
+    case PrerenderFinalStatus::kTabClosedWithoutUserGesture:
+    case PrerenderFinalStatus::kPrimaryMainFrameRendererProcessCrashed:
+    case PrerenderFinalStatus::kPrimaryMainFrameRendererProcessKilled:
+    case PrerenderFinalStatus::kActivationFramePolicyNotCompatible:
+      NOTREACHED_NORETURN();
+    case PrerenderFinalStatus::kPreloadingDisabled:
+      return PreloadingEligibility::kPreloadingDisabled;
+    case PrerenderFinalStatus::kBatterySaverEnabled:
+      return PreloadingEligibility::kBatterySaverEnabled;
+    case PrerenderFinalStatus::kActivatedDuringMainFrameNavigation:
+      NOTREACHED_NORETURN();
+    case PrerenderFinalStatus::kPreloadingUnsupportedByWebContents:
+      return PreloadingEligibility::kPreloadingUnsupportedByWebContents;
+    case PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation:
+    case PrerenderFinalStatus::kCrossSiteNavigationInMainFrameNavigation:
+    case PrerenderFinalStatus::
+        kSameSiteCrossOriginRedirectNotOptInInMainFrameNavigation:
+    case PrerenderFinalStatus::
+        kSameSiteCrossOriginNavigationNotOptInInMainFrameNavigation:
+      NOTREACHED_NORETURN();
+    case PrerenderFinalStatus::kMemoryPressureOnTrigger:
+      return PreloadingEligibility::kMemoryPressure;
+    case PrerenderFinalStatus::kMemoryPressureAfterTriggered:
+      NOTREACHED_NORETURN();
+  }
+
+  NOTREACHED_NORETURN();
+}
+
+// Represents a contract and ensures that the given prerender attempt is started
+// as a PrerenderHost or rejected with a reason. It is allowed to use it only in
+// PrerenderHostRegistry::CreateAndStartHost.
+//
+// TODO(kenoss): Add emits of Preload.prerenderStatusUpdated.
+class PrerenderHostBuilder {
+ public:
+  explicit PrerenderHostBuilder(PreloadingAttempt* attempt);
+  ~PrerenderHostBuilder();
+
+  PrerenderHostBuilder(const PrerenderHostBuilder&) = delete;
+  PrerenderHostBuilder& operator=(const PrerenderHostBuilder&) = delete;
+  PrerenderHostBuilder(PrerenderHostBuilder&&) = delete;
+  PrerenderHostBuilder& operator=(PrerenderHostBuilder&&) = delete;
+
+  void SetHoldbackAllowed();
+
+  // The following methods consumes this class.
+  std::unique_ptr<PrerenderHost> Build(const PrerenderAttributes& attributes,
+                                       WebContentsImpl& prerender_web_contents);
+  void RejectAsNotEligible(const PrerenderAttributes& attributes,
+                           PrerenderFinalStatus status);
+  void RejectDueToHoldback();
+  void RejectAsDuplicate();
+  void RejectAsFailure(const PrerenderAttributes& attributes,
+                       PrerenderFinalStatus status);
+
+ private:
+  void Drop();
+
+  // Use raw pointer as PrerenderHostBuilder is alive only during
+  // PrerenderHostRegistry::CreateAndStartHost(), and PreloadingAttempt should
+  // outlive the function.
+  raw_ptr<PreloadingAttempt> attempt_;
+};
+
+PrerenderHostBuilder::PrerenderHostBuilder(PreloadingAttempt* attempt)
+    : attempt_(attempt) {}
+
+PrerenderHostBuilder::~PrerenderHostBuilder() {
+  CHECK_EQ(attempt_, nullptr);
+}
+
+void PrerenderHostBuilder::Drop() {
+  attempt_ = nullptr;
+}
+
+void PrerenderHostBuilder::SetHoldbackAllowed() {
+  if (attempt_) {
+    attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
+  }
+}
+
+std::unique_ptr<PrerenderHost> PrerenderHostBuilder::Build(
+    const PrerenderAttributes& attributes,
+    WebContentsImpl& prerender_web_contents) {
+  auto prerender_host = std::make_unique<PrerenderHost>(
+      attributes, prerender_web_contents,
+      attempt_ ? attempt_->GetWeakPtr() : nullptr);
+
+  Drop();
+
+  return prerender_host;
+}
+
+void PrerenderHostBuilder::RejectAsNotEligible(
+    const PrerenderAttributes& attributes,
+    PrerenderFinalStatus status) {
+  if (attempt_) {
+    attempt_->SetEligibility(ToEligibility(status));
+  }
+
+  RecordFailedPrerenderFinalStatus(PrerenderCancellationReason(status),
+                                   attributes);
+
+  Drop();
+}
+
+void PrerenderHostBuilder::RejectAsDuplicate() {
+  if (attempt_) {
+    attempt_->SetTriggeringOutcome(PreloadingTriggeringOutcome::kDuplicate);
+  }
+
+  Drop();
+}
+
+void PrerenderHostBuilder::RejectDueToHoldback() {
+  if (attempt_) {
+    attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kHoldback);
+  }
+
+  Drop();
+}
+
+void PrerenderHostBuilder::RejectAsFailure(
+    const PrerenderAttributes& attributes,
+    PrerenderFinalStatus status) {
+  if (attempt_) {
+    attempt_->SetFailureReason(ToPreloadingFailureReason(status));
+  }
+
+  RecordFailedPrerenderFinalStatus(PrerenderCancellationReason(status),
+                                   attributes);
+
+  Drop();
+}
+
 }  // namespace
 
 PrerenderHostRegistry::PrerenderHostRegistry(WebContents& web_contents)
@@ -278,43 +473,34 @@ int PrerenderHostRegistry::CreateAndStartHost(
         base::BindOnce(&PrerenderHostRegistry::NotifyTrigger,
                        base::Unretained(this), attributes.prerendering_url));
 
+    auto builder = PrerenderHostBuilder(attempt);
+
     // Check whether preloading is enabled. If it is not enabled, report the
     // reason.
-    if (auto reason =
-            initiator_web_contents.GetDelegate()->IsPrerender2Supported(
-                initiator_web_contents);
-        reason != PreloadingEligibility::kEligible) {
-      switch (reason) {
-        case PreloadingEligibility::kPreloadingDisabled:
-          RecordFailedPrerenderFinalStatus(
-              PrerenderCancellationReason(
-                  PrerenderFinalStatus::kPreloadingDisabled),
-              attributes);
-          break;
-        case PreloadingEligibility::kDataSaverEnabled:
-          RecordFailedPrerenderFinalStatus(
-              PrerenderCancellationReason(
-                  PrerenderFinalStatus::kDataSaverEnabled),
-              attributes);
-          break;
-        case PreloadingEligibility::kBatterySaverEnabled:
-          RecordFailedPrerenderFinalStatus(
-              PrerenderCancellationReason(
-                  PrerenderFinalStatus::kBatterySaverEnabled),
-              attributes);
-          break;
-        case PreloadingEligibility::kPreloadingUnsupportedByWebContents:
-          RecordFailedPrerenderFinalStatus(
-              PrerenderCancellationReason(
-                  PrerenderFinalStatus::kPreloadingUnsupportedByWebContents),
-              attributes);
-          break;
-        default:
-          NOTREACHED_NORETURN();
-      }
-      if (attempt)
-        attempt->SetEligibility(reason);
-      return RenderFrameHost::kNoFrameTreeNodeId;
+    switch (initiator_web_contents.GetDelegate()->IsPrerender2Supported(
+        initiator_web_contents)) {
+      case PreloadingEligibility::kEligible:
+        // nop
+        break;
+      case PreloadingEligibility::kPreloadingDisabled:
+        builder.RejectAsNotEligible(attributes,
+                                    PrerenderFinalStatus::kPreloadingDisabled);
+        return RenderFrameHost::kNoFrameTreeNodeId;
+      case PreloadingEligibility::kDataSaverEnabled:
+        builder.RejectAsNotEligible(attributes,
+                                    PrerenderFinalStatus::kDataSaverEnabled);
+        return RenderFrameHost::kNoFrameTreeNodeId;
+      case PreloadingEligibility::kBatterySaverEnabled:
+        builder.RejectAsNotEligible(attributes,
+                                    PrerenderFinalStatus::kBatterySaverEnabled);
+        return RenderFrameHost::kNoFrameTreeNodeId;
+      case PreloadingEligibility::kPreloadingUnsupportedByWebContents:
+        builder.RejectAsNotEligible(
+            attributes,
+            PrerenderFinalStatus::kPreloadingUnsupportedByWebContents);
+        return RenderFrameHost::kNoFrameTreeNodeId;
+      default:
+        NOTREACHED_NORETURN();
     }
 
     // Don't prerender when the initiator is in the background and its type is
@@ -326,22 +512,15 @@ int PrerenderHostRegistry::CreateAndStartHost(
     // when trying to pop from `pending_prerenders_` on `StartPrerendering()`.
     if (attributes.trigger_type == PrerenderTriggerType::kEmbedder &&
         initiator_web_contents.GetVisibility() == Visibility::HIDDEN) {
-      RecordFailedPrerenderFinalStatus(
-          PrerenderCancellationReason(
-              PrerenderFinalStatus::kTriggerBackgrounded),
-          attributes);
-      if (attempt)
-        attempt->SetEligibility(PreloadingEligibility::kHidden);
+      builder.RejectAsNotEligible(attributes,
+                                  PrerenderFinalStatus::kTriggerBackgrounded);
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
     // Don't prerender on low-end devices.
     if (!DeviceHasEnoughMemoryForPrerender()) {
-      RecordFailedPrerenderFinalStatus(
-          PrerenderCancellationReason(PrerenderFinalStatus::kLowEndDevice),
-          attributes);
-      if (attempt)
-        attempt->SetEligibility(PreloadingEligibility::kLowMemory);
+      builder.RejectAsNotEligible(attributes,
+                                  PrerenderFinalStatus::kLowEndDevice);
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
@@ -351,13 +530,8 @@ int PrerenderHostRegistry::CreateAndStartHost(
       case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
         break;
       case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
-        RecordFailedPrerenderFinalStatus(
-            PrerenderCancellationReason(
-                PrerenderFinalStatus::kMemoryPressureOnTrigger),
-            attributes);
-        if (attempt) {
-          attempt->SetEligibility(PreloadingEligibility::kMemoryPressure);
-        }
+        builder.RejectAsNotEligible(
+            attributes, PrerenderFinalStatus::kMemoryPressureOnTrigger);
         return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
@@ -368,13 +542,9 @@ int PrerenderHostRegistry::CreateAndStartHost(
     if (!attributes.IsBrowserInitiated() &&
         !prerender_navigation_utils::IsSameSite(
             attributes.prerendering_url, attributes.initiator_origin.value())) {
-      RecordFailedPrerenderFinalStatus(
-          PrerenderCancellationReason(
-              PrerenderFinalStatus::kCrossSiteNavigationInInitialNavigation),
-          attributes);
-      if (attempt) {
-        attempt->SetEligibility(PreloadingEligibility::kCrossOrigin);
-      }
+      builder.RejectAsNotEligible(
+          attributes,
+          PrerenderFinalStatus::kCrossSiteNavigationInInitialNavigation);
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
@@ -382,11 +552,8 @@ int PrerenderHostRegistry::CreateAndStartHost(
     if (SiteInstanceImpl::HasEffectiveURL(
             prerender_web_contents.GetBrowserContext(),
             prerender_web_contents.GetURL())) {
-      RecordFailedPrerenderFinalStatus(
-          PrerenderCancellationReason(PrerenderFinalStatus::kHasEffectiveUrl),
-          attributes);
-      if (attempt)
-        attempt->SetEligibility(PreloadingEligibility::kHasEffectiveUrl);
+      builder.RejectAsNotEligible(attributes,
+                                  PrerenderFinalStatus::kHasEffectiveUrl);
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
@@ -409,21 +576,15 @@ int PrerenderHostRegistry::CreateAndStartHost(
         RenderFrameDevToolsAgentHost::GetFor(initiator_rfh) != nullptr;
     if (!should_prerender2holdback_be_overridden &&
         base::FeatureList::IsEnabled(features::kPrerender2Holdback)) {
-      if (attempt)
-        attempt->SetHoldbackStatus(PreloadingHoldbackStatus::kHoldback);
+      builder.RejectDueToHoldback();
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
-    if (attempt)
-      attempt->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
+    builder.SetHoldbackAllowed();
 
     // Ignore prerendering requests for the same URL.
     for (auto& iter : prerender_host_by_frame_tree_node_id_) {
       if (iter.second->GetInitialUrl() == attributes.prerendering_url) {
-        if (attempt) {
-          attempt->SetTriggeringOutcome(
-              PreloadingTriggeringOutcome::kDuplicate);
-        }
-
+        builder.RejectAsDuplicate();
         return RenderFrameHost::kNoFrameTreeNodeId;
       }
     }
@@ -432,25 +593,17 @@ int PrerenderHostRegistry::CreateAndStartHost(
     // until the forerunners are cancelled, and suspend starting a new prerender
     // when the number reaches the limit.
     if (!IsAllowedToStartPrerenderingForTrigger(attributes.trigger_type)) {
-      if (attempt) {
-        // The reason we don't consider limit exceeded as an ineligibility
-        // reason is because we can't replicate the behavior in our other
-        // experiment groups for analysis. To prevent this we set
-        // TriggeringOutcome to kFailure and look into the failure reason to
-        // learn more.
-        attempt->SetFailureReason(ToPreloadingFailureReason(
-            PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded));
-      }
-      RecordFailedPrerenderFinalStatus(
-          PrerenderCancellationReason(
-              PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded),
-          attributes);
+      // The reason we don't consider limit exceeded as an ineligibility
+      // reason is because we can't replicate the behavior in our other
+      // experiment groups for analysis. To prevent this we set
+      // TriggeringOutcome to kFailure and look into the failure reason to
+      // learn more.
+      builder.RejectAsFailure(
+          attributes, PrerenderFinalStatus::kMaxNumOfRunningPrerendersExceeded);
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
-    auto prerender_host = std::make_unique<PrerenderHost>(
-        attributes, prerender_web_contents,
-        attempt ? attempt->GetWeakPtr() : nullptr);
+    auto prerender_host = builder.Build(attributes, prerender_web_contents);
     frame_tree_node_id = prerender_host->frame_tree_node_id();
 
     CHECK(!base::Contains(prerender_host_by_frame_tree_node_id_,
