@@ -173,6 +173,14 @@ html.breadcrumb-elider-expanded #directory-tree {
   text-overflow: ellipsis;
 }
 
+/* The file label's direction is always LTR even in RTL mode
+   (.entry-name in common.css), so the inline-start above won't work in RTL
+   mode, we need to have the inline-end here. */
+html[dir='rtl'] #directory-tree .tree-row > .file-row > .label {
+  margin-inline-end: 8px;
+  margin-inline-start: 0;
+}
+
 #directory-tree .tree-row .rename-placeholder {
   flex: auto;
   font: var(--cros-button-2-font);
@@ -738,6 +746,7 @@ html[dir='rtl'] #search-box .clear {
   --cr-toggle-box-shadow: var(--cros-elevation-1-shadow);
   --cr-toggle-ripple-diameter: 32px;
   margin-inline: 6px;
+  margin-top: 2px;
 }
 
 /* only show the ripple ring for tab navigation */
@@ -1590,8 +1599,16 @@ input.rename {
   flex: auto;
 }
 
-body.files-ng #list-container input.rename {
+#list-container input.rename {
   margin-inline-end: 12px;
+}
+
+/* The file name's direction is always LTR even in RTL mode
+   (.entry-name in common.css), so the inline-end above won't work in RTL
+   mode, we need to have the inline-start here. */
+html[dir='rtl'] #list-container input.rename {
+  margin-inline-end: 0;
+  margin-inline-start: 12px;
 }
 
 li[renaming=''] .filename-label {
