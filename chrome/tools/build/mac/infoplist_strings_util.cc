@@ -181,6 +181,7 @@ int main(int argc, char* const argv[]) {
         {"NSCameraUsageDescription", permission_reason},
         {"NSLocationUsageDescription", permission_reason},
         {"NSMicrophoneUsageDescription", permission_reason},
+        {"NSWebBrowserPublicKeyCredentialUsageDescription", permission_reason},
     };
     std::string strings_file_contents_string;
     for (const auto& kv : infoplist_strings) {
