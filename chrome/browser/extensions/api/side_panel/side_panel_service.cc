@@ -248,7 +248,8 @@ base::expected<bool, std::string> SidePanelService::OpenSidePanel(
     side_panel_util::OpenContextualExtensionSidePanel(*browser, *web_contents,
                                                       extension.id());
   } else {
-    side_panel_util::OpenExtensionSidePanel(*browser, extension.id());
+    side_panel_util::OpenGlobalExtensionSidePanel(*browser, *web_contents,
+                                                  extension.id());
   }
 
   return true;
