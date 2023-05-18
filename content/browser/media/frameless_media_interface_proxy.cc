@@ -76,11 +76,10 @@ void FramelessMediaInterfaceProxy::CreateVideoDecoder(
         stable_vd_factory_remote_.reset_on_disconnect();
       }
 
-      if (!stable_vd_factory_remote_.is_bound())
-        return;
+      CHECK(stable_vd_factory_remote_.is_bound());
 
       stable_vd_factory_remote_->CreateStableVideoDecoder(
-          oop_video_decoder.InitWithNewPipeAndPassReceiver());
+          oop_video_decoder.InitWithNewPipeAndPassReceiver(), /*tracker=*/{});
     } else {
       render_process_host_->CreateStableVideoDecoder(
           oop_video_decoder.InitWithNewPipeAndPassReceiver());

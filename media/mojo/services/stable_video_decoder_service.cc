@@ -109,9 +109,12 @@ stable::mojom::VideoFramePtr MediaVideoFrameToMojoVideoFrame(
 }  // namespace
 
 StableVideoDecoderService::StableVideoDecoderService(
+    mojo::PendingRemote<stable::mojom::StableVideoDecoderTracker>
+        tracker_remote,
     std::unique_ptr<mojom::VideoDecoder> dst_video_decoder,
     MojoCdmServiceContext* cdm_service_context)
-    : video_decoder_client_receiver_(this),
+    : tracker_remote_(std::move(tracker_remote)),
+      video_decoder_client_receiver_(this),
       media_log_receiver_(this),
       stable_video_frame_handle_releaser_receiver_(this),
       dst_video_decoder_(std::move(dst_video_decoder)),

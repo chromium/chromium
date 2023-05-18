@@ -158,14 +158,32 @@ const sandbox.mojom.Sandbox kStableVideoDecoderFactoryServiceSandbox
 const sandbox.mojom.Sandbox kStableVideoDecoderFactoryServiceSandbox
  = sandbox.mojom.Sandbox.kNoSandbox;
 
+// A disconnection of this interface can be interpreted as the
+// StableVideoDecoder implementation created by
+// StableVideoDecoderFactory.CreateStableVideoDecoder() having been destroyed
+// (or never bound in the first place).
+//
+// This interface is intended to be implemented by the browser process and used
+// by the video decoder processes.
+[Stable, Uuid="b2211aaa-78e9-4326-8c85-a7ab15b32032"]
+interface StableVideoDecoderTracker {};
+
 // A StableVideoDecoderFactory allows the browser process to bind a
 // StableVideoDecoder on behalf of some client which can be, e.g., the
 // lacros-chrome browser process or a renderer process in ash-chrome.
 // Next min method ID: 1
+// Next min version: 2
 [Stable, Uuid="d6047fd9-fffb-4e37-ad9b-383a1c9e1d2d"]
 interface StableVideoDecoderFactory {
   // Creates a StableVideoDecoder and should be called by the browser process.
-  CreateStableVideoDecoder@0(pending_receiver<StableVideoDecoder> receiver);
+  // If |tracker| is provided, the caller can handle its disconnection in order
+  // to know when the StableVideoDecoder implementation is destroyed. Note that
+  // |tracker| may get disconnected without ever creating a StableVideoDecoder
+  // implementation instance, e.g., if an error occurs that prevents |receiver|
+  // from being bound to an implementation.
+  CreateStableVideoDecoder@0(
+      pending_receiver<StableVideoDecoder> receiver,
+      [MinVersion=1] pending_remote<StableVideoDecoderTracker>? tracker);
 };
 
 // A StableVideoDecoderFactoryProcess is intended to be hosted in a utility

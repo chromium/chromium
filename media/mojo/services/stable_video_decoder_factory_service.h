@@ -58,7 +58,8 @@ class MEDIA_MOJO_EXPORT StableVideoDecoderFactoryService
 
   // stable::mojom::StableVideoDecoderFactory implementation.
   void CreateStableVideoDecoder(
-      mojo::PendingReceiver<stable::mojom::StableVideoDecoder> receiver)
+      mojo::PendingReceiver<stable::mojom::StableVideoDecoder> receiver,
+      mojo::PendingRemote<stable::mojom::StableVideoDecoderTracker> tracker)
       override;
 
  private:

@@ -1567,6 +1567,12 @@ RenderProcessHostImpl::RenderProcessHostImpl(
                     perfetto::Track::FromPointer(this),
                     ChromeTrackEvent::kRenderProcessHost, *this);
 
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+  stable_video_decoder_trackers_.set_disconnect_handler(base::BindRepeating(
+      &RenderProcessHostImpl::OnStableVideoDecoderDisconnected,
+      instance_weak_factory_.GetWeakPtr()));
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+
   widget_helper_ = new RenderWidgetHelper();
 
   ChildProcessSecurityPolicyImpl::GetInstance()->Add(GetID(), browser_context);
@@ -2178,7 +2184,7 @@ void RenderProcessHostImpl::ReinitializeLogging(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 void RenderProcessHostImpl::CreateStableVideoDecoder(
     mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -2186,15 +2192,44 @@ void RenderProcessHostImpl::CreateStableVideoDecoder(
     LaunchStableVideoDecoderFactory(
         stable_video_decoder_factory_remote_.BindNewPipeAndPassReceiver());
     stable_video_decoder_factory_remote_.reset_on_disconnect();
+
+    // Version 1 introduced the ability to pass a
+    // mojo::PendingRemote<StableVideoDecoderTracker> to
+    // CreateStableVideoDecoder().
+    stable_video_decoder_factory_remote_.RequireVersion(1u);
   }
 
-  if (!stable_video_decoder_factory_remote_.is_bound())
-    return;
+  CHECK(stable_video_decoder_factory_remote_.is_bound());
 
+  mojo::PendingRemote<media::stable::mojom::StableVideoDecoderTracker>
+      tracker_remote;
+  stable_video_decoder_trackers_.Add(
+      this, tracker_remote.InitWithNewPipeAndPassReceiver());
   stable_video_decoder_factory_remote_->CreateStableVideoDecoder(
-      std::move(receiver));
+      std::move(receiver), std::move(tracker_remote));
 }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+void RenderProcessHostImpl::OnStableVideoDecoderDisconnected() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (stable_video_decoder_trackers_.empty()) {
+    // All StableVideoDecoders have disconnected. Let's reset() the
+    // |stable_video_decoder_factory_remote_| so that the corresponding utility
+    // process gets terminated.
+    //
+    // TODO(b/195769334): maybe we shouldn't reset()
+    // |stable_video_decoder_factory_remote_| immediately because it's possible
+    // that the renderer process is about to create another decoder (e.g., the
+    // user manually changing the resolution of a YouTube video). In that case,
+    // we'll terminate the current video decoder process and start another one
+    // almost immediately. This is not incorrect, but it's unnecessary overhead.
+    // Maybe we should wait a few seconds before terminating the process: if no
+    // request to create a video decoder comes in during that time, then it's
+    // fine to terminate it.
+    stable_video_decoder_factory_remote_.reset();
+  }
+}
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 void RenderProcessHostImpl::DelayProcessShutdown(
     const base::TimeDelta& subframe_shutdown_timeout,
@@ -4905,9 +4940,10 @@ void RenderProcessHostImpl::ResetIPC() {
   coordinator_connector_receiver_.reset();
   tracing_registration_.reset();
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   stable_video_decoder_factory_remote_.reset();
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  stable_video_decoder_trackers_.Clear();
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   // Destroy all embedded CompositorFrameSinks.
   embedded_frame_sink_provider_.reset();
