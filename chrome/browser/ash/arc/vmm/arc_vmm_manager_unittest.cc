@@ -241,6 +241,57 @@ TEST_F(ArcVmmManagerTest, DropCachesAfterEnableSuccess) {
   EXPECT_EQ(1, reclaim_all_conter());
   EXPECT_EQ(1, drop_pages_counter());
 }
+
+TEST_F(ArcVmmManagerTest, EnableSwapRequestWillEnableHeartbeat) {
+  InitVmmManager();
+  EnableAndConnectArcVm();
+  SetTrimCall(true);
+  InitAggressiveBallonResponse();
+
+  manager()->SetSwapState(SwapState::FORCE_ENABLE);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(1, client()->force_enable_count());
+  EXPECT_EQ(0, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
+
+  task_environment_.FastForwardBy(kEnabledStateHeartbeatInterval);
+  EXPECT_EQ(2, client()->force_enable_count());
+  EXPECT_EQ(0, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
+  task_environment_.RunUntilIdle();
+
+  task_environment_.FastForwardBy(kEnabledStateHeartbeatInterval);
+  EXPECT_EQ(3, client()->force_enable_count());
+  EXPECT_EQ(0, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
+  task_environment_.RunUntilIdle();
+
+  manager()->SetSwapState(SwapState::ENABLE);
+  task_environment_.RunUntilIdle();
+  // Send "ENABLE", should overwrite original timer.
+  EXPECT_EQ(3, client()->force_enable_count());
+  EXPECT_EQ(1, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
+
+  task_environment_.FastForwardBy(kEnabledStateHeartbeatInterval);
+  EXPECT_EQ(3, client()->force_enable_count());
+  EXPECT_EQ(2, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
+  task_environment_.RunUntilIdle();
+
+  task_environment_.FastForwardBy(kEnabledStateHeartbeatInterval);
+  EXPECT_EQ(3, client()->force_enable_count());
+  EXPECT_EQ(3, client()->enable_count());
+  EXPECT_EQ(0, client()->swap_out_count());
+  EXPECT_EQ(0, client()->disable_count());
+  task_environment_.RunUntilIdle();
+}
+
 // This test verify the weak ptr safety in scheduler.
 TEST_F(ArcVmmManagerTest, WeakPtrRef) {
   class TestClass {

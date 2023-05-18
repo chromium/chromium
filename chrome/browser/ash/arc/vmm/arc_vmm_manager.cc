@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -118,8 +119,16 @@ void ArcVmmManager::SetSwapState(SwapState state) {
 
   if (state == SwapState::DISABLE) {
     SendSwapRequest(op, base::DoNothing());
+    enabled_state_heartbeat_timer_.Reset();
     return;
   }
+
+  // Reset the timer anyway since the enable state and force enable state may
+  // overwrite each other.
+  enabled_state_heartbeat_timer_.Start(
+      FROM_HERE, kEnabledStateHeartbeatInterval,
+      base::BindRepeating(&ArcVmmManager::SetSwapState,
+                          weak_ptr_factory_.GetWeakPtr(), state));
 
   // Enable or ForceEnable need shrink ARCVM memory first.
   if (!last_shrink_timestamp_ ||

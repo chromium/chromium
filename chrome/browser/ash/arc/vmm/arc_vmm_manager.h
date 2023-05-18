@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 #include "chrome/browser/ash/arc/vmm/arc_vmm_swap_scheduler.h"
 #include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
@@ -21,6 +22,8 @@
 #include "content/public/browser/browser_context.h"
 
 namespace arc {
+
+const base::TimeDelta kEnabledStateHeartbeatInterval = base::Hours(1);
 
 class ArcBridgeService;
 
@@ -90,6 +93,12 @@ class ArcVmmManager : public KeyedService,
   // Log the time stamp and result of last shrink memory request.
   absl::optional<base::Time> last_shrink_timestamp_;
   absl::optional<bool> last_shrink_result_;
+
+  // Repeat timer for checking and trimming ARCVM memory regularly. According
+  // current design in concierge, if the vmm swap status is enabled, the vmm
+  // manager needs to go through the "enable" process (i.e. trim memory, set
+  // aggressive balloon, send enable vmm swap dbus request) once an hour.
+  base::OneShotTimer enabled_state_heartbeat_timer_;
 
   // The default delay from swap enabled and swap out. Basically it's used for
   // keyboard swap. In finch, it will be replaced by the flag parameter.
