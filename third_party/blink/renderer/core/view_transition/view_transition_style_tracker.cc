@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/transform.h"
@@ -266,6 +267,27 @@ gfx::Transform ConvertFromTopLeftToCenter(
   return transform_from_center;
 }
 
+float DevicePixelRatioFromDocument(Document& document) {
+  // Prefer to use the effective zoom. This should be the case in most
+  // situations, unless the transition is being started before first layout
+  // where documentElement gets a layout object.
+  if (document.documentElement() &&
+      document.documentElement()->GetLayoutObject()) {
+    return document.documentElement()
+        ->GetLayoutObject()
+        ->StyleRef()
+        .EffectiveZoom();
+  }
+
+  if (!document.GetPage() || !document.GetFrame()) {
+    return 0.f;
+  }
+  return document.GetPage()
+      ->GetChromeClient()
+      .GetScreenInfo(*document.GetFrame())
+      .device_scale_factor;
+}
+
 }  // namespace
 
 class ViewTransitionStyleTracker::ImageWrapperPseudoElement
@@ -330,7 +352,8 @@ class ViewTransitionStyleTracker::ImageWrapperPseudoElement
 };
 
 ViewTransitionStyleTracker::ViewTransitionStyleTracker(Document& document)
-    : document_(document) {}
+    : document_(document),
+      device_pixel_ratio_(DevicePixelRatioFromDocument(document)) {}
 
 ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     Document& document,
@@ -1012,20 +1035,12 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
     return true;
   }
 
-  bool needs_style_invalidation = false;
-
-  // Use the document element's effective zoom, since that's what the parent
-  // effective zoom would be.
-  DCHECK(document_->documentElement());
-  float device_pixel_ratio = document_->documentElement()
-                                 ->GetLayoutObject()
-                                 ->StyleRef()
-                                 .EffectiveZoom();
-  if (device_pixel_ratio_ != device_pixel_ratio) {
-    // TODO(vmpstr): Changes to device pixel ratio are hard to deal with because
-    // of the cached content. We should just skip the transition here.
-    device_pixel_ratio_ = device_pixel_ratio;
-    needs_style_invalidation = true;
+  DCHECK(document_->documentElement() &&
+         document_->documentElement()->GetLayoutObject());
+  // We don't support changing device pixel ratio, because it's uncommon and
+  // textures may have already been captured at a different size.
+  if (device_pixel_ratio_ != DevicePixelRatioFromDocument(*document_)) {
+    return false;
   }
 
   if (SnapshotRootDidChangeSize()) {
@@ -1044,6 +1059,7 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
           *document_->GetFrame()),
       *snapshot_root_size_at_capture_);
 
+  bool needs_style_invalidation = false;
   for (auto& entry : element_data_map_) {
     auto& element_data = entry.value;
     if (!element_data->target_element)
@@ -1113,6 +1129,8 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
           LayoutSize(box_model->BorderBoundingBox().size());
     }
 
+    // If the object's effective zoom differs from device_pixel_ratio, adjust
+    // the border box size by that difference to get the css space size.
     if (float effective_zoom = layout_object->StyleRef().EffectiveZoom();
         std::abs(effective_zoom - device_pixel_ratio_) >=
         std::numeric_limits<float>::epsilon()) {
@@ -1708,8 +1726,7 @@ const String& ViewTransitionStyleTracker::UAStyleSheet() {
         auto layout_view_size = LayoutSize(GetSnapshotRootSize());
         // Note that we want the size in css space, which means we need to undo
         // the effective zoom.
-        layout_view_size.Scale(
-            1 / document_->GetLayoutView()->StyleRef().EffectiveZoom());
+        layout_view_size.Scale(1 / device_pixel_ratio_);
         builder.AddAnimationAndBlending(
             view_transition_name,
             ContainerProperties(layout_view_size, gfx::Transform()));
