@@ -11,7 +11,6 @@
 #include <limits>
 
 #include "base/logging.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/geometry/size.h"
@@ -21,11 +20,14 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_util_ios.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 // Returns a 16x16 red UIImage to visually show when a UIImage cannot be
 // created from PNG data. Logs error as well.
-// Caller takes ownership of returned UIImage.
 UIImage* CreateErrorUIImage(float scale) {
   LOG(ERROR) << "Unable to decode PNG into UIImage.";
   base::ScopedCFTypeRef<CGColorSpaceRef> color_space(
@@ -43,9 +45,9 @@ UIImage* CreateErrorUIImage(float scale) {
   CGContextFillRect(context, CGRectMake(0.0, 0.0, 16, 16));
   base::ScopedCFTypeRef<CGImageRef> cg_image(
       CGBitmapContextCreateImage(context));
-  return [[UIImage imageWithCGImage:cg_image.get()
-                              scale:scale
-                        orientation:UIImageOrientationUp] retain];
+  return [UIImage imageWithCGImage:cg_image.get()
+                             scale:scale
+                       orientation:UIImageOrientationUp];
 }
 
 // Converts from ImagePNGRep to UIImage.
@@ -67,30 +69,29 @@ namespace internal {
 class ImageRepCocoaTouch final : public ImageRep {
  public:
   explicit ImageRepCocoaTouch(UIImage* image)
-      : ImageRep(Image::kImageRepCocoaTouch),
-        image_(image, base::scoped_policy::RETAIN) {
+      : ImageRep(Image::kImageRepCocoaTouch), image_(image) {
     CHECK(image_);
   }
 
   ImageRepCocoaTouch(const ImageRepCocoaTouch&) = delete;
   ImageRepCocoaTouch& operator=(const ImageRepCocoaTouch&) = delete;
 
-  ~ImageRepCocoaTouch() override { image_.reset(); }
+  ~ImageRepCocoaTouch() override = default;
 
   int Width() const override { return Size().width(); }
 
   int Height() const override { return Size().height(); }
 
   gfx::Size Size() const override {
-    int width = static_cast<int>(image_.get().size.width);
-    int height = static_cast<int>(image_.get().size.height);
+    int width = static_cast<int>(image_.size.width);
+    int height = static_cast<int>(image_.size.height);
     return gfx::Size(width, height);
   }
 
   UIImage* image() const { return image_; }
 
  private:
-  base::scoped_nsobject<UIImage> image_;
+  UIImage* __strong image_;
 };
 
 const ImageRepCocoaTouch* ImageRep::AsImageRepCocoaTouch() const {
@@ -107,13 +108,14 @@ scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromUIImage(
   DCHECK(uiimage);
   NSData* data = UIImagePNGRepresentation(uiimage);
 
-  if ([data length] == 0)
+  if (data.length == 0) {
     return nullptr;
+  }
 
   scoped_refptr<base::RefCountedBytes> png_bytes(
       new base::RefCountedBytes());
-  png_bytes->data().resize([data length]);
-  [data getBytes:&png_bytes->data().at(0) length:[data length]];
+  png_bytes->data().resize(data.length);
+  [data getBytes:&png_bytes->data().at(0) length:data.length];
   return png_bytes;
 }
 
@@ -135,8 +137,7 @@ UIImage* UIImageFromPNG(const std::vector<gfx::ImagePNGRep>& image_png_reps) {
     }
   }
 
-  return
-      [CreateUIImageFromImagePNGRep(image_png_reps[closest_index]) autorelease];
+  return CreateUIImageFromImagePNGRep(image_png_reps[closest_index]);
 }
 
 scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromImageSkia(
@@ -160,8 +161,7 @@ ImageSkia ImageSkiaFromPNG(
   // through UIImage.
   ImageSkia image_skia;
   for (const auto& image_png_rep : image_png_reps) {
-    base::scoped_nsobject<UIImage> uiimage(
-        CreateUIImageFromImagePNGRep(image_png_rep));
+    UIImage* uiimage = CreateUIImageFromImagePNGRep(image_png_rep);
     gfx::ImageSkiaRep image_skia_rep =
         ImageSkiaRepOfScaleFromUIImage(uiimage, image_png_rep.scale);
     if (!image_skia_rep.is_null())

@@ -8,6 +8,9 @@
 #include "ui/gfx/image/image_util.h"
 #include "ui/gfx/image/resize_image_dimensions.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 // Copied from GTMUIImage+Resize in //third_party/google_toolbox_for_mac to
@@ -16,7 +19,7 @@ UIImage* ResizeUIImage(UIImage* image,
                        CGSize target_size,
                        BOOL preserve_aspect_ratio,
                        BOOL trim_to_fit) {
-  CGSize imageSize = [image size];
+  CGSize imageSize = image.size;
   if (imageSize.height < 1 || imageSize.width < 1) {
     return nil;
   }
@@ -85,11 +88,12 @@ bool JPEG1xEncodedDataFromImage(const Image& image,
                                 std::vector<unsigned char>* dst) {
   NSData* data = UIImageJPEGRepresentation(image.ToUIImage(), quality / 100.0);
 
-  if ([data length] == 0)
+  if (data.length == 0) {
     return false;
+  }
 
-  dst->resize([data length]);
-  [data getBytes:&dst->at(0) length:[data length]];
+  dst->resize(data.length);
+  [data getBytes:&dst->at(0) length:data.length];
   return true;
 }
 

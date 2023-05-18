@@ -8,6 +8,7 @@
 
 #include <cmath>
 
+#include "base/apple/bridging.h"
 #import "base/mac/foundation_util.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
@@ -16,6 +17,10 @@
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/ios/NSString+CrStringDrawing.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace gfx {
 
@@ -37,18 +42,18 @@ std::string GetFamilyNameFromTypeface(sk_sp<SkTypeface> typeface) {
 // PlatformFontIOS, public:
 
 PlatformFontIOS::PlatformFontIOS() {
-  font_size_ = [UIFont systemFontSize];
+  font_size_ = UIFont.systemFontSize;
   style_ = Font::NORMAL;
   weight_ = Font::Weight::NORMAL;
   UIFont* system_font = [UIFont systemFontOfSize:font_size_];
-  font_name_ = base::SysNSStringToUTF8([system_font fontName]);
+  font_name_ = base::SysNSStringToUTF8(system_font.fontName);
   CalculateMetrics();
 }
 
 PlatformFontIOS::PlatformFontIOS(CTFontRef ct_font) {
-  UIFont* font = base::mac::CFToNSCast(ct_font);
-  std::string font_name = base::SysNSStringToUTF8([font fontName]);
-  InitWithNameSizeAndStyle(font_name, [font pointSize], Font::NORMAL,
+  UIFont* font = base::apple::CFToNSPtrCast(ct_font);
+  std::string font_name = base::SysNSStringToUTF8(font.fontName);
+  InitWithNameSizeAndStyle(font_name, font.pointSize, Font::NORMAL,
                            Font::Weight::NORMAL);
 }
 
@@ -108,7 +113,7 @@ const std::string& PlatformFontIOS::GetFontName() const {
 }
 
 std::string PlatformFontIOS::GetActualFontName() const {
-  UIFont* font = base::mac::CFToNSCast(GetCTFont());
+  UIFont* font = base::apple::CFToNSPtrCast(GetCTFont());
   return base::SysNSStringToUTF8(font.familyName);
 }
 
@@ -142,9 +147,9 @@ CTFontRef PlatformFontIOS::GetCTFont() const {
   // UIFont's fontWithDescriptor:size: method can return nil if it cannot find a
   // font that matches the given descriptor.
   if (font_with_traits) {
-    return base::mac::NSToCFCast(font_with_traits);
+    return base::apple::NSToCFPtrCast(font_with_traits);
   } else {
-    return base::mac::NSToCFCast(font);
+    return base::apple::NSToCFPtrCast(font);
   }
 }
 
@@ -174,7 +179,7 @@ void PlatformFontIOS::InitWithNameSizeAndStyle(const std::string& font_name,
 }
 
 void PlatformFontIOS::CalculateMetrics() {
-  UIFont* font = base::mac::CFToNSCast(GetCTFont());
+  UIFont* font = base::apple::CFToNSPtrCast(GetCTFont());
   height_ = ceil(font.lineHeight);
   ascent_ = ceil(font.ascender);
   cap_height_ = ceil(font.capHeight);

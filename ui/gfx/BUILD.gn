@@ -280,6 +280,10 @@ component("gfx") {
     "//build/config/compiler:wexit_time_destructors",
   ]
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
   # This is part of the gfx component in the component build.
   defines = [ "GFX_IMPLEMENTATION" ]
 

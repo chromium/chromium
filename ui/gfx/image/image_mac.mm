@@ -9,16 +9,18 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
-#include "base/mac/scoped_nsobject.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_internal.h"
 #include "ui/gfx/image/image_png_rep.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
 // Returns a 16x16 red NSImage to visually show when a NSImage cannot be
 // created from PNG data.
-// Caller takes ownership of the returned NSImage.
 NSImage* GetErrorNSImage() {
   NSRect rect = NSMakeRect(0, 0, 16, 16);
   NSImage* image = [[NSImage alloc] initWithSize:rect.size];
@@ -38,30 +40,29 @@ namespace internal {
 class ImageRepCocoa final : public ImageRep {
  public:
   explicit ImageRepCocoa(NSImage* image)
-      : ImageRep(Image::kImageRepCocoa),
-        image_(image, base::scoped_policy::RETAIN) {
+      : ImageRep(Image::kImageRepCocoa), image_(image) {
     CHECK(image_);
   }
 
   ImageRepCocoa(const ImageRepCocoa&) = delete;
   ImageRepCocoa& operator=(const ImageRepCocoa&) = delete;
 
-  ~ImageRepCocoa() override { image_.reset(); }
+  ~ImageRepCocoa() override = default;
 
   int Width() const override { return Size().width(); }
 
   int Height() const override { return Size().height(); }
 
   gfx::Size Size() const override {
-    int width = static_cast<int>(image_.get().size.width);
-    int height = static_cast<int>(image_.get().size.height);
+    int width = static_cast<int>(image_.size.width);
+    int height = static_cast<int>(image_.size.height);
     return gfx::Size(width, height);
   }
 
   NSImage* image() const { return image_; }
 
  private:
-  base::scoped_nsobject<NSImage> image_;
+  NSImage* __strong image_;
 };
 
 const ImageRepCocoa* ImageRep::AsImageRepCocoa() const {
@@ -84,15 +85,14 @@ scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromNSImage(
     // out what's going on here.
     return scoped_refptr<base::RefCountedMemory>();
   }
-  base::scoped_nsobject<NSBitmapImageRep> ns_bitmap(
-      [[NSBitmapImageRep alloc] initWithCGImage:cg_image]);
+  NSBitmapImageRep* ns_bitmap =
+      [[NSBitmapImageRep alloc] initWithCGImage:cg_image];
   NSData* ns_data = [ns_bitmap representationUsingType:NSBitmapImageFileTypePNG
                                             properties:@{}];
-  const unsigned char* bytes =
-      static_cast<const unsigned char*>([ns_data bytes]);
+  const unsigned char* bytes = static_cast<const unsigned char*>(ns_data.bytes);
   scoped_refptr<base::RefCountedBytes> refcounted_bytes(
       new base::RefCountedBytes());
-  refcounted_bytes->data().assign(bytes, bytes + [ns_data length]);
+  refcounted_bytes->data().assign(bytes, bytes + ns_data.length);
   return refcounted_bytes;
 }
 
@@ -103,14 +103,14 @@ NSImage* NSImageFromPNG(const std::vector<gfx::ImagePNGRep>& image_png_reps,
     return GetErrorNSImage();
   }
 
-  base::scoped_nsobject<NSImage> image;
+  NSImage* image;
   for (const auto& image_png_rep : image_png_reps) {
     scoped_refptr<base::RefCountedMemory> png = image_png_rep.raw_data;
     CHECK(png.get());
-    base::scoped_nsobject<NSData> ns_data(
-        [[NSData alloc] initWithBytes:png->front() length:png->size()]);
-    base::scoped_nsobject<NSBitmapImageRep> ns_image_rep(
-        [[NSBitmapImageRep alloc] initWithData:ns_data]);
+    NSData* ns_data = [[NSData alloc] initWithBytes:png->front()
+                                             length:png->size()];
+    NSBitmapImageRep* ns_image_rep =
+        [[NSBitmapImageRep alloc] initWithData:ns_data];
     if (!ns_image_rep) {
       LOG(ERROR) << "Unable to decode PNG at " << image_png_rep.scale << ".";
       return GetErrorNSImage();
@@ -120,29 +120,29 @@ NSImage* NSImageFromPNG(const std::vector<gfx::ImagePNGRep>& image_png_reps,
     // colorspace information when decoding directly from PNG to an NSImage so
     // that the conversions: PNG -> SkBitmap -> NSImage and PNG -> NSImage
     // produce visually similar results.
-    CGColorSpaceModel decoded_color_space_model = CGColorSpaceGetModel(
-        [[ns_image_rep colorSpace] CGColorSpace]);
+    CGColorSpaceModel decoded_color_space_model =
+        CGColorSpaceGetModel(ns_image_rep.colorSpace.CGColorSpace);
     CGColorSpaceModel color_space_model = CGColorSpaceGetModel(color_space);
     if (decoded_color_space_model == color_space_model) {
-      base::scoped_nsobject<NSColorSpace> ns_color_space(
-          [[NSColorSpace alloc] initWithCGColorSpace:color_space]);
+      NSColorSpace* ns_color_space =
+          [[NSColorSpace alloc] initWithCGColorSpace:color_space];
       NSBitmapImageRep* ns_retagged_image_rep =
           [ns_image_rep
               bitmapImageRepByRetaggingWithColorSpace:ns_color_space];
       if (ns_retagged_image_rep && ns_retagged_image_rep != ns_image_rep)
-        ns_image_rep.reset([ns_retagged_image_rep retain]);
+        ns_image_rep = ns_retagged_image_rep;
     }
 
-    if (!image.get()) {
+    if (!image) {
       float scale = image_png_rep.scale;
-      NSSize image_size = NSMakeSize([ns_image_rep pixelsWide] / scale,
-                                     [ns_image_rep pixelsHigh] / scale);
-      image.reset([[NSImage alloc] initWithSize:image_size]);
+      NSSize image_size = NSMakeSize(ns_image_rep.pixelsWide / scale,
+                                     ns_image_rep.pixelsHigh / scale);
+      image = [[NSImage alloc] initWithSize:image_size];
     }
     [image addRepresentation:ns_image_rep];
   }
 
-  return image.autorelease();
+  return image;
 }
 
 NSImage* NSImageOfImageRepCocoa(const ImageRepCocoa* image_rep) {
