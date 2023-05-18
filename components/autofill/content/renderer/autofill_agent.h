@@ -128,6 +128,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   void EnableHeavyFormDataScraping() override;
   void SetFieldsEligibleForManualFilling(
       const std::vector<FieldRendererId>& fields) override;
+  void GetPotentialLastFourCombinationsForStandaloneCvc(
+      base::OnceCallback<void(const std::vector<std::string>&)>
+          potential_matches) override;
 
   void FormControlElementClicked(const blink::WebFormControlElement& element);
 
@@ -370,6 +373,10 @@ class AutofillAgent : public content::RenderFrameObserver,
   // type started.
   void BatchSelectOptionChange(const blink::WebFormControlElement& element);
   void BatchDataListOptionChange(const blink::WebFormControlElement& element);
+
+  // Return the next web node of `current_node` in the DOM. `next` determines
+  // the direction to traverse in.
+  blink::WebNode NextWebNode(const blink::WebNode& current_node, bool next);
 
   // Contains the form of the document. Does not survive navigations and is
   // reset when the AutofillAgent is pending deletion.

@@ -156,6 +156,12 @@ class AutofillDriver {
   // manual filling on form interaction.
   virtual void SendFieldsEligibleForManualFillingToRenderer(
       const std::vector<FieldGlobalId>& fields) = 0;
+
+  // Query's the DOM for four digit combinations that could potentially be of a
+  // card number.
+  virtual void GetFourDigitCombinationsFromDOM(
+      base::OnceCallback<void(const std::vector<std::string>&)>
+          potential_matches) = 0;
 };
 
 }  // namespace autofill

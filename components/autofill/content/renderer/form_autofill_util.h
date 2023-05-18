@@ -450,6 +450,17 @@ std::u16string GetAriaLabel(const blink::WebDocument& document,
 std::u16string GetAriaDescription(const blink::WebDocument& document,
                                   const blink::WebElement& element);
 
+// Helper function to return the next web node of `current_node` in the DOM.
+// `forward` determines the direction to traverse in.
+blink::WebNode NextWebNode(const blink::WebNode& current_node, bool forward);
+
+// Iterates through the node neighbors of form and form control elements in
+// `document` in search of four digit combinations.
+void TraverseDomForFourDigitCombinations(
+    const blink::WebDocument& document,
+    base::OnceCallback<void(const std::vector<std::string>&)>
+        potential_matches);
+
 }  // namespace form_util
 }  // namespace autofill
 

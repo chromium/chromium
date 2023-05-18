@@ -107,6 +107,13 @@ void ContentAutofillDriver::TriggerReparseInAllFrames(
   }
 }
 
+void ContentAutofillDriver::GetFourDigitCombinationsFromDOM(
+    base::OnceCallback<void(const std::vector<std::string>&)>
+        potential_matches) {
+  GetAutofillAgent()->GetPotentialLastFourCombinationsForStandaloneCvc(
+      std::move(potential_matches));
+}
+
 // static
 ContentAutofillDriver* ContentAutofillDriver::GetForRenderFrameHost(
     content::RenderFrameHost* render_frame_host) {

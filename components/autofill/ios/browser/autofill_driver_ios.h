@@ -69,6 +69,9 @@ class AutofillDriverIOS : public AutofillDriver,
   void TriggerReparseInAllFrames(
       base::OnceCallback<void(bool)> trigger_reparse_finished_callback)
       override;
+  void GetFourDigitCombinationsFromDOM(
+      base::OnceCallback<void(const std::vector<std::string>&)>
+          potential_matches) override;
 
   AutofillClient* client() { return client_; }
 

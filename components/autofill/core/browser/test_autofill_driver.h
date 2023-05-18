@@ -75,6 +75,10 @@ class TestAutofillDriverTemplate : public T {
   void TriggerReparseInAllFrames(
       base::OnceCallback<void(bool)> trigger_reparse_finished_callback)
       override {}
+  void GetFourDigitCombinationsFromDOM(
+      base::OnceCallback<void(const std::vector<std::string>&)>
+          potential_matches) override {}
+
   // The return value contains the members (field, type) of `field_type_map` for
   // which `field_type_map_filter_.Run(triggered_origin, field, type)` is true.
   std::vector<FieldGlobalId> FillOrPreviewForm(

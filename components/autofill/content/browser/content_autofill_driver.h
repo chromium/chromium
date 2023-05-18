@@ -251,6 +251,9 @@ class ContentAutofillDriver : public AutofillDriver,
   void TriggerReparseInAllFrames(
       base::OnceCallback<void(bool success)> trigger_reparse_finished_callback)
       override;
+  void GetFourDigitCombinationsFromDOM(
+      base::OnceCallback<void(const std::vector<std::string>&)>
+          potential_matches) override;
 
   // mojom::AutofillDriver:
   // Events triggered by the renderer. These events are routed by

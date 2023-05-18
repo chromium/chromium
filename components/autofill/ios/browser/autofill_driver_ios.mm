@@ -132,6 +132,13 @@ void AutofillDriverIOS::TriggerReparseInAllFrames(
   NOTIMPLEMENTED();
 }
 
+void AutofillDriverIOS::GetFourDigitCombinationsFromDOM(
+    base::OnceCallback<void(const std::vector<std::string>&)>
+        potential_matches) {
+  // TODO(crbug.com/1423605): Implement GetFourDigitCombinationsFromDOM in iOS.
+  NOTIMPLEMENTED();
+}
+
 void AutofillDriverIOS::RendererShouldClearFilledSection() {}
 
 void AutofillDriverIOS::RendererShouldClearPreviewedForm() {

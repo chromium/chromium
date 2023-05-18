@@ -56,6 +56,7 @@
 #include "third_party/blink/public/web/web_remote_frame.h"
 #include "third_party/blink/public/web/web_select_element.h"
 #include "third_party/blink/public/web/web_select_menu_element.h"
+#include "third_party/re2/src/re2/re2.h"
 
 using blink::WebAutofillState;
 using blink::WebDocument;
@@ -113,6 +114,17 @@ constexpr size_t kMaxShadowLevelsUp = 2;
 // features).
 const char* const kButtonFeatures[] = {"button", "btn", "submit",
                                        "boton" /* "button" in Spanish */};
+
+// Number of form neighbor nodes to traverse in search of four digit
+// combinations on the webpage.
+constexpr int kFormNeighborNodesToTraverse = 50;
+
+// Maximum number of consecutive numbers to allow in the four digit combination
+// matches.
+constexpr int kMaxConsecutiveInFourDigitCombinationMatches = 2;
+
+// Maximum number of four digit combination matches to find in the DOM.
+constexpr size_t kMaxFourDigitCombinationMatches = 5;
 
 // A bit field mask for FillForm functions to not fill some fields.
 enum FieldFilterMask {
@@ -2806,6 +2818,130 @@ std::u16string GetAriaDescription(const blink::WebDocument& document,
       "aria-describedby");
   return CoalesceTextByIdList(document,
                               element.GetAttribute(*kAriaDescribedBy));
+}
+
+WebNode NextWebNode(const WebNode& current_node, bool forward) {
+  if (forward) {
+    if (!current_node.FirstChild().IsNull()) {
+      return current_node.FirstChild();
+    }
+    if (!current_node.NextSibling().IsNull()) {
+      return current_node.NextSibling();
+    }
+    WebNode parent = current_node.ParentNode();
+    while (!parent.IsNull()) {
+      if (!parent.NextSibling().IsNull()) {
+        return parent.NextSibling();
+      }
+      parent = parent.ParentNode();
+    }
+    return parent;
+  } else {
+    if (!current_node.PreviousSibling().IsNull()) {
+      WebNode previous = current_node.PreviousSibling();
+      while (!previous.LastChild().IsNull()) {
+        previous = previous.LastChild();
+      }
+      return previous;
+    }
+    return current_node.ParentNode();
+  }
+}
+
+void TraverseDomForFourDigitCombinations(
+    const WebDocument& document,
+    base::OnceCallback<void(const std::vector<std::string>&)>
+        potential_matches) {
+  re2::RE2 kFourDigitRegex("(?:\\D|^)(\\d{4})(?:\\D|$)");
+  base::flat_set<std::string> matches;
+  // Iterate through each form control element in the DOM and parse the
+  // elements nearby in search of four digit combinations.
+  std::vector<WebFormControlElement> form_control_elements;
+
+  for (const WebFormElement& form : document.Forms()) {
+    base::ranges::move(form.GetFormControlElements().ReleaseVector(),
+                       std::back_inserter(form_control_elements));
+  }
+
+  base::ranges::move(document.UnassociatedFormControls().ReleaseVector(),
+                     std::back_inserter(form_control_elements));
+
+  auto extract_four_digit_combinations = [&](WebNode node) {
+    if (!node.IsTextNode()) {
+      return;
+    }
+    std::string node_text = node.NodeValue().Utf8();
+    re2::StringPiece input(node_text);
+    std::string match;
+    while (matches.size() < kMaxFourDigitCombinationMatches &&
+           re2::RE2::FindAndConsume(&input, kFourDigitRegex, &match)) {
+      matches.insert(match);
+    }
+  };
+
+  // Returns whether the traversal reached a form control element.
+  auto iterate_and_extract_four_digit_combinations = [&](WebNode node,
+                                                         bool forward) {
+    for (int i = 0; i < kFormNeighborNodesToTraverse; ++i) {
+      if (node.IsNull()) {
+        break;
+      }
+      extract_four_digit_combinations(node);
+      node = NextWebNode(node, forward);
+      if (auto form_control_element = node.DynamicTo<WebFormControlElement>();
+          !form_control_element.IsNull()) {
+        // Reached next form control element.
+        return true;
+      }
+    }
+    return false;
+  };
+
+  bool reached_form_control_before = false;
+  for (const WebFormControlElement& element : form_control_elements) {
+    // If a forward search ended at a form control, we don't need a backward
+    // search for that form control.
+    if (!reached_form_control_before) {
+      iterate_and_extract_four_digit_combinations(element,
+                                                  /*forward=*/false);
+    }
+    reached_form_control_before =
+        iterate_and_extract_four_digit_combinations(element, /*forward=*/true);
+
+    if (matches.size() >= kMaxFourDigitCombinationMatches) {
+      break;
+    }
+  }
+
+  // Check for consecutive numbers as a potential indicator that we've
+  // parsed a year <select> element of a credit card form. This indicates that
+  // a CVC field is not a standalone CVC element.
+  if (matches.size() > 2) {
+    auto iter = matches.begin();
+    int consecutive_numbers = 0;
+    int previous_combination = 0;
+    base::StringToInt(*iter, &previous_combination);
+    iter++;
+    for (; iter != matches.end(); ++iter) {
+      int current_combination = 0;
+      base::StringToInt(*iter, &current_combination);
+      if (current_combination == previous_combination + 1) {
+        consecutive_numbers++;
+      } else {
+        consecutive_numbers = 0;
+      }
+      if (consecutive_numbers > kMaxConsecutiveInFourDigitCombinationMatches) {
+        // Clear all matches as we presume this is not standalone cvc if
+        // there is a year input field.
+        matches.clear();
+        break;
+      }
+      previous_combination = current_combination;
+    }
+  }
+
+  std::move(potential_matches)
+      .Run(std::vector<std::string>(matches.begin(), matches.end()));
 }
 
 }  // namespace form_util

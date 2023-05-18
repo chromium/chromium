@@ -91,6 +91,7 @@ using form_util::ExtractMask;
 using form_util::FindFormAndFieldForFormControlElement;
 using form_util::IsElementEditable;
 using form_util::IsOwnedByFrame;
+using form_util::TraverseDomForFourDigitCombinations;
 using mojom::SubmissionSource;
 using ShowAll = PasswordAutofillAgent::ShowAll;
 using GenerationShowing = PasswordAutofillAgent::GenerationShowing;
@@ -973,6 +974,18 @@ void AutofillAgent::SetFieldsEligibleForManualFilling(
     return;
   }
   form_cache_->SetFieldsEligibleForManualFilling(fields);
+}
+
+void AutofillAgent::GetPotentialLastFourCombinationsForStandaloneCvc(
+    base::OnceCallback<void(const std::vector<std::string>&)>
+        potential_matches) {
+  if (!unsafe_render_frame()) {
+    std::vector<std::string> matches;
+    std::move(potential_matches).Run(matches);
+  } else {
+    WebDocument document = unsafe_render_frame()->GetWebFrame()->GetDocument();
+    TraverseDomForFourDigitCombinations(document, std::move(potential_matches));
+  }
 }
 
 void AutofillAgent::QueryAutofillSuggestions(
