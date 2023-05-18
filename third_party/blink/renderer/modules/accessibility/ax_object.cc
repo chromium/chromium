@@ -2953,7 +2953,6 @@ void AXObject::InvalidateCachedValues() {
 #endif
 
   last_modification_count_ = -1;
-  focus_attribute_cache_modification_count_ = -1;
 }
 
 bool AXObject::NeedsToUpdateCachedValues() const {
@@ -3013,6 +3012,11 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     cached_is_inert_ = is_inert;
     cached_is_aria_hidden_ = is_aria_hidden;
   }
+
+  // Must be after inert computation, because focusability depends on that, but
+  // before the included in tree computation, which depends on focusability.
+  cached_can_set_focus_attribute_ = ComputeCanSetFocusAttribute();
+
   cached_is_descendant_of_disabled_node_ = ComputeIsDescendantOfDisabledNode();
 
   bool is_ignored = ComputeAccessibilityIsIgnored();
@@ -3084,6 +3088,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
 
   cached_is_ignored_ = is_ignored;
   cached_is_ignored_but_included_in_tree_ = is_ignored_but_included_in_tree;
+
   // Compute live region root, which can be from any ARIA live value, including
   // "off", or from an automatic ARIA live value, e.g. from role="status".
   // TODO(dmazzoni): remove this const_cast.
@@ -3881,30 +3886,7 @@ bool AXObject::IsFocusableStyleUsingBestAvailableState() const {
 }
 
 bool AXObject::CanSetFocusAttribute() const {
-  // If we are detached or have no document, then we can't set focus on the
-  // object. Note that this early out is necessary since we access the cache and
-  // the document below.
-  if (IsDetached() || !GetDocument())
-    return false;
-
-  AXObjectCacheImpl& cache = AXObjectCache();
-  auto* document = GetDocument();
-
-  // TODO(accessibility) Try to unify this with the system used for other
-  // cached_ members, e.g. use UpdateCachedAttributeValuesIfNeeded(), without
-  // affecting performance. It should be possible now that our cached value
-  // invalidations are more targeted.
-  if (document->StyleVersion() != focus_attribute_style_version_ ||
-      document->DomTreeVersion() != focus_attribute_dom_tree_version_ ||
-      cache.ModificationCount() != focus_attribute_cache_modification_count_) {
-    focus_attribute_style_version_ = document->StyleVersion();
-    focus_attribute_dom_tree_version_ = document->DomTreeVersion();
-    focus_attribute_cache_modification_count_ = cache.ModificationCount();
-
-    cached_can_set_focus_attribute_ = ComputeCanSetFocusAttribute();
-  } else {
-    DCHECK_EQ(cached_can_set_focus_attribute_, ComputeCanSetFocusAttribute());
-  }
+  UpdateCachedAttributeValuesIfNeeded();
   return cached_can_set_focus_attribute_;
 }
 
@@ -3948,13 +3930,9 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
   if (!elem)
     return false;
 
-  // NOT focusable: inert elements. Note we can't just call IsInert() here
-  // because UpdateCachedAttributeValuesIfNeeded() can end up calling
-  // CanSetFocusAttribute() again, which will then try to return
-  // cached_can_set_focus_attribute_, but we haven't set it yet.
-  bool are_cached_attributes_up_to_date = !NeedsToUpdateCachedValues();
-  if (are_cached_attributes_up_to_date ? cached_is_inert_ : ComputeIsInert())
+  if (cached_is_inert_) {
     return false;
+  }
 
   // NOT focusable: child tree owners (it's the content area that will be marked
   // focusable in the a11y tree).
