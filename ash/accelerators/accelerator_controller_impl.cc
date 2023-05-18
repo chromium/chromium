@@ -91,8 +91,9 @@ int GetEncodedShortcut(const ui::Accelerator& accelerator) {
   }
 
   // Currently KeyboardCode only has 2^8 values. It will be a long time until we
-  // get to 2^16. Even if KeyboardCode has 2^28+ values for some reason, only
-  // the top 5 bits will be overwritten.
+  // get to 2^16. But if KeyboardCode has 2^28+ values for some reason, the top
+  // 5 bits will be overwritten.
+  DCHECK((0xF800 & accelerator.key_code()) == 0);
   return encoded_modifier | accelerator.key_code();
 }
 
