@@ -18,7 +18,6 @@ public interface SurfaceCoordinator {
     void onSurfaceOpened();
     boolean isActive();
 
-    void onApplicationStopped();
     void onActivityPaused();
     void onActivityResumed();
 
