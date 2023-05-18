@@ -158,11 +158,11 @@ class OverlayProposedCandidateTest
       const AggregatedRenderPass& render_pass,
       const gfx::RectF& primary_rect,
       bool has_clip_support = true,
-      bool has_arbitrary_transform_support = true,
+      bool has_arbitrary_transform_support = false,
       bool supports_rounded_display_masks = true) {
     return OverlayCandidateFactory(
         &render_pass, &resource_provider_, &surface_damage_list_, &identity_,
-        primary_rect, &render_pass_filters_, /*is_delegated_context=*/true,
+        primary_rect, &render_pass_filters_, /*is_delegated_context=*/false,
         has_clip_support, has_arbitrary_transform_support,
         supports_rounded_display_masks);
   }

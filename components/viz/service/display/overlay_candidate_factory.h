@@ -136,6 +136,12 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
 
   gfx::RectF GetDamageEstimate(const OverlayCandidate& candidate) const;
 
+  // Apply clipping "geometrically" by adjusting the |quad->rect| and
+  // |quad->uv_rect|. May return CandidateStatus::kFailVisible if the clipping
+  // to be applied is empty.
+  CandidateStatus DoGeometricClipping(const DrawQuad* quad,
+                                      OverlayCandidate& candidate) const;
+
   raw_ptr<const AggregatedRenderPass> render_pass_;
   raw_ptr<DisplayResourceProvider> resource_provider_;
   raw_ptr<const SurfaceDamageRectList> surface_damage_rect_list_;
