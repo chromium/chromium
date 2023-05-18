@@ -293,7 +293,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
     ValidateStateStackWithCanvas(GetPaintCanvas());
 #endif
   }
-  virtual void ValidateStateStackWithCanvas(const cc::PaintCanvas*) const = 0;
+  void ValidateStateStackWithCanvas(const cc::PaintCanvas* canvas) const;
 
   virtual bool HasAlpha() const = 0;
 
@@ -668,6 +668,22 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   std::unique_ptr<CanvasColorCache> color_cache_;
   mojom::blink::ColorScheme color_scheme_ = mojom::blink::ColorScheme::kLight;
 };
+
+ALWAYS_INLINE void BaseRenderingContext2D::ValidateStateStackWithCanvas(
+    const cc::PaintCanvas* canvas) const {
+#if DCHECK_IS_ON()
+  if (canvas) {
+    // The canvas should always have an initial save frame, to support
+    // resetting the top level matrix and clip.
+    DCHECK_GT(canvas->getSaveCount(), 1);
+
+    if (context_lost_mode_ == CanvasRenderingContext::kNotLostContext) {
+      DCHECK_EQ(static_cast<size_t>(canvas->getSaveCount()),
+                state_stack_.size() + layer_extra_saves_ + 1);
+    }
+  }
+#endif
+}
 
 namespace {
 

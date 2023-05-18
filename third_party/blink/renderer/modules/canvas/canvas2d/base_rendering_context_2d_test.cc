@@ -90,13 +90,6 @@ class TestRenderingContext2D final
   ExecutionContext* GetTopExecutionContext() const override {
     return execution_context_;
   }
-  void ValidateStateStackWithCanvas(
-      const cc::PaintCanvas* canvas) const override {
-#if DCHECK_IS_ON()
-    CHECK_EQ(static_cast<size_t>(canvas->getSaveCount()),
-             state_stack_.size() + layer_extra_saves_ + 1);
-#endif
-  }
 
   bool HasAlpha() const override { return false; }
 
