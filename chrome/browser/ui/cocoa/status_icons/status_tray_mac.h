@@ -22,5 +22,4 @@ class StatusTrayMac : public StatusTray {
       const std::u16string& tool_tip) override;
 };
 
-#endif // CHROME_BROWSER_UI_COCOA_STATUS_ICONS_STATUS_TRAY_MAC_H_
-
+#endif  // CHROME_BROWSER_UI_COCOA_STATUS_ICONS_STATUS_TRAY_MAC_H_

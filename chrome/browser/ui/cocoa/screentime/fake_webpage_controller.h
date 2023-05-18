@@ -7,8 +7,11 @@
 
 #include <vector>
 
-#include "base/mac/scoped_nsobject.h"
 #include "chrome/browser/ui/cocoa/screentime/webpage_controller.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace screentime {
 
@@ -35,7 +38,7 @@ class FakeWebpageController : public WebpageController {
 
  private:
   bool enabled_ = false;
-  base::scoped_nsobject<NSView> view_;
+  NSView* __strong view_;
   BlockedChangedCallback blocked_changed_callback_;
 
   // For unit tests:

@@ -6,6 +6,10 @@
 
 #import <AppKit/AppKit.h>
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @interface NSMenu (PrivateAPI)
 - (void)_lockMenuPosition;
 - (void)_unlockMenuPosition;
@@ -13,10 +17,10 @@
 
 ScopedMenuBarLock::ScopedMenuBarLock() {
   if ([NSMenu instancesRespondToSelector:@selector(_lockMenuPosition)])
-    [[NSApp mainMenu] _lockMenuPosition];
+    [NSApp.mainMenu _lockMenuPosition];
 }
 
 ScopedMenuBarLock::~ScopedMenuBarLock() {
   if ([NSMenu instancesRespondToSelector:@selector(_unlockMenuPosition)])
-    [[NSApp mainMenu] _unlockMenuPosition];
+    [NSApp.mainMenu _unlockMenuPosition];
 }

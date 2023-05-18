@@ -6,6 +6,10 @@
 
 #import <Cocoa/Cocoa.h>
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 NSView* MakeView(bool enabled) {
@@ -27,7 +31,7 @@ FakeWebpageController::FakeWebpageController(
 FakeWebpageController::~FakeWebpageController() = default;
 
 NSView* FakeWebpageController::GetView() {
-  return view_.get();
+  return view_;
 }
 
 void FakeWebpageController::PageURLChangedTo(const GURL& url) {

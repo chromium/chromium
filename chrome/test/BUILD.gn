@@ -1322,6 +1322,7 @@ if (!is_android) {
         "../browser/ui/cocoa/applescript/browsercrapplication+applescript_browsertest.mm",
         "../browser/ui/cocoa/applescript/tab_applescript_browsertest.mm",
         "../browser/ui/cocoa/applescript/window_applescript_browsertest.mm",
+        "../browser/ui/cocoa/share_menu_controller_browsertest.mm",
         "../browser/ui/cocoa/touchbar/browser_window_touch_bar_controller_browsertest.mm",
       ]
       configs += [ "//build/config/compiler:enable_arc" ]
@@ -1353,6 +1354,7 @@ if (!is_android) {
         "//mojo/core/embedder",
         "//skia",
         "//third_party/abseil-cpp:absl",
+        "//ui/events:test_support",
       ]
     }
   }
@@ -2804,7 +2806,6 @@ if (!is_android) {
         "../browser/ui/cocoa/browser_window_mac_browsertest.mm",
         "../browser/ui/cocoa/color_panel_cocoa_unittest.mm",
         "../browser/ui/cocoa/renderer_context_menu/render_view_context_menu_mac_cocoa_browsertest.mm",
-        "../browser/ui/cocoa/share_menu_controller_browsertest.mm",
         "../browser/ui/cocoa/task_manager_mac_browsertest.mm",
         "../browser/ui/find_bar/find_bar_platform_helper_mac_browsertest.mm",
         "../browser/ui/test/test_browser_dialog_mac.h",
@@ -5539,6 +5540,9 @@ if (is_mac) {
       "../browser/apps/app_shim/mach_bootstrap_acceptor_unittest.mm",
       "../browser/mac/keystone_glue_unittest.mm",
       "../browser/ui/cocoa/applescript/apple_event_util_unittest.mm",
+      "../browser/ui/cocoa/scoped_menu_bar_lock_unittest.mm",
+      "../browser/ui/cocoa/screentime/screentime_tab_helper_unittest.mm",
+      "../browser/ui/cocoa/status_icons/status_icon_mac_unittest.mm",
       "../browser/ui/cocoa/touchbar/browser_window_default_touch_bar_unittest.mm",
       "../browser/ui/cocoa/touchbar/credit_card_autofill_touch_bar_controller_unittest.mm",
     ]
@@ -5547,6 +5551,7 @@ if (is_mac) {
       "//base",
       "//base/test:test_support",
       "//chrome/app:command_ids",
+      "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/app_shim:app_shim",
       "//chrome/browser/apps/app_shim:app_shim",
       "//chrome/browser/autofill:test_support",
@@ -6632,10 +6637,7 @@ test("unit_tests") {
       "../browser/ui/cocoa/main_menu_builder_unittest.mm",
       "../browser/ui/cocoa/profiles/profile_menu_controller_unittest.mm",
       "../browser/ui/cocoa/renderer_context_menu/render_view_context_menu_mac_unittest.mm",
-      "../browser/ui/cocoa/scoped_menu_bar_lock_unittest.mm",
       "../browser/ui/cocoa/screentime/history_bridge_unittest.cc",
-      "../browser/ui/cocoa/screentime/screentime_tab_helper_unittest.mm",
-      "../browser/ui/cocoa/status_icons/status_icon_mac_unittest.mm",
       "../browser/ui/cocoa/tab_menu_bridge_unittest.mm",
       "../browser/ui/cocoa/test/run_loop_testing_unittest.mm",
       "../browser/ui/cocoa/window_size_autosaver_unittest.mm",
@@ -6651,6 +6653,7 @@ test("unit_tests") {
       "//chrome/app_shim",
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/renderer_host:history_swiper",
+      "//chrome/browser/ui:ui_arc",
       "//chrome/browser/updater:browser_updater_client",
       "//chrome/common/notifications",
       "//chrome/common/safe_browsing:archive_analyzer_results",
@@ -9793,6 +9796,24 @@ if (!is_android) {
   }
 }
 
+if (is_mac) {
+  # TODO(https://crbug.com/1280317): Merge back into the `interactive_ui_tests`
+  # target once all .mm files are ARCed.
+  source_set("interactive_ui_tests_arc") {
+    testonly = true
+    sources = [ "../browser/ui/cocoa/status_bubble_mac_interactive_uitest.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    deps = [
+      "//base",
+      "//chrome/app/theme:chrome_unscaled_resources_grit",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+    ]
+  }
+}
+
 if (!is_android) {
   test("interactive_ui_tests") {
     use_xvfb = use_xvfb_in_this_config
@@ -10402,7 +10423,6 @@ if (!is_android) {
         "../browser/notifications/notification_interactive_uitest_mac.mm",
         "../browser/spellchecker/spellcheck_mac_view_interactive_uitest.mm",
         "../browser/ui/cocoa/apps/quit_with_apps_controller_mac_interactive_uitest.mm",
-        "../browser/ui/cocoa/status_bubble_mac_interactive_uitest.mm",
         "../browser/ui/cocoa/tab_contents/web_contents_view_mac_interactive_uitest.mm",
         "../browser/ui/find_bar/find_bar_platform_helper_mac_interactive_uitest.mm",
         "../browser/webauthn/chrome_webauthn_autofill_mac_interactive_uitest.mm",
@@ -10419,6 +10439,7 @@ if (!is_android) {
       ]
 
       deps += [
+        ":interactive_ui_tests_arc",
         "//chrome/browser/apps/app_shim",
         "//chrome/browser/web_applications/extensions",
         "//components/spellcheck:buildflags",
