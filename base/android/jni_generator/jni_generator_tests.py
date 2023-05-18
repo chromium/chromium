@@ -47,7 +47,6 @@ class JniGeneratorOptions(object):
     self.enable_jni_multiplexing = False
     self.unchecked_exceptions = False
     self.split_name = None
-    self.include_test_only = True
     self.package_prefix = None
 
 
@@ -280,34 +279,27 @@ class Tests(BaseTest):
   def testForTestingKept(self):
     input_java_file = 'SampleProxyEdgeCases.java'
     gen_options = JniGeneratorOptions()
-    gen_options.include_test_only = True
-    self._TestEndToEndGeneration(
-        input_java_file, gen_options,
-        'SampleForProxyEdgeCases_test_kept_jni.h.golden')
+    self._TestEndToEndGeneration(input_java_file, gen_options,
+                                 'SampleProxyEdgeCases_test_kept_jni.h.golden')
     options = JniRegistrationGeneratorOptions()
     options.use_proxy_hash = True
     options.include_test_only = True
     name_to_goldens = {
         'org/chromium/base/natives/GEN_JNI.java':
-        'SampleForProxyEdgeCases_test_kept_GenJni.java.golden',
-        'J/N.java': 'SampleForProxyEdgeCases_test_kept_JN.java.golden'
+        'SampleProxyEdgeCases_test_kept_GenJni.java.golden',
+        'J/N.java': 'SampleProxyEdgeCases_test_kept_JN.java.golden'
     }
     self._TestEndToEndRegistration([input_java_file], options, name_to_goldens)
 
   def testForTestingRemoved(self):
     input_java_file = 'SampleProxyEdgeCases.java'
-    gen_options = JniGeneratorOptions()
-    gen_options.include_test_only = False
-    self._TestEndToEndGeneration(
-        input_java_file, gen_options,
-        'SampleForProxyEdgeCases_test_removed_jni.h.golden')
     options = JniRegistrationGeneratorOptions()
     options.use_proxy_hash = True
     options.include_test_only = False
     name_to_goldens = {
         'org/chromium/base/natives/GEN_JNI.java':
-        'SampleForProxyEdgeCases_test_removed_GenJni.java.golden',
-        'J/N.java': 'SampleForProxyEdgeCases_test_removed_JN.java.golden'
+        'SampleProxyEdgeCases_test_removed_GenJni.java.golden',
+        'J/N.java': 'SampleProxyEdgeCases_test_removed_JN.java.golden'
     }
     self._TestEndToEndRegistration([input_java_file], options, name_to_goldens)
 

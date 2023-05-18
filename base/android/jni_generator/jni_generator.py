@@ -1496,9 +1496,6 @@ See SampleForTests.java for more details.
   parser.add_argument('--unchecked_exceptions',
                       action='store_true',
                       help='Do not check that no exceptions were thrown.')
-  parser.add_argument('--include_test_only',
-                      action='store_true',
-                      help='Whether to maintain ForTesting JNI methods.')
   parser.add_argument(
       '--use_proxy_hash',
       action='store_true',
