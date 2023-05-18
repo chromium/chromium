@@ -61,8 +61,8 @@ Received loadstart event
 readyState: 1
 Received load event
 readyState: 2
-result size: 5
-result: data:
+result size: 37
+result: data:application/octet-stream;base64,
 Received loadend event
 Test reading a UTF-8 file as array buffer
 readyState: 0

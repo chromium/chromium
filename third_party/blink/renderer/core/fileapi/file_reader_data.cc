@@ -19,7 +19,7 @@ String ToDataURL(ArrayBufferContents raw_data, const String& data_type) {
   StringBuilder builder;
   builder.Append("data:");
 
-  if (!raw_data.IsValid() || !raw_data.DataLength()) {
+  if (!raw_data.IsValid()) {
     return builder.ToString();
   }
 
@@ -32,12 +32,14 @@ String ToDataURL(ArrayBufferContents raw_data, const String& data_type) {
   }
   builder.Append(";base64,");
 
-  Vector<char> out;
-  Base64Encode(
-      base::make_span(static_cast<const uint8_t*>(raw_data.Data()),
-                      base::checked_cast<unsigned>(raw_data.DataLength())),
-      out);
-  builder.Append(out.data(), out.size());
+  if (raw_data.DataLength()) {
+    Vector<char> out;
+    Base64Encode(
+        base::make_span(static_cast<const uint8_t*>(raw_data.Data()),
+                        base::checked_cast<unsigned>(raw_data.DataLength())),
+        out);
+    builder.Append(out.data(), out.size());
+  }
 
   return builder.ToString();
 }
