@@ -43,8 +43,11 @@ constexpr char kMainDatabaseName[] = "main";
 }  // namespace
 
 // static
-bool BuiltInRecovery::ShouldAttemptRecovery(int extended_error) {
-  return IsErrorCatastrophic(extended_error);
+bool BuiltInRecovery::ShouldAttemptRecovery(Database* database,
+                                            int extended_error) {
+  return database && database->is_open() &&
+         !database->DbPath(InternalApiToken()).empty() &&
+         IsErrorCatastrophic(extended_error);
 }
 
 // static

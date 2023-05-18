@@ -45,10 +45,13 @@ class COMPONENT_EXPORT(SQL) BuiltInRecovery {
     // successfully-recovered, but unsuccessfully-restored database if needed.
   };
 
-  // Returns true for SQLite errors which `RecoverDatabase()` can plausibly fix.
-  // This does not guarantee that `RecoverDatabase()` will successfully recover
-  // the database.
-  static bool ShouldAttemptRecovery(int extended_error);
+  // Returns true if `RecoverDatabase()` can plausibly fix `database` given this
+  // `extended_error`. This does not guarantee that `RecoverDatabase()` will
+  // successfully recover the database.
+  //
+  // Note that even if this method returns true, the database's error callback
+  // must be reset before recovery can be attempted.
+  static bool ShouldAttemptRecovery(Database* database, int extended_error);
 
   // Attempts to recover `database`, and razes the database if it could not be
   // recovered according to `strategy`. After attempting recovery, the database

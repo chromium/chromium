@@ -20,6 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -95,6 +96,36 @@ class SqlRecoveryTest : public testing::TestWithParam<bool> {
   base::FilePath db_path_;
   Database db_;
 };
+
+TEST_P(SqlRecoveryTest, ShouldAttemptRecovery) {
+  if (UseBuiltIn()) {
+    return;
+  }
+
+  // Attempt to recover from corruption.
+  ASSERT_TRUE(BuiltInRecovery::ShouldAttemptRecovery(&db_, SQLITE_CORRUPT));
+
+  // Do not attempt to recover from transient errors.
+  EXPECT_FALSE(BuiltInRecovery::ShouldAttemptRecovery(&db_, SQLITE_BUSY));
+
+  // Do not attempt to recover null databases.
+  EXPECT_FALSE(BuiltInRecovery::ShouldAttemptRecovery(nullptr, SQLITE_CORRUPT));
+
+  // Do not attempt to recover closed databases.
+  Database invalid_db;
+  EXPECT_FALSE(
+      BuiltInRecovery::ShouldAttemptRecovery(&invalid_db, SQLITE_CORRUPT));
+
+  // Do not attempt to recover in-memory databases.
+  ASSERT_TRUE(invalid_db.OpenInMemory());
+  EXPECT_FALSE(
+      BuiltInRecovery::ShouldAttemptRecovery(&invalid_db, SQLITE_CORRUPT));
+
+  // Return true for databases which have an error callback set, even though
+  // the error callback should be reset before recovery is attempted.
+  db_.set_error_callback(base::DoNothing());
+  EXPECT_TRUE(BuiltInRecovery::ShouldAttemptRecovery(&db_, SQLITE_CORRUPT));
+}
 
 // Baseline Recovery test covering the different ways to dispose of the
 // scoped pointer received from Recovery::Begin().
