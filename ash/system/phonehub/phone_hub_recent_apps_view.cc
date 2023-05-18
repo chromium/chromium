@@ -437,6 +437,10 @@ void PhoneHubRecentAppsView::Update() {
       SetVisible(true);
       break;
     case RecentAppsUiState::ITEMS_VISIBLE:
+      // Setting the visibility to false before re-constructing the view.
+      // Without doing this it would cause the view goes to blank when there's a
+      // UI change.
+      recent_app_buttons_view_->SetVisible(false);
       std::vector<phonehub::Notification::AppMetadata> recent_apps_list =
           recent_apps_interaction_handler_->FetchRecentAppMetadataList();
 
