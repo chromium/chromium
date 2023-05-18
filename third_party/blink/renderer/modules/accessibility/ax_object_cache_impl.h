@@ -199,7 +199,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   // changed.
   void TextChanged(const LayoutObject*) override;
   void TextChangedWithCleanLayout(Node* optional_node, AXObject*);
-  void FocusableChangedWithCleanLayout(Element* element);
+  void FocusableChangedWithCleanLayout(Node* node);
   void DocumentTitleChanged() override;
   // Called when a layout tree for a node has just been attached, so we can make
   // sure we have the right subclass of AXObject.
@@ -347,11 +347,11 @@ class MODULES_EXPORT AXObjectCacheImpl
   void MaybeNewRelationTarget(Node& node, AXObject* obj);
 
   void HandleActiveDescendantChangedWithCleanLayout(Node*);
-  void SectionOrRegionRoleMaybeChanged(Element* element);
+  void SectionOrRegionRoleMaybeChangedWithCleanLayout(Node*);
   void HandleRoleChangeWithCleanLayout(Node*);
   void HandleAriaExpandedChangeWithCleanLayout(Node*);
   void HandleAriaSelectedChangedWithCleanLayout(Node*);
-  void HandleAriaPressedChangedWithCleanLayout(Element*);
+  void HandleAriaPressedChangedWithCleanLayout(Node*);
   void HandleNodeLostFocusWithCleanLayout(Node*);
   void HandleNodeGainedFocusWithCleanLayout(Node*);
   void UpdateCacheAfterNodeIsAttachedWithCleanLayout(Node*);
@@ -532,7 +532,9 @@ class MODULES_EXPORT AXObjectCacheImpl
       ax::mojom::blink::Action event_from_action =
           ax::mojom::blink::Action::kNone,
       const BlinkAXEventIntentsSet& event_intents = BlinkAXEventIntentsSet());
-  void LabelChangedWithCleanLayout(Element*);
+  void LabelChangedWithCleanLayout(Node*);
+  void IdChangedWithCleanLayout(Node*);
+  void AriaOwnsChangedWithCleanLayout(Node*);
 
   // Returns a reference to the set of currently active event intents.
   BlinkAXEventIntentsSet& ActiveEventIntents() override {
@@ -819,10 +821,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   // If the presence of document markers changed for the given text node, then
   // call children changed.
   void HandleTextMarkerDataAddedWithCleanLayout(Node*);
-  void HandleAttributeChangedWithCleanLayout(const QualifiedName& attr_name,
-                                             Element* element);
-  void HandleUseMapAttributeChangedWithCleanLayout(Element*);
-  void HandleNameAttributeChangedWithCleanLayout(Element*);
+  void HandleUseMapAttributeChangedWithCleanLayout(Node*);
+  void HandleNameAttributeChangedWithCleanLayout(Node*);
 
   bool DoesEventListenerImpactIgnoredState(const AtomicString& event_type,
                                            const Node& node) const;

@@ -2100,7 +2100,7 @@ void AXObjectCacheImpl::TextChangedWithCleanLayout(
 
   if (obj) {
     if (obj->RoleValue() == ax::mojom::blink::Role::kStaticText &&
-        obj->LastKnownIsIncludedInTreeValue()) {
+        obj->AccessibilityIsIncludedInTree()) {
       if (InlineTextBoxAccessibilityEnabled()) {
         // Update inline text box children.
         ChildrenChangedWithCleanLayout(optional_node_for_relation_update, obj);
@@ -2123,8 +2123,8 @@ void AXObjectCacheImpl::TextChangedWithCleanLayout(Node* node) {
   TextChangedWithCleanLayout(node, GetOrCreate(node));
 }
 
-void AXObjectCacheImpl::FocusableChangedWithCleanLayout(Element* element) {
-  DCHECK(element);
+void AXObjectCacheImpl::FocusableChangedWithCleanLayout(Node* node) {
+  Element* element = To<Element>(node);
   DCHECK(!element->GetDocument().NeedsLayoutTreeUpdateForNode(*element));
   AXObject* obj = GetOrCreate(element);
   if (!obj)
@@ -2207,8 +2207,11 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
 
   // Force computation of aria-owns, so that original parents that already
   // computed their children get the aria-owned children removed.
-  if (AXObject::HasARIAOwns(element))
-    HandleAttributeChangedWithCleanLayout(html_names::kAriaOwnsAttr, element);
+  if (AXObject::HasARIAOwns(element)) {
+    if (AXObject* obj = GetOrCreate(element)) {
+      relation_cache_->UpdateAriaOwnsWithCleanLayout(obj);
+    }
+  }
 
   MaybeNewRelationTarget(*node, Get(node));
 
@@ -3129,9 +3132,8 @@ void AXObjectCacheImpl::HandleAriaExpandedChangeWithCleanLayout(Node* node) {
     obj->HandleAriaExpandedChanged();
 }
 
-void AXObjectCacheImpl::HandleAriaPressedChangedWithCleanLayout(
-    Element* element) {
-  AXObject* ax_object = Get(element);
+void AXObjectCacheImpl::HandleAriaPressedChangedWithCleanLayout(Node* node) {
+  AXObject* ax_object = Get(node);
   if (!ax_object)
     return;
 
@@ -3141,9 +3143,9 @@ void AXObjectCacheImpl::HandleAriaPressedChangedWithCleanLayout(
   bool is_toggle_button = ax_object->HasAttribute(html_names::kAriaPressedAttr);
 
   if (was_toggle_button != is_toggle_button)
-    HandleRoleChangeWithCleanLayout(element);
+    HandleRoleChangeWithCleanLayout(node);
   else
-    PostNotification(element, ax::mojom::blink::Event::kCheckedStateChanged);
+    PostNotification(node, ax::mojom::blink::Event::kCheckedStateChanged);
 }
 
 // In single selection containers, selection follows focus, so a selection
@@ -3252,7 +3254,10 @@ void AXObjectCacheImpl::HandleActiveDescendantChangedWithCleanLayout(
 }
 
 // A <section> or role=region uses the region role if and only if it has a name.
-void AXObjectCacheImpl::SectionOrRegionRoleMaybeChanged(Element* element) {
+void AXObjectCacheImpl::SectionOrRegionRoleMaybeChangedWithCleanLayout(
+    Node* node) {
+  TextChangedWithCleanLayout(node);
+  Element* element = To<Element>(node);
   AXObject* ax_object = Get(element);
   if (!ax_object)
     return;
@@ -3306,114 +3311,104 @@ void AXObjectCacheImpl::HandleRoleChangeWithCleanLayout(Node* node) {
 void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
                                                Element* element) {
   DCHECK(element);
-  // TODO(accessibility) Consider only doing this for attributes that can have
-  // an effect on the a11y tree -- there is no need to queue a call to
-  // HandleAttributeChangedWithCleanLayout() for many attributes.
-  DeferTreeUpdate(&AXObjectCacheImpl::HandleAttributeChangedWithCleanLayout,
-                  attr_name, element);
-}
+  if (attr_name.LocalName().StartsWith("aria-")) {
+    // Perform updates specific to each attribute.
+    if (attr_name == html_names::kAriaActivedescendantAttr) {
+      DeferTreeUpdate(
+          &AXObjectCacheImpl::HandleActiveDescendantChangedWithCleanLayout,
+          element);
+    } else if (attr_name == html_names::kAriaValuenowAttr ||
+               attr_name == html_names::kAriaValuetextAttr) {
+      HandleValueChanged(element);
+    } else if (attr_name == html_names::kAriaLabelAttr ||
+               attr_name == html_names::kAriaLabeledbyAttr ||
+               attr_name == html_names::kAriaLabelledbyAttr) {
+      DeferTreeUpdate(
+          &AXObjectCacheImpl::SectionOrRegionRoleMaybeChangedWithCleanLayout,
+          element);
+    } else if (attr_name == html_names::kAriaDescriptionAttr ||
+               attr_name == html_names::kAriaDescribedbyAttr) {
+      TextChanged(element);
+    } else if (attr_name == html_names::kAriaCheckedAttr) {
+      PostNotification(element, ax::mojom::blink::Event::kCheckedStateChanged);
+    } else if (attr_name == html_names::kAriaPressedAttr) {
+      DeferTreeUpdate(
+          &AXObjectCacheImpl::HandleAriaPressedChangedWithCleanLayout, element);
+    } else if (attr_name == html_names::kAriaSelectedAttr) {
+      DeferTreeUpdate(
+          &AXObjectCacheImpl::HandleAriaSelectedChangedWithCleanLayout,
+          element);
+    } else if (attr_name == html_names::kAriaExpandedAttr) {
+      DeferTreeUpdate(
+          &AXObjectCacheImpl::HandleAriaExpandedChangeWithCleanLayout, element);
+    } else if (attr_name == html_names::kAriaHiddenAttr) {
+      DeferTreeUpdate(
+          &AXObjectCacheImpl::InvalidateCachedValuesOnSubtreeWithCleanLayout,
+          element);
+    } else if (attr_name == html_names::kAriaOwnsAttr) {
+      DeferTreeUpdate(&AXObjectCacheImpl::AriaOwnsChangedWithCleanLayout,
+                      element);
+    } else {
+      MarkElementDirty(element);
+    }
+    return;
+  }
 
-void AXObjectCacheImpl::HandleAttributeChangedWithCleanLayout(
-    const QualifiedName& attr_name,
-    Element* element) {
-  DCHECK(element);
-  DCHECK(!element->GetDocument().NeedsLayoutTreeUpdateForNode(*element));
   if (attr_name == html_names::kRoleAttr ||
       attr_name == html_names::kTypeAttr) {
-    HandleRoleChangeWithCleanLayout(element);
+    DeferTreeUpdate(&AXObjectCacheImpl::HandleRoleChangeWithCleanLayout,
+                    element);
   } else if (attr_name == html_names::kSizeAttr ||
              attr_name == html_names::kAriaHaspopupAttr) {
     // Role won't change on edits, so avoid invalidation so that object is not
     // destroyed during editing.
     if (AXObject* obj = Get(element)) {
-      if (!obj->IsTextField())
-        HandleRoleChangeWithCleanLayout(element);
+      if (!obj->IsTextField()) {
+        DeferTreeUpdate(&AXObjectCacheImpl::HandleRoleChangeWithCleanLayout,
+                        element);
+      }
     }
   } else if (attr_name == html_names::kAltAttr) {
-    TextChangedWithCleanLayout(element);
+    TextChanged(element);
   } else if (attr_name == html_names::kTitleAttr) {
-    TextChangedWithCleanLayout(element);
-    SectionOrRegionRoleMaybeChanged(element);
+    DeferTreeUpdate(
+        &AXObjectCacheImpl::SectionOrRegionRoleMaybeChangedWithCleanLayout,
+        element);
   } else if (attr_name == html_names::kForAttr &&
              IsA<HTMLLabelElement>(*element)) {
-    LabelChangedWithCleanLayout(element);
+    DeferTreeUpdate(&AXObjectCacheImpl::LabelChangedWithCleanLayout, element);
   } else if (attr_name == html_names::kIdAttr) {
-    if (AXObject* obj = Get(element)) {
-      // The id attribute has changed, which can change an object's ignored
-      // state, because an object backed with an element having an id attribute
-      // is always unignored, since it could be the end point of a relation.
-      // Call UpdateCachedAttributeValuesIfNeeded() to force the ignored state
-      // and included states to be recomputed, and if it tree inclusion changes,
-      // this call will also recompute the tree structure.
-      obj->UpdateCachedAttributeValuesIfNeeded();
-      // When the id attribute changes, the relations its in may also change.
-      MaybeNewRelationTarget(*element, obj);
-    }
+    DeferTreeUpdate(&AXObjectCacheImpl::IdChangedWithCleanLayout, element);
   } else if (attr_name == html_names::kTabindexAttr) {
-    FocusableChangedWithCleanLayout(element);
-  } else if (attr_name == html_names::kDisabledAttr ||
-             attr_name == html_names::kReadonlyAttr) {
-    MarkElementDirtyWithCleanLayout(element);
+    DeferTreeUpdate(&AXObjectCacheImpl::FocusableChangedWithCleanLayout,
+                    element);
   } else if (attr_name == html_names::kValueAttr) {
     HandleValueChanged(element);
-  } else if (attr_name == html_names::kMinAttr ||
-             attr_name == html_names::kMaxAttr) {
-    MarkElementDirtyWithCleanLayout(element);
-  } else if (attr_name == html_names::kStepAttr) {
-    MarkElementDirtyWithCleanLayout(element);
+  } else if (attr_name == html_names::kDisabledAttr ||
+             attr_name == html_names::kReadonlyAttr ||
+             attr_name == html_names::kMinAttr ||
+             attr_name == html_names::kMaxAttr ||
+             attr_name == html_names::kStepAttr) {
+    MarkElementDirty(element);
   } else if (attr_name == html_names::kUsemapAttr) {
-    HandleUseMapAttributeChangedWithCleanLayout(element);
+    DeferTreeUpdate(
+        &AXObjectCacheImpl::HandleUseMapAttributeChangedWithCleanLayout,
+        element);
   } else if (attr_name == html_names::kNameAttr) {
-    HandleNameAttributeChangedWithCleanLayout(element);
+    DeferTreeUpdate(
+        &AXObjectCacheImpl::HandleNameAttributeChangedWithCleanLayout, element);
   } else if (attr_name == html_names::kControlsAttr) {
-    ChildrenChangedWithCleanLayout(element);
-  }
-
-  if (!attr_name.LocalName().StartsWith("aria-"))
-    return;
-
-  // Perform updates specific to each attribute.
-  if (attr_name == html_names::kAriaActivedescendantAttr) {
-    HandleActiveDescendantChangedWithCleanLayout(element);
-  } else if (attr_name == html_names::kAriaValuenowAttr ||
-             attr_name == html_names::kAriaValuetextAttr) {
-    HandleValueChanged(element);
-  } else if (attr_name == html_names::kAriaLabelAttr ||
-             attr_name == html_names::kAriaLabeledbyAttr ||
-             attr_name == html_names::kAriaLabelledbyAttr) {
-    TextChangedWithCleanLayout(element);
-    SectionOrRegionRoleMaybeChanged(element);
-  } else if (attr_name == html_names::kAriaDescriptionAttr ||
-             attr_name == html_names::kAriaDescribedbyAttr) {
-    TextChangedWithCleanLayout(element);
-  } else if (attr_name == html_names::kAriaCheckedAttr) {
-    PostNotification(element, ax::mojom::blink::Event::kCheckedStateChanged);
-  } else if (attr_name == html_names::kAriaPressedAttr) {
-    HandleAriaPressedChangedWithCleanLayout(element);
-  } else if (attr_name == html_names::kAriaSelectedAttr) {
-    HandleAriaSelectedChangedWithCleanLayout(element);
-  } else if (attr_name == html_names::kAriaExpandedAttr) {
-    HandleAriaExpandedChangeWithCleanLayout(element);
-  } else if (attr_name == html_names::kAriaHiddenAttr) {
-    InvalidateCachedValuesOnSubtreeWithCleanLayout(element);
-  } else if (attr_name == html_names::kAriaInvalidAttr) {
-    MarkElementDirtyWithCleanLayout(element);
-  } else if (attr_name == html_names::kAriaErrormessageAttr) {
-    MarkElementDirtyWithCleanLayout(element);
-  } else if (attr_name == html_names::kAriaOwnsAttr) {
-    if (AXObject* obj = GetOrCreate(element))
-      relation_cache_->UpdateAriaOwnsWithCleanLayout(obj);
-  } else {
-    MarkElementDirtyWithCleanLayout(element);
+    ChildrenChanged(element);
   }
 }
 
 void AXObjectCacheImpl::HandleUseMapAttributeChangedWithCleanLayout(
-    Element* element) {
-  if (!IsA<HTMLImageElement>(element))
+    Node* node) {
+  if (!IsA<HTMLImageElement>(node)) {
     return;
+  }
   // Get an area (aka image link) from the previous usemap.
-  AXObject* ax_image = Get(element);
+  AXObject* ax_image = Get(node);
   AXObject* ax_image_link =
       ax_image ? ax_image->FirstChildIncludingIgnored() : nullptr;
   HTMLMapElement* previous_map =
@@ -3421,20 +3416,19 @@ void AXObjectCacheImpl::HandleUseMapAttributeChangedWithCleanLayout(
           ? Traversal<HTMLMapElement>::FirstAncestor(*ax_image_link->GetNode())
           : nullptr;
   // Both the old and new image may change image <--> image map.
-  HandleRoleChangeWithCleanLayout(element);
+  HandleRoleChangeWithCleanLayout(node);
   if (previous_map)
     HandleRoleChangeWithCleanLayout(previous_map->ImageElement());
 }
 
-void AXObjectCacheImpl::HandleNameAttributeChangedWithCleanLayout(
-    Element* element) {
+void AXObjectCacheImpl::HandleNameAttributeChangedWithCleanLayout(Node* node) {
   // Changing a map name can alter an image's role and children.
   // The name has already changed, so we can no longer find the primary image
   // via the DOM. Use an area child's parent to find the old image.
   // If the old image was treated as a map, and now isn't, it will take care
   // of updating any other image that is newly associated with the map,
   // via AXNodeObject::AddImageMapChildren().
-  if (HTMLMapElement* map = DynamicTo<HTMLMapElement>(element)) {
+  if (HTMLMapElement* map = DynamicTo<HTMLMapElement>(node)) {
     if (AXObject* ax_previous_image = GetAXImageForMap(*map))
       HandleRoleChangeWithCleanLayout(ax_previous_image->GetNode());
   }
@@ -3604,9 +3598,33 @@ void AXObjectCacheImpl::HandleEventSubscriptionChanged(
   }
 }
 
-void AXObjectCacheImpl::LabelChangedWithCleanLayout(Element* element) {
+void AXObjectCacheImpl::LabelChangedWithCleanLayout(Node* node) {
   // Will call back to TextChanged() when done updating relation cache.
-  relation_cache_->LabelChanged(element);
+  relation_cache_->LabelChanged(To<Element>(node));
+}
+
+void AXObjectCacheImpl::IdChangedWithCleanLayout(Node* node) {
+  if (AXObject* obj = Get(node)) {
+    // The id attribute has changed, which can change an object's ignored
+    // state, because an object backed with an element having an id attribute
+    // is always unignored, since it could be the end point of a relation.
+    // Call UpdateCachedAttributeValuesIfNeeded() to force the ignored state
+    // and included states to be recomputed, and if it tree inclusion changes,
+    // this call will also recompute the tree structure.
+    // TODO(aleventhal) This should no longer be necessary, because queuing this
+    // method via DefertreeUpdate() should have already marked the node dirty,
+    // and any next call for an cached value will call
+    // UpdateCachedAttributeValuesIfNeeded().
+    obj->UpdateCachedAttributeValuesIfNeeded();
+    // When the id attribute changes, the relations its in may also change.
+    MaybeNewRelationTarget(*node, obj);
+  }
+}
+
+void AXObjectCacheImpl::AriaOwnsChangedWithCleanLayout(Node* node) {
+  if (AXObject* obj = GetOrCreate(node)) {
+    relation_cache_->UpdateAriaOwnsWithCleanLayout(obj);
+  }
 }
 
 void AXObjectCacheImpl::InlineTextBoxesUpdated(LayoutObject* layout_object) {
