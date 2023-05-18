@@ -10400,18 +10400,19 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledDUI_20230113",
+                    "name": "EnabledDUIAndDSE_20230517",
                     "params": {
-                        "embedder_blocked_hosts": ""
+                        "embedder_blocked_hosts": "",
+                        "implementation_type": "use_prefetch"
                     },
                     "enable_features": [
                         "OmniboxTriggerForPrerender2",
-                        "Prerender2"
+                        "Prerender2",
+                        "SupportSearchSuggestionForPrerender2"
                     ],
                     "disable_features": [
                         "OmniboxTriggerForNoStatePrefetch",
-                        "Prerender2Holdback",
-                        "SupportSearchSuggestionForPrerender2"
+                        "Prerender2Holdback"
                     ]
                 }
             ]
