@@ -415,7 +415,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
         return new FirstPartyOptionBuilder(
                 ContentType.LINK_PAGE_VISIBLE, ContentType.LINK_PAGE_NOT_VISIBLE, ContentType.IMAGE)
                 .setDetailedContentTypesToDisableFor(DetailedContentType.WEB_NOTES)
-                .setIcon(R.drawable.send_tab, R.string.send_tab_to_self_share_activity_title)
+                .setIcon(R.drawable.send_tab, R.string.sharing_send_tab_to_self)
                 .setFeatureNameForMetrics(USER_ACTION_SEND_TAB_TO_SELF_SELECTED)
                 .setOnClickCallback((view) -> {
                     SendTabToSelfCoordinator sttsCoordinator =

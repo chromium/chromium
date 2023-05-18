@@ -213,7 +213,7 @@ public class AndroidShareSheetControllerUnitTest {
                 intent.getParcelableArrayExtra(INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS));
 
         assertCustomActions(intent, R.string.sharing_copy_url, R.string.sharing_long_screenshot,
-                R.string.print_share_activity_title, R.string.send_tab_to_self_share_activity_title,
+                R.string.print_share_activity_title, R.string.sharing_send_tab_to_self,
                 R.string.qr_code_share_icon_label);
     }
 
@@ -302,7 +302,7 @@ public class AndroidShareSheetControllerUnitTest {
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
         assertCustomActions(intent, R.string.sharing_copy_image, R.string.sharing_long_screenshot,
-                R.string.send_tab_to_self_share_activity_title, R.string.qr_code_share_icon_label);
+                R.string.sharing_send_tab_to_self, R.string.qr_code_share_icon_label);
     }
 
     @Test
@@ -382,7 +382,7 @@ public class AndroidShareSheetControllerUnitTest {
                 shareIntent.getStringExtra(Intent.EXTRA_TEXT));
 
         assertCustomActions(chooserIntent, R.string.sharing_copy, R.string.sharing_long_screenshot,
-                R.string.send_tab_to_self_share_activity_title, R.string.qr_code_share_icon_label);
+                R.string.sharing_send_tab_to_self, R.string.qr_code_share_icon_label);
 
         // Toggle the modify action again, link is removed from text.
         runModifyActionFromChooserIntent(chooserIntent);
@@ -457,7 +457,7 @@ public class AndroidShareSheetControllerUnitTest {
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
         assertCustomActions(intent, R.string.sharing_copy_image, R.string.sharing_long_screenshot,
-                R.string.send_tab_to_self_share_activity_title, R.string.qr_code_share_icon_label);
+                R.string.sharing_send_tab_to_self, R.string.qr_code_share_icon_label);
         chooseCustomAction(intent, R.string.qr_code_share_icon_label);
 
         Assert.assertEquals("Last URL does not match content being shared.",
@@ -486,7 +486,7 @@ public class AndroidShareSheetControllerUnitTest {
         // No download option here.
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
         assertCustomActions(intent, R.string.sharing_long_screenshot, R.string.sharing_copy_image,
-                R.string.send_tab_to_self_share_activity_title, R.string.qr_code_share_icon_label);
+                R.string.sharing_send_tab_to_self, R.string.qr_code_share_icon_label);
     }
 
     private void setFaviconToFetchForTest(Bitmap favicon) {
