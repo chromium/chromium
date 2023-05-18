@@ -108,6 +108,14 @@ interface Euicc {
   // profiles on the Euicc.
   GetProfileList() => (array<pending_remote<ESimProfile>> profiles);
 
+  // Performs SM-DS scans against verified SM-DS servers and requests all
+  // profiles available for this device. This method will return the combined
+  // list of all profiles found across all SM-DS servers.
+  RequestAvailableProfiles() =>
+    (ESimOperationResult result, array<ESimProfileProperties> profiles);
+
+  // TODO(b/281904820): This API is deprecated as part of the SM-DS Support
+  // project and should be removed in favor of RequestAvailableProfiles().
   // Starts a request for pending profiles for this Euicc from SMDS.
   // Returns a status indicating result of the operation. This
   // method updates the pending profiles list before succeeding. This method

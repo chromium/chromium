@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -156,6 +157,15 @@ void Euicc::OnESimInstallProfileResult(
                           esim_profile->CreateRemote());
 }
 
+void Euicc::RequestAvailableProfiles(
+    RequestAvailableProfilesCallback callback) {
+  DCHECK(ash::features::IsSmdsSupportEnabled());
+  esim_manager_->cellular_esim_profile_handler()->RequestAvailableProfiles(
+      path_,
+      base::BindOnce(&Euicc::OnRequestAvailableProfiles,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void Euicc::RequestPendingProfiles(RequestPendingProfilesCallback callback) {
   // Before requesting pending profiles, we also request installed profiles.
   // This ensures that if an error occurs and Chrome's installed profile cache
@@ -281,6 +291,28 @@ void Euicc::PerformRequestPendingProfiles(
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        std::move(inhibit_lock)));
   }
+}
+
+void Euicc::OnRequestAvailableProfiles(
+    RequestAvailableProfilesCallback callback,
+    mojom::ESimOperationResult result,
+    std::vector<CellularESimProfile> profile_list) {
+  DCHECK(ash::features::IsSmdsSupportEnabled());
+
+  std::vector<mojom::ESimProfilePropertiesPtr> profile_properties_list;
+  for (const auto& profile : profile_list) {
+    mojom::ESimProfilePropertiesPtr properties =
+        mojom::ESimProfileProperties::New();
+    properties->eid = profile.eid();
+    properties->iccid = profile.iccid();
+    properties->name = profile.name();
+    properties->nickname = profile.nickname();
+    properties->service_provider = profile.service_provider();
+    properties->state = ProfileStateToMojo(profile.state());
+    properties->activation_code = profile.activation_code();
+    profile_properties_list.push_back(std::move(properties));
+  }
+  std::move(callback).Run(result, std::move(profile_properties_list));
 }
 
 void Euicc::OnRefreshSmdxProfilesResult(
