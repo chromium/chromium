@@ -15,7 +15,7 @@ import org.chromium.base.annotations.NativeMethods;
  */
 @JNINamespace("payments::android")
 public class PaymentFeatureMap extends FeatureMap {
-    private static PaymentFeatureMap sInstance;
+    private static final PaymentFeatureMap sInstance = new PaymentFeatureMap();
 
     // Do not instantiate this class.
     private PaymentFeatureMap() {
@@ -26,7 +26,6 @@ public class PaymentFeatureMap extends FeatureMap {
      * @return the singleton PaymentFeatureMap.
      */
     public static PaymentFeatureMap getInstance() {
-        if (sInstance == null) sInstance = new PaymentFeatureMap();
         return sInstance;
     }
 

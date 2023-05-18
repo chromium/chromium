@@ -22,15 +22,14 @@ import org.chromium.build.annotations.MainDex;
 @JNINamespace("chrome::android")
 @MainDex
 public class ChromeFeatureMap extends FeatureMap {
+    private static final ChromeFeatureMap sInstance = new ChromeFeatureMap();
+
     /** Prevent instantiation. */
     private ChromeFeatureMap() {
         super();
     }
 
-    private static ChromeFeatureMap sInstance;
-
     public static ChromeFeatureMap getInstance() {
-        if (sInstance == null) sInstance = new ChromeFeatureMap();
         return sInstance;
     }
 

@@ -13,7 +13,7 @@ import org.chromium.base.annotations.NativeMethods;
  */
 @JNINamespace("ui")
 public class UiAndroidFeatureMap extends FeatureMap {
-    private static UiAndroidFeatureMap sInstance;
+    private static final UiAndroidFeatureMap sInstance = new UiAndroidFeatureMap();
 
     // Do not instantiate this class
     private UiAndroidFeatureMap() {}
@@ -22,7 +22,6 @@ public class UiAndroidFeatureMap extends FeatureMap {
      * @return the singleton UiAndroidFeatureMap.
      */
     public static UiAndroidFeatureMap getInstance() {
-        if (sInstance == null) sInstance = new UiAndroidFeatureMap();
         return sInstance;
     }
 
