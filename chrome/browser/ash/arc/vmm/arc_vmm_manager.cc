@@ -8,6 +8,7 @@
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_session.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
@@ -69,7 +70,8 @@ ArcVmmManager* ArcVmmManager::GetForBrowserContextForTesting(
 
 ArcVmmManager::ArcVmmManager(content::BrowserContext* context,
                              ArcBridgeService* bridge)
-    : context_(context) {
+    : context_(context), bridge_service_(bridge) {
+  app_instance_observation_.Observe(bridge_service_->app());
   if (base::FeatureList::IsEnabled(kVmmSwapKeyboardShortcut)) {
     accelerator_ = std::make_unique<AcceleratorTarget>(this);
   }

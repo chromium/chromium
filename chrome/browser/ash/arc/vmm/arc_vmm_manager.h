@@ -8,9 +8,11 @@
 #include <string>
 
 #include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/session/connection_holder.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 #include "chrome/browser/ash/arc/vmm/arc_vmm_swap_scheduler.h"
 #include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
@@ -109,6 +111,12 @@ class ArcVmmManager : public KeyedService,
       trim_call_;
 
   raw_ptr<content::BrowserContext> context_ = nullptr;
+  raw_ptr<ArcBridgeService> bridge_service_ = nullptr;
+
+  base::ScopedObservation<
+      ConnectionHolder<mojom::AppInstance, mojom::AppHost>,
+      ConnectionHolder<mojom::AppInstance, mojom::AppHost>::Observer>
+      app_instance_observation_{this};
 
   base::WeakPtrFactory<ArcVmmManager> weak_ptr_factory_{this};
 };

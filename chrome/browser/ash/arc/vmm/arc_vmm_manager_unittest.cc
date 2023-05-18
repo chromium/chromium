@@ -99,6 +99,11 @@ class ArcVmmManagerTest : public testing::Test {
     trim_type_drop_pages_counter_ = 0;
   }
 
+  void TearDown() override {
+    profile_manager_.reset();
+    arc_service_manager_.reset();
+  }
+
   void EnableAndConnectArcVm() {
     auto* command_line = base::CommandLine::ForCurrentProcess();
     command_line->InitFromArgv({"", "--enable-arcvm"});
