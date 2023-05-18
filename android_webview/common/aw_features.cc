@@ -17,7 +17,7 @@ namespace features {
 // flag
 BASE_FEATURE(kWebViewAppsPackageNamesServerSideAllowlist,
              "WebViewAppsPackageNamesServerSideAllowlist",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable brotli compression support in WebView.
 BASE_FEATURE(kWebViewBrotliSupport,
