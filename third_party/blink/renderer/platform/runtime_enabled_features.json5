@@ -2378,6 +2378,13 @@
       status: "test",
       base_feature: "none",
     },
+    // Makes enter/leave Mouse and Pointer Events non-composed as per
+    // corresponding specifications.
+    {
+      name: "NonComposedEnterLeaveEvents",
+      public: true,
+      status: "experimental",
+    },
     {
       // Kill switch for crbug.com/1427047 fix.
       // TODO(xiaochengh): Remove in M117.

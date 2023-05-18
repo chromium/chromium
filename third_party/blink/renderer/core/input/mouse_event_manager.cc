@@ -91,7 +91,10 @@ void SetMouseEventAttributes(MouseEventInit* initializer,
   initializer->setButtons(
       MouseEvent::WebInputEventModifiersToButtons(mouse_event.GetModifiers()));
   initializer->setView(target_node->GetDocument().domWindow());
-  initializer->setComposed(true);
+  initializer->setComposed(
+      RuntimeEnabledFeatures::NonComposedEnterLeaveEventsEnabled()
+          ? !is_mouse_enter_or_leave
+          : true);
   initializer->setDetail(click_count);
   initializer->setRelatedTarget(related_target);
   UIEventWithKeyState::SetFromWebInputEventModifiers(
@@ -996,6 +999,10 @@ bool MouseEventManager::TryStartDrag(
 WebInputEventResult MouseEventManager::DispatchDragSrcEvent(
     const AtomicString& event_type,
     const WebMouseEvent& event) {
+  CHECK(event_type == event_type_names::kDrag ||
+        event_type == event_type_names::kDragend ||
+        event_type == event_type_names::kDragstart);
+
   return DispatchDragEvent(event_type, GetDragState().drag_src_.Get(), nullptr,
                            event, GetDragState().drag_data_transfer_.Get());
 }
