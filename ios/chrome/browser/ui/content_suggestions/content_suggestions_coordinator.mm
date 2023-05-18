@@ -382,7 +382,7 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
                          browser:self.browser
                            title:nil
                          message:nil
-                            rect:button.frame
+                            rect:button.bounds
                             view:button];
 
   __weak ContentSuggestionsMediator* weakMediator =

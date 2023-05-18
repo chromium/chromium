@@ -32,7 +32,7 @@ constexpr CGFloat kBorderWidth = 1;
 constexpr CGFloat kBorderRadius = 12;
 
 // The margin from the leading/trailing sides to the list.
-constexpr CGFloat kMargin = 8;
+constexpr CGFloat kMargin = 14;
 
 // The padding used inside the list.
 constexpr CGFloat kPadding = 15;

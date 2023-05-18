@@ -45,6 +45,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
@@ -64,8 +65,9 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
 // The spacing between modules in the Magic Stack.
 const float kMagicStackSpacing = 10.0f;
 
-// The margin on the left and right of the Set Up List.
-const CGFloat kSetUpListHorizontalMargin = 10;
+// The max width of the SetUpList on phone and tablet.
+const CGFloat kSetUpListWidthPhone = 393;
+const CGFloat kSetUpListWidthTablet = 430;
 
 // The duration of the animation that hides the Set Up List.
 const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
@@ -456,13 +458,16 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     setUpListView.delegate = self.setUpListViewDelegate;
     self.setUpListView = setUpListView;
     [self.verticalStackView insertArrangedSubview:setUpListView atIndex:index];
+
+    CGFloat width = kSetUpListWidthPhone;
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      width = kSetUpListWidthTablet;
+    }
+    // Since this view is put into a StackView, this width constraint acts as
+    // a max width constraint - if the StackView is narrower, it will make the
+    // SetUpListView narrower.
     [NSLayoutConstraint activateConstraints:@[
-      [setUpListView.leadingAnchor
-          constraintEqualToAnchor:self.verticalStackView.leadingAnchor
-                         constant:kSetUpListHorizontalMargin],
-      [setUpListView.trailingAnchor
-          constraintEqualToAnchor:self.verticalStackView.trailingAnchor
-                         constant:-kSetUpListHorizontalMargin],
+      [setUpListView.widthAnchor constraintEqualToConstant:width],
     ]];
   }
 }
