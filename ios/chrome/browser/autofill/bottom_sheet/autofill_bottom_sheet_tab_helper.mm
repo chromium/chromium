@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 
+#import "base/containers/contains.h"
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/ranges/algorithm.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_account_storage_notice_handler.h"
@@ -30,7 +32,9 @@ AutofillBottomSheetTabHelper::AutofillBottomSheetTabHelper(
         password_account_storage_notice_handler)
     : password_account_storage_notice_handler_(
           password_account_storage_notice_handler),
-      web_state_(web_state) {}
+      web_state_(web_state) {
+  web_state->AddObserver(this);
+}
 
 // Public methods
 
@@ -75,15 +79,48 @@ void AutofillBottomSheetTabHelper::AttachPasswordListeners(
     return;
   }
 
-  // Enable the password bottom sheet.
-  AutofillBottomSheetJavaScriptFeature::GetInstance()->AttachListeners(
-      renderer_ids, frame);
+  // Transfer the renderer IDs to a set so that they are sorted and unique.
+  std::set<autofill::FieldRendererId> sorted_renderer_ids(renderer_ids.begin(),
+                                                          renderer_ids.end());
+  // Get vector of new renderer IDs which aren't already registered.
+  std::vector<autofill::FieldRendererId> new_renderer_ids;
+  base::ranges::set_difference(sorted_renderer_ids,
+                               registered_password_renderer_ids_,
+                               std::back_inserter(new_renderer_ids));
+
+  if (!new_renderer_ids.empty()) {
+    // Enable the password bottom sheet on the new renderer IDs.
+    AutofillBottomSheetJavaScriptFeature::GetInstance()->AttachListeners(
+        new_renderer_ids, frame);
+
+    // Add new renderer IDs to the list of registered renderer IDs.
+    std::copy(new_renderer_ids.begin(), new_renderer_ids.end(),
+              std::inserter(registered_password_renderer_ids_,
+                            registered_password_renderer_ids_.end()));
+  }
 }
 
 void AutofillBottomSheetTabHelper::DetachListenersAndRefocus(
     web::WebFrame* frame) {
   AutofillBottomSheetJavaScriptFeature::GetInstance()
       ->DetachListenersAndRefocus(frame);
+}
+
+// WebStateObserver
+
+void AutofillBottomSheetTabHelper::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  if (navigation_context->IsSameDocument()) {
+    return;
+  }
+
+  // Clear all registered renderer ids
+  registered_password_renderer_ids_.clear();
+}
+
+void AutofillBottomSheetTabHelper::WebStateDestroyed(web::WebState* web_state) {
+  web_state->RemoveObserver(this);
 }
 
 // Private methods

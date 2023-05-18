@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_AUTOFILL_BOTTOM_SHEET_AUTOFILL_BOTTOM_SHEET_TAB_HELPER_H_
 
 #import "components/autofill/core/common/unique_ids.h"
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 namespace web {
@@ -18,7 +19,8 @@ class WebFrame;
 @protocol PasswordBottomSheetCommands;
 
 class AutofillBottomSheetTabHelper
-    : public web::WebStateUserData<AutofillBottomSheetTabHelper> {
+    : public web::WebStateObserver,
+      public web::WebStateUserData<AutofillBottomSheetTabHelper> {
  public:
   // Maximum number of times the password bottom sheet can be
   // dismissed before it gets disabled.
@@ -33,7 +35,7 @@ class AutofillBottomSheetTabHelper
   // Handler for JavaScript messages. Dispatch to more specific handler.
   void OnFormMessageReceived(const web::ScriptMessage& message);
 
-  // Sets the CommandDispatcher.
+  // Sets the Password CommandDispatcher.
   void SetPasswordBottomSheetHandler(
       id<PasswordBottomSheetCommands> password_bottom_sheet_commands_handler);
 
@@ -44,6 +46,11 @@ class AutofillBottomSheetTabHelper
 
   // Detach the listeners, which will deactivate the bottom sheet.
   void DetachListenersAndRefocus(web::WebFrame* frame);
+
+  // WebStateObserver:
+  void DidFinishNavigation(web::WebState* web_state,
+                           web::NavigationContext* navigation_context) override;
+  void WebStateDestroyed(web::WebState* web_state) override;
 
  private:
   friend class web::WebStateUserData<AutofillBottomSheetTabHelper>;
@@ -69,6 +76,9 @@ class AutofillBottomSheetTabHelper
 
   // The WebState with which this object is associated.
   web::WebState* const web_state_;
+
+  // List of password bottom sheet related renderer ids.
+  std::set<autofill::FieldRendererId> registered_password_renderer_ids_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };
