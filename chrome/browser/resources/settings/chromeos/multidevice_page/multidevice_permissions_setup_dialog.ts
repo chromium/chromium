@@ -81,7 +81,7 @@ export const CAMERA_ROLL_FEATURE = 1 << 1;
  */
 export const APPS_FEATURE = 1 << 2;
 
-interface SettingsMultidevicePermissionsSetupDialogElement {
+export interface SettingsMultidevicePermissionsSetupDialogElement {
   $: {
     dialog: CrDialogElement,
   };
@@ -90,7 +90,7 @@ interface SettingsMultidevicePermissionsSetupDialogElement {
 const SettingsMultidevicePermissionsSetupDialogElementBase =
     LockStateMixin(PolymerElement);
 
-class SettingsMultidevicePermissionsSetupDialogElement extends
+export class SettingsMultidevicePermissionsSetupDialogElement extends
     SettingsMultidevicePermissionsSetupDialogElementBase {
   static get is() {
     return 'settings-multidevice-permissions-setup-dialog' as const;

@@ -142,7 +142,7 @@ export * as settingMojom from './mojom-webui/setting.mojom-webui.js';
 export {AndroidSmsInfo, MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_page/multidevice_browser_proxy.js';
 export {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubFeatureAccessProhibitedReason, PhoneHubFeatureAccessStatus, PhoneHubPermissionsSetupAction, PhoneHubPermissionsSetupFeatureCombination, PhoneHubPermissionsSetupFlowScreens, PhoneHubPermissionsSetupMode} from './multidevice_page/multidevice_constants.js';
 export {NotificationAccessSetupOperationStatus, SettingsMultideviceNotificationAccessSetupDialogElement} from './multidevice_page/multidevice_notification_access_setup_dialog.js';
-export {PermissionsSetupStatus, SetupFlowStatus} from './multidevice_page/multidevice_permissions_setup_dialog.js';
+export {PermissionsSetupStatus, SettingsMultidevicePermissionsSetupDialogElement, SetupFlowStatus} from './multidevice_page/multidevice_permissions_setup_dialog.js';
 export {Account, NearbyAccountManagerBrowserProxy, NearbyAccountManagerBrowserProxyImpl} from './nearby_share_page/nearby_account_manager_browser_proxy.js';
 export {NearbyShareConfirmPageElement} from './nearby_share_page/nearby_share_confirm_page.js';
 export {NearbyShareHighVisibilityPageElement} from './nearby_share_page/nearby_share_high_visibility_page.js';

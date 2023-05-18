@@ -404,7 +404,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  [
    'MultidevicePageMultidevicePermissionsSetupDialog',
-   'multidevice_page/multidevice_permissions_setup_dialog_tests.js',
+   'multidevice_page/multidevice_permissions_setup_dialog_test.js',
  ],
  [
    'MultidevicePageMultideviceSmartlockItem',
