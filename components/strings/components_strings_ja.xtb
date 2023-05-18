@@ -177,6 +177,7 @@
 <translation id="1363819917331173092"><ph name="SOURCE_LANGUAGE" /> のページを翻訳するか尋ねない</translation>
 <translation id="1364822246244961190">このポリシーはブロックされているため、値は無視されます。</translation>
 <translation id="1368318639262510626">Dino ゲーム。ピクセル画像の恐竜がサボテンやプテロダクティルスをよけながら、荒地を走り抜けます。合図の音が聞こえたら、Space キーを押して障害物を飛び越えましょう。</translation>
+<translation id="136907351928231527">最近の閲覧履歴に基づいてトピックのリストがここに表示されるようになるまで 1 週間ほどかかる場合があります</translation>
 <translation id="1374468813861204354">ヒント</translation>
 <translation id="1375198122581997741">バージョン情報</translation>
 <translation id="1376836354785490390">折りたたむ</translation>
@@ -2966,7 +2967,7 @@
 <translation id="829335040383910391">音声</translation>
 <translation id="8294431847097064396">ソース</translation>
 <translation id="8296205692406981542">公園、庭園</translation>
-<translation id="8297545700510100061">Cookie と他のサイトデータは、ログインや広告のカスタマイズなどでユーザーを特定するために使用されます。すべてのサイトの Cookie を管理するには、<ph name="SETTINGS" /> をご覧ください。</translation>
+<translation id="8297545700510100061">Cookie と他のサイトデータは、ログインや広告のパーソナライズなどでユーザーを覚えておくために使用されます。すべてのサイトの Cookie を管理するには、<ph name="SETTINGS" /> をご覧ください。</translation>
 <translation id="8298115750975731693">ご利用の Wi-Fi（<ph name="WIFI_NAME" />）では、<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> へのアクセスが必要な可能性があります。</translation>
 <translation id="8299269255470343364">日本語</translation>
 <translation id="8303854710873047864">「<ph name="SECTION" />」セクションを表示しています</translation>

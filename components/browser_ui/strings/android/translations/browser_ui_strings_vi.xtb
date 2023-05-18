@@ -416,7 +416,7 @@
 <translation id="8525306231823319788">Toàn màn hình</translation>
 <translation id="8528440122773422556">Thao tác này sẽ xoá toàn bộ dữ liệu và cookie được lưu trữ bởi tất cả trang web trong <ph name="ORIGIN" /> hoặc ứng dụng liên kết với nhóm này trên Màn hình chính</translation>
 <translation id="8541410041357371550">Trang web này thu thập thông tin về chủ đề quảng cáo bạn quan tâm qua Chrome để hiển thị cho bạn những quảng cáo phù hợp hơn</translation>
-<translation id="8564613706851221529">{COUNT,plural, =1{Đã cho phép cookie cho trang web của <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />}other{Đã cho phép cookie cho các trang web của <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" />}}</translation>
+<translation id="8564613706851221529">{COUNT,plural, =1{Đã cho phép cookie với <ph name="FPS_MEMBERS_COUNT" /> trang web của <ph name="FPS_OWNER" />}other{Đã cho phép cookie với <ph name="FPS_MEMBERS_COUNT" /> trang web của <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Được phép (nên dùng)</translation>
 <translation id="8609465669617005112">Di chuyển lên</translation>
 <translation id="8676374126336081632">Xóa văn bản nhập</translation>

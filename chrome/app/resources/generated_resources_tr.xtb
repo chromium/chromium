@@ -8149,7 +8149,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8342861492835240085">Koleksiyon seçin</translation>
 <translation id="8345848587667658367">Artık telefonunuzdaki son fotoğrafları, medya içeriklerini, bildirimleri ve uygulamaları görüntüleyebilirsiniz</translation>
 <translation id="8347227221149377169">Yazdırma işleri</translation>
-<translation id="834785183489258869">Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde tarama etkinliğinizi görmek için çerezlerinizi kullanamaz. Bazı sitelerdeki özellikler çalışmayabilir.</translation>
+<translation id="834785183489258869">Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde tarama etkinliğinizi görmek için çerezlerinizi kullanamaz. Bazı sitelerdeki özellikler çalışmayabilir</translation>
 <translation id="8350789879725387295">Yuvadayken ekran kalemi aracı</translation>
 <translation id="8351316842353540018">Her zaman a11y seçeneklerini göster</translation>
 <translation id="8351419472474436977">Bu uzantı proxy ayarlarınızın denetimini ele geçirdi. Bu, uzantının çevrimiçinde yaptıklarınızı değiştirebileceği, kesebileceği veya dinleyebileceği anlamına gelir. Bu değişikliğin neden olduğundan emin değilseniz muhtemelen bu değişikliği yapmayı istememişsinizdir.</translation>
@@ -9084,7 +9084,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="9199503643457729322">Gizlilik Rehberi'nden ayrılmak için tıklayın.</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" />, <ph name="FOLDERNAME" /> klasöründeki dosyaları düzenleyebilir</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> üzerinde ara</translation>
-<translation id="9201023452444595544">Tüm çevrimdışı veriler temizlenecek</translation>
+<translation id="9201023452444595544">Tüm çevrimdışı veriler temizlenir</translation>
 <translation id="9201117361710210082">Daha önce görüntülendi</translation>
 <translation id="9201220332032049474">Ekran kilidi seçenekleri</translation>
 <translation id="9201842707396338580">Bir hata oluştu. Lütfen cihaz sahibiyle ya da yöneticisiyle iletişime geçin. Hata kodu: <ph name="ERROR_CODE" />.</translation>

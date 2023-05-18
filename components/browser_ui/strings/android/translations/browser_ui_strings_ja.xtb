@@ -31,7 +31,7 @@
 <translation id="1644574205037202324">履歴</translation>
 <translation id="1647582022260550163">権限をリセットし、Cookie とサイトデータを削除してもよろしいですか？</translation>
 <translation id="1660204651932907780">音声の再生をサイトに許可する（推奨）</translation>
-<translation id="1677097821151855053">Cookie と他のサイトデータは、ログインや広告のカスタマイズなどでユーザーを特定するために使用されます。すべてのサイトの Cookie を管理するには、<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />をご覧ください。</translation>
+<translation id="1677097821151855053">Cookie と他のサイトデータは、ログインや広告のカスタマイズなどでユーザーを覚えておくために使用されます。すべてのサイトの Cookie を管理するには、<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="1688867105868176567">サイトデータを削除しますか？</translation>
 <translation id="169515064810179024">サイトによるモーション センサーへのアクセスをブロックする</translation>
 <translation id="1717218214683051432">モーション センサー</translation>
@@ -246,7 +246,7 @@
 <translation id="5505264765875738116">通知を送信するかどうかの確認をサイトに許可しない</translation>
 <translation id="5516455585884385570">通知設定を開く</translation>
 <translation id="5527111080432883924">サイトがクリップボードのテキストや画像を読み取る前に確認する（推奨）</translation>
-<translation id="5545693483061321551">サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のカスタマイズなどが行えなくなります。一部のサイトで機能を使用できなくなる可能性があります。</translation>
+<translation id="5545693483061321551">サイトは、Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のパーソナライズなどが行えなくなります。一部のサイトで機能を使用できなくなる可能性があります。</translation>
 <translation id="5553374991681107062">最新</translation>
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
