@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> tvarko šį įrenginį ir gali stebėti jūsų veiklą.</translation>
 <translation id="1478594628797167447">Skaitytuvas</translation>
 <translation id="1483493594462132177">Siųsti</translation>
+<translation id="1488850966314959671">Nepavyksta prisijungti prie šio tinklo naudojant įgalintus tinkintus APN. Susisiekite su mobiliojo ryšio operatoriumi, kad gautumėte daugiau informacijos.</translation>
 <translation id="1491076385728777984">Atnaujinama įrenginio „<ph name="DEVICE_NAME" />“ programinė aparatinė įranga</translation>
 <translation id="1499041187027566160">garsumo didinimas</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> valdo šį naudotoją ir gali nuotoliniu būdu valdyti nustatymus bei stebėti naudotojo veiklą.</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">Matomumas</translation>
 <translation id="1672499492233627739">Žiniatinklio kameros vaizdo įrašo sklaidos kanalas</translation>
 <translation id="1676557873873341166">Fiksuojamas vaizdo įrašas</translation>
+<translation id="1684279041537802716">Paryškinimo spalva</translation>
 <translation id="1703835215927279855">Laiškas</translation>
 <translation id="1706391837335750954">DNS pavadinimų vertimo programos aptikimas</translation>
 <translation id="1708602061922134366">„Google“ mėlyna</translation>
@@ -562,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Nuskaityti iš naujo</translation>
 <translation id="5583640892426849032">Grįžties klavišas</translation>
+<translation id="5584044598279886848">Šio APN išjungti arba pašalinti negalima. Įsitikinkite, kad įgalinti pridėti APN yra išjungti ar pašalinti.</translation>
 <translation id="5600027863942488546">Išbandytas klavišas <ph name="KEY_NAME" /></translation>
 <translation id="5620281292257375798">Tik vidiniams naudotojams</translation>
 <translation id="5649768706273821470">Klausyti</translation>
@@ -1011,6 +1014,7 @@
 <translation id="9173638680043580060">Liko mažiau nei minutė</translation>
 <translation id="917720651393141712">Bandyti</translation>
 <translation id="9188992814426075118">Klaviatūra gali automatiškai atitikti ekrano foną</translation>
+<translation id="9189000703457422362">Nepavyksta prisijungti prie šio tinklo naudojant automatiškai aptiktus APN. Susisiekite su mobiliojo ryšio operatoriumi, kad gautumėte daugiau informacijos.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Iš „Android“ programų prie tinklų sietuvo prisijungti nepavyko</translation>
 <translation id="9211490828691860325">Visi darbalaukiai</translation>

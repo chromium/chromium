@@ -92,6 +92,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="3179665906251668410">Link in Chromium-Inkognitofenster öffnen</translation>
 <translation id="3185330573522821672">Personalisiere dein neues Chromium-Profil</translation>
 <translation id="3190315855212034486">Chromium ist abgestürzt. Jetzt neu starten?</translation>
+<translation id="3255926992597692024">Chromium versucht, Einstellungen für das Ausfüllen von Zahlungsmethoden zu ändern.</translation>
 <translation id="3258596308407688501">Chromium kann im folgenden Datenverzeichnis weder lesen noch schreiben:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -197,6 +198,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5653831366781983928">Starte Chromium jetzt neu</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium in dieser Sprache anzeigen</translation>
+<translation id="585620188971323280">Einstellungen für das Ausfüllen von Zahlungsmethoden zu ändern.</translation>
 <translation id="5862307444128926510">Willkommen bei Chromium</translation>
 <translation id="5883558403894052917">Chromium hat festgestellt, dass diese Elemente Malware enthalten:</translation>
 <translation id="5895138241574237353">Neu starten</translation>

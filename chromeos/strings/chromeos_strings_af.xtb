@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> bestuur hierdie toestel en sal dalk jou aktiwiteit kan monitor.</translation>
 <translation id="1478594628797167447">Skandeerder</translation>
 <translation id="1483493594462132177">Stuur</translation>
+<translation id="1488850966314959671">Kan nie met enige geaktiveerde gepasmaakte APN’e aan hierdie netwerk koppel nie. Kontak jou selfoondiensverskaffer vir meer inligting.</translation>
 <translation id="1491076385728777984">Dateer fermware op <ph name="DEVICE_NAME" /> op</translation>
 <translation id="1499041187027566160">volume harder</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> bestuur hierdie gebruiker en kan oor 'n afstand instellings bestuur en gebruikeraktiwiteit monitor.</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">Sigbaarheid</translation>
 <translation id="1672499492233627739">Webkamera-videostroom</translation>
 <translation id="1676557873873341166">Neem tans video op</translation>
+<translation id="1684279041537802716">Aksentkleur</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-ontbinder is teenwoordig</translation>
 <translation id="1708602061922134366">Google-blou</translation>
@@ -562,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Herskandeer</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">Kan nie hierdie APN deaktiveer of verwyder nie. Maak seker dat aangehegte APN’e wat geaktiveer is, gedeaktiveer of verwyder word.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" />-sleutel is getoets</translation>
 <translation id="5620281292257375798">Slegs intern</translation>
 <translation id="5649768706273821470">Luister</translation>
@@ -1011,6 +1014,7 @@
 <translation id="9173638680043580060">Minder as 'n minuut oor</translation>
 <translation id="917720651393141712">Toets</translation>
 <translation id="9188992814426075118">Jou sleutelbord kan outomaties by jou muurpapier pas</translation>
+<translation id="9189000703457422362">Kan nie aan hierdie netwerk koppel met APN’e wat outomaties bespeur is nie. Kontak jou selfoondiensverskaffer vir meer inligting.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Kan nie die deurgang van Android-programme af kontak nie</translation>
 <translation id="9211490828691860325">Alle lessenaars</translation>

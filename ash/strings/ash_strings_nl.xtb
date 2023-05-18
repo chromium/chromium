@@ -94,6 +94,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1351937230027495976">Menu samenvouwen</translation>
 <translation id="1360220746312242196">Naar de vorige overeenkomst voor de zoekopdracht gaan als je zoekt op een pagina</translation>
+<translation id="1360788414852622716">Profiel uitzetten. Dit kan een paar minuten duren.</translation>
 <translation id="1364382257761975320">Gebruik je vingerafdruk om je Chromebook te ontgrendelen</translation>
 <translation id="1365866993922957110">Automatische updates krijgen</translation>
 <translation id="1372545819342940910">Bureau opslaan voor later</translation>
@@ -545,6 +546,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3510164367642747937">Muisaanwijzer markeren</translation>
 <translation id="3513798432020909783">Account wordt beheerd door <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Apparaat binnen 1 minuut updaten}other{Apparaat binnen # minuten updaten}}</translation>
+<translation id="3522979239100719575">Zoeken naar beschikbare profielen. Dit kan een paar minuten duren.</translation>
 <translation id="3526440770046466733">Link openen in een nieuw tabblad en op het huidige tabblad blijven</translation>
 <translation id="353086728817903341">Verbonden met <ph name="NUM_DEVICES" /> apparaten</translation>
 <translation id="3533126039236445965">Apps op plank</translation>
@@ -1554,6 +1556,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8083540854303889870">Opgeslagen voor later</translation>
 <translation id="8091153018031979607">Begint om <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatische updates</translation>
+<translation id="8092380135549145188">Bedieningselementen voor scrollen</translation>
 <translation id="8098591350844501178">Schermcast naar <ph name="RECEIVER_NAME" /> stopzetten</translation>
 <translation id="810637681351706236">App losmaken van plank</translation>
 <translation id="8113423164597455979">Aan, alle apps</translation>

@@ -1200,9 +1200,11 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3927932062596804919">Gwrthod</translation>
 <translation id="393316646445601645">Rhyngrwyd a thelathrebu</translation>
 <translation id="3939773374150895049">Defnyddio WebAuthn yn lle CVC?</translation>
+<translation id="3941630233824954464">Galluogi ail-ddilysu gorfodol</translation>
 <translation id="3943857333388298514">Gludo</translation>
 <translation id="3946209740501886391">Gofyn ar y wefan hon bob amser</translation>
 <translation id="3947595700203588284">Yn gallu gofyn am gysylltu â dyfeisiau MIDI</translation>
+<translation id="3948588869002647271">Mae'r ap hwn ar goll neu wedi'i ddifrodi</translation>
 <translation id="3949571496842715403">Ni allai'r gweinydd hwn brofi ei fod yn <ph name="DOMAIN" />; nid yw ei dystysgrif ddiogelwch yn nodi Enwau Amgen Pwnc. Gall hyn gael ei achosi gan gamffurfweddiad neu ymosodwr yn rhyng-gipio'ch cysylltiad.</translation>
 <translation id="3949601375789751990">Mae eich hanes pori'n ymddangos yma</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2203,6 +2205,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6370022303958842211">Camau gweithredu mynediad at ddyfeisiau megis mewngofnodi (gan gynnwys rhesymau mewngofnodi aflwyddiannus), allgofnodi, cloeon, a datgloeon</translation>
 <translation id="6374469231428023295">Rhoi cynnig arall arni</translation>
 <translation id="6374865374745447009">rheoli ffenestri</translation>
+<translation id="6376881782310775282">Nid oes modd cyrraedd y gweinydd datblygu ar gyfer yr ap hwn</translation>
 <translation id="6377268785556383139">1 canlyniad ar gyfer <ph name="SEARCH_TEXT" /></translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Taliadau posib o'ch blaen.</translation>
@@ -2971,7 +2974,6 @@ Manylion ychwanegol:
 <translation id="8217240300496046857">Ni all gwefannau ddefnyddio cwcis sy'n eich olrhain ar draws y we. Mae'n bosib y bydd nodweddion ar rai gwefannau yn torri.</translation>
 <translation id="8217748145574471584">Adnoddau dynol</translation>
 <translation id="8218327578424803826">Lleoliad a Aseiniwyd:</translation>
-<translation id="8225771182978767009">Mae'r person a osododd y cyfrifiadur hwn wedi dewis rhwystro'r wefan hon.</translation>
 <translation id="8228419419708659934">Gwedd ddwy dudalen</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -3012,6 +3014,7 @@ Manylion ychwanegol:
 <translation id="8286799286781881307">Gall apiau a awdurdodwyd gan eich gweinyddwr ddal yr holl sgriniau sydd wedi'u hatodi i'ch dyfais. Gall y wybodaeth hon gael ei phrosesu yn lleol neu ei huwchlwytho i weinyddion eich sefydliad.</translation>
 <translation id="8288807391153049143">Dangos tystysgrif</translation>
 <translation id="8289355894181816810">Cysylltwch â'ch gweinyddwr rhwydwaith os nad ydych yn siŵr beth mae hyn yn ei olygu.</translation>
+<translation id="8292520987784410870">Dilysu pob amser?</translation>
 <translation id="8293206222192510085">Ychwanegu Nod Tudalen</translation>
 <translation id="829335040383910391">sain</translation>
 <translation id="8294431847097064396">Ffynhonnell</translation>
@@ -3084,7 +3087,6 @@ Manylion ychwanegol:
 <translation id="8474910779563686872">Dangos manylion y datblygwr</translation>
 <translation id="8479754468255770962">Stapl ar y chwith isaf</translation>
 <translation id="8483229036294884935">Bydd y cyfeiriad hwn yn cael ei ddileu o'ch Cyfrif Google, <ph name="ACCOUNT" /></translation>
-<translation id="8483780878231876732">I ddefnyddio cardiau o'ch Cyfrif Google, mewngofnodwch i Chrome</translation>
 <translation id="8488350697529856933">Yn berthnasol i</translation>
 <translation id="8490137692873530638">Pentyrrwr 10</translation>
 <translation id="8493948351860045254">Rhyddhau lle storio</translation>
@@ -3112,6 +3114,7 @@ Manylion ychwanegol:
 <translation id="854892890027593466">Amlen C6/C5</translation>
 <translation id="8553387990086529628">Cyrchfannau twristiaid</translation>
 <translation id="8554010658308662631">Llwytho rhagor</translation>
+<translation id="8554802735558319842">Ar gyfer diogelwch ychwanegol ar ddyfeisiau a rennir, trowch ddilysu ymlaen bob tro y byddwch yn talu gan ddefnyddio awtolenwi.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Ailosod caniatâd}zero{Ailosod caniatadau}two{Ailosod caniatadau}few{Ailosod caniatadau}many{Ailosod caniatadau}other{Ailosod caniatadau}}</translation>
 <translation id="8555010941760982128">Defnyddiwch y cod hwn wrth dalu</translation>
 <translation id="8557066899867184262">Byddwch yn gweld y CVC ar gefn eich cerdyn.</translation>

@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">දක්ෂිණාවර්ත</translation>
 <translation id="1351937230027495976">මෙනුව හකුළන්න</translation>
 <translation id="1360220746312242196">පිටුවක් සොයන විට, සෙවීම සඳහා පෙර ගැළපීම වෙත යන්න</translation>
+<translation id="1360788414852622716">පැතිකඩ අබල කරමින්. මෙයට මිනිත්තු කිහිපයක් ගත විය හැක.</translation>
 <translation id="1364382257761975320">ඔබගේ Chromebook අගුලු හැරීමට, ඔබගේ ඇඟිලි සලකුණ භාවිත කරන්න</translation>
 <translation id="1365866993922957110">ස්වයංක්‍රීය යාවත්කාලීන ලබා ගන්න</translation>
 <translation id="1372545819342940910">පසුවට මේසය සුරකින්න</translation>
@@ -545,6 +546,7 @@
 <translation id="3510164367642747937">මූසිකයේ කර්සරය ඉස්මතු කරන්න</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> විසින් ගිණුම කළමනාකරණය කරයි</translation>
 <translation id="352245152354538528">{0,plural, =1{උපාංගය මිනිත්තු 1ක් තුළ යාවත්කාලීන කරන්න}one{උපාංගය මිනිත්තු #ක් තුළ යාවත්කාලීන කරන්න}other{උපාංගය මිනිත්තු #ක් තුළ යාවත්කාලීන කරන්න}}</translation>
+<translation id="3522979239100719575">ලබා ගත හැකි පැතිකඩවල් සොයමින්. මෙයට මිනිත්තු කිහිපයක් ගත විය හැක.</translation>
 <translation id="3526440770046466733">සබැඳිය නව පටිත්තක විවෘත කර වත්මන් පටිත්තේ රැඳී සිටින්න</translation>
 <translation id="353086728817903341">උපාංග <ph name="NUM_DEVICES" />කට සම්බන්ධ විය</translation>
 <translation id="3533126039236445965">රාක්කයේ යෙදුම්</translation>
@@ -1557,6 +1559,7 @@
 <translation id="8083540854303889870">පසුවට සුරකින ලදි</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" />ට ඇරඹේ <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">ස්වයංක්‍රීය යාවත්කාලීන</translation>
+<translation id="8092380135549145188">අනුචලන පාලන</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> වෙත තිරය විකාශය නවතන්න</translation>
 <translation id="810637681351706236">යෙදුම රාක්කයෙන් ගලවන්න</translation>
 <translation id="8113423164597455979">සියලු යෙදුම් සක්‍රිය.</translation>

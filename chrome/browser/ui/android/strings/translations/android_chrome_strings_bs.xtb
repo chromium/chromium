@@ -196,7 +196,7 @@ Kada izbrišete historiju pregledanja, cijelu ili samo za određene web lokacije
 <translation id="2100273922101894616">Automatsko prijavljivanje</translation>
 <translation id="2100314319871056947">Pokušajte dijeliti tekst u manjim segmentima</translation>
 <translation id="2111511281910874386">Idi na stranicu</translation>
-<translation id="2119609734654412418">Ovdje ćete pronaći svoje oznake</translation>
+<translation id="2119609734654412418">Ovdje ćete pronaći oznake</translation>
 <translation id="2122601567107267586">Otvaranje aplikacije nije uspjelo</translation>
 <translation id="2132122640199389833">Ukloni sve povezane uređaje</translation>
 <translation id="213279576345780926">Zatvorena je kartica <ph name="TAB_TITLE" /></translation>
@@ -952,7 +952,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />poništite sinhronizaciju<p
 <translation id="6232535412751077445">Ako omogućite "Bez praćenja", taj će se zahtjev slati uz vaš saobraćaj pregledanja. Efikasnost zavisi od toga reagira li web lokacija na zahtjev i na koji način se taj zahtjev tumači.
 
 Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa koji se ne zasnivaju na drugim web lokacijama koje ste posjetili. Mnoge web lokacije će i dalje prikupljati i koristiti vaše podatke o pregledanju kako bi, naprimjer, poboljšale sigurnost, pružale sadržaje, oglase i preporuke te generirale statističke podatke za izvještaje.</translation>
-<translation id="6255794742848779505">Mijenjamo način spremanja zaporki na ovom uređaju</translation>
+<translation id="6255794742848779505">Mijenjamo način na koji se lozinke pohranjuju na uređaju</translation>
 <translation id="6264376385120300461">Ipak preuzmi</translation>
 <translation id="6277522088822131679">Došlo je do problema sa štampanjem stranice. Pokušajte ponovo.</translation>
 <translation id="6277722725779679269">Ažuriranje postavke Prati cijenu nije uspjelo</translation>

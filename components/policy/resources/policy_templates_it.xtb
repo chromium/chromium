@@ -4281,7 +4281,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 
       Il valore predefinito (0) significa che questa funzionalità è disattivata.</translation>
 <translation id="4937423591320233496">Disattiva i contenuti suggeriti</translation>
-<translation id="4940810901775798837">Consenti ai siti web non sicuri di effettuare richieste a qualsiasi endpoint di rete</translation>
 <translation id="4942096314850617489">Disattiva l'attestazione da remoto per l'utente</translation>
 <translation id="4942681160308347946">Se il criterio è impostato su True, la funzione di lettura vocale viene attivata nella schermata di accesso. Se il criterio è impostato su False, la funzione di lettura vocale viene disattivata nella schermata.
 
@@ -7717,7 +7716,6 @@ In questo tipo di scenari non è garantita la corretta migrazione dei dati.
       Se questo criterio viene impostato, l'utente non può modificarlo o ignorarlo.</translation>
 <translation id="8080200590486938727">Disattiva la ricerca dei plug-in</translation>
 <translation id="8089200718228084417">Attiva stampa Privet deprecata</translation>
-<translation id="8089236320223488328">Usa il comportamento predefinito quando determini se i siti web non sicuri possono effettuare richieste a qualsiasi endpoint di rete</translation>
 <translation id="8091982561085048989">Un flag booleano che indica se deve essere usato o meno IPP Everywhere per configurare la stampante. Questo flag è supportato su <ph name="PRODUCT_OS_NAME" /> 76 e versioni successive.</translation>
 <translation id="8099880303030573137">Ritardo inattività in caso di utilizzo della batteria</translation>
 <translation id="8101381354936029836">Gruppo atomico di criteri:</translation>

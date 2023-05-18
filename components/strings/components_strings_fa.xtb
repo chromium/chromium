@@ -1200,9 +1200,11 @@
 <translation id="3927932062596804919">ردکردن</translation>
 <translation id="393316646445601645">اینترنت و مخابرات</translation>
 <translation id="3939773374150895049">‏به‌جای CVC از WebAuthn استفاده شود؟</translation>
+<translation id="3941630233824954464">فعال‌سازی اصالت‌سنجی مجدد اجباری</translation>
 <translation id="3943857333388298514">جاگذاری</translation>
 <translation id="3946209740501886391">در این سایت، همیشه سؤال شود</translation>
 <translation id="3947595700203588284">‏می‌تواند برای اتصال به دستگاه‌های MIDI درخواست دهد</translation>
+<translation id="3948588869002647271">این برنامه وجود ندارد یا آسیب دیده است</translation>
 <translation id="3949571496842715403">‏این سرور نتوانست ثابت کند که <ph name="DOMAIN" /> است؛ در گواهی امنیتی آن، Subject Alternative Names مشخص نشده است. ممکن است این مشکل به دلیل پیکربندی نادرست یا قطع اتصال شما توسط مهاجم ایجاد شده باشد.</translation>
 <translation id="3949601375789751990">سابقه مرورتان در اینجا نشان داده می‌شود</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2203,6 +2205,7 @@
 <translation id="6370022303958842211">کنش‌های دسترسی به دستگاه مثل ورود به سیستم (ازجمله دلایل ورود ناموفق به سیستم)، خروج از سیستم، قفل کردن، و باز کردن قفل.</translation>
 <translation id="6374469231428023295">دوباره امتحان کنید</translation>
 <translation id="6374865374745447009">مدیریت پنجره</translation>
+<translation id="6376881782310775282">دسترسی به سرور توسعه برای این برنامه ممکن نیست</translation>
 <translation id="6377268785556383139">۱ نتیجه برای «<ph name="SEARCH_TEXT" />»</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">احتمالاً هزینه‌هایی اعمال می‌شود.</translation>
@@ -2971,7 +2974,6 @@
 <translation id="8217240300496046857">سایت‌ها نمی‌توانند از کوکی‌هایی که شما را در وب ردیابی می‌کند استفاده کنند. ویژگی‌های برخی سایت‌ها ممکن است کار نکنند.</translation>
 <translation id="8217748145574471584">منابع انسانی</translation>
 <translation id="8218327578424803826">مکان اختصاص یافته:</translation>
-<translation id="8225771182978767009">شخصی که این رایانه را راه‌اندازی کرده این سایت را مسدود کرده است.</translation>
 <translation id="8228419419708659934">نمای دوصفحه‌ای</translation>
 <translation id="8229288958566709448">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> میلی‌متر</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />،‏ <ph name="TYPE_2" /></translation>
@@ -3012,6 +3014,7 @@
 <translation id="8286799286781881307">برنامه‌هایی که ازسوی سرپرستتان مجوز دارند می‌توانند محتوای همه صفحه‌های متصل به دستگاهتان را ضبط کنند. ممکن است این اطلاعات در دستگاه پردازش شود یا در سرورهای سازمانتان بارگذاری شود.</translation>
 <translation id="8288807391153049143">نمایش گواهی</translation>
 <translation id="8289355894181816810">اگر این موضوع را متوجه نمی‌شوید، با سرپرست شبکه‌تان تماس بگیرید.</translation>
+<translation id="8292520987784410870">درهرصورت تأیید شود؟</translation>
 <translation id="8293206222192510085">افزودن نشانک</translation>
 <translation id="829335040383910391">صدا</translation>
 <translation id="8294431847097064396">منبع</translation>
@@ -3084,7 +3087,6 @@
 <translation id="8474910779563686872">نمایش جزئیات برنامه‌نویس</translation>
 <translation id="8479754468255770962">منگنه در پایین سمت چپ</translation>
 <translation id="8483229036294884935">‏این نشانی از «حساب Google» شما (<ph name="ACCOUNT" />) حذف خواهد شد</translation>
-<translation id="8483780878231876732">‏برای استفاده از کارت‌ها از حساب Google خود، به سیستم Chrome وارد شوید</translation>
 <translation id="8488350697529856933">اعمال برای</translation>
 <translation id="8490137692873530638">پشته‌ساز ۱۰</translation>
 <translation id="8493948351860045254">آزاد کردن فضا</translation>
@@ -3112,6 +3114,7 @@
 <translation id="854892890027593466">پاکت سی۶/سی۵</translation>
 <translation id="8553387990086529628">مقصد گردشگری</translation>
 <translation id="8554010658308662631">بارگیری موارد بیشتر</translation>
+<translation id="8554802735558319842">برای امنیت بیشتر در دستگاه‌های مشترک، هربار که بااستفاده از تکمیل خودکار پرداخت می‌کنید درستی‌سنجی را روشن کنید.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{بازنشانی اجازه}one{بازنشانی اجازه}other{بازنشانی اجازه‌ها}}</translation>
 <translation id="8555010941760982128">هنگام تسویه‌حساب، از این کد استفاده کنید</translation>
 <translation id="8557066899867184262">‏CVC در پشت کارتتان قرار گرفته است.</translation>

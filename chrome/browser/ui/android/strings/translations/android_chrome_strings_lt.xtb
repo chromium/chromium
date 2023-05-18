@@ -575,6 +575,7 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="4188221736490993796">Rūšiuoti nuo Ž iki A</translation>
 <translation id="4195643157523330669">Atidaryti naujame skirtuke</translation>
 <translation id="4196597275619698563">Sukurti kortelę</translation>
+<translation id="4197828496439691735">{NUM_TABS,plural, =1{Vienas skirtukas šiame įrenginyje}one{# skirtukas šiame įrenginyje}few{# skirtukai šiame įrenginyje}many{# skirtuko šiame įrenginyje}other{# skirtukų šiame įrenginyje}}</translation>
 <translation id="4198423547019359126">Nėra pasiekiamų atsisiuntimo vietų</translation>
 <translation id="4202218894997543208">Jūsų užblokuotos temos</translation>
 <translation id="4214315110991671325">Jei leisite slapukus, „Chrome“ gali naudoti juos iš anksto įkeldama puslapius.</translation>
@@ -589,6 +590,7 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Kokie duomenys naudojami:<ph name="END_BOLD" /> jūsų naršymo istorija, svetainių, kuriose lankėtės naudodami „Chrome“ šiame įrenginyje, įrašas.</translation>
 <translation id="4269820728363426813">Kopijuoti nuorodos adresą</translation>
 <translation id="4283102315569707115">Pateikti svetainių kompiuteriams užklausą pagal numatytuosius nustatymus?</translation>
+<translation id="4285846616383034558">Slapukai, talpykla ir kiti svetainės duomenys</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Įjungti ekrano užraktą „Android“ nustatymuose<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Naujas inkognito skirtukas</translation>
 <translation id="4298388696830689168">Susietos svetainės</translation>
@@ -679,6 +681,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4763480195061959176">vaizdo įrašas</translation>
 <translation id="4766313118839197559">Slaptažodžiai saugomi Slaptažodžių tvarkyklėje šiame įrenginyje</translation>
 <translation id="4766678251456904326">Pridėti paskyrą prie įrenginio</translation>
+<translation id="4767947714785277816">Pristatome naują skelbimų privatumo funkciją, vadinamą skelbimų vertinimu. „Chrome“ bendrina tik labai ribotą informaciją svetainėse ir programose, pvz., kada skelbimas buvo rodomas, kad padėtų svetainėms įvertinti skelbimų našumą.</translation>
 <translation id="4769095993849849966">Naujo failo pavadinimas</translation>
 <translation id="4778653490315793244">Dar nėra rodytino turinio</translation>
 <translation id="4787736314074622408">Ar norite ištrinti „<ph name="ITEM_TITLE" />“?</translation>
@@ -914,6 +917,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="6011308810877101166">Paieškos pasiūlymų tobulinimas</translation>
 <translation id="6026538407078977628">Išskleisti viso ekrano režimu</translation>
 <translation id="6030719887161080597">Tvarkykite svetainių naudojamą informaciją skelbimų našumui įvertinti</translation>
+<translation id="6034146297924778597">Pastarųjų penkiolikos minučių istorija bus ištrinta:</translation>
 <translation id="6039379616847168523">Pereiti prie kito skirtuko</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="604124094241169006">Automatinis</translation>
@@ -1119,6 +1123,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7029809446516969842">Slaptažodžiai</translation>
 <translation id="7030304022046916278">Siunčia URL Saugaus naršymo funkcijai, kad juos patikrintų</translation>
 <translation id="7030585293819777123">Tęsti paskutinę užduotį?</translation>
+<translation id="7035701931849773472">Kitos parinktys</translation>
 <translation id="7037830628447527439">Prisijunkite prie „Chrome“ naudodami „Google“ paskyrą</translation>
 <translation id="7038956721828960940">chrome_vaizdas_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Gauti vaizdų aprašus?</translation>
@@ -1341,6 +1346,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8110024788458304985">Padėti tobulinti „Chrome“ funkcijas ir našumą</translation>
 <translation id="8110087112193408731">Rodyti „Chrome“ veiklą Skaitmeninės gerovės programoje?</translation>
 <translation id="8118117428362942925">Jei reikia pagalbos, paprašykite vieno iš tėvų (<ph name="PARENT_NAME" />)</translation>
+<translation id="8124758083429256800">Išsaugotų „Chrome“ ir „Chrome“ <ph name="ERROR_DESCRIPTION" /> slaptažodžių sąrašai bus sujungti po 121 versijos. Galėsite automatiškai užpildyti visus išsaugotus slaptažodžius abiejose programose.</translation>
 <translation id="8127542551745560481">Redaguoti pagrindinį puslapį</translation>
 <translation id="8130309322784422030">Jūsų saugoma prisijungimo informacija gali būti pasenusi</translation>
 <translation id="813082847718468539">Žiūrėti svetainės informaciją</translation>

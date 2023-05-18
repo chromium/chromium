@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> اس آلے کا نظم کرتا ہے اور آپ کی سرگرمی کو مانیٹر کر سکتا ہے۔</translation>
 <translation id="1478594628797167447">اسکینر</translation>
 <translation id="1483493594462132177">بھیجیں</translation>
+<translation id="1488850966314959671">‏فعال کردہ حسب ضرورت کسی بھی APN کا استعمال کر کے اس نیٹ ورک سے منسلک نہیں کر سکتے۔ مزید معلومات کے لیے اپنے موبائل کیریئر سے رابطہ کریں۔</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> فرم ویئر کو اپ ڈیٹ کیا جا رہا ہے</translation>
 <translation id="1499041187027566160">والیوم بڑھائیں</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> اس صارف کا نظم کرتا ہے اور دور سے ترتیبات کا نظم اور صارف کی سرگرمی کو مانیٹر کر سکتا ہے۔</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">مرئیت</translation>
 <translation id="1672499492233627739">ویب کیم ویڈیو فیڈ</translation>
 <translation id="1676557873873341166">ویڈیو بنائی جا رہی ہے</translation>
+<translation id="1684279041537802716">ایکسینٹ کا رنگ</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">‏DNS ریزولور دستیاب ہے</translation>
 <translation id="1708602061922134366">‏Google والا نیلا</translation>
@@ -562,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">دوبارہ اسکین کریں</translation>
 <translation id="5583640892426849032">بیک اسپیس</translation>
+<translation id="5584044598279886848">‏اس APN کو غیر فعال یا ہٹا نہیں سکتے۔ یقینی بنائیں کہ فعال کردہ منسلکہ APNs کو غیر فعال یا ہٹا دیا گیا ہے۔</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> کلید ٹیسٹ کی گئی</translation>
 <translation id="5620281292257375798">صرف داخلی</translation>
 <translation id="5649768706273821470">سنیں</translation>
@@ -1011,6 +1014,7 @@
 <translation id="9173638680043580060">ایک منٹ سے کم باقی ہے</translation>
 <translation id="917720651393141712">ٹیسٹ</translation>
 <translation id="9188992814426075118">آپ کا کی بورڈ خودکار طور پر آپ کے وال پیپر سے مماثل ہو سکتا ہے</translation>
+<translation id="9189000703457422362">‏خودکار طور پر پتہ چلنے والے APNs کا استعمال کر کے اس نیٹ ورک سے منسلک نہیں کر سکتے۔ مزید معلومات کے لیے اپنے موبائل کیریئر سے رابطہ کریں۔</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">‏Android ایپس سے گیٹ وے رابطے کو منسلک نہیں کیا جا سکتا</translation>
 <translation id="9211490828691860325">تمام ڈیسکس</translation>

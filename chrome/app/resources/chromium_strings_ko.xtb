@@ -94,6 +94,7 @@
 <translation id="3179665906251668410">Chromium 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="3185330573522821672">새로운 Chromium 프로필 맞춤설정</translation>
 <translation id="3190315855212034486">Chromium이 다운되었습니다. 다시 시작하시겠습니까?</translation>
+<translation id="3255926992597692024">Chromium에서 결제 수단 입력 설정을 수정하려고 합니다.</translation>
 <translation id="3258596308407688501">Chromium에서 데이터 디렉터리를 읽고 쓸 수 없습니다.
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -199,6 +200,7 @@
 <translation id="5653831366781983928">지금 Chromium을 다시 시작하세요</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">이 언어로 Chromium 표시</translation>
+<translation id="585620188971323280">결제 수단 입력 설정을 수정합니다.</translation>
 <translation id="5862307444128926510">Chromium에 오신 것을 환영합니다.</translation>
 <translation id="5883558403894052917">Chromium에서 다음 항목에 멀웨어가 포함된 것을 발견했습니다.</translation>
 <translation id="5895138241574237353">다시 시작</translation>

@@ -1199,9 +1199,11 @@
 <translation id="3927932062596804919">ከልክል</translation>
 <translation id="393316646445601645">በይነመረብ እና ቴሌኮም</translation>
 <translation id="3939773374150895049">ከCVC ይልቅ WebAuthnን ይጠቀሙ?</translation>
+<translation id="3941630233824954464">የግዴታ ዳግም ማረጋገጥን አንቃ</translation>
 <translation id="3943857333388298514">ለጥፍ</translation>
 <translation id="3946209740501886391">ሁልጊዜ በዚህ ጣቢያ ላይ ጠይቅ</translation>
 <translation id="3947595700203588284">ከMIDI መሣሪያዎች ጋር ለመገናኘት መጠየቅ ይችላል</translation>
+<translation id="3948588869002647271">ይህ መተግበሪያ ጎድሏል ወይም ጉዳት ደርሶበታል</translation>
 <translation id="3949571496842715403">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት ዕውቅና ማረጋገጫው የርዕሰ ጒዳይ አማራጭ ስሞችን አይጠቅስም። ይህ በተሳሳተ ውቅረት የተከሰተ ወይም አጥቂ የእርስዎን ግንኙነት አቋርጦ እየገባ ስለሆነ ሊሆን ይችላል።</translation>
 <translation id="3949601375789751990">የአሰሳ ታሪክዎ እዚህ ይመጣል</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2202,6 +2204,7 @@
 <translation id="6370022303958842211">እንደ መግባቶች (ያልተሳካ የመግባት ምክንያቶችን ጨምሮ)፣ መውጣቶች፣ መቆለፎች እና መከፈቶች ያሉ የመሣሪያ መዳረሻ እርምጃዎች</translation>
 <translation id="6374469231428023295">እንደገና ይሞክሩ</translation>
 <translation id="6374865374745447009">የመስኮት አስተዳደር</translation>
+<translation id="6376881782310775282">ለዚህ መተግብሪያ የግንባታ አገልጋዩ ሊገኝ አይችልም</translation>
 <translation id="6377268785556383139">ለ«<ph name="SEARCH_TEXT" />» 1 ውጤት</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">ሊሆኑ የሚችሉ ክፍያ መጠየቂያዎች እየመጡ ነው።</translation>
@@ -2970,7 +2973,6 @@
 <translation id="8217240300496046857">ጣቢያዎች እርስዎን በመላ ድር ላይ የሚከታተሉ ኩኪዎችን መጠቀም አይችሉም። በአንዳንድ ጣቢያዎች ላይ ያሉ ባህሪያት ሊሰበሩ ይችላሉ።</translation>
 <translation id="8217748145574471584">የሰው ኃይል አስተዳደር</translation>
 <translation id="8218327578424803826">የተመደበ መገኛ አካባቢ፦</translation>
-<translation id="8225771182978767009">ይህን ኮምፒውተር ያቀናበረው ሰው ይህን ጣቢያ ለማገድ መርጧል።</translation>
 <translation id="8228419419708659934">ሁለት ገፅ ዕይታ</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ሚሜ</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />፣ <ph name="TYPE_2" /></translation>
@@ -3011,6 +3013,7 @@
 <translation id="8286799286781881307">በእርስዎ አስተዳዳሪ ፈቃድ የተሰጣቸው መተግበሪያዎች ከመሣሪያዎ ጋር የተያያዙትን ሁሉም ማያ ገጾች መቅረጽ ይችላሉ። ይህ መረጃ በአካባቢያዊ ሊሰናዳ ወይም ወደ ድርጅትዎ አገልጋዮች ሊሰቀል ይችላል።</translation>
 <translation id="8288807391153049143">የእውቅና ማረጋገጫን አሳይ</translation>
 <translation id="8289355894181816810">ይሄ ምን ማለት እንደሆነ እርግጠኛ ካልሆኑ የአውታረ መረብ አስተዳዳሪዎን ያግኙ።</translation>
+<translation id="8292520987784410870">ሁልጊዜ አረጋግጥ?</translation>
 <translation id="8293206222192510085">እልባት ያክሉ</translation>
 <translation id="829335040383910391">ድምፅ</translation>
 <translation id="8294431847097064396">ምንጭ</translation>
@@ -3083,7 +3086,6 @@
 <translation id="8474910779563686872">የገንቢ ዝርዝሮችን አሳይ</translation>
 <translation id="8479754468255770962">ከታች ግራ በኩል ስቴፕለር ምታ</translation>
 <translation id="8483229036294884935">ይህ አድራሻ ከእርስዎ Google መለያ <ph name="ACCOUNT" /> ይሰረዛል</translation>
-<translation id="8483780878231876732">ከእርስዎ የGoogle መለያ ካርዶችን ለመጠቀም ወደ Chrome በመለያ ይግቡ</translation>
 <translation id="8488350697529856933">የሚመለከተው ለ</translation>
 <translation id="8490137692873530638">ቁልል 10</translation>
 <translation id="8493948351860045254">ቦታ አስለቅቅ</translation>
@@ -3111,6 +3113,7 @@
 <translation id="854892890027593466">ሲ6/ሲ5 ፖስታ</translation>
 <translation id="8553387990086529628">የቱሪስት መዳረሻዎች</translation>
 <translation id="8554010658308662631">ተጨማሪ ጫን</translation>
+<translation id="8554802735558319842">በተጋሩ መሣሪያዎች ላይ ለተጨማሪ ደህንነት እርስዎ ራስ-ሙላን በመጠቀም በሚከፍሉ ቁጥር ማረጋገጫን ያብሩ።</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{ፈቃድን ዳግም አስጀምር}one{ፈቃዶችን ዳግም አስጀምር}other{ፈቃዶችን ዳግም አስጀምር}}</translation>
 <translation id="8555010941760982128">ተመዝግበው ሲወጡ ይህን ኮድ ይጠቀሙ</translation>
 <translation id="8557066899867184262">CVC ከካርድዎ በስተጀርባ ላይ ይገኛል።</translation>
@@ -3300,6 +3303,7 @@
 <translation id="9048662076076074925">24 x 36 ኢንች</translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" />ን ለመድረስ ሞክረው ነበር፣ ግን አገልጋዩ ልክ ያልሆነ የእውቅና ማረጋገጫ ነው ያሳየው።</translation>
 <translation id="9050666287014529139">የይለፍ ሐረግ</translation>
+<translation id="9053840549256861041">የማስታወቂያ ልኬት የሚባል አዲስ የማስታወቂያ ግላዊነት ባህሪ እያስጀመርን ነው። Chrome የማስታወቂያዎችን አፈጻጸም እንዲለኩ ጣቢያዎችን ለማገዝ በጣቢያዎች መካከል እንደ ማስታወቂያ ለእርስዎ ሲታይ ያለ በጣም የተገደበ መረጃን ብቻ ያጋራል።</translation>
 <translation id="9056953843249698117">ማከማቻ</translation>
 <translation id="9062620674789239642">ተወስዶ፣ አርትዕ ተደርጎ ወይም ተሰርዞ ሊሆን ይችላል።</translation>
 <translation id="9063398205799684336">ካኩ 2 ፖስታ</translation>

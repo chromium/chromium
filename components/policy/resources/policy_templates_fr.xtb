@@ -2932,6 +2932,11 @@ Si le modèle URI contient une variable <ph name="HTTP_VARIABLE_DNS" />, les req
           Cette règle est temporaire et devrait être supprimée dans <ph name="PRODUCT_NAME" /> 107. Néanmoins, cette échéance peut être repoussée si des entreprises le requièrent.
           </translation>
 <translation id="3678069907945250643">Autoriser l'accès à Google Photos depuis l'appli de personnalisation</translation>
+<translation id="3683696721696720186">Configure une liste des types de données de navigation devant être supprimés lorsque l'utilisateur ferme toutes les fenêtres du navigateur. Les types de données disponibles sont les suivants : historique de navigation (<ph name="DATA_TYPE_BROWSING_HISTORY" />), historique des téléchargements (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cache (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), saisie automatique (<ph name="DATA_TYPE_AUTOFILL" />), mots de passe (<ph name="DATA_TYPE_PASSWORD" />), paramètres des sites (<ph name="DATA_TYPE_SITE_SETTINGS" />) et données des applis hébergées (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Cette règle ne prévaut pas sur <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+Cette règle nécessite que la règle <ph name="SYNC_DISABLED_POLICY_NAME" /> soit définie sur "True". Si ce n'est pas le cas, elle sera ignorée. Si cette règle est définie au niveau de la plate-forme, la synchronisation devra y être désactivée. Si elle est définie au niveau d'un utilisateur, la synchronisation devra être désactivée au niveau de cet utilisateur pour que la règle prenne effet.
+
+      Si <ph name="PRODUCT_NAME" /> ne se ferme pas correctement, par exemple si le navigateur ou l'OS plante, les données de navigation seront supprimées lors du prochain chargement du profil.</translation>
 <translation id="3685979383016152590">Cette règle permet de désigner la règle d'accès qui s'applique à la configuration groupée des imprimantes, en déterminant les imprimantes soumises à la règle <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> qui sont accessibles aux utilisateurs.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (valeur  0) utilise <ph name="PRINTERS_BULK_BLOCKLIST" /> pour limiter l'accès aux imprimantes spécifiées
@@ -4250,7 +4255,6 @@ Cette règle est temporaire et sera supprimée dès le lancement de l'annulation
 
       Utilisez la valeur par défaut (0) pour désactiver cette fonctionnalité.</translation>
 <translation id="4937423591320233496">Désactiver le contenu suggéré</translation>
-<translation id="4940810901775798837">Autoriser les sites non sécurisés à envoyer des requêtes à n'importe quel point de terminaison du réseau</translation>
 <translation id="4942096314850617489">Désactiver l'attestation à distance pour l'utilisateur</translation>
 <translation id="4942681160308347946">Définissez cette règle sur "True" pour activer les commentaires audio sur l'écran de connexion. Définissez-la sur "False" pour désactiver les commentaires audio sur l'écran de connexion.
 
@@ -7673,7 +7677,6 @@ Nous vous recommandons d'utiliser "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE"
       Si cette règle est définie, l'utilisateur ne peut pas la modifier ni l'ignorer.</translation>
 <translation id="8080200590486938727">Désactiver l'outil de recherche de plug-ins</translation>
 <translation id="8089200718228084417">Activer l'impression Privet (obsolète)</translation>
-<translation id="8089236320223488328">Utiliser le comportement par défaut pour déterminer si des sites non sécurisés peuvent envoyer des requêtes à n'importe quel point de terminaison du réseau</translation>
 <translation id="8091982561085048989">Flag booléen spécifiant si IPP Everywhere doit être utilisé ou non pour configurer l'imprimante. Ce flag est compatible avec <ph name="PRODUCT_OS_NAME" /> version 76 (ou plus).</translation>
 <translation id="8099880303030573137">Délai d'inactivité (batterie)</translation>
 <translation id="8101381354936029836">Groupe atomique de la règle :</translation>

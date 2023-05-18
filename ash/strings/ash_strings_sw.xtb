@@ -94,6 +94,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1346748346194534595">Kulia</translation>
 <translation id="1351937230027495976">Kunja menyu</translation>
 <translation id="1360220746312242196">Unapotafuta ukurasa, nenda kwenye utafutaji wa awali unaolingana na utafutaji wa sasa</translation>
+<translation id="1360788414852622716">Inazima wasifu. Huenda ikachukua dakika kadhaa.</translation>
 <translation id="1364382257761975320">Ili ufungue Chromebook yako, tumia alama yako ya kidole</translation>
 <translation id="1365866993922957110">Pata masasisho ya kiotomatiki</translation>
 <translation id="1372545819342940910">Hifadhi eneokazi kwa matumizi ya baadaye</translation>
@@ -545,6 +546,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3510164367642747937">Angazia kiteuzi cha kipanya</translation>
 <translation id="3513798432020909783">Akaunti inasimamiwa na <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Sasisha kifaa ndani ya dakika moja}other{Sasisha kifaa ndani ya dakika #}}</translation>
+<translation id="3522979239100719575">Inatafuta wasifu unaopatikana. Huenda ikachukua dakika kadhaa.</translation>
 <translation id="3526440770046466733">Fungua kiungo katika kichupo kipya na kiweke katika kichupo cha sasa</translation>
 <translation id="353086728817903341">Imeunganishwa kwenye vifaa <ph name="NUM_DEVICES" /></translation>
 <translation id="3533126039236445965">Programu zilizo kwenye rafu</translation>
@@ -1558,6 +1560,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8083540854303889870">Imehifadhiwa kwa ajili ya baadaye</translation>
 <translation id="8091153018031979607">Itaanza saa <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Masasisho ya kiotomatiki</translation>
+<translation id="8092380135549145188">Vidhibiti vya kusogeza</translation>
 <translation id="8098591350844501178">Acha kutuma skrini kwenye <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Bandua programu kwenye rafu</translation>
 <translation id="8113423164597455979">Imewashwa: zote</translation>

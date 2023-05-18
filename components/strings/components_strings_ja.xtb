@@ -2974,7 +2974,6 @@
 <translation id="8217240300496046857">サイトは Cookie を使用してあなたをウェブ上でトラッキングできません。一部サイトの機能が使用できなくなる可能性もあります。</translation>
 <translation id="8217748145574471584">人事</translation>
 <translation id="8218327578424803826">割り当てられた場所:</translation>
-<translation id="8225771182978767009">このサイトは、このパソコンを設定したユーザーによってブロックされています。</translation>
 <translation id="8228419419708659934">2 ページ表示</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" />x<ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
@@ -3020,7 +3019,7 @@
 <translation id="829335040383910391">音声</translation>
 <translation id="8294431847097064396">ソース</translation>
 <translation id="8296205692406981542">公園、庭園</translation>
-<translation id="8297545700510100061">Cookie と他のサイトデータは、ログインや広告のカスタマイズなどでユーザーを特定するために使用されます。すべてのサイトの Cookie を管理するには、<ph name="SETTINGS" /> をご覧ください。</translation>
+<translation id="8297545700510100061">Cookie と他のサイトデータは、ログインや広告のパーソナライズなどでユーザーを覚えておくために使用されます。すべてのサイトの Cookie を管理するには、<ph name="SETTINGS" /> をご覧ください。</translation>
 <translation id="8298115750975731693">ご利用の Wi-Fi（<ph name="WIFI_NAME" />）では、<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> へのアクセスが必要な可能性があります。</translation>
 <translation id="8303854710873047864">「<ph name="SECTION" />」セクションを表示しています</translation>
 <translation id="830498451218851433">2 つ折り</translation>
@@ -3088,7 +3087,6 @@
 <translation id="8474910779563686872">デベロッパーの詳細を表示</translation>
 <translation id="8479754468255770962">ステープル（左下）</translation>
 <translation id="8483229036294884935">この住所は Google アカウント（<ph name="ACCOUNT" />）から削除されます</translation>
-<translation id="8483780878231876732">Google アカウントに保存したカードを使用するには Chrome にログインしてください</translation>
 <translation id="8488350697529856933">適用先</translation>
 <translation id="8490137692873530638">スタッカー 10</translation>
 <translation id="8493948351860045254">容量を空ける</translation>

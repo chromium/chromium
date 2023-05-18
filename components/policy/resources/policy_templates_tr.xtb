@@ -2946,6 +2946,11 @@ URI şablonu <ph name="HTTP_VARIABLE_DNS" /> değişkeni içeriyorsa çözümley
           Bu politika geçicidir ve <ph name="PRODUCT_NAME" /> 107 sürümünde kaldırılması planlanmaktadır. Kuruluşların ihtiyaç duyması halinde bu süre uzatılabilir.
           </translation>
 <translation id="3678069907945250643">Google Fotoğraflar'ın, kişiselleştirme uygulamasından erişmesine izin ver</translation>
+<translation id="3683696721696720186">Kullanıcı tüm tarayıcı pencerelerini kapattığında silinmesi gereken tarama verisi türlerinin listesini yapılandırır. Kullanılabilir veri türleri şunlardır: Tarama geçmişi (<ph name="DATA_TYPE_BROWSING_HISTORY" />), indirme geçmişi (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), çerezler (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), önbellek <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, otomatik doldurma (<ph name="DATA_TYPE_AUTOFILL" />), şifreler (<ph name="DATA_TYPE_PASSWORD" />), site ayarları (<ph name="DATA_TYPE_SITE_SETTINGS" />) ve barındırılan uygulama verileri (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Bu politikanın <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> üzerinde önceliği yoktur.
+
+Bu politika, <ph name="SYNC_DISABLED_POLICY_NAME" /> politikasının doğru değerine ayarlanmasını gerektirir, aksi takdirde yoksayılır. Bu politika, platform seviyesinde ayarlanırsa Senkronizasyon, platform seviyesinde devre dışı bırakılmalıdır. Bu politika, kullanıcı seviyesinde ayarlanırsa politikanın geçerli olması için Senkronizasyon özelliğinin bu kullanıcıda devre dışı bırakılması gerekir.
+
+      <ph name="PRODUCT_NAME" /> normal bir şekilde kapanmazsa (örneğin tarayıcı veya işletim sistemi çökerse) profil tekrar yüklendiğinde tarama verileri silinir.</translation>
 <translation id="3685979383016152590">Politika ayarlanırsa toplu yazıcı yapılandırması için hangi erişim politikasının geçerli olacağı belirlenerek <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> içerisinden hangi yazıcıların kullanılabileceği kontrol edilir.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (0 değeri) ayarlanırsa belirtilen yazıcılara erişimi kısıtlamak için <ph name="PRINTERS_BULK_BLOCKLIST" /> kullanılır.
@@ -4274,7 +4279,6 @@ Bu politika geçici olup sistem ses yankısı giderme özelliği kullanıma sunu
 
       Varsayılan değer (0) bu özelliğin devre dışı olduğu anlamına gelir.</translation>
 <translation id="4937423591320233496">Önerilen içeriği devre dışı bırak</translation>
-<translation id="4940810901775798837">Güvenli olmayan web sitelerinin, herhangi bir ağ uç noktasına istekte bulunmasına izin ver</translation>
 <translation id="4942096314850617489">Kullanıcı için uzaktan onayı devre dışı bırak</translation>
 <translation id="4942681160308347946">Politikayı True (Doğru) değerine ayarlamak, oturum açma ekranında sözlü geri bildirimi açar. Politikayı False (Yanlış) değerine ayarlamak, oturum açma ekranında sözlü geri bildirimi kapatır.
 
@@ -7735,7 +7739,6 @@ yapmak da güvenli seçeneklerden biridir.</translation>
       Bu politika ayarlanırsa kullanıcı tarafından değiştirilemez veya geçersiz kılınamaz.</translation>
 <translation id="8080200590486938727">Eklenti bulucuyu devre dışı bırak</translation>
 <translation id="8089200718228084417">Kullanımdan kaldırılan privet yazdırmayı etkinleştir</translation>
-<translation id="8089236320223488328">Güvenli olmayan web sitelerinin, herhangi bir ağ uç noktasına istekte bulunup bulunamayacağını belirlerken varsayılan davranışı kullan</translation>
 <translation id="8091982561085048989">Yazıcıyı kurmak için IPP Everywhere'in kullanılıp kullanılmayacağını belirten boole flag'i. Bu işaret, <ph name="PRODUCT_OS_NAME" /> sürüm 76 ve sonrasındaki sürümlerde desteklenir.</translation>
 <translation id="8099880303030573137">Pil gücüyle çalışırken boşta kalma gecikmesi</translation>
 <translation id="8101381354936029836">Politika atom grubu:</translation>

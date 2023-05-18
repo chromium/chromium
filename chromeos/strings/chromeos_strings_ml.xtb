@@ -92,6 +92,7 @@
 <translation id="1669047024429367828">ദൃശ്യപരത</translation>
 <translation id="1672499492233627739">വെബ്‌ക്യാം വീഡിയോ ഫീഡ്</translation>
 <translation id="1676557873873341166">വീഡിയോ എടുക്കുന്നു</translation>
+<translation id="1684279041537802716">ആക്‌സന്റ് നിറം</translation>
 <translation id="1703835215927279855">ലെറ്റർ</translation>
 <translation id="1706391837335750954">DNS റിസോൾവർ അവതരണം</translation>
 <translation id="1708602061922134366">Google നീല</translation>
@@ -217,6 +218,7 @@
 <translation id="2638662041295312666">സൈൻ ഇൻ ചിത്രം</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> ആൽബം തിരഞ്ഞെടുത്തു</translation>
 <translation id="267442004702508783">റീഫ്രഷ് ചെയ്യുക</translation>
+<translation id="268270014981824665">കീബോർഡ് മങ്ങിക്കുക</translation>
 <translation id="2712812801627182647">TLS പരിശോധിച്ചുറപ്പിക്കൽ കീ</translation>
 <translation id="2713444072780614174">വെള്ള</translation>
 <translation id="2717139507051041123">ഡാർക്ക് കളർ മോഡ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
@@ -224,6 +226,7 @@
 <translation id="2744221223678373668">പങ്കിട്ടു</translation>
 <translation id="2751739896257479635">രണ്ടാം ഘട്ട EAP പരിശോധിച്ചുറപ്പിക്കൽ</translation>
 <translation id="2783010256799387990">വിജയിച്ചു</translation>
+<translation id="2787435249130282949">തെളിച്ചമുള്ള കീബോർഡ്</translation>
 <translation id="2789486458103222910">ശരി</translation>
 <translation id="2805756323405976993">ആപ്പുകൾ</translation>
 <translation id="28232023175184696">ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല. വീണ്ടും ശ്രമിക്കാൻ ക്ലിക്ക് ചെയ്യുക.</translation>
@@ -327,11 +330,13 @@
 <translation id="3749289110408117711">ഫയല്‍ നാമം</translation>
 <translation id="3771294271822695279">വീഡിയോ ഫയലുകള്‍</translation>
 <translation id="3784455785234192852">ലോക്കുചെയ്യുക</translation>
+<translation id="380097101658023925">RGB നിയന്ത്രണങ്ങൾ</translation>
 <translation id="38114475217616659">എല്ലാ ചരിത്രവും മായ്ക്കുക</translation>
 <translation id="3820172043799983114">പിൻ നമ്പർ തെറ്റാണ്.</translation>
 <translation id="3824259034819781947">ഫയലുകൾ അറ്റാച്ച് ചെയ്യുക</translation>
 <translation id="3838338534323494292">പുതിയ പാസ്‌വേഡ്</translation>
 <translation id="3845880861638660475">ഡയലോഗ് അടയ്‌ക്കാൻ <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> അമർത്തുക.</translation>
+<translation id="3848280697030027394">കീബോർഡ് ഇരുണ്ടതാക്കൽ</translation>
 <translation id="385051799172605136">പിന്നോട്ട്</translation>
 <translation id="3858860766373142691">പേര്</translation>
 <translation id="3862598938296403232">വിവരണം ആവശ്യമാണ്</translation>
@@ -403,6 +408,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">അപ്രാപ്‌തമാക്കുക</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> റീസ്റ്റാർട്ട് ചെയ്യുന്നു</translation>
+<translation id="4395835743215824109">കീബോർഡ് ഇഷ്‌ടാനുസൃതമാക്കൽ</translation>
 <translation id="4415951057168511744">നിലവിലെ അവതാർ</translation>
 <translation id="4422041425070339732">താഴേക്കുള്ള അമ്പടയാളം</translation>
 <translation id="4425149324548788773">എന്റെ ഡ്രൈവ്</translation>
@@ -443,6 +449,7 @@
 <translation id="4731797938093519117">രക്ഷാകർതൃ ആക്‌സസ്</translation>
 <translation id="473775607612524610">അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="4744944742468440486">നിങ്ങളുടെ തിരഞ്ഞെടുപ്പുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ</translation>
+<translation id="4771607256327216405">കീബോർഡ് തെളിച്ചമുള്ളതാക്കുക</translation>
 <translation id="4773299976671772492">അവസാനിപ്പിച്ചു</translation>
 <translation id="4782311465517282004">നിങ്ങൾ വലത്-ക്ലിക്ക് ചെയ്യുമ്പോഴോ ടെക്സ്റ്റിൽ സ്‌പർശിച്ച് പിടിക്കുമ്പോഴോ നിർവചനങ്ങളോ വിവർത്തനങ്ങളോ യൂണിറ്റ് കൺവേർഷനുകളോ നേടുക</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ഫോട്ടോ</translation>
@@ -491,6 +498,7 @@
 <translation id="500920857929044050">ടെസ്‌റ്റ് നിർത്തുക</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">നിങ്ങളുടെ സ്‌ക്രീൻ നിഷ്‌ക്രിയമായിരിക്കുമ്പോൾ ഫോട്ടോകൾ, സമയം, കാലാവസ്ഥ, മീഡിയാ വിവരങ്ങൾ എന്നിവ കാണിക്കുക.</translation>
+<translation id="5038292761217083259">ഒന്നിലേറെ നിറങ്ങളുള്ള കീബോർഡ്</translation>
 <translation id="5039804452771397117">അനുവദിക്കൂ</translation>
 <translation id="5049856988445523908">സിം ലോക്ക് ചെയ്തു (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ഗ്രൂപ്പിന്‍റെ പേര്</translation>
@@ -639,6 +647,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">ഡാർക്ക് തീം ഓണാക്കുക</translation>
 <translation id="6285899124799306373">ലോഞ്ചർ തുറക്കുക</translation>
+<translation id="629550705077076970">കീബോർഡ് മങ്ങിക്കൽ</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> പരിശോധന റദ്ദാക്കി</translation>
 <translation id="631063167932043783">ആപ്പ് അടുത്തറിയുക</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> എന്നതിൽ ഫേംവെയർ അപ്ഡേറ്റ് ചെയ്യുക</translation>
@@ -657,6 +666,7 @@
 <translation id="6401427872449207797">ബ്രൗസർ തിരയൽ</translation>
 <translation id="6410257289063177456">ചിത്ര ഫയലുകള്‍</translation>
 <translation id="641081527798843608">പൊരുത്തപ്പെടുന്ന വിഷയം</translation>
+<translation id="6411934471898487866">കീബോർഡ് തെളിച്ചം</translation>
 <translation id="6412715219990689313">ബിൽറ്റ് ഇൻ കീബോർഡ്</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">VPNതുറക്കുക</translation>
@@ -807,10 +817,12 @@
 <translation id="7656388927906093505">ഉപകരണം ഒരു മൗസാണ്.</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7665800271478495366">അവതാർ മാറ്റുക</translation>
+<translation id="7683228889864052081">കീബോർഡിന്റെ നിറം</translation>
 <translation id="7690294790491645610">പുതിയ പാസ്‌വേഡ് സ്ഥിരീകരിക്കുക</translation>
 <translation id="7701040980221191251">ഒന്നുമില്ല</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">കീബോർഡ് ലെെറ്റ്</translation>
 <translation id="773153675489693198">സൈക്കിളിന്റെ എണ്ണം</translation>
 <translation id="7747039790905080783">മുമ്പ് പങ്കിട്ട കീ</translation>
 <translation id="7762130827864645708">നിങ്ങൾ പാസ്‌വേഡ് മാറ്റി. ഇപ്പോൾ മുതൽ പുതിയ പാസ്‌വേഡ് ഉപയോഗിക്കുക.</translation>
@@ -854,6 +866,7 @@
 <translation id="8075838845814659848">ശേഷിക്കുന്ന ചാർജ്</translation>
 <translation id="8076492880354921740">ടാബുകള്‍‌</translation>
 <translation id="8082366717211101304">Android ആപ്പുകളിൽ നിന്ന് DNS പരിഹരിക്കാനാകില്ല</translation>
+<translation id="8082644724189923105">കീബോർഡ് മേഖല</translation>
 <translation id="808894953321890993">പാസ്‌വേഡ് മാറ്റുക</translation>
 <translation id="8094062939584182041">ഈ പ്രശ്‌നത്തെ കുറിച്ച് നിങ്ങൾക്ക് ഇമെയിൽ അയയ്ക്കാൻ Google-നെ അനുവദിക്കുക</translation>
 <translation id="8104083085214006426">ഓപ്പണും സുരക്ഷിതമല്ലാത്തതുമായ നെറ്റ്‌വർക്ക് ആണ് നിങ്ങൾ ഉപയോഗിക്കുന്നത്</translation>
@@ -902,6 +915,7 @@
 <translation id="8456761643544401578">സ്വയമേവയുള്ള ഡാർക്ക് മോഡ്</translation>
 <translation id="8461329675984532579">ഹോം പ്രൊവൈഡറിന്റെ പേര്</translation>
 <translation id="8475690821716466388">ദുർബലമായ WEP PSK പ്രോട്ടോക്കോൾ ഉപയോഗിച്ചാണ് വെെഫെെ നെറ്റ്‌വർക്ക് സുരക്ഷിതമാക്കിയിരിക്കുന്നത്</translation>
+<translation id="8476242415522716722">കീബോർഡ് അണ്ടർഗ്ലോ</translation>
 <translation id="8477551185774834963">DNS പ്രതികരണ സമയം അനുവദിക്കപ്പെട്ട പരിധിയേക്കാൾ അൽപ്പം മുകളിലാണ്</translation>
 <translation id="8483248364096924578">IP വിലാസം</translation>
 <translation id="8491311378305535241">Android ആപ്പുകളിൽ നിന്ന് HTTPS വെബ്സൈറ്റുകളിലേക്ക് ഫയര്‍വാള്‍ മുഖേന കണക്റ്റ് ചെയ്യാനാകുന്നില്ല</translation>
@@ -945,6 +959,7 @@
 <translation id="8845001906332463065">സഹായം നേടുക</translation>
 <translation id="8855781559874488009">HTTP വെബ്സൈറ്റുകളിലേക്ക് ഫയര്‍വാള്‍ മുഖേന കണക്റ്റ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="885701979325669005">സംഭരണം</translation>
+<translation id="885704831271383379">ഇരുണ്ട കീബോർഡ്</translation>
 <translation id="8863170912498892583">ഡാർക്ക് തീം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" എന്നതിനും മറ്റുമുള്ള <ph name="INTENT" /> നേടുക</translation>
 <translation id="8864415976656252616">നിർദ്ദേശിക്കുന്ന ഉള്ളടക്കമൊന്നും ഇല്ല. മികച്ച സഹായ ഉള്ളടക്കം കാണുക.</translation>

@@ -196,6 +196,7 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="2100273922101894616">Automatisch inloggen</translation>
 <translation id="2100314319871056947">Verdeel de tekst in kleinere stukken en deel in meerdere keren.</translation>
 <translation id="2111511281910874386">Ga naar pagina</translation>
+<translation id="2119609734654412418">Hier vind je je bookmarks</translation>
 <translation id="2122601567107267586">Kan app niet openen</translation>
 <translation id="2132122640199389833">Alle gekoppelde apparaten verwijderen</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> gesloten</translation>
@@ -574,6 +575,7 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="4188221736490993796">Sorteren van Z tot A</translation>
 <translation id="4195643157523330669">Openen op nieuw tabblad</translation>
 <translation id="4196597275619698563">Kaart maken</translation>
+<translation id="4197828496439691735">{NUM_TABS,plural, =1{1 tabblad op dit apparaat}other{# tabbladen op dit apparaat}}</translation>
 <translation id="4198423547019359126">Geen beschikbare downloadlocaties</translation>
 <translation id="4202218894997543208">Onderwerpen die je hebt geblokkeerd</translation>
 <translation id="4214315110991671325">Als je cookies toestaat, kan Chrome deze voor vooraf laden gebruiken.</translation>
@@ -588,6 +590,7 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Welke gegevens worden gebruikt:<ph name="END_BOLD" /> Je browsegeschiedenis, een lijst van de sites die je via Chrome op dit apparaat hebt bezocht.</translation>
 <translation id="4269820728363426813">Linkadres kopiëren</translation>
 <translation id="4283102315569707115">Standaard desktopsites aanvragen?</translation>
+<translation id="4285846616383034558">Cookies, cachegeheugen en andere sitegegevens</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Schermvergrendeling aanzetten via Android-instellingen<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Nieuw incognitotabblad</translation>
 <translation id="4298388696830689168">Gekoppelde sites</translation>
@@ -598,6 +601,7 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="433213510553688132">Volgen…</translation>
 <translation id="4335835283689002019">Safe Browsing staat uit</translation>
 <translation id="4351244548802238354">Dialoogvenster sluiten</translation>
+<translation id="4355272626458588338">Je kunt teruggaan naar een pagina die belangrijk voor je is door een bookmark toe te voegen</translation>
 <translation id="4369735607080757018">Er worden beperkte typen gegevens gedeeld tussen sites om de prestaties van hun advertenties te meten (bijvoorbeeld het tijdstip waarop je een advertentie werd getoond)</translation>
 <translation id="4378154925671717803">Telefoon</translation>
 <translation id="438319986296050901">Alleen kaart delen</translation>
@@ -677,6 +681,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4763480195061959176">video</translation>
 <translation id="4766313118839197559">Wachtwoorden worden opgeslagen in Wachtwoordmanager op dit apparaat</translation>
 <translation id="4766678251456904326">Account toevoegen aan apparaat</translation>
+<translation id="4767947714785277816">We lanceren een nieuwe privacyfunctie voor advertenties: advertentiemeting. Chrome deelt alleen zeer beperkte informatie tussen sites en apps, zoals wanneer een advertentie aan jou is getoond, zodat de prestaties van advertenties kunnen worden gemeten.</translation>
 <translation id="4769095993849849966">Nieuwe bestandsnaam</translation>
 <translation id="4778653490315793244">Er is nog niets om te laten zien</translation>
 <translation id="4787736314074622408">Wil je <ph name="ITEM_TITLE" /> verwijderen?</translation>
@@ -912,6 +917,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6011308810877101166">Zoeksuggesties verbeteren</translation>
 <translation id="6026538407078977628">Uitvouwen naar volledig scherm</translation>
 <translation id="6030719887161080597">Informatie beheren die sites gebruiken om advertentieprestaties te meten</translation>
+<translation id="6034146297924778597">De geschiedenis van de afgelopen 15 minuten wordt verwijderd:</translation>
 <translation id="6039379616847168523">Naar het volgende tabblad gaan</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="604124094241169006">Automatisch</translation>
@@ -950,6 +956,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6232535412751077445">Als je Niet bijhouden aanzet, wordt hiervoor een verzoek opgenomen in je browseverkeer. Het resultaat daarvan hangt af van of een website reageert op het verzoek en hoe het verzoek wordt geïnterpreteerd.
 
 Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken die niet zijn gebaseerd op andere websites die je hebt bezocht. Toch blijven veel websites je browsegegevens nog verzamelen en gebruiken, bijvoorbeeld om de beveiliging te verbeteren, om content, services, advertenties en aanbevelingen te leveren en om rapportagestatistieken te genereren.</translation>
+<translation id="6255794742848779505">We wijzigen hoe wachtwoorden worden opgeslagen op dit apparaat</translation>
 <translation id="6264376385120300461">Toch downloaden</translation>
 <translation id="6277522088822131679">Er is een fout opgetreden bij het afdrukken van de pagina. Probeer het opnieuw.</translation>
 <translation id="6277722725779679269">Kan Prijs volgen niet updaten</translation>

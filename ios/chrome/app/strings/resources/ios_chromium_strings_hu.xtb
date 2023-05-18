@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> felhasználó használta Chromiumot, és könyvjelzőket, jelszavakat, valamint egyéb beállításokat hagyott az eszközön.</translation>
 <translation id="372658070733623520">Ha Chromium-adatokat szeretne használni és tárolni Google-fiókjában, igazolja személyazonosságát.</translation>
 <translation id="3805899903892079518">A Chromium nem fér hozzá az Ön képeihez és videóihoz. Engedélyezés iOS-en: Beállítások &gt; Adatvédelem &gt; Fényképek.</translation>
+<translation id="3955621079070267756">A Chromium megnyitása bármely alkalmazásból</translation>
 <translation id="4043291146360695975">A jelszavakat csak ezen az eszközön menti a rendszer a Jelszókezelőbe.</translation>
 <translation id="4099085513035183040">A Chromium bétaverziója nem támogatja</translation>
 <translation id="4432744876818348753">Jelentkezzen be, hogy a legtöbbet hozhassa ki a Chromiumból.</translation>
@@ -142,5 +143,6 @@ Fontos tudnivalók:
 <translation id="9089354809943900324">A Chromium elavult</translation>
 <translation id="9110075932708282655">A Chromium alapértelmezett használata</translation>
 <translation id="921174536258924340">A Chromium nem tudta ellenőrizni az összes jelszót. Próbálja újra holnap, vagy <ph name="BEGIN_LINK" />ellenőrizze jelszavait a Google-fiókjában<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">Beállíthatja, hogy a rendszer automatikusan a Chromiumot használja, amikor üzenetekben, dokumentumokban és más alkalmazásokban található linkekre kattint.</translation>
 <translation id="985602178874221306">A Chromium szerzői</translation>
 </translationbundle>

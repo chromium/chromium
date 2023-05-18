@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> gerencia este dispositivo e pode monitorar sua atividade.</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Enviar</translation>
+<translation id="1488850966314959671">Não é possível se conectar a esta rede usando APNs personalizados ativados. Entre em contato com sua operadora de celular para mais informações.</translation>
 <translation id="1491076385728777984">Atualizando firmware no <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">aumentar o volume</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gerencia o usuário. Esse administrador pode controlar as configurações e monitorar a atividade do usuário remotamente.</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">Visibilidade</translation>
 <translation id="1672499492233627739">Feed de vídeo da webcam</translation>
 <translation id="1676557873873341166">Captura de vídeo ativada</translation>
+<translation id="1684279041537802716">Cor de destaque</translation>
 <translation id="1703835215927279855">Carta</translation>
 <translation id="1706391837335750954">Resolvedor de DNS presente</translation>
 <translation id="1708602061922134366">Azul do Google</translation>
@@ -562,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Digitalizar novamente</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">Não é possível desativar ou remover esse APN. Desative ou remova os APNs em anexo.</translation>
 <translation id="5600027863942488546">A tecla <ph name="KEY_NAME" /> foi testada</translation>
 <translation id="5620281292257375798">Somente uso interno</translation>
 <translation id="5649768706273821470">Ouvir</translation>
@@ -1011,6 +1014,7 @@
 <translation id="9173638680043580060">Menos de um minuto restante</translation>
 <translation id="917720651393141712">Testar</translation>
 <translation id="9188992814426075118">É possível combinar o teclado automaticamente com o plano de fundo</translation>
+<translation id="9189000703457422362">Não é possível se conectar a essa rede usando APNs detectados automaticamente. Entre em contato com sua operadora de celular para mais informações.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Não foi possível entrar em contato com o gateway em apps Android</translation>
 <translation id="9211490828691860325">Todos os espaços de trabalho</translation>

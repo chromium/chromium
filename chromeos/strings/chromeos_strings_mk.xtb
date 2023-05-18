@@ -69,7 +69,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> управува со корисников и може оддалеку да управува со поставките и да ја набљудува неговата активност.</translation>
 <translation id="150962533380566081">Погрешен PUK.</translation>
 <translation id="1510238584712386396">Стартер</translation>
-<translation id="1526389707933164996">Анимација за заштитникот на екранот</translation>
+<translation id="1526389707933164996">Анимација за штедачот на екранот</translation>
 <translation id="152892567002884378">Зголемете ја јачината на звукот</translation>
 <translation id="1555130319947370107">Сина</translation>
 <translation id="155865706765934889">Подлога за допир</translation>
@@ -77,7 +77,7 @@
 <translation id="1565038567006703504">Не може да се ажурира <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Албуми</translation>
 <translation id="1572585716423026576">Постави како тапет</translation>
-<translation id="1578784163189013834">Изберете заднина за заштитникот на екранот</translation>
+<translation id="1578784163189013834">Изберете заднина за штедачот на екранот</translation>
 <translation id="160633243685262989">Прегледајте ја сликата</translation>
 <translation id="1615335640928990664">Потрошен интернет од <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Изврши тест за наполнетост</translation>
@@ -92,6 +92,7 @@
 <translation id="1669047024429367828">Видливост</translation>
 <translation id="1672499492233627739">Видеоактивност на веб-камерата</translation>
 <translation id="1676557873873341166">Снимање видео</translation>
+<translation id="1684279041537802716">Боја за нагласување</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Има DNS-одредувач</translation>
 <translation id="1708602061922134366">Син како Google</translation>
@@ -145,7 +146,7 @@
 <translation id="2011174342667534258">Верзија на SDK:</translation>
 <translation id="2016697457005847575">Пробајте ги чекорите за решавање проблеми</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2047316797244836561">Поврзете се на мрежа и повторно вчитајте ја страницата за да се прикаже заштитникот на екранот.</translation>
+<translation id="2047316797244836561">Поврзете се на мрежа и повторно вчитајте ја страницата за да се прикаже штедачот на екранот.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Повеќе поставки</translation>
 <translation id="2085089206770112532">Осветленоста на екранот се намали</translation>
@@ -217,6 +218,7 @@
 <translation id="2638662041295312666">Слика при најавување</translation>
 <translation id="2640549051766135490">Избран е албумот <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="267442004702508783">освежи</translation>
+<translation id="268270014981824665">затемнување на тастатурата</translation>
 <translation id="2712812801627182647">Клуч за TLS-проверка</translation>
 <translation id="2713444072780614174">Бела</translation>
 <translation id="2717139507051041123">Овозможете режим во темна боја</translation>
@@ -224,6 +226,7 @@
 <translation id="2744221223678373668">Споделени</translation>
 <translation id="2751739896257479635">Автентикација со EAP во фаза 2</translation>
 <translation id="2783010256799387990">УСПЕШЕН</translation>
+<translation id="2787435249130282949">посветла тастатура</translation>
 <translation id="2789486458103222910">Во ред</translation>
 <translation id="2805756323405976993">Апликации</translation>
 <translation id="28232023175184696">Не може да се поврзе на интернет. Кликнете за повторен обид.</translation>
@@ -247,7 +250,7 @@
 <translation id="3056720590588772262">Крајна точка</translation>
 <translation id="3069085583900247081">Тестот не успеа</translation>
 <translation id="3083667275341675831">Дијагностика на поврзливоста</translation>
-<translation id="3084958266922136097">Оневозможете го заштитникот на екранот</translation>
+<translation id="3084958266922136097">Оневозможете го штедачот на екранот</translation>
 <translation id="3091839911843451378">Неуспешно - запрено</translation>
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3122464029669770682">ЦПУ</translation>
@@ -283,7 +286,7 @@
 <translation id="3368922792935385530">Поврзано</translation>
 <translation id="3369013195428705271">Дали сте сигурни дека сакате да ја исчистите сета историја на печатење? Тековните задачи за печатење нема да бидат избришани.</translation>
 <translation id="3386675685417744672">Ексклузивно за Chromebook</translation>
-<translation id="3404249063913988450">Овозможете го заштитникот на екранот</translation>
+<translation id="3404249063913988450">Овозможете го штедачот на екранот</translation>
 <translation id="3413935475507503304">За да продолжите со ажурирањето, кликнете „Следно“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Безбедност</translation>
@@ -327,11 +330,13 @@
 <translation id="3749289110408117711">Име на датотека</translation>
 <translation id="3771294271822695279">Видеодатотеки</translation>
 <translation id="3784455785234192852">Катанец</translation>
+<translation id="380097101658023925">контроли за rgb</translation>
 <translation id="38114475217616659">Избриши ја целата историја</translation>
 <translation id="3820172043799983114">Неважечки PIN.</translation>
 <translation id="3824259034819781947">Приложете датотеки</translation>
 <translation id="3838338534323494292">Нова лозинка</translation>
 <translation id="3845880861638660475">Притиснете <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> за да го затворите дијалогот.</translation>
+<translation id="3848280697030027394">затемнета тастатура</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858860766373142691">Име</translation>
 <translation id="3862598938296403232">Описот е задолжителен</translation>
@@ -339,7 +344,7 @@
 <translation id="3865414814144988605">Резолуција</translation>
 <translation id="3866249974567520381">Опис</translation>
 <translation id="387301095347517405">Колку пати батеријата поминала низ целосен циклус на полнење</translation>
-<translation id="3885327323343477505">Променете го заштитникот на екранот</translation>
+<translation id="3885327323343477505">Променете го штедачот на екранот</translation>
 <translation id="391412459402535266">Не можете да го тестирате уредот. Префрлете се на режим за лаптоп за да тестирате.</translation>
 <translation id="3916998944874125962">снимање слика од екранот</translation>
 <translation id="3923184630988645767">Интернет</translation>
@@ -380,7 +385,7 @@
 <translation id="4171077696775491955">намалување на осветленоста</translation>
 <translation id="4176463684765177261">Оневозможено</translation>
 <translation id="4176659219503619100">Контролна табла</translation>
-<translation id="420283545744377356">Исклучете го заштитникот на екранот</translation>
+<translation id="420283545744377356">Исклучете го штедачот на екранот</translation>
 <translation id="4213104098953699324">Тастатура со USB</translation>
 <translation id="4227825898293920515">Лозинката истекува за <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Нема задачи за печатење во тек</translation>
@@ -403,6 +408,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Оневозможи</translation>
 <translation id="439429847087949098">Се рестартира <ph name="DEVICE_NAME" /></translation>
+<translation id="4395835743215824109">приспособување на тастатурата</translation>
 <translation id="4415951057168511744">Тековен аватар</translation>
 <translation id="4422041425070339732">стрелка надолу</translation>
 <translation id="4425149324548788773">Мојот Drive</translation>
@@ -443,6 +449,7 @@
 <translation id="4731797938093519117">Пристап за родители</translation>
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4744944742468440486">Информации поврзани со вашиот избор</translation>
+<translation id="4771607256327216405">осветлување на тастатурата</translation>
 <translation id="4773299976671772492">Сопрено</translation>
 <translation id="4782311465517282004">Добивајте дефиниции, преводи или конверзија на вредности кога ќе кликнете со десно копче или ќе допрете и задржите текст</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> фотографија</translation>
@@ -472,7 +479,7 @@
 <translation id="4890353053343094602">Веднаш изберете нова</translation>
 <translation id="4891842000192098784">Стрес</translation>
 <translation id="4897058166682006107">Нивото на батерија на левата слушалка е <ph name="BATTERY_PERCENTAGE" /> %.</translation>
-<translation id="4905998861748258752">Вклучете ја функцијата за да ги изберете опциите за заштитникот на екранот</translation>
+<translation id="4905998861748258752">Вклучете ја функцијата за да ги изберете опциите за штедачот на екранот</translation>
 <translation id="4910858703033903787">Типови APN</translation>
 <translation id="4917385247580444890">Силен</translation>
 <translation id="4917889632206600977">Запрено - нема хартија</translation>
@@ -491,6 +498,7 @@
 <translation id="500920857929044050">Запри го тестот</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Кога екранот е неактивен, прикажувај фотографии, време, временска прогноза и вести.</translation>
+<translation id="5038292761217083259">тастатура во повеќе бои</translation>
 <translation id="5039804452771397117">Дозволи</translation>
 <translation id="5049856988445523908">SIM-картичката е заклучена (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Име на групата</translation>
@@ -639,10 +647,11 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Вклучи темна тема</translation>
 <translation id="6285899124799306373">отворање стартер</translation>
+<translation id="629550705077076970">затемнување на тастатурата</translation>
 <translation id="6302401976930124515">Тестот за <ph name="TEST_NAME" /> е откажан</translation>
 <translation id="631063167932043783">Апликација Explore</translation>
 <translation id="6319207335391420837">Ажурирајте го фирмверот на <ph name="DEVICE_NAME" /></translation>
-<translation id="6321407676395378991">Вклучете го заштитникот на екранот</translation>
+<translation id="6321407676395378991">Вклучете го штедачот на екранот</translation>
 <translation id="6325525973963619867">Неуспешно</translation>
 <translation id="6331191339300272798">Автоматска темна тема</translation>
 <translation id="6340526405444716530">Персонализација</translation>
@@ -657,6 +666,7 @@
 <translation id="6401427872449207797">пребарување во прелистувач</translation>
 <translation id="6410257289063177456">Датотеки со слики</translation>
 <translation id="641081527798843608">Совпаѓање на предмети</translation>
+<translation id="6411934471898487866">осветленост на тастатурата</translation>
 <translation id="6412715219990689313">Вградена тастатура</translation>
 <translation id="6417265370957905582">Помошник на Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -807,10 +817,12 @@
 <translation id="7656388927906093505">Уредот е глувче.</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7665800271478495366">Променете го аватарот</translation>
+<translation id="7683228889864052081">нијанса на тастатурата</translation>
 <translation id="7690294790491645610">Потврдете ја новата лозинка</translation>
 <translation id="7701040980221191251">Нема</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">светлина на тастатурата</translation>
 <translation id="773153675489693198">Број на циклуси</translation>
 <translation id="7747039790905080783">Претходно споделен клуч</translation>
 <translation id="7762130827864645708">Успешно ја променивте лозинката. Отсега користете ја новата лозинка.</translation>
@@ -854,6 +866,7 @@
 <translation id="8075838845814659848">Преостанато полнење</translation>
 <translation id="8076492880354921740">Картички</translation>
 <translation id="8082366717211101304">Не може да се одреди со DNS од апликации на Android</translation>
+<translation id="8082644724189923105">зона на тастатурата</translation>
 <translation id="808894953321890993">Промени лозинка</translation>
 <translation id="8094062939584182041">Дозволете Google да ви праќа е-пораки за проблемов</translation>
 <translation id="8104083085214006426">Користите отворена и небезбедна мрежа</translation>
@@ -902,6 +915,7 @@
 <translation id="8456761643544401578">Автоматски темен режим</translation>
 <translation id="8461329675984532579">Име на оператор на почетна страница</translation>
 <translation id="8475690821716466388">Wi-Fi мрежата е обезбедена со слаб протокол WEP PSK</translation>
+<translation id="8476242415522716722">светлина одоздола на тастатурата</translation>
 <translation id="8477551185774834963">Латенцијата на DNS е малку над дозволениот праг</translation>
 <translation id="8483248364096924578">IP-адреса</translation>
 <translation id="8491311378305535241">Не може да се поврзе преку заштитен ѕид со веб-сајтови со HTTP од апликации на Android</translation>
@@ -945,6 +959,7 @@
 <translation id="8845001906332463065">Побарајте помош</translation>
 <translation id="8855781559874488009">Не може да се поврзе преку заштитен ѕид со веб-сајтови со HTTP</translation>
 <translation id="885701979325669005">Склад</translation>
+<translation id="885704831271383379">потемна тастатура</translation>
 <translation id="8863170912498892583">Овозможи темна тема</translation>
 <translation id="8863888432376731307">Добијте <ph name="INTENT" /> за „<ph name="QUERY" />“ и друго</translation>
 <translation id="8864415976656252616">Нема предложени содржини. Прегледајте ги најпопуларните содржини за помош.</translation>
@@ -974,7 +989,7 @@
 <translation id="9024331582947483881">цел екран</translation>
 <translation id="9025198690966128418">Користете го како личен уред</translation>
 <translation id="902638246363752736">Поставки на тастатура</translation>
-<translation id="9028832514430399253">Вклучете го копчето за да ги изберете опциите за заштитникот на екранот</translation>
+<translation id="9028832514430399253">Вклучете го копчето за да ги изберете опциите за штедачот на екранот</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">Одредување со DNS има висока латенција</translation>

@@ -2970,7 +2970,6 @@
 <translation id="8217240300496046857">網站不能使用 Cookie 追蹤您的網絡活動。有些網站的功能可能無法正常運作。</translation>
 <translation id="8217748145574471584">人力資源</translation>
 <translation id="8218327578424803826">已指派的位置：</translation>
-<translation id="8225771182978767009">設定此電腦的用戶已封鎖此網站。</translation>
 <translation id="8228419419708659934">雙頁檢視</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> 毫米</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
@@ -3083,7 +3082,6 @@
 <translation id="8474910779563686872">顯示開發人員詳情</translation>
 <translation id="8479754468255770962">釘裝 (左下方)</translation>
 <translation id="8483229036294884935">此地址將從您的 Google 帳戶 (<ph name="ACCOUNT" />) 中刪除</translation>
-<translation id="8483780878231876732">如要使用您 Google 帳戶中的信用卡，請登入 Chrome</translation>
 <translation id="8488350697529856933">適用對象</translation>
 <translation id="8490137692873530638">堆疊器 10</translation>
 <translation id="8493948351860045254">釋出儲存空間</translation>
@@ -3299,6 +3297,7 @@
 <translation id="9048662076076074925">24 x 36 吋</translation>
 <translation id="9049981332609050619">您嘗試連線至 <ph name="DOMAIN" />，但伺服器提供的憑證無效。</translation>
 <translation id="9050666287014529139">複雜密碼</translation>
+<translation id="9053840549256861041">我們即將推出名為「廣告評估」的全新廣告隱私權功能。Chrome 只會在網站之間分享相當有限的資訊 (例如向使用者放送廣告的時段)，協助網站評估廣告成效。</translation>
 <translation id="9056953843249698117">商店</translation>
 <translation id="9062620674789239642">此檔案可能已被移動、編輯或刪除。</translation>
 <translation id="9063398205799684336">Kaku 2 信封</translation>

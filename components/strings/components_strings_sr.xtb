@@ -1200,9 +1200,11 @@
 <translation id="3927932062596804919">Одбиј</translation>
 <translation id="393316646445601645">Интернет и телекомуникације</translation>
 <translation id="3939773374150895049">Желите ли да користите WebAuthn уместо CVC-а?</translation>
+<translation id="3941630233824954464">Омогућите обавезну поновну потврду идентитета</translation>
 <translation id="3943857333388298514">Налепи</translation>
 <translation id="3946209740501886391">Увек питај на овом сајту</translation>
 <translation id="3947595700203588284">Може да тражи да се повезује са MIDI уређајима</translation>
+<translation id="3948588869002647271">Ова апликација недостаје или је оштећена</translation>
 <translation id="3949571496842715403">Овај сервер не може да докаже да је <ph name="DOMAIN" />; његов безбедносни сертификат не наводи Алтернативне називе субјекта. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
 <translation id="3949601375789751990">Историја прегледања ће се појавити овде</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2202,6 +2204,7 @@
 <translation id="6370022303958842211">Радње приступа уређајима попут пријављивања (укључујући неуспеле разлоге за пријављивање), одјављивања, закључавања и откључавања</translation>
 <translation id="6374469231428023295">Пробај поново</translation>
 <translation id="6374865374745447009">управљање прозорима</translation>
+<translation id="6376881782310775282">Није могуће приступити серверу за програмирање за ову апликацију</translation>
 <translation id="6377268785556383139">1 резултат за „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Очекују вас потенцијални трошкови.</translation>
@@ -2970,7 +2973,6 @@
 <translation id="8217240300496046857">Сајтови не могу да користе колачиће који вас прате на вебу. Функције на неким сајтовима могу да престану са радом.</translation>
 <translation id="8217748145574471584">Људски ресурси</translation>
 <translation id="8218327578424803826">Додељена локација:</translation>
-<translation id="8225771182978767009">Особа која је подесила овај рачунар је одлучила да блокира овај сајт.</translation>
 <translation id="8228419419708659934">Приказ на две странице</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" />x<ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -3011,6 +3013,7 @@
 <translation id="8286799286781881307">Апликације које је овластио администратор могу да снимају све екране повезане са уређајем. Те информације могу да се обрађују локално или да се отпреме на сервере организације.</translation>
 <translation id="8288807391153049143">Прикажи сертификат</translation>
 <translation id="8289355894181816810">Контактирајте администратора мреже ако нисте сигурни шта то значи.</translation>
+<translation id="8292520987784410870">Желите ли да увек потврђујете?</translation>
 <translation id="8293206222192510085">Додавање обележивача</translation>
 <translation id="829335040383910391">звук</translation>
 <translation id="8294431847097064396">Извор</translation>
@@ -3083,7 +3086,6 @@
 <translation id="8474910779563686872">Прикажи детаље о програмеру</translation>
 <translation id="8479754468255770962">Спајање у доњем левом углу</translation>
 <translation id="8483229036294884935">Ова адреса ће бити избрисана са Google налога, <ph name="ACCOUNT" /></translation>
-<translation id="8483780878231876732">Да бисте користили картице са Google налога, пријавите се у Chrome</translation>
 <translation id="8488350697529856933">Односе се на</translation>
 <translation id="8490137692873530638">10. преграда за слагање</translation>
 <translation id="8493948351860045254">Ослободите простор</translation>
@@ -3111,6 +3113,7 @@
 <translation id="854892890027593466">Коверта C6/C5</translation>
 <translation id="8553387990086529628">Туристичке дестинације</translation>
 <translation id="8554010658308662631">Учитај још</translation>
+<translation id="8554802735558319842">Ради додатне безбедности на дељеним уређајима укључите верификацију сваки пут када плаћате помоћу аутоматског попуњавања.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Ресетуј дозволу}one{Ресетуј дозволе}few{Ресетуј дозволе}other{Ресетуј дозволе}}</translation>
 <translation id="8555010941760982128">Користите овај кôд при плаћању</translation>
 <translation id="8557066899867184262">CVC је на полеђини картице.</translation>

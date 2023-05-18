@@ -359,7 +359,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1303101771013849280">Ficheiro HTML de marcadores</translation>
 <translation id="1303671224831497365">Non se atopou ningún dispositivo Bluetooth</translation>
 <translation id="130491383855577612">As aplicacións e os ficheiros de Linux restauráronse correctamente</translation>
-<translation id="1306390193749326011">Non verás <ph name="MODULE_NAME" /> de novo nesta páxina</translation>
 <translation id="1306518237408758433">Abrir <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="1306606229401759371">Cambiar configuración</translation>
 <translation id="1307165550267142340">Creouse o teu PIN</translation>
@@ -567,7 +566,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1493892686965953381">Agardando por <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Os sitios poden pedirche permiso para utilizar os tipos de letra instalados no dispositivo</translation>
 <translation id="1494429729245089920">A máquina virtual <ph name="VM_NAME" /> existe, pero parece que non é unha máquina virtual válida de <ph name="APP_NAME" />. Fala coa persoa administradora.</translation>
-<translation id="1495201326198374770">Usar teclas de función como teclas da fila superior de Chromebook</translation>
 <translation id="1495677929897281669">Volver á pestana</translation>
 <translation id="1498498210836053409">Desactivar modo persistente cando se edite texto (modo persistente intelixente)</translation>
 <translation id="1500297251995790841">Dispositivo descoñecido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -694,7 +692,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1596286373007273895">Dispoñible</translation>
 <translation id="1596709061955594992">O Bluetooth está desactivado. Para ver os dispositivos dispoñibles, actívao.</translation>
 <translation id="1596780725094407793">(inclúe subdominios)</translation>
-<translation id="1597852076552089763">Opcións de marcadores</translation>
 <translation id="1598163867407640634">Usa <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">O teu administrador desactivou as actualizacións.</translation>
 <translation id="1600857548979126453">Acceder ao back-end de depuración de páxinas</translation>
@@ -1133,7 +1130,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1956390763342388273">Con esta acción cargaranse todos os ficheiros de "<ph name="FOLDER_PATH" />". Non continúes se non confías no sitio.</translation>
 <translation id="1962233722219655970">Esta páxina utiliza unha aplicación de cliente nativo que non funciona no teu ordenador.</translation>
 <translation id="1963976881984600709">Protección estándar</translation>
-<translation id="1965624977906726414">Non ten permisos especiais.</translation>
 <translation id="1966649499058910679">Destacar cada palabra a medida que se pronuncia</translation>
 <translation id="1967970931040389207">Activar zona wifi</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -1307,7 +1303,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2105809836724866556">Ocultouse <ph name="MODULE_TITLE" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de teléfono}other{# números de teléfono}}</translation>
 <translation id="2110941575868943054">Sitios que teñen permiso para buscar dispositivos Bluetooth</translation>
-<translation id="2111238878637848860">Mantén premida a tecla do menú de aplicacións para cambiar entre as teclas de función</translation>
 <translation id="211144231511833662">Borrar tipos</translation>
 <translation id="2111670510994270194">Nova pestana á dereita</translation>
 <translation id="2112554630428445878">Dámosche a benvida, <ph name="USERNAME" /></translation>
@@ -2864,7 +2859,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="346546413339447252">Obter descontos para <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> e máis</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Teléfono Android</translation>
-<translation id="3469345458390352459">Unha vez activada esta opción, as túas aplicacións estarán dispoñibles en calquera dispositivo ChromeOS despois de iniciar sesión coa túa Conta de Google.  As aplicacións web sincronizaranse mediante Chrome mesmo se outras funcións de sincronización do navegador están desactivadas.</translation>
 <translation id="3469583217479686109">Ferramenta de selección</translation>
 <translation id="3470392222765168737">Seguir sitio</translation>
 <translation id="3471876058939596279">Os portos HDMI e USB tipo C non se poden utilizar ao mesmo tempo para o contido de vídeo. Utiliza un porto de vídeo distinto.</translation>
@@ -2904,10 +2898,8 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3497560059572256875">Compartir doodle</translation>
 <translation id="3500417806337761827">Produciuse un erro ao montar o recurso compartido. Xa hai montados demasiados recursos compartidos SMB.</translation>
 <translation id="3503995387997205657">Xa podes restaurar as aplicacións antigas</translation>
-<translation id="3505030558724226696">Revogar o acceso ao dispositivo</translation>
 <translation id="3505100368357440862">Suxestións de compras</translation>
 <translation id="3507132249039706973">A protección estándar está activada</translation>
-<translation id="3507421388498836150">Permisos actuais para "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3507888235492474624">Volver buscar dispositivos Bluetooth</translation>
 <translation id="3508492320654304609">Non se puideron eliminar os teus datos de inicio de sesión</translation>
 <translation id="3508920295779105875">Escoller outro cartafol...</translation>
@@ -3072,7 +3064,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3653887973853407813">Non podes usar esta extensión. O teu pai ou nai (titor ou titora) desactivou Permisos para sitios, aplicacións e extensións en Chrome.</translation>
 <translation id="3653999333232393305">Continuar permitindo a <ph name="HOST" /> acceder ao teu micrófono</translation>
 <translation id="3654045516529121250">Ler a configuración de accesibilidade</translation>
-<translation id="3655712721956801464">{NUM_FILES,plural, =1{Ten acceso permanente a un ficheiro.}other{Ten acceso permanente a # ficheiros.}}</translation>
 <translation id="3658871634334445293">Aceleración de TrackPoint</translation>
 <translation id="3659550105763988702">Usa a clave de acceso para <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Metiches un código de acceso incorrecto demasiadas veces. Téntao de novo máis tarde</translation>
@@ -3379,7 +3370,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="389901847090970821">Selecciona un teclado</translation>
 <translation id="3900966090527141178">Exportar contrasinais</translation>
 <translation id="3902789559055749153">Indica como queres crear unha clave de acceso para <ph name="APP_NAME" /></translation>
-<translation id="3903158219409898205">Usar tecla do menú de aplicacións para modificar o comportamento das teclas da fila superior de Chromebook</translation>
 <translation id="3903187154317825986">Teclado integrado</translation>
 <translation id="3904326018476041253">Servizos de localización</translation>
 <translation id="3905761538810670789">Reparar aplicación</translation>
@@ -3795,7 +3785,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4279129444466079448">Podes instalar ata <ph name="PROFILE_LIMIT" /> perfís de eSIM neste dispositivo. Para engadir outro perfil, primeiro quita un que xa teñas.</translation>
 <translation id="4280325816108262082">O dispositivo desconectarase automaticamente cando se atope apagado ou non se estea utilizando</translation>
 <translation id="4281844954008187215">Condicións de servizo</translation>
-<translation id="428200245206114206">As teclas de función agora servirán como teclas da fila superior de Chromebook.</translation>
 <translation id="4282196459431406533">Smart Lock está activado</translation>
 <translation id="4284903252249997120">Lector de pantalla de ChromeVox e Escoitar selección</translation>
 <translation id="4285418559658561636">Actualizar contrasinal</translation>
@@ -5107,7 +5096,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5476016146231427848">Reinicia o dispositivo para usar Steam no Chromebook</translation>
 <translation id="5481273127572794904">Sitios que non poden descargar automaticamente varios ficheiros</translation>
 <translation id="5481941284378890518">Engadir impresoras que estean cerca</translation>
-<translation id="5483785310822538350">Revogar acceso a ficheiros e dispositivos</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e que devolvas este dispositivo (<ph name="DEVICE_TYPE" />) hoxe. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" />}other{<ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e que devolvas este dispositivo (<ph name="DEVICE_TYPE" />) no prazo de {NUM_DAYS} días. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Engadir aplicación</translation>
 <translation id="5485754497697573575">Restaurar todas as pestanas</translation>
@@ -5996,6 +5984,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6266532094411434237">Conectando co dispositivo (<ph name="DEVICE" />)</translation>
 <translation id="6267166720438879315">Selecciona un certificado para autenticarte en <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Abrir con <ph name="APP" /></translation>
+<translation id="6270309713620950855">Aviso de micrófono silenciado</translation>
 <translation id="6270391203985052864">Os sitios poden pedir permiso para enviar notificacións</translation>
 <translation id="6270770586500173387">Enviar <ph name="BEGIN_LINK1" />información sobre o sistema e as aplicacións<ph name="END_LINK1" />, así como <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /></translation>
 <translation id="6270896861225278704">Tarxeta de percorridos</translation>
@@ -6226,7 +6215,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6478248366783946499">Queres conservar o ficheiro perigoso?</translation>
 <translation id="6479881432656947268">Visitar Chrome Web Store</translation>
 <translation id="6480327114083866287">Xestionado por <ph name="MANAGER" /></translation>
-<translation id="6481978993812487794">Unha vez activada esta opción, as túas aplicacións estarán dispoñibles en calquera dispositivo ChromeOS despois de iniciar sesión coa túa Conta de Google. As aplicacións web sincronizaranse mediante Chrome mesmo se outras funcións de sincronización do navegador están desactivadas.</translation>
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
 <translation id="6483485061007832714">Abre a descarga</translation>
 <translation id="6483805311199035658">Abrindo <ph name="FILE" />...</translation>
@@ -6714,7 +6702,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6903590427234129279">Abrir todos os URL (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Activar sincronización</translation>
 <translation id="6903916726032521638">Buscar <ph name="QUERY_CLUSTER_NAME" /></translation>
-<translation id="6904344821472985372">Revogar o acceso aos ficheiros</translation>
 <translation id="6904655473976120856">Preme o botón Aplicación para saír</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{Para manter a salvo os teus contrasinais, o xestor de contrasinais de Google bloquéase despois de 1 minuto de inactividade}other{Para manter a salvo os teus contrasinais, o xestor de contrasinais de Google bloquéase despois de {NUM_MINS} minutos de inactividade}}</translation>
 <translation id="6909422577741440844">Queres recibir o que está compartindo este dispositivo?</translation>
@@ -7246,6 +7233,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7392118418926456391">Erro na análise antivirus</translation>
 <translation id="7392915005464253525">R&amp;eabrir a ventá pechada</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Copiouse 1 elemento}other{Copiáronse {COUNT} elementos}}</translation>
+<translation id="7393435859300249877">Recibirás unha notificación se falas co micrófono silenciado ao usar determinadas aplicacións (como as de chat de vídeo, por exemplo). O audio non sairá do dispositivo.</translation>
 <translation id="7395774987022469191">Pantalla completa</translation>
 <translation id="7396017167185131589">Os cartafoles compartidos aparecerán aquí</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> empezará a executarse cando se inicie o sistema e seguirá executándose en segundo plano aínda que peches todas as demais ventás de <ph name="PRODUCT_NAME" />.</translation>
@@ -8131,7 +8119,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8138997515734480534">Estado de <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">Ficheiros de Google Drive</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" /> e <ph name="SECOND_DEVICE" /></translation>
-<translation id="8141260936970642964">Permite que as aplicacións, os sitios web e o fuso horario do sistema usen a localización determinada polo servizo de localización de Google. Se o acceso á localización está desactivado, a túa localización podería seguir véndose a través do teu enderezo IP.</translation>
 <translation id="8141418916163800697">Podes configurar máis opcións na configuración da función O meu teléfono</translation>
 <translation id="8141584439523427891">Abrindo nun navegador alternativo</translation>
 <translation id="8141725884565838206">Xestionar os teus contrasinais</translation>
@@ -8371,6 +8358,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8345848587667658367">Xa podes acceder ás aplicacións, ás notificacións, ao contido multimedia e ás fotos recentes do teu teléfono</translation>
 <translation id="8347227221149377169">Traballos de impresión</translation>
 <translation id="834785183489258869">Co modo de incógnito activado, os sitios web non poden utilizar cookies para ver a túa actividade de navegación en distintos sitios (por exemplo, para personalizar os anuncios). As funcións dalgúns sitios poden deixar de funcionar.</translation>
+<translation id="8349826889576450703">menú de aplicacións</translation>
 <translation id="8350789879725387295">Ferramentas do lapis óptico na base</translation>
 <translation id="8351316842353540018">Mostrar sempre as opcións de accesibilidade</translation>
 <translation id="8351419472474436977">Esta extensión asumiu o control da túa configuración de proxy, o que significa que pode cambiar, anular ou espiar todo o que fagas en liña. Se non estás seguro de por que se produciu este cambio, é probable que non che interese conservalo.</translation>

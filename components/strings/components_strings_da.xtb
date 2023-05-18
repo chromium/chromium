@@ -2971,7 +2971,6 @@ Yderligere oplysninger:
 <translation id="8217240300496046857">Websites kan ikke bruge cookies, der sporer din aktivitet på nettet. Funktioner på visse websites virker muligvis ikke.</translation>
 <translation id="8217748145574471584">HR</translation>
 <translation id="8218327578424803826">Tildelt placering:</translation>
-<translation id="8225771182978767009">Den person, der har konfigureret denne computer, har valgt at blokere dette website.</translation>
 <translation id="8228419419708659934">Tosidet visning</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -3084,7 +3083,6 @@ Yderligere oplysninger:
 <translation id="8474910779563686872">Vis udvikleroplysninger</translation>
 <translation id="8479754468255770962">Hæftning nederst til venstre</translation>
 <translation id="8483229036294884935">Denne adresse slettes fra din Google-konto, <ph name="ACCOUNT" /></translation>
-<translation id="8483780878231876732">Hvis du vil bruge kort fra din Google-konto, skal du logge ind i Chrome</translation>
 <translation id="8488350697529856933">Gælder for</translation>
 <translation id="8490137692873530638">Stabler 10</translation>
 <translation id="8493948351860045254">Frigør plads</translation>
@@ -3301,6 +3299,7 @@ Yderligere oplysninger:
 <translation id="9048662076076074925">24 x 36 tommer</translation>
 <translation id="9049981332609050619">Du har forsøgt at nå <ph name="DOMAIN" />, men serveren præsenterede et ugyldigt certifikat.</translation>
 <translation id="9050666287014529139">Adgangssætning</translation>
+<translation id="9053840549256861041">Vi lancerer en ny privatlivsfunktion til annoncer ved navn annoncemåling. Chrome deler kun meget begrænsede oplysninger mellem websites, f.eks. hvornår du fik vist en annonce, for at hjælpe websites med at måle annonceeffektiviteten.</translation>
 <translation id="9056953843249698117">Shop</translation>
 <translation id="9062620674789239642">Den kan være blevet flyttet, redigeret eller slettet.</translation>
 <translation id="9063398205799684336">Konvolut Kaku 2</translation>

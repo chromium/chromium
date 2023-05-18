@@ -64,6 +64,7 @@
 <translation id="1476467821656042872">Ο τομέας <ph name="MANAGER" /> διαχειρίζεται αυτήν τη συσκευή και μπορεί να έχει τη δυνατότητα να παρακολουθεί τη δραστηριότητά σας.</translation>
 <translation id="1478594628797167447">Σαρωτής</translation>
 <translation id="1483493594462132177">Αποστολή</translation>
+<translation id="1488850966314959671">Δεν είναι δυνατή η σύνδεση σε αυτό το δίκτυο με τη χρήση ενεργοποιημένων προσαρμοσμένων APN. Επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας για περισσότερες πληροφορίες.</translation>
 <translation id="1491076385728777984">Ενημέρωση υλικολογισμικού στη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">αύξηση έντασης ήχου</translation>
 <translation id="1499900233129743732">Ο τομέας <ph name="MANAGER" /> διαχειρίζεται αυτόν τον χρήστη και ενδέχεται να διαχειρίζεται απομακρυσμένα τις ρυθμίσεις και να παρακολουθεί τη δραστηριότητα του χρήστη.</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">Ορατότητα</translation>
 <translation id="1672499492233627739">Ροή βίντεο webcam</translation>
 <translation id="1676557873873341166">Λήψη βίντεο</translation>
+<translation id="1684279041537802716">Χρώμα έμφασης</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Παρουσία επίλυσης DNS</translation>
 <translation id="1708602061922134366">Μπλε Google</translation>
@@ -562,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Επανάληψη σάρωσης</translation>
 <translation id="5583640892426849032">Πλήκτρο Backspace</translation>
+<translation id="5584044598279886848">Δεν είναι δυνατή η απενεργοποίηση ή η κατάργηση αυτού του APN. Βεβαιωθείτε ότι τα ενεργοποιημένα APN επισύναψης έχουν απενεργοποιηθεί ή καταργηθεί.</translation>
 <translation id="5600027863942488546">Το πλήκτρο <ph name="KEY_NAME" /> ελέγχθηκε</translation>
 <translation id="5620281292257375798">Εσωτερική χρήση μόνο</translation>
 <translation id="5649768706273821470">Ακρόαση</translation>
@@ -1011,6 +1014,7 @@
 <translation id="9173638680043580060">Απομένει λιγότερο από ένα λεπτό</translation>
 <translation id="917720651393141712">Δοκιμή</translation>
 <translation id="9188992814426075118">Μπορεί να γίνει αυτόματη αντιστοίχιση του πληκτρολογίου με την ταπετσαρία σας</translation>
+<translation id="9189000703457422362">Δεν είναι δυνατή η σύνδεση σε αυτό το δίκτυο με χρήση APN που εντοπίζονται αυτόματα. Επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας για περισσότερες πληροφορίες.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Δεν είναι δυνατή η επικοινωνία με την πύλη από εφαρμογές Android.</translation>
 <translation id="9211490828691860325">Όλα τα γραφεία</translation>

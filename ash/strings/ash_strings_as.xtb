@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">সোঁ</translation>
 <translation id="1351937230027495976">মেনু সংকোচন কৰক</translation>
 <translation id="1360220746312242196">এটা পৃষ্ঠা সন্ধান কৰাৰ সময়ত সন্ধানৰ বাবে মিল থকা পূৰ্বৱৰ্তীটোলৈ যাওক</translation>
+<translation id="1360788414852622716">প্ৰ’ফাইল অক্ষম কৰি থকা হৈছে। এই কামত কেইমিনিটমান সময় লাগিব পাৰে।</translation>
 <translation id="1364382257761975320">আপোনাৰ Chromebook আনলক কৰিবলৈ, নিজৰ ফিংগাৰপ্ৰিণ্ট ব্যৱহাৰ কৰক</translation>
 <translation id="1365866993922957110">স্বয়ংক্ৰিয় আপডে’ট লাভ কৰক</translation>
 <translation id="1372545819342940910">পাছলৈ ডেস্ক ছেভ কৰক</translation>
@@ -545,6 +546,7 @@
 <translation id="3510164367642747937">মাউছৰ কাৰ্ছৰ হাইলাইট কৰক</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" />এ একাউণ্ট পৰিচালনা কৰে</translation>
 <translation id="352245152354538528">{0,plural, =1{১ মিনিটৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}one{# মিনিটৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}other{# মিনিটৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}}</translation>
+<translation id="3522979239100719575">উপলব্ধ প্ৰ’ফাইল বিচাৰি থকা হৈছে। এই কামত কেইমিনিটমান সময় লাগিব পাৰে।</translation>
 <translation id="3526440770046466733">নতুন টেবত লিংক খোলক আৰু বৰ্তমানৰ টেবটোত থাকক</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> টা ডিভাইচৰ সৈতে সংযুক্ত হৈ আছে</translation>
 <translation id="3533126039236445965">শ্বেল্ফত থকা এপ্‌</translation>
@@ -1557,6 +1559,7 @@
 <translation id="8083540854303889870">পাছৰ বাবে ছেভ কৰি থোৱা</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" />ত আৰম্ভ হ’ব</translation>
 <translation id="8091387634532529612">স্বয়ংক্ৰিয় আপডে’ট</translation>
+<translation id="8092380135549145188">স্ক্ৰ’লৰ নিয়ন্ত্ৰণ</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> লৈ স্ক্ৰীন কাষ্ট কৰা বন্ধ কৰক</translation>
 <translation id="810637681351706236">শ্বেল্ফৰ পৰা এপ্‌ আনপিন কৰক</translation>
 <translation id="8113423164597455979">অন, সকলো এপতে</translation>

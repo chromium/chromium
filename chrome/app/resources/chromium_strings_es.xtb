@@ -94,6 +94,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="3179665906251668410">Abrir enlace en una ventana de incó&amp;gnito de Chromium</translation>
 <translation id="3185330573522821672">Personaliza tu nuevo perfil de Chromium.</translation>
 <translation id="3190315855212034486">¡Vaya! Se ha producido un fallo en Chromium. ¿Quieres reiniciar el navegador ahora?</translation>
+<translation id="3255926992597692024">Chromium está intentando modificar la configuración para completar los métodos de pago.</translation>
 <translation id="3258596308407688501">Chromium no puede leer el directorio de datos ni escribir en él:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -199,6 +200,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5653831366781983928">Reinicia Chromium ahora</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Mostrar Chromium en este idioma</translation>
+<translation id="585620188971323280">modificar la configuración para completar los métodos de pago.</translation>
 <translation id="5862307444128926510">Te damos la bienvenida a Chromium</translation>
 <translation id="5883558403894052917">Chromium ha detectado que estos elementos contienen malware:</translation>
 <translation id="5895138241574237353">Reiniciar</translation>

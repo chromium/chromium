@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">Надесно</translation>
 <translation id="1351937230027495976">Собери го менито</translation>
 <translation id="1360220746312242196">При пребарувањето страница, оди на претходното совпаѓање за пребарување</translation>
+<translation id="1360788414852622716">Профилот се оневозможува. Ова може да трае неколку минути.</translation>
 <translation id="1364382257761975320">За да го отклучите вашиот Chromebook, користете го отпечатокот</translation>
 <translation id="1365866993922957110">Добивајте автоматски ажурирања</translation>
 <translation id="1372545819342940910">Зачувај ја работната површина за подоцна</translation>
@@ -545,6 +546,7 @@
 <translation id="3510164367642747937">Нагласи го покажувачот на глувчето</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> управува со сметката</translation>
 <translation id="352245152354538528">{0,plural, =1{Ажурирајте го уредот во рок од 1 минута}one{Ажурирајте го уредот во рок од # минута}other{Ажурирајте го уредот во рок од # минути}}</translation>
+<translation id="3522979239100719575">Се бараат достапни профили. Ова може да трае неколку минути.</translation>
 <translation id="3526440770046466733">Отвора линк во нова картичка и останува во тековната картичка</translation>
 <translation id="353086728817903341">Поврзано со <ph name="NUM_DEVICES" /> уреди</translation>
 <translation id="3533126039236445965">Апликации на полица</translation>
@@ -1558,6 +1560,7 @@
 <translation id="8083540854303889870">Зачувани за подоцна</translation>
 <translation id="8091153018031979607">Започнува во <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Автоматски ажурирања</translation>
+<translation id="8092380135549145188">Контроли за лизгање</translation>
 <translation id="8098591350844501178">Престани со емитување на екранот на <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Откачете апликација од полицата</translation>
 <translation id="8113423164597455979">Вкл. за сите апл.</translation>

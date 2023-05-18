@@ -94,6 +94,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1351937230027495976">Menü minimieren</translation>
 <translation id="1360220746312242196">Bei der Suche auf einer Seite zur vorherigen Übereinstimmung für die Suche gehen</translation>
+<translation id="1360788414852622716">Das Profil wird deaktiviert. Das kann einige Minuten dauern.</translation>
 <translation id="1364382257761975320">Zum Entsperren des Chromebooks Fingerabdruck verwenden</translation>
 <translation id="1365866993922957110">Automatische Updates erhalten</translation>
 <translation id="1372545819342940910">Desktop für später speichern</translation>
@@ -539,6 +540,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3510164367642747937">Cursor hervorheben</translation>
 <translation id="3513798432020909783">Konto verwaltet von <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Gerät innerhalb von 1 Minute neu starten}other{Gerät innerhalb von # Minuten neu starten}}</translation>
+<translation id="3522979239100719575">Es wird nach verfügbaren Profilen gesucht. Das kann einige Minuten dauern.</translation>
 <translation id="3526440770046466733">Link auf neuem Tab öffnen und auf aktuellem Tab bleiben</translation>
 <translation id="353086728817903341">Mit <ph name="NUM_DEVICES" /> Geräten verbunden</translation>
 <translation id="3533126039236445965">Apps in Ablage</translation>
@@ -1539,6 +1541,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8083540854303889870">Für später gespeichert</translation>
 <translation id="8091153018031979607">Beginnt um <ph name="START_TIME" /> Uhr <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatische Updates</translation>
+<translation id="8092380135549145188">Einstellungen für Scrollen</translation>
 <translation id="8098591350844501178">Streamen von Bildschirm an <ph name="RECEIVER_NAME" /> beenden</translation>
 <translation id="810637681351706236">App von Ablage loslösen</translation>
 <translation id="8113423164597455979">An: alle Apps</translation>

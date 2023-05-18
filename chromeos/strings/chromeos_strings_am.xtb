@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> ይህን መሣሪያ ያስተዳድራል እና እንቅስቃሴዎን ሊከታተለው ይችላል።</translation>
 <translation id="1478594628797167447">ቃኚ</translation>
 <translation id="1483493594462132177">ላክ</translation>
+<translation id="1488850966314959671">ማናቸውንም የነቁ ብጁ ኤፒኤኖች በመጠቀም ከዚህ አውታረ መረብ ጋር መገናኘት አይቻልም። ለተጨማሪ መረጃ የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢዎን ያነጋግሩ።</translation>
 <translation id="1491076385728777984">በ<ph name="DEVICE_NAME" /> ላይ ፊርምዌርን በማዘመን ላይ</translation>
 <translation id="1499041187027566160">ድምፅ ጨምር</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> እኚህን ተጠቃሚ ያስተዳድራል ኣና በርቀት ቅንብሮችን ሊያስተዳድር እና የተጠቃሚ እንቅስቃሴን ሊቆጣጠር ይችላል።</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">የታይነት ደረጃ</translation>
 <translation id="1672499492233627739">የድር ካሜራ ቪዲዮ ምግብ</translation>
 <translation id="1676557873873341166">ቪዲዮን በመቅረጽ ላይ</translation>
+<translation id="1684279041537802716">የአጽንዖት ቀለም</translation>
 <translation id="1703835215927279855">ደብዳቤ</translation>
 <translation id="1706391837335750954">የዲኤንኤስ መፍትሔ ሰጪ አለ</translation>
 <translation id="1708602061922134366">የGoogle ሰማያዊ</translation>
@@ -562,6 +564,7 @@
 <translation id="5578477003638479617">ዩኤምቲኤስ</translation>
 <translation id="5578519639599103840">ዳግም ቃኝ</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">ይህን ኤፒኤን ማሰናከል ወይም ማስወገድ አልተቻለም። የነቁ የተያያዙ ኤፒኤኖች መሰናከላቸውን እና መወገዳቸውን ያረጋግጡ።</translation>
 <translation id="5600027863942488546">የ<ph name="KEY_NAME" /> ቁልፍ ተሞክሯል</translation>
 <translation id="5620281292257375798">ውስጣዊ ብቻ</translation>
 <translation id="5649768706273821470">አዳምጥ</translation>
@@ -1011,6 +1014,7 @@
 <translation id="9173638680043580060">ከአንድ ደቂቃ በታች ይቀራል</translation>
 <translation id="917720651393141712">ሙከራ</translation>
 <translation id="9188992814426075118">ቁልፍ ሰሌዳዎ ከእርስዎ ልጣፍ ጋር በራስ-ሰር መመሳሰል ይችላል</translation>
+<translation id="9189000703457422362">በራስ-ሰር የተገኙ ኤፒኤኖችን በመጠቀም ከዚህ አውታረ መረብ ጋር መገናኘት አይቻልም። ለተጨማሪ መረጃ የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢዎን ያነጋግሩ።</translation>
 <translation id="9193744392140377127">ኤፒኤን*</translation>
 <translation id="9204237731135241582">ከAndroid መተግበሪያዎች አግባቢ ፍኖትን ማነጋገር አልተቻለም</translation>
 <translation id="9211490828691860325">ሁሉም ዴስኮች</translation>

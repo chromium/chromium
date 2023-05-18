@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">જમણે</translation>
 <translation id="1351937230027495976">મેનૂ સંકુચિત કરો</translation>
 <translation id="1360220746312242196">પેજમાં શોધતી વખતે, શોધ માટે પાછલા મેળ પર જાઓ</translation>
+<translation id="1360788414852622716">પ્રોફાઇલ બંધ કરી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="1364382257761975320">તમારી Chromebook અનલૉક કરવા માટે, તમારી ફિંગરપ્રિન્ટનો ઉપયોગ કરો</translation>
 <translation id="1365866993922957110">ઑટોમૅટિક અપડેટ મેળવો</translation>
 <translation id="1372545819342940910">પછીથી ઉપયોગ માટે ડૅસ્ક સાચવો</translation>
@@ -545,6 +546,7 @@
 <translation id="3510164367642747937">માઉસ કર્સરને હાઇલાઇટ કરો</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> દ્વારા મેનેજ કરાતું એકાઉન્ટ</translation>
 <translation id="352245152354538528">{0,plural, =1{1 મિનિટની અંદર ડિવાઇસ અપડેટ કરો}one{# મિનિટની અંદર ડિવાઇસ અપડેટ કરો}other{# મિનિટની અંદર ડિવાઇસ અપડેટ કરો}}</translation>
+<translation id="3522979239100719575">ઉપલબ્ધ પ્રોફાઇલ શોધી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="3526440770046466733">લિંકને નવા ટૅબમાં ખોલો અને વર્તમાન ટૅબમાં રહો</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> ડિવાઇસ સાથે કનેક્ટેડ</translation>
 <translation id="3533126039236445965">શેલ્ફમાં ઉપલબ્ધ ઍપ</translation>
@@ -1557,6 +1559,7 @@
 <translation id="8083540854303889870">પછીના માટે સાચવેલી</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> વાગ્યે શરૂ થશે <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">ઑટોમૅટિક અપડેટ</translation>
+<translation id="8092380135549145188">સ્ક્રોલના નિયંત્રણો</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> પર સ્ક્રીન કાસ્ટ કરવાનું રોકો</translation>
 <translation id="810637681351706236">શેલ્ફ પરથી ઍપને અનપિન કરો</translation>
 <translation id="8113423164597455979">ચાલુ, બધી ઍપ</translation>

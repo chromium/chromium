@@ -361,7 +361,6 @@
 <translation id="1303101771013849280">‏קובץ HTML לסימניות</translation>
 <translation id="1303671224831497365">‏לא נמצאו התקני Bluetooth</translation>
 <translation id="130491383855577612">‏החלפת הקבצים והאפליקציות של Linux הושלמה בהצלחה</translation>
-<translation id="1306390193749326011">נפסיק להציג לך <ph name="MODULE_NAME" /> בדף הזה.</translation>
 <translation id="1306518237408758433">פתיחה של <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="1306606229401759371">שינוי הגדרות</translation>
 <translation id="1307165550267142340">קוד האימות שלך נוצר</translation>
@@ -570,7 +569,6 @@
 <translation id="1493892686965953381">בהמתנה ל-<ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">אתרים יכולים לבקש הרשאה להשתמש בגופנים שמותקנים במכשיר</translation>
 <translation id="1494429729245089920">המכונה הווירטואלית '<ph name="VM_NAME" />' קיימת, אבל נראה שהיא לא מכונה וירטואלית תקינה מסוג <ph name="APP_NAME" />. צריך לפנות לאדמין.</translation>
-<translation id="1495201326198374770">‏שימוש במקשי הפונקציות בתור המקשים בשורה העליונה ב-Chromebook</translation>
 <translation id="1495677929897281669">חזרה לכרטיסייה</translation>
 <translation id="1498498210836053409">השבתת ההקשה ביד אחת במהלך עריכת טקסט (הקשה חכמה ביד אחת)</translation>
 <translation id="1500297251995790841">מכשיר לא ידוע [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -695,7 +693,6 @@
 <translation id="1596286373007273895">זמין</translation>
 <translation id="1596709061955594992">‏ה-Bluetooth כבוי. צריך להפעיל את ה-Bluetooth כדי להציג את המכשירים הזמינים.</translation>
 <translation id="1596780725094407793">– כולל תת-דומיינים</translation>
-<translation id="1597852076552089763">אפשרויות לסימניות</translation>
 <translation id="1598163867407640634">יש לך אפשרות להשתמש באתר <ph name="SITE_ETLD_PLUS_ONE" /> עם החשבון <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">מנהל המערכת השבית את העדכונים.</translation>
 <translation id="1600857548979126453">להיכנס לניפוי הבאגים העורפי של הדף</translation>
@@ -1142,7 +1139,6 @@
 <translation id="1956390763342388273">הפעולה הזו תעלה את כל הקבצים מ-"<ph name="FOLDER_PATH" />". יש לעשות זאת רק אם סומכים על האתר.</translation>
 <translation id="1962233722219655970">‏דף זה משתמש ביישום Native Client שאינו פועל במחשב שלך.</translation>
 <translation id="1963976881984600709">הגנה רגילה</translation>
-<translation id="1965624977906726414">אין הרשאות מיוחדות.</translation>
 <translation id="1966649499058910679">הדגשה של כל מילה בזמן שהיא נאמרת</translation>
 <translation id="1967970931040389207">הפעלת הנקודה לשיתוף אינטרנט</translation>
 <translation id="1969011864782743497">‏<ph name="DEVICE_NAME" />‏ (USB)</translation>
@@ -1316,7 +1312,6 @@
 <translation id="2105809836724866556">ההסתרה של <ph name="MODULE_TITLE" /> בוצעה</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{מספר טלפון}one{# מספרי טלפון}two{# מספרי טלפון}other{# מספרי טלפון}}</translation>
 <translation id="2110941575868943054">‏יש הרשאה לאתר מכשירי Bluetooth</translation>
-<translation id="2111238878637848860">צריך ללחוץ לחיצה ארוכה על מקש מרכז האפליקציות כדי לעבור בין מקשי הפונקציות</translation>
 <translation id="211144231511833662">ניקוי הסוגים</translation>
 <translation id="2111670510994270194">כרטיסייה חדשה מצד ימין</translation>
 <translation id="2112554630428445878">שלום, <ph name="USERNAME" /></translation>
@@ -2905,10 +2900,8 @@
 <translation id="3497560059572256875">שיתוף הדודל</translation>
 <translation id="3500417806337761827">‏אירעה שגיאה בטעינת השיתוף. כבר נטענו יותר מדי שיתופי SMB.</translation>
 <translation id="3503995387997205657">יש לך אפשרות לשחזר את האפליקציות הקודמות שבהן השתמשת</translation>
-<translation id="3505030558724226696">ביטול גישה למכשירים</translation>
 <translation id="3505100368357440862">הצעות לקניות</translation>
 <translation id="3507132249039706973">מופעלת הגנה רגילה</translation>
-<translation id="3507421388498836150">הרשאות נוכחיות של "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3507888235492474624">‏סריקה חוזרת לאיתור מכשירי Bluetooth</translation>
 <translation id="3508492320654304609">לא ניתן למחוק את פרטי הכניסה שלך</translation>
 <translation id="3508920295779105875">יש לבחור תיקייה אחרת...</translation>
@@ -3073,7 +3066,6 @@
 <translation id="3653887973853407813">‏אי אפשר להשתמש בתוסף הזה. ההגדרה 'הרשאות לאתרים, אפליקציות ותוספים' הושבתה ב-Chrome על ידי הורה או אפוטרופוס.</translation>
 <translation id="3653999333232393305">להמשיך לאפשר ל-<ph name="HOST" /> לגשת למיקרופון</translation>
 <translation id="3654045516529121250">קריאת הגדרות הנגישות שלך</translation>
-<translation id="3655712721956801464">{NUM_FILES,plural, =1{גישה קבועה אל קובץ אחד.}one{גישה קבועה אל # קבצים.}two{גישה קבועה אל # קבצים.}other{גישה קבועה אל # קבצים.}}</translation>
 <translation id="3658871634334445293">‏האצה של TrackPoint</translation>
 <translation id="3659550105763988702">עליך להשתמש במפתח הגישה שלך עבור <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">הזנת קוד גישה שגוי יותר מדי פעמים. עליך לנסות שוב מאוחר יותר</translation>
@@ -3378,7 +3370,6 @@
 <translation id="389901847090970821">בחירת מקלדת</translation>
 <translation id="3900966090527141178">ייצוא סיסמאות</translation>
 <translation id="3902789559055749153">עליך לבחור איך ברצונך ליצור מפתח גישה עבור <ph name="APP_NAME" /></translation>
-<translation id="3903158219409898205">‏שימוש במקש מרכז האפליקציות לשינוי ההתנהגות של המקשים בשורה העליונה ב-Chromebook</translation>
 <translation id="3903187154317825986">מקלדת מובנית</translation>
 <translation id="3904326018476041253">שירותי מיקום</translation>
 <translation id="3905761538810670789">תיקון האפליקציה</translation>
@@ -3789,7 +3780,6 @@
 <translation id="4279129444466079448">‏ניתן להתקין עד <ph name="PROFILE_LIMIT" /> פרופילים של eSIM במכשיר הזה. כדי להוסיף פרופיל נוסף, קודם צריך להסיר פרופיל קיים.</translation>
 <translation id="4280325816108262082">אם המכשיר מושבת או שאינו בשימוש, הוא ינותק באופן אוטומטי</translation>
 <translation id="4281844954008187215">תנאי שירות</translation>
-<translation id="428200245206114206">‏מעכשיו, ההתנהגות של מקשי F תהיה זהה לזו של המקשים בשורה העליונה ב-Chromebook.</translation>
 <translation id="4282196459431406533">‏Smart Lock מופעל</translation>
 <translation id="4284903252249997120">‏הקראה וקורא המסך ChromeVox</translation>
 <translation id="4285418559658561636">עדכון סיסמה</translation>
@@ -5095,7 +5085,6 @@
 <translation id="5476016146231427848">‏צריך להפעיל מחדש את Chromebook כדי להשתמש ב-Steam</translation>
 <translation id="5481273127572794904">לא מורשים להוריד מספר קבצים באופן אוטומטי</translation>
 <translation id="5481941284378890518">הוספת מדפסות קרובות</translation>
-<translation id="5483785310822538350">ביטול גישה לקבצים ולמכשירים</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{לפי הדרישה של <ph name="MANAGER" />, עליך לגבות את הנתונים שלך ולהחזיר את מכשיר ה-<ph name="DEVICE_TYPE" /> היום. <ph name="LINK_BEGIN" />לפרטים<ph name="LINK_END" />}one{לפי הדרישה של <ph name="MANAGER" />, עליך לגבות את הנתונים שלך ולהחזיר את מכשיר ה-<ph name="DEVICE_TYPE" /> בתוך {NUM_DAYS} ימים. <ph name="LINK_BEGIN" />לפרטים<ph name="LINK_END" />}two{לפי הדרישה של <ph name="MANAGER" />, עליך לגבות את הנתונים שלך ולהחזיר את מכשיר ה-<ph name="DEVICE_TYPE" /> בתוך יומיים ({NUM_DAYS}). <ph name="LINK_BEGIN" />לפרטים<ph name="LINK_END" />}other{לפי הדרישה של <ph name="MANAGER" />, עליך לגבות את הנתונים שלך ולהחזיר את מכשיר ה-<ph name="DEVICE_TYPE" /> בתוך {NUM_DAYS} ימים. <ph name="LINK_BEGIN" />לפרטים<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">התקנת האפליקציה</translation>
 <translation id="5485754497697573575">שחזור כל הכרטיסיות</translation>
@@ -5985,6 +5974,7 @@
 <translation id="6266532094411434237">מתבצעת התחברות אל <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">יש לבחור אישור כדי לאמת את עצמך מול <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">פתיחה באמצעות <ph name="APP" /></translation>
+<translation id="6270309713620950855">השתקת הנדנוד</translation>
 <translation id="6270391203985052864">אתרים יכולים לבקש לשלוח התראות</translation>
 <translation id="6270770586500173387">שליחת <ph name="BEGIN_LINK1" />פרטי מערכת ויישומים<ph name="END_LINK1" />, כמו גם <ph name="BEGIN_LINK2" />מדדים<ph name="END_LINK2" /></translation>
 <translation id="6270896861225278704">כרטיס התהליכים</translation>
@@ -6318,6 +6308,7 @@
 <translation id="657866106756413002">תמונת מצב של תקינות הרשת</translation>
 <translation id="6579369886355986318">הצגת כל &amp;הפקדים</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - תוכן שולחן העבודה משותף</translation>
+<translation id="6580060371127789208">הושלמו: %<ph name="PERCENTAGE_COMPLETE" /></translation>
 <translation id="6580203076670148210">מהירות הסריקה</translation>
 <translation id="6582080224869403177">יש לאתחל את <ph name="DEVICE_TYPE" /> כדי לשדרג את האבטחה.</translation>
 <translation id="6582274660680936615">גלישה כאורח</translation>
@@ -6703,7 +6694,6 @@
 <translation id="6903590427234129279">פתיחת כל החלונות (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">הפעלת הסנכרון</translation>
 <translation id="6903916726032521638">חיפוש של <ph name="QUERY_CLUSTER_NAME" /></translation>
-<translation id="6904344821472985372">ביטול גישה לקבצים</translation>
 <translation id="6904655473976120856">כדי לצאת, צריך ללחוץ על לחצן האפליקציה</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{‏כדי להגן על הסיסמאות, מנהל הסיסמאות של Google ננעל לאחר דקה אחת של חוסר פעילות}one{‏כדי להגן על הסיסמאות, מנהל הסיסמאות של Google ננעל לאחר {NUM_MINS} דקות של חוסר פעילות}two{‏כדי להגן על הסיסמאות, מנהל הסיסמאות של Google ננעל לאחר {NUM_MINS} דקות של חוסר פעילות}other{‏כדי להגן על הסיסמאות, מנהל הסיסמאות של Google ננעל לאחר {NUM_MINS} דקות של חוסר פעילות}}</translation>
 <translation id="6909422577741440844">לקבל שיתוף מהמכשיר הזה?</translation>
@@ -6944,6 +6934,7 @@
 <translation id="7114054701490058191">הסיסמאות לא תואמות</translation>
 <translation id="7114648273807173152">‏כדי להשתמש ב-Smart Lock על מנת להיכנס אל חשבון Google צריך לעבור אל 'הגדרות' &gt; 'מכשירים מחוברים' &gt; 'הטלפון שלך' &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">אין אנשי קשר זמינים</translation>
+<translation id="7116554090938189816">‏פג התוקף של אישור ה-SSL של המדפסת. צריך להפעיל את המדפסת מחדש ולנסות שוב.</translation>
 <translation id="7117228822971127758">אפשר לנסות שוב מאוחר יותר</translation>
 <translation id="711840821796638741">הצגת סימניות מנוהלות</translation>
 <translation id="711985611146095797">‏הדף הזה מאפשר לך לנהל את חשבונות Google שאליהם נכנסת. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
@@ -7229,6 +7220,7 @@
 <translation id="7392118418926456391">סריקת וירוסים נכשלה</translation>
 <translation id="7392915005464253525">פ&amp;תיחה מחדש של חלון שנסגר</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{פריט אחד הועתק}one{הועתקו {COUNT} פריטים}two{הועתקו {COUNT} פריטים}other{הועתקו {COUNT} פריטים}}</translation>
+<translation id="7393435859300249877">נשלחת התראה אם מדברים כשהמיקרופון מושתק כשמשתמשים באפליקציות מסוימות, כמו אפליקציות של וידאו צ'אט. האודיו אף פעם לא נשלח מהמכשיר.</translation>
 <translation id="7395774987022469191">כל המסך</translation>
 <translation id="7396017167185131589">התיקיות המשותפות יופיעו כאן</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> יופעל עם אתחול המערכת וימשיך לפעול ברקע גם כשסוגרים את כל החלונות האחרים של <ph name="PRODUCT_NAME" />.</translation>
@@ -8111,7 +8103,6 @@
 <translation id="8138997515734480534">הסטטוס של <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">‏קבצים ב-Google Drive</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
-<translation id="8141260936970642964">‏אישור השימוש במיקום שנקבע על ידי שירות המיקום של Google באפליקציות, באתרים ובאזור הזמן של המערכת. אם הגישה למיקום מושבתת, יכול להיות שהמיקום עדיין ידוע לפי כתובת ה-IP.</translation>
 <translation id="8141418916163800697">‏אפשר להגדיר תכונות נוספות בהגדרות Phone Hub</translation>
 <translation id="8141584439523427891">נפתח עכשיו בדפדפן חלופי</translation>
 <translation id="8141725884565838206">ניהול הסיסמאות שלך</translation>
@@ -8351,6 +8342,7 @@
 <translation id="8345848587667658367">עכשיו יש לך אפשרות לראות את התמונות, המדיה, ההתראות והאפליקציות האחרונות שבטלפון</translation>
 <translation id="8347227221149377169">משימות הדפסה</translation>
 <translation id="834785183489258869">‏במצב אנונימי, אתרים לא יכולים להשתמש בקובצי cookie כדי לקבל מידע על פעילות הגלישה שלך באתרים השונים, למשל לצורך הצגת מודעות בהתאמה אישית. ייתכן שתכונות באתרים מסוימים לא יפעלו.</translation>
+<translation id="8349826889576450703">מרכז האפליקציות</translation>
 <translation id="8350789879725387295">כלי סטיילוס באזור המוצמד</translation>
 <translation id="8351316842353540018">להציג תמיד אפשרויות נגישוּת</translation>
 <translation id="8351419472474436977">‏תוסף זה השתלט על הגדרות שרת ה-Proxy שלך. משמעות הדבר היא שהוא יכול לשנות, לקטוע או לצותת לכל פעולה שתבצע באינטרנט. אם אינך יודע בוודאות מדוע שינוי זה התרחש, סביר להניח שזהו שינוי לא רצוי.</translation>

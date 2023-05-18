@@ -250,6 +250,7 @@
 <translation id="5756509061973259733">此设备上已有一份使用该帐号创建的 Chrome 个人资料</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">无法启动 Chrome。请重试。</translation>
+<translation id="585620188971323280">修改用于填入付款方式的设置。</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - 网络登录</translation>
 <translation id="5924017743176219022">正在连接到互联网…</translation>
@@ -387,6 +388,7 @@
 <translation id="8516431725144212809">Chrome 推测出的您的兴趣</translation>
 <translation id="8521348052903287641">Google Chrome 开发者版的入站规则，允许 mDNS 流量。</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8544217240017914508">Google Chrome 正在尝试修改用于填入付款方式的设置。</translation>
 <translation id="8550334526674375523">此工作资料与您的个人资料是完全分开的。</translation>
 <translation id="8556340503434111824">Google Chrome 浏览器现已推出速度更快的新版本。</translation>
 <translation id="8571790202382503603">通过使用多份 Chrome 个人资料，您可将自己的所有 Chrome 信息分门别类，从而更轻松地将工作和娱乐分开。</translation>

@@ -196,6 +196,7 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="2100273922101894616">Identifikohu automatikisht</translation>
 <translation id="2100314319871056947">Provo ta ndash tekstin në copëza më të vogla</translation>
 <translation id="2111511281910874386">Shko te faqja</translation>
+<translation id="2119609734654412418">Këtu do të gjesh faqeshënuesit e tu</translation>
 <translation id="2122601567107267586">Aplikacioni nuk mund të hapej</translation>
 <translation id="2132122640199389833">Hiq të gjitha pajisjet e lidhura</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> është mbyllur</translation>
@@ -598,6 +599,7 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="433213510553688132">Po ndjek...</translation>
 <translation id="4335835283689002019">Shfletimi i sigurt është joaktiv</translation>
 <translation id="4351244548802238354">Mbyll dialogun</translation>
+<translation id="4355272626458588338">Mund të kthehesh te një faqe që është e rëndësishme për ty duke shtuar një faqeshënues</translation>
 <translation id="4369735607080757018">Lloje të kufizuara të të dhënave ndahen mes sajteve për të matur performancën e reklamave të tyre, si p.sh. ora kur të është shfaqur reklama.</translation>
 <translation id="4378154925671717803">Telefoni</translation>
 <translation id="438319986296050901">Ndaj vetëm kartën</translation>
@@ -950,6 +952,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="6232535412751077445">Aktivizimi i funksionit "Mos gjurmo" do të thotë se në trafikun e shfletimit do të përfshihet një kërkesë. Çdo efekt varet nëse një sajt uebi i përgjigjet kërkesës dhe se si interpretohet kërkesa.
 
 Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të treguar reklama që nuk bazohen në sajtet e tjera të uebit që ke vizituar. Shumë sajte uebi do të mbledhin dhe do të përdorin përsëri të dhënat e tua të shfletimit - për shembull, për të përmirësuar sigurinë, për të ofruar përmbajtje, reklama dhe rekomandime, si dhe për të krijuar statistika raportimi.</translation>
+<translation id="6255794742848779505">Ne po ndryshojmë mënyrën se si ruhen fjalëkalimet në këtë pajisje</translation>
 <translation id="6264376385120300461">Shkarkoje gjithsesi</translation>
 <translation id="6277522088822131679">Pati një problem me printimin e faqes. Provo përsëri.</translation>
 <translation id="6277722725779679269">Veçoria "Monitoro çmimin" nuk mund të përditësohej</translation>

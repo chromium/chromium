@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351937230027495976">收起菜单</translation>
 <translation id="1360220746312242196">搜索网页时，转到上一个相符的搜索结果</translation>
+<translation id="1360788414852622716">正在停用配置文件。这可能需要几分钟的时间。</translation>
 <translation id="1364382257761975320">若要解锁 Chromebook，请使用指纹</translation>
 <translation id="1365866993922957110">获取自动更新</translation>
 <translation id="1372545819342940910">保存桌面以备后用</translation>
@@ -545,6 +546,7 @@
 <translation id="3510164367642747937">突出显示鼠标光标</translation>
 <translation id="3513798432020909783">该帐号由 <ph name="MANAGER_EMAIL" /> 管理</translation>
 <translation id="352245152354538528">{0,plural, =1{请在 1 分钟内更新此设备}other{请在 # 分钟内更新此设备}}</translation>
+<translation id="3522979239100719575">正在查找可用的配置文件。这可能需要几分钟的时间。</translation>
 <translation id="3526440770046466733">在新标签页中打开链接，同时留在当前标签页中</translation>
 <translation id="353086728817903341">已连接到 <ph name="NUM_DEVICES" /> 部设备</translation>
 <translation id="3533126039236445965">任务栏中的应用</translation>
@@ -1554,6 +1556,7 @@
 <translation id="8083540854303889870">已保存供日后使用</translation>
 <translation id="8091153018031979607">开始时间：<ph name="START_TIME" /><ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">自动更新</translation>
+<translation id="8092380135549145188">滚动控件</translation>
 <translation id="8098591350844501178">停止将屏幕投放到“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="810637681351706236">取消将应用固定到任务栏</translation>
 <translation id="8113423164597455979">开启，所有应用</translation>

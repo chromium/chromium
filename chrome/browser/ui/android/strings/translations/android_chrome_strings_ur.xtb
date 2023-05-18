@@ -575,6 +575,7 @@
 <translation id="4188221736490993796">‏Z سے A کے لحاظ سے ترتیب دیں</translation>
 <translation id="4195643157523330669">نئے ٹیب میں کھولیں</translation>
 <translation id="4196597275619698563">کارڈ تخلیق کریں</translation>
+<translation id="4197828496439691735">{NUM_TABS,plural, =1{اس آلہ پر 1 ٹیب}other{اس آلہ پر # ٹیبز}}</translation>
 <translation id="4198423547019359126">ڈاؤن لوڈ کیلئے کوئی مقام دستیاب نہیں ہے</translation>
 <translation id="4202218894997543208">آپ کے مسدود کردہ موضوعات</translation>
 <translation id="4214315110991671325">‏اگر آپ کوکیز کی اجازت دیتے ہیں تو Chrome پیشگی لوڈنگ کے لیے ان کا استعمال کر سکتا ہے۔</translation>
@@ -589,6 +590,7 @@
 <translation id="4262915912852657291">‏<ph name="BEGIN_BOLD" />کون سا ڈیٹا استعمال کیا جاتا ہے:<ph name="END_BOLD" /> آپ کی براؤزنگ کی سرگزشت، ان سائٹس کا ریکارڈ جو آپ اس آلے پر Chrome کا استعمال کر کے ملاحظہ کر چکے ہیں۔</translation>
 <translation id="4269820728363426813">لنک کا پتہ کاپی کریں</translation>
 <translation id="4283102315569707115">بطور ڈیفالٹ ڈیسک ٹاپ سائٹس کی درخواست کریں؟</translation>
+<translation id="4285846616383034558">کوکیز، کیش اور سائٹ کا دیگر ڈیٹا</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />Android کی ترتیبات میں اسکرین لاک کو آن کریں<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">نیا پوشیدگی ٹیب</translation>
 <translation id="4298388696830689168">لنک کردہ سائٹس</translation>
@@ -679,6 +681,7 @@
 <translation id="4763480195061959176">ویڈیو</translation>
 <translation id="4766313118839197559">پاس ورڈز اس آلہ پر پاس ورڈ مینیجر میں محفوظ کیے جاتے ہیں</translation>
 <translation id="4766678251456904326">اکاؤنٹ کو آلہ میں شامل کریں</translation>
+<translation id="4767947714785277816">‏ہم اشتہارات کی رازداری کی ایک نئی خصوصیت شروع کر رہے ہیں جسے اشتہار کی پیمائش کہتے ہیں۔ Chrome سائٹس اور ایپس کے درمیان صرف بہت محدود معلومات کا اشتراک کرتا ہے، جیسے کہ جب آپ کو کوئی اشتہار دکھایا گیا تھا، تاکہ اشتہارات کی کارکردگی کی پیمائش کرنے میں سائٹس کی مدد کی جا سکے۔</translation>
 <translation id="4769095993849849966">فائل کا نیا نام</translation>
 <translation id="4778653490315793244">دکھانے کے لیے ابھی تک کچھ نہیں ہے</translation>
 <translation id="4787736314074622408">کیا آپ <ph name="ITEM_TITLE" /> کو حذف کرنا چاہتے ہیں؟</translation>
@@ -914,6 +917,7 @@
 <translation id="6011308810877101166">تلاش کی تجاویز کو بہتر بنائیں</translation>
 <translation id="6026538407078977628">مکمل اسکرین پر پھیلائیں</translation>
 <translation id="6030719887161080597">اشتہار کی کارکردگی کی پیمائش کرنے کے لیے سائٹس کے ذریعے استعمال ہونے والی معلومات کا نظم کریں</translation>
+<translation id="6034146297924778597">آخری 15 منٹ کی سرگزشت حذف کر دی جائے گی:</translation>
 <translation id="6039379616847168523">اگلے ٹیب پر جائیں</translation>
 <translation id="6040143037577758943">بند کریں</translation>
 <translation id="604124094241169006">خود کار</translation>

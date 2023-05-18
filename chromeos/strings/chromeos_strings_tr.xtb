@@ -92,6 +92,7 @@
 <translation id="1669047024429367828">Görünürlük</translation>
 <translation id="1672499492233627739">Web kamerası video feed'i</translation>
 <translation id="1676557873873341166">Video çekiliyor</translation>
+<translation id="1684279041537802716">Vurgu rengi</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Çözümleyici Varlığı</translation>
 <translation id="1708602061922134366">Google mavisi</translation>
@@ -217,6 +218,7 @@
 <translation id="2638662041295312666">Oturum açma resmi</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> albümü seçildi</translation>
 <translation id="267442004702508783">yenile</translation>
+<translation id="268270014981824665">klavyeyi karart</translation>
 <translation id="2712812801627182647">TLS kimlik doğrulama anahtarı</translation>
 <translation id="2713444072780614174">Beyaz</translation>
 <translation id="2717139507051041123">Koyu renk modunu etkinleştir</translation>
@@ -224,6 +226,7 @@
 <translation id="2744221223678373668">Paylaşıldı</translation>
 <translation id="2751739896257479635">EAP Aşama 2 kimlik doğrulaması</translation>
 <translation id="2783010256799387990">BAŞARILI OLDU</translation>
+<translation id="2787435249130282949">klavye parlaklığını artır</translation>
 <translation id="2789486458103222910">Tamam</translation>
 <translation id="2805756323405976993">Uygulamalar</translation>
 <translation id="28232023175184696">İnternete bağlanamıyor. Tekrar denemek için tıklayın.</translation>
@@ -327,11 +330,13 @@
 <translation id="3749289110408117711">Dosya adı</translation>
 <translation id="3771294271822695279">Video Dosyaları</translation>
 <translation id="3784455785234192852">Kilitle</translation>
+<translation id="380097101658023925">rgb denetimleri</translation>
 <translation id="38114475217616659">Tüm geçmişi temizle</translation>
 <translation id="3820172043799983114">Geçersiz PIN.</translation>
 <translation id="3824259034819781947">Dosya ekle</translation>
 <translation id="3838338534323494292">Yeni şifre</translation>
 <translation id="3845880861638660475">İletişim kutusunu kapatmak için <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> tuşlarına basın.</translation>
+<translation id="3848280697030027394">klavyeyi koyulaştır</translation>
 <translation id="385051799172605136">Geri</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3862598938296403232">Açıklama gerekli</translation>
@@ -403,6 +408,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Devre dışı bırak</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> yeniden başlatılıyor</translation>
+<translation id="4395835743215824109">klavyeyi özelleştir</translation>
 <translation id="4415951057168511744">Mevcut Avatar</translation>
 <translation id="4422041425070339732">aşağı ok</translation>
 <translation id="4425149324548788773">Drive'ım</translation>
@@ -426,6 +432,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh Pil</translation>
 <translation id="4561801978359312462">SIM Kilidi Açıldı</translation>
 <translation id="4562494484721939086">Hizmet yok</translation>
+<translation id="4573777384450697571">Başarısız - Sertifikanın Süresi Doldu</translation>
 <translation id="458794348635939462">Tüm ana makineler çözümlenemedi</translation>
 <translation id="4593212453765072419">Proxy kimlik doğrulaması gerekli</translation>
 <translation id="4609350030397390689">Klavye parlaklığını azalt</translation>
@@ -442,6 +449,7 @@
 <translation id="4731797938093519117">Ebeveyn erişimi</translation>
 <translation id="473775607612524610">Güncelle</translation>
 <translation id="4744944742468440486">Seçiminizle ilgili bilgi</translation>
+<translation id="4771607256327216405">klavye parlaklığını artır</translation>
 <translation id="4773299976671772492">Durduruldu</translation>
 <translation id="4782311465517282004">Metni sağ tıkladığınızda veya dokunup basılı tuttuğunuzda tanımını veya çevirisini görün ya da birim dönüştürmesi alın</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotoğraf</translation>
@@ -490,6 +498,7 @@
 <translation id="500920857929044050">Testi durdur</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Ekranınız aktif değilken fotoğrafları, saati, hava durumunu ve medya bilgilerini gösterir.</translation>
+<translation id="5038292761217083259">çok renkli klavye</translation>
 <translation id="5039804452771397117">İzin ver</translation>
 <translation id="5049856988445523908">SIM Kilitlendi (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Grup adı</translation>
@@ -638,6 +647,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Koyu temayı aç</translation>
 <translation id="6285899124799306373">başlatıcıyı aç</translation>
+<translation id="629550705077076970">klavye karartma</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> testi iptal edildi</translation>
 <translation id="631063167932043783">Keşfet uygulaması</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> cihazındaki donanım yazılımını güncelleyin</translation>
@@ -656,6 +666,7 @@
 <translation id="6401427872449207797">tarayıcı araması</translation>
 <translation id="6410257289063177456">Resim Dosyaları</translation>
 <translation id="641081527798843608">Konu eşleştirmesi</translation>
+<translation id="6411934471898487866">klavye parlaklığı</translation>
 <translation id="6412715219990689313">Yerleşik klavye</translation>
 <translation id="6417265370957905582">Google Asistan</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -806,10 +817,12 @@
 <translation id="7656388927906093505">Cihazın türü fare.</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7665800271478495366">Avatarı değiştir</translation>
+<translation id="7683228889864052081">klavye tonu</translation>
 <translation id="7690294790491645610">Yeni şifreyi doğrula</translation>
 <translation id="7701040980221191251">Yok</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">klavye ışığı</translation>
 <translation id="773153675489693198">Şarj döngüsü sayısı</translation>
 <translation id="7747039790905080783">Önceden paylaşılan anahtar</translation>
 <translation id="7762130827864645708">Şifre değişikliğiniz başarıyla tamamlandı. Lütfen bundan sonra yeni şifreyi kullanın.</translation>
@@ -853,6 +866,7 @@
 <translation id="8075838845814659848">Kalan şarj seviyesi</translation>
 <translation id="8076492880354921740">Sekmeler</translation>
 <translation id="8082366717211101304">Android uygulamalarından DNS çözümlenemiyor</translation>
+<translation id="8082644724189923105">klavye bölgesi</translation>
 <translation id="808894953321890993">Şifreyi değiştir</translation>
 <translation id="8094062939584182041">Google'ın bu sorunla ilgili olarak size e-posta göndermesine izin verin</translation>
 <translation id="8104083085214006426">Açık ve güvenli olmayan bir ağ kullanıyorsunuz</translation>
@@ -901,6 +915,7 @@
 <translation id="8456761643544401578">Otomatik koyu mod</translation>
 <translation id="8461329675984532579">Ev sağlayıcısının adı</translation>
 <translation id="8475690821716466388">Kablosuz ağ, zayıf bir protokol olan WEP PSK ile güvenlik altına alınmış</translation>
+<translation id="8476242415522716722">klavyenin altındaki parlaklık</translation>
 <translation id="8477551185774834963">DNS gecikmesi, izin verilen eşiğin biraz üzerinde</translation>
 <translation id="8483248364096924578">IP adresi</translation>
 <translation id="8491311378305535241">Android uygulamalarından HTTP web sitelerine güvenlik duvarı aracılığıyla bağlanılamıyor</translation>
@@ -944,6 +959,7 @@
 <translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8855781559874488009">HTTP web sitelerine güvenlik duvarı aracılığıyla bağlanılamıyor</translation>
 <translation id="885701979325669005">Depolama</translation>
+<translation id="885704831271383379">klavye parlaklığını azalt</translation>
 <translation id="8863170912498892583">Koyu temayı etkinleştir</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" için <ph name="INTENT" /> ve daha fazlasını alın</translation>
 <translation id="8864415976656252616">Önerilen içerik yok. En çok görüntülenen yardım içeriğine bakın.</translation>

@@ -1199,9 +1199,11 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3927932062596804919">Neatļaut</translation>
 <translation id="393316646445601645">Internets un telekomunikācijas</translation>
 <translation id="3939773374150895049">Vai vēlaties izmantot WebAuthn, nevis CVC?</translation>
+<translation id="3941630233824954464">Iespējot obligātu atkārtotu autentifikāciju</translation>
 <translation id="3943857333388298514">Ielīmēt</translation>
 <translation id="3946209740501886391">Vienmēr jautāt šajā vietnē</translation>
 <translation id="3947595700203588284">Var pieprasīt atļauju veidot savienojumu ar MIDI ierīcēm</translation>
+<translation id="3948588869002647271">Trūkst šīs lietojumprogrammas, vai tā ir bojāta.</translation>
 <translation id="3949571496842715403">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tā drošības sertifikātā nav norādīti temata citi nosaukumi. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ļaunprātīgi izmanto jūsu savienojumu.</translation>
 <translation id="3949601375789751990">Šeit ir redzama jūsu pārlūkošanas vēsture.</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2202,6 +2204,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6370022303958842211">Ierīces piekļuves darbības, piemēram, pieteikšanās (tostarp nesekmīgas pieteikšanās iemesli), atteikšanās, bloķēšana un atbloķēšana</translation>
 <translation id="6374469231428023295">Mēģināt vēlreiz</translation>
 <translation id="6374865374745447009">logu pārvaldība</translation>
+<translation id="6376881782310775282">Nevar sasniegt šīs lietojumprogrammas izstrādes serveri.</translation>
 <translation id="6377268785556383139">1 rezultāts vaicājumam “<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Iespējams, tiks pieprasīta maksa.</translation>
@@ -2970,7 +2973,6 @@ Papildu informācija:
 <translation id="8217240300496046857">Vietnes nevar izmantot sīkfailus, kas izseko jūsu darbības tīmeklī. Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="8217748145574471584">Cilvēkresursi</translation>
 <translation id="8218327578424803826">Piešķirtā atrašanās vieta:</translation>
-<translation id="8225771182978767009">Persona, kura iestatīja šo datoru, izvēlējās bloķēt šo vietni.</translation>
 <translation id="8228419419708659934">Divu lappušu skats</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -3011,6 +3013,7 @@ Papildu informācija:
 <translation id="8286799286781881307">Jūsu administratora atļautās lietojumprogrammas var tvert visus ekrānus, kas pievienoti jūsu ierīcei. Šī informācija var tikt apstrādāta ierīcē vai augšupielādēta jūsu organizācijas serveros.</translation>
 <translation id="8288807391153049143">Rādīt sertifikātu</translation>
 <translation id="8289355894181816810">Sazinieties ar tīkla administratoru, ja neesat pārliecināts, ko tas nozīmē.</translation>
+<translation id="8292520987784410870">Vai vienmēr verificēt?</translation>
 <translation id="8293206222192510085">Pievienot grāmatzīmi</translation>
 <translation id="829335040383910391">skaņa</translation>
 <translation id="8294431847097064396">Avots</translation>
@@ -3083,7 +3086,6 @@ Papildu informācija:
 <translation id="8474910779563686872">Skatīt informāciju par izstrādātāju</translation>
 <translation id="8479754468255770962">Skavojums apakšējā kreisajā malā</translation>
 <translation id="8483229036294884935">Šī adrese tiks dzēsta no jūsu Google konta (<ph name="ACCOUNT" />).</translation>
-<translation id="8483780878231876732">Lai izmantotu kartes no sava Google konta, pierakstieties pārlūkā Chrome!</translation>
 <translation id="8488350697529856933">Attiecas uz</translation>
 <translation id="8490137692873530638">10. izvades vieta</translation>
 <translation id="8493948351860045254">Atbrīvot vietu</translation>
@@ -3111,6 +3113,7 @@ Papildu informācija:
 <translation id="854892890027593466">Aploksne C6/C5</translation>
 <translation id="8553387990086529628">Tūristu galamērķi</translation>
 <translation id="8554010658308662631">Ielādēt vēl</translation>
+<translation id="8554802735558319842">Lai uzlabotu drošību koplietotajās ierīcēs, ieslēdziet verifikāciju katru reizi, kad maksāšanai izmantojat automātisko aizpildi.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Atiestatīt atļauju}zero{Atiestatīt atļaujas}one{Atiestatīt atļaujas}other{Atiestatīt atļaujas}}</translation>
 <translation id="8555010941760982128">Norēķinoties izmantojiet šo kodu</translation>
 <translation id="8557066899867184262">CVC kods ir norādīts jūsu kartes aizmugurē.</translation>

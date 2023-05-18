@@ -196,6 +196,7 @@
 <translation id="2100273922101894616">自动登录</translation>
 <translation id="2100314319871056947">请尝试使用较小的文本块进行分享</translation>
 <translation id="2111511281910874386">转至相关网页</translation>
+<translation id="2119609734654412418">您的书签会显示在此处</translation>
 <translation id="2122601567107267586">无法打开此应用</translation>
 <translation id="2132122640199389833">移除所有已关联的设备</translation>
 <translation id="213279576345780926">已关闭“<ph name="TAB_TITLE" />”</translation>
@@ -574,6 +575,7 @@
 <translation id="4188221736490993796">按从 Z 到 A 排序</translation>
 <translation id="4195643157523330669">在新标签页中打开</translation>
 <translation id="4196597275619698563">创建卡片</translation>
+<translation id="4197828496439691735">{NUM_TABS,plural, =1{此设备上的 1 个标签页}other{此设备上的 # 个标签页}}</translation>
 <translation id="4198423547019359126">没有可用的下载内容保存位置</translation>
 <translation id="4202218894997543208">您已屏蔽的主题</translation>
 <translation id="4214315110991671325">如果您允许使用 Cookie，Chrome 便可能会使用 Cookie 进行预加载。</translation>
@@ -588,6 +590,7 @@
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />我们会使用哪些数据<ph name="END_BOLD" />：您的浏览记录，即您在此设备上使用 Chrome 访问过的网站的记录。</translation>
 <translation id="4269820728363426813">复制链接地址</translation>
 <translation id="4283102315569707115">默认请求访问桌面版网站？</translation>
+<translation id="4285846616383034558">Cookie、缓存和其他网站数据</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />在 Android 设置中开启“屏幕锁定”功能<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">打开新的无痕式标签页</translation>
 <translation id="4298388696830689168">已关联的网站</translation>
@@ -598,6 +601,7 @@
 <translation id="433213510553688132">正在关注…</translation>
 <translation id="4335835283689002019">“安全浏览”功能处于关闭状态</translation>
 <translation id="4351244548802238354">关闭对话框</translation>
+<translation id="4355272626458588338">您可为重要网页添加书签以便返回查看</translation>
 <translation id="4369735607080757018">为了衡量各自的广告效果，网站之间会分享有限类型的数据，例如一天当中向您展示广告的时段</translation>
 <translation id="4378154925671717803">电话机</translation>
 <translation id="438319986296050901">仅分享卡片</translation>
@@ -677,6 +681,7 @@
 <translation id="4763480195061959176">视频</translation>
 <translation id="4766313118839197559">系统会将密码保存到此设备上的密码管理工具中</translation>
 <translation id="4766678251456904326">向设备添加帐号</translation>
+<translation id="4767947714785277816">我们即将推出一项名为“广告效果衡量”的全新广告隐私权功能。Chrome 只会与网站和应用分享非常有限的信息（例如向您展示广告的时段），以帮助衡量广告效果。</translation>
 <translation id="4769095993849849966">新文件名</translation>
 <translation id="4778653490315793244">尚无可显示的内容</translation>
 <translation id="4787736314074622408">是否要删除 <ph name="ITEM_TITLE" />？</translation>
@@ -912,6 +917,7 @@
 <translation id="6011308810877101166">改进搜索建议</translation>
 <translation id="6026538407078977628">展开为全屏</translation>
 <translation id="6030719887161080597">管理网站用于衡量广告效果的信息</translation>
+<translation id="6034146297924778597">过去 15 分钟内的以下历史记录将被删除：</translation>
 <translation id="6039379616847168523">跳转到下一个标签页</translation>
 <translation id="6040143037577758943">关闭</translation>
 <translation id="604124094241169006">自动</translation>
@@ -950,6 +956,7 @@
 <translation id="6232535412751077445">如果您启用了“不跟踪”，您的浏览流量中将会包含一项请求。具体影响取决于网站是否会回应该请求以及如何解读该请求。
 
 例如：某些网站在收到该请求后，可能会向您展示相应的广告（这些广告并不是根据您访问过的其他网站而展示的）。许多网站仍会出于一些目的收集并使用您的浏览数据，例如，为了提高安全性，为了提供相关内容、广告和推荐内容，以及为了生成报告统计信息。</translation>
+<translation id="6255794742848779505">我们即将更改此设备上的密码保存方式</translation>
 <translation id="6264376385120300461">仍然下载</translation>
 <translation id="6277522088822131679">打印该页面时出现问题，请重试。</translation>
 <translation id="6277722725779679269">无法更新“跟踪价格”设置。</translation>

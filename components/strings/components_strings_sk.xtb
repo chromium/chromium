@@ -1196,9 +1196,11 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3927932062596804919">Odmietnuť</translation>
 <translation id="393316646445601645">Internet a telekomunikácie</translation>
 <translation id="3939773374150895049">Chcete namiesto overovacieho kódu karty použiť WebAuthn?</translation>
+<translation id="3941630233824954464">Povoliť povinné opätovné overenie</translation>
 <translation id="3943857333388298514">Prilepiť</translation>
 <translation id="3946209740501886391">Vždy sa opýtať na tomto webe</translation>
 <translation id="3947595700203588284">Môže žiadať o povolenie pripájať sa k zariadeniam MIDI</translation>
+<translation id="3948588869002647271">Táto aplikácia chýba alebo je poškodená</translation>
 <translation id="3949571496842715403">Tento server nedokázal potvrdiť, či ide o doménu <ph name="DOMAIN" /> – príslušný bezpečnostný certifikát neuvádza alternatívne názvy predmetu. Môže to byť spôsobené nesprávnou konfiguráciou alebo tým, že vaše pripojenie napadol útočník.</translation>
 <translation id="3949601375789751990">Tu sa zobrazí vaša história prehliadania</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2198,6 +2200,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6370022303958842211">Akcie prístupu k zariadeniam, ako sú prihlásenia (vrátane dôvodov neúspešných prihlásení), odhlásenia, uzamknutia a odomknutia</translation>
 <translation id="6374469231428023295">Skúsiť znova</translation>
 <translation id="6374865374745447009">správu okien</translation>
+<translation id="6376881782310775282">S vývojárskym serverom tejto aplikácie sa nedá nadviazať spojenie</translation>
 <translation id="6377268785556383139">1 výsledok pre hľadaný výraz „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Ak prejdete ďalej, môžu vám byť účtované poplatky.</translation>
@@ -2966,7 +2969,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8217240300496046857">Weby nemôžu používať súbory cookie, ktoré vás sledujú na internete. Funkcie na niektorých weboch môžu zlyhávať.</translation>
 <translation id="8217748145574471584">Ľudské zdroje</translation>
 <translation id="8218327578424803826">Pridelená poloha:</translation>
-<translation id="8225771182978767009">Osoba, ktorá nastavila tento počítač, sa rozhodla daný web blokovať.</translation>
 <translation id="8228419419708659934">Zobrazenie dvoch strán</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -3007,6 +3009,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8286799286781881307">Aplikácie, ktoré autorizoval váš správca, môžu snímať všetky obrazovky pripojené k vášmu zariadeniu. Tieto informácie môžu byť spracované miestne alebo nahrané na servery vašej organizácie.</translation>
 <translation id="8288807391153049143">Zobraziť certifikát</translation>
 <translation id="8289355894181816810">Ak neviete, čo to znamená, kontaktujte správcu siete.</translation>
+<translation id="8292520987784410870">Chcete vždy overovať?</translation>
 <translation id="8293206222192510085">Pridať záložku</translation>
 <translation id="829335040383910391">zvuk</translation>
 <translation id="8294431847097064396">Zdroj</translation>
@@ -3079,7 +3082,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8474910779563686872">Zobraziť podrobnosti o vývojárovi</translation>
 <translation id="8479754468255770962">Zošiť spinkou vľavo dole</translation>
 <translation id="8483229036294884935">Táto adresa bude odstránená z vášho účtu Google <ph name="ACCOUNT" /></translation>
-<translation id="8483780878231876732">Ak chcete používať karty z účtu Google, prihláste sa do Chromu</translation>
 <translation id="8488350697529856933">Platí pre</translation>
 <translation id="8490137692873530638">Odkladač č. 10</translation>
 <translation id="8493948351860045254">Uvoľniť miesto</translation>
@@ -3107,6 +3109,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="854892890027593466">Obálka C6/C5</translation>
 <translation id="8553387990086529628">Turistické destinácie</translation>
 <translation id="8554010658308662631">Načítať viac</translation>
+<translation id="8554802735558319842">V záujme zvýšenia zabezpečenia v zdieľaných zariadeniach zapnite overenie pre každú platbu využívajúcu automatické dopĺňanie.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Resetovať povolenie}few{Resetovať povolenia}many{Resetovať povolenia}other{Resetovať povolenia}}</translation>
 <translation id="8555010941760982128">Tento kód použite pri platbe</translation>
 <translation id="8557066899867184262">Kód CVC nájdete na zadnej strane karty.</translation>
@@ -3296,6 +3299,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="9048662076076074925">24 × 36 palcov</translation>
 <translation id="9049981332609050619">Pokúšate sa otvoriť doménu <ph name="DOMAIN" />, ale server predložil neplatný certifikát.</translation>
 <translation id="9050666287014529139">Prístupová fráza</translation>
+<translation id="9053840549256861041">Predstavujeme novú funkciu ochrany súkromia pri reklamách nazvanú Meranie reklám. Na pomoc s meraním výkonnosti reklám zdieľa Chrome medzi webmi iba veľmi obmedzené informácie, napríklad to, kedy sa vám reklama zobrazila.</translation>
 <translation id="9056953843249698117">Obchod</translation>
 <translation id="9062620674789239642">Mohol byť presunutý, upravený alebo odstránený.</translation>
 <translation id="9063398205799684336">Obálka Kaku 2</translation>

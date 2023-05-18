@@ -94,6 +94,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1346748346194534595">Derecha</translation>
 <translation id="1351937230027495976">Contraer menú</translation>
 <translation id="1360220746312242196">Ir a la coincidencia de búsqueda anterior al buscar en una página</translation>
+<translation id="1360788414852622716">Se está inhabilitando el perfil. Este proceso puede demorar unos minutos.</translation>
 <translation id="1364382257761975320">Para desbloquear la Chromebook, utiliza la huella dactilar</translation>
 <translation id="1365866993922957110">Obtener actualizaciones automáticas</translation>
 <translation id="1372545819342940910">Guardar el escritorio para más tarde</translation>
@@ -545,6 +546,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3510164367642747937">Resaltar el cursor del mouse</translation>
 <translation id="3513798432020909783">Cuenta administrada por <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Actualiza el dispositivo en el transcurso de 1 minuto}other{Actualiza el dispositivo en el transcurso de # minutos}}</translation>
+<translation id="3522979239100719575">Se están buscando perfiles disponibles. Este proceso puede demorar unos minutos.</translation>
 <translation id="3526440770046466733">Abrir el vínculo en una pestaña nueva y permanecer en la pestaña actual</translation>
 <translation id="353086728817903341">Se estableció la conexión con <ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="3533126039236445965">Apps en la barra</translation>
@@ -1558,6 +1560,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8083540854303889870">Guardados para después</translation>
 <translation id="8091153018031979607">Comienza a las <ph name="START_TIME" /> el día <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Actualizaciones automáticas</translation>
+<translation id="8092380135549145188">Controles de desplazamiento</translation>
 <translation id="8098591350844501178">Detener la transmisión de la pantalla a <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Dejar de fijar una app en la barra</translation>
 <translation id="8113423164597455979">Sí, para todas</translation>

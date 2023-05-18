@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> spravuje toto zariadenie a môže monitorovať vašu aktivitu.</translation>
 <translation id="1478594628797167447">Skener</translation>
 <translation id="1483493594462132177">Odoslať</translation>
+<translation id="1488850966314959671">K tejto sieti sa nedá pripojiť pomocou žiadnych aktivovaných vlastných názvov prístupového bodu (APN). Viac sa dozviete od svojho operátora.</translation>
 <translation id="1491076385728777984">Aktualizuje sa firmvér zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">zvýšenie hlasitosti</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> spravuje tohto používateľa a môže vzdialene spravovať nastavenia a sledovať aktivitu používateľa.</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">Viditeľnosť</translation>
 <translation id="1672499492233627739">Videoprenos z webovej kamery</translation>
 <translation id="1676557873873341166">Nahráva sa video</translation>
+<translation id="1684279041537802716">Zvýrazňujúca farba</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Prekladač DNS je prítomný</translation>
 <translation id="1708602061922134366">Modrá Google</translation>
@@ -431,6 +433,7 @@
 <translation id="455835558791489930">Batéria s kapacitou <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">SIM karta je odomknutá</translation>
 <translation id="4562494484721939086">Žiadny signál</translation>
+<translation id="4573777384450697571">Nepodarilo sa – certifikát vypršal</translation>
 <translation id="458794348635939462">Nepodarilo sa vybrať všetkých hostiteľov</translation>
 <translation id="4593212453765072419">Vyžaduje sa overenie servera proxy</translation>
 <translation id="4609350030397390689">Zníženie jasu klávesnice</translation>
@@ -561,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skenovať znova</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">Tento názov prístupového bodu (APN) sa nedá deaktivovať ani odstrániť. Uistite sa, že aktivované pripojené názvy prístupových bodov (APN) sú deaktivované alebo odstránené.</translation>
 <translation id="5600027863942488546">Bol otestovaný kláves <ph name="KEY_NAME" /></translation>
 <translation id="5620281292257375798">Iba interné</translation>
 <translation id="5649768706273821470">Počúvať</translation>
@@ -1010,6 +1014,7 @@
 <translation id="9173638680043580060">Zostáva menej ako minúta</translation>
 <translation id="917720651393141712">Testovať</translation>
 <translation id="9188992814426075118">Klávesnica sa môže automaticky prispôsobiť tapete</translation>
+<translation id="9189000703457422362">K tejto sieti sa nedá pripojiť pomocou automaticky rozpoznávaných názvov prístupového bodu (APN). Viac sa dozviete od svojho operátora.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Brána sa nedá kontaktovať v aplikáciách pre Android</translation>
 <translation id="9211490828691860325">Všetky plochy</translation>

@@ -94,7 +94,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1346748346194534595">Desno</translation>
 <translation id="1351937230027495976">Sužavanje menija</translation>
 <translation id="1360220746312242196">Odlazak na prethodno podudaranje prilikom pretraživanja stranice</translation>
-<translation id="1360788414852622716">Profil se onemogućuje. To može potrajati nekoliko minuta.</translation>
+<translation id="1360788414852622716">Onemogućavanje profila. Ovo može potrajati nekoliko minuta.</translation>
 <translation id="1364382257761975320">Da otključate Chromebook, koristite otisak prsta</translation>
 <translation id="1365866993922957110">Dobijajte automatska ažuriranja</translation>
 <translation id="1372545819342940910">Sačuvaj radnu površinu za kasnije</translation>
@@ -546,7 +546,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3510164367642747937">Istakni kursor miša</translation>
 <translation id="3513798432020909783">Računom upravlja <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Ažurirajte uređaj u roku od 1 minute}one{Ažurirajte uređaj u roku od # minute}few{Ažurirajte uređaj u roku od # minute}other{Ažurirajte uređaj u roku od # minuta}}</translation>
-<translation id="3522979239100719575">Tražimo dostupne profile. To može potrajati nekoliko minuta.</translation>
+<translation id="3522979239100719575">Traženje dostupnih profila. Ovo može potrajati nekoliko minuta.</translation>
 <translation id="3526440770046466733">Otvaranje linka u novoj kartici i ostanak na trenutnoj kartici</translation>
 <translation id="353086728817903341">Povezano je sa sljedećim brojem uređaja: <ph name="NUM_DEVICES" /></translation>
 <translation id="3533126039236445965">Aplikacije na polici</translation>
@@ -1559,7 +1559,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8083540854303889870">Sačuvano za kasnije</translation>
 <translation id="8091153018031979607">Počinje u <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatska ažuriranja</translation>
-<translation id="8092380135549145188">Kontrole za pomicanje</translation>
+<translation id="8092380135549145188">Kontrole klizanja</translation>
 <translation id="8098591350844501178">Prestanak emitiranja ekrana na prijemniku <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Otkačite aplikaciju s police</translation>
 <translation id="8113423164597455979">Uključeno, sve</translation>
@@ -1785,7 +1785,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="9133335900048457298">Nije moguće snimiti zaštićeni sadržaj</translation>
 <translation id="9139720510312328767">Brisanje sljedećeg slova</translation>
 <translation id="9161053988251441839">PREDLOŽENE APLIKACIJE</translation>
-<translation id="9168436347345867845">Uradit ću to kasnije</translation>
+<translation id="9168436347345867845">Ostavi za kasnije</translation>
 <translation id="9178475906033259337">Prikaz 1 rezultata za upit <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ova funkcija vam omogućava da brzo pristupite prijavljenim korisnicima bez lozinke. Ovu funkciju koristite samo s računima kojima vjerujete.</translation>
 <translation id="9183456764293710005">Povećalo za cijeli ekran</translation>

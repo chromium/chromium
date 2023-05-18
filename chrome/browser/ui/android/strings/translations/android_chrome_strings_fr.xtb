@@ -196,6 +196,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="2100273922101894616">Connexion automatique</translation>
 <translation id="2100314319871056947">Essayez de scinder le texte pour le partager en plusieurs fois</translation>
 <translation id="2111511281910874386">Accéder à la page</translation>
+<translation id="2119609734654412418">Vos favoris s'afficheront ici</translation>
 <translation id="2122601567107267586">Impossible d'ouvrir l'application</translation>
 <translation id="2132122640199389833">Supprimer tous les appareils associés</translation>
 <translation id="213279576345780926">Onglet "<ph name="TAB_TITLE" />" fermé</translation>
@@ -598,6 +599,7 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="433213510553688132">Suivre…</translation>
 <translation id="4335835283689002019">La navigation sécurisée est désactivée</translation>
 <translation id="4351244548802238354">Fermer la boîte de dialogue</translation>
+<translation id="4355272626458588338">Ajoutez les pages qui vous intéressent à vos favoris pour pouvoir y revenir facilement</translation>
 <translation id="4369735607080757018">Seuls quelques types de données sont partagés entre les sites pour mesurer les performances des annonces, comme l'heure à laquelle une annonce vous a été présentée.</translation>
 <translation id="4378154925671717803">Téléphone</translation>
 <translation id="438319986296050901">Partager uniquement la fiche</translation>
@@ -950,6 +952,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6232535412751077445">Si vous interdisez le suivi, une demande sera incluse dans le trafic lié à votre navigation. Les résultats obtenus dépendent de la réponse du site (s'il répond ou non) et de la manière dont il interprète la demande.
 
 Par exemple, certains sites Web peuvent répondre à cette demande en diffusant des annonces qui ne sont pas déterminées en fonction des autres sites Web que vous avez consultés. Toutefois, nombre d'entre eux recueillent et utilisent vos données de navigation afin, par exemple, d'améliorer la sécurité ou d'afficher du contenu, des services, des annonces et des recommandations, ou encore pour générer des rapports statistiques.</translation>
+<translation id="6255794742848779505">Nous modifions la manière dont les mots de passe sont enregistrés sur cet appareil</translation>
 <translation id="6264376385120300461">Télécharger quand même</translation>
 <translation id="6277522088822131679">Un problème est survenu lors de l'impression de la page. Veuillez réessayer.</translation>
 <translation id="6277722725779679269">Impossible de mettre à jour le suivi du prix</translation>
@@ -1116,6 +1119,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="7030304022046916278">Les URL sont envoyées à la navigation sécurisée pour vérification</translation>
 <translation id="7030585293819777123">Reprendre votre dernière tâche ?</translation>
+<translation id="7035701931849773472">Autres options</translation>
 <translation id="7037830628447527439">Se connecter à Chrome avec votre compte Google</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Obtenir les descriptions d'images ?</translation>
@@ -1338,6 +1342,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8110024788458304985">Contribuer à l'amélioration des fonctionnalités et des performances de Chrome</translation>
 <translation id="8110087112193408731">Afficher votre activité Chrome dans Bien-être numérique ?</translation>
 <translation id="8118117428362942925">Si tu as besoin d'aide, demande à ton parent (<ph name="PARENT_NAME" />)</translation>
+<translation id="8124758083429256800">Vos listes de mots de passe enregistrés pour Chrome et Chrome <ph name="ERROR_DESCRIPTION" /> seront fusionnées après la version 121. Vous pourrez saisir automatiquement tous vos mots de passe enregistrés dans les deux applis.</translation>
 <translation id="8127542551745560481">Modifier la page d'accueil</translation>
 <translation id="8130309322784422030">Les infos de connexion enregistrées sont peut-être obsolètes</translation>
 <translation id="813082847718468539">Afficher des informations à propos du site</translation>

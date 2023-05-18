@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">ਸੱਜਾ</translation>
 <translation id="1351937230027495976">ਮੀਨੂ ਸਮੇਟੋ</translation>
 <translation id="1360220746312242196">ਕਿਸੇ ਪੰਨੇ ਨੂੰ ਖੋਜਣ ਵੇਲੇ, ਖੋਜ ਲਈ ਪਿਛਲੇ ਮਿਲਾਨ 'ਤੇ ਜਾਓ</translation>
+<translation id="1360788414852622716">ਪ੍ਰੋਫਾਈਲ ਬੰਦ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="1364382257761975320">ਆਪਣੀ Chromebook ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਆਪਣੇ ਫਿੰਗਰਪ੍ਰਿੰਟ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="1365866993922957110">ਸਵੈਚਲਿਤ ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="1372545819342940910">ਬਾਅਦ ਵਿੱਚ ਦੇਖਣ ਲਈ ਡੈਸਕ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -545,6 +546,7 @@
 <translation id="3510164367642747937">ਮਾਊਸ ਕਰਸਰ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> ਵੱਲੋਂ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="352245152354538528">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ 1 ਮਿੰਟ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਮਿੰਟ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਮਿੰਟਾਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
+<translation id="3522979239100719575">ਉਪਲਬਧ ਪ੍ਰੋਫਾਈਲਾਂ ਨੂੰ ਲੱਭਿਆ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="3526440770046466733">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ ਅਤੇ ਮੌਜੂਦਾ ਟੈਬ ਵਿੱਚ ਬਣੇ ਰਹੋ</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3533126039236445965">ਸ਼ੈਲਫ ਵਿੱਚ ਐਪਾਂ</translation>
@@ -1558,6 +1560,7 @@
 <translation id="8083540854303889870">ਬਾਅਦ ਲਈ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> ਵਜੇ ਸ਼ੁਰੂ ਹੋਵੇਗਾ <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">ਸਵੈਚਲਿਤ ਅੱਪਡੇਟ</translation>
+<translation id="8092380135549145188">ਸਕ੍ਰੋਲ ਕੰਟਰੋਲ</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> 'ਤੇ ਸਕ੍ਰੀਨ ਕਾਸਟ ਕਰਨੀ ਬੰਦ ਕਰੋ</translation>
 <translation id="810637681351706236">ਐਪ ਨੂੰ ਸ਼ੈਲਫ ਤੋਂ ਅਣਪਿੰਨ ਕਰੋ</translation>
 <translation id="8113423164597455979">ਚਾਲੂ, ਸਭ ਐਪਾਂ</translation>

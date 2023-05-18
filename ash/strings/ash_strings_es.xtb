@@ -94,6 +94,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1346748346194534595">Derecha</translation>
 <translation id="1351937230027495976">Ocultar menú</translation>
 <translation id="1360220746312242196">Al buscar en una página, ir a la coincidencia anterior de la búsqueda</translation>
+<translation id="1360788414852622716">Inhabilitando perfil. Este proceso puede durar unos minutos.</translation>
 <translation id="1364382257761975320">Para desbloquear tu Chromebook, usa tu huella digital</translation>
 <translation id="1365866993922957110">Recibir actualizaciones automáticas</translation>
 <translation id="1372545819342940910">Guardar escritorio para más tarde</translation>
@@ -545,6 +546,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3510164367642747937">Resaltar el cursor del ratón</translation>
 <translation id="3513798432020909783">Cuenta gestionada por <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Actualiza el dispositivo en un plazo de 1 minuto}other{Actualiza el dispositivo en un plazo de # minutos}}</translation>
+<translation id="3522979239100719575">Buscando perfiles disponibles. Este proceso puede durar unos minutos.</translation>
 <translation id="3526440770046466733">Abrir el enlace en una pestaña nueva y permanecer en la pestaña actual</translation>
 <translation id="353086728817903341">Conectado a <ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="3533126039236445965">Aplicaciones en la estantería</translation>
@@ -1558,6 +1560,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8083540854303889870">Guardados para más tarde</translation>
 <translation id="8091153018031979607">Empieza a las <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Actualizaciones automáticas</translation>
+<translation id="8092380135549145188">Controles de desplazamiento</translation>
 <translation id="8098591350844501178">Dejar de enviar la pantalla a <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">No fijar aplicación en la estantería</translation>
 <translation id="8113423164597455979">Sí, todas</translation>

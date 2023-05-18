@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">ଡାହାଣ</translation>
 <translation id="1351937230027495976">ମେନୁକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
 <translation id="1360220746312242196">ଏକ ପୃଷ୍ଠାକୁ ସର୍ଚ୍ଚ କରିବା ସମୟରେ ସର୍ଚ୍ଚ ପାଇଁ ପୂର୍ବବର୍ତ୍ତୀ ମେଳକୁ ଯାଆନ୍ତୁ</translation>
+<translation id="1360788414852622716">ପ୍ରୋଫାଇଲକୁ ଅକ୍ଷମ କରାଯାଉଛି। ଏଥିପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ।</translation>
 <translation id="1364382257761975320">ଆପଣଙ୍କ Chromebookକୁ ଅନଲକ୍ କରିବା ପାଇଁ, ଆପଣଙ୍କ ଟିପଚିହ୍ନ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1365866993922957110">ସ୍ୱଚାଳିତ ଅପଡେଟଗୁଡ଼ିକୁ ପାଆନ୍ତୁ</translation>
 <translation id="1372545819342940910">ପରବର୍ତ୍ତୀ ସମୟ ପାଇଁ ଡେସ୍କ ସେଭ କରନ୍ତୁ</translation>
@@ -545,6 +546,7 @@
 <translation id="3510164367642747937">ମାଉସ୍‌ କର୍ସର୍‌ ହାଇଲାଇଟ୍ କରନ୍ତୁ</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> ଦ୍ୱାରା ଆକାଉଣ୍ଟ ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="352245152354538528">{0,plural, =1{1 ମିନିଟ ଭିତରେ ଡିଭାଇସକୁ ଅପଡେଟ କରନ୍ତୁ}other{# ମିନିଟ ଭିତରେ ଡିଭାଇସକୁ ଅପଡେଟ କରନ୍ତୁ}}</translation>
+<translation id="3522979239100719575">ଉପଲବ୍ଧ ପ୍ରୋଫାଇଲଗୁଡ଼ିକୁ ଖୋଜାଯାଉଛି। ଏଥିପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ।</translation>
 <translation id="3526440770046466733">ନୂଆ ଟାବରେ ଲିଙ୍କ ଖୋଲି ବର୍ତ୍ତମାନର ଟାବରେ ରୁହନ୍ତୁ</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" />ଟି ଡିଭାଇସ୍ ସହ ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="3533126039236445965">ସେଲ୍ଫରେ ଆପ୍ସ</translation>
@@ -1556,6 +1558,7 @@
 <translation id="8083540854303889870">ପରବର୍ତ୍ତୀ ସମୟ ପାଇଁ ସେଭ କରାଯାଇଛି</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" />ରେ ଆରମ୍ଭ ହେଉଛି <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">ସ୍ୱଚାଳିତ ଅପଡେଟଗୁଡ଼ିକ</translation>
+<translation id="8092380135549145188">ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକୁ ସ୍କ୍ରୋଲ କରନ୍ତୁ</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />ରେ ସ୍କ୍ରିନ୍‍ କାଷ୍ଟ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="810637681351706236">ସେଲ୍ଫରୁ ଆପକୁ ଅନପିନ କରନ୍ତୁ</translation>
 <translation id="8113423164597455979">ଚାଲୁ, ସବୁ ଆପ୍</translation>

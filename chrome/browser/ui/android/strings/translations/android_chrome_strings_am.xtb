@@ -575,6 +575,7 @@
 <translation id="4188221736490993796">ከፐ ወደ ሀ ደርድር</translation>
 <translation id="4195643157523330669">በአዲስ ትር ክፈት</translation>
 <translation id="4196597275619698563">ካርድ ፍጠር</translation>
+<translation id="4197828496439691735">{NUM_TABS,plural, =1{በዚህ መሣሪያ ላይ 1 ትር}one{በዚህ መሣሪያ ላይ # ትር}other{በዚህ መሣሪያ ላይ # ትሮች}}</translation>
 <translation id="4198423547019359126">ምንም የማውረጃ አካባቢዎች የሉም</translation>
 <translation id="4202218894997543208">እርስዎ ያገዷቸው ርዕሶች</translation>
 <translation id="4214315110991671325">ኩኪዎችን ከፈቀዱ Chrome ለቅድሚያ መጫን ሊጠቀምባቸው ይችላል።</translation>
@@ -589,6 +590,7 @@
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />ምን ውሂብ ጥቅም ላይ እንደሚውል፦<ph name="END_BOLD" /> የአሰሳ ታሪክዎ፣ በዚህ መሣሪያ ላይ Chromeን ተጠቅመው የጎበኟቸው የጣቢያዎች መዝገብ።</translation>
 <translation id="4269820728363426813">የአገናኝ አድራሻ ቅዳ</translation>
 <translation id="4283102315569707115">የዴስክቶፕ ጣቢያዎች በነባሪነት ይጠየቁ?</translation>
+<translation id="4285846616383034558">ኩኪዎች፣ መሸጎጫ እና ሌላ የጣቢያ ውሂብ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />በAndroid ቅንብሮች ውስጥ ማያ ገፅ መቆለፊያን ያብሩ<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">አዲስ ማንነት የማያሳውቅ ትር</translation>
 <translation id="4298388696830689168">የተገናኙ ጣቢያዎች</translation>
@@ -679,6 +681,7 @@
 <translation id="4763480195061959176">ቪዲዮ</translation>
 <translation id="4766313118839197559">የይለፍ ቃላት የሚቀመጡት በዚህ መሣሪያ ላይ ባለው የይለፍ ቃል አስተዳዳሪ ላይ ነው</translation>
 <translation id="4766678251456904326">መለያ ወደ መሣሪያው ያክሉ</translation>
+<translation id="4767947714785277816">የማስታወቂያ ልኬት የሚባል አዲስ የማስታወቂያ ግላዊነት ባህሪ እያስጀመርን ነው። Chrome የማስታወቂያዎችን አፈጻጸም እንዲለኩ ለማገዝ በጣቢያዎች እና መተግበሪያዎች መካከል እንደ ማስታወቂያ ለእርስዎ ሲታይ ያለ በጣም የተገደበ መረጃን ብቻ ያጋራል።</translation>
 <translation id="4769095993849849966">አዲስ የፋይል ስም</translation>
 <translation id="4778653490315793244">ገና ምንም የሚታይ ነገር የለም</translation>
 <translation id="4787736314074622408"><ph name="ITEM_TITLE" />ን መሰረዝ ይፈልጋሉ?</translation>
@@ -914,6 +917,7 @@
 <translation id="6011308810877101166">የፍለጋ አስተያየት ጥቆማዎችን ያሻሽሉ</translation>
 <translation id="6026538407078977628">ወደ ሙሉ ገፅ ዕይታ ዘርጋ</translation>
 <translation id="6030719887161080597">የማስታወቂያ አፈጻጸምን ለመለካት በጣቢያዎች ጥቅም ላይ የዋለ መረጃን ያስተዳድድሩ</translation>
+<translation id="6034146297924778597">ያለፉት 15 ደቂቃዎች ታሪክ ይሰረዛል፦</translation>
 <translation id="6039379616847168523">ወደ ቀጣዩ ትር ዝለል</translation>
 <translation id="6040143037577758943">ዝጋ</translation>
 <translation id="604124094241169006">ራስ-ሰር</translation>
@@ -1119,6 +1123,7 @@
 <translation id="7029809446516969842">የይለፍ ቃላት</translation>
 <translation id="7030304022046916278">ዩአርኤሎችን ለመፈተሽ ወደ ደህንነቱ የተጠበቀ አሰሳ ይልካቸዋል</translation>
 <translation id="7030585293819777123">የመጨረሻ ተግባርዎ ከቆመበት ይቀጥል?</translation>
+<translation id="7035701931849773472">ሌሎች አማራጮች</translation>
 <translation id="7037830628447527439">በእርስዎ Google መለያ ወደ Chrome ይግቡ</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">የምስል መግለጫዎችን ያግኙ?</translation>
@@ -1341,6 +1346,7 @@
 <translation id="8110024788458304985">የChrome ባህሪያት እና አፈጻጸም እንዲሻሻል ያግዙ</translation>
 <translation id="8110087112193408731">በዲጂታል ብቁ መሆን ውስጥ የChrome እንቅስቃሴዎ ይታይ?</translation>
 <translation id="8118117428362942925">እገዛ ካስፈለገዎት ወላጅዎን ይጠይቁ (<ph name="PARENT_NAME" />)</translation>
+<translation id="8124758083429256800">ለChrome እና Chrome <ph name="ERROR_DESCRIPTION" /> የእርስዎ የተቀመጡ የይለፍ ቃላቶች ዝርዝሮች ከስሪት 121 በኋላ ይዋሃዳሉ። በሁለቱም መተግበሪያዎች ላይ ሁሉንም የተቀመጡ የይለፍ ቃላትዎን በራስ-መሙላት ይችላሉ።</translation>
 <translation id="8127542551745560481">መነሻ ገጽን ያርትዑ</translation>
 <translation id="8130309322784422030">የተከማቸው የመግቢያ መረጃዎ ጊዜው ያለፈበት ሊሆን ይችላል</translation>
 <translation id="813082847718468539">የጣቢያ መረጃን ይመልከቱ</translation>

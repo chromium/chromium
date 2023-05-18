@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> Chromiumను ఉపయోగిస్తూ, బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, ఇతర సెట్టింగ్‌లను ఈ పరికరంలో అలాగే ఉంచారు.</translation>
 <translation id="372658070733623520">మీ Google ఖాతాలో Chromium డేటాను ఉపయోగించడానికి, సేవ్ చేయడానికి, ఇది మీరేనని వెరిఫై చేయండి.</translation>
 <translation id="3805899903892079518">Chromium, మీ ఫోటోలకు లేదా వీడియోలకు యాక్సెస్‌ను కలిగి లేదు. iOS సెట్టింగ్‌లు &gt; గోప్యత &gt; ఫోటోల్లో యాక్సెస్‌ను ఎనేబుల్ చేయండి.</translation>
+<translation id="3955621079070267756">ఏ యాప్ నుండి అయినా Chromiumను తెరవండి</translation>
 <translation id="4043291146360695975">పాస్‌వర్డ్‌లు ఈ పరికరంలోని పాస్‌వర్డ్ మేనేజర్‌లో మాత్రమే సేవ్ చేయబడతాయి.</translation>
 <translation id="4099085513035183040">Chromium బీటాలో సపోర్ట్ చేయదు</translation>
 <translation id="4432744876818348753">Chromium నుండి మరిన్ని ప్రయోజనాలను పొందడానికి సైన్ ఇన్ చేయండి.</translation>
@@ -141,5 +142,6 @@
 <translation id="9089354809943900324">Chromium కాలం చెల్లినది</translation>
 <translation id="9110075932708282655">ఆటోమేటిక్‌గా Chromiumను ఉపయోగించండి</translation>
 <translation id="921174536258924340">Chromiumకు అన్ని పాస్‌వర్డ్‌లను చెక్ చేయడం సాధ్యపడలేదు. రేపు మళ్లీ ట్రై చేయండి లేదా <ph name="BEGIN_LINK" />మీ Google ఖాతాలో పాస్‌వర్డ్‌లను చెక్ చేయండి.<ph name="END_LINK" /></translation>
+<translation id="971488683725792095">మెసేజ్‌లు, డాక్యుమెంట్‌లు, ఇతర యాప్‌లలోని లింక్‌లను మీరు ట్యాప్ చేసినప్పుడు Chromiumను ఆటోమేటిక్‌గా ఉపయోగించండి.</translation>
 <translation id="985602178874221306">Chromium రచయితలు</translation>
 </translationbundle>

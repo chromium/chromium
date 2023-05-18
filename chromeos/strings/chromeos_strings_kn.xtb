@@ -64,6 +64,7 @@
 <translation id="1476467821656042872">ಈ ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ಮತ್ತು ನಿಮ್ಮ ಚಟುವಟಿಕೆಯ ಮೇಲೆ ಗಮನವಿಡಲು ಇದಕ್ಕೆ ಸಾಧ್ಯವಾಗಬಹುದು.</translation>
 <translation id="1478594628797167447">ಸ್ಕ್ಯಾನರ್</translation>
 <translation id="1483493594462132177">ಕಳುಹಿಸು</translation>
+<translation id="1488850966314959671">ಯಾವುದೇ ಸಕ್ರಿಯಗೊಳಿಸಿದ ಕಸ್ಟಮ್ APN ಗಳನ್ನು ಬಳಸಿಕೊಂಡು ಈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನಿಮ್ಮ ಮೊಬೈಲ್ ಕ್ಯಾರಿಯರ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> ನಲ್ಲಿ ಫರ್ಮ್‌‌ವೇರ್‌‌ ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1499041187027566160">ವಾಲ್ಯೂಮ್ ಹೆಚ್ಚು ಮಾಡಿ</translation>
 <translation id="1499900233129743732">ಈ ಬಳಕೆದಾರರನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ಮತ್ತು ರಿಮೋಟ್ ಆಗಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಬಹುದು ಹಾಗೂ ಬಳಕೆದಾರರ ಚಟುವಟಿಕೆಯನ್ನು ಮಾನಿಟರ್ ಮಾಡಬಹುದು.</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">ಗೋಚರತೆ</translation>
 <translation id="1672499492233627739">ವೆಬ್‌ಕ್ಯಾಮ್ ವೀಡಿಯೊ ಫೀಡ್</translation>
 <translation id="1676557873873341166">ವೀಡಿಯೊ ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
+<translation id="1684279041537802716">ಆ್ಯಕ್ಸೆಂಟ್ ಬಣ್ಣ</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS ರೀಸಾಲ್ವರ್ ಅಸ್ತಿತ್ವ</translation>
 <translation id="1708602061922134366">Google‌ ನೀಲಿ</translation>
@@ -562,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ಪುನಃ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">ಈ APN ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ಅಥವಾ ತೆಗೆದುಹಾಕಲು ಸಾಧ್ಯವಿಲ್ಲ. ಸಕ್ರಿಯಗೊಳಿಸಲಾದ ಸೇರಿಸಿರುವ APN ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ ಅಥವಾ ತೆಗೆದುಹಾಕಲಾಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> ಕೀ ಪರೀಕ್ಷಿಸಲಾಗಿದೆ</translation>
 <translation id="5620281292257375798">ಆಂತರಿಕ ಮಾತ್ರ</translation>
 <translation id="5649768706273821470">ಆಲಿಸು</translation>
@@ -1011,6 +1014,7 @@
 <translation id="9173638680043580060">ಒಂದು ನಿಮಿಷಕ್ಕಿಂತ ಕಡಿಮೆ ಸಮಯ ಉಳಿದಿದೆ</translation>
 <translation id="917720651393141712">ಪರೀಕ್ಷೆ</translation>
 <translation id="9188992814426075118">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ನಿಮ್ಮ ವಾಲ್‌ಪೇಪರ್‌ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಹೊಂದಾಣಿಕೆಯಾಗಬಹುದು</translation>
+<translation id="9189000703457422362">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪತ್ತೆಯಾದ APN ಗಳನ್ನು ಬಳಸಿಕೊಂಡು ಈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನಿಮ್ಮ ಮೊಬೈಲ್ ಕ್ಯಾರಿಯರ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Android ಆ್ಯಪ್‌ಗಳ ಮೂಲಕ ಗೇಟ್‌ವೇ ಅನ್ನು ಸಂಪರ್ಕಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="9211490828691860325">ಎಲ್ಲಾ ಡೆಸ್ಕ್‌ಗಳು</translation>

@@ -64,6 +64,7 @@
 <translation id="1476467821656042872">Այս սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինս կարող է տեսնել ձեր գործողությունները։</translation>
 <translation id="1478594628797167447">Սկաներ</translation>
 <translation id="1483493594462132177">Ուղարկել</translation>
+<translation id="1488850966314959671">Միացված հատուկ APN-ներից ոչ մեկի միջոցով չհաջողվեց միանալ այս ցանցին։ Լրացուցիչ տեղեկությունների համար կապվեք ձեր բջջային օպերատորի հետ։</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> սարքի ներկառուցված ծրագրաշարը թարմացվում է</translation>
 <translation id="1499041187027566160">բարձրացնել ձայնը</translation>
 <translation id="1499900233129743732">Այս օգտատերը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինս նաև կարող է հեռակա կառավարել կարգավորումներն ու վերահսկել օգտատիրոջ գործողությունները։</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">Տեսանելիություն</translation>
 <translation id="1672499492233627739">Վեբ տեսախցիկի տեսահոսք</translation>
 <translation id="1676557873873341166">Տեսագրում</translation>
+<translation id="1684279041537802716">Ակցենտի գույն</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS լուծիչը առկա է</translation>
 <translation id="1708602061922134366">Google-ի կապույտ</translation>
@@ -217,6 +219,7 @@
 <translation id="2638662041295312666">Մուտքի պատկեր</translation>
 <translation id="2640549051766135490">Ընտրվել է «<ph name="TITLE" />» (<ph name="DESC" />) ալբոմը</translation>
 <translation id="267442004702508783">թարմացնել</translation>
+<translation id="268270014981824665">խամրեցնել ստեղնաշարի լուսավորությունը</translation>
 <translation id="2712812801627182647">TLS իսկորոշման բանալի</translation>
 <translation id="2713444072780614174">Սպիտակ</translation>
 <translation id="2717139507051041123">Միացնել մուգ գույների ռեժիմը</translation>
@@ -224,6 +227,7 @@
 <translation id="2744221223678373668">Համօգտագործված</translation>
 <translation id="2751739896257479635">EAP նույնականացման փուլ 2</translation>
 <translation id="2783010256799387990">ԱՆՑԱԾ Է</translation>
+<translation id="2787435249130282949">ստեղնաշարի լուսավորության ավելացում</translation>
 <translation id="2789486458103222910">Եղավ</translation>
 <translation id="2805756323405976993">Հավելվածներ</translation>
 <translation id="28232023175184696">Չհաջողվեց միանալ ինտերնետին։ Սեղմեք՝ նորից փորձելու համար:</translation>
@@ -327,11 +331,13 @@
 <translation id="3749289110408117711">Ֆայլի անունը</translation>
 <translation id="3771294271822695279">Տեսաֆայլեր</translation>
 <translation id="3784455785234192852">Կողպել</translation>
+<translation id="380097101658023925">RGB-ի կարգավորումներ</translation>
 <translation id="38114475217616659">Մաքրել ամբողջ պատմությունը</translation>
 <translation id="3820172043799983114">PIN-ը սխալ է</translation>
 <translation id="3824259034819781947">Կցել ֆայլեր</translation>
 <translation id="3838338534323494292">Նոր գաղտնաբառը</translation>
 <translation id="3845880861638660475">Սեղմեք <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />՝ երկխոսության պատուհանը փակելու համար։</translation>
+<translation id="3848280697030027394">նվազեցնել ստեղնաշարի լույսը</translation>
 <translation id="385051799172605136">Հետ</translation>
 <translation id="3858860766373142691">Անուն</translation>
 <translation id="3862598938296403232">Նկարագրությունը պարտադիր է</translation>
@@ -403,6 +409,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Անջատել</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> սարքը վերագործարկվում է</translation>
+<translation id="4395835743215824109">ստեղնաշարի հարմարեցում</translation>
 <translation id="4415951057168511744">Ընթացիկ ավատարը</translation>
 <translation id="4422041425070339732">ներքև սլաք</translation>
 <translation id="4425149324548788773">Իմ դրայվը</translation>
@@ -443,6 +450,7 @@
 <translation id="4731797938093519117">Ծնողի մուտք</translation>
 <translation id="473775607612524610">Թարմացնել</translation>
 <translation id="4744944742468440486">Տեղեկություններ ձեր ընտրության վերաբերյալ</translation>
+<translation id="4771607256327216405">ավելացնել ստեղնաշարի լույսը</translation>
 <translation id="4773299976671772492">Դադարեցված է</translation>
 <translation id="4782311465517282004">Ստացեք սահմանումներ, թարգմանություններ կամ չափման միավորների փոխարկումներ՝ տեքստի վրա մկնիկի աջ կոճակը սեղմելով կամ տեքստին հպել և պահելով։</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> լուսանկար</translation>
@@ -491,6 +499,7 @@
 <translation id="500920857929044050">Դադարեցնել փորձարկումը</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Ցուցադրում է լուսանկարներ, ժամը, եղանակը և նորություններ, երբ ձեր սարքն անգործուն ռեժիմում է։</translation>
+<translation id="5038292761217083259">ստեղնաշարի լուսավորության գույներ</translation>
 <translation id="5039804452771397117">Թույլ տալ</translation>
 <translation id="5049856988445523908">SIM քարտը կողպված է (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Խմբի անունը</translation>
@@ -555,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Նորից սկանավորել</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">Հնարավոր չէ անջատել կամ հեռացնել այս APN-ը։ Համոզվեք, որ միացված և կցված APN-ներն անջատված են կամ հեռացված։</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> ստեղնը փորձարկվել է</translation>
 <translation id="5620281292257375798">Միայն ներքին օգտագործման համար</translation>
 <translation id="5649768706273821470">Լսել</translation>
@@ -639,6 +649,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Միացնել մուգ թեման</translation>
 <translation id="6285899124799306373">բացել գործարկիչը</translation>
+<translation id="629550705077076970">ստեղնաշարի լուսավորության խամրեցում</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> թեստը չեղարկվել է</translation>
 <translation id="631063167932043783">«Հնարավորություններ» հավելված</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> սարքի ներկառուցված ծրագրի թարմացում</translation>
@@ -657,6 +668,7 @@
 <translation id="6401427872449207797">որոնում դիտարկիչում</translation>
 <translation id="6410257289063177456">Պատկերների ֆայլեր</translation>
 <translation id="641081527798843608">Թեմաների համընկնում</translation>
+<translation id="6411934471898487866">ստեղնաշարի պայծառություն</translation>
 <translation id="6412715219990689313">Ներկառուցված ստեղնաշար</translation>
 <translation id="6417265370957905582">Google Օգնական</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -807,10 +819,12 @@
 <translation id="7656388927906093505">Սարքը մկնիկ է։</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7665800271478495366">Փոխել ավատարը</translation>
+<translation id="7683228889864052081">ստեղնաշարի լուսավորության երանգ</translation>
 <translation id="7690294790491645610">Հաստատեք նոր գաղտնաբառը</translation>
 <translation id="7701040980221191251">Չկա</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">ստեղնաշարի լույս</translation>
 <translation id="773153675489693198">Շրջափուլերի թիվը</translation>
 <translation id="7747039790905080783">Ընդհանուր բանալի</translation>
 <translation id="7762130827864645708">Ձեր գաղտնաբառը հաջողությամբ փոխվեց։ Այս պահից սկսած օգտագործեք նոր գաղտնաբառը։</translation>
@@ -854,6 +868,7 @@
 <translation id="8075838845814659848">Մարտկոցի լիցքը</translation>
 <translation id="8076492880354921740">Ներդիրներ</translation>
 <translation id="8082366717211101304">Չհաջողվեց փոխակերպել DNS-ը Android հավելվածներից</translation>
+<translation id="8082644724189923105">ստեղնաշարի գոտի</translation>
 <translation id="808894953321890993">Փոխել գաղտնաբառը</translation>
 <translation id="8094062939584182041">Թույլ տվեք Google-ին տեղեկացնել ձեզ էլփոստով այս խնդրի մասին</translation>
 <translation id="8104083085214006426">Դուք օգտագործում եք բաց և ոչ անվտանգ ցանց</translation>
@@ -902,6 +917,7 @@
 <translation id="8456761643544401578">Ավոտմատ մուգ ռեժիմ</translation>
 <translation id="8461329675984532579">Տան ծառայությունների մատակարարի անունը</translation>
 <translation id="8475690821716466388">Wi-Fi ցանցը պաշտպանված է WEP PSK թույլ հաղորդակարգով</translation>
+<translation id="8476242415522716722">ստեղնաշարի լուսավորություն</translation>
 <translation id="8477551185774834963">DNS-ի հապաղումը փոքր առավելություն ունի թույլատրելի սահմանափակման նկատմամբ</translation>
 <translation id="8483248364096924578">IP հասցե</translation>
 <translation id="8491311378305535241">Չհաջողվեց միանալ HTTP կայքերին Android-ի համար հավելվածներից հրապատի միջոցով։</translation>
@@ -945,6 +961,7 @@
 <translation id="8845001906332463065">Օգնություն</translation>
 <translation id="8855781559874488009">Չհաջողվեց միանալ HTTP կայքերին հրապատի միջոցով</translation>
 <translation id="885701979325669005">Պահոց</translation>
+<translation id="885704831271383379">ստեղնաշարի լուսավորության նվազեցում</translation>
 <translation id="8863170912498892583">Միացնել մուգ թեման</translation>
 <translation id="8863888432376731307">Ստացեք «<ph name="QUERY" />» բառի <ph name="INTENT" />ը և ավելին</translation>
 <translation id="8864415976656252616">Առաջարկվող բովանդակություն չկա։ Դիտեք հիմնական տեղեկատվական բովանդակությունը։</translation>
@@ -997,6 +1014,7 @@
 <translation id="9173638680043580060">Մնացել է մեկ րոպեից քիչ</translation>
 <translation id="917720651393141712">Ստուգում</translation>
 <translation id="9188992814426075118">Ստեղնաշարը կարող է ավտոմատ կերպով հարմարեցվել պաստառին</translation>
+<translation id="9189000703457422362">Ավտոմատ հայտնաբերված APN-ներից ոչ մեկի միջոցով չհաջողվեց միանալ այս ցանցին։ Լրացուցիչ տեղեկությունների համար կապվեք ձեր բջջային օպերատորի հետ։</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Չհաջողվեց կապ հաստատել անցախուցի հետ Android հավելվածներից</translation>
 <translation id="9211490828691860325">Բոլոր աշխատասեղանները</translation>

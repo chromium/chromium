@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> hefur umsjón með þessu tæki og getur hugsanlega fylgst með því sem þú gerir.</translation>
 <translation id="1478594628797167447">Skanni</translation>
 <translation id="1483493594462132177">Senda</translation>
+<translation id="1488850966314959671">Ekki næst tenging við þetta netkerfi með virkum, sérsniðnum aðgangsstöðum. Hafðu samband við símafyrirtækið þitt til að fá frekari upplýsingar.</translation>
 <translation id="1491076385728777984">Uppfærir fastbúnað í <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">hækka hljóð</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> hefur umsjón með þessum notanda og getur stjórnað stillingum og skoðað notendavirkni með fjartengingu.</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">Sýnileiki</translation>
 <translation id="1672499492233627739">Myndskeiðsstraumur vefmyndavélar</translation>
 <translation id="1676557873873341166">Myndbandsupptaka í gangi</translation>
+<translation id="1684279041537802716">Áherslulitur</translation>
 <translation id="1703835215927279855">Bréf</translation>
 <translation id="1706391837335750954">DNS-úrlausn til staðar</translation>
 <translation id="1708602061922134366">Google-blár</translation>
@@ -562,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Leita aftur</translation>
 <translation id="5583640892426849032">Bakklykill</translation>
+<translation id="5584044598279886848">Hvorki er hægt að slökkva á né fjarlægja þennan aðgangsstað. Gakktu úr skugga um að slökkt sé á tengdum aðgangsstöðum sem er kveikt á eða þeir fjarlægðir.</translation>
 <translation id="5600027863942488546">Lykillinn <ph name="KEY_NAME" /> var prófaðu</translation>
 <translation id="5620281292257375798">Aðeins innanhúss</translation>
 <translation id="5649768706273821470">Hlusta</translation>
@@ -1011,6 +1014,7 @@
 <translation id="9173638680043580060">Innan við mínúta eftir</translation>
 <translation id="917720651393141712">Prófa</translation>
 <translation id="9188992814426075118">Lyklaborðið getur passað sjálfkrafa við veggfóðrið</translation>
+<translation id="9189000703457422362">Ekki næst tenging við þetta netkerfi með aðgangsstöðum sem eru greindir sjálfkrafa. Hafðu samband við símafyrirtækið þitt til að fá frekari upplýsingar.</translation>
 <translation id="9193744392140377127">Aðgangsstaður*</translation>
 <translation id="9204237731135241582">Ekki er hægt að tengjast gátt úr Android forritum</translation>
 <translation id="9211490828691860325">Öll skrifborð</translation>

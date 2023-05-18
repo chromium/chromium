@@ -5,6 +5,7 @@
 <translation id="1002085272681738789">برگه دوباره فعال شد</translation>
 <translation id="1003088604756913841">باز کردن پیوند در پنجره جدید <ph name="APP" /></translation>
 <translation id="100323615638474026">‏دستگاه USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="1003355351496161312">‏مرور ایمن Google</translation>
 <translation id="1004218526896219317">دسترسی به سایت</translation>
 <translation id="1005274289863221750">استفاده از میکروفون و دوربین شما</translation>
 <translation id="1005333234656240382">‏اشکال‌زدایی ADB (پل اشکال‌زدایی Android) فعال شود؟</translation>
@@ -362,7 +363,6 @@
 <translation id="1303101771013849280">‏فایل HTML نشانک‌ها</translation>
 <translation id="1303671224831497365">هیچ دستگاه بلوتوثی یافت نشد</translation>
 <translation id="130491383855577612">‏برنامه‌ها و فایل‌های Linux باموفقیت جایگزین شدند</translation>
-<translation id="1306390193749326011">دیگر <ph name="MODULE_NAME" /> را دوباره در این صفحه نخواهید دید</translation>
 <translation id="1306518237408758433">باز کردن <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="1306606229401759371">تغییر تنظیمات</translation>
 <translation id="1307165550267142340">پین ایجاد شد</translation>
@@ -571,7 +571,6 @@
 <translation id="1493892686965953381">انتظار برای <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">سایت‌ها می‌توانند برای استفاده از قلم‌های نصب‌شده در دستگاه درخواست دهند</translation>
 <translation id="1494429729245089920">ماشین مجازی «<ph name="VM_NAME" />» وجود دارد، اما ظاهراً ماشین مجازی <ph name="APP_NAME" /> معتبری نیست. لطفاً با سرپرست تماس بگیرید.</translation>
-<translation id="1495201326198374770">‏از کلیدهای عملکرد به‌عنوان کلیدهای ردیف بالای Chromebook استفاده شود</translation>
 <translation id="1495677929897281669">برگشتن به برگه</translation>
 <translation id="1498498210836053409">هنگام ویرایش نوشتار، «حالت چسبیده» خاموش شود (حالت چسبیده هوشمند)</translation>
 <translation id="1500297251995790841">دستگاه نامشخص [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -696,7 +695,6 @@
 <translation id="1596286373007273895">دردسترس</translation>
 <translation id="1596709061955594992">بلوتوث خاموش است. برای دیدن دستگاه‌های دردسترس، بلوتوث را روشن کنید.</translation>
 <translation id="1596780725094407793">- شامل زیردامنه‌ها می‌شود</translation>
-<translation id="1597852076552089763">گزینه‌های نشانک</translation>
 <translation id="1598163867407640634">استفاده از <ph name="SITE_ETLD_PLUS_ONE" /> با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">سرپرست سیستم شما به‌روزرسانی‌ها را غیرفعال کرده است.</translation>
 <translation id="1600857548979126453">دسترسی به مرحله پایانی اشکال‌زدای صفحه</translation>
@@ -913,6 +911,7 @@
 <translation id="1769104665586091481">باز کردن پیوند در &amp;پنجره جدید</translation>
 <translation id="1770407692401984718">تصویری را به اینجا بکشید یا</translation>
 <translation id="177053719077591686">‏از برنامه‌های Android در Google Drive پشتیبان‌گیری کنید.</translation>
+<translation id="1771075623623424448">به‌دنبال صفحه گزارش دستگاه مرورگر هستید؟ به <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" /> بروید.</translation>
 <translation id="177336675152937177">داده های برنامه میزبانی شده</translation>
 <translation id="1776712937009046120">افزودن کاربر</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
@@ -1143,7 +1142,6 @@
 <translation id="1956390763342388273">با این کار همه فایل‌ها از «<ph name="FOLDER_PATH" />» بارگذاری خواهد شد. تنها درصورتی که به این سایت اعتماد دارید، این کار را انجام دهید.</translation>
 <translation id="1962233722219655970">‏این صفحه از برنامه Native Client استفاده می‌کند که روی رایانه شما کار نمی‌کند.</translation>
 <translation id="1963976881984600709">محافظت استاندارد</translation>
-<translation id="1965624977906726414">مجوز خاصی ندارد.</translation>
 <translation id="1966649499058910679">وقتی کلمه‌ای گفته می‌شود، برجسته شود</translation>
 <translation id="1967970931040389207">روشن کردن نقطه اتصال</translation>
 <translation id="1969011864782743497">‏<ph name="DEVICE_NAME" /> (‏USB)</translation>
@@ -1317,7 +1315,6 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> پنهان شده است</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{شماره تلفن}one{# شماره تلفن}other{# شماره تلفن}}</translation>
 <translation id="2110941575868943054">اجازه دارند دستگاه‌های بلوتوث را جستجو کند</translation>
-<translation id="2111238878637848860">برای جابه‌جایی بین کلیدهای کار، کلید راه‌انداز نگه داشته شود</translation>
 <translation id="211144231511833662">پاک کردن نوع</translation>
 <translation id="2111670510994270194">برگه جدید در سمت راست</translation>
 <translation id="2112554630428445878">خوش آمدید، <ph name="USERNAME" /></translation>
@@ -1700,6 +1697,15 @@
 <translation id="2422125132043002186">‏بازیابی Linux لغو شد</translation>
 <translation id="2423578206845792524">ذ&amp;خیره فایل تصویری به‌عنوان...</translation>
 <translation id="2424424966051154874">{0,plural, =1{مهمان}one{مهمان (#)}other{مهمان (#)}}</translation>
+<translation id="242684489663276773">‏با این اقدام:
+          <ph name="LINE_BREAKS" />
+           • برخی‌از تنظیمات Chrome و میان‌برهای Chrome بازنشانی می‌شوند
+           <ph name="LINE_BREAK" />
+           • افزونه‌ها غیرفعال می‌شوند
+           <ph name="LINE_BREAK" />
+           • کوکی‌ها و دیگر داده‌های موقت سایت حذف می‌شوند
+            <ph name="LINE_BREAKS" />
+           نشانک‌ها، سابقه، و گذرواژه‌های ذخیره‌شده تحت‌تأثیر قرار نمی‌گیرند.</translation>
 <translation id="2428510569851653187">توضیح دهید وقتی برگه خراب شد مشغول انجام چه کاری بودید</translation>
 <translation id="2428939361789119025">‏خاموش کردن Wi-Fi</translation>
 <translation id="2428978615149723410">این سبدهای خرید</translation>
@@ -2877,7 +2883,6 @@
 <translation id="346546413339447252">دریافت تخفیف از <ph name="MERCHANT_NAME_1" />، <ph name="MERCHANT_NAME_2" /> و فروشندگان بیشتر</translation>
 <translation id="3468298837301810372">برچسب</translation>
 <translation id="3468999815377931311">‏تلفن Android</translation>
-<translation id="3469345458390352459">‏پس‌از روشن شدن، اگر با «حساب Google» خود به سیستم وارد شوید، برنامه‌های شما در همه دستگاه‌های ChromeOS دردسترس خواهند بود.  حتی اگر سایر ویژگی‌های همگام‌سازی مرورگر خاموش باشد، برنامه‌های وب ازطریق Chrome همگام‌سازی می‌شوند.</translation>
 <translation id="3469583217479686109">ابزار انتخاب</translation>
 <translation id="3470392222765168737">دنبال کردن سایت</translation>
 <translation id="3471876058939596279">‏نمی‌توان به‌طور هم‌زمان از درگاه‌های HDMI و USB نوع C برای ویدیو استفاده کرد. از درگاه ویدیو  دیگری استفاده کنید.</translation>
@@ -2917,10 +2922,8 @@
 <translation id="3497560059572256875">‏هم‌رسانی Doodle</translation>
 <translation id="3500417806337761827">‏هنگام نشاندن هم‌رسانی خطایی روی داد. هم‌رسانی‌های SMB زیادی نشانده شده است.</translation>
 <translation id="3503995387997205657">می‌توانید برنامه‌های قبلی‌تان را بازیابی کنید</translation>
-<translation id="3505030558724226696">لغو دسترسی به دستگاه</translation>
 <translation id="3505100368357440862">پیشنهادهای خرید</translation>
 <translation id="3507132249039706973">«محافظت استاندارد» روشن است</translation>
-<translation id="3507421388498836150">اجازه‌های فعلی برای «<ph name="EXTENSION_NAME" />»</translation>
 <translation id="3507888235492474624">اسکن مجدد دستگاه‌های بلوتوث</translation>
 <translation id="3508492320654304609">داده‌های ورود به سیستم شما حذف نشد</translation>
 <translation id="3508920295779105875">انتخاب یک پوشه دیگر…</translation>
@@ -3085,7 +3088,6 @@
 <translation id="3653887973853407813">‏نمی‌توانید از این افزونه استفاده کنید. ولی یا سرپرستتان «اجازه‌های سایت‌ها، برنامه‌ها، و افزونه‌ها» را در Chrome خاموش کرده است.</translation>
 <translation id="3653999333232393305">ادامه اجازه به <ph name="HOST" /> برای دسترسی به میکروفون</translation>
 <translation id="3654045516529121250">خواندن تنظیمات دسترس‌پذیری خودتان</translation>
-<translation id="3655712721956801464">{NUM_FILES,plural, =1{به یک فایل دسترسی دائم دارد.}one{به # فایل دسترسی دائم دارد.}other{به # فایل دسترسی دائم دارد.}}</translation>
 <translation id="3658871634334445293">‏شتاب TrackPoint</translation>
 <translation id="3659550105763988702">استفاده از گذرکلید برای <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">کد دسترسی نادرستی را چند بار وارد کرده‌اید. بعداً دوباره امتحان کنید</translation>
@@ -3392,7 +3394,6 @@
 <translation id="389901847090970821">انتخاب صفحه‌کلید</translation>
 <translation id="3900966090527141178">صادر کردن گذرواژه‌ها</translation>
 <translation id="3902789559055749153">انتخاب کنید گذرکلید <ph name="APP_NAME" /> چگونه ایجاد شود</translation>
-<translation id="3903158219409898205">‏از کلید راه‌انداز برای تغییر رفتار کلیدهای ردیف بالای Chromebook استفاده شود</translation>
 <translation id="3903187154317825986">صفحه‌کلید داخلی</translation>
 <translation id="3904326018476041253">خدمات مکان</translation>
 <translation id="3905761538810670789">تعمیر برنامه</translation>
@@ -3808,7 +3809,6 @@
 <translation id="4279129444466079448">می‌توانید تا <ph name="PROFILE_LIMIT" /> نمایه سیم‌کارت داخلی را در این دستگاه نصب کنید. برای افزودن نمایه‌ای دیگر، ابتدا یکی از نمایه‌ها موجود را بردارید.</translation>
 <translation id="4280325816108262082">وقتی دستگاه خاموش شود یا از آن استفاده نشود، به‌طور خودکار قطع می‌شود</translation>
 <translation id="4281844954008187215">شرایط استفاده از سرویس</translation>
-<translation id="428200245206114206">‏ازاین‌پس کلیدهای F رفتاری مشابه با کلیدهای ردیف بالای Chromebook خواهند داشت.</translation>
 <translation id="4282196459431406533">‏Smart Lock روشن شده است</translation>
 <translation id="4284903252249997120">‏ویژگی «انتخاب برای شنیدن» و صفحه‌خوان ChromeVox</translation>
 <translation id="4285418559658561636">به‌روزرسانی گذرواژه</translation>
@@ -4480,6 +4480,7 @@
 <translation id="4876895919560854374">قفل و باز کردن قفل صفحه</translation>
 <translation id="4877276003880815204">بازرسی عناصر</translation>
 <translation id="4877652723592270843">‏آیا می‌خواهید ChromeVox را که صفحه‌خوان داخلی ChromeOS Flex است فعال کنید؟ اگر پاسختان مثبت است، هر دو کلید میزان صدا را فشار دهید و پنج ثانیه نگه دارید.</translation>
+<translation id="4878261017150799673">فعال نگه داشتن سایت</translation>
 <translation id="4878634973244289103">بازخورد ارسال نمی‌شود. لطفاً بعداً دوباره امتحان کنید.</translation>
 <translation id="4878653975845355462">سرپرستتان پس‌زمینه سفارشی را خاموش کرده است</translation>
 <translation id="4878718769565915065">اثر انگشت به این کلید امنیتی اضافه نشد</translation>
@@ -5121,7 +5122,6 @@
 <translation id="5476016146231427848">‏برای استفاده از Steam در Chromebook، لطفاً دستگاهتان را بازراه‌اندازی کنید</translation>
 <translation id="5481273127572794904">اجازه ندارد چند فایل را به‌طور خودکار بارگیری کند</translation>
 <translation id="5481941284378890518">افزودن چاپگرهای اطراف</translation>
-<translation id="5483785310822538350">لغو دسترسی به فایل و دستگاه</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> لازم می‌داند از داده‌هایتان پشتیبان بگیرید و این <ph name="DEVICE_TYPE" /> را امروز برگردانید. <ph name="LINK_BEGIN" />دیدن جزئیات<ph name="LINK_END" />}one{<ph name="MANAGER" /> لازم می‌داند از داده‌هایتان پشتیبان بگیرید و این <ph name="DEVICE_TYPE" /> را ظرف {NUM_DAYS} روز برگردانید. <ph name="LINK_BEGIN" />مشاهده جزئیات<ph name="LINK_END" />}other{<ph name="MANAGER" /> لازم می‌داند از داده‌هایتان پشتیبان بگیرید و این <ph name="DEVICE_TYPE" /> را ظرف {NUM_DAYS} روز برگردانید. <ph name="LINK_BEGIN" />مشاهده جزئیات<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">افزودن برنامه</translation>
 <translation id="5485754497697573575">بازیابی همه برگه‌ها</translation>
@@ -5268,6 +5268,9 @@
 <translation id="5602765853043467355">نشانک‌ها، سابقه، گذرواژه‌ها و موارد دیگر از این دستگاه پاک شود</translation>
 <translation id="5605758115928394442">برای تأیید اینکه خودتان هستید، اعلانی به تلفنتان ارسال شد.</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{این افزونه مسدود شده است}one{این افزونه‌ها مسدود شده‌اند}other{این افزونه‌ها مسدود شده‌اند}}</translation>
+<translation id="560743070587960985">‏این فایل ممکن است ویروس یا بدافزار باشد.
+
+می‌توانید آن را برای Google ارسال کنید تا بررسی کند که ایمن است یا نه. اسکن معمولاً چند ثانیه طول می‌کشد.</translation>
 <translation id="560834977503641186">‏«همگام‌سازی Wi-Fi»، بیشتر بدانید</translation>
 <translation id="5608580678041221894">برای تنظیم یا انتقال ناحیه بریده‌شده، روی کلیدهای زیر ضربه بزنید</translation>
 <translation id="5609231933459083978">به نظر می‌رسد این برنامه معتبر نیست.</translation>
@@ -6005,6 +6008,7 @@
 <translation id="6254892857036829079">عالی</translation>
 <translation id="6257602895346497974">روشن کردن همگام‌سازی…</translation>
 <translation id="62586649943626337">سازمان‌دهی برگه‌ها با گروه‌های برگه</translation>
+<translation id="6260092874648348841">فعال نگه داشتن سایت</translation>
 <translation id="6262371516389954471">‏داده‌های پشتیبان در Google بارگذاری می‌شود و بااستفاده از گذرواژه «حساب Google» رمزگذاری می‌شود.</translation>
 <translation id="6263082573641595914">‏نسخه CA Microsoft</translation>
 <translation id="6263284346895336537">غیر مهم</translation>
@@ -6013,6 +6017,7 @@
 <translation id="6266532094411434237">درحال اتصال به <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">انتخاب گواهی برای راستی‌آزمایی خودتان در <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">باز کردن با <ph name="APP" /></translation>
+<translation id="6270309713620950855">بی‌صدا کردن یادآوری خودکار</translation>
 <translation id="6270391203985052864">سایت‌ها می‌توانند برای ارسال اعلان درخواست دهند</translation>
 <translation id="6270770586500173387">ارسال <ph name="BEGIN_LINK1" />اطلاعات برنامه و سیستم<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />معیارها<ph name="END_LINK2" /></translation>
 <translation id="6270896861225278704">کارت سفرهای جستجو</translation>
@@ -6243,7 +6248,6 @@
 <translation id="6478248366783946499">فایل خطرناک حفظ شود؟</translation>
 <translation id="6479881432656947268">‏رفتن به «نت‌بازار Chrome»</translation>
 <translation id="6480327114083866287">تحت مدیریت <ph name="MANAGER" /></translation>
-<translation id="6481978993812487794">‏پس‌از روشن شدن، اگر با «حساب Google» خود به سیستم وارد شوید، برنامه‌های شما در همه دستگاه‌های ChromeOS دردسترس خواهند بود. حتی اگر سایر ویژگی‌های همگام‌سازی مرورگر خاموش باشد، برنامه‌های وب ازطریق Chrome همگام‌سازی می‌شوند.</translation>
 <translation id="6482559668224714696">ذره‌بین تمام‌صفحه</translation>
 <translation id="6483485061007832714">باز کردن بارگیری</translation>
 <translation id="6483805311199035658">در حال باز کردن <ph name="FILE" />...</translation>
@@ -6733,7 +6737,6 @@
 <translation id="6903590427234129279">باز کردن همه (<ph name="URL_COUNT" /> مورد)</translation>
 <translation id="6903907808598579934">روشن کردن همگام‌سازی</translation>
 <translation id="6903916726032521638">جستجوی <ph name="QUERY_CLUSTER_NAME" /></translation>
-<translation id="6904344821472985372">ابطال دسترسی به فایل</translation>
 <translation id="6904655473976120856">برای خروج، دکمه «برنامه» را فشار دهید</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{‏برای حفظ ایمنی گذرواژه‌هایتان، «مدیر گذرواژه Google» پس‌از یک دقیقه عدم فعالیت قفل می‌شود}one{‏برای حفظ ایمنی گذرواژه‌هایتان، «مدیر گذرواژه Google» پس‌از {NUM_MINS} دقیقه عدم فعالیت قفل می‌شود}other{‏برای حفظ ایمنی گذرواژه‌هایتان، «مدیر گذرواژه Google» پس‌از {NUM_MINS} دقیقه عدم فعالیت قفل می‌شود}}</translation>
 <translation id="6909422577741440844">از این دستگاه دریافت شود؟</translation>
@@ -7265,6 +7268,7 @@
 <translation id="7392118418926456391">اسکن ویروس انجام نشد</translation>
 <translation id="7392915005464253525">با&amp;ز کردن مجدد پنجره بسته</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{۱ مورد کپی شد}one{{COUNT} مورد کپی شد}other{{COUNT} مورد کپی شد}}</translation>
+<translation id="7393435859300249877">هنگام استفاده از برنامه‌های خاصی مثل برنامه‌های گپ ویدیویی، اگر با میکروفون بی‌صدا صحبت کنید به شما اطلاع داده می‌شود. صدا هرگز از دستگاهتان خارج نمی‌شود.</translation>
 <translation id="7395774987022469191">تمام صفحه</translation>
 <translation id="7396017167185131589">پوشه‌های هم‌رسانی‌شده اینجا ظاهر خواهند شد</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> در هنگام راه‌اندازی سیستم شروع به کار می‌کند و در پس‌زمینه همچنان فعال خواهد بود، حتی زمانی که تمام پنجره‌های دیگر <ph name="PRODUCT_NAME" /> را ببندید.</translation>
@@ -7542,6 +7546,7 @@
 <translation id="7634280112532283638">کاهش هرزنامه و تقلب</translation>
 <translation id="7634337648687970851">درحال‌حاضر از بازیابی داده‌های محلی پشتیبانی نمی‌شود.</translation>
 <translation id="7634566076839829401">مشکلی پیش آمد. لطفاً دوباره امتحان کنید.</translation>
+<translation id="763472884969134151">تجزیه‌وتحلیل توسط <ph name="LINK" /> انجام شده است</translation>
 <translation id="7635048370253485243">سرپرستتان آن را پین کرده است</translation>
 <translation id="7635711411613274199">درحین مرور، شخصی شدن یا نشدن آگهی‌هایی که می‌بینید به این تنظیم، <ph name="BEGIN_LINK1" />موضوع‌های آگهی<ph name="LINK_END1" />، <ph name="BEGIN_LINK2" />تنظیمات کوکی<ph name="LINK_END2" /> شما، و اینکه آیا سایتی که مشاهده می‌کنید آگهی‌ها را شخصی‌سازی می‌کند یا نه بستگی دارد</translation>
 <translation id="7636919061354591437">نصب در این دستگاه</translation>
@@ -8150,7 +8155,6 @@
 <translation id="8138997515734480534">وضعیت <ph name="VM_NAME" /></translation>
 <translation id="8139447493436036221">‏فایل‌های Google Drive</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />،<ph name="SECOND_DEVICE" /></translation>
-<translation id="8141260936970642964">‏به برنامه‌ها، وب‌سایت‌ها، و منطقه زمانی سیستم اجازه داده شود از مکان تعیین‌شده توسط «خدمات مکان Google» استفاده کنند. اگر دسترسی به مکان خاموش باشد، مکانتان ممکن است همچنان ازطریق نشانی IP شما نمایان باشد.</translation>
 <translation id="8141418916163800697">می‌توانید در تنظیمات «مرکز کنترل تلفن»، ویژگی‌های بیشتری را راه‌اندازی کنید</translation>
 <translation id="8141584439523427891">اکنون باز کردن در مرورگر جایگزین</translation>
 <translation id="8141725884565838206">مدیریت گذرواژه‌های شما</translation>
@@ -8221,6 +8225,7 @@
 <translation id="8195737548602430447">به‌طور خودکار زیرنویس ناشنوایان به زبان هدف ترجمه می‌شود.</translation>
 <translation id="8197673340773315084">نام یا برچسبی مثل «کاری» یا «شخصی» اضافه کنید</translation>
 <translation id="8198456017687137612">فرستادن برگه</translation>
+<translation id="8198457270656084773">به‌دنبال صفحه گزارش دستگاه سیستم هستید؟ به <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> بروید.</translation>
 <translation id="8198511718495409170">برای اعمال کردن تنظیمات به‌روزشده «<ph name="EXTENSION_NAME" />» در این سایت، این صفحه را مجدداً بار کنید</translation>
 <translation id="8199300056570174101">مشخصات دستگاه و شبکه (سرویس)</translation>
 <translation id="8200772114523450471">ازسرگیری</translation>
@@ -8390,6 +8395,7 @@
 <translation id="8345848587667658367">اکنون می‌توانید عکس‌ها، رسانه‌ها، اعلان‌ها، و برنامه‌های جدید تلفنتان را مشاهده کنید</translation>
 <translation id="8347227221149377169">کارهای چاپی</translation>
 <translation id="834785183489258869">در «حالت ناشناس»، سایت‌ها نمی‌توانند از کوکی‌های شما برای دیدن فعالیت مرور شما در سایت‌های مختلف و برای مثال شخصی‌سازی آگهی‌ها استفاده کنند. ممکن است ویژگی‌های برخی‌از سایت‌ها کار نکند.</translation>
+<translation id="8349826889576450703">راه‌انداز</translation>
 <translation id="8350789879725387295">ابزارهای قلم در قفسه</translation>
 <translation id="8351316842353540018">‏نمایش همیشگی گزینه‌های a11y</translation>
 <translation id="8351419472474436977">این برنامه افزودنی کنترل تنظیمات پروکسی شما را در اختیار گرفته است یعنی می‌تواند هر چیزی را در که حالت آنلاین انجام می‌دهید تغییر دهد، خراب کند یا استراق سمع کند. اگر مطمئن نیستید چرا این تغییر اتفاق افتاده، احتمالاً این برنامه را نمی‌خواهید.</translation>

@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">Баруун</translation>
 <translation id="1351937230027495976">Цэсийг буулгах</translation>
 <translation id="1360220746312242196">Хуудаснаас хайж байхдаа хайлтын өмнөх тохирол руу очих</translation>
+<translation id="1360788414852622716">Профайлыг идэвхгүй болгож байна. Үүнд хэдэн минут шаардлагатай байж магадгүй.</translation>
 <translation id="1364382257761975320">Chromebook-нхээ түгжээг тайлахын тулд хурууны хээгээ ашиглана уу</translation>
 <translation id="1365866993922957110">Автомат шинэчлэлт авах</translation>
 <translation id="1372545819342940910">Дэлгэцийг дараа ашиглахаар хадгалах</translation>
@@ -545,6 +546,7 @@
 <translation id="3510164367642747937">Хулганы курсорыг тодруулах</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" />-н удирддаг бүртгэл</translation>
 <translation id="352245152354538528">{0,plural, =1{Төхөөрөмжийг 1 минутын дотор шинэчилнэ үү}other{Төхөөрөмжийг # минутын дотор шинэчилнэ үү}}</translation>
+<translation id="3522979239100719575">Боломжтой профайлыг хайж байна. Үүнд хэдэн минут шаардлагатай байж магадгүй.</translation>
 <translation id="3526440770046466733">Холбоосыг шинэ табд нээж, одоогийн табд үлдэх</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> төхөөрөмжид холбогдсон</translation>
 <translation id="3533126039236445965">Тавиур дээрх аппууд</translation>
@@ -1558,6 +1560,7 @@
 <translation id="8083540854303889870">Дараа ашиглахаар хадгалсан</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" />-д эхэлнэ <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Автомат шинэчлэлт</translation>
+<translation id="8092380135549145188">Тохиргоог гүйлгэх</translation>
 <translation id="8098591350844501178">Дэлгэцийг <ph name="RECEIVER_NAME" />-д дамжуулахыг зогсоох</translation>
 <translation id="810637681351706236">Аппыг тавиураас бэхэлснийг болиулах</translation>
 <translation id="8113423164597455979">Бүх аппд и.тэй</translation>

@@ -222,6 +222,7 @@
 <translation id="2423077901494354337">‏يمكنك الآن الاستفادة بشكل أفضل من Chrome على جهازك.</translation>
 <translation id="2434405374328098816">سبق أن حفظت كلمة مرور لاسم المستخدم "<ph name="USERNAME" />" على <ph name="WEBSITE" />.</translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
+<translation id="2439425774439590">المواقع الإلكترونية الأكثر زيارة</translation>
 <translation id="2451654228769116489">تثبيت علامة تبويب</translation>
 <translation id="2461070143328828326">إعدادات كلمات المرور</translation>
 <translation id="2469960372084740698">هل تريد إيقاف "التصفُّح الآمن"؟</translation>
@@ -443,6 +444,7 @@
 <translation id="3891414008432200754">السعر</translation>
 <translation id="3892144330757387737">سيظهر لك السجلّ هنا</translation>
 <translation id="3897092660631435901">قائمة</translation>
+<translation id="3899568514738536144">عرض سجلّ التصفّح</translation>
 <translation id="3904829425754749514">أوقفت مؤسستك ميزة المزامنة. سيظل بإمكانك الاطّلاع على الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى على هذا الجهاز. وفي حال إجراء أي تغييرات، لن تتم مزامنتها مع حسابك.</translation>
 <translation id="3913386780052199712">‏تم تسجيل الدخول إلى Chrome</translation>
 <translation id="3915450441834151894">معلومات الموقع الإلكتروني</translation>
@@ -1120,6 +1122,7 @@
 <translation id="8197543752516192074">ترجمة الصفحة</translation>
 <translation id="8205564605687841303">إلغاء</translation>
 <translation id="8206354486702514201">تم فرض هذا الإعداد بواسطة المشرف.</translation>
+<translation id="8214293972734702249">علامة تبويب مثبّتة، "<ph name="TAB_TITLE" />"</translation>
 <translation id="8225985093977202398">الصور والملفات المُخزنة مؤقتًا</translation>
 <translation id="8237382152611443140">‏فتح AutoFill Password Settings (إعدادات الملء التلقائي لكلمات المرور)</translation>
 <translation id="8248969482078657578">الحفاظ على تركيزك من خلال "علامات التبويب غير النشطة"</translation>

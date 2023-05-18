@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">Աջ</translation>
 <translation id="1351937230027495976">Ծալել ընտրացանկը</translation>
 <translation id="1360220746312242196">Անցնել էջի որոնման նախորդ արդյունքին</translation>
+<translation id="1360788414852622716">Պրոֆիլն անջատվում է։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="1364382257761975320">Ապակողպեք ձեր Chromebook-ը մատնահետքի միջոցով</translation>
 <translation id="1365866993922957110">Ստանալ ավտոմատ թարմացումներ</translation>
 <translation id="1372545819342940910">Պահել աշխատասեղանը</translation>
@@ -545,6 +546,7 @@
 <translation id="3510164367642747937">Ընդգծել մկնիկի նշորդը</translation>
 <translation id="3513798432020909783">Հաշվի կառավարիչ՝ <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Թարմացրեք սարքը 1 րոպեի ընթացքում}one{Թարմացրեք սարքը # րոպեի ընթացքում}other{Թարմացրեք սարքը # րոպեի ընթացքում}}</translation>
+<translation id="3522979239100719575">Հասանելի պրոֆիլների որոնում։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="3526440770046466733">Բացել հղումը նոր ներդիրում և մնալ ընթացիկ ներդիրում</translation>
 <translation id="353086728817903341">Միացված է <ph name="NUM_DEVICES" /> սարքի</translation>
 <translation id="3533126039236445965">Հավելվածներ դարակում</translation>
@@ -1555,6 +1557,7 @@
 <translation id="8083540854303889870">Պահված է հետագայի համար</translation>
 <translation id="8091153018031979607">Մեկնարկը՝ <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Ավտոմատ թարմացումներ</translation>
+<translation id="8092380135549145188">Ոլորման կարգավորումներ</translation>
 <translation id="8098591350844501178">Դադարեցնել էկրանի հեռարձակումը <ph name="RECEIVER_NAME" />-ին</translation>
 <translation id="810637681351706236">Ապամրացնել հավելվածը դարակից</translation>
 <translation id="8113423164597455979">Բոլորը միացված են</translation>

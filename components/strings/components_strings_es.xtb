@@ -598,6 +598,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Personaliza las herramientas de accesibilidad desde la configuración de Chrome</translation>
 <translation id="2384307209577226199">Empresa (con valores predeterminados)</translation>
+<translation id="238459632961158867">Sitio web</translation>
 <translation id="2385809941344967209">Actualiza Chrome desde la configuración</translation>
 <translation id="2386255080630008482">Se ha revocado el certificado de servidor.</translation>
 <translation id="239293030466334554">Descapotables</translation>
@@ -1047,6 +1048,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3566336457819493938">215x315 mm</translation>
 <translation id="3567778190852720481">No te puedes registrar con la cuenta de empresa (la cuenta de empresa no reúne los requisitos).</translation>
 <translation id="3567901620846335314">100x150 mm</translation>
+<translation id="3568886473829759308">Accede al sitio web para ver información, recursos o servicios que ofrece la empresa.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Permitir en este sitio web</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1367,6 +1369,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4300675098767811073">Perforado múltiple en la parte derecha</translation>
 <translation id="4302514097724775343">Toca el dinosaurio para jugar</translation>
 <translation id="4304049446746819918">{0,plural, =1{La política del administrador no recomienda mover este archivo a <ph name="DESTINATION_NAME" />}other{La política del administrador no recomienda mover estos archivos a <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="4304485328308299773">Lee las evaluaciones de los clientes sobre productos, servicios o experiencias y toma decisiones más fundamentadas con las reseñas.</translation>
 <translation id="4305666528087210886">No se ha podido acceder al archivo</translation>
 <translation id="4306529830550717874">¿Guardar dirección?</translation>
 <translation id="4306812610847412719">portapapeles</translation>
@@ -1531,6 +1534,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4724144314178270921">Puede solicitar permiso para ver texto e imágenes del portapapeles</translation>
 <translation id="4726672564094551039">Volver a cargar políticas</translation>
 <translation id="4728558894243024398">Plataforma</translation>
+<translation id="4730977633786878901">Reseñas</translation>
 <translation id="4731638775147756694">Tu administrador ha bloqueado esta aplicación</translation>
 <translation id="4733082559415072992"><ph name="URL" /> quiere utilizar la ubicación de tu dispositivo</translation>
 <translation id="4736491186715342415">Vehículos a motor</translation>
@@ -2162,6 +2166,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6284292079994426700">26x38 pulgadas</translation>
 <translation id="6284517535531159884">Tipo de origen de las variaciones</translation>
 <translation id="6285507000506177184">Botón Gestionar las descargas en Chrome: pulsa Intro para gestionar los archivos que has descargado en Chrome</translation>
+<translation id="6287197303017372967">Obtén indicaciones para llegar a tu destino con guías detalladas usando la función de navegación.</translation>
 <translation id="6289939620939689042">Color de la página</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
@@ -2185,6 +2190,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="633770708279464947">El valor <ph name="SECURE_DNS_SALT" /> no es válido y no se usará.</translation>
 <translation id="6340739886198108203">La política del administrador recomienda no hacer capturas de pantalla o grabaciones cuando se muestra contenido confidencial:</translation>
 <translation id="6341434961864773665">{0,plural, =1{La política del administrador recomienda no subir este archivo a <ph name="DESTINATION_NAME" />}other{La política del administrador recomienda no subir estos archivos a <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="634500758737709758">Indicaciones</translation>
 <translation id="6348220984832452017">Variaciones activas</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ninguna}=1{1 contraseña de <ph name="DOMAIN_LIST" /> (sincronizada)}=2{2 contraseñas de <ph name="DOMAIN_LIST" /> (sincronizadas)}other{# contraseñas de <ph name="DOMAIN_LIST" /> (sincronizadas)}}</translation>
@@ -2372,6 +2378,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6823746213313229853">Debates de radio</translation>
 <translation id="6825578344716086703">Has intentado acceder a <ph name="DOMAIN" />, pero el servidor ha presentado un certificado firmado con un algoritmo de firma no seguro (por ejemplo, SHA-1). Una posible causa de este problema es que se hayan falsificado las credenciales de seguridad presentadas por el servidor y que hayas accedido a la página de un atacante en lugar de establecer conexión con el servidor en cuestión.</translation>
 <translation id="6826993739343257035">¿Permitir realidad aumentada?</translation>
+<translation id="6828150717884939426">Llamar</translation>
 <translation id="6828866289116430505">Genética</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="683108308100148227">Ocultar elemento</translation>
@@ -2964,7 +2971,6 @@ Más información:
 <translation id="8217240300496046857">Los sitios no pueden usar cookies para hacer un seguimiento de tu actividad en la Web. Es posible que las funciones de algunos sitios no funcionen correctamente.</translation>
 <translation id="8217748145574471584">Recursos Humanos</translation>
 <translation id="8218327578424803826">Ubicación asignada:</translation>
-<translation id="8225771182978767009">La persona que ha configurado este ordenador ha elegido bloquear este sitio web.</translation>
 <translation id="8228419419708659934">Vista de dos páginas</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" /> o <ph name="TYPE_2" /></translation>
@@ -3077,7 +3083,6 @@ Más información:
 <translation id="8474910779563686872">Mostrar información para desarrolladores</translation>
 <translation id="8479754468255770962">Grapado en la parte inferior izquierda</translation>
 <translation id="8483229036294884935">Esta dirección se eliminará de tu cuenta de Google (<ph name="ACCOUNT" />)</translation>
-<translation id="8483780878231876732">Inicia sesión en Chrome para utilizar tarjetas de tu cuenta de Google</translation>
 <translation id="8488350697529856933">Aplicable a</translation>
 <translation id="8490137692873530638">Apilador 10</translation>
 <translation id="8493948351860045254">Liberar espacio</translation>
@@ -3097,6 +3102,7 @@ Más información:
 <translation id="8539500321752640291">¿Conceder 2 permisos?</translation>
 <translation id="8541158209346794904">Dispositivo Bluetooth</translation>
 <translation id="8541410041357371550">Este sitio consulta tus temas de anuncios de Chrome para mostrarte anuncios más relevantes</translation>
+<translation id="8541579497401304453">Conecta con una empresa iniciando una llamada telefónica.</translation>
 <translation id="8542014550340843547">Grapado triple en la parte inferior</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Puedes <ph name="BEGIN_ERROR_LINK" />informar de un problema de detección<ph name="END_ERROR_LINK" /> o, si comprendes los riesgos que conlleva esta acción para tu seguridad, <ph name="BEGIN_LINK" />accede a este sitio web no seguro<ph name="END_LINK" />.</translation>
@@ -3292,6 +3298,7 @@ Más información:
 <translation id="9048662076076074925">24x36 pulgadas</translation>
 <translation id="9049981332609050619">Has intentado acceder a <ph name="DOMAIN" />, pero el servidor ha presentado un certificado no válido.</translation>
 <translation id="9050666287014529139">Frase de contraseña</translation>
+<translation id="9053840549256861041">Vamos a lanzar una nueva función de privacidad en la publicidad llamada "medición de anuncios". Chrome solo comparte información muy limitada entre sitios (por ejemplo, cuándo se te ha mostrado un anuncio) para ayudar a los sitios a medir el rendimiento de los anuncios.</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">Es posible que se haya movido, editado o eliminado.</translation>
 <translation id="9063398205799684336">Sobre Kaku 2</translation>

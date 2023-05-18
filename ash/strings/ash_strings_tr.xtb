@@ -94,6 +94,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1346748346194534595">Sağa</translation>
 <translation id="1351937230027495976">Menüyü daralt</translation>
 <translation id="1360220746312242196">Sayfa ararken aramayla ilgili bir önceki eşleşmeye git</translation>
+<translation id="1360788414852622716">Profil devre dışı bırakılıyor. Bu işlem birkaç dakika sürebilir.</translation>
 <translation id="1364382257761975320">Chromebook'unuzun kilidini açmak için parmak izinizi kullanın</translation>
 <translation id="1365866993922957110">Otomatik güncellemeler al</translation>
 <translation id="1372545819342940910">Masayı daha sonra kullanmak için kaydet</translation>
@@ -545,6 +546,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3510164367642747937">Fare imlecini vurgula</translation>
 <translation id="3513798432020909783">Hesap <ph name="MANAGER_EMAIL" /> tarafından yönetiliyor</translation>
 <translation id="352245152354538528">{0,plural, =1{Cihazı 1 dakika içinde güncelleyin}other{Cihazı # dakika içinde güncelleyin}}</translation>
+<translation id="3522979239100719575">Mevcut profiller aranıyor. Bu işlem birkaç dakika sürebilir.</translation>
 <translation id="3526440770046466733">Bağlantıyı yeni sekmede açıp geçerli sekmede kal</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> cihaza bağlanıldı</translation>
 <translation id="3533126039236445965">Raftaki uygulamalar</translation>
@@ -1557,6 +1559,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8083540854303889870">Daha sonra kullanmak için kaydedildi</translation>
 <translation id="8091153018031979607">Başlama zamanı: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Otomatik güncellemeler</translation>
+<translation id="8092380135549145188">Kaydırma denetimleri</translation>
 <translation id="8098591350844501178">Ekranın <ph name="RECEIVER_NAME" /> cihazına yayınını durdur</translation>
 <translation id="810637681351706236">Uygulamanın raftaki sabitlemesini kaldırın</translation>
 <translation id="8113423164597455979">Açık, tümü</translation>

@@ -598,6 +598,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Přizpůsobte si v nastavení Chromu nástroje pro usnadnění přístupu</translation>
 <translation id="2384307209577226199">Výchozí podnikové nastavení</translation>
+<translation id="238459632961158867">Web</translation>
 <translation id="2385809941344967209">Aktualizujte Chrome v nastavení Chromu</translation>
 <translation id="2386255080630008482">Certifikát serveru byl zamítnut.</translation>
 <translation id="239293030466334554">Kabriolety</translation>
@@ -1044,6 +1045,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3566336457819493938">215 × 315 mm</translation>
 <translation id="3567778190852720481">Pomocí podnikového účtu se nelze zaregistrovat.</translation>
 <translation id="3567901620846335314">100 × 150 mm</translation>
+<translation id="3568886473829759308">Přejít na web a zobrazit informace, zdroje nebo služby, které firma poskytuje.</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3575121482199441727">Povolit pro tento web</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1363,6 +1365,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4300675098767811073">Několik děr vpravo</translation>
 <translation id="4302514097724775343">Klepnutím na dinosaura spustíte hru</translation>
 <translation id="4304049446746819918">{0,plural, =1{Zásady administrátora nedoporučují přesun tohoto souboru do následujícího cíle: <ph name="DESTINATION_NAME" />}few{Zásady administrátora nedoporučují přesun těchto souborů do následujícího cíle: <ph name="DESTINATION_NAME" />}many{Zásady administrátora nedoporučují přesun těchto souborů do následujícího cíle: <ph name="DESTINATION_NAME" />}other{Zásady administrátora nedoporučují přesun těchto souborů do následujícího cíle: <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="4304485328308299773">Zobrazit zákaznická hodnocení produktů, služeb nebo zkušeností, abyste se podle recenzí mohli lépe rozhodnout.</translation>
 <translation id="4305666528087210886">K souboru nelze získat přístup</translation>
 <translation id="4306529830550717874">Uložit adresu?</translation>
 <translation id="4306812610847412719">schránka</translation>
@@ -1527,6 +1530,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4724144314178270921">Může žádat o zobrazení textu a obrázků ve schránce</translation>
 <translation id="4726672564094551039">Znovu načíst zásady</translation>
 <translation id="4728558894243024398">Platforma</translation>
+<translation id="4730977633786878901">Recenze</translation>
 <translation id="4731638775147756694">Administrátor aplikaci zablokoval</translation>
 <translation id="4733082559415072992">Web <ph name="URL" /> chce použít polohu vašeho zařízení</translation>
 <translation id="4736491186715342415">Motorová vozidla</translation>
@@ -2157,6 +2161,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6284292079994426700">26 × 38 palců</translation>
 <translation id="6284517535531159884">Typ zdroje variant</translation>
 <translation id="6285507000506177184">Tlačítko správy stažených souborů v Chromu. Stisknutím klávesy Enter můžete spravovat soubory, které jste v Chromu stáhli</translation>
+<translation id="6287197303017372967">Získat trasu k cíli pomocí funkce podrobné navigace.</translation>
 <translation id="6289939620939689042">Barva stránky</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">Bezpečnostní kód kreditní karty (CVC):</translation>
@@ -2180,6 +2185,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="633770708279464947">Hodnota <ph name="SECURE_DNS_SALT" /> není platná a nebude použita.</translation>
 <translation id="6340739886198108203">Zásady správce nedoporučují pořizování snímků nebo záznamů obrazovky, když je viditelný důvěrný obsah:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Zásady administrátora nedoporučují nahrávat tento soubor do následujícího cíle: <ph name="DESTINATION_NAME" />}few{Zásady administrátora nedoporučují nahrávat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}many{Zásady administrátora nedoporučují nahrávat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}other{Zásady administrátora nedoporučují nahrávat tyto soubory do následujícího cíle: <ph name="DESTINATION_NAME" />}}</translation>
+<translation id="634500758737709758">Trasa</translation>
 <translation id="6348220984832452017">Aktivní variace</translation>
 <translation id="6349101878882523185">Nainstalovat aplikaci <ph name="APP_NAME" /></translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Žádné}=1{1 heslo (pro <ph name="DOMAIN_LIST" />, synchronizováno)}=2{2 hesla (pro <ph name="DOMAIN_LIST" />, synchronizováno)}few{# hesla (pro <ph name="DOMAIN_LIST" />, synchronizováno)}many{# hesla (pro <ph name="DOMAIN_LIST" />, synchronizováno)}other{# hesel (pro <ph name="DOMAIN_LIST" />, synchronizováno)}}</translation>
@@ -2367,6 +2373,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6823746213313229853">Mluvené rozhlasové stanice</translation>
 <translation id="6825578344716086703">Pokusili jste se přejít na web <ph name="DOMAIN" />, server však předložil certifikát podepsaný slabým algoritmem (například SHA-1). To znamená, že bezpečnostní pověření předložená serverem mohou být falešná a může se jednat o úplně jiný server, než předpokládáte (můžete komunikovat s útočníkem).</translation>
 <translation id="6826993739343257035">Povolit rozšířenou realitu?</translation>
+<translation id="6828150717884939426">Zavolat</translation>
 <translation id="6828866289116430505">Genetika</translation>
 <translation id="6831043979455480757">Přeložit</translation>
 <translation id="683108308100148227">Skrýt položku</translation>
@@ -2958,7 +2965,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8217240300496046857">Weby vás nemohou na internetu sledovat pomocí souborů cookie. Některé weby mohou přestat fungovat.</translation>
 <translation id="8217748145574471584">Lidské zdroje</translation>
 <translation id="8218327578424803826">Přiřazené místo:</translation>
-<translation id="8225771182978767009">Uživatel, který tento počítač nastavoval, se rozhodl tento web blokovat.</translation>
 <translation id="8228419419708659934">Zobrazení dvou stránek</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -3071,7 +3077,6 @@ Další podrobnosti:
 <translation id="8474910779563686872">Zobrazit podrobnosti pro vývojáře</translation>
 <translation id="8479754468255770962">Sponka vlevo dole</translation>
 <translation id="8483229036294884935">Tato adresa bude smazána z vašeho účtu Google (<ph name="ACCOUNT" />)</translation>
-<translation id="8483780878231876732">Chcete-li používat karty z účtu Google, přihlaste se do Chromu.</translation>
 <translation id="8488350697529856933">Platí pro</translation>
 <translation id="8490137692873530638">Stohovač 10</translation>
 <translation id="8493948351860045254">Uvolnit místo</translation>
@@ -3091,6 +3096,7 @@ Další podrobnosti:
 <translation id="8539500321752640291">Udělit dvě oprávnění?</translation>
 <translation id="8541158209346794904">Zařízení Bluetooth</translation>
 <translation id="8541410041357371550">Tento web získává témata reklam z Chromu, aby vám mohl zobrazovat relevantnější reklamy</translation>
+<translation id="8541579497401304453">Kontaktovat firmu zahájením telefonního hovoru.</translation>
 <translation id="8542014550340843547">Tři sponky dole</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Můžete <ph name="BEGIN_ERROR_LINK" />nahlásit problém se zjištěným webem<ph name="END_ERROR_LINK" />. Pokud bezpečnostní rizika chápete, můžete <ph name="BEGIN_LINK" />tento nespolehlivý web navštívit<ph name="END_LINK" />.</translation>

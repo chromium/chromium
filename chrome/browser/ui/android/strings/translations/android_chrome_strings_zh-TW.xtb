@@ -574,6 +574,7 @@
 <translation id="4188221736490993796">按 Z 到 A 排序</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4196597275619698563">建立卡片</translation>
+<translation id="4197828496439691735">{NUM_TABS,plural, =1{這部裝置上的 1 個分頁}other{這部裝置上的 # 個分頁}}</translation>
 <translation id="4198423547019359126">沒有可用的下載位置</translation>
 <translation id="4202218894997543208">你封鎖的主題</translation>
 <translation id="4214315110991671325">如果你允許 Cookie，Chrome 可能會使用 Cookie 預先載入網頁。</translation>
@@ -588,6 +589,7 @@
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />我們會使用哪些資料：<ph name="END_BOLD" />你的瀏覽記錄，以及在這部裝置上透過 Chrome 造訪的網站記錄。</translation>
 <translation id="4269820728363426813">複製連結網址</translation>
 <translation id="4283102315569707115">要讓系統預設顯示電腦版網站嗎？</translation>
+<translation id="4285846616383034558">Cookie、快取和其他網站資料</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />在 Android 設定中開啟螢幕鎖定功能<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">新增無痕分頁</translation>
 <translation id="4298388696830689168">連結的網站</translation>
@@ -678,6 +680,7 @@
 <translation id="4763480195061959176">影片</translation>
 <translation id="4766313118839197559">密碼會儲存至這部裝置上的密碼管理工具。</translation>
 <translation id="4766678251456904326">在裝置上新增帳戶</translation>
+<translation id="4767947714785277816">我們即將推出名為「廣告評估」的全新廣告隱私權功能。Chrome 只會在網站和應用程式之間分享相當有限的資訊 (例如向使用者放送廣告的時段)，協助評估廣告成效。</translation>
 <translation id="4769095993849849966">新檔名</translation>
 <translation id="4778653490315793244">目前還沒有內容</translation>
 <translation id="4787736314074622408">要刪除 <ph name="ITEM_TITLE" /> 嗎？</translation>
@@ -913,6 +916,7 @@
 <translation id="6011308810877101166">改善搜尋建議</translation>
 <translation id="6026538407078977628">展開至全螢幕模式</translation>
 <translation id="6030719887161080597">管理網站用來評估廣告成效的資訊</translation>
+<translation id="6034146297924778597">系統將刪除過去 15 分鐘的歷史記錄：</translation>
 <translation id="6039379616847168523">跳至下一個分頁</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="604124094241169006">自動</translation>

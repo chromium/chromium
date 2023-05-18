@@ -657,7 +657,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2544546346215446551">Administrator uruchomił ponownie Twoje urządzenie</translation>
 <translation id="2544644783021658368">Pojedynczy dokument</translation>
 <translation id="254524874071906077">Ustaw Chrome jako przeglądarkę domyślną</translation>
-<translation id="2546283357679194313">Pliki cookie i dane stron</translation>
+<translation id="2546283357679194313">Pliki cookie i dane witryn</translation>
 <translation id="2547466893236767989">Projektowanie i programowanie internetowe</translation>
 <translation id="254947805923345898">Wartość zasady jest nieprawidłowa.</translation>
 <translation id="255002559098805027">Serwer <ph name="HOST_NAME" /> wysłał nieprawidłową odpowiedź.</translation>
@@ -2974,7 +2974,6 @@ Dodatkowe informacje:
 <translation id="8217240300496046857">Strony nie mogą używać plików cookie śledzących, co robisz w sieci. Funkcje niektórych stron mogą nie działać prawidłowo.</translation>
 <translation id="8217748145574471584">Zasoby ludzkie</translation>
 <translation id="8218327578424803826">Przypisana lokalizacja:</translation>
-<translation id="8225771182978767009">Administrator tego komputera zablokował tę witrynę.</translation>
 <translation id="8228419419708659934">Widok dwóch stron</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -3088,7 +3087,6 @@ Dodatkowe informacje:
 <translation id="8474910779563686872">Pokaż informacje dla deweloperów</translation>
 <translation id="8479754468255770962">Zszywka w lewym dolnym rogu</translation>
 <translation id="8483229036294884935">Ten adres zostanie usunięty z Twojego konta Google (<ph name="ACCOUNT" />)</translation>
-<translation id="8483780878231876732">Aby użyć kart z konta Google, zaloguj się w Chrome</translation>
 <translation id="8488350697529856933">Dotyczy</translation>
 <translation id="8490137692873530638">Układarka 10</translation>
 <translation id="8493948351860045254">Zwolnij miejsce</translation>

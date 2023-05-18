@@ -1201,9 +1201,11 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3927932062596804919">Uždrausti</translation>
 <translation id="393316646445601645">Internetas ir telekomunikacijos</translation>
 <translation id="3939773374150895049">Naudoti „WebAuthn“ vietoj CVC?</translation>
+<translation id="3941630233824954464">Įgalinti privalomą pakartotinį autentifikavimą</translation>
 <translation id="3943857333388298514">Įklijuoti</translation>
 <translation id="3946209740501886391">Visada klausti šioje svetainėje</translation>
 <translation id="3947595700203588284">Gali būti prašoma prisijungti prie MIDI įrenginių</translation>
+<translation id="3948588869002647271">Trūksta šios programos arba ji pažeista</translation>
 <translation id="3949571496842715403">Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikate nenurodomi temos alternatyvūs pavadinimai. Tai gali būti dėl netinkamos konfigūracijos arba dėl ryšį pertraukusio užgrobėjo.</translation>
 <translation id="3949601375789751990">Naršymo istorija rodoma čia</translation>
 <translation id="3949790930165450333">„<ph name="DEVICE_NAME" />“ (<ph name="DEVICE_ID" />)</translation>
@@ -2204,6 +2206,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6370022303958842211">Įrenginių prieigos veiksmai, pvz., prisijungimai (įskaitant nepavykusių prisijungimų priežastis), atsijungimai, užrakinimai ir atrakinimai</translation>
 <translation id="6374469231428023295">Bandyti dar kartą</translation>
 <translation id="6374865374745447009">langų tvarkymas</translation>
+<translation id="6376881782310775282">Nepavyko pasiekti šios programos kūrimo serverio</translation>
 <translation id="6377268785556383139">Rezultatų pagal užklausą „<ph name="SEARCH_TEXT" />“: 1</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Galimi apmokestinimai.</translation>
@@ -2972,7 +2975,6 @@ Papildoma išsami informacija:
 <translation id="8217240300496046857">Svetainės negali naudoti slapukų, stebinčių jus žiniatinklyje. Funkcijos gali neveikti tam tikrose svetainėse.</translation>
 <translation id="8217748145574471584">Žmogiškieji ištekliai</translation>
 <translation id="8218327578424803826">Priskirta vieta:</translation>
-<translation id="8225771182978767009">Šį kompiuterį nustatęs asmuo pasirinko blokuoti šią svetainę.</translation>
 <translation id="8228419419708659934">Dviejų puslapių peržiūra</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -3013,6 +3015,7 @@ Papildoma išsami informacija:
 <translation id="8286799286781881307">Administratoriaus patvirtintos programos gali užfiksuoti visus prie įrenginio pridėtus ekranus. Šią informaciją galima apdoroti vietiniu mastu arba įkelti į organizacijos serverius.</translation>
 <translation id="8288807391153049143">Rodyti sertifikatą</translation>
 <translation id="8289355894181816810">Jei nesate tikri, ką tai reiškia, susisiekite su tinklo administratoriumi.</translation>
+<translation id="8292520987784410870">Visada patvirtinti?</translation>
 <translation id="8293206222192510085">Pridėti žymę</translation>
 <translation id="829335040383910391">garsas</translation>
 <translation id="8294431847097064396">Šaltinis</translation>
@@ -3085,7 +3088,6 @@ Papildoma išsami informacija:
 <translation id="8474910779563686872">Rodyti išsamią kūrėjo informaciją</translation>
 <translation id="8479754468255770962">Sankabėlė apačioje kairėje</translation>
 <translation id="8483229036294884935">Šis adresas bus ištrintas iš jūsų „Google“ paskyros (<ph name="ACCOUNT" />)</translation>
-<translation id="8483780878231876732">Jei norite naudoti korteles iš „Google“ paskyros, prisijunkite prie „Chrome“</translation>
 <translation id="8488350697529856933">Taikoma</translation>
 <translation id="8490137692873530638">10 dėtuvė</translation>
 <translation id="8493948351860045254">Atlaisvinti vietos</translation>
@@ -3113,6 +3115,7 @@ Papildoma išsami informacija:
 <translation id="854892890027593466">C6 / C5 vokas</translation>
 <translation id="8553387990086529628">Turizmo traukos vietovės</translation>
 <translation id="8554010658308662631">Įkelti daugiau</translation>
+<translation id="8554802735558319842">Jei norite padidinti saugumą bendrai naudojamuose įrenginiuose, įjunkite patvirtinimą kiekvieną kartą, kai mokate naudodami automatinį pildymą.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Iš naujo nustatyti leidimą}one{Iš naujo nustatyti leidimus}few{Iš naujo nustatyti leidimus}many{Iš naujo nustatyti leidimus}other{Iš naujo nustatyti leidimus}}</translation>
 <translation id="8555010941760982128">Naudokite šį kodą atsiskaitydami</translation>
 <translation id="8557066899867184262">Kortelės saugos kodas (CVC) nurodytas kitoje kortelės pusėje.</translation>
@@ -3302,6 +3305,7 @@ Papildoma išsami informacija:
 <translation id="9048662076076074925">24 x 36 col.</translation>
 <translation id="9049981332609050619">Bandėte pasiekti <ph name="DOMAIN" />, bet serveris pateikė neteisingą sertifikatą.</translation>
 <translation id="9050666287014529139">Slaptafrazė</translation>
+<translation id="9053840549256861041">Pristatome naują skelbimų privatumo funkciją, vadinamą skelbimų vertinimu. „Chrome“ bendrina tik labai ribotą informaciją svetainėse, pvz., kada skelbimas buvo rodomas, kad padėtų svetainėms įvertinti skelbimų našumą.</translation>
 <translation id="9056953843249698117">Parduotuvė</translation>
 <translation id="9062620674789239642">Galbūt jis buvo perkeltas, redaguotas ar ištrintas.</translation>
 <translation id="9063398205799684336">„Kaku 2“ vokas</translation>

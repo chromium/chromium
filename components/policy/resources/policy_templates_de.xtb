@@ -2930,6 +2930,11 @@ In Version 114 und höher ist <ph name="DOH_SALT_POLICY_NAME" /> optional, wenn
           Diese Richtlinie kommt nur vorübergehend zum Einsatz und wird voraussichtlich in <ph name="PRODUCT_NAME" /> 107 entfernt. Die Frist kann verlängert werden, sofern bei Unternehmen Bedarf besteht.
           </translation>
 <translation id="3678069907945250643">Google Fotos den Zugriff über die Personalisierungs-App erlauben</translation>
+<translation id="3683696721696720186">Konfiguriert eine Liste von Browserdatentypen, die beim Schließen aller Browserfenster gelöscht werden sollen. Die folgenden Datentypen sind verfügbar: Browserverlauf (<ph name="DATA_TYPE_BROWSING_HISTORY" />), Downloadverlauf (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), Cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), Cache (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), die Funktion „Autofill“ (<ph name="DATA_TYPE_AUTOFILL" />), Passwörter (<ph name="DATA_TYPE_PASSWORD" />), Website-Einstellungen (<ph name="DATA_TYPE_SITE_SETTINGS" />) und Daten von gehosteten Apps (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Diese Richtlinie hat keinen Vorrang vor <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+Für diese Richtlinie muss die Richtlinie <ph name="SYNC_DISABLED_POLICY_NAME" /> auf „True“ gesetzt sein. Andernfalls wird sie ignoriert. Wenn diese Richtlinie auf Plattformebene eingerichtet ist, muss die Synchronisierung auf Plattformebene deaktiviert werden. Ist sie auf Nutzerebene eingerichtet, muss die Synchronisierung für diesen Nutzer deaktiviert werden, damit die Richtlinie wirksam ist.
+
+      Wenn <ph name="PRODUCT_NAME" /> nicht ordnungsgemäß beendet wird, z. B. beim Absturz des Browsers oder Betriebssystems, werden die Browserdaten beim nächsten Laden des Profils gelöscht.</translation>
 <translation id="3685979383016152590">Durch die Richtlinie wird angegeben, welche Zugriffsrichtlinie für die Massenkonfiguration von Druckern verwendet wird. Dadurch wird festgelegt, welche Drucker von <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> für Nutzer verfügbar sind.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (Wert 0) verwendet <ph name="PRINTERS_BULK_BLOCKLIST" />, um den Zugriff auf die angegebenen Drucker einzuschränken
@@ -4237,7 +4242,6 @@ Diese Richtlinie ist vorübergehend verfügbar und wird nach Einführung der Sys
 
       Der Standardwert (0) bedeutet, dass diese Funktion deaktiviert ist.</translation>
 <translation id="4937423591320233496">Vorgeschlagene Inhalte deaktivieren</translation>
-<translation id="4940810901775798837">Zulassen, dass unsichere Websites Anfragen an jeden Netzwerk-Endpunkt senden</translation>
 <translation id="4942096314850617489">Remote-Attestierung für den Nutzer deaktivieren</translation>
 <translation id="4942681160308347946">Wenn du die Richtlinie auf "True" setzt, wird gesprochenes Feedback auf dem Anmeldebildschirm aktiviert. Wenn du die Richtlinie auf "False" setzt, wird gesprochenes Feedback auf dem Anmeldebildschirm deaktiviert.
 
@@ -7613,7 +7617,6 @@ Wenn man <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> oder <ph name="LACROS_
       Ist diese Richtlinie festgelegt, kann der Nutzer sie weder ändern noch überschreiben.</translation>
 <translation id="8080200590486938727">Plug-in-Suchfunktion deaktivieren</translation>
 <translation id="8089200718228084417">Veraltetes Drucken über Privet aktivieren</translation>
-<translation id="8089236320223488328">Standardverhalten anwenden, wenn festgelegt wird, ob unsichere Websites Anfragen an jeden Netzwerk-Endpunkt senden können</translation>
 <translation id="8091982561085048989">Boolescher Parameter, der angibt, ob zum Einrichten des Druckers IPP Everywhere verwendet werden soll. Dieser Parameter wird unter <ph name="PRODUCT_OS_NAME" /> Version 76 und höher unterstützt.</translation>
 <translation id="8099880303030573137">Inaktivitätsverzögerung im Akkubetrieb</translation>
 <translation id="8101381354936029836">Atomische Richtlinien-Gruppe:</translation>

@@ -2939,6 +2939,11 @@ En la versión 114 y posteriores, <ph name="DOH_SALT_POLICY_NAME" /> es opcional
           Se trata de una política temporal y se prevé que se elimine en la versión 107 de <ph name="PRODUCT_NAME" />. Este plazo puede ampliarse si lo necesitan las empresas.
           </translation>
 <translation id="3678069907945250643">Permitir el acceso a Google Fotos desde la aplicación de personalización</translation>
+<translation id="3683696721696720186">Configura una lista de los tipos de datos de navegación que se deben eliminar cuando el usuario cierra todas las ventanas del navegador. Los tipos de datos disponibles son los siguientes: historial de navegación (<ph name="DATA_TYPE_BROWSING_HISTORY" />), historial de descargas (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), caché <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, Autocompletar (<ph name="DATA_TYPE_AUTOFILL" />), contraseñas (<ph name="DATA_TYPE_PASSWORD" />), configuración de sitios (<ph name="DATA_TYPE_SITE_SETTINGS" />) y datos de aplicaciones alojadas (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Esta política no prevalece sobre <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+La política requiere asignar el valor true a la política <ph name="SYNC_DISABLED_POLICY_NAME" />. De lo contrario, se ignorará. Si la política se establece a nivel de plataforma, se debe inhabilitar la sincronización a nivel de plataforma. Si la política se establece a nivel de usuario, se debe inhabilitar la sincronización en el caso de ese usuario para que la política se haga efectiva.
+
+      Si <ph name="PRODUCT_NAME" /> no se cierra correctamente (por ejemplo, si el navegador o el SO fallan), los datos de navegación se borrarán la próxima vez que se cargue el perfil.</translation>
 <translation id="3685979383016152590">Si se establece esta política, se designará qué política de acceso se utiliza para configurar impresoras en bloque y controlará qué impresoras de la política <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> están disponibles para los usuarios.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (valor 0) utiliza <ph name="PRINTERS_BULK_BLOCKLIST" /> para restringir el acceso a las impresoras especificadas
@@ -3347,6 +3352,16 @@ Esta política es una solución temporal y se eliminará gradualmente (está pre
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Esta política no acepta el valor <ph name="WILDCARD_VALUE" />.</translation>
 <translation id="4061590579642538878">Proporcionar información de informes sobre fallos</translation>
+<translation id="4062646759141042418">Habilita <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> en una lista de URLs.
+
+Si se define esta política, se especificarán las URLs a las que <ph name="PRODUCT_NAME" /> les ofrecerá la opción de iniciar el flujo de atestación para perfiles gestionados. Este último permite que esos sitios web obtengan un conjunto acreditado de señales contextuales del dispositivo.
+Esta política solo se puede configurar a través de la página de Chrome Enterprise Connectors en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Si no se define esta política o se deja vacía, ningún sitio web podrá iniciar un flujo de atestación a nivel de usuario ni obtener señales del dispositivo. Sin embargo, si se habilita la política <ph name="BROWSER_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST" /> correspondiente, se podrá iniciar el flujo de atestación en el navegador gestionado y se podrán recoger las señales del dispositivo.
+
+En el caso de <ph name="PRODUCT_OS_NAME" />, esta política está relacionada con la atestación remota en la que se genera automáticamente un certificado y se sube al servidor. Para usar el flujo de atestación en la pantalla de inicio de sesión del dispositivo, usa la política <ph name="DEVICE_LOGIN_SCREEN_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
+
+Para obtener información detallada sobre los patrones válidos de <ph name="URL_LABEL" />, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4070039109671307724">Varios</translation>
 <translation id="4072225853834793549">Inhabilitar los accesos directos de accesibilidad en la pantalla de inicio de sesión</translation>
 <translation id="4075675819066819571">Colocar la estantería en la parte izquierda de la pantalla</translation>
@@ -4117,6 +4132,7 @@ Esta política es temporal y se eliminará en cuanto se lance la cancelación de
   Si se asigna el valor true a esta política, la cancelación del eco de audio del sistema siempre estará habilitada.
 
   Aunque se asigne el valor false a esta política o no se defina, es posible que la cancelación del eco del sistema se habilite en función del plan de lanzamiento, pero esta política no la implementará obligatoriamente.</translation>
+<translation id="4800865664096110749">Habilitar el flujo de atestación de <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para una lista de URLs en perfiles gestionados</translation>
 <translation id="4801512016965057443">Permitir el roaming de datos móviles</translation>
 <translation id="4801647366128872782">Especifica las URLs que permiten el informe de tecnología antigua</translation>
 <translation id="4802744647065138872">Limita el número de instantáneas de datos de usuario retenidas para usarlas en caso de restauración de emergencia.</translation>
@@ -4261,7 +4277,6 @@ Esta política es temporal y se eliminará en cuanto se lance la cancelación de
 
       El valor predeterminado (0) significa que esta función está inhabilitada.</translation>
 <translation id="4937423591320233496">Inhabilitar sugerencias de contenido</translation>
-<translation id="4940810901775798837">Permitir que los sitios web no seguros envíen solicitudes a cualquier punto final de la red</translation>
 <translation id="4942096314850617489">Inhabilitar la atestación remota para el usuario</translation>
 <translation id="4942681160308347946">Si se le asigna el valor "true" a esta política, los mensajes de voz se activan en la pantalla de inicio de sesión. Si se le asigna el valor "false", los mensajes de voz se desactivan en la pantalla de inicio de sesión.
 
@@ -5454,6 +5469,14 @@ Si se inhabilita esta política, se inhabilitará la protección de extensiones 
       Si no se le asigna ningún valor, <ph name="PRODUCT_NAME" /> usa el directorio de caché predeterminado, pero lo usuarios podrán cambiar el ajuste con el indicador de línea de comandos "--disk-cache-dir".
 
       <ph name="PRODUCT_NAME" /> gestiona el contenido del directorio raíz de un volumen. Para evitar que se pierdan datos o que se produzcan otros errores, esta política no se debe asignar al directorio raíz ni a ningún otro directorio que se use para otros propósitos. Consulta las variables que puedes usar en esta página: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
+<translation id="6082391187598394288">Esta política se puede usar temporalmente para forzar la compatibilidad con la API PPB_VideoDecoder(Dev).
+
+Si la política se inhabilita o no se define, el navegador decidirá si se admite la API.
+Si se habilita la política, se admitirá la API.
+
+Esta política se puede usar en caso de que surjan problemas debido a que estamos eliminando la compatibilidad con esta API. Si tienes que usar esta política, avisa de un error en crbug.com, explica cómo la quieres usar y pon en copia a {blundell, vasilyt}@chromium.org. La política está disponible hasta la versión 114 de <ph name="PRODUCT_NAME" />. En versiones posteriores, se eliminó la compatibilidad con esta API de forma incondicional.
+
+NOTA: Solo los procesos de renderizado que se hayan iniciado recientemente reflejarán los cambios de esta política mientras se esté ejecutando el navegador.</translation>
 <translation id="6083631234867522991">Windows (clientes de Windows):</translation>
 <translation id="608788685013546076">Establece el umbral de batería de Peak Shift en forma de porcentaje</translation>
 <translation id="6089679180657323464">Controla los ajustes del controlador de diagnóstico y telemetría wilco.</translation>
@@ -5580,6 +5603,14 @@ El tiempo de espera de inactividad para que se inicie el salvapantallas y el int
       Si se asigna un color hexadecimal válido a esta política, se generará y se aplicará de forma automática un tema basado en ese color al navegador. Los usuarios no podrán cambiar el tema definido por la política.
 
       Si no se asigna ningún valor a la política, los usuarios podrán cambiar al tema que prefieran en su navegador.</translation>
+<translation id="6195356309340063061">Habilita <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para una lista de URLs.
+
+Si se define esta política, se especificarán las URLs a las que <ph name="PRODUCT_NAME" /> les ofrecerá la opción de iniciar el flujo de atestación para navegadores gestionados. Este último permite que esos sitios web obtengan un conjunto acreditado de señales contextuales del dispositivo.
+Esta política solo se puede configurar a través de la página de Chrome Enterprise Connectors en la <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Si no se define esta política o se deja vacía, ningún sitio web podrá iniciar un flujo de atestación a nivel de navegador ni obtener señales del dispositivo. Sin embargo, si se habilita la política <ph name="USER_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST" /> correspondiente, se podrá iniciar el flujo de atestación en el perfil gestionado y se podrán recoger las señales del dispositivo.
+
+Para obtener información detallada sobre los patrones válidos de <ph name="URL_LABEL" />, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="6195802366906945965">Determina si se utilizará el verificador de certificados integrado para verificar los certificados de los servidores</translation>
 <translation id="6198947200418556248">Esta política está obsoleta. Si necesitas que las cookies tengan el comportamiento antiguo, usa <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />. Te permite revertir todas las cookies al comportamiento antiguo de <ph name="ATTRIBUTE_SAMESITE_NAME" />. Si restableces el comportamiento antiguo, las cookies que no especifiquen un atributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> se tratarán como si fueran <ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />. Además, se eliminará el requisito de que las cookies <ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" /> tengan el atributo <ph name="ATTRIBUTE_SECURE_NAME" /> y se omitirá la comparación de esquemas cuando se evalúe si dos sitios son iguales. Para ver la descripción completa, consulta https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
 
@@ -7200,6 +7231,7 @@ Esta política sustituye a la obsoleta de <ph name="WINDOW_PLACEMENT_BLOCKED_FOR
       Si se inhabilita la política, no se realizará la recogida de datos anónima con clave de URL.
 
       Si no se establece la política, el usuario podrá cambiar este ajuste manualmente.</translation>
+<translation id="7585312329612243723">Habilitar el flujo de atestación de <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para una lista de URLs en navegadores gestionados</translation>
 <translation id="7587345076013230465">Pedir al usuario que seleccione el certificado de cliente cuando la política de selección automática encuentre coincidencias con varios certificados en la pantalla de inicio de sesión</translation>
 <translation id="7587921466180902617">Habilitar dogfood de Grabación de pantalla para usuarios de Family Link</translation>
 <translation id="759957074386651883">Configuración de Navegación segura</translation>
@@ -7739,7 +7771,6 @@ Usar <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> o <ph name="LACROS_SELECTI
       Si se asigna un valor a esta política, el usuario no podrá cambiarlo ni anularlo.</translation>
 <translation id="8080200590486938727">Inhabilitar el buscador de complementos</translation>
 <translation id="8089200718228084417">Habilitar el protocolo Privet de impresión obsoleto</translation>
-<translation id="8089236320223488328">Usar comportamiento predeterminado al determinar si los sitios web no seguros pueden enviar solicitudes a cualquier punto final de la red</translation>
 <translation id="8091982561085048989">Indicador booleano que especifica si se debe usar IPP Everywhere para configurar la impresora. Este indicador es compatible con <ph name="PRODUCT_OS_NAME" /> 76 y versiones posteriores.</translation>
 <translation id="8099880303030573137">Retraso de inactividad cuando el dispositivo funciona con la batería</translation>
 <translation id="8101381354936029836">Grupo atómico de la política:</translation>

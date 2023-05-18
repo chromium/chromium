@@ -2925,6 +2925,11 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
           Dit is een tijdelijk beleid dat volgens planning wordt verwijderd in <ph name="PRODUCT_NAME" /> 107. Deze deadline kan worden verlengd als daar bij bedrijven behoefte aan is.
           </translation>
 <translation id="3678069907945250643">Toestaan dat Google Foto's toegang krijgt vanuit de personalisatie-app</translation>
+<translation id="3683696721696720186">Hiermee stel je een lijst met typen browsegegevens in die moeten worden verwijderd als de gebruiker alle browservensters sluit. De beschikbare gegevenstypen zijn browsegeschiedenis (<ph name="DATA_TYPE_BROWSING_HISTORY" />), downloadgeschiedenis (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cachegeheugen (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), automatisch invullen (<ph name="DATA_TYPE_AUTOFILL" />), wachtwoorden (<ph name="DATA_TYPE_PASSWORD" />), site-instellingen (<ph name="DATA_TYPE_SITE_SETTINGS" />) en gegevens van gehoste apps (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Dit beleid krijgt geen voorrang op <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+Dit beleid vereist dat het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> is ingesteld op waar, anders wordt dit beleid genegeerd. Als je dit beleid instelt op platformniveau, moet je synchronisatie uitzetten op platformniveau. Als je dit beleid instelt op gebruikersniveau, heeft dit beleid alleen effect als je synchronisatie uitzet voor die gebruiker.
+
+      Als <ph name="PRODUCT_NAME" /> niet correct wordt afgesloten (bijvoorbeeld als de browser of het besturingssysteem crasht), worden de browsegegevens gewist wanneer het profiel weer wordt geladen.</translation>
 <translation id="3685979383016152590">Als je dit beleid instelt, kun je aangeven welk toegangsbeleid wordt toegepast op bulksgewijze printerconfiguratie en beheren welke printers van <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> beschikbaar zijn voor gebruikers.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (waarde 0) gebruikt <ph name="PRINTERS_BULK_BLOCKLIST" /> om de toegang tot de opgegeven printers te beperken,
@@ -4234,7 +4239,6 @@ Dit beleid is tijdelijk en wordt verwijderd zodra de opheffing van systeemaudio-
 
       De standaardwaarde (0) betekent dat deze functie niet wordt gebruikt.</translation>
 <translation id="4937423591320233496">Voorgestelde content uitzetten</translation>
-<translation id="4940810901775798837">Toestaan dat niet-beveiligde websites verzoeken indienen bij een netwerkeindpunt</translation>
 <translation id="4942096314850617489">Extern attest voor de gebruiker uitzetten</translation>
 <translation id="4942681160308347946">Als je het beleid instelt op True, staat gesproken feedback aan op het inlogscherm. Als je het beleid instelt op False, staat gesproken feedback uit op het scherm.
 
@@ -7638,7 +7642,6 @@ Het gebruik van <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> of <ph name="LA
       Als dit beleid is ingesteld, kan de gebruiker het niet wijzigen of overschrijven.</translation>
 <translation id="8080200590486938727">Plug-inzoeker uitzetten</translation>
 <translation id="8089200718228084417">Verouderde Privet-afdrukken aanzetten</translation>
-<translation id="8089236320223488328">Standaardgedrag gebruiken om te bepalen of niet-beveiligde websites verzoeken kunnen indienen bij een netwerkeindpunt</translation>
 <translation id="8091982561085048989">Booleaanse markering die aangeeft of IPP Everywhere moet worden gebruikt om de printer in te stellen. Deze markering wordt ondersteund in versie 76 en hoger van <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8099880303030573137">Inactieve vertraging wanneer op de batterij wordt gewerkt</translation>
 <translation id="8101381354936029836">Beleid van atomische groep:</translation>

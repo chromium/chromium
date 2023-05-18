@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">ညာ</translation>
 <translation id="1351937230027495976">မီနူးကို လျှော့ပြရန်</translation>
 <translation id="1360220746312242196">စာမျက်နှာရှာသောအခါ ရှာဖွေမှုအတွက် ယခင်ကိုက်ညီမှုသို့ သွားရန်</translation>
+<translation id="1360788414852622716">ပရိုဖိုင်ကို ပိတ်နေသည်။ မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။</translation>
 <translation id="1364382257761975320">သင့် Chromebook ကို လော့ခ်ဖွင့်ရန် သင့်လက်ဗွေကို အသုံးပြုပါ</translation>
 <translation id="1365866993922957110">အလိုအလျောက် အပ်ဒိတ်များ ရယူရန်</translation>
 <translation id="1372545819342940910">နောင်အတွက် မျက်နှာပြင်ကို သိမ်းရန်</translation>
@@ -545,6 +546,7 @@
 <translation id="3510164367642747937">မောက်စ်ကာဆာကို ထင်သာမြင်သာဖြစ်အောင်ပြုလုပ်ရန်</translation>
 <translation id="3513798432020909783">အကောင့်ကို <ph name="MANAGER_EMAIL" /> က စီမံပါသည်</translation>
 <translation id="352245152354538528">{0,plural, =1{စက်ကို ၁ မိနစ်အတွင်း အပ်ဒိတ်လုပ်ပါ}other{စက်ကို # မိနစ်အတွင်း အပ်ဒိတ်လုပ်ပါ}}</translation>
+<translation id="3522979239100719575">ရနိုင်သောပရိုဖိုင်များ ရှာနေသည်။ မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။</translation>
 <translation id="3526440770046466733">လင့်ခ်ကို တဘ်အသစ်တွင် ဖွင့်ပြီး လက်ရှိတဘ်တွင် နေရန်</translation>
 <translation id="353086728817903341">စက် <ph name="NUM_DEVICES" /> ခုသို့ ချိတ်ဆက်ထားသည်</translation>
 <translation id="3533126039236445965">စင်ရှိအက်ပ်များ</translation>
@@ -1557,6 +1559,7 @@
 <translation id="8083540854303889870">နောင်အတွက် သိမ်းထားသည်</translation>
 <translation id="8091153018031979607"><ph name="DAYS_ELAPSED" /> <ph name="START_TIME" /> တွင် စတင်မည်</translation>
 <translation id="8091387634532529612">အလိုအလျောက် အပ်ဒိတ်များ</translation>
+<translation id="8092380135549145188">လှိမ့်သည့် သတ်မှတ်ချက်များ</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> သို့ မျက်နှာပြင်အား ကာစ်လုပ်နေခြင်းကို ရပ်ပါ</translation>
 <translation id="810637681351706236">စင်ပေါ်ရှိ အက်ပ်ကို ပင်ဖြုတ်ရန်</translation>
 <translation id="8113423164597455979">ဖွင့်- အားလုံး</translation>

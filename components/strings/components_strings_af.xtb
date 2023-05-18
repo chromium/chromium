@@ -1200,9 +1200,11 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3927932062596804919">Weier</translation>
 <translation id="393316646445601645">Internet en telekommunikasie</translation>
 <translation id="3939773374150895049">Gebruik WebAuthn pleks van CVC?</translation>
+<translation id="3941630233824954464">Aktiveer verpligte herstawing</translation>
 <translation id="3943857333388298514">Plak</translation>
 <translation id="3946209740501886391">Vra altyd op hierdie werf</translation>
 <translation id="3947595700203588284">Kan vra om aan MIDI-toestelle te koppel</translation>
+<translation id="3948588869002647271">Hierdie app ontbreek of is beskadig</translation>
 <translation id="3949571496842715403">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat spesifiseer nie Onderwerp Alternatiewe Name nie. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>
 <translation id="3949601375789751990">Jou blaaigeskiedenis verskyn hier</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2203,6 +2205,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6370022303958842211">Toesteltoeganghandelinge soos aanmeldings (insluitend redes hoekom aanmelding misluk het), afmeldings, sluithandelinge en ontsluithandelinge</translation>
 <translation id="6374469231428023295">Probeer weer</translation>
 <translation id="6374865374745447009">vensterbestuur</translation>
+<translation id="6376881782310775282">Die ontwikkelingbediener vir hierdie app kan nie bereik word nie</translation>
 <translation id="6377268785556383139">1 resultaat vir "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Moontlike heffings voor.</translation>
@@ -2971,7 +2974,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8217240300496046857">Werwe kan nie webkoekies gebruik wat jou op die web naspoor nie. Kenmerke op sommige werwe kan breek.</translation>
 <translation id="8217748145574471584">Mensehulpbronne</translation>
 <translation id="8218327578424803826">Toegewysde ligging:</translation>
-<translation id="8225771182978767009">Die persoon wat hierdie rekenaar opgestel het, het besluit om hierdie werf te blokkeer.</translation>
 <translation id="8228419419708659934">Tweebladsyaansig</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" />x<ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -3012,6 +3014,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8286799286781881307">Apps wat deur jou admin gemagtig is, kan alle skerms vasvang wat aan jou toestel gekoppel is. Hierdie inligting kan plaaslik verwerk word, of kan na jou organisasie se bedieners toe opgelaai word.</translation>
 <translation id="8288807391153049143">Wys sertifikaat</translation>
 <translation id="8289355894181816810">Kontak jou netwerkadministrateur as jy nie seker is wat dit beteken nie.</translation>
+<translation id="8292520987784410870">Verifieer altyd?</translation>
 <translation id="8293206222192510085">Voeg boekmerk by</translation>
 <translation id="829335040383910391">klank</translation>
 <translation id="8294431847097064396">Bron</translation>
@@ -3084,7 +3087,6 @@ Bykomende besonderhede:
 <translation id="8474910779563686872">Wys ontwikkelaarbesonderhede</translation>
 <translation id="8479754468255770962">Kram links onder</translation>
 <translation id="8483229036294884935">Hierdie adres sal in jou Google-rekening, <ph name="ACCOUNT" />, uitgevee word</translation>
-<translation id="8483780878231876732">Meld by Chrome aan om kaarte van jou Google-rekening af te gebruik</translation>
 <translation id="8488350697529856933">Is van toepassing op</translation>
 <translation id="8490137692873530638">Stapelaar 10</translation>
 <translation id="8493948351860045254">Maak spasie beskikbaar</translation>
@@ -3112,6 +3114,7 @@ Bykomende besonderhede:
 <translation id="854892890027593466">Koevert C6/C5</translation>
 <translation id="8553387990086529628">Toeristebestemmings</translation>
 <translation id="8554010658308662631">Laai meer</translation>
+<translation id="8554802735558319842">Vir bykomende sekuriteit op gedeelde toestelle moet jy elke keer wanneer jy met outovul betaal, verifikasie aanskakel.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Stel toestemming terug}other{Stel toestemmings terug}}</translation>
 <translation id="8555010941760982128">Gebruik hierdie kode by die betaalpunt</translation>
 <translation id="8557066899867184262">Die CVC is agterop jou kaart.</translation>
@@ -3300,6 +3303,7 @@ Bykomende besonderhede:
 <translation id="9048662076076074925">24x36 dm.</translation>
 <translation id="9049981332609050619">Jy het probeer om <ph name="DOMAIN" /> te bereik, maar die bediener het 'n ongeldige sertifikaat voorgehou.</translation>
 <translation id="9050666287014529139">Wagfrase</translation>
+<translation id="9053840549256861041">Ons stel ’n nuwe advertensieprivaatheidkenmerk genaamd advertensiemeting bekend. Chrome deel net baie beperkte inligting tussen werwe, soos wanneer ’n advertensie vir jou gewys is, om werwe te help om advertensieprestasie te meet.</translation>
 <translation id="9056953843249698117">Winkel</translation>
 <translation id="9062620674789239642">Dit is dalk geskuif, gewysig of uitgevee.</translation>
 <translation id="9063398205799684336">Koevert Kaku 2</translation>

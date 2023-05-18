@@ -3377,6 +3377,17 @@ Esta política é uma solução temporária e vai ser removida em marcos futuros
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês).  O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="4061590579642538878">Enviar informações sobre relatórios de erros.</translation>
+<translation id="4062646759141042418">Ativar o <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para uma lista de URLs.
+
+Esta política especifica a quais URLs o <ph name="PRODUCT_NAME" /> vai oferecer a opção de iniciar o fluxo de atestado para perfis gerenciados. O último permite que esses sites recebam um conjunto atestado de indicadores contextuais do dispositivo.
+Esta política só pode ser configurada na página do Chrome Enterprise Connectors no <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Se for deixada sem definição ou em branco, nenhum site poderá iniciar um fluxo de atestado no nível do usuário e receber indicadores do dispositivo. No entanto, se a política
+<ph name="BROWSER_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST" /> correspondente for ativada, o fluxo de atestado poderá ser iniciado para o navegador gerenciado, e os indicadores do dispositivo poderão ser coletados.
+
+No <ph name="PRODUCT_OS_NAME" />, esta política está relacionada a atestados remotos em que um certificado é gerado automaticamente e o upload dele é feito para o servidor. Para usar o fluxo de atestado na tela de login do dispositivo, use a política <ph name="DEVICE_LOGIN_SCREEN_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
+
+Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="4070039109671307724">Diversos</translation>
 <translation id="4072225853834793549">Desativar atalhos de acessibilidade na tela de login</translation>
 <translation id="4075675819066819571">Posicionar a estante no lado esquerdo da tela</translation>
@@ -4204,6 +4215,7 @@ Esta política é temporária e será removida assim que o cancelamento de eco d
 
   Se a política for definida como "false" ou deixada sem definição, o cancelamento de eco de áudio do sistema ainda poderá ser
   ativado com base no plano de lançamento, mas não será aplicado por essa política.</translation>
+<translation id="4800865664096110749">Ativar o fluxo de atestado do <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para uma lista de URLs em perfis gerenciados</translation>
 <translation id="4801512016965057443">Permitir roaming de dados móveis</translation>
 <translation id="4801647366128872782">Especifica os URLs que permitem o relatório de tecnologia legada</translation>
 <translation id="4802744647065138872">Limita o número de snapshots de dados do usuário retidos para uso em caso de reversão de emergência.</translation>
@@ -4348,7 +4360,6 @@ Esta política é temporária e será removida assim que o cancelamento de eco d
 
       O valor padrão (0) significa que esse recurso está desativado.</translation>
 <translation id="4937423591320233496">Desativar conteúdo sugerido</translation>
-<translation id="4940810901775798837">Permitir que sites não seguros façam solicitações para qualquer endpoint da rede</translation>
 <translation id="4942096314850617489">Desativar atestado remoto para o usuário</translation>
 <translation id="4942681160308347946">Se esta política for definida como verdadeira, a resposta falada vai ficar ativado na tela de login. Se ela for definida como falsa, a resposta falada vai ficar desativado na tela.
 
@@ -5543,6 +5554,21 @@ Se a política for desativada, a proteção de extensões pelo recurso <ph name=
       Se ela não for definida, o <ph name="PRODUCT_NAME" /> usará o diretório de cache padrão, mas os usuários poderão mudar isso com a sinalização da linha de comando "--disk-cache-dir".
 
       O <ph name="PRODUCT_NAME" /> gerencia o conteúdo do diretório raiz de um volume. Portanto, para evitar a perda de dados ou outros erros, não defina a política para o diretório raiz nem qualquer diretório usado para outros propósitos. Veja as variáveis que podem ser usadas: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables (link em inglês).</translation>
+<translation id="6082391187598394288">Esta política pode ser usada temporariamente para forçar a ativação do suporte à
+API PPB_VideoDecoder(Dev).
+
+Quando a política é deixada sem definição ou é desativada, o navegador decide se
+há suporte para a API.
+Quando a política é ativada, há suporte.
+
+Esta política pode ser usada caso nossa eliminação contínua do suporte a essa API
+exponha problemas. Se você precisar usar a política, registre um bug em crbug.com
+explicando seu caso de uso e envie uma cópia para {blundell, vasilyt}@chromium.org. A política está
+disponível até a versão 114 do <ph name="PRODUCT_NAME" />.
+Depois dela, o suporte a essa API foi eliminado incondicionalmente.
+
+OBSERVAÇÃO: somente processos de renderizador recém-iniciados vão refletir as mudanças nesta
+política enquanto o navegador estiver em execução.</translation>
 <translation id="6083631234867522991">Windows (clientes do Windows):</translation>
 <translation id="608788685013546076">Definir o limite de bateria (em porcentagem) para a economia de energia no período de pico</translation>
 <translation id="6089679180657323464">Controla as configurações do controlador de telemetria e diagnósticos wilco.</translation>
@@ -5669,6 +5695,15 @@ O tempo limite de inatividade para iniciar o protetor de tela e o intervalo de e
       Se a política for definida como uma cor hexadecimal válida, um tema baseado nessa cor será gerado automaticamente e aplicado ao navegador. O usuário não poderá mudar o tema definido pela política.
 
       Se a política for deixada sem definição, o usuário poderá mudar o tema do navegador como quiser.</translation>
+<translation id="6195356309340063061">Ativar o <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para uma lista de URLs.
+
+Esta política especifica para quais URLs o <ph name="PRODUCT_NAME" /> vai oferecer a opção de iniciar o fluxo de atestado para navegadores gerenciados. O último permite que esses sites recebam um conjunto atestado de indicadores contextuais do dispositivo.
+Esta política só pode ser configurada na página do Chrome Enterprise Connectors no <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Se for deixada sem definição ou em branco, nenhum site poderá iniciar um fluxo de atestado no nível do navegador e receber indicadores do dispositivo. No entanto, se a política <ph name="USER_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST" />
+correspondente for ativada, o fluxo de atestado poderá ser iniciado para o perfil gerenciado, e os indicadores do dispositivo poderão ser coletados.
+
+Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="6195802366906945965">Determina se o verificador integrado de certificados será usado para verificar os certificados do servidor</translation>
 <translation id="6198947200418556248">Esta política foi descontinuada. Se você ainda precisa de um comportamento de cookies legado, use a <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />. Com ela, é possível reverter todos os cookies para o comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado. A reversão para o comportamento legado faz com que os cookies que não especificam um atributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> sejam tratados como <ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />, remove o requisito de que cookies <ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" /> precisam ter o atributo <ph name="ATTRIBUTE_SECURE_NAME" /> e ignora a comparação do esquema ao avaliar se dois sites são o mesmo. Para ver uma descrição completa, consulte https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies (em inglês).
 
@@ -7306,6 +7341,7 @@ Isso substitui a política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NA
       Se a política for desativada, não vai haver coleta de dados anônimos inseridos no URL.
 
       Se ela for deixada sem definição, o usuário poderá mudar a configuração manualmente.</translation>
+<translation id="7585312329612243723">Ativar o fluxo de atestado do <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para uma lista de URLs em navegadores gerenciados</translation>
 <translation id="7587345076013230465">Pedir para o usuário selecionar o certificado do cliente sempre que a política de seleção automática corresponder a vários certificados na tela de login</translation>
 <translation id="7587921466180902617">Ativar o dogfood do Screencast para usuários do Family Link</translation>
 <translation id="759957074386651883">Configurações da política Safe Browsing</translation>
@@ -7853,7 +7889,6 @@ também é seguro.</translation>
       Se for definida, o usuário não vai poder modificar ou substituir esta política.</translation>
 <translation id="8080200590486938727">Desativar o localizador de plug-ins</translation>
 <translation id="8089200718228084417">Ativar a impressão com o protocolo Privet suspenso</translation>
-<translation id="8089236320223488328">Usar o comportamento padrão ao determinar se sites não seguros podem fazer solicitações para qualquer endpoint da rede</translation>
 <translation id="8091982561085048989">Flag booleana indicando se o IPP Everywhere deve ser usado ou não para configurar a impressora. Essa sinalização é compatível com o <ph name="PRODUCT_OS_NAME" /> 76 ou versão mais recente.</translation>
 <translation id="8099880303030573137">Intervalo de inatividade no funcionamento com energia da bateria</translation>
 <translation id="8101381354936029836">Grupo atômico de políticas:</translation>

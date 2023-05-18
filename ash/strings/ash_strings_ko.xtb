@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">오른쪽</translation>
 <translation id="1351937230027495976">메뉴 접기</translation>
 <translation id="1360220746312242196">페이지를 검색할 때 이전 일치 항목으로 이동</translation>
+<translation id="1360788414852622716">프로필을 사용 중지하는 중입니다. 몇 분 정도 소요될 수 있습니다</translation>
 <translation id="1364382257761975320">Chromebook을 잠금 해제하려면 지문을 사용하세요.</translation>
 <translation id="1365866993922957110">자동 업데이트 받기</translation>
 <translation id="1372545819342940910">나중을 위해 데스크 저장</translation>
@@ -545,6 +546,7 @@
 <translation id="3510164367642747937">마우스 커서 강조표시</translation>
 <translation id="3513798432020909783">계정 관리자: <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{1분 이내에 기기 업데이트}other{#분 이내에 기기 업데이트}}</translation>
+<translation id="3522979239100719575">사용 가능한 프로필을 찾는 중입니다. 몇 분 정도 소요될 수 있습니다</translation>
 <translation id="3526440770046466733">새 탭에서 링크 열기 및 현재 탭 유지</translation>
 <translation id="353086728817903341">기기 <ph name="NUM_DEVICES" />대에 연결됨</translation>
 <translation id="3533126039236445965">앱 표시줄의 앱</translation>
@@ -1557,6 +1559,7 @@
 <translation id="8083540854303889870">저장된 항목</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /><ph name="DAYS_ELAPSED" />에 시작</translation>
 <translation id="8091387634532529612">자동 업데이트</translation>
+<translation id="8092380135549145188">스크롤 제어</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />에 화면 전송 중지</translation>
 <translation id="810637681351706236">앱 표시줄에서 앱 고정 해제</translation>
 <translation id="8113423164597455979">모든 앱에서 사용 중</translation>

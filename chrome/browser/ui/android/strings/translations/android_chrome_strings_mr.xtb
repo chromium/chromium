@@ -575,6 +575,7 @@
 <translation id="4188221736490993796">ज्ञ-अ नुसार क्रमाने लावा</translation>
 <translation id="4195643157523330669">नवीन टॅबमध्ये उघडा</translation>
 <translation id="4196597275619698563">कार्ड तयार करा</translation>
+<translation id="4197828496439691735">{NUM_TABS,plural, =1{या डिव्हाइसवर १ टॅब आहे}other{या डिव्हाइसवर # टॅब आहेत}}</translation>
 <translation id="4198423547019359126">कोणतीही डाउनलोड स्थाने उपलब्ध नाहीत</translation>
 <translation id="4202218894997543208">तुम्ही ब्लॉक केलेले विषय</translation>
 <translation id="4214315110991671325">तुम्ही कुकीना अनुमती दिल्यास, Chrome प्रीलोडिंगसाठी त्यांचा वापर करू शकते.</translation>
@@ -589,6 +590,7 @@
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />कोणता डेटा वापरला जातो:<ph name="END_BOLD" /> तुमचा ब्राउझिंग इतिहास, या डिव्हाइसवर तुम्ही Chrome वापरून भेट दिलेल्या साइटची नोंद.</translation>
 <translation id="4269820728363426813">लिंकचा पत्ता कॉपी करा</translation>
 <translation id="4283102315569707115">बाय डीफॉल्ट डेस्कटॉप साइटची विनंती करायची आहे का?</translation>
+<translation id="4285846616383034558">कुकी, कॅशे आणि इतर साइट डेटा</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android सेटिंग्जमध्ये स्क्रीन लॉक सुरू करणे<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">नवीन गुप्त टॅब</translation>
 <translation id="4298388696830689168">लिंक केलेल्या साइट</translation>
@@ -679,6 +681,7 @@
 <translation id="4763480195061959176">व्हिडिओ</translation>
 <translation id="4766313118839197559">पासवर्ड हे या डिव्हाइसवर पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले जातात</translation>
 <translation id="4766678251456904326">डिव्हाइसवर खाते जोडा</translation>
+<translation id="4767947714785277816">आम्ही ads measurement नावाचे नवीन जाहिरातविषयक गोपनीयता वैशिष्‍ट्य लाँच करत आहोत. जाहिरातींचा परफॉर्मन्स मोजण्यासाठी मदत करण्याकरिता Chrome साइट आणि ॲप्सदरम्यान तुम्हाला जाहिरात कधी दाखवली होती यांसारखी अगदी मोजकीच माहिती शेअर करते.</translation>
 <translation id="4769095993849849966">नवीन फाइल नाव</translation>
 <translation id="4778653490315793244">अद्याप दाखवण्यासाठी काहीही नाही</translation>
 <translation id="4787736314074622408">तुम्हाला <ph name="ITEM_TITLE" /> का हटवायची आहे?</translation>
@@ -914,6 +917,7 @@
 <translation id="6011308810877101166">शोध सूचनांमध्ये सुधारणा करा</translation>
 <translation id="6026538407078977628">फुलस्क्रीनवर विस्तार करा</translation>
 <translation id="6030719887161080597">जाहिरातीच्या परफॉर्मन्सचे मापन करण्यासाठी साइट वापरत असलेल्या माहितीचे व्यवस्थापन करा</translation>
+<translation id="6034146297924778597">शेवटच्या १५ मिनिटांमधील इतिहास हटवला जाईल:</translation>
 <translation id="6039379616847168523">पुढील टॅबवर जा</translation>
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="604124094241169006">स्वयंचलित</translation>
@@ -1119,6 +1123,7 @@
 <translation id="7029809446516969842">पासवर्ड</translation>
 <translation id="7030304022046916278">URLs तपासण्यासाठी त्या सुरक्षित ब्राउझिंग ला पाठवते</translation>
 <translation id="7030585293819777123">तुमची शेवटची टास्क पुन्हा सुरू करायची आहे का?</translation>
+<translation id="7035701931849773472">इतर पर्याय</translation>
 <translation id="7037830628447527439">तुमचे Google खाते वापरून Chrome मध्ये साइन इन करा</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">इमेजची वर्णने मिळवायची का?</translation>
@@ -1341,6 +1346,7 @@
 <translation id="8110024788458304985">Chrome ची वैशिष्ट्ये आणि परफॉर्मन्समध्ये सुधारणा करण्यात मदत करा</translation>
 <translation id="8110087112193408731">Digital wellbeing मध्ये तुमची Chrome ॲक्टिव्हिटी दाखवायची का?</translation>
 <translation id="8118117428362942925">तुम्हाला मदत हवी असल्यास, तुमचे पालक (<ph name="PARENT_NAME" />) यांना विचारा</translation>
+<translation id="8124758083429256800">Chrome आणि Chrome <ph name="ERROR_DESCRIPTION" /> साठी सेव्ह केलेल्या तुमच्या पासवर्डच्या सूची 121 या आवृत्तीनंतर मर्ज होतील. तुमचे सेव्ह केलेले पासवर्ड तुम्ही दोन्ही अ‍ॅप्सवर ऑटोफिल करू शकाल.</translation>
 <translation id="8127542551745560481">होमपेज संपादित करा</translation>
 <translation id="8130309322784422030">तुमची स्टोअर केलेली साइन-इनशी संबंधित माहिती कदाचित कालबाह्य झाली आहे</translation>
 <translation id="813082847718468539">साइटची माहिती पहा</translation>

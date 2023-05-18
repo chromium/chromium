@@ -92,6 +92,7 @@
 <translation id="1669047024429367828">Доступ</translation>
 <translation id="1672499492233627739">Видеоизображение с веб-камеры</translation>
 <translation id="1676557873873341166">Запись видео…</translation>
+<translation id="1684279041537802716">Цвет элементов</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Наличие DNS-резолвера</translation>
 <translation id="1708602061922134366">Синий (Google)</translation>
@@ -431,6 +432,7 @@
 <translation id="455835558791489930">Батарея <ph name="CHARGE_VALUE" /> мА·ч</translation>
 <translation id="4561801978359312462">SIM-карта разблокирована</translation>
 <translation id="4562494484721939086">Сеть не найдена</translation>
+<translation id="4573777384450697571">Сбой: срок действия сертификата истек</translation>
 <translation id="458794348635939462">Не удалось преобразовать имена всех хостов.</translation>
 <translation id="4593212453765072419">Требуется аутентификация на прокси-сервере</translation>
 <translation id="4609350030397390689">Уменьшение яркости клавиатуры</translation>

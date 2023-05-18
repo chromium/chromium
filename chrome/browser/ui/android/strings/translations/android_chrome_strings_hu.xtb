@@ -196,6 +196,7 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="2100273922101894616">Automatikus bejelentkezés</translation>
 <translation id="2100314319871056947">Próbálja meg kisebb részletekben megosztani a szöveget</translation>
 <translation id="2111511281910874386">Ugrás az oldalhoz</translation>
+<translation id="2119609734654412418">Itt láthatja majd a könyvjelzőit</translation>
 <translation id="2122601567107267586">Nem sikerült megnyitni az alkalmazást</translation>
 <translation id="2132122640199389833">Az összes összekapcsolt eszköz eltávolítása</translation>
 <translation id="213279576345780926">Bezárva: <ph name="TAB_TITLE" /></translation>
@@ -574,6 +575,7 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="4188221736490993796">Rendezés Z-től A-ig</translation>
 <translation id="4195643157523330669">Megnyitás új lapon</translation>
 <translation id="4196597275619698563">Kártya létrehozása</translation>
+<translation id="4197828496439691735">{NUM_TABS,plural, =1{1 lap ezen az eszközön}other{# lap ezen az eszközön}}</translation>
 <translation id="4198423547019359126">Nem áll rendelkezésre letöltési hely</translation>
 <translation id="4202218894997543208">Ön által letiltott témák</translation>
 <translation id="4214315110991671325">Ha engedélyezi a cookie-kat, előfordulhat, hogy a Chrome előtöltéshez használja fel őket.</translation>
@@ -588,6 +590,7 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />A felhasznált adatok:<ph name="END_BOLD" /> Böngészési előzményei, az Ön által az ezen az eszközön használt Chrome-ban felkeresett webhelyek jegyzéke.</translation>
 <translation id="4269820728363426813">Link másolása</translation>
 <translation id="4283102315569707115">Alapértelmezés szerint asztali webhelyeket kérjen a böngésző?</translation>
+<translation id="4285846616383034558">Cookie-k, gyorsítótár és egyéb webhelyadatok</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Állítsa be a képernyőzárat az Android beállításai között<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Új inkognitó lap</translation>
 <translation id="4298388696830689168">Összekapcsolt webhelyek</translation>
@@ -598,6 +601,7 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="433213510553688132">Követés…</translation>
 <translation id="4335835283689002019">A Biztonságos Böngészés ki van kapcsolva</translation>
 <translation id="4351244548802238354">Párbeszédablak bezárása</translation>
+<translation id="4355272626458588338">A fontos oldalakra könyvjelző felvételével térhet vissza a későbbiekben</translation>
 <translation id="4369735607080757018">A webhelyek között korlátozott típusú adatok kerülnek megosztásra a hirdetéseik teljesítményének mérése érdekében (ilyen adat például az a napszak, amikor a hirdetés megjelent Önnek).</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="438319986296050901">Csak kártya megosztása</translation>
@@ -677,6 +681,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4763480195061959176">video</translation>
 <translation id="4766313118839197559">A jelszavakat ezen az eszközön menti a rendszer a Jelszókezelőbe.</translation>
 <translation id="4766678251456904326">Fiók hozzáadása az eszközhöz</translation>
+<translation id="4767947714785277816">Új hirdetésekhez kapcsolódó adatvédelmi funkciót vezetünk be, melynek neve hirdetésmérés. A Chrome csak nagyon korlátozott információkat oszt meg webhelyek és alkalmazások között (például arról, hogy mikor jelent meg Önnek egy adott hirdetés), hogy segítsen a hirdetések teljesítményének mérésében.</translation>
 <translation id="4769095993849849966">Új fájlnév</translation>
 <translation id="4778653490315793244">Még nincs megjeleníthető tartalom</translation>
 <translation id="4787736314074622408">Törli a következőt: <ph name="ITEM_TITLE" />?</translation>
@@ -912,6 +917,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="6011308810877101166">Keresési javaslatok javítása</translation>
 <translation id="6026538407078977628">Kibontás teljes képernyőre</translation>
 <translation id="6030719887161080597">A webhelyek által a hirdetésteljesítmény méréséhez használt adatok kezelése</translation>
+<translation id="6034146297924778597">Az elmúlt 15 perc előzményeit töröljük:</translation>
 <translation id="6039379616847168523">Ugrás a következő lapra</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="604124094241169006">Automatikus</translation>
@@ -950,6 +956,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="6232535412751077445">A „Nincs nyomon követés” engedélyezése azt jelenti, hogy a böngészési forgalommal együtt kérelmet is küld a rendszer. Ennek hatása attól függ, hogy a webhely reagál-e a kérelemre, és hogyan értelmezi azt.
 
 Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jelenítenek meg, amelyek nem a már felkeresett egyéb webhelyeken alapulnak. Számos webhely ilyenkor is gyűjti és felhasználja a böngészési adatokat (például a biztonság növelése, továbbá tartalom, hirdetések és ajánlatok biztosítása, valamint jelentésekhez használt statisztika előállítása céljából).</translation>
+<translation id="6255794742848779505">Módosítjuk az új jelszavak mentésének módját ezen az eszközön</translation>
 <translation id="6264376385120300461">Letöltés mindenképpen</translation>
 <translation id="6277522088822131679">Hiba történt az oldal nyomtatásakor. Próbálja újra.</translation>
 <translation id="6277722725779679269">Nem sikerült frissíteni a nyomon követett árat.</translation>
@@ -1116,6 +1123,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7029809446516969842">Jelszavak</translation>
 <translation id="7030304022046916278">Elküldi az URL-eket a Biztonságos Böngészésnek ellenőrzésre.</translation>
 <translation id="7030585293819777123">Folytatja a legutóbbi feladatot?</translation>
+<translation id="7035701931849773472">Egyéb beállítások</translation>
 <translation id="7037830628447527439">Jelentkezzen be a Chrome-ba Google-fiókjával</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Lekéri a képleírásokat?</translation>
@@ -1338,6 +1346,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8110024788458304985">Hozzájárulás a Chrome funkcióinak és teljesítményének javításához</translation>
 <translation id="8110087112193408731">Chrome-beli tevékenysége megjelenjen a digitális jóllét funkcióban?</translation>
 <translation id="8118117428362942925">Ha segítségre van szükséged, fordulj a szülődhöz (<ph name="PARENT_NAME" />)</translation>
+<translation id="8124758083429256800">A Chrome-hoz és a Chrome <ph name="ERROR_DESCRIPTION" /> változatához mentett jelszavainak listáit a 121-es verzió után egyesíti a rendszer. Az összes mentett jelszavát automatikusan kitöltheti mindkét alkalmazásban.</translation>
 <translation id="8127542551745560481">Kezdőlap szerkesztése</translation>
 <translation id="8130309322784422030">A tárolt bejelentkezési adatai elavultak lehetnek</translation>
 <translation id="813082847718468539">Az oldalinformációk megtekintése</translation>

@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" />, Chromium'u kullanıyordu, ardından yer işaretlerini, şifrelerini ve diğer ayarlarını bu cihazda bıraktı.</translation>
 <translation id="372658070733623520">Chromium verilerini kullanmak ve Google Hesabınıza kaydetmek için kimliğinizi doğrulayın.</translation>
 <translation id="3805899903892079518">Chromium, fotoğraflarınıza veya videolarınıza erişemiyor. iOS Ayarlar &gt; Gizlilik &gt; Fotoğraflar'dan erişimi etkinleştirin.</translation>
+<translation id="3955621079070267756">Chromium'u İstediğiniz Uygulamadan Açın</translation>
 <translation id="4043291146360695975">Şifreler yalnızca bu cihazda Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="4099085513035183040">Chromium Beta'da desteklenmiyor</translation>
 <translation id="4432744876818348753">Chromium'dan en iyi şekilde yararlanmak için oturum açın.</translation>
@@ -143,5 +144,6 @@ Dikkate alınması gereken noktalar:
 <translation id="9089354809943900324">Chromium sürümü eski</translation>
 <translation id="9110075932708282655">Varsayılan olarak Chromium kullanın</translation>
 <translation id="921174536258924340">Chromium, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin veya <ph name="BEGIN_LINK" />Google Hesabınızdaki şifreleri kontrol edin<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">Mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantılara dokunduğunuzda otomatik olarak Chromium'u kullanabilirsiniz.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

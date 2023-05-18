@@ -1123,6 +1123,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7029809446516969842">Lozinke</translation>
 <translation id="7030304022046916278">Šalje URL-ove u Bezbedno pregledanje na proveru</translation>
 <translation id="7030585293819777123">Želite da nastavite poslednji zadatak?</translation>
+<translation id="7035701931849773472">Druge opcije</translation>
 <translation id="7037830628447527439">Prijavite se u Chrome pomoću Google naloga</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Želite da dobijate opise slika?</translation>
@@ -1345,6 +1346,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8110024788458304985">Pomozite nam da poboljšamo funkcije i učinak Chrome OS-a</translation>
 <translation id="8110087112193408731">Želite li da se Chrome aktivnosti prikazuju u Digitalnom blagostanju?</translation>
 <translation id="8118117428362942925">Ako ti treba pomoć, pitaj roditelja (<ph name="PARENT_NAME" />)</translation>
+<translation id="8124758083429256800">Liste sačuvanih lozinki za Chrome i Chrome <ph name="ERROR_DESCRIPTION" /> će se objediniti posle verzije 121. Moći ćete automatski da popunite sve sačuvane lozinke u obe aplikacije.</translation>
 <translation id="8127542551745560481">Izmenite početnu stranicu</translation>
 <translation id="8130309322784422030">Sačuvane informacije za prijavljivanje su možda zastarele</translation>
 <translation id="813082847718468539">Pogledajte informacije o sajtu</translation>

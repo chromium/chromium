@@ -92,6 +92,7 @@
 <translation id="3179665906251668410">Відкрити посилання в аноні&amp;мному вікні Chromium</translation>
 <translation id="3185330573522821672">Налаштуйте свій новий профіль Chromium</translation>
 <translation id="3190315855212034486">Помилка. Chromium аварійно завершив роботу. Перезапустити зараз?</translation>
+<translation id="3255926992597692024">Chromium намагається змінити параметри заповнення способів оплати.</translation>
 <translation id="3258596308407688501">Chromium не може читати та писати дані у свій каталог даних:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -197,6 +198,7 @@
 <translation id="5653831366781983928">Перезапустіть Chromium</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Вибрати цю мову для Chromium</translation>
+<translation id="585620188971323280">змінити параметри заповнення способів оплати.</translation>
 <translation id="5862307444128926510">Вітаємо в Chromium</translation>
 <translation id="5883558403894052917">Веб-переглядач Chromium виявив, що наведені нижче елементи містять зловмисне програмне забезпечення.</translation>
 <translation id="5895138241574237353">Перезапустити</translation>

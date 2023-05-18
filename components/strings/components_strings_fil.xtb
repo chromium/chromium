@@ -1200,9 +1200,11 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3927932062596804919">Tanggihan</translation>
 <translation id="393316646445601645">Internet at telecom</translation>
 <translation id="3939773374150895049">Gamitin ang WebAuthn sa halip na CVC?</translation>
+<translation id="3941630233824954464">I-enable ang mandatoryong pag-authenticate ulit</translation>
 <translation id="3943857333388298514">I-paste</translation>
 <translation id="3946209740501886391">Palaging hilingin sa site na ito</translation>
 <translation id="3947595700203588284">Puwedeng hilinging kumonekta sa mga MIDI device</translation>
+<translation id="3948588869002647271">Wala o sira ang application na ito</translation>
 <translation id="3949571496842715403">Hindi mapatunayan ng server na ito na <ph name="DOMAIN" /> ito; hindi tinutukoy ng certificate ng seguridad nito ang Mga Alternatibong Pangalan ng Subject. Maaaring dahil ito sa isang maling configuration o sa isang umaatake na humahadlang sa iyong koneksyon.</translation>
 <translation id="3949601375789751990">Lalabas dito ang iyong history ng pag-browse</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2203,6 +2205,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6370022303958842211">Mga pagkilos sa access sa device gaya ng mga pag-log in (kabilang ang mga dahilan ng hindi nagtagumpay na pag-log in), pag-log out, pag-lock, at pag-unlock</translation>
 <translation id="6374469231428023295">Subukan Ulit</translation>
 <translation id="6374865374745447009">pamamahala sa window</translation>
+<translation id="6376881782310775282">Hindi maabot ang development server para sa application na ito</translation>
 <translation id="6377268785556383139">1 resulta para sa '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Maaaring magkaroon ng singil.</translation>
@@ -2971,7 +2974,6 @@ Mga karagdagang detalye:
 <translation id="8217240300496046857">Hindi makakagamit ng cookies na sumusubaybay sa iyo sa buong web ang mga site. Posibleng masira ang mga feature sa ilang site.</translation>
 <translation id="8217748145574471584">Human resources</translation>
 <translation id="8218327578424803826">Itinakdang Lokasyon:</translation>
-<translation id="8225771182978767009">Pinili ng taong nag-set up ng computer na ito na i-block ang site na ito.</translation>
 <translation id="8228419419708659934">Dalawang page na view</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -3012,6 +3014,7 @@ Mga karagdagang detalye:
 <translation id="8286799286781881307">Maka-capture ng mga application na awtorisado ng iyong administrator ang lahat ng screen na naka-attach sa device mo. Mapoproseso ang impormasyong ito nang lokal o maa-upload ito sa mga server ng iyong organisasyon.</translation>
 <translation id="8288807391153049143">Ipakita ang certificate</translation>
 <translation id="8289355894181816810">Makipag-ugnay sa administrator ng iyong network kung hindi ka sigurado kung ano ang ibig sabihin nito.</translation>
+<translation id="8292520987784410870">Palaging i-verify?</translation>
 <translation id="8293206222192510085">Magdagdag ng Bookmark</translation>
 <translation id="829335040383910391">tunog</translation>
 <translation id="8294431847097064396">Pinagmulan</translation>
@@ -3084,7 +3087,6 @@ Mga karagdagang detalye:
 <translation id="8474910779563686872">Ipakita ang mga detalye ng developer</translation>
 <translation id="8479754468255770962">Staple bottom left</translation>
 <translation id="8483229036294884935">Made-delete ang address na ito sa iyong Google Account na <ph name="ACCOUNT" /></translation>
-<translation id="8483780878231876732">Upang gumamit ng mga card mula sa iyong Google Account, mag-sign in sa Chrome</translation>
 <translation id="8488350697529856933">Nalalapat sa</translation>
 <translation id="8490137692873530638">Stacker 10</translation>
 <translation id="8493948351860045254">Magbakante ng espasyo</translation>
@@ -3112,6 +3114,7 @@ Mga karagdagang detalye:
 <translation id="854892890027593466">Envelope C6/C5</translation>
 <translation id="8553387990086529628">Mga pasyalan ng mga turista</translation>
 <translation id="8554010658308662631">Mag-load pa</translation>
+<translation id="8554802735558319842">Para sa karagdagang seguridad sa mga naka-share na device, i-on ang pag-verify tuwing nagbabayad ka gamit ang autofill.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{I-reset ang pahintulot}one{I-reset ang mga pahintulot}other{I-reset ang mga pahintulot}}</translation>
 <translation id="8555010941760982128">Gamitin ang code na ito kapag nag-checkout</translation>
 <translation id="8557066899867184262">Makikita ang CVC sa likod ng iyong card.</translation>
@@ -3300,6 +3303,7 @@ Mga karagdagang detalye:
 <translation id="9048662076076074925">24 x 36 in</translation>
 <translation id="9049981332609050619">Tinangka mong maabot ang <ph name="DOMAIN" />, ngunit nagpakita ang server ng isang di-wastong certificate.</translation>
 <translation id="9050666287014529139">Passphrase</translation>
+<translation id="9053840549256861041">Maglulunsad kami ng bagong feature ng privacy sa ad na tinatawag na pagsukat sa ad. Napakalimitado lang ng impormasyong shine-share ng Chrome sa pagitan ng mga site, gaya kapag may ipinakitang ad sa iyo, para matulungan ang mga site na sukatin ang performance ng mga ad.</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">Posibleng nailipat, na-edit, o na-delete ito.</translation>
 <translation id="9063398205799684336">Envelope Kaku 2</translation>

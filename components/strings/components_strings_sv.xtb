@@ -2974,7 +2974,6 @@ Mer information.
 <translation id="8217240300496046857">Webbplatser kan inte använda cookies som spårar dig på webben. Funktioner på vissa webbplatser kan sluta fungera.</translation>
 <translation id="8217748145574471584">Personal/bemanning</translation>
 <translation id="8218327578424803826">Tilldelad plats:</translation>
-<translation id="8225771182978767009">Personen som konfigurerade datorn har valt att blockera den här webbplatsen.</translation>
 <translation id="8228419419708659934">Dubbelsidig vy</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -3088,7 +3087,6 @@ Mer information:
 <translation id="8474910779563686872">Visa information om utvecklare</translation>
 <translation id="8479754468255770962">Häfta nere till vänster</translation>
 <translation id="8483229036294884935">Adressen raderas från Google-kontot <ph name="ACCOUNT" /></translation>
-<translation id="8483780878231876732">Logga in i Chrome om du vill använda kort i Google-kontot</translation>
 <translation id="8488350697529856933">Gäller för</translation>
 <translation id="8490137692873530638">Utmatningsfack 10</translation>
 <translation id="8493948351860045254">Frigör lagringsutrymme</translation>
@@ -3306,6 +3304,7 @@ Mer information:
 <translation id="9048662076076074925">24 x 36 tum</translation>
 <translation id="9049981332609050619">Du försökte nå <ph name="DOMAIN" /> men servern angav ett ogiltigt certifikat.</translation>
 <translation id="9050666287014529139">Lösenfras</translation>
+<translation id="9053840549256861041">Vi lanserar en ny funktion för annonsintegritet som kallas annonsmätning. Chrome delar bara mycket begränsad information mellan webbplatser, till exempel när en annons visades för dig, för att hjälpa webbplatser att mäta annonsernas resultat.</translation>
 <translation id="9056953843249698117">Butik</translation>
 <translation id="9062620674789239642">Den kan ha flyttats, ändrats eller tagits bort.</translation>
 <translation id="9063398205799684336">Kaku 2-kuvert</translation>

@@ -94,6 +94,7 @@
 <translation id="1346748346194534595">Jobbra</translation>
 <translation id="1351937230027495976">Menü összecsukása</translation>
 <translation id="1360220746312242196">Oldalkereséskor ugrás az előző keresési találatra</translation>
+<translation id="1360788414852622716">A profil letiltása folyamatban van. Ez eltarthat néhány percig.</translation>
 <translation id="1364382257761975320">A Chromebook zárolásának feloldásához használja ujjlenyomatát.</translation>
 <translation id="1365866993922957110">Automatikus frissítések fogadása</translation>
 <translation id="1372545819342940910">Asztal mentése későbbre</translation>
@@ -545,6 +546,7 @@
 <translation id="3510164367642747937">Egérmutató kiemelése</translation>
 <translation id="3513798432020909783">A fiókot a(z) <ph name="MANAGER_EMAIL" /> kezeli</translation>
 <translation id="352245152354538528">{0,plural, =1{1 percen belül frissítse az eszközt}other{# percen belül frissítse az eszközt}}</translation>
+<translation id="3522979239100719575">Folyamatban van a rendelkezésre álló profilok keresése. Ez eltarthat néhány percig.</translation>
 <translation id="3526440770046466733">Link megnyitása új lapon, és maradjon az aktuális lapon</translation>
 <translation id="353086728817903341">Csatlakoztatva <ph name="NUM_DEVICES" /> eszközhöz</translation>
 <translation id="3533126039236445965">Alkalmazások a polcon</translation>
@@ -1558,6 +1560,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8083540854303889870">Későbbre mentett</translation>
 <translation id="8091153018031979607">Kezdés: <ph name="START_TIME" />, <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automatikus frissítések</translation>
+<translation id="8092380135549145188">Görgetési vezérlők</translation>
 <translation id="8098591350844501178">A képernyő „<ph name="RECEIVER_NAME" />” eszközre történő átküldésének leállítása</translation>
 <translation id="810637681351706236">Alkalmazás kitűzésének feloldása a polcon</translation>
 <translation id="8113423164597455979">Be, összes app</translation>

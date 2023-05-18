@@ -252,6 +252,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5756509061973259733">Cihazda bu hesaba sahip bir Chrome profili zaten var</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome başlatılamadı. Tekrar deneyin.</translation>
+<translation id="585620188971323280">ödeme yöntemi girmeyle ilgili ayarları değiştirmeye çalışıyor.</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Ağda Oturum Açın</translation>
 <translation id="5924017743176219022">İnternete bağlanılıyor...</translation>
@@ -389,6 +390,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="8516431725144212809">Chrome'un tahmin ettiği ilgi alanlarınız</translation>
 <translation id="8521348052903287641">Google Chrome Dev'in mDNS trafiğine izin vermeyi sağlayan gelen trafik kuralı.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8544217240017914508">Google Chrome, ödeme yöntemi girmeyle ilgili ayarları değiştirmeye çalışıyor.</translation>
 <translation id="8550334526674375523">Bu iş profili, kişisel profilinizden tamamen ayrıdır.</translation>
 <translation id="8556340503434111824">Kullanabileceğiniz yeni bir Google Chrome sürümü var ve bu sürüm, her zamankinden daha hızlı.</translation>
 <translation id="8571790202382503603">Chrome profilleri ile tüm Chrome öğelerinizi ayırabilirsiniz. Bu özellik, iş ile eğlenceyi daha kolay ayırmayı sağlar.</translation>

@@ -94,6 +94,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1346748346194534595">À droite</translation>
 <translation id="1351937230027495976">Réduire le menu</translation>
 <translation id="1360220746312242196">Lors de la recherche d'une page, accéder à la correspondance précédente pour la recherche</translation>
+<translation id="1360788414852622716">Désactivation du profil en cours… Cette opération peut prendre quelques minutes.</translation>
 <translation id="1364382257761975320">Utilisez votre empreinte digitale pour déverrouiller votre Chromebook</translation>
 <translation id="1365866993922957110">Recevoir des mises à jour automatiques</translation>
 <translation id="1372545819342940910">Enregistrer le bureau pour plus tard</translation>
@@ -539,6 +540,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3510164367642747937">Mettre le curseur de la souris en surbrillance</translation>
 <translation id="3513798432020909783">Compte géré par <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Mettez à jour l'appareil d'ici 1 minute}one{Mettez à jour l'appareil d'ici # minute}other{Mettez à jour l'appareil d'ici # minutes}}</translation>
+<translation id="3522979239100719575">Recherche des profils accessibles en cours… Cette opération peut prendre quelques minutes.</translation>
 <translation id="3526440770046466733">Ouvrir le lien dans un nouvel onglet et demeurer dans l'onglet actuel</translation>
 <translation id="353086728817903341">Connecté à <ph name="NUM_DEVICES" /> appareils</translation>
 <translation id="3533126039236445965">Applications dans l'étagère</translation>
@@ -1540,6 +1542,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8083540854303889870">Enregistré pour plus tard</translation>
 <translation id="8091153018031979607">Commence à <ph name="START_TIME" /> le <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Mises à jour automatiques</translation>
+<translation id="8092380135549145188">Commandes de défilement</translation>
 <translation id="8098591350844501178">Arrêter la diffusion de l'écran sur <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Annuler l'épinglage de l'application dans l'étagère</translation>
 <translation id="8113423164597455979">Activées, toutes applis</translation>

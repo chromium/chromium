@@ -92,6 +92,7 @@
 <translation id="1669047024429367828">දෘශ්‍යතාව</translation>
 <translation id="1672499492233627739">වෙබ් කැමරා වීඩියෝ සංග්‍රහය</translation>
 <translation id="1676557873873341166">වීඩියෝව පටිගත කරමින්</translation>
+<translation id="1684279041537802716">උච්චාරණ වර්ණය</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS විසඳුම්කාරක පැවතීම</translation>
 <translation id="1708602061922134366">Google නිල්</translation>
@@ -217,6 +218,7 @@
 <translation id="2638662041295312666">පුරන රූපය</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> ඇල්බමය තෝරන ලදි</translation>
 <translation id="267442004702508783">නැවුම් කිරීම</translation>
+<translation id="268270014981824665">යතුරු පුවරුව අඳුරු</translation>
 <translation id="2712812801627182647">TLS සත්‍යාපන යතුර</translation>
 <translation id="2713444072780614174">සුදු</translation>
 <translation id="2717139507051041123">අඳුරු වර්ණ ප්‍රකාරය සබල කරන්න</translation>
@@ -224,6 +226,7 @@
 <translation id="2744221223678373668">හුවමාරු කළ</translation>
 <translation id="2751739896257479635">EAP අදියර 2 සත්‍යාපනය</translation>
 <translation id="2783010256799387990">සමත් විය</translation>
+<translation id="2787435249130282949">යතුරු පුවරුව දීප්තිමත්</translation>
 <translation id="2789486458103222910">හරි</translation>
 <translation id="2805756323405976993">යෙදුම්</translation>
 <translation id="28232023175184696">අන්තර්ජාලයට සම්බන්ධ විය නොහැකිය. නැවත උත්සාහ කිරීමට ක්ලික් කරන්න.</translation>
@@ -327,11 +330,13 @@
 <translation id="3749289110408117711">ගොනුවේ නම</translation>
 <translation id="3771294271822695279">වීඩියෝ ගොනු</translation>
 <translation id="3784455785234192852">අගුලු ලන්න</translation>
+<translation id="380097101658023925">rgb පාලන</translation>
 <translation id="38114475217616659">සියලු ඉතිහාසය හිස් කරන්න</translation>
 <translation id="3820172043799983114">වලංගු නොවන PIN.</translation>
 <translation id="3824259034819781947">ගොනු අමුණන්න</translation>
 <translation id="3838338534323494292">නව මුරපදය</translation>
 <translation id="3845880861638660475">සංවාදය වැසීමට <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> ඔබන්න.</translation>
+<translation id="3848280697030027394">යතුරු පුවරුව අඳුරු කිරීම</translation>
 <translation id="385051799172605136">ආපසු</translation>
 <translation id="3858860766373142691">නම</translation>
 <translation id="3862598938296403232">විස්තරය අවශ්‍ය වේ</translation>
@@ -403,6 +408,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">අක්‍රිය කරන්න</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> යළි අරඹමින්</translation>
+<translation id="4395835743215824109">යතුරු පුවරුව අභිරුචිකරණය</translation>
 <translation id="4415951057168511744">වත්මන් නියුරුව</translation>
 <translation id="4422041425070339732">ඊතලය පහළට</translation>
 <translation id="4425149324548788773">මගේ Drive</translation>
@@ -426,6 +432,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh බැටරිය</translation>
 <translation id="4561801978359312462">SIM අගුලු හරින ලදී</translation>
 <translation id="4562494484721939086">සේවාව නැත</translation>
+<translation id="4573777384450697571">අසමත් විය - සහතිකය කල් ඉකුත් විය</translation>
 <translation id="458794348635939462">සියලු සත්කාරක විසඳීම අසාර්ථක විය</translation>
 <translation id="4593212453765072419">ප්‍රොක්සි සත්‍යාපනය අවශ්‍යයි</translation>
 <translation id="4609350030397390689">යතුරු පුවරු දීප්තිය පහළට</translation>
@@ -442,6 +449,7 @@
 <translation id="4731797938093519117">මාපිය ප්‍රවේශය</translation>
 <translation id="473775607612524610">යාවත්කාලීනය</translation>
 <translation id="4744944742468440486">ඔබගේ තේරීමට අදාළ තොරතුරු</translation>
+<translation id="4771607256327216405">යතුරු පුවරුව දීප්තිමත්</translation>
 <translation id="4773299976671772492">නවත්වන ලදි</translation>
 <translation id="4782311465517282004">ඔබ දකුණු-ක්ලික් කළ විට හෝ පෙළ ස්පර්ශ කර අල්ලාගෙන සිටින විට නිර්වචන, පරිවර්තන හෝ ඒකක පරිවර්තන ලබා ගන්න</translation>
 <translation id="4791000909649665275">ඡායාරූප <ph name="NUMBER" />ක්</translation>
@@ -490,6 +498,7 @@
 <translation id="500920857929044050">පරීක්ෂණය නවත්වන්න</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">ඔබගේ තිරය අක්‍රිය වූ විට, ඡායාරූප, වේලාව, කාලගුණය සහ මාධ්‍ය තොරතුරු පෙන්වීම.</translation>
+<translation id="5038292761217083259">යතුරු පුවරු බහු වර්ණ</translation>
 <translation id="5039804452771397117">ඉඩදෙන්න</translation>
 <translation id="5049856988445523908">SIM අගුලු දමන ලදි (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">සමූහ නම</translation>
@@ -638,6 +647,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">අඳුරු තේමාව ක්‍රියාත්මක කරන්න</translation>
 <translation id="6285899124799306373">දියත්කරණය විවෘත කරන්න</translation>
+<translation id="629550705077076970">යතුරු පුවරුව අඳුරු වීම</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> පරීක්ෂණය අවලංගු කර ඇත</translation>
 <translation id="631063167932043783">යෙදුම ගවේෂණය කරන්න</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> හි නිත්‍ය මෘදුකාංග යාවත්කාලීන කරන්න</translation>
@@ -656,6 +666,7 @@
 <translation id="6401427872449207797">බ්‍රව්සර සෙවීම</translation>
 <translation id="6410257289063177456">පින්තූර ගොනු</translation>
 <translation id="641081527798843608">විෂය ගැළපුම</translation>
+<translation id="6411934471898487866">යතුරු පුවරුවේ දීප්තිය</translation>
 <translation id="6412715219990689313">එක්ව තැනූ යතුරු පුවරුව</translation>
 <translation id="6417265370957905582">Google සහායක</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -806,10 +817,12 @@
 <translation id="7656388927906093505">උපාංගය මූසිකයකි.</translation>
 <translation id="7658239707568436148">අවලංගු කරන්න</translation>
 <translation id="7665800271478495366">නියුරුව වෙනස් කරන්න</translation>
+<translation id="7683228889864052081">යතුරු පුවරුවේ පැහැය</translation>
 <translation id="7690294790491645610">නව මුරපදය තහවුරු කරන්න</translation>
 <translation id="7701040980221191251">නොමැත</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">යතුරු පුවරු ආලෝකය</translation>
 <translation id="773153675489693198">චක්‍ර ගණන</translation>
 <translation id="7747039790905080783">පූර්ව බෙදා ගත් යතුර</translation>
 <translation id="7762130827864645708">ඔබගේ මුරපදය වෙනස් කිරීම සාර්ථක විය. කරුණාකර මෙතැන් සිට නව මුරපදය භාවිත කරන්න.</translation>
@@ -853,6 +866,7 @@
 <translation id="8075838845814659848">ඉතිරි ආරෝපණය</translation>
 <translation id="8076492880354921740">පටිති</translation>
 <translation id="8082366717211101304">Android යෙදුම් වෙතින් DNS විසඳිය නොහැකිය</translation>
+<translation id="8082644724189923105">යතුරු පුවරු කලාපය</translation>
 <translation id="808894953321890993">මුරපදය වෙනස් කරන්න</translation>
 <translation id="8094062939584182041">මෙම ගැටලුව පිළිබඳව ඔබට ඉ-තැපැල් කිරීමට Google හට ඉඩ දෙන්න</translation>
 <translation id="8104083085214006426">ඔබ විවෘත සහ අනාරක්ෂිත ජාලයක් භාවිත කරමින් සිටියි</translation>
@@ -901,6 +915,7 @@
 <translation id="8456761643544401578">ස්වයංක්‍රිය අඳුරු ප්‍රකාරය</translation>
 <translation id="8461329675984532579">නිවෙස් සපයන්නාගේ නම</translation>
 <translation id="8475690821716466388">WiFi ජාලය දුර්වල ප්‍රොටොකෝලයකින් ආරක්ෂිතයි WEP PSK</translation>
+<translation id="8476242415522716722">යතුරු පුවරුව යට දීප්තිය</translation>
 <translation id="8477551185774834963">DNS පමාව ඉඩ දිය හැකි මායිමෙන් මදක් ඉහළය</translation>
 <translation id="8483248364096924578">IP ලිපිනය</translation>
 <translation id="8491311378305535241">Android යෙදුම් වෙතින් HTTPS වෙබ් අඩවිවලට ෆයර්වෝලය හරහා සම්බන්ධ විය නොහැකිය</translation>
@@ -944,6 +959,7 @@
 <translation id="8845001906332463065">උදවු ලබා ගන්න</translation>
 <translation id="8855781559874488009">HTTP වෙබ් අඩවිවලට ෆයර්වෝලය හරහා සම්බන්ධ විය නොහැකිය</translation>
 <translation id="885701979325669005">ගබඩාව</translation>
+<translation id="885704831271383379">යතුරු පුවරුව අඳුරු වීම</translation>
 <translation id="8863170912498892583">අඳුරු තේමාව සබල කරන්න</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" සඳහා <ph name="INTENT" /> ලබා ගන්න සහ තවත් දේ</translation>
 <translation id="8864415976656252616">යෝජිත අන්තර්ගතය නැත. ඉහළම උදවු අන්තර්ගතය බලන්න.</translation>

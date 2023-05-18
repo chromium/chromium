@@ -363,7 +363,6 @@
 <translation id="1303101771013849280">HTML फ़ाइल को बुकमार्क करता है</translation>
 <translation id="1303671224831497365">कोई ब्लूटूथ डिवाइस नहीं मि‍ला</translation>
 <translation id="130491383855577612">Linux ऐप्लिकेशन और फ़ाइलें बदल दी गई हैं</translation>
-<translation id="1306390193749326011">आपको इस पेज पर <ph name="MODULE_NAME" /> फिर से नहीं दिखेंगे</translation>
 <translation id="1306518237408758433"><ph name="BOOKMARK_TITLE" /> खोलें</translation>
 <translation id="1306606229401759371">सेटिंग बदलें</translation>
 <translation id="1307165550267142340">आपका पिन बनाया गया था</translation>
@@ -572,7 +571,6 @@
 <translation id="1493892686965953381"><ph name="LOAD_STATE_PARAMETER" /> की प्रतीक्षा कर रहा है...</translation>
 <translation id="1494349716233667318">साइटें आपके डिवाइस पर इंस्टॉल किए गए फ़ॉन्ट इस्तेमाल करने की अनुमति मांग सकती हैं</translation>
 <translation id="1494429729245089920">वर्चुअल मशीन "<ph name="VM_NAME" />" मौजूद है, लेकिन यह मान्य <ph name="APP_NAME" /> वर्चुअल मशीन नहीं लगती. कृपया अपने एडमिन से संपर्क करें.</translation>
-<translation id="1495201326198374770">Chromebook में बटन की सबसे ऊपर वाली पंक्ति के तौर पर फ़ंक्शन बटन का इस्तेमाल करें</translation>
 <translation id="1495677929897281669">टैब पर वापस जाएं</translation>
 <translation id="1498498210836053409">टेक्स्ट में बदलाव करते समय स्टिकी मोड को बंद कर दें (स्मार्ट स्टिकी मोड)</translation>
 <translation id="1500297251995790841">अज्ञात डिवाइस [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -700,7 +698,6 @@
 <translation id="1596286373007273895">कास्ट करने के लिए उपलब्ध जगह</translation>
 <translation id="1596709061955594992">ब्लूटूथ बंद है. उपलब्ध डिवाइसों को देखने के लिए, ब्लूटूथ चालू करें.</translation>
 <translation id="1596780725094407793">- इसमें सबडोमेन शामिल हैं</translation>
-<translation id="1597852076552089763">बुकमार्क के विकल्प</translation>
 <translation id="1598163867407640634"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> की मदद से, <ph name="SITE_ETLD_PLUS_ONE" /> का इस्तेमाल करें</translation>
 <translation id="1598233202702788831">आपके व्‍यवस्‍थापक के द्वारा अपडेट अक्षम किए गए हैं</translation>
 <translation id="1600857548979126453">पेज डीबगर बैकएंड को एक्सेस करें</translation>
@@ -1149,7 +1146,6 @@
 <translation id="1956390763342388273">यह "<ph name="FOLDER_PATH" />" से सभी फ़ाइलों को अपलोड कर देगा. ऐसा तभी करें जब आपको साइट पर विश्वास हो.</translation>
 <translation id="1962233722219655970">यह पेज एक ऐसे नेटिव क्लाइंट का उपयोग करता है जो आपके कंप्यूटर पर काम नहीं करता.</translation>
 <translation id="1963976881984600709">मानक सुरक्षा मोड</translation>
-<translation id="1965624977906726414">कोई विशेष अनुमति नहीं है.</translation>
 <translation id="1966649499058910679">जैसे-जैसे हर शब्द बोला जाए, उसे हाइलाइट करें</translation>
 <translation id="1967970931040389207">हॉटस्पॉट चालू करें</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
@@ -1323,7 +1319,6 @@
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> छिपा दिया गया है</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{फ़ोन नंबर}one{# फ़ोन नंबर}other{# फ़ोन नंबर}}</translation>
 <translation id="2110941575868943054">ब्लूटूथ डिवाइसों को खोजने की अनुमति है</translation>
-<translation id="2111238878637848860">फ़ंक्शन बटन के काम करने के तरीके को बदलने के लिए, लॉन्चर बटन को दबाकर रखें</translation>
 <translation id="211144231511833662">डिवाइस के प्रकार के लिए चेकबॉक्स से सही का निशान हटाएं</translation>
 <translation id="2111670510994270194">दाईं ओर नया टैब खोलें</translation>
 <translation id="2112554630428445878">आपका स्वागत है, <ph name="USERNAME" /></translation>
@@ -2892,7 +2887,6 @@
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> वगैरह के लिए छूट पाएं</translation>
 <translation id="3468298837301810372">लेबल</translation>
 <translation id="3468999815377931311">Android फ़ोन</translation>
-<translation id="3469345458390352459">यह सुविधा चालू होने पर, Google खाते से साइन इन करने के बाद, आपको किसी भी ChromeOS डिवाइस पर अपने ऐप्लिकेशन दिख जाएंगे.  ब्राउज़र से डेटा सिंक करने की अन्य सुविधाएं बंद होने पर भी, वेब ऐप्लिकेशन Chrome से सिंक होंगे.</translation>
 <translation id="3469583217479686109">कोई खास हिस्सा चुनने का टूल</translation>
 <translation id="3470392222765168737">साइट को फ़ॉलो करें</translation>
 <translation id="3471876058939596279">वीडियो के लिए एचडीएमआई पोर्ट और यूएसबी टाइप-सी पोर्ट को एक ही समय में इस्तेमाल नहीं किया जा सकता. कोई अलग पोर्ट इस्तेमाल करें.</translation>
@@ -2932,10 +2926,8 @@
 <translation id="3497560059572256875">डूडल शेयर करें</translation>
 <translation id="3500417806337761827">शेयर माउंट करने में गड़बड़ी हुई. बहुत से एसएमबी शेयर पहले ही माउंट कर दिए गए हैं.</translation>
 <translation id="3503995387997205657">आप अपने पुराने ऐप्लिकेशन वापस पा सकते हैं</translation>
-<translation id="3505030558724226696">डिवाइस एक्सेस रद्द करें</translation>
 <translation id="3505100368357440862">खरीदारी के लिए सुझाव</translation>
 <translation id="3507132249039706973">मानक सुरक्षा की सुविधा चालू है</translation>
-<translation id="3507421388498836150">"<ph name="EXTENSION_NAME" />" के लिए वर्तमान अनुमतियां</translation>
 <translation id="3507888235492474624">ब्लूटूथ डिवाइस के लिए दोबारा स्कैन करें</translation>
 <translation id="3508492320654304609">आपका साइन-इन डेटा मिटाया नहीं जा सका</translation>
 <translation id="3508920295779105875">कोई अन्य फ़ोल्डर चुनें...</translation>
@@ -3100,7 +3092,6 @@
 <translation id="3653887973853407813">इस एक्सटेंशन का इस्तेमाल नहीं किया जा सकता. आपके माता-पिता या अभिभावक ने Chrome के लिए, “साइटों, ऐप्लिकेशन, और एक्सटेंशन के लिए अनुमतियों” की सुविधा बंद कर दी है.</translation>
 <translation id="3653999333232393305"><ph name="HOST" /> को अपना माइक्रोफ़ोन एक्सेस करते रहने दें</translation>
 <translation id="3654045516529121250">अपनी सुलभता सेटिंग पढ़ें</translation>
-<translation id="3655712721956801464">{NUM_FILES,plural, =1{उसे एक फ़ाइल की स्‍थायी एक्सेस मिली हुई है.}one{उसे # फ़ाइलों की स्‍थायी एक्सेस मिली हुई है.}other{उसे # फ़ाइलों की स्‍थायी एक्सेस मिली हुई है.}}</translation>
 <translation id="3658871634334445293">TrackPoint ऐक्सेलरेशन</translation>
 <translation id="3659550105763988702"><ph name="APP_NAME" /> के लिए अपनी पासकी इस्तेमाल करें</translation>
 <translation id="3659929705630080526">आपने कई बार गलत ऐक्सेस कोड डाला है. बाद में कोशिश करें</translation>
@@ -3407,7 +3398,6 @@
 <translation id="389901847090970821">कीबोर्ड चुनें</translation>
 <translation id="3900966090527141178">पासवर्ड निर्यात करें</translation>
 <translation id="3902789559055749153"><ph name="APP_NAME" /> के लिए पासकी सेट करने का तरीका चुनें</translation>
-<translation id="3903158219409898205">Chromebook में बटन की सबसे ऊपर वाली पंक्ति का काम करने का तरीका बदलने के लिए, लॉन्चर बटन का इस्तेमाल करें</translation>
 <translation id="3903187154317825986">पहले से मौजूद कीबोर्ड</translation>
 <translation id="3904326018476041253">जगह की जानकारी</translation>
 <translation id="3905761538810670789">ऐप्लिकेशन को ठीक करें</translation>
@@ -3822,7 +3812,6 @@
 <translation id="4279129444466079448">आप इस डिवाइस पर <ph name="PROFILE_LIMIT" /> ई-सिम प्रोफ़ाइलें इंस्टॉल कर सकते हैं. अन्य प्रोफ़ाइल जोड़ने के लिए, पहले किसी मौजूदा प्रोफ़ाइल को हटाएं.</translation>
 <translation id="4280325816108262082">बंद होने पर या इस्तेमाल नहीं किए जाने पर डिवाइस अपने-आप डिसकनेक्ट हो जाएगा</translation>
 <translation id="4281844954008187215">सेवा की शर्तें</translation>
-<translation id="428200245206114206">F बटन, अब आपके Chromebook की सबसे ऊपर वाली पंक्ति के बटन की तरह काम करेंगे.</translation>
 <translation id="4282196459431406533">Smart Lock चालू है</translation>
 <translation id="4284903252249997120">ChromeVox स्क्रीन रीडर और 'चुनें और सुनें' सुविधा</translation>
 <translation id="4285418559658561636">पासवर्ड अपडेट करें</translation>
@@ -5136,7 +5125,6 @@
 <translation id="5476016146231427848">Chromebook पर Steam इस्तेमाल करने के लिए, कृपया अपना डिवाइस रीस्टार्ट करें</translation>
 <translation id="5481273127572794904">एक से ज़्यादा फ़ाइलों को अपने-आप डाउनलोड करने की अनुमति नहीं है</translation>
 <translation id="5481941284378890518">आस-पास के प्रिंटर जोड़ें</translation>
-<translation id="5483785310822538350">फ़ाइल और डिवाइस के एक्सेस रद्द करें</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> के मुताबिक, यह ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को आज ही लौटा दें. <ph name="LINK_BEGIN" />जानकारी देखें<ph name="LINK_END" />}one{<ph name="MANAGER" /> के मुताबिक, यह ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को {NUM_DAYS} दिन के अंदर लौटा दें. <ph name="LINK_BEGIN" />जानकारी देखें<ph name="LINK_END" />}other{<ph name="MANAGER" /> के मुताबिक, यह ज़रूरी है कि आप अपने डेटा का बैक अप लें और इस <ph name="DEVICE_TYPE" /> को {NUM_DAYS} दिन के अंदर लौटा दें. <ph name="LINK_BEGIN" />जानकारी देखें<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">ऐप्लिकेशन जोड़ें</translation>
 <translation id="5485754497697573575">सभी टैब पुनर्स्थापित करें</translation>
@@ -6032,6 +6020,7 @@
 <translation id="6266532094411434237"><ph name="DEVICE" /> से कनेक्ट किया जा रहा है</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> पर अपना प्रमाणन करने के लिए किसी प्रमाणपत्र को चुनें</translation>
 <translation id="6268252012308737255"><ph name="APP" /> में खोलें</translation>
+<translation id="6270309713620950855">सूचना म्यूट करें</translation>
 <translation id="6270391203985052864">साइटें आपको सूचनाएं भेजने के लिए पूछ सकती हैं</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />सिस्टम और ऐप्लिकेशन की जानकारी<ph name="END_LINK1" /> और <ph name="BEGIN_LINK2" />मेट्रिक<ph name="END_LINK2" /> भेजें</translation>
 <translation id="6270896861225278704">गतिविधि के इतिहास का कार्ड</translation>
@@ -6262,7 +6251,6 @@
 <translation id="6478248366783946499">खतरनाक फ़ाइल रखें?</translation>
 <translation id="6479881432656947268">Chrome Web Store पर जाएं</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> मैनेज करता है</translation>
-<translation id="6481978993812487794">यह सुविधा चालू होने पर, Google खाते से साइन इन करने के बाद, आपको किसी भी ChromeOS डिवाइस पर अपने ऐप्लिकेशन दिख जाएंगे. ब्राउज़र से डेटा सिंक करने की अन्य सुविधाएं बंद होने पर भी, वेब ऐप्लिकेशन Chrome से सिंक होंगे.</translation>
 <translation id="6482559668224714696">फ़ुल-स्क्रीन पर सामग्री को बड़ा दिखाने वाला</translation>
 <translation id="6483485061007832714">डाउनलोड खोलें</translation>
 <translation id="6483805311199035658"><ph name="FILE" /> खोला जा रहा है...</translation>
@@ -6752,7 +6740,6 @@
 <translation id="6903590427234129279">सभी यूआरएल (<ph name="URL_COUNT" />) खोलें</translation>
 <translation id="6903907808598579934">सिंक करना चालू करें</translation>
 <translation id="6903916726032521638"><ph name="QUERY_CLUSTER_NAME" /> खोजें</translation>
-<translation id="6904344821472985372">फ़ाइल एक्सेस रद्द करें</translation>
 <translation id="6904655473976120856">बाहर निकलने के लिए ऐप्लिकेशन बटन दबाएं</translation>
 <translation id="6906095067383230422">{NUM_MINS,plural, =1{1 मिनट तक कोई गतिविधि न होने पर, Google Password Manager अपने-आप बंद हो जाता है. ऐसा, आपके पासवर्ड को सुरक्षित रखने के लिए किया जाता है}one{{NUM_MINS} मिनट तक कोई गतिविधि न होने पर, Google Password Manager अपने-आप बंद हो जाता है. ऐसा, आपके पासवर्ड को सुरक्षित रखने के लिए किया जाता है}other{{NUM_MINS} मिनट तक कोई गतिविधि न होने पर, Google Password Manager अपने-आप बंद हो जाता है. ऐसा, आपके पासवर्ड को सुरक्षित रखने के लिए किया जाता है}}</translation>
 <translation id="6909422577741440844">क्या आप इस डिवाइस से फ़ाइल पाना चाहते हैं?</translation>
@@ -7284,6 +7271,7 @@
 <translation id="7392118418926456391">वायरस स्कैन विफल रहा</translation>
 <translation id="7392915005464253525">बंद की गई विंडो पु&amp;न: खोलें</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{1 आइटम कॉपी किया गया}one{{COUNT} आइटम कॉपी किया गया}other{{COUNT} आइटम कॉपी किए गए}}</translation>
+<translation id="7393435859300249877">वीडियो चैट जैसे ऐप्लिकेशन का इस्तेमाल करते समय, आपका माइक म्यूट होने पर, आपको इसकी सूचना दी जाएगी. माइक के म्यूट होने पर, आपकी बातचीत किसी को सुनाई नहीं देती.</translation>
 <translation id="7395774987022469191">पूरी स्क्रीन</translation>
 <translation id="7396017167185131589">शेयर किए गए फ़ोल्डर यहां दिखेंगे</translation>
 <translation id="7396845648024431313">सिस्‍टम स्टार्ट होने पर <ph name="APP_NAME" /> लॉन्‍च होगा और सभी अन्‍य <ph name="PRODUCT_NAME" /> विंडो बंद कर देने के बाद भी बैकग्राउंड में चलता रहेगा.</translation>
@@ -8169,7 +8157,6 @@
 <translation id="8138997515734480534"><ph name="VM_NAME" /> की स्थिति</translation>
 <translation id="8139447493436036221">Google Drive फ़ाइलें</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
-<translation id="8141260936970642964">ऐप्लिकेशन, वेबसाइटों और सिस्टम के टाइम ज़ोन को, 'Google लोकेशन सर्विस' से मिली जगह की जानकारी का इस्तेमाल करने की अनुमति दें. अगर जगह की जानकारी ऐक्सेस करने की सुविधा बंद है, तो भी आपके आईपी पते से आपकी जगह की जानकारी दिख सकती है.</translation>
 <translation id="8141418916163800697">आपके पास फ़ोन हब की सेटिंग में जाकर, ज़्यादा सुविधाएं सेट अप करने का विकल्प है</translation>
 <translation id="8141584439523427891">अब वैकल्पिक ब्राउज़र में खोला जा रहा है</translation>
 <translation id="8141725884565838206">अपने पासवर्ड प्रबंधित करें</translation>
@@ -8410,6 +8397,7 @@
 <translation id="8345848587667658367">अब आपके पास अपने फ़ोन में मौजूद हाल ही की फ़ोटो, मीडिया, सूचनाएं, और ऐप्लिकेशन देखने का विकल्प है</translation>
 <translation id="8347227221149377169">प्रिंट जॉब</translation>
 <translation id="834785183489258869">गुप्त मोड इस्तेमाल करने पर, अलग-अलग साइटों पर की गई आपकी ब्राउज़िंग गतिविधि देखने के लिए, साइटें, कुकी इस्तेमाल नहीं कर सकतीं. जैसे, लोगों के हिसाब से विज्ञापन दिखाने के लिए. हो सकता है कि कुछ साइटों पर खास सुविधाएं काम न करें.</translation>
+<translation id="8349826889576450703">लॉन्चर</translation>
 <translation id="8350789879725387295">डॉक में स्टाइलस टूल</translation>
 <translation id="8351316842353540018">सुलभता के विकल्प हमेशा दिखाएं</translation>
 <translation id="8351419472474436977">इस एक्सटेंशन ने आपकी प्रॉक्सी सेटिंग पर नियंत्रण कर लिया है, जिसका अर्थ है कि यह   ऑनलाइन किए जाने वाले काम को बदल सकता है, खंडित कर सकता है या उसे छिप कर सुन सकता है. अगर आप पक्का नहीं हैं कि यह बदलाव क्यों हुआ है, तो संभवत: आप उसे नहीं चाहते हैं.</translation>

@@ -2974,7 +2974,6 @@ Mais detalhes:
 <translation id="8217240300496046857">Os sites não podem usar cookies que rastreiem você pela Web. Os recursos de alguns sites podem falhar.</translation>
 <translation id="8217748145574471584">Recursos humanos</translation>
 <translation id="8218327578424803826">Local designado:</translation>
-<translation id="8225771182978767009">A pessoa que configurou este computador optou por bloquear esse site.</translation>
 <translation id="8228419419708659934">Visualização de duas páginas</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -3088,7 +3087,6 @@ Mais detalhes:
 <translation id="8474910779563686872">Mostrar detalhes do desenvolvedor</translation>
 <translation id="8479754468255770962">Grampo na parte inferior esquerda</translation>
 <translation id="8483229036294884935">Esse endereço vai ser excluído da sua Conta do Google (<ph name="ACCOUNT" />)</translation>
-<translation id="8483780878231876732">Para usar os cards da sua Conta do Google, faça login no Google Chrome</translation>
 <translation id="8488350697529856933">Aplicável a</translation>
 <translation id="8490137692873530638">Empilhador 10</translation>
 <translation id="8493948351860045254">Liberar espaço</translation>
@@ -3306,6 +3304,7 @@ Mais detalhes:
 <translation id="9048662076076074925">24 x 36 pol.</translation>
 <translation id="9049981332609050619">Você tentou acessar <ph name="DOMAIN" />, mas o servidor apresentou um certificado inválido.</translation>
 <translation id="9050666287014529139">Senha</translation>
+<translation id="9053840549256861041">Estamos lançando um novo recurso de privacidade de anúncios chamado "medição de anúncios". O Chrome compartilha apenas informações muito limitadas entre sites, como o momento em que um anúncio foi mostrado a você, para ajudar os sites a avaliar a performance dos anúncios.</translation>
 <translation id="9056953843249698117">Loja</translation>
 <translation id="9062620674789239642">Talvez ele tenha sido movido, editado ou excluído.</translation>
 <translation id="9063398205799684336">Envelope Kaku 2</translation>

@@ -1199,9 +1199,11 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3927932062596804919">Odbij</translation>
 <translation id="393316646445601645">Internet i telekomunikacije</translation>
 <translation id="3939773374150895049">Želite li koristiti WebAuthn umjesto CVC-a?</translation>
+<translation id="3941630233824954464">Omogući obaveznu ponovnu autentifikaciju</translation>
 <translation id="3943857333388298514">Zalijepi</translation>
 <translation id="3946209740501886391">Uvijek pitaj na ovoj web-lokaciji</translation>
 <translation id="3947595700203588284">Može tražiti dopuštenje za povezivanje s MIDI uređajima</translation>
+<translation id="3948588869002647271">Aplikacija nedostaje ili je oštećena</translation>
 <translation id="3949571496842715403">Poslužitelj nije mogao dokazati da je <ph name="DOMAIN" />; njegov sigurnosni certifikat ne navodi alternativne nazive predmeta. To može biti uzrokovano pogrešnom konfiguracijom ili napadom na vašu vezu.</translation>
 <translation id="3949601375789751990">Ovdje se prikazuje vaša povijest pregledavanja</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2202,6 +2204,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6370022303958842211">Radnje pristupa uređaju kao što su prijave (uključujući razloge neuspjelih prijava), odjave, zaključavanja i otključavanja</translation>
 <translation id="6374469231428023295">Pokušaj ponovo</translation>
 <translation id="6374865374745447009">upravljanje prozorima</translation>
+<translation id="6376881782310775282">Nije moguće pristupiti razvojnom poslužitelju za ovu aplikaciju</translation>
 <translation id="6377268785556383139">Jedan rezultat za upit "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Ako nastavite, moguća je naplata.</translation>
@@ -2970,7 +2973,6 @@ Dodatne pojedinosti:
 <translation id="8217240300496046857">Web-lokacije ne mogu upotrebljavati kolačiće koji vas prate na webu. Značajke na nekim web-lokacijama mogu prestati funkcionirati.</translation>
 <translation id="8217748145574471584">Ljudski resursi</translation>
 <translation id="8218327578424803826">Dodijeljena lokacija:</translation>
-<translation id="8225771182978767009">Osoba koja je postavila računalo blokirala je tu web-lokaciju.</translation>
 <translation id="8228419419708659934">Prikaz dviju stranica</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -3011,6 +3013,7 @@ Dodatne pojedinosti:
 <translation id="8286799286781881307">Aplikacije koje je odobrio administrator mogu snimiti sve zaslone priključene na vaš uređaj. Te se informacije mogu obrađivati lokalno ili prenijeti na poslužitelje vaše organizacije.</translation>
 <translation id="8288807391153049143">Prikaz certifikata</translation>
 <translation id="8289355894181816810">Obratite se svojem mrežnom administratoru ako niste sigurni što to znači.</translation>
+<translation id="8292520987784410870">Uvijek potvrditi?</translation>
 <translation id="8293206222192510085">Dodaj oznaku</translation>
 <translation id="829335040383910391">zvuk</translation>
 <translation id="8294431847097064396">Izvor</translation>
@@ -3083,7 +3086,6 @@ Dodatne pojedinosti:
 <translation id="8474910779563686872">Prikaži pojedinosti o razvojnom programeru</translation>
 <translation id="8479754468255770962">Spajanje pri dnu lijevo</translation>
 <translation id="8483229036294884935">Ta će se adresa izbrisati s vašeg Google računa, <ph name="ACCOUNT" /></translation>
-<translation id="8483780878231876732">Da biste upotrebljavali kartice sa svojeg Google računa, prijavite se na Chrome</translation>
 <translation id="8488350697529856933">Primjenjuje se na</translation>
 <translation id="8490137692873530638">Spremnik za slaganje u snopove 10</translation>
 <translation id="8493948351860045254">Oslobodi prostor</translation>
@@ -3111,6 +3113,7 @@ Dodatne pojedinosti:
 <translation id="854892890027593466">Omotnica C6/C5</translation>
 <translation id="8553387990086529628">Turistička odredišta</translation>
 <translation id="8554010658308662631">Učitaj više</translation>
+<translation id="8554802735558319842">Radi dodatne sigurnosti na dijeljenim uređajima uključite potvrdu za svako plaćanje uz upotrebu automatskog popunjavanja.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Poništi dopuštenje}one{Poništi dopuštenja}few{Poništi dopuštenja}other{Poništi dopuštenja}}</translation>
 <translation id="8555010941760982128">Ovaj kôd primijenite pri naplati</translation>
 <translation id="8557066899867184262">CVC možete pronaći na poleđini kartice.</translation>

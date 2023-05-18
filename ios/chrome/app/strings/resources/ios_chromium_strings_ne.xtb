@@ -48,6 +48,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> ले Chromium प्रयोग गर्नुभएको थियो तर यो डिभाइसबाट सेभ गरिएका बुकमार्क, पासवर्ड र अन्य सेटिङ मेटाउनुभएको थिएन।</translation>
 <translation id="372658070733623520">तपाईं आफ्नो Google खातामा सेभ गरिएको Chromium डेटा प्रयोग गर्न र Google खातामा थप Chromium डेटा सेभ गर्न चाहनुहुन्छ भने आफ्नो पहिचान पुष्टि गर्नुहोस्।</translation>
 <translation id="3805899903892079518">Chromiumसँग तपाईंको तस्बिर वा भिडियोहरूमा पहुँच छैन। iOS सेटिङहरू &gt; गोपनीयता &gt; तस्बिरहरूमा पहुँच अन गर्नुहोस्।</translation>
+<translation id="3955621079070267756">जुनसुकै एपबाट Chromium खोल्नुहोस्</translation>
 <translation id="4043291146360695975">पासवर्डहरू यो डिभाइसको पासवर्ड म्यानेजरमा मात्र सेभ गरिन्छन्।</translation>
 <translation id="4099085513035183040">Chromium को बिटा संस्करणमा प्रयोग गर्न मिल्दैन</translation>
 <translation id="4432744876818348753">तपाईं Chromium बाट बढीभन्दा बढी फाइदा लिन चाहनुहुन्छ भने साइन इन गर्नुहोस्।</translation>
@@ -140,5 +141,6 @@
 <translation id="9089354809943900324">क्रोमियमको म्याद सकिएको छ</translation>
 <translation id="9110075932708282655">स्वतः Chromium चलाउनुहोस्</translation>
 <translation id="921174536258924340">Chromium ले सबै पासवर्डहरू जाँच्न सकेन। भोलि फेरि प्रयास गर्नुहोस् वा <ph name="BEGIN_LINK" />आफ्नो Google खातामा रहेका पासवर्डहरू जाँच्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="971488683725792095">म्यासेज, डकुमेन्ट र अन्य एपहरूमा भएका लिंकहरूमा ट्याप गर्दा Chromium स्वतः प्रयोग गरियोस्।</translation>
 <translation id="985602178874221306">Chromium लेखकहरू</translation>
 </translationbundle>

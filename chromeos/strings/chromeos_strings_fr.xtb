@@ -92,6 +92,7 @@
 <translation id="1669047024429367828">Visibilité</translation>
 <translation id="1672499492233627739">Flux vidéo de la webcam</translation>
 <translation id="1676557873873341166">Enregistrement vidéo…</translation>
+<translation id="1684279041537802716">Couleur d'accentuation</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Présence du résolveur DNS</translation>
 <translation id="1708602061922134366">Bleu Google</translation>
@@ -217,6 +218,7 @@
 <translation id="2638662041295312666">Image de connexion</translation>
 <translation id="2640549051766135490">Album "<ph name="TITLE" />" (<ph name="DESC" />) sélectionné</translation>
 <translation id="267442004702508783">actualiser</translation>
+<translation id="268270014981824665">baisse de la luminosité du clavier</translation>
 <translation id="2712812801627182647">Clé d'authentification TLS</translation>
 <translation id="2713444072780614174">Blanc</translation>
 <translation id="2717139507051041123">Activer le mode couleur sombre</translation>
@@ -224,6 +226,7 @@
 <translation id="2744221223678373668">Partagés</translation>
 <translation id="2751739896257479635">Authentification EAP phase 2</translation>
 <translation id="2783010256799387990">RÉUSSI</translation>
+<translation id="2787435249130282949">clavier plus lumineux</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Applications</translation>
 <translation id="28232023175184696">Impossible d'établir la connexion Internet. Cliquez ici pour réessayer.</translation>
@@ -327,11 +330,13 @@
 <translation id="3749289110408117711">Nom du fichier</translation>
 <translation id="3771294271822695279">Fichiers vidéo</translation>
 <translation id="3784455785234192852">Verrouiller</translation>
+<translation id="380097101658023925">commandes RVB</translation>
 <translation id="38114475217616659">Effacer tout l'historique</translation>
 <translation id="3820172043799983114">Code incorrect.</translation>
 <translation id="3824259034819781947">Joindre des fichiers</translation>
 <translation id="3838338534323494292">Nouveau mot de passe</translation>
 <translation id="3845880861638660475">Appuyez sur <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" />+<ph name="ESC_SHORTCUT_START" />Échap<ph name="ESC_SHORTCUT_END" /> pour fermer la boîte de dialogue.</translation>
+<translation id="3848280697030027394">assombrissement du clavier</translation>
 <translation id="385051799172605136">Retour</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3862598938296403232">Veuillez saisir une description</translation>
@@ -403,6 +408,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Désactiver</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> : redémarrage…</translation>
+<translation id="4395835743215824109">personnalisation du clavier</translation>
 <translation id="4415951057168511744">Avatar actuel</translation>
 <translation id="4422041425070339732">flèche vers le bas</translation>
 <translation id="4425149324548788773">Mon Drive</translation>
@@ -443,6 +449,7 @@
 <translation id="4731797938093519117">Accès parental</translation>
 <translation id="473775607612524610">Mettre à jour</translation>
 <translation id="4744944742468440486">Informations sur le texte sélectionné</translation>
+<translation id="4771607256327216405">augmentation de la luminosité du clavier</translation>
 <translation id="4773299976671772492">Interrompu</translation>
 <translation id="4782311465517282004">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous effectuez un clic droit ou appuyez de manière prolongée sur du texte</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> photo</translation>
@@ -491,6 +498,7 @@
 <translation id="500920857929044050">Arrêter le test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Affichez des photos, l'heure, la météo ou les actualités sur l'écran de veille.</translation>
+<translation id="5038292761217083259">clavier multicolore</translation>
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5049856988445523908">SIM bloquée (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nom du groupe</translation>
@@ -639,6 +647,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Appliquer le thème sombre</translation>
 <translation id="6285899124799306373">ouvrir le lanceur d'applications</translation>
+<translation id="629550705077076970">diminution de la luminosité du clavier</translation>
 <translation id="6302401976930124515">Le test <ph name="TEST_NAME" /> a été annulé</translation>
 <translation id="631063167932043783">Appli Explorer</translation>
 <translation id="6319207335391420837">Mettre à jour le micrologiciel sur <ph name="DEVICE_NAME" /></translation>
@@ -657,6 +666,7 @@
 <translation id="6401427872449207797">recherche du navigateur</translation>
 <translation id="6410257289063177456">Fichiers image</translation>
 <translation id="641081527798843608">Correspondance d'objet</translation>
+<translation id="6411934471898487866">luminosité du clavier</translation>
 <translation id="6412715219990689313">Clavier intégré</translation>
 <translation id="6417265370957905582">Assistant Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -807,10 +817,12 @@
 <translation id="7656388927906093505">L'appareil est une souris.</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7665800271478495366">Modifier l'avatar</translation>
+<translation id="7683228889864052081">teinte du clavier</translation>
 <translation id="7690294790491645610">Confirmer le nouveau mot de passe</translation>
 <translation id="7701040980221191251">Rien</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">lumière du clavier</translation>
 <translation id="773153675489693198">Nombre de cycles</translation>
 <translation id="7747039790905080783">Clé pré-partagée</translation>
 <translation id="7762130827864645708">Votre mot de passe a bien été modifié. Veuillez désormais utiliser le nouveau mot de passe.</translation>
@@ -854,6 +866,7 @@
 <translation id="8075838845814659848">Niveau de charge</translation>
 <translation id="8076492880354921740">Onglets</translation>
 <translation id="8082366717211101304">Impossible de résoudre le DNS depuis les applis Android</translation>
+<translation id="8082644724189923105">zone du clavier</translation>
 <translation id="808894953321890993">Modifier le mot de passe</translation>
 <translation id="8094062939584182041">Autoriser Google à vous informer de ce problème par e-mail</translation>
 <translation id="8104083085214006426">Vous utilisez un réseau ouvert et non sécurisé</translation>
@@ -902,6 +915,7 @@
 <translation id="8456761643544401578">Mode sombre automatique</translation>
 <translation id="8461329675984532579">Nom du fournisseur personnel</translation>
 <translation id="8475690821716466388">Le réseau Wi-Fi est protégé par le protocole peu sécurisé WEP PSK</translation>
+<translation id="8476242415522716722">éclairage discret du clavier</translation>
 <translation id="8477551185774834963">Seuil de latence autorisé légèrement dépassé par le DNS</translation>
 <translation id="8483248364096924578">Adresse IP</translation>
 <translation id="8491311378305535241">Impossible de se connecter aux sites HTTP via le pare-feu depuis les applis Android</translation>
@@ -945,6 +959,7 @@
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8855781559874488009">Impossible de se connecter aux sites HTTP via le pare-feu</translation>
 <translation id="885701979325669005">Données stockées</translation>
+<translation id="885704831271383379">clavier plus sombre</translation>
 <translation id="8863170912498892583">Activer le thème sombre</translation>
 <translation id="8863888432376731307">Obtenir la <ph name="INTENT" /> pour "<ph name="QUERY" />" et plus</translation>
 <translation id="8864415976656252616">Aucune suggestion de contenu. Consultez les contenus d'aide populaires.</translation>

@@ -94,6 +94,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1346748346194534595">Djathtas</translation>
 <translation id="1351937230027495976">Palos menynë</translation>
 <translation id="1360220746312242196">Kur kërkon në një faqe, shko te përputhja e mëparshme për kërkimin</translation>
+<translation id="1360788414852622716">Profili po çaktivizohet. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="1364382257761975320">Për të shkyçur Chromebook-un tënd, përdor gjurmën e gishtit</translation>
 <translation id="1365866993922957110">Merr përditësimet automatike</translation>
 <translation id="1372545819342940910">Ruaj tavolinën e punës për më vonë</translation>
@@ -545,6 +546,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3510164367642747937">Thekso kursorin e miut</translation>
 <translation id="3513798432020909783">Llogaria menaxhohet nga <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Përditëso pajisjen brenda 1 minute}other{Përditëso pajisjen brenda # minutash}}</translation>
+<translation id="3522979239100719575">Po kërkon për profilet e disponueshme. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="3526440770046466733">Hape lidhjen në një skedë të re dhe qëndro në skedën aktuale</translation>
 <translation id="353086728817903341">U lidh me <ph name="NUM_DEVICES" /> pajisje</translation>
 <translation id="3533126039236445965">Aplikacionet në raft</translation>
@@ -1557,6 +1559,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8083540854303889870">Ruajtur për më vonë</translation>
 <translation id="8091153018031979607">Fillon në <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Përditësimet automatike</translation>
+<translation id="8092380135549145188">Kontrollet e lëvizjes</translation>
 <translation id="8098591350844501178">Ndalo transmetimin e ekranit te <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Zhgozhdo aplikacionin nga rafti</translation>
 <translation id="8113423164597455979">Aktiv, të gjitha aplikacionet</translation>

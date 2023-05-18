@@ -1096,6 +1096,7 @@
 <translation id="3658742229777143148">التعديل</translation>
 <translation id="3664782872746246217">الكلمات الرئيسية:</translation>
 <translation id="3667704023705708645">رأس مال مُخاطر</translation>
+<translation id="3671117652518853176">عند إيقاف هذا الإعداد، قد يُطلب منك إجراء عملية التحقُّق من حين لآخر لأغراض تتعلّق بالأمان.</translation>
 <translation id="3671540257457995106">هل تريد السماح بتغيير الحجم؟</translation>
 <translation id="3672568546897166916">حدث خطأ في <ph name="ERROR_PATH" />: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">اللفافة الثالثة</translation>
@@ -1131,6 +1132,7 @@
 <translation id="3736520371357197498">إذا كنت على دراية بالمخاطر على أمنك، يمكنك <ph name="BEGIN_LINK" />زيارة هذا الموقع غير الآمن<ph name="END_LINK" /> قبل أن تتم إزالة البرامج الخطيرة.</translation>
 <translation id="3738166223076830879">يتولّى مشرفك إدارة متصفِّحك.</translation>
 <translation id="3740319564441798148">حافلات وقطارات للمسافات الطويلة</translation>
+<translation id="3743765582345153106">التحقُّق دائمًا من بيانات طرق الدفع عند استخدام ميزة "الملء التلقائي"</translation>
 <translation id="3744111561329211289">المزامنة في الخلفية</translation>
 <translation id="3744286742364977428">‏يتم إرسال الملفات التي تنزِّلها إلى Google Cloud أو جهات خارجية لتحليلها. على سبيل المثال، قد يتم فحص هذه الملفات بحثًا عن بيانات حسّاسة أو برامج ضارة، وقد يتم تخزينها استنادًا إلى سياسات الشركة.</translation>
 <translation id="3744899669254331632">‏لا يمكنك زيارة <ph name="SITE" /> في الوقت الحالي لأن الموقع أرسل اعتمادات مختلطة حيث لا يستطيع Chromium المعالجة. أخطاء الشبكة وهجماتها عادةً ما تكون مؤقتة، لذلك من المحتمل أن تعمل هذه الصفحة في وقت لاحق.</translation>
@@ -1200,9 +1202,11 @@
 <translation id="3927932062596804919">رفض</translation>
 <translation id="393316646445601645">إنترنت واتصالات</translation>
 <translation id="3939773374150895049">‏هل تريد استخدم WebAuthn بدلاً من رمز التحقق من البطاقة (CVC)؟</translation>
+<translation id="3941630233824954464">تفعيل ميزة إعادة المصادقة الإلزامية</translation>
 <translation id="3943857333388298514">لصق</translation>
 <translation id="3946209740501886391">السؤال دائمًا على الموقع الإلكتروني هذا</translation>
 <translation id="3947595700203588284">‏السماح للموقع الإلكتروني بطلب الاتصال بأجهزة MIDI</translation>
+<translation id="3948588869002647271">هذا التطبيق غير متوفِّر أو تالف.</translation>
 <translation id="3949571496842715403">لم يتمكن هذا الخادم من إثبات أنه <ph name="DOMAIN" />؛ بل إن شهادة الأمان التابعة له لا تُحدّد الأسماء البديلة للمضيفات. وربما يكون السبب في ذلك وجود خطأ في الإعداد أو اعتراض أحد المهاجمين للاتصال.</translation>
 <translation id="3949601375789751990">يظهر سجلّ التصفّح هنا</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -1737,6 +1741,7 @@
 <translation id="5171045022955879922">‏البحث أو إدخال عنوان URL</translation>
 <translation id="5172758083709347301">الجهاز</translation>
 <translation id="5177076414499237632">الاطّلاع على مصدر هذه الصفحة وموضوعها</translation>
+<translation id="5179490652562926740">تم حفظ إعدادات التحقُّق من بيانات طرق الدفع.</translation>
 <translation id="5179510805599951267">هل الصفحة ليست باللغة <ph name="ORIGINAL_LANGUAGE" />؟ الإبلاغ عن هذا الخطأ</translation>
 <translation id="518639307526414276">طعام حيوانات أليفة ومستلزمات رعايتها</translation>
 <translation id="5190072300954988691">تم رفض طلب الوصول إلى الكاميرا والميكروفون.</translation>
@@ -2204,6 +2209,7 @@
 <translation id="6370022303958842211">إجراءات الوصول إلى الأجهزة، مثل عمليات تسجيل الدخول (بما في ذلك أسباب تعذّر تسجيل الدخول) وعمليات تسجيل الخروج وقفل الأجهزة وفتحها</translation>
 <translation id="6374469231428023295">إعادة المحاولة</translation>
 <translation id="6374865374745447009">إدارة النوافذ</translation>
+<translation id="6376881782310775282">لا يمكن الوصول إلى خادم تطوير هذا التطبيق.</translation>
 <translation id="6377268785556383139">نتيجة بحث واحدة عن "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">رسوم محتملة في انتظارك.</translation>
@@ -2478,7 +2484,7 @@
 <translation id="706295145388601875">‏إضافة عناوين وإدارتها في إعدادات متصفّح Chrome</translation>
 <translation id="7064851114919012435">معلومات الاتصال</translation>
 <translation id="7067633076996245366">موسيقى "سول" وموسيقى "آر آند بي"</translation>
-<translation id="7068733155164172741">أدخِل الرمز المكوَّن من <ph name="OTP_LENGTH" /> رقم.</translation>
+<translation id="7068733155164172741">أدخِل الرمز الذي يبلغ عدد أرقامه <ph name="OTP_LENGTH" />.</translation>
 <translation id="70705239631109039">اتصالك بهذا الموقع تتخلله ثغرات أمنية.</translation>
 <translation id="7075452647191940183">الطلب كبير جدًا</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -2973,7 +2979,6 @@
 <translation id="8217240300496046857">لا يمكن للمواقع الإلكترونية استخدام ملفات تعريف الارتباط لتتبّع نشاط تصفحّك على الإنترنت. وقد تتعطّل بعض الميزات على بعض المواقع الإلكترونية.</translation>
 <translation id="8217748145574471584">موارد بشرية</translation>
 <translation id="8218327578424803826">الموقع الذي تم تعيينه:</translation>
-<translation id="8225771182978767009">اختار الشخص الذي أعد جهاز الكمبيوتر حظر الموقع الإلكتروني هذا.</translation>
 <translation id="8228419419708659934">عرض صفحتين</translation>
 <translation id="8229288958566709448">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> ملم</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />، <ph name="TYPE_2" /></translation>
@@ -3014,11 +3019,12 @@
 <translation id="8286799286781881307">إنّ التطبيقات التي يسمح المشرف بعرضها يمكنها أخذ لقطة شاشة لمحتوى جميع الشاشات المتصلة بجهازك. يمكن معالجة هذه المعلومات على الجهاز أو تحميلها إلى خوادم مؤسستك.</translation>
 <translation id="8288807391153049143">عرض الشهادة</translation>
 <translation id="8289355894181816810">اتصل بمشرف الشبكة إذا لم تكن متأكدًا مما يعنيه هذا.</translation>
+<translation id="8292520987784410870">هل تريد إثبات هويتك دائمًا؟</translation>
 <translation id="8293206222192510085">إضافة إشارة مرجعية</translation>
 <translation id="829335040383910391">الصوت</translation>
 <translation id="8294431847097064396">المصدر</translation>
 <translation id="8296205692406981542">منتزهات وحدائق عامة ومحلية</translation>
-<translation id="8297545700510100061">يتم استخدام ملفات تعريف الارتباط وبيانات الموقع الإلكتروني الأخرى لتذكُّر بيانات تسجيل دخولك أو تقديم إعلانات مخصّصة لك مثلاً. لإدارة ملفات تعريف الارتباط لجميع المواقع الإلكترونية، يمكنك الانتقال إلى <ph name="SETTINGS" />.</translation>
+<translation id="8297545700510100061">يتم استخدام ملفات تعريف الارتباط وبيانات المواقع الإلكترونية الأخرى لتذكُّر بيانات تسجيل دخولك أو تقديم إعلانات مخصّصة لك مثلاً. لإدارة ملفات تعريف الارتباط لجميع المواقع الإلكترونية، يمكنك الانتقال إلى <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">‏قد يتتطلب Wi-Fi الذي تستخدمه (<ph name="WIFI_NAME" />) زيارة <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8303854710873047864">تم عرض قسم "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">الطي إلى نصفَين</translation>
@@ -3087,7 +3093,6 @@
 <translation id="8474910779563686872">عرض تفاصيل مطوّر البرامج</translation>
 <translation id="8479754468255770962">وضع دبوس أسفل اليسار</translation>
 <translation id="8483229036294884935">‏سيتم حذف هذا العنوان من حسابك على Google، <ph name="ACCOUNT" />.</translation>
-<translation id="8483780878231876732">‏لاستخدام البطاقات من حسابك في Google، يُرجى تسجيل الدخول إلى Chrome</translation>
 <translation id="8488350697529856933">تنطبق على</translation>
 <translation id="8490137692873530638">المكدِّس 10</translation>
 <translation id="8493948351860045254">تفريغ بعض المساحة</translation>
@@ -3115,6 +3120,7 @@
 <translation id="854892890027593466">‏ظرف C6/C5</translation>
 <translation id="8553387990086529628">وجهات سياحية</translation>
 <translation id="8554010658308662631">تحميل المزيد</translation>
+<translation id="8554802735558319842">لمزيد من الأمان على الأجهزة المشتركة، يمكنك إثبات هويتك في كل مرة تستخدم فيها ميزة "الملء التلقائي" لإتمام عملية الدفع.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{إعادة ضبط الإذن}zero{إعادة ضبط الأذونات}two{إعادة ضبط الإذنَين}few{إعادة ضبط الأذونات}many{إعادة ضبط الأذونات}other{إعادة ضبط الأذونات}}</translation>
 <translation id="8555010941760982128">استخدام هذا الرمز عند الدفع</translation>
 <translation id="8557066899867184262">‏رمز التحقق من البطاقة (CVC) موجود خلف بطاقتك.</translation>

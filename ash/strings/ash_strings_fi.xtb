@@ -94,6 +94,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1346748346194534595">Oikealla</translation>
 <translation id="1351937230027495976">Tiivistä valikko</translation>
 <translation id="1360220746312242196">Kun haet sivua, siirry haun edelliseen osumaan</translation>
+<translation id="1360788414852622716">Profiilia poistetaan käytöstä. Tässä voi kulua muutama minuutti.</translation>
 <translation id="1364382257761975320">Voit avata Chromebookin lukituksen käyttämällä sormenjälkeäsi</translation>
 <translation id="1365866993922957110">Päivitä automaattisesti</translation>
 <translation id="1372545819342940910">Tallenna työpöytä myöhempää käyttöä varten</translation>
@@ -545,6 +546,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3510164367642747937">Korosta hiiren osoitin</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> hallinnoi tiliä</translation>
 <translation id="352245152354538528">{0,plural, =1{Päivitä laite 1 minuutin kuluessa}other{Päivitä laite # minuutin kuluessa}}</translation>
+<translation id="3522979239100719575">Etsitään käytettävissä olevia profiileja. Tässä voi kulua muutama minuutti.</translation>
 <translation id="3526440770046466733">Avaa linkki uudella välilehdellä ja pysy nykyisellä välilehdellä</translation>
 <translation id="353086728817903341">Yhdistetty <ph name="NUM_DEVICES" /> laitteeseen</translation>
 <translation id="3533126039236445965">Hyllyssä olevat sovellukset</translation>
@@ -1557,6 +1559,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8083540854303889870">Tallennettu myöhempää käyttöä varten</translation>
 <translation id="8091153018031979607">Alkaa klo <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Automaattiset päivitykset</translation>
+<translation id="8092380135549145188">Vieritysasetukset</translation>
 <translation id="8098591350844501178">Lopeta suoratoisto: <ph name="RECEIVER_NAME" /></translation>
 <translation id="810637681351706236">Irrota sovellus hyllystä</translation>
 <translation id="8113423164597455979">Päällä, kaikki</translation>

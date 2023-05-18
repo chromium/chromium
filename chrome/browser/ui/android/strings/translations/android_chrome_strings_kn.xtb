@@ -575,6 +575,7 @@
 <translation id="4188221736490993796">Z ನಿಂದ A ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
 <translation id="4195643157523330669">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="4196597275619698563">ಕಾರ್ಡ್ ರಚಿಸಿ</translation>
+<translation id="4197828496439691735">{NUM_TABS,plural, =1{ಈ ಸಾಧನದಲ್ಲಿ 1 ಟ್ಯಾಬ್}one{ಈ ಸಾಧನದಲ್ಲಿ # ಟ್ಯಾಬ್‌ಗಳು}other{ಈ ಸಾಧನದಲ್ಲಿ # ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="4198423547019359126">ಡೌನ್‌ಲೋಡ್ ಸ್ಥಳಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="4202218894997543208">ನೀವು ನಿರ್ಬಂಧಿಸಿದ ವಿಷಯಗಳು</translation>
 <translation id="4214315110991671325">ನೀವು ಕುಕೀಗಳನ್ನು ಅನುಮತಿಸಿದರೆ, ಮುಂಚಿತವಾಗಿ ಲೋಡ್ ಮಾಡುವುದಕ್ಕಾಗಿ Chrome ಅವುಗಳನ್ನು ಬಳಸಬಹುದು.</translation>
@@ -589,6 +590,7 @@
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />ಯಾವ ಡೇಟಾವನ್ನು ಬಳಸಲಾಗುತ್ತದೆ:<ph name="END_BOLD" /> ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ, ಎಂದರೆ, ಈ ಸಾಧನದಲ್ಲಿ Chrome ಬಳಸುವಾಗ ನೀವು ಭೇಟಿ ನೀಡಿದ ಸೈಟ್‌ಗಳ ದಾಖಲೆ.</translation>
 <translation id="4269820728363426813">ಲಿಂಕ್ ವಿಳಾಸವನ್ನು ನಕಲಿಸಿ</translation>
 <translation id="4283102315569707115">ಡೆಸ್ಕ್‌ಟಾಪ್ ಸೈಟ್‌ಗಳನ್ನು ಡೀಫಾಲ್ಟ್ ಆಗಿ ವಿನಂತಿಸಬೇಕೆ?</translation>
+<translation id="4285846616383034558">ಕುಕೀಸ್, ಕ್ಯಾಷ್, ಮತ್ತು ಇತರ ಸೈಟ್ ಡೇಟಾ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಆನ್ ಮಾಡಿ<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">ಹೊಸ ಅಜ್ಞಾತ ವಿಂಡೋ</translation>
 <translation id="4298388696830689168">ಲಿಂಕ್ ಮಾಡಿರುವ ಸೈಟ್‌ಗಳು</translation>
@@ -678,6 +680,7 @@
 <translation id="4763480195061959176">ವೀಡಿಯೊ</translation>
 <translation id="4766313118839197559">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಈ ಸಾಧನದಲ್ಲಿನ Password Manager ನಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4766678251456904326">ಸಾಧನಕ್ಕೆ ಖಾತೆಯನ್ನು ಸೇರಿಸಿ</translation>
+<translation id="4767947714785277816">ನಾವು ಆ್ಯಡ್ ಮಾಪನ ಎಂಬ ಹೊಸ ಆ್ಯಡ್ ಗೌಪ್ಯತೆ ಫೀಚರ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸುತ್ತಿದ್ದೇವೆ. Chrome ಈಗ ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳ ನಡುವೆ ಬಹಳ ಸೀಮಿತ ಮಾಹಿತಿಯನ್ನು ಮಾತ್ರ ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ, ಉದಾಹರಣೆಗೆ ಆ್ಯಡ್‌ಗಳ ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಅಳೆಯುವುದಕ್ಕಾಗಿ ಸಹಾಯ ಮಾಡಲು, ನಿಮಗೆ ಯಾವಾಗ ಆ್ಯಡ್ ಅನ್ನು ತೋರಿಸಲಾಯಿತು.</translation>
 <translation id="4769095993849849966">ಹೊಸ ಫೈಲ್ ಹೆಸರು</translation>
 <translation id="4778653490315793244">ತೋರಿಸಲು ಇನ್ನೂ ಏನೂ ಇಲ್ಲ</translation>
 <translation id="4787736314074622408">ನೀವು <ph name="ITEM_TITLE" /> ಅನ್ನು ಅಳಿಸಲು ಬಯಸುತ್ತೀರಾ?</translation>
@@ -913,6 +916,7 @@
 <translation id="6011308810877101166">ಹುಡುಕಾಟ ಸಲಹೆಗಳನ್ನು ಸುಧಾರಿಸಿ</translation>
 <translation id="6026538407078977628">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್‌ಗೆ ವಿಸ್ತೃತಗೊಳಿಸಿ</translation>
 <translation id="6030719887161080597">ಆ್ಯಡ್ ಪರ್ಫಾರ್ಮೆನ್ಸ್ ಅನ್ನು ಮಾಪನ ಮಾಡಲು ಸೈಟ್‌ಗಳು ಬಳಸುವ ಮಾಹಿತಿಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="6034146297924778597">ಕಳೆದ 15 ನಿಮಿಷಗಳ ಇತಿಹಾಸವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ:</translation>
 <translation id="6039379616847168523">ಮುಂದಿನ ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="6040143037577758943">ಮುಚ್ಚಿರಿ</translation>
 <translation id="604124094241169006">ಸ್ವಯಂಚಾಲಿತ</translation>
@@ -1118,6 +1122,7 @@
 <translation id="7029809446516969842">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="7030304022046916278">URL ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು, ಅವುಗಳನ್ನು ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌ಗೆ ಕಳುಹಿಸುತ್ತದೆ</translation>
 <translation id="7030585293819777123">ನಿಮ್ಮ ಕೊನೆಯ ಕಾರ್ಯವನ್ನು ಪುನರಾರಂಭಿಸಬೇಕೆ?</translation>
+<translation id="7035701931849773472">ಇತರ ಆಯ್ಕೆಗಳು</translation>
 <translation id="7037830628447527439">ನಿಮ್ಮ Google ಖಾತೆಯ ಮೂಲಕ Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">ಚಿತ್ರದ ವಿವರಣೆ ಪಡೆಯಬೇಕೇ?</translation>
@@ -1340,6 +1345,7 @@
 <translation id="8110024788458304985">Chrome ನ ಫೀಚರ್‌ಗಳು ಹಾಗೂ ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡಿ</translation>
 <translation id="8110087112193408731">ಡಿಜಿಟಲ್ ಯೋಗಕ್ಷೇಮದಲ್ಲಿ ನಿಮ್ಮ Chrome ಚಟುವಟಿಕೆಯನ್ನು ತೋರಿಸಲು ಬಯಸುವಿರಾ?</translation>
 <translation id="8118117428362942925">ನಿಮಗೆ ಸಹಾಯ ಬೇಕಿದ್ದರೆ, ನಿಮ್ಮ ಪೋಷಕರನ್ನು ಕೇಳಿ (<ph name="PARENT_NAME" />)</translation>
+<translation id="8124758083429256800">Chrome ಮತ್ತು Chrome <ph name="ERROR_DESCRIPTION" /> ಗೆ ಸಂಬಂಧಿಸಿದ ಸೇವ್ ಮಾಡಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳ ನಿಮ್ಮ ಪಟ್ಟಿಗಳನ್ನು 121 ಆವೃತ್ತಿ ಹೊರಬಂದ ನಂತರ ವಿಲೀನಗೊಳಿಸಲಾಗುತ್ತದೆ. ಎರಡೂ ಆ್ಯಪ್‌ಗಳಲ್ಲಿನ ನಿಮ್ಮ ಎಲ್ಲಾ ಸೇವ್ ಮಾಡಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ.</translation>
 <translation id="8127542551745560481">ಮುಖಪುಟವನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="8130309322784422030">ನೀವು ಸಂಗ್ರಹಿಸಿದ ಸೈನ್-ಇನ್ ಮಾಹಿತಿಯು ಹಳೆಯದಾಗಿರಬಹುದು</translation>
 <translation id="813082847718468539">ಸೈಟ್ ಮಾಹಿತಿಯನ್ನು ವೀಕ್ಷಿಸಿ</translation>

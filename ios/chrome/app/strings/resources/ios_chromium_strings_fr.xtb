@@ -49,6 +49,7 @@
 <translation id="3650632991272923014"><ph name="USER_EMAIL1" /> utilisait Chromium et a laissé des favoris, des mots de passe et d'autres paramètres sur cet appareil.</translation>
 <translation id="372658070733623520">Pour utiliser et enregistrer des données Chromium dans votre compte Google, confirmez votre identité.</translation>
 <translation id="3805899903892079518">Chromium n'a pas accès à vos photos ni à vos vidéos. Activez l'accès dans iOS via Réglages &gt; Confidentialité &gt; Photos.</translation>
+<translation id="3955621079070267756">Ouvrir Chromium depuis n'importe quelle appli</translation>
 <translation id="4043291146360695975">Les mots de passe sont enregistrés dans le Gestionnaire de mots de passe uniquement sur cet appareil.</translation>
 <translation id="4099085513035183040">Non disponible dans la version bêta de Chromium</translation>
 <translation id="4432744876818348753">Connectez-vous pour profiter pleinement de Chromium.</translation>
@@ -142,5 +143,6 @@
 <translation id="9089354809943900324">Version de Chromium obsolète</translation>
 <translation id="9110075932708282655">Utiliser Chromium par défaut</translation>
 <translation id="921174536258924340">Chromium n'est pas parvenu à vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe enregistrés dans votre compte Google<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">Utilisez automatiquement Chromium lorsque vous appuyez sur des liens dans des messages, des documents et d'autres applis.</translation>
 <translation id="985602178874221306">Auteurs de Chromium</translation>
 </translationbundle>

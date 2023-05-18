@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> 管理這個裝置，且可能有權監控你的活動。</translation>
 <translation id="1478594628797167447">掃描器</translation>
 <translation id="1483493594462132177">傳送</translation>
+<translation id="1488850966314959671">無法透過任何已啟用的自訂 APN 連上這個網路，詳情請洽詢你的行動電信業者。</translation>
 <translation id="1491076385728777984">正在更新「<ph name="DEVICE_NAME" />」的韌體</translation>
 <translation id="1499041187027566160">調高音量</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> 管理這位使用者，且可從遠端管理設定及監控使用者活動。</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">瀏覽權限</translation>
 <translation id="1672499492233627739">網路攝影機視訊畫面</translation>
 <translation id="1676557873873341166">正在錄影</translation>
+<translation id="1684279041537802716">強調色</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS 解析器存在</translation>
 <translation id="1708602061922134366">Google 藍</translation>
@@ -562,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">重新掃描</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">無法停用或移除這個 APN，請務必停用或移除已啟用的連結 APN。</translation>
 <translation id="5600027863942488546">已測試 <ph name="KEY_NAME" /> 鍵</translation>
 <translation id="5620281292257375798">僅供內部使用</translation>
 <translation id="5649768706273821470">聆聽</translation>
@@ -1011,6 +1014,7 @@
 <translation id="9173638680043580060">還剩不到 1 分鐘</translation>
 <translation id="917720651393141712">測試</translation>
 <translation id="9188992814426075118">鍵盤可以自動與桌布搭配</translation>
+<translation id="9189000703457422362">無法透過自動偵測到的 APN 連上這個網路，詳情請洽詢你的行動電信業者。</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">無法從 Android 應用程式連線至閘道</translation>
 <translation id="9211490828691860325">所有桌面</translation>

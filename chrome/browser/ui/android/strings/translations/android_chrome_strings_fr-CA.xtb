@@ -195,6 +195,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="2100273922101894616">Connexion automatique</translation>
 <translation id="2100314319871056947">Essayez de partager le texte en plusieurs parties plus petites</translation>
 <translation id="2111511281910874386">Accéder à la page</translation>
+<translation id="2119609734654412418">Vous trouverez vos favoris ici</translation>
 <translation id="2122601567107267586">Impossible d'ouvrir l'application</translation>
 <translation id="2132122640199389833">Retirer tous les appareils associés</translation>
 <translation id="213279576345780926">Onglet <ph name="TAB_TITLE" /> fermé</translation>
@@ -597,6 +598,7 @@ Les jetons de confiance valides améliorent la confidentialité sur le Web et ne
 <translation id="433213510553688132">Suivi en cours…</translation>
 <translation id="4335835283689002019">La navigation sécurisée est désactivée</translation>
 <translation id="4351244548802238354">Fermer la boîte de dialogue</translation>
+<translation id="4355272626458588338">Vous pouvez revenir à une page importante pour vous en ajoutant un favori</translation>
 <translation id="4369735607080757018">Les sites n’échangent entre eux qu’un type de données limité pour mesurer la performance de leurs annonces, comme l’heure de la journée à laquelle une annonce vous a été présentée</translation>
 <translation id="4378154925671717803">Numéro de téléphone</translation>
 <translation id="438319986296050901">Partager la carte uniquement</translation>
@@ -948,6 +950,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6232535412751077445">Si vous activez la fonction « Ne pas faire le suivi », une demande sera incluse dans le trafic lié à votre navigation. Les résultats obtenus dépendent de la réponse du site (s'il répond ou non) et de la manière dont il interprète la demande.
 
 Par exemple, certains sites Web peuvent répondre à cette demande en diffusant des annonces qui ne sont pas déterminées en fonction des autres sites Web que vous avez consultés. Toutefois, nombre d'entre eux recueillent et utilisent vos données de navigation afin, par exemple, d'améliorer la sécurité du contenu, les annonces et des recommandations, ou encore pour générer des rapports statistiques.</translation>
+<translation id="6255794742848779505">Nous modifions la façon dont les mots de passe sont enregistrés sur cet appareil</translation>
 <translation id="6264376385120300461">Télécharger quand même</translation>
 <translation id="6277522088822131679">Un problème est survenu lors de l'impression de la page. Veuillez réessayer.</translation>
 <translation id="6277722725779679269">Impossible de mettre à jour le prix suivi</translation>

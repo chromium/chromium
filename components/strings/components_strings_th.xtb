@@ -1199,9 +1199,11 @@
 <translation id="3927932062596804919">ปฏิเสธ</translation>
 <translation id="393316646445601645">อินเทอร์เน็ตและโทรคมนาคม</translation>
 <translation id="3939773374150895049">ใช้ WebAuthn แทน CVC ไหม</translation>
+<translation id="3941630233824954464">เปิดใช้การตรวจสอบสิทธิ์อีกครั้งซึ่งจำเป็นต้องดำเนินการ</translation>
 <translation id="3943857333388298514">วาง</translation>
 <translation id="3946209740501886391">ถามทุกครั้งบนเว็บไซต์นี้</translation>
 <translation id="3947595700203588284">สามารถขอเชื่อมต่อกับอุปกรณ์ MIDI ได้</translation>
+<translation id="3948588869002647271">แอปพลิเคชันนี้หายไปหรือได้รับความเสียหาย</translation>
 <translation id="3949571496842715403">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะใบรับรองความปลอดภัยไม่ได้ระบุชื่อสำรองของหัวเรื่อง โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้โจมตีที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="3949601375789751990">ประวัติการท่องเว็บของคุณจะปรากฏที่นี่</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2202,6 +2204,7 @@
 <translation id="6370022303958842211">การดำเนินการเข้าถึงอุปกรณ์ เช่น การเข้าสู่ระบบ (รวมถึงเหตุผลที่เข้าสู่ระบบไม่สำเร็จ) การออกจากระบบ การล็อก และการปลดล็อก</translation>
 <translation id="6374469231428023295">ลองอีกครั้ง</translation>
 <translation id="6374865374745447009">การจัดการหน้าต่าง</translation>
+<translation id="6376881782310775282">เข้าถึงเซิร์ฟเวอร์การพัฒนาสำหรับแอปพลิเคชันนี้ไม่ได้</translation>
 <translation id="6377268785556383139">มีผลการค้นหา "<ph name="SEARCH_TEXT" />" 1 รายการ</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">อาจมีการเรียกเก็บเงิน</translation>
@@ -2970,7 +2973,6 @@
 <translation id="8217240300496046857">เว็บไซต์ต่างๆ จะใช้คุกกี้ที่ติดตามคุณในอินเทอร์เน็ตไม่ได้ ฟีเจอร์ในเว็บไซต์บางแห่งอาจใช้งานไม่ได้</translation>
 <translation id="8217748145574471584">ทรัพยากรบุคคล</translation>
 <translation id="8218327578424803826">ตำแหน่งที่มอบหมาย:</translation>
-<translation id="8225771182978767009">ผู้ที่ตั้งค่าคอมพิวเตอร์เครื่องนี้เลือกบล็อกเว็บไซต์นี้</translation>
 <translation id="8228419419708659934">ดูแบบ 2 หน้า</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> มม.</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -3011,11 +3013,12 @@
 <translation id="8286799286781881307">แอปพลิเคชันที่ผู้ดูแลระบบอนุญาตจะจับภาพหน้าจอทั้งหมดที่เชื่อมต่อกับอุปกรณ์ของคุณได้ ระบบจะประมวลผลข้อมูลนี้ในเครื่องหรืออัปโหลดไปยังเซิร์ฟเวอร์ขององค์กร</translation>
 <translation id="8288807391153049143">แสดงใบรับรอง</translation>
 <translation id="8289355894181816810">ติดต่อผู้ดูแลระบบเครือข่ายของคุณหากไม่แน่ใจว่าข้อความนี้หมายถึงอะไร</translation>
+<translation id="8292520987784410870">ยืนยันเสมอหรือไม่</translation>
 <translation id="8293206222192510085">เพิ่มบุ๊กมาร์ก</translation>
 <translation id="829335040383910391">เสียง</translation>
 <translation id="8294431847097064396">แหล่งที่มา</translation>
 <translation id="8296205692406981542">อุทยานและสวนระดับเมือง</translation>
-<translation id="8297545700510100061">คุกกี้และข้อมูลเว็บไซต์อื่นๆ ใช้ในการจดจำคุณ เช่น เพื่อลงชื่อเข้าใช้หรือปรับโฆษณาตามโปรไฟล์ของคุณ ดู<ph name="SETTINGS" />เพื่อจัดการคุกกี้สำหรับทุกเว็บไซต์</translation>
+<translation id="8297545700510100061">ระบบจะใช้คุกกี้และข้อมูลอื่นของเว็บไซต์ในการจดจำคุณ เช่น เพื่อลงชื่อเข้าใช้หรือปรับโฆษณาตามโปรไฟล์ของคุณ ดู<ph name="SETTINGS" />เพื่อจัดการคุกกี้สำหรับทุกเว็บไซต์</translation>
 <translation id="8298115750975731693">Wi-Fi ที่คุณใช้ (<ph name="WIFI_NAME" />) อาจต้องการให้คุณไปที่ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /></translation>
 <translation id="8303854710873047864">แสดงส่วน "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">พับครึ่ง</translation>
@@ -3083,7 +3086,6 @@
 <translation id="8474910779563686872">แสดงรายละเอียดนักพัฒนาซอฟต์แวร์</translation>
 <translation id="8479754468255770962">เย็บด้วยลวดเย็บกระดาษด้านซ้ายล่าง</translation>
 <translation id="8483229036294884935">ระบบจะลบที่อยู่นี้ออกจากบัญชี Google <ph name="ACCOUNT" /></translation>
-<translation id="8483780878231876732">หากต้องการใช้การ์ดจากบัญชี Google ให้ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="8488350697529856933">ใช้กับ</translation>
 <translation id="8490137692873530638">สแต็กเกอร์ 10</translation>
 <translation id="8493948351860045254">เพิ่มพื้นที่ว่าง</translation>
@@ -3111,6 +3113,7 @@
 <translation id="854892890027593466">Envelope C6/C5</translation>
 <translation id="8553387990086529628">แหล่งท่องเที่ยว</translation>
 <translation id="8554010658308662631">โหลดเพิ่มเติม</translation>
+<translation id="8554802735558319842">เปิดการยืนยันทุกครั้งที่คุณชำระเงินโดยใช้การป้อนข้อความอัตโนมัติเพื่อเพิ่มความปลอดภัยในอุปกรณ์ที่แชร์</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{รีเซ็ตสิทธิ์}other{รีเซ็ตสิทธิ์}}</translation>
 <translation id="8555010941760982128">ใช้รหัสนี้เมื่อชำระเงิน</translation>
 <translation id="8557066899867184262">CVC จะอยู่ที่ด้านหลังบัตร</translation>

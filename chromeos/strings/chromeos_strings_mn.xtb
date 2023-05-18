@@ -92,6 +92,7 @@
 <translation id="1669047024429367828">Харагдац</translation>
 <translation id="1672499492233627739">Вебкамерын видео хангамж</translation>
 <translation id="1676557873873341166">Видео бичиж байна</translation>
+<translation id="1684279041537802716">Өргөлтийн өнгө</translation>
 <translation id="1703835215927279855">Захидал</translation>
 <translation id="1706391837335750954">DNS тайлагчийг үзүүлэх</translation>
 <translation id="1708602061922134366">Google-н цэнхэр</translation>
@@ -217,6 +218,7 @@
 <translation id="2638662041295312666">Нэвтрэх зураг</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> цомгийг <ph name="DESC" /> сонгосон</translation>
 <translation id="267442004702508783">дахин боловсруулах</translation>
+<translation id="268270014981824665">гарын бүдгэрэл</translation>
 <translation id="2712812801627182647">TLS баталгаажуулалтын түлхүүр</translation>
 <translation id="2713444072780614174">Цагаан</translation>
 <translation id="2717139507051041123">Бараан өнгөний горимыг идэвхжүүлэх</translation>
@@ -224,6 +226,7 @@
 <translation id="2744221223678373668">Дундын</translation>
 <translation id="2751739896257479635">EAP 2-р шатны баталгаажуулалт</translation>
 <translation id="2783010256799387990">ДАВСАН</translation>
+<translation id="2787435249130282949">гарыг илүү гэрэлтүүлэх</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Програм</translation>
 <translation id="28232023175184696">Интернэтэд холбогдох боломжгүй байна. Дахин оролдохын тулд товшино уу.</translation>
@@ -327,11 +330,13 @@
 <translation id="3749289110408117711">Файлын нэр</translation>
 <translation id="3771294271822695279">Видео файлууд</translation>
 <translation id="3784455785234192852">Түгжих</translation>
+<translation id="380097101658023925">rgb тохиргоо</translation>
 <translation id="38114475217616659">Бүх түүхийг арилгах</translation>
 <translation id="3820172043799983114">ПИН буруу байна.</translation>
 <translation id="3824259034819781947">Файлууд хавсаргах</translation>
 <translation id="3838338534323494292">Шинэ нууц үг</translation>
 <translation id="3845880861638660475">Харилцах цонхыг хаахын тулд <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> дээр дарна уу.</translation>
+<translation id="3848280697030027394">гарыг бараан болгох</translation>
 <translation id="385051799172605136">Буцах</translation>
 <translation id="3858860766373142691">Нэр</translation>
 <translation id="3862598938296403232">Тайлбар шаардлагатай</translation>
@@ -403,6 +408,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">Идэвхгүй болгох</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" />-г дахин эхлүүлж байна</translation>
+<translation id="4395835743215824109">гар өөрчлөх</translation>
 <translation id="4415951057168511744">Одоогийн аватар</translation>
 <translation id="4422041425070339732">доош заасан сум</translation>
 <translation id="4425149324548788773">Миний Драйв</translation>
@@ -443,6 +449,7 @@
 <translation id="4731797938093519117">Эцэг эхийн хандалт</translation>
 <translation id="473775607612524610">Шинэчлэх</translation>
 <translation id="4744944742468440486">Таны сонголттой холбоотой мэдээлэл</translation>
+<translation id="4771607256327216405">гарыг илүү гэрэлтүүлэх</translation>
 <translation id="4773299976671772492">Зогссон</translation>
 <translation id="4782311465517282004">Та баруун талыг товших эсвэл текстийг удаан дарах үедээ тодорхойлолт, орчуулга эсвэл нэгж хөрвүүлэлт аваарай</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> зураг</translation>
@@ -491,6 +498,7 @@
 <translation id="500920857929044050">Туршилтыг зогсоох</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Дэлгэц тань идэвхгүй үед зураг, цаг, цаг агаар болон медиагийн мэдээлэл харуулна уу.</translation>
+<translation id="5038292761217083259">гарын олон өнгө</translation>
 <translation id="5039804452771397117">Зөвшөөрөх</translation>
 <translation id="5049856988445523908">SIM-г түгжсэн (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Бүлгийн нэр</translation>
@@ -639,6 +647,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Бараан загварыг асаах</translation>
 <translation id="6285899124799306373">эхлүүлэгчийг нээх</translation>
+<translation id="629550705077076970">гарыг бүдгэрүүлэх</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> тестийг цуцалсан байна</translation>
 <translation id="631063167932043783">Аппыг судлах</translation>
 <translation id="6319207335391420837">Жижиг программыг <ph name="DEVICE_NAME" /> дээр шинэчлэх</translation>
@@ -657,6 +666,7 @@
 <translation id="6401427872449207797">хөтчийн хайлт</translation>
 <translation id="6410257289063177456">Зургийн файлууд</translation>
 <translation id="641081527798843608">Субъект тохируулах</translation>
+<translation id="6411934471898487866">гарын гэрэлтүүлэг</translation>
 <translation id="6412715219990689313">Суурилуулсан гар</translation>
 <translation id="6417265370957905582">Google туслах</translation>
 <translation id="6423239382391657905">VPN-г нээх</translation>
@@ -807,10 +817,12 @@
 <translation id="7656388927906093505">Төхөөрөмж нь хулгана байна.</translation>
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7665800271478495366">Аватар өөрчлөх</translation>
+<translation id="7683228889864052081">гарын өнгө</translation>
 <translation id="7690294790491645610">Шинэ нууц үг баталгаажуулна уу</translation>
 <translation id="7701040980221191251">Тодорхойгүй</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">гарын гэрэл</translation>
 <translation id="773153675489693198">Мөчлөгийн тоо</translation>
 <translation id="7747039790905080783">Урьдчилан хуваалцсан түлхүүр</translation>
 <translation id="7762130827864645708">Таны нууц үгийг амжилттай өөрчиллөө. Одооноос шинэ нууц үгийг ашиглана уу.</translation>
@@ -854,6 +866,7 @@
 <translation id="8075838845814659848">Үлдсэн цэнэг</translation>
 <translation id="8076492880354921740">Таб</translation>
 <translation id="8082366717211101304">Android аппуудаас DNS-г шийдвэрлэх боломжгүй</translation>
+<translation id="8082644724189923105">гарын бүс</translation>
 <translation id="808894953321890993">Нууц үгийг солих</translation>
 <translation id="8094062939584182041">Танд энэ асуудлын талаар имэйл илгээхийг Google-д зөвшөөрөх</translation>
 <translation id="8104083085214006426">Та нээлттэй бөгөөд найдваргүй сүлжээ ашиглаж байна</translation>
@@ -902,6 +915,7 @@
 <translation id="8456761643544401578">Автомат бараан горим</translation>
 <translation id="8461329675984532579">Нүүр хуудас бэлтгэх нэр</translation>
 <translation id="8475690821716466388">WiFi сүлжээ WEP PSK-н сул протоколоор хамгаалагдсан байна</translation>
+<translation id="8476242415522716722">гарын доогуурх гэрэл</translation>
 <translation id="8477551185774834963">DNS хоцролт зөвшөөрөгдөх хязгаараас бага зэрэг өндөр байна</translation>
 <translation id="8483248364096924578">IP хаяг</translation>
 <translation id="8491311378305535241">Android аппуудаас HTTP вебсайт руу галт хана дундуур холбогдох боломжгүй</translation>
@@ -945,6 +959,7 @@
 <translation id="8845001906332463065">Тусламж авах</translation>
 <translation id="8855781559874488009">HTTP вебсайтуудад галт хана дундуур холбогдох боломжгүй</translation>
 <translation id="885701979325669005">Хадгалалт</translation>
+<translation id="885704831271383379">гарыг бараан болгох</translation>
 <translation id="8863170912498892583">Бараан загварыг идэвхжүүлэх</translation>
 <translation id="8863888432376731307">"<ph name="QUERY" />" болон бусад зүйлд <ph name="INTENT" />-г авах</translation>
 <translation id="8864415976656252616">Санал болгосон контент байхгүй. Шилдэг тусламжийн контентыг харна уу.</translation>

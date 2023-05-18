@@ -1200,9 +1200,11 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3927932062596804919">Keela</translation>
 <translation id="393316646445601645">Internet ja telekommunikatsioon</translation>
 <translation id="3939773374150895049">Kas kasutada CVC asemel WebAuthn-autentimist?</translation>
+<translation id="3941630233824954464">Luba kohustuslik taasautentimine</translation>
 <translation id="3943857333388298514">Kleebi</translation>
 <translation id="3946209740501886391">Küsi sellel saidil alati</translation>
 <translation id="3947595700203588284">Saab küsida luba MIDI-seadmetega ühenduse loomiseks</translation>
+<translation id="3948588869002647271">See rakendus puudub või on rikutud</translation>
 <translation id="3949571496842715403">Server ei suutnud tõestada, et see on domeen <ph name="DOMAIN" />; selle turvasertifikaat ei määra laiendust Subject Alternative Names. Selle põhjuseks võib olla vale seadistus või ründaja, kes on sekkunud teie ühendusse.</translation>
 <translation id="3949601375789751990">Siin kuvatakse teie sirvimisajalugu</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2203,6 +2205,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6370022303958842211">Seadme juurdepääsutoimingud, näiteks sisselogimised (sealhulgas ebaõnnestunud sisselogimiskatsete põhjused), väljalogimised, lukustamised ja avamised</translation>
 <translation id="6374469231428023295">Proovi uuesti</translation>
 <translation id="6374865374745447009">akende haldamine</translation>
+<translation id="6376881782310775282">Selle rakenduse arendusserveriga ei saa ühendust</translation>
 <translation id="6377268785556383139">1 tulemus otsingule „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Jätkamisega võivad kaasneda tasud.</translation>
@@ -2971,7 +2974,6 @@ Lisateave:
 <translation id="8217240300496046857">Saidid ei saa veebis teie jälgimiseks kasutada küpsisefaile. Mõne saidi funktsioonid ei pruugi töötada.</translation>
 <translation id="8217748145574471584">Inimressursid</translation>
 <translation id="8218327578424803826">Määratud asukoht:</translation>
-<translation id="8225771182978767009">Arvuti seadistanud inimene blokeeris selle saidi.</translation>
 <translation id="8228419419708659934">Kahe lehe vaade</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -3012,6 +3014,7 @@ Lisateave:
 <translation id="8286799286781881307">Administraatori autoriseeritud rakendused saavad jäädvustada kõiki teie seadmega ühendatud ekraane. Seda teavet saab töödelda kohalikult või laadida üles teie organisatsiooni serveritesse.</translation>
 <translation id="8288807391153049143">Kuva sertifikaat</translation>
 <translation id="8289355894181816810">Kui te pole kindel, mida see tähendab, võtke ühendust oma võrguadministraatoriga.</translation>
+<translation id="8292520987784410870">Kas kontrollida alati?</translation>
 <translation id="8293206222192510085">Lisa järjehoidja</translation>
 <translation id="829335040383910391">heli</translation>
 <translation id="8294431847097064396">Allikas</translation>
@@ -3084,7 +3087,6 @@ Lisateave:
 <translation id="8474910779563686872">Kuva arendaja üksikasjad</translation>
 <translation id="8479754468255770962">Kirjaklamber vasakul all</translation>
 <translation id="8483229036294884935">See aadress kustutatakse teie Google'i kontolt <ph name="ACCOUNT" /></translation>
-<translation id="8483780878231876732">Google'i konto kaartide kasutamiseks logige sisse Chrome'i</translation>
 <translation id="8488350697529856933">Kehtib:</translation>
 <translation id="8490137692873530638">Virnastaja 10</translation>
 <translation id="8493948351860045254">Vabasta ruum</translation>
@@ -3112,6 +3114,7 @@ Lisateave:
 <translation id="854892890027593466">Ümbrik C6/C5</translation>
 <translation id="8553387990086529628">Turismisihtkohad</translation>
 <translation id="8554010658308662631">Laadi rohkem</translation>
+<translation id="8554802735558319842">Ühiskasutuses seadmetes turvalisuse parandamiseks lülitage kontrollimine sisse igaks korraks, kui kasutate maksmisel automaattäidet.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Lähtesta luba}other{Lähtesta load}}</translation>
 <translation id="8555010941760982128">Kasutage seda koodi kassas</translation>
 <translation id="8557066899867184262">CVC asub kaardi tagaküljel.</translation>
@@ -3300,6 +3303,7 @@ Lisateave:
 <translation id="9048662076076074925">24 × 36 tolli</translation>
 <translation id="9049981332609050619">Proovisite jõuda domeenile <ph name="DOMAIN" />, kuid server esitas kehtetu sertifikaadi.</translation>
 <translation id="9050666287014529139">Parool</translation>
+<translation id="9053840549256861041">Anname välja uue reklaamide privaatsusfunktsiooni, mida nimetame reklaamide mõõtmiseks. Chrome jagab saitide vahel vaid väga piiratud teavet, näiteks seda, millal teile reklaami näidati, et aidata saitidel reklaamide toimivust mõõta.</translation>
 <translation id="9056953843249698117">Store</translation>
 <translation id="9062620674789239642">Seda võidi muuta, see võidi teisaldada või kustutada.</translation>
 <translation id="9063398205799684336">Ümbrik Kaku 2</translation>

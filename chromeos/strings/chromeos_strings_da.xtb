@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> administrerer din enhed og kan muligvis overvåge din aktivitet.</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Send</translation>
+<translation id="1488850966314959671">Der kan ikke oprettes forbindelse til dette netværk via aktiverede tilpassede APN'er. Kontakt dit mobilselskab for at få flere oplysninger.</translation>
 <translation id="1491076385728777984">Opdaterer firmware på <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">lydstyrke op</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> administrerer denne bruger, og vedkommende kan administrere indstillinger og overvåge brugeraktivitet via fjernadgang.</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">Synlighed</translation>
 <translation id="1672499492233627739">Videofeed fra webcam</translation>
 <translation id="1676557873873341166">Optager video</translation>
+<translation id="1684279041537802716">Kontrastfarve</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolver er til stede</translation>
 <translation id="1708602061922134366">Google-blå</translation>
@@ -431,6 +433,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh batteri</translation>
 <translation id="4561801978359312462">SIM-kortet er låst op</translation>
 <translation id="4562494484721939086">Ingen dækning</translation>
+<translation id="4573777384450697571">Handlingen mislykkedes – certifikatet er udløbet</translation>
 <translation id="458794348635939462">Ikke alle hosts kunne identificeres</translation>
 <translation id="4593212453765072419">Proxygodkendelse påkrævet</translation>
 <translation id="4609350030397390689">Reducer tastaturets lysstyrke</translation>
@@ -561,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Scan igen</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">Dette APN kan ikke deaktiveres eller fjernes. Sørg for, at tilknyttede APN'er, som er aktiveret, deaktiveres eller fjernes.</translation>
 <translation id="5600027863942488546">Du har testet tasten <ph name="KEY_NAME" /></translation>
 <translation id="5620281292257375798">Kun internt</translation>
 <translation id="5649768706273821470">Lyt</translation>
@@ -1010,6 +1014,7 @@
 <translation id="9173638680043580060">Mindre end ét minut tilbage</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Dit tastatur kan automatisk tilpasses din baggrund</translation>
+<translation id="9189000703457422362">Der kan ikke oprettes forbindelse til dette netværk via automatisk registrerede APN'er. Kontakt dit mobilselskab for at få flere oplysninger.</translation>
 <translation id="9193744392140377127">Adgangspunkt*</translation>
 <translation id="9204237731135241582">Gateway kan ikke kontaktes fra Android-apps</translation>
 <translation id="9211490828691860325">Alle skriveborde</translation>

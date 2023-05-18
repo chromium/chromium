@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> हे डिव्हाइस व्यवस्थापित करतो आणि तो तुमच्या अ‍ॅक्टिव्हिटीचे निरीक्षण करू शकतो.</translation>
 <translation id="1478594628797167447">स्कॅनर</translation>
 <translation id="1483493594462132177">पाठवा</translation>
+<translation id="1488850966314959671">कोणतीही सुरू असलेली कस्टम APNs वापरून या नेटवर्कशी कनेक्ट करू शकत नाही. अधिक माहितीसाठी तुमच्या मोबाइल वाहकाशी संपर्क साधा.</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> वर फर्मवेअर अपडेट करत आहे</translation>
 <translation id="1499041187027566160">आवाज वाढवा</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> या वापरकर्त्याला व्यवस्थापित करतो आणि तो रिमोट पद्धतीने सेटिंग्ज व्यवस्थापित करू शकतो तसेच वापरकर्ता अ‍ॅक्टिव्हिटीचे निरीक्षण करू शकतो.</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">दृश्यमानता</translation>
 <translation id="1672499492233627739">वेबकॅम व्हिडिओ फीड</translation>
 <translation id="1676557873873341166">व्हिडिओ घेत आहे</translation>
+<translation id="1684279041537802716">अ‍ॅक्सेंट रंग</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS रिसॉल्व्हर प्रेझेंट</translation>
 <translation id="1708602061922134366">Google निळा</translation>
@@ -431,6 +433,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh बॅटरी</translation>
 <translation id="4561801978359312462">सिम अनलॉक केले</translation>
 <translation id="4562494484721939086">सेवा नाही</translation>
+<translation id="4573777384450697571">अयशस्वी - सर्टिफिकेट एक्स्पायर झाले आहे</translation>
 <translation id="458794348635939462">सर्व होस्टचे निराकरण करता आले नाही</translation>
 <translation id="4593212453765072419">प्रॉक्सी प्रमाणीकरण आवश्यक</translation>
 <translation id="4609350030397390689">कीबोर्डचा ब्राइटनेस कमी करा</translation>
@@ -561,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">पुन्हा स्कॅन करा</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">हे APN बंद करू शकत नाही किंवा काढून टाकू शकत नाही. सुरू केलेली अटॅच APNs बंद केल्याची किंवा काढून टाकल्याची खात्री करा.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> की तपासली</translation>
 <translation id="5620281292257375798">फक्त अंतर्गत</translation>
 <translation id="5649768706273821470">ऐका</translation>
@@ -1010,6 +1014,7 @@
 <translation id="9173638680043580060">एका मिनिटापेक्षा कमी वेळ शिल्लक आहे</translation>
 <translation id="917720651393141712">चाचणी करा</translation>
 <translation id="9188992814426075118">तुमचा कीबोर्ड तुमच्या वॉलपेपरशी आपोआप जुळवून घेऊ शकतो</translation>
+<translation id="9189000703457422362">आपोआप डिटेक्ट केलेली APNs वापरून या नेटवर्कशी कनेक्ट करू शकत नाही. अधिक माहितीसाठी तुमच्या मोबाइल वाहकाशी संपर्क साधा.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Android अ‍ॅप्सवरून गेटवेशी संपर्क साधू शकत नाही</translation>
 <translation id="9211490828691860325">सर्व डेस्क</translation>

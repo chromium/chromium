@@ -1199,9 +1199,11 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3927932062596804919">Tolak</translation>
 <translation id="393316646445601645">Internet &amp; telekomunikasi</translation>
 <translation id="3939773374150895049">Gunakan WebAuthn dan bukan CVC?</translation>
+<translation id="3941630233824954464">Aktifkan autentikasi ulang wajib</translation>
 <translation id="3943857333388298514">Sisipkan</translation>
 <translation id="3946209740501886391">Selalu tanyakan pada situs ini</translation>
 <translation id="3947595700203588284">Dapat meminta untuk terhubung ke perangkat MIDI</translation>
+<translation id="3948588869002647271">Aplikasi ini tidak ada atau rusak</translation>
 <translation id="3949571496842715403">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya tidak menyebutkan Nama Alternatif Subjek. Hal ini dapat disebabkan oleh kesalahan konfigurasi atau penyerang memotong sambungan Anda.</translation>
 <translation id="3949601375789751990">Histori browsing Anda muncul di sini</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2202,6 +2204,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6370022303958842211">Tindakan akses perangkat seperti login (termasuk alasan login yang gagal), logout, kunci, dan buka kunci</translation>
 <translation id="6374469231428023295">Coba Lagi</translation>
 <translation id="6374865374745447009">pengelolaan jendela</translation>
+<translation id="6376881782310775282">Server pengembangan untuk aplikasi ini tidak dapat diakses</translation>
 <translation id="6377268785556383139">1 hasil untuk '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Kemungkinan mengenakan tagihan di awal.</translation>
@@ -2968,7 +2971,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8217240300496046857">Situs tidak dapat menggunakan cookie yang melacak Anda di seluruh web. Fitur di beberapa situs mungkin tidak berfungsi.</translation>
 <translation id="8217748145574471584">Sumber daya manusia</translation>
 <translation id="8218327578424803826">Lokasi yang Ditetapkan:</translation>
-<translation id="8225771182978767009">Orang yang menyiapkan komputer ini telah memilih untuk memblokir situs ini.</translation>
 <translation id="8228419419708659934">Tampilan dua halaman</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -3009,6 +3011,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8286799286781881307">Aplikasi yang diizinkan oleh administrator dapat merekam semua layar yang terpasang ke perangkat Anda. Informasi ini dapat diproses secara lokal atau diupload ke server organisasi Anda.</translation>
 <translation id="8288807391153049143">Tampilkan sertifikat</translation>
 <translation id="8289355894181816810">Hubungi administrator jaringan Anda jika Anda tidak yakin apa maksudnya.</translation>
+<translation id="8292520987784410870">Selalu verifikasi?</translation>
 <translation id="8293206222192510085">Tambahkan Bookmark</translation>
 <translation id="829335040383910391">suara</translation>
 <translation id="8294431847097064396">Sumber</translation>
@@ -3079,7 +3082,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8474910779563686872">Lihat detail developer</translation>
 <translation id="8479754468255770962">Jepretan di kiri bawah</translation>
 <translation id="8483229036294884935">Alamat ini akan dihapus dari Akun Google Anda, <ph name="ACCOUNT" /></translation>
-<translation id="8483780878231876732">Untuk menggunakan kartu dari Akun Google Anda, masuk ke Chrome</translation>
 <translation id="8488350697529856933">Berlaku untuk</translation>
 <translation id="8490137692873530638">Tempat kertas 10</translation>
 <translation id="8493948351860045254">Kosongkan ruang</translation>
@@ -3107,6 +3109,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="854892890027593466">Envelope C6/C5</translation>
 <translation id="8553387990086529628">Tujuan wisata</translation>
 <translation id="8554010658308662631">Muat lainnya</translation>
+<translation id="8554802735558319842">Untuk keamanan tambahan di perangkat bersama, aktifkan verifikasi setiap kali Anda membayar menggunakan isi otomatis.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Reset izin}other{Reset izin}}</translation>
 <translation id="8555010941760982128">Gunakan kode ini saat checkout</translation>
 <translation id="8557066899867184262">CVC terletak di bagian belakang kartu Anda.</translation>

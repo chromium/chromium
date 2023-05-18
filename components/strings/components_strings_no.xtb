@@ -2973,7 +2973,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8217240300496046857">Nettsteder kan ikke bruke informasjonskapsler som sporer deg på nettet. Det kan hende at funksjoner på enkelte nettsteder slutter å fungere.</translation>
 <translation id="8217748145574471584">Personaladministrasjon</translation>
 <translation id="8218327578424803826">Tilordnet posisjon:</translation>
-<translation id="8225771182978767009">Personen som konfigurerte denne datamaskinen, har valgt å blokkere dette nettstedet.</translation>
 <translation id="8228419419708659934">Visning med to sider</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -3087,7 +3086,6 @@ Mer informasjon:
 <translation id="8474910779563686872">Vis utviklerdetaljer</translation>
 <translation id="8479754468255770962">Stift nede til venstre</translation>
 <translation id="8483229036294884935">Denne adressen slettes fra Google-kontoen din (<ph name="ACCOUNT" />)</translation>
-<translation id="8483780878231876732">For å bruke kredittkort du har lagret i Google-kontoen din, logg på Chrome</translation>
 <translation id="8488350697529856933">Gjelder for</translation>
 <translation id="8490137692873530638">Hylle 10</translation>
 <translation id="8493948351860045254">Frigjør plass</translation>

@@ -49,6 +49,7 @@
 <translation id="3650632991272923014">Օգտատերը (<ph name="USER_EMAIL1" />) օգտագործել է Chromium-ը, և այս սարքում պահպանվել են էջանիշներ, գաղտնաբառեր և այլ կարգավորումներ։</translation>
 <translation id="372658070733623520">Chromium-ի տվյալները ձեր Google հաշվում օգտագործելու և պահելու համար հաստատեք ձեր ինքնությունը։</translation>
 <translation id="3805899903892079518">Chromium-ին հասանելի չեն ձեր լուսանկարները կամ տեսանյութերը: Անցեք iOS Կարգավորումներ &gt; Գաղտնիություն &gt; Լուսանկարներ (Settings &gt; Privacy &gt; Photos) և միացրեք մուտքի թույլտվությունը:</translation>
+<translation id="3955621079070267756">Բացեք Chromium-ը ցանկացած հավելվածից</translation>
 <translation id="4043291146360695975">Գաղտնաբառերը պահվում են միայն այս սարքի Գաղտնաբառերի կառավարիչում</translation>
 <translation id="4099085513035183040">Չի աջակցվում Chromium-ի բետա տարբերակում</translation>
 <translation id="4432744876818348753">Մտեք հաշիվ՝ Chromium-ի բոլոր գործառույթներից օգտվելու համար։</translation>
@@ -143,5 +144,6 @@
 <translation id="9089354809943900324">Chromium-ը հնացել է</translation>
 <translation id="9110075932708282655">Օգտագործեք Chromium-ն ըստ կանխադրման</translation>
 <translation id="921174536258924340">Chromium-ին չհաջողվեց ստուգել բոլոր գաղտնաբառերը։ Վաղը նորից փորձեք կամ <ph name="BEGIN_LINK" />գաղտնաբառերը ստուգեք ձեր Google հաշվում<ph name="END_LINK" />։</translation>
+<translation id="971488683725792095">Օգտագործեք Chromium-ը՝ հաղորդագրություններում, փաստաթղթերում և այլ հավելվածներում առկա հղումները ավտոմատ կերպով բացելու համար։</translation>
 <translation id="985602178874221306">Chromium Authors</translation>
 </translationbundle>

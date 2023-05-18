@@ -575,6 +575,7 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="4188221736490993796">Rangskik volgens Z na A</translation>
 <translation id="4195643157523330669">Maak in nuwe oortjie oop</translation>
 <translation id="4196597275619698563">Skep kaart</translation>
+<translation id="4197828496439691735">{NUM_TABS,plural, =1{1 oortjie op hierdie toestel}other{# oortjies op hierdie toestel}}</translation>
 <translation id="4198423547019359126">Geen beskikbare aflaailiggings nie</translation>
 <translation id="4202218894997543208">Onderwerpe wat jy geblokkeer het</translation>
 <translation id="4214315110991671325">As jy webkoekies toelaat, kan Chrome hulle vir vooraflaai gebruik.</translation>
@@ -589,6 +590,7 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Watter data gebruik word:<ph name="END_BOLD" /> Jou blaaigeskiedenis, 'n rekord van werwe wat jy besoek het deur Chrome op hierdie toestel te gebruik.</translation>
 <translation id="4269820728363426813">Kopieer skakeladres</translation>
 <translation id="4283102315569707115">Versoek rekenaarwerwe by verstek?</translation>
+<translation id="4285846616383034558">Webkoekies, kasgeheue en ander werfdata</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Skakel skermslot in Android-instellings aan<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Nuwe Incognito-oortjie</translation>
 <translation id="4298388696830689168">Gekoppelde werwe</translation>
@@ -679,6 +681,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4763480195061959176">video</translation>
 <translation id="4766313118839197559">Wagwoorde word op hierdie toestel in Wagwoordbestuurder gestoor</translation>
 <translation id="4766678251456904326">Voeg rekening by toestel</translation>
+<translation id="4767947714785277816">Ons stel ’n nuwe advertensieprivaatheidkenmerk genaamd advertensiemeting bekend. Chrome deel net baie beperkte inligting tussen werwe en apps, soos wanneer ’n advertensie vir jou gewys is, om werwe te help om advertensieprestasie te meet.</translation>
 <translation id="4769095993849849966">Nuwe lêernaam</translation>
 <translation id="4778653490315793244">Nog niks om te wys nie</translation>
 <translation id="4787736314074622408">Wil jy <ph name="ITEM_TITLE" /> uitvee?</translation>
@@ -914,6 +917,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="6011308810877101166">Verbeter soekvoorstelle</translation>
 <translation id="6026538407078977628">Vou uit na volskerm</translation>
 <translation id="6030719887161080597">Bestuur inligting wat deur werwe gebruik word om advertensieprestasie te meet</translation>
+<translation id="6034146297924778597">Geskiedenis van die afgelope 15 minute sal uitgevee word:</translation>
 <translation id="6039379616847168523">Spring na die volgende oortjie</translation>
 <translation id="6040143037577758943">Maak toe</translation>
 <translation id="604124094241169006">Outomaties</translation>
@@ -1119,6 +1123,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7029809446516969842">Wagwoorde</translation>
 <translation id="7030304022046916278">Stuur URL'e na Veiligblaai toe om hulle na te gaan</translation>
 <translation id="7030585293819777123">Hervat jou laaste taak?</translation>
+<translation id="7035701931849773472">Ander opsies</translation>
 <translation id="7037830628447527439">Meld by Chrome aan met jou Google-rekening</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Kry prentbeskrywings?</translation>
@@ -1341,6 +1346,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8110024788458304985">Help om Chrome se kenmerke en -werkverrigting beter te maak</translation>
 <translation id="8110087112193408731">Wys jou Chrome-aktiwiteit in Digitale Welstand?</translation>
 <translation id="8118117428362942925">Vra jou ouer (<ph name="PARENT_NAME" />) as jy hulp benodig</translation>
+<translation id="8124758083429256800">Jou lys gestoorde wagwoorde vir Chrome en Chrome <ph name="ERROR_DESCRIPTION" /> sal ná weergawe 121 saamgevoeg word. Jy sal al jou gestoorde wagwoorde op albei apps outomaties kan invul.</translation>
 <translation id="8127542551745560481">Wysig tuisblad</translation>
 <translation id="8130309322784422030">Jou gebergde aanmeldinligting is dalk verouderd</translation>
 <translation id="813082847718468539">Bekyk werfinligting</translation>

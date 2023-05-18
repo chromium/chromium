@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> haldab seda seadet ja saab võib-olla jälgida teie tegevusi.</translation>
 <translation id="1478594628797167447">Skanner</translation>
 <translation id="1483493594462132177">Saada</translation>
+<translation id="1488850966314959671">Selle võrguga ei saa ühendust luua ühegi lubatud kohandatud APN-i abil. Pöörduge lisateabe saamiseks oma mobiilioperaatori poole.</translation>
 <translation id="1491076385728777984">Seadmes <ph name="DEVICE_NAME" /> värskendatakse püsivara</translation>
 <translation id="1499041187027566160">suurendab helitugevust</translation>
 <translation id="1499900233129743732">Seda kasutajat haldab domeen <ph name="MANAGER" />, mis võib eemalt hallata seadeid ja jälgida kasutaja tegevusi.</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">Nähtavus</translation>
 <translation id="1672499492233627739">Veebikaamera videovoog</translation>
 <translation id="1676557873873341166">Video jäädvustamine</translation>
+<translation id="1684279041537802716">Aktsentvärv</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-lahendaja on olemas</translation>
 <translation id="1708602061922134366">Google'i sinine</translation>
@@ -431,6 +433,7 @@
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh aku</translation>
 <translation id="4561801978359312462">SIM on avatud</translation>
 <translation id="4562494484721939086">Levi puudub</translation>
+<translation id="4573777384450697571">Ebaõnnestus – sertifikaat on aegunud</translation>
 <translation id="458794348635939462">Kõikide hostide lahendamine ebaõnnestus</translation>
 <translation id="4593212453765072419">Vajalik on puhverserveri autentimine</translation>
 <translation id="4609350030397390689">Klaviatuuri ereduse vähendamine</translation>
@@ -561,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skanni uuesti</translation>
 <translation id="5583640892426849032">Tagasilükkeklahv</translation>
+<translation id="5584044598279886848">Seda APN-i ei saa keelata ega eemaldada. Veenduge, et lubatud manus-APN-id oleksid keelatud või eemaldatud.</translation>
 <translation id="5600027863942488546">Klahvi <ph name="KEY_NAME" /> on testitud</translation>
 <translation id="5620281292257375798">Ainult sisemine</translation>
 <translation id="5649768706273821470">Esita</translation>
@@ -1010,6 +1014,7 @@
 <translation id="9173638680043580060">Jäänud on alla minuti</translation>
 <translation id="917720651393141712">Testi</translation>
 <translation id="9188992814426075118">Teie klaviatuuri saab automaatselt sobitada teie taustapildiga</translation>
+<translation id="9189000703457422362">Selle võrguga ei saa ühendust luua automaatselt tuvastatud APN-ide abil. Pöörduge lisateabe saamiseks oma mobiilioperaatori poole.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Ei saa Androidi rakendustest lüüsiga ühendust</translation>
 <translation id="9211490828691860325">Kõik töölauad</translation>

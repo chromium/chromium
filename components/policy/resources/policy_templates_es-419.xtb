@@ -2967,6 +2967,11 @@ En la versión 114 y en versiones posteriores, <ph name="DOH_SALT_POLICY_NAME" /
           Esta es una política temporal que se planea quitar en <ph name="PRODUCT_NAME" /> 107. Es posible que se extienda la fecha límite si las empresas lo necesitan.
           </translation>
 <translation id="3678069907945250643">Permitir el acceso a Google Fotos desde la app de personalización</translation>
+<translation id="3683696721696720186">Configura una lista de los tipos de datos de navegación que deben borrarse cuando el usuario cierra todas las ventanas del navegador. Los tipos de datos disponibles son el historial de navegación (<ph name="DATA_TYPE_BROWSING_HISTORY" />), el historial de descargas (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), las cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), la memoria caché <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, las opciones de Autocompletar (<ph name="DATA_TYPE_AUTOFILL" />), las contraseñas (<ph name="DATA_TYPE_PASSWORD" />), la configuración de los sitios (<ph name="DATA_TYPE_SITE_SETTINGS" />) y los datos de las apps alojadas (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Esta política no tendrá prioridad sobre <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
+
+Esta política requiere que se establezca la política <ph name="SYNC_DISABLED_POLICY_NAME" /> como verdadera; de lo contrario, se ignorará. Si estableces esta política al nivel de la plataforma, se deberá inhabilitar la sincronización al nivel de la plataforma. Si la estableces al nivel del usuario, se deberá inhabilitar la sincronización para ese usuario a fin de que tenga efecto esta política.
+
+      Si se produce algún error al salir de <ph name="PRODUCT_NAME" /> (por ejemplo, si falla el navegador o el SO), se borrarán los datos de navegación la próxima vez que se cargue el perfil.</translation>
 <translation id="3685979383016152590">Si estableces la política, se designará la política de acceso que se utilizará para la configuración de impresoras en lote, lo que permitirá determinar las impresoras de <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> que estarán disponibles para los usuarios.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (valor 0) utiliza <ph name="PRINTERS_BULK_BLOCKLIST" /> para restringir el acceso a las impresoras especificadas.
@@ -4346,7 +4351,6 @@ Esta política es temporal y se quitará ni bien se inicie la cancelación del e
 
       El valor predeterminado (0) significa que esta función está inhabilitada.</translation>
 <translation id="4937423591320233496">Inhabilitar el contenido sugerido</translation>
-<translation id="4940810901775798837">Permitir los sitios web no seguros para hacer solicitudes a cualquier extremo de red</translation>
 <translation id="4942096314850617489">Inhabilitar la certificación remota para el usuario</translation>
 <translation id="4942681160308347946">Si estableces el valor "True" para la política, se activarán los comentarios por voz en la pantalla de acceso. Si estableces el valor "False", no se activarán los comentarios por voz en esa pantalla.
 
@@ -7863,7 +7867,6 @@ también es seguro.</translation>
       Si estableces esta política, el usuario no podrá cambiarla ni anularla.</translation>
 <translation id="8080200590486938727">Inhabilitar el buscador de complementos</translation>
 <translation id="8089200718228084417">Habilita la impresión Privet obsoleta</translation>
-<translation id="8089236320223488328">Utilizar el comportamiento predeterminado al decidir si los sitios web no seguros pueden hacer solicitudes a cualquier extremo de red</translation>
 <translation id="8091982561085048989">Función experimental booleana que indica si se debe usar IPP Everywhere para configurar la impresora. Esta función experimental es compatible con <ph name="PRODUCT_OS_NAME" /> 76 y versiones posteriores.</translation>
 <translation id="8099880303030573137">Demora de inactividad con batería</translation>
 <translation id="8101381354936029836">Grupo atómico de la política:</translation>

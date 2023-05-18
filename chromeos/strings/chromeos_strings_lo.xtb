@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> ຈັດການອຸປະກອນນີ້ ແລະ ອາດຈະສາມາດຕິດຕາມການເຄື່ອນໄຫວຂອງທ່ານໄດ້.</translation>
 <translation id="1478594628797167447">ເຄື່ອງສະແກນ</translation>
 <translation id="1483493594462132177">ສົ່ງ</translation>
+<translation id="1488850966314959671">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍນີ້ໂດຍໃຊ້ APN ແບບກຳນົດເອງທີ່ເປີດການນຳໃຊ້. ກະລຸນາຕິດຕໍ່ຜູ້ໃຫ້ບໍລິການມືຖືຂອງທ່ານສຳລັບຂໍ້ມູນເພີ່ມເຕີມ.</translation>
 <translation id="1491076385728777984">ກຳລັງອັບເດດເຟີມແວຢູ່ <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">ສຽງ​ຂຶ້ນ</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> ຈັດການຜູ້ໃຊ້ນີ້ ແລະ ອາດຈະຈັດການການຕັ້ງຄ່າ ແລະ ຕິດຕາມເບິ່ງການເຄື່ອນໄຫວຂອງຜູ້ໃຊ້ຈາກທາງໄກໄດ້.</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">ການແບ່ງປັນ</translation>
 <translation id="1672499492233627739">ຟີດວິດີໂອເວັບແຄມ</translation>
 <translation id="1676557873873341166">ກຳລັງຖ່າຍວິດີໂອ</translation>
+<translation id="1684279041537802716">ສີເດັ່ນ</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">ມີ DNS Resolver</translation>
 <translation id="1708602061922134366">ສີຟ້າ Google</translation>
@@ -562,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ສະແກນຄືນໃໝ່</translation>
 <translation id="5583640892426849032">ລຶບຄືນຫຼັງ</translation>
+<translation id="5584044598279886848">ບໍ່ສາມາດປິດການນຳໃຊ້ ຫຼື ລຶບ APN ນີ້ອອກໄດ້. ໃຫ້ແນ່ໃຈວ່າໄຟລ໌ແນບ APN ທີ່ເປີດການນຳໃຊ້ຖືກປິດການນຳໃຊ້ ຫຼື ເອົາອອກແລ້ວ.</translation>
 <translation id="5600027863942488546">ທົດສອບປຸ່ມ <ph name="KEY_NAME" /> ແລ້ວ</translation>
 <translation id="5620281292257375798">ສະ​ເພາະ​ພາຍ​ໃນ​ເທົ່າ​ນັ້ນ</translation>
 <translation id="5649768706273821470">​ຟັງ</translation>
@@ -1012,6 +1015,7 @@
 <translation id="9173638680043580060">ເຫຼືອບໍ່ຮອດໜຶ່ງນາທີ</translation>
 <translation id="917720651393141712">ທົດສອບ</translation>
 <translation id="9188992814426075118">ແປ້ນພິມຂອງທ່ານສາມາດຈັບຄູ່ກັບຮູບພື້ນຫຼັງຂອງທ່ານໄດ້ອັດຕະໂນມັດ</translation>
+<translation id="9189000703457422362">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍນີ້ໂດຍໃຊ້ APN ທີ່ກວດພົບໂດຍອັດຕະໂນມັດ. ກະລຸນາຕິດຕໍ່ຜູ້ໃຫ້ບໍລິການມືຖືຂອງທ່ານສຳລັບຂໍ້ມູນເພີ່ມເຕີມ.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">ບໍ່ສາມາດຕິດຕໍ່ຫາເກດເວຈາກແອັບ Android ໄດ້</translation>
 <translation id="9211490828691860325">ໂຕະທັງໝົດ</translation>

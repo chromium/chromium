@@ -4358,7 +4358,6 @@ Kebijakan ini bersifat sementara dan akan dihapus segera setelah pengurangan gem
 
       Nilai default (0) berarti fitur ini dinonaktifkan.</translation>
 <translation id="4937423591320233496">Nonaktifkan konten yang disarankan</translation>
-<translation id="4940810901775798837">Izinkan situs yang tidak aman membuat permintaan ke endpoint jaringan mana pun</translation>
 <translation id="4942096314850617489">Nonaktifkan pengesahan jarak jauh untuk pengguna</translation>
 <translation id="4942681160308347946">Jika kebijakan ditetapkan ke Benar (True), respons lisan akan diaktifkan di layar login. Jika kebijakan ditetapkan ke Salah (False), respons lisan akan dinonaktifkan di layar login.
 
@@ -7871,7 +7870,6 @@ juga aman.</translation>
       Jika kebijakan ini disetel, pengguna tidak dapat mengubah atau menggantinya.</translation>
 <translation id="8080200590486938727">Nonaktifkan pencari plugin</translation>
 <translation id="8089200718228084417">Aktifkan pencetakan privet yang tidak digunakan lagi</translation>
-<translation id="8089236320223488328">Gunakan perilaku default saat menentukan apakah situs yang tidak aman dapat membuat permintaan ke endpoint jaringan mana pun</translation>
 <translation id="8091982561085048989">Tanda boolean menunjukkan apakah IPP Everywhere harus digunakan untuk menyiapkan printer. Tanda ini didukung di <ph name="PRODUCT_OS_NAME" /> versi 76 dan lebih tinggi.</translation>
 <translation id="8099880303030573137">Menunda waktu menganggur saat menggunakan daya baterai</translation>
 <translation id="8101381354936029836">Grup atom kebijakan:</translation>

@@ -92,6 +92,7 @@
 <translation id="1669047024429367828">မြင်နိုင်မှု</translation>
 <translation id="1672499492233627739">ဝဘ်ကမ်ဗီဒီယို ဖိဒ်</translation>
 <translation id="1676557873873341166">ဗီဒီယိုရိုက်နေသည်</translation>
+<translation id="1684279041537802716">အားဖြည့် အရောင်</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Resolver ရှိသည်</translation>
 <translation id="1708602061922134366">Google ပြာ</translation>
@@ -217,6 +218,7 @@
 <translation id="2638662041295312666">လက်မှတ်ထိုးဝင်ရန်ပုံ</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> အယ်လ်ဘမ်ကို ရွေးထားသည်</translation>
 <translation id="267442004702508783">ဆန်းသစ်ယူပါ</translation>
+<translation id="268270014981824665">ကီးဘုတ် မှိန်ခြင်း</translation>
 <translation id="2712812801627182647">TLS အထောက်အထားစိစစ်ခြင်းကီး</translation>
 <translation id="2713444072780614174">အဖြူ</translation>
 <translation id="2717139507051041123">အမှောင်မုဒ် ဖွင့်ရန်</translation>
@@ -224,6 +226,7 @@
 <translation id="2744221223678373668">မျှဝေထား</translation>
 <translation id="2751739896257479635">EAP အဆင့် ၂ အထောက်အထားစိစစ်ခြင်း</translation>
 <translation id="2783010256799387990">အောင်မြင်သည်</translation>
+<translation id="2787435249130282949">ကီးဘုတ် ပိုလင်း</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">အက်ပ်များ</translation>
 <translation id="28232023175184696">အင်တာနက်သို့ ချိတ်ဆက်၍မရပါ။ ထပ်စမ်းကြည့်ရန် နှိပ်ပါ။</translation>
@@ -327,11 +330,13 @@
 <translation id="3749289110408117711">ဖိုင် အမည်</translation>
 <translation id="3771294271822695279">ဗီဒီယို ဖိုင်များ</translation>
 <translation id="3784455785234192852">သော့ခတ်</translation>
+<translation id="380097101658023925">rgb သတ်မှတ်ချက်များ</translation>
 <translation id="38114475217616659">မှတ်တမ်းအားလုံး ရှင်းထုတ်ရန်</translation>
 <translation id="3820172043799983114">ပင်နံပါတ် မမှန်ကန်ပါ။</translation>
 <translation id="3824259034819781947">ဖိုင်များပူးတွဲရန်</translation>
 <translation id="3838338534323494292">စကားဝှက်အသစ်</translation>
 <translation id="3845880861638660475">ဒိုင်ယာလော့ပိတ်ရန် <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> နှိပ်ပါ။</translation>
+<translation id="3848280697030027394">ကီးဘုတ် မှောင်လာခြင်း</translation>
 <translation id="385051799172605136">နောက်သို့</translation>
 <translation id="3858860766373142691">အမည်</translation>
 <translation id="3862598938296403232">ဖော်ပြချက် လိုအပ်သည်</translation>
@@ -403,6 +408,7 @@
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4394049700291259645">ပိတ်ထားရန်</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ပြန်စနေသည်</translation>
+<translation id="4395835743215824109">ကီးဘုတ် စိတ်ကြိုက်ပြင်ရန်</translation>
 <translation id="4415951057168511744">လက်ရှိ ကိုယ်စားပြုပုံ</translation>
 <translation id="4422041425070339732">အောက်ညွှန်မြား</translation>
 <translation id="4425149324548788773">My Drive</translation>
@@ -443,6 +449,7 @@
 <translation id="4731797938093519117">မိဘ သုံးခွင့်</translation>
 <translation id="473775607612524610">အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="4744944742468440486">သင်ရွေးထားသည့်အရာနှင့် သက်ဆိုင်သည့် အချက်အလက်များ</translation>
+<translation id="4771607256327216405">ကီးဘုတ် လင်းသွားခြင်း</translation>
 <translation id="4773299976671772492">ဆိုင်းငံ့ထား</translation>
 <translation id="4782311465517282004">ညာဘက်ခလုတ်ကို နှိပ်ချိန် (သို့) စာသားကိုတို့ထိ၍ ဖိထားချိန်တွင် အဓိပ္ပာယ်ဖွင့်ဆိုချက်၊ ဘာသာပြန်ဆိုချက် (သို့) ယူနစ်ပြောင်းလဲချက်များကို ရယူနိုင်သည်</translation>
 <translation id="4791000909649665275">ဓာတ်ပုံ <ph name="NUMBER" /> ပုံ</translation>
@@ -491,6 +498,7 @@
 <translation id="500920857929044050">စစ်ဆေးမှု ရပ်ရန်</translation>
 <translation id="5017508259293544172">နှစ်ထက်နှစ်</translation>
 <translation id="5019310272469539976">သင့်ဖန်သားပြင်ကို အသုံးမပြုသောအခါ ဓာတ်ပုံများ၊ အချိန်၊ ရာသီဥတုနှင့် မီဒီယာအချက်အလက်များ ပြသည်။</translation>
+<translation id="5038292761217083259">ကီးဘုတ် ရောင်စုံ</translation>
 <translation id="5039804452771397117">ခွင့်ပြုရန်</translation>
 <translation id="5049856988445523908">ဆင်းမ်ကတ် လော့ခ်ချထားသည် (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">အုပ်စု အမည်</translation>
@@ -639,6 +647,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">အမှောင်နောက်ခံ ဖွင့်ရန်</translation>
 <translation id="6285899124799306373">Launcher ဖွင့်ရန်</translation>
+<translation id="629550705077076970">ကီးဘုတ် မှိန်သွားခြင်း</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> စစ်ဆေးမှုကို ပယ်ဖျက်လိုက်သည်</translation>
 <translation id="631063167932043783">Explore အက်ပ်</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> တွင် ဖာမ်းဝဲအပ်ဒိတ်လုပ်ရန်</translation>
@@ -657,6 +666,7 @@
 <translation id="6401427872449207797">ဘရောင်ဇာ ရှာဖွေမှု</translation>
 <translation id="6410257289063177456">ပုံ ဖိုင်များ</translation>
 <translation id="641081527798843608">တိုက်ဆိုင်သည့် အကြောင်းအရာ</translation>
+<translation id="6411934471898487866">ကီးဘုတ် တောက်ပမှု</translation>
 <translation id="6412715219990689313">အသင့်ပါကီးဘုတ်</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
@@ -807,10 +817,12 @@
 <translation id="7656388927906093505">ကိရိယာသည် မောက်စ်ဖြစ်သည်။</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7665800271478495366">ချန်နယ်ပုံပြောင်းရန်</translation>
+<translation id="7683228889864052081">ကီးဘုတ် အရောင်အသွေး</translation>
 <translation id="7690294790491645610">စကားဝှက်အသစ်ကို အတည်ပြုပါ</translation>
 <translation id="7701040980221191251">မရှိ</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
+<translation id="7718231387947923843">ကီးဘုတ် အလင်း</translation>
 <translation id="773153675489693198">သုံးစွဲမှု အကြိမ်ရေ</translation>
 <translation id="7747039790905080783">ကြိုတင်မျှဝေထားသည့် ကီး</translation>
 <translation id="7762130827864645708">သင်၏စကားဝှက်ကို ပြောင်းပြီးပြီ။ ယခုမှစ၍ စကားဝှက်အသစ် သုံးပါ။</translation>
@@ -854,6 +866,7 @@
 <translation id="8075838845814659848">ကျန်ရှိသော အားပမာဏ</translation>
 <translation id="8076492880354921740">တဘ်များ</translation>
 <translation id="8082366717211101304">Android အက်ပ်များမှ DNS ဖြေရှင်း၍မရပါ</translation>
+<translation id="8082644724189923105">ကီးဘုတ် ဇုန်</translation>
 <translation id="808894953321890993">စကားဝှက် ပြောင်းရန်</translation>
 <translation id="8094062939584182041">ဤပြဿနာအကြောင်း အီးမေးလ်ပို့ခွင့် Google ကိုပေးရန်</translation>
 <translation id="8104083085214006426">သင်သည် အများသုံးဖြစ်ပြီး မလုံခြုံသောကွန်ရက်ကို သုံးနေသည်</translation>
@@ -902,6 +915,7 @@
 <translation id="8456761643544401578">အလိုအလျောက် အမှောင်မုဒ်</translation>
 <translation id="8461329675984532579">ပင်မထောက်ပံ့သူအမည်</translation>
 <translation id="8475690821716466388">WiFi ကွန်ရက်ကို အားနည်းသောပရိုတိုကော WEP PSK ဖြင့် လုံခြုံအောင်ထားသည်</translation>
+<translation id="8476242415522716722">ကီးဘုတ် အောက်တွင်လင်းခြင်း</translation>
 <translation id="8477551185774834963">DNS တုံ့ပြန်ချိန်က ခွင့်ပြုနိုင်သောသတ်မှတ်ကာလကို အနည်းငယ်ကျော်နေသည်</translation>
 <translation id="8483248364096924578">IP လိပ်စာ</translation>
 <translation id="8491311378305535241">Android အက်ပ်များမှ HTTP ဝဘ်ဆိုက်များသို့ firewall ဖြတ်ပြီး ချိတ်ဆက်၍မရပါ</translation>
@@ -945,6 +959,7 @@
 <translation id="8845001906332463065">အကူအညီရယူပါ</translation>
 <translation id="8855781559874488009">HTTP ဝဘ်ဆိုက်များသို့ firewall ဖြတ်ပြီး ချိတ်ဆက်၍မရပါ</translation>
 <translation id="885701979325669005">သိုလှောင်ခန်း</translation>
+<translation id="885704831271383379">ကီးဘုတ် ပိုမှောင်</translation>
 <translation id="8863170912498892583">အမှောင်နောက်ခံ ဖွင့်ရန်</translation>
 <translation id="8863888432376731307">“<ph name="QUERY" />” စသည်တို့အတွက် <ph name="INTENT" /> ရယူပါ</translation>
 <translation id="8864415976656252616">အကြံပြုထားသောအကြောင်းအရာ မရှိပါ။ ထိပ်တန်းအကူအညီ အကြောင်းအရာကို ကြည့်ပါ။</translation>

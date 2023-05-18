@@ -575,6 +575,7 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="4188221736490993796">Sordi Y-st A-ni järgi</translation>
 <translation id="4195643157523330669">Ava uuel vahelehel</translation>
 <translation id="4196597275619698563">Loo kaart</translation>
+<translation id="4197828496439691735">{NUM_TABS,plural, =1{1 vahekaart selles seadmes}other{# vahekaarti selles seadmes}}</translation>
 <translation id="4198423547019359126">Ükski allalaadimise asukoht ei ole saadaval</translation>
 <translation id="4202218894997543208">Teie blokeeritud teemad</translation>
 <translation id="4214315110991671325">Kui lubate küpsised, võib Chrome neid kasutada eellaadimise jaoks.</translation>
@@ -589,6 +590,7 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Milliseid andmeid kasutatakse?<ph name="END_BOLD" /> Teie sirvimisajalugu, selles seadmes Chrome'iga külastatud saitide andmed.</translation>
 <translation id="4269820728363426813">Kopeeri lingi aadress</translation>
 <translation id="4283102315569707115">Kas taotleda vaikimisi arvutisaite?</translation>
+<translation id="4285846616383034558">Küpsised, vahemälu ja muud saidiandmed</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Androidi seadetes ekraaniluku sisselülitamine<ph name="END_LINK" /></translation>
 <translation id="4296252229500326964">Uus inkognito vaheleht</translation>
 <translation id="4298388696830689168">Lingitud saidid</translation>
@@ -679,6 +681,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4763480195061959176">video</translation>
 <translation id="4766313118839197559">Paroolid salvestatakse rakendusse Paroolihaldur selles seadmes</translation>
 <translation id="4766678251456904326">Konto lisamine seadmesse</translation>
+<translation id="4767947714785277816">Anname välja uue reklaamide privaatsusfunktsiooni, mida nimetame reklaamide mõõtmiseks. Chrome jagab saitide ja rakenduste vahel vaid väga piiratud teavet, näiteks seda, millal teile reklaami näidati, et aidata reklaamide toimivust mõõta.</translation>
 <translation id="4769095993849849966">Uus failinimi</translation>
 <translation id="4778653490315793244">Siin ei ole veel midagi</translation>
 <translation id="4787736314074622408">Kas soovite faili <ph name="ITEM_TITLE" /> kustutada?</translation>
@@ -914,6 +917,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="6011308810877101166">Otsingusoovituste täiustamine</translation>
 <translation id="6026538407078977628">Laienda täisekraanile</translation>
 <translation id="6030719887161080597">Saate hallata teavet, mida saidid kasutavad reklaami toimivuse mõõtmiseks</translation>
+<translation id="6034146297924778597">Kustutatakse viimase 15 minuti ajalugu.</translation>
 <translation id="6039379616847168523">Järgmisele vahelehele liikumine</translation>
 <translation id="6040143037577758943">Sulge</translation>
 <translation id="604124094241169006">Automaatne</translation>
@@ -1119,6 +1123,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7029809446516969842">Paroolid</translation>
 <translation id="7030304022046916278">Saadab URL-id kontrollimiseks teenusele Google'i ohutu sirvimine.</translation>
 <translation id="7030585293819777123">Kas jätkata viimast ülesannet?</translation>
+<translation id="7035701931849773472">Muud valikud</translation>
 <translation id="7037830628447527439">Logige Chrome’i oma Google’i kontoga sisse</translation>
 <translation id="7038956721828960940">Chrome'i_pilt_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Kas saada piltide kirjeldusi?</translation>
@@ -1341,6 +1346,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8110024788458304985">Aidake täiustada Chrome'i funktsioone ja toimivust</translation>
 <translation id="8110087112193408731">Kas kuvada teie Chrome'i tegevused teenuses Digitaalne heaolu?</translation>
 <translation id="8118117428362942925">Kui vajad abi, küsi vanemalt (<ph name="PARENT_NAME" />)</translation>
+<translation id="8124758083429256800">Pärast versiooni 121 liidetakse Chrome’i ja väljalaske Chrome <ph name="ERROR_DESCRIPTION" /> salvestatud paroolide loend. Edaspidi saate kõiki salvestatud paroole mõlemas rakenduses automaattäita.</translation>
 <translation id="8127542551745560481">Avalehe muutmine</translation>
 <translation id="8130309322784422030">Salvestatud sisselogimisteave võib olla aegunud</translation>
 <translation id="813082847718468539">Kuvab saidi teabe</translation>

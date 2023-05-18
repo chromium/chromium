@@ -2251,7 +2251,7 @@
 <translation id="647261751007945333">Правила устройства</translation>
 <translation id="647330291963761005">Обновления устанавливаются</translation>
 <translation id="6475672344094591109">Сайты, которые вы посещаете, могут запрашивать у Chrome информацию для оценки эффективности рекламы. Chrome защищает вашу конфиденциальность, ограничивая данные, которыми сайты могут обмениваться друг с другом.</translation>
-<translation id="6476284679642588870">Управление способами оплаты</translation>
+<translation id="6476284679642588870">Настроить способы оплаты</translation>
 <translation id="6486200200930923183">Документальные фильмы</translation>
 <translation id="6489534406876378309">Начать загрузку сведений об ошибках</translation>
 <translation id="6493924760403974580">Приложение доступно только в этом размере</translation>
@@ -2970,7 +2970,6 @@
 <translation id="8217240300496046857">Сайтам запрещается использовать файлы cookie, которые отслеживают ваши действия в интернете. Из-за этого некоторые функции сайтов могут работать некорректно.</translation>
 <translation id="8217748145574471584">Управление персоналом</translation>
 <translation id="8218327578424803826">Назначенное местоположение:</translation>
-<translation id="8225771182978767009">Тот, кто настраивал компьютер, заблокировал этот сайт.</translation>
 <translation id="8228419419708659934">Двухстраничный режим</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> x <ph name="HEIGHT" /> мм</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" /> и <ph name="TYPE_2" /></translation>
@@ -3083,7 +3082,6 @@
 <translation id="8474910779563686872">Показать сведения о разработчике</translation>
 <translation id="8479754468255770962">Скоба в левом нижнем углу</translation>
 <translation id="8483229036294884935">Адрес будет удален из вашего аккаунта Google (<ph name="ACCOUNT" />)</translation>
-<translation id="8483780878231876732">Чтобы использовать карты, привязанные к аккаунту Google Account, войдите в Chrome</translation>
 <translation id="8488350697529856933">Объект применения</translation>
 <translation id="8490137692873530638">Укладчик 10</translation>
 <translation id="8493948351860045254">Освободить место</translation>

@@ -64,6 +64,7 @@
 <translation id="1476467821656042872">Pinapamahalaan ng <ph name="MANAGER" /> ang device na ito at puwede nitong masubaybayan ang iyong aktibidad.</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Ipadala</translation>
+<translation id="1488850966314959671">Hindi makakonekta sa network na ito gamit ang anumang naka-enable na custom na APN. Makipag-ugnayan sa iyong mobile carrier para sa higit pang impormasyon.</translation>
 <translation id="1491076385728777984">Nag-a-update ng firmware sa <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">lakasan ang volume</translation>
 <translation id="1499900233129743732">Pinapamahalaan ng <ph name="MANAGER" /> ang user na ito at puwede nitong pamahalaan ang mga setting at subaybayan ang aktibidad ng user sa remote na paraan.</translation>
@@ -92,6 +93,7 @@
 <translation id="1669047024429367828">Visibility</translation>
 <translation id="1672499492233627739">Video feed ng webcam</translation>
 <translation id="1676557873873341166">Pagkuha ng video</translation>
+<translation id="1684279041537802716">Kulay ng accent</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">May DNS Resolver</translation>
 <translation id="1708602061922134366">Google blue</translation>
@@ -562,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Mag-scan ulit</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">Hindi ma-disable o maalis ang APN na ito. Tiyaking naka-disable o inalis ang mga naka-enable na naka-attach na APN.</translation>
 <translation id="5600027863942488546">Nasubok ang key na <ph name="KEY_NAME" /></translation>
 <translation id="5620281292257375798">Internal lang</translation>
 <translation id="5649768706273821470">Pakinggan</translation>
@@ -1011,6 +1014,7 @@
 <translation id="9173638680043580060">Wala nang isang minuto ang natitira</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Awtomatikong maitutugma ng iyong keyboard ang wallpaper mo</translation>
+<translation id="9189000703457422362">Hindi makakonekta sa network na ito gamit ang mga awtomatikong nade-detect na APN. Makipag-ugnayan sa iyong mobile carrier para sa higit pang impormasyon.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Hindi makaugnayan ang gateway mula sa mga Android app</translation>
 <translation id="9211490828691860325">Lahat ng desk</translation>

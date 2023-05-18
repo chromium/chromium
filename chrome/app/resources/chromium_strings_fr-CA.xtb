@@ -94,6 +94,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="3179665906251668410">Ouvrir le lien dans une fenêtre de navi&amp;gation privée Chromium</translation>
 <translation id="3185330573522821672">Personnaliser votre nouveau profil Chromium</translation>
 <translation id="3190315855212034486">Google Chrome a planté. Voulez-vous le relancer maintenant?</translation>
+<translation id="3255926992597692024">Chromium tente de modifier les paramètres de remplissage des modes de paiement.</translation>
 <translation id="3258596308407688501">Chromium ne peut pas lire et écrire dans son répertoire de données :
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -199,6 +200,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5653831366781983928">Veuillez redémarrer Chromium maintenant</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Afficher Chromium dans cette langue</translation>
+<translation id="585620188971323280">modifier les paramètres de remplissage des modes de paiement.</translation>
 <translation id="5862307444128926510">Bienvenue dans Chromium</translation>
 <translation id="5883558403894052917">Chromium a constaté que ces éléments contiennent un logiciel malveillant :</translation>
 <translation id="5895138241574237353">Redémarrer</translation>

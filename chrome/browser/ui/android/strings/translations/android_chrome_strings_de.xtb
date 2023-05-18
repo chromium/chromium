@@ -195,6 +195,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="2100273922101894616">Automatisch anmelden</translation>
 <translation id="2100314319871056947">Teile den Text am besten in mehrere Abschnitte</translation>
 <translation id="2111511281910874386">Seite aufrufen</translation>
+<translation id="2119609734654412418">Hier werden deine Lesezeichen angezeigt</translation>
 <translation id="2122601567107267586">App konnte nicht geöffnet werden</translation>
 <translation id="2132122640199389833">Alle verknüpften Geräte entfernen</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> geschlossen</translation>
@@ -597,6 +598,7 @@ Private State Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="433213510553688132">Folgen wird aktiviert…</translation>
 <translation id="4335835283689002019">Safe Browsing ist deaktiviert</translation>
 <translation id="4351244548802238354">Dialogfeld schließen</translation>
+<translation id="4355272626458588338">Du kannst Lesezeichen setzen, damit du zu Seiten zurückfindest, die für dich interessant sind</translation>
 <translation id="4369735607080757018">Zur Erfolgsmessung von Werbeanzeigen werden nur manche Datentypen zwischen Websites geteilt, wie z. B. die Tageszeit, zu der dir die Werbung präsentiert wurde</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="438319986296050901">Nur Karte teilen</translation>
@@ -948,6 +950,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="6232535412751077445">Wenn du das Kästchen „Do Not Track“ anklickst, wird mit deinen Browserzugriffen eine Anforderung gesendet. Wie sich diese Anforderung auswirkt, hängt davon ab, ob eine Website darauf reagiert und wie die Anforderung interpretiert wird.
 
 Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht darauf basiert, welche Websites du zuvor besucht hast. Viele Websites erfassen weiterhin deine Browserdaten und verwenden sie, um beispielsweise die Sicherheit zu verbessern oder Inhalte, Werbeanzeigen und Empfehlungen bereitzustellen und Statistiken für Berichte zu erstellen.</translation>
+<translation id="6255794742848779505">Wir ändern, wie Passwörter auf diesem Gerät gespeichert werden</translation>
 <translation id="6264376385120300461">Trotzdem herunterladen</translation>
 <translation id="6277522088822131679">Beim Drucken der Seite ist ein Problem aufgetreten. Bitte versuche es erneut.</translation>
 <translation id="6277722725779679269">„Preis beobachten“ konnte nicht aktualisiert werden</translation>

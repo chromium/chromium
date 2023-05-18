@@ -1196,9 +1196,11 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3927932062596804919">Ukatu</translation>
 <translation id="393316646445601645">Internet eta telekomunikazioak</translation>
 <translation id="3939773374150895049">WebAuthn erabili nahi duzu CVC kodearen ordez?</translation>
+<translation id="3941630233824954464">Gaitu derrigorrez berriro autentifikatzea</translation>
 <translation id="3943857333388298514">Itsatsi</translation>
 <translation id="3946209740501886391">Galdetu beti gune honetan</translation>
 <translation id="3947595700203588284">MIDI gailuetara konektatzea eska dezake</translation>
+<translation id="3948588869002647271">Aplikazioa falta da edo hondatuta dago</translation>
 <translation id="3949571496842715403">Zerbitzari honek ezin izan du frogatu <ph name="DOMAIN" /> denik; haren segurtasun ziurtagiriak ez ditu zehazten gaiaren beste izen batzuk (SAN). Oker konfiguratuta dagoelako izan liteke, edo erasotzaile batek zure konexioa atzeman duelako, bestela.</translation>
 <translation id="3949601375789751990">Arakatze-historia agertuko da hemen</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2198,6 +2200,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6370022303958842211">Gailua atzitzeko ekintzak; esate baterako, saioa hasten saiatzea (huts egiten duenean barne), saioa amaitzea, gailua blokeatzea edo gailua desblokeatzea</translation>
 <translation id="6374469231428023295">Saiatu berriro</translation>
 <translation id="6374865374745447009">leihoen kudeaketa</translation>
+<translation id="6376881782310775282">Ezin da konektatu aplikazio honen garapen-zerbitzariarekin</translation>
 <translation id="6377268785556383139">"<ph name="SEARCH_TEXT" />" bilaketak emaitza bat du</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Baliteke aurrera egiteko ordaindu behar izatea.</translation>
@@ -2966,7 +2969,6 @@ Xehetasun gehiago:
 <translation id="8217240300496046857">Webguneek ezin dituzte erabili sarean jarraipena egiten dizuten cookieak. Baliteke webgune batzuetako eginbideek ez funtzionatzea.</translation>
 <translation id="8217748145574471584">Giza baliabideak</translation>
 <translation id="8218327578424803826">Esleitutako kokapena</translation>
-<translation id="8225771182978767009">Ordenagailua konfiguratu duen pertsonak webgune hau blokeatzea aukeratu du.</translation>
 <translation id="8228419419708659934">Bi orriko ikuspegia</translation>
 <translation id="8229288958566709448"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
@@ -3007,6 +3009,7 @@ Xehetasun gehiago:
 <translation id="8286799286781881307">Administratzailearen baimena daukaten aplikazioek gailuarekin lotutako pantaila guztiak kaptura ditzakete. Baliteke informazio hori gailuan prozesatzea edo erakundearen zerbitzarietara kargatzea.</translation>
 <translation id="8288807391153049143">Erakutsi ziurtagiria</translation>
 <translation id="8289355894181816810">Ez badakizu ziur horrek zer esan nahi duen, jarri harremanetan sarearen administratzailearekin.</translation>
+<translation id="8292520987784410870">Beti egiaztatu nahi duzu?</translation>
 <translation id="8293206222192510085">Gehitu laster-marka</translation>
 <translation id="829335040383910391">soinua</translation>
 <translation id="8294431847097064396">Iturburua</translation>
@@ -3079,7 +3082,6 @@ Xehetasun gehiago:
 <translation id="8474910779563686872">Erakutsi garatzailearen xehetasunak</translation>
 <translation id="8479754468255770962">Grapa bat behean, ezkerretara</translation>
 <translation id="8483229036294884935">Helbidea zure Google-ko kontutik (<ph name="ACCOUNT" />) ezabatuko da</translation>
-<translation id="8483780878231876732">Google-ko kontuko txartelak erabiltzeko, hasi saioa Chrome-n</translation>
 <translation id="8488350697529856933">Honi aplikatzen zaio:</translation>
 <translation id="8490137692873530638">10. pilatzailea</translation>
 <translation id="8493948351860045254">Egin tokia</translation>
@@ -3107,6 +3109,7 @@ Xehetasun gehiago:
 <translation id="854892890027593466">C6/C5 gutun-azala</translation>
 <translation id="8553387990086529628">Helmuga turistikoak</translation>
 <translation id="8554010658308662631">Kargatu gehiago</translation>
+<translation id="8554802735558319842">Gailu partekatuetan segurtasun handiagoa izateko, aktibatu betetze automatikoaren bidez ordaintzen duzun bakoitzean egiaztapena egiteko aukera.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Berrezarri baimena}other{Berrezarri baimenak}}</translation>
 <translation id="8555010941760982128">Erabili kode hau ordainketa-prozesuan</translation>
 <translation id="8557066899867184262">Txartelaren atzealdean agertzen da CVC kodea.</translation>
