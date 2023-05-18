@@ -1631,7 +1631,7 @@
       include_paths: ["third_party/blink/renderer/core/style/anchor_specifier_value.h"],
       type_name: "AnchorSpecifierValue",
       wrapper_pointer_name: "Persistent",
-      default_value: "nullptr",
+      default_value: "AnchorSpecifierValue::Default()",
       field_group: "*",
       field_template: "external",
       converter: "ConvertAnchorScroll",

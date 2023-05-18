@@ -52,7 +52,7 @@ align-self: auto
 alignment-baseline: auto
 anchor-default: implicit
 anchor-name: none
-anchor-scroll: none
+anchor-scroll: default
 animation-composition: replace
 animation-delay: 0s
 animation-direction: normal

@@ -105,6 +105,21 @@ void CollapseLoneAnonymousBlockChild(LayoutBox* parent, LayoutObject* child) {
   parent_block_flow->CollapseAnonymousBlockChild(child_block_flow);
 }
 
+bool NeedsAnchorScrollData(Element& element, const ComputedStyle& style) {
+  // `anchor-scroll` has no effect if the element is not absolutely positioned
+  // or when the property value is `none`.
+  if (!style.HasOutOfFlowPosition() || !style.AnchorScroll()) {
+    return false;
+  }
+  // There's an explicitly set `anchor-scroll` or `anchor-default` value.
+  if (!style.AnchorScroll()->IsDefault() || style.AnchorDefault()) {
+    return true;
+  }
+  // Now we have `anchor-scroll: default` and `anchor-default: implicit`. We
+  // need AnchorScrollData only if there's an implicit anchor element.
+  return element.ImplicitAnchorElement();
+}
+
 }  // namespace
 
 LayoutBoxModelObject::LayoutBoxModelObject(ContainerNode* node)
@@ -328,10 +343,11 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
   }
 
   if (Element* element = DynamicTo<Element>(GetNode())) {
-    if (IsOutOfFlowPositioned() && StyleRef().AnchorScroll())
+    if (NeedsAnchorScrollData(*element, StyleRef())) {
       element->EnsureAnchorScrollData();
-    else
+    } else {
       element->RemoveAnchorScrollData();
+    }
   }
 }
 
