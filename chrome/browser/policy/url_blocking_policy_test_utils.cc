@@ -40,16 +40,16 @@ void UrlBlockingPolicyTest::CheckURLIsBlockedInWebContents(
   EXPECT_EQ(blocked_page_title, web_contents->GetTitle());
 
   // Verify that the expected error page is being displayed.
-  EXPECT_EQ(true, content::EvalJs(
-                      web_contents,
-                      content::JsReplace(
-                          "var textContent = document.body.textContent;"
-                          "var hasError = "
-                          "textContent.indexOf('$1') >= 0;"
-                          "hasError;",
-                          l10n_util::GetStringUTF8(
-                              IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_ADMINISTRATOR)
-                              .c_str())));
+  EXPECT_EQ(true,
+            content::EvalJs(
+                web_contents,
+                content::JsReplace(
+                    "var textContent = document.body.textContent;"
+                    "var hasError = "
+                    "textContent.indexOf($1) >= 0;"
+                    "hasError;",
+                    l10n_util::GetStringUTF8(
+                        IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_ADMINISTRATOR))));
 }
 
 void UrlBlockingPolicyTest::CheckURLIsBlocked(Browser* browser,
