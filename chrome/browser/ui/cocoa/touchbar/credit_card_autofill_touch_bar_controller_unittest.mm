@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -25,6 +24,10 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/test/scoped_default_font_description.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace autofill {
 
 namespace {
@@ -39,8 +42,8 @@ class CreditCardAutofillTouchBarControllerUnitTest : public CocoaTest {
   void SetUp() override {
     CocoaTest::SetUp();
 
-    touch_bar_controller_.reset([[CreditCardAutofillTouchBarController alloc]
-        initWithController:&autofill_popup_controller_]);
+    touch_bar_controller_ = [[CreditCardAutofillTouchBarController alloc]
+        initWithController:&autofill_popup_controller_];
   }
 
   void SetSuggestions(std::vector<Suggestion> suggestions) {
@@ -57,8 +60,7 @@ class CreditCardAutofillTouchBarControllerUnitTest : public CocoaTest {
     SetSuggestions(std::move(suggestions));
   }
 
-  base::scoped_nsobject<CreditCardAutofillTouchBarController>
-      touch_bar_controller_;
+  CreditCardAutofillTouchBarController* __strong touch_bar_controller_;
 
  private:
   MockAutofillPopupController autofill_popup_controller_;
