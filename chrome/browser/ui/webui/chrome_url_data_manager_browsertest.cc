@@ -246,8 +246,7 @@ IN_PROC_BROWSER_TEST_P(ChromeURLDataManagerWebUITrustedTypesTest,
 
 // Verify that Trusted Types checks are actually enabled for all `kChromeUrls`.
 IN_PROC_BROWSER_TEST_P(ChromeURLDataManagerWebUITrustedTypesTest,
-                       // TODO(crbug.com/1446612): Re-enable this test
-                       DISABLED_TrustedTypesEnabled) {
+                       TrustedTypesEnabled) {
   CheckTrustedTypesEnabled(GetParam());
 }
 
@@ -269,7 +268,10 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://components",
     "chrome://connection-help",
     "chrome://connection-monitoring-detected",
+// TODO(crbug.com/1446612): Re-enable this test
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
     "chrome://credits",
+#endif
     "chrome://customize-chrome-side-panel.top-chrome",
     "chrome://device-log",
     // TODO(crbug.com/1113446): Test failure due to excessive output.
