@@ -82,6 +82,25 @@ promise_test(async t => {
   assert_true(
       got.cookies.includes('unpartitioned'),
       'Worker can access unpartitioned cookie via JS');
+
+  // Test that the partitioned cookie is not available to this worker in HTTP
+  // requests from importScripts.
+  wait_promise = new Promise(resolve => {
+    resolve_wait_promise = resolve;
+  });
+  on_message = ev => {
+    got = ev.data;
+    resolve_wait_promise();
+  };
+  filtered_registrations[0].active.postMessage({type: 'echo_cookies_import'});
+  await wait_promise;
+  assert_true(got.ok, 'Get cookies');
+  assert_false(
+      got.cookies.includes('__Host-partitioned'),
+      'Worker cannot access partitioned cookie via importScripts');
+  assert_true(
+      got.cookies.includes('unpartitioned'),
+      'Worker can access unpartitioned cookie via importScripts');
 });
 
 </script>
