@@ -102,13 +102,14 @@ class HistoryClustersModuleRankingModelHandlerTest : public testing::Test {
 
     base::RunLoop run_loop;
     model_handler()->ExecuteBatch(
-        inputs, base::BindOnce(
-                    [](base::RunLoop* run_loop, std::vector<float>* out_outputs,
-                       std::vector<float> outputs) {
-                      *out_outputs = std::move(outputs);
-                      run_loop->Quit();
-                    },
-                    &run_loop, &outputs));
+        &inputs,
+        base::BindOnce(
+            [](base::RunLoop* run_loop, std::vector<float>* out_outputs,
+               std::vector<float> outputs) {
+              *out_outputs = std::move(outputs);
+              run_loop->Quit();
+            },
+            &run_loop, &outputs));
 
     run_loop.Run();
 

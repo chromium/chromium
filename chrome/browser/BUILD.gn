@@ -3911,6 +3911,10 @@ static_library("browser") {
       "new_tab_page/modules/history_clusters/history_clusters_page_handler.h",
       "new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranker.cc",
       "new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranker.h",
+      "new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_metrics_logger.cc",
+      "new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_metrics_logger.h",
+      "new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.cc",
+      "new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h",
       "new_tab_page/modules/modules_switches.cc",
       "new_tab_page/modules/modules_switches.h",
       "new_tab_page/modules/new_tab_page_modules.cc",
@@ -7696,8 +7700,6 @@ static_library("browser") {
         "new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_model_executor.h",
         "new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_model_handler.cc",
         "new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_model_handler.h",
-        "new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.cc",
-        "new_tab_page/modules/history_clusters/ranking/history_clusters_module_ranking_signals.h",
       ]
       deps += [
         "new_tab_page/modules/history_clusters/ranking:history_clusters_module_proto",

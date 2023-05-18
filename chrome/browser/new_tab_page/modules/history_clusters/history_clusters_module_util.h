@@ -11,7 +11,13 @@
 #include "base/containers/flat_set.h"
 #include "components/history/core/browser/history_types.h"
 
-// Sort clusters using heuristics.
+// Compares two clusters using heuristics.
+bool CompareClustersUsingHeuristic(
+    const base::flat_set<std::string>& category_boostlist,
+    const history::Cluster& c1,
+    const history::Cluster& c2);
+
+// Sorts clusters using `CompareClustersUsingHeuristic()` as the comparator.
 void SortClustersUsingHeuristic(
     const base::flat_set<std::string>& category_boostlist,
     std::vector<history::Cluster>& clusters);

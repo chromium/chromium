@@ -13,6 +13,10 @@
 #include "components/commerce/core/proto/cart_db_content.pb.h"
 #include "components/history/core/browser/history_types.h"
 
+namespace ukm::builders {
+class NewTabPage_HistoryClusters;
+}  // namespace ukm::builders
+
 // The signals used to rank clusters for the history clusters module.
 class HistoryClustersModuleRankingSignals {
  public:
@@ -27,6 +31,10 @@ class HistoryClustersModuleRankingSignals {
   ~HistoryClustersModuleRankingSignals();
   HistoryClustersModuleRankingSignals(
       const HistoryClustersModuleRankingSignals&);
+
+  // Populates UKM entry with data from `this`.
+  void PopulateUkmEntry(
+      ukm::builders::NewTabPage_HistoryClusters* ukm_entry_builder) const;
 
   // Duration since cluster's most recent visit.
   base::TimeDelta duration_since_most_recent_visit;
