@@ -68,6 +68,8 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
   void Execute(ProgressCallback progress_callback,
                CompleteCallback complete_callback) override;
 
+  void Resume(ResumeParams params) override;
+
  private:
   // Verifies the transfer by performing enterprise connector scans.
   void VerifyTransfer() override;

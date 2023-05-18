@@ -54,7 +54,6 @@ class CopyOrMoveIOTask : public IOTask {
   void Pause(PauseParams params) override;
 
   // Resumes the copy or move.
-  // TODO(b/281973963): Adapt for policy warnings.
   void Resume(ResumeParams params) override;
 
   // Cancels the copy or move.

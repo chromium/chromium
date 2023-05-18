@@ -78,9 +78,9 @@ enum class PolicyErrorType {
 // Unique identifier for any type of task.
 using IOTaskId = uint64_t;
 
-// I/O task state::PAUSED parameters. Currently, only CopyOrMoveIOTask can
-// pause to resolve a file name conflict.
-struct PauseParams {
+// I/O task state::PAUSED parameters when paused to resolve a file name
+// conflict. Currently, only supported by CopyOrMoveIOTask.
+struct ConflictPauseParams {
   // The conflict file name.
   std::string conflict_name;
 
@@ -94,14 +94,64 @@ struct PauseParams {
   std::string conflict_target_url;
 };
 
-// Resume I/O task parameters.
-struct ResumeParams {
+// I/O task state::PAUSED parameters when paused to show a policy warning.
+// Currently, only supported by CopyOrMovePolicyIOTask.
+struct PolicyPauseParams {
+  // One of kDlp, kEnterpriseConnectors.
+  PolicyErrorType type;
+};
+
+// I/O task state::PAUSED parameters. Only one of conflict or policy params
+// should be set.
+struct PauseParams {
+  PauseParams();
+
+  PauseParams(const PauseParams& other);
+  PauseParams& operator=(const PauseParams& other);
+
+  PauseParams(PauseParams&& other);
+  PauseParams& operator=(PauseParams&& other);
+
+  ~PauseParams();
+
+  // Set iff pausing due to name conflict.
+  absl::optional<ConflictPauseParams> conflict_params;
+  // Set iff pausing due to a policy warning.
+  absl::optional<PolicyPauseParams> policy_params;
+};
+
+// Resume I/O task parameters when paused because of a name conflict.
+struct ConflictResumeParams {
   // How to resolve a CopyOrMoveIOTask file name conflict: either 'keepboth'
   // or 'replace'.
   std::string conflict_resolve;
 
   // True if |conflict_resolve| should apply to future file name conflicts.
   bool conflict_apply_to_all = false;
+};
+
+// Resume I/O task parameters when paused because of a policy.
+struct PolicyResumeParams {
+  // One of kDlp, kEnterpriseConnectors.
+  PolicyErrorType type;
+};
+
+// Resume I/O task parameters.
+struct ResumeParams {
+  ResumeParams();
+
+  ResumeParams(const ResumeParams& other);
+  ResumeParams& operator=(const ResumeParams& other);
+
+  ResumeParams(ResumeParams&& other);
+  ResumeParams& operator=(ResumeParams&& other);
+
+  ~ResumeParams();
+
+  // Set iff paused due to name conflict.
+  absl::optional<ConflictResumeParams> conflict_params;
+  // Set iff paused due to a policy warning.
+  absl::optional<PolicyResumeParams> policy_params;
 };
 
 // Represents the status of a particular entry in an I/O task.

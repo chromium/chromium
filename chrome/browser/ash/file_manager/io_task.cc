@@ -22,6 +22,30 @@ void IOTask::Resume(ResumeParams) {}
 
 void IOTask::CompleteWithError(PolicyErrorType policy_error) {}
 
+PauseParams::PauseParams() = default;
+
+PauseParams::PauseParams(const PauseParams& other) = default;
+
+PauseParams& PauseParams::operator=(const PauseParams& other) = default;
+
+PauseParams::PauseParams(PauseParams&& other) = default;
+
+PauseParams& PauseParams::operator=(PauseParams&& other) = default;
+
+PauseParams::~PauseParams() = default;
+
+ResumeParams::ResumeParams() = default;
+
+ResumeParams::ResumeParams(const ResumeParams& other) = default;
+
+ResumeParams& ResumeParams::operator=(const ResumeParams& other) = default;
+
+ResumeParams::ResumeParams(ResumeParams&& other) = default;
+
+ResumeParams& ResumeParams::operator=(ResumeParams&& other) = default;
+
+ResumeParams::~ResumeParams() = default;
+
 EntryStatus::EntryStatus(storage::FileSystemURL file_url,
                          absl::optional<base::File::Error> file_error)
     : url(file_url), error(file_error) {}

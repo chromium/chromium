@@ -74,7 +74,7 @@ class CopyOrMoveIOTaskImpl {
   void Pause(PauseParams);
 
   // Resumes the copy or move.
-  void Resume(ResumeParams);
+  virtual void Resume(ResumeParams);
 
   // Cancels the copy or move.
   void Cancel();

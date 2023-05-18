@@ -292,6 +292,21 @@ policy::FilesDialogType ApiPolicyDialogTypeToChromeEnum(
   return policy::FilesDialogType::kUnknown;
 }
 
+file_manager::io_task::PolicyErrorType ApiPolicyErrorTypeToChromeEnum(
+    api::file_manager_private::PolicyErrorType type) {
+  switch (type) {
+    case api::file_manager_private::POLICY_ERROR_TYPE_DLP:
+      return file_manager::io_task::PolicyErrorType::kDlp;
+    case api::file_manager_private::POLICY_ERROR_TYPE_ENTERPRISE_CONNECTORS:
+      return file_manager::io_task::PolicyErrorType::kEnterpriseConnectors;
+    case api::file_manager_private::POLICY_ERROR_TYPE_DLP_WARNING_TIMEOUT:
+      return file_manager::io_task::PolicyErrorType::kDlpWarningTimeout;
+    case api::file_manager_private::POLICY_ERROR_TYPE_NONE:
+      NOTREACHED_NORETURN() << "POLICY_ERROR_TYPE_NONE passed";
+  }
+  NOTREACHED_NORETURN() << "Unknown policy error type " << type;
+}
+
 }  // namespace
 
 ExtensionFunction::ResponseAction
@@ -1694,10 +1709,12 @@ FileManagerPrivateResumeIOTaskFunction::Run() {
   }
 
   file_manager::io_task::ResumeParams io_task_resume_params;
-  io_task_resume_params.conflict_resolve =
-      params->params.conflict_resolve.value_or("");
-  io_task_resume_params.conflict_apply_to_all =
-      params->params.conflict_apply_to_all.value_or(false);
+  io_task_resume_params.conflict_params->conflict_resolve =
+      params->params.conflict_params->conflict_resolve.value_or("");
+  io_task_resume_params.conflict_params->conflict_apply_to_all =
+      params->params.conflict_params->conflict_apply_to_all.value_or(false);
+  io_task_resume_params.policy_params->type =
+      ApiPolicyErrorTypeToChromeEnum(params->params.policy_params->type);
 
   volume_manager->io_task_controller()->Resume(
       params->task_id, std::move(io_task_resume_params));

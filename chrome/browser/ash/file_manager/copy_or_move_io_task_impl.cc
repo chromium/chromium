@@ -203,6 +203,17 @@ void CopyOrMoveIOTaskImpl::Pause(PauseParams params) {
 }
 
 void CopyOrMoveIOTaskImpl::Resume(ResumeParams params) {
+  if (params.policy_params.has_value()) {
+    LOG(ERROR)
+        << "Policy resume should be handled by CopyOrMoveIOTaskPolicyImpl";
+    Complete(State::kError);
+    return;
+  }
+  if (!params.conflict_params.has_value()) {
+    LOG(ERROR) << "Missing resume conflict params";
+    Complete(State::kError);
+  }
+
   LOG_IF(ERROR, !resume_callback_) << "Resume but no resume_callback_";
 
   if (resume_callback_) {
@@ -546,8 +557,8 @@ void CopyOrMoveIOTaskImpl::CopyOrMoveFile(
   // Use it to automatically resolve the conflict (no need to ask the UI).
   if (!conflict_resolve_.empty()) {
     ResumeParams params;
-    params.conflict_resolve = conflict_resolve_;
-    params.conflict_apply_to_all = true;
+    params.conflict_params->conflict_resolve = conflict_resolve_;
+    params.conflict_params->conflict_apply_to_all = true;
     ResumeCopyOrMoveFile(idx, std::move(replace_url),
                          std::move(destination_url), std::move(params));
     return;
@@ -565,16 +576,17 @@ void CopyOrMoveIOTaskImpl::CopyOrMoveFile(
   // Enter state PAUSED: send pause params to the UI, to ask the user how to
   // resolve the file name conflict.
   progress_->state = State::kPaused;
-  progress_->pause_params.conflict_name = basename.AsUTF8Unsafe();
-  progress_->pause_params.conflict_multiple =
+  progress_->pause_params.conflict_params->conflict_name =
+      basename.AsUTF8Unsafe();
+  progress_->pause_params.conflict_params->conflict_multiple =
       (idx < progress_->sources.size() - 1) ? true : false;
-  progress_->pause_params.conflict_is_directory =
+  progress_->pause_params.conflict_params->conflict_is_directory =
       progress_->sources[idx].is_directory;
   auto destination_folder = file_system_context_->CreateCrackedFileSystemURL(
       progress_->GetDestinationFolder().storage_key(),
       progress_->GetDestinationFolder().mount_type(),
       progress_->GetDestinationFolder().virtual_path());
-  progress_->pause_params.conflict_target_url =
+  progress_->pause_params.conflict_params->conflict_target_url =
       destination_folder.ToGURL().spec();
   progress_callback_.Run(*progress_);
 }
@@ -594,7 +606,8 @@ void CopyOrMoveIOTaskImpl::ResumeCopyOrMoveFile(
   }
 
   // Get the user's conflict resolve choice.
-  const std::string& conflict_resolve = params.conflict_resolve;
+  const std::string& conflict_resolve =
+      params.conflict_params->conflict_resolve;
   const bool resolve_keepboth = conflict_resolve == "keepboth";
   const bool resolve_replace = conflict_resolve == "replace";
 
@@ -606,7 +619,8 @@ void CopyOrMoveIOTaskImpl::ResumeCopyOrMoveFile(
   }
 
   // Remember the 'ApplyToAll' choice for future conflict handling.
-  if (conflict_resolve_.empty() && params.conflict_apply_to_all) {
+  if (conflict_resolve_.empty() &&
+      params.conflict_params->conflict_apply_to_all) {
     conflict_resolve_ = conflict_resolve;
   }
 

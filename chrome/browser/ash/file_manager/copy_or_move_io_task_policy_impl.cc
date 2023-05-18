@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
+#include "chrome/browser/ash/file_manager/copy_or_move_io_task_impl.h"
 #include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_delegate.h"
 #include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_file_check_delegate.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
@@ -163,6 +164,31 @@ void CopyOrMoveIOTaskPolicyImpl::Execute(
   } else {
     CopyOrMoveIOTaskImpl::Execute(std::move(progress_callback),
                                   std::move(complete_callback));
+  }
+}
+
+void CopyOrMoveIOTaskPolicyImpl::Resume(ResumeParams params) {
+  // In this class we only handle policy resumes, anything else defer to the
+  // base class.
+  if (!params.policy_params.has_value()) {
+    CopyOrMoveIOTaskImpl::Resume(std::move(params));
+    return;
+  }
+
+  // We cannot resume after timeout error.
+  if (params.policy_params->type != PolicyErrorType::kDlpWarningTimeout) {
+    LOG(ERROR)
+        << "Policy resume shouldn't be called with kDlpWarningTimeout type";
+    Complete(State::kError);
+    return;
+  }
+
+  if (params.policy_params->type == PolicyErrorType::kDlp) {
+    // TODO: Start scanning.
+  }
+
+  if (params.policy_params->type == PolicyErrorType::kEnterpriseConnectors) {
+    // TODO: Start transfer.
   }
 }
 

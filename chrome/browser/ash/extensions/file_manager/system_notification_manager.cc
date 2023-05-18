@@ -776,10 +776,11 @@ void SystemNotificationManager::HandleIOTaskProgress(
   } else {
     title = GetIOTaskMessage(profile_, status);
     int message_id = IDS_FILE_BROWSER_CONFLICT_DIALOG_MESSAGE;
-    if (status.pause_params.conflict_is_directory) {
+    if (status.pause_params.conflict_params.has_value() &&
+        status.pause_params.conflict_params->conflict_is_directory) {
       message_id = IDS_FILE_BROWSER_CONFLICT_DIALOG_FOLDER_MESSAGE;
     }
-    auto& item_name = status.pause_params.conflict_name;
+    auto& item_name = status.pause_params.conflict_params->conflict_name;
     message = GetStringFUTF16(message_id, base::UTF8ToUTF16(item_name));
   }
 
