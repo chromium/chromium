@@ -11,8 +11,11 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/message_center/oobe_notification_constants.h"
 #include "ash/session/test_session_controller_client.h"
+#include "ash/shell.h"
 #include "ash/system/do_not_disturb_notification_controller.h"
+#include "ash/system/lock_screen_notification_controller.h"
 #include "ash/system/power/battery_notification.h"
+#include "ash/system/system_notification_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -27,6 +30,8 @@ namespace ash {
 namespace {
 
 const char kNotifierSystemPriority[] = "ash.some-high-priority-component";
+
+}  // namespace
 
 class SessionStateNotificationBlockerTest
     : public NoSessionAshTestBase,
@@ -72,6 +77,10 @@ class SessionStateNotificationBlockerTest
     int result = state_changed_count_;
     state_changed_count_ = 0;
     return result;
+  }
+
+  bool ShouldShowNotification(message_center::Notification* notification) {
+    return blocker_->ShouldShowNotification(*notification);
   }
 
   bool ShouldShowNotification(const message_center::NotifierId& notifier_id) {
@@ -124,6 +133,10 @@ class SessionStateNotificationBlockerTest
   void SetLockedState(bool locked) {
     GetSessionControllerClient()->SetSessionState(
         locked ? SessionState::LOCKED : SessionState::ACTIVE);
+  }
+
+  LockScreenNotificationController* lock_screen_notification_controller() {
+    return Shell::Get()->system_notification_controller()->lock_screen_.get();
   }
 
  private:
@@ -333,6 +346,33 @@ TEST_P(SessionStateNotificationBlockerTest, DoNotDisturbNotification) {
   EXPECT_TRUE(ShouldShowDoNotDisturbNotification());
 }
 
+TEST_P(SessionStateNotificationBlockerTest, LockScreenNotification) {
+  // OOBE.
+  GetSessionControllerClient()->SetSessionState(SessionState::OOBE);
+  EXPECT_FALSE(ShouldShowNotification(
+      lock_screen_notification_controller()->CreateNotification().get()));
+
+  // Login screen.
+  GetSessionControllerClient()->SetSessionState(SessionState::LOGIN_PRIMARY);
+  EXPECT_FALSE(ShouldShowNotification(
+      lock_screen_notification_controller()->CreateNotification().get()));
+
+  // Logged in as a normal user.
+  SimulateUserLogin("user@test.com");
+  EXPECT_FALSE(ShouldShowNotification(
+      lock_screen_notification_controller()->CreateNotification().get()));
+
+  // Lock.
+  SetLockedState(true);
+  EXPECT_TRUE(ShouldShowNotification(
+      lock_screen_notification_controller()->CreateNotification().get()));
+
+  // Unlock.
+  SetLockedState(false);
+  EXPECT_FALSE(ShouldShowNotification(
+      lock_screen_notification_controller()->CreateNotification().get()));
+}
+
 TEST_P(SessionStateNotificationBlockerTest, NotificationAllowedDuringOOBE) {
   const std::unordered_map<std::string, /*expected_notification_allowed=*/bool>
       kTestCases = {
@@ -355,5 +395,4 @@ TEST_P(SessionStateNotificationBlockerTest, NotificationAllowedDuringOOBE) {
   }
 }
 
-}  // namespace
 }  // namespace ash
