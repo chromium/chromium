@@ -75998,6 +75998,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Quick Office"/>
 </enum>
 
+<enum name="OfficeFilesTransferRequired">
+  <int value="0" label="Not Required"/>
+  <int value="1" label="Move"/>
+  <int value="2" label="Copy"/>
+</enum>
+
 <enum name="OfficeFilesUseOutsideDriveHook">
   <summary>
     Hooks for file system operations that use MS Office files outside of Drive.

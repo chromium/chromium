@@ -739,6 +739,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="FileBrowser.OfficeFiles.Open.TransferRequired.{ProviderName}"
+    enum="OfficeFilesTransferRequired" expires_after="M124">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: Records whether an office file must be transferred
+    to Google Drive or Microsoft OneDrive in order to open it.
+  </summary>
+  <token key="ProviderName">
+    <variant name="GoogleDrive"
+        summary="The file must be transferred to Google Drive"/>
+    <variant name="OneDrive"
+        summary="The file must be transferred to Microsoft OneDrive"/>
+  </token>
+</histogram>
+
 <histogram name="FileBrowser.OfficeFiles.TaskResult.{ProviderName}"
     enum="OfficeTaskResult" expires_after="M124">
   <owner>simmonsjosh@google.com</owner>

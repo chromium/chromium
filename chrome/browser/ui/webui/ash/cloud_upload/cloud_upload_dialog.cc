@@ -64,6 +64,20 @@ const char kAndroidOneDriveAuthority[] =
     "com.microsoft.skydrive.content.StorageAccessProvider";
 constexpr char kNotificationId[] = "cloud_upload_open_failure";
 
+constexpr char kDriveTransferRequiredMetric[] =
+    "FileBrowser.OfficeFiles.Open.TransferRequired.GoogleDrive";
+constexpr char kOneDriveTransferRequiredMetric[] =
+    "FileBrowser.OfficeFiles.Open.TransferRequired.OneDrive";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OfficeFilesTransferRequired {
+  kNotRequired = 0,
+  kMove = 1,
+  kCopy = 2,
+  kMaxValue = kCopy,
+};
+
 std::vector<ProvidedFileSystemInfo> GetODFSFileSystems(Profile* profile) {
   Service* service = Service::Get(profile);
   ProviderId provider_id = ProviderId::CreateFromExtensionId(
@@ -350,17 +364,35 @@ void CloudOpenTask::OpenOrMoveFiles() {
   if (cloud_provider_ == CloudProvider::kGoogleDrive &&
       PathIsOnDriveFS(profile_, file_urls_.front().path())) {
     // The files are on Drive already.
+    UMA_HISTOGRAM_ENUMERATION(kDriveTransferRequiredMetric,
+                              OfficeFilesTransferRequired::kNotRequired);
     OpenAlreadyHostedDriveUrls();
   } else if (cloud_provider_ == CloudProvider::kOneDrive &&
              UrlIsOnODFS(profile_, file_urls_.front())) {
     // The files are on OneDrive already, selected from ODFS.
+    UMA_HISTOGRAM_ENUMERATION(kOneDriveTransferRequiredMetric,
+                              OfficeFilesTransferRequired::kNotRequired);
     OpenODFSUrls();
   } else if (cloud_provider_ == CloudProvider::kOneDrive &&
              UrlIsOnAndroidOneDrive(profile_, file_urls_.front())) {
     // The files are on OneDrive already, selected from Android OneDrive.
+    UMA_HISTOGRAM_ENUMERATION(kOneDriveTransferRequiredMetric,
+                              OfficeFilesTransferRequired::kNotRequired);
     OpenAndroidOneDriveUrlsIfAccountMatchedODFS();
   } else {
     // The files need to be moved.
+    auto operation = GetOperationTypeForUpload(profile_, file_urls_.front()) ==
+                             file_manager::io_task::OperationType::kCopy
+                         ? OfficeFilesTransferRequired::kCopy
+                         : OfficeFilesTransferRequired::kMove;
+    switch (cloud_provider_) {
+      case CloudProvider::kGoogleDrive:
+        UMA_HISTOGRAM_ENUMERATION(kDriveTransferRequiredMetric, operation);
+        break;
+      case CloudProvider::kOneDrive:
+        UMA_HISTOGRAM_ENUMERATION(kOneDriveTransferRequiredMetric, operation);
+        break;
+    }
     ConfirmMoveOrStartUpload();
   }
 }
