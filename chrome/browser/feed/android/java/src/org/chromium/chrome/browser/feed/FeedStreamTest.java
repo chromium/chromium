@@ -46,7 +46,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
-import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
@@ -69,7 +68,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.xsurface.FeedUserInteractionReliabilityLogger.ClosedReason;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenMode;
@@ -104,7 +102,6 @@ public class FeedStreamTest {
     private static final String HEADER_PREFIX = "header";
     private static final OpenUrlOptions DEFAULT_OPEN_URL_OPTIONS = new OpenUrlOptions() {};
 
-    private ActivityController<Activity> mActivityController;
     private Activity mActivity;
     private RecyclerView mRecyclerView;
     private FakeLinearLayoutManager mLayoutManager;
@@ -180,8 +177,7 @@ public class FeedStreamTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mActivityController = Robolectric.buildActivity(Activity.class);
-        mActivity = mActivityController.get();
+        mActivity = Robolectric.buildActivity(Activity.class).get();
 
         mocker.mock(FeedStreamJni.TEST_HOOKS, mFeedStreamJniMock);
         mocker.mock(FeedServiceBridge.getTestHooksForTesting(), mFeedServiceBridgeJniMock);
@@ -229,7 +225,7 @@ public class FeedStreamTest {
                         .build();
         mFeedStream.onStreamUpdated(update.toByteArray());
 
-        mFeedStream.unbind(false, false);
+        mFeedStream.unbind(false);
         assertEquals(3, mContentManager.getItemCount());
         assertEquals(HEADER_PREFIX + "0", mContentManager.getContent(0).getKey());
         assertEquals(HEADER_PREFIX + "1", mContentManager.getContent(1).getKey());
@@ -255,7 +251,7 @@ public class FeedStreamTest {
         createHeaderContent(2);
         mFeedStream.notifyNewHeaderCount(5);
 
-        mFeedStream.unbind(false, false);
+        mFeedStream.unbind(false);
 
         assertEquals(5, mContentManager.getItemCount());
         assertEquals(HEADER_PREFIX + "0", mContentManager.getContent(0).getKey());
@@ -278,7 +274,7 @@ public class FeedStreamTest {
                         .build();
         mFeedStream.onStreamUpdated(update.toByteArray());
 
-        mFeedStream.unbind(true, false);
+        mFeedStream.unbind(true);
 
         assertEquals(2, mContentManager.getItemCount());
         assertEquals(HEADER_PREFIX + "0", mContentManager.getContent(0).getKey());
@@ -298,7 +294,7 @@ public class FeedStreamTest {
                         .addUpdatedSlices(createSliceUpdateForNewXSurfaceSlice("a"))
                         .build();
         mFeedStream.onStreamUpdated(update.toByteArray());
-        mFeedStream.unbind(true, false);
+        mFeedStream.unbind(true);
 
         // Bind again with correct headercount.
         mFeedStream.bind(mRecyclerView, mContentManager, null, mSurfaceScope, mRenderer,
@@ -331,36 +327,11 @@ public class FeedStreamTest {
     @Test
     public void testUnbind() {
         bindToView();
-        mFeedStream.unbind(false, /*switchingStream=*/false);
+        mFeedStream.unbind(false);
         verify(mFeedStreamJniMock).surfaceClosed(anyLong(), any(FeedStream.class));
         // Unset handlers in contentmanager.
         assertEquals(0, mContentManager.getContextValues(0).size());
-        verify(mReliabilityLogger).onUnbindStream(eq(ClosedReason.LEAVE_FEED));
-    }
-
-    @Test
-    public void testUnbind_ClosedReasonForSwitchStream() {
-        bindToView();
-        mFeedStream.unbind(false, /*switchingStream=*/true);
-        verify(mReliabilityLogger).onUnbindStream(eq(ClosedReason.SWITCH_STREAM));
-
-        bindToView();
-        mFeedStream.unbind(false, /*switchingStream=*/false);
-        verify(mReliabilityLogger).onUnbindStream(eq(ClosedReason.LEAVE_FEED));
-    }
-
-    @Test
-    public void testUnbind_ClosedReasonForSuspendApp() {
-        bindToView();
-        mActivityController.create();
-        mActivityController.stop();
-        mFeedStream.unbind(false, /*switchingStream=*/false);
-        verify(mReliabilityLogger).onUnbindStream(eq(ClosedReason.SUSPEND_APP));
-
-        bindToView();
-        mActivityController.start();
-        mFeedStream.unbind(false, /*switchingStream=*/false);
-        verify(mReliabilityLogger).onUnbindStream(eq(ClosedReason.LEAVE_FEED));
+        verify(mReliabilityLogger).onUnbindStream();
     }
 
     @Test
@@ -374,7 +345,7 @@ public class FeedStreamTest {
         handler.showSnackbar(
                 "message", "Undo", FeedActionsHandler.SnackbarDuration.SHORT, mSnackbarController);
         verify(mSnackbarManager).showSnackbar(any());
-        mFeedStream.unbind(false, false);
+        mFeedStream.unbind(false);
         verify(mSnackbarManager, times(1)).dismissSnackbars(any());
     }
 
@@ -486,7 +457,7 @@ public class FeedStreamTest {
 
         // loadMore triggered again after hide&show.
         mFeedStream.checkScrollingForLoadMore(-triggerDistance);
-        mFeedStream.unbind(false, false);
+        mFeedStream.unbind(false);
         bindToView();
 
         mLayoutManager.setLastVisiblePosition(itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD + 1);
@@ -1028,7 +999,7 @@ public class FeedStreamTest {
         // RecyclerView prevents scrolling if there's no content to scroll. We hack
         // the scroll listener directly.
         mFeedStream.getScrollListenerForTest().onScrolled(mRecyclerView, 0, 100);
-        mFeedStream.unbind(false, false);
+        mFeedStream.unbind(false);
 
         verify(mFeedStreamJniMock).reportStreamScrollStart(anyLong(), any(FeedStream.class));
         verify(mFeedStreamJniMock).reportStreamScrolled(anyLong(), any(FeedStream.class), eq(100));

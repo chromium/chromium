@@ -309,7 +309,7 @@ public class FeedSurfaceMediatorTest {
         mFeedSurfaceMediator.updateContent();
 
         mFeedSurfaceMediator.onSurfaceClosed();
-        verify(mForYouStream).unbind(anyBoolean(), anyBoolean());
+        verify(mForYouStream).unbind(anyBoolean());
     }
 
     @Test

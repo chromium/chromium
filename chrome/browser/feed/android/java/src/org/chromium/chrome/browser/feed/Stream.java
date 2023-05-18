@@ -126,9 +126,8 @@ public interface Stream {
      *
      * @param shouldPlaceSpacer Whether this feed should place a spacer at the end to
      *     prevent abrupt scroll jumps.
-     * @param switchingStream Whether another feed is going to be bound right after this.
      */
-    void unbind(boolean shouldPlaceSpacer, boolean switchingStream);
+    void unbind(boolean shouldPlaceSpacer);
 
     /**
      * Whether this stream supports alternate sort options.

@@ -34,6 +34,11 @@ public class FeedReliabilityLogger implements UrlFocusChangeListener {
         mUserInteractionLogger = userInteractionLogger;
     }
 
+    /** Call this when the application is stoppped. */
+    public void onApplicationStopped() {
+        reportStreamClosed(ClosedReason.SUSPEND_APP);
+    }
+
     /** Call this when the activity is paused. */
     public void onActivityPaused() {
         logLaunchFinishedIfInProgress(
@@ -89,6 +94,7 @@ public class FeedReliabilityLogger implements UrlFocusChangeListener {
         logLaunchFinishedIfInProgress(
                 DiscoverLaunchResult.SWITCHED_FEED_TABS, /*userMightComeBack=*/false);
         mLaunchLogger.logSwitchedFeeds(switchedToStream, SystemClock.elapsedRealtimeNanos());
+        reportStreamClosed(ClosedReason.SWITCH_STREAM);
     }
 
     /** Call this when the stream is binded. */
@@ -102,16 +108,17 @@ public class FeedReliabilityLogger implements UrlFocusChangeListener {
     }
 
     /** Call this when the stream is unbinded. */
-    public void onUnbindStream(@ClosedReason int closedReason) {
+    public void onUnbindStream() {
         logLaunchFinishedIfInProgress(
                 DiscoverLaunchResult.FRAGMENT_STOPPED, /*userMightComeBack=*/false);
-        reportStreamClosed(closedReason);
+        reportStreamClosed(ClosedReason.LEAVE_FEED);
     }
 
     /** Call this when the card is about to open. */
     public void onOpenCard() {
         logLaunchFinishedIfInProgress(
                 DiscoverLaunchResult.CARD_TAPPED, /*userMightComeBack=*/false);
+        reportStreamClosed(ClosedReason.OPEN_CARD);
     }
 
     /** Call this when the view is barely visible for the first time. */
