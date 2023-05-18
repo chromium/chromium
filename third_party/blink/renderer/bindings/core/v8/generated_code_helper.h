@@ -220,20 +220,6 @@ bool GetDictionaryMemberFromV8Object(v8::Isolate* isolate,
   return true;
 }
 
-// [CSSProperty]
-CORE_EXPORT void InstallCSSPropertyAttributes(
-    v8::Isolate* isolate,
-    const DOMWrapperWorld& world,
-    v8::Local<v8::Template> instance_template,
-    v8::Local<v8::Template> prototype_template,
-    v8::Local<v8::Template> interface_template,
-    v8::Local<v8::Signature> signature,
-    base::span<const char* const> css_property_names);
-CORE_EXPORT void CSSPropertyAttributeGet(
-    const v8::FunctionCallbackInfo<v8::Value>& info);
-CORE_EXPORT void CSSPropertyAttributeSet(
-    const v8::FunctionCallbackInfo<v8::Value>& info);
-
 // Common implementation to reduce the binary size of attribute set callbacks.
 CORE_EXPORT void PerformAttributeSetCEReactionsReflectTypeBoolean(
     const v8::FunctionCallbackInfo<v8::Value>& info,
