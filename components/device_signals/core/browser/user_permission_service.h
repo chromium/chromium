@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_USER_PERMISSION_SERVICE_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_USER_PERMISSION_SERVICE_H_
 
+#include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace device_signals {
@@ -37,7 +38,11 @@ enum class UserPermission {
   // Returned when the user is granted permission to the device's signals.
   kGranted = 5,
 
-  kMaxValue = kGranted
+  // Returned when the current context is currently unsupported, but eventually
+  // could be.
+  kUnsupported = 6,
+
+  kMaxValue = kUnsupported
 };
 
 // Service that can be used to conduct permission checks on given users. The
@@ -52,11 +57,13 @@ class UserPermissionService : public KeyedService {
   // missing.
   virtual bool ShouldCollectConsent() const = 0;
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // Will verify whether context-aware signals can be collected
   // on behalf of the user represented by `user_context`. Returns `kGranted` if
   // collection is allowed.
   virtual UserPermission CanUserCollectSignals(
       const UserContext& user_context) const = 0;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX
 
   // Will verify whether context-aware signals can be collected
   // based on the current context (e.g. browser-wide management, user logged-in

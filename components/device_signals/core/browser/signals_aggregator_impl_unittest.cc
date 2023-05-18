@@ -29,11 +29,11 @@ using testing::Return;
 
 namespace device_signals {
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 namespace {
-
 constexpr char kGaiaId[] = "gaia-id";
-
 }  // namespace
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 class SignalsAggregatorImplTest : public testing::Test {
  protected:
@@ -51,10 +51,12 @@ class SignalsAggregatorImplTest : public testing::Test {
         &mock_permission_service_, std::move(collectors));
   }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   void GrantUserPermission() {
     EXPECT_CALL(mock_permission_service_, CanUserCollectSignals(user_context_))
         .WillOnce(Return(UserPermission::kGranted));
   }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   std::unique_ptr<MockSignalsCollector> GetFakeCollector(
       SignalName signal_name) {
@@ -82,11 +84,16 @@ class SignalsAggregatorImplTest : public testing::Test {
   raw_ptr<MockSignalsCollector> av_signal_collector_;
   raw_ptr<MockSignalsCollector> hotfix_signal_collector_;
   testing::StrictMock<MockUserPermissionService> mock_permission_service_;
-  UserContext user_context_{kGaiaId};
   std::unique_ptr<SignalsAggregatorImpl> aggregator_;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  UserContext user_context_{kGaiaId};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
   base::HistogramTester histogram_tester_;
 };
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Tests that the aggregator will return an empty value when given an empty
 // parameter dictionary.
 TEST_F(SignalsAggregatorImplTest, GetSignalsForUser_NoSignal) {
@@ -214,6 +221,7 @@ TEST_F(SignalsAggregatorImplTest, GetSignalsForUser_InvalidUserPermissions) {
         "Enterprise.DeviceSignals.UserPermission", test_case.first, 1);
   }
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 // Tests how the aggregator behaves when given a parameter with a single signal
 // which is supported by one of the collectors. Specifically tests the API that

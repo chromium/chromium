@@ -74,6 +74,7 @@ bool UserPermissionServiceImpl::ShouldCollectConsent() const {
          consent_required_by_dependent_policy;
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 UserPermission UserPermissionServiceImpl::CanUserCollectSignals(
     const UserContext& user_context) const {
   // Return "unknown user" if no user ID was given.
@@ -107,6 +108,7 @@ UserPermission UserPermissionServiceImpl::CanUserCollectSignals(
   // They are, therefore, allowed to collect signals.
   return UserPermission::kGranted;
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX
 
 UserPermission UserPermissionServiceImpl::CanCollectSignals() const {
   if (HasUserConsented()) {

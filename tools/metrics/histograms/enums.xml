@@ -26339,6 +26339,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="3" label="Unknown User"/>
   <int value="4" label="Missing User"/>
   <int value="5" label="Granted"/>
+  <int value="6" label="Unsupported"/>
 </enum>
 
 <enum name="DeviceSignalsWmiParsingError">
