@@ -12,6 +12,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.view.LayoutInflater;
 
@@ -396,17 +397,20 @@ public class BundleUtils {
             // We will never have android.* classes in isolated split class loaders,
             // but android framework inflater does sometimes try loading classes
             // that do not exist when inflating xml files on startup.
-            if (sSplitsToRestore != null && !cn.startsWith("android.")) {
+            if (!cn.startsWith("android.")) {
                 // If we fail from all the currently loaded classLoaders, lets
                 // try loading some splits that were loaded when chrome was last
                 // run and check again.
-                restoreSplitsClassLoaders();
-                foundClass = checkSplitsClassLoaders(cn);
-                if (foundClass != null) {
-                    return foundClass;
+                if (sSplitsToRestore != null) {
+                    restoreSplitsClassLoaders();
+                    foundClass = checkSplitsClassLoaders(cn);
+                    if (foundClass != null) {
+                        return foundClass;
+                    }
                 }
+                Log.w(TAG, "No class %s amongst %s", cn,
+                        TextUtils.join("\n", sInflationClassLoaders.keySet()));
             }
-            Log.w(TAG, "No class %s amongst %s", cn, sInflationClassLoaders.keySet());
             throw new ClassNotFoundException(cn);
         }
 
