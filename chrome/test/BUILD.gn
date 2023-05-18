@@ -2832,6 +2832,7 @@ if (!is_android) {
         "//chrome/app_shim",
         "//chrome/browser/apps/app_shim",
         "//chrome/browser/renderer_host:history_swiper",
+        "//chrome/browser/ui:ui_arc",
         "//components/onc",
         "//components/remote_cocoa/app_shim",
         "//mojo/core/embedder",
@@ -10259,7 +10260,10 @@ if (!is_android) {
         deps += [ "//ui/touch_selection" ]
       }
       if (is_mac) {
-        deps += [ "//content/test:browsertest_support" ]
+        deps += [
+          "//chrome/browser/ui:ui_arc",
+          "//content/test:browsertest_support",
+        ]
       }
       if (is_win) {
         sources += [

@@ -35,6 +35,10 @@ if (is_mac) {
   # .mm files are ARCed.
   source_set("ui_arc") {
     sources = [
+      "autofill/autofill_popup_controller_impl_mac.h",
+      "autofill/autofill_popup_controller_impl_mac.mm",
+      "browser_commands_mac.h",
+      "browser_commands_mac.mm",
       "cocoa/applescript/apple_event_util.h",
       "cocoa/applescript/apple_event_util.mm",
       "cocoa/applescript/bookmark_folder_applescript.h",
@@ -3965,10 +3969,6 @@ static_library("ui") {
 
   if (is_mac) {
     sources += [
-      "autofill/autofill_popup_controller_impl_mac.h",
-      "autofill/autofill_popup_controller_impl_mac.mm",
-      "browser_commands_mac.h",
-      "browser_commands_mac.mm",
       "browser_mac.cc",
       "browser_mac.h",
       "cocoa/accelerator_utils_cocoa.mm",
