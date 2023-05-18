@@ -86,10 +86,8 @@ void Touch::OnTouchEvent(ui::TouchEvent* event) {
         return;
 
       TRACE_EXO_INPUT_EVENT(event);
-      if (touch_points_surface_map_.find(touch_pointer_id) !=
-          touch_points_surface_map_.end()) {
-        return;
-      }
+      DCHECK(touch_points_surface_map_.find(touch_pointer_id) ==
+             touch_points_surface_map_.end());
 
       touch_points_surface_map_.emplace(touch_pointer_id, target);
 
