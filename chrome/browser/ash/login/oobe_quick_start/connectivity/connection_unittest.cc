@@ -252,8 +252,7 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   std::unique_ptr<ash::quick_start::QuickStartMessage>
       bootstrap_options_message =
           ash::quick_start::QuickStartMessage::ReadMessage(
-              bootstrap_options_data,
-              QuickStartMessageType::kBootstrapConfigurations);
+              bootstrap_options_data, QuickStartMessageType::kBootstrapOptions);
   ASSERT_TRUE(bootstrap_options_message != nullptr);
   base::Value::Dict& bootstrap_options =
       *bootstrap_options_message->GetPayload();
