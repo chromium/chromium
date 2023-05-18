@@ -67,6 +67,16 @@
           'shards': 4,
         },
       },
+      'android-12l-x64-fyi-dbg': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
+      'android-13-x64-fyi-rel': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
       'android-13-x64-rel': {
         'args': [
           # https://crbug.com/1414886
@@ -1797,6 +1807,16 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter',
         ],
+        'swarming': {
+          'shards': 40,
+        },
+      },
+      'android-12l-x64-fyi-dbg': {
+        'swarming': {
+          'shards': 40,
+        },
+      },
+      'android-13-x64-fyi-rel': {
         'swarming': {
           'shards': 40,
         },
@@ -4497,6 +4517,16 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.webview_instrumentation_test_apk.filter',
         ],
+        'swarming': {
+          'shards': 9,
+        },
+      },
+      'android-12l-x64-fyi-dbg': {
+        'swarming': {
+          'shards': 9,
+        },
+      },
+      'android-13-x64-fyi-rel': {
         'swarming': {
           'shards': 9,
         },
