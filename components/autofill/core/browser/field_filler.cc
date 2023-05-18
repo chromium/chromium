@@ -717,15 +717,14 @@ std::u16string GetStateTextForInput(const std::u16string& state_value,
 }
 
 // Returns the appropriate expiration year from |credit_card| for the field.
-// Uses the |field_type| and the |field|'s max_length attribute to
+// Uses the |field|'s type and the |field|'s max_length attribute to
 // determine if the year needs to be truncated.
 std::u16string GetExpirationYearForInput(const CreditCard& credit_card,
-                                         ServerFieldType field_type,
                                          const AutofillField& field) {
-  std::u16string value;
-  value = field_type == CREDIT_CARD_EXP_2_DIGIT_YEAR
-              ? credit_card.Expiration2DigitYearAsString()
-              : credit_card.Expiration4DigitYearAsString();
+  ServerFieldType field_type = field.Type().GetStorableType();
+  std::u16string value = field_type == CREDIT_CARD_EXP_2_DIGIT_YEAR
+                             ? credit_card.Expiration2DigitYearAsString()
+                             : credit_card.Expiration4DigitYearAsString();
 
   // In case the field's max_length is less than the length of the year, shorten
   // the year to field.max_length.
@@ -764,10 +763,10 @@ std::u16string GetExpirationYearForVirtualCardPreviewInput(
 // padded. Returns an empty string in case of a failure.
 std::u16string GetExpirationDateForInput(const CreditCard& credit_card,
                                          const AutofillField& field,
-                                         ServerFieldType field_type,
                                          std::string* failure_to_fill) {
   // TODO(crbug.com/1441057): If |field| is classified by the server we should
   // try to give extra priority to the field type.
+  ServerFieldType field_type = field.Type().GetStorableType();
   CreditCardField::ExpirationDateFormat format =
       CreditCardField::DetermineExpirationDateFormat(field, field_type);
   std::u16string expiration_candidate = base::StrCat(
@@ -876,11 +875,10 @@ std::u16string GetValueForCreditCard(const CreditCard& credit_card,
                                            action);
       case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
       case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
-        return GetExpirationDateForInput(credit_card, field, storable_type,
-                                         failure_to_fill);
+        return GetExpirationDateForInput(credit_card, field, failure_to_fill);
       case CREDIT_CARD_EXP_2_DIGIT_YEAR:
       case CREDIT_CARD_EXP_4_DIGIT_YEAR:
-        return GetExpirationYearForInput(credit_card, storable_type, field);
+        return GetExpirationYearForInput(credit_card, field);
       default:
         // All other cases handled here.
         return credit_card.GetInfo(storable_type, app_locale);
