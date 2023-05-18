@@ -7,8 +7,8 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:115-
 owners:
 - aprilzhou@google.com
 - yzd@google.com
