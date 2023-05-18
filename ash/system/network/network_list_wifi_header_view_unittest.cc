@@ -11,10 +11,12 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/network/fake_network_list_network_header_view_delegate.h"
+#include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_toggle_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
@@ -61,14 +63,20 @@ class NetworkListWifiHeaderViewTest : public AshTestBase {
     return &network_config_helper_.network_state_helper();
   }
 
+  HoverHighlightView* GetEntryRow() {
+    return network_list_wifi_header_view_->entry_row();
+  }
+
   IconButton* GetJoinWifiButton() {
     return FindViewById<IconButton*>(
         NetworkListWifiHeaderViewImpl::kJoinWifiButtonId);
   }
 
-  TrayToggleButton* GetToggleButton() {
-    return FindViewById<TrayToggleButton*>(
-        NetworkListNetworkHeaderView::kToggleButtonId);
+  views::ToggleButton* GetToggleButton() {
+    return FindViewById<views::ToggleButton*>(
+        features::IsQsRevampEnabled()
+            ? NetworkListNetworkHeaderView::kQsToggleButtonId
+            : NetworkListNetworkHeaderView::kToggleButtonId);
   }
 
   views::Label* GetLabelView() {
@@ -88,6 +96,11 @@ class NetworkListWifiHeaderViewTest : public AshTestBase {
  private:
   template <class T>
   T FindViewById(int id) {
+    // For QsRevamp: child views are added into `entry_row()`.
+    if (features::IsQsRevampEnabled()) {
+      return static_cast<T>(
+          network_list_wifi_header_view_->entry_row()->GetViewByID(id));
+    }
     return static_cast<T>(
         network_list_wifi_header_view_->container()->GetViewByID(id));
   }
@@ -137,7 +150,7 @@ TEST_F(NetworkListWifiHeaderViewTest, WifiToggleButton) {
   if (features::IsQsRevampEnabled()) {
     return;
   }
-  TrayToggleButton* toggle_button = GetToggleButton();
+  views::ToggleButton* toggle_button = GetToggleButton();
   ASSERT_NE(nullptr, toggle_button);
   EXPECT_TRUE(toggle_button->GetEnabled());
 
@@ -169,6 +182,31 @@ TEST_F(NetworkListWifiHeaderViewTest, WifiToggleButton) {
       1u,
       fake_network_list_network_header_delegate()->wifi_toggle_clicked_count());
   EXPECT_FALSE(toggle_button->GetIsOn());
+}
+
+class NetworkListWifiHeaderViewQsRevampTest
+    : public NetworkListWifiHeaderViewTest {
+ public:
+  NetworkListWifiHeaderViewQsRevampTest() {
+    feature_list_.InitAndEnableFeature(features::kQsRevamp);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Only QsRevamp uses an entry row.
+TEST_F(NetworkListWifiHeaderViewQsRevampTest, SetToggleStateUpdatesTooltips) {
+  SetToggleState(/*enabled=*/true, /*is_on=*/true);
+  EXPECT_EQ(GetEntryRow()->GetTooltipText(),
+            u"Toggle Wi-Fi. Wi-Fi is turned on.");
+  EXPECT_EQ(GetToggleButton()->GetTooltipText(),
+            u"Toggle Wi-Fi. Wi-Fi is turned on.");
+
+  SetToggleState(/*enabled=*/true, /*is_on=*/false);
+  EXPECT_EQ(GetEntryRow()->GetTooltipText(),
+            u"Toggle Wi-Fi. Wi-Fi is turned off.");
+  EXPECT_EQ(GetToggleButton()->GetTooltipText(),
+            u"Toggle Wi-Fi. Wi-Fi is turned off.");
 }
 
 }  // namespace ash

@@ -112,6 +112,15 @@ class NetworkListMobileHeaderViewTest
     return &network_config_helper_.network_state_helper();
   }
 
+  void SetToggleState(bool is_on) {
+    network_list_mobile_header_view_->SetToggleState(/*enabled=*/true, is_on,
+                                                     /*animate_toggle=*/false);
+  }
+
+  HoverHighlightView* GetEntryRow() {
+    return network_list_mobile_header_view_->entry_row();
+  }
+
   IconButton* GetAddEsimButton() {
     return FindViewById<IconButton*>(
         NetworkListMobileHeaderViewImpl::kAddESimButtonId);
@@ -265,6 +274,25 @@ TEST_P(NetworkListMobileHeaderViewTest, MobileToggleButtonStates) {
   LeftClickOn(toggle_button);
   EXPECT_EQ(1u, fake_network_list_network_header_delegate()
                     ->mobile_toggle_clicked_count());
+}
+
+TEST_P(NetworkListMobileHeaderViewTest, SetToggleStateUpdatesTooltips) {
+  // Only QsRevamp uses an entry row.
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+  Init();
+  SetToggleState(true);
+  EXPECT_EQ(GetEntryRow()->GetTooltipText(),
+            u"Toggle mobile data. Mobile data is turned on.");
+  EXPECT_EQ(GetToggleButton()->GetTooltipText(),
+            u"Toggle mobile data. Mobile data is turned on.");
+
+  SetToggleState(false);
+  EXPECT_EQ(GetEntryRow()->GetTooltipText(),
+            u"Toggle mobile data. Mobile data is turned off.");
+  EXPECT_EQ(GetToggleButton()->GetTooltipText(),
+            u"Toggle mobile data. Mobile data is turned off.");
 }
 
 }  // namespace ash

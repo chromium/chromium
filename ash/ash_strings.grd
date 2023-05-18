@@ -3249,6 +3249,12 @@ Connect your device to power.
       <message name="IDS_ASH_STATUS_TRAY_ENABLING_MOBILE_ENABLES_BLUETOOTH" desc="The message to display in the mobile section of the network list when Bluetooth is off. If Bluetooth is off and mobile data is turned on, Bluetooth will also be turned on for the user to support this feature.">
         Enabling mobile data will enable Bluetooth
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_TOGGLE_MOBILE" desc="Button label in the system tray bubble for turning mobile data on and off.">
+        Toggle mobile data. <ph name="STATE">$1<ex>Mobile data is turned on</ex></ph>.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_ENABLED" desc="The message to display in the network list when mobile data is turned on.">
+        Mobile data is turned on
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLED" desc="The message to display in the network list when mobile data is turned off.">
         Mobile data is turned off
       </message>
@@ -3269,6 +3275,9 @@ Connect your device to power.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_VPN_CONNECTED_SHORT" desc="VPN button label in the system tray bubble." meaning="VPN is connected. [CHAR_LIMIT=14]">
         On
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_TOGGLE_WIFI" desc="Button label in the system tray bubble for turning Wi-Fi on and off.">
+        Toggle Wi-Fi. <ph name="STATE">$1<ex>Wi-Fi is turned on</ex></ph>.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_WIFI_ENABLED" desc="The label used in the tray popup to notify that Wi-Fi is turned on.">
         Wi-Fi is turned on

@@ -56,6 +56,8 @@ class ASH_EXPORT NetworkListNetworkHeaderView : public NetworkListHeaderView {
 
   TrayNetworkStateModel* model() { return model_; }
 
+  Switch* qs_toggle() { return qs_toggle_; }
+
   // Used for testing.
   static constexpr int kToggleButtonId =
       NetworkListHeaderView::kTitleLabelViewId + 1;

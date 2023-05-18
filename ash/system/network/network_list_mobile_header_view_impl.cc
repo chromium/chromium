@@ -98,6 +98,21 @@ void NetworkListMobileHeaderViewImpl::AddExtraButtons() {
   }
 }
 
+void NetworkListMobileHeaderViewImpl::SetToggleState(bool enabled,
+                                                     bool is_on,
+                                                     bool animate_toggle) {
+  if (features::IsQsRevampEnabled()) {
+    std::u16string tooltip_text = l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_NETWORK_TOGGLE_MOBILE,
+        l10n_util::GetStringUTF16(
+            is_on ? IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_ENABLED
+                  : IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLED));
+    entry_row()->SetTooltipText(tooltip_text);
+    qs_toggle()->SetTooltipText(tooltip_text);
+  }
+  NetworkListMobileHeaderView::SetToggleState(enabled, is_on, animate_toggle);
+}
+
 void NetworkListMobileHeaderViewImpl::OnToggleToggled(bool is_on) {
   delegate()->OnMobileToggleClicked(is_on);
 }
