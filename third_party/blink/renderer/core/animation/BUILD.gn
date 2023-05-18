@@ -239,6 +239,8 @@ blink_core_sources("animation") {
     "property_handle.h",
     "sampled_effect.cc",
     "sampled_effect.h",
+    "scroll_snapshot_timeline.cc",
+    "scroll_snapshot_timeline.h",
     "scroll_timeline.cc",
     "scroll_timeline.h",
     "scroll_timeline_attachment.cc",

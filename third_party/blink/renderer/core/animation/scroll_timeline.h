@@ -10,20 +10,16 @@
 #include "cc/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_axis.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
-#include "third_party/blink/renderer/core/animation/animation_timeline.h"
+#include "third_party/blink/renderer/core/animation/scroll_snapshot_timeline.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_attachment.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value.h"
-#include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 
 namespace blink {
 
+class Element;
 class PaintLayerScrollableArea;
 class ScrollTimelineOptions;
 class ScrollTimelineAttachment;
@@ -37,13 +33,10 @@ class ScrollTimelineAttachment;
 // control the conversion of scroll amount to time output.
 //
 // Spec: https://wicg.github.io/scroll-animations/#scroll-timelines
-class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
-                                   public ScrollSnapshotClient {
+class CORE_EXPORT ScrollTimeline : public ScrollSnapshotTimeline {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  using ScrollOffsets = cc::ScrollTimeline::ScrollOffsets;
-  using ScrollAxis = V8ScrollAxis::Enum;
   using ReferenceType = ScrollTimelineAttachment::ReferenceType;
 
   static ScrollTimeline* Create(Document&,
@@ -66,60 +59,18 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
 
   bool IsScrollTimeline() const override { return true; }
 
-  // ScrollTimeline is not resolved if source is null, does not currently
-  // have a CSS layout box, or if its layout box is not a scroll container.
-  bool IsResolved() const override;
-
-  // ScrollTimeline is not active if not resolved or if the current time is
-  // unresolved (e.g. before the timeline ticks).
-  // https://github.com/WICG/scroll-animations/issues/31
-  bool IsActive() const override;
-
-  absl::optional<base::TimeDelta> InitialStartTimeForAnimations() override;
-
-  TimelineRange GetTimelineRange() const override;
-
-  AnimationTimeDelta ZeroTime() override { return AnimationTimeDelta(); }
-
-  void ServiceAnimations(TimingUpdateReason) override;
-  void ScheduleNextService() override;
-
   // IDL API implementation.
   Element* source() const;
   const V8ScrollAxis axis() const { return V8ScrollAxis(GetAxis()); }
-
-  V8CSSNumberish* currentTime() override;
-  V8CSSNumberish* duration() override;
-  V8CSSNumberish* ConvertTimeToProgress(AnimationTimeDelta time) const;
-
-  // Returns the Node that should actually have the ScrollableArea (if one
-  // exists). This can differ from |source| when defaulting to the
-  // Document's scrollingElement, and it may be null if the document was
-  // removed before the ScrollTimeline was created.
-  Node* ResolvedSource() const {
-    return timeline_state_snapshotted_.resolved_source;
-  }
-
-  // Return the latest resolved scroll/view offsets. This will be empty when
-  // timeline is inactive.
-  absl::optional<ScrollOffsets> GetResolvedScrollOffsets() const;
-  absl::optional<ScrollOffsets> GetResolvedViewOffsets() const;
-
-  float GetResolvedZoom() const { return timeline_state_snapshotted_.zoom; }
 
   bool Matches(TimelineAttachment,
                ReferenceType,
                Element* reference_element,
                ScrollAxis) const;
 
-  ScrollAxis GetAxis() const;
-
-  // Mark every effect target of every Animation attached to this timeline
-  // for style recalc.
-  void InvalidateEffectTargetStyle() const;
-
   cc::AnimationTimeline* EnsureCompositorTimeline() override;
   void UpdateCompositorTimeline() override;
+  ScrollAxis GetAxis() const;
 
   void AnimationAttached(Animation*) override;
   void AnimationDetached(Animation*) override;
@@ -146,70 +97,16 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   void AddAttachment(ScrollTimelineAttachment*);
   void RemoveAttachment(ScrollTimelineAttachment*);
 
-  void ResolveTimelineOffsets() const;
-
  protected:
   ScrollTimeline(Document*, TimelineAttachment, ScrollTimelineAttachment*);
 
-  PhaseAndTime CurrentPhaseAndTime() override;
-
-  AnimationTimeDelta CalculateIntrinsicIterationDuration(
-      const TimelineRange&,
-      const absl::optional<TimelineOffset>& range_start,
-      const absl::optional<TimelineOffset>& range_end,
-      const Timing&) override;
-
   Node* ComputeResolvedSource() const;
-  static bool ComputeIsResolved(Node* resolved_source);
-
-  struct TimelineState {
-    DISALLOW_NEW();
-
-   public:
-    // TODO(crbug.com/1338167): Remove phase as it can be inferred from
-    // current_time.
-    TimelinePhase phase = TimelinePhase::kInactive;
-    absl::optional<base::TimeDelta> current_time;
-    absl::optional<ScrollOffsets> scroll_offsets;
-    // The view offsets will be null unless using a view timeline.
-    absl::optional<ScrollOffsets> view_offsets;
-    // Zoom factor applied to the scroll offsets.
-    float zoom = 1.0f;
-    // The scroller driving the timeline.
-    Member<Node> resolved_source;
-
-    bool HasConsistentLayout(const TimelineState& other) const {
-      return scroll_offsets == other.scroll_offsets && zoom == other.zoom &&
-             view_offsets == other.view_offsets;
-    }
-
-    bool operator==(const TimelineState& other) const {
-      return phase == other.phase && current_time == other.current_time &&
-             scroll_offsets == other.scroll_offsets && zoom == other.zoom &&
-             view_offsets == other.view_offsets &&
-             resolved_source == other.resolved_source;
-    }
-
-    void Trace(blink::Visitor* visitor) const {
-      visitor->Trace(resolved_source);
-    }
-  };
 
   // Scroll offsets corresponding to 0% and 100% progress. By default, these
   // correspond to the scroll range of the container.
   virtual void CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
                                 ScrollOrientation physical_orientation,
                                 TimelineState* state) const;
-
-  // ScrollSnapshotClient:
-  // https://wicg.github.io/scroll-animations/#avoiding-cycles
-  // Snapshots scroll timeline current time and phase.
-  // Called once per animation frame.
-  void UpdateSnapshot() override;
-  bool ValidateSnapshot() override;
-  bool ShouldScheduleNextService() override;
-
-  bool ComputeIsResolved() const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, MultipleScrollOffsetsClamping);
@@ -221,13 +118,9 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   // See Node::[Un]RegisterScrollTimeline.
   Element* RetainingElement() const;
 
-  TimelineState ComputeTimelineState() const;
+  TimelineState ComputeTimelineState() const override;
 
   TimelineAttachment attachment_type_;
-
-  // Snapshotted value produced by the last SnapshotState call.
-  TimelineState timeline_state_snapshotted_;
-
   HeapVector<Member<ScrollTimelineAttachment>, 1> attachments_;
 };
 

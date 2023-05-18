@@ -170,7 +170,7 @@ CSSAnimationProxy::CSSAnimationProxy(
       timeline, animation, adjusted_range_start, adjusted_range_end, timing);
 
   timeline_duration_ = timeline ? timeline->GetDuration() : absl::nullopt;
-  if (timeline && timeline->IsScrollTimeline() && timeline->CurrentTime()) {
+  if (timeline && timeline->IsProgressBased() && timeline->CurrentTime()) {
     AnimationTimeDelta timeline_time = timeline->CurrentTime().value();
     at_scroll_timeline_boundary_ =
         timeline_time.is_zero() ||
@@ -207,7 +207,7 @@ absl::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
       !animation || (range_start != animation->GetRangeStartInternal() ||
                      range_end != animation->GetRangeEndInternal());
 
-  if (timeline && timeline->IsScrollTimeline()) {
+  if (timeline && timeline->IsProgressBased()) {
     if (is_paused_ || ((timeline == previous_timeline) &&
                        !resets_current_time_on_resume && !range_changed)) {
       // Current time is unaffected by the update.
@@ -245,9 +245,9 @@ absl::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
     return absl::nullopt;
   }
 
-  if (previous_timeline && previous_timeline->IsScrollTimeline() &&
+  if (previous_timeline && previous_timeline->IsProgressBased() &&
       previous_timeline->CurrentTime()) {
-    // Going from a scroll timeline to a document or null timeline.
+    // Going from a progress-based timeline to a document or null timeline.
     // In this case, we preserve the current time.
     double progress = previous_timeline->CurrentTime().value() /
                       previous_timeline->GetDuration().value();

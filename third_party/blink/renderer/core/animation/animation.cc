@@ -373,7 +373,7 @@ bool Animation::ConvertCSSNumberishToTime(
     return true;
   }
 
-  if (timeline_ && timeline_->IsScrollTimeline()) {
+  if (timeline_ && timeline_->IsProgressBased()) {
     // Progress based timeline
     if (numberish->IsCSSNumericValue()) {
       CSSUnitValue* numberish_as_percentage =
@@ -518,8 +518,9 @@ V8CSSNumberish* Animation::startTime() const {
 V8CSSNumberish* Animation::ConvertTimeToCSSNumberish(
     absl::optional<AnimationTimeDelta> time) const {
   if (time) {
-    if (timeline_ && timeline_->IsScrollTimeline()) {
-      return To<ScrollTimeline>(*timeline_).ConvertTimeToProgress(time.value());
+    if (timeline_ && timeline_->IsScrollSnapshotTimeline()) {
+      return To<ScrollSnapshotTimeline>(*timeline_)
+          .ConvertTimeToProgress(time.value());
     }
     return MakeGarbageCollected<V8CSSNumberish>(time.value().InMillisecondsF());
   }
@@ -1014,7 +1015,7 @@ absl::optional<AnimationTimeDelta> Animation::CalculateStartTime(
     if (timeline_time)
       start_time = timeline_time.value() - current_time / playback_rate_;
     // TODO(crbug.com/916117): Handle NaN time for scroll-linked animations.
-    DCHECK(start_time || timeline_->IsScrollTimeline());
+    DCHECK(start_time || timeline_->IsProgressBased());
   }
   return start_time;
 }
@@ -2074,9 +2075,9 @@ Animation::CheckCanStartAnimationOnCompositorInternal() const {
   // If the scroll source is not composited, fall back to main thread.
   // TODO(crbug.com/476553): Once all ScrollNodes including uncomposited ones
   // are in the compositor, the animation should be composited.
-  if (timeline_ && timeline_->IsScrollTimeline() &&
+  if (timeline_ && timeline_->IsScrollSnapshotTimeline() &&
       !CompositorAnimations::CheckUsesCompositedScrolling(
-          To<ScrollTimeline>(*timeline_).ResolvedSource())) {
+          To<ScrollSnapshotTimeline>(*timeline_).ResolvedSource())) {
     reasons |= CompositorAnimations::kTimelineSourceHasInvalidCompositingState;
   }
 
@@ -2101,9 +2102,9 @@ base::TimeDelta Animation::ComputeCompositorTimeOffset() const {
   if (!playback_rate)
     return base::TimeDelta::Max();
 
-  // Don't set a compositor time offset for a scroll timeline. When we tick the
-  // animation, we pass "absolute" times to cc::KeyframeEffect::Pause.
-  if (timeline_ && timeline_->IsScrollTimeline()) {
+  // Don't set a compositor time offset for progress-based timelines. When we
+  // tick the animation, we pass "absolute" times to cc::KeyframeEffect::Pause.
+  if (timeline_ && timeline_->IsProgressBased()) {
     return base::TimeDelta();
   }
 
@@ -2300,8 +2301,7 @@ void Animation::UpdateStartTimeForViewTimeline() {
 
 void Animation::OnRangeUpdate() {
   // Change in animation range has no effect unless using a scroll-timeline.
-  ScrollTimeline* scroll_timeline = DynamicTo<ScrollTimeline>(timeline_.Get());
-  if (!scroll_timeline) {
+  if (!IsA<ScrollSnapshotTimeline>(timeline_.Get())) {
     return;
   }
 
@@ -2403,9 +2403,11 @@ bool Animation::AtScrollTimelineBoundary() {
   //     return false
   absl::optional<AnimationTimeDelta> timeline_duration =
       timeline_ ? timeline_->GetDuration() : absl::nullopt;
-  if (!timeline_ || !timeline_->IsScrollTimeline() || !timeline_duration ||
-      timeline_duration->is_zero() || playback_rate_ == 0)
+  if (!timeline_ || !timeline_->IsScrollSnapshotTimeline() ||
+      !timeline_duration || timeline_duration->is_zero() ||
+      playback_rate_ == 0) {
     return false;
+  }
 
   // 2.  Let effective start time be the animation's start time if resolved, or
   // zero otherwise.

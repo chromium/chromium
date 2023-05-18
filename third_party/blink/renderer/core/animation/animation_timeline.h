@@ -54,6 +54,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   TimelinePhase Phase() { return CurrentPhaseAndTime().phase; }
 
   virtual bool IsDocumentTimeline() const { return false; }
+  virtual bool IsScrollSnapshotTimeline() const { return false; }
   virtual bool IsScrollTimeline() const { return false; }
   virtual bool IsViewTimeline() const { return false; }
 
@@ -64,6 +65,8 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   // A timeline is monotonically increasing if its reported current time is
   // always greater than or equal than its previously reported current time.
   bool IsMonotonicallyIncreasing() const { return IsDocumentTimeline(); }
+  // https://drafts.csswg.org/web-animations-2/#progress-based-timeline
+  bool IsProgressBased() const { return IsScrollSnapshotTimeline(); }
   // Returns the initial start time for animations that are linked to this
   // timeline. This method gets invoked when initializing the start time of an
   // animation on this timeline for the first time. It exists because the
