@@ -155,7 +155,7 @@ def extract_full_class_names_from_jar(abs_build_output_dir: pathlib.Path,
         full_java_class = full_java_class[0:dollar_index]
 
       out.add(full_java_class)
-  out = list(out)
+  out = sorted(out)
 
   cache_file.write('\n'.join(out))
   return out
