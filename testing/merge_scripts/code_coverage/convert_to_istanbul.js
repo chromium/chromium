@@ -12,7 +12,7 @@ const NODE_MODULES = [
   '..', '..', '..', 'third_party', 'js_code_coverage', 'node_modules'];
 
 const {createHash} = require('crypto');
-const {join, dirname} = require('path');
+const {join, dirname, normalize} = require('path');
 const {readdir, readFile, writeFile, mkdir, access} = require('fs').promises;
 const V8ToIstanbul = require(join(...NODE_MODULES, 'v8-to-istanbul'));
 const {ArgumentParser} = require(join(...NODE_MODULES, 'argparse'));
@@ -20,8 +20,43 @@ const convertSourceMap = require(join(...NODE_MODULES, 'convert-source-map'));
 const sourceMap = require(join(...NODE_MODULES, 'source-map'));
 
 /**
- * Validate the sourcemap by looking at the start and end positions
- * of the source file if present.
+ * Validate that the mapping in the sourcemaps is valid.
+ * @param {Object} mapping Individual mapping to validate.
+ * @param {Map} sourcesMap Map of the sources in the mappings to it's content.
+ * @param {string} instrumentedFilePath Path to the instrumented file.
+ * @returns {boolean} true if mapping is valid, false otherwise.
+ */
+function validateMapping(mapping, sourcesMap, instrumentedFilePath) {
+  if (!mapping.generatedLine || !mapping.originalLine || !mapping.source) {
+    console.log(`Invalid mapping found for ${instrumentedFilePath}`);
+    return false;
+  }
+
+  // Verify that we have file contents.
+  if (!sourcesMap[mapping.source]) {
+    return false;
+  }
+
+  // Verify that the mapping line numbers refers to actual lines in source.
+  const origLine = sourcesMap[mapping.source][mapping.originalLine-1];
+  const genLine = sourcesMap[instrumentedFilePath][mapping.generatedLine-1];
+  if (origLine === undefined || genLine === undefined) {
+    return false;
+  }
+
+  // Verify that the mapping columns refers to actual column bounds in source.
+  if (mapping.generatedColumn > genLine.length ||
+      mapping.originalColumn > origLine.length) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Validate the sourcemap by looking at:
+ * 1. Existence of the source files in sourcemap
+ * 2. Verify original and generated lines are within bounds.
  * @param {string} instrumentedFilePath Path to the file with source map.
  * @returns {boolean} true if sourcemap is valid, false otherwise
  */
@@ -30,60 +65,44 @@ async function validateSourceMaps(instrumentedFilePath) {
   const rawSourceMap = convertSourceMap.fromSource(rawSource) ||
       convertSourceMap.fromMapFileSource(
         rawSource, dirname(instrumentedFilePath));
+
   if (!rawSourceMap || rawSourceMap.sourcemap.sources.length < 1) {
-    return false
+    console.log(`No valid source map found for ${instrumentedFilePath}`);
+    return false;
   }
 
-  let exists = false
-  const consumer =
-      await new sourceMap.SourceMapConsumer(rawSourceMap.sourcemap);
-  let result = consumer.originalPositionFor({line: 1, column: 0});
-
-  let file = null
-  if (!result || !result.source) {
-    exists = false
-  } else {
+  let sourcesMap = {};
+  sourcesMap[instrumentedFilePath] = rawSource.toString().split('\n');
+  for (let i = 0; i < rawSourceMap.sourcemap.sources.length; i++) {
+    const sourcePath = normalize(join(
+        rawSourceMap.sourcemap.sourceRoot, rawSourceMap.sourcemap.sources[i]));
     try {
-      file = await readFile(result.source, 'utf8');
-    } catch(error) {
+      const content = await readFile(sourcePath, 'utf-8');
+      sourcesMap[sourcePath] = content.toString().split('\n');
+    } catch (error) {
       if (error.code === 'ENOENT') {
-        exists = false
+        console.error(`Original missing for ${sourcePath}`);
+        return false;
       } else {
         throw error;
       }
     }
   }
 
-  if (!file) {
-    consumer.destroy();
-    return exists;
-  }
+  let validMap = true;
+  const consumer =
+      await new sourceMap.SourceMapConsumer(rawSourceMap.sourcemap);
+  consumer.eachMapping(function(mapping) {
+    if (!validMap ||
+      !validateMapping(mapping, sourcesMap, instrumentedFilePath)) {
+      validMap = false;
+    }
+  });
 
-  const contents = file.toString();
-  const lines = contents.split("\n");
-  result = consumer.originalPositionFor({line: lines.length, column: 0});
-  if (checkSource(result.source)) {
-    exists = true
-  } else {
-    throw new Error(`Original source missing for ${instrumentedFilePath}`)
-  }
-
+  console.log(validMap)
+  // Destroy consumer as we dont need it anymore.
   consumer.destroy();
-  return exists;
-}
-
-/**
- * Check if the source exists on disk.
- * @param {string} url Path to the source file
- * @returns {boolean} True if exists, false otherwise
- */
-async function checkSource(url) {
-  try {
-    await access(url)
-    return true
-  } catch(error) {
-    return false
-  }
+  return validMap;
 }
 
 /**
@@ -119,7 +138,6 @@ async function extractCoverage(
           join(instrumentedDirectoryRoot, urlToPathMap[coverage.url]);
       const validSourceMap = await validateSourceMaps(instrumentedFilePath)
       if (!validSourceMap) {
-        console.log(`Original source missing for ${instrumentedFilePath}.`);
         continue;
       }
 

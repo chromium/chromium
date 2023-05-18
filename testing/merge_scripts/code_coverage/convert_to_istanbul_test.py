@@ -31,6 +31,18 @@ function subtract(a, b) {
 
 subtract(5, 2);
 """
+    _INVALID_MAPPING_A = (
+        "//# sourceMappingURL=data:application/json;base64,"
+        "eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImZvby50cyJdLCJuYW1lcyI6W10sIm1hcHBpb"
+        "mdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Oz"
+        "s7OztBQUFBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUN"
+        "BIiwiZmlsZSI6Ii91c3IvbG9jYWwvZ29vZ2xlL2hvbWUvc3Jpbml2YXNoZWdkZS9jaHJv"
+        "bWl1bS9zcmMvZm9vX3ByZS50cyIsInNvdXJjZVJvb3QiOiIvdXNyL2xvY2FsL2dvb2dsZ"
+        "S9ob21lL3NyaW5pdmFzaGVnZGUvY2hyb21pdW0vc3JjIiwic291cmNlc0NvbnRlbnQiOl"
+        "siZnVuY3Rpb24gYWRkKGEsIGIpIHtcbiAgcmV0dXJuIGEgKyBiO1xufVxuXG5mdW5jdGl"
+        "vbiBzdWJ0cmFjdChhLCBiKSB7XG4gIHJldHVybiBhIC0gYjtcbn1cblxuc3VidHJhY3Qo"
+        "NSwgMik7XG4iXX0="
+        )
 
     _TEST_COVERAGE_A = """{
   "result": [
@@ -345,6 +357,22 @@ subtract(5, 2);
             os.path.join(self.task_output_dir, 'istanbul'))
         self.assertEqual(len(istanbul_files), 1)
 
+    def test_invalid_mapping(self):
+        self.write_sources((('//file.js', 'file.js'), self._TEST_SOURCE_A))
+        self._write_files(
+            self.out_dir, (
+            'file.js', self._TEST_SOURCE_A + '\n' + self._INVALID_MAPPING_A))
+        self.write_coverages(('test_coverage.cov.json', self._TEST_COVERAGE_A))
+
+
+        merger.convert_raw_coverage_to_istanbul([self.coverage_dir],
+                                                self.out_dir,
+                                                self.task_output_dir)
+
+        istanbul_files = self.list_files(
+            os.path.join(self.task_output_dir, 'istanbul'))
+        self.assertEqual(len(istanbul_files), 0)
+
     def test_no_coverages_in_file(self):
         coverage_file = """{
       "result": []
@@ -421,7 +449,6 @@ subtract(5, 2);
         self.write_sources((('//file.js', 'file.js'), self._TEST_SOURCE_A))
         self.write_coverages(('test_coverage.cov.json', self._TEST_COVERAGE_A))
         os.remove(os.path.join(self.source_dir, "file.js"))
-
 
         merger.convert_raw_coverage_to_istanbul([self.coverage_dir],
                                                 self.out_dir,
