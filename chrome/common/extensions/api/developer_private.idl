@@ -318,6 +318,7 @@ namespace developerPrivate {
     boolean? errorCollection;
     HostAccess? hostAccess;
     boolean? showAccessRequestsInToolbar;
+    boolean? acknowledgeSafetyCheckWarning;
   };
 
   dictionary ProfileConfigurationUpdate {

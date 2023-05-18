@@ -50,6 +50,12 @@ class EventRouter;
 class ExtensionError;
 class ExtensionInfoGenerator;
 
+// A key that indicates whether the safety check warning for this
+// extension has been acknowledged because the user has chosen to keep
+// it in a past review.
+constexpr PrefMap kPrefAcknowledgeSafetyCheckWarning = {
+    "ack_safety_check_warning", PrefType::kBool, PrefScope::kExtensionSpecific};
+
 namespace api {
 
 namespace developer_private {

@@ -16,6 +16,7 @@
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -567,6 +568,17 @@ TEST_F(DeveloperPrivateApiUnitTest,
       base::BindRepeating(&SitePermissionsHelper::ShowAccessRequestsInToolbar,
                           base::Unretained(&helper), id),
       "showAccessRequestsInToolbar", id, /*expected_default_value=*/true);
+
+  auto has_acknowledged_safety_check = [&]() {
+    bool has_acknowledged = false;
+    return ExtensionPrefs::Get(profile())->ReadPrefAsBoolean(
+               id, kPrefAcknowledgeSafetyCheckWarning, &has_acknowledged) &&
+           has_acknowledged;
+  };
+
+  TestExtensionPrefSetting(
+      base::BindLambdaForTesting(has_acknowledged_safety_check),
+      "acknowledgeSafetyCheckWarning", id, /*expected_default_value=*/false);
 }
 
 // Test developerPrivate.reload.
