@@ -67,12 +67,14 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
       const net::X509Certificate& cert,
       int error,
       content::StoragePartition* storage_partition) override;
+
   void HostRanInsecureContent(const std::string& host,
                               int child_id,
                               InsecureContentType content_type) override;
   bool DidHostRunInsecureContent(const std::string& host,
                                  int child_id,
                                  InsecureContentType content_type) override;
+
   void AllowHttpForHost(const std::string& host,
                         content::StoragePartition* storage_partition) override;
   bool IsHttpAllowedForHost(
@@ -89,6 +91,9 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   bool IsHttpsEnforcedForHost(
       const std::string& host,
       content::StoragePartition* storage_partition) override;
+
+  // Clears all entries from the HTTP allowlist.
+  void ClearHttpsOnlyModeAllowlist();
 
   // RevokeUserAllowExceptionsHard is the same as RevokeUserAllowExceptions but
   // additionally may close idle connections in the process. This should be used

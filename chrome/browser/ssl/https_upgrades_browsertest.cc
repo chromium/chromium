@@ -1946,6 +1946,44 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, crbug1431026) {
   }
 }
 
+// Tests that when the HTTPS-First Mode setting is toggled on or off, the
+// HTTP allowlist is cleared.
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+                       TogglingSettingClearsAllowlist) {
+  auto http_url = http_server()->GetURL("bad-https.com", "/simple.html");
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Start by enabling HTTPS-First Mode.
+  SetPref(true);
+
+  // Navigate to a URL that will fail upgrades, and click through the
+  // interstitial to add it to the allowlist.
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
+  ProceedThroughInterstitial(contents);
+
+  // Disable the HTTPS-First Mode pref. This should clear the allowlist.
+  SetPref(false);
+
+  // If HTTPS-Upgrades are enabled, navigating again should cause the site to
+  // get added back to the allowlist. If not, the HTTP URL will load normally as
+  // HTTPS-First Mode is disabled.
+  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          contents));
+
+  // Re-enable the HTTPS-First Mode pref. The allowlist should be cleared again.
+  SetPref(true);
+
+  // Navigate to a URL that will fail upgrades, and the interstitial should be
+  // shown again as the allowlist was cleared.
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
+}
+
 // A simple test fixture that ensures the kHttpsFirstModeV2 feature is enabled
 // and constructs a HistogramTester (so that it gets initialized before browser
 // startup). Used for testing pref tracking logic.

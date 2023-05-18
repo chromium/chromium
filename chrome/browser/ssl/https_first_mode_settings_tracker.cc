@@ -165,6 +165,14 @@ void HttpsFirstModeService::OnHttpsFirstModePrefChanged() {
       kHttpsFirstModeSyntheticFieldTrialName,
       enabled ? kHttpsFirstModeSyntheticFieldTrialEnabledGroup
               : kHttpsFirstModeSyntheticFieldTrialDisabledGroup);
+
+  // Reset the allowlist when the pref changes. A user going from HTTPS-Upgrades
+  // to HTTPS-First Mode shouldn't inherit the set of allowlisted sites (or
+  // vice versa).
+  StatefulSSLHostStateDelegate* state =
+      static_cast<StatefulSSLHostStateDelegate*>(
+          profile_->GetSSLHostStateDelegate());
+  state->ClearHttpsOnlyModeAllowlist();
 }
 
 void HttpsFirstModeService::OnAdvancedProtectionStatusChanged(bool enabled) {
