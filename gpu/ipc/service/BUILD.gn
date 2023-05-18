@@ -77,6 +77,7 @@ component("service") {
     # implicitly depended upon by gpu/config/gpu_crash_keys.h but deps (even
     # public ones) are not transitive for static libraries.
     "//components/crash/core/common:crash_key",
+    "//components/viz/common:resource_format",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/service",
     "//gpu/command_buffer/service:gles2",

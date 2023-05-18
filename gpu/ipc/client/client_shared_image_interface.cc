@@ -120,7 +120,7 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     gfx::GpuMemoryBufferHandle buffer_handle) {
   DCHECK(gpu::IsValidClientUsage(usage));
   DCHECK(viz::HasEquivalentBufferFormat(format));
-  DCHECK(format.is_multi_plane());
+  CHECK(!format.IsLegacyMultiplanar());
   return AddMailbox(proxy_->CreateSharedImage(
       format, size, color_space, surface_origin, alpha_type, usage, debug_label,
       std::move(buffer_handle)));

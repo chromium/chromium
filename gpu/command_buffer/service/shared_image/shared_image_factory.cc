@@ -431,9 +431,9 @@ bool SharedImageFactory::CreateSharedImage(
     uint32_t usage,
     std::string debug_label,
     gfx::GpuMemoryBufferHandle buffer_handle) {
-  if (!format.is_multi_plane()) {
-    // Only use this for new multi-planar path for now. All legacy multi-planar
-    // and single planar GMBs can go through CreateSharedImage() that takes
+  if (format.IsLegacyMultiplanar()) {
+    // Use this for multi-planar and real single-planar formats. All legacy
+    // multi-planar GMBs must go through CreateSharedImage() that takes
     // BufferPlane parameter.
     LOG(ERROR) << "Invalid format " << format.ToString();
     return false;
