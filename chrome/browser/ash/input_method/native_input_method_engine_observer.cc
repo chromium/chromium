@@ -566,7 +566,8 @@ void OnError(base::Time start) {
 InputFieldContext CreateInputFieldContext(
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   return InputFieldContext{
-      .multiword_enabled = features::IsAssistiveMultiWordEnabled(),
+      .multiword_enabled =
+          base::FeatureList::IsEnabled(features::kAssistMultiWord),
       .multiword_allowed = enabled_suggestions.multi_word_suggestions};
 }
 
@@ -853,7 +854,7 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
       // The FST Mojo engine is only needed if autocorrect is enabled ...
       !IsPhysicalKeyboardAutocorrectEnabled(prefs_, engine_id) &&
       // ... or if predictive writing is enabled.
-      !(features::IsAssistiveMultiWordEnabled() &&
+      !(base::FeatureList::IsEnabled(features::kAssistMultiWord) &&
         IsPredictiveWritingEnabled(prefs_, engine_id))) {
     connection_factory_.reset();
     remote_manager_.reset();
@@ -958,7 +959,7 @@ void NativeInputMethodEngineObserver::HandleOnFocusAsyncForNativeMojoEngine(
                             settings);
 
   InputFieldContext input_field_context =
-      features::IsAssistiveMultiWordEnabled()
+      base::FeatureList::IsEnabled(features::kAssistMultiWord)
           ? CreateInputFieldContext(enabled_suggestions)
           : InputFieldContext{};
   const bool is_normal_screen =

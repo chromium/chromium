@@ -249,7 +249,7 @@ bool AssistiveSuggester::IsEnhancedEmojiSuggestEnabled() {
 }
 
 bool AssistiveSuggester::IsMultiWordSuggestEnabled() {
-  return features::IsAssistiveMultiWordEnabled() &&
+  return base::FeatureList::IsEnabled(features::kAssistMultiWord) &&
          IsPredictiveWritingPrefEnabled(profile_->GetPrefs(),
                                         active_engine_id_);
 }
@@ -284,7 +284,7 @@ DisabledReason AssistiveSuggester::GetDisabledReasonForEmoji(
 
 DisabledReason AssistiveSuggester::GetDisabledReasonForMultiWord(
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
-  if (!features::IsAssistiveMultiWordEnabled()) {
+  if (!base::FeatureList::IsEnabled(features::kAssistMultiWord)) {
     return DisabledReason::kFeatureFlagOff;
   }
   if (!profile_->GetPrefs()->GetBoolean(
@@ -551,7 +551,7 @@ void AssistiveSuggester::ProcessExternalSuggestions(
 
 void AssistiveSuggester::RecordTextInputStateMetrics(
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
-  if (features::IsAssistiveMultiWordEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kAssistMultiWord)) {
     RecordMultiWordTextInputState(profile_->GetPrefs(), active_engine_id_,
                                   enabled_suggestions);
   }
@@ -689,7 +689,7 @@ void AssistiveSuggester::OnActivate(const std::string& engine_id) {
   active_engine_id_ = engine_id;
   longpress_diacritics_suggester_.SetEngineId(engine_id);
 
-  if (features::IsAssistiveMultiWordEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kAssistMultiWord)) {
     RecordAssistiveUserPrefForMultiWord(
         IsPredictiveWritingPrefEnabled(profile_->GetPrefs(), engine_id));
   }

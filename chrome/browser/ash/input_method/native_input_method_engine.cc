@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
@@ -61,12 +62,12 @@ void NativeInputMethodEngine::Initialize(
   autocorrect_manager_ = autocorrect_manager.get();
 
   auto suggestions_service_client =
-      features::IsAssistiveMultiWordEnabled()
+      base::FeatureList::IsEnabled(features::kAssistMultiWord)
           ? std::make_unique<SuggestionsServiceClient>()
           : nullptr;
 
   auto suggestions_collector =
-      features::IsAssistiveMultiWordEnabled()
+      base::FeatureList::IsEnabled(features::kAssistMultiWord)
           ? std::make_unique<SuggestionsCollector>(
                 assistive_suggester_, std::move(suggestions_service_client))
           : nullptr;

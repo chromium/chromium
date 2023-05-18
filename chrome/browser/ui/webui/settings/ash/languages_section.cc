@@ -157,10 +157,6 @@ const std::vector<SearchConcept>& GetEmojiSuggestionSearchConcepts() {
   return *tags;
 }
 
-bool IsPredictiveWritingAllowed() {
-  return features::IsAssistiveMultiWordEnabled();
-}
-
 // TODO(crbug/1113611): As Smart Inputs page is renamed to Suggestions.
 // All related strings, function names and filenames should be renamed as well.
 void AddSmartInputsStrings(content::WebUIDataSource* html_source,
@@ -342,8 +338,9 @@ void AddInputMethodOptionsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_KEYBOARD_COLEMAK},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
-  html_source->AddBoolean("allowPredictiveWriting",
-                          IsPredictiveWritingAllowed());
+  html_source->AddBoolean(
+      "allowPredictiveWriting",
+      base::FeatureList::IsEnabled(features::kAssistMultiWord));
   html_source->AddBoolean(
       "allowDiacriticsOnPhysicalKeyboardLongpress",
       base::FeatureList::IsEnabled(

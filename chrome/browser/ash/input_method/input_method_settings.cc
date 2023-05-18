@@ -189,7 +189,7 @@ mojom::LatinSettingsPtr CreateLatinSettings(
       base::FeatureList::IsEnabled(features::kAutocorrectParamsTuning) ||
       autocorrect_pref == AutocorrectPreference::kEnabled;
   settings->predictive_writing =
-      features::IsAssistiveMultiWordEnabled() &&
+      base::FeatureList::IsEnabled(features::kAssistMultiWord) &&
       prefs.GetBoolean(prefs::kAssistPredictiveWritingEnabled) &&
       IsUsEnglishEngine(engine_id);
   return settings;

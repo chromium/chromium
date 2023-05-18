@@ -2574,10 +2574,6 @@ bool IsAssistantNativeIconsEnabled() {
   return base::FeatureList::IsEnabled(kAssistantNativeIcons);
 }
 
-bool IsAssistiveMultiWordEnabled() {
-  return base::FeatureList::IsEnabled(kAssistMultiWord);
-}
-
 bool IsAudioSettingsPageEnabled() {
   return base::FeatureList::IsEnabled(kAudioSettingsPage);
 }
