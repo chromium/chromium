@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_INPUT_DELEGATE_TAB_SESSION_SOURCE_H_
 
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "components/segmentation_platform/embedder/tab_fetcher.h"
 #include "components/segmentation_platform/public/input_delegate.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -35,8 +36,8 @@ class TabSessionSource : public InputDelegate {
   static constexpr int kInputSessionRank = 6;
   static constexpr int kNumInputs = 7;
 
-  explicit TabSessionSource(
-      sync_sessions::SessionSyncService* session_sync_service);
+  TabSessionSource(sync_sessions::SessionSyncService* session_sync_service,
+                   TabFetcher* tab_fetcher);
   ~TabSessionSource() override;
 
   TabSessionSource(const TabSessionSource&) = delete;
@@ -47,6 +48,14 @@ class TabSessionSource : public InputDelegate {
                const FeatureProcessorState& feature_processor_state,
                ProcessedCallback callback) override;
 
+ protected:
+  // Adds info about local tabs, to be implemented by the chrome layer which
+  // knows about local tabs.
+  virtual void AddLocalTabInfo(
+      const TabFetcher::Tab& tab,
+      const FeatureProcessorState& feature_processor_state,
+      Tensor& inputs);
+
  private:
   void AddTabInfo(const sessions::SessionTab* session_tab, Tensor& inputs);
   void AddTabRanks(const std::string& session_tag,
@@ -54,6 +63,7 @@ class TabSessionSource : public InputDelegate {
                    Tensor& inputs);
 
   const raw_ptr<sync_sessions::SessionSyncService> session_sync_service_;
+  const raw_ptr<TabFetcher> tab_fetcher_;
 };
 
 }  // namespace segmentation_platform::processing

@@ -17,6 +17,8 @@ source_set("embedder") {
     "input_delegate/tab_session_source.h",
     "model_provider_factory_impl.cc",
     "model_provider_factory_impl.h",
+    "tab_fetcher.cc",
+    "tab_fetcher.h",
   ]
 
   deps = [

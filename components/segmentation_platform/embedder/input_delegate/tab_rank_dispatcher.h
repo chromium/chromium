@@ -13,6 +13,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
+#include "components/segmentation_platform/embedder/tab_fetcher.h"
 #include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/sessions/core/session_types.h"
@@ -26,7 +27,8 @@ namespace segmentation_platform {
 class TabRankDispatcher : public base::SupportsUserData::Data {
  public:
   TabRankDispatcher(SegmentationPlatformService* segmentation_service,
-                    sync_sessions::SessionSyncService* session_sync_service);
+                    sync_sessions::SessionSyncService* session_sync_service,
+                    std::unique_ptr<TabFetcher> tab_fetcher);
   ~TabRankDispatcher() override;
 
   TabRankDispatcher(const TabRankDispatcher&) = delete;
@@ -34,12 +36,9 @@ class TabRankDispatcher : public base::SupportsUserData::Data {
 
   // Wrapper for SessionTab, includes a prediction score.
   struct RankedTab {
-    // Pointer to the tracked tab. Note: the tab is not owned and not guaranteed
-    // to be alive.
-    // TODO(ssid): Consider returning tab id instead of pointer.
-    const raw_ptr<sessions::SessionTab> tab = nullptr;
-    // Session tag to identify the associated synced session.
-    std::string session_tag;
+    // A tab entry. To access the tab details, use `fetcher()->FindTab(entry)`.
+    TabFetcher::TabEntry tab;
+
     // A score based on the ranking heuristic identified by `segmentation_key`.
     // Higher score is better.
     float model_score = -1;
@@ -66,6 +65,8 @@ class TabRankDispatcher : public base::SupportsUserData::Data {
                         const TabFilter& tab_filter,
                         RankedTabsCallback callback);
 
+  TabFetcher* tab_fetcher() { return tab_fetcher_.get(); }
+
  private:
   void GetNextResult(const std::string& segmentation_key,
                      std::queue<RankedTab> candidate_tabs,
@@ -78,6 +79,7 @@ class TabRankDispatcher : public base::SupportsUserData::Data {
                    RankedTab current_tab,
                    const AnnotatedNumericResult& result);
 
+  const std::unique_ptr<TabFetcher> tab_fetcher_;
   const raw_ptr<SegmentationPlatformService> segmentation_service_;
   const raw_ptr<sync_sessions::SessionSyncService> session_sync_service_;
 

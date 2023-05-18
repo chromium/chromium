@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/embedder/input_delegate/tab_session_source.h"
+#include <memory>
 
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
@@ -131,7 +132,9 @@ class TabSessionSourceTest : public testing::Test {
 
   void SetUp() override {
     Test::SetUp();
-    tab_source_ = std::make_unique<TabSessionSource>(&session_sync_service_);
+    tab_fetcher_ = std::make_unique<TabFetcher>(&session_sync_service_);
+    tab_source_ = std::make_unique<TabSessionSource>(&session_sync_service_,
+                                                     tab_fetcher_.get());
     EXPECT_CALL(session_sync_service_, GetOpenTabsUIDelegate())
         .WillRepeatedly(Return(&open_tabs_delegate_));
   }
@@ -175,6 +178,7 @@ class TabSessionSourceTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_env_;
   MockSessionSyncService session_sync_service_;
+  std::unique_ptr<TabFetcher> tab_fetcher_;
   MockOpenTabsUIDelegate open_tabs_delegate_;
   std::unique_ptr<TabSessionSource> tab_source_;
 };

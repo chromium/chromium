@@ -17,6 +17,7 @@
 #import "components/segmentation_platform/embedder/input_delegate/tab_rank_dispatcher.h"
 #import "components/segmentation_platform/embedder/input_delegate/tab_session_source.h"
 #import "components/segmentation_platform/embedder/model_provider_factory_impl.h"
+#import "components/segmentation_platform/embedder/tab_fetcher.h"
 #import "components/segmentation_platform/internal/dummy_ukm_data_manager.h"
 #import "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 #import "components/segmentation_platform/internal/ukm_data_manager.h"
@@ -59,7 +60,8 @@ UkmDataManager* GetUkmDataManager() {
 
 std::unique_ptr<processing::InputDelegateHolder> SetUpInputDelegates(
     std::vector<std::unique_ptr<Config>>& configs,
-    sync_sessions::SessionSyncService* session_sync_service) {
+    sync_sessions::SessionSyncService* session_sync_service,
+    TabFetcher* tab_fetcher) {
   auto input_delegate_holder =
       std::make_unique<processing::InputDelegateHolder>();
   for (auto& config : configs) {
@@ -71,7 +73,7 @@ std::unique_ptr<processing::InputDelegateHolder> SetUpInputDelegates(
   input_delegate_holder->SetDelegate(
       proto::CustomInput::FILL_TAB_METRICS,
       std::make_unique<segmentation_platform::processing::TabSessionSource>(
-          session_sync_service));
+          session_sync_service, tab_fetcher));
 
   // Add shareable input delegates here.
 
@@ -124,6 +126,7 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   }
   sync_sessions::SessionSyncService* session_sync_service =
       SessionSyncServiceFactory::GetForBrowserState(chrome_browser_state);
+  auto tab_fetcher = std::make_unique<TabFetcher>(session_sync_service);
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
 
@@ -149,8 +152,8 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   params->device_info_tracker =
       DeviceInfoSyncServiceFactory::GetForBrowserState(chrome_browser_state)
           ->GetDeviceInfoTracker();
-  params->input_delegate_holder =
-      SetUpInputDelegates(params->configs, session_sync_service);
+  params->input_delegate_holder = SetUpInputDelegates(
+      params->configs, session_sync_service, tab_fetcher.get());
   auto service =
       std::make_unique<SegmentationPlatformServiceImpl>(std::move(params));
 
@@ -170,7 +173,8 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
           chrome_browser_state->GetPrefs(), field_trial_register));
   service->SetUserData(
       kSegmentationTabRankDispatcherUserDataKey,
-      std::make_unique<TabRankDispatcher>(service.get(), session_sync_service));
+      std::make_unique<TabRankDispatcher>(service.get(), session_sync_service,
+                                          std::move(tab_fetcher)));
   return service;
 }
 

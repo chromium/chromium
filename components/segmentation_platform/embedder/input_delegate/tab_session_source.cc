@@ -7,6 +7,7 @@
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "components/segmentation_platform/embedder/tab_fetcher.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
 #include "components/sessions/core/session_id.h"
@@ -33,8 +34,9 @@ absl::optional<ProcessedValue> GetMetadataArgument(
 }  // namespace
 
 TabSessionSource::TabSessionSource(
-    sync_sessions::SessionSyncService* session_sync_service)
-    : session_sync_service_(session_sync_service) {}
+    sync_sessions::SessionSyncService* session_sync_service,
+    TabFetcher* tab_fetcher)
+    : session_sync_service_(session_sync_service), tab_fetcher_(tab_fetcher) {}
 
 TabSessionSource::~TabSessionSource() = default;
 
@@ -55,22 +57,17 @@ void TabSessionSource::Process(
   SessionID::id_type tab_id = tab_id_val->int_val;
   std::string session_tag = session_tag_val->str_val;
 
-  // Fetch the tab. The tab might have been closed between the time was fetched
-  // and the model is run asynchronously.
-  sync_sessions::OpenTabsUIDelegate* open_tab_delegate =
-      session_sync_service_->GetOpenTabsUIDelegate();
-  const sessions::SessionTab* session_tab = nullptr;
-  if (!open_tab_delegate ||
-      !open_tab_delegate->GetForeignTab(
-          session_tag, SessionID::FromSerializedValue(tab_id), &session_tab)) {
-    std::move(callback).Run(/*error=*/true, Tensor());
-    return;
-  }
-
   Tensor inputs(kNumInputs, ProcessedValue(0.0f));
 
-  AddTabInfo(session_tab, inputs);
-  AddTabRanks(session_tag, session_tab, inputs);
+  TabFetcher::Tab tab = tab_fetcher_->FindTab(TabFetcher::TabEntry(
+      SessionID::FromSerializedValue(tab_id), session_tag));
+  if (tab.session_tab) {
+    AddTabInfo(tab.session_tab, inputs);
+    AddTabRanks(session_tag, tab.session_tab, inputs);
+  }
+  if (tab.webcontents || tab.tab_android) {
+    AddLocalTabInfo(tab, feature_processor_state, inputs);
+  }
 
   std::move(callback).Run(false, std::move(inputs));
 }
@@ -149,4 +146,8 @@ void TabSessionSource::AddTabRanks(const std::string& session_tag,
   inputs[kInputSessionRank] = ProcessedValue::FromFloat(session_rank_overall);
 }
 
+void TabSessionSource::AddLocalTabInfo(
+    const TabFetcher::Tab& tab,
+    const FeatureProcessorState& feature_processor_state,
+    Tensor& inputs) {}
 }  // namespace segmentation_platform::processing
