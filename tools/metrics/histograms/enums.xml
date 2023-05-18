@@ -24293,18 +24293,6 @@ metrics consent we also won't be able to send UMA metrics. -->
       label="kLocLECredManPinWeaverFailedInCheckSecret - TPM_RC_INSUFFICIENT"/>
 </enum>
 
-<enum name="CryptohomeFetchUssExperimentConfigStatus">
-  <int value="0" label="Enabled"/>
-  <int value="1" label="Disabled"/>
-  <int value="2" label="Error (Deprecated)"/>
-  <int value="3" label="Fetch Error"/>
-  <int value="4" label="Parse Error"/>
-  <int value="5" label="No Release Track">
-    Failed to parse the /etc/lsb-release file, so unable to determine the
-    current channel.
-  </int>
-</enum>
-
 <enum name="CryptohomeLECredError">
   <summary>
     The result when a Low Entropy CheckCredential operation was performed.
@@ -24585,12 +24573,6 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="192" label="TSS Error NvRam Area Already Exists"/>
   <int value="193" label="TSS Error NvRam Area Doesn't Exist"/>
   <int value="194" label="TSS Error Unknown Error"/>
-</enum>
-
-<enum name="CryptohomeUssExperimentFlag">
-  <int value="0" label="Enabled"/>
-  <int value="1" label="Disabled"/>
-  <int value="2" label="Not found"/>
 </enum>
 
 <enum name="CTComplianceStatus">

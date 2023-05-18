@@ -781,45 +781,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cryptohome.UssExperiment.FetchUssExperimentConfigRetries"
-    units="retries" expires_after="2023-09-03">
-  <owner>hcyang@google.com</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    The number of retries before successfully fetching the USS experiment config
-    file. This is not reported if the fetching failed (including reaching retry
-    limit) at last, and reports 0 when the fetching succeeds on the first
-    attempt. This is so that we can monitor how many retries before a success
-    are needed in average on a normal working device.
-  </summary>
-</histogram>
-
-<histogram name="Cryptohome.UssExperiment.FetchUssExperimentConfigStatus"
-    enum="CryptohomeFetchUssExperimentConfigStatus" expires_after="2023-11-12">
-  <owner>hcyang@google.com</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    cryptohomed fetchs the USS experiment config from gstatic when it starts.
-    This metric tracks the fetch and parse result. If fetch and parse is
-    successful, and it determines that the experiment should be
-    enabled/disabled, it reports Enabled/Disabled respectively. Otherwise it
-    reports the kind of error it encountered.
-  </summary>
-</histogram>
-
-<histogram name="Cryptohome.UssExperiment.UssExperimentFlag"
-    enum="CryptohomeUssExperimentFlag" expires_after="2023-11-12">
-  <owner>hcyang@google.com</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    cryptohomed checks the USS experiment flag when a new user is created to
-    decide whether a USS-structured cryptohome should be created. This metrics
-    reports the value of the experiment flag when it checks it. Not found means
-    that the experiment config fetching failed or haven't complete when the flag
-    is checked.
-  </summary>
-</histogram>
-
 <histogram name="Cryptohome.VaultKeysetMetric.{VaultKeysetMetric}"
     units="count" expires_after="2023-09-01">
   <owner>thomascedeno@google.com</owner>
