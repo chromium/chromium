@@ -3781,6 +3781,7 @@ data/accessibility/html/link-inside-heading-expected-uia-win.txt
 data/accessibility/html/link-inside-heading-expected-win.txt
 data/accessibility/html/link-inside-heading.html
 data/accessibility/html/link-target-expected-auralinux.txt
+data/accessibility/html/link-target-expected-blink.txt
 data/accessibility/html/link-target-expected-win.txt
 data/accessibility/html/link-target.html
 data/accessibility/html/link.html

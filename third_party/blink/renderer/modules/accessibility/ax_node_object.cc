@@ -2295,7 +2295,11 @@ const AtomicString& AXNodeObject::EffectiveTarget() const {
   // to which target (browser context) a form would be submitted.
   const auto* anchor = DynamicTo<HTMLAnchorElement>(GetNode());
   if (anchor) {
-    return anchor->GetEffectiveTarget();
+    const AtomicString self_value("_self");
+    const AtomicString& effective_target = anchor->GetEffectiveTarget();
+    if (effective_target != self_value) {
+      return anchor->GetEffectiveTarget();
+    }
   }
   return AXObject::EffectiveTarget();
 }

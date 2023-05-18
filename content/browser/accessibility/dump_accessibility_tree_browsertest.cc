@@ -2518,6 +2518,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityLink) {
   RunHtmlTest(FILE_PATH_LITERAL("link.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityLinkTarget) {
+  RunHtmlTest(FILE_PATH_LITERAL("link-target.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityLinkInsideHeading) {
   RunHtmlTest(FILE_PATH_LITERAL("link-inside-heading.html"));

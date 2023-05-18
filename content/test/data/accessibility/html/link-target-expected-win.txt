@@ -1,0 +1,17 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_PARAGRAPH
+++++ROLE_SYSTEM_STATICTEXT name='Top context.'
+++IA2_ROLE_INTERNAL_FRAME
+++++ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++++++IA2_ROLE_PARAGRAPH
+++++++++ROLE_SYSTEM_STATICTEXT name='First context.'
+++++++ROLE_SYSTEM_LINK name='Self target. Opens in this iframe. ' FOCUSABLE
+++++++++ROLE_SYSTEM_STATICTEXT name='Self target. Opens in this iframe. '
+++++++ROLE_SYSTEM_LINK name='Parent target. Opens in the body of the whole page.' FOCUSABLE link-target:_parent
+++++++++ROLE_SYSTEM_STATICTEXT name='Parent target. Opens in the body of the whole page.'
+++ROLE_SYSTEM_LINK name='Base target. Open in blank. ' FOCUSABLE link-target:_top
+++++ROLE_SYSTEM_STATICTEXT name='Base target. Open in blank. '
+++ROLE_SYSTEM_LINK name='Top target. Opens in current context. ' FOCUSABLE link-target:_top
+++++ROLE_SYSTEM_STATICTEXT name='Top target. Opens in current context. '
+++ROLE_SYSTEM_LINK name='Opens in iframe.' FOCUSABLE link-target:iframeContext
+++++ROLE_SYSTEM_STATICTEXT name='Opens in iframe.'
