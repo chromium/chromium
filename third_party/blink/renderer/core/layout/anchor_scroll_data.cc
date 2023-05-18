@@ -5,10 +5,10 @@
 #include "third_party/blink/renderer/core/layout/anchor_scroll_data.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_anchor_query.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 
@@ -30,24 +30,30 @@ const LayoutObject* AnchorScrollObject(const LayoutObject* layout_object) {
   if (!anchor_query)
     return nullptr;
 
-  const NGPhysicalFragment* fragment = nullptr;
+  const LayoutObject* anchor = nullptr;
   if (value->IsNamed()) {
-    fragment = anchor_query->Fragment(*layout_object, &value->GetName());
+    anchor =
+        anchor_query->AnchorLayoutObject(*layout_object, &value->GetName());
   } else if (value->IsDefault() && style.AnchorDefault()) {
-    fragment = anchor_query->Fragment(*layout_object, style.AnchorDefault());
+    anchor =
+        anchor_query->AnchorLayoutObject(*layout_object, style.AnchorDefault());
   } else {
     DCHECK(value->IsImplicit() ||
            (value->IsDefault() && !style.AnchorDefault()));
     Element* element = DynamicTo<Element>(layout_object->GetNode());
-    Element* anchor = element ? element->ImplicitAnchorElement() : nullptr;
+    Element* anchor_element =
+        element ? element->ImplicitAnchorElement() : nullptr;
     LayoutObject* anchor_layout_object =
-        anchor ? anchor->GetLayoutObject() : nullptr;
+        anchor_element ? anchor_element->GetLayoutObject() : nullptr;
     if (anchor_layout_object) {
-      fragment = anchor_query->Fragment(*layout_object, anchor_layout_object);
+      // Even with the implicit anchor element at hand, we still need to verify
+      // whether it's an acceptable anchor element.
+      anchor = anchor_query->AnchorLayoutObject(*layout_object,
+                                                anchor_layout_object);
     }
   }
 
-  return fragment ? fragment->GetLayoutObject() : nullptr;
+  return anchor;
 }
 
 // Returns the PaintLayer of the scroll container of |anchor|.

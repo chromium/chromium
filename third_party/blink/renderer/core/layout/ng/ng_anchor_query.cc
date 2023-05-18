@@ -62,17 +62,15 @@ NGPhysicalAnchorReference::NGPhysicalAnchorReference(
     const NGLogicalAnchorReference& logical_reference,
     const WritingModeConverter& converter)
     : rect(converter.ToPhysical(logical_reference.rect)),
-      fragment(logical_reference.fragment),
+      layout_object(logical_reference.layout_object),
       is_out_of_flow(logical_reference.is_out_of_flow) {}
 
 void NGLogicalAnchorReference::InsertInReverseTreeOrderInto(
     Member<NGLogicalAnchorReference>* head_ptr) {
-  const LayoutObject* const object = fragment->GetLayoutObject();
   for (;;) {
     NGLogicalAnchorReference* const head = *head_ptr;
-    DCHECK(!head || head->fragment->GetLayoutObject());
-    if (!head ||
-        head->fragment->GetLayoutObject()->IsBeforeInPreOrder(*object)) {
+    DCHECK(!head || head->layout_object);
+    if (!head || head->layout_object->IsBeforeInPreOrder(*layout_object)) {
       // An in-flow reference has higher precedence than any other reference
       // before it in tree order, in which case there's no need to keep the
       // other references.
@@ -161,8 +159,7 @@ const NGPhysicalAnchorReference* NGPhysicalAnchorQuery::AnchorReference(
     for (const NGPhysicalAnchorReference* result = reference; result;
          result = result->next) {
       if (!result->is_out_of_flow ||
-          result->fragment->GetLayoutObject()->IsBeforeInPreOrder(
-              query_object)) {
+          result->layout_object->IsBeforeInPreOrder(query_object)) {
         return result;
       }
     }
@@ -170,12 +167,12 @@ const NGPhysicalAnchorReference* NGPhysicalAnchorQuery::AnchorReference(
   return nullptr;
 }
 
-const NGPhysicalFragment* NGPhysicalAnchorQuery::Fragment(
+const LayoutObject* NGPhysicalAnchorQuery::AnchorLayoutObject(
     const LayoutObject& query_object,
     const NGAnchorKey& key) const {
   if (const NGPhysicalAnchorReference* reference =
           AnchorReference(query_object, key)) {
-    return reference->fragment.Get();
+    return reference->layout_object;
   }
   return nullptr;
 }
@@ -187,8 +184,7 @@ const NGLogicalAnchorReference* NGLogicalAnchorQuery::AnchorReference(
     for (const NGLogicalAnchorReference* result = reference; result;
          result = result->next) {
       if (!result->is_out_of_flow ||
-          result->fragment->GetLayoutObject()->IsBeforeInPreOrder(
-              query_object)) {
+          result->layout_object->IsBeforeInPreOrder(query_object)) {
         return result;
       }
     }
@@ -197,12 +193,11 @@ const NGLogicalAnchorReference* NGLogicalAnchorQuery::AnchorReference(
 }
 
 void NGLogicalAnchorQuery::Set(const NGAnchorKey& key,
-                               const NGPhysicalFragment& fragment,
+                               const LayoutObject& layout_object,
                                const LogicalRect& rect,
                                SetOptions options) {
-  DCHECK(fragment.GetLayoutObject());
   Set(key, MakeGarbageCollected<NGLogicalAnchorReference>(
-               fragment, rect, options == SetOptions::kOutOfFlow));
+               layout_object, rect, options == SetOptions::kOutOfFlow));
 }
 
 void NGLogicalAnchorQuery::Set(const NGAnchorKey& key,
@@ -218,11 +213,11 @@ void NGLogicalAnchorQuery::Set(const NGAnchorKey& key,
       result.stored_value;
   NGLogicalAnchorReference* const existing_head = *existing_head_ptr;
   DCHECK(existing_head);
-  const LayoutObject* new_object = reference->fragment->GetLayoutObject();
+  const LayoutObject* new_object = reference->layout_object;
   DCHECK(new_object);
   for (NGLogicalAnchorReference* existing = existing_head; existing;
        existing = existing->next) {
-    const LayoutObject* existing_object = existing->fragment->GetLayoutObject();
+    const LayoutObject* existing_object = existing->layout_object;
     DCHECK(existing_object);
     if (existing_object == new_object) {
       existing->rect.Unite(reference->rect);
@@ -268,9 +263,9 @@ void NGLogicalAnchorQuery::SetFromPhysical(
     // each containing block.
     LogicalRect rect = converter.ToLogical(entry.value->rect);
     rect.offset += additional_offset;
-    Set(entry.key,
-        MakeGarbageCollected<NGLogicalAnchorReference>(
-            *entry.value->fragment, rect, options == SetOptions::kOutOfFlow));
+    Set(entry.key, MakeGarbageCollected<NGLogicalAnchorReference>(
+                       *entry.value->layout_object, rect,
+                       options == SetOptions::kOutOfFlow));
   }
 }
 
@@ -480,12 +475,12 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchorSize(
 }
 
 void NGLogicalAnchorReference::Trace(Visitor* visitor) const {
-  visitor->Trace(fragment);
+  visitor->Trace(layout_object);
   visitor->Trace(next);
 }
 
 void NGPhysicalAnchorReference::Trace(Visitor* visitor) const {
-  visitor->Trace(fragment);
+  visitor->Trace(layout_object);
   visitor->Trace(next);
 }
 

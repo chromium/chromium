@@ -26,7 +26,6 @@ class AnchorSpecifierValue;
 class LayoutObject;
 class NGLogicalAnchorQuery;
 class NGLogicalAnchorQueryMap;
-class NGPhysicalFragment;
 struct NGLogicalAnchorReference;
 
 using NGAnchorKey = absl::variant<const ScopedCSSName*, const LayoutObject*>;
@@ -156,10 +155,7 @@ struct CORE_EXPORT NGPhysicalAnchorReference
   void Trace(Visitor* visitor) const;
 
   PhysicalRect rect;
-  // TODO(xiaochengh): Should store |LayoutObject| instead. No one uses the
-  // stored fragment, and it's semantically incorrect when the stored rect is
-  // united from fragments.
-  Member<const NGPhysicalFragment> fragment;
+  Member<const LayoutObject> layout_object;
   // A singly linked list in the reverse tree order. There can be at most one
   // in-flow reference, which if exists must be at the end of the list.
   Member<NGPhysicalAnchorReference> next;
@@ -181,8 +177,8 @@ class CORE_EXPORT NGPhysicalAnchorQuery
   const NGPhysicalAnchorReference* AnchorReference(
       const LayoutObject& query_object,
       const NGAnchorKey&) const;
-  const NGPhysicalFragment* Fragment(const LayoutObject& query_object,
-                                     const NGAnchorKey&) const;
+  const LayoutObject* AnchorLayoutObject(const LayoutObject& query_object,
+                                         const NGAnchorKey&) const;
 
   void SetFromLogical(const NGLogicalAnchorQuery& logical_query,
                       const WritingModeConverter& converter);
@@ -190,10 +186,12 @@ class CORE_EXPORT NGPhysicalAnchorQuery
 
 struct CORE_EXPORT NGLogicalAnchorReference
     : public GarbageCollected<NGLogicalAnchorReference> {
-  NGLogicalAnchorReference(const NGPhysicalFragment& fragment,
+  NGLogicalAnchorReference(const LayoutObject& layout_object,
                            const LogicalRect& rect,
                            bool is_out_of_flow)
-      : rect(rect), fragment(&fragment), is_out_of_flow(is_out_of_flow) {}
+      : rect(rect),
+        layout_object(&layout_object),
+        is_out_of_flow(is_out_of_flow) {}
 
   // Insert |this| into the given singly linked list in the reverse tree order.
   void InsertInReverseTreeOrderInto(Member<NGLogicalAnchorReference>* head_ptr);
@@ -201,10 +199,7 @@ struct CORE_EXPORT NGLogicalAnchorReference
   void Trace(Visitor* visitor) const;
 
   LogicalRect rect;
-  // TODO(xiaochengh): Should store |LayoutObject| instead. No one uses the
-  // stored fragment, and it's semantically incorrect when the stored rect is
-  // united from fragments.
-  Member<const NGPhysicalFragment> fragment;
+  Member<const LayoutObject> layout_object;
   // A singly linked list in the reverse tree order. There can be at most one
   // in-flow reference, which if exists must be at the end of the list.
   Member<NGLogicalAnchorReference> next;
@@ -231,7 +226,7 @@ class CORE_EXPORT NGLogicalAnchorQuery
     kOutOfFlow,
   };
   void Set(const NGAnchorKey&,
-           const NGPhysicalFragment& fragment,
+           const LayoutObject& layout_object,
            const LogicalRect& rect,
            SetOptions);
   void Set(const NGAnchorKey&, NGLogicalAnchorReference* reference);
