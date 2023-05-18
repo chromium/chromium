@@ -467,6 +467,8 @@ crbug.com/1414878 [ mac nvidia-0xfe9 ] conformance2/textures/video/* [ RetryOnFa
 
 crbug.com/1338004 [ mac nvidia-0xfe9 passthrough ] deqp/functional/gles3/multisample/fbo_4_samples.html [ RetryOnFailure ]
 
+crbug.com/1446664 [ mac nvidia-0xfe9 angle-opengl passthrough ] deqp/functional/gles3/texturespecification/teximage3d_depth.html [ Failure ]
+
 ## Mac AMD ##
 
 # TODO(kbr): uncomment the following two exepectations after test
@@ -525,6 +527,8 @@ crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/transfor
 crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/transformfeedback/random_interleaved_lines.html [ Failure ]
 crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/transformfeedback/random_interleaved_points.html [ Failure ]
 crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/transformfeedback/random_interleaved_triangles.html [ Failure ]
+
+crbug.com/1446664 [ mac amd-0x67ef angle-metal passthrough ] deqp/functional/gles3/texturespecification/teximage3d_depth.html [ Failure ]
 
 ## Mac Intel ##
 
