@@ -805,7 +805,7 @@ html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
   width: 100%;
 }
 
-.dialog-footer cr-input::part(input)::selection {
+cr-input::part(input)::selection {
   background-color: var(--cros-sys-highlight_text);
 }
 
