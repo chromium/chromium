@@ -153,6 +153,11 @@ ChildWindowWin::~ChildWindowWin() {
   }
 }
 
+void ChildWindowWin::Resize(const gfx::Size& size) {
+  SetWindowPos(window_, nullptr, 0, 0, size.width(), size.height(),
+               SWP_NOACTIVATE | SWP_NOZORDER);
+}
+
 scoped_refptr<base::TaskRunner> ChildWindowWin::GetTaskRunnerForTesting() {
   DCHECK(thread_);
   return thread_->task_runner();

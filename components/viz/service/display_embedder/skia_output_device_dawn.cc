@@ -31,6 +31,7 @@ constexpr wgpu::TextureFormat kSwapChainFormat =
 #else
 constexpr SkColorType kSurfaceColorType = kBGRA_8888_SkColorType;
 constexpr wgpu::TextureFormat kSwapChainFormat =
+    wgpu::TextureFormat::BGRA8Unorm;
 #endif
 
 constexpr wgpu::TextureUsage kUsage =
@@ -101,6 +102,8 @@ bool SkiaOutputDeviceDawn::Reshape(const SkImageInfo& image_info,
   size_ = gfx::SkISizeToSize(image_info.dimensions());
   sk_color_space_ = image_info.refColorSpace();
   sample_count_ = sample_count;
+
+  child_window_.Resize(size_);
 
   wgpu::SwapChainDescriptor swap_chain_desc;
   swap_chain_desc.format = kSwapChainFormat;
