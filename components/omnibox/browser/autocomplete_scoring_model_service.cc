@@ -37,16 +37,14 @@ AutocompleteScoringModelService::~AutocompleteScoringModelService() = default;
 void AutocompleteScoringModelService::ScoreAutocompleteUrlMatch(
     base::CancelableTaskTracker* tracker,
     const ScoringSignals& scoring_signals,
-    size_t match_index,
-    GURL match_destination_url,
+    const std::string& stripped_destination_url,
     ResultCallback result_callback) {
   TRACE_EVENT0("omnibox",
                "AutocompleteScoringModelService::ScoreAutocompleteUrlMatch");
 
   if (!UrlScoringModelAvailable()) {
     std::move(result_callback)
-        .Run(
-            std::make_tuple(absl::nullopt, match_index, match_destination_url));
+        .Run(std::make_tuple(absl::nullopt, stripped_destination_url));
     return;
   }
 
@@ -54,8 +52,7 @@ void AutocompleteScoringModelService::ScoreAutocompleteUrlMatch(
       url_scoring_model_handler_->GetModelInput(scoring_signals);
   if (!input_signals) {
     std::move(result_callback)
-        .Run(
-            std::make_tuple(absl::nullopt, match_index, match_destination_url));
+        .Run(std::make_tuple(absl::nullopt, stripped_destination_url));
     return;
   }
 
@@ -63,7 +60,7 @@ void AutocompleteScoringModelService::ScoreAutocompleteUrlMatch(
       tracker,
       base::BindOnce(&AutocompleteScoringModelService::ProcessModelOutput,
                      weak_ptr_factory_.GetWeakPtr(), std::move(result_callback),
-                     match_index, match_destination_url),
+                     stripped_destination_url),
       *input_signals);
 }
 
@@ -107,8 +104,7 @@ void AutocompleteScoringModelService::BatchScoreAutocompleteUrlMatches(
 
 void AutocompleteScoringModelService::ProcessModelOutput(
     ResultCallback result_callback,
-    size_t match_index,
-    GURL match_destination_url,
+    const std::string& stripped_destination_url,
     const absl::optional<AutocompleteScoringModelExecutor::ModelOutput>&
         model_output) {
   TRACE_EVENT0("omnibox",
@@ -116,14 +112,14 @@ void AutocompleteScoringModelService::ProcessModelOutput(
   if (model_output.has_value()) {
     if (!model_output.value().empty()) {
       std::move(result_callback)
-          .Run(std::make_tuple(model_output.value()[0], match_index,
-                               match_destination_url));
+          .Run(std::make_tuple(model_output.value()[0],
+                               stripped_destination_url));
       return;
     }
     NOTREACHED() << "The model generated an empty output vector.";
   }
   std::move(result_callback)
-      .Run(std::make_tuple(absl::nullopt, match_index, match_destination_url));
+      .Run(std::make_tuple(absl::nullopt, stripped_destination_url));
 }
 
 void AutocompleteScoringModelService::ProcessBatchModelOutput(
