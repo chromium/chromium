@@ -190,6 +190,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_pref_names.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/translate/core/browser/language_state.h"
@@ -299,6 +300,11 @@
 // To avoid conflicts with the macro from the Windows SDK...
 #undef LoadAccelerators
 #endif
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "chrome/browser/accessibility/pdf_ocr_controller.h"
+#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
@@ -764,6 +770,17 @@ class BrowserView::AccessibilityModeObserver : public ui::AXModeObserver {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&BrowserView::MaybeInitializeWebUITabStrip,
                                     browser_view_->GetAsWeakPtr()));
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+      // TODO(crbug.com/1442928): Check if PdfOcrController is correctly
+      // created on windows, macOS, and linux when screen reader is on.
+      if (features::IsPdfOcrEnabled()) {
+        screen_ai::PdfOcrControllerFactory::GetForProfile(
+            browser_view_->GetProfile());
+        // TODO(crbug.com/1393069): Destroy `PdfOcrController` when no longer
+        // needed.
+      }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     }
   }
 

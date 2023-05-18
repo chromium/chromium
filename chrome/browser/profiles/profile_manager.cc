@@ -80,7 +80,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search_engines/default_search_manager.h"
-#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -105,12 +104,6 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
-#endif
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/accessibility/pdf_ocr_controller.h"
-#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
-#include "ui/accessibility/accessibility_features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -1533,14 +1526,6 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
       AccessibilityLabelsServiceFactory::GetForProfile(profile);
   if (accessibility_service)
     accessibility_service->Init();
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // TODO(crbug.com/1393069): Dynamically create PdfOcrController when needed
-  // and destroy it when no longer used.
-  if (features::IsPdfOcrEnabled()) {
-    screen_ai::PdfOcrControllerFactory::GetForProfile(profile);
-  }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::AccountManagerPolicyControllerFactory::GetForBrowserContext(profile);
