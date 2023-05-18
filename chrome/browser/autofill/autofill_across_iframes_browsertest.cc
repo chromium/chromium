@@ -740,7 +740,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAcrossIframesTest_NestedAndLargeForm,
     // and <form> elements.
     auto name = HtmlFieldType::kCreditCardNameFull;
     auto num = HtmlFieldType::kCreditCardNumber;
-    auto exp = HtmlFieldType::kCreditCardExp;
+    auto exp = HtmlFieldType::kCreditCardExpDate4DigitYear;
     auto cvc = HtmlFieldType::kCreditCardVerificationCode;
     auto unspecified = HtmlFieldType::kUnspecified;
     auto m = [](base::StringPiece host, HtmlFieldType type) {

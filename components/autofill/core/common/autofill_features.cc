@@ -220,6 +220,15 @@ BASE_FEATURE(kAutofillEnableDevtoolsIssues,
              "AutofillEnableDevtoolsIssues",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables a couple of improvements to credit card expiration date handling:
+// - The autocomplete attribute values are rationalized with format strings
+//   like MM/YY from placeholders and labels in mind.
+// - more fill follow.
+// TODO(crbug.com/1441057): Remove once launched.
+BASE_FEATURE(kAutofillEnableExpirationDateImprovements,
+             "AutofillEnableExpirationDateImprovements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to save the first number in a form with multiple phone
 // numbers instead of aborting the import.
 // TODO(crbug.com/1167484) Remove once launched.

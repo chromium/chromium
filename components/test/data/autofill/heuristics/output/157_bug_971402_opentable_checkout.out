@@ -1,4 +1,4 @@
 HTML_TYPE_CREDIT_CARD_NAME_FULL | creditCardName | Name on card |  | creditCardName_1
 HTML_TYPE_CREDIT_CARD_NUMBER | creditCardNumber | Credit card number |  | creditCardName_1
-CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR | creditCardExpiry | MM / YY |  | creditCardName_1
+HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR | creditCardExpiry | MM / YY |  | creditCardName_1
 HTML_TYPE_CREDIT_CARD_VERIFICATION_CODE | creditCardCode | CVC |  | creditCardName_1

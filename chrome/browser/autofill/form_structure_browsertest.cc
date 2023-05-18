@@ -221,7 +221,9 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
        features::kAutofillInferCountryCallingCode,
        // TODO(crbug.com/1355264): Remove once launched.
-       features::kAutofillLabelAffixRemoval},
+       features::kAutofillLabelAffixRemoval,
+       // TODO(crbug.com/1441057): Remove once launched.
+       features::kAutofillEnableExpirationDateImprovements},
       // Disabled
       {// TODO(crbug.com/1311937): Remove once launched.
        // This feature is part of the AutofillRefinedPhoneNumberTypes rollout.

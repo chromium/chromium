@@ -892,6 +892,9 @@ struct RationalizeAutocompleteTestParam {
 class RationalizeAutocompleteTest
     : public testing::Test,
       public testing::WithParamInterface<RationalizeAutocompleteTestParam> {
+ protected:
+  base::test::ScopedFeatureList scoped_features_{
+      features::kAutofillEnableExpirationDateImprovements};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 };
 INSTANTIATE_TEST_SUITE_P(
@@ -920,6 +923,15 @@ INSTANTIATE_TEST_SUITE_P(
                                 .field_type = HtmlFieldType::kCreditCardExp},
                         .max_length = 7}},
             .final_types = {CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}},
+        // <input autocomplete="cc-exp" max-length=7> becomes a MM/YY field
+        // if there is a MM / YY label.
+        RationalizeAutocompleteTestParam{
+            .fields = {{.label = "MM / YY",
+                        .parsed_autocomplete =
+                            AutocompleteParsingResult{
+                                .field_type = HtmlFieldType::kCreditCardExp},
+                        .max_length = 7}},
+            .final_types = {CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}},
         // <input autocomplete="cc-exp-year" max-length=4> becomes a YYYY field.
         RationalizeAutocompleteTestParam{
             .fields =
