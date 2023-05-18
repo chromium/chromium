@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -30,10 +31,12 @@ import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayerJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -63,6 +66,7 @@ public class StripLayoutHelperManagerTest {
 
     private StripLayoutHelperManager mStripLayoutHelperManager;
     private Context mContext;
+    private ObservableSupplierImpl<TabModelStartupInfo> mTabModelStartupInfoSupplier;
     private static final float SCREEN_WIDTH = 800.f;
     private static final float SCREEN_HEIGHT = 1600.f;
     private static final float VISIBLE_VIEWPORT_Y = 200.f;
@@ -87,24 +91,24 @@ public class StripLayoutHelperManagerTest {
     }
 
     private void initializeTest() {
+        mTabModelStartupInfoSupplier = new ObservableSupplierImpl<>();
         mStripLayoutHelperManager = new StripLayoutHelperManager(mContext, mManagerHost,
-                mUpdateHost, mRenderHost, mLayerTitleCacheSupplier, mLifecycleDispatcher);
+                mUpdateHost, mRenderHost, mLayerTitleCacheSupplier, mTabModelStartupInfoSupplier,
+                mLifecycleDispatcher);
     }
 
     private void initializeFolioTest() {
         // Since we check TSR arm and determine model selector button width inside constructor, so
         // need to set TSR arm before initialize test.
         TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
-        mStripLayoutHelperManager = new StripLayoutHelperManager(mContext, mManagerHost,
-                mUpdateHost, mRenderHost, mLayerTitleCacheSupplier, mLifecycleDispatcher);
+        initializeTest();
     }
 
     private void initializeDetachedTest() {
         // Since we check TSR arm and determine model selector button width inside constructor, so
         // need to set TSR arm before initialize test.
         TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
-        mStripLayoutHelperManager = new StripLayoutHelperManager(mContext, mManagerHost,
-                mUpdateHost, mRenderHost, mLayerTitleCacheSupplier, mLifecycleDispatcher);
+        initializeTest();
     }
 
     @Test
@@ -286,5 +290,32 @@ public class StripLayoutHelperManagerTest {
         assertEquals("Fade drawable resource is not as expected",
                 R.drawable.tab_strip_fade_short_tsr,
                 mStripLayoutHelperManager.getRightFadeDrawable());
+    }
+
+    @Test
+    @Feature("TabStripPerformance")
+    public void testSetTabModelStartupInfo() {
+        // Setup
+        int expectedStandardCount = 5;
+        int expectedIncognitoCount = 0;
+        int expectedStandardActiveTabIndex = 2;
+        int expectedIncognitoActiveTabIndex = Tab.INVALID_TAB_ID;
+        TabModelStartupInfo startupInfo =
+                new TabModelStartupInfo(expectedStandardCount, expectedIncognitoCount,
+                        expectedStandardActiveTabIndex, expectedIncognitoActiveTabIndex);
+        mTabModelStartupInfoSupplier.set(startupInfo);
+
+        // Verify
+        StripLayoutHelper standardHelper = mStripLayoutHelperManager.getStripLayoutHelper(false);
+        assertEquals("Unexpected standard tab count.", expectedStandardCount,
+                standardHelper.getTabCountOnStartupForTesting());
+        assertEquals("Unexpected standard active tab index", expectedStandardActiveTabIndex,
+                standardHelper.getActiveTabIndexOnStartupForTesting());
+
+        StripLayoutHelper incognitoHelper = mStripLayoutHelperManager.getStripLayoutHelper(true);
+        assertEquals("Unexpected incognito tab count", expectedIncognitoCount,
+                incognitoHelper.getTabCountOnStartupForTesting());
+        assertEquals("Unexpected incognito active tab index", expectedIncognitoActiveTabIndex,
+                incognitoHelper.getActiveTabIndexOnStartupForTesting());
     }
 }

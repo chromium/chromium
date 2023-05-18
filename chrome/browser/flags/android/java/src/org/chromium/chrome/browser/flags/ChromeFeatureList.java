@@ -434,6 +434,7 @@ public abstract class ChromeFeatureList {
     public static final String TAB_GROUPS_CONTINUATION_ANDROID = "TabGroupsContinuationAndroid";
     public static final String TAB_GROUPS_FOR_TABLETS = "TabGroupsForTablets";
     public static final String TAB_STRIP_REDESIGN = "TabStripRedesign";
+    public static final String TAB_STRIP_STARTUP_REFACTORING = "TabStripStartupRefactoring";
     public static final String TABLET_TOOLBAR_REORDERING = "TabletToolbarReordering";
     public static final String TAB_TO_GTS_ANIMATION = "TabToGTSAnimation";
     public static final String TANGIBLE_SYNC = "TangibleSync";
@@ -574,6 +575,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabGroupsForTablets =
             new CachedFlag(TAB_GROUPS_FOR_TABLETS, true);
     public static final CachedFlag sTabStripRedesign = new CachedFlag(TAB_STRIP_REDESIGN, false);
+    public static final CachedFlag sTabStripStartupRefactoring =
+            new CachedFlag(TAB_STRIP_STARTUP_REFACTORING, false);
     public static final CachedFlag sTabletToolbarReordering =
             new CachedFlag(TABLET_TOOLBAR_REORDERING, false);
     public static final CachedFlag sTabToGTSAnimation = new CachedFlag(TAB_TO_GTS_ANIMATION, true);
@@ -648,6 +651,7 @@ public abstract class ChromeFeatureList {
         sTabGroupsContinuationAndroid,
         sTabGroupsForTablets,
         sTabStripRedesign,
+        sTabStripStartupRefactoring,
         sTabletToolbarReordering,
         sTabToGTSAnimation,
         sToolbarUseHardwareBitmapDraw,

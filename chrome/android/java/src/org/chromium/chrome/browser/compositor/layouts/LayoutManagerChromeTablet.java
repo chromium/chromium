@@ -11,6 +11,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -74,6 +75,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             Supplier<StartSurface> startSurfaceSupplier, Supplier<TabSwitcher> tabSwitcherSupplier,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
+            ObservableSupplier<TabModelStartupInfo> tabModelStartupInfoSupplier,
             ViewGroup tabSwitcherViewHolder, ScrimCoordinator scrimCoordinator,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             Callable<ViewGroup> delayedStartSurfaceCallable) {
@@ -83,7 +85,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
         mStartSurfaceSupplier = startSurfaceSupplier;
         mTabSwitcherSupplier = tabSwitcherSupplier;
         mTabStripLayoutHelperManager = new StripLayoutHelperManager(host.getContext(), host, this,
-                mHost.getLayoutRenderHost(), () -> mLayerTitleCache, lifecycleDispatcher);
+                mHost.getLayoutRenderHost(),
+                () -> mLayerTitleCache, tabModelStartupInfoSupplier, lifecycleDispatcher);
         mScrimCoordinator = scrimCoordinator;
         mCreateStartSurfaceCallable = delayedStartSurfaceCallable;
         addSceneOverlay(mTabStripLayoutHelperManager);

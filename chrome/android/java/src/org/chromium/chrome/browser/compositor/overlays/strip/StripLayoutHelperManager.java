@@ -14,6 +14,7 @@ import android.os.SystemClock;
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
@@ -65,8 +66,25 @@ import java.util.List;
  * all input and model events to the proper destination.
  */
 public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNativeObserver {
-    // Caching Variables
-    private final RectF mStripFilterArea = new RectF();
+    /**
+     * POD type that contains the necessary tab model info on startup. Used in the startup flicker
+     * fix experiment where we create a placeholder tab strip on startup to mitigate jank as tabs
+     * are rapidly restored (perceived as a flicker/tab strip scroll).
+     */
+    public static class TabModelStartupInfo {
+        public final int standardCount;
+        public final int incognitoCount;
+        public final int standardActiveIndex;
+        public final int incognitoActiveIndex;
+
+        public TabModelStartupInfo(int standardCount, int incognitoCount, int standardActiveIndex,
+                int incognitoActiveIndex) {
+            this.standardCount = standardCount;
+            this.incognitoCount = incognitoCount;
+            this.standardActiveIndex = standardActiveIndex;
+            this.incognitoActiveIndex = incognitoActiveIndex;
+        }
+    }
 
     // Model selector buttons constants.
     private static final float MODEL_SELECTOR_BUTTON_Y_OFFSET_DP = 10.f;
@@ -80,6 +98,9 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP_DETACHED = 38.f;
     private static final float MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP = 12.f;
     private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE = 48.f;
+
+    // Caching Variables
+    private final RectF mStripFilterArea = new RectF();
 
     // External influences
     private TabModelSelector mTabModelSelector;
@@ -219,12 +240,14 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
      * @param updateHost The parent {@link LayoutUpdateHost}.
      * @param renderHost The {@link LayoutRenderHost}.
      * @param layerTitleCacheSupplier A supplier of the cache that holds the title textures.
+     * @param tabModelStartupInfoSupplier A supplier for the {@link TabModelStartupInfo}.
      * @param lifecycleDispatcher The {@link ActivityLifecycleDispatcher} for registering this class
      *         to lifecycle events.
      */
     public StripLayoutHelperManager(Context context, LayoutManagerHost managerHost,
             LayoutUpdateHost updateHost, LayoutRenderHost renderHost,
             Supplier<LayerTitleCache> layerTitleCacheSupplier,
+            ObservableSupplier<TabModelStartupInfo> tabModelStartupInfoSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         mUpdateHost = updateHost;
         mLayerTitleCacheSupplier = layerTitleCacheSupplier;
@@ -315,7 +338,22 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         mIncognitoHelper = new StripLayoutHelper(
                 context, managerHost, updateHost, renderHost, true, mModelSelectorButton);
 
+        if (tabModelStartupInfoSupplier != null) {
+            if (tabModelStartupInfoSupplier.hasValue()) {
+                setTabModelStartupInfo(tabModelStartupInfoSupplier.get());
+            } else {
+                tabModelStartupInfoSupplier.addObserver(this::setTabModelStartupInfo);
+            }
+        }
+
         onContextChanged(context);
+    }
+
+    private void setTabModelStartupInfo(TabModelStartupInfo startupInfo) {
+        mNormalHelper.setTabModelStartupInfo(startupInfo.standardCount,
+                startupInfo.standardActiveIndex - startupInfo.incognitoCount);
+        mIncognitoHelper.setTabModelStartupInfo(
+                startupInfo.incognitoCount, startupInfo.incognitoActiveIndex);
     }
 
     private void createFolioModelSelectorButton(
