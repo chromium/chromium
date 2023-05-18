@@ -9,6 +9,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/privacy/screen_security_controller.h"
 #include "ash/system/status_area_widget.h"
@@ -35,11 +36,16 @@ message_center::Notification* FindNotification(const std::string& id) {
 void ExpectPrivacyIndicatorsVisible(bool visible) {
   for (ash::RootWindowController* root_window_controller :
        ash::Shell::Get()->GetAllRootWindowControllers()) {
-    EXPECT_EQ(root_window_controller->GetStatusAreaWidget()
-                  ->unified_system_tray()
+    auto* privacy_indicators_view =
+        features::IsQsRevampEnabled()
+            ? root_window_controller->GetStatusAreaWidget()
+                  ->notification_center_tray()
                   ->privacy_indicators_view()
-                  ->GetVisible(),
-              visible);
+            : root_window_controller->GetStatusAreaWidget()
+                  ->unified_system_tray()
+                  ->privacy_indicators_view();
+
+    EXPECT_EQ(privacy_indicators_view->GetVisible(), visible);
   }
 }
 
@@ -180,7 +186,9 @@ TEST_P(ScreenSecurityControllerTest,
   EXPECT_FALSE(FindNotification(kScreenAccessNotificationId));
 }
 
-class PrivacyIndicatorsScreenSecurityTest : public AshTestBase {
+class PrivacyIndicatorsScreenSecurityTest
+    : public AshTestBase,
+      public testing::WithParamInterface<bool> {
  public:
   PrivacyIndicatorsScreenSecurityTest() = default;
   PrivacyIndicatorsScreenSecurityTest(
@@ -191,18 +199,29 @@ class PrivacyIndicatorsScreenSecurityTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kPrivacyIndicators);
+    if (IsQsRevampEnabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kPrivacyIndicators, features::kQsRevamp}, {});
+    } else {
+      scoped_feature_list_.InitAndEnableFeature(features::kPrivacyIndicators);
+    }
 
     AshTestBase::SetUp();
   }
+
+  bool IsQsRevampEnabled() { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrivacyIndicatorsScreenSecurityTest,
+                         testing::Bool());
+
 // Tests that the screen share notification is created with proper metadata when
 // the `SystemTrayNotifier` notifies observers of screen share start.
-TEST_F(PrivacyIndicatorsScreenSecurityTest, ScreenShareNotification) {
+TEST_P(PrivacyIndicatorsScreenSecurityTest, ScreenShareNotification) {
   Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStart(
       base::DoNothing());
 
@@ -217,9 +236,24 @@ TEST_F(PrivacyIndicatorsScreenSecurityTest, ScreenShareNotification) {
             notification->accent_color_id());
 }
 
+TEST_P(PrivacyIndicatorsScreenSecurityTest, ScreenShareTrayItemIndicator) {
+  // Make sure the indicator shows up on multiple displays.
+  UpdateDisplay("400x300,400x300,400x300,400x300");
+
+  ExpectPrivacyIndicatorsVisible(/*visible=*/false);
+
+  Shell::Get()->system_tray_notifier()->NotifyScreenAccessStart(
+      base::DoNothing(), base::DoNothing(), std::u16string());
+  ExpectPrivacyIndicatorsVisible(/*visible=*/true);
+
+  Shell::Get()->system_tray_notifier()->NotifyScreenAccessStop();
+  ExpectPrivacyIndicatorsVisible(/*visible=*/false);
+}
+
 // Tests that the privacy indicator shows up on multiple displays, if they
 // displays exist before screen share starts.
-TEST_F(PrivacyIndicatorsScreenSecurityTest, TrayItemIndicator) {
+TEST_P(PrivacyIndicatorsScreenSecurityTest,
+       RemotingScreenShareTrayItemIndicator) {
   // Make sure the indicator shows up on multiple displays.
   UpdateDisplay("400x300,400x300,400x300,400x300");
 

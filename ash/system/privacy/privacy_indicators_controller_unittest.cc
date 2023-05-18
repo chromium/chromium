@@ -78,10 +78,14 @@ void ExpectPrivacyIndicatorsTrayItemVisible(bool visible,
                                             bool microphone_visible) {
   for (auto* root_window_controller :
        ash::Shell::Get()->GetAllRootWindowControllers()) {
-    auto* privacy_indicators_view =
-        root_window_controller->GetStatusAreaWidget()
-            ->unified_system_tray()
-            ->privacy_indicators_view();
+    StatusAreaWidget* status_area_widget =
+        root_window_controller->GetStatusAreaWidget();
+    PrivacyIndicatorsTrayItemView* privacy_indicators_view =
+        features::IsQsRevampEnabled()
+            ? status_area_widget->notification_center_tray()
+                  ->privacy_indicators_view()
+            : status_area_widget->unified_system_tray()
+                  ->privacy_indicators_view();
 
     ASSERT_TRUE(privacy_indicators_view);
     EXPECT_EQ(visible, privacy_indicators_view->GetVisible());
@@ -110,12 +114,27 @@ class PrivacyIndicatorsControllerTest : public AshTestBase {
   // Get the notification view from message center associated with `id`.
   message_center::NotificationViewBase* GetNotificationViewFromMessageCenter(
       const std::string& id) {
-    GetPrimaryUnifiedSystemTray()->ShowBubble();
-    auto* view = GetPrimaryUnifiedSystemTray()
-                     ->message_center_bubble()
-                     ->notification_center_view()
-                     ->notification_list_view()
-                     ->GetMessageViewForNotificationId(id);
+    // Privacy notifications have been moved to the notification center tray if
+    // QsRevamp is enabled.
+    message_center::MessageView* view;
+    if (features::IsQsRevampEnabled()) {
+      NotificationCenterTray* notification_center_tray =
+          Shell::GetPrimaryRootWindowController()
+              ->GetStatusAreaWidget()
+              ->notification_center_tray();
+
+      notification_center_tray->ShowBubble();
+      view = notification_center_tray->GetNotificationListView()
+                 ->GetMessageViewForNotificationId(id);
+    } else {
+      GetPrimaryUnifiedSystemTray()->ShowBubble();
+      view = GetPrimaryUnifiedSystemTray()
+                 ->message_center_bubble()
+                 ->notification_center_view()
+                 ->notification_list_view()
+                 ->GetMessageViewForNotificationId(id);
+    }
+
     auto* notification_view =
         static_cast<message_center::NotificationViewBase*>(view);
     EXPECT_TRUE(notification_view);
@@ -143,10 +162,15 @@ class PrivacyIndicatorsControllerTest : public AshTestBase {
 
   PrivacyIndicatorsTrayItemView* GetPrimaryDisplayPrivacyIndicatorsView()
       const {
-    return Shell::GetPrimaryRootWindowController()
-        ->GetStatusAreaWidget()
-        ->unified_system_tray()
-        ->privacy_indicators_view();
+    return features::IsQsRevampEnabled()
+               ? Shell::GetPrimaryRootWindowController()
+                     ->GetStatusAreaWidget()
+                     ->notification_center_tray()
+                     ->privacy_indicators_view()
+               : Shell::GetPrimaryRootWindowController()
+                     ->GetStatusAreaWidget()
+                     ->unified_system_tray()
+                     ->privacy_indicators_view();
   }
 
  private:

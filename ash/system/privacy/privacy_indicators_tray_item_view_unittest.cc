@@ -11,6 +11,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -89,7 +90,9 @@ std::u16string GetExpectedTooltipText(std::u16string cam_mic_status,
 
 namespace ash {
 
-class PrivacyIndicatorsTrayItemViewTest : public AshTestBase {
+class PrivacyIndicatorsTrayItemViewTest
+    : public AshTestBase,
+      public testing::WithParamInterface<bool> {
  public:
   PrivacyIndicatorsTrayItemViewTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
@@ -101,7 +104,12 @@ class PrivacyIndicatorsTrayItemViewTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kPrivacyIndicators);
+    if (IsQsRevampEnabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kPrivacyIndicators, features::kQsRevamp}, {});
+    } else {
+      scoped_feature_list_.InitAndEnableFeature(features::kPrivacyIndicators);
+    }
 
     AshTestBase::SetUp();
   }
@@ -133,12 +141,19 @@ class PrivacyIndicatorsTrayItemViewTest : public AshTestBase {
         privacy_indicators_view()->shorter_side_shrink_animation_.get());
   }
 
+  bool IsQsRevampEnabled() { return GetParam(); }
+
  protected:
   PrivacyIndicatorsTrayItemView* privacy_indicators_view() const {
-    return Shell::GetPrimaryRootWindowController()
-        ->GetStatusAreaWidget()
-        ->unified_system_tray()
-        ->privacy_indicators_view();
+    return features::IsQsRevampEnabled()
+               ? Shell::GetPrimaryRootWindowController()
+                     ->GetStatusAreaWidget()
+                     ->notification_center_tray()
+                     ->privacy_indicators_view()
+               : Shell::GetPrimaryRootWindowController()
+                     ->GetStatusAreaWidget()
+                     ->unified_system_tray()
+                     ->privacy_indicators_view();
   }
 
   views::ImageView* camera_icon() {
@@ -171,7 +186,11 @@ class PrivacyIndicatorsTrayItemViewTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(PrivacyIndicatorsTrayItemViewTest, IconsVisibility) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrivacyIndicatorsTrayItemViewTest,
+                         testing::Bool());
+
+TEST_P(PrivacyIndicatorsTrayItemViewTest, IconsVisibility) {
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 
   UpdateCameraAndMicrophoneUsage(
@@ -201,7 +220,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, IconsVisibility) {
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 }
 
-TEST_F(PrivacyIndicatorsTrayItemViewTest, IconsVisibilityAfterAnimation) {
+TEST_P(PrivacyIndicatorsTrayItemViewTest, IconsVisibilityAfterAnimation) {
   UpdateCameraAndMicrophoneUsage(
       /*is_camera_used=*/true,
       /*is_microphone_used=*/true);
@@ -272,7 +291,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, IconsVisibilityAfterAnimation) {
   EXPECT_FALSE(microphone_icon()->GetVisible());
 }
 
-TEST_F(PrivacyIndicatorsTrayItemViewTest, ScreenShareIconsVisibility) {
+TEST_P(PrivacyIndicatorsTrayItemViewTest, ScreenShareIconsVisibility) {
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 
   privacy_indicators_view()->UpdateScreenShareStatus(
@@ -305,7 +324,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, ScreenShareIconsVisibility) {
   EXPECT_FALSE(screen_share_icon()->GetVisible());
 }
 
-TEST_F(PrivacyIndicatorsTrayItemViewTest, TooltipText) {
+TEST_P(PrivacyIndicatorsTrayItemViewTest, TooltipText) {
   EXPECT_EQ(GetExpectedTooltipText(/*cam_mic_status=*/std::u16string(),
                                    /*screen_share_status=*/std::u16string()),
             GetTooltipText());
@@ -351,28 +370,26 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, TooltipText) {
             GetTooltipText());
 }
 
-TEST_F(PrivacyIndicatorsTrayItemViewTest, ShelfAlignmentChanged) {
-  auto* privacy_indicators_view =
-      GetPrimaryUnifiedSystemTray()->privacy_indicators_view();
-
+TEST_P(PrivacyIndicatorsTrayItemViewTest, ShelfAlignmentChanged) {
+  auto* view = privacy_indicators_view();
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
   EXPECT_EQ(views::BoxLayout::Orientation::kVertical,
-            GetLayoutManager(privacy_indicators_view)->GetOrientation());
+            GetLayoutManager(view)->GetOrientation());
 
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
   EXPECT_EQ(views::BoxLayout::Orientation::kHorizontal,
-            GetLayoutManager(privacy_indicators_view)->GetOrientation());
+            GetLayoutManager(view)->GetOrientation());
 
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kRight);
   EXPECT_EQ(views::BoxLayout::Orientation::kVertical,
-            GetLayoutManager(privacy_indicators_view)->GetOrientation());
+            GetLayoutManager(view)->GetOrientation());
 
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottomLocked);
   EXPECT_EQ(views::BoxLayout::Orientation::kHorizontal,
-            GetLayoutManager(privacy_indicators_view)->GetOrientation());
+            GetLayoutManager(view)->GetOrientation());
 }
 
-TEST_F(PrivacyIndicatorsTrayItemViewTest, VisibilityAnimation) {
+TEST_P(PrivacyIndicatorsTrayItemViewTest, VisibilityAnimation) {
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
 
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
@@ -445,7 +462,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, VisibilityAnimation) {
 
 // Same test as above, but with the side shelf (the longer and shorter side will
 // be flipped).
-TEST_F(PrivacyIndicatorsTrayItemViewTest, SideShelfVisibilityAnimation) {
+TEST_P(PrivacyIndicatorsTrayItemViewTest, SideShelfVisibilityAnimation) {
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
 
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
@@ -516,7 +533,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, SideShelfVisibilityAnimation) {
   EXPECT_FALSE(screen_share_icon()->GetVisible());
 }
 
-TEST_F(PrivacyIndicatorsTrayItemViewTest, StateChangeDuringAnimation) {
+TEST_P(PrivacyIndicatorsTrayItemViewTest, StateChangeDuringAnimation) {
   SetViewVisibleWithAnimation();
   double progress = 0.5;
 
@@ -554,7 +571,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, StateChangeDuringAnimation) {
   shorter_side_shrink_animation()->End();
 }
 
-TEST_F(PrivacyIndicatorsTrayItemViewTest, MultipleAppsAccess) {
+TEST_P(PrivacyIndicatorsTrayItemViewTest, MultipleAppsAccess) {
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 
   UpdateCameraAndMicrophoneUsage(
@@ -598,7 +615,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, MultipleAppsAccess) {
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 }
 
-TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowTypeMetrics) {
+TEST_P(PrivacyIndicatorsTrayItemViewTest, RecordShowTypeMetrics) {
   auto check_histogram_record = [](bool is_camera_used, bool is_microphone_used,
                                    bool is_screen_sharing,
                                    PrivacyIndicatorsTrayItemView* view,
@@ -643,7 +660,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowTypeMetrics) {
       PrivacyIndicatorsTrayItemView::Type::kAllUsed);
 }
 
-TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowPerSessionMetrics) {
+TEST_P(PrivacyIndicatorsTrayItemViewTest, RecordShowPerSessionMetrics) {
   // Set up 2 displays. Note that only one instance should be recorded for the
   // primary display when session changes.
   UpdateDisplay("100x200,300x400");
@@ -696,7 +713,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowPerSessionMetrics) {
 
 // When multiple apps access camera and microphone, their histograms should
 // update accordingly.
-TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordAppAccessSimultaneously) {
+TEST_P(PrivacyIndicatorsTrayItemViewTest, RecordAppAccessSimultaneously) {
   base::HistogramTester histograms;
 
   UpdateCameraAndMicrophoneUsage(
@@ -718,7 +735,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordAppAccessSimultaneously) {
   histograms.ExpectBucketCount(kCountAppsAccessMicrophoneHistogramName, 2, 1);
 }
 
-TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordRepeatedShows) {
+TEST_P(PrivacyIndicatorsTrayItemViewTest, RecordRepeatedShows) {
   // Set up 2 displays. Note that only one instance should be recorded for the
   // primary display when session changes.
   UpdateDisplay("100x200,300x400");
