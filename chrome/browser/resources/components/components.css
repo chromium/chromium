@@ -13,7 +13,7 @@ a {
 }
 
 #header {
-  background: url(../../../../ui/webui/resources/images/extension.svg)
+  background: url(chrome://resources/images/extension.svg)
       left center / 48px no-repeat;
   box-sizing: border-box;
   margin-bottom: 1.05em;
