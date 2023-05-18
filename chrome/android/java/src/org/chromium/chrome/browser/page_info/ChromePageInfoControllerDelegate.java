@@ -202,7 +202,8 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
 
     @Override
     public void showCookieSettings() {
-        SiteSettingsHelper.showCategorySettings(mContext, SiteSettingsCategory.Type.COOKIES);
+        SiteSettingsHelper.showCategorySettings(
+                mContext, mProfile, SiteSettingsCategory.Type.COOKIES);
     }
 
     @Override

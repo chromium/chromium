@@ -189,16 +189,14 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     @Override
     public void launchSettingsHelpAndFeedbackActivity(Activity currentActivity) {
-        HelpAndFeedbackLauncherImpl.getForProfile(Profile.getLastUsedRegularProfile())
-                .show(currentActivity, currentActivity.getString(R.string.help_context_settings),
-                        null);
+        HelpAndFeedbackLauncherImpl.getForProfile(mProfile).show(
+                currentActivity, currentActivity.getString(R.string.help_context_settings), null);
     }
 
     @Override
     public void launchProtectedContentHelpAndFeedbackActivity(Activity currentActivity) {
-        HelpAndFeedbackLauncherImpl.getForProfile(Profile.getLastUsedRegularProfile())
-                .show(currentActivity,
-                        currentActivity.getString(R.string.help_context_protected_content), null);
+        HelpAndFeedbackLauncherImpl.getForProfile(mProfile).show(currentActivity,
+                currentActivity.getString(R.string.help_context_protected_content), null);
     }
 
     @Override
@@ -229,7 +227,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     private boolean isAnyPrivacySandboxApiEnabledV4() {
-        PrefService prefs = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        PrefService prefs = UserPrefs.get(mProfile);
         return prefs.getBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED)
                 || prefs.getBoolean(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED)
                 || prefs.getBoolean(Pref.PRIVACY_SANDBOX_M1_FLEDGE_ENABLED);

@@ -650,7 +650,7 @@ public class RequestDesktopUtils {
                                 resources.getString(R.string.rds_global_default_on_message_button))
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION,
                                 () -> {
-                                    SiteSettingsHelper.showCategorySettings(context,
+                                    SiteSettingsHelper.showCategorySettings(context, profile,
                                             SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE);
                                     tracker.notifyEvent(
                                             EventConstants.DESKTOP_SITE_DEFAULT_ON_PRIMARY_ACTION);
