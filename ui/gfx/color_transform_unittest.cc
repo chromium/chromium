@@ -939,7 +939,7 @@ TEST(ColorSpaceTest, PQTonemapSdrRelative) {
     runtime_options.sdr_max_luminance_nits = kSdrWhite;
     runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
     runtime_options.src_hdr_metadata =
-        HDRMetadata(ColorVolumeMetadata(), 1000.f, 100.f);
+        HDRMetadata(HdrMetadataCta861_3(1000.f, 100.f));
 
     ColorTransform::TriStim val(kPQ1000Nits, kPQ1000Nits, kPQ1000Nits);
     xform->Transform(&val, 1, runtime_options);
@@ -969,7 +969,7 @@ TEST(ColorSpaceTest, PQTonemapSdrRelative) {
     runtime_options.sdr_max_luminance_nits = kSdrWhite;
     runtime_options.dst_max_luminance_relative = kDstMaxLumRel;
     runtime_options.src_hdr_metadata =
-        HDRMetadata(ColorVolumeMetadata(), 1000.f, 100.f);
+        HDRMetadata(HdrMetadataCta861_3(1000.f, 100.f));
 
     ColorTransform::TriStim val(kPQ1000Nits, kPQ1000Nits, kPQ1000Nits);
     xform->Transform(&val, 1, runtime_options);

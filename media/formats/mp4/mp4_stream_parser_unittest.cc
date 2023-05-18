@@ -799,11 +799,11 @@ TEST_F(MP4StreamParserTest, Vp9) {
   ASSERT_TRUE(video_decoder_config_.hdr_metadata().has_value());
 
   const auto& hdr_metadata = *video_decoder_config_.hdr_metadata();
-  EXPECT_EQ(hdr_metadata.max_content_light_level, 1000u);
-  EXPECT_EQ(hdr_metadata.max_frame_average_light_level, 640u);
+  EXPECT_EQ(hdr_metadata.cta_861_3.max_content_light_level, 1000u);
+  EXPECT_EQ(hdr_metadata.cta_861_3.max_frame_average_light_level, 640u);
 
-  const auto& color_volume_metadata = hdr_metadata.color_volume_metadata;
-  const auto& primaries = color_volume_metadata.primaries;
+  const auto& smpte_st_2086 = hdr_metadata.smpte_st_2086;
+  const auto& primaries = smpte_st_2086.primaries;
 
   constexpr float kColorCoordinateUnit = 1 / 16.0f;
   EXPECT_NEAR(primaries.fRX, 0.68, kColorCoordinateUnit);
@@ -816,10 +816,10 @@ TEST_F(MP4StreamParserTest, Vp9) {
   EXPECT_NEAR(primaries.fWY, 0.351, kColorCoordinateUnit);
 
   constexpr float kLuminanceMaxUnit = 1 / 8.0f;
-  EXPECT_NEAR(color_volume_metadata.luminance_max, 1000.0f, kLuminanceMaxUnit);
+  EXPECT_NEAR(smpte_st_2086.luminance_max, 1000.0f, kLuminanceMaxUnit);
 
   constexpr float kLuminanceMinUnit = 1 / 14.0;
-  EXPECT_NEAR(color_volume_metadata.luminance_min, 0.01f, kLuminanceMinUnit);
+  EXPECT_NEAR(smpte_st_2086.luminance_min, 0.01f, kLuminanceMinUnit);
 }
 
 TEST_F(MP4StreamParserTest, FourCCToString) {

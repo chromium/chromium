@@ -687,9 +687,9 @@ TEST_F(OopPixelTest, DISABLED_DrawHdrImageWithMetadata) {
   // maximum luminance. The result should map the image to solid white (up
   // to rounding error).
   {
-    options.target_color_params.hdr_metadata->color_volume_metadata =
-        gfx::ColorVolumeMetadata(SkNamedPrimariesExt::kSRGB, image_luminance,
-                                 0.f);
+    options.target_color_params.hdr_metadata->smpte_st_2086 =
+        gfx::HdrMetadataSmpteSt2086(SkNamedPrimariesExt::kSRGB, image_luminance,
+                                    0.f);
 
     auto actual = Raster(display_item_list, options);
     auto color = actual.getColor4f(0, 0);
@@ -702,9 +702,9 @@ TEST_F(OopPixelTest, DISABLED_DrawHdrImageWithMetadata) {
   // luminance. The result should map the image to something darker than solid
   // white.
   {
-    options.target_color_params.hdr_metadata->color_volume_metadata =
-        gfx::ColorVolumeMetadata(SkNamedPrimariesExt::kSRGB, kPQMaxLuminance,
-                                 0.f);
+    options.target_color_params.hdr_metadata->smpte_st_2086 =
+        gfx::HdrMetadataSmpteSt2086(SkNamedPrimariesExt::kSRGB, kPQMaxLuminance,
+                                    0.f);
 
     auto actual = Raster(display_item_list, options);
     auto color = actual.getColor4f(0, 0);

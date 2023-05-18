@@ -87,16 +87,16 @@ void ParseCanvasHighDynamicRangeOptions(
   }
   if (options->hasSmpteSt2086Metadata()) {
     hdr_metadata = gfx::HDRMetadata();
-    auto& color_volume_metadata = hdr_metadata->color_volume_metadata;
+    auto& smpte_st_2086 = hdr_metadata->smpte_st_2086;
     const auto* v8_metadata = options->smpteSt2086Metadata();
-    color_volume_metadata.primaries = {
+    smpte_st_2086.primaries = {
         v8_metadata->redPrimaryX(),   v8_metadata->redPrimaryY(),
         v8_metadata->greenPrimaryX(), v8_metadata->greenPrimaryY(),
         v8_metadata->bluePrimaryX(),  v8_metadata->bluePrimaryY(),
         v8_metadata->whitePointX(),   v8_metadata->whitePointY(),
     };
-    color_volume_metadata.luminance_min = v8_metadata->minimumLuminance();
-    color_volume_metadata.luminance_max = v8_metadata->maximumLuminance();
+    smpte_st_2086.luminance_min = v8_metadata->minimumLuminance();
+    smpte_st_2086.luminance_max = v8_metadata->maximumLuminance();
   }
 }
 

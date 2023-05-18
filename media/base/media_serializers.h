@@ -278,10 +278,9 @@ struct MediaSerializer<gfx::HDRMetadata> {
     base::Value::Dict result;
     FIELD_SERIALIZE(
         "luminance range",
-        base::StringPrintf("%.2f => %.2f",
-                           value.color_volume_metadata.luminance_min,
-                           value.color_volume_metadata.luminance_max));
-    const auto& primaries = value.color_volume_metadata.primaries;
+        base::StringPrintf("%.2f => %.2f", value.smpte_st_2086.luminance_min,
+                           value.smpte_st_2086.luminance_max));
+    const auto& primaries = value.smpte_st_2086.primaries;
     FIELD_SERIALIZE(
         "primaries",
         base::StringPrintf(

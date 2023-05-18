@@ -441,21 +441,21 @@ struct StructTraits<media::stable::mojom::ColorSpaceDataView, gfx::ColorSpace> {
 
 template <>
 struct StructTraits<media::stable::mojom::ColorVolumeMetadataDataView,
-                    gfx::ColorVolumeMetadata> {
-  static gfx::PointF primary_r(const gfx::ColorVolumeMetadata& input);
+                    gfx::HdrMetadataSmpteSt2086> {
+  static gfx::PointF primary_r(const gfx::HdrMetadataSmpteSt2086& input);
 
-  static gfx::PointF primary_g(const gfx::ColorVolumeMetadata& input);
+  static gfx::PointF primary_g(const gfx::HdrMetadataSmpteSt2086& input);
 
-  static gfx::PointF primary_b(const gfx::ColorVolumeMetadata& input);
+  static gfx::PointF primary_b(const gfx::HdrMetadataSmpteSt2086& input);
 
-  static gfx::PointF white_point(const gfx::ColorVolumeMetadata& input);
+  static gfx::PointF white_point(const gfx::HdrMetadataSmpteSt2086& input);
 
-  static float luminance_max(const gfx::ColorVolumeMetadata& input);
+  static float luminance_max(const gfx::HdrMetadataSmpteSt2086& input);
 
-  static float luminance_min(const gfx::ColorVolumeMetadata& input);
+  static float luminance_min(const gfx::HdrMetadataSmpteSt2086& input);
 
   static bool Read(media::stable::mojom::ColorVolumeMetadataDataView data,
-                   gfx::ColorVolumeMetadata* output);
+                   gfx::HdrMetadataSmpteSt2086* output);
 };
 
 template <>
@@ -608,7 +608,7 @@ struct StructTraits<media::stable::mojom::HDRMetadataDataView,
 
   static uint32_t max_frame_average_light_level(const gfx::HDRMetadata& input);
 
-  static const gfx::ColorVolumeMetadata& color_volume_metadata(
+  static const gfx::HdrMetadataSmpteSt2086& color_volume_metadata(
       const gfx::HDRMetadata& input);
 
   static bool Read(media::stable::mojom::HDRMetadataDataView data,

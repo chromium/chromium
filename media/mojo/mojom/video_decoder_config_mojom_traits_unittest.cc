@@ -93,13 +93,12 @@ TEST(VideoDecoderConfigStructTraitsTest,
                            kVisibleRect, kNaturalSize, EmptyExtraData(),
                            EncryptionScheme::kUnencrypted);
   gfx::HDRMetadata hdr_metadata;
-  hdr_metadata.max_frame_average_light_level = 123;
-  hdr_metadata.max_content_light_level = 456;
-  hdr_metadata.color_volume_metadata.primaries = {
+  hdr_metadata.cta_861_3 = gfx::HdrMetadataCta861_3(123, 456);
+  hdr_metadata.smpte_st_2086.primaries = {
       0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f,
   };
-  hdr_metadata.color_volume_metadata.luminance_max = 1000;
-  hdr_metadata.color_volume_metadata.luminance_min = 0;
+  hdr_metadata.smpte_st_2086.luminance_max = 1000;
+  hdr_metadata.smpte_st_2086.luminance_min = 0;
   input.set_hdr_metadata(hdr_metadata);
   std::vector<uint8_t> data =
       media::mojom::VideoDecoderConfig::Serialize(&input);

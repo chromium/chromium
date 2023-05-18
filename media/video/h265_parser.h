@@ -23,7 +23,7 @@
 
 namespace gfx {
 struct HDRMetadata;
-struct ColorVolumeMetadata;
+struct HdrMetadataSmpteSt2086;
 }  // namespace gfx
 
 namespace media {
@@ -457,7 +457,7 @@ struct MEDIA_EXPORT H265SEIMasteringDisplayInfo {
   uint32_t min_luminance;
 
   void PopulateColorVolumeMetadata(
-      gfx::ColorVolumeMetadata& color_volume_metadata) const;
+      gfx::HdrMetadataSmpteSt2086& smpte_st_2086) const;
 };
 
 struct MEDIA_EXPORT H265SEIMessage {

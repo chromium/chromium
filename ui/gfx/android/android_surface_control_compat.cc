@@ -809,18 +809,18 @@ void SurfaceControl::Transaction::SetColorSpace(
   if (metadata && !extended_range) {
     AHdrMetadata_cta861_3 cta861_3 = {
         .maxContentLightLevel =
-            static_cast<float>(metadata->max_content_light_level),
-        .maxFrameAverageLightLevel =
-            static_cast<float>(metadata->max_frame_average_light_level)};
+            static_cast<float>(metadata->cta_861_3.max_content_light_level),
+        .maxFrameAverageLightLevel = static_cast<float>(
+            metadata->cta_861_3.max_frame_average_light_level)};
 
-    const auto& primaries = metadata->color_volume_metadata.primaries;
+    const auto& primaries = metadata->smpte_st_2086.primaries;
     AHdrMetadata_smpte2086 smpte2086 = {
         .displayPrimaryRed = {.x = primaries.fRX, .y = primaries.fRY},
         .displayPrimaryGreen = {.x = primaries.fGX, .y = primaries.fGY},
         .displayPrimaryBlue = {.x = primaries.fBX, .y = primaries.fBY},
         .whitePoint = {.x = primaries.fWX, .y = primaries.fWY},
-        .maxLuminance = metadata->color_volume_metadata.luminance_max,
-        .minLuminance = metadata->color_volume_metadata.luminance_min};
+        .maxLuminance = metadata->smpte_st_2086.luminance_max,
+        .minLuminance = metadata->smpte_st_2086.luminance_min};
 
     SurfaceControlMethods::Get().ASurfaceTransaction_setHdrMetadata_cta861_3Fn(
         transaction_, surface.surface(), &cta861_3);
