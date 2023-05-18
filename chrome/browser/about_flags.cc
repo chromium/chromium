@@ -5140,6 +5140,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"feed-discofeed-endpoint", flag_descriptions::kFeedDiscoFeedEndpointName,
      flag_descriptions::kFeedDiscoFeedEndpointDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kDiscoFeedEndpoint)},
+    {"feed-dynamic-colors", flag_descriptions::kFeedDynamicColorsName,
+     flag_descriptions::kFeedDynamicColorsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(feed::kFeedDynamicColors)},
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)

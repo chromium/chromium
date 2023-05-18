@@ -62007,6 +62007,7 @@ from previous Chrome versions.
   <int value="-346600492" label="GainmapHdrImages:enabled"/>
   <int value="-346413328" label="UseNewAcceptLanguageHeader:disabled"/>
   <int value="-345838366" label="enable-hosted-apps-in-windows"/>
+  <int value="-345366193" label="FeedDynamicColors:disabled"/>
   <int value="-345324571" label="enable-quirks-client"/>
   <int value="-345181892" label="new-tab-button-position"/>
   <int value="-345156835" label="OmniboxDisableCGIParamMatching:enabled"/>
@@ -62274,6 +62275,7 @@ from previous Chrome versions.
   <int value="-204355195" label="secondary-ui-md"/>
   <int value="-203968600" label="SyncSupportSecondaryAccount:disabled"/>
   <int value="-203058505" label="QueryTilesSegmentation:disabled"/>
+  <int value="-202761528" label="FeedDynamicColors:enabled"/>
   <int value="-202371473" label="enable-optimization-guide-debug-logs"/>
   <int value="-202007318" label="AndroidAIAFetching:enabled"/>
   <int value="-201633741" label="DisplayAlignAssist:enabled"/>
