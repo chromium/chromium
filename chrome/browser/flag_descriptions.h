@@ -3589,6 +3589,9 @@ extern const char kPrintingPpdChannelDescription[];
 extern const char kPrintManagementJellyName[];
 extern const char kPrintManagementJellyDescription[];
 
+extern const char kPrintManagementSetupAssistanceName[];
+extern const char kPrintManagementSetupAssistanceDescription[];
+
 extern const char kProductivityLauncherName[];
 extern const char kProductivityLauncherDescription[];
 

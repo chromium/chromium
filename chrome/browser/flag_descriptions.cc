@@ -6271,6 +6271,11 @@ const char kPrintManagementJellyDescription[] =
     "Enable jelly colors for the Print Management App. Requires "
     "jelly-colors flag to be enabled.";
 
+const char kPrintManagementSetupAssistanceName[] =
+    "Enable improved printer setup experience for the Print Management App";
+const char kPrintManagementSetupAssistanceDescription[] =
+    "Enable improved printer setup experience for the Print Management App.";
+
 const char kProductivityLauncherName[] =
     "Productivity experiment: App Launcher";
 const char kProductivityLauncherDescription[] =

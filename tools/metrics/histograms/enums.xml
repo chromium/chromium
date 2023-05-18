@@ -58983,6 +58983,7 @@ from previous Chrome versions.
   <int value="-1954369543" label="NewWindowAppMenu:enabled"/>
   <int value="-1954246274"
       label="enable-experimental-accessibility-switch-access"/>
+  <int value="-1954122445" label="PrintManagementSetupAssistance:disabled"/>
   <int value="-1953145846" label="TargetEmbeddingLookalikes:disabled"/>
   <int value="-1953121360" label="EphemeralTab:disabled"/>
   <int value="-1951046208" label="SidePanelPrototype:disabled"/>
@@ -62125,6 +62126,7 @@ from previous Chrome versions.
   <int value="-290672626" label="enable-asm-wasm"/>
   <int value="-290329565" label="CrosVmCupsProxy:disabled"/>
   <int value="-288316828" label="enable-delegated-renderer"/>
+  <int value="-287089194" label="PrintManagementSetupAssistance:enabled"/>
   <int value="-286603268" label="hide-android-files-in-files-app"/>
   <int value="-285499775"
       label="AdaptiveButtonInTopToolbarAddToBookmarks:enabled"/>
