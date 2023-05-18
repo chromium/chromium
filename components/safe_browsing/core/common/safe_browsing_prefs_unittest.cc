@@ -119,6 +119,23 @@ TEST_F(SafeBrowsingPrefsTest, EnhancedProtection) {
   }
 }
 
+TEST_F(SafeBrowsingPrefsTest, InitializesEsbProtegoPingWithTokenLastLogTime) {
+  TestingPrefServiceSimple prefs;
+  safe_browsing::RegisterProfilePrefs(prefs.registry());
+  EXPECT_EQ(
+      prefs.GetTime(prefs::kSafeBrowsingEsbProtegoPingWithTokenLastLogTime),
+      base::Time());
+}
+
+TEST_F(SafeBrowsingPrefsTest,
+       InitializesEsbProtegoPingWithoutTokenLastLogTime) {
+  TestingPrefServiceSimple prefs;
+  safe_browsing::RegisterProfilePrefs(prefs.registry());
+  EXPECT_EQ(
+      prefs.GetTime(prefs::kSafeBrowsingEsbProtegoPingWithoutTokenLastLogTime),
+      base::Time());
+}
+
 TEST_F(SafeBrowsingPrefsTest, IsExtendedReportingPolicyManaged) {
   // This test checks that manipulating SBEROptInAllowed and the management
   // state of SBER behaves as expected. Below, we describe what should happen
