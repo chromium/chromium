@@ -186,10 +186,8 @@ TEST_P(IsolatedWebAppValidatorMetadataTest, Validate) {
   auto isolated_web_app_trust_checker =
       std::make_unique<MockIsolatedWebAppTrustChecker>();
   IsolatedWebAppValidator validator(std::move(isolated_web_app_trust_checker));
-  auto validation_status =
-      validator.ValidateMetadata(*web_bundle_id, primary_url_, entries_);
-
-  EXPECT_EQ(validation_status, status_);
+  EXPECT_EQ(validator.ValidateMetadata(*web_bundle_id, primary_url_, entries_),
+            status_);
 }
 
 INSTANTIATE_TEST_SUITE_P(
