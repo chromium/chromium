@@ -303,8 +303,8 @@ const char kUseDnsHttpsSvcbAlpnDescription[] =
 
 const char kEnableFirstPartySetsName[] = "Enable First-Party Sets";
 const char kEnableFirstPartySetsDescription[] =
-    "When enabled, Chrome will apply First-Party Sets to features such as the "
-    "SameParty cookie attribute.";
+    "When enabled, Chrome will enable First-Party Sets and the Storage Access "
+    "API.";
 
 extern const char kSHA1ServerSignatureName[] =
     "Allow SHA-1 server signatures in TLS.";
