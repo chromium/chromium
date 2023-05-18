@@ -276,14 +276,19 @@ void MainThreadTaskQueue::SetFrameSchedulerForTest(
 
 void MainThreadTaskQueue::SetWebSchedulingPriority(
     WebSchedulingPriority priority) {
-  if (web_scheduling_priority_ == priority)
+  if (web_scheduling_priority_ == priority) {
     return;
+  }
   web_scheduling_priority_ = priority;
-  frame_scheduler_->OnWebSchedulingTaskQueuePriorityChanged(this);
+  if (frame_scheduler_) {
+    frame_scheduler_->OnWebSchedulingTaskQueuePriorityChanged(this);
+  }
 }
 
 void MainThreadTaskQueue::OnWebSchedulingTaskQueueDestroyed() {
-  frame_scheduler_->OnWebSchedulingTaskQueueDestroyed(this);
+  if (frame_scheduler_) {
+    frame_scheduler_->OnWebSchedulingTaskQueueDestroyed(this);
+  }
 }
 
 bool MainThreadTaskQueue::IsThrottled() const {
