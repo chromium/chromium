@@ -34,11 +34,32 @@ std::string UpdateValueAsString(
   }
 }
 
+std::string InstallDefaultValueAsString(
+    ::wireless_android_enterprise_devicemanagement::InstallDefaultValue value) {
+  switch (value) {
+    case ::wireless_android_enterprise_devicemanagement::
+        INSTALL_DEFAULT_DISABLED:
+      return "Disabled";
+    case ::wireless_android_enterprise_devicemanagement::
+        INSTALL_DEFAULT_ENABLED_MACHINE_ONLY:
+      return "Enabled Machine Only";
+    case ::wireless_android_enterprise_devicemanagement::
+        INSTALL_DEFAULT_ENABLED:
+    default:
+      return "Enabled";
+  }
+}
+
 std::string InstallValueAsString(
     ::wireless_android_enterprise_devicemanagement::InstallValue value) {
   switch (value) {
     case ::wireless_android_enterprise_devicemanagement::INSTALL_DISABLED:
       return "Disabled";
+    case ::wireless_android_enterprise_devicemanagement::
+        INSTALL_ENABLED_MACHINE_ONLY:
+      return "Enabled Machine Only";
+    case ::wireless_android_enterprise_devicemanagement::INSTALL_FORCED:
+      return "Forced";
     case ::wireless_android_enterprise_devicemanagement::INSTALL_ENABLED:
     default:
       return "Enabled";
@@ -81,7 +102,8 @@ void PrintPolicies() {
     std::cout << "Global policies:" << std::endl;
     if (omaha_settings->has_install_default()) {
       std::cout << "  InstallDefault: "
-                << InstallValueAsString(omaha_settings->install_default())
+                << InstallDefaultValueAsString(
+                       omaha_settings->install_default())
                 << "(" << omaha_settings->install_default() << ")" << std::endl;
       has_global_policy = true;
     }

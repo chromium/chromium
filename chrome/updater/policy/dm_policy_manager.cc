@@ -22,13 +22,34 @@ namespace updater {
 
 namespace {
 
+int PolicyValueFromProtoInstallDefaultValue(
+    ::wireless_android_enterprise_devicemanagement::InstallDefaultValue
+        install_default_value) {
+  switch (install_default_value) {
+    case ::wireless_android_enterprise_devicemanagement::
+        INSTALL_DEFAULT_DISABLED:
+      return kPolicyDisabled;
+    case ::wireless_android_enterprise_devicemanagement::
+        INSTALL_DEFAULT_ENABLED_MACHINE_ONLY:
+      return kPolicyEnabledMachineOnly;
+    case ::wireless_android_enterprise_devicemanagement::
+        INSTALL_DEFAULT_ENABLED:
+    default:
+      return kPolicyEnabled;
+  }
+}
+
 int PolicyValueFromProtoInstallValue(
     ::wireless_android_enterprise_devicemanagement::InstallValue
         install_value) {
   switch (install_value) {
     case ::wireless_android_enterprise_devicemanagement::INSTALL_DISABLED:
       return kPolicyDisabled;
-
+    case ::wireless_android_enterprise_devicemanagement::
+        INSTALL_ENABLED_MACHINE_ONLY:
+      return kPolicyEnabledMachineOnly;
+    case ::wireless_android_enterprise_devicemanagement::INSTALL_FORCED:
+      return kPolicyForceInstallMachine;
     case ::wireless_android_enterprise_devicemanagement::INSTALL_ENABLED:
     default:
       return kPolicyEnabled;
@@ -169,7 +190,8 @@ absl::optional<int> DMPolicyManager::GetEffectivePolicyForAppInstalls(
 
   // Fallback to global-level settings.
   if (omaha_settings_.has_install_default()) {
-    return PolicyValueFromProtoInstallValue(omaha_settings_.install_default());
+    return PolicyValueFromProtoInstallDefaultValue(
+        omaha_settings_.install_default());
   }
 
   return absl::nullopt;

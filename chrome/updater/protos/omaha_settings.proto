@@ -12,7 +12,6 @@
 //        "option java_enable_dual_generate_mutable_api = true;"
 //        "option cc_api_version = 2;"
 //        "option java_use_javaproto2 = true;"
-//        "option java_java5_enums = true;"
 //   3) Update the copyright section.
 //
 
@@ -43,9 +42,18 @@ enum UpdateValue {
   AUTOMATIC_UPDATES_ONLY = 3;
 }
 
+enum InstallDefaultValue {
+  INSTALL_DEFAULT_DISABLED = 0;
+  INSTALL_DEFAULT_ENABLED = 1;
+  INSTALL_DEFAULT_ENABLED_MACHINE_ONLY = 4;
+  // Apps cannot be force-installed by default.
+}
+
 enum InstallValue {
   INSTALL_DISABLED = 0;
   INSTALL_ENABLED = 1;
+  INSTALL_ENABLED_MACHINE_ONLY = 4;
+  INSTALL_FORCED = 5;
 }
 
 enum RollbackToTargetVersionValue {
@@ -227,7 +235,7 @@ message OmahaSettingsClientProto {
   // Installer. Cannot prevent running the application installer directly or
   // installation of Google software that does not use Google Update/Google
   // Installer for installation.
-  optional InstallValue install_default = 17;
+  optional InstallDefaultValue install_default = 17;
 
   // Update policy override default
   //

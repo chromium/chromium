@@ -216,7 +216,7 @@ TEST_F(DMResponseValidatorTests, OmahaPolicyWithBadValues) {
   omaha_settings.set_proxy_mode("weird_proxy_mode");
   omaha_settings.set_proxy_server("unexpected_proxy");
   omaha_settings.set_proxy_pac_url("foo.c/proxy.pa");
-  omaha_settings.set_install_default(edm::INSTALL_DISABLED);
+  omaha_settings.set_install_default(edm::INSTALL_DEFAULT_DISABLED);
   omaha_settings.set_update_default(edm::MANUAL_UPDATES_ONLY);
 
   edm::ApplicationSettings app;

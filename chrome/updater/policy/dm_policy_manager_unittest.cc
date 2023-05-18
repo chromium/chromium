@@ -136,29 +136,56 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
   ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto
       omaha_settings;
 
+  // Global policies.
   omaha_settings.set_auto_update_check_period_minutes(111);
   omaha_settings.mutable_updates_suppressed()->set_start_hour(9);
   omaha_settings.mutable_updates_suppressed()->set_start_minute(30);
   omaha_settings.mutable_updates_suppressed()->set_duration_min(120);
   omaha_settings.set_download_preference("test_download_preference");
+  omaha_settings.set_proxy_server("test_proxy_server");
   omaha_settings.set_proxy_mode("test_proxy_mode");
   omaha_settings.set_proxy_pac_url("foo.c/proxy.pa");
   omaha_settings.set_install_default(
-      ::wireless_android_enterprise_devicemanagement::INSTALL_ENABLED);
+      ::wireless_android_enterprise_devicemanagement::
+          INSTALL_DEFAULT_ENABLED_MACHINE_ONLY);
   omaha_settings.set_update_default(
       ::wireless_android_enterprise_devicemanagement::MANUAL_UPDATES_ONLY);
 
-  ::wireless_android_enterprise_devicemanagement::ApplicationSettings app;
-  app.set_app_guid(test::kChromeAppId);
-  app.set_install(
+  // Chrome specific policies.
+  ::wireless_android_enterprise_devicemanagement::ApplicationSettings chrome;
+  chrome.set_app_guid(test::kChromeAppId);
+  chrome.set_install(
       ::wireless_android_enterprise_devicemanagement::INSTALL_DISABLED);
-  app.set_update(
+  chrome.set_update(
       ::wireless_android_enterprise_devicemanagement::AUTOMATIC_UPDATES_ONLY);
-  app.set_target_version_prefix("81.");
-  app.set_rollback_to_target_version(
+  chrome.set_target_version_prefix("81.");
+  chrome.set_rollback_to_target_version(
       ::wireless_android_enterprise_devicemanagement::
           ROLLBACK_TO_TARGET_VERSION_ENABLED);
-  omaha_settings.mutable_application_settings()->Add(std::move(app));
+  omaha_settings.mutable_application_settings()->Add(std::move(chrome));
+
+  // App1 policies.
+  constexpr char kApp1[] = "app1.chromium.org";
+  ::wireless_android_enterprise_devicemanagement::ApplicationSettings app1;
+  app1.set_app_guid(kApp1);
+  app1.set_bundle_identifier(kApp1);
+  app1.set_install(::wireless_android_enterprise_devicemanagement::
+                       INSTALL_ENABLED_MACHINE_ONLY);
+  app1.set_update(
+      ::wireless_android_enterprise_devicemanagement::UPDATES_DISABLED);
+  app1.set_target_channel("canary");
+  omaha_settings.mutable_application_settings()->Add(std::move(app1));
+
+  // App2 policies.
+  constexpr char kApp2[] = "app2.chromium.org";
+  ::wireless_android_enterprise_devicemanagement::ApplicationSettings app2;
+  app2.set_app_guid(kApp2);
+  app2.set_install(
+      ::wireless_android_enterprise_devicemanagement::INSTALL_FORCED);
+  app2.set_update(
+      ::wireless_android_enterprise_devicemanagement::UPDATES_ENABLED);
+  app2.set_target_channel("dev");
+  omaha_settings.mutable_application_settings()->Add(std::move(app2));
 
   auto policy_manager(base::MakeRefCounted<DMPolicyManager>(omaha_settings));
 
@@ -167,6 +194,7 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
 #endif  // BUILDFLAG(IS_LINUX)
   EXPECT_EQ(policy_manager->source(), "DeviceManagement");
 
+  // Verify global policies
   EXPECT_EQ(policy_manager->GetLastCheckPeriod(), base::Minutes(111));
 
   absl::optional<UpdatesSuppressedTimes> suppressed_times =
@@ -179,34 +207,57 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
   EXPECT_EQ(policy_manager->GetDownloadPreferenceGroupPolicy(),
             "test_download_preference");
 
+  EXPECT_EQ(policy_manager->GetProxyServer(), "test_proxy_server");
   EXPECT_EQ(policy_manager->GetProxyMode(), "test_proxy_mode");
   EXPECT_EQ(policy_manager->GetProxyPacUrl(), "foo.c/proxy.pa");
-  EXPECT_EQ(policy_manager->GetProxyServer(), absl::nullopt);
 
   EXPECT_EQ(policy_manager->GetPackageCacheSizeLimitMBytes(), absl::nullopt);
   EXPECT_EQ(policy_manager->GetPackageCacheExpirationTimeDays(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetForceInstallApps(), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetAppsWithPolicy(),
+            std::vector<std::string>({test::kChromeAppId, kApp1, kApp2}));
 
-  // Verify app-specific polices.
+  // Verify Chrome policies.
   EXPECT_EQ(
       policy_manager->GetEffectivePolicyForAppInstalls(test::kChromeAppId),
       kPolicyDisabled);
   EXPECT_EQ(policy_manager->GetEffectivePolicyForAppUpdates(test::kChromeAppId),
             kPolicyAutomaticUpdatesOnly);
-  EXPECT_EQ(
-      policy_manager->IsRollbackToTargetVersionAllowed(test::kChromeAppId),
-      true);
+  EXPECT_TRUE(
+      policy_manager->IsRollbackToTargetVersionAllowed(test::kChromeAppId));
   EXPECT_EQ(policy_manager->GetTargetVersionPrefix(test::kChromeAppId), "81.");
+  EXPECT_EQ(policy_manager->GetTargetChannel(test::kChromeAppId),
+            absl::nullopt);
+
+  // Verify app1 policies.
+  EXPECT_EQ(policy_manager->GetEffectivePolicyForAppInstalls(kApp1),
+            kPolicyEnabledMachineOnly);
+  EXPECT_EQ(policy_manager->GetEffectivePolicyForAppUpdates(kApp1),
+            kPolicyDisabled);
+  EXPECT_EQ(policy_manager->IsRollbackToTargetVersionAllowed(kApp1),
+            absl::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetVersionPrefix(kApp1), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetChannel(kApp1), "canary");
+
+  // Verify app2 policies.
+  EXPECT_EQ(policy_manager->GetEffectivePolicyForAppInstalls(kApp2),
+            kPolicyForceInstallMachine);
+  EXPECT_EQ(policy_manager->GetEffectivePolicyForAppUpdates(kApp2),
+            kPolicyEnabled);
+  EXPECT_EQ(policy_manager->IsRollbackToTargetVersionAllowed(kApp2),
+            absl::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetVersionPrefix(kApp2), absl::nullopt);
+  EXPECT_EQ(policy_manager->GetTargetChannel(kApp2), "dev");
 
   // Verify that if no app-specific polices, fallback to global-level policies
   // or return false if no fallback is available.
   const std::string app_guid = "ArbitraryAppGuid";
   EXPECT_EQ(policy_manager->GetEffectivePolicyForAppInstalls(app_guid),
-            kPolicyEnabled);
+            kPolicyEnabledMachineOnly);
   EXPECT_EQ(policy_manager->GetEffectivePolicyForAppUpdates(app_guid),
             kPolicyManualUpdatesOnly);
   EXPECT_EQ(policy_manager->IsRollbackToTargetVersionAllowed(app_guid),
             absl::nullopt);
-
   EXPECT_EQ(policy_manager->GetTargetVersionPrefix(app_guid), absl::nullopt);
 }
 
