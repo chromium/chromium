@@ -353,6 +353,12 @@ void ContentAnalysisDelegate::SetOnAckAllRequestsCallbackForTesting(
   *OnAckAllRequestsStorage() = std::move(callback);
 }
 
+void ContentAnalysisDelegate::SetPageWarningForTesting(
+    ContentAnalysisResponse page_response) {
+  page_warning_ = true;
+  page_response_ = std::move(page_response);
+}
+
 ContentAnalysisDelegate::ContentAnalysisDelegate(
     content::WebContents* web_contents,
     Data data,
@@ -373,6 +379,11 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
   result_.image_result = false;
   result_.paths_results.resize(data_.paths.size(), false);
   result_.page_result = false;
+
+  // This setter is technically redundant with other code in the class, but
+  // is useful to make unit tests behave predictably so the ordering in which
+  // each type of request is made doesn't matter.
+  files_request_complete_ = data_.paths.empty();
 }
 
 void ContentAnalysisDelegate::StringRequestCallback(

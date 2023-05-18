@@ -59,7 +59,7 @@ class EventReportValidator {
       const enterprise_connectors::ContentAnalysisResponse::Result&
           expected_dlp_verdict,
       const std::set<std::string>* expected_mimetypes,
-      int64_t expected_content_size,
+      absl::optional<int64_t> expected_content_size,
       const std::string& expected_result,
       const std::string& expected_profile_username,
       const std::string& expected_profile_identifier,

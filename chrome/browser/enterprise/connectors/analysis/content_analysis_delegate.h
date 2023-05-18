@@ -239,6 +239,8 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   static void SetOnAckAllRequestsCallbackForTesting(
       OnAckAllRequestsCallback callback);
 
+  void SetPageWarningForTesting(ContentAnalysisResponse page_response);
+
  protected:
   ContentAnalysisDelegate(content::WebContents* web_contents,
                           Data data,

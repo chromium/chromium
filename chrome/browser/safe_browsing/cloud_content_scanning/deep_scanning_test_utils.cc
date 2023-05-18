@@ -169,7 +169,7 @@ void EventReportValidator::ExpectSensitiveDataEvent(
     const enterprise_connectors::ContentAnalysisResponse::Result&
         expected_dlp_verdict,
     const std::set<std::string>* expected_mimetypes,
-    int64_t expected_content_size,
+    absl::optional<int64_t> expected_content_size,
     const std::string& expected_result,
     const std::string& expected_profile_username,
     const std::string& expected_profile_identifier,
@@ -559,7 +559,9 @@ void EventReportValidator::ValidateDlpRule(
 void EventReportValidator::ValidateFilenameMappedAttributes(
     const base::Value::Dict* value) {
   if (filenames_and_hashes_.empty()) {
-    ASSERT_FALSE(value->contains(SafeBrowsingPrivateEventRouter::kKeyFileName));
+    ASSERT_FALSE(value->contains(SafeBrowsingPrivateEventRouter::kKeyFileName))
+        << "Expected no file name but found "
+        << *value->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName);
   } else {
     const std::string* filename =
         value->FindString(SafeBrowsingPrivateEventRouter::kKeyFileName);
