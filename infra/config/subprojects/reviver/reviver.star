@@ -82,8 +82,9 @@ polymorphic.launcher(
         polymorphic.target_builder(
             builder = "ci/Android x64 Builder (dbg)",
             dimensions = dimensions.dimensions(
-                os = os.LINUX_DEFAULT,
-                cpu = cpu.X86_64,
+                builderless = "",
+                ssd = "",
+                builder = "Android x64 Builder (dbg)",
             ),
             testers = [
                 "ci/android-12l-x64-dbg-tests",
