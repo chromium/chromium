@@ -38,6 +38,8 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     private PrivacyPreferencesManager mPrivacyPreferencesManager;
     private String mApiKey;
 
+    private static boolean sEnableAppFlowDebugging;
+
     public FeedProcessScopeDependencyProvider(
             String apiKey, PrivacyPreferencesManager privacyPreferencesManager) {
         mContext = createFeedContext(ContextUtils.getApplicationContext());
@@ -216,6 +218,16 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     public void reportVisibilityLoggingEnabled(boolean enabled) {
         RecordHistogram.recordBooleanHistogram(
                 "ContentSuggestions.Feed.VisibilityLoggingEnabled", enabled);
+    }
+
+    @Override
+    public boolean enableAppFlowDebugging() {
+        return sEnableAppFlowDebugging;
+    }
+
+    @VisibleForTesting
+    public void setEnableAppFlowDebugging(boolean enable) {
+        sEnableAppFlowDebugging = enable;
     }
 
     @VisibleForTesting

@@ -219,4 +219,11 @@ public interface ProcessScopeDependencyProvider {
      * @param enabled - whether logging is enabled
      */
     default void reportVisibilityLoggingEnabled(boolean enabled) {}
+
+    /**
+     * Must return true to enable ReliabilityLoggingTestUtil.
+     */
+    default boolean enableAppFlowDebugging() {
+        return false;
+    }
 }
