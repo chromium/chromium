@@ -173,6 +173,10 @@ SetTriggeringOutcomeAndFailureReasonFromStatus(
       case PrefetchStatus::kPrefetchFailedInvalidRedirect:
       case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
       case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
+      // TODO(adithyas): This would report 'eviction' as a failure even though
+      // the initial prefetch succeeded, consider introducing a different
+      // PreloadingTriggerOutcome for eviction.
+      case PrefetchStatus::kPrefetchEvicted:
         preloading_trigger_outcome = PreloadingTriggeringOutcome::kFailure;
         attempt->SetFailureReason(
             ToPreloadingFailureReason(new_prefetch_status));

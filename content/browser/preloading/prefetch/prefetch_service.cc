@@ -112,6 +112,7 @@ bool ShouldConsiderDecoyRequestForStatus(PrefetchStatus status) {
     case PrefetchStatus::kPrefetchFailedInvalidRedirect:
     case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
     case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
+    case PrefetchStatus::kPrefetchEvicted:
       // These statuses should not be returned by the eligibility checks, and
       // thus not be passed in here.
       NOTREACHED();
@@ -856,6 +857,16 @@ void PrefetchService::RemovePrefetch(
   if (prefetch_iter != all_prefetches_.end()) {
     all_prefetches_.erase(prefetch_iter);
   }
+}
+
+void PrefetchService::EvictPrefetch(
+    const PrefetchContainer::Key& prefetch_container_key) {
+  DCHECK(base::Contains(owned_prefetches_, prefetch_container_key));
+  base::WeakPtr<PrefetchContainer> prefetch_container =
+      owned_prefetches_[prefetch_container_key].first->GetWeakPtr();
+  DCHECK(prefetch_container);
+  prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchEvicted);
+  ResetPrefetch(prefetch_container);
 }
 
 void PrefetchService::StartSinglePrefetch(

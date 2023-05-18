@@ -317,6 +317,7 @@ bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(
     case PrefetchStatus::kPrefetchFailedPerPageLimitExceeded:
     case PrefetchStatus::
         kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy:
+    case PrefetchStatus::kPrefetchEvicted:
       return true;
   }
 }
@@ -373,7 +374,7 @@ void PrefetchDocumentManager::OnPrefetchSuccessful(
       blink::mojom::SpeculationEagerness::kEager) {
     number_eager_prefetches_completed_++;
   } else {
-    number_non_eager_prefetches_completed_++;
+    completed_non_eager_prefetches_.push_back(prefetch->GetWeakPtr());
   }
 }
 
@@ -382,15 +383,33 @@ void PrefetchDocumentManager::EnableNoVarySearchSupport() {
 }
 
 bool PrefetchDocumentManager::CanPrefetchNow(PrefetchContainer* prefetch) {
-  // TODO(crbug.com/1445086): Implement eviction policies.
   DCHECK(PrefetchNewLimitsEnabled());
   if (prefetch->GetPrefetchType().GetEagerness() ==
       blink::mojom::SpeculationEagerness::kEager) {
+    // TODO(crbug.com/1445086): Implement eviction policies.
     return number_eager_prefetches_completed_ <
            MaxNumberOfEagerPrefetchesPerPageForPrefetchNewLimits();
   } else {
-    return number_non_eager_prefetches_completed_ <
-           MaxNumberOfNonEagerPrefetchesPerPageForPrefetchNewLimits();
+    base::EraseIf(completed_non_eager_prefetches_,
+                  [&](const base::WeakPtr<PrefetchContainer>& prefetch) {
+                    return !prefetch;
+                  });
+    if (completed_non_eager_prefetches_.size() <
+        MaxNumberOfNonEagerPrefetchesPerPageForPrefetchNewLimits()) {
+      return true;
+    }
+    // We are at capacity, and now need to evict the oldest non-eager prefetch
+    // to make space for a new one.
+    DCHECK(GetPrefetchService());
+    base::WeakPtr<PrefetchContainer> oldest_prefetch =
+        completed_non_eager_prefetches_.front();
+    // TODO(crbug.com/1445086): We should also be checking if the prefetch is
+    // currently being used to serve a navigation. In that scenario, evicting
+    // doesn't make sense.
+    GetPrefetchService()->EvictPrefetch(
+        oldest_prefetch->GetPrefetchContainerKey());
+    completed_non_eager_prefetches_.pop_front();
+    return true;
   }
 }
 

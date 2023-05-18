@@ -201,8 +201,12 @@ enum class PrefetchStatus {
   // The prefetch was not made because preloading was disabled.
   kPrefetchNotEligiblePreloadingDisabled = 48,
 
+  // The prefetch was evicted to make room for a newer prefetch. This currently
+  // only happens when |kPrefetchNewLimits| is enabled.
+  kPrefetchEvicted = 49,
+
   // The max value of the PrefetchStatus. Update this when new enums are added.
-  kMaxValue = kPrefetchNotEligiblePreloadingDisabled,
+  kMaxValue = kPrefetchEvicted,
 };
 
 }  // namespace content

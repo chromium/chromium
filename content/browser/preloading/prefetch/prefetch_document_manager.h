@@ -101,10 +101,10 @@ class CONTENT_EXPORT PrefetchDocumentManager
   void EnableNoVarySearchSupport();
 
   // Returns true if we can prefetch |next_prefetch| based on the number of
-  // existing completed prefetches. The eagerness of |next_prefetch| is taken
-  // into account when making the decision.
-  // TODO(crbug.com/1445086): Change this method to evict completed candidates
-  // (if possible) when we're at the limit.
+  // existing completed prefetches. This method will make room for
+  // another prefetch by evicting an existing prefetch if possible. The
+  // eagerness of |next_prefetch| is taken into account when making the
+  // decision.
   bool CanPrefetchNow(PrefetchContainer* next_prefetch);
 
   base::WeakPtr<PrefetchDocumentManager> GetWeakPtr() {
@@ -137,11 +137,12 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // requested by this page.
   int number_prefetch_request_attempted_{0};
 
-  // The number of prefetch requests (from this page) that have completed, with
-  // a separate count for 'eager' and 'non-eager' prefetches. An 'eager'
-  // prefetch is a prefetch whose eagerness is kEager.
+  // The number of eager prefetch requests (from this page) that have completed.
+  // An 'eager' prefetch is a prefetch whose eagerness is kEager.
   size_t number_eager_prefetches_completed_{0};
-  size_t number_non_eager_prefetches_completed_{0};
+  // A list of non-eager prefetch requests (from this page) that have completed
+  // (oldest to newest).
+  std::deque<base::WeakPtr<PrefetchContainer>> completed_non_eager_prefetches_;
 
   // Metrics related to the prefetches requested by this page load.
   PrefetchReferringPageMetrics referring_page_metrics_;
