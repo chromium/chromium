@@ -15,7 +15,6 @@ import collections
 import copy
 import difflib
 import inspect
-import optparse
 import os
 import sys
 import tempfile
@@ -404,30 +403,5 @@ class Tests(BaseTest):
         header_golden='SampleForAnnotationProcessor_multiplexing.h.golden')
 
 
-def TouchStamp(stamp_path):
-  dir_name = os.path.dirname(stamp_path)
-  if not os.path.isdir(dir_name):
-    os.makedirs(dir_name)
-
-  with open(stamp_path, 'a'):
-    os.utime(stamp_path, None)
-
-
-def main(argv):
-  parser = optparse.OptionParser()
-  parser.add_option('--stamp', help='Path to touch on success.')
-  parser.add_option(
-      '-v', '--verbose', action='store_true', help='Whether to output details.')
-  options, _ = parser.parse_args(argv[1:])
-
-  test_result = unittest.main(
-      argv=argv[0:1], exit=False, verbosity=(2 if options.verbose else 1))
-
-  if test_result.result.wasSuccessful() and options.stamp:
-    TouchStamp(options.stamp)
-
-  return not test_result.result.wasSuccessful()
-
-
 if __name__ == '__main__':
-  sys.exit(main(sys.argv))
+  unittest.main()
