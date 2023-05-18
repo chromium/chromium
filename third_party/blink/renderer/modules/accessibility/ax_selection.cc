@@ -349,7 +349,10 @@ void AXSelection::UpdateSelectionIfNecessary() {
 
 bool AXSelection::Select(const AXSelectionBehavior selection_behavior) {
   if (!IsValid()) {
-    NOTREACHED() << "Trying to select an invalid accessibility selection.";
+    // TODO(crbug.com/1409881): Make sure this no longer fires then turn this
+    // block into CHECK(IsValid());
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
+        << "Trying to select an invalid accessibility selection.";
     return false;
   }
 

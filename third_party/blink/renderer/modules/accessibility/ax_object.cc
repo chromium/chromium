@@ -5221,9 +5221,12 @@ AXObject* AXObject::PreviousSiblingIncludingIgnored() const {
 AXObject* AXObject::NextInPreOrderIncludingIgnored(
     const AXObject* within) const {
   if (!AccessibilityIsIncludedInTree()) {
-    NOTREACHED() << "We don't support iterating children of objects excluded "
-                    "from the accessibility tree: "
-                 << ToString(true, true);
+    // TODO(crbug.com/1421052): Make sure this no longer fires then turn the
+    // above into CHECK(AccessibilityIsIncludedInTree());
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
+        << "We don't support iterating children of objects excluded "
+           "from the accessibility tree: "
+        << ToString(true, true);
     return nullptr;
   }
 
@@ -5301,10 +5304,13 @@ AXObject* AXObject::UnignoredChildAt(int index) const {
 
 AXObject* AXObject::UnignoredNextSibling() const {
   if (AccessibilityIsIgnored()) {
-    NOTREACHED() << "We don't support finding unignored siblings for ignored "
-                    "objects because it is not clear whether to search for the "
-                    "sibling in the unignored tree or in the whole tree: "
-                 << ToString(true, true);
+    // TODO(crbug.com/1407397): Make sure this no longer fires then turn this
+    // block into CHECK(!AccessibilityIsIgnored());
+    DUMP_WILL_BE_NOTREACHED_NORETURN()
+        << "We don't support finding unignored siblings for ignored "
+           "objects because it is not clear whether to search for the "
+           "sibling in the unignored tree or in the whole tree: "
+        << ToString(true, true);
     return nullptr;
   }
 
