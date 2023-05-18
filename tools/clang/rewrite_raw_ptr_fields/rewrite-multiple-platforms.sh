@@ -13,11 +13,7 @@
 set -e  # makes the script quit on any command failure
 set -u  # unset variables are quit-worthy errors
 
-PLATFORMS="win,android"
-if [ "$1" != "" ]
-then
-  PLATFORMS="$1"
-fi
+PLATFORMS="${1:-win,android}"
 
 SCRIPT_PATH=$(realpath $0)
 REWRITER_SRC_DIR=$(dirname $SCRIPT_PATH)
