@@ -767,17 +767,29 @@ NGGridLayoutTrackCollection::CreateSubgridTrackCollection(
     subgrid_last_indefinite_index.ReserveInitialCapacity(set_span_size + 1);
     subgrid_last_indefinite_index.push_back(kNotFound);
 
-    for (wtf_size_t i = begin_set_index + 1; i <= end_set_index; ++i) {
-      subgrid_last_indefinite_index.push_back(
-          (last_indefinite_index_[i] == kNotFound ||
-           last_indefinite_index_[i] < begin_set_index)
-              ? kNotFound
-              : last_indefinite_index_[i] - begin_set_index);
-    }
+    wtf_size_t last_indefinite_index = kNotFound;
+    for (wtf_size_t i = 1; i <= set_span_size; ++i) {
+      // Opposite direction subgrids need to iterate backwards.
+      const wtf_size_t current_index = is_opposite_direction_in_root_grid
+                                           ? end_set_index - i
+                                           : begin_set_index + i;
+      const wtf_size_t next_index = is_opposite_direction_in_root_grid
+                                        ? current_index - 1
+                                        : current_index + 1;
 
-    // TODO(kschmi): Handle `subgrid_last_indefinite_index` when
-    // `is_opposite_direction_to_parent`. This can be done by looking at the
-    // difference between subsequent entries.
+      if (last_indefinite_index_[current_index] == kNotFound ||
+          next_index == last_indefinite_index_.size()) {
+        subgrid_last_indefinite_index.push_back(kNotFound);
+      } else {
+        // Map the last indefinite index from the parent track collection by
+        // looking for a change in subsequent entries.
+        if (last_indefinite_index_[current_index] !=
+            last_indefinite_index_[next_index]) {
+          last_indefinite_index = i;
+        }
+        subgrid_last_indefinite_index.push_back(last_indefinite_index);
+      }
+    }
   }
 
   // Copy the major and minor baselines in the subgrid's span.

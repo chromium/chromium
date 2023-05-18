@@ -2592,8 +2592,13 @@ void NGGridLayoutAlgorithm::ResolveIntrinsicTrackSizes(
                                                  ? subgrid_layout_data.Columns()
                                                  : subgrid_layout_data.Rows();
 
-      AccomodateSubgridExtraMargins(subgrid_track_collection.StartExtraMargin(),
-                                    subgrid_track_collection.EndExtraMargin(),
+      auto start_extra_margin = subgrid_track_collection.StartExtraMargin();
+      auto end_extra_margin = subgrid_track_collection.EndExtraMargin();
+      if (grid_item.IsOppositeDirectionInRootGrid(track_direction)) {
+        std::swap(start_extra_margin, end_extra_margin);
+      }
+
+      AccomodateSubgridExtraMargins(start_extra_margin, end_extra_margin,
                                     grid_item.SetIndices(track_direction),
                                     &track_collection);
 
