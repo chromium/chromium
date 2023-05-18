@@ -6,7 +6,7 @@
 
 import './api_listener.js';
 import './main_view.js';
-import '../../../settings_shared.css.js';
+import '../../settings_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

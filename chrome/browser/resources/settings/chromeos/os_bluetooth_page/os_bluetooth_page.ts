@@ -10,7 +10,7 @@
 
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import './os_bluetooth_devices_subpage.js';
 import './os_bluetooth_summary.js';

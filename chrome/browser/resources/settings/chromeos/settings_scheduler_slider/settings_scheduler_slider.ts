@@ -8,7 +8,7 @@
  * start and end times.
  */
 
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 
 import {PrefsMixin, PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';

@@ -7,7 +7,7 @@
  * Settings subpage for managing Bluetooth properties and devices.
  */
 
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 import './os_paired_bluetooth_list.js';
 import './settings_fast_pair_toggle.js';
 

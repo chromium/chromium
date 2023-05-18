@@ -10,7 +10,7 @@ import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '/shared/settings/controls/controlled_radio_button.js';
 import '/shared/settings/controls/settings_dropdown_menu.js';
 import '/shared/settings/controls/settings_radio_group.js';
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 import './timezone_selector.js';
 
 import {SettingsDropdownMenuElement} from '/shared/settings/controls/settings_dropdown_menu.js';

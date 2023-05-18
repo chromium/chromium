@@ -12,8 +12,8 @@
  */
 
 import 'chrome://resources/ash/common/network/network_icon.js';
-import '../../settings_shared.css.js';
-import '../../settings_vars.css.js';
+import '../settings_shared.css.js';
+import '../settings_vars.css.js';
 import './multidevice_feature_item.js';
 
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';

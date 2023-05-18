@@ -7,7 +7,7 @@
  * 'os-settings-powerwash-dialog-esim-item' is an item showing details of an
  * installed eSIM profile shown in a list in the device reset dialog.
  */
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';

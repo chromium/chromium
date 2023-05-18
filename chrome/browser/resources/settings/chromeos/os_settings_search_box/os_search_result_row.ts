@@ -7,7 +7,7 @@
  */
 import 'chrome://resources/cr_elements/icons.html.js';
 import '../os_settings_icons.html.js';
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';

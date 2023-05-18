@@ -18,7 +18,7 @@ import './crostini_port_forwarding_add_port_dialog.js';
 import '/shared/settings/controls/settings_toggle_button.js';
 import '../os_settings_page/os_settings_section.js';
 import '../os_settings_page_styles.css.js';
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';

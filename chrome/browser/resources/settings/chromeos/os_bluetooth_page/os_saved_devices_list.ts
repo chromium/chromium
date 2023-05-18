@@ -7,7 +7,7 @@
  * UI element for displaying saved Bluetooth devices.
  */
 
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 import './os_saved_devices_list_item.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 

@@ -8,7 +8,7 @@
  * only be called when a device exist.
  */
 
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import './os_bluetooth_change_device_name_dialog.js';

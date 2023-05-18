@@ -9,7 +9,7 @@
  */
 
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

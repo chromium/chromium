@@ -15,8 +15,8 @@ import '/shared/settings/controls/controlled_button.js';
 import '/shared/settings/controls/settings_toggle_button.js';
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import 'chrome://resources/cr_components/settings_prefs/pref_util.js';
-import '../../settings_shared.css.js';
-import '../../settings_vars.css.js';
+import '../settings_shared.css.js';
+import '../settings_vars.css.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './search_engine.js';
 

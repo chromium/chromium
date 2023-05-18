@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import './crostini_arc_adb_confirmation_dialog.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';

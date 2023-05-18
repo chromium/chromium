@@ -24,7 +24,7 @@ import '/shared/settings/controls/settings_toggle_button.js';
 import './setup_pin_dialog.js';
 import './pin_autosubmit_dialog.js';
 import './local_data_recovery_dialog.js';
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 import '../multidevice_page/multidevice_smartlock_item.js';
 
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';

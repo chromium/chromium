@@ -13,7 +13,7 @@ import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
 import '/shared/settings/controls/settings_toggle_button.js';
 import '../os_settings_page/os_settings_subpage.js';
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 import './date_time_types.js';
 import './timezone_selector.js';
 import './timezone_subpage.js';

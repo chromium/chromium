@@ -11,7 +11,7 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import '../../settings_shared.css.js';
+import '../settings_shared.css.js';
 
 import {getNearbyShareSettings} from '/shared/nearby_share_settings.js';
 import {NearbySettings} from '/shared/nearby_share_settings_mixin.js';
