@@ -11,6 +11,7 @@
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/style/pill_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
@@ -112,13 +113,15 @@ TEST_F(GameDashboardCaptureModeTest, StartForGameDashboardTest) {
 }
 
 TEST_F(GameDashboardCaptureModeTest, CaptureBar) {
-  StartGameCaptureModeSession();
+  CaptureModeController* controller = StartGameCaptureModeSession();
+
   views::Widget* bar_widget = GetCaptureModeBarWidget();
   ASSERT_TRUE(bar_widget);
 
+  auto* start_recording_button = GetStartRecordingButton();
   // Checks that the game capture bar only includes the start recording button,
   // settings button and close button.
-  EXPECT_TRUE(GetStartRecordingButton());
+  EXPECT_TRUE(start_recording_button);
   EXPECT_FALSE(GetImageToggleButton());
   EXPECT_FALSE(GetVideoToggleButton());
   EXPECT_FALSE(GetFullscreenToggleButton());
@@ -126,6 +129,13 @@ TEST_F(GameDashboardCaptureModeTest, CaptureBar) {
   EXPECT_FALSE(GetWindowToggleButton());
   EXPECT_TRUE(GetSettingsButton());
   EXPECT_TRUE(GetCloseButton());
+
+  CaptureModeSession* session = controller->capture_mode_session();
+  EXPECT_EQ(game_window(), session->GetSelectedWindow());
+  // Clicking the start recording button should start the video recording.
+  ClickOnView(start_recording_button, GetEventGenerator());
+  WaitForRecordingToStart();
+  EXPECT_TRUE(controller->is_recording_in_progress());
 }
 
 TEST_F(GameDashboardCaptureModeTest, CaptureBarPosition) {

@@ -261,6 +261,10 @@ class ASH_EXPORT CaptureModeSession
 
   void OnCameraPreviewDestroyed();
 
+  // If there's a user nudge currently showing, it will be dismissed forever,
+  // and will no longer be shown to the user.
+  void MaybeDismissUserNudgeForever();
+
  private:
   friend class CaptureModeSettingsTestApi;
   friend class CaptureModeSessionFocusCycler;
@@ -301,10 +305,6 @@ class ASH_EXPORT CaptureModeSession
   // the new folder selection settings. The nudge will be created on top of the
   // the settings button on the capture mode bar.
   void MaybeCreateUserNudge();
-
-  // If there's a user nudge currently showing, it will be dismissed forever,
-  // and will no longer be shown to the user.
-  void MaybeDismissUserNudgeForever();
 
   // Called to accept and trigger a capture operation. This happens e.g. when
   // the user hits enter, selects a window/display to capture, or presses on the

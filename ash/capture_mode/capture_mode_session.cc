@@ -1515,6 +1515,13 @@ void CaptureModeSession::OnCameraPreviewDestroyed() {
       CaptureToastType::kCameraPreview);
 }
 
+void CaptureModeSession::MaybeDismissUserNudgeForever() {
+  if (user_nudge_controller_) {
+    user_nudge_controller_->set_should_dismiss_nudge_forever(true);
+  }
+  user_nudge_controller_.reset();
+}
+
 std::vector<views::Widget*> CaptureModeSession::GetAvailableWidgets() {
   std::vector<views::Widget*> result;
   DCHECK(capture_mode_bar_widget_);
@@ -1618,14 +1625,7 @@ void CaptureModeSession::MaybeCreateUserNudge() {
   user_nudge_controller_->SetVisible(true);
 }
 
-void CaptureModeSession::MaybeDismissUserNudgeForever() {
-  if (user_nudge_controller_)
-    user_nudge_controller_->set_should_dismiss_nudge_forever(true);
-  user_nudge_controller_.reset();
-}
-
 void CaptureModeSession::DoPerformCapture() {
-  MaybeDismissUserNudgeForever();
   controller_->PerformCapture();  // `this` can be deleted after this.
 }
 

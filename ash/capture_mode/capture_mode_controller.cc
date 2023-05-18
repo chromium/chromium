@@ -782,6 +782,7 @@ void CaptureModeController::PerformCapture() {
   DCHECK(!pending_dlp_check_);
   pending_dlp_check_ = true;
   capture_mode_session_->OnWaitingForDlpConfirmationStarted();
+  capture_mode_session_->MaybeDismissUserNudgeForever();
   delegate_->CheckCaptureOperationRestrictionByDlp(
       capture_params->window, capture_params->bounds,
       base::BindOnce(
