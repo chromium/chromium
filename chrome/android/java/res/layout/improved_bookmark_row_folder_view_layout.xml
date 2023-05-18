@@ -12,17 +12,16 @@ found in the LICENSE file.
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-  <!-- TODO(crbug.com/1434538): Make this tint configurable. -->
   <FrameLayout
-      android:id="@+id/no_image_background"
+      android:id="@+id/no_image_placeholder_background"
       android:layout_width="@dimen/improved_bookmark_row_size"
       android:layout_height="@dimen/improved_bookmark_row_size"
       app:layout_constraintTop_toTopOf="parent"
       app:layout_constraintLeft_toLeftOf="parent"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintRight_toRightOf="parent">
-    <!-- TODO(crbug.com/1434538): Make this image/tint configurable. -->
     <ImageView
+        android:id="@+id/no_image_placeholder_image"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginLeft="14dp"

@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.app.Activity;
-import android.graphics.drawable.Drawable;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -46,8 +47,6 @@ public class ImprovedBookmarkRowTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock
-    Drawable mIcon;
-    @Mock
     View mView;
     @Mock
     ViewGroup mViewGroup;
@@ -61,16 +60,19 @@ public class ImprovedBookmarkRowTest {
     Activity mActivity;
     ImprovedBookmarkRow mImprovedBookmarkRow;
     PropertyModel mModel;
+    BitmapDrawable mDrawable;
 
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
 
+        mDrawable = new BitmapDrawable(
+                mActivity.getResources(), Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888));
         mImprovedBookmarkRow = ImprovedBookmarkRow.buildView(mActivity, /*isVisual=*/true);
         mModel = new PropertyModel.Builder(ImprovedBookmarkRowProperties.ALL_KEYS)
                          .with(ImprovedBookmarkRowProperties.TITLE, TITLE)
                          .with(ImprovedBookmarkRowProperties.DESCRIPTION, DESCRIPTION)
-                         .with(ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE, mIcon)
+                         .with(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, mDrawable)
                          .with(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE,
                                  mListMenuButtonDelegate)
                          .with(ImprovedBookmarkRowProperties.POPUP_LISTENER, mPopupListener)

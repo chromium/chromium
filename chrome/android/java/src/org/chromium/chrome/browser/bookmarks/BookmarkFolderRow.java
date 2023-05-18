@@ -10,9 +10,8 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-import androidx.appcompat.content.res.AppCompatResources;
-
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -38,7 +37,8 @@ public class BookmarkFolderRow extends BookmarkRow {
     public BookmarkFolderRow(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        setIconDrawable(BookmarkUtils.getFolderIcon(getContext(), BookmarkType.NORMAL));
+        setIconDrawable(BookmarkUtils.getFolderIcon(
+                getContext(), BookmarkType.NORMAL, BookmarkRowDisplayPref.COMPACT));
     }
 
     // BookmarkRow implementation.
@@ -56,7 +56,8 @@ public class BookmarkFolderRow extends BookmarkRow {
         mDescriptionView.setText(BookmarkUtils.getFolderDescriptionText(
                 bookmarkId, mDelegate.getModel(), getContext().getResources()));
 
-        setIconDrawable(BookmarkUtils.getFolderIcon(getContext(), item.getId().getType()));
+        setIconDrawable(BookmarkUtils.getFolderIcon(
+                getContext(), item.getId().getType(), BookmarkRowDisplayPref.COMPACT));
         return item;
     }
 
@@ -66,8 +67,7 @@ public class BookmarkFolderRow extends BookmarkRow {
     protected ColorStateList getDefaultIconTint() {
         @BookmarkType
         int type = (mBookmarkId == null) ? BookmarkType.NORMAL : mBookmarkId.getType();
-        return AppCompatResources.getColorStateList(
-                getContext(), BookmarkUtils.getFolderIconTint(type));
+        return BookmarkUtils.getFolderIconTint(getContext(), type);
     }
 
     /**

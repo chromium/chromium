@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -32,10 +34,15 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
+import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.StartImageVisibility;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -132,7 +139,19 @@ public class ImprovedBookmarkFolderViewRenderTest {
     @Feature({"RenderTest"})
     public void testNoImage() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(ImprovedBookmarkRowProperties.FOLDER_DRAWABLES, new Pair<>(null, null));
+            mModel.set(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,
+                    StartImageVisibility.FOLDER_DRAWABLE);
+            mModel.set(ImprovedBookmarkRowProperties.START_IMAGE_FOLDER_DRAWABLES,
+                    new Pair<>(null, null));
+            mModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE,
+                    BookmarkUtils.getFolderIcon(mActivityTestRule.getActivity(),
+                            BookmarkType.NORMAL, BookmarkRowDisplayPref.VISUAL));
+            mModel.set(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
+                    ChromeColors.getSurfaceColor(
+                            mActivityTestRule.getActivity(), R.dimen.default_elevation_1));
+            mModel.set(ImprovedBookmarkRowProperties.START_ICON_TINT,
+                    AppCompatResources.getColorStateList(mActivityTestRule.getActivity(),
+                            R.color.default_icon_color_secondary_tint_list));
         });
         mRenderTestRule.render(mContentView, "no_image");
     }
@@ -140,9 +159,32 @@ public class ImprovedBookmarkFolderViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testNoImage_readingList() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.set(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,
+                    StartImageVisibility.FOLDER_DRAWABLE);
+            mModel.set(ImprovedBookmarkRowProperties.START_IMAGE_FOLDER_DRAWABLES,
+                    new Pair<>(null, null));
+            mModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE,
+                    BookmarkUtils.getFolderIcon(mActivityTestRule.getActivity(),
+                            BookmarkType.READING_LIST, BookmarkRowDisplayPref.VISUAL));
+            mModel.set(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
+                    SemanticColorUtils.getColorPrimaryContainer(mActivityTestRule.getActivity()));
+            mModel.set(ImprovedBookmarkRowProperties.START_ICON_TINT,
+                    ColorStateList.valueOf(SemanticColorUtils.getDefaultIconColorAccent1(
+                            mActivityTestRule.getActivity())));
+        });
+        mRenderTestRule.render(mContentView, "no_image_reading_list");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testOneImage() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(ImprovedBookmarkRowProperties.FOLDER_DRAWABLES,
+            mModel.set(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,
+                    StartImageVisibility.FOLDER_DRAWABLE);
+            mModel.set(ImprovedBookmarkRowProperties.START_IMAGE_FOLDER_DRAWABLES,
                     new Pair<>(mPrimaryDrawable, null));
         });
         mRenderTestRule.render(mContentView, "one_image");
@@ -153,7 +195,9 @@ public class ImprovedBookmarkFolderViewRenderTest {
     @Feature({"RenderTest"})
     public void testTwoImages() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(ImprovedBookmarkRowProperties.FOLDER_DRAWABLES,
+            mModel.set(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,
+                    StartImageVisibility.FOLDER_DRAWABLE);
+            mModel.set(ImprovedBookmarkRowProperties.START_IMAGE_FOLDER_DRAWABLES,
                     new Pair<>(mPrimaryDrawable, mSecondaryDrawable));
         });
         mRenderTestRule.render(mContentView, "two_images");
@@ -164,8 +208,10 @@ public class ImprovedBookmarkFolderViewRenderTest {
     @Feature({"RenderTest"})
     public void testTwoImages_99Children() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.set(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,
+                    StartImageVisibility.FOLDER_DRAWABLE);
             mModel.set(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT, 99);
-            mModel.set(ImprovedBookmarkRowProperties.FOLDER_DRAWABLES,
+            mModel.set(ImprovedBookmarkRowProperties.START_IMAGE_FOLDER_DRAWABLES,
                     new Pair<>(mPrimaryDrawable, mSecondaryDrawable));
         });
         mRenderTestRule.render(mContentView, "two_images_99_children");
@@ -176,8 +222,10 @@ public class ImprovedBookmarkFolderViewRenderTest {
     @Feature({"RenderTest"})
     public void testTwoImages_999Children() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.set(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,
+                    StartImageVisibility.FOLDER_DRAWABLE);
             mModel.set(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT, 999);
-            mModel.set(ImprovedBookmarkRowProperties.FOLDER_DRAWABLES,
+            mModel.set(ImprovedBookmarkRowProperties.START_IMAGE_FOLDER_DRAWABLES,
                     new Pair<>(mPrimaryDrawable, mSecondaryDrawable));
         });
         mRenderTestRule.render(mContentView, "two_images_999_children");

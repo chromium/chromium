@@ -7,12 +7,16 @@ package org.chromium.chrome.browser.bookmarks;
 import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.Pair;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ObserverList;
@@ -27,6 +31,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayP
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.Observer;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
+import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.StartImageVisibility;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
@@ -36,6 +41,8 @@ import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DragListener;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DraggabilityProvider;
@@ -1049,31 +1056,61 @@ class BookmarkManagerMediator
     // ImprovedBookmarkRow methods.
 
     private void resolveIconForBookmark(BookmarkItem item, PropertyModel model) {
+        @BookmarkRowDisplayPref
+        int displayPref = mBookmarkUiPrefs.getBookmarkRowDisplayPref();
         boolean useImages = BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
-                && mBookmarkUiPrefs.getBookmarkRowDisplayPref() == BookmarkRowDisplayPref.VISUAL;
+                && displayPref == BookmarkRowDisplayPref.VISUAL;
+        model.set(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,
+                item.isFolder() && useImages ? StartImageVisibility.FOLDER_DRAWABLE
+                                             : StartImageVisibility.DRAWABLE);
+
         if (item.isFolder()) {
+            int type = item.getId().getType();
+            Drawable folderDrawable = null;
             if (useImages) {
                 model.set(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT,
                         BookmarkUtils.getChildCountForDisplay(item.getId(), mBookmarkModel));
+                folderDrawable = ResourcesCompat.getDrawable(mContext.getResources(),
+                        R.drawable.ic_folder_outline_24dp, mContext.getTheme());
 
-                // TODO(crbug.com/1440863): Support reading list special placeholder case.
-                model.set(ImprovedBookmarkRowProperties.FOLDER_DRAWABLES, new Pair<>(null, null));
+                model.set(ImprovedBookmarkRowProperties.START_IMAGE_FOLDER_DRAWABLES,
+                        new Pair<>(null, null));
                 mBookmarkImageFetcher.fetchFirstTwoImagesForFolder(item, imagePair -> {
-                    model.set(ImprovedBookmarkRowProperties.FOLDER_DRAWABLES, imagePair);
+                    model.set(
+                            ImprovedBookmarkRowProperties.START_IMAGE_FOLDER_DRAWABLES, imagePair);
                 });
 
             } else {
-                model.set(ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE,
-                        BookmarkUtils.getFolderIcon(mContext, item.getId().getType()));
+                folderDrawable = BookmarkUtils.getFolderIcon(mContext, type, displayPref);
             }
+
+            if (type == BookmarkType.READING_LIST) {
+                folderDrawable = BookmarkUtils.getFolderIcon(mContext, type, displayPref);
+                model.set(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
+                        SemanticColorUtils.getColorPrimaryContainer(mContext));
+                model.set(ImprovedBookmarkRowProperties.START_ICON_TINT,
+                        ColorStateList.valueOf(
+                                SemanticColorUtils.getDefaultIconColorAccent1(mContext)));
+            } else {
+                model.set(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
+                        ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_1));
+                model.set(ImprovedBookmarkRowProperties.START_ICON_TINT,
+                        AppCompatResources.getColorStateList(
+                                mContext, R.color.default_icon_color_secondary_tint_list));
+            }
+
+            model.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, folderDrawable);
         } else {
+            model.set(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
+                    ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_1));
+            model.set(ImprovedBookmarkRowProperties.START_ICON_TINT, null);
             if (useImages) {
                 mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(item, image -> {
-                    model.set(ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE, image);
+                    model.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, image);
                 });
             } else {
                 mBookmarkImageFetcher.fetchFaviconForBookmark(item, image -> {
-                    model.set(ImprovedBookmarkRowProperties.BOOKMARK_DRAWABLE, image);
+                    model.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, image);
                 });
             }
         }

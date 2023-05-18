@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -16,7 +17,6 @@ import android.os.LocaleList;
 import android.provider.Browser;
 import android.text.TextUtils;
 
-import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -54,6 +54,7 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -527,21 +528,31 @@ public class BookmarkUtils {
      * @param type The bookmark type of the folder.
      * @return A {@link Drawable} to use for displaying bookmark folders.
      */
-    public static Drawable getFolderIcon(Context context, @BookmarkType int type) {
+    public static Drawable getFolderIcon(
+            Context context, @BookmarkType int type, @BookmarkRowDisplayPref int displayPref) {
+        ColorStateList tint = getFolderIconTint(context, type);
         if (type == BookmarkType.READING_LIST) {
-            return UiUtils.getTintedDrawable(
-                    context, R.drawable.ic_reading_list_folder_24dp, getFolderIconTint(type));
+            return UiUtils.getTintedDrawable(context, R.drawable.ic_reading_list_folder_24dp, tint);
         }
-        return UiUtils.getTintedDrawable(
-                context, R.drawable.ic_folder_blue_24dp, getFolderIconTint(type));
+
+        return UiUtils.getTintedDrawable(context,
+                displayPref == BookmarkRowDisplayPref.VISUAL ? R.drawable.ic_folder_outline_24dp
+                                                             : R.drawable.ic_folder_blue_24dp,
+                tint);
     }
 
     /**
-     * @param type The bookmark type.
+     * @param context {@link Context} used to retrieve the drawable.
+     * @param type The bookmark type of the folder.
      * @return The tint used on the bookmark folder icon.
      */
-    public static @ColorRes int getFolderIconTint(@BookmarkType int type) {
-        return R.color.default_icon_color_tint_list;
+    public static ColorStateList getFolderIconTint(Context context, @BookmarkType int type) {
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
+                && type == BookmarkType.READING_LIST) {
+            return ColorStateList.valueOf(SemanticColorUtils.getDefaultIconColorAccent1(context));
+        }
+
+        return ColorStateList.valueOf(context.getColor(R.color.default_icon_color_tint_list));
     }
 
     /**
