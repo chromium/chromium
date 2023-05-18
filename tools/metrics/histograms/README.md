@@ -674,39 +674,18 @@ correction to its `direction` attribute any time.
 
 ### Cleaning Up Histogram Entries {#obsolete}
 
-If a histogram is no longer being emitted to, there are two options to clean up
-the entry: either mark the histogram as obsolete or remove the corresponding
-histograms.xml entry. This also applies to variants of a
+If a histogram is no longer being emitted to, you should clean it up by removing
+the corresponding histograms.xml entry. You can also add an obsoletion message
+in the same changelist. This also applies to variants of a
 [patterned histogram](#Patterned-Histograms) and to suffix entries for a
 suffixed histogram.
 
-However you proceed, a changelist that obsoletes a histogram entry should be
-reviewed by all current owners.
+The changelist that obsoletes a histogram entry should be reviewed by all
+current owners.
 
-Note: the Chrome team is in the process of streamlining this process so that a
-histogram entry can be deleted and an obsoletion message recorded in a single
-change list.
+#### Remove the Entry
 
-#### Option: Add an Obsoletion Message
-
-You can choose to add a message to a histogram entry which will mark it as
-obsolete, and which will also provide relevant information to interested Chrome
-developers.
-
-* Add the obsoletion message between `<obsolete>` and `</obsolete>` tags within
-  the `<histogram>` block.
-* This should include the date or milestone when the entry became obsolete.
-* You could also include information about why the histogram has become
-  obsolete. For example, you might indicate how the histogram's summary did not
-  accurately describe the collected data.
-* If the obsolete histogram is being replaced, include the name of the
-  replacement and make sure that the new description is different from the
-  original to reflect the change between versions.
-
-#### Option: Remove the Entry
-
-If you do not want to add an obsoletion message, you can simply delete the
-entry in the histograms.xml file.
+Delete the entry in the histograms.xml file.
 
 * In some cases there may be artifacts that remain, with some examples being:
   * Empty `<token>` blocks.
@@ -718,9 +697,26 @@ entry in the histograms.xml file.
     `<int value="1" label="(Obsolete) Navigation failed. Removed in 2023/01."/>`
     rather than deleting them, if the surrounding `<enum>` block is not being
     deleted.
-* A histogram entry can be removed after an obsoletion message was added, but
-  please check that at least a day has passed since the change landed. This
-  ensures that the message will be recorded by internal tools.
+
+#### Add an Obsoletion Message
+
+You can choose to add a message to the removed histogram entry which will
+provide relevant information to interested Chrome developers. Whether you
+choose to add an obsoletion message or not, the date and milestone when the
+entry became obsolete will be automatically recorded.
+
+* Add the obsoletion message in the CL description in the format
+  OBSOLETE_HISTOGRAM[histogram name]=obsoletion message.
+  * Note: currently, it is not possible to add the same obsoletion message
+    to multiple histograms in a single tag. But you can add multiple obsoletion
+    message tags in one changelist. The Chrome Metrics team is in the process
+    to enable CL-level obsoletion messages.
+* You could also include information about why the histogram has become
+  obsolete. For example, you might indicate how the histogram's summary did not
+  accurately describe the collected data.
+* If the obsolete histogram is being replaced, include the name of the
+  replacement and make sure that the new description is different from the
+  original to reflect the change between versions.
 
 ### Patterned Histograms
 
