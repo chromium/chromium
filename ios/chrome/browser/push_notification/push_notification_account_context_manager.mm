@@ -93,7 +93,12 @@
 - (BOOL)isPushNotificationEnabledForClient:(PushNotificationClientId)clientID
                                 forAccount:(const std::string&)gaiaID {
   ChromeBrowserState* browserState = [self chromeBrowserStateFrom:gaiaID];
-  DCHECK(browserState);
+  // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome via
+  // ConsistencySigninPromo UI updates the BrowserStateInfoCache.
+  if (!browserState) {
+    return false;
+  }
+
   std::string key =
       PushNotificationClientManager::PushNotificationClientIdToString(clientID);
   return browserState->GetPrefs()
