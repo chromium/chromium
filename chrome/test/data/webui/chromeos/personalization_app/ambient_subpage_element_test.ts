@@ -108,7 +108,7 @@ suite('AmbientSubpageTest', function() {
 
     const topicSourceItemPlaceholders =
         ambientSubpageElement.shadowRoot!.querySelectorAll(
-            '#topicSourceTextPlaceholder:not([hidden])');
+            '.topic-source-placeholder:not([hidden])');
     assertEquals(2, topicSourceItemPlaceholders!.length);
 
     // Should show placeholders for 2 weather unit radio buttons.
@@ -119,7 +119,7 @@ suite('AmbientSubpageTest', function() {
 
     const weatherUnitItemPlaceholders =
         ambientSubpageElement.shadowRoot!.querySelectorAll(
-            '#weatherUnitTextPlaceholder:not([hidden])');
+            '.weather-unit-placeholder:not([hidden])');
     assertEquals(2, weatherUnitItemPlaceholders!.length);
 
     personalizationStore.data.ambient.ambientModeEnabled = false;
