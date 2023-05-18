@@ -332,6 +332,25 @@ void LanguagePackManager::InstallBasePack(
                                      feature_id));
 }
 
+void LanguagePackManager::UpdatePacksForOobe(const std::string& locale) {
+  if (!IsOobe()) {
+    DLOG(ERROR) << "Language Packs: UpdatePackForOobe called while not in OOBE";
+    return;
+  }
+
+  // For now, TTS is the only feature we want to install during OOBE.
+  // In the future we'll have a function that returns the list of features to
+  // install.
+  const std::string final_locale = ResolveLocaleForTts(locale);
+  const absl::optional<std::string> dlc_id =
+      GetDlcIdForLanguagePack(kTtsFeatureId, final_locale);
+
+  if (dlc_id) {
+    InstallDlc(*dlc_id, base::BindOnce(&OnInstallDlcComplete, base::DoNothing(),
+                                       kTtsFeatureId));
+  }
+}
+
 void LanguagePackManager::AddObserver(Observer* const observer) {
   observers_.AddObserver(observer);
 }

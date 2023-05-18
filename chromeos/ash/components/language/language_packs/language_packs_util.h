@@ -36,6 +36,9 @@ PackResult ConvertDlcStateToPackResult(const dlcservice::DlcState& dlc_state);
 const std::string ResolveLocaleForHandwriting(const std::string& input_locale);
 const std::string ResolveLocaleForTts(const std::string& input_locale);
 
+// Returns true if we currently are in the OOBE flow.
+bool IsOobe();
+
 }  // namespace ash::language_packs
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LANGUAGE_LANGUAGE_PACKS_LANGUAGE_PACKS_UTIL_H_

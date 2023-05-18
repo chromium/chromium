@@ -7,6 +7,8 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "components/language/core/common/locale_util.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/session_manager_types.h"
 #include "third_party/cros_system_api/dbus/dlcservice/dbus-constants.h"
 
 namespace ash::language_packs {
@@ -117,6 +119,11 @@ const std::string ResolveLocaleForTts(const std::string& input_locale) {
     return base::ToLowerASCII(input_locale);
   }
   return std::string(language::ExtractBaseLanguage(input_locale));
+}
+
+bool IsOobe() {
+  return session_manager::SessionManager::Get()->session_state() ==
+         session_manager::SessionState::OOBE;
 }
 
 }  // namespace ash::language_packs

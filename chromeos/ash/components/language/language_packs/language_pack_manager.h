@@ -178,6 +178,11 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   void InstallBasePack(const std::string& feature_id,
                        OnInstallBasePackCompleteCallback callback);
 
+  // Installs relevant language packs during OOBE.
+  // This method should only be called during OOBE and will do nothing if called
+  // outside it.
+  void UpdatePacksForOobe(const std::string& locale);
+
   // Adds an observer to the observer list.
   void AddObserver(Observer* observer);
 
