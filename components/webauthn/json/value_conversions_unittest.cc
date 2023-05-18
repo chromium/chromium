@@ -9,10 +9,12 @@
 #include <vector>
 
 #include "base/json/json_string_value_serializer.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
@@ -265,6 +267,58 @@ TEST(WebAuthenticationJSONConversionTest,
 }
 
 TEST(WebAuthenticationJSONConversionTest,
+     AuthenticatorAttestationResponseOptionalFields) {
+  // Test that both `null` and omitting the field works for the sole optional
+  // field, `authenticatorAttachment`.
+  constexpr char kJsonWithNull[] = R"({
+  "authenticatorAttachment": null,
+  "clientExtensionResults": {
+    "credBlob": true,
+    "credProps": { "rk": true },
+    "hmacCreateSecret": true,
+    "largeBlob": { "supported": true }
+  },
+  "id": "dGVzdCBpZA",
+  "rawId": "dGVzdCBpZA",
+  "response": {
+    "attestationObject": "o2NmbXRkbm9uZWdhdHRTdG10oGhhdXRoRGF0YVikJr1yeL5GN2Hx-qGxCrTE-CZwJpxBDHJqH9bgWFXhm0ZdAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAQnqQEo7oPQjy-pupOzL3-bqCFjsQklxGpULfOrnG6WpQECAyYgASFYIJZF8F3hN5jYY05Slr0X96-zXsT0Za1-ZXjoRO69uRL1Ilgg8ZOMJTagPCfl8zZ1n36qxA8lIOOGvZrn1CahB9G-DAI",
+    "clientDataJSON": "dGVzdCBjbGllbnQgZGF0YSBqc29u",
+    "transports": [ "usb", "unknowntransport" ]
+  },
+  "type": "public-key"
+})";
+
+  JSONStringValueDeserializer deserializer(kJsonWithNull);
+  std::string deserialize_error;
+  std::unique_ptr<base::Value> value =
+      deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
+  ASSERT_TRUE(value) << deserialize_error;
+
+  {
+    auto [response, error] = MakeCredentialResponseFromValue(*value);
+    ASSERT_TRUE(response) << error;
+    EXPECT_EQ(response->authenticator_attachment,
+              device::AuthenticatorAttachment::kAny);
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({device::kWebAuthnNoNullInJSON}, {});
+    auto [response, error] = MakeCredentialResponseFromValue(*value);
+    EXPECT_FALSE(response);
+  }
+
+  {
+    base::Value json = value->Clone();
+    EXPECT_TRUE(json.GetIfDict()->Remove("authenticatorAttachment"));
+    auto [response, error] = MakeCredentialResponseFromValue(*value);
+    ASSERT_TRUE(response) << error;
+    EXPECT_EQ(response->authenticator_attachment,
+              device::AuthenticatorAttachment::kAny);
+  }
+}
+
+TEST(WebAuthenticationJSONConversionTest,
      AuthenticatorAssertionResponseFromValue) {
   // The following values appear Base64URL-encoded in `json`.
   static const std::vector<uint8_t> kAuthenticatorData =
@@ -347,6 +401,62 @@ TEST(WebAuthenticationJSONConversionTest,
   // Produce a failure even if the list above is missing any fields. But this
   // will not print any meaningful error.
   EXPECT_EQ(response, expected);
+}
+
+TEST(WebAuthenticationJSONConversionTest,
+     AuthenticatorAssertionResponseOptionalFields) {
+  constexpr char kJsonWithNull[] = R"({
+  "authenticatorAttachment": null,
+  "clientExtensionResults": {
+    "appid": true,
+    "getCredBlob": "dGVzdCBjcmVkIGJsb2I",
+    "largeBlob": {
+      "blob": "dGVzdCBsYXJnZSBibG9i",
+      "written": true
+    }
+  },
+  "id": "dGVzdCBpZA",
+  "rawId": "dGVzdCBpZA",
+  "response": {
+    "authenticatorData": "dGVzdCBhdXRoZW50aWNhdG9yIGRhdGE",
+    "clientDataJSON": "dGVzdCBjbGllbnQgZGF0YSBqc29u",
+    "signature": "dGVzdCBzaWduYXR1cmU",
+    "userHandle": null
+  },
+  "type": "public-key"
+})";
+
+  JSONStringValueDeserializer deserializer(kJsonWithNull);
+  std::string deserialize_error;
+  std::unique_ptr<base::Value> value =
+      deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
+  ASSERT_TRUE(value) << deserialize_error;
+
+  {
+    auto [response, error] = GetAssertionResponseFromValue(*value);
+    ASSERT_TRUE(response) << error;
+    EXPECT_EQ(response->authenticator_attachment,
+              device::AuthenticatorAttachment::kAny);
+    EXPECT_FALSE(response->user_handle);
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({device::kWebAuthnNoNullInJSON}, {});
+    auto [response, error] = MakeCredentialResponseFromValue(*value);
+    EXPECT_FALSE(response);
+  }
+
+  {
+    base::Value json = value->Clone();
+    EXPECT_TRUE(json.GetIfDict()->Remove("authenticatorAttachment"));
+    EXPECT_TRUE(json.GetIfDict()->FindDict("response")->Remove("userHandle"));
+    auto [response, error] = GetAssertionResponseFromValue(json);
+    ASSERT_TRUE(response) << error;
+    EXPECT_EQ(response->authenticator_attachment,
+              device::AuthenticatorAttachment::kAny);
+    EXPECT_FALSE(response->user_handle);
+  }
 }
 
 }  // namespace

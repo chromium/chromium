@@ -75,4 +75,9 @@ BASE_FEATURE(kWebAuthnHybridLinkWithoutNotifications,
              "WebAuthenticationHybridLinkWithoutNotifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Not yet enabled by default.
+BASE_FEATURE(kWebAuthnNoNullInJSON,
+             "WebAuthenticationNoNullInJSON",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device

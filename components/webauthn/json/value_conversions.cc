@@ -5,11 +5,13 @@
 #include "components/webauthn/json/value_conversions.h"
 
 #include "base/base64url.h"
+#include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "device/fido/attestation_object.h"
 #include "device/fido/authenticator_selection_criteria.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
@@ -57,26 +59,28 @@ absl::optional<std::string> Base64UrlDecodeStringKey(
 }
 
 // Like `Base64UrlDecodeStringKey()` attempts to find and base64-decode the
-// value of `key` in `dict`. However, the value may also be of
-// `base::Value::Type::NONE`. Returns true on success and the decoded result if
-// the value was a string. Returns `{false, absl::nullopt}` if the key wasn't
-// found or if decoding the string failed.
+// value of `key` in `dict`. However, the value is optional and so may be
+// `base::Value::Type::NONE` or may be omitted. The style of omitted values
+// is changing: initially they were expressed as `null` values in JSON objects,
+// but as of https://github.com/w3c/webauthn/pull/1878 they'll be omitted
+// instead. This code is in a transitional state where either form is accepted.
 //
-// This is useful for extracting attributes that are defined as nullable
-// ArrayBuffers in the WebIDL since the JS `null` value maps to
-// `base::Value::Type::NONE`.
-std::tuple<bool, absl::optional<std::string>> Base64UrlDecodeNullableStringKey(
+// Returns true on success and the decoded result if the value was a string.
+// Returns `{false, absl::nullopt}` if the key wasn't found or if decoding the
+// string failed.
+std::tuple<bool, absl::optional<std::string>> Base64UrlDecodeOptionalStringKey(
     const base::Value::Dict& dict,
     const std::string& key) {
   const base::Value* value = dict.Find(key);
-  if (!value || (!value->is_string() && !value->is_none())) {
-    return {false, absl::nullopt};
-  }
-  if (value->is_none()) {
+  if (!value) {
     return {true, absl::nullopt};
   }
+  if (value->is_none()) {
+    return {!base::FeatureList::IsEnabled(device::kWebAuthnNoNullInJSON),
+            absl::nullopt};
+  }
   std::string decoded;
-  if (!Base64UrlDecode(value->GetString(), &decoded)) {
+  if (!value->is_string() || !Base64UrlDecode(value->GetString(), &decoded)) {
     return {false, absl::nullopt};
   }
   return {true, decoded};
@@ -276,16 +280,22 @@ absl::optional<device::FidoTransportProtocol> FidoTransportProtocolFromValue(
 }
 
 absl::optional<device::AuthenticatorAttachment>
-NullableAuthenticatorAttachmentFromValue(const base::Value& value) {
-  if (!value.is_none() && !value.is_string()) {
-    return absl::nullopt;
-  }
-  if (value.is_none()) {
-    // PublicKeyCredential.authenticatorAttachment can be `null`, which is
-    // equivalent to `AuthenticatorAttachment::kAny`.
+OptionalAuthenticatorAttachmentFromValue(const base::Value* value) {
+  if (!value) {
+    // PublicKeyCredential.authenticatorAttachment can be omitted or `null`,
+    // which is equivalent to `AuthenticatorAttachment::kAny`.
     return device::AuthenticatorAttachment::kAny;
   }
-  const std::string& attachment_name = value.GetString();
+  if (value->is_none()) {
+    if (base::FeatureList::IsEnabled(device::kWebAuthnNoNullInJSON)) {
+      return absl::nullopt;
+    }
+    return device::AuthenticatorAttachment::kAny;
+  }
+  if (!value->is_string()) {
+    return absl::nullopt;
+  }
+  const std::string& attachment_name = value->GetString();
   if (attachment_name == "platform") {
     return device::AuthenticatorAttachment::kPlatform;
   } else if (attachment_name == "cross-platform") {
@@ -468,13 +478,9 @@ MakeCredentialResponseFromValue(const base::Value& value) {
   }
   response->info->raw_id = ToByteVector(*raw_id);
 
-  const base::Value* authenticator_attachment_value =
-      dict.Find("authenticatorAttachment");
-  if (!authenticator_attachment_value) {
-    return InvalidMakeCredentialField("authenticatorAttachment");
-  }
   absl::optional<device::AuthenticatorAttachment> authenticator_attachment =
-      NullableAuthenticatorAttachmentFromValue(*authenticator_attachment_value);
+      OptionalAuthenticatorAttachmentFromValue(
+          dict.Find("authenticatorAttachment"));
   if (!authenticator_attachment) {
     return InvalidMakeCredentialField("authenticatorAttachment");
   }
@@ -598,13 +604,9 @@ GetAssertionResponseFromValue(const base::Value& value) {
   }
   response->info->raw_id = ToByteVector(*raw_id);
 
-  const base::Value* authenticator_attachment_value =
-      dict.Find("authenticatorAttachment");
-  if (!authenticator_attachment_value) {
-    return InvalidGetAssertionField("authenticatorAttachment");
-  }
   absl::optional<device::AuthenticatorAttachment> authenticator_attachment =
-      NullableAuthenticatorAttachmentFromValue(*authenticator_attachment_value);
+      OptionalAuthenticatorAttachmentFromValue(
+          dict.Find("authenticatorAttachment"));
   if (!authenticator_attachment) {
     return InvalidGetAssertionField("authenticatorAttachment");
   }
@@ -637,9 +639,8 @@ GetAssertionResponseFromValue(const base::Value& value) {
   }
   response->signature = ToByteVector(*signature);
 
-  // userHandle is non-optional but nullable.
   auto [ok, opt_user_handle] =
-      Base64UrlDecodeNullableStringKey(*assertion_response, "userHandle");
+      Base64UrlDecodeOptionalStringKey(*assertion_response, "userHandle");
   if (!ok) {
     return InvalidGetAssertionField("userHandle");
   }

@@ -53,8 +53,6 @@ AuthenticatorAssertionResponse::toJSON() const {
   json->setSignature(WebAuthnBase64UrlEncode(signature()));
   if (user_handle_) {
     json->setUserHandle(WebAuthnBase64UrlEncode(userHandle()));
-  } else {
-    json->setUserHandle(String() /* null string */);
   }
   return json;
 }
