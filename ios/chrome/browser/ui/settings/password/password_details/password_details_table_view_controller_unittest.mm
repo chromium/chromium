@@ -226,7 +226,7 @@ class PasswordDetailsTableViewControllerTest
                    std::string note = kNote,
                    bool is_compromised = false,
                    bool is_muted = false,
-                   DetailsContext context = DetailsContext::kGeneral) {
+                   DetailsContext context = DetailsContext::kPasswordSettings) {
     std::vector<std::string> websites = {website};
     SetPassword(websites, username, password, note, is_compromised, is_muted,
                 context);
@@ -238,7 +238,7 @@ class PasswordDetailsTableViewControllerTest
                    std::string note = kNote,
                    bool is_compromised = false,
                    bool is_muted = false,
-                   DetailsContext context = DetailsContext::kGeneral) {
+                   DetailsContext context = DetailsContext::kPasswordSettings) {
     std::vector<password_manager::PasswordForm> forms;
     for (const auto& website : websites) {
       auto form = password_manager::PasswordForm();

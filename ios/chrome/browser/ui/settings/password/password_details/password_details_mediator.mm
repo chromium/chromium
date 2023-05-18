@@ -61,7 +61,8 @@ bool ShouldDisplayCredentialAsCompromised(
     const CredentialUIEntry& credential,
     std::vector<password_manager::CredentialUIEntry> insecure_credentials) {
   switch (details_context) {
-    case DetailsContext::kGeneral:
+    case DetailsContext::kPasswordSettings:
+    case DetailsContext::kOutsideSettings:
     case DetailsContext::kCompromisedIssues:
     case DetailsContext::kDismissedWarnings:
       for (const auto& insecure_credential : insecure_credentials) {
@@ -93,7 +94,8 @@ bool ShouldDisplayCredentialAsMuted(
   }
 
   switch (details_context) {
-    case DetailsContext::kGeneral:
+    case DetailsContext::kPasswordSettings:
+    case DetailsContext::kOutsideSettings:
     case DetailsContext::kCompromisedIssues:
     case DetailsContext::kReusedIssues:
     case DetailsContext::kWeakIssues:
@@ -471,7 +473,7 @@ bool ShouldDisplayCredentialAsMuted(
     // - The user is interested in saving passwords to the account, i.e. they
     // are opted in to account storage.
     password.shouldOfferToMoveToAccount =
-        _context == DetailsContext::kGeneral &&
+        _context == DetailsContext::kPasswordSettings &&
         password_manager::features_util::IsOptedInForAccountStorage(
             _prefService, _syncService) &&
         ShouldShowLocalOnlyIcon(credential, _syncService);

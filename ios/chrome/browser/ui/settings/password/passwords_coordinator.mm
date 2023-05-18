@@ -233,7 +233,7 @@ using password_manager::WarningType;
                                browser:self.browser
                             credential:credential
                           reauthModule:self.reauthModule
-                               context:DetailsContext::kGeneral];
+                               context:DetailsContext::kPasswordSettings];
   self.passwordDetailsCoordinator.delegate = self;
   [self.passwordDetailsCoordinator start];
 }
@@ -246,7 +246,7 @@ using password_manager::WarningType;
                                browser:self.browser
                        affiliatedGroup:affiliatedGroup
                           reauthModule:self.reauthModule
-                               context:DetailsContext::kGeneral];
+                               context:DetailsContext::kPasswordSettings];
   self.passwordDetailsCoordinator.delegate = self;
   [self.passwordDetailsCoordinator start];
 }

@@ -17,7 +17,8 @@ WarningType GetWarningTypeForDetailsContext(DetailsContext details_context) {
       // User actions in password details are only associated to other
       // insecurity types (weak, reused, etc) when navigating from the
       // corresponding Password Checkup UI.
-    case DetailsContext::kGeneral:
+    case DetailsContext::kPasswordSettings:
+    case DetailsContext::kOutsideSettings:
     case DetailsContext::kCompromisedIssues:
       return WarningType::kCompromisedPasswordsWarning;
     case DetailsContext::kWeakIssues:
@@ -32,7 +33,8 @@ WarningType GetWarningTypeForDetailsContext(DetailsContext details_context) {
 bool ShouldRecordPasswordCheckUserAction(DetailsContext details_context,
                                          bool is_password_compromised) {
   switch (details_context) {
-    case DetailsContext::kGeneral:
+    case DetailsContext::kPasswordSettings:
+    case DetailsContext::kOutsideSettings:
       return is_password_compromised;
     case DetailsContext::kCompromisedIssues:
     case DetailsContext::kDismissedWarnings:

@@ -102,7 +102,8 @@ NSUInteger GetPasswordIndex(NSUInteger section) {
 // Returns true if the "Dismiss Warning" button should be shown.
 bool ShouldAllowToDismissWarning(DetailsContext context, bool is_compromised) {
   switch (context) {
-    case DetailsContext::kGeneral:
+    case DetailsContext::kPasswordSettings:
+    case DetailsContext::kOutsideSettings:
     case DetailsContext::kCompromisedIssues:
     case DetailsContext::kDismissedWarnings:
       return IsPasswordCheckupEnabled() && is_compromised;
@@ -115,7 +116,8 @@ bool ShouldAllowToDismissWarning(DetailsContext context, bool is_compromised) {
 // Returns true if the "Restore Warning" button should be shown.
 bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   switch (context) {
-    case DetailsContext::kGeneral:
+    case DetailsContext::kPasswordSettings:
+    case DetailsContext::kOutsideSettings:
     case DetailsContext::kCompromisedIssues:
     case DetailsContext::kReusedIssues:
     case DetailsContext::kWeakIssues:

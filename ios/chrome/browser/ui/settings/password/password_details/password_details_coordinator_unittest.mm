@@ -36,7 +36,7 @@ class PasswordDetailsCoordinatorTest : public PlatformTest {
                                  browser:browser_.get()
                          affiliatedGroup:affiliateGroup
                             reauthModule:nil
-                                 context:DetailsContext::kGeneral];
+                                 context:DetailsContext::kPasswordSettings];
   }
 
   web::WebTaskEnvironment task_environment_;

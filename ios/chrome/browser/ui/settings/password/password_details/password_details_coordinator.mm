@@ -350,7 +350,13 @@
 - (void)onAllPasswordsDeleted {
   DCHECK_EQ(self.baseNavigationController.topViewController,
             self.viewController);
-  [self.baseNavigationController popViewControllerAnimated:YES];
+  // For password details opened outside of the settings context.
+  if (_context == DetailsContext::kOutsideSettings) {
+    [self passwordDetailsTableViewControllerWasDismissed];
+  } else {
+    // For password details opened from the Password Manager in the settings.
+    [self.baseNavigationController popViewControllerAnimated:YES];
+  }
 }
 
 #pragma mark - PasswordDetailsMediatorDelegate

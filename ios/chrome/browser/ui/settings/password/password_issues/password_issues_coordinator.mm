@@ -48,7 +48,7 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
     case WarningType::kDismissedWarningsWarning:
       return DetailsContext::kDismissedWarnings;
     case WarningType::kNoInsecurePasswordsWarning:
-      return DetailsContext::kGeneral;
+      return DetailsContext::kPasswordSettings;
   }
 }
 
