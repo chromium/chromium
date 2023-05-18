@@ -1170,11 +1170,19 @@ void NativeInputMethodEngineObserver::OnAssistiveWindowButtonClicked(
       }
       if (button.window_type ==
           ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion) {
-        chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-            ProfileManager::GetActiveUserProfile(),
-            SettingToQueryString(
-                chromeos::settings::mojom::kKeyboardSubpagePath,
-                chromeos::settings::mojom::Setting::kShowDiacritic));
+        if (features::IsInputDeviceSettingsSplitEnabled()) {
+          chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+              ProfileManager::GetActiveUserProfile(),
+              SettingToQueryString(
+                  chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath,
+                  chromeos::settings::mojom::Setting::kShowDiacritic));
+        } else {
+          chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+              ProfileManager::GetActiveUserProfile(),
+              SettingToQueryString(
+                  chromeos::settings::mojom::kKeyboardSubpagePath,
+                  chromeos::settings::mojom::Setting::kShowDiacritic));
+        }
       }
       if (button.window_type == ash::ime::AssistiveWindowType::kLearnMore) {
         autocorrect_manager_->HideUndoWindow();
