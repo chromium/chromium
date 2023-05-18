@@ -2173,12 +2173,6 @@ const char kOmniboxDomainSuggestionsDescription[] =
     "If enabled, history URL suggestions from hosts visited often bypass the "
     "per provider limit.";
 
-const char kOmniboxExperimentalSuggestScoringName[] =
-    "Omnibox Experimental Suggest Scoring";
-const char kOmniboxExperimentalSuggestScoringDescription[] =
-    "Enables an experimental scoring mode for suggestions when Google is the "
-    "default search engine.";
-
 const char kOmniboxFuzzyUrlSuggestionsName[] = "Omnibox Fuzzy URL Suggestions";
 const char kOmniboxFuzzyUrlSuggestionsDescription[] =
     "Enables URL suggestions for inputs that may contain typos.";

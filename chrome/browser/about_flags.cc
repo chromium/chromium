@@ -5733,11 +5733,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxFocusTriggersSRPZeroSuggestDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kFocusTriggersSRPZeroSuggest)},
 
-    {"omnibox-experimental-suggest-scoring",
-     flag_descriptions::kOmniboxExperimentalSuggestScoringName,
-     flag_descriptions::kOmniboxExperimentalSuggestScoringDescription, kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxExperimentalSuggestScoring)},
-
     {"omnibox-fuzzy-url-suggestions",
      flag_descriptions::kOmniboxFuzzyUrlSuggestionsName,
      flag_descriptions::kOmniboxFuzzyUrlSuggestionsDescription, kOsAll,

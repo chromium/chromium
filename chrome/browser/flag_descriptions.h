@@ -1218,9 +1218,6 @@ extern const char kOmniboxDiscardTemporaryInputOnTabSwitchDescription[];
 extern const char kOmniboxDomainSuggestionsName[];
 extern const char kOmniboxDomainSuggestionsDescription[];
 
-extern const char kOmniboxExperimentalSuggestScoringName[];
-extern const char kOmniboxExperimentalSuggestScoringDescription[];
-
 extern const char kOmniboxFuzzyUrlSuggestionsName[];
 extern const char kOmniboxFuzzyUrlSuggestionsDescription[];
 

@@ -5526,11 +5526,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-experimental-suggest-scoring",
-    "owners": [ "jdonnelly", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 85
-  },
-  {
     "name": "omnibox-fuzzy-url-suggestions",
     "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120
