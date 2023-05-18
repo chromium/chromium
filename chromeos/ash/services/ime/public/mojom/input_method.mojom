@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 20
+// Next MinVersion: 21
 
 module ash.ime.mojom;
 
@@ -629,7 +629,7 @@ interface InputMethod {
 
 // Settings for Vietnamese Telex input method.
 //
-// Next ordinal: 4
+// Next ordinal: 5
 [Stable]
 struct VietnameseTelexSettings {
   // Allow flexible diacritic assignment.
@@ -644,11 +644,14 @@ struct VietnameseTelexSettings {
 
   // Type the horn modifier trigger to get u-horn.
   bool enable_w_for_u_horn_shortcut@3;
+
+  // Show an underline for the text under composition mode.
+  [MinVersion=20] bool show_underline_for_composition_text@4;
 };
 
 // Settings for Vietnamese VNI input method.
 //
-// Next ordinal: 3
+// Next ordinal: 4
 [Stable]
 struct VietnameseVniSettings {
   // Allow flexible diacritic assignment.
@@ -660,5 +663,8 @@ struct VietnameseVniSettings {
 
   // When a horn modifier is applied to "uo", it will add horns to both u and o.
   bool enable_insert_double_horn_on_uo@2;
+
+  // Show an underline for the text under composition mode.
+  [MinVersion=20] bool show_underline_for_composition_text@3;
 };
 
