@@ -5,6 +5,7 @@
 import 'chrome://shortcut-customization/js/shortcut_customization_app.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -526,10 +527,21 @@ suite('shortcutCustomizationAppTest', function() {
     let acceleratorList =
         editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view');
+
+    // Get the accelerator info before removal.
+    const accelViewElement = strictQuery(
+        '#acceleratorItem', acceleratorList[0]!.shadowRoot,
+        AcceleratorViewElement);
+    const acceleratorInfo =
+        (accelViewElement as AcceleratorViewElement).acceleratorInfo;
+
+    // Before removal, there should be exactly one accelerator present in the
+    // dialog, and its state should be set to kEnabled.
     assertEquals(1, acceleratorList!.length);
-    const editView = acceleratorList[0] as AcceleratorEditViewElement;
+    assertEquals(AcceleratorState.kEnabled, acceleratorInfo.state);
 
     // Click on remove button.
+    const editView = acceleratorList[0] as AcceleratorEditViewElement;
     const deleteButton =
         editView!.shadowRoot!.querySelector('#deleteButton') as CrButtonElement;
     deleteButton.click();
@@ -541,15 +553,12 @@ suite('shortcutCustomizationAppTest', function() {
         editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view');
 
-    // Expect that the accelerator has now been disabled but not removed.
+    // After removal, expect that the accelerator has now been disabled and
+    // removed.
     acceleratorList =
         editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view');
-    assertEquals(1, acceleratorList!.length);
-    const accelViewElement =
-        acceleratorList[0]!.shadowRoot!.querySelector('#acceleratorItem');
-    const acceleratorInfo =
-        (accelViewElement as AcceleratorViewElement).acceleratorInfo;
+    assertEquals(0, acceleratorList!.length);
     assertEquals(AcceleratorState.kDisabledByUser, acceleratorInfo.state);
   });
 

@@ -17,7 +17,7 @@ import {DomRepeat, flush, PolymerElement} from 'chrome://resources/polymer/v3_0/
 import {getTemplate} from './accelerator_edit_dialog.html.js';
 import {ViewState} from './accelerator_view.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
-import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource} from './shortcut_types.js';
+import {AcceleratorConfigResult, AcceleratorInfo, AcceleratorSource, AcceleratorState} from './shortcut_types.js';
 
 export interface AcceleratorEditDialogElement {
   $: {
@@ -181,6 +181,12 @@ export class AcceleratorEditDialogElement extends
             }));
           }
         });
+  }
+
+  protected getFilteredAccelerators(accelerators: AcceleratorInfo[]):
+      AcceleratorInfo[] {
+    return accelerators.filter(
+        accel => accel.state !== AcceleratorState.kDisabledByUser);
   }
 }
 
