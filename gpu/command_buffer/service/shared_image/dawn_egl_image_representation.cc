@@ -13,7 +13,7 @@
 namespace {
 GLenum ToSharedImageAccessGLMode(WGPUTextureUsage usage) {
   if (usage & (WGPUTextureUsage_CopyDst | WGPUTextureUsage_RenderAttachment |
-               WGPUTextureUsage_StorageBinding | WGPUTextureUsage_Present)) {
+               WGPUTextureUsage_StorageBinding)) {
     return GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;
   } else {
     return GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM;
