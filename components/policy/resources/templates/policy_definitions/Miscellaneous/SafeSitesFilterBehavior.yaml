@@ -12,7 +12,6 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
-- android
 - fuchsia
 items:
 - caption: Do not filter sites for adult content
@@ -30,6 +29,7 @@ schema:
   - 1
   type: integer
 supported_on:
+- android:115-
 - chrome.*:69-
 - chrome_os:69-
 tags:
