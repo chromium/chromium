@@ -7,7 +7,52 @@
 load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
 
-__filegroups = {}
+__filegroups = {
+    # for precomputed subtrees
+    "build/linux/debian_bullseye_amd64-sysroot/usr/include:include": {
+        "type": "glob",
+        "includes": ["*"],
+        # need bits/stab.def, c++/*
+    },
+    "build/linux/debian_bullseye_amd64-sysroot/usr/lib:headers": {
+        "type": "glob",
+        "includes": ["*.h", "crtbegin.o"],
+    },
+    "build/linux/debian_bullseye_i386-sysroot/usr/include:include": {
+        "type": "glob",
+        "includes": ["*"],
+        # need bits/stab.def, c++/*
+    },
+    "build/linux/debian_bullseye_i386-sysroot/usr/lib:headers": {
+        "type": "glob",
+        "includes": ["*.h", "crtbegin.o"],
+    },
+    "buildtools/third_party/libc++/trunk/include:headers": {
+        "type": "glob",
+        "includes": ["*"],
+        # can't use "*.h", because c++ headers have no extension.
+    },
+    "third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include": {
+        "type": "glob",
+        "includes": ["*"],
+        # can't use "*.h", because c++ headers have no extension.
+    },
+    "third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/local/include:include": {
+        "type": "glob",
+        "includes": ["*"],
+    },
+
+    # toolchain root
+    # :headers for compiling
+    "third_party/llvm-build/Release+Asserts:headers": {
+        "type": "glob",
+        "includes": [
+            "*.h",
+            "bin/clang",
+            "bin/clang++",
+        ],
+    },
+}
 
 def __clang_compile_coverage(ctx, cmd):
     # TODO(b/278225415): add better support for coverage build.
@@ -49,8 +94,31 @@ def __step_config(ctx, step_config):
     step_config["input_deps"].update({
         # clang++ is a symlink to clang
         # but siso doesn't add symlink target automatically.
+        # TODO(b/282608727): remove this once precomputed tree is ready.
         "third_party/llvm-build/Release+Asserts/bin/clang++": [
             "third_party/llvm-build/Release+Asserts/bin/clang",
+        ],
+
+        # sysroot headers for precomputed subtrees
+        "build/linux/debian_bullseye_amd64-sysroot:headers": [
+            "build/linux/debian_bullseye_amd64-sysroot/usr/include:include",
+            "build/linux/debian_bullseye_amd64-sysroot/usr/lib:headers",
+        ],
+        "build/linux/debian_bullseye_i386-sysroot:headers": [
+            "build/linux/debian_bullseye_i386-sysroot/usr/include:include",
+            "build/linux/debian_bullseye_i386-sysroot/usr/lib:headers",
+        ],
+        "third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot:headers": [
+            "third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include",
+            "third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/local/include:include",
+        ],
+
+        # need this because we use
+        # buildtools/third_party/libc++/trunk/include:headers,
+        # but scandeps doesn't scan `__config` file, which uses
+        # `#include <__config_site>`
+        "buildtools/third_party/libc++": [
+            "buildtools/third_party/libc++/__config_site",
         ],
     })
     step_config["rules"].extend([
