@@ -593,7 +593,7 @@ function Pause_getExceptionValue() {
   const rv = sendMessage("Debugger.getPendingException", {
     objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
   });
-  return { exception: buildRrpObjectFromCdpObject(rv.exception), data: {} };
+  return { exception: rv.exception ? buildRrpObjectFromCdpObject(rv.exception) : undefined, data: {} };
 }
 
 function Pause_getObjectPreview({ object, level = "full" }) {
