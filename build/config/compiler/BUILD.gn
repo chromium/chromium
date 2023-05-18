@@ -219,7 +219,11 @@ if (is_android || (is_chromeos_ash && is_chromeos_device)) {
       # another variable.
       chrome_orderfile_path = default_chrome_orderfile
     } else if (is_chromeos_ash && is_chromeos_device) {
-      chrome_orderfile_path = "//chromeos/profiles/chromeos.orderfile.txt"
+      if (chromeos_afdo_platform == "arm" || chromeos_afdo_platform == "arm-exp") {
+        chrome_orderfile_path = "//chromeos/profiles/chromeos.arm.orderfile.txt"
+      } else {
+        chrome_orderfile_path = "//chromeos/profiles/chromeos.orderfile.txt"
+      }
     }
   }
 }
