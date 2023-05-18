@@ -105,7 +105,7 @@ import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
-import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.NavigationButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.ViewType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
@@ -352,8 +352,7 @@ public class BookmarkTest {
 
         // Check that we are in the mobile bookmarks folder.
         assertEquals("Mobile bookmarks", mToolbar.getTitle());
-        assertEquals(SelectableListToolbar.NavigationButton.BACK,
-                mToolbar.getNavigationButtonForTests());
+        assertEquals(NavigationButton.BACK, mToolbar.getNavigationButtonForTests());
         assertFalse(mToolbar.getMenu().findItem(R.id.edit_menu_id).isVisible());
 
         // Open the new test folder.
@@ -361,8 +360,7 @@ public class BookmarkTest {
 
         // Check that we are in the editable test folder.
         assertEquals(TEST_FOLDER_TITLE, mToolbar.getTitle());
-        assertEquals(SelectableListToolbar.NavigationButton.BACK,
-                mToolbar.getNavigationButtonForTests());
+        assertEquals(NavigationButton.BACK, mToolbar.getNavigationButtonForTests());
         assertTrue(mToolbar.getMenu().findItem(R.id.edit_menu_id).isVisible());
 
         runOnUiThreadBlocking(
@@ -376,8 +374,7 @@ public class BookmarkTest {
 
         // Check that we are back in the mobile folder
         assertEquals("Mobile bookmarks", mToolbar.getTitle());
-        assertEquals(SelectableListToolbar.NavigationButton.BACK,
-                mToolbar.getNavigationButtonForTests());
+        assertEquals(NavigationButton.BACK, mToolbar.getNavigationButtonForTests());
         assertFalse(mToolbar.getMenu().findItem(R.id.edit_menu_id).isVisible());
 
         // Call BookmarkToolbar#onClick() to activate the navigation button.
@@ -385,8 +382,7 @@ public class BookmarkTest {
 
         // Check that we are in the root folder.
         assertEquals("Bookmarks", mToolbar.getTitle());
-        assertEquals(SelectableListToolbar.NavigationButton.NONE,
-                mToolbar.getNavigationButtonForTests());
+        assertEquals(NavigationButton.NONE, mToolbar.getNavigationButtonForTests());
         assertFalse(mToolbar.getMenu().findItem(R.id.edit_menu_id).isVisible());
     }
 
@@ -1717,8 +1713,7 @@ public class BookmarkTest {
 
         // Check that we are in the mobile bookmarks folder.
         assertEquals("Tracked products", mToolbar.getTitle());
-        assertEquals(SelectableListToolbar.NavigationButton.BACK,
-                mToolbar.getNavigationButtonForTests());
+        assertEquals(NavigationButton.BACK, mToolbar.getNavigationButtonForTests());
     }
 
     @Test
