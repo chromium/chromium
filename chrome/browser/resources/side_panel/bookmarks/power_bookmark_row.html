@@ -80,11 +80,11 @@
 
   <template is="dom-if" if="[[showTrailingIcon_(hasInput, hasCheckbox)]]"
       on-dom-change="onInputDisplayChange_">
-   <slot slot="badges" id="badges" name="badges"></slot>
+    <slot slot="badges" id="badges" name="badges"></slot>
     <cr-icon-button slot="suffix-icon" iron-icon="[[trailingIcon]]"
         hidden="[[!trailingIcon]]" on-click="onTrailingIconClicked_"
         title="[[trailingIconTooltip]]"
-        aria-label="[[trailingIconAriaLabel]]">
+        aria-label="[[trailingIconAriaLabel]]"></cr-icon-button>
   </template>
 
   <template is="dom-if" if="[[isBookmarksBar_(bookmark)]]" restamp>
