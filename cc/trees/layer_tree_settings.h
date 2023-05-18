@@ -220,6 +220,9 @@ class CC_EXPORT LayerTreeSettings {
   // disabled. This size is equivalent to the max texture size in GPU mode.
   // This is an arbitrary limit here similar to what hardware might have.
   int max_render_buffer_bounds_for_sw = 16 * 1024;
+
+  // Whether to use variable refresh rates when generating begin frames.
+  bool enable_variable_refresh_rate = false;
 };
 
 class CC_EXPORT LayerListSettings : public LayerTreeSettings {

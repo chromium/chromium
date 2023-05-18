@@ -270,14 +270,21 @@ void BackToBackBeginFrameSource::OnGpuNoLongerBusy() {
   OnTimerTick();
 }
 
+void BackToBackBeginFrameSource::SetMaxVrrInterval(
+    const absl::optional<base::TimeDelta>& max_vrr_interval) {
+  DCHECK(!max_vrr_interval.has_value() || !max_vrr_interval->is_zero());
+  max_vrr_interval_ = max_vrr_interval;
+}
+
 void BackToBackBeginFrameSource::OnTimerTick() {
   if (RequestCallbackOnGpuAvailable())
     return;
   base::TimeTicks frame_time = time_source_->LastTickTime();
-  base::TimeDelta default_interval = BeginFrameArgs::DefaultInterval();
+  base::TimeDelta interval =
+      max_vrr_interval_.value_or(BeginFrameArgs::DefaultInterval());
   BeginFrameArgs args = BeginFrameArgs::Create(
       BEGINFRAME_FROM_HERE, source_id(), next_sequence_number_, frame_time,
-      frame_time + default_interval, default_interval, BeginFrameArgs::NORMAL);
+      frame_time + interval, interval, BeginFrameArgs::NORMAL);
   next_sequence_number_++;
 
   // This must happen after getting the LastTickTime() from the time source.

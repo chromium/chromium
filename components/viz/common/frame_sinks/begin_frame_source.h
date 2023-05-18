@@ -281,6 +281,8 @@ class VIZ_COMMON_EXPORT SyntheticBeginFrameSource : public BeginFrameSource {
 
   virtual void OnUpdateVSyncParameters(base::TimeTicks timebase,
                                        base::TimeDelta interval) = 0;
+  virtual void SetMaxVrrInterval(
+      const absl::optional<base::TimeDelta>& max_vrr_interval) = 0;
 };
 
 // A frame source which calls BeginFrame (at the next possible time) as soon as
@@ -307,6 +309,8 @@ class VIZ_COMMON_EXPORT BackToBackBeginFrameSource
   // SyntheticBeginFrameSource implementation.
   void OnUpdateVSyncParameters(base::TimeTicks timebase,
                                base::TimeDelta interval) override {}
+  void SetMaxVrrInterval(
+      const absl::optional<base::TimeDelta>& max_vrr_interval) override;
 
   // DelayBasedTimeSourceClient implementation.
   void OnTimerTick() override;
@@ -318,6 +322,7 @@ class VIZ_COMMON_EXPORT BackToBackBeginFrameSource
   base::flat_set<BeginFrameObserver*> observers_;
   base::flat_set<BeginFrameObserver*> pending_begin_frame_observers_;
   uint64_t next_sequence_number_;
+  absl::optional<base::TimeDelta> max_vrr_interval_ = absl::nullopt;
   base::WeakPtrFactory<BackToBackBeginFrameSource> weak_factory_{this};
 };
 
@@ -348,6 +353,7 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSource
   // SyntheticBeginFrameSource implementation.
   void OnUpdateVSyncParameters(base::TimeTicks timebase,
                                base::TimeDelta interval) override;
+  void SetMaxVrrInterval(const absl::optional<base::TimeDelta>&) override {}
 
   // DelayBasedTimeSourceClient implementation.
   void OnTimerTick() override;

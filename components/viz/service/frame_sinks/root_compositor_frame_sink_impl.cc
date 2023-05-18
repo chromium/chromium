@@ -149,7 +149,10 @@ RootCompositorFrameSinkImpl::Create(
             base::SingleThreadTaskRunner::GetCurrentDefault().get()),
         restart_id);
 #else
-    if (params->disable_frame_rate_limit) {
+    // TODO(b/221220344): Support dynamically choosing the BeginFrameSource per
+    // VRR state changes.
+    if (params->disable_frame_rate_limit ||
+        params->enable_variable_refresh_rate) {
       synthetic_begin_frame_source =
           std::make_unique<BackToBackBeginFrameSource>(
               std::make_unique<DelayBasedTimeSource>(
@@ -685,7 +688,9 @@ BeginFrameSource* RootCompositorFrameSinkImpl::begin_frame_source() {
 
 void RootCompositorFrameSinkImpl::SetMaxVrrInterval(
     absl::optional<base::TimeDelta> max_vrr_interval) {
-  // TODO(b/221220344): Use VRR parameters in frame scheduling logic.
+  if (synthetic_begin_frame_source_) {
+    synthetic_begin_frame_source_->SetMaxVrrInterval(max_vrr_interval);
+  }
 }
 
 }  // namespace viz
