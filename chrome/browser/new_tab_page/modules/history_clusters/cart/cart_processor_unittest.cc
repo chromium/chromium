@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/new_tab_page/modules/history_clusters/cart/cart_processor.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/cart/cart_db.h"
 #include "chrome/browser/cart/cart_service.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/history_clusters/core/clustering_test_utils.h"
 #include "components/history_clusters/public/mojom/history_cluster_types.mojom.h"
 #include "components/search/ntp_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -51,6 +53,30 @@ class CartProcessorTest : public BrowserWithTestWindowTest {
   CartProcessor& cart_processor() { return *cart_processor_; }
 
   MockCartService& mock_cart_service() { return *mock_cart_service_; }
+
+ protected:
+  void CheckCartAssociationMetricsStatus(
+      int associated_with_top_cluster_count,
+      int associated_with_non_top_cluster_count,
+      int not_associated_count) {
+    histogram_tester_.ExpectBucketCount(
+        "NewTabPage.HistoryClusters.CartAssociationStatus",
+        commerce::CartHistoryClusterAssociationStatus::
+            kAssociatedWithTopCluster,
+        associated_with_top_cluster_count);
+    histogram_tester_.ExpectBucketCount(
+        "NewTabPage.HistoryClusters.CartAssociationStatus",
+        commerce::CartHistoryClusterAssociationStatus::
+            kAssociatedWithNonTopCluster,
+        associated_with_non_top_cluster_count);
+    histogram_tester_.ExpectBucketCount(
+        "NewTabPage.HistoryClusters.CartAssociationStatus",
+        commerce::CartHistoryClusterAssociationStatus::
+            kNotAssociatedWithCluster,
+        not_associated_count);
+  }
+
+  base::HistogramTester histogram_tester_;
 
  private:
   // BrowserWithTestWindowTest:
@@ -392,4 +418,60 @@ TEST_F(CartProcessorTest, TestOnlyMatchGoogleCartForGoogleStore) {
 
   ASSERT_TRUE(cart_mojom);
   ASSERT_EQ(cart_mojom->domain, "google.com");
+}
+
+TEST_F(CartProcessorTest, TestRecordCartAssociationMetrics) {
+  // Arrange.
+  cart_db::ChromeCartContentProto cart_proto;
+  std::vector<CartDB::KeyAndValue> carts = {{"amazon.com", cart_proto},
+                                            {"target.com", cart_proto}};
+  history::Cluster cluster1;
+  cluster1.cluster_id = 1;
+  history::AnnotatedVisit visit =
+      history_clusters::testing::CreateDefaultAnnotatedVisit(
+          1, GURL("https://foo.com/"));
+  cluster1.visits = {history_clusters::testing::CreateClusterVisit(
+      visit, /*normalized_url=*/absl::nullopt, 0.1)};
+  history::Cluster cluster2;
+  cluster2.cluster_id = 2;
+  history::AnnotatedVisit visit2 =
+      history_clusters::testing::CreateDefaultAnnotatedVisit(
+          2, GURL("https://amazon.com/"));
+  cluster2.visits = {history_clusters::testing::CreateClusterVisit(
+      visit2, /*normalized_url=*/absl::nullopt, 0.1)};
+
+  // Act.
+  std::vector<history::Cluster> clusters = {cluster1};
+  CartProcessor::RecordCartHistoryClusterAssociationMetrics(carts, clusters);
+
+  // Assert.
+  CheckCartAssociationMetricsStatus(/*associated_with_top_cluster_count=*/0,
+                                    /*associated_with_non_top_cluster_count=*/0,
+                                    /*not_associated_count=*/2);
+
+  // Act.
+  clusters = {cluster2, cluster1};
+  CartProcessor::RecordCartHistoryClusterAssociationMetrics(carts, clusters);
+
+  // Assert.
+  CheckCartAssociationMetricsStatus(/*associated_with_top_cluster_count=*/1,
+                                    /*associated_with_non_top_cluster_count=*/0,
+                                    /*not_associated_count=*/3);
+
+  // Act.
+  clusters = {cluster1, cluster2};
+  CartProcessor::RecordCartHistoryClusterAssociationMetrics(carts, clusters);
+
+  // Assert.
+  CheckCartAssociationMetricsStatus(/*associated_with_top_cluster_count=*/1,
+                                    /*associated_with_non_top_cluster_count=*/1,
+                                    /*not_associated_count=*/4);
+
+  // Act.
+  // We only record once per cart even if there are multiple matchings.
+  clusters = {cluster2, cluster1, cluster2};
+  CartProcessor::RecordCartHistoryClusterAssociationMetrics(carts, clusters);
+  CheckCartAssociationMetricsStatus(/*associated_with_top_cluster_count=*/2,
+                                    /*associated_with_non_top_cluster_count=*/1,
+                                    /*not_associated_count=*/5);
 }

@@ -54,6 +54,7 @@ class HistoryClustersModuleRanker {
   // Runs the fallback heuristic if `model_handler_` is not instantiated or if
   // the model is not available.
   void RunFallbackHeuristic(std::vector<history::Cluster> clusters,
+                            std::vector<CartDB::KeyAndValue> active_carts,
                             ClustersCallback callback);
 
   // The cart service used to check for active carts.
@@ -64,9 +65,11 @@ class HistoryClustersModuleRanker {
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Callback invoked when `model_handler_` has completed scoring of `clusters`.
-  void OnBatchModelExecutionComplete(std::vector<history::Cluster> clusters,
-                                     ClustersCallback callback,
-                                     std::vector<float> output);
+  void OnBatchModelExecutionComplete(
+      std::vector<history::Cluster> clusters,
+      std::vector<CartDB::KeyAndValue> active_carts,
+      ClustersCallback callback,
+      std::vector<float> output);
 
   // The model handler to use for ranking clusters.
   std::unique_ptr<HistoryClustersModuleRankingModelHandler> model_handler_;
