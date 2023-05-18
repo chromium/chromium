@@ -14,6 +14,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/containers/span.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/time/time.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/transfer_cache_entry.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
@@ -114,6 +115,10 @@ class GPU_GLES2_EXPORT ServiceTransferCache
     ~CacheEntryInternal();
     absl::optional<ServiceDiscardableHandle> handle;
     std::unique_ptr<cc::ServiceTransferCacheEntry> entry;
+
+    // For metrics.
+    uint32_t num_reuse = 0u;
+    base::TimeTicks last_use = base::TimeTicks::Now();
   };
 
   struct EntryKeyComp {

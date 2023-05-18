@@ -1442,6 +1442,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.TransferCache.EntryFound" enum="BooleanYesNo"
+    expires_after="2024-01-31">
+  <owner>boliu@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Whether a transfer cache entry is found when trying to retrieve it. Recorded
+    on every transfer cache look up.
+  </summary>
+</histogram>
+
+<histogram name="GPU.TransferCache.ReusedTimes" units="Reuses"
+    expires_after="2024-01-31">
+  <owner>boliu@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    When a transfer cache entry is deleted, record how many times it was used.
+    Recorded when an entry is deleted.
+  </summary>
+</histogram>
+
+<histogram name="GPU.TransferCache.TimeSinceLastUse" units="ms"
+    expires_after="2024-01-31">
+  <owner>boliu@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    When a transfer cache is found, record the time since last use. Recorded on
+    every successful transfer cache look up.
+  </summary>
+</histogram>
+
+<histogram name="GPU.TransferCache.TimeSinceLastUseOnDelete" units="ms"
+    expires_after="2024-01-31">
+  <owner>boliu@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    When a transfer cache entry is deleted, record the last time the entry was
+    used. Recorded when an entry is deleted.
+  </summary>
+</histogram>
+
 <histogram name="GPU.VideoProcessorBlt.VpSuperResolution.{State}"
     enum="Hresult" expires_after="2023-06-30">
   <owner>magchen@chromium.org</owner>
