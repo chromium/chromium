@@ -79,6 +79,24 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertSdCardState) {
             cx_events::SdCardEvent::kDisconnected);
 }
 
+TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertPowerState) {
+  EXPECT_EQ(
+      Convert(crosapi::TelemetryPowerEventInfo::State::kUnmappedEnumField),
+      cx_events::PowerEvent::kNone);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryPowerEventInfo::State::kAcInserted),
+            cx_events::PowerEvent::kAcInserted);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryPowerEventInfo::State::kAcRemoved),
+            cx_events::PowerEvent::kAcRemoved);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryPowerEventInfo::State::kOsSuspend),
+            cx_events::PowerEvent::kOsSuspend);
+
+  EXPECT_EQ(Convert(crosapi::TelemetryPowerEventInfo::State::kOsResume),
+            cx_events::PowerEvent::kOsResume);
+}
+
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertEventCategoryEnum) {
   EXPECT_EQ(Convert(cx_events::EventCategory::kNone),
             crosapi::TelemetryEventCategoryEnum::kUnmappedEnumField);
@@ -94,6 +112,9 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertEventCategoryEnum) {
 
   EXPECT_EQ(Convert(cx_events::EventCategory::kSdCard),
             crosapi::TelemetryEventCategoryEnum::kSdCard);
+
+  EXPECT_EQ(Convert(cx_events::EventCategory::kPower),
+            crosapi::TelemetryEventCategoryEnum::kPower);
 }
 
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertAudioJackEventInfo) {
@@ -145,6 +166,15 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertSdCardEventInfo) {
   auto result = ConvertStructPtr<cx_events::SdCardEventInfo>(std::move(input));
 
   EXPECT_EQ(result.event, cx_events::SdCardEvent::kConnected);
+}
+
+TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertPowerEventInfo) {
+  auto input = crosapi::TelemetryPowerEventInfo::New();
+  input->state = crosapi::TelemetryPowerEventInfo::State::kAcInserted;
+
+  auto result = ConvertStructPtr<cx_events::PowerEventInfo>(std::move(input));
+
+  EXPECT_EQ(result.event, cx_events::PowerEvent::kAcInserted);
 }
 
 }  // namespace chromeos::converters

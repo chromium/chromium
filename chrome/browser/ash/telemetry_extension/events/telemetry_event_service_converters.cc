@@ -36,6 +36,11 @@ crosapi::mojom::TelemetrySdCardEventInfoPtr UncheckedConvertPtr(
   return crosapi::mojom::TelemetrySdCardEventInfo::New(Convert(input->state));
 }
 
+crosapi::mojom::TelemetryPowerEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::PowerEventInfoPtr input) {
+  return crosapi::mojom::TelemetryPowerEventInfo::New(Convert(input->state));
+}
+
 crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::EventInfoPtr input) {
   switch (input->which()) {
@@ -55,6 +60,10 @@ crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
         kSdCardEventInfo:
       return crosapi::mojom::TelemetryEventInfo::NewSdCardEventInfo(
           ConvertStructPtr(std::move(input->get_sd_card_event_info())));
+    case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
+        kPowerEventInfo:
+      return crosapi::mojom::TelemetryEventInfo::NewPowerEventInfo(
+          ConvertStructPtr(std::move(input->get_power_event_info())));
     default:
       LOG(WARNING) << "Got event for unsupported category";
       return nullptr;
@@ -182,6 +191,23 @@ crosapi::mojom::TelemetrySdCardEventInfo::State Convert(
   NOTREACHED();
 }
 
+crosapi::mojom::TelemetryPowerEventInfo::State Convert(
+    cros_healthd::mojom::PowerEventInfo::State input) {
+  switch (input) {
+    case cros_healthd::mojom::PowerEventInfo_State::kUnmappedEnumField:
+      return crosapi::mojom::TelemetryPowerEventInfo::State::kUnmappedEnumField;
+    case cros_healthd::mojom::PowerEventInfo_State::kAcInserted:
+      return crosapi::mojom::TelemetryPowerEventInfo::State::kAcInserted;
+    case cros_healthd::mojom::PowerEventInfo_State::kAcRemoved:
+      return crosapi::mojom::TelemetryPowerEventInfo::State::kAcRemoved;
+    case cros_healthd::mojom::PowerEventInfo_State::kOsSuspend:
+      return crosapi::mojom::TelemetryPowerEventInfo::State::kOsSuspend;
+    case cros_healthd::mojom::PowerEventInfo_State::kOsResume:
+      return crosapi::mojom::TelemetryPowerEventInfo::State::kOsResume;
+  }
+  NOTREACHED();
+}
+
 crosapi::mojom::TelemetryExtensionException::Reason Convert(
     cros_healthd::mojom::Exception::Reason input) {
   switch (input) {
@@ -212,6 +238,8 @@ cros_healthd::mojom::EventCategoryEnum Convert(
       return cros_healthd::mojom::EventCategoryEnum::kUsb;
     case crosapi::mojom::TelemetryEventCategoryEnum::kSdCard:
       return cros_healthd::mojom::EventCategoryEnum::kSdCard;
+    case crosapi::mojom::TelemetryEventCategoryEnum::kPower:
+      return cros_healthd::mojom::EventCategoryEnum::kPower;
   }
   NOTREACHED();
 }

@@ -64,6 +64,25 @@ TEST(TelemetryEventServiceConvertersTest,
 }
 
 TEST(TelemetryEventServiceConvertersTest,
+     ConvertTelemetryPowerEventInfo_State) {
+  EXPECT_EQ(
+      Convert(cros_healthd::mojom::PowerEventInfo::State::kUnmappedEnumField),
+      crosapi::mojom::TelemetryPowerEventInfo::State::kUnmappedEnumField);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::PowerEventInfo::State::kAcInserted),
+            crosapi::mojom::TelemetryPowerEventInfo::State::kAcInserted);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::PowerEventInfo::State::kAcRemoved),
+            crosapi::mojom::TelemetryPowerEventInfo::State::kAcRemoved);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::PowerEventInfo::State::kOsSuspend),
+            crosapi::mojom::TelemetryPowerEventInfo::State::kOsSuspend);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::PowerEventInfo::State::kOsResume),
+            crosapi::mojom::TelemetryPowerEventInfo::State::kOsResume);
+}
+
+TEST(TelemetryEventServiceConvertersTest,
      ConvertTelemetryAudioJackEventInfo_DeviceType) {
   EXPECT_EQ(Convert(cros_healthd::mojom::AudioJackEventInfo::DeviceType::
                         kUnmappedEnumField),
@@ -126,6 +145,9 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryEventCategoryEnum) {
 
   EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kSdCard),
             cros_healthd::mojom::EventCategoryEnum::kSdCard);
+
+  EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kPower),
+            cros_healthd::mojom::EventCategoryEnum::kPower);
 }
 
 TEST(TelemetryEventServiceConvertersTest,
@@ -170,6 +192,15 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetrySdCardEventInfoPtr) {
   EXPECT_EQ(ConvertStructPtr(std::move(input)),
             crosapi::mojom::TelemetrySdCardEventInfo::New(
                 crosapi::mojom::TelemetrySdCardEventInfo::State::kAdd));
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryPowerEventInfoPtr) {
+  auto input = cros_healthd::mojom::PowerEventInfo::New();
+  input->state = cros_healthd::mojom::PowerEventInfo::State::kAcInserted;
+
+  EXPECT_EQ(ConvertStructPtr(std::move(input)),
+            crosapi::mojom::TelemetryPowerEventInfo::New(
+                crosapi::mojom::TelemetryPowerEventInfo::State::kAcInserted));
 }
 
 TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryExtensionException) {
