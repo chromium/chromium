@@ -8998,6 +8998,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCanvasOopRasterizationDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kCanvasOopRasterization)},
 
+    {"skia-graphite", flag_descriptions::kSkiaGraphiteName,
+     flag_descriptions::kSkiaGraphiteDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kSkiaGraphite)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"bookmarks-improved-save-flow",
      flag_descriptions::kBookmarksImprovedSaveFlowName,

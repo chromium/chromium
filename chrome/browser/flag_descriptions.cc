@@ -2979,6 +2979,12 @@ const char kSiteIsolationOptOutDescription[] =
 const char kSiteIsolationOptOutChoiceDefault[] = "Default";
 const char kSiteIsolationOptOutChoiceOptOut[] = "Disabled (not recommended)";
 
+const char kSkiaGraphiteName[] = "Skia Graphite";
+const char kSkiaGraphiteDescription[] =
+    "Enable Skia Graphite. This will use the Dawn backend by default, but can "
+    "be overridden with command line flags for testing on non-official "
+    "developer builds. See --skia-graphite-backend flag in gpu_switches.h.";
+
 const char kSmoothScrollingName[] = "Smooth Scrolling";
 const char kSmoothScrollingDescription[] =
     "Animate smoothly when scrolling page content.";

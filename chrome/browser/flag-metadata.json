@@ -6953,6 +6953,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "skia-graphite",
+    "owners": [ "sunnyps", "blundell", "chrome-skia-graphite@google.com" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "skip-service-worker-fetch-handler",
     "owners": [ "yyanagisawa@google.com", "chrome-worker@google.com" ],
     "expiry_milestone": 116

@@ -1687,6 +1687,9 @@ extern const char kSiteIsolationOptOutDescription[];
 extern const char kSiteIsolationOptOutChoiceDefault[];
 extern const char kSiteIsolationOptOutChoiceOptOut[];
 
+extern const char kSkiaGraphiteName[];
+extern const char kSkiaGraphiteDescription[];
+
 extern const char kSmoothScrollingName[];
 extern const char kSmoothScrollingDescription[];
 
