@@ -4,10 +4,9 @@
 
 #include "chrome/browser/extensions/api/side_panel/side_panel_api.h"
 
-#include "base/strings/stringprintf.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/common/extensions/api/side_panel.h"
 #include "extensions/common/extension_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -93,28 +92,15 @@ ExtensionFunction::ResponseAction SidePanelOpenFunction::RunFunction() {
       api::side_panel::Open::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  int tab_id = params->options.tab_id;
-  Browser* browser = nullptr;
-  if (!ExtensionTabUtil::GetTabById(tab_id, browser_context(),
-                                    include_incognito_information(), &browser,
-                                    nullptr, nullptr, nullptr)) {
-    return RespondNow(
-        Error(base::StringPrintf("No tab with tabId: %d", tab_id)));
-  }
-  CHECK(browser);
-
   SidePanelService* service = GetService();
-  api::side_panel::PanelOptions panel_options =
-      service->GetOptions(*extension(), tab_id);
-  if (!panel_options.path || !panel_options.enabled.has_value() ||
-      !(*panel_options.enabled)) {
-    return RespondNow(Error(base::StringPrintf(
-        "No active side panel for tabId: %d", params->options.tab_id)));
+  base::expected<bool, std::string> open_panel_result = service->OpenSidePanel(
+      *extension(), params->options.tab_id, include_incognito_information());
+
+  if (!open_panel_result.has_value()) {
+    return RespondNow(Error(std::move(open_panel_result.error())));
   }
 
-  // TODO(https://crbug.com/1446022): This doesn't work for opening a contextual
-  // entry on the non-active tab.
-  service->OpenSidePanel(*extension(), *browser);
+  CHECK_EQ(true, open_panel_result.value());
 
   // TODO(https://crbug.com/1446022): Should we wait for the side panel to be
   // created and load? That would probably be nice.

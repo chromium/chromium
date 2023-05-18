@@ -1425,9 +1425,36 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
       side_panel_coordinator()->IsSidePanelEntryShowing(extension1_key));
 }
 
+// Tests that calling `sidePanel.open()` on an inactive tab with a contextual
+// side panel sets that panel as the active entry for that tab, but does not
+// open the side panel in the active tab.
+IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
+                       OpenSidePanel_OpenContextualPanelInInactiveTab) {
+  const Extension* extension = LoadSidePanelExtension();
+  ASSERT_TRUE(extension);
+
+  int first_tab_id = GetCurrentTabId();
+
+  // Open a new tab.
+  OpenNewTab();
+
+  // Register a contextual side panel in the first tab.
+  RunSetOptions(*extension, first_tab_id, "panel.html", true);
+
+  // Call `sidePanel.open()` on the first tab.
+  RunOpenPanel(*extension, first_tab_id);
+
+  // The contextual side panel should not show on the current tab.
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
+
+  // Switch to the first tab; the contextual panel should be shown.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelEntryShowing(
+      GetKey(extension->id())));
+}
+
 // TODO(https://crbug.com/1446022): Add tests for:
 // * Specifying `windowId` in `sidePanel.open()`.
-// * Opening contextual panels in inactive tabs.
 
 // TODO(crbug.com/1378048): Add a test here which requires a browser in
 // ExtensionViewHost for both global and contextual extension entries. One

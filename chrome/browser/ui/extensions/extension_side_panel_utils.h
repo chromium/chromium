@@ -31,6 +31,15 @@ void ToggleExtensionSidePanel(Browser* browser,
 // Implemented by extension_side_panel_utils.cc in views/.
 void OpenExtensionSidePanel(Browser& browser, const ExtensionId& extension_id);
 
+// Opens a contextual side panel for the given `extension_id` in `browser` for
+// `web_contents`. If `web_contents` is not the active tab, this will set the
+// panel for that tab, but will not open the side panel until that tab is
+// activated.
+// Implemented by extension_side_panel_utils.cc in views/.
+void OpenContextualExtensionSidePanel(Browser& browser,
+                                      content::WebContents& web_contents,
+                                      const ExtensionId& extension_id);
+
 }  // namespace extensions::side_panel_util
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_SIDE_PANEL_UTILS_H_

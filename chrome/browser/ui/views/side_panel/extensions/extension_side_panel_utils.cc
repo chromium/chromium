@@ -44,4 +44,23 @@ void OpenExtensionSidePanel(Browser& browser, const ExtensionId& extension_id) {
       SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension_id));
 }
 
+// Declared in extension_side_panel_utils.h
+void OpenContextualExtensionSidePanel(Browser& browser,
+                                      content::WebContents& web_contents,
+                                      const ExtensionId& extension_id) {
+  if (browser.tab_strip_model()->GetActiveWebContents() == &web_contents) {
+    OpenExtensionSidePanel(browser, extension_id);
+    return;
+  }
+
+  SidePanelRegistry* registry = SidePanelRegistry::Get(&web_contents);
+  CHECK(registry);
+
+  SidePanelEntry::Key extension_key =
+      SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension_id);
+  SidePanelEntry* entry = registry->GetEntryForKey(extension_key);
+  CHECK(entry);
+  registry->SetActiveEntry(entry);
+}
+
 }  // namespace extensions::side_panel_util

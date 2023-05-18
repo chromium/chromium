@@ -10,13 +10,12 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
+#include "base/types/expected.h"
 #include "chrome/common/extensions/api/side_panel.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
-
-class Browser;
 
 namespace extensions {
 
@@ -80,8 +79,18 @@ class SidePanelService : public BrowserContextKeyedAPI,
   void SetOpenSidePanelOnIconClick(const ExtensionId& extension_id,
                                    bool open_side_panel_on_icon_click);
 
-  // Opens the `extension`'s side panel in the specified `browser`.
-  void OpenSidePanel(const Extension& extension, Browser& browser);
+  // Opens the `extension`'s side panel for the specified `tab_id`.
+  // Handles properly determining if the side panel to be opened is a global or
+  // contextual panel. `include_incognito_information` indicates whether the
+  // registry should allow crossing incognito contexts when looking up `tab_id`.
+  // Returns true on success; returns an error string on failure.
+  // TODO(https://crbug.com/1446022): Return an enum here to indicate if the
+  // panel was newly-opened vs already-opened in order to support waiting for
+  // the panel to open?
+  base::expected<bool, std::string> OpenSidePanel(
+      const Extension& extension,
+      int tab_id,
+      bool include_incognito_information);
 
   // Adds or removes observers.
   void AddObserver(Observer* observer);
