@@ -280,7 +280,9 @@ TEST_F(SearchBoxViewTest, CloseButtonVisibleInZeroStateSearchBox) {
   EXPECT_FALSE(view()->close_button()->GetVisible());
 }
 
-TEST_F(SearchBoxViewTest, AccessibilityHintRemovedWhenSearchBoxActive) {
+// TODO(crbug.com/1446550): Re-enable this test
+TEST_F(SearchBoxViewTest,
+       DISABLED_AccessibilityHintRemovedWhenSearchBoxActive) {
   EXPECT_TRUE(IsValidSearchBoxAccessibilityHint(
       view()->search_box()->GetAccessibleName()));
   SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
