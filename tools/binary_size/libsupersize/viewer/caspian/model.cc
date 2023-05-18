@@ -116,10 +116,12 @@ const char* Symbol::SourcePath() const {
   return source_path_;
 }
 const char* Symbol::GroupingPath() const {
-  if (*source_path_)
+  if (source_path_ && *source_path_) {
     return source_path_;
-  if (*object_path_)
+  }
+  if (object_path_ && *object_path_) {
     return object_path_;
+  }
   return kNoPath;
 }
 const char* Symbol::SectionName() const {
