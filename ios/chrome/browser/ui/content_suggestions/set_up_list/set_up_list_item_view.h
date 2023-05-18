@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
+
 enum class SetUpListItemType;
 @class SetUpListItemView;
 @class SetUpListItemViewData;
@@ -32,8 +34,9 @@ enum class SetUpListItemType;
 // The object that should receive a message when this view is tapped.
 @property(nonatomic, weak) id<SetUpListItemViewTapDelegate> tapDelegate;
 
-// Marks this item as complete visually.
-- (void)markComplete;
+// Marks this item as complete with an animation. When the animation is done,
+// `completion` will be called.
+- (void)markCompleteWithCompletion:(ProceduralBlock)completion;
 
 @end
 

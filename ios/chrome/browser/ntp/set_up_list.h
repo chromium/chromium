@@ -36,6 +36,9 @@ class PrefService;
 // Disconnects and cleans up this Set Up List.
 - (void)disconnect;
 
+// Returns `YES` if all items are complete.
+- (BOOL)allItemsComplete;
+
 // Contains the items or tasks that the user may want to complete as part of
 // setting up the app.
 @property(nonatomic, strong, readonly) NSArray<SetUpListItem*>* items;

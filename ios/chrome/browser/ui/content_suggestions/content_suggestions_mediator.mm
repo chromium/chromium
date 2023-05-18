@@ -364,7 +364,15 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
 #pragma mark - SetUpListDelegate
 
 - (void)setUpListItemDidComplete:(SetUpListItem*)item {
-  [self.consumer markSetUpListItemComplete:item.type];
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock completion = ^{
+    if ([weakSelf.setUpList allItemsComplete]) {
+      [weakSelf.consumer showSetUpListDoneWithAnimations:^{
+        [self.feedDelegate contentSuggestionsWasUpdated];
+      }];
+    }
+  };
+  [self.consumer markSetUpListItemComplete:item.type completion:completion];
 }
 
 #pragma mark - ContentSuggestionsCommands

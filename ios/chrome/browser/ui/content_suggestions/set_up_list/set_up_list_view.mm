@@ -37,11 +37,21 @@ constexpr CGFloat kMargin = 8;
 // The padding used inside the list.
 constexpr CGFloat kPadding = 15;
 
+// The spacing used between title and description in the "All Set" View.
+constexpr CGFloat kAllSetSpacing = 10;
+
 // The point size used for the menu button and expand button.
 constexpr CGFloat kButtonPointSize = 17;
 
 // The duration of the animation used when expanding and unexpanding the list.
 constexpr base::TimeDelta kExpandAnimationDuration = base::Seconds(0.25);
+
+// The duration of the animation used when displaying the "All Set" view.
+constexpr base::TimeDelta kAllSetAnimationDuration = base::Seconds(0.5);
+
+// The names of images used on the left and right sides of the "All Set" view.
+constexpr NSString* const kAllSetLeft = @"set_up_list_all_set_left";
+constexpr NSString* const kAllSetRight = @"set_up_list_all_set_right";
 
 // The accessibility IDs used for various UI items.
 constexpr NSString* const kSetUpListAccessibilityID =
@@ -94,13 +104,67 @@ constexpr NSString* const kSetUpListMenuButtonID = @"kSetUpListMenuButtonID";
 
 #pragma mark - Public
 
-- (void)markItemComplete:(SetUpListItemType)type {
+- (void)markItemComplete:(SetUpListItemType)type
+              completion:(ProceduralBlock)completion {
   for (SetUpListItemView* item in _items) {
     if (item.type == type) {
-      [item markComplete];
+      [item markCompleteWithCompletion:completion];
       break;
     }
   }
+}
+
+- (void)showDoneWithAnimations:(ProceduralBlock)animations {
+  UIView* allSetView = [self createAllSetView];
+  allSetView.alpha = 0;
+  allSetView.hidden = YES;
+  [_itemsStack addSubview:allSetView];
+  // Position the allSetView the same way the _itemsStack will, so that it
+  // doesn't move during the animation. It should only fade in.
+  [NSLayoutConstraint activateConstraints:@[
+    [allSetView.leadingAnchor
+        constraintEqualToAnchor:_itemsStack.layoutMarginsGuide.leadingAnchor],
+    [allSetView.trailingAnchor
+        constraintEqualToAnchor:_itemsStack.layoutMarginsGuide.trailingAnchor],
+    [allSetView.topAnchor
+        constraintEqualToAnchor:_itemsStack.layoutMarginsGuide.topAnchor],
+  ]];
+
+  [_itemsStack layoutIfNeeded];
+  _itemsStack.accessibilityElements = @[ allSetView ];
+  __weak __typeof(_itemsStack) weakItemsStack = _itemsStack;
+  [UIView animateWithDuration:kAllSetAnimationDuration.InSecondsF()
+      animations:^{
+        for (UIView* view in weakItemsStack.arrangedSubviews) {
+          view.alpha = 0;
+          view.hidden = YES;
+          // Constrain the old item view's position so that it doesn't move
+          // during the animation. It should only fade out.
+          [NSLayoutConstraint activateConstraints:@[
+            [view.heightAnchor
+                constraintEqualToConstant:view.frame.size.height],
+            [view.widthAnchor constraintEqualToConstant:view.frame.size.width],
+            [view.topAnchor constraintEqualToAnchor:weakItemsStack.topAnchor
+                                           constant:view.frame.origin.y],
+            [view.leftAnchor constraintEqualToAnchor:weakItemsStack.leftAnchor
+                                            constant:view.frame.origin.x],
+          ]];
+          [weakItemsStack removeArrangedSubview:view];
+        }
+        [weakItemsStack insertArrangedSubview:allSetView atIndex:0];
+        allSetView.alpha = 1;
+        allSetView.hidden = NO;
+        if (animations) {
+          animations();
+        }
+      }
+      completion:^(BOOL finished) {
+        for (UIView* view in weakItemsStack.arrangedSubviews) {
+          if (view != allSetView) {
+            [view removeFromSuperview];
+          }
+        }
+      }];
 }
 
 #pragma mark - SetUpListItemViewTapDelegate methods
@@ -140,7 +204,7 @@ constexpr NSString* const kSetUpListMenuButtonID = @"kSetUpListMenuButtonID";
   UILabel* listTitle = [self createListTitle];
   _items = [self createItems];
   _itemsStack = [self createItemsStack];
-  if (_items.count > kInitialItemCount) {
+  if (_items.count > kInitialItemCount && ![self allItemsComplete]) {
     _expandButton = [self createExpandButton];
     [_itemsStack addArrangedSubview:_expandButton];
   }
@@ -195,8 +259,15 @@ constexpr NSString* const kSetUpListMenuButtonID = @"kSetUpListMenuButtonID";
 // Creates the vertical stack view that holds all the SetUpListItemViews.
 - (UIStackView*)createItemsStack {
   _expanded = NO;
+  BOOL allItemsComplete = [self allItemsComplete];
+  NSArray<UIView*>* initialItems;
+  if (allItemsComplete) {
+    initialItems = @[ [self createAllSetView] ];
+  } else {
+    initialItems = [self initialItems];
+  }
   UIStackView* stack =
-      [[UIStackView alloc] initWithArrangedSubviews:[self initialItems]];
+      [[UIStackView alloc] initWithArrangedSubviews:initialItems];
   stack.axis = UILayoutConstraintAxisVertical;
   stack.translatesAutoresizingMaskIntoConstraints = NO;
   stack.spacing = kPadding;
@@ -211,7 +282,6 @@ constexpr NSString* const kSetUpListMenuButtonID = @"kSetUpListMenuButtonID";
   stack.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE);
   stack.accessibilityContainerType = UIAccessibilityContainerTypeList;
   stack.accessibilityElements = [self initialItems];
-  ;
   return stack;
 }
 
@@ -263,6 +333,52 @@ constexpr NSString* const kSetUpListMenuButtonID = @"kSetUpListMenuButtonID";
                 action:@selector(didTapExpandButton)
       forControlEvents:UIControlEventTouchUpInside];
   return button;
+}
+
+// Creates a view with a message that indicates that all the items have been
+// completed.
+- (UIView*)createAllSetView {
+  UILabel* title = [[UILabel alloc] init];
+  title.text = l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_TITLE);
+  title.textAlignment = NSTextAlignmentCenter;
+  title.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  title.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  title.accessibilityTraits = UIAccessibilityTraitHeader;
+
+  UILabel* description = [[UILabel alloc] init];
+  description.text =
+      l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_ALL_SET_DESCRIPTION);
+  description.textAlignment = NSTextAlignmentCenter;
+  description.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  description.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  description.numberOfLines = 0;
+  description.lineBreakMode = NSLineBreakByWordWrapping;
+
+  UIStackView* stack =
+      [[UIStackView alloc] initWithArrangedSubviews:@[ title, description ]];
+  stack.axis = UILayoutConstraintAxisVertical;
+  stack.alignment = UIStackViewAlignmentCenter;
+  stack.translatesAutoresizingMaskIntoConstraints = NO;
+  stack.spacing = kAllSetSpacing;
+  stack.layoutMarginsRelativeArrangement = YES;
+  stack.layoutMargins =
+      UIEdgeInsetsMake(kPadding, kPadding, kPadding, kPadding);
+
+  UIImageView* leftImage =
+      [[UIImageView alloc] initWithImage:[UIImage imageNamed:kAllSetLeft]];
+  UIImageView* rightImage =
+      [[UIImageView alloc] initWithImage:[UIImage imageNamed:kAllSetRight]];
+  leftImage.translatesAutoresizingMaskIntoConstraints = NO;
+  rightImage.translatesAutoresizingMaskIntoConstraints = NO;
+  [stack addSubview:leftImage];
+  [stack addSubview:rightImage];
+  AddSameCenterYConstraint(leftImage, stack);
+  AddSameCenterYConstraint(rightImage, stack);
+  [NSLayoutConstraint activateConstraints:@[
+    [leftImage.leftAnchor constraintEqualToAnchor:stack.leftAnchor],
+    [rightImage.rightAnchor constraintEqualToAnchor:stack.rightAnchor],
+  ]];
+  return stack;
 }
 
 #pragma mark - Private methods (expandable stack helpers)
@@ -342,6 +458,18 @@ constexpr NSString* const kSetUpListMenuButtonID = @"kSetUpListMenuButtonID";
           [item removeFromSuperview];
         }
       }];
+}
+
+#pragma mark Private methods (All Set view)
+
+// Returns `YES` if all items are marked complete.
+- (BOOL)allItemsComplete {
+  for (SetUpListItemView* item in _items) {
+    if (!item.complete) {
+      return NO;
+    }
+  }
+  return YES;
 }
 
 @end

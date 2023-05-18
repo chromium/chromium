@@ -128,6 +128,15 @@ void AddItemIfNotNil(NSMutableArray* array, id item) {
   _localState = nullptr;
 }
 
+- (BOOL)allItemsComplete {
+  for (SetUpListItem* item in _items) {
+    if (!item.complete) {
+      return NO;
+    }
+  }
+  return YES;
+}
+
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {

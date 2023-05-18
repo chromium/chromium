@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 
 #import "base/notreached.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/shared/ui/elements/crossfade_label.h"
@@ -94,7 +95,7 @@ NSAttributedString* Strikethrough(NSString* text) {
   }
 }
 
-- (void)markComplete {
+- (void)markCompleteWithCompletion:(ProceduralBlock)completion {
   if (_complete) {
     return;
   }
@@ -110,6 +111,12 @@ NSAttributedString* Strikethrough(NSString* text) {
 
   [_icon playSparkleWithDuration:kAnimationSparkleDuration
                            delay:kAnimationSparkleDelay];
+
+  if (completion) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(completion),
+        kAnimationSparkleDuration + kAnimationSparkleDelay);
+  }
 
   // Set up the main animation.
   __weak __typeof(self) weakSelf = self;

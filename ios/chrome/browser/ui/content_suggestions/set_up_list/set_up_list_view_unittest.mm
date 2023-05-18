@@ -189,7 +189,7 @@ TEST_F(SetUpListViewTest, SetUpListItemViewMarkComplete) {
   EXPECT_TRUE(item_view != nil);
   EXPECT_FALSE(item_view.complete);
 
-  [item_view markComplete];
+  [item_view markCompleteWithCompletion:nil];
   // Give time for run loop to execute events.
   _task_environment.RunUntilIdle();
 

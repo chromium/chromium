@@ -467,23 +467,25 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }
 }
 
-- (void)markSetUpListItemComplete:(SetUpListItemType)type {
+- (void)markSetUpListItemComplete:(SetUpListItemType)type
+                       completion:(ProceduralBlock)completion {
   if (IsMagicStackEnabled()) {
     switch (type) {
       case SetUpListItemType::kSignInSync:
-        [_setUpListSyncItemView markComplete];
+        [_setUpListSyncItemView markCompleteWithCompletion:completion];
         break;
       case SetUpListItemType::kDefaultBrowser:
-        [_setUpListDefaultBrowserItemView markComplete];
+        [_setUpListDefaultBrowserItemView
+            markCompleteWithCompletion:completion];
         break;
       case SetUpListItemType::kAutofill:
-        [_setUpListAutofillItemView markComplete];
+        [_setUpListAutofillItemView markCompleteWithCompletion:completion];
         break;
       default:
         break;
     }
   } else {
-    [self.setUpListView markItemComplete:type];
+    [self.setUpListView markItemComplete:type completion:completion];
   }
 }
 
@@ -517,6 +519,21 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         strongSelf.setUpListView.delegate = nil;
         strongSelf.setUpListView = nil;
       }];
+}
+
+- (void)showSetUpListDoneWithAnimations:(ProceduralBlock)animations {
+  if (IsMagicStackEnabled()) {
+    // The MagicStack does not show the "All Set" view.
+    return;
+  }
+  __weak __typeof(self) weakSelf = self;
+  [self.setUpListView showDoneWithAnimations:^{
+    [weakSelf.view setNeedsLayout];
+    [weakSelf.view layoutIfNeeded];
+    if (animations) {
+      animations();
+    }
+  }];
 }
 
 - (CGFloat)contentSuggestionsHeight {
