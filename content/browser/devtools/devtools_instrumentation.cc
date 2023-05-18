@@ -232,6 +232,9 @@ std::string FederatedAuthRequestResultToProtocol(
     case FederatedAuthRequestResult::kError: {
       return FederatedAuthRequestIssueReasonEnum::ErrorIdToken;
     }
+    case FederatedAuthRequestResult::kErrorSilentMediationFailure: {
+      return FederatedAuthRequestIssueReasonEnum::SilentMediationFailure;
+    }
     case FederatedAuthRequestResult::kSuccess: {
       DCHECK(false);
       return "";

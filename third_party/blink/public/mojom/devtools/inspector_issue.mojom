@@ -203,6 +203,7 @@ enum FederatedAuthRequestResult {
   kErrorFetchingIdTokenInvalidContentType,
   kErrorCanceled,
   kErrorRpPageNotVisible,
+  kErrorSilentMediationFailure,
   kError,
 };
 

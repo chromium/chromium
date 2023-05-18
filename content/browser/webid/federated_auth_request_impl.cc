@@ -174,6 +174,7 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse:
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType:
     case FederatedAuthRequestResult::kErrorRpPageNotVisible:
+    case FederatedAuthRequestResult::kErrorSilentMediationFailure:
     case FederatedAuthRequestResult::kError: {
       return RequestTokenStatus::kError;
     }
@@ -236,7 +237,8 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::
           kIdpServerInvalidResponse;
     }
-    case FederatedAuthRequestResult::kError: {
+    case FederatedAuthRequestResult::kError:
+    case FederatedAuthRequestResult::kErrorSilentMediationFailure: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kOther;
     }
   }
@@ -677,9 +679,10 @@ void FederatedAuthRequestImpl::RequestToken(
       // TODO(crbug.com/1383384): Handle auto_reauthn for multi IDP.
       if (ShouldFailBeforeFetchingAccounts(
               idp_ptr->get_federated()->config_url)) {
-        CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                                 TokenStatus::kSilentMediationFailure,
-                                 /*should_delay_callback=*/false);
+        CompleteRequestWithError(
+            FederatedAuthRequestResult::kErrorSilentMediationFailure,
+            TokenStatus::kSilentMediationFailure,
+            /*should_delay_callback=*/false);
         return;
       }
     }
@@ -1176,9 +1179,15 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       // 1. Reject the promise immediately without delay
       // 2. Not to show any UI to respect `mediation: silent`
       // TODO(crbug.com/1441436): validate the statement above with stakeholders
-      CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                               TokenStatus::kSilentMediationFailure,
-                               /*should_delay_callback=*/false);
+      render_frame_host().AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kError,
+          "Silent mediation failed reason: the user has used FedCM with "
+          "multiple accounts on "
+          "this site.");
+      CompleteRequestWithError(
+          FederatedAuthRequestResult::kErrorSilentMediationFailure,
+          TokenStatus::kSilentMediationFailure,
+          /*should_delay_callback=*/false);
       return;
     }
     auto_reauthn &= has_single_returning_account;
@@ -1277,9 +1286,10 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
   // 2. Not to show any UI to respect `mediation: silent`
   // TODO(crbug.com/1441436): validate the statement above with stakeholders
   if (mediation_requirement_ == MediationRequirement::kSilent) {
-    CompleteRequestWithError(FederatedAuthRequestResult::kError,
-                             TokenStatus::kSilentMediationFailure,
-                             /*should_delay_callback=*/false);
+    CompleteRequestWithError(
+        FederatedAuthRequestResult::kErrorSilentMediationFailure,
+        TokenStatus::kSilentMediationFailure,
+        /*should_delay_callback=*/false);
     return;
   }
 
@@ -2065,17 +2075,44 @@ bool FederatedAuthRequestImpl::ShouldFailBeforeFetchingAccounts(
 
   bool is_auto_reauthn_setting_enabled =
       auto_reauthn_permission_delegate_->IsAutoReauthnSettingEnabled();
+  if (!is_auto_reauthn_setting_enabled) {
+    render_frame_host().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "Silent mediation failed reason: the user has disabled auto re-authn.");
+  }
 
   bool is_auto_reauthn_embargoed =
       auto_reauthn_permission_delegate_->IsAutoReauthnEmbargoed(
           GetEmbeddingOrigin());
+  if (is_auto_reauthn_embargoed) {
+    render_frame_host().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "Silent mediation failed reason: auto re-authn is in quiet period "
+        "because "
+        "it was recently used on this site.");
+  }
 
   bool has_sharing_permission_for_any_account =
       permission_delegate_->HasSharingPermission(
           origin(), GetEmbeddingOrigin(), url::Origin::Create(config_url),
           absl::nullopt);
 
-  return RequiresUserMediation() || !is_auto_reauthn_setting_enabled ||
+  if (!has_sharing_permission_for_any_account) {
+    render_frame_host().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "Silent mediation failed reason: the user has not used FedCM on this "
+        "site with this identity provider.");
+  }
+
+  bool requires_user_mediation = RequiresUserMediation();
+  if (requires_user_mediation) {
+    render_frame_host().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "Silent mediation failed reason: preventSilentAccess() has been "
+        "invoked on the site.");
+  }
+
+  return requires_user_mediation || !is_auto_reauthn_setting_enabled ||
          is_auto_reauthn_embargoed || !has_sharing_permission_for_any_account;
 }
 
