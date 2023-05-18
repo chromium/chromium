@@ -5,6 +5,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -335,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DeveloperToolsDisabledExtensionsDevMode) {
 // blocked or allowed for different pages depending on the
 // DeveloperToolsAvailability policy setting. Note: javascript URLs are always
 // blocked on extension schemes, regardless of the policy setting.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) || BUILDFLAG(IS_LINUX)
 #define MAYBE_DebugURLsDisabledByDeveloperToolsAvailability \
   DISABLED_DebugURLsDisabledByDeveloperToolsAvailability
 #else
