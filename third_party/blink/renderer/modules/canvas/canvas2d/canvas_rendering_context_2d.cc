@@ -181,8 +181,6 @@ void CanvasRenderingContext2D::ValidateStateStackWithCanvas(
     }
   }
 #endif
-  CHECK(state_stack_.front()
-            .Get());  // Temporary for investigating crbug.com/648510
 }
 
 bool CanvasRenderingContext2D::IsAccelerated() const {
