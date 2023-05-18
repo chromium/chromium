@@ -31,7 +31,9 @@
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_map.h"
 
-using base::ScopedCFTypeRef;
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace policy {
 
@@ -67,8 +69,7 @@ PolicyLoaderMac::PolicyLoaderMac(
       application_id_(CFStringCreateCopy(kCFAllocatorDefault, application_id)) {
 }
 
-PolicyLoaderMac::~PolicyLoaderMac() {
-}
+PolicyLoaderMac::~PolicyLoaderMac() = default;
 
 void PolicyLoaderMac::InitOnBackgroundThread() {
   if (!managed_policy_path_.empty()) {
@@ -169,7 +170,7 @@ base::Time PolicyLoaderMac::LastModificationTime() {
 #if BUILDFLAG(IS_MAC)
 
 base::FilePath PolicyLoaderMac::GetManagedPolicyPath(CFStringRef bundle_id) {
-  // This constructs the path to the plist file in which Mac OS X stores the
+  // This constructs the path to the plist file in which macOS stores the
   // managed preference for the application. This is undocumented and therefore
   // fragile, but if it doesn't work out, AsyncPolicyLoader has a task that
   // polls periodically in order to reload managed preferences later even if we
@@ -198,12 +199,12 @@ void PolicyLoaderMac::LoadPolicyForDomain(PolicyDomain domain,
   if (!components)
     return;
 
-  for (ComponentMap::const_iterator it = components->begin();
-       it != components->end(); ++it) {
+  for (const auto& component : *components) {
     PolicyMap policy;
-    LoadPolicyForComponent(id_prefix + it->first, it->second, &policy);
+    LoadPolicyForComponent(id_prefix + component.first, component.second,
+                           &policy);
     if (!policy.empty())
-      bundle->Get(PolicyNamespace(domain, it->first)).Swap(&policy);
+      bundle->Get(PolicyNamespace(domain, component.first)).Swap(&policy);
   }
 }
 
@@ -217,14 +218,14 @@ void PolicyLoaderMac::LoadPolicyForComponent(
   if (!schema.valid())
     return;
 
-  base::ScopedCFTypeRef<CFStringRef> bundle_id(
-      base::SysUTF8ToCFStringRef(bundle_id_string));
+  base::ScopedCFTypeRef<CFStringRef> bundle_id =
+      base::SysUTF8ToCFStringRef(bundle_id_string);
   preferences_->AppSynchronize(bundle_id);
 
   for (Schema::Iterator it = schema.GetPropertiesIterator(); !it.IsAtEnd();
        it.Advance()) {
-    base::ScopedCFTypeRef<CFStringRef> pref_name(
-        base::SysUTF8ToCFStringRef(it.key()));
+    base::ScopedCFTypeRef<CFStringRef> pref_name =
+        base::SysUTF8ToCFStringRef(it.key());
     base::ScopedCFTypeRef<CFPropertyListRef> value(
         preferences_->CopyAppValue(pref_name, bundle_id));
     if (!value)
