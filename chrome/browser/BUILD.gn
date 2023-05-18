@@ -6035,7 +6035,6 @@ static_library("browser") {
       "//components/crash/core/app",
       "//components/metal_util",
       "//components/policy/core/common:common_constants",
-      "//components/power_metrics",
       "//components/remote_cocoa/browser:browser",
       "//sandbox/mac:seatbelt",
       "//sandbox/policy",
@@ -6213,6 +6212,7 @@ static_library("browser") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
       "//chrome/services/system_signals/public/cpp/browser",
+      "//components/power_metrics",
     ]
     public_deps +=
         [ "//chrome/browser/enterprise/connectors/analysis:sdk_manager" ]
