@@ -5,13 +5,27 @@ found in the LICENSE file.
 -->
 <style>
   .container {
-    --cr-toast-background: var(--cros-bg-color-elevation-2-inverted);
     box-shadow: var(--cros-elevation-2-shadow);
     justify-content: space-between;
     max-width: 336px;
     min-height: 48px;
     min-width: 256px;
+  }
+
+  :host-context([theme='legacy']) .container {
+    --cr-toast-background: var(--cros-bg-color-elevation-2-inverted);
+    --cr-toast-button-color: var(--cros-toast-button-color);
+    --cr-toast-text-color: var(--cros-toast-text-color);
     padding: 0;
+  }
+
+  :host-context([theme='refresh23']) .container {
+    --cr-toast-background: var(--cros-sys-base_elevated);
+    --cr-toast-button-color: var(--cros-sys-primary);
+    --cr-toast-text-color: var(--cros-sys-on_surface);
+    border-radius: 8px;
+    font: var(--cros-body-2-font);
+    padding: 14px 0;
   }
 
   :host-context(:root[dir=ltr]) .container {
@@ -27,27 +41,47 @@ found in the LICENSE file.
   .text {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
-    --cr-toast-text-color: var(--cros-toast-text-color);
     display: -webkit-box;
-    line-height: 20px;
-    margin: 14px 16px;
     overflow: hidden;
   }
 
-  .action {
-    --cr-toast-button-color: var(--cros-toast-button-color);
+  :host-context([theme='legacy']) .text {
+    line-height: 20px;
+    margin: 14px 16px;
+  }
+
+  :host-context([theme='refresh23']) .text {
+    margin-inline-start: 24px;
+  }
+
+  :host-context([theme='legacy']) .action {
     --ink-color: var(--cros-toast-button-color);
     --paper-ripple-opacity: var(--cros-button-secondary-ripple-opacity);
     margin: 0 8px !important;
+  }
+
+  :host-context([theme='refresh23']) .action {
+    --ink-color: var(--cros-sys-ripple_neutral_on_subtle);
+    --paper-ripple-opacity: 100%;
+    border-radius: 18px;
+    height: 36px;
+    margin-inline-end: 12px;
   }
 
   .action:active {
     box-shadow: none;
   }
 
-  :host-context(.focus-outline-visible) .action:focus {
+  :host-context([theme='legacy']):host-context(.focus-outline-visible)
+      .action:focus {
     --focus-shadow-color: none;
     outline: 2px solid var(--cros-toast-button-color);
+  }
+
+  :host-context([theme='refresh23']):host-context(.focus-outline-visible)
+      .action:focus {
+    --focus-shadow-color: none;
+    outline: 2px solid var(--cros-sys-focus_ring);
   }
 </style>
 <cr-toast class="container" id="container" duration="5000">
