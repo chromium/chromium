@@ -2142,7 +2142,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Shill.Cellular.TimeToRedirectFound" units="ms"
     expires_after="2023-10-08">
   <owner>matthewmwang@chromium.org</owner>
-  <owner>hugobenichi@chromium.org</owner>
+  <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network performance metric sampling the time to determine that a
@@ -2357,7 +2357,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Shill.Ethernet.TimeToRedirectFound" units="ms"
     expires_after="2023-10-01">
   <owner>matthewmwang@chromium.org</owner>
-  <owner>hugobenichi@chromium.org</owner>
+  <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network performance metric sampling the time to determine that an
@@ -3224,6 +3224,167 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.WiFi.Passpoint.ConnectionResult"
+    enum="NetworkServiceError" expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-networking@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Results of a WiFi connection attempt for a WiFi network provisioned through
+    Passpoint.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.WiFi.Passpoint.Domains" units="count"
+    expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-networking@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Number of FQDNs specified in a Passpoint profile. Recorded once per
+    Passpoint profile successfully provisioned in shill.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.WiFi.Passpoint.HomeOis" units="count"
+    expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-networking@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Number of Home Organization Identifiers specified in a Passpoint profile.
+    Recorded once per Passpoint profile successfully provisioned in shill.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.WiFi.Passpoint.InterworkingDurationMillis"
+    units="ms" expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-networking@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Duration in milliseconds of a single supplicant Interworking select
+    operation.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.WiFi.Passpoint.InterworkingMatches"
+    units="count" expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-networking@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Number of Passpoint match events during a single supplicant Interworking
+    select operation.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.WiFi.Passpoint.Match" enum="PasspointMatch"
+    expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-networking@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Match event between a Passpoint profile provisioned in shill and a Passpoint
+    network.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.WiFi.Passpoint.Meteredness"
+    enum="PasspointMeteredness" expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-networking@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Meterdness configuration of Passpoint profiles. Recorded once per Passpoint
+    profile successfully provisioned in shill.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.WiFi.Passpoint.Origin" enum="PasspointOrigin"
+    expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-networking@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Origin of a Passpoint profile successfully provisioned in shill.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.WiFi.Passpoint.ProvisioningResult"
+    enum="PasspointProvisioningResult" expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-networking@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Result of a Passpoint profile provisioning operation in shill.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.WiFi.Passpoint.RemovalResult"
+    enum="PasspointRemovalResult" expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-networking@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>Result of a Passpoint profile removal operation in shill.</summary>
+</histogram>
+
+<histogram name="Network.Shill.WiFi.Passpoint.RequiredHomeOis" units="count"
+    expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-networking@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Number of required Home Organization Identifiers specified in a Passpoint
+    profile. Recorded once per Passpoint profile successfully provisioned in
+    shill.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.WiFi.Passpoint.RoamingOis" units="count"
+    expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-networking@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Number of Roaming Organization Identifiers specified in a Passpoint profile.
+    Recorded once per Passpoint profile successfully provisioned in shill.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.WiFi.Passpoint.SavedCredentials" units="count"
+    expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-networking@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Number of Passpoint profiles saved in a shill user profile. Recorded once
+    every time a user profile is loaded in shill.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.WiFi.Passpoint.Security"
+    enum="PasspointSecurity" expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-networking@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    EAP method configuration of Passpoint profiles. Recorded once per Passpoint
+    profile successfully provisioned in shill.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.WiFi.PasspointNetworkCount" units="count"
+    expires_after="2023-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-networking@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Number of savd WiFi networks provisioned through Passpoint. Recorded once
+    every time a user profile is loaded in shill.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.Wifi.PhyMode" enum="NetworkPhyModeType"
     expires_after="2023-12-01">
   <owner>norvez@chromium.org</owner>
@@ -3562,7 +3723,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Shill.Wifi.TimeToPortal" units="ms"
     expires_after="2023-12-31">
   <owner>matthewmwang@chromium.org</owner>
-  <owner>hugobenichi@chromium.org</owner>
+  <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network performance metric sampling the time to determine that an
@@ -3574,7 +3735,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Shill.Wifi.TimeToRedirectFound" units="ms"
     expires_after="2023-12-31">
   <owner>matthewmwang@chromium.org</owner>
-  <owner>hugobenichi@chromium.org</owner>
+  <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     ChromeOS network performance metric sampling the time to determine that an

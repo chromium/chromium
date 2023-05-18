@@ -79663,6 +79663,57 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="DocumentLevelTouchPreventDefaultCalled"/>
 </enum>
 
+<enum name="PasspointMatch">
+  <int value="0" label="No match"/>
+  <int value="1" label="Service not found"/>
+  <int value="2" label="Prior higher tier Passpoint match"/>
+  <int value="3" label="Prior non-Passpoint credentials"/>
+  <int value="4" label="Upgrade match to Home match"/>
+  <int value="5" label="Upgrade match to Roaming match"/>
+  <int value="6" label="First match as Home match"/>
+  <int value="7" label="First match as Roaming match"/>
+  <int value="8" label="First match (other)"/>
+</enum>
+
+<enum name="PasspointMeteredness">
+  <int value="0" label="Not metered"/>
+  <int value="1" label="Metered"/>
+</enum>
+
+<enum name="PasspointOrigin">
+  <int value="0" label="Other"/>
+  <int value="1" label="Android"/>
+  <int value="2" label="Policy"/>
+  <int value="3" label="Carrier"/>
+</enum>
+
+<enum name="PasspointProvisioningResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="No or invalid FQDN"/>
+  <int value="2" label="No or invalid realm"/>
+  <int value="3" label="Invalid EAP method"/>
+  <int value="4" label="Invalid EAP properties"/>
+  <int value="5" label="Invalid Organization Identifier"/>
+  <int value="6" label="Invalid expiration time"/>
+  <int value="7" label="Shill Profile error"/>
+</enum>
+
+<enum name="PasspointRemovalResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Passpoint Profile not found"/>
+  <int value="2" label="No active user profile"/>
+  <int value="3" label="Internal error"/>
+</enum>
+
+<enum name="PasspointSecurity">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="TLS"/>
+  <int value="2" label="TTLS+Unknown"/>
+  <int value="3" label="TTLS+PAP"/>
+  <int value="4" label="TTLS+MSCHAP"/>
+  <int value="5" label="TTLS+MSCHAPv2"/>
+</enum>
+
 <enum name="PasswordAccountStoreClearedOnStartup">
   <int value="0" label="User is opted in, so no need to clear"/>
   <int value="1" label="User is not opted in, and store was already empty"/>
