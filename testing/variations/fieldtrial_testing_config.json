@@ -5095,9 +5095,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20230517",
                     "enable_features": [
+                        "CommercePriceTracking",
                         "IPH_PriceNotificationsWhileBrowsing",
+                        "NotificationSettingsMenuItem",
                         "OptimizationGuidePushNotifications",
                         "ShoppingList",
                         "kSmartSortingPriceTrackingDestination"
