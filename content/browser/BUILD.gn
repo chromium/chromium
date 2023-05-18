@@ -2771,6 +2771,7 @@ source_set("browser") {
     ]
     deps += [
       "//components/services/screen_ai/public/cpp:utilities",
+      "//content/utility:delegate_data",
       "//third_party/blink/public/common:font_unique_name_table_proto",
       "//third_party/iaccessible2",
       "//third_party/isimpledom",

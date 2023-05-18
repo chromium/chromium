@@ -1,0 +1,14 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module content.mojom.sandbox;
+import "mojo/public/mojom/base/file_path.mojom";
+
+// Startup data smuggled by the sandbox to utility_main.cc to set things up
+// before sandbox lockdown. Only used on Windows.
+// Note: Changes should be reviewed by the security team.
+struct UtilityConfig {
+  // `preload_libraries` are absolute paths to libraries to be loaded prior to
+  // lockdown - see ServiceProcessHost::Options::WithPreloadedLibraries().
+  array<mojo_base.mojom.FilePath> preload_libraries;
+};

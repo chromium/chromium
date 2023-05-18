@@ -76,10 +76,10 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/native_library.h"
-#include "base/pickle.h"
 #include "base/rand_util.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "content/utility/sandbox_delegate_data.mojom.h"
 #include "sandbox/win/src/sandbox.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -139,30 +139,30 @@ bool ShouldUseAmdGpuPolicy(sandbox::mojom::Sandbox sandbox_type) {
 #if BUILDFLAG(IS_WIN)
 // Handle pre-lockdown sandbox hooks
 bool PreLockdownSandboxHook(base::span<const uint8_t> delegate_blob) {
-  CHECK_GT(delegate_blob.size(), 0u);
-  // TODO(1435571) Use a typed structure rather than a base::Pickle for this.
   // TODO(1435571) Migrate other settable things to delegate_data.
-  base::Pickle libs_pickle(reinterpret_cast<const char*>(delegate_blob.data()),
-                           delegate_blob.size());
-  base::PickleIterator libs_iter(libs_pickle);
-  base::FilePath library_path;
-  while (library_path.ReadFromPickle(&libs_iter)) {
-    CHECK(library_path.IsAbsolute());
-    base::NativeLibraryLoadError lib_error;
-    HMODULE h_mod = base::LoadNativeLibrary(library_path, &lib_error);
-    // We deliberately "leak" `h_mod` so that the module stays loaded.
-    if (!h_mod) {
-      // The browser should not request libraries that do not exist, so crash on
-      // failure.
-      wchar_t dll_name[MAX_PATH];
-      base::wcslcpy(dll_name, library_path.value().c_str(), MAX_PATH);
-      base::debug::Alias(dll_name);
-      base::debug::Alias(&lib_error);
-      NOTREACHED_NORETURN();
+  CHECK(!delegate_blob.empty());
+  content::mojom::sandbox::UtilityConfigPtr sandbox_config;
+  if (!content::mojom::sandbox::UtilityConfig::Deserialize(
+          delegate_blob.data(), delegate_blob.size(), &sandbox_config)) {
+    NOTREACHED_NORETURN();
+  }
+  if (!sandbox_config->preload_libraries.empty()) {
+    for (const auto& library_path : sandbox_config->preload_libraries) {
+      CHECK(library_path.IsAbsolute());
+      base::NativeLibraryLoadError lib_error;
+      HMODULE h_mod = base::LoadNativeLibrary(library_path, &lib_error);
+      // We deliberately "leak" `h_mod` so that the module stays loaded.
+      if (!h_mod) {
+        // The browser should not request libraries that do not exist, so crash
+        // on failure.
+        wchar_t dll_name[MAX_PATH];
+        base::wcslcpy(dll_name, library_path.value().c_str(), MAX_PATH);
+        base::debug::Alias(dll_name);
+        base::debug::Alias(&lib_error);
+        NOTREACHED_NORETURN();
+      }
     }
   }
-  CHECK(libs_iter.ReachedEnd());
-
   return true;
 }
 #endif  // BUILDFLAG(IS_WIN)
