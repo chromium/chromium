@@ -178,10 +178,33 @@ public class CreatorCoordinatorTest {
         contents.add(new NativeViewContent(0, "header", new View(mActivity)));
         contents.add(new NativeViewContent(0, "error", new View(mActivity)));
 
+        // Set the title to avoid deleting the profile section.
+        coordinator.getCreatorModel().set(CreatorProperties.TITLE_KEY, "creatorTitle");
+
         listener.onContentChanged(contents);
 
         verify(mStreamMock, never()).notifyNewHeaderCount(anyInt());
         verify(mStreamMock, never()).removeOnContentChangedListener(any());
+    }
+
+    @Test
+    public void testOnChangeListener_RemoveHeader() {
+        CreatorCoordinator coordinator = newCreatorCoordinator(
+                mUrlDefault, mWebFeedIdDefault, mEntryPointDefault, mFollowingDefault);
+        coordinator.setStreamForTest(mStreamMock);
+        ContentChangedListener listener = coordinator.new ContentChangedListener();
+
+        List<FeedContent> contents = new ArrayList<>();
+        contents.add(new NativeViewContent(0, "header", new View(mActivity)));
+        contents.add(new NativeViewContent(0, "error", new View(mActivity)));
+
+        // Make sure title is unavailable to test deletion of profile section.
+        coordinator.getCreatorModel().set(CreatorProperties.TITLE_KEY, null);
+
+        listener.onContentChanged(contents);
+
+        verify(mStreamMock).notifyNewHeaderCount(0);
+        verify(mStreamMock).removeOnContentChangedListener(listener);
     }
 
     @Test

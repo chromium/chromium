@@ -581,6 +581,14 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
                 mHeaderCount += privacyList.size();
                 mStream.removeOnContentChangedListener(this);
                 mStream.notifyNewHeaderCount(mHeaderCount);
+            } else if (TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.URL_KEY))
+                    || TextUtils.isEmpty(mCreatorModel.get(CreatorProperties.TITLE_KEY))) {
+                // If there is an error, hide the profile section if either the creator URL or
+                // creator title is unavailable.
+                mContentManager.removeContents(0, 1);
+                mHeaderCount -= 1;
+                mStream.removeOnContentChangedListener(this);
+                mStream.notifyNewHeaderCount(mHeaderCount);
             }
         }
     }
