@@ -72,7 +72,7 @@ bool MinidumpCallback(const google_breakpad::MinidumpDescriptor& descriptor,
           .Set(kBreakpadProcessStartTimeKey,
                base::NumberToString(self.process_start_time().ToTimeT()))
           .Set(kBreakpadProcessUptimeKey,
-               base::NumberToString(process_uptime.InSeconds()))
+               base::NumberToString(process_uptime.InMilliseconds()))
           .Set(kBreakpadHostVersionKey, REMOTING_VERSION_STRING);
 
   auto metadata_file_contents = base::WriteJson(metadata);
