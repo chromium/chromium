@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/string_search.h"
+#include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -505,7 +506,8 @@ const BookmarkNode* AddIfNotBookmarked(BookmarkModel* model,
   // Nothing to do, a user bookmark with that url already exists.
   if (IsBookmarkedByUser(model, url))
     return nullptr;
-  model->client()->RecordAction(base::UserMetricsAction("BookmarkAdded"));
+
+  base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
 
   const auto* parent_to_use = parent ? parent : GetParentForNewNodes(model);
   return model->AddNewURL(parent_to_use, parent_to_use->children().size(),

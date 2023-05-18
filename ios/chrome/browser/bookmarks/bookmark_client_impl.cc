@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/metrics/user_metrics.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_storage.h"
@@ -78,10 +77,6 @@ void BookmarkClientImpl::GetTypedCountForUrls(
 bool BookmarkClientImpl::IsPermanentNodeVisibleWhenEmpty(
     bookmarks::BookmarkNode::Type type) {
   return type == bookmarks::BookmarkNode::MOBILE;
-}
-
-void BookmarkClientImpl::RecordAction(const base::UserMetricsAction& action) {
-  base::RecordAction(action);
 }
 
 bookmarks::LoadManagedNodeCallback

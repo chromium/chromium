@@ -49,7 +49,6 @@ class BookmarkClientImpl : public bookmarks::BookmarkClient {
   void GetTypedCountForUrls(UrlTypedCountMap* url_typed_count_map) override;
   bool IsPermanentNodeVisibleWhenEmpty(
       bookmarks::BookmarkNode::Type type) override;
-  void RecordAction(const base::UserMetricsAction& action) override;
   bookmarks::LoadManagedNodeCallback GetLoadManagedNodeCallback() override;
   bool CanSetPermanentNodeTitle(
       const bookmarks::BookmarkNode* permanent_node) override;

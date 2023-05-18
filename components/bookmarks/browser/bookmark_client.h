@@ -18,10 +18,6 @@
 
 class GURL;
 
-namespace base {
-struct UserMetricsAction;
-}
-
 namespace bookmarks {
 
 class BookmarkModel;
@@ -68,10 +64,6 @@ class BookmarkClient {
   // Returns whether the embedder wants permanent node of type |type|
   // to always be visible or to only show them when not empty.
   virtual bool IsPermanentNodeVisibleWhenEmpty(BookmarkNode::Type type) = 0;
-
-  // Wrapper around RecordAction defined in base/metrics/user_metrics.h
-  // that ensure that the action is posted from the correct thread.
-  virtual void RecordAction(const base::UserMetricsAction& action) = 0;
 
   // Returns a task that will be used to load a managed root node. This task
   // will be invoked in the Profile's IO task runner.

@@ -293,8 +293,7 @@ bool CreateOrUpdateBookmark(const BookmarkNode* node,
   bookmarks::BookmarkModel* folder_model =
       GetBookmarkModelForNode(folder, local_or_syncable_model, account_model);
   if (!node) {  // Create a new bookmark.
-    folder_model->client()->RecordAction(
-        base::UserMetricsAction("BookmarkAdded"));
+    base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
     node = folder_model->AddNewURL(folder, folder->children().size(),
                                    titleString, url);
   } else {  // Update the existing bookmark.
@@ -370,8 +369,7 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
       [[UndoManagerWrapper alloc] initWithBrowserState:browser_state];
   [wrapper startGroupingActions];
 
-  bookmark_model->client()->RecordAction(
-      base::UserMetricsAction("BookmarkAdded"));
+  base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
   const bookmarks::BookmarkNode* node = bookmark_model->AddNewURL(
       folder, folder->children().size(), titleString, url);
   bookmark_model->Move(node, folder, position);

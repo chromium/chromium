@@ -115,9 +115,6 @@ bool TestBookmarkClient::IsPermanentNodeVisibleWhenEmpty(
   return false;
 }
 
-void TestBookmarkClient::RecordAction(const base::UserMetricsAction& action) {
-}
-
 LoadManagedNodeCallback TestBookmarkClient::GetLoadManagedNodeCallback() {
   return base::BindOnce(&TestBookmarkClient::LoadManagedNode,
                         std::move(managed_node_));

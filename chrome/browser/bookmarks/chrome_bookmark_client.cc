@@ -4,7 +4,6 @@
 
 #include "chrome/browser/bookmarks/chrome_bookmark_client.h"
 
-#include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -110,10 +109,6 @@ bool ChromeBookmarkClient::IsPermanentNodeVisibleWhenEmpty(
   }
 
   return false;
-}
-
-void ChromeBookmarkClient::RecordAction(const base::UserMetricsAction& action) {
-  base::RecordAction(action);
 }
 
 bookmarks::LoadManagedNodeCallback
