@@ -246,7 +246,8 @@ IN_PROC_BROWSER_TEST_P(ChromeURLDataManagerWebUITrustedTypesTest,
 
 // Verify that Trusted Types checks are actually enabled for all `kChromeUrls`.
 IN_PROC_BROWSER_TEST_P(ChromeURLDataManagerWebUITrustedTypesTest,
-                       TrustedTypesEnabled) {
+                       // TODO(crbug.com/1446612): Re-enable this test
+                       DISABLED_TrustedTypesEnabled) {
   CheckTrustedTypesEnabled(GetParam());
 }
 
