@@ -3,29 +3,23 @@
 // found in the LICENSE file.
 
 import {crosAudioConfigMojom, fakeCrosAudioConfig} from 'chrome://os-settings/chromeos/os_settings.js';
-import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockController, MockMethod} from 'chrome://webui-test/mock_controller.js';
 
-suite('FakeCrosAudioConfig', function() {
+suite('FakeCrosAudioConfig', () => {
   // Observer for testing updates which have not been added to mojo yet.
-  // Implements `fakeCrosAudioConfig.FakePropertiesObserverInterface`.
-  class TestPropertiesObserver {
-    onPropertiesUpdated(properties) {}
+  class TestPropertiesObserver implements
+      fakeCrosAudioConfig.FakePropertiesObserverInterface {
+    onPropertiesUpdated() {}
   }
 
-  /** @type {crosAudioConfigMojom.AudioSystemProperties} */
-  const defaultProperties =
+  const defaultProperties: crosAudioConfigMojom.AudioSystemProperties =
       fakeCrosAudioConfig.defaultFakeAudioSystemProperties;
 
-  /** @type {?fakeCrosAudioConfig.FakeCrosAudioConfig} */
-  let crosAudioConfig = null;
-  /** @type {?TestPropertiesObserver} */
-  let fakeObserver = null;
-
-  /** @type {?MockController} */
-  let mockController = null;
-  /** @type {?MockMethod} */
-  let onPropertiesUpdated = null;
+  let crosAudioConfig: fakeCrosAudioConfig.FakeCrosAudioConfig;
+  let fakeObserver: TestPropertiesObserver;
+  let mockController: MockController;
+  let onPropertiesUpdated: MockMethod;
 
   setup(() => {
     crosAudioConfig = new fakeCrosAudioConfig.FakeCrosAudioConfig();
@@ -35,49 +29,44 @@ suite('FakeCrosAudioConfig', function() {
         mockController.createFunctionMock(fakeObserver, 'onPropertiesUpdated');
     onPropertiesUpdated.addExpectation(defaultProperties);
     crosAudioConfig.observeAudioSystemProperties(fakeObserver);
-  });
-
-  teardown(() => {
-    crosAudioConfig = null;
-    fakeObserver = null;
-    mockController = null;
-    onPropertiesUpdated = null;
+    assertTrue(!!onPropertiesUpdated);
   });
 
   test('VerifyObserversReceiveAudioSystemProperitesUpdates', () => {
     // `fakeObserver` observer initialized during setup.
-    assertDeepEquals(defaultProperties, onPropertiesUpdated.calls_[0][0]);
+    assertDeepEquals(defaultProperties, onPropertiesUpdated['calls_'][0]![0]);
 
-    /** @type {crosAudioConfigMojom.fakeObserver} */
     const observer = new TestPropertiesObserver();
-    /** @type {MockMethod} */
-    const onObserverPropertiesUpdated =
+    const onObserverPropertiesUpdated: MockMethod =
         mockController.createFunctionMock(observer, 'onPropertiesUpdated');
 
-    assertEquals(0, onObserverPropertiesUpdated.calls_.length);
+    assertTrue(!!onObserverPropertiesUpdated);
+    assertEquals(0, onObserverPropertiesUpdated['calls_'].length);
     crosAudioConfig.observeAudioSystemProperties(observer);
 
     assertDeepEquals(
-        defaultProperties, onObserverPropertiesUpdated.calls_[0][0]);
-    assertDeepEquals(defaultProperties, onPropertiesUpdated.calls_[1][0]);
+        defaultProperties, onObserverPropertiesUpdated['calls_'][0]![0]);
+    assertDeepEquals(defaultProperties, onPropertiesUpdated['calls_'][1]![0]);
 
-    /** @type {crosAudioConfigMojom.AudioSystemProperties} */
-    const updatedProperties = {
+    const updatedProperties: crosAudioConfigMojom.AudioSystemProperties = {
       outputDevices: [fakeCrosAudioConfig.fakeSpeakerActive],
       outputVolumePercent: 0,
       outputMuteState: crosAudioConfigMojom.MuteState.kMutedByUser,
+      inputGainPercent: 0,
+      inputDevices: [],
+      inputMuteState: crosAudioConfigMojom.MuteState.MIN_VALUE,
     };
     crosAudioConfig.setAudioSystemProperties(updatedProperties);
 
     assertDeepEquals(
-        updatedProperties, onObserverPropertiesUpdated.calls_[1][0]);
-    assertDeepEquals(updatedProperties, onPropertiesUpdated.calls_[2][0]);
+        updatedProperties, onObserverPropertiesUpdated['calls_'][1]![0]);
+    assertDeepEquals(updatedProperties, onPropertiesUpdated['calls_'][2]![0]);
   });
 
   test('VerifySetOutputVolumeTriggersMatchingPropertyUpdate', () => {
     const outputVolumePercentExpected = 47;
-    /** @type {AudioSystemProperties} */
-    const updatedVolumeProperties = {
+    const updatedVolumeProperties:
+        crosAudioConfigMojom.AudioSystemProperties = {
       ...defaultProperties,
       outputVolumePercent: outputVolumePercentExpected,
     };
@@ -89,8 +78,8 @@ suite('FakeCrosAudioConfig', function() {
 
   test(
       'VerifySetActiveDeviceOutputDeviceTriggersMatchingPropertyUpdate', () => {
-        /** @type {AudioSystemProperties} */
-        const updateActiveOutputDevice = {
+        const updateActiveOutputDevice:
+            crosAudioConfigMojom.AudioSystemProperties = {
           ...defaultProperties,
           outputDevices: [
             fakeCrosAudioConfig.createAudioDevice(
@@ -107,8 +96,8 @@ suite('FakeCrosAudioConfig', function() {
       });
 
   test('VerifySetActiveDeviceInputDeviceTriggersMatchingPropertyUpdate', () => {
-    /** @type {AudioSystemProperties} */
-    const updateActiveInputDevice = {
+    const updateActiveInputDevice:
+        crosAudioConfigMojom.AudioSystemProperties = {
       ...defaultProperties,
       inputDevices: [
         fakeCrosAudioConfig.createAudioDevice(
@@ -124,33 +113,32 @@ suite('FakeCrosAudioConfig', function() {
   });
 
   test('VerifySetOutputMutedTriggersMatchingPropertyUpdate', () => {
-    /** @type {AudioSystemProperties} */
-    const propertiesOutputMutedByUser = {
+    const propertiesOutputMutedByUser:
+        crosAudioConfigMojom.AudioSystemProperties = {
       ...defaultProperties,
       outputMuteState: crosAudioConfigMojom.MuteState.kMutedByUser,
     };
     onPropertiesUpdated.addExpectation(propertiesOutputMutedByUser);
     crosAudioConfig.setOutputMuted(/*muted=*/ true);
     assertDeepEquals(
-        propertiesOutputMutedByUser, onPropertiesUpdated.calls_[1][0]);
+        propertiesOutputMutedByUser, onPropertiesUpdated['calls_'][1]![0]);
 
-    /** @type {AudioSystemProperties} */
-    const propertiesOutputUnmute = {
+    const propertiesOutputUnmute: crosAudioConfigMojom.AudioSystemProperties = {
       ...defaultProperties,
       outputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
     };
     onPropertiesUpdated.addExpectation(propertiesOutputUnmute);
     crosAudioConfig.setOutputMuted(/*muted=*/ false);
-    assertDeepEquals(propertiesOutputUnmute, onPropertiesUpdated.calls_[2][0]);
+    assertDeepEquals(
+        propertiesOutputUnmute, onPropertiesUpdated['calls_'][2]![0]);
   });
 
   test('VerifySetInputMutedTriggersMatchingPropertyUpdate', () => {
     assertEquals(
         crosAudioConfigMojom.MuteState.kNotMuted,
-        onPropertiesUpdated.calls_[0][0].inputMuteState);
+        onPropertiesUpdated['calls_'][0]![0].inputMuteState);
 
-    /** @type {AudioSystemProperties} */
-    const updateInputGainMuted = {
+    const updateInputGainMuted: crosAudioConfigMojom.AudioSystemProperties = {
       ...defaultProperties,
       inputMuteState: crosAudioConfigMojom.MuteState.kMutedByUser,
     };
@@ -159,19 +147,18 @@ suite('FakeCrosAudioConfig', function() {
 
     assertEquals(
         crosAudioConfigMojom.MuteState.kMutedByUser,
-        onPropertiesUpdated.calls_[1][0].inputMuteState);
+        onPropertiesUpdated['calls_'][1]![0].inputMuteState);
     onPropertiesUpdated.addExpectation(defaultProperties);
     crosAudioConfig.setInputMuted(/*muted=*/ false);
 
     assertEquals(
         crosAudioConfigMojom.MuteState.kNotMuted,
-        onPropertiesUpdated.calls_[2][0].inputMuteState);
+        onPropertiesUpdated['calls_'][2]![0].inputMuteState);
   });
 
   test('VerifySetInputGainTriggersMatchingPropertyUpdate', () => {
     const expectedGainPercent = 32;
-    /** @type {AudioSystemProperties} */
-    const updatedProperties = {
+    const updatedProperties: crosAudioConfigMojom.AudioSystemProperties = {
       ...defaultProperties,
       inputGainPercent: expectedGainPercent,
     };
@@ -183,60 +170,61 @@ suite('FakeCrosAudioConfig', function() {
 
   test(
       'VerifySetNoiseCancellationEnabledTriggersMatchingPropertyUpdate', () => {
-        /** @type {AudioDevice} */
-        const ncSupportedNotEnabled = fakeCrosAudioConfig.createAudioDevice(
-            fakeCrosAudioConfig.fakeInternalFrontMic, /*isActive=*/ true);
+        const ncSupportedNotEnabled: crosAudioConfigMojom.AudioDevice =
+            fakeCrosAudioConfig.createAudioDevice(
+                fakeCrosAudioConfig.fakeInternalFrontMic, /*isActive=*/ true);
         ncSupportedNotEnabled.noiseCancellationState =
             crosAudioConfigMojom.AudioEffectState.kNotEnabled;
 
-        /** @type {AudioSystemProperties} */
-        const defaultNoiseCancellation = {
+        const defaultNoiseCancellation:
+            crosAudioConfigMojom.AudioSystemProperties = {
           ...defaultProperties,
           inputDevices: [ncSupportedNotEnabled],
         };
         crosAudioConfig.setAudioSystemProperties(defaultNoiseCancellation);
         assertDeepEquals(
-            defaultNoiseCancellation, onPropertiesUpdated.calls_[1][0]);
+            defaultNoiseCancellation, onPropertiesUpdated['calls_'][1]![0]);
         crosAudioConfig.setNoiseCancellationEnabled(/*enabled=*/ true);
 
-        /** @type {AudioDevice} */
-        const ncSupportedEnabled = fakeCrosAudioConfig.createAudioDevice(
-            fakeCrosAudioConfig.fakeInternalFrontMic, /*isActive=*/ true);
+        const ncSupportedEnabled: crosAudioConfigMojom.AudioDevice =
+            fakeCrosAudioConfig.createAudioDevice(
+                fakeCrosAudioConfig.fakeInternalFrontMic, /*isActive=*/ true);
         ncSupportedEnabled.noiseCancellationState =
             crosAudioConfigMojom.AudioEffectState.kEnabled;
 
-        /** @type {AudioSystemProperties} */
-        const enabledNoiseCancellation = {
+        const enabledNoiseCancellation:
+            crosAudioConfigMojom.AudioSystemProperties = {
           ...defaultNoiseCancellation,
           inputDevices: [ncSupportedEnabled],
         };
         assertDeepEquals(
-            enabledNoiseCancellation, onPropertiesUpdated.calls_[2][0]);
+            enabledNoiseCancellation, onPropertiesUpdated['calls_'][2]![0]);
 
         crosAudioConfig.setNoiseCancellationEnabled(/*enabled=*/ false);
         assertDeepEquals(
-            defaultNoiseCancellation, onPropertiesUpdated.calls_[2][0]);
+            defaultNoiseCancellation, onPropertiesUpdated['calls_'][2]![0]);
       });
 
   test(
       'VerifySetNoiseCancellationEnabledDoesNotUpdateUnsupportedDevice', () => {
-        /** @type {AudioDevice} */
-        const ncNotSupported = fakeCrosAudioConfig.createAudioDevice(
-            fakeCrosAudioConfig.fakeInternalFrontMic, /*isActive=*/ true);
+        const ncNotSupported: crosAudioConfigMojom.AudioDevice =
+            fakeCrosAudioConfig.createAudioDevice(
+                fakeCrosAudioConfig.fakeInternalFrontMic, /*isActive=*/ true);
         ncNotSupported.noiseCancellationState =
             crosAudioConfigMojom.AudioEffectState.kNotSupported;
 
-        /** @type {AudioSystemProperties} */
-        const noNoiseCancellation = {
+        const noNoiseCancellation:
+            crosAudioConfigMojom.AudioSystemProperties = {
           ...defaultProperties,
           inputDevices: [ncNotSupported],
         };
         crosAudioConfig.setAudioSystemProperties(noNoiseCancellation);
-        assertDeepEquals(noNoiseCancellation, onPropertiesUpdated.calls_[1][0]);
+        assertDeepEquals(
+            noNoiseCancellation, onPropertiesUpdated['calls_'][1]![0]);
         const expectedCallCount = 2;
-        assertEquals(expectedCallCount, onPropertiesUpdated.calls_.length);
+        assertEquals(expectedCallCount, onPropertiesUpdated['calls_'].length);
         crosAudioConfig.setNoiseCancellationEnabled(/*enabled=*/ true);
         crosAudioConfig.setNoiseCancellationEnabled(/*enabled=*/ false);
-        assertEquals(expectedCallCount, onPropertiesUpdated.calls_.length);
+        assertEquals(expectedCallCount, onPropertiesUpdated['calls_'].length);
       });
 });

@@ -32,7 +32,6 @@ build_webui_tests("build") {
     "esim_remove_profile_dialog_test.js",
     "esim_rename_dialog_test.js",
     "fake_canvas_context.js",
-    "fake_cros_audio_config_test.js",
     "fake_input_method_private.js",
     "fake_language_settings_private.js",
     "fake_media_devices.ts",
@@ -143,6 +142,7 @@ build_webui_tests("build") {
     "date_time_page/timezone_subpage_test.ts",
 
     "device_page/device_page_tests.js",
+    "device_page/fake_cros_audio_config_test.ts",
     "device_page/fake_input_device_settings_provider_test.ts",
     "device_page/input_device_mojo_interface_provider_test.ts",
     "device_page/per_device_keyboard_remap_keys_test.ts",

@@ -252,6 +252,9 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['DateTimePageTimezoneSelector', 'date_time_page/timezone_selector_test.js'],
  ['DateTimePageTimezoneSubpage', 'date_time_page/timezone_subpage_test.js'],
  [
+   'DevicePageFakeCrosAudioConfig', 'device_page/fake_cros_audio_config_test.js'
+ ],
+ [
    'DevicePageFakeInputDeviceSettingsProvider',
    'device_page/fake_input_device_settings_provider_test.js'
  ],
@@ -306,7 +309,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['EsimInstallErrorDialog', 'esim_install_error_dialog_test.js'],
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],
  ['EsimRenameDialog', 'esim_rename_dialog_test.js'],
- ['FakeCrosAudioConfig', 'fake_cros_audio_config_test.js'],
  ['GuestOsSharedPaths', 'guest_os/guest_os_shared_paths_test.js'],
  ['GuestOsSharedUsbDevices', 'guest_os/guest_os_shared_usb_devices_test.js'],
  [
