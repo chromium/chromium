@@ -143,8 +143,7 @@ static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
 
-  if (V8Blob::HasInstance(isolate, body)) {
-    Blob* blob = V8Blob::ToWrappableUnsafe(body.As<v8::Object>());
+  if (Blob* blob = V8Blob::ToWrappable(isolate, body)) {
     return_buffer = BodyStreamBuffer::Create(
         script_state,
         MakeGarbageCollected<BlobBytesConsumer>(execution_context,
@@ -187,10 +186,8 @@ static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
         script_state,
         MakeGarbageCollected<FormDataBytesConsumer>(array_buffer_view),
         nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr);
-  } else if (V8FormData::HasInstance(isolate, body)) {
-    scoped_refptr<EncodedFormData> form_data =
-        V8FormData::ToWrappableUnsafe(body.As<v8::Object>())
-            ->EncodeMultiPartFormData();
+  } else if (FormData* form = V8FormData::ToWrappable(isolate, body)) {
+    scoped_refptr<EncodedFormData> form_data = form->EncodeMultiPartFormData();
     // Here we handle formData->boundary() as a C-style string. See
     // FormDataEncoder::generateUniqueBoundaryString.
     content_type = AtomicString("multipart/form-data; boundary=") +
@@ -200,10 +197,10 @@ static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
         MakeGarbageCollected<FormDataBytesConsumer>(execution_context,
                                                     std::move(form_data)),
         nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr);
-  } else if (V8URLSearchParams::HasInstance(isolate, body)) {
+  } else if (URLSearchParams* url_search_params =
+                 V8URLSearchParams::ToWrappable(isolate, body)) {
     scoped_refptr<EncodedFormData> form_data =
-        V8URLSearchParams::ToWrappableUnsafe(body.As<v8::Object>())
-            ->ToEncodedFormData();
+        url_search_params->ToEncodedFormData();
     return_buffer = BodyStreamBuffer::Create(
         script_state,
         MakeGarbageCollected<FormDataBytesConsumer>(execution_context,

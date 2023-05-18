@@ -303,8 +303,7 @@ ThreadDebuggerCommonImpl::serializeToWebDriverValue(
     v8::Local<v8::Value> v8_value,
     int max_depth) {
   // Serialize according to https://w3c.github.io/webdriver-bidi.
-  if (V8Node::HasInstance(isolate_, v8_value)) {
-    Node* node = V8Node::ToWrappable(isolate_, v8_value);
+  if (Node* node = V8Node::ToWrappable(isolate_, v8_value)) {
     return SerializeNodeToWebDriverValue(node, isolate_, max_depth);
   }
 
@@ -356,19 +355,15 @@ std::unique_ptr<v8_inspector::StringBuffer>
 ThreadDebuggerCommonImpl::descriptionForValueSubtype(
     v8::Local<v8::Context> context,
     v8::Local<v8::Value> value) {
-  if (V8TrustedHTML::HasInstance(isolate_, value)) {
-    TrustedHTML* trusted_html = V8TrustedHTML::ToWrappable(isolate_, value);
+  if (TrustedHTML* trusted_html = V8TrustedHTML::ToWrappable(isolate_, value)) {
     return ToV8InspectorStringBuffer(trusted_html->toString());
-  } else if (V8TrustedScript::HasInstance(isolate_, value)) {
-    TrustedScript* trusted_script =
-        V8TrustedScript::ToWrappable(isolate_, value);
+  } else if (TrustedScript* trusted_script =
+                 V8TrustedScript::ToWrappable(isolate_, value)) {
     return ToV8InspectorStringBuffer(trusted_script->toString());
-  } else if (V8TrustedScriptURL::HasInstance(isolate_, value)) {
-    TrustedScriptURL* trusted_script_url =
-        V8TrustedScriptURL::ToWrappable(isolate_, value);
+  } else if (TrustedScriptURL* trusted_script_url =
+                 V8TrustedScriptURL::ToWrappable(isolate_, value)) {
     return ToV8InspectorStringBuffer(trusted_script_url->toString());
-  } else if (V8Node::HasInstance(isolate_, value)) {
-    Node* node = V8Node::ToWrappable(isolate_, value);
+  } else if (Node* node = V8Node::ToWrappable(isolate_, value)) {
     StringBuilder description;
     switch (node->getNodeType()) {
       case Node::kElementNode: {

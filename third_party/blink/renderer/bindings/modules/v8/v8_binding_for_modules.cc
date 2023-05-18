@@ -421,33 +421,29 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
       return nullptr;
     v8::Local<v8::Object> object = v8_value.As<v8::Object>();
 
-    if (V8Blob::HasInstance(isolate, object)) {
+    if (Blob* blob = V8Blob::ToWrappable(isolate, object)) {
       if (element == "size") {
-        v8_value =
-            v8::Number::New(isolate, V8Blob::ToWrappableUnsafe(object)->size());
+        v8_value = v8::Number::New(isolate, blob->size());
         continue;
       }
       if (element == "type") {
-        v8_value = V8String(isolate, V8Blob::ToWrappableUnsafe(object)->type());
+        v8_value = V8String(isolate, blob->type());
         continue;
       }
       // Fall through.
     }
 
-    if (V8File::HasInstance(isolate, object)) {
+    if (File* file = V8File::ToWrappable(isolate, object)) {
       if (element == "name") {
-        v8_value = V8String(isolate, V8File::ToWrappableUnsafe(object)->name());
+        v8_value = V8String(isolate, file->name());
         continue;
       }
       if (element == "lastModified") {
-        v8_value = v8::Number::New(
-            isolate, V8File::ToWrappableUnsafe(object)->lastModified());
+        v8_value = v8::Number::New(isolate, file->lastModified());
         continue;
       }
       if (element == "lastModifiedDate") {
-        v8_value = V8File::ToWrappableUnsafe(object)
-                       ->lastModifiedDate(ScriptState::From(context))
-                       .V8Value();
+        v8_value = file->lastModifiedDate(ScriptState::From(context)).V8Value();
         continue;
       }
       // Fall through.

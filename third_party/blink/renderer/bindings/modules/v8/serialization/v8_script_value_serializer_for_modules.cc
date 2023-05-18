@@ -77,9 +77,7 @@ bool V8ScriptValueSerializerForModules::ExtractTransferable(
   if (exception_state.HadException())
     return false;
 
-  if (V8VideoFrame::HasInstance(isolate, object)) {
-    VideoFrame* video_frame =
-        V8VideoFrame::ToWrappableUnsafe(v8::Local<v8::Object>::Cast(object));
+  if (VideoFrame* video_frame = V8VideoFrame::ToWrappable(isolate, object)) {
     VideoFrameTransferList* transfer_list =
         transferables.GetOrCreateTransferList<VideoFrameTransferList>();
     if (transfer_list->video_frames.Contains(video_frame)) {
@@ -93,9 +91,7 @@ bool V8ScriptValueSerializerForModules::ExtractTransferable(
     return true;
   }
 
-  if (V8AudioData::HasInstance(isolate, object)) {
-    AudioData* audio_data =
-        V8AudioData::ToWrappableUnsafe(v8::Local<v8::Object>::Cast(object));
+  if (AudioData* audio_data = V8AudioData::ToWrappable(isolate, object)) {
     AudioDataTransferList* transfer_list =
         transferables.GetOrCreateTransferList<AudioDataTransferList>();
     if (transfer_list->audio_data_collection.Contains(audio_data)) {
@@ -109,26 +105,24 @@ bool V8ScriptValueSerializerForModules::ExtractTransferable(
     return true;
   }
 
-  if (V8MediaStreamTrack::HasInstance(isolate, object) &&
-      RuntimeEnabledFeatures::MediaStreamTrackTransferEnabled(
-          CurrentExecutionContext(isolate))) {
-    MediaStreamTrack* track = V8MediaStreamTrack::ToWrappableUnsafe(
-        v8::Local<v8::Object>::Cast(object));
-    if (transferables.media_stream_tracks.Contains(track)) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataCloneError,
-          "MediaStreamTrack at index " + String::Number(object_index) +
-              " is a duplicate of an earlier MediaStreamTrack.");
-      return false;
+  if (MediaStreamTrack* track =
+          V8MediaStreamTrack::ToWrappable(isolate, object)) {
+    if (RuntimeEnabledFeatures::MediaStreamTrackTransferEnabled(
+            CurrentExecutionContext(isolate))) {
+      if (transferables.media_stream_tracks.Contains(track)) {
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kDataCloneError,
+            "MediaStreamTrack at index " + String::Number(object_index) +
+                " is a duplicate of an earlier MediaStreamTrack.");
+        return false;
+      }
+      transferables.media_stream_tracks.push_back(track);
+      return true;
     }
-    transferables.media_stream_tracks.push_back(track);
-    return true;
   }
 
-  if (V8MediaSourceHandle::HasInstance(isolate, object)) {
-    MediaSourceHandleImpl* media_source_handle =
-        V8MediaSourceHandle::ToWrappableUnsafe(
-            v8::Local<v8::Object>::Cast(object));
+  if (MediaSourceHandleImpl* media_source_handle =
+          V8MediaSourceHandle::ToWrappable(isolate, object)) {
     MediaSourceHandleTransferList* transfer_list =
         transferables.GetOrCreateTransferList<MediaSourceHandleTransferList>();
     if (transfer_list->media_source_handles.Contains(media_source_handle)) {

@@ -109,14 +109,9 @@ namespace blink {
 
 static String ExtractMessageForConsole(v8::Isolate* isolate,
                                        v8::Local<v8::Value> data) {
-  if (V8DOMWrapper::IsWrapper(isolate, data)) {
-    v8::Local<v8::Object> obj = v8::Local<v8::Object>::Cast(data);
-    const WrapperTypeInfo* type = ToWrapperTypeInfo(obj);
-    if (V8DOMException::GetWrapperTypeInfo()->IsSubclass(type)) {
-      DOMException* exception = V8DOMException::ToWrappableUnsafe(obj);
-      if (exception && !exception->MessageForConsole().empty())
-        return exception->ToStringForConsole();
-    }
+  DOMException* exception = V8DOMException::ToWrappable(isolate, data);
+  if (exception && !exception->MessageForConsole().empty()) {
+    return exception->ToStringForConsole();
   }
   return g_empty_string;
 }

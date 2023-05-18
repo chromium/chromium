@@ -48,13 +48,11 @@
 namespace blink {
 
 WebDOMFileSystem WebDOMFileSystem::FromV8Value(v8::Local<v8::Value> value) {
-  if (!V8DOMFileSystem::HasInstance(v8::Isolate::GetCurrent(), value)) {
-    return WebDOMFileSystem();
+  if (DOMFileSystem* dom_file_system =
+          V8DOMFileSystem::ToWrappable(v8::Isolate::GetCurrent(), value)) {
+    return WebDOMFileSystem(dom_file_system);
   }
-  v8::Local<v8::Object> object = v8::Local<v8::Object>::Cast(value);
-  DOMFileSystem* dom_file_system = V8DOMFileSystem::ToWrappableUnsafe(object);
-  DCHECK(dom_file_system);
-  return WebDOMFileSystem(dom_file_system);
+  return WebDOMFileSystem();
 }
 
 WebURL WebDOMFileSystem::CreateFileSystemURL(v8::Local<v8::Value> value) {

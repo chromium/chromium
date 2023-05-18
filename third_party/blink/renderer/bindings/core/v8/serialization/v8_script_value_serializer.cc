@@ -91,9 +91,7 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     Transferables& transferables,
     ExceptionState& exception_state) {
   // Validation of Objects implementing an interface, per WebIDL spec 4.1.15.
-  if (V8MessagePort::HasInstance(isolate, object)) {
-    MessagePort* port =
-        V8MessagePort::ToWrappableUnsafe(v8::Local<v8::Object>::Cast(object));
+  if (MessagePort* port = V8MessagePort::ToWrappable(isolate, object)) {
     // Check for duplicate MessagePorts.
     if (transferables.message_ports.Contains(port)) {
       exception_state.ThrowDOMException(
@@ -105,9 +103,7 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     transferables.message_ports.push_back(port);
     return true;
   }
-  if (V8MojoHandle::HasInstance(isolate, object)) {
-    MojoHandle* handle =
-        V8MojoHandle::ToWrappableUnsafe(v8::Local<v8::Object>::Cast(object));
+  if (MojoHandle* handle = V8MojoHandle::ToWrappable(isolate, object)) {
     // Check for duplicate MojoHandles.
     if (transferables.mojo_handles.Contains(handle)) {
       exception_state.ThrowDOMException(
@@ -151,9 +147,7 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     transferables.array_buffers.push_back(shared_array_buffer);
     return true;
   }
-  if (V8ImageBitmap::HasInstance(isolate, object)) {
-    ImageBitmap* image_bitmap =
-        V8ImageBitmap::ToWrappableUnsafe(v8::Local<v8::Object>::Cast(object));
+  if (ImageBitmap* image_bitmap = V8ImageBitmap::ToWrappable(isolate, object)) {
     if (transferables.image_bitmaps.Contains(image_bitmap)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
@@ -164,9 +158,8 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     transferables.image_bitmaps.push_back(image_bitmap);
     return true;
   }
-  if (V8OffscreenCanvas::HasInstance(isolate, object)) {
-    OffscreenCanvas* offscreen_canvas = V8OffscreenCanvas::ToWrappableUnsafe(
-        v8::Local<v8::Object>::Cast(object));
+  if (OffscreenCanvas* offscreen_canvas =
+          V8OffscreenCanvas::ToWrappable(isolate, object)) {
     if (transferables.offscreen_canvases.Contains(offscreen_canvas)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
@@ -177,9 +170,7 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     transferables.offscreen_canvases.push_back(offscreen_canvas);
     return true;
   }
-  if (V8ReadableStream::HasInstance(isolate, object)) {
-    ReadableStream* stream = V8ReadableStream::ToWrappableUnsafe(
-        v8::Local<v8::Object>::Cast(object));
+  if (ReadableStream* stream = V8ReadableStream::ToWrappable(isolate, object)) {
     if (transferables.readable_streams.Contains(stream)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
@@ -190,9 +181,7 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     transferables.readable_streams.push_back(stream);
     return true;
   }
-  if (V8WritableStream::HasInstance(isolate, object)) {
-    WritableStream* stream = V8WritableStream::ToWrappableUnsafe(
-        v8::Local<v8::Object>::Cast(object));
+  if (WritableStream* stream = V8WritableStream::ToWrappable(isolate, object)) {
     if (transferables.writable_streams.Contains(stream)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
@@ -203,9 +192,8 @@ bool V8ScriptValueSerializer::ExtractTransferable(
     transferables.writable_streams.push_back(stream);
     return true;
   }
-  if (V8TransformStream::HasInstance(isolate, object)) {
-    TransformStream* stream = V8TransformStream::ToWrappableUnsafe(
-        v8::Local<v8::Object>::Cast(object));
+  if (TransformStream* stream =
+          V8TransformStream::ToWrappable(isolate, object)) {
     if (transferables.transform_streams.Contains(stream)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
