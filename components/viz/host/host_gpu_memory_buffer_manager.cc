@@ -69,7 +69,8 @@ HostGpuMemoryBufferManager::HostGpuMemoryBufferManager(
   weak_ptr_ = weak_factory_.GetWeakPtr();
 
   if (!WillGetGmbConfigFromGpu()) {
-    native_configurations_ = gpu::GetNativeGpuMemoryBufferConfigurations();
+    native_configurations_ =
+        gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations();
     native_configurations_initialized_.Set();
   }
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(

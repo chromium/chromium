@@ -12,58 +12,6 @@
 
 namespace gpu {
 
-GpuMemoryBufferConfigurationSet GetNativeGpuMemoryBufferConfigurations() {
-  GpuMemoryBufferConfigurationSet configurations;
-
-#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_ANDROID)
-  const gfx::BufferFormat kBufferFormats[] = {
-      gfx::BufferFormat::R_8,
-      gfx::BufferFormat::R_16,
-      gfx::BufferFormat::RG_88,
-      gfx::BufferFormat::RG_1616,
-      gfx::BufferFormat::BGR_565,
-      gfx::BufferFormat::RGBA_4444,
-      gfx::BufferFormat::RGBX_8888,
-      gfx::BufferFormat::RGBA_8888,
-      gfx::BufferFormat::BGRX_8888,
-      gfx::BufferFormat::BGRA_1010102,
-      gfx::BufferFormat::RGBA_1010102,
-      gfx::BufferFormat::BGRA_8888,
-      gfx::BufferFormat::RGBA_F16,
-      gfx::BufferFormat::YVU_420,
-      gfx::BufferFormat::YUV_420_BIPLANAR,
-      gfx::BufferFormat::YUVA_420_TRIPLANAR,
-      gfx::BufferFormat::P010};
-
-  const gfx::BufferUsage kUsages[] = {
-      gfx::BufferUsage::GPU_READ,
-      gfx::BufferUsage::SCANOUT,
-      gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE,
-      gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE,
-      gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
-      gfx::BufferUsage::SCANOUT_VDA_WRITE,
-      gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE,
-      gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
-      gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
-      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-      gfx::BufferUsage::SCANOUT_FRONT_RENDERING,
-  };
-
-  for (auto format : kBufferFormats) {
-    for (auto usage : kUsages) {
-      if (gpu::GpuMemoryBufferSupport::
-              IsNativeGpuMemoryBufferConfigurationSupported(format, usage)) {
-        configurations.insert(gfx::BufferUsageAndFormat(usage, format));
-      }
-    }
-  }
-#endif  // BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_ANDROID)
-
-  return configurations;
-}
-
 bool GetImageNeedsPlatformSpecificTextureTarget(gfx::BufferFormat format,
                                                 gfx::BufferUsage usage) {
   if (!NativeBufferNeedsPlatformSpecificTextureTarget(format))
@@ -71,7 +19,7 @@ bool GetImageNeedsPlatformSpecificTextureTarget(gfx::BufferFormat format,
 #if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
   GpuMemoryBufferConfigurationSet native_configurations =
-      GetNativeGpuMemoryBufferConfigurations();
+      gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations();
   return base::Contains(native_configurations,
                         gfx::BufferUsageAndFormat(usage, format));
 #else

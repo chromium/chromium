@@ -45,7 +45,7 @@
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_lists_version.h"
 #include "gpu/config/gpu_util.h"
-#include "gpu/ipc/host/gpu_memory_buffer_support.h"
+#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "skia/ext/skia_commit_hash.h"
 #include "third_party/angle/src/common/angle_version_info.h"
@@ -358,7 +358,8 @@ base::Value::List GpuMemoryBufferInfo(const gfx::GpuExtraInfo& gpu_extra_info) {
   }
 #endif
   if (native_config.empty()) {
-    native_config = gpu::GetNativeGpuMemoryBufferConfigurations();
+    native_config =
+        gpu::GpuMemoryBufferSupport::GetNativeGpuMemoryBufferConfigurations();
   }
   for (size_t format = 0;
        format < static_cast<size_t>(gfx::BufferFormat::LAST) + 1; format++) {

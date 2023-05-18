@@ -18,7 +18,7 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/viz/host/viz_host_export.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
-#include "gpu/ipc/host/gpu_memory_buffer_support.h"
+#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 
 namespace gpu {
 class GpuMemoryBufferSupport;
