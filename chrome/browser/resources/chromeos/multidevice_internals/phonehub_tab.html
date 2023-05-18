@@ -28,9 +28,12 @@
     <div class="cr-row">
       <div class="cr-padded-text">
         Click to undo Notification Setup UI user dismissal. Note that
-        Notification access must be revoked by the phone (Toggle "Google Play
-        Services" to off in Apps & notifications > Special app access >
-        Notification access.
+        Notification access must already be revoked for Google Play services on
+        the phone (Toggle "Allow notification access" to off in Settings >
+        Notifications > Device & app notifications > Google Play services OR
+        Settings > Apps > Special app access > Device & app notifications >
+        Google Play services). This will restart the Notification access
+        onboarding flow.
       </div>
       <cr-button class="internals-button" on-click="onResetHasMultideviceFeatureSetupUiBeenDismissedButtonClick_">
         Reset
@@ -52,8 +55,8 @@
         Click to make the Recent Photos onboarding UI appear when the feature
         becomes disabled by the user if it has been dismissed by the user
         previously. Note that this should be done before disabling Recent
-        Photos from the settings page in order for the onboarding UI to
-        reappear.
+        Photos from the Chromebook settings page in order for the onboarding UI
+        to reappear.
       </div>
       <cr-button class="internals-button" on-click="onResetCameraRollOnboardingUiDismissedButtonClick_">
         Reset
