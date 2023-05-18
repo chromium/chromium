@@ -105,6 +105,11 @@ class TabAndroid : public base::SupportsUserData {
   // `GetProfile()->IsOffTheRecord()` unless `web_contents()` is nullptr.
   bool IsIncognito() const;
 
+  // Returns the time at which the tab was last shown to the user. Note that the
+  // timestamp is when the tab comes into view, not the time it went out of
+  // view.
+  base::Time GetLastShownTimestamp() const;
+
   // Delete navigation entries matching predicate from frozen state.
   void DeleteFrozenNavigationEntries(
       const WebContentsState::DeletionPredicate& predicate);

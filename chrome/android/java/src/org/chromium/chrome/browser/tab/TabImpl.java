@@ -1376,6 +1376,11 @@ public class TabImpl implements Tab {
     }
 
     @CalledByNative
+    private long getLastShownTimestamp() {
+        return CriticalPersistedTabData.from(this).getTimestampMillis();
+    }
+
+    @CalledByNative
     private static long[] getAllNativePtrs(Tab[] tabsArray) {
         if (tabsArray == null) return null;
 

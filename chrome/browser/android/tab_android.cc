@@ -228,6 +228,16 @@ bool TabAndroid::IsIncognito() const {
   return is_incognito;
 }
 
+base::Time TabAndroid::GetLastShownTimestamp() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  const long timestamp =
+      Java_TabImpl_getLastShownTimestamp(env, weak_java_tab_.get(env));
+  if (timestamp == -1) {
+    return base::Time();
+  }
+  return base::Time::FromJavaTime(timestamp);
+}
+
 void TabAndroid::DeleteFrozenNavigationEntries(
     const WebContentsState::DeletionPredicate& predicate) {
   JNIEnv* env = base::android::AttachCurrentThread();
