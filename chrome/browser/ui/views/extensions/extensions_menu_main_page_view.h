@@ -92,6 +92,8 @@ class ExtensionsMenuMainPageView : public views::View {
   }
   std::vector<extensions::ExtensionId>
   GetExtensionsRequestingAccessForTesting();
+  views::View* GetExtensionRequestingAccessEntryForTesting(
+      const extensions::ExtensionId& extension_id);
 
  private:
   content::WebContents* GetActiveWebContents() const;

@@ -9064,6 +9064,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action
+    name="Extensions.Toolbar.ExtensionActivatedFromAllowingRequestAccessInMenu">
+  <owner>emiliapaz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <description>
+    The user triggered an extension to run by allowing it from the extensions
+    menu. Their actions may or may not run, depending on other checks. This is
+    recorded for both keyboard and mouse activation.
+  </description>
+</action>
+
 <action name="Extensions.Toolbar.ExtensionActivatedFromMenu">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>

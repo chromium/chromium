@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
+#include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
 #include "chrome/grit/generated_resources.h"
@@ -70,6 +72,9 @@ class ExtensionsMenuMainPageViewUnitTest : public ExtensionsToolbarUnitTest {
   // Returns the extension names in the request access section. If it's empty,
   // the section is not visible.
   std::vector<extensions::ExtensionId> GetExtensionsInRequestAccessSection();
+
+  // Returns the extension ids in the request access button in the toolbar.
+  std::vector<extensions::ExtensionId> GetExtensionsInRequestAccessButton();
 
   // Since this is a unittest, the extensions menu widget sometimes needs a
   // nudge to re-layout the views.
@@ -123,6 +128,14 @@ ExtensionsMenuMainPageViewUnitTest::GetExtensionsInRequestAccessSection() {
   ExtensionsMenuMainPageView* page = main_page();
   return page ? page->GetExtensionsRequestingAccessForTesting()
               : std::vector<std::string>();
+}
+
+std::vector<extensions::ExtensionId>
+ExtensionsMenuMainPageViewUnitTest::GetExtensionsInRequestAccessButton() {
+  return extensions_container()
+      ->GetExtensionsToolbarControls()
+      ->request_access_button_for_testing()
+      ->GetExtensionIdsForTesting();
 }
 
 void ExtensionsMenuMainPageViewUnitTest::LayoutMenuIfNecessary() {
@@ -1007,4 +1020,58 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, RequestsAccessSection) {
   UpdateUserSiteSetting(
       PermissionsManager::UserSiteSetting::kBlockAllExtensions, url);
   EXPECT_TRUE(GetExtensionsInRequestAccessSection().empty());
+}
+
+TEST_F(ExtensionsMenuMainPageViewUnitTest,
+       RequestsAccessSection_AllowExtension) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+  WithholdHostPermissions(extension.get());
+
+  const GURL url("http://www.example.com");
+  web_contents_tester()->NavigateAndCommit(url);
+
+  ShowMenu();
+
+  constexpr char kActivatedUserAction[] =
+      "Extensions.Toolbar.ExtensionActivatedFromAllowingRequestAccessInMenu";
+  base::UserActionTester user_action_tester;
+  auto* permissions = PermissionsManager::Get(profile());
+
+  // When extension is requesting site access:
+  //   - request access section (menu) includes extension.
+  //   - request access button (toolbar) includes extension.
+  //   - action has not been run.
+  //   - site access is "on click".
+  EXPECT_THAT(GetExtensionsInRequestAccessSection(),
+              testing::ElementsAre(extension->id()));
+  EXPECT_THAT(GetExtensionsInRequestAccessButton(),
+              testing::ElementsAre(extension->id()));
+  EXPECT_EQ(user_action_tester.GetActionCount(kActivatedUserAction), 0);
+  EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
+            PermissionsManager::UserSiteAccess::kOnClick);
+
+  // Click on the allow button for the extension.
+  views::View* extension_entry =
+      main_page()->GetExtensionRequestingAccessEntryForTesting(extension->id());
+  ASSERT_TRUE(extension_entry);
+  views::Button* extension_allow_button =
+      static_cast<views::Button*>(extension_entry->children()[2]);
+  ClickButton(extension_allow_button);
+
+  WaitForAnimation();
+  LayoutContainerIfNecessary();
+  LayoutMenuIfNecessary();
+
+  // When extension is granted site access via 'allow' button:
+  //   - request access section (menu) does not include extension
+  //   - request access button (toolbar) does not include extension
+  //   - action has been run
+  //   - site access is still "on click" since clicking the button grants one
+  //   time access
+  EXPECT_TRUE(GetExtensionsInRequestAccessSection().empty());
+  EXPECT_TRUE(GetExtensionsInRequestAccessButton().empty());
+  EXPECT_EQ(user_action_tester.GetActionCount(kActivatedUserAction), 1);
+  EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
+            PermissionsManager::UserSiteAccess::kOnClick);
 }

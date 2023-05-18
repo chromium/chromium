@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -33,6 +34,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
@@ -89,7 +91,9 @@ ExtensionMenuItemView* GetMenuItem(
 
 class RequestsAccessSection : public views::BoxLayoutView {
  public:
-  RequestsAccessSection();
+  explicit RequestsAccessSection(
+      base::RepeatingCallback<void(const extensions::ExtensionId&)>
+          allow_callback);
   RequestsAccessSection(const RequestsAccessSection&) = delete;
   const RequestsAccessSection& operator=(const RequestsAccessSection&) = delete;
   ~RequestsAccessSection() override = default;
@@ -111,6 +115,8 @@ class RequestsAccessSection : public views::BoxLayoutView {
 
   // Accessors used by tests:
   std::vector<extensions::ExtensionId> GetExtensionsForTesting();
+  views::View* GetExtensionEntryForTesting(
+      const extensions::ExtensionId& extension_id);
 
  private:
   // Container for the entries for all the extensions requesting access..
@@ -118,6 +124,9 @@ class RequestsAccessSection : public views::BoxLayoutView {
 
   // A collection of all the extension entries
   std::map<extensions::ExtensionId, views::View*> extension_entries_;
+
+  // Callback for the allow button.
+  base::RepeatingCallback<void(const extensions::ExtensionId&)> allow_callback_;
 };
 
 BEGIN_VIEW_BUILDER(/* No Export */, RequestsAccessSection, views::BoxLayoutView)
@@ -125,7 +134,10 @@ END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(/* No Export */, RequestsAccessSection)
 
-RequestsAccessSection::RequestsAccessSection() {
+RequestsAccessSection::RequestsAccessSection(
+    base::RepeatingCallback<void(const extensions::ExtensionId&)>
+        allow_callback)
+    : allow_callback_(std::move(allow_callback)) {
   views::Builder<RequestsAccessSection>(this)
       .SetOrientation(views::BoxLayout::Orientation::kVertical)
       .SetVisible(false)
@@ -161,8 +173,13 @@ void RequestsAccessSection::AddOrUpdateExtension(
     auto item =
         views::Builder<views::FlexLayoutView>()
             .SetOrientation(views::LayoutOrientation::kHorizontal)
-            .AddChildren(views::Builder<views::ImageView>().SetImage(icon),
-                         views::Builder<views::Label>().SetText(name))
+            .AddChildren(
+                views::Builder<views::ImageView>().SetImage(icon),
+                views::Builder<views::Label>().SetText(name),
+                views::Builder<views::MdTextButton>()
+                    .SetCallback(base::BindRepeating(allow_callback_, id))
+                    .SetText(l10n_util::GetStringUTF16(
+                        IDS_EXTENSIONS_MENU_REQUESTS_ACCESS_SECTION_ALLOW_BUTTON_TEXT)))
             .Build();
     extension_entries_.insert({id, item.get()});
     extensions_container_->AddChildViewAt(std::move(item), index);
@@ -203,6 +220,12 @@ RequestsAccessSection::GetExtensionsForTesting() {
     extensions.push_back(entry.first);
   }
   return extensions;
+}
+
+views::View* RequestsAccessSection::GetExtensionEntryForTesting(
+    const extensions::ExtensionId& extension_id) {
+  auto iter = extension_entries_.find(extension_id);
+  return iter == extension_entries_.end() ? nullptr : iter->second;
 }
 
 ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
@@ -313,7 +336,11 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                       .AddChildren(
                           // Request access section.
                           views::Builder<RequestsAccessSection>(
-                              std::make_unique<RequestsAccessSection>())
+                              std::make_unique<RequestsAccessSection>(
+                                  base::BindRepeating(
+                                      &ExtensionsMenuHandler::
+                                          OnAllowExtensionClicked,
+                                      base::Unretained(menu_handler_))))
                               .CopyAddressTo(&requests_access_section_),
                           // Menu items section.
                           views::Builder<views::BoxLayoutView>()
@@ -411,6 +438,13 @@ std::vector<ExtensionMenuItemView*> ExtensionsMenuMainPageView::GetMenuItems()
 std::vector<extensions::ExtensionId>
 ExtensionsMenuMainPageView::GetExtensionsRequestingAccessForTesting() {
   return requests_access_section_->GetExtensionsForTesting();  // IN-TEST
+}
+
+views::View*
+ExtensionsMenuMainPageView::GetExtensionRequestingAccessEntryForTesting(
+    const extensions::ExtensionId& extension_id) {
+  return requests_access_section_->GetExtensionEntryForTesting(
+      extension_id);  // IN-TEST
 }
 
 content::WebContents* ExtensionsMenuMainPageView::GetActiveWebContents() const {

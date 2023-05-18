@@ -6,6 +6,8 @@
 
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
@@ -348,6 +350,25 @@ void ExtensionsMenuViewController::OnExtensionToggleSelected(
   action_runner->GrantTabPermissions({extension});
 }
 
+void ExtensionsMenuViewController::OnAllowExtensionClicked(
+    const extensions::ExtensionId& extension_id) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  extensions::ExtensionActionRunner* action_runner =
+      extensions::ExtensionActionRunner::GetForWebContents(web_contents);
+  if (!action_runner) {
+    return;
+  }
+
+  base::RecordAction(base::UserMetricsAction(
+      "Extensions.Toolbar.ExtensionActivatedFromAllowingRequestAccessInMenu"));
+  action_runner->GrantTabPermissions({GetExtension(browser_, extension_id)});
+  // TODO(crbug.com/1445399): Granting tab permission but not accepting the
+  // reload page means we grant tab permissions but the action is not executed.
+  // This causes a mismatch between the request access button in the toolbar,
+  // and the request access section in the menu when the extension is granted
+  // tab permission by one item but the action is not run.
+}
+
 void ExtensionsMenuViewController::TabChangedAt(content::WebContents* contents,
                                                 int index,
                                                 TabChangeType change_type) {
@@ -469,6 +490,12 @@ void ExtensionsMenuViewController::UpdateMainPage(
             *extension, *browser_->profile(), *toolbar_model_, *web_contents);
     menu_item->Update(site_access_toggle_state, site_permissions_button_state,
                       site_permissions_button_access);
+  }
+
+  // Items can be added/removed from the menu, thus we need to resize the menu
+  // contents (e.g extension is added to the requests section).
+  if (bubble_delegate_->GetBubbleFrameView()) {
+    bubble_delegate_->SizeToContents();
   }
 }
 

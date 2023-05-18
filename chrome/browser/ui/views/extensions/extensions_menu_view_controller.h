@@ -49,6 +49,8 @@ class ExtensionsMenuViewController
       extensions::PermissionsManager::UserSiteAccess site_access) override;
   void OnExtensionToggleSelected(extensions::ExtensionId extension_id,
                                  bool is_on) override;
+  void OnAllowExtensionClicked(
+      const extensions::ExtensionId& extension_id) override;
 
   // TabStripModelObserver:
   // Sometimes, menu can stay open when tab changes (e.g keyboard shortcuts) or
