@@ -397,10 +397,11 @@ size_t Partitions::BufferPotentialCapacity(size_t n) {
 // static
 void* Partitions::FastMalloc(size_t n, const char* type_name) {
   auto* fast_malloc_partition = FastMallocPartition();
-  if (UNLIKELY(fast_malloc_partition))
+  if (UNLIKELY(fast_malloc_partition)) {
     return fast_malloc_partition->Alloc(n, type_name);
-  else
+  } else {
     return malloc(n);
+  }
 }
 
 // static
@@ -417,10 +418,11 @@ void* Partitions::FastZeroedMalloc(size_t n, const char* type_name) {
 // static
 void Partitions::FastFree(void* p) {
   auto* fast_malloc_partition = FastMallocPartition();
-  if (UNLIKELY(fast_malloc_partition))
+  if (UNLIKELY(fast_malloc_partition)) {
     fast_malloc_partition->Free(p);
-  else
+  } else {
     free(p);
+  }
 }
 
 // static
@@ -445,22 +447,30 @@ void Partitions::HandleOutOfMemory(size_t size) {
       "page-allocator-mapped-size");
   g_page_allocator_mapped_size.Set(value);
 
-  if (total_usage >= 2UL * 1024 * 1024 * 1024)
+  if (total_usage >= 2UL * 1024 * 1024 * 1024) {
     PartitionsOutOfMemoryUsing2G(size);
-  if (total_usage >= 1UL * 1024 * 1024 * 1024)
+  }
+  if (total_usage >= 1UL * 1024 * 1024 * 1024) {
     PartitionsOutOfMemoryUsing1G(size);
-  if (total_usage >= 512 * 1024 * 1024)
+  }
+  if (total_usage >= 512 * 1024 * 1024) {
     PartitionsOutOfMemoryUsing512M(size);
-  if (total_usage >= 256 * 1024 * 1024)
+  }
+  if (total_usage >= 256 * 1024 * 1024) {
     PartitionsOutOfMemoryUsing256M(size);
-  if (total_usage >= 128 * 1024 * 1024)
+  }
+  if (total_usage >= 128 * 1024 * 1024) {
     PartitionsOutOfMemoryUsing128M(size);
-  if (total_usage >= 64 * 1024 * 1024)
+  }
+  if (total_usage >= 64 * 1024 * 1024) {
     PartitionsOutOfMemoryUsing64M(size);
-  if (total_usage >= 32 * 1024 * 1024)
+  }
+  if (total_usage >= 32 * 1024 * 1024) {
     PartitionsOutOfMemoryUsing32M(size);
-  if (total_usage >= 16 * 1024 * 1024)
+  }
+  if (total_usage >= 16 * 1024 * 1024) {
     PartitionsOutOfMemoryUsing16M(size);
+  }
   PartitionsOutOfMemoryUsingLessThan16M(size);
 }
 
