@@ -5,7 +5,11 @@
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
 
 #import "base/mac/foundation_util.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/scoped_password_suggestion_bottom_sheet_reauth_module_override.h"
+#import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
 #import "ios/chrome/test/app/password_test_util.h"
 
@@ -33,6 +37,15 @@ static std::unique_ptr<ScopedPasswordSuggestionBottomSheetReauthModuleOverride>
       base::mac::ObjCCastStrict<MockReauthenticationModule>(
           _scopedReauthOverride->module);
   mockModule.expectedResult = expectedResult;
+}
+
++ (void)removeMockReauthenticationModule {
+  _scopedReauthOverride = nullptr;
+}
+
++ (void)setDismissCount:(int)dismissCount {
+  chrome_test_util::GetOriginalBrowserState()->GetPrefs()->SetInteger(
+      prefs::kIosPasswordBottomSheetDismissCount, dismissCount);
 }
 
 @end
