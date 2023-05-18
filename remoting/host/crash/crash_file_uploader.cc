@@ -305,13 +305,18 @@ void CrashFileUploader::Core::OnUploadComplete(
 
   std::string upload_result;
   if ((*it)->NetError() == net::OK) {
-    LOG(INFO) << "Successfully uploaded: " << crash_guid << ".dmp";
     std::string report_id = (response_body ? *response_body : "empty");
     // Result file format looks like:
     // report_id: <id_from_crash_service>
     // go/crash/<id_from_crash_service>
     upload_result =
         "report_id: " + report_id + "\r\n" + "http://go/crash/" + report_id;
+    // Include the crash report id and go link in the host log.
+    LOG(INFO) << "Successfully uploaded: " << crash_guid << ".dmp\r\n"
+              << "    report_id: " << report_id << "\r\n"
+              << "    http://go/crash/" << report_id << "\r\n"
+              << "    Please note that it may take a few minutes to finish "
+              << "processing the report.";
   } else {
     auto response_code = (*it)->ResponseInfo()->headers->response_code();
     LOG(ERROR) << "Failed to upload crash report: " << crash_guid << ".dmp"

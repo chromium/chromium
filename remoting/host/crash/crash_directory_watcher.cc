@@ -60,6 +60,19 @@ bool PrepareFilesForUpload(const base::FilePath& crash_directory,
 
   return true;
 }
+
+void DeleteCrashFiles(const base::FilePath& crash_directory,
+                      const std::string& crash_guid) {
+  base::FilePath minidump_file = crash_directory.Append(crash_guid + ".dmp");
+  if (!base::DeleteFile(minidump_file)) {
+    PLOG(ERROR) << "Failed to delete " << minidump_file.value();
+  }
+  base::FilePath metadata_file = crash_directory.Append(crash_guid + ".json");
+  if (!base::DeleteFile(metadata_file)) {
+    PLOG(ERROR) << "Failed to delete " << metadata_file.value();
+  }
+}
+
 }  // namespace
 
 CrashDirectoryWatcher::CrashDirectoryWatcher() = default;
@@ -116,15 +129,20 @@ void CrashDirectoryWatcher::OnFileChangeDetected(const base::FilePath& path,
   std::vector<std::string> crash_guids;
   base::FilePath metadata_file = metadata_file_enumerator.Next();
   while (!metadata_file.empty()) {
-    crash_guids.push_back(metadata_file.BaseName().RemoveExtension().value());
+    std::string crash_guid = metadata_file.BaseName().RemoveExtension().value();
+    LOG(INFO) << "Found new crash report: " << crash_guid;
+    crash_guids.push_back(std::move(crash_guid));
     metadata_file = metadata_file_enumerator.Next();
   }
 
   for (const auto& crash_guid : crash_guids) {
     if (PrepareFilesForUpload(path, crash_guid)) {
+      LOG(INFO) << "Crash report ready for upload: " << crash_guid;
       upload_callback_.Run(crash_guid);
+    } else {
+      LOG(ERROR) << "Deleting invalid crash report files for " << crash_guid;
+      DeleteCrashFiles(path, crash_guid);
     }
-    // TODO(joedow): Clean up files which couldn't be prepped for upload.
   }
 
   auto last_error = metadata_file_enumerator.GetError();
