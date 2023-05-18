@@ -25,7 +25,6 @@
 #include "chrome/browser/thumbnail/cc/jpeg_thumbnail_helper.h"
 #include "chrome/browser/thumbnail/cc/scoped_ptr_expiring_cache.h"
 #include "chrome/browser/thumbnail/cc/thumbnail.h"
-#include "chrome/browser/thumbnail/cc/thumbnail_capture_tracker.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/android/resources/ui_resource_provider.h"
@@ -70,7 +69,6 @@ class ThumbnailCache : ThumbnailDelegate {
   void RemoveThumbnailCacheObserver(ThumbnailCacheObserver* observer);
 
   void Put(TabId tab_id,
-           std::unique_ptr<ThumbnailCaptureTracker> tracker,
            const SkBitmap& bitmap,
            float thumbnail_scale,
            double jpeg_aspect_ratio);
@@ -82,7 +80,7 @@ class ThumbnailCache : ThumbnailDelegate {
   bool IsInVisibleIds(TabId tab_id);
   void UpdateVisibleIds(const std::vector<TabId>& priority,
                         TabId primary_tab_id);
-  void DecompressEtc1ThumbnailFromFile(
+  void DecompressThumbnailFromFile(
       TabId tab_id,
       double jpeg_aspect_ratio,
       base::OnceCallback<void(bool, const SkBitmap&)> post_decompress_callback);
@@ -124,12 +122,9 @@ class ThumbnailCache : ThumbnailDelegate {
                                      sk_sp<SkPixelRef> compressed_data,
                                      float scale,
                                      const gfx::Size& content_size);
-  void WriteJpegThumbnailIfNecessary(
-      TabId tab_id,
-      std::unique_ptr<ThumbnailCaptureTracker> tracker,
-      std::vector<uint8_t> compressed_data);
+  void WriteJpegThumbnailIfNecessary(TabId tab_id,
+                                     std::vector<uint8_t> compressed_data);
   void SaveAsJpeg(TabId tab_id,
-                  std::unique_ptr<ThumbnailCaptureTracker> tracker,
                   const SkBitmap& bitmap,
                   double jpeg_aspect_ratio);
   void ForkToSaveAsJpeg(
@@ -138,20 +133,16 @@ class ThumbnailCache : ThumbnailDelegate {
       double jpeg_aspect_ratio,
       bool result,
       const SkBitmap& bitmap);
-  void PostWriteJpegTask(std::unique_ptr<ThumbnailCaptureTracker> tracker,
-                         bool success);
 
-  void CompressThumbnailIfNecessary(
-      TabId tab_id,
-      std::unique_ptr<ThumbnailCaptureTracker> tracker,
-      const base::Time& time_stamp,
-      const SkBitmap& bitmap,
-      float scale,
-      double jpeg_aspect_ratio);
+  void CompressThumbnailIfNecessary(TabId tab_id,
+                                    const base::Time& time_stamp,
+                                    const SkBitmap& bitmap,
+                                    float scale,
+                                    double jpeg_aspect_ratio);
   void ReadNextThumbnail();
   void MakeSpaceForNewItemIfNecessary(TabId tab_id);
   void RemoveFromReadQueue(TabId tab_id);
-  void PostWriteEtc1Task();
+  void PostWriteTask();
   void PostEtc1CompressionTask(TabId tab_id,
                                const base::Time& time_stamp,
                                float scale,
@@ -170,10 +161,10 @@ class ThumbnailCache : ThumbnailDelegate {
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
 
-  // Default priority as most of the time there is a placeholder available.
+  // TODO(crbug/1402843): Look into making these USER_VISIBLE. They do look
+  // visually jarring if late.
   const scoped_refptr<base::SequencedTaskRunner>
       etc1_file_sequenced_task_runner_;
-  // USER_VISIBLE priority as almost always used for Tab Switcher UI.
   const scoped_refptr<base::SequencedTaskRunner>
       jpeg_file_sequenced_task_runner_;
   thumbnail::Etc1ThumbnailHelper etc1_helper_;

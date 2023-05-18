@@ -105,10 +105,6 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
   void NativeRemoveTabThumbnail(int tab_id);
   void RemoveTabThumbnail(JNIEnv* env, jint tab_id);
   void OnUIResourcesWereEvicted();
-  void WaitForJpegTabThumbnail(
-      JNIEnv* env,
-      jint tab_id,
-      const base::android::JavaParamRef<jobject>& j_callback);
   void GetEtc1TabThumbnail(
       JNIEnv* env,
       jint tab_id,
@@ -133,18 +129,12 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
   content::RenderWidgetHostView* GetRwhvForTab(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& tab);
-  std::unique_ptr<thumbnail::ThumbnailCaptureTracker> TrackCapture(
-      thumbnail::TabId tab_id);
-  void OnTrackingFinished(int tab_id,
-                          thumbnail::ThumbnailCaptureTracker* tracker);
-  void OnTabReadback(
-      int tab_id,
-      std::unique_ptr<thumbnail::ThumbnailCaptureTracker> tracker,
-      base::android::ScopedJavaGlobalRef<jobject> j_callback,
-      bool write_to_cache,
-      double aspect_ratio,
-      float thumbnail_scale,
-      const SkBitmap& bitmap);
+  void OnTabReadback(int tab_id,
+                     base::android::ScopedJavaGlobalRef<jobject> j_callback,
+                     bool write_to_cache,
+                     double aspect_ratio,
+                     float thumbnail_scale,
+                     const SkBitmap& bitmap);
 
   void SendThumbnailToJava(
       base::android::ScopedJavaGlobalRef<jobject> j_callback,
@@ -153,9 +143,6 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
       bool result,
       const SkBitmap& bitmap);
 
-  base::flat_map<thumbnail::TabId,
-                 base::WeakPtr<thumbnail::ThumbnailCaptureTracker>>
-      in_flight_captures_;
   std::unique_ptr<thumbnail::ThumbnailCache> thumbnail_cache_;
   ThumbnailLayerMap static_layer_cache_;
   LayerMap live_layer_list_;

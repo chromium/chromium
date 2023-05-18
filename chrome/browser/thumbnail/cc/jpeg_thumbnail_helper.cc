@@ -58,7 +58,7 @@ void CompressTask(
 
 void WriteTask(base::FilePath file_path,
                std::vector<uint8_t> compressed_data,
-               base::OnceCallback<void(bool)> post_write_task) {
+               base::OnceClosure post_write_task) {
   DCHECK(!compressed_data.empty());
 
   int bytes_written = base::WriteFile(
@@ -67,11 +67,9 @@ void WriteTask(base::FilePath file_path,
 
   if (bytes_written != static_cast<int>(compressed_data.size())) {
     base::DeleteFile(file_path);
-    std::move(post_write_task).Run(false);
-    return;
   }
 
-  std::move(post_write_task).Run(true);
+  std::move(post_write_task).Run();
 }
 
 void ReadTask(base::FilePath file_path,
@@ -120,10 +118,9 @@ void JpegThumbnailHelper::Compress(
                                         std::move(post_processing_task))));
 }
 
-void JpegThumbnailHelper::Write(
-    TabId tab_id,
-    std::vector<uint8_t> compressed_data,
-    base::OnceCallback<void(bool)> post_write_task) {
+void JpegThumbnailHelper::Write(TabId tab_id,
+                                std::vector<uint8_t> compressed_data,
+                                base::OnceClosure post_write_task) {
   DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
   base::FilePath file_path = GetJpegFilePath(tab_id);
   file_task_runner_->PostTask(

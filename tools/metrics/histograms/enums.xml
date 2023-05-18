@@ -49279,7 +49279,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="Got ETC1 thumbnail"/>
   <int value="2" label="Got nothing"/>
   <int value="3" label="Got different aspect ratio JPEG thumbnail"/>
-  <int value="4" label="Got JPEG thumbnail on refetch"/>
 </enum>
 
 <enum name="GroupId">
