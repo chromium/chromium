@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/ipc/common/gpu_client_ids.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 
@@ -73,7 +74,14 @@ void GrCacheController::PurgeGrCache(uint64_t idle_id) {
 
   // Force Skia to check fences to determine what can be freed.
   context_state_->gr_context()->checkAsyncWorkCompletion();
-  context_state_->gr_context()->freeGpuResources();
+  {
+    absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+    // ScopedCacheUse is to avoid the empty/invalid client id DCHECKS caused
+    // while accessing GrShaderCache. Note that since the actual client_id here
+    // does not matter, we are using gpu::kDisplayCompositorClientId.
+    context_state_->UseShaderCache(cache_use, gpu::kDisplayCompositorClientId);
+    context_state_->gr_context()->freeGpuResources();
+  }
 
   // Skia may have released resources, but the driver may not process that
   // without a flush.

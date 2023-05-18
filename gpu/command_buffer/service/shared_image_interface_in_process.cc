@@ -21,6 +21,7 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
+#include "gpu/ipc/common/gpu_client_ids.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gl/gl_context.h"
 
@@ -279,7 +280,7 @@ void SharedImageInterfaceInProcess::CreateSharedImageWithDataOnGpuThread(
   // Creating a si with data can result in raster work. This will be a textureop
   // that requires a program. See crbug.com/1442725.
   absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
-  context_state_->UseShaderCache(cache_use);
+  context_state_->UseShaderCache(cache_use, gpu::kDisplayCompositorClientId);
 
   DCHECK(shared_image_factory_);
   if (!shared_image_factory_->CreateSharedImage(

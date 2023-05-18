@@ -128,8 +128,8 @@ class GPU_GLES2_EXPORT SharedContextState
   void StoreVkPipelineCacheIfNeeded();
 
   void UseShaderCache(
-      absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse>& cache_use)
-      const;
+      absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse>& cache_use,
+      int32_t client_id) const;
 
   gl::GLShareGroup* share_group() { return share_group_.get(); }
   gl::GLContext* context() { return context_.get(); }
