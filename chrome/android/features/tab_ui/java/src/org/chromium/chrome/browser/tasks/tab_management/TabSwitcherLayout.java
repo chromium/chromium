@@ -98,6 +98,9 @@ public class TabSwitcherLayout extends Layout {
     private final LayoutTab mDummyLayoutTab;
     private boolean mIsInitialized;
 
+    // Only access this value via isTabGtsAnimationEnabled. Caches the value to avoid repeated
+    // calculations during animations.
+    private Boolean mCachedIsTabGtsAnimationEnabled;
     private float mBackgroundAlpha;
     private int mTabListTopOffset;
 
@@ -149,7 +152,7 @@ public class TabSwitcherLayout extends Layout {
                 // causing janky frames. When animation is off or not used, the thumbnail is already
                 // updated when showing the GTS. Tab-to-GTS animation is not invoked for tablet tab
                 // switcher polish.
-                if (isTabGtsAnimationEnabled()) {
+                if (isTabGtsAnimationEnabled(false)) {
                     // Delay thumbnail taking a bit more to make it less likely to happen before the
                     // thumbnail taking triggered by ThumbnailFetcher. See crbug.com/996385 for
                     // details.
@@ -174,7 +177,7 @@ public class TabSwitcherLayout extends Layout {
                 // The Android View version of GTS overview is hidden.
                 // If not doing GTS-to-Tab transition animation, we show the fade-out instead, which
                 // was already done.
-                if (!isTabGtsAnimationEnabled()) {
+                if (!isTabGtsAnimationEnabled(false)) {
                     postHiding();
                     return;
                 }
@@ -333,7 +336,7 @@ public class TabSwitcherLayout extends Layout {
             if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
                 translateDown();
             } else {
-                mController.hideTabSwitcherView(!isTabGtsAnimationEnabled());
+                mController.hideTabSwitcherView(!isTabGtsAnimationEnabled(true));
             }
         }
     }
@@ -408,7 +411,7 @@ public class TabSwitcherLayout extends Layout {
         // Skip shrinking animation when there is no tab in current tab model.
         boolean isCurrentTabModelEmpty = mTabModelSelector.getCurrentModel().getCount() == 0;
         boolean showShrinkingAnimation =
-                animate && isTabGtsAnimationEnabled() && !isCurrentTabModelEmpty;
+                animate && isTabGtsAnimationEnabled(true) && !isCurrentTabModelEmpty;
 
         boolean skipSlowZooming = TabUiFeatureUtilities.SKIP_SLOW_ZOOMING.getValue();
         Log.d(TAG, "SkipSlowZooming = " + skipSlowZooming);
@@ -694,7 +697,7 @@ public class TabSwitcherLayout extends Layout {
         // The content viewport is intentionally sent as both params below.
         mSceneLayer.pushLayers(getContext(), contentViewport, contentViewport, this,
                 tabContentManager, resourceManager, browserControls,
-                isTabGtsAnimationEnabled() ? mGridTabListDelegate.getResourceId() : 0,
+                isTabGtsAnimationEnabled(false) ? mGridTabListDelegate.getResourceId() : 0,
                 mBackgroundAlpha, mTabListTopOffset);
         mFrameCount++;
         if (mLastFrameTime != 0) {
@@ -739,8 +742,15 @@ public class TabSwitcherLayout extends Layout {
      * Shrink/Expand animation is disabled for Tablet TabSwitcher launch polish.
      * @return Whether shrink/expand animation is enabled.
      */
-    private boolean isTabGtsAnimationEnabled() {
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) return false;
-        return TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext());
+    private boolean isTabGtsAnimationEnabled(boolean updateCachedValue) {
+        if (updateCachedValue || mCachedIsTabGtsAnimationEnabled == null) {
+            if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
+                mCachedIsTabGtsAnimationEnabled = false;
+            } else {
+                mCachedIsTabGtsAnimationEnabled =
+                        TabUiFeatureUtilities.isTabToGtsAnimationEnabled(getContext());
+            }
+        }
+        return mCachedIsTabGtsAnimationEnabled;
     }
 }

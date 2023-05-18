@@ -5,10 +5,8 @@
 #ifndef CHROME_BROWSER_ANDROID_COMPOSITOR_SCENE_LAYER_TAB_LIST_SCENE_LAYER_H_
 #define CHROME_BROWSER_ANDROID_COMPOSITOR_SCENE_LAYER_TAB_LIST_SCENE_LAYER_H_
 
-#include <map>
-#include <memory>
-#include <set>
-
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/ui_resource_layer.h"
@@ -102,9 +100,9 @@ class TabListSceneLayer : public SceneLayer {
   SkColor GetBackgroundColor() override;
 
  private:
-  typedef std::map<int, scoped_refptr<TabLayer>> TabMap;
+  typedef base::flat_map<int, scoped_refptr<TabLayer>> TabMap;
   TabMap tab_map_;
-  std::set<int> visible_tabs_this_frame_;
+  base::flat_set<int> visible_tabs_this_frame_;
 
   scoped_refptr<cc::slim::UIResourceLayer> background_layer_;
 

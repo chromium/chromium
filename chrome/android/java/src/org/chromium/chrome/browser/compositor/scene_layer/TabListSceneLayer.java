@@ -95,22 +95,20 @@ public class TabListSceneLayer extends SceneLayer {
                 ? LayoutTab.SHADOW_ALPHA_ON_DARK_BG
                 : LayoutTab.SHADOW_ALPHA_ON_LIGHT_BG;
 
+        float toolbarYOffset = 0;
+        int contentOffset = 0;
+        if (browserControls != null) {
+            toolbarYOffset = browserControls.getTopControlOffset()
+                    + browserControls.getTopControlsMinHeight();
+            contentOffset = browserControls.getContentOffset();
+        }
+        final int urlBarBackgroundId = R.drawable.modern_location_bar;
+
         for (int i = 0; i < tabsCount; i++) {
             LayoutTab t = tabs[i];
             final float decoration = t.getDecorationAlpha();
-
-            int urlBarBackgroundId = R.drawable.modern_location_bar;
             boolean useIncognitoColors = t.isIncognito();
-
             int defaultThemeColor = ChromeColors.getDefaultThemeColor(context, useIncognitoColors);
-
-            float toolbarYOffset = 0;
-            int contentOffset = 0;
-            if (browserControls != null) {
-                toolbarYOffset = browserControls.getTopControlOffset()
-                        + browserControls.getTopControlsMinHeight();
-                contentOffset = browserControls.getContentOffset();
-            }
 
             // TODO(dtrainor, clholgat): remove "* dpToPx" once the native part fully supports dp.
             TabListSceneLayerJni.get().putTabLayer(mNativePtr, TabListSceneLayer.this, t.getId(),
