@@ -5,18 +5,16 @@ create {
       tag_pattern: "v%s"
       version_restriction {
         op: EQ
-        val: "0.8.3"
+        val: "0.8.8"
       }
     }
     patch_dir: "patches"
-    patch_version: "chromium.2"
+    patch_version: "chromium.1"
   }
   build {
     install: "install.py"
     tool: "chromium/third_party/maven"
-    # TODO(crbug.com/1412466): jacoco 0.8.3 can't use the latest chromium jdk (17).
-    # This may be changed to chromium normal jdk when jacoco is upgraded to newer versions.
-    external_dep: "chromium/third_party/jdk@2@11.0.15+10.cr0"
+    dep: "chromium/third_party/jdk"
   }
 }
 
