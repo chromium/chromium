@@ -13,6 +13,9 @@
 
 namespace viz {
 
+///////////////////////////////////////////////////////////////////////////////
+// ExternalBeginFrameSourceMac
+
 ExternalBeginFrameSourceMac::ExternalBeginFrameSourceMac(
     std::unique_ptr<DelayBasedTimeSource> time_source,
     uint32_t restart_id)
@@ -92,6 +95,44 @@ void ExternalBeginFrameSourceMac::OnTimeSourceParamsUpdate(
     time_source_->SetTimebaseAndInterval(last_timebase_,
                                          BeginFrameArgs::DefaultInterval());
   }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// DelayBasedBeginFrameSourceMac
+
+DelayBasedBeginFrameSourceMac::DelayBasedBeginFrameSourceMac(
+    std::unique_ptr<DelayBasedTimeSource> time_source,
+    uint32_t restart_id)
+    : DelayBasedBeginFrameSource(std::move(time_source), restart_id) {}
+
+DelayBasedBeginFrameSourceMac::~DelayBasedBeginFrameSourceMac() = default;
+
+void DelayBasedBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id) {
+  if (display_id_ == display_id) {
+    return;
+  }
+
+  display_id_ = display_id;
+  display_link_ = ui::DisplayLinkMac::GetForDisplay(
+      base::checked_cast<CGDirectDisplayID>(display_id_));
+  time_source_next_update_time_ = base::TimeTicks();
+  RequestTimeSourceParamsUpdate();
+}
+
+void DelayBasedBeginFrameSourceMac::RequestTimeSourceParamsUpdate() {
+  if (!display_link_ || time_source_updater_) {
+    return;
+  }
+  time_source_updater_ = display_link_->RegisterCallback(base::BindRepeating(
+      &DelayBasedBeginFrameSourceMac::OnTimeSourceParamsUpdate,
+      weak_factory_.GetWeakPtr()));
+}
+
+void DelayBasedBeginFrameSourceMac::OnTimeSourceParamsUpdate(
+    ui::VSyncParamsMac params) {
+  time_source_next_update_time_ = base::TimeTicks::Now() + base::Seconds(10);
+  time_source_updater_ = nullptr;
+  OnUpdateVSyncParameters(params.display_timebase, params.display_interval);
 }
 
 }  // namespace viz

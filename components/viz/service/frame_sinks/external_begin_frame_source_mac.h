@@ -14,10 +14,8 @@
 
 namespace viz {
 
-// A begin frame source for use on macOS. This behaves like a
-// DelayBasedBeginFrameSource, but, instead of being informed externally of its
-// timebase and interval, it is informed externally of its display::DisplayId
-// and uses that to query its timebase and interval from a DisplayLinkMac.
+// An external begin frame source for use on macOS. This listens to a
+// DisplayLinkMac in order to tick.
 class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
     : public ExternalBeginFrameSource,
       public ExternalBeginFrameSourceClient,
@@ -67,6 +65,42 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   std::unique_ptr<ui::VSyncCallbackMac> time_source_updater_;
 
   base::WeakPtrFactory<ExternalBeginFrameSourceMac> weak_factory_{this};
+};
+
+// A delay-based begin frame source for use on macOS. Instead of being informed
+// externally of its timebase and interval, it is informed externally of its
+// display::DisplayId and uses that to query its timebase and interval from a
+// DisplayLinkMac.
+// TODO(https://crbug.com/1404797): Delete this class when it is no longer
+// needed.
+class VIZ_COMMON_EXPORT DelayBasedBeginFrameSourceMac
+    : public DelayBasedBeginFrameSource {
+ public:
+  DelayBasedBeginFrameSourceMac(
+      std::unique_ptr<DelayBasedTimeSource> time_source,
+      uint32_t restart_id);
+  DelayBasedBeginFrameSourceMac(const DelayBasedBeginFrameSourceMac&) = delete;
+  DelayBasedBeginFrameSourceMac& operator=(
+      const DelayBasedBeginFrameSourceMac&) = delete;
+  ~DelayBasedBeginFrameSourceMac() override;
+
+  // BeginFrameSource implementation.
+  void SetVSyncDisplayID(int64_t display_id) override;
+
+ private:
+  // Request a callback from DisplayLinkMac, and the callback function.
+  void RequestTimeSourceParamsUpdate();
+  void OnTimeSourceParamsUpdate(ui::VSyncParamsMac params);
+
+  // CVDisplayLink and related structures to set timer parameters.
+  int64_t display_id_ = display::kInvalidDisplayId;
+  scoped_refptr<ui::DisplayLinkMac> display_link_;
+
+  // The callback that is used to update `time_source_`.
+  base::TimeTicks time_source_next_update_time_;
+  std::unique_ptr<ui::VSyncCallbackMac> time_source_updater_;
+
+  base::WeakPtrFactory<DelayBasedBeginFrameSourceMac> weak_factory_{this};
 };
 
 }  // namespace viz

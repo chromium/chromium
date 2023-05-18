@@ -227,6 +227,10 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
       DynamicBeginFrameDeadlineOffsetSource*
           dynamic_begin_frame_deadline_offset_source);
 
+  // Update the display ID for the source. This can change, e.g, as a window
+  // moves across displays.
+  virtual void SetVSyncDisplayID(int64_t display_id) {}
+
  protected:
   // Returns whether begin-frames to clients should be withheld (because the gpu
   // is still busy, for example). If this returns true, then OnGpuNoLongerBusy()
@@ -421,8 +425,6 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
   // Notifies the begin frame source of the desired frame interval for the
   // observers.
   virtual void SetPreferredInterval(base::TimeDelta interval) {}
-
-  virtual void SetVSyncDisplayID(int64_t display_id) {}
 
   // Returns the maximum supported refresh rate interval for a given BFS.
   virtual base::TimeDelta GetMaximumRefreshFrameInterval();

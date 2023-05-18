@@ -143,11 +143,6 @@ RootCompositorFrameSinkImpl::Create(
     hw_support_for_multiple_refresh_rates = true;
     external_begin_frame_source =
         std::make_unique<ExternalBeginFrameSourceIOS>(restart_id);
-#elif BUILDFLAG(IS_MAC)
-    external_begin_frame_source = std::make_unique<ExternalBeginFrameSourceMac>(
-        std::make_unique<DelayBasedTimeSource>(
-            base::SingleThreadTaskRunner::GetCurrentDefault().get()),
-        restart_id);
 #else
     // TODO(b/221220344): Support dynamically choosing the BeginFrameSource per
     // VRR state changes.
@@ -171,11 +166,17 @@ RootCompositorFrameSinkImpl::Create(
       external_begin_frame_source = std::make_unique<GpuVSyncBeginFrameSource>(
           restart_id, output_surface.get());
     } else {
+      auto time_source = std::make_unique<DelayBasedTimeSource>(
+          base::SingleThreadTaskRunner::GetCurrentDefault().get());
+#if BUILDFLAG(IS_MAC)
       synthetic_begin_frame_source =
-          std::make_unique<DelayBasedBeginFrameSource>(
-              std::make_unique<DelayBasedTimeSource>(
-                  base::SingleThreadTaskRunner::GetCurrentDefault().get()),
-              restart_id);
+          std::make_unique<DelayBasedBeginFrameSourceMac>(
+              std::move(time_source), restart_id);
+#else
+      synthetic_begin_frame_source =
+          std::make_unique<DelayBasedBeginFrameSource>(std::move(time_source),
+                                                       restart_id);
+#endif
     }
 #endif  // BUILDFLAG(IS_ANDROID)
   }
@@ -289,9 +290,7 @@ void RootCompositorFrameSinkImpl::SetDisplayColorSpaces(
 
 #if BUILDFLAG(IS_MAC)
 void RootCompositorFrameSinkImpl::SetVSyncDisplayID(int64_t display_id) {
-  if (external_begin_frame_source_) {
-    external_begin_frame_source_->SetVSyncDisplayID(display_id);
-  }
+  begin_frame_source()->SetVSyncDisplayID(display_id);
 }
 #endif
 
