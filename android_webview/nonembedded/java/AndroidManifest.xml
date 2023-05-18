@@ -25,6 +25,7 @@ by a child template that "extends" this file.
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!-- Required by WebView Developer UI only -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />

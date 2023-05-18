@@ -13,6 +13,7 @@
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
   <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="33"/>
   <application
       android:name="org.chromium.android_webview.nonembedded.WebViewApkApplication"

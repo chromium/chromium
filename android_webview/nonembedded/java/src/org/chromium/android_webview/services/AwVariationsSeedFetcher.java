@@ -266,7 +266,8 @@ public class AwVariationsSeedFetcher extends JobService {
                         .setBackoffCriteria(JOB_INITIAL_BACKOFF_TIME_IN_MS, JOB_BACKOFF_POLICY);
         if (requireFastMode) {
             long backoffTime = sUseSmallJitter ? SMALL_JITTER_IN_MS : TimeUnit.MINUTES.toMillis(1);
-            builder = builder.setBackoffCriteria(backoffTime, JobInfo.BACKOFF_POLICY_LINEAR);
+            builder = builder.setBackoffCriteria(backoffTime, JobInfo.BACKOFF_POLICY_LINEAR)
+                              .setPersisted(true);
 
             boolean isInitialRequest = !requestPeriodicFastMode;
             if (isInitialRequest) {

@@ -251,6 +251,7 @@ public class AwVariationsSeedFetcherTest {
             Assert.assertTrue("Fast mode should enabled.",
                     pendingJob.getExtras().getBoolean(
                             AwVariationsSeedFetcher.JOB_REQUEST_FAST_MODE));
+            Assert.assertTrue("Fast mode jobs should be persisted", pendingJob.isPersisted());
             Assert.assertEquals("Fast Mode backoff policy should be linear.",
                     pendingJob.getBackoffPolicy(), JobInfo.BACKOFF_POLICY_LINEAR);
         } finally {
