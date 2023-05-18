@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
+#include "content/browser/preloading/prerender/devtools_prerender_attempt.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
@@ -333,10 +334,12 @@ class PrerenderHostBuilder {
   // PrerenderHostRegistry::CreateAndStartHost(), and PreloadingAttempt should
   // outlive the function.
   raw_ptr<PreloadingAttempt> attempt_;
+  std::unique_ptr<DevToolsPrerenderAttempt> devtools_attempt_;
 };
 
 PrerenderHostBuilder::PrerenderHostBuilder(PreloadingAttempt* attempt)
-    : attempt_(attempt) {}
+    : attempt_(attempt),
+      devtools_attempt_(std::make_unique<DevToolsPrerenderAttempt>()) {}
 
 PrerenderHostBuilder::~PrerenderHostBuilder() {
   CHECK_EQ(attempt_, nullptr);
@@ -344,6 +347,7 @@ PrerenderHostBuilder::~PrerenderHostBuilder() {
 
 void PrerenderHostBuilder::Drop() {
   attempt_ = nullptr;
+  devtools_attempt_.reset();
 }
 
 void PrerenderHostBuilder::SetHoldbackAllowed() {
@@ -357,7 +361,8 @@ std::unique_ptr<PrerenderHost> PrerenderHostBuilder::Build(
     WebContentsImpl& prerender_web_contents) {
   auto prerender_host = std::make_unique<PrerenderHost>(
       attributes, prerender_web_contents,
-      attempt_ ? attempt_->GetWeakPtr() : nullptr);
+      attempt_ ? attempt_->GetWeakPtr() : nullptr,
+      std::move(devtools_attempt_));
 
   Drop();
 
@@ -371,6 +376,8 @@ void PrerenderHostBuilder::RejectAsNotEligible(
     attempt_->SetEligibility(ToEligibility(status));
   }
 
+  devtools_attempt_->SetFailureReason(attributes, status);
+
   RecordFailedPrerenderFinalStatus(PrerenderCancellationReason(status),
                                    attributes);
 
@@ -382,6 +389,8 @@ void PrerenderHostBuilder::RejectAsDuplicate() {
     attempt_->SetTriggeringOutcome(PreloadingTriggeringOutcome::kDuplicate);
   }
 
+  // No need to report DevTools nor UMA; just removing duplicates.
+
   Drop();
 }
 
@@ -389,6 +398,9 @@ void PrerenderHostBuilder::RejectDueToHoldback() {
   if (attempt_) {
     attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kHoldback);
   }
+
+  // If DevTools is opened, holdbacks are force-disabled. So, we don't need to
+  // report this case to DevTools.
 
   Drop();
 }
@@ -399,6 +411,8 @@ void PrerenderHostBuilder::RejectAsFailure(
   if (attempt_) {
     attempt_->SetFailureReason(ToPreloadingFailureReason(status));
   }
+
+  devtools_attempt_->SetFailureReason(attributes, status);
 
   RecordFailedPrerenderFinalStatus(PrerenderCancellationReason(status),
                                    attributes);

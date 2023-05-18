@@ -1503,6 +1503,8 @@ source_set("browser") {
     "preloading/preloading_decider.h",
     "preloading/preloading_prediction.cc",
     "preloading/preloading_prediction.h",
+    "preloading/prerender/devtools_prerender_attempt.cc",
+    "preloading/prerender/devtools_prerender_attempt.h",
     "preloading/prerender/prerender_attributes.cc",
     "preloading/prerender/prerender_attributes.h",
     "preloading/prerender/prerender_commit_deferring_condition.cc",
