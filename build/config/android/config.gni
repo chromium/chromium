@@ -10,6 +10,7 @@
 if (is_android || is_chromeos) {
   import("//build/config/android/channel.gni")
   import("//build/config/chromecast_build.gni")
+  import("//build/config/clang/clang.gni")
   import("//build/config/dcheck_always_on.gni")
   import("//build_overrides/build.gni")
   import("abi.gni")
@@ -353,7 +354,9 @@ if (is_android || is_chromeos) {
 
   android_toolchain_root = "$android_ndk_root/toolchains/llvm/prebuilt/${android_host_os}-${android_host_arch}"
   android_ndk_library_path = "$android_toolchain_root/lib64"
-  android_tool_prefix = "$android_toolchain_root/bin/llvm-"
+
+  # Point to Chromium's LLVM for tooling.
+  android_tool_prefix = "$clang_base_path/bin/llvm-"
   android_readelf = "${android_tool_prefix}readobj"
   android_objcopy = "${android_tool_prefix}objcopy"
   android_gdbserver =
