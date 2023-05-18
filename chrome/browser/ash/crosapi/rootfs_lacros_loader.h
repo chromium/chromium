@@ -35,16 +35,17 @@ class RootfsLacrosLoader : public LacrosSelectionLoader {
   void Load(LoadCompletionCallback callback) override;
   void Unload() override;
   void Reset() override;
-  void GetVersion(base::OnceCallback<void(base::Version)> callback) override;
+  void GetVersion(
+      base::OnceCallback<void(const base::Version&)> callback) override;
 
  private:
   // Called after GetVersion.
-  void OnGetVersion(base::OnceCallback<void(base::Version)> callback,
+  void OnGetVersion(base::OnceCallback<void(const base::Version&)> callback,
                     base::Version version);
 
   // Called when `version_` is calculated and set during Load() sequence.
   void OnVersionReadyToLoad(LoadCompletionCallback callback,
-                            base::Version version);
+                            const base::Version& version);
 
   // Called on checking rootfs lacros-chrome is already maounted or not during
   // Load() sequence.
