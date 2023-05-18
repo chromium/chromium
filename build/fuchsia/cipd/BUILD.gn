@@ -293,10 +293,16 @@ cipd_test_archive("tests") {
   description = "Prebuilt Chromium tests for Fuchsia."
   testonly = true
 
+  _common_tests = [
+    "${root_gen_dir}/base/base_unittests/base_unittests.far",
+    "${root_gen_dir}/ipc/ipc_tests/ipc_tests.far",
+    "${root_gen_dir}/media/media_unittests/media_unittests.far",
+    "${root_gen_dir}/mojo/mojo_unittests/mojo_unittests.far",
+    "${root_gen_dir}/skia/skia_unittests/skia_unittests.far",
+    "${root_gen_dir}/third_party/blink/common/blink_common_unittests/blink_common_unittests.far",
+  ]
   deps = [
     "//base:base_unittests_pkg",
-    "//fuchsia_web/runners:cast_runner_integration_tests_pkg",
-    "//fuchsia_web/webengine:web_engine_integration_tests_pkg",
     "//ipc:ipc_tests_pkg",
     "//media:media_unittests_pkg",
     "//mojo:mojo_unittests_pkg",
@@ -304,38 +310,30 @@ cipd_test_archive("tests") {
     "//third_party/blink/common:blink_common_unittests_pkg",
   ]
 
+  _web_engine_tests = [ "${root_gen_dir}/fuchsia_web/webengine/web_engine_integration_tests/web_engine_integration_tests.far" ]
+  deps += [ "//fuchsia_web/webengine:web_engine_integration_tests_pkg" ]
+
+  _cast_runner_tests = [ "${root_gen_dir}/fuchsia_web/runners/cast_runner_integration_tests/cast_runner_integration_tests.far" ]
+  deps += [ "//fuchsia_web/runners:cast_runner_integration_tests_pkg" ]
+
+  _all_tests = _common_tests + _web_engine_tests + _cast_runner_tests
+
   test_sets = [
     {
       manifest_path = "${target_gen_dir}/test_manifest.json"
-      far_sources = [
-        "${root_gen_dir}/base/base_unittests/base_unittests.far",
-        "${root_gen_dir}/fuchsia_web/runners/cast_runner_integration_tests/cast_runner_integration_tests.far",
-        "${root_gen_dir}/fuchsia_web/webengine/web_engine_integration_tests/web_engine_integration_tests.far",
-        "${root_gen_dir}/ipc/ipc_tests/ipc_tests.far",
-        "${root_gen_dir}/media/media_unittests/media_unittests.far",
-        "${root_gen_dir}/mojo/mojo_unittests/mojo_unittests.far",
-        "${root_gen_dir}/skia/skia_unittests/skia_unittests.far",
-        "${root_gen_dir}/third_party/blink/common/blink_common_unittests/blink_common_unittests.far",
-      ]
+      far_sources = _all_tests
     },
     {
       manifest_path = "${target_gen_dir}/common_tests_manifest.json"
-      far_sources = [
-        "${root_gen_dir}/base/base_unittests/base_unittests.far",
-        "${root_gen_dir}/ipc/ipc_tests/ipc_tests.far",
-        "${root_gen_dir}/media/media_unittests/media_unittests.far",
-        "${root_gen_dir}/mojo/mojo_unittests/mojo_unittests.far",
-        "${root_gen_dir}/skia/skia_unittests/skia_unittests.far",
-        "${root_gen_dir}/third_party/blink/common/blink_common_unittests/blink_common_unittests.far",
-      ]
+      far_sources = _common_tests
     },
     {
       manifest_path = "${target_gen_dir}/web_engine_tests_manifest.json"
-      far_sources = [ "${root_gen_dir}/fuchsia_web/webengine/web_engine_integration_tests/web_engine_integration_tests.far" ]
+      far_sources = _web_engine_tests
     },
     {
       manifest_path = "${target_gen_dir}/cast_runner_tests_manifest.json"
-      far_sources = [ "${root_gen_dir}/fuchsia_web/runners/cast_runner_integration_tests/cast_runner_integration_tests.far" ]
+      far_sources = _cast_runner_tests
     },
   ]
 }
