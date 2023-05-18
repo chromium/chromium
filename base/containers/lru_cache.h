@@ -77,8 +77,12 @@ class LRUCacheBase {
   // can pass NO_AUTO_EVICT to not restrict the cache size.
   explicit LRUCacheBase(size_type max_size) : max_size_(max_size) {}
 
-  LRUCacheBase(const LRUCacheBase&) = delete;
-  LRUCacheBase& operator=(const LRUCacheBase&) = delete;
+  // In theory, LRUCacheBase could be copyable, but since copying `ValueList`
+  // might be costly, it's currently move-only to ensure users don't
+  // accidentally incur performance penalties. If you need this to become
+  // copyable, talk to base/ OWNERS.
+  LRUCacheBase(LRUCacheBase&&) noexcept = default;
+  LRUCacheBase& operator=(LRUCacheBase&&) noexcept = default;
 
   ~LRUCacheBase() = default;
 
