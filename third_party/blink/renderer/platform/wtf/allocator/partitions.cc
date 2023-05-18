@@ -81,8 +81,8 @@ partition_alloc::PartitionOptions PartitionOptionsFromFeatures() {
   using base::features::BackupRefPtrMode;
   using partition_alloc::PartitionOptions;
 
-  const auto brp_mode = base::features::kBackupRefPtrModeParam.Get();
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  const auto brp_mode = base::features::kBackupRefPtrModeParam.Get();
   const bool process_affected_by_brp_flag =
 #if BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
       true;
@@ -96,7 +96,6 @@ partition_alloc::PartitionOptions PartitionOptionsFromFeatures() {
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocBackupRefPtr) &&
       (brp_mode == BackupRefPtrMode::kEnabled ||
-       brp_mode == BackupRefPtrMode::kEnabledWithoutZapping ||
        brp_mode == BackupRefPtrMode::kEnabledWithMemoryReclaimer) &&
       process_affected_by_brp_flag;
 #else  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -106,16 +105,11 @@ partition_alloc::PartitionOptions PartitionOptionsFromFeatures() {
   const auto brp_setting = enable_brp
                                ? PartitionOptions::BackupRefPtr::kEnabled
                                : PartitionOptions::BackupRefPtr::kDisabled;
-  const auto brp_zapping_setting =
-      enable_brp && brp_mode == BackupRefPtrMode::kEnabled
-          ? PartitionOptions::BackupRefPtrZapping::kEnabled
-          : PartitionOptions::BackupRefPtrZapping::kDisabled;
 
   return PartitionOptions{
       .quarantine = PartitionOptions::Quarantine::kAllowed,
       .cookie = PartitionOptions::Cookie::kAllowed,
       .backup_ref_ptr = brp_setting,
-      .backup_ref_ptr_zapping = brp_zapping_setting,
   };
 }
 

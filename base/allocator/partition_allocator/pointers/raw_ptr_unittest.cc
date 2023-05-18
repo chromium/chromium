@@ -1513,8 +1513,6 @@ void HandleOOM(size_t unused_size) {
 static constexpr partition_alloc::PartitionOptions kOpts = {
     .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
     .backup_ref_ptr = partition_alloc::PartitionOptions::BackupRefPtr::kEnabled,
-    .backup_ref_ptr_zapping =
-        partition_alloc::PartitionOptions::BackupRefPtrZapping::kEnabled,
 };
 
 class BackupRefPtrTest : public testing::Test {

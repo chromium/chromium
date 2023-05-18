@@ -87,9 +87,6 @@ enum class BackupRefPtrMode {
   // This entails splitting the main partition.
   kEnabled,
 
-  // Same as kEnabled but without zapping quarantined objects.
-  kEnabledWithoutZapping,
-
   // Same as kEnabled but registers the main partition to memory reclaimer.
   kEnabledWithMemoryReclaimer,
 

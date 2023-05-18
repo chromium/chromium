@@ -888,10 +888,6 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     flags.brp_enabled_ =
         opts.backup_ref_ptr == PartitionOptions::BackupRefPtr::kEnabled;
-    flags.brp_zapping_enabled_ =
-        opts.backup_ref_ptr_zapping ==
-        PartitionOptions::BackupRefPtrZapping::kEnabled;
-    PA_CHECK(!flags.brp_zapping_enabled_ || flags.brp_enabled_);
 #if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK) && BUILDFLAG(IS_APPLE)
     flags.mac11_malloc_size_hack_enabled_ =
         flags.brp_enabled_ && internal::base::mac::IsOS11();

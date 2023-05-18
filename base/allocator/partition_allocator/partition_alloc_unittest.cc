@@ -389,8 +389,6 @@ class PartitionAllocTest
             .cookie = PartitionOptions::Cookie::kAllowed,
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
             .backup_ref_ptr = PartitionOptions::BackupRefPtr::kEnabled,
-            .backup_ref_ptr_zapping =
-                PartitionOptions::BackupRefPtrZapping::kEnabled,
 #endif
           },
           PartitionTestOptions{.use_memory_reclaimer = true,

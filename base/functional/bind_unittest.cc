@@ -1863,8 +1863,6 @@ static constexpr partition_alloc::PartitionOptions
         .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
         .backup_ref_ptr =
             partition_alloc::PartitionOptions::BackupRefPtr::kEnabled,
-        .backup_ref_ptr_zapping =
-            partition_alloc::PartitionOptions::BackupRefPtrZapping::kEnabled,
 };
 
 class BindUnretainedDanglingInternalFixture : public BindTest {

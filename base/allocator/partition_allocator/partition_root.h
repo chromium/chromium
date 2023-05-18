@@ -175,11 +175,6 @@ struct PartitionOptions {
     kEnabled,
   };
 
-  enum class BackupRefPtrZapping : uint8_t {
-    kDisabled,
-    kEnabled,
-  };
-
   enum class UseConfigurablePool : uint8_t {
     kNo,
     kIfAvailable,
@@ -190,7 +185,6 @@ struct PartitionOptions {
   Quarantine quarantine = Quarantine::kDisallowed;
   Cookie cookie = Cookie::kDisallowed;
   BackupRefPtr backup_ref_ptr = BackupRefPtr::kDisabled;
-  BackupRefPtrZapping backup_ref_ptr_zapping = BackupRefPtrZapping::kDisabled;
   UseConfigurablePool use_configurable_pool = UseConfigurablePool::kNo;
   size_t ref_count_size;
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
@@ -250,7 +244,6 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     bool allow_cookie;
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool brp_enabled_;
-    bool brp_zapping_enabled_;
 #if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
     bool mac11_malloc_size_hack_enabled_ = false;
 #endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
@@ -759,14 +752,6 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   bool brp_enabled() const {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     return flags.brp_enabled_;
-#else
-    return false;
-#endif
-  }
-
-  bool brp_zapping_enabled() const {
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    return flags.brp_zapping_enabled_;
 #else
     return false;
 #endif
@@ -1331,8 +1316,7 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
     // If there are no more references to the allocation, it can be freed
     // immediately. Otherwise, defer the operation and zap the memory to turn
     // potential use-after-free issues into unexploitable crashes.
-    if (PA_UNLIKELY(!ref_count->IsAliveWithNoKnownRefs() &&
-                    brp_zapping_enabled())) {
+    if (PA_UNLIKELY(!ref_count->IsAliveWithNoKnownRefs())) {
       auto usable_size = slot_span->GetUsableSize(this);
       auto hook = PartitionAllocHooks::GetQuarantineOverrideHook();
       if (PA_UNLIKELY(hook)) {

@@ -180,7 +180,6 @@ BASE_EXPORT void InitializeAllocatorShim();
 BASE_EXPORT void EnablePartitionAllocMemoryReclaimer();
 
 using EnableBrp = base::StrongAlias<class EnableBrpTag, bool>;
-using EnableBrpZapping = base::StrongAlias<class EnableBrpZappingTag, bool>;
 using EnableBrpPartitionMemoryReclaimer =
     base::StrongAlias<class EnableBrpPartitionMemoryReclaimerTag, bool>;
 using SplitMainPartition = base::StrongAlias<class SplitMainPartitionTag, bool>;
@@ -194,7 +193,6 @@ using AlternateBucketDistribution =
 // thread-cache on the main (malloc) partition will be disabled.
 BASE_EXPORT void ConfigurePartitions(
     EnableBrp enable_brp,
-    EnableBrpZapping enable_brp_zapping,
     EnableBrpPartitionMemoryReclaimer enable_brp_memory_reclaimer,
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,

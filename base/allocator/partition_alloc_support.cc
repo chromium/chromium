@@ -334,13 +334,6 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
         brp_group_name = "EnabledBeforeAlloc";
 #endif
         break;
-      case features::BackupRefPtrMode::kEnabledWithoutZapping:
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-        brp_group_name = "EnabledPrevSlotWithoutZapping";
-#else
-        brp_group_name = "EnabledBeforeAllocWithoutZapping";
-#endif
-        break;
       case features::BackupRefPtrMode::kEnabledWithMemoryReclaimer:
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
         brp_group_name = "EnabledPrevSlotWithMemoryReclaimer";
@@ -902,7 +895,6 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
 
   bool enable_brp = false;
   bool enable_brp_for_ash = false;
-  bool enable_brp_zapping = false;
   bool split_main_partition = false;
   bool use_dedicated_aligned_partition = false;
   bool process_affected_by_brp_flag = false;
@@ -953,9 +945,6 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
         enable_memory_reclaimer = true;
         ABSL_FALLTHROUGH_INTENDED;
       case base::features::BackupRefPtrMode::kEnabled:
-        enable_brp_zapping = true;
-        ABSL_FALLTHROUGH_INTENDED;
-      case base::features::BackupRefPtrMode::kEnabledWithoutZapping:
         enable_brp = true;
         split_main_partition = true;
 #if !BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
@@ -1019,7 +1008,6 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
   return {
       enable_brp,
       enable_brp_for_ash,
-      enable_brp_zapping,
       enable_memory_reclaimer,
       split_main_partition,
       use_dedicated_aligned_partition,
@@ -1161,7 +1149,6 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 
   allocator_shim::ConfigurePartitions(
       allocator_shim::EnableBrp(brp_config.enable_brp),
-      allocator_shim::EnableBrpZapping(brp_config.enable_brp_zapping),
       allocator_shim::EnableBrpPartitionMemoryReclaimer(
           brp_config.enable_brp_partition_memory_reclaimer),
       allocator_shim::SplitMainPartition(brp_config.split_main_partition),

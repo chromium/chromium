@@ -152,7 +152,6 @@ const base::FeatureParam<BackupRefPtrRefCountSize>
 constexpr FeatureParam<BackupRefPtrMode>::Option kBackupRefPtrModeOptions[] = {
     {BackupRefPtrMode::kDisabled, "disabled"},
     {BackupRefPtrMode::kEnabled, "enabled"},
-    {BackupRefPtrMode::kEnabledWithoutZapping, "enabled-without-zapping"},
     {BackupRefPtrMode::kEnabledWithMemoryReclaimer,
      "enabled-with-memory-reclaimer"},
     {BackupRefPtrMode::kDisabledButSplitPartitions2Way,

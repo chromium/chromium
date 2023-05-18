@@ -548,7 +548,6 @@ void EnablePartitionAllocMemoryReclaimer() {
 
 void ConfigurePartitions(
     EnableBrp enable_brp,
-    EnableBrpZapping enable_brp_zapping,
     EnableBrpPartitionMemoryReclaimer enable_brp_memory_reclaimer,
     SplitMainPartition split_main_partition,
     UseDedicatedAlignedPartition use_dedicated_aligned_partition,
@@ -612,11 +611,6 @@ void ConfigurePartitions(
               enable_brp
                   ? partition_alloc::PartitionOptions::BackupRefPtr::kEnabled
                   : partition_alloc::PartitionOptions::BackupRefPtr::kDisabled,
-          .backup_ref_ptr_zapping = enable_brp_zapping
-                                        ? partition_alloc::PartitionOptions::
-                                              BackupRefPtrZapping::kEnabled
-                                        : partition_alloc::PartitionOptions::
-                                              BackupRefPtrZapping::kDisabled,
           .ref_count_size = ref_count_size,
       });
   partition_alloc::ThreadSafePartitionRoot* new_root = new_main_partition.get();
