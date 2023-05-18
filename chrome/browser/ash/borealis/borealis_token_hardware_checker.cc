@@ -105,6 +105,11 @@ AllowStatus BorealisTokenHardwareChecker::BoardSpecificChecks() const {
                       "esBGhWX18eOMlNrqOS5oEcFfyy0MbNJ5VWz+92iVOwk=")) {
       return AllowStatus::kAllowed;
     }
+  } else if (IsBoard("rex")) {
+    if (HasNamedToken("rex", "!P$z%iOvTg,5n3t@%8m",
+                      "+Ynue2NR7pnJrI9McC5aHhcO9OEW6q2dS0kr9fQaq2Q=")) {
+      return AllowStatus::kAllowed;
+    }
   }
   return AllowStatus::kUnsupportedModel;
 }
