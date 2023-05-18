@@ -185,8 +185,14 @@ class HeadlessModeDumpDomCommandBrowserTestWithTimeout
   int hello_request_number_ = 0;
 };
 
+// TODO(crbug.com/1446617): Reenable once deflaked.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_HeadlessDumpDomWithTimeout DISABLED_HeadlessDumpDomWithTimeout
+#else
+#define MAYBE_HeadlessDumpDomWithTimeout HeadlessDumpDomWithTimeout
+#endif
 IN_PROC_BROWSER_TEST_F(HeadlessModeDumpDomCommandBrowserTestWithTimeout,
-                       HeadlessDumpDomWithTimeout) {
+                       MAYBE_HeadlessDumpDomWithTimeout) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   RunLoop();
