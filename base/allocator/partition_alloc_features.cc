@@ -81,12 +81,6 @@ BASE_FEATURE(kPartitionAllocPCScanRendererOnly,
              "PartitionAllocPCScanRendererOnly",
              FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, this instance belongs to the Control group of the BackupRefPtr
-// binary experiment.
-BASE_FEATURE(kPartitionAllocBackupRefPtrControl,
-             "PartitionAllocBackupRefPtrControl",
-             FEATURE_DISABLED_BY_DEFAULT);
-
 // Use a larger maximum thread cache cacheable bucket size.
 BASE_FEATURE(kPartitionAllocLargeThreadCacheSize,
              "PartitionAllocLargeThreadCacheSize",
