@@ -507,7 +507,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
         if (fragment instanceof AccessibilitySettings) {
             ((AccessibilitySettings) fragment)
-                    .setDelegate(new ChromeAccessibilitySettingsDelegate());
+                    .setDelegate(new ChromeAccessibilitySettingsDelegate(mProfile));
         }
     }
 
