@@ -37,8 +37,13 @@ ZeroSuggestCacheService::ZeroSuggestCacheService(PrefService* prefs,
         prefs->GetDict(omnibox::kZeroSuggestCachedResultsWithURL);
     for (auto it = prefs_dict.begin(); it != prefs_dict.end(); ++it) {
       const auto& page_url = it->first;
-      const auto& response_json = (it->second).GetString();
-      StoreZeroSuggestResponse(page_url, response_json);
+      // Use GetIfString() instead of GetString() in order to account for an
+      // edge case where the stored JSON data is not a string Value
+      // (crbug/1432797).
+      const auto* response_json = (it->second).GetIfString();
+      if (response_json) {
+        StoreZeroSuggestResponse(page_url, *response_json);
+      }
     }
   }
 }
