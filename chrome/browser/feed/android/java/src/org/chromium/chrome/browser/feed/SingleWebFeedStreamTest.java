@@ -211,7 +211,7 @@ public class SingleWebFeedStreamTest {
     @Test
     public void testUnbind() {
         bindToView();
-        mFeedStream.unbind(false);
+        mFeedStream.unbind(false, false);
         verify(mFeedStreamJniMock).surfaceClosed(anyLong(), any(FeedStream.class));
         // Unset handlers in contentmanager.
         assertEquals(0, mContentManager.getContextValues(0).size());
@@ -228,7 +228,7 @@ public class SingleWebFeedStreamTest {
         handler.showSnackbar(
                 "message", "Undo", FeedActionsHandler.SnackbarDuration.SHORT, mSnackbarController);
         verify(mSnackbarManager).showSnackbar(any());
-        mFeedStream.unbind(false);
+        mFeedStream.unbind(false, false);
         verify(mSnackbarManager, times(1)).dismissSnackbars(any());
     }
 

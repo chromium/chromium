@@ -303,11 +303,4 @@ public class NtpFeedSurfaceLifecycleManagerTest {
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.PAUSED);
         verify(mCoordinator).onActivityPaused();
     }
-
-    @Test
-    @SmallTest
-    public void testPaused() {
-        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
-        verify(mCoordinator).onApplicationStopped();
-    }
 }

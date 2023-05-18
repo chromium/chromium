@@ -22,6 +22,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
+import org.chromium.base.ApplicationState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
@@ -54,6 +56,7 @@ import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenMode;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenWebFeedEntryPoint;
 import org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler;
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
+import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
 import org.chromium.chrome.browser.xsurface.feed.StreamType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -296,6 +299,7 @@ public class FeedStream implements Stream {
             if (disposition != WindowOpenDisposition.NEW_BACKGROUND_TAB
                     && mReliabilityLogger != null) {
                 mReliabilityLogger.onOpenCard();
+                mClosedReason = ClosedReason.OPEN_CARD;
             }
 
             LoadUrlParams params = new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK);
@@ -589,6 +593,7 @@ public class FeedStream implements Stream {
     private final ObserverList<ContentChangedListener> mContentChangedListeners =
             new ObserverList<>();
     private final int mStreamKind;
+    private @ClosedReason int mClosedReason = ClosedReason.LEAVE_FEED;
     // Various helpers/controllers.
     private ShareHelperWrapper mShareHelper;
     private SnackbarManager mSnackManager;
@@ -790,6 +795,7 @@ public class FeedStream implements Stream {
         if (mWindowAndroid.getDisplay() != null) {
             mWindowAndroid.getDisplay().addObserver(mRotationObserver);
         }
+        mClosedReason = ClosedReason.LEAVE_FEED;
 
         if (isPlaceholderShown()) {
             // Set recyclerView as transparent until first batch of articles are loaded. Before
@@ -816,11 +822,19 @@ public class FeedStream implements Stream {
     }
 
     @Override
-    public void unbind(boolean shouldPlaceSpacer) {
+    public void unbind(boolean shouldPlaceSpacer, boolean switchingStream) {
+        // Find out the specific reason for unbinding the stream.
+        if (switchingStream) {
+            mClosedReason = ClosedReason.SWITCH_STREAM;
+        } else if (ApplicationStatus.getStateForApplication()
+                == ApplicationState.HAS_STOPPED_ACTIVITIES) {
+            mClosedReason = ClosedReason.SUSPEND_APP;
+        }
+
         // This is the catch-all feed launch end event to ensure a complete flow is logged
         // even if we don't know a more specific reason for the stream unbinding.
         if (mReliabilityLogger != null) {
-            mReliabilityLogger.onUnbindStream();
+            mReliabilityLogger.onUnbindStream(mClosedReason);
         }
 
         dismissSnackbars();

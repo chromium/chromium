@@ -145,7 +145,6 @@ public class FeedReliabilityLoggerTest {
                 .logLaunchFinished(
                         anyLong(), eq(DiscoverLaunchResult.SWITCHED_FEED_TABS.getNumber()));
         verify(mLaunchLogger).logSwitchedFeeds(eq(StreamType.FOR_YOU), anyLong());
-        verify(mUserInteractionLogger).onStreamClosed(eq(ClosedReason.SWITCH_STREAM));
     }
 
     @Test
@@ -159,7 +158,7 @@ public class FeedReliabilityLoggerTest {
     @Test
     public void testOnUnbindStream() {
         when(mLaunchLogger.isLaunchInProgress()).thenReturn(true);
-        mFeedReliabilityLogger.onUnbindStream();
+        mFeedReliabilityLogger.onUnbindStream(ClosedReason.LEAVE_FEED);
         verify(mLaunchLogger)
                 .logLaunchFinished(
                         anyLong(), eq(DiscoverLaunchResult.FRAGMENT_STOPPED.getNumber()));
@@ -172,6 +171,5 @@ public class FeedReliabilityLoggerTest {
         mFeedReliabilityLogger.onOpenCard();
         verify(mLaunchLogger)
                 .logLaunchFinished(anyLong(), eq(DiscoverLaunchResult.CARD_TAPPED.getNumber()));
-        verify(mUserInteractionLogger).onStreamClosed(eq(ClosedReason.OPEN_CARD));
     }
 }

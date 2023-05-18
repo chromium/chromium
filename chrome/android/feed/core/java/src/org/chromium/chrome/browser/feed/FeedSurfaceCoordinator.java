@@ -1070,13 +1070,6 @@ public class FeedSurfaceCoordinator
     }
 
     @Override
-    public void onApplicationStopped() {
-        if (mReliabilityLogger != null) {
-            mReliabilityLogger.onApplicationStopped();
-        }
-    }
-
-    @Override
     public void onActivityPaused() {
         if (mReliabilityLogger != null) {
             mReliabilityLogger.onActivityPaused();

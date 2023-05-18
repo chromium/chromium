@@ -10,7 +10,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ActivityState;
-import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 
@@ -21,8 +20,7 @@ import java.lang.annotation.RetentionPolicy;
  * Manages the lifecycle of a feed surface represented by {@link FeedSurfaceCoordinator} associated
  * with an Activity.
  */
-public class FeedSurfaceLifecycleManager implements ApplicationStatus.ActivityStateListener,
-                                                    ApplicationStatus.ApplicationStateListener {
+public class FeedSurfaceLifecycleManager implements ApplicationStatus.ActivityStateListener {
     /** The different states that the Stream can be in its lifecycle. */
     // TODO(chili): Clean up unused SHOWN/HIDDEN states.
     @IntDef({SurfaceState.NOT_SPECIFIED, SurfaceState.CREATED, SurfaceState.SHOWN,
@@ -64,15 +62,7 @@ public class FeedSurfaceLifecycleManager implements ApplicationStatus.ActivitySt
         mSurfaceState = SurfaceState.CREATED;
         show();
 
-        ApplicationStatus.registerApplicationStateListener(this);
         ApplicationStatus.registerStateListenerForActivity(this, mActivity);
-    }
-
-    @Override
-    public void onApplicationStateChange(@ApplicationState int newState) {
-        if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES) {
-            mCoordinator.onApplicationStopped();
-        }
     }
 
     @Override
@@ -139,7 +129,6 @@ public class FeedSurfaceLifecycleManager implements ApplicationStatus.ActivitySt
         // Make sure the feed is hidden before setting it to destroyed state.
         hide();
         mSurfaceState = SurfaceState.DESTROYED;
-        ApplicationStatus.unregisterApplicationStateListener(this);
         ApplicationStatus.unregisterActivityStateListener(this);
     }
 
