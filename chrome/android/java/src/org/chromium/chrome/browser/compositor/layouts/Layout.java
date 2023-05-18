@@ -578,15 +578,6 @@ public abstract class Layout {
     }
 
     /**
-     * Called when a tab is about to be closed. When called, the closing tab will still
-     * be part of the model.
-     * @param time  The current time of the app in ms.
-     * @param tabId The id of the tab being closed
-     */
-    public void onTabClosing(long time, int tabId) {
-    }
-
-    /**
      * Called when a tab is being closed. When called, the closing tab will not
      * be part of the model.
      * @param time      The current time of the app in ms.

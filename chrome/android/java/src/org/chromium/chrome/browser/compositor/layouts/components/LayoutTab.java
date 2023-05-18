@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.compositor.layouts.components;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.RectF;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -81,17 +80,8 @@ public class LayoutTab extends PropertyModel {
     public static final WritableBooleanPropertyKey ANONYMIZE_TOOLBAR =
             new WritableBooleanPropertyKey();
 
-    public static final WritableObjectPropertyKey<RectF> BOUNDS = new WritableObjectPropertyKey<>();
-
     /** Whether we need to draw the decoration (border, shadow, ..) at all. */
     public static final WritableFloatPropertyKey DECORATION_ALPHA = new WritableFloatPropertyKey();
-
-    /**
-     * Whether this tab need to have its title texture generated. As this is not a free operation
-     * knowing that we won't show it might save a few cycles and memory.
-     */
-    public static final WritableBooleanPropertyKey IS_TITLE_NEEDED =
-            new WritableBooleanPropertyKey();
 
     /**
      * Whether initFromHost() has been called since the last call to init().
@@ -120,8 +110,8 @@ public class LayoutTab extends PropertyModel {
             Y, RENDER_X, RENDER_Y, CLIPPED_WIDTH, CLIPPED_HEIGHT, ALPHA, SATURATION, BORDER_ALPHA,
             BORDER_SCALE, ORIGINAL_CONTENT_WIDTH_IN_DP, ORIGINAL_CONTENT_HEIGHT_IN_DP,
             MAX_CONTENT_WIDTH, MAX_CONTENT_HEIGHT, STATIC_TO_VIEW_BLEND, SHOULD_STALL,
-            CAN_USE_LIVE_TEXTURE, SHOW_TOOLBAR, ANONYMIZE_TOOLBAR, BOUNDS, DECORATION_ALPHA,
-            IS_TITLE_NEEDED, INIT_FROM_HOST_CALLED, BACKGROUND_COLOR, TOOLBAR_BACKGROUND_COLOR,
+            CAN_USE_LIVE_TEXTURE, SHOW_TOOLBAR, ANONYMIZE_TOOLBAR, DECORATION_ALPHA,
+            INIT_FROM_HOST_CALLED, BACKGROUND_COLOR, TOOLBAR_BACKGROUND_COLOR,
             TEXT_BOX_BACKGROUND_COLOR, CONTENT_OFFSET};
 
     /**
@@ -138,7 +128,6 @@ public class LayoutTab extends PropertyModel {
 
         set(TAB_ID, tabId);
         set(IS_INCOGNITO, isIncognito);
-        set(BOUNDS, new RectF());
         set(BACKGROUND_COLOR, Color.WHITE);
         set(TOOLBAR_BACKGROUND_COLOR, 0xfff2f2f2);
         set(TEXT_BOX_BACKGROUND_COLOR, Color.WHITE);
@@ -455,13 +444,6 @@ public class LayoutTab extends PropertyModel {
      */
     public float getDecorationAlpha() {
         return get(DECORATION_ALPHA);
-    }
-
-    /**
-     * @param drawDecoration Whether or not to draw decoration.
-     */
-    public void setDrawDecoration(boolean drawDecoration) {
-        set(DECORATION_ALPHA, drawDecoration ? 1.0f : 0.0f);
     }
 
     /**
