@@ -141,13 +141,13 @@ offscreen_ref_test: |-
       %(fallback)s
     </canvas>
     <script>
-      const offscreen_canvas = new OffscreenCanvas(%(width)s, %(height)s);
-      const ctx = offscreen_canvas.getContext(%(context_args)s);
+      const canvas = new OffscreenCanvas(%(width)s, %(height)s);
+      const ctx = canvas.getContext(%(context_args)s);
 
     %(code)s
 
-      const canvas = document.getElementById("canvas");
-      canvas.getContext(%(context_args)s).drawImage(offscreen_canvas, 0, 0);
+      const outputCanvas = document.getElementById("canvas");
+      outputCanvas.getContext(%(context_args)s).drawImage(canvas, 0, 0);
     </script>
     %(images)s
 
@@ -167,12 +167,12 @@ worker_ref_test: |
     </canvas>
     <script id='myWorker' type='text/worker'>
       self.onmessage = function(e) {
-        const oc = new OffscreenCanvas(%(width)s, %(height)s);
-        const ctx = oc.getContext('2d');
+        const canvas = new OffscreenCanvas(%(width)s, %(height)s);
+        const ctx = canvas.getContext('2d');
 
     %(code)s
 
-        const bitmap = oc.transferToImageBitmap();
+        const bitmap = canvas.transferToImageBitmap();
         self.postMessage(bitmap, bitmap);
       };
     </script>
