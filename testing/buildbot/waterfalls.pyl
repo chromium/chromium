@@ -5602,12 +5602,7 @@
           'rust_build_tests',
         ],
         'mixins': [
-          'has_native_resultdb_integration',
           'mac_12_x64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_14_main',
-          'xctest',
         ],
         'test_suites': {
           'gtest_tests': 'rust_host_gtests',

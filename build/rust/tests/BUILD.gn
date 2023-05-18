@@ -71,7 +71,7 @@ group("deps") {
         # `//build/rust/run_rs_bindings_from_cc.py`.
         #"test_rs_bindings_from_cc:test_rs_bindings_from_cc_unittests",
       ]
-      if (!is_win || !is_component_build) {
+      if ((!is_win || !is_component_build) && !is_mac) {
         # TODO(crbug.com/1442273): The shared library unittest EXE ends up
         # requiring the DLL to run, even though it does not use the DLL.
         deps +=
