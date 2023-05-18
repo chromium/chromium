@@ -83,7 +83,7 @@ TEST_F(NGLineBreakCandidateTest, SoftHyphen) {
     }
     </style>
     <div id="target">
-      01&shy;345&shy;7890
+      01&shy;345&shy;7890&shy;
     </div>
   )HTML");
   const NGInlineNode target = GetInlineNodeByElementId("target");
@@ -95,7 +95,33 @@ TEST_F(NGLineBreakCandidateTest, SoftHyphen) {
                     NGLineBreakCandidate({0, 0}, 0),
                     NGLineBreakCandidate({0, 3}, {0, 3}, 20, 30, 0, true),
                     NGLineBreakCandidate({0, 7}, {0, 7}, 50, 60, 0, true),
-                    NGLineBreakCandidate({0, 11}, 90)))
+                    NGLineBreakCandidate({0, 12}, 90)))
+        << String::Format("Width=%d", width);
+  }
+}
+
+TEST_F(NGLineBreakCandidateTest, SoftHyphenDisabled) {
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    #target {
+      font-family: Ahem;
+      font-size: 10px;
+      hyphens: none;
+    }
+    </style>
+    <div id="target">
+      01&shy;345&shy;7890
+    </div>
+  )HTML");
+  const NGInlineNode target = GetInlineNodeByElementId("target");
+  for (int width : {800, 60, 10}) {
+    NGLineBreakCandidates candidates;
+    EXPECT_TRUE(ComputeCandidates(target, LayoutUnit(width), candidates));
+    EXPECT_THAT(candidates,
+                testing::ElementsAre(NGLineBreakCandidate({0, 0}, 0),
+                                     NGLineBreakCandidate({0, 11}, 90)))
         << String::Format("Width=%d", width);
   }
 }

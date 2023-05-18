@@ -1821,8 +1821,13 @@ void NGLineBreaker::AppendCandidates(const NGInlineItemResult& item_result,
     // Compute the offset of the next break opportunity.
     wtf_size_t next_offset;
     if (auto_wrap_) {
-      next_offset = break_iterator_.NextBreakOpportunity(
-          offset.start + 1, std::min(offset.end + 1, text_content.length()));
+      const wtf_size_t len = std::min(offset.end + 1, text_content.length());
+      next_offset = offset.start;
+      do {
+        next_offset =
+            break_iterator_.NextBreakOpportunity(next_offset + 1, len);
+      } while (UNLIKELY(!enable_soft_hyphen_) && next_offset < len &&
+               text_content[next_offset - 1] == kSoftHyphenCharacter);
     } else {
       next_offset = offset.end + 1;
     }
@@ -1927,7 +1932,8 @@ void NGLineBreaker::AppendCandidates(const NGInlineItemResult& item_result,
       DCHECK(!is_hyphenated);
       if (end_offset == item_result.EndOffset()) {
         is_hyphenated = item_result.is_hyphenated;
-      } else if (last_ch == kSoftHyphenCharacter) {
+      } else if (UNLIKELY(last_ch == kSoftHyphenCharacter) &&
+                 next_state == NGLineBreakCandidateContext::kBreak) {
         is_hyphenated = true;
       }
       if (is_hyphenated) {
