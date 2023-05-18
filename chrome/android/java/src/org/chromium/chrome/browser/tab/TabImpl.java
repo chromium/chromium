@@ -889,7 +889,8 @@ public class TabImpl implements Tab {
      *        whether or not the newly created {@link WebContents} will be hidden or not.
      * @param tabState State containing information about this Tab, if it was persisted.
      * @param initializeRenderer Determines whether or not we initialize renderer with {@link
-     *         WebContents} creation.
+     *         WebContents} creation. The CREATE_NEW_TAB_INITIALIZE_RENDERER feature also controls
+     *         this parameter, which initializes the renderer when it is enabled.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void initialize(Tab parent, @Nullable @TabCreationState Integer creationState,
@@ -898,7 +899,13 @@ public class TabImpl implements Tab {
             TabState tabState, boolean initializeRenderer) {
         try {
             TraceEvent.begin("Tab.initialize");
-
+            // If the feature is enabled, the renderer will always be initialized during the
+            // WebContents creation. It is an experimental performance optimization to speed
+            // up navigation.
+            initializeRenderer = ChromeFeatureList.isEnabled(
+                                         ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
+                    ? true
+                    : initializeRenderer;
             if (parent != null) {
                 CriticalPersistedTabData.from(this).setParentId(parent.getId());
                 mSourceTabId = parent.isIncognito() == mIncognito ? parent.getId() : INVALID_TAB_ID;
