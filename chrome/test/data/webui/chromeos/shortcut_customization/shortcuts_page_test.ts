@@ -171,13 +171,13 @@ suite('ShortcutsPageTest', function() {
 
     // Disable smooth scroll so that the scroll completes instantly.
     disableScrollAnimation(AcceleratorRowElement);
+    shortcutsPageElement.setScrollTimeoutForTesting(/*timeout=*/ 0);
 
     // Trigger onRouteChanged as if the user had selected a SearchResultRow.
     shortcutsPageElement.onRouteChanged(new URL(`${SHORTCUTS_APP_URL}?action=${
         lastAcceleratorRow.action}&category=${AcceleratorCategory.kGeneral}`));
 
     await flushTasks();
-
     // After `onRouteChanged`, the AcceleratorRow is now visible.
     assertTrue(isVisibleVerticallyInViewport(lastAcceleratorRow));
   });
@@ -205,6 +205,7 @@ suite('ShortcutsPageTest', function() {
 
     // Disable smooth scroll so that the scroll completes instantly.
     disableScrollAnimation(AcceleratorRowElement);
+    shortcutsPageElement.setScrollTimeoutForTesting(/*timeout=*/ 0);
 
     // Update the URL of the app and trigger onNavigationPageChanged as if the
     // user had selected a SearchResultRow.
@@ -216,7 +217,8 @@ suite('ShortcutsPageTest', function() {
 
     await flushTasks();
 
-    // After `onNavigationPageChanged`, the AcceleratorRow is now visible.
+    // After `onNavigationPageChanged`, the AcceleratorRow is now
+    // visible.
     assertTrue(isVisibleVerticallyInViewport(lastAcceleratorRow));
   });
 });
