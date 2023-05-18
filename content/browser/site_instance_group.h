@@ -137,6 +137,12 @@ class CONTENT_EXPORT SiteInstanceGroup
     return browsing_instance_->isolation_context().browsing_instance_id();
   }
 
+  // Returns the token uniquely identifying the BrowsingInstance this
+  // SiteInstanceGroup belongs to.
+  base::UnguessableToken browsing_instance_token() const {
+    return browsing_instance_->token();
+  }
+
   // Returns the token uniquely identifying the CoopRelatedGroup this
   // SiteInstanceGroup belongs to.
   base::UnguessableToken coop_related_group_token() const {

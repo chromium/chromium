@@ -234,6 +234,7 @@
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 #include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
+#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
@@ -7961,7 +7962,10 @@ void RenderFrameHostImpl::CreateNewWindow(
       std::move(pending_associated_interface_provider), cloned_namespace->id(),
       new_main_rfh->GetDevToolsFrameToken(), wait_for_debugger,
       new_main_rfh->GetDocumentToken(),
-      new_main_rfh->policy_container_host()->CreatePolicyContainerForBlink());
+      new_main_rfh->policy_container_host()->CreatePolicyContainerForBlink(),
+      blink::BrowsingContextGroupInfo(
+          new_main_rfh->GetSiteInstance()->browsing_instance_token(),
+          new_main_rfh->GetSiteInstance()->coop_related_group_token()));
 
   std::move(callback).Run(mojom::CreateNewWindowStatus::kSuccess,
                           std::move(reply));

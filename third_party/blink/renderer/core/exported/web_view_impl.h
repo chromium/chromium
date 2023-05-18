@@ -42,6 +42,7 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -127,7 +128,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
       const SessionStorageNamespaceId& session_storage_namespace_id,
-      absl::optional<SkColor> page_base_background_color);
+      absl::optional<SkColor> page_base_background_color,
+      const BrowsingContextGroupInfo& browsing_context_group_info);
 
   // All calls to Create() should be balanced with a call to Close(). This
   // synchronously destroys the WebViewImpl.
@@ -692,7 +694,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
       const SessionStorageNamespaceId& session_storage_namespace_id,
-      absl::optional<SkColor> page_base_background_color);
+      absl::optional<SkColor> page_base_background_color,
+      const BrowsingContextGroupInfo& browsing_context_group_info);
   ~WebViewImpl() override;
 
   void ConfigureAutoResizeMode();

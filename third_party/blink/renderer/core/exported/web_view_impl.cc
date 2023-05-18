@@ -461,7 +461,8 @@ WebView* WebView::Create(
         page_handle,
     scheduler::WebAgentGroupScheduler& agent_group_scheduler,
     const SessionStorageNamespaceId& session_storage_namespace_id,
-    absl::optional<SkColor> page_base_background_color) {
+    absl::optional<SkColor> page_base_background_color,
+    const BrowsingContextGroupInfo& browsing_context_group_info) {
   return WebViewImpl::Create(
       client,
       is_hidden ? mojom::blink::PageVisibilityState::kHidden
@@ -469,7 +470,7 @@ WebView* WebView::Create(
       is_prerendering, is_inside_portal, fenced_frame_mode, compositing_enabled,
       widgets_never_composited, To<WebViewImpl>(opener), std::move(page_handle),
       agent_group_scheduler, session_storage_namespace_id,
-      std::move(page_base_background_color));
+      std::move(page_base_background_color), browsing_context_group_info);
 }
 
 WebViewImpl* WebViewImpl::Create(
@@ -485,14 +486,16 @@ WebViewImpl* WebViewImpl::Create(
     mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
     blink::scheduler::WebAgentGroupScheduler& agent_group_scheduler,
     const SessionStorageNamespaceId& session_storage_namespace_id,
-    absl::optional<SkColor> page_base_background_color) {
+    absl::optional<SkColor> page_base_background_color,
+    const BrowsingContextGroupInfo& browsing_context_group_info) {
   // Take a self-reference for WebViewImpl that is released by calling Close(),
   // then return a raw pointer to the caller.
   auto web_view = base::AdoptRef(new WebViewImpl(
       client, visibility, is_prerendering, is_inside_portal, fenced_frame_mode,
       compositing_enabled, widgets_never_composited, opener,
       std::move(page_handle), agent_group_scheduler,
-      session_storage_namespace_id, std::move(page_base_background_color)));
+      session_storage_namespace_id, std::move(page_base_background_color),
+      browsing_context_group_info));
   web_view->AddRef();
   return web_view.get();
 }
@@ -561,7 +564,8 @@ WebViewImpl::WebViewImpl(
     mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
     blink::scheduler::WebAgentGroupScheduler& agent_group_scheduler,
     const SessionStorageNamespaceId& session_storage_namespace_id,
-    absl::optional<SkColor> page_base_background_color)
+    absl::optional<SkColor> page_base_background_color,
+    const BrowsingContextGroupInfo& browsing_context_group_info)
     : widgets_never_composited_(widgets_never_composited),
       web_view_client_(client),
       chrome_client_(MakeGarbageCollected<ChromeClientImpl>(this)),
@@ -589,7 +593,8 @@ WebViewImpl::WebViewImpl(
     DCHECK(!does_composite_);
   page_ = Page::CreateOrdinary(*chrome_client_,
                                opener ? opener->GetPage() : nullptr,
-                               agent_group_scheduler.GetAgentGroupScheduler());
+                               agent_group_scheduler.GetAgentGroupScheduler(),
+                               browsing_context_group_info);
   CoreInitializer::GetInstance().ProvideModulesToPage(
       *page_, session_storage_namespace_id_);
 

@@ -113,6 +113,7 @@ blink_core_tests_page = [
   "focus_controller_test.cc",
   "focusgroup_controller_test.cc",
   "page_popup_client_test.cc",
+  "page_test.cc",
   "plugin_data_test.cc",
   "print_context_test.cc",
   "scrolling/element_fragment_anchor_test.cc",

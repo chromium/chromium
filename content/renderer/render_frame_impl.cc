@@ -6345,6 +6345,7 @@ WebView* RenderFrameImpl::CreateNewWindow(
   view_params->replication_state->frame_policy.sandbox_flags = sandbox_flags;
   view_params->replication_state->name = frame_name_utf8;
   view_params->devtools_main_frame_token = reply->devtools_main_frame_token;
+  view_params->browsing_context_group_info = reply->browsing_context_group_info;
 
   auto main_frame_params = mojom::CreateLocalMainFrameParams::New();
   main_frame_params->frame_token = reply->main_frame_token;

@@ -51,6 +51,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/css/page_orientation.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
+#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
@@ -749,7 +750,8 @@ void PrintRenderFrameHelper::PrintHeaderAndFooter(
       /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
       *source_frame.GetAgentGroupScheduler(),
       /*session_storage_namespace_id=*/base::EmptyString(),
-      /*page_base_background_color=*/absl::nullopt);
+      /*page_base_background_color=*/absl::nullopt,
+      blink::BrowsingContextGroupInfo::CreateUnique());
   web_view->GetSettings()->SetJavaScriptEnabled(true);
 
   class HeaderAndFooterClient final : public blink::WebLocalFrameClient {
@@ -1043,7 +1045,8 @@ void PrepareFrameAndViewForPrint::CopySelection(
       /*opener=*/nullptr, mojo::NullAssociatedReceiver(),
       agent_group_scheduler_,
       /*session_storage_namespace_id=*/base::EmptyString(),
-      /*page_base_background_color=*/absl::nullopt);
+      /*page_base_background_color=*/absl::nullopt,
+      blink::BrowsingContextGroupInfo::CreateUnique());
   blink::WebView::ApplyWebPreferences(prefs, web_view);
   blink::WebLocalFrame* main_frame = blink::WebLocalFrame::CreateMainFrame(
       web_view, this, nullptr, blink::LocalFrameToken(), blink::DocumentToken(),

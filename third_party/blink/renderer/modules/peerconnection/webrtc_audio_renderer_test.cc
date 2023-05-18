@@ -21,6 +21,7 @@
 #include "media/base/mock_audio_renderer_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/audio/web_audio_device_source_type.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_renderer.h"
@@ -155,7 +156,8 @@ class WebRtcAudioRendererTest : public testing::Test {
             mojo::NullAssociatedReceiver(),
             *agent_group_scheduler_,
             /*session_storage_namespace_id=*/base::EmptyString(),
-            /*page_base_background_color=*/absl::nullopt)),
+            /*page_base_background_color=*/absl::nullopt,
+            blink::BrowsingContextGroupInfo::CreateUnique())),
         web_local_frame_(blink::WebLocalFrame::CreateMainFrame(
             web_view_,
             &web_local_frame_client_,

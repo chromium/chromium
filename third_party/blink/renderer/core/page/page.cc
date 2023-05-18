@@ -147,17 +147,19 @@ HeapVector<Member<Page>> Page::RelatedPages() {
 
 Page* Page::CreateNonOrdinary(ChromeClient& chrome_client,
                               AgentGroupScheduler& agent_group_scheduler) {
-  return MakeGarbageCollected<Page>(base::PassKey<Page>(), chrome_client,
-                                    agent_group_scheduler,
-                                    /*is_ordinary=*/false);
+  return MakeGarbageCollected<Page>(
+      base::PassKey<Page>(), chrome_client, agent_group_scheduler,
+      BrowsingContextGroupInfo::CreateUnique(), /*is_ordinary=*/false);
 }
 
-Page* Page::CreateOrdinary(ChromeClient& chrome_client,
-                           Page* opener,
-                           AgentGroupScheduler& agent_group_scheduler) {
-  Page* page = MakeGarbageCollected<Page>(base::PassKey<Page>(), chrome_client,
-                                          agent_group_scheduler,
-                                          /*is_ordinary=*/true);
+Page* Page::CreateOrdinary(
+    ChromeClient& chrome_client,
+    Page* opener,
+    AgentGroupScheduler& agent_group_scheduler,
+    const BrowsingContextGroupInfo& browsing_context_group_info) {
+  Page* page = MakeGarbageCollected<Page>(
+      base::PassKey<Page>(), chrome_client, agent_group_scheduler,
+      browsing_context_group_info, /*is_ordinary=*/true);
 
   if (opener) {
     // Before: ... -> opener -> next -> ...
@@ -178,6 +180,7 @@ Page* Page::CreateOrdinary(ChromeClient& chrome_client,
 Page::Page(base::PassKey<Page>,
            ChromeClient& chrome_client,
            AgentGroupScheduler& agent_group_scheduler,
+           const BrowsingContextGroupInfo& browsing_context_group_info,
            bool is_ordinary)
     : SettingsDelegate(std::make_unique<Settings>()),
       main_frame_(nullptr),
@@ -219,7 +222,8 @@ Page::Page(base::PassKey<Page>,
       autoplay_flags_(0),
       web_text_autosizer_page_info_({0, 0, 1.f}),
       v8_compile_hints_(
-          MakeGarbageCollected<V8CrowdsourcedCompileHintsProducer>(this)) {
+          MakeGarbageCollected<V8CrowdsourcedCompileHintsProducer>(this)),
+      browsing_context_group_info_(browsing_context_group_info) {
   DCHECK(!AllPages().Contains(this));
   AllPages().insert(this);
 
@@ -1143,6 +1147,14 @@ void Page::UpdateLifecycle(LocalFrame& root,
   } else {
     Animator().UpdateAllLifecyclePhases(root, reason);
   }
+}
+
+const base::UnguessableToken& Page::BrowsingContextGroupToken() {
+  return browsing_context_group_info_.browsing_context_group_token;
+}
+
+const base::UnguessableToken& Page::CoopRelatedGroupToken() {
+  return browsing_context_group_info_.coop_related_group_token;
 }
 
 template class CORE_TEMPLATE_EXPORT Supplement<Page>;

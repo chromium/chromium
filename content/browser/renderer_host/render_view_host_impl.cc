@@ -85,6 +85,7 @@
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -553,6 +554,10 @@ bool RenderViewHostImpl::CreateRenderView(
   } else {
     params->type = mojom::ViewWidgetType::kTopLevel;
   }
+
+  params->browsing_context_group_info = blink::BrowsingContextGroupInfo(
+      site_instance_group()->browsing_instance_token(),
+      site_instance_group()->coop_related_group_token());
 
   // RenderViewHostImpl is reused after a crash, so reset any endpoint that
   // might be a leftover from a crash.

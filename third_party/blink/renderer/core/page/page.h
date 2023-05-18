@@ -32,6 +32,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
+#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/text_autosizer_page_info.mojom-blink.h"
@@ -114,13 +115,16 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
                                  AgentGroupScheduler& agent_group_scheduler);
 
   // An "ordinary" page is a fully-featured page owned by a web view.
-  static Page* CreateOrdinary(ChromeClient& chrome_client,
-                              Page* opener,
-                              AgentGroupScheduler& agent_group_scheduler);
+  static Page* CreateOrdinary(
+      ChromeClient& chrome_client,
+      Page* opener,
+      AgentGroupScheduler& agent_group_scheduler,
+      const BrowsingContextGroupInfo& browsing_context_group_info);
 
   Page(base::PassKey<Page>,
        ChromeClient& chrome_client,
        AgentGroupScheduler& agent_group_scheduler,
+       const BrowsingContextGroupInfo& browsing_context_group_info,
        bool is_ordinary);
   Page(const Page&) = delete;
   Page& operator=(const Page&) = delete;
@@ -420,6 +424,14 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
     return *v8_compile_hints_;
   }
 
+  // Returns the token uniquely identifying the browsing context group this page
+  // lives in.
+  const base::UnguessableToken& BrowsingContextGroupToken();
+
+  // Returns the token uniquely identifying the CoopRelatedGroup this page lives
+  // in.
+  const base::UnguessableToken& CoopRelatedGroupToken();
+
  private:
   friend class ScopedPagePauser;
 
@@ -572,6 +584,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   WebScopedVirtualTimePauser history_navigation_virtual_time_pauser_;
 
   Member<V8CrowdsourcedCompileHintsProducer> v8_compile_hints_;
+
+  // The information determining the browsing context group this page lives in.
+  BrowsingContextGroupInfo browsing_context_group_info_;
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<Page>;
