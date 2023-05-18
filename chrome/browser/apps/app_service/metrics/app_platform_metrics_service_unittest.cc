@@ -1902,12 +1902,17 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   // Simulate registering publishers for the launch interface to record metrics.
   proxy->RegisterPublishersForTesting();
   FakePublisher fake_arc_apps(proxy, AppType::kArc);
+  FakePublisher fake_borealis_apps(proxy, AppType::kBorealis);
   FakePublisher fake_standalone_browser(proxy, AppType::kStandaloneBrowser);
   FakePublisher fake_standalone_browser_chrome_app(
       proxy, AppType::kStandaloneBrowserChromeApp);
   FakePublisher fake_standalone_browser_extension(
       proxy, AppType::kStandaloneBrowserExtension);
 
+  EXPECT_CALL(fake_borealis_apps,
+              Launch(/*app_id=*/borealis::kClientAppId, ui::EF_NONE,
+                     LaunchSource::kFromChromeInternal, _))
+      .Times(1);
   proxy->Launch(
       /*app_id=*/borealis::kClientAppId, ui::EF_NONE,
       LaunchSource::kFromChromeInternal, nullptr);
@@ -1917,9 +1922,12 @@ TEST_P(AppPlatformMetricsServiceTest, LaunchApps) {
   VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kBorealis);
   VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kBorealis);
 
-  proxy->Launch(
-      /*app_id=*/borealis::FakeAppId("borealistest"), ui::EF_NONE,
-      LaunchSource::kFromChromeInternal, nullptr);
+  std::string fake_borealis_app = borealis::FakeAppId("borealistest");
+  EXPECT_CALL(fake_borealis_apps, Launch(fake_borealis_app, ui::EF_NONE,
+                                         LaunchSource::kFromChromeInternal, _))
+      .Times(1);
+  proxy->Launch(fake_borealis_app, ui::EF_NONE,
+                LaunchSource::kFromChromeInternal, nullptr);
   VerifyAppsLaunchUkm("app://borealis/123", AppTypeName::kBorealis,
                       LaunchSource::kFromChromeInternal);
 

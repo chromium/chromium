@@ -69,9 +69,11 @@ TEST_F(GuestOsWaylandServerTest, NullDelegateCausesFailure) {
 
   // This test relies on the borealis security delegate giving us nullptr
   // when borealis is disallowed.
-  ASSERT_NE(borealis::BorealisService::GetForProfile(&profile_)
-                ->Features()
-                .MightBeAllowed(),
+  base::test::TestFuture<borealis::BorealisFeatures::AllowStatus>
+      allowedness_future;
+  borealis::BorealisService::GetForProfile(&profile_)->Features().IsAllowed(
+      allowedness_future.GetCallback());
+  ASSERT_NE(allowedness_future.Get(),
             borealis::BorealisFeatures::AllowStatus::kAllowed);
 
   base::test::TestFuture<absl::optional<std::string>> result_future;

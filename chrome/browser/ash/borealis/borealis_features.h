@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 
 class Profile;
 
@@ -50,14 +51,6 @@ class BorealisFeatures {
   // borealis can run, other statuses imply an error.
   void IsAllowed(base::OnceCallback<void(AllowStatus)> callback);
 
-  // Returns the partial AllowStatus which only performs synchronous checks.
-  // Borealis must first pass this check and then the async ones to be truly
-  // allowed.
-  //
-  // This method is useful for systems that need to initialize borealis
-  // components before the async checks returns.
-  AllowStatus MightBeAllowed();
-
   // Returns true if borealis has been installed and can be run in the profile.
   bool IsEnabled();
 
@@ -68,6 +61,15 @@ class BorealisFeatures {
                   base::OnceCallback<void(AllowStatus)> callback);
 
  private:
+  // Allowedness failures should be from most-unable-to-fix to most fixable.
+  // Hence we divide the synchronous checks into pre- and post- hardware.
+  AllowStatus PreTokenHardwareChecks();
+  AllowStatus PostTokenHardwareChecks();
+
+  void OnTokenHardwareChecked(
+      base::OnceCallback<void(AllowStatus)> callback,
+      base::expected<AllowStatus*, bool> token_hardware_status);
+
   void OnVmTokenDetermined(base::OnceCallback<void(AllowStatus)> callback,
                            std::string hashed_token);
 
