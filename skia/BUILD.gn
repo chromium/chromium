@@ -256,6 +256,7 @@ component("skia") {
     "ext/recursive_gaussian_convolution.cc",
     "ext/rgba_to_yuva.cc",
     "ext/skcolorspace_primaries.cc",
+    "ext/skcolorspace_trfn.cc",
     "ext/skia_histogram.cc",
     "ext/skia_histogram.h",
     "ext/skia_memory_dump_provider.cc",
@@ -926,6 +927,7 @@ test("skia_unittests") {
     "ext/platform_canvas_unittest.cc",
     "ext/recursive_gaussian_convolution_unittest.cc",
     "ext/skcolorspace_primaries_unittest.cc",
+    "ext/skcolorspace_trfn_unittest.cc",
     "ext/skia_memory_dump_provider_unittest.cc",
     "ext/skia_utils_base_unittest.cc",
   ]
@@ -944,6 +946,7 @@ test("skia_unittests") {
   }
 
   deps = [
+    ":skcms",
     ":skia",
     ":test_fonts",
     "//base",
