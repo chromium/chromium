@@ -16,10 +16,12 @@ cr-button {
    menus in FileBrowser look like native ChromeOS menus. */
 
 cr-menu.chrome-menu {
-  background-color: var(--cros-bg-color-elevation-2);
-  border-radius: 4px;
+  background-color: var(--cros-sys-base_elevated);
+  border-radius: 8px;
   box-shadow: var(--cros-elevation-2-shadow);
-  color: var(--cros-menu-label-color);
+  color: var(--cros-sys-on_surface);
+  font: var(--cros-button-2-font);
+  min-width: 208px;
   outline: none;
   overflow: hidden;
   padding: 8px 0;
@@ -40,19 +42,12 @@ cr-menu.chrome-menu.hide-delayed[hidden] {
 }
 
 cr-menu.chrome-menu > :not(hr) {
-  background-position: right 10px center;
-  background-repeat: no-repeat;
-  line-height: 32px;
+  height: 36px;
   outline: none;
-  padding: 0 8px;
-}
-
-html[dir='rtl'] cr-menu.chrome-menu > :not(hr) {
-  background-position: left 10px center;
 }
 
 cr-menu.chrome-menu > cr-menu-item[disabled] {
-  color: var(--cros-text-color-disabled);
+  color: var(--cros-sys-disabled);
   pointer-events: none;
 }
 
@@ -66,9 +61,9 @@ cr-menu.chrome-menu > cr-menu-item[disabled] > .icon.start {
 }
 
 cr-menu.chrome-menu > hr {
-  background: var(--cros-separator-color);
+  background: var(--cros-sys-separator);
   height: 1px;
-  margin: 4px 0;
+  margin: 8px 0;
 }
 
 cr-menu.chrome-menu > hr:first-child {
@@ -79,10 +74,12 @@ cr-menu.chrome-menu > cr-menu-item[checked]::after {
   -webkit-mask-image: url(../images/common/ic_selected.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  background-color: var(--cros-icon-color-prominent);
+  background-color: var(--cros-sys-primary);
   content: '';
   float: right;
-  height: 32px;
+  height: 20px;
+  /* Trailing icon has a different padding than its container padding (16px). */
+  margin-inline-end: calc(12px - 16px);
   width: 20px;
 }
 
@@ -90,7 +87,13 @@ html[dir='rtl'] cr-menu.chrome-menu > cr-menu-item[checked]::after {
   float: left;
 }
 
-cr-menu.chrome-menu > [checked]::before {
+cr-menu.chrome-menu > cr-menu-item#volume-space-info {
+  /* Volume info menu item has more contents to show. */
+  height: auto;
+  min-height: 36px;
+}
+
+cr-menu#file-context-menu.toolbar-menu > .hide-on-toolbar {
   display: none;
 }
 
@@ -190,23 +193,22 @@ button[disabled]:hover > .hover-layer {
 }
 
 .progress-bar {
-  background-color: var(--cros-slider-track-color-inactive);
+  background-color: var(--cros-sys-highlight_shape);
   border-radius: 3px;
   height: 6px;
+  margin-bottom: 6px;
 }
 
 .progress-track {
-  background-color: var(--cros-icon-color-primary);
+  background-color: var(--cros-sys-primary);
   border-radius: 3px;
   height: 6px;
   min-width: 6px;
 }
 
 .menu-warning {
-  color: var(--cros-textfield-label-color-error);
-  font-size: 11px;
-  line-height: 16px;
-  margin-top: 6px;
+  color: var(--cros-sys-error);
+  font: var(--cros-annotation-2-font);
 }
 
 /* Entry names (File names, Folder names, Volume names, ...). */

@@ -1859,25 +1859,6 @@ html[dir=rtl] body.files-ng #drag-container .drag-bubble {
   right: unset;
 }
 
-/* TODO(fukino): Gather menu-related definitions into one place. */
-cr-menu#file-context-menu {
-  min-width: 208px;
-  z-index: 600;  /* Must be below the overlay pane (1000). */
-}
-
-cr-menu#file-context-menu > :not(hr) {
-  padding-inline-end: 8px;
-}
-
-cr-menu#file-context-menu.toolbar-menu > .hide-on-toolbar {
-  display: none;
-}
-
-cr-menu.chrome-menu hr {
-  color: transparent;
-  font-size: 0;
-}
-
 body[drive='unmounted'] .dialog-container #list-container,
 body[drive='mounting'] .dialog-container #list-container,
 body[drive='error'] .dialog-container #list-container,
@@ -2251,11 +2232,6 @@ list.autocomplete-suggestions > li > div[search-icon] {
 list.autocomplete-suggestions > [selected],
 list.autocomplete-suggestions > [lead] {
   background-color: var(--cros-menu-item-background-hover);
-}
-
-#gear-menu > cr-menu-item:not(.menuitem-button),
-#sort-menu > cr-menu-item {
-  margin-inline-end: 50px;
 }
 
 .cr-dialog-container.files-ng #suggest-app-dialog.cr-dialog-frame {
