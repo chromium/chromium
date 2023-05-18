@@ -9,6 +9,7 @@
 #include "content/public/browser/webui_config.h"
 
 namespace content {
+class BrowserContext;
 class WebUIDataSource;
 class WebUIController;
 class WebUI;

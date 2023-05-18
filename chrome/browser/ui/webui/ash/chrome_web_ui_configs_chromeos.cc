@@ -206,6 +206,10 @@ std::unique_ptr<content::WebUIConfig> MakeEcheAppUIConfig() {
 
 void RegisterAshChromeWebUIConfigs() {
   // Add `WebUIConfig`s for Ash ChromeOS to the list here.
+  //
+  // All `WebUIConfig`s should be registered here, irrespective of whether their
+  // `WebUI` is enabled or not. To conditionally enable/disable a WebUI,
+  // developers should override `WebUIConfig::IsWebUIEnabled()`.
   auto& map = content::WebUIConfigMap::GetInstance();
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<CameraAppUIConfig, CameraAppUI,

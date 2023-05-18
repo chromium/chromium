@@ -4,6 +4,7 @@
 
 #include "ash/webui/face_ml_app_ui/face_ml_app_untrusted_ui.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_face_ml_app_bundle_resources.h"
 #include "ash/webui/grit/ash_face_ml_app_bundle_resources_map.h"
 #include "ash/webui/grit/ash_face_ml_app_untrusted_resources.h"
@@ -59,5 +60,10 @@ FaceMLAppUntrustedUI::FaceMLAppUntrustedUI(content::WebUI* web_ui)
 }
 
 FaceMLAppUntrustedUI::~FaceMLAppUntrustedUI() = default;
+
+bool FaceMLAppUntrustedUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return base::FeatureList::IsEnabled(ash::features::kFaceMLApp);
+}
 
 }  // namespace ash

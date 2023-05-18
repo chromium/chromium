@@ -31,6 +31,10 @@ namespace ash {
 void RegisterAshChromeUntrustedWebUIConfigs() {
   auto& map = content::WebUIConfigMap::GetInstance();
   // Add untrusted `WebUIConfig`s for Ash ChromeOS to the list here.
+  //
+  // All `WebUIConfig`s should be registered here, irrespective of whether their
+  // `WebUI` is enabled or not. To conditionally enable/disable a WebUI,
+  // developers should override `WebUIConfig::IsWebUIEnabled()`.
   map.AddUntrustedWebUIConfig(std::make_unique<CroshUIConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<TerminalUIConfig>());
   map.AddUntrustedWebUIConfig(
@@ -40,20 +44,14 @@ void RegisterAshChromeUntrustedWebUIConfigs() {
   map.AddUntrustedWebUIConfig(std::make_unique<CameraAppUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(
       std::make_unique<HelpAppKidsMagazineUntrustedUIConfig>());
-  if (features::IsProjectorEnabled()) {
-    map.AddUntrustedWebUIConfig(std::make_unique<UntrustedProjectorUIConfig>());
-  }
+  map.AddUntrustedWebUIConfig(std::make_unique<UntrustedProjectorUIConfig>());
   map.AddUntrustedWebUIConfig(
       std::make_unique<UntrustedProjectorAnnotatorUIConfig>());
   map.AddUntrustedWebUIConfig(
       std::make_unique<file_manager::FileManagerUntrustedUIConfig>());
-  if (base::FeatureList::IsEnabled(features::kOsFeedback)) {
-    map.AddUntrustedWebUIConfig(
-        std::make_unique<feedback::OsFeedbackUntrustedUIConfig>());
-  }
-  if (base::FeatureList::IsEnabled(features::kFaceMLApp)) {
-    map.AddUntrustedWebUIConfig(std::make_unique<FaceMLAppUntrustedUIConfig>());
-  }
+  map.AddUntrustedWebUIConfig(
+      std::make_unique<feedback::OsFeedbackUntrustedUIConfig>());
+  map.AddUntrustedWebUIConfig(std::make_unique<FaceMLAppUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(
       std::make_unique<DemoModeAppUntrustedUIConfig>(base::BindRepeating(
           [] { return DemoSession::Get()->GetDemoAppComponentPath(); })));
