@@ -1214,7 +1214,8 @@ export class FileManager extends EventTarget {
         this.ui_.fileTypeFilterContainer, this.directoryModel_,
         this.recentEntry_, /** @type {!A11yAnnounce} */ (this.ui_));
     this.emptyFolderController_ = new EmptyFolderController(
-        this.ui_.emptyFolder, this.directoryModel_, this.recentEntry_);
+        this.ui_.emptyFolder, this.directoryModel_,
+        assert(this.providersModel_), this.recentEntry_);
 
 
     return directoryTreePromise;
