@@ -1142,6 +1142,25 @@ BuildPrivateAggregationForEventRequest(absl::uint128 bucket,
       blink::mojom::DebugModeDetails::New());
 }
 
+auction_worklet::mojom::PrivateAggregationRequestPtr
+BuildPrivateAggregationForBaseValue(
+    absl::uint128 bucket,
+    auction_worklet::mojom::BaseValue base_value,
+    std::string event_type) {
+  auction_worklet::mojom::AggregatableReportForEventContribution contribution(
+      auction_worklet::mojom::ForEventSignalBucket::NewIdBucket(bucket),
+      auction_worklet::mojom::ForEventSignalValue::NewSignalValue(
+          auction_worklet::mojom::SignalValue::New(base_value, /*scale=*/1.0,
+                                                   /*offset=*/0)),
+      event_type);
+
+  return auction_worklet::mojom::PrivateAggregationRequest::New(
+      auction_worklet::mojom::AggregatableReportContribution::
+          NewForEventContribution(contribution.Clone()),
+      blink::mojom::AggregationServiceMode::kDefault,
+      blink::mojom::DebugModeDetails::New());
+}
+
 // Marks `ad` in `group` k-anonymous, double-checking that its url is `url`.
 void AuthorizeKAnonAd(const blink::InterestGroup::Ad& ad,
                       const char* url,
@@ -12673,6 +12692,97 @@ TEST_F(AuctionRunnerTest,
                         ElementsAreRequests(
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest))));
+}
+
+TEST_F(AuctionRunnerTest, PrivateAggregationTimeMetrics) {
+  const int kNumBidders = 2;
+  UseMockWorkletService();
+  StartStandardAuction();
+  mock_auction_process_manager_->WaitForWorklets(kNumBidders,
+                                                 /*num_sellers=*/1);
+
+  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+
+  std::unique_ptr<MockBidderWorklet> bidder_worklets[2];
+  bidder_worklets[0] =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  bidder_worklets[1] =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  for (int i = 0; i < kNumBidders; ++i) {
+    ASSERT_TRUE(bidder_worklets[i]);
+    bidder_worklets[i]->SetBidderTrustedSignalsFetchLatency(
+        base::Milliseconds(100 * i + 1));
+    bidder_worklets[i]->SetBiddingLatency(base::Milliseconds(100 * i + 10));
+
+    std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
+        pa_requests;
+    pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+        /*bucket=*/100 * i, auction_worklet::mojom::BaseValue::kScriptRunTime,
+        "reserved.always"));
+    pa_requests.push_back(BuildPrivateAggregationForBaseValue(
+        /*bucket=*/100 * i + 1,
+        auction_worklet::mojom::BaseValue::kSignalsFetchTime,
+        "reserved.always"));
+    bidder_worklets[i]->InvokeGenerateBidCallback(
+        i + 1, /*bid_currency=*/absl::nullopt,
+        blink::AdDescriptor(
+            GURL(base::StringPrintf("https://ad%d.com/", i + 1))),
+        auction_worklet::mojom::BidderWorkletKAnonEnforcedBidPtr(),
+        /*ad_component_descriptors=*/absl::nullopt,
+        // Note that duration here is the duration of non-kanon-enforced run;
+        // if there is a k-anon-enforced one as well it will have a duration
+        // inside the BidderWorkletKAnonEnforcedBid. The overall bidding_latency
+        // passed to OnGenerateBidComplete (here configured via
+        // SetBiddingLatency()) encompasses all the runs combined.
+        // This test just passes a silly value to make sure we use the right
+        // (combined) value.
+        /*duration=*/base::Seconds(5),
+        /*bidding_signals_data_version=*/absl::nullopt,
+        /*debug_loss_report_url=*/absl::nullopt,
+        /*debug_win_report_url=*/absl::nullopt, std::move(pa_requests));
+    auto score_ad_params = seller_worklet->WaitForScoreAd();
+    mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+        std::move(score_ad_params.score_ad_client))
+        ->OnScoreAdComplete(
+            /*score=*/i + 1,
+            /*reject_reason=*/
+            auction_worklet::mojom::RejectReason::kNotAvailable,
+            auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+            /*bid_in_seller_currency=*/absl::nullopt,
+            /*scoring_signals_data_version=*/absl::nullopt,
+            /*debug_loss_report_url=*/absl::nullopt,
+            /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+            /*errors=*/{});
+  }
+
+  // Need to flush the service pipe to make sure the AuctionRunner has
+  // received the score.
+  seller_worklet->Flush();
+  seller_worklet->WaitForReportResult();
+  seller_worklet->InvokeReportResultCallback();
+  mock_auction_process_manager_->WaitForWinningBidderReload();
+  auto winning_bidder_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  ASSERT_TRUE(winning_bidder_worklet);
+  winning_bidder_worklet->WaitForReportWin();
+  winning_bidder_worklet->InvokeReportWinCallback();
+  auction_run_loop_->Run();
+  EXPECT_THAT(
+      private_aggregation_manager_.TakePrivateAggregationRequests(),
+      testing::UnorderedElementsAre(
+          testing::Pair(
+              kBidder1,
+              ElementsAreRequests(BuildPrivateAggregationRequest(/*bucket=*/0,
+                                                                 /*value=*/10),
+                                  BuildPrivateAggregationRequest(/*bucket=*/1,
+                                                                 /*value=*/1))),
+          testing::Pair(kBidder2,
+                        ElementsAreRequests(
+                            BuildPrivateAggregationRequest(/*bucket=*/100,
+                                                           /*value=*/110),
+                            BuildPrivateAggregationRequest(/*bucket=*/101,
+                                                           /*value=*/101)))));
 }
 
 TEST_F(AuctionRunnerTest,

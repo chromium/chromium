@@ -455,10 +455,10 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
     // meaningful thus not supported in reportResult(), so it is set to
     // absl::nullopt.
     absl::optional<PrivateAggregationRequestWithEventType> converted_request =
-        FillInPrivateAggregationRequest(std::move(request), winning_bid,
-                                        highest_scoring_other_bid,
-                                        /*reject_reason=*/absl::nullopt,
-                                        /*is_winner=*/true);
+        FillInPrivateAggregationRequest(
+            std::move(request), winning_bid, highest_scoring_other_bid,
+            /*reject_reason=*/absl::nullopt, PrivateAggregationTimings(),
+            /*is_winner=*/true);
 
     // Only private aggregation requests with reserved event types are kept for
     // seller.
@@ -723,7 +723,8 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
         FillInPrivateAggregationRequest(
             std::move(request), winning_bid,
             /*highest_scoring_other_bid=*/highest_scoring_other_bid,
-            /*reject_reason=*/absl::nullopt, /*is_winner=*/true);
+            /*reject_reason=*/absl::nullopt, PrivateAggregationTimings(),
+            /*is_winner=*/true);
 
     if (converted_request.has_value()) {
       PrivateAggregationRequestWithEventType converted_request_value =

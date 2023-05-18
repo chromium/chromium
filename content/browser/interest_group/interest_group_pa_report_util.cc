@@ -40,7 +40,8 @@ absl::optional<double> GetBaseValue(
     auction_worklet::mojom::BaseValue base_value,
     double winning_bid,
     double highest_scoring_other_bid,
-    const absl::optional<auction_worklet::mojom::RejectReason> reject_reason) {
+    const absl::optional<auction_worklet::mojom::RejectReason> reject_reason,
+    const PrivateAggregationTimings& timings) {
   // The mojom API declaration should ensure base_value is one of these cases.
   switch (base_value) {
     case auction_worklet::mojom::BaseValue::kWinningBid:
@@ -48,9 +49,9 @@ absl::optional<double> GetBaseValue(
     case auction_worklet::mojom::BaseValue::kHighestScoringOtherBid:
       return highest_scoring_other_bid;
     case auction_worklet::mojom::BaseValue::kScriptRunTime:
-      return absl::nullopt;
+      return timings.script_run_time.InMillisecondsF();
     case auction_worklet::mojom::BaseValue::kSignalsFetchTime:
-      return absl::nullopt;
+      return timings.signals_fetch_time.InMillisecondsF();
     case auction_worklet::mojom::BaseValue::kBidRejectReason:
       // reportWin() and reportResult() have no reject reason, so their private
       // aggregation requests with "bid-reject-reason" base value are not sent.
@@ -139,8 +140,6 @@ absl::optional<int32_t> CalculateValue(
     const auction_worklet::mojom::SignalValuePtr& value_obj,
     absl::optional<double> base) {
   if (!base.has_value()) {
-    // Once kScriptRunTime and kSignalsFetchTime are supported, this should not
-    // happen.
     return absl::nullopt;
   }
 
@@ -176,7 +175,8 @@ CalculateContributionBucketAndValue(
         contribution,
     double winning_bid,
     double highest_scoring_other_bid,
-    const absl::optional<auction_worklet::mojom::RejectReason> reject_reason) {
+    const absl::optional<auction_worklet::mojom::RejectReason> reject_reason,
+    const PrivateAggregationTimings& timings) {
   absl::uint128 bucket;
   int value;
 
@@ -186,8 +186,9 @@ CalculateContributionBucketAndValue(
     auction_worklet::mojom::SignalBucketPtr& bucket_obj =
         contribution->bucket->get_signal_bucket();
     absl::optional<absl::uint128> bucket_opt = CalculateBucket(
-        bucket_obj, GetBaseValue(bucket_obj->base_value, winning_bid,
-                                 highest_scoring_other_bid, reject_reason));
+        bucket_obj,
+        GetBaseValue(bucket_obj->base_value, winning_bid,
+                     highest_scoring_other_bid, reject_reason, timings));
     if (!bucket_opt.has_value()) {
       return nullptr;
     }
@@ -209,8 +210,9 @@ CalculateContributionBucketAndValue(
     const auction_worklet::mojom::SignalValuePtr& value_obj =
         contribution->value->get_signal_value();
     absl::optional<int> value_opt = CalculateValue(
-        value_obj, GetBaseValue(value_obj->base_value, winning_bid,
-                                highest_scoring_other_bid, reject_reason));
+        value_obj,
+        GetBaseValue(value_obj->base_value, winning_bid,
+                     highest_scoring_other_bid, reject_reason, timings));
     if (!value_opt.has_value()) {
       return nullptr;
     }
@@ -245,6 +247,7 @@ FillInPrivateAggregationRequest(
     double winning_bid,
     double highest_scoring_other_bid,
     const absl::optional<auction_worklet::mojom::RejectReason> reject_reason,
+    const PrivateAggregationTimings& timings,
     bool is_winner) {
   DCHECK(request);
   if (request->contribution->is_histogram_contribution()) {
@@ -292,7 +295,7 @@ FillInPrivateAggregationRequest(
   blink::mojom::AggregatableReportHistogramContributionPtr
       calculated_contribution = CalculateContributionBucketAndValue(
           std::move(contribution->get_for_event_contribution()), winning_bid,
-          highest_scoring_other_bid, reject_reason);
+          highest_scoring_other_bid, reject_reason, timings);
   if (!calculated_contribution) {
     return absl::nullopt;
   }

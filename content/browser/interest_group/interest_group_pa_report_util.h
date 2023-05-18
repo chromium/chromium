@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_PA_REPORT_UTIL_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_PA_REPORT_UTIL_H_
 
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -36,6 +37,12 @@ struct CONTENT_EXPORT PrivateAggregationRequestWithEventType {
   absl::optional<std::string> event_type;
 };
 
+// Various timings that can be used as base values in private aggregation.
+struct CONTENT_EXPORT PrivateAggregationTimings {
+  base::TimeDelta script_run_time;
+  base::TimeDelta signals_fetch_time;
+};
+
 // If request's contribution is an AggregatableReportForEventContribution, fills
 // the contribution in with post-auction signals such as winning_bid, converts
 // it to an AggregatableReportHistogramContribution and returns the resulting
@@ -50,6 +57,7 @@ FillInPrivateAggregationRequest(
     double winning_bid,
     double highest_scoring_other_bid,
     const absl::optional<auction_worklet::mojom::RejectReason> reject_reason,
+    const PrivateAggregationTimings& timings,
     bool is_winner);
 
 }  // namespace content
