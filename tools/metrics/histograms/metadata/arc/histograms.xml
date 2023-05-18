@@ -2356,6 +2356,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.VmDataMigration.AccessDeniedAtOpenSourceFileFailureType"
+    enum="ArcVmDataMigrationAccessDeniedAtOpenFileFailureType"
+    expires_after="2024-01-01">
+  <owner>momohatt@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The detailed cause of an access denied error at opening a source file during
+    ARCVM /data migration. Reported each time when the migrator encounters such
+    an error.
+  </summary>
+</histogram>
+
 <histogram name="Arc.VmDataMigration.AutoResumeCount" units="count"
     expires_after="2024-01-01">
   <owner>momohatt@google.com</owner>
