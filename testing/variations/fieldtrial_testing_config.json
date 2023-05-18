@@ -3611,6 +3611,21 @@
             ]
         }
     ],
+    "CrOSLateBootLongBluetoothAutosuspend": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootLongBluetoothAutosuspend"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootMediaDynamicCgroup": [
         {
             "platforms": [
