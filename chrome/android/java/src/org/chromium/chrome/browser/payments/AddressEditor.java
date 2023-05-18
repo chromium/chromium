@@ -158,7 +158,7 @@ public class AddressEditor
         final String editTitle;
         final AutofillAddress address;
         if (toEdit == null) {
-            address = new AutofillAddress(mContext, AutofillProfile.builder().build());
+            address = new AutofillAddress(mContext, new AutofillProfile());
             editTitle = mContext.getString(R.string.autofill_create_profile);
         } else {
             address = toEdit;

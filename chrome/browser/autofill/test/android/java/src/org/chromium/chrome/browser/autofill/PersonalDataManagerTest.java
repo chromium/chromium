@@ -402,7 +402,7 @@ public class PersonalDataManagerTest {
     @SmallTest
     @Feature({"Autofill"})
     public void testValuesSetInProfileGainUserVerifiedStatus() {
-        AutofillProfile profile = AutofillProfile.builder().build();
+        AutofillProfile profile = new AutofillProfile();
         Assert.assertEquals(VerificationStatus.NO_STATUS, profile.getFullNameStatus());
         Assert.assertEquals(VerificationStatus.NO_STATUS, profile.getStreetAddressStatus());
         Assert.assertEquals(VerificationStatus.NO_STATUS, profile.getLocalityStatus());

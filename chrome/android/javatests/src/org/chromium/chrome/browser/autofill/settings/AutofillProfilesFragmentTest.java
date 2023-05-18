@@ -80,20 +80,9 @@ public class AutofillProfilesFragmentTest {
                     .setEmailAddress("first@gmail.com")
                     .setLanguageCode("en-US")
                     .build();
-    private static final AutofillProfile sAccountProfile =
-            AutofillProfile.builder()
-                    .setSource(Source.ACCOUNT)
-                    .setFullName("Artik Doe")
-                    .setCompanyName("Google")
-                    .setStreetAddress("999 Fourth St")
-                    .setRegion("California")
-                    .setLocality("Los Angeles")
-                    .setPostalCode("90291")
-                    .setCountryCode("US")
-                    .setPhoneNumber("650-253-0000")
-                    .setEmailAddress("artik@gmail.com")
-                    .setLanguageCode("en-US")
-                    .build();
+    private static final AutofillProfile sAccountProfile = new AutofillProfile("", true, Source.ACCOUNT,
+            "" /* honorific prefix */, "Artik Doe", "Google", "999 Fourth St", "California",
+            "Los Angeles", "", "90291", "", "US", "650-253-0000", "artik@gmail.com", "en-US");
 
     @Rule
     public final AutofillTestRule rule = new AutofillTestRule();
@@ -404,19 +393,9 @@ public class AutofillProfilesFragmentTest {
         String email = "test@account";
         setUpMockPrimaryAccount(email);
 
-        mHelper.setProfile(AutofillProfile.builder()
-                                   .setSource(Source.ACCOUNT)
-                                   .setFullName("Account Updated #0")
-                                   .setCompanyName("Google")
-                                   .setStreetAddress("111 Fourth St")
-                                   .setRegion("California")
-                                   .setLocality("Los Angeles")
-                                   .setPostalCode("90291")
-                                   .setCountryCode("US")
-                                   .setPhoneNumber("650-253-0000")
-                                   .setEmailAddress("fourth@gmail.com")
-                                   .setLanguageCode("en-US")
-                                   .build());
+        mHelper.setProfile(new AutofillProfile("", true, Source.ACCOUNT, "" /* honorific prefix */,
+                "Account Updated #0", "Google", "111 Fourth St", "California", "Los Angeles", "",
+                "90291", "", "US", "650-253-0000", "fourth@gmail.com", "en-US"));
 
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
         Context context = autofillProfileFragment.getContext();
@@ -466,21 +445,10 @@ public class AutofillProfilesFragmentTest {
     @Feature({"Preferences"})
     @Features.EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES})
     public void testEditInvalidAccountProfile() throws Exception {
-        mHelper.setProfile(
-                AutofillProfile.builder()
-                        .setSource(Source.ACCOUNT)
-                        .setFullName("Account Updated #0")
-                        .setCompanyName("Google")
-                        .setStreetAddress(
-                                "") /** Street address is required in US but already missing. */
-                        .setRegion("California")
-                        .setLocality("Los Angeles")
-                        .setPostalCode("90291")
-                        .setCountryCode("US")
-                        .setPhoneNumber("650-253-0000")
-                        .setEmailAddress("fourth@gmail.com")
-                        .setLanguageCode("en-US")
-                        .build());
+        mHelper.setProfile(new AutofillProfile("", true, Source.ACCOUNT, "" /* honorific prefix */,
+                "Account Updated #0", "Google",
+                "" /** Street address is required in US but already missing. */, "California",
+                "Los Angeles", "", "90291", "", "US", "650-253-0000", "fourth@gmail.com", "en-US"));
 
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
 

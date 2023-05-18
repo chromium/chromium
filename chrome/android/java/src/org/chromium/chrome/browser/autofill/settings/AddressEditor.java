@@ -145,8 +145,8 @@ public class AddressEditor {
     public AddressEditor(EditorDialog editorDialog, Delegate delegate, boolean saveToDisk,
             boolean isUpdate, boolean isMigrationToAccount) {
         this(editorDialog, delegate,
-                new AutofillAddress(editorDialog.getContext(), AutofillProfile.builder().build()),
-                saveToDisk, isUpdate, isMigrationToAccount, true);
+                new AutofillAddress(editorDialog.getContext(), new AutofillProfile()), saveToDisk,
+                isUpdate, isMigrationToAccount, true);
     }
 
     /**

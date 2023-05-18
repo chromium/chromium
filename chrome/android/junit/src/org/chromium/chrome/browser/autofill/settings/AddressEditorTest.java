@@ -89,32 +89,14 @@ public class AddressEditorTest {
             new AddressUiComponent(
                     AddressField.STREET_ADDRESS, "street address label", true, true));
 
-    private static final AutofillProfile sLocalProfile = AutofillProfile.builder()
-                                                                 .setFullName("Seb Doe")
-                                                                 .setCompanyName("Google")
-                                                                 .setStreetAddress("111 First St")
-                                                                 .setRegion("CA")
-                                                                 .setLocality("Los Angeles")
-                                                                 .setPostalCode("90291")
-                                                                 .setCountryCode("US")
-                                                                 .setPhoneNumber("650-253-0000")
-                                                                 .setEmailAddress("first@gmail.com")
-                                                                 .setLanguageCode("en-US")
-                                                                 .build();
-    private static final AutofillProfile sAccountProfile =
-            AutofillProfile.builder()
-                    .setSource(Source.ACCOUNT)
-                    .setFullName("Seb Doe")
-                    .setCompanyName("Google")
-                    .setStreetAddress("111 First St")
-                    .setRegion("CA")
-                    .setLocality("Los Angeles")
-                    .setPostalCode("90291")
-                    .setCountryCode("US")
-                    .setPhoneNumber("650-253-0000")
-                    .setEmailAddress("first@gmail.com")
-                    .setLanguageCode("en-US")
-                    .build();
+    private static final AutofillProfile sLocalProfile = new AutofillProfile("",
+            true, Source.LOCAL_OR_SYNCABLE, "" /* honorific prefix */,
+            "Seb Doe", "Google", "111 First St", "CA", "Los Angeles", "", "90291", "", "US",
+            "650-253-0000", "first@gmail.com", "en-US");
+    private static final AutofillProfile sAccountProfile = new AutofillProfile("",
+            true, Source.ACCOUNT, "" /* honorific prefix */, "Seb Doe",
+            "Google", "111 First St", "CA", "Los Angeles", "", "90291", "", "US", "650-253-0000",
+            "first@gmail.com", "en-US");
 
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -651,7 +633,7 @@ public class AddressEditorTest {
                 /*isMigrationToAccount=*/false);
 
         mAddressEditor.showEditorDialog();
-        validateShownFields(mEditorModelCapture.getValue(), AutofillProfile.builder().build(),
+        validateShownFields(mEditorModelCapture.getValue(), new AutofillProfile(),
                 /*shouldMarkFieldsRequired=*/false);
     }
 
@@ -665,7 +647,7 @@ public class AddressEditorTest {
                 /*isMigrationToAccount=*/false);
 
         mAddressEditor.showEditorDialog();
-        validateShownFields(mEditorModelCapture.getValue(), AutofillProfile.builder().build(),
+        validateShownFields(mEditorModelCapture.getValue(), new AutofillProfile(),
                 /*shouldMarkFieldsRequired=*/true,
                 /*shouldMarkFieldsRequiredWhenAddressFieldEmpty=*/true);
     }

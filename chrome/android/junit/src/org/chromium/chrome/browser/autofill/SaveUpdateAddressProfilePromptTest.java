@@ -105,7 +105,7 @@ public class SaveUpdateAddressProfilePromptTest {
     }
 
     private void createAndShowPrompt(boolean isUpdate, boolean isMigrationToAccount) {
-        AutofillProfile dummyProfile = AutofillProfile.builder().build();
+        AutofillProfile dummyProfile = new AutofillProfile();
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.APP);
         mPrompt = new SaveUpdateAddressProfilePrompt(mPromptController, mModalDialogManager,
                 mActivity, mProfile, dummyProfile, isUpdate, isMigrationToAccount);

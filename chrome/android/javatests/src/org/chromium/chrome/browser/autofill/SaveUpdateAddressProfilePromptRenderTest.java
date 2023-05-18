@@ -120,8 +120,7 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
         View dialogView = runOnUiThreadBlocking(() -> {
             mPrompt = new SaveUpdateAddressProfilePrompt(mPromptController,
                     getActivity().getModalDialogManager(), getActivity(), mProfile,
-                    AutofillProfile.builder().build(), /*isUpdate=*/false,
-                    /*isMigrationToAccount=*/false);
+                    new AutofillProfile(), /*isUpdate=*/false, /*isMigrationToAccount=*/false);
             mPrompt.setDialogDetails(/*title=*/"Dialog title", /*positiveButtonText=*/"Accept",
                     /*negativeButtonText=*/"Cancel");
             mPrompt.setSaveOrMigrateDetails(
@@ -140,8 +139,7 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
         View dialogView = runOnUiThreadBlocking(() -> {
             mPrompt = new SaveUpdateAddressProfilePrompt(mPromptController,
                     getActivity().getModalDialogManager(), getActivity(), mProfile,
-                    AutofillProfile.builder().build(), /*isUpdate=*/false,
-                    /*isMigrationToAccount=*/false);
+                    new AutofillProfile(), /*isUpdate=*/false, /*isMigrationToAccount=*/false);
             mPrompt.setDialogDetails(/*title=*/"Dialog title", /*positiveButtonText=*/"Accept",
                     /*negativeButtonText=*/"Cancel");
             mPrompt.setSaveOrMigrateDetails(
@@ -165,8 +163,7 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
         View dialogView = runOnUiThreadBlocking(() -> {
             mPrompt = new SaveUpdateAddressProfilePrompt(mPromptController,
                     getActivity().getModalDialogManager(), getActivity(), mProfile,
-                    AutofillProfile.builder().build(), /*isUpdate=*/false,
-                    /*isMigrationToAccount=*/true);
+                    new AutofillProfile(), /*isUpdate=*/false, /*isMigrationToAccount=*/true);
             mPrompt.setDialogDetails(/*title=*/"Dialog title", /*positiveButtonText=*/"Accept",
                     /*negativeButtonText=*/"Cancel");
             mPrompt.setSaveOrMigrateDetails(
@@ -190,8 +187,7 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
         View dialogView = runOnUiThreadBlocking(() -> {
             mPrompt = new SaveUpdateAddressProfilePrompt(mPromptController,
                     getActivity().getModalDialogManager(), getActivity(), mProfile,
-                    AutofillProfile.builder().build(), /*isUpdate=*/true,
-                    /*isMigrationToAccount=*/false);
+                    new AutofillProfile(), /*isUpdate=*/true, /*isMigrationToAccount=*/false);
             mPrompt.setDialogDetails(/*title=*/"Dialog title", /*positiveButtonText=*/"Accept",
                     /*negativeButtonText=*/"Cancel");
             mPrompt.setUpdateDetails(
@@ -210,8 +206,7 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
         View dialogView = runOnUiThreadBlocking(() -> {
             mPrompt = new SaveUpdateAddressProfilePrompt(mPromptController,
                     getActivity().getModalDialogManager(), getActivity(), mProfile,
-                    AutofillProfile.builder().build(), /*isUpdate=*/true,
-                    /*isMigrationToAccount=*/false);
+                    new AutofillProfile(), /*isUpdate=*/true, /*isMigrationToAccount=*/false);
             mPrompt.setDialogDetails(/*title=*/"Dialog title", /*positiveButtonText=*/"Accept",
                     /*negativeButtonText=*/"Cancel");
             mPrompt.setUpdateDetails(
