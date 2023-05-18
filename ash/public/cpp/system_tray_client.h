@@ -61,6 +61,9 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // Shows OS settings page for Privacy Hub.
   virtual void ShowPrivacyHubSettings() = 0;
 
+  // Shows OS settings page for speak-on-mute detection setting in Privacy Hub.
+  virtual void ShowSpeakOnMuteDetectionSettings() = 0;
+
   // Show OS smart privacy settings.
   virtual void ShowSmartPrivacySettings() = 0;
 

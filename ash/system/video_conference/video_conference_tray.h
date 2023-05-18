@@ -168,6 +168,11 @@ class ASH_EXPORT VideoConferenceTray
   void OnAudioButtonClicked(const ui::Event& event);
   void OnScreenShareButtonClicked(const ui::Event& event);
 
+  // Callback function for the settings buttons or the speak-on-mute toast when
+  // being clicked. Opens the the Privacy Hub settings page with speak-on-mute
+  // switch focused.
+  static void OpenSpeakOnMuteDetectionSettingsPage();
+
   // Owned by the views hierarchy.
   raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> audio_icon_ = nullptr;
   raw_ptr<VideoConferenceTrayButton, ExperimentalAsh> camera_icon_ = nullptr;

@@ -49,6 +49,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowPaletteSettings() override;
   void ShowPrivacyAndSecuritySettings() override;
   void ShowPrivacyHubSettings() override;
+  void ShowSpeakOnMuteDetectionSettings() override;
   void ShowSmartPrivacySettings() override;
   void ShowEnterpriseInfo() override;
   void ShowNetworkConfigure(const std::string& network_id) override;
@@ -104,6 +105,10 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
 
   int show_os_settings_privacy_hub_count() const {
     return show_os_settings_privacy_hub_count_;
+  }
+
+  int show_speak_on_mute_detection_count() const {
+    return show_speak_on_mute_detection_count_;
   }
 
   int show_os_smart_privacy_settings_count() const {
@@ -181,6 +186,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   int show_connected_devices_settings_count_ = 0;
   int show_os_settings_privacy_and_security_count_ = 0;
   int show_os_settings_privacy_hub_count_ = 0;
+  int show_speak_on_mute_detection_count_ = 0;
   int show_os_smart_privacy_settings_count_ = 0;
   int show_wifi_sync_settings_count_ = 0;
   int show_sim_unlock_settings_count_ = 0;
