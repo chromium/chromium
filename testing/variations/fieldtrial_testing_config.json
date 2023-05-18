@@ -8514,21 +8514,6 @@
             ]
         }
     ],
-    "MojoDirectSharedMemoryAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MojoDirectSharedMemoryAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "MojoInlineMessagePayloads": [
         {
             "platforms": [
