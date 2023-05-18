@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -314,6 +315,29 @@ const VideoBitrateAllocation& VideoEncoderTestEnvironment::BitrateAllocation()
 
 bool VideoEncoderTestEnvironment::SaveOutputBitstream() const {
   return save_output_bitstream_;
+}
+
+base::FilePath VideoEncoderTestEnvironment::OutputFilePath(
+    const VideoCodec& codec,
+    const base::FilePath& base_name,
+    bool svc_enable,
+    int spatial_idx,
+    int temporal_idx) const {
+  base::FilePath::StringPieceType extension = codec == VideoCodec::kH264
+                                                  ? FILE_PATH_LITERAL("h264")
+                                                  : FILE_PATH_LITERAL("ivf");
+  auto output_bitstream_filepath =
+      OutputFolder()
+          .Append(GetTestOutputFilePath())
+          .Append(base_name.ReplaceExtension(extension));
+  if (svc_enable) {
+    output_bitstream_filepath =
+        output_bitstream_filepath.InsertBeforeExtensionASCII(
+            FILE_PATH_LITERAL(".SL") + base::NumberToString(spatial_idx) +
+            FILE_PATH_LITERAL(".TL") + base::NumberToString(temporal_idx));
+  }
+
+  return output_bitstream_filepath;
 }
 
 bool VideoEncoderTestEnvironment::Reverse() const {

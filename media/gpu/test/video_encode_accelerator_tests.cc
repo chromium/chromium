@@ -232,13 +232,6 @@ class VideoEncoderTest : public ::testing::Test {
     const VideoCodec codec =
         VideoCodecProfileToVideoCodec(config.output_profile);
     if (g_env->SaveOutputBitstream()) {
-      base::FilePath::StringPieceType extension =
-          codec == VideoCodec::kH264 ? FILE_PATH_LITERAL("h264")
-                                     : FILE_PATH_LITERAL("ivf");
-      auto output_bitstream_filepath =
-          g_env->OutputFolder()
-              .Append(g_env->GetTestOutputFilePath())
-              .Append(video->FilePath().BaseName().ReplaceExtension(extension));
       if (!spatial_layer_resolutions.empty()) {
         CHECK_GE(config.num_spatial_layers, 1u);
         CHECK_GE(config.num_temporal_layers, 1u);
@@ -251,11 +244,9 @@ class VideoEncoderTest : public ::testing::Test {
                temporal_layer_index_to_write < config.num_temporal_layers;
                ++temporal_layer_index_to_write) {
             bitstream_processors.emplace_back(BitstreamFileWriter::Create(
-                output_bitstream_filepath.InsertBeforeExtensionASCII(
-                    FILE_PATH_LITERAL(".SL") +
-                    base::NumberToString(spatial_layer_index_to_write) +
-                    FILE_PATH_LITERAL(".TL") +
-                    base::NumberToString(temporal_layer_index_to_write)),
+                g_env->OutputFilePath(codec, video->FilePath().BaseName(), true,
+                                      spatial_layer_index_to_write,
+                                      temporal_layer_index_to_write),
                 codec, layer_size, config.framerate,
                 config.num_frames_to_encode, spatial_layer_index_to_write,
                 temporal_layer_index_to_write, spatial_layer_resolutions));
@@ -264,8 +255,9 @@ class VideoEncoderTest : public ::testing::Test {
         }
       } else {
         bitstream_processors.emplace_back(BitstreamFileWriter::Create(
-            output_bitstream_filepath, codec, visible_rect.size(),
-            config.framerate, config.num_frames_to_encode));
+            g_env->OutputFilePath(codec, video->FilePath().BaseName()), codec,
+            visible_rect.size(), config.framerate,
+            config.num_frames_to_encode));
         LOG_ASSERT(bitstream_processors.back());
       }
     }
