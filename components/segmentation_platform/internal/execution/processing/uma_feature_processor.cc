@@ -172,7 +172,11 @@ void UmaFeatureProcessor::OnGetSamplesForUmaFeature(
         std::vector<ProcessedValue>(feature_data.begin(), feature_data.end());
   } else {
     DCHECK_EQ(feature.tensor_length(),
-              static_cast<unsigned int>(feature.default_values_size()));
+              static_cast<unsigned int>(feature.default_values_size()))
+        << " Mismatch between expected value size and default value size for "
+           "UMA feature '"
+        << feature.name()
+        << "'. Did you forget to specify a default value for this feature?";
     result_[index] = std::vector<ProcessedValue>(
         feature.default_values().begin(), feature.default_values().end());
   }

@@ -70,6 +70,7 @@ chromium-metrics-reviews@google.com.
   <variant name="FeedUserSegment"/>
   <variant name="FrequentFeatureUser"/>
   <variant name="IntentionalUser"/>
+  <variant name="PasswordManagerUser"/>
   <variant name="PowerUser"/>
   <variant name="QueryTiles"/>
   <variant name="ResumeHeavyUser"/>
@@ -94,6 +95,7 @@ chromium-metrics-reviews@google.com.
   <variant name="FrequentFeatureUserSegment"/>
   <variant name="IntentionalUser"/>
   <variant name="NewTab"/>
+  <variant name="PasswordManagerUser"/>
   <variant name="PowerUserSegment"/>
   <variant name="QueryTiles"/>
   <variant name="ResumeHeavyUserSegment"/>

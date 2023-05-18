@@ -53,6 +53,8 @@ const char* SegmentationKeyToUmaName(const std::string& segmentation_key) {
     return kDeviceTierUmaName;
   } else if (segmentation_key == kTabResumptionClassifierKey) {
     return kTabResumptionClassifierUmaName;
+  } else if (segmentation_key == kPasswordManagerUserKey) {
+    return kPasswordManagerUserUmaName;
   } else if (base::StartsWith(segmentation_key, "test_key")) {
     return "TestKey";
   }
@@ -117,6 +119,8 @@ std::string SegmentIdToHistogramVariant(proto::SegmentId segment_id) {
       return "DeviceTierSegment";
     case proto::TAB_RESUMPTION_CLASSIFIER:
       return "TabResumptionClassifier";
+    case proto::PASSWORD_MANAGER_USER:
+      return kPasswordManagerUserUmaName;
     default:
       // This case is reached when UNKNOWN segment is valid, in case of boolean
       // segment results.
