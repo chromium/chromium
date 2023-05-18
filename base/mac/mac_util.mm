@@ -385,11 +385,17 @@ int MacOSVersion() {
 
 }  // namespace internal
 
+extern "C" bool V8RecordReplayIsARM();
+
 namespace {
 
 #if defined(ARCH_CPU_X86_64)
 // https://developer.apple.com/documentation/apple_silicon/about_the_rosetta_translation_environment#3616845
 bool ProcessIsTranslated() {
+  // When replaying an ARM recording on x64 we want to make the same library calls,
+  // so don't call sysctl below.
+  if (V8RecordReplayIsARM())
+    return false;
   int ret = 0;
   size_t size = sizeof(ret);
   if (sysctlbyname("sysctl.proc_translated", &ret, &size, nullptr, 0) == -1)

@@ -311,7 +311,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'f63b17d58b3586e2ab2a0d1131df597ae611b7a3',
+  'v8_revision': 'bc3ca2ba1a186836f208c1f68d9de6c82b94925f',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling swarming_client
   # and whatever else without interference from each other.
@@ -334,7 +334,7 @@ vars = {
   #
   # Note this revision should be updated with
   # third_party/boringssl/roll_boringssl.py, not roll-dep.
-  'boringssl_revision': '40ba057785b3e6dcb4266e7df99eb43f04eaebe9',
+  'boringssl_revision': '9892225c7970166e20cfded40b21a86f9820bd4c',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Fuchsia sdk
   # and whatever else without interference from each other.
