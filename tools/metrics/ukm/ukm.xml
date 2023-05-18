@@ -15074,6 +15074,16 @@ be describing additional metrics about the same event.
       Cluster is of a boosted category.
     </summary>
   </metric>
+  <metric name="DidEngageWithModule" enum="Boolean">
+    <summary>
+      Whether the user engaged with the module.
+    </summary>
+  </metric>
+  <metric name="LayoutTypeShown" enum="NTPHistoryClustersModuleDisplayLayout">
+    <summary>
+      The layout type that was shown to the user for this module.
+    </summary>
+  </metric>
   <metric name="MinutesSinceMostRecentVisit">
     <summary>
       Minutes since the shown cluster's most recent visit, exponentially

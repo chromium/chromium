@@ -19,6 +19,7 @@
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/search/ntp_features.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -386,7 +387,6 @@ class FakeModelHandler : public HistoryClustersModuleRankingModelHandler {
   void ExecuteBatch(std::vector<HistoryClustersModuleRankingSignals>* inputs,
                     ExecuteBatchCallback callback) override {
     CHECK(inputs);
-
     std::vector<float> outputs;
     outputs.reserve(inputs->size());
     for (const auto& input : *inputs) {

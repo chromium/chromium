@@ -52,6 +52,10 @@ class HistoryClustersPageHandler
                               absl::nullopt) override;
   void DismissCluster(
       const std::vector<history_clusters::mojom::URLVisitPtr> visits) override;
+  void RecordClick(int64_t cluster_id) override;
+  void RecordLayoutTypeShown(
+      ntp::history_clusters::mojom::LayoutType layout_type,
+      int64_t cluster_id) override;
 
  private:
   // Forward the most relevant history clusters to the callback if any.
