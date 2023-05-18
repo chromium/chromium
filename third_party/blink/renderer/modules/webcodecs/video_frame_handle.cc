@@ -51,7 +51,6 @@ VideoFrameHandle::VideoFrameHandle(
       timestamp_(frame_->timestamp()),
       duration_(frame_->metadata().frame_duration) {
   DCHECK(frame_);
-  DCHECK(close_auditor_);
   MaybeMonitorOpenFrame();
 }
 
