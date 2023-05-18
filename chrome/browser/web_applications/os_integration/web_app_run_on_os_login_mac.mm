@@ -7,9 +7,11 @@
 #import "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 
-namespace web_app {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
-namespace internals {
+namespace web_app::internals {
 
 bool RegisterRunOnOsLogin(const ShortcutInfo& shortcut_info) {
   base::FilePath shortcut_data_dir = GetShortcutDataDir(shortcut_info);
@@ -28,6 +30,4 @@ Result UnregisterRunOnOsLogin(const std::string& app_id,
   return Result::kOk;
 }
 
-}  // namespace internals
-
-}  // namespace web_app
+}  // namespace web_app::internals
