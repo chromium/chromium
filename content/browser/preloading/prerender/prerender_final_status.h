@@ -14,10 +14,15 @@ namespace content {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
-// If you change this, please follow the process in
+// If you change this, please follow the processes below:
+//
 // go/preloading-dashboard-updates to update the mapping reflected in
 // dashboard, or if you are not a Googler, please file an FYI bug on
 // https://crbug.new with component Internals>Preload.
+//
+// https://docs.google.com/document/d/1PnrfowsZMt62PX1EvvTp2Nqs3ji1zrklrAEe1JYbkTk
+// to ensure failure reasons are correctly shown in the DevTools
+// frontend.
 enum class PrerenderFinalStatus {
   kActivated = 0,
   kDestroyed = 1,
