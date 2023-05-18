@@ -7,15 +7,24 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/memory/singleton.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/AuxiliarySearchBridge_jni.h"
 #include "chrome/browser/android/auxiliary_search/proto/auxiliary_search_group.pb.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
 
 using base::android::ToJavaByteArray;
+using bookmarks::BookmarkModel;
+using bookmarks::BookmarkNode;
 
 namespace {
+
+const size_t kMaxBookmarksCount = 100u;
 
 class AuxiliarySearchProviderFactory : public ProfileKeyedServiceFactory {
  public:
@@ -59,14 +68,29 @@ AuxiliarySearchProvider::GetSearchableData(JNIEnv* env) const {
   auxiliary_search::AuxiliarySearchGroup group;
   std::string serialized_group;
 
-  // TODO(crbug.com/1445112): read the tabs and bookmarks and fill in the
-  // |group|.
+  GetBookmarks(BookmarkModelFactory::GetForBrowserContext(profile_.get()),
+               &group);
+
+  // TODO(crbug.com/1445112): read the tabs and fill in the |group|.
 
   if (!group.SerializeToString(&serialized_group)) {
     serialized_group.clear();
   }
 
   return ToJavaByteArray(env, serialized_group);
+}
+
+void AuxiliarySearchProvider::GetBookmarks(
+    bookmarks::BookmarkModel* model,
+    auxiliary_search::AuxiliarySearchGroup* group) const {
+  std::vector<const BookmarkNode*> nodes;
+  bookmarks::GetMostRecentlyUsedEntries(model, kMaxBookmarksCount, &nodes);
+  for (const BookmarkNode* node : nodes) {
+    auxiliary_search::AuxiliarySearchGroup_Entry* entry =
+        group->add_bookmarks();
+    entry->set_title(base::UTF16ToUTF8(node->GetTitle()));
+    entry->set_url(node->url().spec());
+  }
 }
 
 // static

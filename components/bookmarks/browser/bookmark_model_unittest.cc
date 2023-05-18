@@ -173,6 +173,12 @@ void SwapDateAdded(BookmarkNode* n1, BookmarkNode* n2) {
   n2->set_date_added(tmp);
 }
 
+void SwapDateUsed(BookmarkNode* n1, BookmarkNode* n2) {
+  Time tmp = n1->date_last_used();
+  n1->set_date_last_used(n2->date_last_used());
+  n2->set_date_last_used(tmp);
+}
+
 // See comment in PopulateNodeFromString.
 using TestNode = ui::TreeNodeWithValue<BookmarkNode::Type>;
 
@@ -1345,6 +1351,42 @@ TEST_F(BookmarkModelTest, MostRecentlyAddedEntries) {
   ASSERT_TRUE(n1 == recently_added[1]);
   ASSERT_TRUE(n3 == recently_added[2]);
   ASSERT_TRUE(n4 == recently_added[3]);
+}
+
+// Make sure GetMostRecentlyUsedEntries stays in sync.
+TEST_F(BookmarkModelTest, GetMostRecentlyUsedEntries) {
+  // Add a couple of nodes such that the following holds for the time of the
+  // nodes: n1 > n2 > n3 > n4.
+  Time base_time = Time::Now();
+  BookmarkNode* n1 = AsMutable(model_->AddURL(
+      model_->bookmark_bar_node(), 0, u"blah", GURL("http://foo.com/0")));
+  BookmarkNode* n2 = AsMutable(model_->AddURL(
+      model_->bookmark_bar_node(), 1, u"blah", GURL("http://foo.com/1")));
+  BookmarkNode* n3 = AsMutable(model_->AddURL(
+      model_->bookmark_bar_node(), 2, u"blah", GURL("http://foo.com/2")));
+  BookmarkNode* n4 = AsMutable(model_->AddURL(
+      model_->bookmark_bar_node(), 3, u"blah", GURL("http://foo.com/3")));
+  n1->set_date_last_used(base_time + base::Days(4));
+  n2->set_date_last_used(base_time + base::Days(3));
+  n3->set_date_last_used(base_time + base::Days(2));
+  n4->set_date_last_used(base_time + base::Days(1));
+
+  // Make sure order is honored.
+  std::vector<const BookmarkNode*> recently_used;
+  GetMostRecentlyUsedEntries(model_.get(), 2, &recently_used);
+  ASSERT_EQ(2U, recently_used.size());
+  ASSERT_TRUE(n1 == recently_used[0]);
+  ASSERT_TRUE(n2 == recently_used[1]);
+
+  // swap 1 and 2, then check again.
+  recently_used.clear();
+  SwapDateUsed(n1, n2);
+  GetMostRecentlyUsedEntries(model_.get(), 4, &recently_used);
+  ASSERT_EQ(4U, recently_used.size());
+  ASSERT_TRUE(n2 == recently_used[0]);
+  ASSERT_TRUE(n1 == recently_used[1]);
+  ASSERT_TRUE(n3 == recently_used[2]);
+  ASSERT_TRUE(n4 == recently_used[3]);
 }
 
 // Makes sure GetMostRecentlyAddedUserNodeForURL stays in sync.

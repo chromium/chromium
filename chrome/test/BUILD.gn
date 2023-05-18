@@ -6776,6 +6776,7 @@ test("unit_tests") {
 
   if (is_android) {
     sources += [
+      "../browser/android/auxiliary_search/auxiliary_search_provider_unittest.cc",
       "../browser/android/bookmarks/partner_bookmarks_shim_unittest.cc",
       "../browser/android/chrome_backup_agent_unittest.cc",
       "../browser/android/compositor/layer/tab_layer_unittest.cc",
@@ -6891,6 +6892,7 @@ test("unit_tests") {
       "//chrome/browser:fast_checkout_funnels_proto",
       "//chrome/browser:profile_token",
       "//chrome/browser:usage_stats_proto",
+      "//chrome/browser/android/auxiliary_search/proto",
       "//chrome/browser/android/httpclient:unittests",
       "//chrome/browser/android/webapk:webapk_sources",
       "//chrome/browser/commerce/merchant_viewer:merchant_viewer_data_manager",

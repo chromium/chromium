@@ -8,8 +8,15 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/gtest_prod_util.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+namespace auxiliary_search {
+class AuxiliarySearchGroup;
+}
+namespace bookmarks {
+class BookmarkModel;
+}
 class Profile;
 
 // AuxiliarySearchProvider is responsible for providing the necessary
@@ -17,12 +24,16 @@ class Profile;
 class AuxiliarySearchProvider : public KeyedService {
  public:
   explicit AuxiliarySearchProvider(Profile* profile);
+  ~AuxiliarySearchProvider() override;
 
   base::android::ScopedJavaLocalRef<jbyteArray> GetSearchableData(
       JNIEnv* env) const;
 
  private:
-  ~AuxiliarySearchProvider() override;
+  FRIEND_TEST_ALL_PREFIXES(AuxiliarySearchProviderTest, QueryBookmarks);
+
+  void GetBookmarks(bookmarks::BookmarkModel* model,
+                    auxiliary_search::AuxiliarySearchGroup* group) const;
 
   raw_ptr<Profile> profile_;
 };
