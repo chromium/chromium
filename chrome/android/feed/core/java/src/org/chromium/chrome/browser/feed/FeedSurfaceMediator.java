@@ -786,7 +786,7 @@ public class FeedSurfaceMediator
         mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).clear();
 
         if (mCoordinator.getSurfaceScope() != null) {
-            mCoordinator.getSurfaceScope().getFeedLaunchReliabilityLogger().cancelPendingEvents();
+            mCoordinator.getSurfaceScope().getLaunchReliabilityLogger().cancelPendingEvents();
         }
     }
 

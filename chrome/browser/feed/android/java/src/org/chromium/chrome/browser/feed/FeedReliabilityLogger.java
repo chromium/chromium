@@ -10,9 +10,9 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
-import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
-import org.chromium.chrome.browser.xsurface.FeedUserInteractionReliabilityLogger;
-import org.chromium.chrome.browser.xsurface.FeedUserInteractionReliabilityLogger.ClosedReason;
+import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger;
+import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger;
+import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
 import org.chromium.chrome.browser.xsurface.feed.StreamType;
 import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverLaunchResult;
 

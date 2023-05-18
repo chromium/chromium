@@ -33,7 +33,6 @@ public interface ProcessScope {
         return null;
     }
 
-    // TODO(b/269234249): Don't call from Chrome yet, it's not implemented.
     /**
      * Returns a SurfaceScope which should be one per Surface. That Surface can have multiple
      * HybridListRenderers and SurfaceRenderers within its UI.

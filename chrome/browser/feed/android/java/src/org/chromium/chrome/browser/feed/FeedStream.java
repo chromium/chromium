@@ -52,8 +52,8 @@ import org.chromium.chrome.browser.xsurface.LoggingParameters;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenMode;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenWebFeedEntryPoint;
-import org.chromium.chrome.browser.xsurface.SurfaceScope;
 import org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler;
+import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
 import org.chromium.chrome.browser.xsurface.feed.StreamType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -621,7 +621,7 @@ public class FeedStream implements Stream {
     // Things valid only when bound.
     private @Nullable RecyclerView mRecyclerView;
     private @Nullable FeedListContentManager mContentManager;
-    private @Nullable SurfaceScope mSurfaceScope;
+    private @Nullable FeedSurfaceScope mSurfaceScope;
     private @Nullable HybridListRenderer mRenderer;
     private FeedScrollState mScrollStateToRestore;
     private int mHeaderCount;
@@ -761,7 +761,7 @@ public class FeedStream implements Stream {
 
     @Override
     public void bind(RecyclerView rootView, FeedListContentManager manager,
-            FeedScrollState savedInstanceState, SurfaceScope surfaceScope,
+            FeedScrollState savedInstanceState, FeedSurfaceScope surfaceScope,
             HybridListRenderer renderer, @Nullable FeedReliabilityLogger reliabilityLogger,
             int headerCount) {
         mReliabilityLogger = reliabilityLogger;

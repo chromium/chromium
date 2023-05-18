@@ -67,8 +67,8 @@ import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
-import org.chromium.chrome.browser.xsurface.SurfaceScope;
-import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
+import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
+import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScopeDependencyProvider;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feature_engagement.Tracker;
@@ -192,7 +192,7 @@ public class FeedSurfaceCoordinatorTest {
     @Mock
     private ProcessScope mProcessScope;
     @Mock
-    private SurfaceScope mSurfaceScope;
+    private FeedSurfaceScope mSurfaceScope;
     @Mock
     private HybridListRenderer mRenderer;
     @Captor
@@ -273,12 +273,12 @@ public class FeedSurfaceCoordinatorTest {
 
         FeedServiceBridge.setProcessScopeForTesting(mProcessScope);
 
-        when(mProcessScope.obtainSurfaceScope(any(SurfaceScopeDependencyProvider.class)))
+        when(mProcessScope.obtainFeedSurfaceScope(any(FeedSurfaceScopeDependencyProvider.class)))
                 .thenReturn(mSurfaceScope);
         when(mSurfaceScope.provideListRenderer()).thenReturn(mRenderer);
         when(mRenderer.bind(mContentManagerCaptor.capture(), isNull(), eq(false)))
                 .thenReturn(mRecyclerView);
-        when(mSurfaceScope.getFeedLaunchReliabilityLogger()).thenReturn(mLaunchReliabilityLogger);
+        when(mSurfaceScope.getLaunchReliabilityLogger()).thenReturn(mLaunchReliabilityLogger);
         TrackerFactory.setTrackerForTests(mTracker);
         when(mTabModelSelector.getModel(eq(false))).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(eq(true))).thenReturn(mTabModelIncognito);

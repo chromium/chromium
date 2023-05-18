@@ -73,8 +73,8 @@ import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenMode;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenUrlOptions;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.WebFeedFollowUpdate;
-import org.chromium.chrome.browser.xsurface.SurfaceScope;
 import org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler;
+import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feed.proto.FeedUiProto;
@@ -137,7 +137,7 @@ public class FeedStreamTest {
     @Mock
     private HybridListRenderer mRenderer;
     @Mock
-    private SurfaceScope mSurfaceScope;
+    private FeedSurfaceScope mSurfaceScope;
     @Mock
     private RecyclerView.Adapter mAdapter;
     @Mock

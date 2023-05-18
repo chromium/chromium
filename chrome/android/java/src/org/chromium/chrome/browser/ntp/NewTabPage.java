@@ -87,7 +87,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
-import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
+import org.chromium.chrome.browser.xsurface.feed.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.tasks.SingleTabSwitcherCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
