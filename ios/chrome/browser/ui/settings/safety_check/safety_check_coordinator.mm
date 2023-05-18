@@ -139,6 +139,10 @@ using password_manager::WarningType;
   [self.privacySafeBrowsingCoordinator stop];
   self.privacySafeBrowsingCoordinator.delegate = nil;
   self.privacySafeBrowsingCoordinator = nil;
+
+  [self.passwordCheckupCoordinator stop];
+  self.passwordCheckupCoordinator.delegate = nil;
+  self.passwordCheckupCoordinator = nil;
 }
 
 #pragma mark - SafetyCheckTableViewControllerPresentationDelegate
