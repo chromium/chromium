@@ -355,6 +355,10 @@ bool ToolbarButton::ShouldPaintBorder() const {
   return true;
 }
 
+bool ToolbarButton::ShouldDirectlyUseHighlightAsBackground() const {
+  return true;
+}
+
 absl::optional<SkColor> ToolbarButton::GetHighlightTextColor() const {
   return absl::nullopt;
 }
@@ -770,7 +774,8 @@ ToolbarButton::HighlightColorAnimation::GetBackgroundColor() const {
   SkColor bg_color =
       color_provider->GetColor(kColorToolbarButtonBackgroundHighlightedDefault);
   if (highlight_color_) {
-    if (features::IsChromeRefresh2023()) {
+    if (features::IsChromeRefresh2023() &&
+        parent_->ShouldDirectlyUseHighlightAsBackground()) {
       bg_color = *highlight_color_;
     } else {
       bg_color = color_utils::AlphaBlend(

@@ -345,5 +345,9 @@ int AvatarToolbarButton::GetIconSize() const {
                                          : kIconSizeForNonTouchUi;
 }
 
+bool AvatarToolbarButton::ShouldDirectlyUseHighlightAsBackground() const {
+  return false;
+}
+
 BEGIN_METADATA(AvatarToolbarButton, ToolbarButton)
 END_METADATA
