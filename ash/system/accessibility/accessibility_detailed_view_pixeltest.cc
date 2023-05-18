@@ -30,13 +30,13 @@ TEST_F(AccessibilityDetailedViewPixelTest, Basics) {
   system_tray->bubble()
       ->unified_system_tray_controller()
       ->ShowAccessibilityDetailedView();
-  views::View* detailed_view =
-      system_tray->bubble()->unified_view()->detailed_view();
-  ASSERT_TRUE(detailed_view);
+  views::View* detailed_view_container =
+      system_tray->bubble()->unified_view()->detailed_view_container();
+  ASSERT_TRUE(detailed_view_container);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "accessibility_detailed_view",
-      /*revision_number=*/1, detailed_view));
+      /*revision_number=*/1, detailed_view_container));
 }
 
 }  // namespace ash

@@ -2144,7 +2144,7 @@ class CalendarViewWithMessageCenterTest : public AshTestBase {
     return GetPrimaryUnifiedSystemTray()
         ->bubble()
         ->unified_view()
-        ->detailed_view_for_testing()
+        ->detailed_view_container()
         ->GetFocusManager();
   }
 

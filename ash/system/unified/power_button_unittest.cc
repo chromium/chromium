@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/shutdown_controller_impl.h"
 #include "ash/style/icon_button.h"
+#include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/quick_settings_footer.h"
 #include "ash/system/unified/quick_settings_view.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -372,7 +373,7 @@ TEST_F(PowerButtonTest, ClickingEmailShowsUserChooserView) {
       GetPrimaryUnifiedSystemTray()->bubble()->quick_settings_view();
   EXPECT_TRUE(quick_settings_view->IsDetailedViewShown());
   EXPECT_TRUE(views::IsViewClass<UserChooserView>(
-      quick_settings_view->detailed_view()));
+      quick_settings_view->GetDetailedViewForTest()));
 }
 
 // Power button's rounded radii should change correctly when switching between

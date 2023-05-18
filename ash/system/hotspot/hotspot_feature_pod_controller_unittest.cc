@@ -7,6 +7,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/hotspot/hotspot_detailed_view.h"
+#include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -18,6 +20,7 @@
 #include "chromeos/ash/services/hotspot_config/public/cpp/cros_hotspot_config_test_helper.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -105,13 +108,12 @@ class HotspotFeaturePodControllerTest : public AshTestBase {
   }
 
   void ExpectHotspotDetailedViewShown() {
-    auto* quick_settings_view =
-        GetPrimaryUnifiedSystemTray()->bubble()->quick_settings_view();
-    ASSERT_TRUE(quick_settings_view->detailed_view());
-    const views::View::Views& children =
-        quick_settings_view->detailed_view()->children();
-    EXPECT_EQ(1u, children.size());
-    EXPECT_STREQ("HotspotDetailedView", children.at(0)->GetClassName());
+    TrayDetailedView* detailed_view = GetPrimaryUnifiedSystemTray()
+                                          ->bubble()
+                                          ->quick_settings_view()
+                                          ->GetDetailedViewForTest();
+    ASSERT_TRUE(detailed_view);
+    EXPECT_TRUE(views::IsViewClass<HotspotDetailedView>(detailed_view));
   }
 
  protected:

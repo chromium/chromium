@@ -106,14 +106,11 @@ class ASH_EXPORT QuickSettingsView : public views::View,
   FeatureTilesContainerView* feature_tiles_container() {
     return feature_tiles_container_;
   }
+  views::View* detailed_view_container() { return detailed_view_container_; }
 
   // Returns the current tray detailed view.
   TrayDetailedView* GetDetailedViewForTest();
 
-  // TODO(jamescook): Rename this method. It doesn't return a detailed view and
-  // should be named `detailed_view_container()`.
-  views::View* detailed_view() { return detailed_view_container_; }
-  views::View* detailed_view_for_testing() { return detailed_view_container_; }
   PageIndicatorView* page_indicator_view_for_test() {
     return page_indicator_view_;
   }

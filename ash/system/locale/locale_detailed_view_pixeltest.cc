@@ -9,6 +9,7 @@
 #include "ash/public/cpp/locale_update_controller.h"
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/quick_settings_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -54,8 +55,8 @@ TEST_F(LocaleDetailedViewPixelTest, Basics) {
       ->ShowLocaleDetailedView();
 
   // Compare pixels.
-  auto* detailed_view =
-      system_tray->bubble()->quick_settings_view()->detailed_view();
+  TrayDetailedView* detailed_view =
+      system_tray->bubble()->quick_settings_view()->GetDetailedViewForTest();
   ASSERT_TRUE(detailed_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",

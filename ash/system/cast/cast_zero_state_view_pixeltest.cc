@@ -4,6 +4,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_cast_config_controller.h"
+#include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/unified/quick_settings_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -44,8 +45,8 @@ TEST_F(CastZeroStateViewPixelTest, Basics) {
   system_tray->bubble()
       ->unified_system_tray_controller()
       ->ShowCastDetailedView();
-  views::View* detailed_view =
-      system_tray->bubble()->quick_settings_view()->detailed_view();
+  TrayDetailedView* detailed_view =
+      system_tray->bubble()->quick_settings_view()->GetDetailedViewForTest();
   ASSERT_TRUE(detailed_view);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
