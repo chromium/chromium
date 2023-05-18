@@ -324,8 +324,9 @@ ManifestDataChanges GetManifestDataChanges(
             new_install_info.validated_scope_extensions.value()) {
       return true;
     }
-    // TODO(crbug.com/897314): Check changes to tab_strip field once
-    // icons are stored.
+    if (existing_web_app.tab_strip() != new_install_info.tab_strip) {
+      return true;
+    }
     // TODO(crbug.com/926083): Check more manifest fields.
     return false;
   }();

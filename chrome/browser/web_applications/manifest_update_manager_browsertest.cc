@@ -4808,6 +4808,261 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerPrerenderingBrowserTest,
   EXPECT_EQ(nullptr, app_id_after_activation);
 }
 
+class ManifestUpdateManagerBrowserTest_TabStrip
+    : public ManifestUpdateManagerBrowserTest {
+ public:
+  ManifestUpdateManagerBrowserTest_TabStrip() {
+    feature_list_.InitWithFeatures(
+        {blink::features::kDesktopPWAsTabStripCustomizations,
+         features::kDesktopPWAsTabStrip},
+        /*disabled_features=*/{});
+  }
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,
+                       CheckFindsAddedTabStripField) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "display_override": ["tabbed"],
+      "icons": $1
+    }
+  )";
+
+  constexpr char kTabStripManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "display_override": ["tabbed"],
+      "tab_strip": {
+        "new_tab_button": {
+          "url": "/new-tab-url"
+        },
+        "home_tab": {
+          "scope_patterns": [
+            {"pathname": "/foo/*"}
+          ]
+        }
+      },
+      "icons": $1
+    }
+  )";
+
+  OverrideManifest(kManifestTemplate, {kInstallableIconList});
+  AppId app_id = InstallWebApp();
+  const WebApp* web_app = GetProvider().registrar_unsafe().GetAppById(app_id);
+  EXPECT_FALSE(web_app->tab_strip().has_value());
+
+  OverrideManifest(kTabStripManifestTemplate, {kInstallableIconList});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
+            GetResultAfterPageLoad(GetAppURL()));
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+
+  EXPECT_TRUE(web_app->tab_strip().has_value());
+  EXPECT_EQ(http_server_.GetURL("/new-tab-url"),
+            absl::get<blink::Manifest::NewTabButtonParams>(
+                web_app->tab_strip().value().new_tab_button)
+                .url);
+  EXPECT_EQ(absl::get<blink::Manifest::HomeTabParams>(
+                web_app->tab_strip().value().home_tab)
+                .scope_patterns.size(),
+            1u);
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,
+                       CheckIgnoresUnchangedTabStripField) {
+  constexpr char kTabStripManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "display_override": ["tabbed"],
+      "tab_strip": {
+        "new_tab_button": {
+          "url": "/new-tab-url"
+        },
+        "home_tab": {}
+      },
+      "icons": $1
+    }
+  )";
+
+  OverrideManifest(kTabStripManifestTemplate, {kInstallableIconList});
+  AppId app_id = InstallWebApp();
+  const WebApp* web_app = GetProvider().registrar_unsafe().GetAppById(app_id);
+  EXPECT_TRUE(web_app->tab_strip().has_value());
+  EXPECT_EQ(http_server_.GetURL("/new-tab-url"),
+            absl::get<blink::Manifest::NewTabButtonParams>(
+                web_app->tab_strip().value().new_tab_button)
+                .url);
+  EXPECT_TRUE(absl::holds_alternative<blink::Manifest::HomeTabParams>(
+      web_app->tab_strip().value().home_tab));
+
+  OverrideManifest(kTabStripManifestTemplate, {kInstallableIconList});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpToDate,
+            GetResultAfterPageLoad(GetAppURL()));
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpToDate, 1);
+  EXPECT_TRUE(web_app->tab_strip().has_value());
+  EXPECT_EQ(http_server_.GetURL("/new-tab-url"),
+            absl::get<blink::Manifest::NewTabButtonParams>(
+                web_app->tab_strip().value().new_tab_button)
+                .url);
+  EXPECT_TRUE(absl::holds_alternative<blink::Manifest::HomeTabParams>(
+      web_app->tab_strip().value().home_tab));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,
+                       CheckFindsChangedTabStripField) {
+  constexpr char kTabStripManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "display_override": ["tabbed"],
+      "tab_strip": {
+        "new_tab_button": {
+          "url": "$1"
+        }
+      },
+      "icons": $2
+    }
+  )";
+
+  OverrideManifest(kTabStripManifestTemplate,
+                   {"old-relative-url", kInstallableIconList});
+  AppId app_id = InstallWebApp();
+  const WebApp* web_app = GetProvider().registrar_unsafe().GetAppById(app_id);
+  // URL parsed relative to manifest URL, which is in /banners/.
+  EXPECT_TRUE(web_app->tab_strip().has_value());
+  EXPECT_EQ(http_server_.GetURL("/banners/old-relative-url"),
+            absl::get<blink::Manifest::NewTabButtonParams>(
+                web_app->tab_strip().value().new_tab_button)
+                .url);
+
+  OverrideManifest(kTabStripManifestTemplate,
+                   {"/new-tab-url", kInstallableIconList});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
+            GetResultAfterPageLoad(GetAppURL()));
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+  EXPECT_TRUE(web_app->tab_strip().has_value());
+  EXPECT_EQ(http_server_.GetURL("/new-tab-url"),
+            absl::get<blink::Manifest::NewTabButtonParams>(
+                web_app->tab_strip().value().new_tab_button)
+                .url);
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_TabStrip,
+                       CheckFindsDeletedTabStripField) {
+  constexpr char kTabStripManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "display_override": ["tabbed"],
+      "tab_strip": {
+        "new_tab_button": {
+          "url": "/new-tab-url"
+        },
+        "home_tab": {}
+      },
+      "icons": $1
+    }
+  )";
+
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "display_override": ["tabbed"],
+      "icons": $1
+    }
+  )";
+
+  OverrideManifest(kTabStripManifestTemplate, {kInstallableIconList});
+  AppId app_id = InstallWebApp();
+  const WebApp* web_app = GetProvider().registrar_unsafe().GetAppById(app_id);
+  EXPECT_TRUE(web_app->tab_strip().has_value());
+  EXPECT_EQ(http_server_.GetURL("/new-tab-url"),
+            absl::get<blink::Manifest::NewTabButtonParams>(
+                web_app->tab_strip().value().new_tab_button)
+                .url);
+  EXPECT_TRUE(absl::holds_alternative<blink::Manifest::HomeTabParams>(
+      web_app->tab_strip().value().home_tab));
+
+  OverrideManifest(kManifestTemplate, {kInstallableIconList});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
+            GetResultAfterPageLoad(GetAppURL()));
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+  EXPECT_FALSE(web_app->tab_strip().has_value());
+}
+
+class ManifestUpdateManagerBrowserTest_NoTabStrip
+    : public ManifestUpdateManagerBrowserTest {
+ public:
+  ManifestUpdateManagerBrowserTest_NoTabStrip() {
+    feature_list_.InitAndDisableFeature(
+        blink::features::kDesktopPWAsTabStripCustomizations);
+  }
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_NoTabStrip,
+                       WithoutTabStripFlag_CheckIgnoresTabStripField) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "display_override": ["tabbed"],
+      "icons": $1
+    }
+  )";
+
+  constexpr char kTabStripManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "display_override": ["tabbed"],
+      "tab_strip": {
+        "new_tab_button": {
+          "url": "/new-tab-url"
+        }
+      },
+      "icons": $1
+    }
+  )";
+
+  OverrideManifest(kManifestTemplate, {kInstallableIconList});
+  AppId app_id = InstallWebApp();
+  const WebApp* web_app = GetProvider().registrar_unsafe().GetAppById(app_id);
+  EXPECT_FALSE(web_app->tab_strip().has_value());
+
+  OverrideManifest(kTabStripManifestTemplate, {kInstallableIconList});
+  EXPECT_EQ(ManifestUpdateResult::kAppUpToDate,
+            GetResultAfterPageLoad(GetAppURL()));
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpToDate, 1);
+  EXPECT_FALSE(web_app->tab_strip().has_value());
+}
+
 enum AppIdTestParam {
   kInvalid = 0,
   kTypeWebApp = 1 << 1,
