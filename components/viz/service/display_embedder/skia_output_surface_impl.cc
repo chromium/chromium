@@ -558,7 +558,7 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
     void* fulfill = new FulfillForPlane(y_context);
     image = SkImages::PromiseTextureFrom(
         graphite_recorder_, gfx::SizeToSkISize(y_context->size()), texture_info,
-        color_info, skgpu::graphite::Volatile::kNo, FulfillGraphite, CleanUp,
+        color_info, skgpu::graphite::Volatile::kYes, FulfillGraphite, CleanUp,
         ReleaseGraphite, fulfill);
   } else {
     GrBackendFormat formats[4] = {};
@@ -609,7 +609,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
                            image_context->color_space());
     auto image = SkImages::PromiseTextureFrom(
         graphite_recorder_, gfx::SizeToSkISize(image_context->size()),
-        texture_info, color_info, skgpu::graphite::Volatile::kNo,
+        texture_info, color_info, skgpu::graphite::Volatile::kYes,
         FulfillGraphite, CleanUp, ReleaseGraphite, fulfill);
     image_context->SetImage(std::move(image), {texture_info});
   } else {
@@ -655,7 +655,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
     void* fulfill = new FulfillForPlane(image_context, /*plane_index=*/0);
     auto image = SkImages::PromiseTextureFrom(
         graphite_recorder_, gfx::SizeToSkISize(image_context->size()),
-        texture_info, color_info, skgpu::graphite::Volatile::kNo,
+        texture_info, color_info, skgpu::graphite::Volatile::kYes,
         FulfillGraphite, CleanUp, ReleaseGraphite, fulfill);
     image_context->SetImage(std::move(image), {texture_info});
   } else {
