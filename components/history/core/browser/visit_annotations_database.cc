@@ -11,6 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 #include "sql/statement.h"
 #include "sql/statement_id.h"
@@ -32,9 +33,9 @@ namespace {
 #define HISTORY_CLUSTER_ROW_FIELDS                                    \
   " cluster_id,should_show_on_prominent_ui_surfaces,label,raw_label," \
   "triggerability_calculated,originator_cache_guid,originator_cluster_id "
-#define HISTORY_CLUSTER_VISIT_ROW_FIELDS                              \
-  " visit_id,score,engagement_score,url_for_deduping,normalized_url," \
-  "url_for_display "
+#define HISTORY_CLUSTER_VISIT_ROW_FIELDS                          \
+  " cluster_id,visit_id,score,engagement_score,url_for_deduping," \
+  "normalized_url,url_for_display,interaction_state "
 
 // Converts the serialized categories into a vector of (`id`, `weight`)
 // pairs.
@@ -214,6 +215,26 @@ VisitContextAnnotations ConstructContextAnnotationsWithFlags(
   context_annotations.on_visit.response_code = response_code;
   return context_annotations;
 }
+
+ClusterVisit::InteractionState InteractionStateFromInt(int state) {
+  ClusterVisit::InteractionState converted =
+      static_cast<ClusterVisit::InteractionState>(state);
+  // Verify that `converted` is actually a valid enum value.
+  switch (converted) {
+    case ClusterVisit::InteractionState::kDefault:
+    case ClusterVisit::InteractionState::kHidden:
+    case ClusterVisit::InteractionState::kDone:
+      return converted;
+  }
+  // If the `state` wasn't actually a valid, return `kDefault` to be safe.
+  return ClusterVisit::InteractionState::kDefault;
+}
+
+int InteractionStateToInt(ClusterVisit::InteractionState state) {
+  DCHECK_EQ(InteractionStateFromInt(static_cast<int>(state)), state);
+  return static_cast<int>(state);
+}
+
 }  // namespace
 
 VisitAnnotationsDatabase::VisitAnnotationsDatabase() = default;
@@ -586,12 +607,11 @@ void VisitAnnotationsDatabase::AddClusters(
                                  "raw_label,triggerability_calculated,"
                                  "originator_cache_guid,originator_cluster_id)"
                                  "VALUES(?,?,?,?,?,?)"));
-  sql::Statement clusters_and_visits_statement(GetDB().GetCachedStatement(
-      SQL_FROM_HERE,
-      "INSERT INTO clusters_and_visits"
-      "(cluster_id,visit_id,score,engagement_score,url_for_deduping,"
-      "normalized_url,url_for_display)"
-      "VALUES(?,?,?,?,?,?,?)"));
+  sql::Statement clusters_and_visits_statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "INSERT INTO clusters_and_visits"
+                                 "(" HISTORY_CLUSTER_VISIT_ROW_FIELDS ")"
+                                 "VALUES(?,?,?,?,?,?,?,?)"));
   sql::Statement cluster_keywords_statement(
       GetDB().GetCachedStatement(SQL_FROM_HERE,
                                  "INSERT INTO cluster_keywords"
@@ -641,6 +661,8 @@ void VisitAnnotationsDatabase::AddClusters(
           5, cluster_visit.normalized_url.spec());
       clusters_and_visits_statement.BindString16(6,
                                                  cluster_visit.url_for_display);
+      clusters_and_visits_statement.BindInt(
+          7, InteractionStateToInt(cluster_visit.interaction_state));
       if (!clusters_and_visits_statement.Run()) {
         DVLOG(0)
             << "Failed to execute 'clusters_and_visits' insert statement:  "
@@ -710,12 +732,11 @@ void VisitAnnotationsDatabase::AddVisitsToCluster(
     int64_t cluster_id,
     const std::vector<ClusterVisit>& visits) {
   DCHECK_GT(cluster_id, 0);
-  sql::Statement clusters_and_visits_statement(GetDB().GetCachedStatement(
-      SQL_FROM_HERE,
-      "INSERT INTO clusters_and_visits"
-      "(cluster_id,visit_id,score,engagement_score,url_for_deduping,"
-      "normalized_url,url_for_display)"
-      "VALUES(?,?,?,?,?,?,?)"));
+  sql::Statement clusters_and_visits_statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "INSERT INTO clusters_and_visits"
+                                 "(" HISTORY_CLUSTER_VISIT_ROW_FIELDS ")"
+                                 "VALUES(?,?,?,?,?,?,?,?)"));
 
   // Insert each visit into 'clusters_and_visits'.
   base::ranges::for_each(visits, [&](const auto& visit) {
@@ -730,6 +751,8 @@ void VisitAnnotationsDatabase::AddVisitsToCluster(
     clusters_and_visits_statement.BindString(4, visit.url_for_deduping.spec());
     clusters_and_visits_statement.BindString(5, visit.normalized_url.spec());
     clusters_and_visits_statement.BindString16(6, visit.url_for_display);
+    clusters_and_visits_statement.BindInt(
+        7, InteractionStateToInt(visit.interaction_state));
     if (!clusters_and_visits_statement.Run()) {
       DVLOG(0) << "Failed to execute 'clusters_and_visits' insert statement:  "
                << "cluster_id = " << cluster_id
@@ -856,14 +879,16 @@ void VisitAnnotationsDatabase::UpdateClusterVisit(
                                  "UPDATE clusters_and_visits "
                                  "SET "
                                  "engagement_score=?,url_for_deduping=?,"
-                                 "normalized_url=?,url_for_display=? "
+                                 "normalized_url=?,url_for_display=?,"
+                                 "interaction_state=? "
                                  "WHERE cluster_id=? AND visit_id=?"));
   statement.BindDouble(0, cluster_visit.engagement_score);
   statement.BindString(1, cluster_visit.url_for_deduping.spec());
   statement.BindString(2, cluster_visit.normalized_url.spec());
   statement.BindString16(3, cluster_visit.url_for_display);
-  statement.BindInt64(4, cluster_id);
-  statement.BindInt64(5, cluster_visit.annotated_visit.visit_row.visit_id);
+  statement.BindInt(4, InteractionStateToInt(cluster_visit.interaction_state));
+  statement.BindInt64(5, cluster_id);
+  statement.BindInt64(6, cluster_visit.annotated_visit.visit_row.visit_id);
   if (!statement.Run()) {
     DVLOG(0) << "Failed to execute 'clusters_and_visits' update statement in "
                 "`UpdateClusterVisit()`: "
@@ -960,19 +985,21 @@ ClusterVisit VisitAnnotationsDatabase::GetClusterVisit(VisitID visit_id) {
   if (!statement.Step())
     return {};
 
-  VisitID received_visit_id = statement.ColumnInt64(0);
+  VisitID received_visit_id = statement.ColumnInt64(1);
   DCHECK_EQ(visit_id, received_visit_id);
 
   // The `VisitID` in column 0 is intentionally ignored, as it's not part of
   // `VisitContextAnnotations`.
   ClusterVisit cluster_visit;
   cluster_visit.annotated_visit.visit_row.visit_id = received_visit_id;
-  cluster_visit.score = static_cast<float>(statement.ColumnDouble(1));
+  cluster_visit.score = static_cast<float>(statement.ColumnDouble(2));
   cluster_visit.engagement_score =
-      static_cast<float>(statement.ColumnDouble(2));
-  cluster_visit.url_for_deduping = GURL(statement.ColumnString(3));
-  cluster_visit.normalized_url = GURL(statement.ColumnString(4));
-  cluster_visit.url_for_display = statement.ColumnString16(5);
+      static_cast<float>(statement.ColumnDouble(3));
+  cluster_visit.url_for_deduping = GURL(statement.ColumnString(4));
+  cluster_visit.normalized_url = GURL(statement.ColumnString(5));
+  cluster_visit.url_for_display = statement.ColumnString16(6);
+  cluster_visit.interaction_state =
+      InteractionStateFromInt(statement.ColumnInt(7));
   return cluster_visit;
 }
 
@@ -1454,6 +1481,20 @@ bool VisitAnnotationsDatabase::MigrateContentAnnotationsAddHasUrlKeyedImage() {
       "ADD COLUMN has_url_keyed_image BOOLEAN DEFAULT false NOT NULL");
 }
 
+bool VisitAnnotationsDatabase::MigrateClustersAndVisitsAddInteractionState() {
+  if (!GetDB().DoesTableExist("clusters_and_visits")) {
+    NOTREACHED() << "clusters_and_visits table should exist before migration";
+    return false;
+  }
+
+  if (GetDB().DoesColumnExist("clusters_and_visits", "interaction_state")) {
+    return true;
+  }
+  return GetDB().Execute(
+      "ALTER TABLE clusters_and_visits "
+      "ADD COLUMN interaction_state INTEGER DEFAULT 0 NOT NULL");
+}
+
 bool VisitAnnotationsDatabase::CreateClustersTable() {
   // The `id` uses AUTOINCREMENT to support Sync. Chrome Sync uses the
   // `id` in conjunction with the Client ID as a unique identifier.
@@ -1477,11 +1518,12 @@ bool VisitAnnotationsDatabase::CreateClustersAndVisitsTableAndIndex() {
              "CREATE TABLE IF NOT EXISTS clusters_and_visits("
              "cluster_id INTEGER NOT NULL,"
              "visit_id INTEGER NOT NULL,"
-             "score NUMERIC NOT NULL,"
-             "engagement_score NUMERIC NOT NULL,"
+             "score NUMERIC DEFAULT 0 NOT NULL,"
+             "engagement_score NUMERIC DEFAULT 0 NOT NULL,"
              "url_for_deduping LONGVARCHAR NOT NULL,"
              "normalized_url LONGVARCHAR NOT NULL,"
              "url_for_display LONGVARCHAR NOT NULL,"
+             "interaction_state INTEGER DEFAULT 0 NOT NULL,"
              "PRIMARY KEY(cluster_id,visit_id))"
              "WITHOUT ROWID") &&
          GetDB().Execute(

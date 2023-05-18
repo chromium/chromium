@@ -860,6 +860,18 @@ struct DuplicateClusterVisit {
 
 // An `AnnotatedVisit` associated with some other metadata from clustering.
 struct ClusterVisit {
+  // Values are persisted; do not reorder or reuse, and only add new values at
+  // the end.
+  enum class InteractionState {
+    // The default state of visits. Visible in both zero-state and searches.
+    kDefault = 0,
+    // User has marked the visit hidden. Hidden in all surfaces.
+    kHidden = 1,
+    // User has dismissed the visit with positive intent. Hidden in the
+    // zero-state but still searchable.
+    kDone = 2,
+  };
+
   ClusterVisit();
   ~ClusterVisit();
   ClusterVisit(const ClusterVisit&);
@@ -872,6 +884,9 @@ struct ClusterVisit {
   // A floating point score in the range [0, 1] describing how important this
   // visit is to the containing cluster.
   float score = 0.0;
+
+  // Can be changed when the user dismisses or hides the visit.
+  InteractionState interaction_state = InteractionState::kDefault;
 
   // Flagged as true if this cluster visit matches the user's search query.
   // This depends on the user's search query, and should not be persisted. It's

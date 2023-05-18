@@ -340,6 +340,7 @@ TEST_F(
   visit_2.url_for_deduping = GURL{"url_for_deduping_2"};
   visit_2.normalized_url = GURL{"normalized_url_2"};
   visit_2.url_for_display = u"url_for_display_2";
+  visit_2.interaction_state = ClusterVisit::InteractionState::kHidden;
 
   // `search_match_score` shouldn't matter, it is not persisted.
   clusters.push_back(
@@ -394,6 +395,8 @@ TEST_F(
   EXPECT_EQ(visit_2_retrieved.url_for_deduping, GURL{"url_for_deduping_2"});
   EXPECT_EQ(visit_2_retrieved.normalized_url, GURL{"normalized_url_2"});
   EXPECT_EQ(visit_2_retrieved.url_for_display, u"url_for_display_2");
+  EXPECT_EQ(visit_2_retrieved.interaction_state,
+            ClusterVisit::InteractionState::kHidden);
 
   // Test `GetDuplicateClusterVisitIdsForClusterVisit()`.
 

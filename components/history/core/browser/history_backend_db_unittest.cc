@@ -21,6 +21,7 @@
 
 #include <stdint.h>
 
+#include <cstdint>
 #include <string>
 #include <unordered_set>
 
@@ -38,6 +39,7 @@
 #include "components/history/core/browser/download_row.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_database.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/page_usage_data.h"
 #include "components/history/core/test/history_backend_db_base_test.h"
@@ -2923,6 +2925,68 @@ TEST_F(HistoryBackendDBTest, MigrateDownloadByWebApp) {
       EXPECT_EQ("extension-id", s.ColumnString(0));
       EXPECT_EQ("", s.ColumnString(1));
     }
+  }
+}
+
+TEST_F(HistoryBackendDBTest, MigrateClustersAndVisitsAddInteractionState) {
+  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(64));
+
+  constexpr int64_t kTestClusterId = 39;
+  constexpr VisitID kTestVisitId = 42;
+
+  ClusterVisit visit;
+  visit.score = 0.4;
+  visit.engagement_score = 0.9;
+  visit.url_for_deduping = GURL("https://url_for_deduping_test.com/");
+  visit.normalized_url = GURL("https://norm_url.com/");
+  visit.url_for_display = u"urlfordisplay";
+
+  const char kInsertStatement[] =
+      "INSERT INTO clusters_and_visits "
+      "(cluster_id,visit_id,score,engagement_score,url_for_deduping,"
+      "normalized_url,url_for_display) VALUES (?,?,?,?,?,?,?)";
+
+  // Open the old version of the DB and make sure the new columns don't exist
+  // yet.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+    ASSERT_FALSE(
+        db.DoesColumnExist("clusters_and_visits", "interaction_state"));
+
+    // Add legacy entry to visits.
+    sql::Statement s(db.GetUniqueStatement(kInsertStatement));
+    s.BindInt64(0, kTestClusterId);
+    s.BindInt64(1, kTestVisitId);
+    s.BindDouble(2, visit.score);
+    s.BindDouble(3, visit.engagement_score);
+    s.BindString(4, visit.url_for_deduping.spec());
+    s.BindString(5, visit.normalized_url.spec());
+    s.BindString16(6, visit.url_for_display);
+
+    ASSERT_TRUE(s.Run());
+  }
+
+  // Re-open the db, triggering migration.
+  CreateBackendAndDatabase();
+
+  // The version should have been updated.
+  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 65);
+
+  ClusterVisit visit_received = db_->GetClusterVisit(kTestVisitId);
+  EXPECT_EQ(visit.score, visit_received.score);
+  EXPECT_EQ(visit.engagement_score, visit_received.engagement_score);
+  EXPECT_EQ(visit.url_for_deduping, visit_received.url_for_deduping);
+  EXPECT_EQ(visit.normalized_url, visit_received.normalized_url);
+  EXPECT_EQ(visit.url_for_display, visit.url_for_display);
+
+  DeleteBackend();
+
+  // Open the db manually again and make sure the new columns exist.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+    EXPECT_TRUE(db.DoesColumnExist("clusters_and_visits", "interaction_state"));
   }
 }
 
