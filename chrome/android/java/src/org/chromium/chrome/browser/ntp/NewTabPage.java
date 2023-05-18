@@ -1090,9 +1090,16 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         updateSingleTabCardContainerMargins();
         mSingleTabSwitcherCoordinator = new SingleTabSwitcherCoordinator(mActivity,
                 mSingleTabCardContainer, mActivityLifecycleDispatcher, mTabModelSelector, true,
-                isScrollableMvtEnabled(mContext), mostRecentTab);
+                isScrollableMvtEnabled(mContext), mostRecentTab, this::onSingleTabCardClicked);
         mSingleTabSwitcherCoordinator.initWithNative();
         setSingleTabCardVisibility(true);
+    }
+
+    private void onSingleTabCardClicked() {
+        mTabModelSelector.getModel(false).closeTab(mTab);
+        if (mHomeSurfaceTracker != null) {
+            mHomeSurfaceTracker.updateHomeSurfaceAndTrackingTabs(null, null);
+        }
     }
 
     /**

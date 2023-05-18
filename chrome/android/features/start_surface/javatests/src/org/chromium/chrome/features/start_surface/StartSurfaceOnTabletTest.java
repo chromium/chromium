@@ -50,6 +50,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -518,6 +519,35 @@ public class StartSurfaceOnTabletTest {
         verifyMvtAndSingleTabCardVerticalMargins(expectedMvtBottomMargin,
                 -expectedSingleTabCardTopAndBottomMargin, expectedSingleTabCardTopAndBottomMargin,
                 /*isNtpHomepage=*/true, ntp);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
+    // clang-format off
+    public void testClickSingleTabCardCloseNtpHomeSurface() throws IOException {
+        // clang-format on
+        StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
+        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+
+        // Verifies that a new NTP is created and set as the active Tab.
+        verifyTabCountAndActiveTabUrl(
+                cta, 2, UrlConstants.NTP_URL, true /* expectHomeSurfaceUiShown */);
+        waitForNtpLoaded(cta.getActivityTab());
+
+        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        try {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> cta.findViewById(R.id.single_tab_view).performClick());
+        } catch (ExecutionException e) {
+            Assert.fail("Failed to tap the single tab card " + e.toString());
+        }
+
+        // Verifies that the last active Tab is showing, and NTP home surface is closed.
+        verifyTabCountAndActiveTabUrl(cta, 1, TAB_URL, null /* expectHomeSurfaceUiShown */);
     }
 
     /**

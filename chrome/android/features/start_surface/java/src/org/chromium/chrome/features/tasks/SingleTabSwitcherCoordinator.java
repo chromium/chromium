@@ -48,7 +48,8 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
     public SingleTabSwitcherCoordinator(@NonNull Activity activity, @NonNull ViewGroup container,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull TabModelSelector tabModelSelector, boolean isTablet,
-            boolean isScrollableMvtEnabled, Tab mostRecentTab) {
+            boolean isScrollableMvtEnabled, Tab mostRecentTab,
+            @Nullable Runnable singleTabCardClickedCallback) {
         mTabModelSelector = tabModelSelector;
         mIsTablet = isTablet;
         mLastActiveTab = mostRecentTab;
@@ -65,10 +66,11 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
                     activity, propertyModel, tabModelSelector, mTabListFaviconProvider);
             mMediatorOnTablet = null;
         } else {
-            mMediatorOnTablet = new SingleTabSwitcherOnTabletMediator(propertyModel,
-                    activity.getResources(), activityLifecycleDispatcher, tabModelSelector,
-                    mTabListFaviconProvider, mostRecentTab,
-                    FeedFeatures.isMultiColumnFeedEnabled(activity), isScrollableMvtEnabled);
+            mMediatorOnTablet =
+                    new SingleTabSwitcherOnTabletMediator(propertyModel, activity.getResources(),
+                            activityLifecycleDispatcher, tabModelSelector, mTabListFaviconProvider,
+                            mostRecentTab, FeedFeatures.isMultiColumnFeedEnabled(activity),
+                            isScrollableMvtEnabled, singleTabCardClickedCallback);
             mMediator = null;
         }
         if (ChromeFeatureList.sInstantStart.isEnabled()) {

@@ -44,16 +44,20 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
     private boolean mIsScrollableMvtEnabled;
     private boolean mIsMultiFeedEnabled;
 
+    private Runnable mSingleTabCardClickedCallback;
+
     SingleTabSwitcherOnTabletMediator(PropertyModel propertyModel, Resources resources,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             TabModelSelector tabModelSelector, TabListFaviconProvider tabListFaviconProvider,
-            Tab mostRecentTab, boolean isMultiColumnFeedEnabled, boolean isScrollableMvtEnabled) {
+            Tab mostRecentTab, boolean isMultiColumnFeedEnabled, boolean isScrollableMvtEnabled,
+            Runnable singleTabCardClickedCallback) {
         mPropertyModel = propertyModel;
         mResources = resources;
         mTabListFaviconProvider = tabListFaviconProvider;
         mMostRecentTab = mostRecentTab;
         mIsMultiFeedEnabled = isMultiColumnFeedEnabled;
         mIsScrollableMvtEnabled = isScrollableMvtEnabled;
+        mSingleTabCardClickedCallback = singleTabCardClickedCallback;
 
         if (mIsMultiFeedEnabled) {
             mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -76,6 +80,10 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
             TabModel currentTabModel = tabModelSelector.getModel(false);
             TabModelUtils.setIndex(currentTabModel,
                     TabModelUtils.getTabIndexById(currentTabModel, mMostRecentTab.getId()), false);
+            if (mSingleTabCardClickedCallback != null) {
+                mSingleTabCardClickedCallback.run();
+                mSingleTabCardClickedCallback = null;
+            }
         });
     }
 
