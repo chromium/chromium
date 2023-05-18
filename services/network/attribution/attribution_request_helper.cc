@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/feature_list.h"
@@ -21,6 +22,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/structured_headers.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request.h"
 #include "services/network/attribution/attribution_verification_mediator.h"
@@ -285,28 +287,43 @@ void AttributionRequestHelper::OnDoneProcessingVerificationResponse(
 // https://wicg.github.io/attribution-reporting-api/#mark-a-request-for-attribution-reporting-eligibility
 void SetAttributionReportingHeaders(net::URLRequest& url_request,
                                     const ResourceRequest& request) {
-  base::StringPiece eligibility_header;
+  std::vector<net::structured_headers::DictionaryMember> eligibilities;
+  const auto add_eligibility = [&eligibilities](std::string key) {
+    // TODO(crbug.com/1446382): Consider "greasing" this header by adding
+    // meaningless keys and/or parameters.
+    eligibilities.emplace_back(std::move(key),
+                               net::structured_headers::ParameterizedMember(
+                                   net::structured_headers::Item(true),
+                                   net::structured_headers::Parameters()));
+  };
+
   switch (request.attribution_reporting_eligibility) {
     case AttributionReportingEligibility::kUnset:
       return;
     case AttributionReportingEligibility::kEmpty:
-      eligibility_header = "";
       break;
     case AttributionReportingEligibility::kEventSource:
-      eligibility_header = "event-source";
+      add_eligibility("event-source");
       break;
     case AttributionReportingEligibility::kNavigationSource:
-      eligibility_header = "navigation-source";
+      add_eligibility("navigation-source");
       break;
     case AttributionReportingEligibility::kTrigger:
-      eligibility_header = "trigger";
+      add_eligibility("trigger");
       break;
     case AttributionReportingEligibility::kEventSourceOrTrigger:
-      eligibility_header = "event-source, trigger";
+      add_eligibility("event-source");
+      add_eligibility("trigger");
       break;
   }
+
+  absl::optional<std::string> eligible_header =
+      net::structured_headers::SerializeDictionary(
+          net::structured_headers::Dictionary(std::move(eligibilities)));
+  DCHECK(eligible_header.has_value());
+
   url_request.SetExtraRequestHeaderByName("Attribution-Reporting-Eligible",
-                                          eligibility_header,
+                                          std::move(*eligible_header),
                                           /*overwrite=*/true);
 
   // Note that it's important that the network process check both the
