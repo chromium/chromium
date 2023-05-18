@@ -9,7 +9,6 @@
 
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/input/touch_emulator_client.h"
@@ -67,8 +66,7 @@ class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
   // propagate any further.
   // TODO(dgozman): maybe pass latency info together with events.
   bool HandleMouseEvent(const blink::WebMouseEvent& event,
-                        RenderWidgetHostViewBase* target_view,
-                        base::OnceClosure callback);
+                        RenderWidgetHostViewBase* target_view);
   bool HandleMouseWheelEvent(const blink::WebMouseWheelEvent& event);
   bool HandleKeyboardEvent(const blink::WebKeyboardEvent& event);
   bool HandleTouchEvent(const blink::WebTouchEvent& event);
@@ -134,7 +132,7 @@ class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
                                 RenderWidgetHostViewBase* target_view);
 
   // Called when ack for injected touch has been received.
-  void OnTouchCompleted();
+  void OnInjectedTouchCompleted();
 
   const raw_ptr<TouchEmulatorClient> client_;
 
@@ -182,7 +180,7 @@ class CONTENT_EXPORT TouchEmulator : public ui::GestureProviderClient {
   float pinch_scale_;
   bool pinch_gesture_active_;
 
-  base::queue<base::OnceClosure> touch_event_completion_callbacks_;
+  base::queue<base::OnceClosure> injected_touch_completion_callbacks_;
 };
 
 }  // namespace content
