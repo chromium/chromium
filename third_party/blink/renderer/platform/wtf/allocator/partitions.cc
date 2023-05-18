@@ -72,6 +72,55 @@ partition_alloc::ThreadSafePartitionRoot* Partitions::array_buffer_root_ =
     nullptr;
 partition_alloc::ThreadSafePartitionRoot* Partitions::buffer_root_ = nullptr;
 
+namespace {
+
+// Reads feature configuration and returns a suitable
+// `PartitionOptions`.
+partition_alloc::PartitionOptions PartitionOptionsFromFeatures() {
+  using base::features::BackupRefPtrEnabledProcesses;
+  using base::features::BackupRefPtrMode;
+  using partition_alloc::PartitionOptions;
+
+  const auto brp_mode = base::features::kBackupRefPtrModeParam.Get();
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  const bool process_affected_by_brp_flag =
+#if BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
+      true;
+#else
+      base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
+          BackupRefPtrEnabledProcesses::kAllProcesses ||
+      base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
+          BackupRefPtrEnabledProcesses::kBrowserAndRenderer;
+#endif  // BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
+  const bool enable_brp =
+      base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocBackupRefPtr) &&
+      (brp_mode == BackupRefPtrMode::kEnabled ||
+       brp_mode == BackupRefPtrMode::kEnabledWithoutZapping ||
+       brp_mode == BackupRefPtrMode::kEnabledWithMemoryReclaimer) &&
+      process_affected_by_brp_flag;
+#else  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  const bool enable_brp = false;
+#endif
+
+  const auto brp_setting = enable_brp
+                               ? PartitionOptions::BackupRefPtr::kEnabled
+                               : PartitionOptions::BackupRefPtr::kDisabled;
+  const auto brp_zapping_setting =
+      enable_brp && brp_mode == BackupRefPtrMode::kEnabled
+          ? PartitionOptions::BackupRefPtrZapping::kEnabled
+          : PartitionOptions::BackupRefPtrZapping::kDisabled;
+
+  return PartitionOptions{
+      .quarantine = PartitionOptions::Quarantine::kAllowed,
+      .cookie = PartitionOptions::Cookie::kAllowed,
+      .backup_ref_ptr = brp_setting,
+      .backup_ref_ptr_zapping = brp_zapping_setting,
+  };
+}
+
+}  // namespace
+
 // static
 void Partitions::Initialize() {
   static bool initialized = InitializeOnce();
@@ -80,38 +129,18 @@ void Partitions::Initialize() {
 
 // static
 bool Partitions::InitializeOnce() {
-  base::features::BackupRefPtrMode brp_mode =
-      base::features::kBackupRefPtrModeParam.Get();
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  const bool process_affected_by_brp_flag =
-#if BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
-      true;
-#else
-      base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
-          base::features::BackupRefPtrEnabledProcesses::kAllProcesses ||
-      base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
-          base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer;
-#endif  // BUILDFLAG(FORCIBLY_ENABLE_BACKUP_REF_PTR_IN_ALL_PROCESSES)
-  const bool enable_brp =
-      base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocBackupRefPtr) &&
-      (brp_mode == base::features::BackupRefPtrMode::kEnabled ||
-       brp_mode == base::features::BackupRefPtrMode::kEnabledWithoutZapping ||
-       brp_mode ==
-           base::features::BackupRefPtrMode::kEnabledWithMemoryReclaimer) &&
-      process_affected_by_brp_flag;
-#else  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  const bool enable_brp = false;
-#endif
-  const auto brp_setting =
-      enable_brp ? partition_alloc::PartitionOptions::BackupRefPtr::kEnabled
-                 : partition_alloc::PartitionOptions::BackupRefPtr::kDisabled;
-  const auto brp_zapping_setting =
-      enable_brp && brp_mode == base::features::BackupRefPtrMode::kEnabled
-          ? partition_alloc::PartitionOptions::BackupRefPtrZapping::kEnabled
-          : partition_alloc::PartitionOptions::BackupRefPtrZapping::kDisabled;
+  using partition_alloc::PartitionOptions;
+
+  partition_alloc::PartitionAllocGlobalInit(&Partitions::HandleOutOfMemory);
+
+  auto options = PartitionOptionsFromFeatures();
+  static base::NoDestructor<partition_alloc::PartitionAllocator>
+      buffer_allocator{};
+  buffer_allocator->init(options);
+  buffer_root_ = buffer_allocator->root();
+
   scan_is_enabled_ =
-      !enable_brp &&
+      (options.backup_ref_ptr == PartitionOptions::BackupRefPtr::kDisabled) &&
 #if BUILDFLAG(USE_STARSCAN)
       (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan) ||
        base::FeatureList::IsEnabled(kPCScanBlinkPartitions));
@@ -130,35 +159,14 @@ bool Partitions::InitializeOnce() {
   // In addition, enable the FastMalloc partition if
   // --enable-features=PartitionAllocPCScanBlinkPartitions is specified.
   if (scan_is_enabled_ || !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)) {
-    constexpr partition_alloc::PartitionOptions::ThreadCache thread_cache =
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-        partition_alloc::PartitionOptions::ThreadCache::kDisabled;
-#else
-        partition_alloc::PartitionOptions::ThreadCache::kEnabled;
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    options.thread_cache = PartitionOptions::ThreadCache::kEnabled;
 #endif
     static base::NoDestructor<partition_alloc::PartitionAllocator>
         fast_malloc_allocator{};
-    fast_malloc_allocator->init(partition_alloc::PartitionOptions{
-        .thread_cache = thread_cache,
-        .quarantine = partition_alloc::PartitionOptions::Quarantine::kAllowed,
-        .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
-        .backup_ref_ptr = brp_setting,
-        .backup_ref_ptr_zapping = brp_zapping_setting,
-    });
+    fast_malloc_allocator->init(options);
     fast_malloc_root_ = fast_malloc_allocator->root();
   }
-
-  partition_alloc::PartitionAllocGlobalInit(&Partitions::HandleOutOfMemory);
-
-  static base::NoDestructor<partition_alloc::PartitionAllocator>
-      buffer_allocator{};
-  buffer_allocator->init(partition_alloc::PartitionOptions{
-      .quarantine = partition_alloc::PartitionOptions::Quarantine::kAllowed,
-      .cookie = partition_alloc::PartitionOptions::Cookie::kAllowed,
-      .backup_ref_ptr = brp_setting,
-      .backup_ref_ptr_zapping = brp_zapping_setting,
-  });
-  buffer_root_ = buffer_allocator->root();
 
 #if BUILDFLAG(USE_STARSCAN)
   if (scan_is_enabled_) {
