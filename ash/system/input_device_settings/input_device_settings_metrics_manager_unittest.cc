@@ -58,6 +58,9 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
   keyboard_external.settings = mojom::KeyboardSettings::New();
   auto& settings_external = *keyboard_external.settings;
   settings_external.top_row_are_fkeys = true;
+  settings_external.modifier_remappings = {
+      {ui::mojom::ModifierKey::kAlt, ui::mojom::ModifierKey::kControl},
+      {ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kCapsLock}};
 
   mojom::Keyboard keyboard_external_chromeos;
   keyboard_external_chromeos.device_key = kExternalChromeOSKeyboardId;
@@ -88,6 +91,10 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Keyboard.Internal.TopRowAreFKeys.Initial",
       /*expected_count=*/0u);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.Keyboard.External.Modifiers."
+      "NumberOfRemappedKeysOnStart",
+      /*sample=*/3u, /*expected_bucket_count=*/1u);
 
   manager_.get()->RecordKeyboardInitialMetrics(keyboard_external_chromeos);
 
@@ -392,6 +399,10 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordModifierRemappingMetrics) {
       "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers.MetaRemappedTo."
       "Initial",
       /*expected_count=*/1u);
+  histogram_tester.ExpectUniqueSample(
+      "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers."
+      "NumberOfRemappedKeysOnStart",
+      /*sample=*/1u, /*expected_bucket_count=*/1u);
 
   const auto old_settings = std::move(keyboard.settings);
   keyboard.settings = mojom::KeyboardSettings::New();
@@ -412,6 +423,10 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordModifierRemappingMetrics) {
       "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers."
       "AssistantRemappedTo.Changed",
       /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers."
+      "NumberOfRemappedKeysOnStart",
+      /*expected_count*/ 1u);
 }
 
 TEST_F(InputDeviceSettingsMetricsManagerTest,
