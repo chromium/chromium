@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,7 +27,9 @@
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -58,13 +61,14 @@ class FileHandlerLaunchDialogTest : public WebAppControllerBrowserTest {
   void SetUpOnMainThread() override {
     WebAppControllerBrowserTest::SetUpOnMainThread();
 
-    // The os_hooks_suppress_ is set as part of the WebAppControllerBrowserTest
-    // to prevent OS integrations from being executed. This needs to be reset so
-    // that OS integration can be run.
+    // The os_hooks_suppress_ is set as part of the
+    // WebAppControllerBrowserTest to prevent OS integrations from being
+    // executed. This needs to be reset so that OS integration can be run.
     os_hooks_suppress_.reset();
     base::ScopedAllowBlockingForTesting allow_blocking;
     override_registration_ =
         OsIntegrationTestOverrideImpl::OverrideForTesting();
+    test::WaitUntilReady(provider());
     InstallTestWebApp();
   }
 
@@ -81,8 +85,9 @@ class FileHandlerLaunchDialogTest : public WebAppControllerBrowserTest {
     ProfileManager* profile_manager = g_browser_process->profile_manager();
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
     command_line.AppendSwitchASCII(switches::kAppId, app_id_);
-    for (const auto& path : paths)
+    for (const auto& path : paths) {
       command_line.AppendArgPath(path);
+    }
 
     browser_creator.Start(
         command_line, profile_manager->user_data_dir(),
@@ -115,23 +120,33 @@ class FileHandlerLaunchDialogTest : public WebAppControllerBrowserTest {
     entry2.launch_type = apps::FileHandler::LaunchType::kMultipleClients;
     web_app_info->file_handlers.push_back(std::move(entry2));
 
-    app_id_ =
-        test::InstallWebApp(browser()->profile(), std::move(web_app_info));
+    base::test::TestFuture<const AppId&, webapps::InstallResultCode> result;
+    provider()->scheduler().InstallFromInfoWithParams(
+        std::move(web_app_info), /*overwrite_existing_manifest_fields=*/false,
+        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+        result.GetCallback(), WebAppInstallParams());
+
+    bool success = result.Wait();
+    EXPECT_TRUE(success);
+    if (!success) {
+      app_id_ = AppId();
+      return;
+    }
+
+    EXPECT_EQ(result.Get<webapps::InstallResultCode>(),
+              webapps::InstallResultCode::kSuccessNewInstall);
+    app_id_ = result.Get<AppId>();
 
     // Setting the user display mode is necessary because
     // `test::InstallWebApp()` forces a kBrowser display mode; see
     // `WebAppInstallFinalizer::FinalizeInstall()`.
-    ScopedRegistryUpdate update(
-        &WebAppProvider::GetForTest(browser()->profile())
-             ->sync_bridge_unsafe());
+    ScopedRegistryUpdate update(&provider()->sync_bridge_unsafe());
     update->UpdateApp(app_id_)->SetUserDisplayMode(
         mojom::UserDisplayMode::kStandalone);
   }
 
   const WebApp* GetApp() {
-    return WebAppProvider::GetForTest(browser()->profile())
-        ->registrar_unsafe()
-        .GetAppById(app_id_);
+    return provider()->registrar_unsafe().GetAppById(app_id_);
   }
 
   // Launches the app and responds to the dialog, verifying expected outcomes.
@@ -182,9 +197,12 @@ class FileHandlerLaunchDialogTest : public WebAppControllerBrowserTest {
   }
 
  protected:
-  AppId app_id_;
+  WebAppProvider* provider() {
+    return WebAppProvider::GetForTest(browser()->profile());
+  }
 
  private:
+  AppId app_id_;
   std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       override_registration_;
 };
@@ -193,9 +211,11 @@ IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest,
                        EscapeDoesNotRememberPreference) {
   // One normal browser window exists.
   EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+
   LaunchAppAndRespond(/*remember_checkbox_state=*/true,
                       views::Widget::ClosedReason::kEscKeyPressed,
                       ApiApprovalState::kRequiresPrompt);
+
   // One normal browser window exists still as the app wasn't launched.
   EXPECT_EQ(1U, BrowserList::GetInstance()->size());
 }
@@ -283,6 +303,7 @@ IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest, AcceptDoNotRemember) {
   LaunchAppAndRespond(/*remember_checkbox_state=*/false,
                       views::Widget::ClosedReason::kCancelButtonClicked,
                       ApiApprovalState::kRequiresPrompt);
+
   // An app window is not created.
   ASSERT_EQ(2U, BrowserList::GetInstance()->size());
 }
@@ -293,7 +314,8 @@ IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest, UnhandledType) {
   EXPECT_EQ(1U, BrowserList::GetInstance()->size());
 
   // Try to launch the app with a file type it doesn't handle. It should fail
-  // without showing a dialog, but fall back to showing a normal browser window.
+  // without showing a dialog, but fall back to showing a normal browser
+  // window.
   LaunchAppAndExpectUrlWithoutDialog(base::FilePath::FromASCII("foo.rtf"),
                                      GURL(kStartUrl));
   EXPECT_EQ(2U, BrowserList::GetInstance()->size());

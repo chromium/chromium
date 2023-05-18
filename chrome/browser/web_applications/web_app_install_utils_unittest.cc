@@ -22,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -1673,9 +1674,16 @@ TEST(WebAppInstallUtils, DuplicateIconDownloadURLs) {
 INSTANTIATE_TEST_SUITE_P(, FileHandlersFromManifestTest, testing::Bool());
 
 #if BUILDFLAG(IS_WIN)
+
+// TODO(crbug.com/1403999): Refactor to not using MockOsIntegrationManager once
+// removed.
 using RegisterOsSettingsTest = testing::Test;
 
 TEST_F(RegisterOsSettingsTest, MaybeRegisterOsUninstall) {
+  if (AreSubManagersExecuteEnabled()) {
+    GTEST_SKIP() << "Skipping tests as enabling sub managers bypasses "
+                    "existing OS integration flow";
+  }
   content::BrowserTaskEnvironment task_environment;
 
   // MaybeRegisterOsUninstall
@@ -1751,6 +1759,10 @@ TEST_F(RegisterOsSettingsTest, MaybeRegisterOsSettings_NoRegistration) {
 }
 
 TEST_F(RegisterOsSettingsTest, MaybeUnregisterOsUninstall) {
+  if (AreSubManagersExecuteEnabled()) {
+    GTEST_SKIP() << "Skipping tests as enabling sub managers bypasses "
+                    "existing OS integration flow";
+  }
   content::BrowserTaskEnvironment task_environment;
 
   // MaybeUnregisterOsUninstall

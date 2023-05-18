@@ -58,6 +58,14 @@ class OsIntegrationManagerTest : public WebAppTest {
 
   ~OsIntegrationManagerTest() override = default;
 
+  void SetUp() override {
+    WebAppTest::SetUp();
+    if (AreSubManagersExecuteEnabled()) {
+      GTEST_SKIP() << "Skipping tests as enabling sub managers bypasses "
+                      "existing OS integration flow";
+    }
+  }
+
  private:
   base::test::ScopedFeatureList features_;
 };
