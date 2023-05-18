@@ -141,6 +141,8 @@ class CORE_EXPORT CSSAnimations final {
   void Trace(Visitor*) const;
 
  private:
+  friend class CSSAnimationsTest;
+
   class RunningAnimation final : public GarbageCollected<RunningAnimation> {
    public:
     RunningAnimation(Animation* animation, NewCSSAnimation new_animation)
@@ -207,6 +209,11 @@ class CORE_EXPORT CSSAnimations final {
     const CSSViewTimelineMap& GetViewTimelines() const {
       return view_timelines_;
     }
+
+    void SetDeferredTimeline(const ScopedCSSName& name, DeferredTimeline*);
+    const CSSDeferredTimelineMap& GetDeferredTimelines() const {
+      return deferred_timelines_;
+    }
     void SetAttachingTimeline(ScrollTimelineAttachment*, ScrollTimeline*);
     ScrollTimeline* GetAttachingTimeline(ScrollTimelineAttachment*);
     const AttachingTimelineMap& GetAttachingTimelines() const {
@@ -214,11 +221,12 @@ class CORE_EXPORT CSSAnimations final {
     }
     bool IsEmpty() const {
       return scroll_timelines_.empty() && view_timelines_.empty() &&
-             attaching_timelines_.empty();
+             deferred_timelines_.empty() && attaching_timelines_.empty();
     }
     void Clear() {
       scroll_timelines_.clear();
       view_timelines_.clear();
+      deferred_timelines_.clear();
       attaching_timelines_.clear();
     }
     void Trace(Visitor*) const;
@@ -226,6 +234,7 @@ class CORE_EXPORT CSSAnimations final {
    private:
     CSSScrollTimelineMap scroll_timelines_;
     CSSViewTimelineMap view_timelines_;
+    CSSDeferredTimelineMap deferred_timelines_;
     AttachingTimelineMap attaching_timelines_;
   };
 
@@ -298,6 +307,9 @@ class CORE_EXPORT CSSAnimations final {
   static void CalculateViewTimelineUpdate(CSSAnimationUpdate&,
                                           Element& animating_element,
                                           const ComputedStyleBuilder&);
+  static void CalculateDeferredTimelineUpdate(CSSAnimationUpdate&,
+                                              Element& animating_element,
+                                              const ComputedStyleBuilder&);
 
   static CSSScrollTimelineMap CalculateChangedScrollTimelines(
       Element& animating_element,
@@ -306,6 +318,10 @@ class CORE_EXPORT CSSAnimations final {
   static CSSViewTimelineMap CalculateChangedViewTimelines(
       Element& animating_element,
       const CSSViewTimelineMap* existing_view_timelines,
+      const ComputedStyleBuilder&);
+  static CSSDeferredTimelineMap CalculateChangedDeferredTimelines(
+      Element& animating_element,
+      const CSSDeferredTimelineMap* existing_deferred_timelines,
       const ComputedStyleBuilder&);
 
   template <typename MapType>

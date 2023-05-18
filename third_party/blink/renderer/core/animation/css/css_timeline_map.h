@@ -12,6 +12,7 @@
 
 namespace blink {
 
+class DeferredTimeline;
 class ScrollTimeline;
 class ViewTimeline;
 class ScrollTimelineAttachment;
@@ -22,6 +23,7 @@ using CSSTimelineMap =
 
 using CSSViewTimelineMap = CSSTimelineMap<ViewTimeline>;
 using CSSScrollTimelineMap = CSSTimelineMap<ScrollTimeline>;
+using CSSDeferredTimelineMap = CSSTimelineMap<DeferredTimeline>;
 
 using AttachingTimelineMap =
     HeapHashMap<Member<ScrollTimelineAttachment>, Member<ScrollTimeline>>;
