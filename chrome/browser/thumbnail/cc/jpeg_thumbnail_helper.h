@@ -35,7 +35,7 @@ class JpegThumbnailHelper {
   // JpegThumbnailHelper.
   void Write(thumbnail::TabId tab_id,
              std::vector<uint8_t> compressed_data,
-             base::OnceClosure post_write_task);
+             base::OnceCallback<void(bool)> post_write_task);
 
   // `post_read_task` will run on the thread that created this
   // JpegThumbnailHelper.

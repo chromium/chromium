@@ -90,12 +90,14 @@ TEST_F(ThumbnailCacheTest, PruneCache) {
                                      -1);
   EXPECT_TRUE(thumbnail_cache().CheckAndUpdateThumbnailMetaData(
       kTabId1, GURL("https://www.foo.com/")));
-  thumbnail_cache().Put(kTabId1, bitmap,
+  auto tracker1 = std::make_unique<ThumbnailCaptureTracker>(base::DoNothing());
+  thumbnail_cache().Put(kTabId1, std::move(tracker1), bitmap,
                         /*thumbnail_scale=*/1.0f, kJpegAspectRatio);
 
   EXPECT_TRUE(thumbnail_cache().CheckAndUpdateThumbnailMetaData(
       kTabId2, GURL("https://www.bar.com/")));
-  thumbnail_cache().Put(kTabId2, bitmap,
+  auto tracker2 = std::make_unique<ThumbnailCaptureTracker>(base::DoNothing());
+  thumbnail_cache().Put(kTabId2, std::move(tracker2), bitmap,
                         /*thumbnail_scale=*/1.0f, kJpegAspectRatio);
 
   EXPECT_TRUE(thumbnail_cache().Get(kTabId1, false, false));
@@ -136,7 +138,8 @@ TEST_F(ThumbnailCacheTest, MetricsEmission) {
   thumbnail_cache().UpdateVisibleIds(std::vector<TabId>({kTabId}), -1);
   EXPECT_TRUE(thumbnail_cache().CheckAndUpdateThumbnailMetaData(
       kTabId, GURL("https://www.foo.com/")));
-  thumbnail_cache().Put(kTabId, bitmap,
+  auto tracker = std::make_unique<ThumbnailCaptureTracker>(base::DoNothing());
+  thumbnail_cache().Put(kTabId, std::move(tracker), bitmap,
                         /*thumbnail_scale=*/1.0f, kJpegAspectRatio);
   RecordCacheMetrics();
 

@@ -113,7 +113,13 @@ TEST_F(JpegThumbnailHelperTest, WriteThumbnail) {
 
   // Write the image
   base::RunLoop loop1;
-  GetInterface().Write(tab_id, data, loop1.QuitClosure());
+  GetInterface().Write(tab_id, data,
+                       base::BindOnce(
+                           [](base::OnceClosure quit, bool success) {
+                             EXPECT_TRUE(success);
+                             std::move(quit).Run();
+                           },
+                           loop1.QuitClosure()));
   task_environment_.RunUntilIdle();
   loop1.Run();
 
