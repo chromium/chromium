@@ -258,9 +258,17 @@ IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest,
   WaitForAppLaunchSuccess();
 }
 
+// TODO(crbug.com/1446486): Flaky on Chrome OS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_LaunchingAppThatRequiresNetworkWhilstOfflineShouldShowNetworkScreen \
+  DISABLED_LaunchingAppThatRequiresNetworkWhilstOfflineShouldShowNetworkScreen
+#else
+#define MAYBE_LaunchingAppThatRequiresNetworkWhilstOfflineShouldShowNetworkScreen \
+  LaunchingAppThatRequiresNetworkWhilstOfflineShouldShowNetworkScreen
+#endif
 IN_PROC_BROWSER_TEST_F(
     KioskEnterpriseTest,
-    LaunchingAppThatRequiresNetworkWhilstOfflineShouldShowNetworkScreen) {
+    MAYBE_LaunchingAppThatRequiresNetworkWhilstOfflineShouldShowNetworkScreen) {
   ScopedCanConfigureNetwork can_configure_network(true);
 
   // Start app launch with network portal state.
