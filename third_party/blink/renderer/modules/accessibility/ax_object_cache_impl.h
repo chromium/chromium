@@ -371,10 +371,6 @@ class MODULES_EXPORT AXObjectCacheImpl
                            const String,
                            const AriaNotificationOptions*) override;
 
-  // Counts the number of times the document has been modified. Some attribute
-  // values are cached as long as the modification count hasn't changed.
-  int ModificationCount() const { return modification_count_; }
-
   void PostNotification(const LayoutObject*, ax::mojom::blink::Event);
   // Creates object if necessary.
   void EnsurePostNotification(Node*, ax::mojom::blink::Event);
@@ -716,7 +712,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   HeapHashMap<Member<const Node>, AXID> node_object_mapping_;
   HeapHashMap<Member<NGAbstractInlineTextBox>, AXID>
       inline_text_box_object_mapping_;
-  int modification_count_;
 
   // Used for a mock AXObject representing the message displayed in the
   // validation message bubble.

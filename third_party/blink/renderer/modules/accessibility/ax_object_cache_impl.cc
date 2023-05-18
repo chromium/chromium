@@ -677,7 +677,6 @@ AXObjectCacheImpl::AXObjectCacheImpl(Document& document,
                                      const ui::AXMode& ax_mode)
     : document_(document),
       ax_mode_(ax_mode),
-      modification_count_(0),
       validation_message_axid_(0),
       active_aria_modal_dialog_(nullptr),
       relation_cache_(std::make_unique<AXRelationCache>(this)),
@@ -3827,18 +3826,12 @@ void AXObjectCacheImpl::MarkDocumentDirty() {
   // Note that objects can remain in the tree without being re-created.
   // However, they will be dropped if they are no longer needed as the tree
   // structure is rebuilt from the top down.
-  // TODO(accessibility) This doesn't happen very often, so we could decide to
-  // just call AXObject::InvalidateCachedValues() on every object manually,
-  // either by calling InvalidateCachedValuesOnSubtreeWithCleanLayout(), or
-  // iterating through objects_, which would be the simplest.
-  // In that case, we can remove modification_count_ and instead rely on a
-  // boolean in each object..
-  if (++modification_count_ < 0) {
-    // Protect against possible wrap around, because it's important to avoid
-    // becoming -1, which is the default value for a new AXObject, as well as an
-    // AXObject that has had its last_modification_count_ reset.
-    modification_count_ = 0;
+  for (auto& entry : objects_) {
+    AXObject* object = entry.value;
+    DCHECK(!object->IsDetached());
+    object->InvalidateCachedValues();
   }
+
   ScheduleAXUpdate();
 }
 

@@ -325,7 +325,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // To instead invalidate on all objects in a subtree, call
   // AXObjectCacheImpl::InvalidateCachedValuesOnSubtree().
   void InvalidateCachedValues();
-  bool NeedsToUpdateCachedValues() const;
 
   // The AXObjectCacheImpl that owns this object, and its unique ID within this
   // cache.
@@ -1512,7 +1511,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool ComputeCanSetFocusAttribute() const;
   String KeyboardShortcut() const;
 
-  mutable int last_modification_count_;
+  // Do the rest of the cached_* member variables need to be recomputed?
+  mutable bool cached_values_need_update_ : 1;
 
   // The following cached attribute values (the ones starting with m_cached*)
   // are only valid if last_modification_count_ matches

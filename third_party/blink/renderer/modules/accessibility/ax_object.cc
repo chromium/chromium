@@ -579,7 +579,7 @@ AXObject::AXObject(AXObjectCacheImpl& ax_object_cache)
       parent_(nullptr),
       role_(ax::mojom::blink::Role::kUnknown),
       explicit_container_id_(0),
-      last_modification_count_(-1),
+      cached_values_need_update_(true),
       cached_is_ignored_(false),
       cached_is_ignored_but_included_in_tree_(false),
       cached_is_inert_(false),
@@ -2947,16 +2947,14 @@ bool AXObject::AccessibilityIsIncludedInTree() const {
 }
 
 void AXObject::InvalidateCachedValues() {
+  // TODO(accessibility) Try to add DCHECK that layout is not clean, that the
+  // cache is not frozen, and the the cache is not processing deferred events.
 #if DCHECK_IS_ON()
   DCHECK(!is_updating_cached_values_)
       << "Should not invalidate cached values while updating them.";
 #endif
 
-  last_modification_count_ = -1;
-}
-
-bool AXObject::NeedsToUpdateCachedValues() const {
-  return AXObjectCache().ModificationCount() != last_modification_count_;
+  cached_values_need_update_ = true;
 }
 
 void AXObject::UpdateCachedAttributeValuesIfNeeded(
@@ -2967,13 +2965,11 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     return;
   }
 
-  AXObjectCacheImpl& cache = AXObjectCache();
-
-  if (!NeedsToUpdateCachedValues()) {
+  if (!cached_values_need_update_) {
     return;
   }
 
-  last_modification_count_ = cache.ModificationCount();
+  cached_values_need_update_ = false;
 
 #if DCHECK_IS_ON()  // Required in order to get Lifecycle().ToString()
   DCHECK(!is_computing_role_)
@@ -3112,7 +3108,8 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
         GetLayoutObject()->LocalBoundingBoxRectForAccessibility();
   }
 
-  DCHECK(!NeedsToUpdateCachedValues());
+  DCHECK(!cached_values_need_update_)
+      << "While recomputing cached values, they were invalidated again.";
 }
 
 bool AXObject::ComputeAccessibilityIsIgnored(
@@ -3122,8 +3119,7 @@ bool AXObject::ComputeAccessibilityIsIgnored(
 
 bool AXObject::ShouldIgnoreForHiddenOrInert(
     IgnoredReasons* ignored_reasons) const {
-  DCHECK(AXObjectCache().ModificationCount() == last_modification_count_)
-      << "Hidden values must be computed before ignored.";
+  DCHECK(!cached_values_need_update_);
 
   // All nodes must have an unignored parent within their tree under
   // the root node of the web area, so force that node to always be unignored.
@@ -7321,7 +7317,7 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
     if (!GetDocument())
       string_builder = string_builder + " missingDocument";
 
-    if (NeedsToUpdateCachedValues()) {
+    if (cached_values_need_update_) {
       string_builder = string_builder + " needsToUpdateCachedValues";
     }
 
