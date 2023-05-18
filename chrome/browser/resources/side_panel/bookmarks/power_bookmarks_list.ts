@@ -309,12 +309,12 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   onBookmarkChanged(id: string, changedInfo: chrome.bookmarks.ChangeInfo) {
-    Object.keys(changedInfo).forEach(key => {
-      const visibleIndex = this.visibleIndex_(id);
-      if (visibleIndex > -1) {
+    const visibleIndex = this.visibleIndex_(id);
+    if (visibleIndex > -1) {
+      Object.keys(changedInfo).forEach(key => {
         this.notifyPath(`shownBookmarks_.${visibleIndex}.${key}`);
-      }
-    });
+      });
+    }
     this.updateShoppingData_();
   }
 
@@ -533,21 +533,19 @@ export class PowerBookmarksListElement extends PolymerElement {
     }
   }
 
-  private getBookmarkMenuA11yLabel_(
-      bookmark: chrome.bookmarks.BookmarkTreeNode): string {
-    if (bookmark.url) {
-      return loadTimeData.getStringF('bookmarkMenuLabel', bookmark.title);
+  private getBookmarkMenuA11yLabel_(url: string, title: string): string {
+    if (url) {
+      return loadTimeData.getStringF('bookmarkMenuLabel', title);
     } else {
-      return loadTimeData.getStringF('folderMenuLabel', bookmark.title);
+      return loadTimeData.getStringF('folderMenuLabel', title);
     }
   }
 
-  private getBookmarkAllyLabel_(bookmark: chrome.bookmarks.BookmarkTreeNode):
-      string {
-    if (bookmark.url) {
-      return loadTimeData.getStringF('openBookmarkLabel', bookmark.title);
+  private getBookmarkA11yLabel_(url: string, title: string): string {
+    if (url) {
+      return loadTimeData.getStringF('openBookmarkLabel', title);
     } else {
-      return loadTimeData.getStringF('openFolderLabel', bookmark.title);
+      return loadTimeData.getStringF('openFolderLabel', title);
     }
   }
 
