@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "ui/aura/window.h"
 #include "ui/events/base_event_utils.h"
