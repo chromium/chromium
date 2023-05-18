@@ -841,6 +841,7 @@ component("platform") {
     "graphics/compositor_mutator_client.cc",
     "graphics/compositor_mutator_client.h",
     "graphics/cpu/arm/webgl_image_conversion_neon.h",
+    "graphics/cpu/loongarch64/webgl_image_conversion_lsx.h",
     "graphics/cpu/mips/webgl_image_conversion_msa.h",
     "graphics/cpu/x86/webgl_image_conversion_sse.h",
     "graphics/crossfade_generated_image.cc",
@@ -1577,6 +1578,10 @@ component("platform") {
     if (get_path_info(_output, "extension") != "pickle") {
       sources += [ _output ]
     }
+  }
+
+  if (current_cpu == "loong64") {
+      cflags = [ "-mlsx", "-flax-vector-conversions" ]
   }
 
   if (is_apple) {
