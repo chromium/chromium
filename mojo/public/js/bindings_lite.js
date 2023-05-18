@@ -923,16 +923,13 @@ mojo.internal.Decoder = class {
 
     const result = {};
     for (const field of structSpec.fields) {
-      if (field.minVersion > version) {
-        result[field.name] = field.defaultValue;
-        continue;
-      }
-
+      // Decode an optional numeric pair into a single
+      // field.
       if (mojo.internal.isNullableValueKindField(field)) {
-        // Decode an optional numeric pair into a single
-        // field.
         const props = field.nullableValueKindProperties;
-        if (props.isPrimary) {
+        if (props.isPrimary && field.minVersion > version) {
+          result[props.originalFieldName] = null;
+        } else if (props.isPrimary) {
           const hasValue = decodeStructField(field);
           // If the field is null, set it here. If it isn't,
           // the value will be decoded as part of decoding
@@ -951,6 +948,10 @@ mojo.internal.Decoder = class {
         continue;
       }
 
+      if (field.minVersion > version) {
+        result[field.name] = field.defaultValue;
+        continue;
+      }
       result[field.name] = decodeStructField(field);
     }
 
