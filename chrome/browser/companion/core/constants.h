@@ -14,6 +14,7 @@ const char kSigninPromoDeclinedCountPref[] =
     "Companion.Promo.Signin.Declined.Count";
 const char kExpsPromoDeclinedCountPref[] =
     "Companion.Promo.Exps.Declined.Count";
+const char kExpsPromoShownCountPref[] = "Companion.Promo.Exps.Shown.Count";
 
 // Pref name for storing experience opt-in status.
 const char kExpsOptInStatusGrantedPref[] =

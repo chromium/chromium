@@ -174,6 +174,8 @@ TEST_F(CompanionUrlBuilderTest, MsbbOff) {
 TEST_F(CompanionUrlBuilderTest, MsbbOn) {
   EXPECT_CALL(signin_delegate_, IsSignedIn())
       .WillRepeatedly(testing::Return(true));
+  pref_service_.SetUserPref(kExpsPromoShownCountPref, base::Value(2));
+
   GURL page_url(kValidUrl);
   GURL companion_url = url_builder_->BuildCompanionURL(page_url);
 
@@ -207,6 +209,7 @@ TEST_F(CompanionUrlBuilderTest, MsbbOn) {
   EXPECT_EQ(1, proto.promo_state().signin_promo_denial_count());
   EXPECT_EQ(0, proto.promo_state().msbb_promo_denial_count());
   EXPECT_EQ(0, proto.promo_state().exps_promo_denial_count());
+  EXPECT_EQ(2, proto.promo_state().exps_promo_shown_count());
 }
 
 TEST_F(CompanionUrlBuilderTest, NonProtobufParams) {
