@@ -41,11 +41,11 @@ if (sysroot == "") {
     } else if (current_cpu == "x86") {
       sysroot = "$target_sysroot_dir/debian_bullseye_i386-sysroot"
     } else if (current_cpu == "mipsel") {
-      sysroot = "$target_sysroot_dir/debian_bullseye_mips-sysroot"
+      sysroot = "$target_sysroot_dir/debian_bullseye_mipsel-sysroot"
     } else if (current_cpu == "mips64el") {
       sysroot = "$target_sysroot_dir/debian_bullseye_mips64el-sysroot"
     } else if (current_cpu == "arm") {
-      sysroot = "$target_sysroot_dir/debian_bullseye_arm-sysroot"
+      sysroot = "$target_sysroot_dir/debian_bullseye_armhf-sysroot"
     } else if (current_cpu == "arm64") {
       sysroot = "$target_sysroot_dir/debian_bullseye_arm64-sysroot"
     } else {
