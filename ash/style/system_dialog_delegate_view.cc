@@ -229,6 +229,11 @@ void SystemDialogDelegateView::SetDescription(
   description_->SetVisible(!description.empty());
 }
 
+void SystemDialogDelegateView::SetDescriptionAccessibleName(
+    const std::u16string& accessible_name) {
+  description_->SetAccessibleName(accessible_name);
+}
+
 void SystemDialogDelegateView::SetAcceptButtonText(
     const std::u16string& accept_text) {
   button_container_->SetAcceptText(accept_text);

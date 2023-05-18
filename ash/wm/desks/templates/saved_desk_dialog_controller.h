@@ -23,8 +23,6 @@ class Window;
 
 namespace ash {
 
-class SavedDeskDialog;
-
 // SavedDeskDialogController controls when to show the various confirmation
 // dialogs for modifying saved desks.
 class ASH_EXPORT SavedDeskDialogController : public views::WidgetObserver {
@@ -65,7 +63,7 @@ class ASH_EXPORT SavedDeskDialogController : public views::WidgetObserver {
 
  private:
   // Creates and shows the dialog on `root_window`.
-  void CreateDialogWidget(std::unique_ptr<SavedDeskDialog> dialog,
+  void CreateDialogWidget(std::unique_ptr<views::WidgetDelegate> dialog,
                           aura::Window* root_window);
 
   // Returns true if a dialog can be shown.
