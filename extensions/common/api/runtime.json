@@ -328,12 +328,12 @@
       {
         "name": "setUninstallURL",
         "type": "function",
-        "description": "Sets the URL to be visited upon uninstallation. This may be used to clean up server-side data, do analytics, and implement surveys. Maximum 255 characters.",
+        "description": "Sets the URL to be visited upon uninstallation. This may be used to clean up server-side data, do analytics, and implement surveys. Maximum 1023 characters.",
         "parameters": [
           {
             "type": "string",
             "name": "url",
-            "maxLength": 255,
+            "maxLength": 1023,
             "description": "URL to be opened after the extension is uninstalled. This URL must have an http: or https: scheme. Set an empty string to not open a new tab upon uninstallation."
           }
         ],
