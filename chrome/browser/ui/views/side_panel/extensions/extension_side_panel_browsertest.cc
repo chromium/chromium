@@ -1219,16 +1219,38 @@ class ExtensionOpenSidePanelBrowserTest : public ExtensionSidePanelBrowserTest {
     return extension;
   }
 
-  void RunOpenPanel(const Extension& extension, int tab_id) {
+  void RunOpenPanelForTab(const Extension& extension, int tab_id) {
+    RunOpenPanel(extension, tab_id, /*window_id=*/absl::nullopt);
+  }
+  void RunOpenPanelForWindow(const Extension& extension, int window_id) {
+    RunOpenPanel(extension, /*tab_id=*/absl::nullopt, window_id);
+  }
+
+  int GetCurrentWindowId() { return ExtensionTabUtil::GetWindowId(browser()); }
+
+ private:
+  void RunOpenPanel(const Extension& extension,
+                    absl::optional<int> tab_id,
+                    absl::optional<int> window_id) {
     auto function = base::MakeRefCounted<SidePanelOpenFunction>();
     function->set_extension(&extension);
-    std::string args = base::StringPrintf(R"([{"tabId": %d}])", tab_id);
+
+    base::Value::Dict options;
+    if (tab_id) {
+      options.Set("tabId", *tab_id);
+    }
+    if (window_id) {
+      options.Set("windowId", *window_id);
+    }
+    std::string args_str;
+    base::JSONWriter::Write(base::Value::List().Append(std::move(options)),
+                            &args_str);
     function->set_user_gesture(true);
-    EXPECT_TRUE(api_test_utils::RunFunction(function.get(), args, profile()))
+    EXPECT_TRUE(
+        api_test_utils::RunFunction(function.get(), args_str, profile()))
         << function->GetError();
   }
 
- private:
   std::vector<TestExtensionDir> test_dirs_;
 };
 
@@ -1244,7 +1266,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
 
   EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
   // Run `sidePanel.open()`. The panel should open.
-  RunOpenPanel(*extension, GetCurrentTabId());
+  RunOpenPanelForTab(*extension, GetCurrentTabId());
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelEntryShowing(
       GetKey(extension->id())));
 }
@@ -1269,7 +1291,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
   EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
 
   // Open the side panel on the original tab.
-  RunOpenPanel(*extension, tab_id);
+  RunOpenPanelForTab(*extension, tab_id);
 
   // Because it's a global side panel, it should be displaying in both the
   // original and the new tab.
@@ -1295,7 +1317,7 @@ IN_PROC_BROWSER_TEST_F(
             side_panel_coordinator()->GetCurrentEntryId());
 
   // Call `sidePanel.open()` on the current tab.
-  RunOpenPanel(*extension, GetCurrentTabId());
+  RunOpenPanelForTab(*extension, GetCurrentTabId());
 
   // The extension side panel should be able to override the currently-open
   // side panel.
@@ -1324,7 +1346,7 @@ IN_PROC_BROWSER_TEST_F(
             side_panel_coordinator()->GetCurrentEntryId());
 
   // Call `sidePanel.open()` on the inactive tab.
-  RunOpenPanel(*extension, first_tab_id);
+  RunOpenPanelForTab(*extension, first_tab_id);
 
   // Even though the tab ID provided was for an inactive tab, the extension side
   // panel should be able to override the currently-open side panel in the
@@ -1355,7 +1377,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
   RunSetOptions(*extension, new_tab_id, "panel.html", /*enabled=*/true);
 
   // Call `sidePanel.open()` on the current tab.
-  RunOpenPanel(*extension, GetCurrentTabId());
+  RunOpenPanelForTab(*extension, GetCurrentTabId());
 
   // The contextual side panel should show on the current tab.
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelEntryShowing(
@@ -1403,7 +1425,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Now, run `sidePanel.open()` from the first extension. This is a global
   // panel, and shouldn't override the current tab's contextual panel.
-  RunOpenPanel(*extension1, first_tab_id);
+  RunOpenPanelForTab(*extension1, first_tab_id);
   EXPECT_TRUE(
       side_panel_coordinator()->IsSidePanelEntryShowing(extension2_key));
 
@@ -1443,14 +1465,14 @@ IN_PROC_BROWSER_TEST_F(
   // Show the contextual entry for the second extension on the inactive (first)
   // tab. The panel shouldn't be displayed on the active tab since it's
   // contextual.
-  RunOpenPanel(*extension2, first_tab_id);
+  RunOpenPanelForTab(*extension2, first_tab_id);
   EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
 
   // Now, run `sidePanel.open()` from the first extension on the inactive
   // (first) tab. Even though this is a global side panel, in this case, it
   // *should* override the contextual panel because the tab ID was explicitly
   // specified.
-  RunOpenPanel(*extension1, first_tab_id);
+  RunOpenPanelForTab(*extension1, first_tab_id);
 
   // As a result, the panel should be showing on the active tab (since it's
   // global)...
@@ -1492,7 +1514,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
 
   // Now, run `sidePanel.open()` from the first extension. This should override
   // the current (contextual) panel since the active tab ID was provided.
-  RunOpenPanel(*extension1, current_tab_id);
+  RunOpenPanelForTab(*extension1, current_tab_id);
   EXPECT_TRUE(
       side_panel_coordinator()->IsSidePanelEntryShowing(extension1_key));
 }
@@ -1514,7 +1536,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
   RunSetOptions(*extension, first_tab_id, "panel.html", true);
 
   // Call `sidePanel.open()` on the first tab.
-  RunOpenPanel(*extension, first_tab_id);
+  RunOpenPanelForTab(*extension, first_tab_id);
 
   // The contextual side panel should not show on the current tab.
   EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
@@ -1525,8 +1547,126 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
       GetKey(extension->id())));
 }
 
-// TODO(https://crbug.com/1446022): Add tests for:
-// * Specifying `windowId` in `sidePanel.open()`.
+// Tests calling `sidePanel.open()` with a given window ID will open the
+// side panel in that window when there is no active side panel.
+IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
+                       OpenSidePanel_WindowId_OpenWithNoActivePanel) {
+  const Extension* extension = LoadSidePanelExtension();
+  ASSERT_TRUE(extension);
+  // Register a global side panel.
+  RunSetOptions(*extension, /*tab_id=*/absl::nullopt, "panel.html",
+                /*enabled=*/true);
+
+  EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
+  // Run `sidePanel.open()`. The panel should open.
+  RunOpenPanelForWindow(*extension, GetCurrentWindowId());
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelEntryShowing(
+      GetKey(extension->id())));
+}
+
+// Tests calling `sidePanel.open()` with a given window ID will override an
+// active global side panel in that window.
+IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
+                       OpenSidePanel_WindowId_OverridesActiveGlobalPanel) {
+  const Extension* extension = LoadSidePanelExtension();
+  ASSERT_TRUE(extension);
+  // Register a global side panel.
+  RunSetOptions(*extension, /*tab_id=*/absl::nullopt, "panel.html",
+                /*enabled=*/true);
+
+  // Open a different global side panel (reading list).
+  ShowEntryAndWait(SidePanelEntry::Key(SidePanelEntry::Id::kReadingList));
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelEntryShowing(
+      SidePanelEntryKey(SidePanelEntry::Id::kReadingList)));
+
+  // Call `sidePanel.open()` on the current tab.
+  RunOpenPanelForWindow(*extension, GetCurrentWindowId());
+
+  // The extension side panel should be able to override the currently-open
+  // side panel.
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelEntryShowing(
+      GetKey(extension->id())));
+}
+
+// Tests calling `sidePanel.open()` with a given window ID will not override an
+// active contextual panel.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionOpenSidePanelBrowserTest,
+    OpenSidePanel_WindowId_DoesNotOverrideActiveContextualPanel) {
+  // Load two side panel extensions.
+  const Extension* extension1 = LoadSidePanelExtension();
+  ASSERT_TRUE(extension1);
+  const Extension* extension2 = LoadSidePanelExtension();
+  ASSERT_TRUE(extension2);
+
+  OpenNewForegroundTab();
+  int second_tab_id = GetCurrentTabId();
+
+  // Register a global side panel in the first extension.
+  RunSetOptions(*extension1, /*tab_id=*/absl::nullopt, "panel.html",
+                /*enabled=*/true);
+  // Register a contextual side panel in the second extension.
+  RunSetOptions(*extension2, second_tab_id, "panel.html", /*enabled=*/true);
+
+  SidePanelEntry::Key extension1_key = GetKey(extension1->id());
+  SidePanelEntry::Key extension2_key = GetKey(extension2->id());
+
+  // Show the contextual entry for the second extension on the active tab.
+  ShowContextualEntryAndWait(extension2_key);
+  EXPECT_TRUE(
+      side_panel_coordinator()->IsSidePanelEntryShowing(extension2_key));
+
+  // Now, run `sidePanel.open()` from the first extension. This is a global
+  // panel, and shouldn't override the current tab's contextual panel.
+  RunOpenPanelForWindow(*extension1, GetCurrentWindowId());
+  EXPECT_TRUE(
+      side_panel_coordinator()->IsSidePanelEntryShowing(extension2_key));
+
+  // However, the global panel of the first extension should be displayed in
+  // the other tab.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_TRUE(
+      side_panel_coordinator()->IsSidePanelEntryShowing(extension1_key));
+}
+
+// Tests calling `sidePanel.open()` with a given window ID will not override an
+// inactive contextual panel.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionOpenSidePanelBrowserTest,
+    OpenSidePanel_WindowId_DoesNotOverrideInactiveContextualPanel) {
+  // Load two side panel extensions.
+  const Extension* extension1 = LoadSidePanelExtension();
+  ASSERT_TRUE(extension1);
+  const Extension* extension2 = LoadSidePanelExtension();
+  ASSERT_TRUE(extension2);
+
+  int first_tab_id = GetCurrentTabId();
+  OpenNewForegroundTab();
+
+  // Register a global side panel in the first extension.
+  RunSetOptions(*extension1, /*tab_id=*/absl::nullopt, "panel.html",
+                /*enabled=*/true);
+  // Register a contextual side panel in the second extension.
+  RunSetOptions(*extension2, first_tab_id, "panel.html", /*enabled=*/true);
+
+  SidePanelEntry::Key extension1_key = GetKey(extension1->id());
+  SidePanelEntry::Key extension2_key = GetKey(extension2->id());
+
+  // Show the contextual entry for the second extension on the inactive tab.
+  RunOpenPanelForTab(*extension2, first_tab_id);
+
+  // Now, run `sidePanel.open()` from the first extension. This is a global
+  // panel, and shouldn't override the inactive tab's contextual panel, but
+  // it should be displayed in the active tab.
+  RunOpenPanelForWindow(*extension1, GetCurrentWindowId());
+  EXPECT_TRUE(
+      side_panel_coordinator()->IsSidePanelEntryShowing(extension1_key));
+
+  // The first tab should still show the contextual panel.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_TRUE(
+      side_panel_coordinator()->IsSidePanelEntryShowing(extension2_key));
+}
 
 // TODO(crbug.com/1378048): Add a test here which requires a browser in
 // ExtensionViewHost for both global and contextual extension entries. One

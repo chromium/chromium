@@ -26,13 +26,15 @@ void CreateSidePanelManagerForWebContents(Profile* profile,
 void ToggleExtensionSidePanel(Browser* browser,
                               const ExtensionId& extension_id);
 
-// Opens the global side panel for the given `extension_id` in `browser` for
-// `web_contents`. This may not immediately show the side panel if
-// `web_contents` is not the active tab and the active tab has an open
-// contextual panel. No-op (and safe to call) if the panel is already open.
+// Opens the global side panel for the given `extension_id` in `browser`.
+// If `web_contents` is specified, this will close any active side panel in
+// `web_contents`; otherwise, this will not override any contextual side panels.
+// This may not immediately show the side panel if `web_contents` is not the
+// active tab and the active tab has an open contextual panel. No-op (and safe
+// to call) if the panel is already open.
 // Implemented by extension_side_panel_utils.cc in views/.
 void OpenGlobalExtensionSidePanel(Browser& browser,
-                                  content::WebContents& web_contents,
+                                  content::WebContents* web_contents,
                                   const ExtensionId& extension_id);
 
 // Opens a contextual side panel for the given `extension_id` in `browser` for

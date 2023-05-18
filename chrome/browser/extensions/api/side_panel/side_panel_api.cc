@@ -92,9 +92,23 @@ ExtensionFunction::ResponseAction SidePanelOpenFunction::RunFunction() {
       api::side_panel::Open::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
+  if (!params->options.tab_id && !params->options.window_id) {
+    return RespondNow(
+        Error("At least one of `tabId` and `windowId` must be provided"));
+  }
+
   SidePanelService* service = GetService();
-  base::expected<bool, std::string> open_panel_result = service->OpenSidePanel(
-      *extension(), params->options.tab_id, include_incognito_information());
+  base::expected<bool, std::string> open_panel_result;
+  if (params->options.tab_id) {
+    open_panel_result = service->OpenSidePanelForTab(
+        *extension(), *params->options.tab_id, params->options.window_id,
+        include_incognito_information());
+  } else {
+    CHECK(params->options.window_id);
+    open_panel_result = service->OpenSidePanelForWindow(
+        *extension(), *params->options.window_id,
+        include_incognito_information());
+  }
 
   if (!open_panel_result.has_value()) {
     return RespondNow(Error(std::move(open_panel_result.error())));

@@ -37,7 +37,7 @@ void ToggleExtensionSidePanel(Browser* browser,
 
 // Declared in extension_side_panel_utils.h
 void OpenGlobalExtensionSidePanel(Browser& browser,
-                                  content::WebContents& web_contents,
+                                  content::WebContents* web_contents,
                                   const ExtensionId& extension_id) {
   SidePanelCoordinator* coordinator =
       BrowserView::GetBrowserViewForBrowser(&browser)->side_panel_coordinator();
@@ -48,7 +48,7 @@ void OpenGlobalExtensionSidePanel(Browser& browser,
       browser.tab_strip_model()->GetActiveWebContents();
   // If we're opening the side panel for the active tab, we can just call
   // `Show()` and be done with it.
-  if (active_web_contents == &web_contents) {
+  if (web_contents && active_web_contents == web_contents) {
     coordinator->Show(extension_key);
     return;
   }
@@ -57,14 +57,16 @@ void OpenGlobalExtensionSidePanel(Browser& browser,
   // little complex because only extensions have this functionality. We could
   // move more of this logic into the SidePanelCoordinator if it makes sense to
   // in the future.
-  // First, check if there is an open contextual panel in the specified tab. If
-  // there is one, we need to reset it so that we can show the global entry
-  // instead.
-  SidePanelRegistry* contextual_registry =
-      SidePanelRegistry::Get(&web_contents);
-  CHECK(contextual_registry);
-  if (contextual_registry->active_entry()) {
-    contextual_registry->ResetActiveEntry();
+  if (web_contents) {
+    // First, if there was a tab specified, check if there is an open
+    // contextual panel in that tab. If there is one, we need to reset it so
+    // that we can show the global entry instead.
+    SidePanelRegistry* contextual_registry =
+        SidePanelRegistry::Get(web_contents);
+    CHECK(contextual_registry);
+    if (contextual_registry && contextual_registry->active_entry()) {
+      contextual_registry->ResetActiveEntry();
+    }
   }
 
   // If the side panel isn't showing on the active tab, we can show the new
