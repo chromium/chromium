@@ -381,6 +381,7 @@ crbug.com/1382332 [ android-pixel-4 android-r no-clang-coverage qualcomm rendere
 crbug.com/1382332 [ fuchsia ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ linux nvidia-0x2184 passthrough debug angle-vulkan ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ linux nvidia-0x2184 passthrough debug angle-vulkan ] Pixel_MediaRecorderFromVideoElement [ Failure ]
+crbug.com/1382332 [ linux intel-0x9bc5 passthrough release angle-vulkan ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
 # Pixel_MediaRecorderFromVideoElement flakes on several Linux/Lacros FYI bots
 crbug.com/1382332 [ linux release renderer-skia-vulkan intel-0x9bc5 ] Pixel_MediaRecorderFromVideoElement [ RetryOnFailure ]
