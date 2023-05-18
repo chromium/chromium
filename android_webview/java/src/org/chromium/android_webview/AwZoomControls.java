@@ -12,7 +12,10 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.android_webview.common.Lifetime;
+
 // This class is visible purely for tests.
+@Lifetime.WebView
 public class AwZoomControls {
     private AwContents mAwContents;
     // It is advised to use getZoomController() where possible.

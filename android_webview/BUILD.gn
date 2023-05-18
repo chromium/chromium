@@ -768,6 +768,7 @@ android_library("common_java") {
     "java/src/org/chromium/android_webview/common/DeveloperModeUtils.java",
     "java/src/org/chromium/android_webview/common/Flag.java",
     "java/src/org/chromium/android_webview/common/FlagOverrideHelper.java",
+    "java/src/org/chromium/android_webview/common/Lifetime.java",
     "java/src/org/chromium/android_webview/common/ProductionSupportedFlagList.java",
     "java/src/org/chromium/android_webview/common/SafeModeAction.java",
     "java/src/org/chromium/android_webview/common/SafeModeController.java",
