@@ -3746,7 +3746,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4193575319002689239">Prikaži kartice</translation>
 <translation id="4193836101014293726">Nije moguće izbrisati ovaj profil</translation>
 <translation id="419427585139779713">Unesite slog po slog</translation>
-<translation id="4194570336751258953">Omogući funkciju Dodirni za klik</translation>
+<translation id="4194570336751258953">Omogući dodir za klik</translation>
 <translation id="4195378859392041564">Mišem kliknite na bilo koju tipku, a zatim pritisnite neku tipku tastature da je prilagodite</translation>
 <translation id="4195421689821407315">Nesigurno preuzimanje</translation>
 <translation id="4195643157523330669">Otvori u novoj kartici</translation>
@@ -9392,7 +9392,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="9166253503936244008">Skenirajte ovaj QR kôd uređajem koji ima pristupni ključ koji želite koristiti za aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="9167063903968449027">Prikaži Listu za čitanje</translation>
 <translation id="9167450455589251456">Profil nije podržan</translation>
-<translation id="9168436347345867845">Uradit ću to kasnije</translation>
+<translation id="9168436347345867845">Ostavi za kasnije</translation>
 <translation id="9169496697824289689">Prikaži prečice na tastaturi</translation>
 <translation id="916964310188958970">Zbog čega ovaj prijedlog?</translation>
 <translation id="9170048603158555829">Thunderbolt</translation>

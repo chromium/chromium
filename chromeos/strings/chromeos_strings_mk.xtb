@@ -69,7 +69,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> управува со корисников и може оддалеку да управува со поставките и да ја набљудува неговата активност.</translation>
 <translation id="150962533380566081">Погрешен PUK.</translation>
 <translation id="1510238584712386396">Стартер</translation>
-<translation id="1526389707933164996">Анимација за заштитникот на екранот</translation>
+<translation id="1526389707933164996">Анимација за штедачот на екранот</translation>
 <translation id="152892567002884378">Зголемете ја јачината на звукот</translation>
 <translation id="1555130319947370107">Сина</translation>
 <translation id="155865706765934889">Подлога за допир</translation>
@@ -77,7 +77,7 @@
 <translation id="1565038567006703504">Не може да се ажурира <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Албуми</translation>
 <translation id="1572585716423026576">Постави како тапет</translation>
-<translation id="1578784163189013834">Изберете заднина за заштитникот на екранот</translation>
+<translation id="1578784163189013834">Изберете заднина за штедачот на екранот</translation>
 <translation id="160633243685262989">Прегледајте ја сликата</translation>
 <translation id="1615335640928990664">Потрошен интернет од <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Изврши тест за наполнетост</translation>
@@ -144,7 +144,7 @@
 <translation id="2011174342667534258">Верзија на SDK:</translation>
 <translation id="2016697457005847575">Пробајте ги чекорите за решавање проблеми</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2047316797244836561">Поврзете се на мрежа и повторно вчитајте ја страницата за да се прикаже заштитникот на екранот.</translation>
+<translation id="2047316797244836561">Поврзете се на мрежа и повторно вчитајте ја страницата за да се прикаже штедачот на екранот.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Повеќе поставки</translation>
 <translation id="2085089206770112532">Осветленоста на екранот се намали</translation>
@@ -246,7 +246,7 @@
 <translation id="3056720590588772262">Крајна точка</translation>
 <translation id="3069085583900247081">Тестот не успеа</translation>
 <translation id="3083667275341675831">Дијагностика на поврзливоста</translation>
-<translation id="3084958266922136097">Оневозможете го заштитникот на екранот</translation>
+<translation id="3084958266922136097">Оневозможете го штедачот на екранот</translation>
 <translation id="3091839911843451378">Неуспешно - запрено</translation>
 <translation id="3102119246920354026">Кеш</translation>
 <translation id="3122464029669770682">ЦПУ</translation>
@@ -281,7 +281,7 @@
 <translation id="3368922792935385530">Поврзано</translation>
 <translation id="3369013195428705271">Дали сте сигурни дека сакате да ја исчистите сета историја на печатење? Тековните задачи за печатење нема да бидат избришани.</translation>
 <translation id="3386675685417744672">Ексклузивно за Chromebook</translation>
-<translation id="3404249063913988450">Овозможете го заштитникот на екранот</translation>
+<translation id="3404249063913988450">Овозможете го штедачот на екранот</translation>
 <translation id="3413935475507503304">За да продолжите со ажурирањето, кликнете „Следно“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Безбедност</translation>
@@ -336,7 +336,7 @@
 <translation id="3865414814144988605">Резолуција</translation>
 <translation id="3866249974567520381">Опис</translation>
 <translation id="387301095347517405">Колку пати батеријата поминала низ целосен циклус на полнење</translation>
-<translation id="3885327323343477505">Променете го заштитникот на екранот</translation>
+<translation id="3885327323343477505">Променете го штедачот на екранот</translation>
 <translation id="391412459402535266">Не можете да го тестирате уредот. Префрлете се на режим за лаптоп за да тестирате.</translation>
 <translation id="3916998944874125962">снимање слика од екранот</translation>
 <translation id="3923184630988645767">Интернет</translation>
@@ -377,7 +377,7 @@
 <translation id="4171077696775491955">намалување на осветленоста</translation>
 <translation id="4176463684765177261">Оневозможено</translation>
 <translation id="4176659219503619100">Контролна табла</translation>
-<translation id="420283545744377356">Исклучете го заштитникот на екранот</translation>
+<translation id="420283545744377356">Исклучете го штедачот на екранот</translation>
 <translation id="4213104098953699324">Тастатура со USB</translation>
 <translation id="4227825898293920515">Лозинката истекува за <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Нема задачи за печатење во тек</translation>
@@ -468,7 +468,7 @@
 <translation id="4890353053343094602">Веднаш изберете нова</translation>
 <translation id="4891842000192098784">Стрес</translation>
 <translation id="4897058166682006107">Нивото на батерија на левата слушалка е <ph name="BATTERY_PERCENTAGE" /> %.</translation>
-<translation id="4905998861748258752">Вклучете ја функцијата за да ги изберете опциите за заштитникот на екранот</translation>
+<translation id="4905998861748258752">Вклучете ја функцијата за да ги изберете опциите за штедачот на екранот</translation>
 <translation id="4910858703033903787">Типови APN</translation>
 <translation id="4917385247580444890">Силен</translation>
 <translation id="4917889632206600977">Запрено - нема хартија</translation>
@@ -639,7 +639,7 @@
 <translation id="6302401976930124515">Тестот за <ph name="TEST_NAME" /> е откажан</translation>
 <translation id="631063167932043783">Апликација Explore</translation>
 <translation id="6319207335391420837">Ажурирајте го фирмверот на <ph name="DEVICE_NAME" /></translation>
-<translation id="6321407676395378991">Вклучете го заштитникот на екранот</translation>
+<translation id="6321407676395378991">Вклучете го штедачот на екранот</translation>
 <translation id="6325525973963619867">Неуспешно</translation>
 <translation id="6331191339300272798">Автоматска темна тема</translation>
 <translation id="6340526405444716530">Персонализација</translation>
@@ -966,7 +966,7 @@
 <translation id="9024331582947483881">цел екран</translation>
 <translation id="9025198690966128418">Користете го како личен уред</translation>
 <translation id="902638246363752736">Поставки на тастатура</translation>
-<translation id="9028832514430399253">Вклучете го копчето за да ги изберете опциите за заштитникот на екранот</translation>
+<translation id="9028832514430399253">Вклучете го копчето за да ги изберете опциите за штедачот на екранот</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">Одредување со DNS има висока латенција</translation>
