@@ -843,6 +843,16 @@ AutofillPrivateRemoveVirtualCardFunction::Run() {
 ////////////////////////////////////////////////////////////////////////////////
 // AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction
 
+// Constructor
+AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
+    AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction() =
+        default;
+
+// Destructor
+AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
+    ~AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction() =
+        default;
+
 ExtensionFunction::ResponseAction
 AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -853,21 +863,26 @@ AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
     return RespondNow(Error(kErrorDeviceAuthUnavailable));
   }
 
-  // If `device_authenticator` is not available, then don't do anything.
-  auto device_authenticator = client->GetDeviceAuthenticator();
-  if (!device_authenticator) {
+  // If `device_authenticator_` is not available, then don't do anything.
+  device_authenticator_ = client->GetDeviceAuthenticator();
+  if (!device_authenticator_) {
     return RespondNow(Error(kErrorDeviceAuthUnavailable));
   }
 
+  base::OnceClosure on_reauth_completed = base::BindOnce(
+      &AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
+          OnReauthCompleted,
+      this);
   // We will be modifying the pref `kAutofillPaymentMethodsMandatoryReauth`
   // asynchronously. The pref value directly correlates to the mandatory auth
   // toggle.
   autofill_util::AuthenticateUserOnMandatoryReauthToggled(
-      device_authenticator,
+      device_authenticator_,
       base::BindOnce(
           &AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
               UpdateMandatoryAuthTogglePref,
-          this));
+          this)
+          .Then(std::move(on_reauth_completed)));
   base::RecordAction(base::UserMetricsAction(
       "PaymentsUserAuthTriggeredForMandatoryAuthToggle"));
   return RespondNow(NoArguments());
@@ -890,6 +905,11 @@ void AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
         "PaymentsUserAuthSuccessfulForMandatoryAuthToggle"));
   }
 #endif
+}
+
+void AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
+    OnReauthCompleted() {
+  device_authenticator_.reset();
 }
 
 }  // namespace extensions
