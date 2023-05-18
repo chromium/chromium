@@ -60,11 +60,14 @@ class COMPONENT_EXPORT(SQL) BuiltInRecovery {
   // TODO(https://crbug.com/1385500): Support the lost-and-found table if the
   // need arises to try to restore all these records.
   //
-  // `database` must be open when calling this method and must not have an
-  // error callback set. This original handle is poisoned so that operations
-  // on the stack do not accidentally disrupt the restored data.
+  // It is illegal to attempt recovery if:
+  //   - `database` is null,
+  //   - `database` is not open,
+  //   - `database` is an in-memory or temporary database, or
+  //   - `database` has an error callback set
   //
-  // Recovery must not be attempted on an in-memory or temporary database.
+  // During the recovery process, `database` is poisoned so that operations on
+  // the stack do not accidentally disrupt the restored data.
   //
   // Returns a SQLite error code specifying whether the database was
   // successfully recovered.

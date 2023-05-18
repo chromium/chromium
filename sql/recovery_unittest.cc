@@ -14,10 +14,12 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -1251,6 +1253,52 @@ TEST_P(SqlRecoveryTest, PageSize) {
     EXPECT_NO_FATAL_FAILURE(TestPageSize(db_path_, 2048, "2048",
                                          DatabaseOptions::kDefaultPageSize,
                                          default_page_size, UseBuiltIn()));
+  }
+}
+
+TEST_P(SqlRecoveryTest, CannotRecoverNullDb) {
+  if (UseBuiltIn()) {
+    EXPECT_CHECK_DEATH(std::ignore = BuiltInRecovery::RecoverDatabase(
+                           nullptr, BuiltInRecovery::Strategy::kRecoverOrRaze));
+  } else {
+    // TODO(https://crbug.com/1255316): Ideally the line below should work.
+    // EXPECT_DCHECK_DEATH(Recovery::RecoverDatabase(nullptr, db_path_))
+  }
+}
+
+TEST_P(SqlRecoveryTest, CannotRecoverClosedDb) {
+  db_.Close();
+
+  if (UseBuiltIn()) {
+    EXPECT_CHECK_DEATH(std::ignore = BuiltInRecovery::RecoverDatabase(
+                           &db_, BuiltInRecovery::Strategy::kRecoverOrRaze));
+  } else {
+    EXPECT_DCHECK_DEATH(Recovery::RecoverDatabase(&db_, db_path_));
+  }
+}
+
+TEST_P(SqlRecoveryTest, CannotRecoverDbWithErrorCallback) {
+  db_.set_error_callback(base::DoNothing());
+
+  if (UseBuiltIn()) {
+    EXPECT_CHECK_DEATH(std::ignore = BuiltInRecovery::RecoverDatabase(
+                           &db_, BuiltInRecovery::Strategy::kRecoverOrRaze));
+  } else {
+    EXPECT_DCHECK_DEATH(Recovery::RecoverDatabase(&db_, db_path_));
+  }
+}
+
+TEST_P(SqlRecoveryTest, CannotRecoverInMemoryDb) {
+  Database in_memory_db;
+  ASSERT_TRUE(in_memory_db.OpenInMemory());
+
+  if (UseBuiltIn()) {
+    EXPECT_CHECK_DEATH(
+        std::ignore = BuiltInRecovery::RecoverDatabase(
+            &in_memory_db, BuiltInRecovery::Strategy::kRecoverOrRaze));
+  } else {
+    // TODO(https://crbug.com/1255316): Ideally the line below should work.
+    // EXPECT_DCHECK_DEATH(Recovery::RecoverDatabase(&in_memory_db, db_path_))
   }
 }
 

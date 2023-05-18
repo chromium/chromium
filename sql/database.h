@@ -333,6 +333,7 @@ class COMPONENT_EXPORT(SQL) Database {
     error_callback_ = std::move(callback);
   }
   void reset_error_callback() { error_callback_.Reset(); }
+  bool has_error_callback() const { return !error_callback_.is_null(); }
 
   // Developer-friendly database ID used in logging output and memory dumps.
   void set_histogram_tag(const std::string& tag);

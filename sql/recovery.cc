@@ -59,7 +59,7 @@ BuiltInRecovery::BuiltInRecovery(Database* database, Strategy strategy)
       db_(database),
       recover_db_(sql::DatabaseOptions{
           .exclusive_locking = false,
-          .page_size = db_->page_size(),
+          .page_size = database ? database->page_size() : 0,
           .cache_size = 0,
       }) {
   // TODO(https://crbug.com/1385500): Make built-in recovery work on Fuchsia.
@@ -68,6 +68,10 @@ BuiltInRecovery::BuiltInRecovery(Database* database, Strategy strategy)
 #endif  // BUILDFLAG(IS_FUCHSIA)
   CHECK(db_);
   CHECK(db_->is_open());
+  // Recovery is likely to be used in error handling. To prevent re-entry due to
+  // errors while attempting to recover the database, the error callback must
+  // not be set.
+  CHECK(!db_->has_error_callback());
 
   auto db_path = db_->DbPath(InternalApiToken());
 
@@ -75,17 +79,6 @@ BuiltInRecovery::BuiltInRecovery(Database* database, Strategy strategy)
   CHECK(!db_path.empty());
 
   recovery_database_path_ = db_path.AddExtensionASCII(".recovery");
-
-#if DCHECK_IS_ON()
-  // set_error_callback() will DCHECK if the database already has an error
-  // callback. The recovery process is likely to result in SQLite errors, and
-  // those shouldn't get surfaced to any callback.
-  database->set_error_callback(base::DoNothing());
-
-  // Undo the set_error_callback() above. We only used it for its DCHECK
-  // behavior.
-  database->reset_error_callback();
-#endif  // DCHECK_IS_ON()
 
   // Break any outstanding transactions on the original database, since the
   // recovery module opens a transaction on the database while recovery is in
@@ -299,9 +292,9 @@ bool BuiltInRecovery::RecoveredDbHasValidMetaTable() {
 // static
 std::unique_ptr<Recovery> Recovery::Begin(Database* database,
                                           const base::FilePath& db_path) {
-  // Recovery is likely to be used in error handling.  Since recovery changes
-  // the state of the handle, protect against multiple layers attempting the
-  // same recovery.
+  // Recovery is likely to be initiated in an error handler. Since recovery
+  // changes the state of the handle, protect against multiple layers attempting
+  // the same recovery.
   if (!database->is_open()) {
     // Warn about API mis-use.
     DCHECK(database->poisoned(InternalApiToken()))
