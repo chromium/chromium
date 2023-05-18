@@ -1910,6 +1910,10 @@ class ComputedStyle : public ComputedStyleBase,
     return IsDecoratingBox() ? EnsureAppliedTextDecorationsCache()
                              : BaseTextDecorationDataInternal().get();
   }
+  const Vector<AppliedTextDecoration, 1>* BaseAppliedTextDecorations() const {
+    const auto base = BaseTextDecorationDataInternal();
+    return base ? &base->data : nullptr;
+  }
 
   // Returns true if this a "decorating box".
   // https://drafts.csswg.org/css-text-decor-3/#decorating-box
