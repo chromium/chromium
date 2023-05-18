@@ -5,19 +5,22 @@
 // https://gpuweb.github.io/gpuweb/
 
 enum GPUFeatureName {
-    "pipeline-statistics-query",
+    "depth-clip-control",
+    "depth32float-stencil8",
     "texture-compression-bc",
     "texture-compression-etc2",
     "texture-compression-astc",
     "timestamp-query",
-    "timestamp-query-inside-passes",
-    "depth-clip-control",
-    "depth32float-stencil8",
     "indirect-first-instance",
-    "chromium-experimental-dp4a",
+    "shader-f16",
     "rg11b10ufloat-renderable",
     "bgra8unorm-storage",
-    "shader-f16",
+    "float32-filterable",
+
+    // Non-standard (not currently in the spec).
+    "pipeline-statistics-query",
+    "timestamp-query-inside-passes",
+    "chromium-experimental-dp4a",
 };
 
 [
