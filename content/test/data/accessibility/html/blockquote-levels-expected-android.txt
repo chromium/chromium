@@ -1,0 +1,6 @@
+android.webkit.WebView focusable focused scrollable
+++android.view.View role_description='blockquote'
+++++android.widget.TextView name='Top level'
+++++android.view.View role_description='blockquote'
+++++++android.widget.TextView name='Sub'
+++++++android.view.View role_description='blockquote' name='Sub-sub'

@@ -433,9 +433,10 @@ data/accessibility/aria/aria-banner-expected-blink.txt
 data/accessibility/aria/aria-banner-expected-mac.txt
 data/accessibility/aria/aria-banner-expected-win.txt
 data/accessibility/aria/aria-banner.html
-data/accessibility/aria/aria-blockquote-expected-android.txt
 data/accessibility/aria/aria-blockquote-expected-auralinux.txt
+data/accessibility/aria/aria-blockquote-expected-blink.txt
 data/accessibility/aria/aria-blockquote-expected-mac.txt
+data/accessibility/aria/aria-blockquote-expected-uia-win.txt
 data/accessibility/aria/aria-blockquote-expected-win.txt
 data/accessibility/aria/aria-blockquote.html
 data/accessibility/aria/aria-braillelabel-expected-android-external.txt
@@ -2639,8 +2640,13 @@ data/accessibility/html/blockquote-expected-mac.txt
 data/accessibility/html/blockquote-expected-uia-win.txt
 data/accessibility/html/blockquote-expected-win.txt
 data/accessibility/html/blockquote-levels-expected-android-external.txt
+data/accessibility/html/blockquote-levels-expected-android.txt
+data/accessibility/html/blockquote-levels-expected-auralinux.txt
+data/accessibility/html/blockquote-levels-expected-blink.txt
 data/accessibility/html/blockquote-levels-expected-fuchsia.txt
 data/accessibility/html/blockquote-levels-expected-mac.txt
+data/accessibility/html/blockquote-levels-expected-uia-win.txt
+data/accessibility/html/blockquote-levels-expected-win.txt
 data/accessibility/html/blockquote-levels.html
 data/accessibility/html/blockquote.html
 data/accessibility/html/body-expected-android-external.txt
