@@ -43,7 +43,6 @@ blink_core_sources_page = [
   "page.h",
   "page_animator.cc",
   "page_animator.h",
-  "page_hidden_state.cc",
   "page_hidden_state.h",
   "page_popup.h",
   "page_popup_client.cc",
