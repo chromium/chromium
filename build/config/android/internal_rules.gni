@@ -1899,6 +1899,8 @@ if (enable_java_templates) {
         rebase_path(invoker.input_jar, root_build_dir),
         "--stamp",
         rebase_path(outputs[0], root_build_dir),
+        "--chromium-output-dir",
+        rebase_path(root_build_dir, root_build_dir),
         "--direct-classpath-jars=@FileArg($_rebased_build_config:javac:classpath)",
         "--full-classpath-jars=@FileArg($_rebased_build_config:deps_info:javac_full_classpath)",
         "--full-classpath-gn-targets=@FileArg($_rebased_build_config:deps_info:javac_full_classpath_targets)",

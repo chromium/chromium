@@ -43,6 +43,12 @@ class CacheFile:
   build_output_dir: pathlib.Path
   src_dir: pathlib.Path = _SRC_PATH
 
+  def __post_init__(self):
+    # Ensure that all paths are absolute so that relative_to works correctly.
+    self.jar_path = self.jar_path.resolve()
+    self.build_output_dir = self.build_output_dir.resolve()
+    self.src_dir = self.src_dir.resolve()
+
   @functools.cached_property
   def cache_path(self):
     """Return a cache path for the jar that is always in the output dir.
@@ -130,18 +136,18 @@ def run_jdeps(filepath: pathlib.Path,
   return output
 
 
-def extract_full_class_names_from_jar(abs_build_output_dir: pathlib.Path,
-                                      abs_jar_path: pathlib.Path) -> List[str]:
+def extract_full_class_names_from_jar(build_output_dir: pathlib.Path,
+                                      jar_path: pathlib.Path) -> List[str]:
   """Returns set of fully qualified class names in passed-in jar."""
 
-  cache_file = CacheFile(jar_path=abs_jar_path,
+  cache_file = CacheFile(jar_path=jar_path,
                          cache_suffix='.class_name_cache',
-                         build_output_dir=abs_build_output_dir)
+                         build_output_dir=build_output_dir)
   if cache_file.is_valid():
     return cache_file.read().splitlines()
 
   out = set()
-  with zipfile.ZipFile(abs_jar_path) as z:
+  with zipfile.ZipFile(jar_path) as z:
     for zip_entry_name in z.namelist():
       if not zip_entry_name.endswith('.class'):
         continue
