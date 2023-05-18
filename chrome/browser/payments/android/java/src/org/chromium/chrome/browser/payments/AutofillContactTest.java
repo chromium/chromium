@@ -87,7 +87,7 @@ public class AutofillContactTest {
 
     @Test
     public void test() {
-        AutofillProfile profile = new AutofillProfile();
+        AutofillProfile profile = AutofillProfile.builder().build();
         AutofillContact contact =
                 new AutofillContact(mContext, profile, mPayerName, mPayerPhone, mPayerEmail,
                         mIsComplete ? ContactEditor.COMPLETE
