@@ -536,6 +536,10 @@
     "label": "//chrome/test/chromedriver:chromedriver_unittests",
     "type": "windowed_test_launcher",
   },
+  "chrome_finch_smoke_tests": {
+    "label": "//clank/java:chrome_finch_smoke_tests",
+    "type": "generated_script",
+  },
   "chromeos_components_unittests": {
     "label": "//chromeos/components:chromeos_components_unittests",
     "type": "console_test_launcher",

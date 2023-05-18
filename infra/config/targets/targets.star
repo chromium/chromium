@@ -665,6 +665,11 @@ targets.windowed_test_launcher(
     label = "//chrome/test/chromedriver:chromedriver_unittests",
 )
 
+targets.generated_script(
+    name = "chrome_finch_smoke_tests",
+    label = "//clank/java:chrome_finch_smoke_tests",
+)
+
 targets.console_test_launcher(
     name = "chromeos_components_unittests",
     label = "//chromeos/components:chromeos_components_unittests",
