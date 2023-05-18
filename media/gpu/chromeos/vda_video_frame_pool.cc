@@ -152,7 +152,11 @@ scoped_refptr<VideoFrame> VdaVideoFramePool::GetFrame() {
   // Update visible_rect and natural_size.
   scoped_refptr<VideoFrame> wrapped_frame = VideoFrame::WrapVideoFrame(
       origin_frame, origin_frame->format(), visible_rect_, natural_size_);
-  DCHECK(wrapped_frame);
+  if (!wrapped_frame) {
+    DLOG(WARNING) << __func__ << "Failed to wrap a VideoFrame";
+    return nullptr;
+  }
+
   wrapped_frame->AddDestructionObserver(
       base::BindOnce(&VdaVideoFramePool::ImportFrameThunk, parent_task_runner_,
                      weak_this_, std::move(origin_frame)));
