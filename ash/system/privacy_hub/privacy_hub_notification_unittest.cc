@@ -4,12 +4,15 @@
 
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
 
+#include <memory>
+
 #include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "privacy_hub_notification.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -84,28 +87,40 @@ message_center::Notification* GetPopupNotification() {
 class PrivacyHubNotificationTest : public AshTestBase {
  public:
   PrivacyHubNotificationTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        notification_(
-            kNotificationId,
-            ash::NotificationCatalogName::kTestCatalogName,
-            PrivacyHubNotificationDescriptor{
-                SensorDisabledNotificationDelegate::SensorSet{
-                    SensorDisabledNotificationDelegate::Sensor::kMicrophone},
-                IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_TITLE,
-                std::vector<int>{
-                    IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_BUTTON},
-                std::vector<int>{
-                    IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE,
-                    IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
-                    IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES},
-                base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
-                    base::DoNothing())}) {}
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~PrivacyHubNotificationTest() override = default;
 
-  PrivacyHubNotification& notification() { return notification_; }
+  PrivacyHubNotification& notification() { return *notification_; }
 
   FakeSensorDisabledNotificationDelegate& sensor_delegate() {
     return sensor_delegate_;
+  }
+
+  // testing::Test
+  void SetUp() override {
+    AshTestBase::SetUp();
+    // We need initialize the notification after `AshTestBase::SetUp` has been
+    // called, as the constructor depends on the message center, which is not
+    // available earlier.
+    notification_ = std::make_unique<PrivacyHubNotification>(
+        kNotificationId, ash::NotificationCatalogName::kTestCatalogName,
+        PrivacyHubNotificationDescriptor{
+            SensorDisabledNotificationDelegate::SensorSet{
+                SensorDisabledNotificationDelegate::Sensor::kMicrophone},
+            IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_TITLE,
+            std::vector<int>{
+                IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_BUTTON},
+            std::vector<int>{
+                IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE,
+                IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
+                IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES},
+            base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
+                base::DoNothing())});
+  }
+  // testing::Test
+  void TearDown() override {
+    notification_.reset();
+    AshTestBase::TearDown();
   }
 
   void WaitUntilPopupCloses() {
@@ -115,7 +130,7 @@ class PrivacyHubNotificationTest : public AshTestBase {
 
  private:
   FakeSensorDisabledNotificationDelegate sensor_delegate_;
-  PrivacyHubNotification notification_;
+  std::unique_ptr<PrivacyHubNotification> notification_;
 };
 
 using PrivacyHubNotificationClickDelegateTest = AshTestBase;

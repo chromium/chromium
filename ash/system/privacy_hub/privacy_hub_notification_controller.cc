@@ -19,7 +19,9 @@
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
 #include "ash/system/system_notification_controller.h"
+#include "base/containers/ring_buffer.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/prefs/pref_service.h"
 #include "ui/message_center/message_center.h"
@@ -36,6 +38,51 @@ void LogInvalidSensor(const Sensor sensor) {
   NOTREACHED() << "Invalid sensor: "
                << static_cast<std::underlying_type_t<Sensor>>(sensor);
 }
+
+// Throttler for geolocation notification. Limits notification to be displayed
+// no more than once in an hour and no more that 3x in 24 hours.
+class GeolocationThrottler : public PrivacyHubNotification::Throttler {
+ public:
+  // PrivacyHubNotification::Throttler
+  bool ShouldThrottle() final {
+    if (dismissals_.CurrentIndex() == 0) {
+      // No dismissals recorded yet. -> No suppression.
+      return false;
+    }
+    const base::TimeTicks current_time = base::TimeTicks::Now();
+    const base::TimeDelta time_since_last_dismissal =
+        current_time - **dismissals_.End();
+    if (time_since_last_dismissal < base::Hours(1)) {
+      // There has been a dismissal recorded within the last hour. ->
+      // Notification suppressed.
+      return true;
+    }
+    // Now we should suppress if there have been at least 3 accesses within last
+    // 24 hours.
+    if (dismissals_.CurrentIndex() < dismissals_.BufferSize()) {
+      // Buffer is not full. -> There have not been 3 accesses. -> No
+      // suppression.
+      return false;
+    }
+    // There are 3 recorded accesses.
+    const base::TimeDelta time_since_oldest_dismissal =
+        current_time - **dismissals_.Begin();
+    if (time_since_oldest_dismissal >= base::Hours(24)) {
+      // The oldest one is older than 24 hours. -> No suppression.
+      return false;
+    }
+    // All 3 must be within the 24 hours window. -> Notification suppressed.
+    return true;
+  }
+
+  void RecordDismissalByUser() final {
+    dismissals_.SaveToBuffer(base::TimeTicks::Now());
+  }
+
+ private:
+  // Contains the times of up to the last three dismissals (in order).
+  base::RingBuffer<base::TimeTicks, 3u> dismissals_;
+};
 
 }  // namespace
 
@@ -109,6 +156,8 @@ PrivacyHubNotificationController::PrivacyHubNotificationController() {
       kGeolocationSwitchNotificationId,
       NotificationCatalogName::kGeolocationSwitch,
       std::move(geolocation_notification_descriptor));
+  geolocation_notification_->SetThrottler(
+      std::make_unique<GeolocationThrottler>());
 }
 
 PrivacyHubNotificationController::~PrivacyHubNotificationController() = default;
