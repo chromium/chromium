@@ -807,8 +807,14 @@ template("apple_toolchain") {
   }
 
   if (enable_rust && current_toolchain == default_toolchain) {
-    # Make an additional toolchain which uses the prebuilt stdlib shipped with
-    # rustc.
+    # Make an additional toolchain which is used for making tools that are run
+    # on the host machine as part of the build process (such as proc macros
+    # and Cargo build scripts). This toolchain uses the prebuilt stdlib that
+    # comes with the compiler, so it doesn't have to wait for the stdlib to be
+    # built before building other stuff. And this ensures its proc macro
+    # outputs have the right ABI to be loaded by the compiler, and it can be
+    # used to compile build scripts that are part of the stdlib that is built
+    # for the default toolchain.
     single_apple_toolchain("${target_name}_for_rust_host_build_tools") {
       assert(defined(invoker.toolchain_args),
              "Toolchains must declare toolchain_args")
@@ -823,8 +829,12 @@ template("apple_toolchain") {
         # Populate toolchain args from the invoker.
         forward_variables_from(invoker.toolchain_args, "*")
         toolchain_for_rust_host_build_tools = true
+
+        # The host build tools are static release builds to make the Chromium
+        # build faster. They do not need PGO etc, so no official builds.
         is_debug = false
         is_component_build = false
+        is_official_build = false
       }
     }
   }
