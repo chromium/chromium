@@ -477,26 +477,33 @@ void ExtensionsMenuViewController::UpdateSitePermissionsPage(
     content::WebContents* web_contents) {
   CHECK(web_contents);
 
+  auto* permissions_manager = PermissionsManager::Get(browser_->profile());
+  SitePermissionsHelper permissions_helper(browser_->profile());
+
   extensions::ExtensionId extension_id = site_permissions_page->extension_id();
+  const extensions::Extension* extension = GetExtension(browser_, extension_id);
+  const GURL& url = web_contents->GetLastCommittedURL();
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
   ToolbarActionViewController* action_controller =
       extensions_container_->GetActionForId(extension_id);
 
   std::u16string extension_name = action_controller->GetActionName();
-  ui::ImageModel extension_icon = action_controller->GetIcon(
-      GetActiveWebContents(), gfx::Size(icon_size, icon_size));
+  ui::ImageModel extension_icon =
+      action_controller->GetIcon(web_contents, gfx::Size(icon_size, icon_size));
   std::u16string current_site = GetCurrentHost(web_contents);
-  extensions::PermissionsManager::UserSiteAccess user_site_access =
-      PermissionsManager::Get(browser_->profile())
-          ->GetUserSiteAccess(*GetExtension(browser_, extension_id),
-                              GetActiveWebContents()->GetLastCommittedURL());
+  PermissionsManager::UserSiteAccess user_site_access =
+      permissions_manager->GetUserSiteAccess(*extension, url);
   bool is_show_requests_toggle_on =
-      extensions::SitePermissionsHelper(browser_->profile())
-          .ShowAccessRequestsInToolbar(extension_id);
+      permissions_helper.ShowAccessRequestsInToolbar(extension_id);
+  bool is_on_site_enabled = permissions_manager->CanUserSelectSiteAccess(
+      *extension, url, PermissionsManager::UserSiteAccess::kOnSite);
+  bool is_on_all_sites_enabled = permissions_manager->CanUserSelectSiteAccess(
+      *extension, url, PermissionsManager::UserSiteAccess::kOnAllSites);
 
   site_permissions_page->Update(extension_name, extension_icon, current_site,
-                                user_site_access, is_show_requests_toggle_on);
+                                user_site_access, is_show_requests_toggle_on,
+                                is_on_site_enabled, is_on_all_sites_enabled);
 }
 
 void ExtensionsMenuViewController::OnToolbarActionAdded(
