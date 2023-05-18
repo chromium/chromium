@@ -84,7 +84,6 @@ bool AreHttpRequestHeadersCompatible(
   }
 
   // The headers mismatch. Analyze the headers asynchronously.
-  // conclusion.
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&AnalyzePrerenderActivationHeader,
