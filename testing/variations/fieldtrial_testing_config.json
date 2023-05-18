@@ -15317,21 +15317,6 @@
             ]
         }
     ],
-    "WebViewAppsPackageNamesServerSideAllowlist": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebViewAppsPackageNamesServerSideAllowlist"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebViewBrotliSupport": [
         {
             "platforms": [
