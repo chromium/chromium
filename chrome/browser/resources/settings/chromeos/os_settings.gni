@@ -117,12 +117,14 @@ web_component_files = [
   "chromeos/nearby_share_page/nearby_share_receive_dialog.ts",
   "chromeos/nearby_share_page/nearby_share_subpage.ts",
   "chromeos/os_a11y_page/audio_and_captions_page.ts",
+  "chromeos/os_a11y_page/bluetooth_braille_display_ui.ts",
+  "chromeos/os_a11y_page/captions_subpage.ts",
   "chromeos/os_a11y_page/change_dictation_locale_dialog.ts",
   "chromeos/os_a11y_page/chromevox_subpage.ts",
-  "chromeos/os_a11y_page/bluetooth_braille_display_ui.ts",
   "chromeos/os_a11y_page/cursor_and_touchpad_page.ts",
   "chromeos/os_a11y_page/display_and_magnification_subpage.ts",
   "chromeos/os_a11y_page/keyboard_and_text_input_page.ts",
+  "chromeos/os_a11y_page/live_caption_section.ts",
   "chromeos/os_a11y_page/manage_a11y_subpage.ts",
   "chromeos/os_a11y_page/os_a11y_page.ts",
   "chromeos/os_a11y_page/select_to_speak_subpage.ts",
@@ -251,10 +253,6 @@ web_component_files = [
   "chromeos/parental_controls_page/parental_controls_page.ts",
   "chromeos/personalization_page/personalization_page.ts",
   "chromeos/settings_scheduler_slider/settings_scheduler_slider.ts",
-
-  # Files below are from Browser Settings and shared with ChromeOS Settings
-  "a11y_page/captions_subpage.ts",
-  "a11y_page/live_caption_section.ts",
 ]
 
 # HTML files that are passed as input to html_to_wrapper().

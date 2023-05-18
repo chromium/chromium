@@ -1,16 +1,16 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview 'settings-captions' is a component for showing captions
- * settings on chrome://settings/captions.
+ * settings in chrome://os-settings/audioAndCaptions and is forked from the
+ * equivalent Browser Settings UI (in chrome://settings/captions).
  */
 
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '/shared/settings/controls/settings_slider.js';
-import '../settings_shared.css.js';
-import '../strings.m.js';
+import '../../settings_shared.css.js';
 import './live_caption_section.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -20,9 +20,8 @@ import {DropdownMenuOptionList} from '/shared/settings/controls/settings_dropdow
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 
-import {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
-
 import {getTemplate} from './captions_subpage.html.js';
+
 
 const SettingsCaptionsElementBase = PrefsMixin(PolymerElement);
 
@@ -41,18 +40,6 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
         type: Object,
         notify: true,
       },
-
-
-      /**
-       * Read-only reference to the languages model provided by the
-       * 'settings-languages' instance.
-       */
-      languages: {
-        type: Object,
-        notify: true,
-      },
-
-      languageHelper: Object,
 
       /**
        * List of options for the background opacity drop-down menu.
@@ -211,8 +198,6 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
     };
   }
 
-  languages: LanguagesModel;
-  languageHelper: LanguageHelper;
   private readonly backgroundOpacityOptions_: DropdownMenuOptionList;
   private readonly colorOptions_: DropdownMenuOptionList;
   private textFontOptions_: DropdownMenuOptionList;

@@ -6,8 +6,8 @@
  * @fileoverview 'settings-live-caption' is a component for showing Live Caption
  * settings. It appears on the accessibility subpage
  * (chrome://settings/accessibility) on Mac and some versions of Windows and on
- * the captions subpage (chrome://settings/captions) on Linux, ChromeOS, and
- * other versions of Windows.
+ * the captions subpage (chrome://settings/captions) on Linux and other versions
+ * of Windows.
  */
 
 import '//resources/cr_elements/cr_shared_style.css.js';

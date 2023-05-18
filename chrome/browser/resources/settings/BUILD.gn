@@ -69,7 +69,6 @@ build_webui("build") {
   # -----------------web_component_files start ---------------------------------
   web_component_files = [
     "a11y_page/a11y_page.ts",
-    "a11y_page/live_caption_section.ts",
     "about_page/about_page.ts",
     "appearance_page/appearance_fonts_page.ts",
     "appearance_page/appearance_page.ts",
@@ -216,7 +215,6 @@ build_webui("build") {
 
   if (!is_chromeos_ash) {
     web_component_files += [
-      "a11y_page/live_translate_section.ts",
       "people_page/manage_profile.ts",
       "relaunch_confirmation_dialog.ts",
       "languages_page/add_languages_dialog.ts",
@@ -229,6 +227,8 @@ build_webui("build") {
 
   if (!is_chromeos) {
     web_component_files += [
+      "a11y_page/live_caption_section.ts",
+      "a11y_page/live_translate_section.ts",
       "default_browser_page/default_browser_page.ts",
       "people_page/import_data_dialog.ts",
     ]
@@ -238,9 +238,11 @@ build_webui("build") {
     web_component_files += [ "languages_page/edit_dictionary_page.ts" ]
   }
 
-  if (!is_mac) {
+  if (!is_chromeos && !is_mac) {
     web_component_files += [ "a11y_page/captions_subpage.ts" ]
-  } else {
+  }
+
+  if (is_mac) {
     web_component_files += [ "autofill_page/passkey_edit_dialog.ts" ]
   }
 
