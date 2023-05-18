@@ -133,6 +133,9 @@ class HttpsUpgradesInterceptor : public content::URLLoaderRequestInterceptor,
       security_interstitials::https_only_mode::HttpInterstitialState>
       interstitial_state_;
 
+  // URLs seen by the interceptor, used to detect a redirect loop.
+  std::set<GURL> urls_seen_;
+
   // Receiver for the URLLoader interface.
   mojo::Receiver<network::mojom::URLLoader> receiver_{this};
 

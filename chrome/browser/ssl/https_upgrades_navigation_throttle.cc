@@ -210,13 +210,12 @@ HttpsUpgradesNavigationThrottle::WillRedirectRequest() {
   //      navigation, and will also result in the Interceptor serving an
   //      artificial redirect to upgrade the navigation.
   //
-  // HTTPS->HTTP downgrades may result in net::ERR_TOO_MANY_REDIRECTS, but these
+  // The Interceptor logs the URLs that it sees and triggers fallback if it
+  // encounters a redirect loop. Any cases that might not be caught by the
+  // Interceptor should result in net::ERR_TOO_MANY_REDIRECTS, but in general
   // redirect loops should hit the cache and not cost too much. If they go too
   // long, the fallback timer will kick in. ERR_TOO_MANY_REDIRECTS should result
-  // in the request failing and triggering fallback. Alternately, the
-  // Interceptor could log URLs seen and bail if it encounters a redirect loop,
-  // but it is simpler to rely on existing handling unless the optimization is
-  // needed.
+  // in the request failing and triggering fallback.
   if (tab_helper->is_navigation_upgraded()) {
     // Check if the timer is already started, as there may be additional
     // redirects on the navigation after the artificial upgrade redirect.

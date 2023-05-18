@@ -51452,6 +51452,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="7" label="kUpgradeNotAttempted">
     Upgrade not attempted because not enabled
   </int>
+  <int value="8" label="kUpgradeRedirectLoop">
+    Upgrade failed due to a redirect loop
+  </int>
 </enum>
 
 <enum name="HttpsImageCompressionInfoBarAction">

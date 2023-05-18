@@ -1079,12 +1079,15 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 }
 
 // Tests that navigating to an HTTPS page that downgrades to HTTP on the same
-// host will fail and trigger the HTTPS-Only Mode interstitial (due to the
-// redirect loop hitting the redirect limit).
-// TODO(crbug.com/1394910): Re-enable once redirect loops are handled by the
-// interceptor rather than relying on the net error.
+// host will fail and trigger the HTTPS-Only Mode interstitial (due to
+// interceptor detecting a redirect loop and triggering fallback).
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
-                       DISABLED_RedirectLoop_ShouldInterstitial) {
+                       RedirectLoop_ShouldInterstitial) {
+  // This test is only interesting if some form of HTTPS upgrading is enabled.
+  if (!IsHttpUpgradingEnabled()) {
+    return;
+  }
+
   // Set up a new test server instance so it can have a custom handler.
   net::EmbeddedTestServer downgrading_server{
       net::EmbeddedTestServer::TYPE_HTTPS};
@@ -1124,7 +1127,8 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   histograms()->ExpectTotalCount(kEventHistogram, 3);
   histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted, 1);
   histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 1);
-  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeNetError, 1);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeRedirectLoop,
+                                  1);
 }
 
 // Tests that the security level is WARNING when the HTTPS-Only Mode

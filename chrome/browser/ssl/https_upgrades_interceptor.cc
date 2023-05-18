@@ -245,8 +245,6 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
 
   // Exclude "localhost" (and loopback addresses) as they do not expose traffic
   // over the network.
-  // TODO(crbug.com/1394910): Extend the exemption list for HTTPS-Upgrades
-  // beyond just localhost.
   if (net::IsLocalhost(tentative_resource_request.url)) {
     RecordNavigationRequestSecurityLevel(
         NavigationRequestSecurityLevel::kLocalhost);
@@ -270,8 +268,6 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   }
 
   // Don't exclude local-network requests (for now) but record metrics for them.
-  // TODO(crbug.com/1394910): Extend the exemption list for HTTPS-Upgrades
-  // beyond just localhost.
   if (net::IsHostnameNonUnique(tentative_resource_request.url.host())) {
     RecordNavigationRequestSecurityLevel(
         NavigationRequestSecurityLevel::kNonUniqueHostname);
@@ -444,6 +440,50 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
     return;
   }
 
+  // If the request URL is in the set of URLs that HttpsUpgradesInterceptor has
+  // already processed, skip upgrading and trigger fallback to HTTP to avoid a
+  // redirect loop.
+  if (base::Contains(urls_seen_, tentative_resource_request.url)) {
+    // Record failure type metrics for upgraded navigations.
+    RecordHttpsFirstModeNavigation(Event::kUpgradeFailed, *interstitial_state_);
+    RecordHttpsFirstModeNavigation(Event::kUpgradeRedirectLoop,
+                                   *interstitial_state_);
+
+    // If HTTPS-First Mode is not enabled (so no interstitial will be shown),
+    // add the fallback hostname to the allowlist now before triggering
+    // fallback. HTTPS-First Mode handles this on the user proceeding through
+    // the interstitial only.
+    // TODO(crbug.com/1446193): Distinguish HTTPS-First Mode and HTTPS-Upgrades
+    // allowlist entries, and ensure that HTTPS-Upgrades allowlist entries don't
+    // downgrade Page Info.
+    // TODO(crbug.com/1394910): Move this to a helper function
+    // `AddUrlToAllowlist()`, especially once this gets more complicated for
+    // HFM vs. Upgrades.
+    if (!IsInterstitialEnabled(*interstitial_state_)) {
+      // StatefulSSLHostStateDelegate can be null during tests.
+      if (state) {
+        state->AllowHttpForHost(
+            tab_helper->fallback_url().host(),
+            web_contents->GetPrimaryMainFrame()->GetStoragePartition());
+      }
+    }
+
+    tab_helper->set_is_navigation_upgraded(false);
+    tab_helper->set_is_navigation_fallback(true);
+    tab_helper->add_failed_upgrade(tab_helper->fallback_url());
+
+    // Note: If `fallback_url` is the same as the request URL, this
+    // could skip doing an additional redirect, but then the NavigationThrottle
+    // doesn't have the ability to act on this navigation request and apply
+    // the HTTPS-First Mode interstitial. If we add a better way to "fast fail"
+    // navigations directly to the interstitial, then we could probably use that
+    // here as well as an optimization.
+    std::move(callback).Run(CreateRedirectHandler(tab_helper->fallback_url()));
+    return;
+  }
+  // Not a redirect loop. Add the current request URL to the set of URLs seen.
+  urls_seen_.insert(tentative_resource_request.url);
+
   RecordNavigationRequestSecurityLevel(
       NavigationRequestSecurityLevel::kUpgraded);
 
@@ -522,7 +562,7 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
   }
 
   // If HTTPS-First Mode is not enabled (so no interstitial will be shown),
-  // add the hostname to the allowlist now before triggering fallback.
+  // add the fallback hostname to the allowlist now before triggering fallback.
   // HTTPS-First Mode handles this on the user proceeding through the
   // interstitial only.
   // TODO(crbug.com/1394910): Distinguish HTTPS-First Mode and HTTPS-Upgrades
@@ -535,7 +575,7 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
     // StatefulSSLHostStateDelegate can be null during tests.
     if (state) {
       state->AllowHttpForHost(
-          request.url.host(),
+          tab_helper->fallback_url().host(),
           web_contents->GetPrimaryMainFrame()->GetStoragePartition());
     }
   }
