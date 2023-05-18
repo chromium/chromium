@@ -122,5 +122,9 @@ extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerDismissedKey{
 extern const base::FeatureParam<int> kBannerParamsDaysAfterBannerIgnoredKey{
     &kAppBannerTriggering, "days_after_ignore", kMinimumDaysBetweenBannerShows};
 
+BASE_FEATURE(kWebAppsMlUkmCollection,
+             "WebAppsMlUkmCollection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace webapps

@@ -16,8 +16,13 @@ class WebContents;
 
 namespace webapps {
 
+class SiteMetricsCollectionTask;
+
 // This class is used to measure metrics after page load and trigger a ML model
 // to promote installability of a site.
+//
+// Browsertests are located in
+// chrome/browser/web_applications/ml_promotion_browsertest.cc
 class MLInstallabilityPromoter
     : public content::WebContentsObserver,
       public content::WebContentsUserData<MLInstallabilityPromoter> {
@@ -34,8 +39,10 @@ class MLInstallabilityPromoter
   explicit MLInstallabilityPromoter(content::WebContents* web_contents);
   friend class content::WebContentsUserData<MLInstallabilityPromoter>;
 
-  GURL frame_url_;
-  bool is_model_running_ = false;
+  void OnMetricsTaskFinished();
+
+  std::unique_ptr<SiteMetricsCollectionTask> current_collection_task_;
+
   base::WeakPtrFactory<MLInstallabilityPromoter> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

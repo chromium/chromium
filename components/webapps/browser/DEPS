@@ -16,6 +16,7 @@ include_rules = [
   "+content/public/test",
   "+mojo/public/cpp",
   "+net/base",
+  "+storage/browser/quota",
   "+services/network/public/cpp",
   "+services/service_manager/public/cpp",
   "+skia/ext",
