@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "ash/app_list/app_list_bubble_event_filter.h"
 #include "ash/app_list/app_list_controller_impl.h"
@@ -320,9 +321,14 @@ void AppListBubblePresenter::Dismiss() {
     // when the app list is dismissed.
     auto* manager = ::wm::TransientWindowManager::GetOrCreate(bubble_window);
     if (manager) {
-      for (auto* child : manager->transient_children()) {
-        manager->RemoveTransientChild(child);
-        child->parent()->RemoveChild(child);
+      std::vector<aura::Window*> children = manager->transient_children();
+      for (auto* child : children) {
+        views::Widget* child_widget =
+            views::Widget::GetWidgetForNativeWindow(child);
+        if (child_widget) {
+          child_widget->CloseWithReason(
+              views::Widget::ClosedReason::kUnspecified);
+        }
       }
     }
 
