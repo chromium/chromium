@@ -11,7 +11,7 @@
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
-import '../../icons.html.js';
+import '../icons.html.js';
 import '../../settings_shared.css.js';
 
 import {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';

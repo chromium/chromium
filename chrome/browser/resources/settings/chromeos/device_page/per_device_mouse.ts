@@ -8,7 +8,7 @@
  * settings.
  */
 
-import '../../icons.html.js';
+import '../icons.html.js';
 import '../../settings_shared.css.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';

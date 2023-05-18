@@ -264,7 +264,7 @@ foreach(f, web_component_files) {
 }
 
 icons_html_files = [
-  "icons.html",
+  "chromeos/icons.html",
   "chromeos/os_settings_icons.html",
 ]
 
