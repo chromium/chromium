@@ -252,9 +252,9 @@ public class FakeCronetEngineTest {
         assertTrue(mFakeCronetEngine.startRequest());
         try {
             mFakeCronetEngine.shutdown();
-            fail("Shutdown not checked for active requests.");
+            fail("Shutdown not checked for running requests.");
         } catch (IllegalStateException e) {
-            assertEquals("Cannot shutdown with active requests.", e.getMessage());
+            assertEquals("Cannot shutdown with running requests.", e.getMessage());
         }
 
         // Finish the request and verify the engine can be shutdown.

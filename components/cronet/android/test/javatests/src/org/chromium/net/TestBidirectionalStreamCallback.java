@@ -44,6 +44,10 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     // that advance it.
     private boolean mAutoAdvance = true;
 
+    // The executor thread will block on this after reaching a terminal method.
+    // Terminal methods are (onSucceeded, onFailed or onCancelled)
+    private ConditionVariable mBlockOnTerminalState = new ConditionVariable(true);
+
     // Conditionally fail on certain steps.
     private FailureType mFailureType = FailureType.NONE;
     private ResponseStep mFailureStep = ResponseStep.NOTHING;
@@ -127,6 +131,20 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     public TestBidirectionalStreamCallback(boolean useDirectExecutor) {
         mUseDirectExecutor = useDirectExecutor;
         mDirectExecutor = new DirectExecutor();
+    }
+
+    /**
+     * This blocks the callback executor thread once it has reached a final state callback.
+     * In order to continue execution, this method must be called again and providing {@code false}
+     * to continue execution.
+     * @param blockOnTerminalState the state to set for the executor thread
+     */
+    public void setBlockOnTerminalState(boolean blockOnTerminalState) {
+        if (blockOnTerminalState) {
+            mBlockOnTerminalState.close();
+        } else {
+            mBlockOnTerminalState.open();
+        }
     }
 
     public void setAutoAdvance(boolean autoAdvance) {
@@ -291,6 +309,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
         mResponseStep = ResponseStep.ON_SUCCEEDED;
         mResponseInfo = info;
         openDone();
+        mBlockOnTerminalState.block();
         maybeThrowCancelOrPause(stream, mReadStepBlock);
     }
 
@@ -310,6 +329,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
         mOnErrorCalled = true;
         mError = error;
         openDone();
+        mBlockOnTerminalState.block();
         maybeThrowCancelOrPause(stream, mReadStepBlock);
     }
 
@@ -326,6 +346,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
 
         mOnCanceledCalled = true;
         openDone();
+        mBlockOnTerminalState.block();
         maybeThrowCancelOrPause(stream, mReadStepBlock);
     }
 

@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -298,6 +299,42 @@ public class BidirectionalStreamTest {
         assertEquals("", callback.mResponseInfo.getAllHeaders().get("echo-empty").get(0));
         assertEquals(
                 "zebra", callback.mResponseInfo.getAllHeaders().get("echo-content-type").get(0));
+    }
+
+    @Test
+    @SmallTest
+    @OnlyRunNativeCronet
+    public void testGetActiveRequestCount() throws Exception {
+        TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
+        callback.addWriteData("Test String".getBytes());
+        callback.setBlockOnTerminalState(true);
+        BidirectionalStream stream =
+                mCronetEngine
+                        .newBidirectionalStreamBuilder(Http2TestServer.getEchoStreamUrl(), callback,
+                                callback.getExecutor())
+                        .build();
+        assertEquals(0, mCronetEngine.getActiveRequestCount());
+        stream.start();
+        callback.blockForDone();
+        assertEquals(1, mCronetEngine.getActiveRequestCount());
+        callback.setBlockOnTerminalState(false);
+        waitForActiveRequestCount(0);
+    }
+
+    @Test
+    @SmallTest
+    @OnlyRunNativeCronet
+    public void testGetActiveRequestCountWithInvalidRequest() throws Exception {
+        TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
+        BidirectionalStream stream =
+                mCronetEngine
+                        .newBidirectionalStreamBuilder(Http2TestServer.getEchoStreamUrl(), callback,
+                                callback.getExecutor())
+                        .addHeader("", "") // Deliberately invalid
+                        .build();
+        assertEquals(0, mCronetEngine.getActiveRequestCount());
+        assertThrows(IllegalArgumentException.class, stream::start);
+        assertEquals(0, mCronetEngine.getActiveRequestCount());
     }
 
     @Test
@@ -1451,7 +1488,7 @@ public class BidirectionalStreamTest {
             mCronetEngine.shutdown();
             fail("Should throw an exception");
         } catch (Exception e) {
-            assertEquals("Cannot shutdown with active requests.", e.getMessage());
+            assertEquals("Cannot shutdown with running requests.", e.getMessage());
         }
 
         callback.waitForNextReadStep();
@@ -1460,7 +1497,7 @@ public class BidirectionalStreamTest {
             mCronetEngine.shutdown();
             fail("Should throw an exception");
         } catch (Exception e) {
-            assertEquals("Cannot shutdown with active requests.", e.getMessage());
+            assertEquals("Cannot shutdown with running requests.", e.getMessage());
         }
         callback.startNextRead(stream);
 
@@ -1470,7 +1507,7 @@ public class BidirectionalStreamTest {
             mCronetEngine.shutdown();
             fail("Should throw an exception");
         } catch (Exception e) {
-            assertEquals("Cannot shutdown with active requests.", e.getMessage());
+            assertEquals("Cannot shutdown with running requests.", e.getMessage());
         }
 
         // May not have read all the data, in theory. Just enable auto-advance
@@ -1516,7 +1553,7 @@ public class BidirectionalStreamTest {
             mCronetEngine.shutdown();
             fail("Should throw an exception");
         } catch (Exception e) {
-            assertEquals("Cannot shutdown with active requests.", e.getMessage());
+            assertEquals("Cannot shutdown with running requests.", e.getMessage());
         }
         callback.waitForNextReadStep();
         assertEquals(ResponseStep.ON_RESPONSE_STARTED, callback.mResponseStep);
@@ -1636,5 +1673,16 @@ public class BidirectionalStreamTest {
         builder.build().start();
         callback.blockForDone();
         assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
+    }
+
+    /**
+     * Cronet does not currently provide an API to wait for the active request
+     * count to change. We can't just wait for the terminal callback to fire
+     * because Cronet updates the count some time *after* we return from the
+     * callback. We hack around this by polling the active request count in a
+     * loop.
+     */
+    private void waitForActiveRequestCount(int expectedCount) throws Exception {
+        while (mCronetEngine.getActiveRequestCount() != expectedCount) Thread.sleep(100);
     }
 }

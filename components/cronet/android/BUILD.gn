@@ -313,6 +313,7 @@ android_library("cronet_impl_common_base_java") {
     "java/src/org/chromium/net/impl/NoOpLogger.java",
     "java/src/org/chromium/net/impl/Preconditions.java",
     "java/src/org/chromium/net/impl/QuicExceptionImpl.java",
+    "java/src/org/chromium/net/impl/RefCountDelegate.java",
     "java/src/org/chromium/net/impl/RequestFinishedInfoImpl.java",
     "java/src/org/chromium/net/impl/UrlRequestBase.java",
     "java/src/org/chromium/net/impl/UrlRequestBuilderImpl.java",

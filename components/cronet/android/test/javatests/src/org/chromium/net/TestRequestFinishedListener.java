@@ -17,6 +17,7 @@ import java.util.concurrent.Executors;
  */
 public class TestRequestFinishedListener extends RequestFinishedInfo.Listener {
     private final ConditionVariable mBlock;
+    private final ConditionVariable mBlockListener = new ConditionVariable(true);
     private RequestFinishedInfo mRequestInfo;
     private boolean mMakeListenerThrow;
 
@@ -40,12 +41,20 @@ public class TestRequestFinishedListener extends RequestFinishedInfo.Listener {
         return mRequestInfo;
     }
 
+    public void blockListener() {
+        mBlockListener.close();
+    }
+    public void unblockListener() {
+        mBlockListener.open();
+    }
+
     @Override
     public void onRequestFinished(RequestFinishedInfo requestInfo) {
         assertNull("onRequestFinished called repeatedly", mRequestInfo);
         assertNotNull(requestInfo);
         mRequestInfo = requestInfo;
         mBlock.open();
+        mBlockListener.block();
         if (mMakeListenerThrow) {
             throw new IllegalStateException(
                     "TestRequestFinishedListener throwing exception as requested");

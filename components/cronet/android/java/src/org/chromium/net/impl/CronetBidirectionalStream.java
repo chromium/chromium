@@ -100,6 +100,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
     private final boolean mTrafficStatsUidSet;
     private final int mTrafficStatsUid;
     private final long mNetworkHandle;
+    private RefCountDelegate mInflightDoneCallbackCount;
     private CronetException mException;
 
     /*
@@ -274,6 +275,11 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                         !mDelayRequestHeadersUntilFirstFlush, mTrafficStatsTagSet, mTrafficStatsTag,
                         mTrafficStatsUidSet, mTrafficStatsUid, mNetworkHandle);
                 mRequestContext.onRequestStarted();
+                mInflightDoneCallbackCount =
+                        new RefCountDelegate(mRequestContext::onRequestFinished);
+                // We need an initial count of 2: one decrement for the final callback
+                // (e.g. onSucceeded), and another for onMetricsCollected().
+                mInflightDoneCallbackCount.increment();
                 // Non-zero startResult means an argument error.
                 int startResult = CronetBidirectionalStreamJni.get().start(mNativeStream,
                         CronetBidirectionalStream.this, mInitialUrl, mInitialPriority,
@@ -291,6 +297,8 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 // If there's an exception, clean up and then throw the
                 // exception to the caller.
                 destroyNativeStreamLocked(false);
+                mInflightDoneCallbackCount.decrement();
+                mInflightDoneCallbackCount.decrement();
                 throw e;
             }
         }
@@ -482,6 +490,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
         } catch (Exception e) {
             Log.e(CronetUrlRequestContext.LOG_TAG, "Exception in onSucceeded method", e);
         }
+        mInflightDoneCallbackCount.decrement();
     }
 
     @SuppressWarnings("unused")
@@ -652,6 +661,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 } catch (Exception e) {
                     Log.e(CronetUrlRequestContext.LOG_TAG, "Exception in onCanceled method", e);
                 }
+                mInflightDoneCallbackCount.decrement();
             }
         });
     }
@@ -667,27 +677,33 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
             long responseStartMs, long requestEndMs, boolean socketReused, long sentByteCount,
             long receivedByteCount) {
         synchronized (mNativeStreamLock) {
-            if (mMetrics != null) {
-                throw new IllegalStateException("Metrics collection should only happen once.");
+            try {
+                if (mMetrics != null) {
+                    throw new IllegalStateException("Metrics collection should only happen once.");
+                }
+                mMetrics = new CronetMetrics(requestStartMs, dnsStartMs, dnsEndMs, connectStartMs,
+                        connectEndMs, sslStartMs, sslEndMs, sendingStartMs, sendingEndMs,
+                        pushStartMs, pushEndMs, responseStartMs, requestEndMs, socketReused,
+                        sentByteCount, receivedByteCount);
+                assert mReadState == mWriteState;
+                assert (mReadState == State.SUCCESS) || (mReadState == State.ERROR)
+                        || (mReadState == State.CANCELED);
+                int finishedReason;
+                if (mReadState == State.SUCCESS) {
+                    finishedReason = RequestFinishedInfo.SUCCEEDED;
+                } else if (mReadState == State.CANCELED) {
+                    finishedReason = RequestFinishedInfo.CANCELED;
+                } else {
+                    finishedReason = RequestFinishedInfo.FAILED;
+                }
+                final RequestFinishedInfo requestFinishedInfo =
+                        new RequestFinishedInfoImpl(mInitialUrl, mRequestAnnotations, mMetrics,
+                                finishedReason, mResponseInfo, mException);
+                mRequestContext.reportRequestFinished(
+                        requestFinishedInfo, mInflightDoneCallbackCount);
+            } finally {
+                mInflightDoneCallbackCount.decrement();
             }
-            mMetrics = new CronetMetrics(requestStartMs, dnsStartMs, dnsEndMs, connectStartMs,
-                    connectEndMs, sslStartMs, sslEndMs, sendingStartMs, sendingEndMs, pushStartMs,
-                    pushEndMs, responseStartMs, requestEndMs, socketReused, sentByteCount,
-                    receivedByteCount);
-            assert mReadState == mWriteState;
-            assert (mReadState == State.SUCCESS) || (mReadState == State.ERROR)
-                    || (mReadState == State.CANCELED);
-            int finishedReason;
-            if (mReadState == State.SUCCESS) {
-                finishedReason = RequestFinishedInfo.SUCCEEDED;
-            } else if (mReadState == State.CANCELED) {
-                finishedReason = RequestFinishedInfo.CANCELED;
-            } else {
-                finishedReason = RequestFinishedInfo.FAILED;
-            }
-            final RequestFinishedInfo requestFinishedInfo = new RequestFinishedInfoImpl(mInitialUrl,
-                    mRequestAnnotations, mMetrics, finishedReason, mResponseInfo, mException);
-            mRequestContext.reportRequestFinished(requestFinishedInfo);
         }
     }
 
@@ -796,6 +812,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
             Log.e(CronetUrlRequestContext.LOG_TAG, "Exception notifying of failed request",
                     failException);
         }
+        mInflightDoneCallbackCount.decrement();
     }
 
     /**
