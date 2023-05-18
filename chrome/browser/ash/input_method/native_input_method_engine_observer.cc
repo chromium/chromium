@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_offset_string_conversions.h"
@@ -1411,13 +1412,13 @@ void NativeInputMethodEngineObserver::RecordUkm(mojom::UkmEntryPtr entry) {
   }
 }
 
-void NativeInputMethodEngineObserver::ReportKoreanAction(
+void NativeInputMethodEngineObserver::DEPRECATED_ReportKoreanAction(
     mojom::KoreanAction action) {
   UMA_HISTOGRAM_ENUMERATION("InputMethod.PhysicalKeyboard.Korean.Action",
                             action);
 }
 
-void NativeInputMethodEngineObserver::ReportKoreanSettings(
+void NativeInputMethodEngineObserver::DEPRECATED_ReportKoreanSettings(
     mojom::KoreanSettingsPtr settings) {
   UMA_HISTOGRAM_BOOLEAN("InputMethod.PhysicalKeyboard.Korean.MultipleSyllables",
                         settings->input_multiple_syllables);
@@ -1425,11 +1426,17 @@ void NativeInputMethodEngineObserver::ReportKoreanSettings(
                             settings->layout);
 }
 
-void NativeInputMethodEngineObserver::ReportSuggestionOpportunity(
+void NativeInputMethodEngineObserver::DEPRECATED_ReportSuggestionOpportunity(
     ime::AssistiveSuggestionMode mode) {
   base::UmaHistogramEnumeration(
       "InputMethod.Assistive.MultiWord.SuggestionOpportunity",
       ToUmaSuggestionType(mode));
+}
+
+void NativeInputMethodEngineObserver::ReportHistogramSample(
+    base::Histogram* histogram,
+    uint16_t value) {
+  histogram->Add(base::strict_cast<base::Histogram::Sample>(value));
 }
 
 void NativeInputMethodEngineObserver::UpdateQuickSettings(

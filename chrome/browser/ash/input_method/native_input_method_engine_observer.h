@@ -110,9 +110,13 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
       const absl::optional<ime::SuggestionsTextContext>& context) override;
   void UpdateCandidatesWindow(ime::mojom::CandidatesWindowPtr window) override;
   void RecordUkm(ime::mojom::UkmEntryPtr entry) override;
-  void ReportKoreanAction(ime::mojom::KoreanAction action) override;
-  void ReportKoreanSettings(ime::mojom::KoreanSettingsPtr settings) override;
-  void ReportSuggestionOpportunity(ime::AssistiveSuggestionMode mode) override;
+  void DEPRECATED_ReportKoreanAction(ime::mojom::KoreanAction action) override;
+  void DEPRECATED_ReportKoreanSettings(
+      ime::mojom::KoreanSettingsPtr settings) override;
+  void DEPRECATED_ReportSuggestionOpportunity(
+      ime::AssistiveSuggestionMode mode) override;
+  void ReportHistogramSample(base::Histogram* histogram,
+                             uint16_t value) override;
   void UpdateQuickSettings(
       ime::mojom::InputMethodQuickSettingsPtr quick_settings) override;
 

@@ -201,11 +201,54 @@ enum KoreanAction {
   kComposeOutOfOrder = 3,
 };
 
+// Specifies how the buckets of an UMA histogram are determined.
+//
+// Next ordinal: 2
+[Extensible, Stable]
+enum HistogramBucketType {
+  // Buckets are exponential. For example, buckets might contain (sequentially)
+  // the count of values in the following intervals:
+  // [0,1), [1,2), [2,4), [4,8), [8,16), [16,32), [32,64), [64,infinity)
+  // The algorithm to determine the buckets is from base::Histogram.
+  // This is the default for most metrics.
+  [Default] kExponential = 0,
+
+  // Buckets are evenly spaced. For example, buckets might contain
+  // (sequentially) the count of values in the following intervals:
+  // [0,5), [5,10), [10,infinity)
+  // The algorithm to determine the buckets is from base::LinearHistogram.
+  kLinear = 1,
+};
+
+// An UMA histogram with each sample allocated to a bucket.
+// The buckets are determined by `bucket_type`, `minimum`, `maximum` and
+// `bucket_count`.
+//
+// Next ordinal: 5
+[Stable]
+struct BucketedHistogram {
+  string name@0;
+  HistogramBucketType bucket_type@1;
+
+  // The minimum value for a sample.
+  // This must be > 0.
+  uint16 minimum@2;
+
+  // The maximum value for a sample.
+  // This must be > minimum.
+  uint16 maximum@3;
+
+  // The number of buckets between `minimum` and `maximum`.
+  // This must be > 2.
+  // This must also be <= (maximum - minimum + 2).
+  uint16 bucket_count@4;
+};
+
 // Interface for InputMethod to interact with Chrome.
 // Provides a way for the InputMethod, which lives in a Chrome utility process,
 // to communicate back to the browser process.
 //
-// Next ordinal: 15
+// Next ordinal: 16
 [Stable]
 interface InputMethodHost {
   // ========================================================
@@ -316,16 +359,25 @@ interface InputMethodHost {
 
   // Reports an action performed on the Korean IME.
   // Recorded in UMA as InputMethod.PhysicalKeyboard.Korean.Action.
-  [MinVersion=3] ReportKoreanAction@10(KoreanAction action);
+  // DEPRECATED: Use ReportHistogramSample instead.
+  [MinVersion=3] DEPRECATED_ReportKoreanAction@10(KoreanAction action);
 
   // Reports the usage of certain settings on the Korean IME:
   // - The input multiple syllables setting is recorded in UMA as
   //   InputMethod.PhysicalKeyboard.Korean.MultipleSyllables.
   // - The layout setting is recorded in UMA as
   //   InputMethod.PhysicalKeyboard.Korean.Layout.
-  [MinVersion=3] ReportKoreanSettings@11(KoreanSettings settings);
+  // DEPRECATED: Use ReportHistogramSample instead.
+  [MinVersion=3] DEPRECATED_ReportKoreanSettings@11(KoreanSettings settings);
 
   // Reports an opportunity identified in the current text to show a predictive
   // text suggestions.
-  [MinVersion=8] ReportSuggestionOpportunity@14(SuggestionMode mode);
+  // DEPRECATED: Use ReportHistogramSample instead.
+  [MinVersion=8] DEPRECATED_ReportSuggestionOpportunity@14(SuggestionMode mode);
+
+  // Reports a histogram sample to UMA.
+  // The name of the histogram must start with 'Untrusted.'. (e.g.
+  // 'Untrusted.InputMethod.CharacterCount'), or else this sample is dropped.
+  [MinVersion=10] ReportHistogramSample@15(BucketedHistogram histogram,
+                                           uint16 value);
 };
