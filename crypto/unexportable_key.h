@@ -139,7 +139,7 @@ class CRYPTO_EXPORT VirtualUnexportableSigningKey {
   // Deletes the key from storage in the virtual machine. As the virtual machine
   // has limited storage shared by all applications it is important to delete
   // keys no longer in use.
-  virtual bool DeleteKey() = 0;
+  virtual void DeleteKey() = 0;
 };
 
 // VirtualUnexportableKeyProvider creates |VirtualUnexportableSigningKey|s.
