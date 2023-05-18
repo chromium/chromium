@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/field_filler.h"
 
 #include <stdint.h>
+#include <array>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -764,16 +765,44 @@ std::u16string GetExpirationYearForVirtualCardPreviewInput(
 std::u16string GetExpirationDateForInput(const CreditCard& credit_card,
                                          const AutofillField& field,
                                          std::string* failure_to_fill) {
-  // TODO(crbug.com/1441057): If |field| is classified by the server we should
-  // try to give extra priority to the field type.
+  std::u16string mm = credit_card.Expiration2DigitMonthAsString();
+  std::u16string yy = credit_card.Expiration2DigitYearAsString();
+  std::u16string yyyy = credit_card.Expiration4DigitYearAsString();
+
   ServerFieldType field_type = field.Type().GetStorableType();
   CreditCardField::ExpirationDateFormat format =
       CreditCardField::DetermineExpirationDateFormat(field, field_type);
-  std::u16string expiration_candidate = base::StrCat(
-      {credit_card.Expiration2DigitMonthAsString(), format.separator,
-       format.digits_in_expiration_year == 4
-           ? credit_card.Expiration4DigitYearAsString()
-           : credit_card.Expiration2DigitYearAsString()});
+
+  // In case of a server override, try whether the server's format fits and use
+  // it if possible.
+  // TODO(crbug.com/1441057): Experiment with choosing the server type (when
+  // it's not an override) over the format string found on the website.
+  std::u16string server_year;
+  if (field.server_type() == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR) {
+    server_year = yy;
+  } else if (field.server_type() == CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) {
+    server_year = yyyy;
+  }
+  if (field.server_type_prediction_is_override() && !server_year.empty()) {
+    // Try several separators (longest to shortest), hoping that one fits.
+    std::array<std::u16string, 4> separator_candidates = {
+        format.separator,
+        std::u16string(base::TrimWhitespace(format.separator, base::TRIM_ALL)),
+        std::u16string(u"/"), std::u16string()};
+    for (const std::u16string& separator : separator_candidates) {
+      std::u16string expiration_candidate =
+          base::StrCat({mm, separator, server_year});
+      if (field.max_length == 0 ||
+          expiration_candidate.length() <= field.max_length) {
+        return expiration_candidate;
+      }
+    }
+  }
+
+  // Now try the format data derived locally from the website.
+  std::u16string expiration_candidate =
+      base::StrCat({mm, format.separator,
+                    format.digits_in_expiration_year == 4 ? yyyy : yy});
   if (field.max_length != 0 &&
       expiration_candidate.length() > field.max_length) {
     if (failure_to_fill) {
