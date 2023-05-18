@@ -471,8 +471,11 @@ void DIPSService::DeleteDIPSEligibleState(
   for (const auto& site : sites_to_clear) {
     const ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForDipsSite(
         base::PassKey<DIPSService>(), site);
-    ukm::builders::DIPS_Deletion(source_id).SetDetected(true).Record(
-        ukm::UkmRecorder::Get());
+    ukm::builders::DIPS_Deletion(source_id)
+        .SetShouldBlockThirdPartyCookies(ShouldBlockThirdPartyCookies())
+        .SetHasCookieException(Has3PCExceptionAs3P(site))
+        .SetIsDeletionEnabled(dips::kDeletionEnabled.Get())
+        .Record(ukm::UkmRecorder::Get());
   }
 
   base::OnceClosure finish_callback;

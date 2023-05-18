@@ -7608,12 +7608,22 @@ be describing additional metrics about the same event.
   <owner>dc-komics@google.com</owner>
   <summary>
     Recorded when DIPS judges a site to be an incidental party and deletes its
-    storage.
+    state if specific conditions are met.
   </summary>
-  <metric name="Detected" enum="BooleanDetected">
+  <metric name="HasCookieException" enum="Boolean">
     <summary>
-      Always set to true (only present because UKM events require at least one
-      metric).
+      True iff the user has a third-party cookies blocking exception for the
+      site (as a third-party).
+    </summary>
+  </metric>
+  <metric name="IsDeletionEnabled" enum="Boolean">
+    <summary>
+      True iff site data deletion is enabled for the DIPS service.
+    </summary>
+  </metric>
+  <metric name="ShouldBlockThirdPartyCookies" enum="Boolean">
+    <summary>
+      True when third-party cookies are blocked.
     </summary>
   </metric>
 </event>
