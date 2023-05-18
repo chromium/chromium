@@ -4,6 +4,7 @@
 
 #include "gpu/vulkan/semaphore_handle.h"
 
+#include "base/logging.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -38,6 +39,9 @@ SemaphoreHandle::SemaphoreHandle(gfx::GpuFenceHandle fence_handle) {
   // https://fuchsia.dev/reference/fidl/fuchsia.ui.scenic.
   Init(VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA,
        std::move(fence_handle.owned_event));
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  Init(VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT_KHR,
+       std::move(fence_handle.owned_fd));
 #elif BUILDFLAG(IS_POSIX)
   Init(VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT_KHR,
        std::move(fence_handle.owned_fd));
@@ -60,6 +64,12 @@ gfx::GpuFenceHandle SemaphoreHandle::ToGpuFenceHandle() && {
   // VkSemaphore, which can then be used to submit present work, see
   // https://fuchsia.dev/reference/fidl/fuchsia.ui.scenic.
   fence_handle.owned_event = TakeHandle();
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  if (type_ == VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT_KHR) {
+    fence_handle.owned_fd = TakeHandle();
+  } else {
+    DLOG(ERROR) << "Unable to convert SemaphoreHandle to GpuFenceHandle";
+  }
 #elif BUILDFLAG(IS_POSIX)
   fence_handle.owned_fd = TakeHandle();
 #elif BUILDFLAG(IS_WIN)
