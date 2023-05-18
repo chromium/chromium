@@ -4,7 +4,6 @@
 
 #include "ash/system/phonehub/app_stream_launcher_list_item.h"
 
-#include "app_stream_launcher_list_item.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
