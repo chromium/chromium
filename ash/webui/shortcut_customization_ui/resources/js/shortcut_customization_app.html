@@ -76,9 +76,11 @@
     </shortcuts-bottom-nav-content>
   </div>
   <div slot="bottom-nav-content-drawer" id="bottomNavContentDrawer">
-    <bottom-nav-content keyboard-settings-link="[[keyboardSettingsLink]]"
+    <shortcuts-bottom-nav-content
+      keyboard-settings-link="[[keyboardSettingsLink]]"
       restore-all-button-hidden="[[shouldHideRestoreAllButton()]]"
-      on-restore-all-default="onRestoreAllDefaultClicked"></bottom-nav-content>
+      on-restore-all-default="onRestoreAllDefaultClicked">
+    </shortcuts-bottom-nav-content>
   </div>
 </navigation-view-panel>
 
