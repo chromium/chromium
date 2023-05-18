@@ -62,6 +62,7 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
+#import "ui/base/resource/resource_bundle.h"
 #import "ui/gfx/geometry/rect.h"
 #import "url/gurl.h"
 
@@ -669,11 +670,22 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
         popup_suggestion.acceptance_a11y_announcement.has_value()
             ? SysUTF16ToNSString(*popup_suggestion.acceptance_a11y_announcement)
             : nil;
+
     // Only show icon for credit card suggestions.
-    NSString* icon = delegate && delegate->GetPopupType() ==
-                                     autofill::PopupType::kCreditCards
-                         ? base::SysUTF8ToNSString(popup_suggestion.icon)
-                         : nil;
+    UIImage* icon = nil;
+    if (delegate &&
+        delegate->GetPopupType() == autofill::PopupType::kCreditCards) {
+      if (popup_suggestion.custom_icon.IsEmpty()) {
+        const int resourceID =
+            autofill::CreditCard::IconResourceId(popup_suggestion.icon);
+        icon = ui::ResourceBundle::GetSharedInstance()
+                   .GetNativeImageNamed(resourceID)
+                   .ToUIImage();
+      } else {
+        icon = popup_suggestion.custom_icon.ToUIImage();
+      }
+    }
+
     FormSuggestion* suggestion = [FormSuggestion
                suggestionWithValue:value
                 displayDescription:displayDescription

@@ -441,7 +441,7 @@ TEST_F(SharedPasswordControllerTest, ReturnsSuggestionsIfAvailable) {
   FormSuggestion* suggestion =
       [FormSuggestion suggestionWithValue:@"value"
                        displayDescription:@"display-description"
-                                     icon:@"icon"
+                                     icon:nil
                                identifier:0
                         backendIdentifier:nil
                            requiresReauth:NO];

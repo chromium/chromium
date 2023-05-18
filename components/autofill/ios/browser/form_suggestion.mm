@@ -12,7 +12,7 @@
 
 - (instancetype)initWithValue:(NSString*)value
             displayDescription:(NSString*)displayDescription
-                          icon:(NSString*)icon
+                          icon:(UIImage*)icon
                     identifier:(NSInteger)identifier
              backendIdentifier:(NSString*)backendIdentifier
                 requiresReauth:(BOOL)requiresReauth
@@ -32,7 +32,7 @@
 
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription
-                                  icon:(NSString*)icon
+                                  icon:(UIImage*)icon
                             identifier:(NSInteger)identifier
                      backendIdentifier:(NSString*)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth
@@ -48,7 +48,7 @@
 
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription
-                                  icon:(NSString*)icon
+                                  icon:(UIImage*)icon
                             identifier:(NSInteger)identifier
                      backendIdentifier:(NSString*)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth {

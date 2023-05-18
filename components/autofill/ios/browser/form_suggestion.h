@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_FORM_SUGGESTION_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 // Represents a user-selectable suggestion for a single field within a form
 // on a web page.
@@ -17,8 +18,9 @@
 // An optional user-visible description for this suggestion.
 @property(copy, readonly, nonatomic) NSString* displayDescription;
 
-// The string in the form to identify credit card icon.
-@property(copy, readonly, nonatomic) NSString* icon;
+// The credit card icon; either a custom icon if available, or the network icon
+// otherwise.
+@property(copy, readonly, nonatomic) UIImage* icon;
 
 // The integer identifier associated with the suggestion. Identifiers greater
 // than zero are profile or credit card identifiers.
@@ -43,7 +45,7 @@
 // Returns FormSuggestion (immutable) with given values.
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription
-                                  icon:(NSString*)icon
+                                  icon:(UIImage*)icon
                             identifier:(NSInteger)identifier
                      backendIdentifier:(NSString*)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth
@@ -52,7 +54,7 @@
 // Returns FormSuggestion (immutable) with given values.
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription
-                                  icon:(NSString*)icon
+                                  icon:(UIImage*)icon
                             identifier:(NSInteger)identifier
                      backendIdentifier:(NSString*)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth;

@@ -81,13 +81,13 @@
   NSArray<FormSuggestion*>* suggestions = @[
     [FormSuggestion suggestionWithValue:@"foo"
                      displayDescription:nil
-                                   icon:@""
+                                   icon:nil
                              identifier:0
                       backendIdentifier:nil
                          requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
-                                   icon:@""
+                                   icon:nil
                              identifier:1
                       backendIdentifier:nil
                          requiresReauth:NO]

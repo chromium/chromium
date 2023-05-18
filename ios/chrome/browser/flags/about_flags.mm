@@ -1478,6 +1478,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"history-sync-opt-in", flag_descriptions::kHistorySyncOptInName,
      flag_descriptions::kHistorySyncOptInDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kHistorySyncOptIn)},
+    {"autofill-enable-card-art-image",
+     flag_descriptions::kAutofillEnableCardArtImageName,
+     flag_descriptions::kAutofillEnableCardArtImageDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardArtImage)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

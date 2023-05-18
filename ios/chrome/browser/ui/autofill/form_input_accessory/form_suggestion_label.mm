@@ -83,12 +83,9 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
     [self addSubview:stackView];
     AddSameConstraints(stackView, self);
 
-    if (suggestion.icon.length > 0) {
-      const int iconImageID = autofill::data_util::GetPaymentRequestData(
-                                  base::SysNSStringToUTF8(suggestion.icon))
-                                  .icon_resource_id;
-      UIImage* iconImage = NativeImage(iconImageID);
-      UIImageView* iconView = [[UIImageView alloc] initWithImage:iconImage];
+    if (suggestion.icon != nil) {
+      UIImageView* iconView =
+          [[UIImageView alloc] initWithImage:suggestion.icon];
       [stackView addArrangedSubview:iconView];
     }
 

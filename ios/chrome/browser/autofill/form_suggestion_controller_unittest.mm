@@ -77,13 +77,13 @@ using autofill::PopupType;
   NSArray* suggestions = @[
     [FormSuggestion suggestionWithValue:@"foo"
                      displayDescription:nil
-                                   icon:@""
+                                   icon:nil
                              identifier:0
                       backendIdentifier:nil
                          requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
-                                   icon:@""
+                                   icon:nil
                              identifier:1
                       backendIdentifier:nil
                          requiresReauth:NO]
@@ -384,13 +384,13 @@ TEST_F(FormSuggestionControllerTest,
   NSArray* suggestions = @[
     [FormSuggestion suggestionWithValue:@"foo"
                      displayDescription:nil
-                                   icon:@""
+                                   icon:nil
                              identifier:0
                       backendIdentifier:nil
                          requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
-                                   icon:@""
+                                   icon:nil
                              identifier:1
                       backendIdentifier:nil
                          requiresReauth:NO]
@@ -436,7 +436,7 @@ TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
   NSArray* suggestions = @[
     [FormSuggestion suggestionWithValue:@"foo"
                      displayDescription:nil
-                                   icon:@""
+                                   icon:nil
                              identifier:0
                       backendIdentifier:nil
                          requiresReauth:NO],
@@ -473,7 +473,7 @@ TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
 TEST_F(FormSuggestionControllerTest, AutofillSuggestionIPH) {
   FormSuggestion* suggestion = [FormSuggestion suggestionWithValue:@"foo"
                                                 displayDescription:nil
-                                                              icon:@""
+                                                              icon:nil
                                                         identifier:0
                                                  backendIdentifier:nil
                                                     requiresReauth:NO];
