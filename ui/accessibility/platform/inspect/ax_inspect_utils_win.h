@@ -77,8 +77,7 @@ std::vector<Microsoft::WRL::ComPtr<IAccessible>> IAccessibleChildrenOf(
 
 // Returns IA2 Interfaces
 template <typename ServiceType>
-HRESULT IA2QueryInterface(IAccessible* accessible,
-                          ServiceType** out_accessible) {
+HRESULT IA2QueryInterface(IUnknown* accessible, ServiceType** out_accessible) {
   // IA2 Spec dictates that IServiceProvider should be used instead of
   // QueryInterface when retrieving IAccessible2.
   Microsoft::WRL::ComPtr<IServiceProvider> service_provider;
