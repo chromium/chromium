@@ -1008,7 +1008,9 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   if (cookie_util::ShouldClearSessionCookies()) {
     cookie_util::ClearSessionCookies(
         self.appState.mainBrowserState->GetOriginalChromeBrowserState());
-    if (!(self.otrBrowser->GetWebStateList()->empty())) {
+    Browser* otrBrowser =
+        self.browserProviderInterface.incognitoBrowserProvider.browser;
+    if (otrBrowser && !(otrBrowser->GetWebStateList()->empty())) {
       cookie_util::ClearSessionCookies(
           self.appState.mainBrowserState->GetOffTheRecordChromeBrowserState());
     }
@@ -1287,20 +1289,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 #pragma mark - Helper methods backed by interfaces.
-
-- (Browser*)mainBrowser {
-  DCHECK(self.browserProviderInterface);
-  return self.browserProviderInterface.mainBrowserProvider.browser;
-}
-
-- (Browser*)otrBrowser {
-  DCHECK(self.browserProviderInterface);
-  return self.browserProviderInterface.incognitoBrowserProvider.browser;
-}
-
-- (Browser*)currentBrowser {
-  return self.browserProviderInterface.currentBrowserProvider.browser;
-}
 
 - (ChromeBrowserState*)currentBrowserState {
   if (!self.browserProviderInterface.currentBrowserProvider.browser) {
