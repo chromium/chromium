@@ -28,12 +28,6 @@ class Messenger {
   // Sends an unlock event message to the remote device.
   virtual void DispatchUnlockEvent() = 0;
 
-  // Sends a serialized SecureMessage to the remote device to decrypt the
-  // |challenge|. OnDecryptResponse will be called for each observer when the
-  // decrypted response is received.
-  // TODO(isherman): Add params for the RSA private key and crypto delegate.
-  virtual void RequestDecryption(const std::string& challenge) = 0;
-
   // Sends a simple request to the remote device to unlock the screen.
   // OnUnlockResponse is called for each observer when the response is returned.
   virtual void RequestUnlock() = 0;

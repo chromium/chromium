@@ -30,8 +30,6 @@ namespace proximity_auth {
 
 namespace {
 
-const char kChallenge[] = "a most difficult challenge";
-
 class MockMessengerObserver : public MessengerObserver {
  public:
   explicit MockMessengerObserver(Messenger* messenger) : messenger_(messenger) {
@@ -46,14 +44,8 @@ class MockMessengerObserver : public MessengerObserver {
   MOCK_METHOD1(OnUnlockEventSent, void(bool success));
   MOCK_METHOD1(OnRemoteStatusUpdate,
                void(const RemoteStatusUpdate& status_update));
-  MOCK_METHOD1(OnDecryptResponseProxy,
-               void(const std::string& decrypted_bytes));
   MOCK_METHOD1(OnUnlockResponse, void(bool success));
   MOCK_METHOD0(OnDisconnected, void());
-
-  void OnDecryptResponse(const std::string& decrypted_bytes) override {
-    OnDecryptResponseProxy(decrypted_bytes);
-  }
 
  private:
   // The messenger that |this| instance observes.
@@ -124,85 +116,6 @@ TEST_F(ProximityAuthMessengerImplTest,
       "\"type\":\"event\""
       "}",
       GetLastSentMessage());
-}
-
-TEST_F(ProximityAuthMessengerImplTest, RequestDecryption_SendsExpectedMessage) {
-  CreateMessenger(true /* is_multi_device_api_enabled */);
-
-  messenger_->RequestDecryption(kChallenge);
-
-  EXPECT_EQ(
-      "{"
-      "\"encrypted_data\":\"YSBtb3N0IGRpZmZpY3VsdCBjaGFsbGVuZ2U=\","
-      "\"type\":\"decrypt_request\""
-      "}",
-      GetLastSentMessage());
-}
-
-TEST_F(ProximityAuthMessengerImplTest,
-       RequestDecryption_SendsExpectedMessage_UsingBase64UrlEncoding) {
-  CreateMessenger(true /* is_multi_device_api_enabled */);
-
-  messenger_->RequestDecryption("\xFF\xE6");
-
-  EXPECT_EQ(
-      "{"
-      "\"encrypted_data\":\"_-Y=\","
-      "\"type\":\"decrypt_request\""
-      "}",
-      GetLastSentMessage());
-}
-
-TEST_F(ProximityAuthMessengerImplTest,
-       RequestDecryption_SendSucceeds_NotifiesObserversOnReply_NoData) {
-  CreateMessenger(true /* is_multi_device_api_enabled */);
-
-  messenger_->RequestDecryption(kChallenge);
-
-  EXPECT_CALL(*observer_, OnDecryptResponseProxy(std::string()));
-  fake_channel_->NotifyMessageReceived("{\"type\":\"decrypt_response\"}");
-}
-
-TEST_F(ProximityAuthMessengerImplTest,
-       RequestDecryption_SendSucceeds_NotifiesObserversOnReply_InvalidData) {
-  CreateMessenger(true /* is_multi_device_api_enabled */);
-
-  messenger_->RequestDecryption(kChallenge);
-
-  EXPECT_CALL(*observer_, OnDecryptResponseProxy(std::string()));
-  fake_channel_->NotifyMessageReceived(
-      "{"
-      "\"type\":\"decrypt_response\","
-      "\"data\":\"not a base64-encoded string\""
-      "}");
-}
-
-TEST_F(ProximityAuthMessengerImplTest,
-       RequestDecryption_SendSucceeds_NotifiesObserversOnReply_ValidData) {
-  CreateMessenger(true /* is_multi_device_api_enabled */);
-
-  messenger_->RequestDecryption(kChallenge);
-
-  EXPECT_CALL(*observer_, OnDecryptResponseProxy("a winner is you"));
-  fake_channel_->NotifyMessageReceived(
-      "{"
-      "\"type\":\"decrypt_response\","
-      "\"data\":\"YSB3aW5uZXIgaXMgeW91\""  // "a winner is you", base64-encoded
-      "}");
-}
-
-TEST_F(ProximityAuthMessengerImplTest,
-       RequestDecryption_SendSucceeds_ParsesBase64UrlEncodingInReply) {
-  CreateMessenger(true /* is_multi_device_api_enabled */);
-
-  messenger_->RequestDecryption(kChallenge);
-
-  EXPECT_CALL(*observer_, OnDecryptResponseProxy("\xFF\xE6"));
-  fake_channel_->NotifyMessageReceived(
-      "{"
-      "\"type\":\"decrypt_response\","
-      "\"data\":\"_-Y=\""  // "\0xFF\0xE6", base64url-encoded.
-      "}");
 }
 
 TEST_F(ProximityAuthMessengerImplTest, RequestUnlock_SendsExpectedMessage) {
@@ -280,59 +193,6 @@ TEST_F(ProximityAuthMessengerImplTest, OnMessageReceived_UnexpectedReply) {
   StrictMock<MockMessengerObserver> observer(messenger_.get());
 
   // The StrictMock will verify that no observer methods are called.
-  fake_channel_->NotifyMessageReceived("{\"type\":\"unlock_response\"}");
-}
-
-TEST_F(ProximityAuthMessengerImplTest,
-       OnMessageReceived_MismatchedReply_UnlockInReplyToDecrypt) {
-  CreateMessenger(true /* is_multi_device_api_enabled */);
-
-  StrictMock<MockMessengerObserver> observer(messenger_.get());
-
-  messenger_->RequestDecryption(kChallenge);
-
-  // The StrictMock will verify that no observer methods are called.
-  fake_channel_->NotifyMessageReceived("{\"type\":\"unlock_response\"}");
-}
-
-TEST_F(ProximityAuthMessengerImplTest,
-       OnMessageReceived_MismatchedReply_DecryptInReplyToUnlock) {
-  CreateMessenger(true /* is_multi_device_api_enabled */);
-
-  StrictMock<MockMessengerObserver> observer(messenger_.get());
-
-  messenger_->RequestUnlock();
-
-  // The StrictMock will verify that no observer methods are called.
-  fake_channel_->NotifyMessageReceived(
-      "{"
-      "\"type\":\"decrypt_response\","
-      "\"data\":\"YSB3aW5uZXIgaXMgeW91\""
-      "}");
-}
-
-TEST_F(ProximityAuthMessengerImplTest, BuffersMessages) {
-  CreateMessenger(true /* is_multi_device_api_enabled */);
-
-  // Initiate a decryption request, and allow the message to be sent.
-  messenger_->RequestDecryption(kChallenge);
-
-  // At this point, the messenger is awaiting a reply to the decryption message.
-  // While it's waiting, initiate an unlock request.
-  messenger_->RequestUnlock();
-
-  // Now simulate a response arriving for the original decryption request.
-  EXPECT_CALL(*observer_, OnDecryptResponseProxy("a winner is you"));
-  fake_channel_->NotifyMessageReceived(
-      "{"
-      "\"type\":\"decrypt_response\","
-      "\"data\":\"YSB3aW5uZXIgaXMgeW91\""
-      "}");
-
-  // The unlock request should have remained buffered, and should only now be
-  // sent.
-  EXPECT_CALL(*observer_, OnUnlockResponse(true));
-  GetLastSentMessage();
   fake_channel_->NotifyMessageReceived("{\"type\":\"unlock_response\"}");
 }
 

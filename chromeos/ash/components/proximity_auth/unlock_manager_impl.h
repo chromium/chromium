@@ -93,7 +93,6 @@ class UnlockManagerImpl : public UnlockManager,
   // MessengerObserver:
   void OnUnlockEventSent(bool success) override;
   void OnRemoteStatusUpdate(const RemoteStatusUpdate& status_update) override;
-  void OnDecryptResponse(const std::string& decrypted_bytes) override;
   void OnUnlockResponse(bool success) override;
   void OnDisconnected() override;
 
@@ -220,10 +219,6 @@ class UnlockManagerImpl : public UnlockManager,
   // Whether the user is present at the remote device. Unset if no remote status
   // update has yet been received.
   std::unique_ptr<RemoteScreenlockState> remote_screenlock_state_;
-
-  // The sign-in secret received from the remote device by decrypting the
-  // sign-in challenge.
-  std::unique_ptr<std::string> sign_in_secret_;
 
   // Controls the proximity auth flow logic for a remote device. Not owned, and
   // expcted to outlive |this| instance.
