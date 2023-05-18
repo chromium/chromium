@@ -18,6 +18,8 @@ mojom("mojom") {
 
 component("aggregation_service") {
   sources = [
+    "features.cc",
+    "features.h",
     "parsing_utils.cc",
     "parsing_utils.h",
   ]

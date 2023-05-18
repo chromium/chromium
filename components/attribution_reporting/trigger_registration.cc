@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/aggregation_service/features.h"
 #include "components/aggregation_service/parsing_utils.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
@@ -184,11 +185,18 @@ TriggerRegistration::Parse(base::Value::Dict registration) {
   if (!aggregatable_values.has_value()) {
     return base::unexpected(aggregatable_values.error());
   }
-  auto aggregation_coordinator = ParseAggregationCoordinator(
-      registration.Find(kAggregationCoordinatorIdentifier));
-  if (!aggregation_coordinator.has_value()) {
-    return base::unexpected(aggregation_coordinator.error());
+
+  auto aggregation_coordinator = AggregationCoordinator::kDefault;
+  if (base::FeatureList::IsEnabled(
+          aggregation_service::kAggregationServiceMultipleCloudProviders)) {
+    auto parsed_aggregation_coordinator = ParseAggregationCoordinator(
+        registration.Find(kAggregationCoordinatorIdentifier));
+    if (!parsed_aggregation_coordinator.has_value()) {
+      return base::unexpected(parsed_aggregation_coordinator.error());
+    }
+    aggregation_coordinator = *parsed_aggregation_coordinator;
   }
+
   absl::optional<uint64_t> debug_key = ParseDebugKey(registration);
   bool debug_reporting = ParseDebugReporting(registration);
 
@@ -207,8 +215,8 @@ TriggerRegistration::Parse(base::Value::Dict registration) {
   return TriggerRegistration(
       std::move(*filters), debug_key, std::move(*aggregatable_dedup_keys),
       std::move(*event_triggers), std::move(*aggregatable_trigger_data),
-      std::move(*aggregatable_values), debug_reporting,
-      *aggregation_coordinator, source_registration_time_config);
+      std::move(*aggregatable_values), debug_reporting, aggregation_coordinator,
+      source_registration_time_config);
 }
 
 // static
@@ -289,9 +297,12 @@ base::Value::Dict TriggerRegistration::ToJson() const {
 
   SerializeDebugReporting(dict, debug_reporting);
 
-  dict.Set(kAggregationCoordinatorIdentifier,
-           aggregation_service::SerializeAggregationCoordinator(
-               aggregation_coordinator));
+  if (base::FeatureList::IsEnabled(
+          aggregation_service::kAggregationServiceMultipleCloudProviders)) {
+    dict.Set(kAggregationCoordinatorIdentifier,
+             aggregation_service::SerializeAggregationCoordinator(
+                 aggregation_coordinator));
+  }
 
   if (base::FeatureList::IsEnabled(
           kAttributionReportingNullAggregatableReports)) {

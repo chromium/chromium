@@ -264,7 +264,6 @@ TEST(AttributionReportTest, PopulateAdditionalHeaders) {
 
 TEST(AttributionReportTest, NullAggregatableReport) {
   base::Value::Dict expected = base::test::ParseJsonDict(R"json({
-    "aggregation_coordinator_identifier": "aws-cloud",
     "aggregation_service_payloads": [{
       "key_id": "key",
       "payload": "ABCD1234"

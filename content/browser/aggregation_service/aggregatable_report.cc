@@ -20,6 +20,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -29,6 +30,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/aggregation_service/features.h"
 #include "components/aggregation_service/parsing_utils.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -855,9 +857,12 @@ base::Value::Dict AggregatableReport::GetAsJson() const {
     value.Set("debug_key", base::NumberToString(debug_key_.value()));
   }
 
-  value.Set("aggregation_coordinator_identifier",
-            ::aggregation_service::SerializeAggregationCoordinator(
-                aggregation_coordinator_));
+  if (base::FeatureList::IsEnabled(
+          aggregation_service::kAggregationServiceMultipleCloudProviders)) {
+    value.Set("aggregation_coordinator_identifier",
+              ::aggregation_service::SerializeAggregationCoordinator(
+                  aggregation_coordinator_));
+  }
 
   for (const auto& item : additional_fields_) {
     CHECK(!value.contains(item.first))

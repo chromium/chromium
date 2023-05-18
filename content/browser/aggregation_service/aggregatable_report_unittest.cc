@@ -16,10 +16,12 @@
 #include "base/json/json_writer.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/aggregation_service/features.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
@@ -458,7 +460,6 @@ TEST(AggregatableReportTest, GetAsJsonOnePayload_ValidJsonReturned) {
 
   const char kExpectedJsonString[] =
       R"({)"
-      R"("aggregation_coordinator_identifier":"aws-cloud",)"
       R"("aggregation_service_payloads":[)"
       R"({"key_id":"key_1","payload":"ABCD1234"})"
       R"(],)"
@@ -486,7 +487,6 @@ TEST(AggregatableReportTest, GetAsJsonTwoPayloads_ValidJsonReturned) {
 
   const char kExpectedJsonString[] =
       R"({)"
-      R"("aggregation_coordinator_identifier":"aws-cloud",)"
       R"("aggregation_service_payloads":[)"
       R"({"key_id":"key_1","payload":"ABCD1234"},)"
       R"({"key_id":"key_2","payload":"EFGH5678"})"
@@ -510,16 +510,14 @@ TEST(AggregatableReportTest, GetAsJsonDebugCleartextPayload_ValidJsonReturned) {
   std::string report_json_string;
   base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);
 
-  const char kExpectedJsonString[] =
-      R"({)"
-      R"("aggregation_coordinator_identifier":"aws-cloud",)"
-      R"("aggregation_service_payloads":[{)"
-      R"("debug_cleartext_payload":"EFGH5678",)"
-      R"("key_id":"key_1",)"
-      R"("payload":"ABCD1234")"
-      R"(}],)"
-      R"("shared_info":"example_shared_info")"
-      R"(})";
+  const char kExpectedJsonString[] = R"({)"
+                                     R"("aggregation_service_payloads":[{)"
+                                     R"("debug_cleartext_payload":"EFGH5678",)"
+                                     R"("key_id":"key_1",)"
+                                     R"("payload":"ABCD1234")"
+                                     R"(}],)"
+                                     R"("shared_info":"example_shared_info")"
+                                     R"(})";
   EXPECT_EQ(report_json_string, kExpectedJsonString);
 }
 
@@ -536,17 +534,15 @@ TEST(AggregatableReportTest, GetAsJsonDebugKey_ValidJsonReturned) {
   std::string report_json_string;
   base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);
 
-  const char kExpectedJsonString[] =
-      R"({)"
-      R"("aggregation_coordinator_identifier":"aws-cloud",)"
-      R"("aggregation_service_payloads":[{)"
-      R"("debug_cleartext_payload":"EFGH5678",)"
-      R"("key_id":"key_1",)"
-      R"("payload":"ABCD1234")"
-      R"(}],)"
-      R"("debug_key":"1234",)"
-      R"("shared_info":"example_shared_info")"
-      R"(})";
+  const char kExpectedJsonString[] = R"({)"
+                                     R"("aggregation_service_payloads":[{)"
+                                     R"("debug_cleartext_payload":"EFGH5678",)"
+                                     R"("key_id":"key_1",)"
+                                     R"("payload":"ABCD1234")"
+                                     R"(}],)"
+                                     R"("debug_key":"1234",)"
+                                     R"("shared_info":"example_shared_info")"
+                                     R"(})";
   EXPECT_EQ(report_json_string, kExpectedJsonString);
 }
 
@@ -565,18 +561,16 @@ TEST(AggregatableReportTest, GetAsJsonAdditionalFields_ValidJsonReturned) {
   std::string report_json_string;
   base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);
 
-  const char kExpectedJsonString[] =
-      R"({)"
-      R"("":"",)"
-      R"("additional_key":"example_value",)"
-      R"("aggregation_coordinator_identifier":"aws-cloud",)"
-      R"("aggregation_service_payloads":[{)"
-      R"("key_id":"key_1",)"
-      R"("payload":"ABCD1234")"
-      R"(}],)"
-      R"("second":"field",)"
-      R"("shared_info":"example_shared_info")"
-      R"(})";
+  const char kExpectedJsonString[] = R"({)"
+                                     R"("":"",)"
+                                     R"("additional_key":"example_value",)"
+                                     R"("aggregation_service_payloads":[{)"
+                                     R"("key_id":"key_1",)"
+                                     R"("payload":"ABCD1234")"
+                                     R"(}],)"
+                                     R"("second":"field",)"
+                                     R"("shared_info":"example_shared_info")"
+                                     R"(})";
   EXPECT_EQ(report_json_string, kExpectedJsonString);
 }
 
@@ -735,11 +729,9 @@ TEST(AggregatableReportTest, EmptyPayloads) {
   std::string report_json_string;
   base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);
 
-  const char kExpectedJsonString[] =
-      R"({)"
-      R"("aggregation_coordinator_identifier":"aws-cloud",)"
-      R"("shared_info":"example_shared_info")"
-      R"(})";
+  const char kExpectedJsonString[] = R"({)"
+                                     R"("shared_info":"example_shared_info")"
+                                     R"(})";
   EXPECT_EQ(report_json_string, kExpectedJsonString);
 }
 
@@ -912,6 +904,34 @@ TEST(AggregatableReportTest, AggregationCoordinator_ProtoSet) {
     EXPECT_EQ(parsed_request->payload_contents().aggregation_coordinator,
               aggregation_coordinator);
   }
+}
+
+TEST(AggregatableReportTest, AggregationCoordinator_SetInReport) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ::aggregation_service::kAggregationServiceMultipleCloudProviders);
+
+  std::vector<AggregatableReport::AggregationServicePayload> payloads;
+  payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
+                        /*key_id=*/"key_1",
+                        /*debug_cleartext_payload=*/absl::nullopt);
+
+  AggregatableReport report(std::move(payloads), "example_shared_info",
+                            /*debug_key=*/absl::nullopt,
+                            /*additional_fields=*/{},
+                            AggregationCoordinator::kDefault);
+
+  std::string report_json_string;
+  base::JSONWriter::Write(base::Value(report.GetAsJson()), &report_json_string);
+
+  const char kExpectedJsonString[] =
+      R"({)"
+      R"("aggregation_coordinator_identifier":"aws-cloud",)"
+      R"("aggregation_service_payloads":[)"
+      R"({"key_id":"key_1","payload":"ABCD1234"})"
+      R"(],)"
+      R"("shared_info":"example_shared_info")"
+      R"(})";
+  EXPECT_EQ(report_json_string, kExpectedJsonString);
 }
 
 }  // namespace
