@@ -91,7 +91,7 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
     fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
     fake_target_device_connection_broker_->AuthenticateConnection(
         kSourceDeviceId);
-    ASSERT_EQ(fake_observer_->last_status.step, Step::CONNECTED);
+    ASSERT_EQ(fake_observer_->last_status.step, Step::CONNECTING_TO_WIFI);
   }
 
   void NotifySourceOfUpdateResponse(bool ack_successful) {
@@ -296,7 +296,6 @@ TEST_F(TargetDeviceBootstrapControllerTest, RequestWifiCredentials) {
   fake_target_device_connection_broker_->AuthenticateConnection(
       kSourceDeviceId);
 
-  bootstrap_controller_->AttemptWifiCredentialTransfer();
   EXPECT_EQ(fake_observer_->last_status.step, Step::CONNECTING_TO_WIFI);
   EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
       fake_observer_->last_status.payload));
@@ -325,8 +324,6 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   fake_target_device_connection_broker_->AuthenticateConnection(
       kSourceDeviceId);
 
-  bootstrap_controller_->AttemptWifiCredentialTransfer();
-
   fake_target_device_connection_broker_->GetFakeConnection()->VerifyUser(
       mojom::UserVerificationResponse(
           mojom::UserVerificationResult::kUserVerified,
@@ -349,7 +346,6 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   fake_target_device_connection_broker_->AuthenticateConnection(
       kSourceDeviceId);
 
-  bootstrap_controller_->AttemptWifiCredentialTransfer();
   EXPECT_EQ(fake_observer_->last_status.step, Step::CONNECTING_TO_WIFI);
   EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
       fake_observer_->last_status.payload));
@@ -373,7 +369,6 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   fake_target_device_connection_broker_->AuthenticateConnection(
       kSourceDeviceId);
 
-  bootstrap_controller_->AttemptWifiCredentialTransfer();
   EXPECT_EQ(fake_observer_->last_status.step, Step::CONNECTING_TO_WIFI);
   EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
       fake_observer_->last_status.payload));

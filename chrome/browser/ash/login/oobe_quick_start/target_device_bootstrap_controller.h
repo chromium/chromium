@@ -58,6 +58,8 @@ class TargetDeviceBootstrapController
     ~Status();
     Step step = Step::NONE;
     Payload payload;
+    std::string ssid;
+    std::string password;
   };
 
   class Observer : public base::CheckedObserver {

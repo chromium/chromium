@@ -38,6 +38,15 @@ void QuickStartScreenHandler::SetQRCode(base::Value::List blob) {
   CallExternalAPI("setQRCode", std::move(blob));
 }
 
+void QuickStartScreenHandler::ShowConnectingToWifi() {
+  CallExternalAPI("showConnectingToWifi");
+}
+
+void QuickStartScreenHandler::ShowConnectedToWifi(std::string ssid,
+                                                  std::string password) {
+  CallExternalAPI("showConnectedToWifi", ssid, password);
+}
+
 void QuickStartScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {}
 

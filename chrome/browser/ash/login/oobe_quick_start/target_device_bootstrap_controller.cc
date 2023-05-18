@@ -86,7 +86,7 @@ void TargetDeviceBootstrapController::StartAdvertising() {
 
   status_.step = Step::ADVERTISING;
   connection_broker_->StartAdvertising(
-      this, /*use_pin_authentication=*/false,
+      this, /*use_pin_authentication=*/true,
       base::BindOnce(&TargetDeviceBootstrapController::OnStartAdvertisingResult,
                      weak_ptr_factory_.GetWeakPtr()));
   NotifyObservers();
@@ -156,6 +156,7 @@ void TargetDeviceBootstrapController::OnConnectionAuthenticated(
   status_.step = Step::CONNECTED;
   status_.payload.emplace<absl::monostate>();
   NotifyObservers();
+  AttemptWifiCredentialTransfer();
 }
 
 void TargetDeviceBootstrapController::OnConnectionRejected() {
@@ -264,6 +265,8 @@ void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
 
   status_.step = Step::CONNECTED_TO_WIFI;
   status_.payload.emplace<absl::monostate>();
+  status_.ssid = credentials->ssid;
+  status_.password = credentials->password;
   NotifyObservers();
 }
 

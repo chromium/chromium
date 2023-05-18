@@ -89,9 +89,13 @@ void QuickStartScreen::OnStatusChanged(
       return;
     }
     case Step::ERROR:
-    case Step::CONNECTING_TO_WIFI:
-    case Step::CONNECTED_TO_WIFI:
       NOTIMPLEMENTED();
+      return;
+    case Step::CONNECTING_TO_WIFI:
+      view_->ShowConnectingToWifi();
+      return;
+    case Step::CONNECTED_TO_WIFI:
+      view_->ShowConnectedToWifi(status.ssid, status.password);
       return;
     case Step::NONE:
     case Step::ADVERTISING:

@@ -27,6 +27,8 @@ class QuickStartView : public base::SupportsWeakPtr<QuickStartView> {
   virtual void Show() = 0;
   virtual void SetShapes(const quick_start::ShapeList& shape_list) = 0;
   virtual void SetQRCode(base::Value::List blob) = 0;
+  virtual void ShowConnectingToWifi() = 0;
+  virtual void ShowConnectedToWifi(std::string ssid, std::string password) = 0;
 };
 
 // WebUI implementation of QuickStartView.
@@ -46,6 +48,8 @@ class QuickStartScreenHandler : public QuickStartView,
   void Show() override;
   void SetShapes(const quick_start::ShapeList& shape_list) override;
   void SetQRCode(base::Value::List blob) override;
+  void ShowConnectingToWifi() override;
+  void ShowConnectedToWifi(std::string ssid, std::string password) override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(

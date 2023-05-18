@@ -26,6 +26,8 @@ const QuickStartUIState = {
   LOADING: 'loading',
   VERIFICATION: 'verification',
   FIGURES: 'figures',
+  CONNECTING_TO_WIFI: 'connecting_to_wifi',
+  CONNECTED_TO_WIFI: 'connected_to_wifi',
 };
 
 // Should be in sync with the C++ enum (ash::quick_start::Color).
@@ -70,6 +72,14 @@ class QuickStartScreen extends QuickStartScreenBase {
         type: Number,
         value: 0,
       },
+      ssid_: {
+        type: String,
+        value: '',
+      },
+      password_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -78,10 +88,14 @@ class QuickStartScreen extends QuickStartScreenBase {
     this.UI_STEPS = QuickStartUIState;
     this.figures_ = [];
     this.canvasSize_ = 0;
+    this.password_ = '';
+    this.ssid_ = '';
   }
 
   get EXTERNAL_API() {
-    return ['setFigures', 'setQRCode'];
+    return [
+      'setFigures', 'setQRCode', 'showConnectingToWifi', 'showConnectedToWifi',
+    ];
   }
 
   /** @override */
@@ -103,6 +117,20 @@ class QuickStartScreen extends QuickStartScreenBase {
     this.figures_ = figures.map(x => {
       return {shape: x.shape, color: QuickStartColors[x.color], digit: x.digit};
     });
+  }
+
+  showConnectingToWifi() {
+    this.setUIStep(QuickStartUIState.CONNECTING_TO_WIFI);
+  }
+
+  /**
+   * @param {String} ssid
+   * @param {String} password
+   */
+  showConnectedToWifi(ssid, password) {
+    this.setUIStep(QuickStartUIState.CONNECTED_TO_WIFI);
+    this.ssid_ = ssid;
+    this.password_ = password;
   }
 
   /**
