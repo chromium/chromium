@@ -30,11 +30,13 @@
   /*
    * This is the <iframe> style set for sandboxed chrome-untrusted:// guests.
    * `user-select: none` is applied here to avoid the iframe obtaining a grey
-   * overlay if it is clicked while loading (b/227678322).
+   * overlay if it is clicked while loading (b/227678322). `position: fixed` is
+   * needed to avoid unexpected scrolling in fullscreen (b/263329344).
    */
   iframe {
     border: 0;
     height: 100%;
+    position: fixed;
     user-select: none;
     width: 100%;
   }
