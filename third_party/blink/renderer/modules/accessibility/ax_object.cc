@@ -3106,6 +3106,8 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     cached_local_bounding_box_rect_for_accessibility_ =
         GetLayoutObject()->LocalBoundingBoxRectForAccessibility();
   }
+
+  DCHECK(!NeedsToUpdateCachedValues());
 }
 
 bool AXObject::ComputeAccessibilityIsIgnored(
