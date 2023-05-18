@@ -645,7 +645,7 @@ void RendererBlinkPlatformImpl::Collect3DContextInformation(
 std::unique_ptr<blink::WebGraphicsContext3DProvider>
 RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
     const blink::Platform::ContextAttributes& web_attributes,
-    const blink::WebURL& top_document_web_url,
+    const blink::WebURL& document_url,
     blink::Platform::GraphicsInfo* gl_info) {
   DCHECK(gl_info);
   if (!RenderThreadImpl::current()) {
@@ -698,9 +698,8 @@ RendererBlinkPlatformImpl::CreateOffscreenGraphicsContext3DProvider(
           std::move(gpu_channel_host),
           RenderThreadImpl::current()->GetGpuMemoryBufferManager(),
           kGpuStreamIdDefault, kGpuStreamPriorityDefault,
-          gpu::kNullSurfaceHandle, GURL(top_document_web_url),
-          automatic_flushes, support_locking, use_grcontext,
-          gpu::SharedMemoryLimits(), attributes,
+          gpu::kNullSurfaceHandle, GURL(document_url), automatic_flushes,
+          support_locking, use_grcontext, gpu::SharedMemoryLimits(), attributes,
           viz::command_buffer_metrics::ContextType::WEBGL));
   return std::make_unique<WebGraphicsContext3DProviderImpl>(
       std::move(provider));
@@ -734,7 +733,7 @@ RendererBlinkPlatformImpl::CreateSharedOffscreenGraphicsContext3DProvider() {
 
 std::unique_ptr<blink::WebGraphicsContext3DProvider>
 RendererBlinkPlatformImpl::CreateWebGPUGraphicsContext3DProvider(
-    const blink::WebURL& top_document_web_url) {
+    const blink::WebURL& document_url) {
 #if !BUILDFLAG(USE_DAWN)
   return nullptr;
 #else
@@ -772,8 +771,8 @@ RendererBlinkPlatformImpl::CreateWebGPUGraphicsContext3DProvider(
           std::move(gpu_channel_host),
           RenderThreadImpl::current()->GetGpuMemoryBufferManager(),
           kGpuStreamIdDefault, kGpuStreamPriorityDefault,
-          gpu::kNullSurfaceHandle, GURL(top_document_web_url),
-          automatic_flushes, support_locking, support_grcontext,
+          gpu::kNullSurfaceHandle, GURL(document_url), automatic_flushes,
+          support_locking, support_grcontext,
           gpu::SharedMemoryLimits::ForWebGPUContext(), attributes,
           viz::command_buffer_metrics::ContextType::WEBGPU, buffer_mapper));
   return std::make_unique<WebGraphicsContext3DProviderImpl>(

@@ -1627,7 +1627,6 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         r'^third_party/blink/renderer/core/dom/element\.cc',
         r'^third_party/blink/renderer/core/exported/web_disallow_transition_scope_test\.cc',
         r'^third_party/blink/renderer/core/exported/web_document_test\.cc',
-        r'^third_party/blink/renderer/core/html/canvas/html_canvas_element\.h',
         r'^third_party/blink/renderer/core/html/html_anchor_element\.cc',
         r'^third_party/blink/renderer/core/html/html_dialog_element\.cc',
         r'^third_party/blink/renderer/core/html/html_element\.cc',

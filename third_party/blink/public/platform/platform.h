@@ -468,7 +468,7 @@ class BLINK_PLATFORM_EXPORT Platform {
   // created or initialized.
   virtual std::unique_ptr<WebGraphicsContext3DProvider>
   CreateOffscreenGraphicsContext3DProvider(const ContextAttributes&,
-                                           const WebURL& top_document_url,
+                                           const WebURL& document_url,
                                            GraphicsInfo*);
 
   // Returns a newly allocated and initialized offscreen context provider,
@@ -481,7 +481,7 @@ class BLINK_PLATFORM_EXPORT Platform {
   // backed by an independent context. Returns null if the context cannot be
   // created or initialized.
   virtual std::unique_ptr<WebGraphicsContext3DProvider>
-  CreateWebGPUGraphicsContext3DProvider(const WebURL& top_document_url);
+  CreateWebGPUGraphicsContext3DProvider(const WebURL& document_url);
 
   virtual gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() {
     return nullptr;
