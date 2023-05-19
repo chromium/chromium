@@ -2118,48 +2118,28 @@ std::vector<uint32_t> V4L2Device::PreferredInputFormat(Type type) const {
 void V4L2Device::GetSupportedResolution(uint32_t pixelformat,
                                         gfx::Size* min_resolution,
                                         gfx::Size* max_resolution) {
-  max_resolution->SetSize(0, 0);
-  min_resolution->SetSize(0, 0);
+  constexpr gfx::Size kDefaultMaxCodedSize(1920, 1088);
+  *max_resolution = kDefaultMaxCodedSize;
+  constexpr gfx::Size kDefaultMinCodedSize(16, 16);
+  *min_resolution = kDefaultMinCodedSize;
+
   v4l2_frmsizeenum frame_size;
   memset(&frame_size, 0, sizeof(frame_size));
   frame_size.pixel_format = pixelformat;
-  for (; Ioctl(VIDIOC_ENUM_FRAMESIZES, &frame_size) == 0; ++frame_size.index) {
-    if (frame_size.type == V4L2_FRMSIZE_TYPE_DISCRETE) {
-      if (frame_size.discrete.width >=
-              base::checked_cast<uint32_t>(max_resolution->width()) &&
-          frame_size.discrete.height >=
-              base::checked_cast<uint32_t>(max_resolution->height())) {
-        max_resolution->SetSize(frame_size.discrete.width,
-                                frame_size.discrete.height);
-      }
-      if (min_resolution->IsEmpty() ||
-          (frame_size.discrete.width <=
-               base::checked_cast<uint32_t>(min_resolution->width()) &&
-           frame_size.discrete.height <=
-               base::checked_cast<uint32_t>(min_resolution->height()))) {
-        min_resolution->SetSize(frame_size.discrete.width,
-                                frame_size.discrete.height);
-      }
-    } else if (frame_size.type == V4L2_FRMSIZE_TYPE_STEPWISE ||
-               frame_size.type == V4L2_FRMSIZE_TYPE_CONTINUOUS) {
+  if (Ioctl(VIDIOC_ENUM_FRAMESIZES, &frame_size) == 0) {
+    if (frame_size.type == V4L2_FRMSIZE_TYPE_STEPWISE) {
       max_resolution->SetSize(frame_size.stepwise.max_width,
                               frame_size.stepwise.max_height);
       min_resolution->SetSize(frame_size.stepwise.min_width,
                               frame_size.stepwise.min_height);
-      break;
+    } else {
+#if BUILDFLAG(IS_CHROMEOS)
+      // All of Chrome-supported implementations support STEPWISE only.
+      CHECK_EQ(frame_size.type, V4L2_FRMSIZE_TYPE_STEPWISE);
+#endif
     }
-  }
-  if (max_resolution->IsEmpty()) {
-    max_resolution->SetSize(1920, 1088);
-    VLOGF(1) << "GetSupportedResolution failed to get maximum resolution for "
-             << "fourcc " << FourccToString(pixelformat) << ", fall back to "
-             << max_resolution->ToString();
-  }
-  if (min_resolution->IsEmpty()) {
-    min_resolution->SetSize(16, 16);
-    VLOGF(1) << "GetSupportedResolution failed to get minimum resolution for "
-             << "fourcc " << FourccToString(pixelformat) << ", fall back to "
-             << min_resolution->ToString();
+  } else {
+    DLOGF(INFO) << "VIDIOC_ENUM_FRAMESIZES failed, using default values";
   }
 }
 
