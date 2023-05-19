@@ -7,6 +7,9 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+{% if namespace == "HTML" %}
+#include "third_party/blink/renderer/core/html_names.h"
+{% endif %}
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -18,16 +21,16 @@ using HTMLTypeMap = HashMap<AtomicString, HTMLElementType>;
 HTMLTypeMap CreateHTMLTypeMap() {
   HTMLTypeMap html_type_map;
   html_type_map.ReserveCapacityForSize({{tags|count}});
-  static constexpr struct {
-    const char* name;
+  static const struct {
+    const QualifiedName* name;
     HTMLElementType type;
   } kTags[] = {
     {% for tag in tags|sort(attribute='name') %}
-    { "{{tag.name}}", HTMLElementType::k{{tag.js_interface}} },
+    { &html_names::{{tag|symbol}}Tag, HTMLElementType::k{{tag.js_interface}} },
     {% endfor %}
   };
   for (const auto& tag : kTags)
-    html_type_map.insert(tag.name, tag.type);
+    html_type_map.insert(tag.name->LocalName(), tag.type);
   return html_type_map;
 }
 
