@@ -321,8 +321,6 @@ void PreloadHandler::DidActivatePrerender(
   std::string initiating_frame_id =
       ftn->current_frame_host()->devtools_frame_token().ToString();
   const GURL& prerendering_url = nav_request.common_params().url;
-  last_activated_prerender_initiator_devtools_navigation_token_ =
-      initiator_devtools_navigation_token;
   // TODO(crbug/1384419): Handle target_hint.
   auto preloading_attempt_key =
       protocol::Preload::PreloadingAttemptKey::Create()
@@ -341,7 +339,6 @@ void PreloadHandler::DidCancelPrerender(
     const std::string& initiating_frame_id,
     PrerenderFinalStatus status,
     const std::string& disallowed_api_method) {
-  last_activated_prerender_initiator_devtools_navigation_token_.reset();
   if (!enabled_) {
     return;
   }
@@ -415,7 +412,6 @@ void PreloadHandler::DidUpdatePrerenderStatus(
 
 Response PreloadHandler::Enable() {
   enabled_ = true;
-  RetrievePrerenderActivationFromWebContents();
   SendInitialPreloadEnabledState();
   return Response::FallThrough();
 }
@@ -433,34 +429,6 @@ void PreloadHandler::Wire(UberDispatcher* dispatcher) {
 void PreloadHandler::SetRenderer(int process_host_id,
                                  RenderFrameHostImpl* frame_host) {
   host_ = frame_host;
-}
-
-void PreloadHandler::RetrievePrerenderActivationFromWebContents() {
-  if (!host_) {
-    return;
-  }
-  WebContentsImpl* web_contents =
-      WebContentsImpl::FromRenderFrameHostImpl(host_);
-  if (web_contents->last_navigation_was_prerender_activation_for_devtools() &&
-      last_activated_prerender_initiator_devtools_navigation_token_
-          .has_value()) {
-    std::string frame_token = host_->devtools_frame_token().ToString();
-    // TODO(crbug/1384419): Handle target_hint.
-    auto preloading_attempt_key =
-        protocol::Preload::PreloadingAttemptKey::Create()
-            .SetLoaderId(
-                last_activated_prerender_initiator_devtools_navigation_token_
-                    .value()
-                    .ToString())
-            .SetAction(Preload::SpeculationActionEnum::Prerender)
-            .SetUrl(host_->GetLastCommittedURL().spec())
-            .Build();
-    frontend_->PrerenderAttemptCompleted(
-        std::move(preloading_attempt_key), frame_token,
-        host_->GetLastCommittedURL().spec(),
-        Preload::PrerenderFinalStatusEnum::Activated);
-    last_activated_prerender_initiator_devtools_navigation_token_.reset();
-  }
 }
 
 void PreloadHandler::SendInitialPreloadEnabledState() {

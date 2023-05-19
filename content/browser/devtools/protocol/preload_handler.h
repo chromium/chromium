@@ -65,17 +65,11 @@ class PreloadHandler : public DevToolsDomainHandler, public Preload::Backend {
   void SetRenderer(int process_host_id,
                    RenderFrameHostImpl* frame_host) override;
 
-  void RetrievePrerenderActivationFromWebContents();
   void SendInitialPreloadEnabledState();
 
   RenderFrameHostImpl* host_ = nullptr;
 
   bool enabled_ = false;
-
-  // `initiator_devtools_navigation_token` of the most recently activated
-  // prerender.
-  absl::optional<base::UnguessableToken>
-      last_activated_prerender_initiator_devtools_navigation_token_;
 
   std::unique_ptr<Preload::Frontend> frontend_;
 };
