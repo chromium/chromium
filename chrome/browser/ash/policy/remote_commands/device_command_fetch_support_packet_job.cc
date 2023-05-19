@@ -88,8 +88,8 @@ redaction::PIIType GetPiiTypeFromProtoEnum(support_tool::PiiType pii_type) {
       return redaction::PIIType::kIPPAddress;
     case support_tool::PiiType::IP_ADDRESS:
       return redaction::PIIType::kIPAddress;
-    case support_tool::PiiType::LOCATION_INFO:
-      return redaction::PIIType::kLocationInfo;
+    case support_tool::PiiType::CELLULAR_LOCATION_INFO:
+      return redaction::PIIType::kCellularLocationInfo;
     case support_tool::PiiType::MAC_ADDRESS:
       return redaction::PIIType::kMACAddress;
     case support_tool::PiiType::UI_HIEARCHY_WINDOW_TITLE:

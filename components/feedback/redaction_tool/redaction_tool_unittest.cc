@@ -572,7 +572,7 @@ TEST_F(RedactionToolTest, RedactCustomPatternWithContext) {
   const CustomPatternWithAlias kPattern2 = {"ID", "(\\b(?i)id=')(\\d+)(')",
                                             PIIType::kStableIdentifier};
   const CustomPatternWithAlias kPattern3 = {"IDG", "(\\b(?i)idg=')(\\d+)(')",
-                                            PIIType::kLocationInfo};
+                                            PIIType::kCellularLocationInfo};
   EXPECT_EQ("", RedactCustomPatternWithContext("", kPattern1));
   EXPECT_EQ("foo\nbar\n",
             RedactCustomPatternWithContext("foo\nbar\n", kPattern1));

@@ -70,9 +70,10 @@ namespace {
 // (?:regex) denotes non-capturing parentheses group.
 CustomPatternWithAlias kCustomPatternsWithContext[] = {
     // ModemManager
-    {"CellID", "(\\bCell ID: ')([0-9a-fA-F]+)(')", PIIType::kLocationInfo},
+    {"CellID", "(\\bCell ID: ')([0-9a-fA-F]+)(')",
+     PIIType::kCellularLocationInfo},
     {"LocAC", "(\\bLocation area code: ')([0-9a-fA-F]+)(')",
-     PIIType::kLocationInfo},
+     PIIType::kCellularLocationInfo},
 
     // Android. Must run first since this expression matches the replacement.
     //

@@ -56,8 +56,9 @@ namespace {
 
 // The set of PII types that can be found in policy status.
 const std::set<redaction::PIIType> kExpectedPIITypesInPolicyStatus = {
-    redaction::PIIType::kStableIdentifier, redaction::PIIType::kLocationInfo,
-    redaction::PIIType::kGaiaID, redaction::PIIType::kEmail};
+    redaction::PIIType::kStableIdentifier,
+    redaction::PIIType::kStableIdentifier, redaction::PIIType::kGaiaID,
+    redaction::PIIType::kEmail};
 
 // The set of pairs with policy status keys which are considered as PII. These
 // are the common keys between user and device policy status.
