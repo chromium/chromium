@@ -233,7 +233,9 @@ MATCHER_P2(MatchVABufferDescriptor, va_buffer_type, va_buffer_size, "") {
 
 class MockVaapiWrapper : public VaapiWrapper {
  public:
-  MockVaapiWrapper() : VaapiWrapper(kEncodeConstantQuantizationParameter) {}
+  MockVaapiWrapper()
+      : VaapiWrapper(VADisplayStateHandle(),
+                     kEncodeConstantQuantizationParameter) {}
   MOCK_METHOD1(SubmitBuffer_Locked, bool(const VABufferDescriptor&));
 
  protected:
