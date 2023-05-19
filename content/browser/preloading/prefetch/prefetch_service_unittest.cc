@@ -104,6 +104,10 @@ class MockPrefetchServiceDelegate : public PrefetchServiceDelegate {
         .WillByDefault(testing::Return(PreloadingEligibility::kEligible));
     ON_CALL(*this, IsExtendedPreloadingEnabled)
         .WillByDefault(testing::Return(false));
+    ON_CALL(*this, IsPreloadingPrefEnabled)
+        .WillByDefault(testing::Return(true));
+    ON_CALL(*this, IsDataSaverEnabled).WillByDefault(testing::Return(false));
+    ON_CALL(*this, IsBatterySaverEnabled).WillByDefault(testing::Return(false));
     ON_CALL(*this, IsDomainInPrefetchAllowList(testing::_))
         .WillByDefault(testing::Return(true));
 
@@ -133,6 +137,9 @@ class MockPrefetchServiceDelegate : public PrefetchServiceDelegate {
   MOCK_METHOD(bool, DisableDecoysBasedOnUserSettings, (), (override));
   MOCK_METHOD(PreloadingEligibility, IsSomePreloadingEnabled, (), (override));
   MOCK_METHOD(bool, IsExtendedPreloadingEnabled, (), (override));
+  MOCK_METHOD(bool, IsPreloadingPrefEnabled, (), (override));
+  MOCK_METHOD(bool, IsDataSaverEnabled, (), (override));
+  MOCK_METHOD(bool, IsBatterySaverEnabled, (), (override));
   MOCK_METHOD(bool, IsDomainInPrefetchAllowList, (const GURL&), (override));
   MOCK_METHOD(void, OnPrefetchLikely, (WebContents*), (override));
 };

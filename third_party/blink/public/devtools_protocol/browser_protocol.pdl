@@ -11024,19 +11024,12 @@ experimental domain Preload
       # that is incompatible with prerender and has caused the cancellation of the attempt
       optional string disallowedApiMethod
 
-  type PreloadEnabledState extends string
-    enum
-      Enabled
-      DisabledByDataSaver
-      DisabledByBatterySaver
-      DisabledByPreference
-      # Service not available.
-      NotSupported
-
   # Fired when a preload enabled state is updated.
   event preloadEnabledStateUpdated
     parameters
-      PreloadEnabledState state
+      boolean disabledByPreference
+      boolean disabledByDataSaver
+      boolean disabledByBatterySaver
 
   # Preloading status values, see also PreloadingTriggeringOutcome. This
   # status is shared by prefetchStatusUpdated and prerenderStatusUpdated.

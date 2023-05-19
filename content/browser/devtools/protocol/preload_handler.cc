@@ -473,31 +473,18 @@ void PreloadHandler::SendInitialPreloadEnabledState() {
   PrefetchService* prefetch_service = PrefetchService::GetFromFrameTreeNodeId(
       web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId());
 
-  Preload::PreloadEnabledState state =
-      Preload::PreloadEnabledStateEnum::NotSupported;
   if (prefetch_service && prefetch_service->GetPrefetchServiceDelegate()) {
     // TODO(https://crbug.com/1384419): Add more grainularity to
     // PreloadingEligibility to distinguish PreloadHoldback and
     // DisabledByPreference for PreloadingEligibility::kPreloadingDisabled.
     // Use more general method to check status of Preloading instead of
     // relying on PrefetchService.
-    switch (prefetch_service->GetPrefetchServiceDelegate()
-                ->IsSomePreloadingEnabled()) {
-      case PreloadingEligibility::kDataSaverEnabled:
-        state = Preload::PreloadEnabledStateEnum::DisabledByDataSaver;
-        break;
-      case PreloadingEligibility::kBatterySaverEnabled:
-        state = Preload::PreloadEnabledStateEnum::DisabledByBatterySaver;
-        break;
-      case PreloadingEligibility::kPreloadingDisabled:
-        state = Preload::PreloadEnabledStateEnum::DisabledByPreference;
-        break;
-      default:
-        state = Preload::PreloadEnabledStateEnum::Enabled;
-        break;
-    }
-
-    frontend_->PreloadEnabledStateUpdated(state);
+    frontend_->PreloadEnabledStateUpdated(
+        !prefetch_service->GetPrefetchServiceDelegate()
+             ->IsPreloadingPrefEnabled(),
+        prefetch_service->GetPrefetchServiceDelegate()->IsDataSaverEnabled(),
+        prefetch_service->GetPrefetchServiceDelegate()
+            ->IsBatterySaverEnabled());
   }
 }
 

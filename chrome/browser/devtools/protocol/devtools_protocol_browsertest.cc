@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CheckReportedPreloadingState) {
   const base::Value::Dict result =
       WaitForNotification("Preload.preloadEnabledStateUpdated", true);
 
-  EXPECT_THAT(*result.FindString("state"), "DisabledByPreference");
+  EXPECT_THAT(result.FindBool("disabledByPreference"), true);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -914,7 +914,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderDataSaverProtocolTest,
   const base::Value::Dict result =
       WaitForNotification("Preload.preloadEnabledStateUpdated", true);
 
-  EXPECT_THAT(*result.FindString("state"), "DisabledByDataSaver");
+  EXPECT_THAT(result.FindBool("disabledByDataSaver"), true);
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       /*PrerenderFinalStatus::kDataSaverEnabled=*/38, 1);
