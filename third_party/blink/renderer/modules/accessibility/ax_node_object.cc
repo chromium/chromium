@@ -4764,13 +4764,7 @@ bool AXNodeObject::OnNativeFocusAction() {
   if (!document || !node)
     return false;
 
-  // In most cases, UpdateAllLifecyclePhasesExceptPaint() is enough, but if
-  // focus is is moving to a display locked node, that will not update the node
-  // because it's not part of the layout update cycle yet. In that case, calling
-  // UpdateStyleAndLayoutTreeForNode() is also necessary.
   document->UpdateStyleAndLayoutTreeForNode(node);
-  document->View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kAccessibility);
 
   if (!CanSetFocusAttribute())
     return false;

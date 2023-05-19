@@ -320,12 +320,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void UpdateCachedAttributeValuesIfNeeded(
       bool notify_parent_of_ignored_changes = true) const;
 
-  // Invalidates cached_* members on this object only by resetting the
-  // modification count.
-  // To instead invalidate on all objects in a subtree, call
-  // AXObjectCacheImpl::InvalidateCachedValuesOnSubtree().
-  void InvalidateCachedValues();
-
   // The AXObjectCacheImpl that owns this object, and its unique ID within this
   // cache.
   AXObjectCacheImpl& AXObjectCache() const {
@@ -1511,8 +1505,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool ComputeCanSetFocusAttribute() const;
   String KeyboardShortcut() const;
 
-  // Do the rest of the cached_* member variables need to be recomputed?
-  mutable bool cached_values_need_update_ : 1;
+  mutable int last_modification_count_;
 
   // The following cached attribute values (the ones starting with m_cached*)
   // are only valid if last_modification_count_ matches
@@ -1524,6 +1517,20 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   mutable bool cached_is_hidden_via_style_ : 1;
   mutable bool cached_is_descendant_of_disabled_node_ : 1;
   mutable bool cached_can_set_focus_attribute_ : 1;
+
+  // Focusability can change in response to a new style (e.g. content-visibility
+  // added/removed), new dom (e.g. tabindex set/unset), or new AXCache
+  // modification count (e.g. new ax tree).
+  // TODO(accessibility) Determine whether it's worth it to store these extra
+  // variables rather than just using the usual caching mechanism in
+  // UpdateCachedAttributeValuesIfNeeded(). This reduces the number of calls to
+  // CanSetFocusAttribute() by 25% extra. It also causes updates when AXCache
+  // ModificationCount doesn't change but DOM version/style version do change.
+  // This can happen during focus action which forces a new style recalc without
+  // modifying the AX tree.
+  mutable uint64_t focus_attribute_style_version_ = 0;
+  mutable uint64_t focus_attribute_dom_tree_version_ = 0;
+  mutable int focus_attribute_cache_modification_count_ = -1;
 
   mutable Member<AXObject> cached_live_region_root_;
   mutable int cached_aria_column_index_;

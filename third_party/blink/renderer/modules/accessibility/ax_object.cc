@@ -579,7 +579,7 @@ AXObject::AXObject(AXObjectCacheImpl& ax_object_cache)
       parent_(nullptr),
       role_(ax::mojom::blink::Role::kUnknown),
       explicit_container_id_(0),
-      cached_values_need_update_(true),
+      last_modification_count_(-1),
       cached_is_ignored_(false),
       cached_is_ignored_but_included_in_tree_(false),
       cached_is_inert_(false),
@@ -998,10 +998,6 @@ bool AXObject::CanHaveChildren(Element& element) {
   // <img> instead of the <map> for the map's children.
   if (IsA<HTMLMapElement>(element)) {
     return false;
-  }
-
-  if (IsA<HTMLImageElement>(element)) {
-    return GetMapForImage(&element);
   }
 
   // Placeholder gets exposed as an attribute on the input accessibility node,
@@ -2946,17 +2942,6 @@ bool AXObject::AccessibilityIsIncludedInTree() const {
   return !AccessibilityIsIgnored() || AccessibilityIsIgnoredButIncludedInTree();
 }
 
-void AXObject::InvalidateCachedValues() {
-  // TODO(accessibility) Try to add DCHECK that layout is not clean, that the
-  // cache is not frozen, and the the cache is not processing deferred events.
-#if DCHECK_IS_ON()
-  DCHECK(!is_updating_cached_values_)
-      << "Should not invalidate cached values while updating them.";
-#endif
-
-  cached_values_need_update_ = true;
-}
-
 void AXObject::UpdateCachedAttributeValuesIfNeeded(
     bool notify_parent_of_ignored_changes) const {
   if (IsDetached()) {
@@ -2965,11 +2950,12 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     return;
   }
 
-  if (!cached_values_need_update_) {
-    return;
-  }
+  AXObjectCacheImpl& cache = AXObjectCache();
 
-  cached_values_need_update_ = false;
+  if (cache.ModificationCount() == last_modification_count_)
+    return;
+
+  last_modification_count_ = cache.ModificationCount();
 
 #if DCHECK_IS_ON()  // Required in order to get Lifecycle().ToString()
   DCHECK(!is_computing_role_)
@@ -3008,11 +2994,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     cached_is_inert_ = is_inert;
     cached_is_aria_hidden_ = is_aria_hidden;
   }
-
-  // Must be after inert computation, because focusability depends on that, but
-  // before the included in tree computation, which depends on focusability.
-  cached_can_set_focus_attribute_ = ComputeCanSetFocusAttribute();
-
   cached_is_descendant_of_disabled_node_ = ComputeIsDescendantOfDisabledNode();
 
   bool is_ignored = ComputeAccessibilityIsIgnored();
@@ -3067,13 +3048,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   // may misfire.
   if (notify_included_in_tree_changed) {
     if (AXObject* parent = CachedParentObject()) {
-      SANITIZER_CHECK(!AXObjectCache().IsFrozen())
-          << "Objects cannot change their inclusion state during "
-             "serialization:\n"
-          << "* Object: " << ToString(true, true) << "\n* Ignored will become "
-          << is_ignored << "\n* Included in tree will become "
-          << (!is_ignored || is_ignored_but_included_in_tree)
-          << "\n* Parent: " << parent->ToString(true, true);
       // Defers a ChildrenChanged() on the first included ancestor.
       // Must defer it, otherwise it can cause reentry into
       // UpdateCachedAttributeValuesIfNeeded() on |this|.
@@ -3084,7 +3058,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
 
   cached_is_ignored_ = is_ignored;
   cached_is_ignored_but_included_in_tree_ = is_ignored_but_included_in_tree;
-
   // Compute live region root, which can be from any ARIA live value, including
   // "off", or from an automatic ARIA live value, e.g. from role="status".
   // TODO(dmazzoni): remove this const_cast.
@@ -3107,9 +3080,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     cached_local_bounding_box_rect_for_accessibility_ =
         GetLayoutObject()->LocalBoundingBoxRectForAccessibility();
   }
-
-  DCHECK(!cached_values_need_update_)
-      << "While recomputing cached values, they were invalidated again.";
 }
 
 bool AXObject::ComputeAccessibilityIsIgnored(
@@ -3119,7 +3089,8 @@ bool AXObject::ComputeAccessibilityIsIgnored(
 
 bool AXObject::ShouldIgnoreForHiddenOrInert(
     IgnoredReasons* ignored_reasons) const {
-  DCHECK(!cached_values_need_update_);
+  DCHECK(AXObjectCache().ModificationCount() == last_modification_count_)
+      << "Hidden values must be computed before ignored.";
 
   // All nodes must have an unignored parent within their tree under
   // the root node of the web area, so force that node to always be unignored.
@@ -3882,7 +3853,26 @@ bool AXObject::IsFocusableStyleUsingBestAvailableState() const {
 }
 
 bool AXObject::CanSetFocusAttribute() const {
-  UpdateCachedAttributeValuesIfNeeded();
+  // If we are detached or have no document, then we can't set focus on the
+  // object. Note that this early out is necessary since we access the cache and
+  // the document below.
+  if (IsDetached() || !GetDocument())
+    return false;
+
+  AXObjectCacheImpl& cache = AXObjectCache();
+  auto* document = GetDocument();
+
+  if (document->StyleVersion() != focus_attribute_style_version_ ||
+      document->DomTreeVersion() != focus_attribute_dom_tree_version_ ||
+      cache.ModificationCount() != focus_attribute_cache_modification_count_) {
+    focus_attribute_style_version_ = document->StyleVersion();
+    focus_attribute_dom_tree_version_ = document->DomTreeVersion();
+    focus_attribute_cache_modification_count_ = cache.ModificationCount();
+
+    cached_can_set_focus_attribute_ = ComputeCanSetFocusAttribute();
+  } else {
+    DCHECK_EQ(cached_can_set_focus_attribute_, ComputeCanSetFocusAttribute());
+  }
   return cached_can_set_focus_attribute_;
 }
 
@@ -3926,9 +3916,14 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
   if (!elem)
     return false;
 
-  if (cached_is_inert_) {
+  // NOT focusable: inert elements. Note we can't just call IsInert() here
+  // because UpdateCachedAttributeValuesIfNeeded() can end up calling
+  // CanSetFocusAttribute() again, which will then try to return
+  // cached_can_set_focus_attribute_, but we haven't set it yet.
+  bool are_cached_attributes_up_to_date =
+      AXObjectCache().ModificationCount() == last_modification_count_;
+  if (are_cached_attributes_up_to_date ? cached_is_inert_ : ComputeIsInert())
     return false;
-  }
 
   // NOT focusable: child tree owners (it's the content area that will be marked
   // focusable in the a11y tree).
@@ -5678,8 +5673,8 @@ void AXObject::ClearChildren() const {
         // Since this code only runs when |map| is set, and therefore
         // |node| is an image outside the map, this only needs to happen for
         // the map descendants, not the image descendants.
-        AXObjectCache().RemoveSubtreeWithCleanLayout(ax_child_from_node,
-                                                     /* notify_parent */ false);
+        AXObjectCache().RemoveSubtreeWithFlatTraversal(ax_child_from_node,
+                                                       false);
       } else {
         ax_child_from_node->DetachFromParent();
       }
@@ -5748,8 +5743,8 @@ void AXObject::ChildrenChangedWithCleanLayout() {
   // all of them, and we don't want to leave any parentless objects around. This
   // will force re-creation of any AXObjects for this subtree.
   if (GetNode() && GetNode()->IsPseudoElement()) {
-    AXObjectCache().RemoveSubtreeWithCleanLayout(this,
-                                                 /* notify_parent */ false);
+    AXObjectCache().RemoveSubtreeWithFlatTraversal(this,
+                                                   /* notify_parent */ false);
   }
 }
 
@@ -7322,10 +7317,6 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
 
     if (!GetDocument())
       string_builder = string_builder + " missingDocument";
-
-    if (cached_values_need_update_) {
-      string_builder = string_builder + " needsToUpdateCachedValues";
-    }
 
     // Add properties of interest that often contribute to errors:
     if (HasARIAOwns(GetElement())) {

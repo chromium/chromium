@@ -369,8 +369,9 @@ class CORE_EXPORT LayoutText : public LayoutObject {
  protected:
   void WillBeDestroyed() override;
 
-  void StyleWillChange(StyleDifference, const ComputedStyle&) final;
-
+  void StyleWillChange(StyleDifference, const ComputedStyle&) final {
+    NOT_DESTROYED();
+  }
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
   void InLayoutNGInlineFormattingContextWillChange(bool) final;
