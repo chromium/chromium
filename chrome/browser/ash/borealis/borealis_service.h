@@ -17,6 +17,7 @@ class BorealisContextManager;
 class BorealisDiskManagerDispatcher;
 class BorealisFeatures;
 class BorealisInstaller;
+class BorealisInstallUrlHandler;
 class BorealisLaunchOptions;
 class BorealisShutdownMonitor;
 class BorealisWindowManager;
@@ -35,6 +36,7 @@ class BorealisService : public KeyedService {
   virtual BorealisDiskManagerDispatcher& DiskManagerDispatcher() = 0;
   virtual BorealisFeatures& Features() = 0;
   virtual BorealisInstaller& Installer() = 0;
+  virtual BorealisInstallUrlHandler& InstallUrlHandler() = 0;
   virtual BorealisLaunchOptions& LaunchOptions() = 0;
   virtual BorealisShutdownMonitor& ShutdownMonitor() = 0;
   virtual BorealisWindowManager& WindowManager() = 0;

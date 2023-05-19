@@ -16,6 +16,8 @@ GuestOsUrlHandler::GuestOsUrlHandler(const base::StringPiece name,
                                      const HandlerCallback handler)
     : name_(name), handler_(handler) {}
 
+GuestOsUrlHandler::GuestOsUrlHandler(const GuestOsUrlHandler& other) = default;
+
 GuestOsUrlHandler::~GuestOsUrlHandler() = default;
 
 void GuestOsUrlHandler::Handle(Profile* profile, const GURL& url) {

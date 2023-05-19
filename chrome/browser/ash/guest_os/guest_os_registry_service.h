@@ -48,6 +48,7 @@ class ApplicationList;
 namespace guest_os {
 
 using IconContentCallback = base::OnceCallback<void(std::string)>;
+using CanHandleUrlCallback = base::RepeatingCallback<bool(const GURL&)>;
 
 // The GuestOsRegistryService  stores information about Desktop Entries (apps)
 // in Crostini. We store this in prefs so that it is readily available even when
@@ -163,12 +164,20 @@ class GuestOsRegistryService : public KeyedService {
   std::map<std::string, GuestOsRegistryService::Registration> GetRegisteredApps(
       VmType vm_type) const;
 
-  // Return null if |app_id| is not found in the registry.
+  // Return null if `app_id` is not found in the registry.
   absl::optional<GuestOsRegistryService::Registration> GetRegistration(
       const std::string& app_id) const;
 
   // Return the preferred handler for the given URL, if any.
   absl::optional<GuestOsUrlHandler> GetHandler(const GURL& url) const;
+
+  // Register a non-app handler of URLs.
+  // Handlers registered here take priority over apps (since they come from
+  // the OS, rather than VMs), and are not persisted to prefs.
+  // `canHandleCallback` should return true when passed a URL that should be
+  // handled by `handler`.
+  void RegisterTransientUrlHandler(GuestOsUrlHandler handler,
+                                   CanHandleUrlCallback canHandleCallback);
 
   // Constructs path to app icon for specific scale factor.
   base::FilePath GetIconPath(const std::string& app_id,
@@ -313,6 +322,8 @@ class GuestOsRegistryService : public KeyedService {
   base::ObserverList<Observer>::Unchecked observers_;
 
   raw_ptr<const base::Clock, ExperimentalAsh> clock_;
+
+  std::vector<std::pair<GuestOsUrlHandler, CanHandleUrlCallback>> url_handlers_;
 
   // Keeps record for icon request to avoid duplication. Each app may contain
   // several requests for different scale factors. Scale factor is defined by

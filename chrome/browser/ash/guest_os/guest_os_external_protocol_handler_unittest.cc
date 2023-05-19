@@ -81,6 +81,42 @@ TEST_F(GuestOsExternalProtocolHandlerTest, MostRecent) {
   EXPECT_EQ("App1", registration->name());
 }
 
+TEST_F(GuestOsExternalProtocolHandlerTest, TransientUrlHandlerIsInvoked) {
+  GuestOsRegistryService service(profile());
+  int invocations = 0;
+  service.RegisterTransientUrlHandler(
+      /*handler=*/GuestOsUrlHandler(
+          "Handler1", base::BindRepeating(
+                          [](int& invocations, Profile*, const GURL& url) {
+                            invocations++;
+                            EXPECT_EQ(url.spec(), "test://test");
+                          },
+                          std::ref(invocations))),
+      /*canHandleCallback=*/base::BindRepeating(
+          [](const GURL& url) { return url.SchemeIs("test"); }));
+
+  GURL url{"test://test"};
+  absl::optional<GuestOsUrlHandler> handler = service.GetHandler(url);
+  ASSERT_TRUE(handler);
+  handler->Handle(profile(), url);
+
+  EXPECT_EQ(invocations, 1);
+}
+
+TEST_F(GuestOsExternalProtocolHandlerTest,
+       InapplicableTransientUrlHandlersIgnored) {
+  GuestOsRegistryService service(profile());
+  service.RegisterTransientUrlHandler(
+      /*handler=*/GuestOsUrlHandler(
+          "Handler1", base::BindRepeating([](Profile*, const GURL& url) {})),
+      /*canHandleCallback=*/base::BindRepeating(
+          [](const GURL& url) { return url.SchemeIs("test"); }));
+
+  absl::optional<GuestOsUrlHandler> handler =
+      service.GetHandler(GURL("otherscheme://test"));
+  EXPECT_FALSE(handler);
+}
+
 TEST_F(GuestOsExternalProtocolHandlerTest, OffTheRecordProfile) {
   auto* otr_profile = profile()->GetOffTheRecordProfile(
       Profile::OTRProfileID::CreateUniqueForTesting(),

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/borealis/borealis_service_fake.h"
 
+#include "chrome/browser/ash/borealis/borealis_install_url_handler.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_service_factory.h"
 
@@ -53,6 +54,11 @@ BorealisInstaller& BorealisServiceFake::Installer() {
   return *installer_;
 }
 
+BorealisInstallUrlHandler& BorealisServiceFake::InstallUrlHandler() {
+  CHECK(install_url_handler_);
+  return *install_url_handler_;
+}
+
 BorealisLaunchOptions& BorealisServiceFake::LaunchOptions() {
   CHECK(launch_options_);
   return *launch_options_;
@@ -94,6 +100,11 @@ void BorealisServiceFake::SetFeaturesForTesting(BorealisFeatures* features) {
 
 void BorealisServiceFake::SetInstallerForTesting(BorealisInstaller* installer) {
   installer_ = installer;
+}
+
+void BorealisServiceFake::SetInstallUrlHandlerForTesting(
+    BorealisInstallUrlHandler* install_url_handler) {
+  install_url_handler_ = install_url_handler;
 }
 
 void BorealisServiceFake::SetShutdownMonitorForTesting(

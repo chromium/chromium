@@ -616,8 +616,21 @@ GuestOsRegistryService::GetRegistration(const std::string& app_id) const {
       app_id, base::Value(pref_registration->Clone()));
 }
 
+void GuestOsRegistryService::RegisterTransientUrlHandler(
+    GuestOsUrlHandler handler,
+    CanHandleUrlCallback canHandleCallback) {
+  url_handlers_.emplace_back(handler, canHandleCallback);
+}
+
 absl::optional<GuestOsUrlHandler> GuestOsRegistryService::GetHandler(
     const GURL& url) const {
+  // Transient URL handlers are system-installed, so always take priority.
+  for (const auto& handler : url_handlers_) {
+    if (handler.second.Run(url)) {
+      return handler.first;
+    }
+  }
+
   std::map<std::string, Registration> apps = GetEnabledApps();
   const Registration* result = nullptr;
   for (auto& [unused, registration] : apps) {

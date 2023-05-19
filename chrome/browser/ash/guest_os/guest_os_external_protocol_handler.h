@@ -26,8 +26,7 @@ class GuestOsUrlHandler {
 
   GuestOsUrlHandler(const base::StringPiece name,
                     const HandlerCallback handler);
-  GuestOsUrlHandler(const GuestOsUrlHandler& other) = delete;
-  GuestOsUrlHandler& operator=(const GuestOsUrlHandler&) = delete;
+  GuestOsUrlHandler(const GuestOsUrlHandler& other);
   ~GuestOsUrlHandler();
 
   // Localized name, shown to users when asking whether to use this handler.

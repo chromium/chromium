@@ -100,7 +100,6 @@ std::u16string GetInstallationPredictionText(const base::Time& start_time,
 
 }  // namespace
 
-// Defined in chrome/browser/ash/borealis/borealis_util.h.
 void borealis::ShowBorealisInstallerView(Profile* profile) {
   borealis::BorealisService::GetForProfile(profile)->Features().IsAllowed(
       base::BindOnce(&ShowBorealisInstallerViewIfAllowed, profile));
