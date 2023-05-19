@@ -170,7 +170,7 @@ TEST_F(WebAppDatabaseTest, WriteAndReadRegistry) {
   InitSyncBridge();
   EXPECT_TRUE(registrar().is_empty());
 
-  const uint32_t num_apps = 20;
+  const uint32_t num_apps = 100;
   const GURL base_url("https://example.com/path");
 
   std::unique_ptr<WebApp> app =
@@ -197,7 +197,7 @@ TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
   InitSyncBridge();
   EXPECT_TRUE(registrar().is_empty());
 
-  const uint32_t num_apps = 10;
+  const uint32_t num_apps = 100;
   const GURL base_url("https://example.com/path");
 
   RegistryUpdateData::Apps apps_to_create;
@@ -266,7 +266,7 @@ TEST_F(WebAppDatabaseTest, WriteAndDeleteAppsWithCallbacks) {
 }
 
 TEST_F(WebAppDatabaseTest, OpenDatabaseAndReadRegistry) {
-  Registry registry = WriteWebApps(GURL("https://example.com/path"), 20);
+  Registry registry = WriteWebApps(GURL("https://example.com/path"), 100);
 
   InitSyncBridge();
   EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry));
