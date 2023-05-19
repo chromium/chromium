@@ -31,11 +31,11 @@ struct DetailedQuotaError {
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr DetailedQuotaError(QuotaError error) : quota_error(error) {}
 
-  bool operator==(const DetailedQuotaError& error) const {
+  constexpr bool operator==(const DetailedQuotaError& error) const {
     return std::tie(quota_error, sqlite_error) ==
            std::tie(error.quota_error, error.sqlite_error);
   }
-  bool operator!=(const DetailedQuotaError& error) const {
+  constexpr bool operator!=(const DetailedQuotaError& error) const {
     return !operator==(error);
   }
 
