@@ -56,6 +56,40 @@ namespace auction_worklet {
 
 namespace {
 
+// TODO(crbug.com/1441988): Remove this code after rename. These functions allow
+// having multiple dictionary keys (e.g. renderUrl and renderURL) share the same
+// V8 value.
+bool SetDictMember(v8::Isolate* isolate,
+                   v8::Local<v8::Object> object,
+                   const std::string& key,
+                   v8::Local<v8::Value> v8_value) {
+  v8::Maybe<bool> result = object->Set(isolate->GetCurrentContext(),
+                                       gin::StringToV8(isolate, key), v8_value);
+  return !result.IsNothing() && result.FromJust();
+}
+
+bool SetRenderUrl(v8::Isolate* isolate,
+                  v8::Local<v8::Object> object,
+                  const std::string& val) {
+  v8::Local<v8::Value> v8_value;
+  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
+    return false;
+  }
+  return SetDictMember(isolate, object, "renderURL", v8_value) &&
+         SetDictMember(isolate, object, "renderUrl", v8_value);
+}
+
+bool SetDecisionLogicUrl(v8::Isolate* isolate,
+                         v8::Local<v8::Object> object,
+                         const std::string& val) {
+  v8::Local<v8::Value> v8_value;
+  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
+    return false;
+  }
+  return SetDictMember(isolate, object, "decisionLogicURL", v8_value) &&
+         SetDictMember(isolate, object, "decisionLogicUrl", v8_value);
+}
+
 bool InsertPrioritySignals(
     AuctionV8Helper* v8_helper,
     base::StringPiece key,
@@ -195,7 +229,8 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
   gin::Dictionary auction_config_dict(isolate, auction_config_value);
   if (!auction_config_dict.Set(
           "seller", url::Origin::Create(decision_logic_url).Serialize()) ||
-      !auction_config_dict.Set("decisionLogicUrl", decision_logic_url.spec()) ||
+      !SetDecisionLogicUrl(isolate, auction_config_value,
+                           decision_logic_url.spec()) ||
       (trusted_coding_signals_url &&
        !auction_config_dict.Set("trustedScoringSignalsUrl",
                                 trusted_coding_signals_url->spec()))) {
@@ -424,29 +459,6 @@ bool VerifySellerCurrency(
     return false;
   }
   return true;
-}
-
-// TODO(crbug.com/1441988): Remove this code after rename. These functions allow
-// having multiple dictionary keys (e.g. renderUrl and renderURL) share the same
-// V8 value.
-bool SetDictMember(v8::Isolate* isolate,
-                   v8::Local<v8::Object> object,
-                   const std::string& key,
-                   v8::Local<v8::Value> v8_value) {
-  v8::Maybe<bool> result = object->Set(isolate->GetCurrentContext(),
-                                       gin::StringToV8(isolate, key), v8_value);
-  return !result.IsNothing() && result.FromJust();
-}
-
-bool SetRenderUrl(v8::Isolate* isolate,
-                  v8::Local<v8::Object> object,
-                  const std::string& val) {
-  v8::Local<v8::Value> v8_value;
-  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
-    return false;
-  }
-  return SetDictMember(isolate, object, "renderURL", v8_value) &&
-         SetDictMember(isolate, object, "renderUrl", v8_value);
 }
 
 }  // namespace

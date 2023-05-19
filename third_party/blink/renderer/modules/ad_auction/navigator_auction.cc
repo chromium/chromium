@@ -1000,10 +1000,10 @@ bool CopyDecisionLogicUrlFromIdlToMojo(const ExecutionContext& context,
                                        ExceptionState& exception_state,
                                        const AuctionAdConfig& input,
                                        mojom::blink::AuctionAdConfig& output) {
-  KURL decision_logic_url = context.CompleteURL(input.decisionLogicUrl());
+  KURL decision_logic_url = context.CompleteURL(input.decisionLogicURL());
   if (!decision_logic_url.IsValid()) {
     exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
-        input, "decisionLogicUrl", input.decisionLogicUrl(),
+        input, "decisionLogicURL", input.decisionLogicURL(),
         "cannot be resolved to a valid URL."));
     return false;
   }
@@ -1015,7 +1015,7 @@ bool CopyDecisionLogicUrlFromIdlToMojo(const ExecutionContext& context,
       !output.seller->IsSameOriginWith(
           SecurityOrigin::Create(decision_logic_url).get())) {
     exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
-        input, "decisionLogicUrl", input.decisionLogicUrl(),
+        input, "decisionLogicURL", input.decisionLogicURL(),
         "must match seller origin."));
     return false;
   }
@@ -2065,8 +2065,8 @@ void RecordCommonFledgeUseCounters(Document* document) {
 // Some fields that were "required" in WebIDL also get checked -- during the
 // rename, these fields aren't marked as required in WebIDL, but at least one
 // of the old or new name versions must be specified.
-bool HandleOldDictNames(AuctionAdInterestGroup* group,
-                        ExceptionState& exception_state) {
+bool HandleOldDictNamesJoin(AuctionAdInterestGroup* group,
+                            ExceptionState& exception_state) {
   if (group->hasAds()) {
     for (auto& ad : group->ads()) {
       if (ad->hasRenderUrlDeprecated()) {
@@ -2114,6 +2114,36 @@ bool HandleOldDictNames(AuctionAdInterestGroup* group,
     }
   }
 
+  return true;
+}
+
+bool HandleOldDictNamesRun(AuctionAdConfig* config,
+                           ExceptionState& exception_state) {
+  if (config->hasComponentAuctions()) {
+    for (AuctionAdConfig* component_auction : config->componentAuctions()) {
+      HandleOldDictNamesRun(component_auction, exception_state);
+    }
+  }
+
+  if (config->hasDecisionLogicUrlDeprecated()) {
+    if (config->hasDecisionLogicURL()) {
+      if (config->decisionLogicURL() != config->decisionLogicUrlDeprecated()) {
+        exception_state.ThrowTypeError(ErrorRenameMismatch(
+            /*old_field_name=*/"ad auction config decisionLogicUrl",
+            /*old_field_value=*/config->decisionLogicUrlDeprecated(),
+            /*new_field_name=*/"ad auction config decisionLogicURL",
+            /*new_field_value=*/config->decisionLogicURL()));
+        return false;
+      }
+    } else {
+      config->setDecisionLogicURL(config->decisionLogicUrlDeprecated());
+    }
+  }
+  if (!config->hasDecisionLogicURL()) {
+    exception_state.ThrowTypeError(
+        ErrorMissingRequired("ad auction config decisionLogicURL"));
+    return false;
+  }
   return true;
 }
 
@@ -2435,7 +2465,7 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
   const ExecutionContext* context = ExecutionContext::From(script_state);
 
   // TODO(crbug.com/1441988): Remove this code after rename is complete.
-  if (!HandleOldDictNames(mutable_group, exception_state)) {
+  if (!HandleOldDictNamesJoin(mutable_group, exception_state)) {
     return ScriptPromise();
   }
   const AuctionAdInterestGroup* group = mutable_group;
@@ -2715,9 +2745,14 @@ void NavigatorAuction::updateAdInterestGroups(ScriptState* script_state,
 }
 
 ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
-                                             const AuctionAdConfig* config,
+                                             AuctionAdConfig* mutable_config,
                                              ExceptionState& exception_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
+
+  if (!HandleOldDictNamesRun(mutable_config, exception_state)) {
+    return ScriptPromise();
+  }
+  const AuctionAdConfig* config = mutable_config;
 
   mojo::PendingReceiver<mojom::blink::AbortableAdAuction> abort_receiver;
   auto* auction_handle = MakeGarbageCollected<AuctionHandle>(
@@ -2777,7 +2812,7 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
 /* static */
 ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
                                              Navigator& navigator,
-                                             const AuctionAdConfig* config,
+                                             AuctionAdConfig* config,
                                              ExceptionState& exception_state) {
   if (!navigator.DomWindow()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
@@ -3029,7 +3064,7 @@ ScriptPromise NavigatorAuction::finalizeAd(ScriptState* script_state,
   const ExecutionContext* context = ExecutionContext::From(script_state);
   auto mojo_config = mojom::blink::AuctionAdConfig::New();
 
-  // For finalizing an Ad PARAKEET only really cares about the decisionLogicUrl,
+  // For finalizing an Ad PARAKEET only really cares about the decisionLogicURL,
   // auctionSignals, sellerSignals, and perBuyerSignals. Also need seller, since
   // it's used to validate the decision logic URL. We can ignore
   // copying/validating other fields on AuctionAdConfig.

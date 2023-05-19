@@ -2754,6 +2754,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", /*extra_code=*/std::string(),
       R"({"seller":"https://example.com",)"
+      R"("decisionLogicURL":"https://example.com/auction.js",)"
       R"("decisionLogicUrl":"https://example.com/auction.js"})",
       /*expected_report_url=*/absl::nullopt);
 
@@ -2819,6 +2820,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
 
   const char kExpectedJson1[] =
       R"({"seller":"https://example.com",
+          "decisionLogicURL":"https://example.com/auction.js",
           "decisionLogicUrl":"https://example.com/auction.js",
           "trustedScoringSignalsUrl":"https://example.com/scoring_signals.json",
           "interestGroupBuyers":["https://buyer1.com",
@@ -2866,13 +2868,16 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
 
   const char kExpectedJson2[] =
       R"({"seller":"https://example.com",
+          "decisionLogicURL":"https://example.com/auction.js",
           "decisionLogicUrl":"https://example.com/auction.js",
           "trustedScoringSignalsUrl":"https://example.com/scoring_signals.json",
           "componentAuctions":[
               {"seller":"https://component1.com",
+               "decisionLogicURL":"https://component1.com/script.js",
                "decisionLogicUrl":"https://component1.com/script.js",
                "sellerTimeout":111},
               {"seller":"https://component2.com",
+               "decisionLogicURL":"https://component2.com/script.js",
                "decisionLogicUrl":"https://component2.com/script.js",
                "trustedScoringSignalsUrl":"https://component2.com/signals.json"}
           ]})";
@@ -2888,6 +2893,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", /*extra_code=*/std::string(),
       R"({"seller":"https://example.com",)"
+      R"("decisionLogicURL":"https://example.com/auction.js",)"
       R"("decisionLogicUrl":"https://example.com/auction.js"})",
       /*expected_report_url=*/absl::nullopt);
 
@@ -2901,6 +2907,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
     RunReportResultCreatedScriptExpectingResult(
         "auctionConfig", /*extra_code=*/std::string(),
         R"({"seller":"https://example.com",)"
+        R"("decisionLogicURL":"https://example.com/auction.js",)"
         R"("decisionLogicUrl":"https://example.com/auction.js",)"
         R"("perBuyerTimeouts":{}})",
         /*expected_report_url=*/absl::nullopt);
@@ -2917,6 +2924,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
     RunReportResultCreatedScriptExpectingResult(
         "auctionConfig", /*extra_code=*/std::string(),
         R"({"seller":"https://example.com",)"
+        R"("decisionLogicURL":"https://example.com/auction.js",)"
         R"("decisionLogicUrl":"https://example.com/auction.js",)"
         R"("perBuyerTimeouts":{"*":150}})",
         /*expected_report_url=*/absl::nullopt);

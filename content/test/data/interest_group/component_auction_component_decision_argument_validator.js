@@ -39,13 +39,19 @@ function validateBid(bid) {
 }
 
 function validateAuctionConfig(auctionConfig) {
-  if (Object.keys(auctionConfig).length !== 13) {
+  if (Object.keys(auctionConfig).length !== 14) {
     throw 'Wrong number of auctionConfig fields ' +
         JSON.stringify(auctionConfig);
   }
 
   if (!auctionConfig.seller.includes('d.test'))
     throw 'Wrong seller ' + auctionConfig.seller;
+
+  if (auctionConfig.decisionLogicURL !==
+      auctionConfig.seller + '/interest_group' +
+          '/component_auction_component_decision_argument_validator.js') {
+    throw 'Wrong decisionLogicURL ' + auctionConfig.decisionLogicURL;
+  }
 
   if (auctionConfig.decisionLogicUrl !==
       auctionConfig.seller + '/interest_group' +

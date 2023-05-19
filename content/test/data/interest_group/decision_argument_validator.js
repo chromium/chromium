@@ -41,13 +41,18 @@ function validateBid(bid) {
 }
 
 function validateAuctionConfig(auctionConfig) {
-  if (Object.keys(auctionConfig).length !== 13) {
+  if (Object.keys(auctionConfig).length !== 14) {
     throw 'Wrong number of auctionConfig fields ' +
         JSON.stringify(auctionConfig);
   }
 
   if (!auctionConfig.seller.includes('b.test'))
     throw 'Wrong seller ' + auctionConfig.seller;
+
+  if (auctionConfig.decisionLogicURL !==
+      auctionConfig.seller + '/interest_group/decision_argument_validator.js') {
+    throw 'Wrong decisionLogicURL ' + auctionConfig.decisionLogicURL;
+  }
 
   if (auctionConfig.decisionLogicUrl !==
       auctionConfig.seller + '/interest_group/decision_argument_validator.js') {
@@ -61,7 +66,7 @@ function validateAuctionConfig(auctionConfig) {
   }
 
   // TODO(crbug.com/1186444): Consider validating URL fields like
-  // auctionConfig.decisionLogicUrl once we decide what to do about URL
+  // auctionConfig.decisionLogicURL once we decide what to do about URL
   // normalization.
 
   if (auctionConfig.interestGroupBuyers.length !== 2 ||
