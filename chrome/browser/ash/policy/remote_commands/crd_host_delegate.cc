@@ -73,7 +73,9 @@ class CrdHostDelegate::CrdHostSession
                  << ", show_confirmation_dialog "
                  << parameters_.show_confirmation_dialog
                  << ", curtain_local_user_session "
-                 << parameters_.curtain_local_user_session << "}";
+                 << parameters_.curtain_local_user_session
+                 << ", allow_troubleshooting_tools "
+                 << parameters_.allow_troubleshooting_tools << "}";
 
     remoting_service.StartSession(
         GetSessionParameters(), GetEnterpriseParameters(),
@@ -162,7 +164,8 @@ class CrdHostDelegate::CrdHostSession
         .suppress_user_dialogs = !parameters_.show_confirmation_dialog,
         .suppress_notifications = !parameters_.show_confirmation_dialog,
         .terminate_upon_input = parameters_.terminate_upon_input,
-        .curtain_local_user_session = parameters_.curtain_local_user_session};
+        .curtain_local_user_session = parameters_.curtain_local_user_session,
+        .allow_troubleshooting_tools = parameters_.allow_troubleshooting_tools};
   }
 
   void ReportSuccess(const std::string& access_code) {

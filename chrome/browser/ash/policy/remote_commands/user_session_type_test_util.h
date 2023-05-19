@@ -9,6 +9,7 @@
 #define CHROME_BROWSER_ASH_POLICY_REMOTE_COMMANDS_USER_SESSION_TYPE_TEST_UTIL_H_
 
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/test/base/testing_profile_manager.h"
 
 namespace policy::test {
 
@@ -42,6 +43,14 @@ const char* SessionTypeToString(TestSessionType session_type);
 // doesn't require a logged in user).
 void StartSessionOfType(TestSessionType session_type,
                         ash::FakeChromeUserManager& user_manager);
+
+// Start a session of the given type, which involves first creating an user
+// of the given type and then logging the user in (unless the session type
+// doesn't require a logged in user) and a main TestingProfile creation.
+TestingProfile* StartSessionOfTypeWithProfile(
+    TestSessionType session_type,
+    ash::FakeChromeUserManager& user_manager,
+    TestingProfileManager& profile_manager);
 
 }  // namespace policy::test
 
