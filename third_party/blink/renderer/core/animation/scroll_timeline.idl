@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-enum ScrollAxis { "block", "inline", "horizontal", "vertical" };
+enum ScrollAxis { "block", "inline", "x", "y" };
 
 // https://wicg.github.io/scroll-animations/#scrolltimeline-interface
 [

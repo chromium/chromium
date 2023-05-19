@@ -122,7 +122,7 @@
   <div class="timeline defer" style="view-timeline-axis:inline">
     <div class=target>Test</div>
     <div class=scroller>
-      <div class="content timeline ancestor" style="view-timeline-axis:vertical"></div>
+      <div class="content timeline ancestor" style="view-timeline-axis:y"></div>
     </div>
   </div>
 </template>
@@ -133,7 +133,7 @@
     assert_equals(target.getAnimations().length, 1);
     let anim = target.getAnimations()[0];
     assert_not_equals(anim.timeline, null);
-    assert_equals(anim.timeline.axis, 'vertical');
+    assert_equals(anim.timeline.axis, 'y');
   }, 'Axis of deferred timeline is taken from attached timeline');
 </script>
 
@@ -141,7 +141,7 @@
   <div class="timeline defer" style="view-timeline-axis:inline">
     <div class=target>Test</div>
     <div class=scroller>
-      <div class="content timeline ancestor" style="view-timeline-axis:vertical"></div>
+      <div class="content timeline ancestor" style="view-timeline-axis:y"></div>
       <!-- Extra attachment -->
       <div class="timeline ancestor"></div>
     </div>

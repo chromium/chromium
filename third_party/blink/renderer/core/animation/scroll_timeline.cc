@@ -23,9 +23,9 @@ ScrollOrientation ToPhysicalScrollOrientation(ScrollAxis axis,
       return is_horizontal ? kVerticalScroll : kHorizontalScroll;
     case ScrollAxis::kInline:
       return is_horizontal ? kHorizontalScroll : kVerticalScroll;
-    case ScrollAxis::kHorizontal:
+    case ScrollAxis::kX:
       return kHorizontalScroll;
-    case ScrollAxis::kVertical:
+    case ScrollAxis::kY:
       return kVerticalScroll;
   }
 }

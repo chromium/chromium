@@ -52,10 +52,12 @@ CompositorScrollTimeline::ScrollDirection ConvertOrientation(
     ScrollAxis axis,
     const ComputedStyle* style) {
   // Easy cases; physical is always physical.
-  if (axis == ScrollAxis::kHorizontal)
+  if (axis == ScrollAxis::kX) {
     return CompositorScrollTimeline::ScrollRight;
-  if (axis == ScrollAxis::kVertical)
+  }
+  if (axis == ScrollAxis::kY) {
     return CompositorScrollTimeline::ScrollDown;
+  }
 
   // Harder cases; first work out which axis is which, and then for each check
   // which edge we start at.

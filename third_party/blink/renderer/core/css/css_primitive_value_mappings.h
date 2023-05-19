@@ -1772,11 +1772,11 @@ inline CSSIdentifierValue::CSSIdentifierValue(TimelineAxis axis)
     case TimelineAxis::kInline:
       value_id_ = CSSValueID::kInline;
       break;
-    case TimelineAxis::kVertical:
-      value_id_ = CSSValueID::kVertical;
+    case TimelineAxis::kX:
+      value_id_ = CSSValueID::kX;
       break;
-    case TimelineAxis::kHorizontal:
-      value_id_ = CSSValueID::kHorizontal;
+    case TimelineAxis::kY:
+      value_id_ = CSSValueID::kY;
       break;
   }
 }
@@ -1788,10 +1788,10 @@ inline TimelineAxis CSSIdentifierValue::ConvertTo() const {
       return TimelineAxis::kBlock;
     case CSSValueID::kInline:
       return TimelineAxis::kInline;
-    case CSSValueID::kVertical:
-      return TimelineAxis::kVertical;
-    case CSSValueID::kHorizontal:
-      return TimelineAxis::kHorizontal;
+    case CSSValueID::kX:
+      return TimelineAxis::kX;
+    case CSSValueID::kY:
+      return TimelineAxis::kY;
     default:
       break;
   }

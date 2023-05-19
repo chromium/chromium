@@ -38,9 +38,9 @@ bool IsBlockDirection(ViewTimeline::ScrollAxis axis, WritingMode writing_mode) {
       return true;
     case ViewTimeline::ScrollAxis::kInline:
       return false;
-    case ViewTimeline::ScrollAxis::kHorizontal:
+    case ViewTimeline::ScrollAxis::kX:
       return !blink::IsHorizontalWritingMode(writing_mode);
-    case ViewTimeline::ScrollAxis::kVertical:
+    case ViewTimeline::ScrollAxis::kY:
       return blink::IsHorizontalWritingMode(writing_mode);
   }
 }

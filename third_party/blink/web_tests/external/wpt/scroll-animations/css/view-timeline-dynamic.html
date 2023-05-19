@@ -126,7 +126,7 @@
     await scrollLeft(scroller, 20); // 10% (horizontal)
 
     assert_equals(getComputedStyle(target).zIndex, '25', 'vertical');
-    timeline.style.viewTimelineAxis = 'horizontal';
+    timeline.style.viewTimelineAxis = 'x';
     await waitForCSSScrollTimelineStyle();
     assert_equals(getComputedStyle(target).zIndex, '10', 'horizontal');
   }, 'Dynamically changing view-timeline-axis');

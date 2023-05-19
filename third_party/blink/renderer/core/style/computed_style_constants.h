@@ -403,7 +403,7 @@ enum class ViewportUnitFlag {
   kDynamic = 0x2,
 };
 
-enum class TimelineAxis { kBlock, kInline, kVertical, kHorizontal };
+enum class TimelineAxis { kBlock, kInline, kX, kY };
 enum class TimelineAttachment {
   // The timeline is not attached to another timeline, and other timelines
   // can not be attached to this timeline.

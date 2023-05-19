@@ -86,7 +86,7 @@ class TestScrollTimeline : public ScrollTimeline {
                        TimelineAttachment::kLocal,
                        ScrollTimeline::ReferenceType::kSource,
                        source,
-                       ScrollAxis::kVertical) {
+                       ScrollAxis::kY) {
     if (snapshot) {
       UpdateSnapshot();
     }
@@ -116,7 +116,7 @@ class TestViewTimeline : public ViewTimeline {
       : ViewTimeline(document,
                      TimelineAttachment::kLocal,
                      subject,
-                     ScrollAxis::kVertical,
+                     ScrollAxis::kY,
                      TimelineInset()) {
     if (snapshot) {
       UpdateSnapshot();

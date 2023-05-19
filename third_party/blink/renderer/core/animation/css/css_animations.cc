@@ -897,10 +897,10 @@ ScrollTimeline::ScrollAxis ComputeAxis(TimelineAxis axis) {
       return ScrollTimeline::ScrollAxis::kBlock;
     case TimelineAxis::kInline:
       return ScrollTimeline::ScrollAxis::kInline;
-    case TimelineAxis::kVertical:
-      return ScrollTimeline::ScrollAxis::kVertical;
-    case TimelineAxis::kHorizontal:
-      return ScrollTimeline::ScrollAxis::kHorizontal;
+    case TimelineAxis::kX:
+      return ScrollTimeline::ScrollAxis::kX;
+    case TimelineAxis::kY:
+      return ScrollTimeline::ScrollAxis::kY;
   }
 
   NOTREACHED();

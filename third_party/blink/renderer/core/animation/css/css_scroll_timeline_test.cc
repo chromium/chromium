@@ -251,7 +251,7 @@ TEST_F(CSSScrollTimelineTest, ViewTimelineHost) {
         animation-timeline: timeline;
       }
       .scroller > div {
-        view-timeline: timeline horizontal;
+        view-timeline: timeline x;
       }
     </style>
     <div class=scroller>
@@ -260,7 +260,7 @@ TEST_F(CSSScrollTimelineTest, ViewTimelineHost) {
           <template shadowroot=open>
             <style>
               :host {
-                view-timeline: timeline vertical;
+                view-timeline: timeline y;
               }
             </style>
           </template>
@@ -273,8 +273,7 @@ TEST_F(CSSScrollTimelineTest, ViewTimelineHost) {
   ASSERT_TRUE(target);
   HeapVector<Member<Animation>> animations = target->getAnimations();
   ASSERT_EQ(1u, animations.size());
-  ASSERT_EQ(ScrollTimeline::ScrollAxis::kHorizontal,
-            GetTimelineAxis(*animations[0]))
+  ASSERT_EQ(ScrollTimeline::ScrollAxis::kX, GetTimelineAxis(*animations[0]))
       << "Outer animation can not see view timeline defined by :host";
 }
 
@@ -293,7 +292,7 @@ TEST_F(CSSScrollTimelineTest, ViewTimelineSlotted) {
         animation-timeline: timeline;
       }
       .host {
-        view-timeline: timeline horizontal;
+        view-timeline: timeline x;
       }
     </style>
     <div class=scroller>
@@ -301,7 +300,7 @@ TEST_F(CSSScrollTimelineTest, ViewTimelineSlotted) {
         <template shadowroot=open>
           <style>
             ::slotted(.target) {
-              view-timeline: timeline vertical;
+              view-timeline: timeline y;
             }
           </style>
           <slot></slot>
@@ -315,8 +314,7 @@ TEST_F(CSSScrollTimelineTest, ViewTimelineSlotted) {
   ASSERT_TRUE(target);
   HeapVector<Member<Animation>> animations = target->getAnimations();
   ASSERT_EQ(1u, animations.size());
-  ASSERT_EQ(ScrollTimeline::ScrollAxis::kHorizontal,
-            GetTimelineAxis(*animations[0]))
+  ASSERT_EQ(ScrollTimeline::ScrollAxis::kX, GetTimelineAxis(*animations[0]))
       << "Outer animation can not see view timeline defined by ::slotted";
 }
 
@@ -327,10 +325,10 @@ TEST_F(CSSScrollTimelineTest, ViewTimelinePart) {
       ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <style>
       .host {
-        view-timeline: timeline vertical;
+        view-timeline: timeline y;
       }
       .host::part(foo) {
-        view-timeline: timeline horizontal;
+        view-timeline: timeline x;
       }
     </style>
     <div class=host>
@@ -361,8 +359,7 @@ TEST_F(CSSScrollTimelineTest, ViewTimelinePart) {
   ASSERT_TRUE(target);
   HeapVector<Member<Animation>> animations = target->getAnimations();
   ASSERT_EQ(1u, animations.size());
-  ASSERT_EQ(ScrollTimeline::ScrollAxis::kHorizontal,
-            GetTimelineAxis(*animations[0]))
+  ASSERT_EQ(ScrollTimeline::ScrollAxis::kX, GetTimelineAxis(*animations[0]))
       << "Inner animation can see view timeline defined by ::part";
 }
 
@@ -381,7 +378,7 @@ TEST_F(CSSScrollTimelineTest, ScrollTimelineHost) {
         animation-timeline: timeline;
       }
       main > .scroller {
-        scroll-timeline: timeline horizontal;
+        scroll-timeline: timeline x;
       }
     </style>
     <main>
@@ -390,7 +387,7 @@ TEST_F(CSSScrollTimelineTest, ScrollTimelineHost) {
           <template shadowroot=open>
             <style>
               :host {
-                scroll-timeline: timeline vertical;
+                scroll-timeline: timeline y;
               }
             </style>
             <slot></slot>
@@ -405,8 +402,7 @@ TEST_F(CSSScrollTimelineTest, ScrollTimelineHost) {
   ASSERT_TRUE(target);
   HeapVector<Member<Animation>> animations = target->getAnimations();
   ASSERT_EQ(1u, animations.size());
-  ASSERT_EQ(ScrollTimeline::ScrollAxis::kHorizontal,
-            GetTimelineAxis(*animations[0]))
+  ASSERT_EQ(ScrollTimeline::ScrollAxis::kX, GetTimelineAxis(*animations[0]))
       << "Outer animation can not see scroll timeline defined by :host";
 }
 
@@ -425,14 +421,14 @@ TEST_F(CSSScrollTimelineTest, ScrollTimelineSlotted) {
         animation-timeline: timeline;
       }
       .host {
-        scroll-timeline: timeline horizontal;
+        scroll-timeline: timeline x;
       }
     </style>
     <div class=host>
       <template shadowroot=open>
         <style>
           ::slotted(.scroller) {
-            scroll-timeline: timeline vertical;
+            scroll-timeline: timeline y;
           }
         </style>
         <slot></slot>
@@ -447,8 +443,7 @@ TEST_F(CSSScrollTimelineTest, ScrollTimelineSlotted) {
   ASSERT_TRUE(target);
   HeapVector<Member<Animation>> animations = target->getAnimations();
   ASSERT_EQ(1u, animations.size());
-  ASSERT_EQ(ScrollTimeline::ScrollAxis::kHorizontal,
-            GetTimelineAxis(*animations[0]))
+  ASSERT_EQ(ScrollTimeline::ScrollAxis::kX, GetTimelineAxis(*animations[0]))
       << "Outer animation can not see scroll timeline defined by ::slotted";
 }
 
@@ -459,10 +454,10 @@ TEST_F(CSSScrollTimelineTest, ScrollTimelinePart) {
       ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <style>
       .host {
-        scroll-timeline: timeline vertical;
+        scroll-timeline: timeline y;
       }
       .host::part(foo) {
-        scroll-timeline: timeline horizontal;
+        scroll-timeline: timeline x;
       }
     </style>
     <div class=host>
@@ -493,8 +488,7 @@ TEST_F(CSSScrollTimelineTest, ScrollTimelinePart) {
   ASSERT_TRUE(target);
   HeapVector<Member<Animation>> animations = target->getAnimations();
   ASSERT_EQ(1u, animations.size());
-  ASSERT_EQ(ScrollTimeline::ScrollAxis::kHorizontal,
-            GetTimelineAxis(*animations[0]))
+  ASSERT_EQ(ScrollTimeline::ScrollAxis::kX, GetTimelineAxis(*animations[0]))
       << "Inner animation can see scroll timeline defined by ::part";
 }
 

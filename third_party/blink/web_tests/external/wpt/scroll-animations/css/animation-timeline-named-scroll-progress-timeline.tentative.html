@@ -379,13 +379,13 @@ promise_test(async t => {
   document.body.appendChild(scroller);
   scroller.appendChild(target);
 
-  scroller.style.scrollTimeline = 'timeline horizontal';
+  scroller.style.scrollTimeline = 'timeline x';
   target.style.animation = "anim-2 10s linear";
   target.style.animationTimeline = 'timeline';
 
   await waitForScrollLeft(scroller, 50);
   assert_equals(getComputedStyle(target).zIndex, '50');
-}, 'scroll-timeline-axis is horizontal');
+}, 'scroll-timeline-axis is x');
 
 promise_test(async t => {
   let [scroller, target] = createScrollerAndTarget(t);
@@ -397,13 +397,13 @@ promise_test(async t => {
   document.body.appendChild(scroller);
   scroller.appendChild(target);
 
-  scroller.style.scrollTimeline = 'timeline vertical';
+  scroller.style.scrollTimeline = 'timeline y';
   target.style.animation = "anim-2 10s linear";
   target.style.animationTimeline = 'timeline';
 
   await waitForScrollTop(scroller, 50);
   assert_equals(getComputedStyle(target).zIndex, '50');
-}, 'scroll-timeline-axis is vertical');
+}, 'scroll-timeline-axis is y');
 
 promise_test(async t => {
   let [scroller, target] = createScrollerAndTarget(t);
