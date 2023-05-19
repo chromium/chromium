@@ -4832,9 +4832,6 @@
         },
       },
       'Cast Linux ARM64': {
-        'mixins': [
-          'linux-bionic',
-        ],
         'additional_compile_targets': [
           'cast_shell',
           'cast_test_lists',
