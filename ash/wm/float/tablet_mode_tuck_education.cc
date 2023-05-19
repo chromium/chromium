@@ -80,10 +80,10 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
   params.child = true;
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
+  widget->GetLayer()->SetFillsBoundsOpaquely(false);
 
   auto nudge_label = std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_ASH_TUCK_EDUCATIONAL_NUDGE_LABEL));
-
   nudge_label->SetBackground(views::CreateThemedRoundedRectBackground(
       ui::kColorSysSurface3, kLabelHeight / kRoundedDivisor));
   nudge_label->SetPreferredSize(gfx::Size(
