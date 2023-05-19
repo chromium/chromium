@@ -20,6 +20,10 @@ export function androidAppsVisible(): boolean {
   return loadTimeData.getBoolean('androidAppsVisible');
 }
 
+export function isArcVmEnabled(): boolean {
+  return loadTimeData.getBoolean('isArcVmEnabled');
+}
+
 export function isPlayStoreAvailable(): boolean {
   return loadTimeData.getBoolean('isPlayStoreAvailable');
 }

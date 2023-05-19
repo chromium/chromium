@@ -71,7 +71,7 @@ class SettingsAndroidAppsSubpageElement extends
       },
 
       /** Whether Arc VM manage usb subpage should be shown. */
-      showArcvmManageUsb: Boolean,
+      isArcVmManageUsbAvailable: Boolean,
 
       /**
        * Used by DeepLinkingMixin to focus this page's deep links.
@@ -87,7 +87,7 @@ class SettingsAndroidAppsSubpageElement extends
   }
 
   androidAppsInfo: AndroidAppsInfo;
-  showArcvmManageUsb: boolean;
+  isArcVmManageUsbAvailable: boolean;
   private dialogBody_: string;
   private playStoreEnabled_: boolean;
 

@@ -35,7 +35,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {androidAppsVisible, isPlayStoreAvailable, isPluginVmAvailable} from '../common/load_time_booleans.js';
+import {androidAppsVisible, isArcVmEnabled, isPlayStoreAvailable, isPluginVmAvailable} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {App as AppWithNotifications, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver, Readiness} from '../mojom-webui/app_notification_handler.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -100,10 +100,12 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
         },
       },
 
-      /**
-       * Show ARCVM Manage USB related settings and sub-page.
-       */
-      showArcvmManageUsb: Boolean,
+      isArcVmManageUsbAvailable_: {
+        type: Boolean,
+        value: () => {
+          return isArcVmEnabled();
+        },
+      },
 
       /**
        * Whether the App Notifications page should be shown.
@@ -192,11 +194,11 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
 
   androidAppsInfo: AndroidAppsInfo;
   searchTerm: string;
-  showArcvmManageUsb: boolean;
   private app_: App;
   private appNotificationsObserverReceiver_: AppNotificationsObserverReceiver;
   private appsWithNotifications_: AppWithNotifications[];
   private focusConfig_: Map<string, string>;
+  private isArcVmManageUsbAvailable_: boolean;
   private isDndEnabled_: boolean;
   private isPlayStoreAvailable_: boolean;
   private isPluginVmAvailable_: boolean;

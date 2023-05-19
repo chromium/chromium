@@ -8,7 +8,7 @@
   </cr-link-row>
 </template>
 
-<template is="dom-if" if="[[showArcvmManageUsb]]">
+<template is="dom-if" if="[[isArcVmManageUsbAvailable]]">
   <cr-link-row
       class="hr"
       label="$i18n{guestOsSharedUsbDevicesLabel}"

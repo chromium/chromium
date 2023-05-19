@@ -140,8 +140,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
         },
       },
 
-      showArcvmManageUsb_: Boolean,
-
       showToolbar_: Boolean,
 
       showNavMenu_: Boolean,
@@ -163,7 +161,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
   private advancedOpenedInMenu_: boolean;
   private toolbarSpinnerActive_: boolean;
   private pageAvailability_: OsPageAvailability;
-  private showArcvmManageUsb_: boolean;
   private showToolbar_: boolean;
   private showNavMenu_: boolean;
   private narrowThreshold_: number;
@@ -217,7 +214,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
           loadTimeData.getString('controlledSettingChildRestriction'),
     };
 
-    this.showArcvmManageUsb_ = loadTimeData.getBoolean('showArcvmManageUsb');
     this.showNavMenu_ = !loadTimeData.getBoolean('isKioskModeActive');
     this.showToolbar_ = !loadTimeData.getBoolean('isKioskModeActive');
 

@@ -453,7 +453,7 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "showOsSettingsAppBadgingToggle",
       base::FeatureList::IsEnabled(features::kOsSettingsAppBadgingToggle));
-  html_source->AddBoolean("showArcvmManageUsb", arc::IsArcVmEnabled());
+  html_source->AddBoolean("isArcVmEnabled", arc::IsArcVmEnabled());
 
   AddAppManagementStrings(html_source);
   AddGuestOsStrings(html_source);

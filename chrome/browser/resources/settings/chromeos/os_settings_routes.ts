@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {androidAppsVisible, isCrostiniSupported, isGuest, isKerberosEnabled, isPluginVmAvailable, isPowerwashAllowed} from './common/load_time_booleans.js';
+import {androidAppsVisible, isArcVmEnabled, isCrostiniSupported, isGuest, isKerberosEnabled, isPluginVmAvailable, isPowerwashAllowed} from './common/load_time_booleans.js';
 import * as routesMojom from './mojom-webui/routes.mojom-webui.js';
 
 /** Class for navigable routes. */
@@ -378,8 +378,7 @@ function createOsSettingsRoutes(): OsSettingsRoutes {
     r.ANDROID_APPS_DETAILS = createSubpage(
         r.APPS, routesMojom.GOOGLE_PLAY_STORE_SUBPAGE_PATH,
         Subpage.kGooglePlayStore);
-    if (loadTimeData.valueExists('showArcvmManageUsb') &&
-        loadTimeData.getBoolean('showArcvmManageUsb')) {
+    if (isArcVmEnabled()) {
       r.ANDROID_APPS_DETAILS_ARC_VM_SHARED_USB_DEVICES = createSubpage(
           r.ANDROID_APPS_DETAILS,
           routesMojom.ARC_VM_USB_PREFERENCES_SUBPAGE_PATH,

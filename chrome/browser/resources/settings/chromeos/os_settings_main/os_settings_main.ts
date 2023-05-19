@@ -93,9 +93,6 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
        * Dictionary defining page availability.
        */
       pageAvailability: Object,
-
-      showArcvmManageUsb: Boolean,
-
     };
   }
 
@@ -103,7 +100,6 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
   advancedToggleExpanded: boolean;
   toolbarSpinnerActive: boolean;
   pageAvailability: OsPageAvailability;
-  showArcvmManageUsb: boolean;
   private overscroll_: number;
   private showPages_: MainPageVisibility;
   private showingSubpage_: boolean;

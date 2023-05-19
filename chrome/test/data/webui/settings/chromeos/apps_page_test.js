@@ -594,13 +594,13 @@ suite('AppsPageTests', function() {
 
     test('ManageUsbDevice', function() {
       // ARCVM is not enabled
-      subpage.showArcvmManageUsb = false;
+      subpage.isArcVmManageUsbAvailable = false;
       flush();
       assertFalse(
           !!subpage.shadowRoot.querySelector('#manageArcvmShareUsbDevices'));
 
       // ARCMV is enabled
-      subpage.showArcvmManageUsb = true;
+      subpage.isArcVmManageUsbAvailable = true;
       flush();
       assertTrue(
           !!subpage.shadowRoot.querySelector('#manageArcvmShareUsbDevices'));
