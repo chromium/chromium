@@ -6529,10 +6529,6 @@ crbug.com/1186788 [ Mac ] external/wpt/pointerevents/pointerevent_pointercapture
 # TODO(crbug.com/1401396): Re-enable this test
 external/wpt/webrtc/simulcast/setParameters-active.https.html [ Pass Timeout ]
 
-# Flaky CSP tests. To be re-enabled.
-crbug.com/1400930 external/wpt/content-security-policy/embedded-enforcement/subsumption_algorithm-general.html [ Pass Timeout ]
-crbug.com/1399780 external/wpt/content-security-policy/embedded-enforcement/subsumption_algorithm-nonces.html [ Pass Timeout ]
-
 # TODO(crbug.com/1403877): Deflake this test.
 virtual/portals/http/tests/devtools/portals/portals-elements-nesting.js [ Failure Pass ]
 
@@ -6652,7 +6648,6 @@ crbug.com/1426534 wpt_internal/content-security-policy/reporting-api/reporting-a
 # Flake suppressor for Mac12 Tests (dbg) builder 2023-04-26
 [ Debug Mac12 ] compositing/video/video-controls-squashing.html [ Failure ]
 [ Debug Mac12 ] editing/selection/caret-at-bidi-boundary.html [ Failure ]
-[ Debug Mac12 ] external/wpt/content-security-policy/embedded-enforcement/subsumption_algorithm-unsafe_inline.html [ Failure ]
 [ Debug Mac12 ] external/wpt/content-security-policy/inheritance/history-iframe.sub.html [ Failure ]
 [ Debug Mac12 ] external/wpt/cookies/attributes/domain.sub.html [ Failure ]
 [ Debug Mac12 ] external/wpt/credential-management/fedcm-network-requests.https.html [ Failure ]
