@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/capture_mode/capture_mode_observer.h"
 #include "ash/game_dashboard/game_dashboard_delegate.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
@@ -23,7 +24,8 @@ namespace ash {
 
 // Controls the Game Dashboard behavior on supported windows.
 class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
-                                           public aura::WindowObserver {
+                                           public aura::WindowObserver,
+                                           public CaptureModeObserver {
  public:
   explicit GameDashboardController(
       std::unique_ptr<GameDashboardDelegate> delegate);
@@ -42,6 +44,14 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
                                const void* key,
                                intptr_t old) override;
   void OnWindowDestroying(aura::Window* window) override;
+
+  // CaptureModeObserver:
+  void OnRecordingStarted(aura::Window* current_root) override;
+  void OnRecordingEnded() override;
+  void OnVideoFileFinalized(bool user_deleted_video_file,
+                            const gfx::ImageSkia& thumbnail) override;
+  void OnRecordedWindowChangingRoot(aura::Window* new_root) override;
+  void OnRecordingStartAborted() override;
 
  private:
   enum class WindowGameState { kGame, kNotGame, kNotYetKnown };

@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/window_properties.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -33,11 +34,13 @@ GameDashboardController::GameDashboardController(
   g_instance = this;
   CHECK(aura::Env::HasInstance());
   env_observation_.Observe(aura::Env::GetInstance());
+  CaptureModeController::Get()->AddObserver(this);
 }
 
 GameDashboardController::~GameDashboardController() {
-  DCHECK_EQ(g_instance, this);
+  CHECK_EQ(g_instance, this);
   g_instance = nullptr;
+  CaptureModeController::Get()->RemoveObserver(this);
 }
 
 void GameDashboardController::OnWindowInitialized(aura::Window* new_window) {
@@ -60,6 +63,29 @@ void GameDashboardController::OnWindowPropertyChanged(aura::Window* window,
 
 void GameDashboardController::OnWindowDestroying(aura::Window* window) {
   window_observations_.RemoveObservation(window);
+}
+
+void GameDashboardController::OnRecordingStarted(aura::Window* current_root) {
+  // Update any needed game dashboard UIs if and only if this recording started
+  // from a request by a game dashboard entry point.
+}
+
+void GameDashboardController::OnRecordingEnded() {}
+
+void GameDashboardController::OnVideoFileFinalized(
+    bool user_deleted_video_file,
+    const gfx::ImageSkia& thumbnail) {}
+
+void GameDashboardController::OnRecordedWindowChangingRoot(
+    aura::Window* new_root) {
+  // TODO(phshah): Update any game dashboard UIs that need to change as a result
+  // of the recorded window moving to a different display if and only if this
+  // recording started from a request by a game dashboard entry point. If
+  // nothing needs to change, leave empty.
+}
+
+void GameDashboardController::OnRecordingStartAborted() {
+  // Reset the Gamedashboard UI state to its initial state.
 }
 
 GameDashboardController::WindowGameState
