@@ -26,12 +26,9 @@ CPU profiling is not to be confused with tracing or task profiling:
 # Profiling on Linux
 
 ## General checkout setup
-Profiling should always be done on a Release build, which has very similar performance characteristics to an official build. Make sure the following appears in your `args.gn` file:
+Profiling should preferably be done on an official build. Make sure the following appears in your `args.gn` file:
 
-    is_debug = false
-    blink_symbol_level = 2
-    symbol_level = 2
-    dcheck_always_on = false
+    is_official_build = true
 
 ## Profiling a process or thread for a defined period of time using perf
 
