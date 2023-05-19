@@ -347,6 +347,19 @@ AtomicString PerformanceNavigationTiming::systemEntropy() const {
   return AtomicString(GetSystemEntropy(GetDocumentLoader()));
 }
 
+DOMHighResTimeStamp PerformanceNavigationTiming::criticalCHRestart(
+    ScriptState* script_state) const {
+  ExecutionContext::From(script_state)
+      ->CountUse(WebFeature::kCriticalCHRestartNavigationTiming);
+  DocumentLoadTiming* timing = GetDocumentLoadTiming();
+  if (!timing) {
+    return 0.0;
+  }
+  return Performance::MonotonicTimeToDOMHighResTimeStamp(
+      TimeOrigin(), timing->CriticalCHRestart(), AllowNegativeValues(),
+      CrossOriginIsolatedCapability());
+}
+
 void PerformanceNavigationTiming::BuildJSONValue(
     V8ObjectBuilder& builder) const {
   PerformanceResourceTiming::BuildJSONValue(builder);
@@ -376,6 +389,12 @@ void PerformanceNavigationTiming::BuildJSONValue(
   if (RuntimeEnabledFeatures::PerformanceNavigateSystemEntropyEnabled(
           ExecutionContext::From(builder.GetScriptState()))) {
     builder.Add("systemEntropy", GetSystemEntropy(GetDocumentLoader()));
+  }
+
+  if (RuntimeEnabledFeatures::CriticalCHRestartNavigationTimingEnabled(
+          ExecutionContext::From(builder.GetScriptState()))) {
+    builder.Add("criticalCHRestart",
+                criticalCHRestart(builder.GetScriptState()));
   }
 }
 

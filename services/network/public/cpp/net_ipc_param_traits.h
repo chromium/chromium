@@ -271,6 +271,7 @@ IPC_STRUCT_TRAITS_BEGIN(net::RedirectInfo)
   IPC_STRUCT_TRAITS_MEMBER(insecure_scheme_was_upgraded)
   IPC_STRUCT_TRAITS_MEMBER(is_signed_exchange_fallback_redirect)
   IPC_STRUCT_TRAITS_MEMBER(new_referrer_policy)
+  IPC_STRUCT_TRAITS_MEMBER(critical_ch_restart_time)
 IPC_STRUCT_TRAITS_END()
 
 IPC_ENUM_TRAITS_MAX_VALUE(net::HttpResponseInfo::ConnectionInfo,

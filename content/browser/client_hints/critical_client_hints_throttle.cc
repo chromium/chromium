@@ -177,6 +177,7 @@ void CriticalClientHintsThrottle::MaybeRestartWithHints(
   for (auto modified_header : modified_headers.GetHeaderVector()) {
     if (!initial_request_headers_.HasHeader(modified_header.key)) {
       LogCriticalCHStatus(CriticalCHRestart::kNavigationRestarted);
+      delegate_->DidRestartForCriticalClientHint();
       delegate_->RestartWithURLResetAndFlags(/*additional_load_flags=*/0);
       return;
     }

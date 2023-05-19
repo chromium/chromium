@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/url_request/referrer_policy.h"
@@ -86,6 +87,10 @@ struct NET_EXPORT RedirectInfo {
   // subsequent redirects.
   ReferrerPolicy new_referrer_policy =
       ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
+
+  // When navigation is restarted due to a Critical-CH header this stores the
+  // time at which the the restart was initiated.
+  base::TimeTicks critical_ch_restart_time;
 };
 
 }  // namespace net

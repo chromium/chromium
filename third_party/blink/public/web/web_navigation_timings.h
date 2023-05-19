@@ -20,6 +20,7 @@ struct WebNavigationTimings {
       blink::mojom::ParentResourceTimingAccess::kDoNotReport;
   blink::mojom::SystemEntropy system_entropy_at_navigation_start =
       blink::mojom::SystemEntropy::kNormal;
+  base::TimeTicks critical_ch_restart;
 };
 
 }  // namespace blink

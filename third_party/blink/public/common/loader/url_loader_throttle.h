@@ -137,6 +137,9 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
     // using a combined value of all of the |additional_load_flags|.
     virtual void RestartWithURLResetAndFlags(int additional_load_flags);
 
+    // Indicates a restart did occur due to a Critical-CH HTTP Header.
+    virtual void DidRestartForCriticalClientHint() {}
+
    protected:
     virtual ~Delegate();
   };

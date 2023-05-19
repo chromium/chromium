@@ -291,4 +291,10 @@ void DocumentLoadTiming::SetActivationStart(base::TimeTicks activation_start) {
   NotifyDocumentTimingChanged();
 }
 
+void DocumentLoadTiming::SetCriticalCHRestart(
+    base::TimeTicks critical_ch_restart) {
+  critical_ch_restart_ = critical_ch_restart;
+  NotifyDocumentTimingChanged();
+}
+
 }  // namespace blink

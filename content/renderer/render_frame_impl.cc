@@ -967,6 +967,10 @@ void FillMiscNavigationParams(
   navigation_params->navigation_timings = BuildNavigationTimings(
       common_params.navigation_start, *commit_params.navigation_timing,
       common_params.input_start);
+  if (!commit_params.redirect_infos.empty()) {
+    navigation_params->navigation_timings.critical_ch_restart =
+        commit_params.redirect_infos.back().critical_ch_restart_time;
+  }
 
   navigation_params->is_user_activated =
       commit_params.was_activated == blink::mojom::WasActivatedOption::kYes;

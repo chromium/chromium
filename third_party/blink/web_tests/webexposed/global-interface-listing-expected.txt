@@ -6920,6 +6920,7 @@ interface PerformanceNavigation
 interface PerformanceNavigationTiming : PerformanceResourceTiming
     attribute @@toStringTag
     getter activationStart
+    getter criticalCHRestart
     getter domComplete
     getter domContentLoadedEventEnd
     getter domContentLoadedEventStart

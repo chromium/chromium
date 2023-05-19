@@ -51,6 +51,7 @@ class CORE_EXPORT PerformanceNavigationTiming final
   uint16_t redirectCount() const;
   ScriptValue notRestoredReasons(ScriptState* script_state) const;
   AtomicString systemEntropy() const;
+  DOMHighResTimeStamp criticalCHRestart(ScriptState* script_state) const;
 
   // PerformanceResourceTiming overrides:
   DOMHighResTimeStamp fetchStart() const override;
