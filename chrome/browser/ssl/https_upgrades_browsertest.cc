@@ -597,6 +597,12 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
             contents));
+    EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
+        contents->GetPrimaryMainFrame(),
+        IsSiteEngagementHeuristicEnabled()
+            ? "You usually connect to this site securely"
+            : "You are seeing this warning because this site does not support "
+              "HTTPS."));
   } else {
     EXPECT_FALSE(
         chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(

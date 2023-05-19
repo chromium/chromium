@@ -6,6 +6,7 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_HTTPS_ONLY_MODE_BLOCKING_PAGE_H_
 
 #include "components/security_interstitials/content/security_interstitial_page.h"
+#include "components/security_interstitials/core/https_only_mode_metrics.h"
 
 namespace security_interstitials {
 
@@ -17,7 +18,8 @@ class HttpsOnlyModeBlockingPage : public SecurityInterstitialPage {
       content::WebContents* web_contents,
       const GURL& request_url,
       std::unique_ptr<SecurityInterstitialControllerClient> controller_client,
-      bool is_under_advanced_protection);
+      const security_interstitials::https_only_mode::HttpInterstitialState&
+          interstitial_state);
 
   static const SecurityInterstitialPage::TypeID kTypeForTesting;
 
@@ -37,9 +39,8 @@ class HttpsOnlyModeBlockingPage : public SecurityInterstitialPage {
 
  private:
   bool user_made_decision_ = false;
-  // True if the interstitial is shown because the user is under Advanced
-  // Protection which automatically enables HTTPS-First Mode.
-  bool is_under_advanced_protection_ = false;
+  const security_interstitials::https_only_mode::HttpInterstitialState
+      interstitial_state_;
 };
 
 }  // namespace security_interstitials

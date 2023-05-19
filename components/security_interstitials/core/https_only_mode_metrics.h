@@ -149,6 +149,10 @@ struct HttpInterstitialState {
   // Whether HTTPS-First Mode is enabled for the current site due to the
   // site engagement heuristic.
   bool enabled_by_engagement_heuristic = false;
+
+  // Whether HTTPS-First Mode is enabled because the user is in the Advanced
+  // Protection program.
+  bool enabled_by_advanced_protection = false;
 };
 
 // Helper to record an HTTPS-First Mode navigation event.

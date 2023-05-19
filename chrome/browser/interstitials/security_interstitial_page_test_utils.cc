@@ -78,8 +78,11 @@ bool IsShowingBlockedInterceptionInterstitial(content::WebContents* tab) {
 
 bool IsShowingHttpsFirstModeInterstitial(content::WebContents* tab) {
   return IsShowingInterstitial(tab) &&
-         IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(),
-                                      "this site does not support HTTPS.");
+         (IsInterstitialDisplayingText(tab->GetPrimaryMainFrame(),
+                                       "this site does not support HTTPS.") ||
+          IsInterstitialDisplayingText(
+              tab->GetPrimaryMainFrame(),
+              "You usually connect to this site securely"));
 }
 
 }  // namespace chrome_browser_interstitials

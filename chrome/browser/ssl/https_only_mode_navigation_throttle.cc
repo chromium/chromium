@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -107,7 +108,8 @@ HttpsOnlyModeNavigationThrottle::WillFailRequest() {
 
     std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
         blocking_page = blocking_page_factory_->CreateHttpsOnlyModeBlockingPage(
-            contents, handle->GetURL());
+            contents, handle->GetURL(),
+            security_interstitials::https_only_mode::HttpInterstitialState());
     std::string interstitial_html = blocking_page->GetHTMLContents();
     security_interstitials::SecurityInterstitialTabHelper::
         AssociateBlockingPage(handle, std::move(blocking_page));
