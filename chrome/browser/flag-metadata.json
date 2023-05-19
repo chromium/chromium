@@ -5751,11 +5751,6 @@
     "expiry_milestone": 107
   },
   {
-    "name": "omnibox-spare-renderer",
-    "owners": [ "instant-nav@google.com" ],
-    "expiry_milestone": 92
-  },
-  {
     "name": "omnibox-square-suggest-icons",
     "owners": [
       "yohanes@google.com", "manukh", "chrome-omnibox-team@google.com"
