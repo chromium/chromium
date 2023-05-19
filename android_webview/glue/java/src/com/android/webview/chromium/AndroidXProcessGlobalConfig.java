@@ -9,6 +9,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.support_lib_boundary.ProcessGlobalConfigConstants;
 
 import java.lang.reflect.Field;
@@ -21,7 +22,11 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Class that contains the process global configuration information if it was set by the embedding
  * app using androidx.webkit.ProcessGlobalConfig.
+ *
+ * It is extracted once when WebView first loads and is used for global process configurations (
+ * hence the name).
  */
+@Lifetime.Singleton
 public final class AndroidXProcessGlobalConfig {
     private String mDataDirectorySuffix;
     private String mDataDirectoryBasePath;
