@@ -31,9 +31,9 @@ and optional in "api_config" field.
   "max_sources_per_origin": "1024",
 
   // Positive integer that controls the maximum number of distinct destinations
-  // covered by pending sources for a given (source site, reporting origin).
+  // covered by pending sources for a given (source site, reporting site).
   // Formatted as a base-10 string.
-  "max_destinations_per_source_site_reporting_origin": "100",
+  "max_destinations_per_source_site_reporting_site": "100",
 
   // Positive integer that controls the rate-limiting time window in days for
   // attribution. Formatted as a base-10 string.
@@ -50,7 +50,7 @@ and optional in "api_config" field.
   "rate_limit_max_attribution_reporting_origins": "10",
 
   // Positive integer that controls the maximum number of attributions for a
-  // given (source site, destination site, reporting origin) per rate-limit window.
+  // given (source site, destination site, reporting site) per rate-limit window.
   // Formatted as a base-10 string.
   "rate_limit_max_attributions": "100",
 

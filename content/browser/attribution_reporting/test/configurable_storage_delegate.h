@@ -57,7 +57,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   void set_max_reports_per_destination(AttributionReport::Type, int max);
 
-  void set_max_destinations_per_source_site_reporting_origin(int max);
+  void set_max_destinations_per_source_site_reporting_site(int max);
 
   void set_aggregatable_budget_per_source(int64_t max);
 

@@ -166,14 +166,14 @@ inline constexpr const char kRateLimitAttributionAllowedSql[] =
     "WHERE scope=1 "
     "AND destination_site=? "
     "AND source_site=? "
-    "AND reporting_origin=? "
+    "AND reporting_site=? "
     "AND time>?";
 
 inline constexpr const char kRateLimitSourceAllowedSql[] =
     "SELECT destination_site FROM rate_limits "
     "WHERE scope=0 "
     "AND source_site=? "
-    "AND reporting_origin=? "
+    "AND reporting_site=? "
     "AND source_expiry_or_attribution_time>?";
 
 inline constexpr const char kRateLimitSelectReportingOriginsSql[] =

@@ -1,7 +1,7 @@
 {
   "description": "Unique destination limit covered by unexpired sources",
   "api_config": {
-    "max_destinations_per_source_site_reporting_origin": "1"
+    "max_destinations_per_source_site_reporting_site": "1"
   },
   "input": {
     "sources": [
@@ -113,7 +113,31 @@
           }
         }]
       },
-      // Should be registered as the reporting origin is different.
+      // Should be dropped due to destination limit even if one of the
+      // destinations existed because the reporting site is the same.
+      {
+        "timestamp": "1643235575003",
+        "registration_request": {
+          "source_origin": "https://source1.test",
+          "attribution_src_url": "https://sub.reporter1.test/register-source",
+          "source_type": "event"
+        },
+        "responses": [{
+          "url": "https://sub.reporter1.test/register-source",
+          "debug_permission": true,
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "debug_reporting": true,
+              "destination": [
+                "https://destination1.test",
+                "https://destination2.test"
+              ],
+              "source_event_id": "765"
+            }
+          }
+        }]
+      },
+      // Should be registered as the reporting site is different.
       {
         "timestamp": "1643235577000",
         "registration_request": {
@@ -428,6 +452,19 @@
        } ],
        "report_time": "1643235575002",
        "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+          "body": {
+             "attribution_destination": [ "https://destination1.test", "https://destination2.test" ],
+             "limit": "1",
+             "source_event_id": "765",
+             "source_site": "https://source1.test"
+          },
+          "type": "source-destination-limit"
+       } ],
+       "report_time": "1643235575003",
+       "report_url": "https://sub.reporter1.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
   }

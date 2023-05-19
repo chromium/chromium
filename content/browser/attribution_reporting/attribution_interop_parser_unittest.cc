@@ -582,9 +582,9 @@ TEST(AttributionInteropParserTest, ValidConfig) {
       {R"json({})json", false, AttributionConfig()},
       {R"json({"max_sources_per_origin":"100"})json", false,
        AttributionConfig{.max_sources_per_origin = 100}},
-      {R"json({"max_destinations_per_source_site_reporting_origin":"100"})json",
+      {R"json({"max_destinations_per_source_site_reporting_site":"100"})json",
        false,
-       AttributionConfig{.max_destinations_per_source_site_reporting_origin =
+       AttributionConfig{.max_destinations_per_source_site_reporting_site =
                              100}},
       {R"json({"rate_limit_time_window":"30"})json", false,
        AttributionConfig{.rate_limit = {.time_window = base::Days(30)}}},
@@ -631,7 +631,7 @@ TEST(AttributionInteropParserTest, ValidConfig) {
        AttributionConfig{.aggregate_limit = {.delay_span = base::TimeDelta()}}},
       {R"json({
         "max_sources_per_origin":"10",
-        "max_destinations_per_source_site_reporting_origin":"10",
+        "max_destinations_per_source_site_reporting_site":"10",
         "rate_limit_time_window":"10",
         "rate_limit_max_source_registration_reporting_origins":"20",
         "rate_limit_max_attribution_reporting_origins":"15",
@@ -650,7 +650,7 @@ TEST(AttributionInteropParserTest, ValidConfig) {
        true,
        AttributionConfig{
            .max_sources_per_origin = 10,
-           .max_destinations_per_source_site_reporting_origin = 10,
+           .max_destinations_per_source_site_reporting_site = 10,
            .rate_limit = {.time_window = base::Days(10),
                           .max_source_registration_reporting_origins = 20,
                           .max_attribution_reporting_origins = 15,
@@ -685,7 +685,7 @@ TEST(AttributionInteropParserTest, ValidConfig) {
 TEST(AttributionInteropParserTest, InvalidConfigPositiveIntegers) {
   const char* const kFields[] = {
       "max_sources_per_origin",
-      "max_destinations_per_source_site_reporting_origin",
+      "max_destinations_per_source_site_reporting_site",
       "rate_limit_time_window",
       "rate_limit_max_source_registration_reporting_origins",
       "rate_limit_max_attribution_reporting_origins",

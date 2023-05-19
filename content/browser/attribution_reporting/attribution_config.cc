@@ -15,7 +15,7 @@ bool AttributionConfig::Validate() const {
     return false;
   }
 
-  if (max_destinations_per_source_site_reporting_origin <= 0) {
+  if (max_destinations_per_source_site_reporting_site <= 0) {
     return false;
   }
 

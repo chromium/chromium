@@ -47,7 +47,7 @@ TEST(AttributionDebugReportTest, NoDebugReporting_NoReportReturned) {
       StoreSourceResult(
           StorableSource::Result::kInsufficientUniqueDestinationCapacity,
           /*min_fake_report_time=*/absl::nullopt,
-          /*max_destinations_per_source_site_reporting_origin=*/3)));
+          /*max_destinations_per_source_site_reporting_site=*/3)));
 
   EXPECT_FALSE(AttributionDebugReport::Create(
       TriggerBuilder().Build(),
@@ -66,7 +66,7 @@ TEST(AttributionDebugReportTest,
           StoreSourceResult(
               StorableSource::Result::kInsufficientUniqueDestinationCapacity,
               /*min_fake_report_time=*/absl::nullopt,
-              /*max_destinations_per_source_site_reporting_origin=*/3));
+              /*max_destinations_per_source_site_reporting_site=*/3));
   ASSERT_TRUE(report);
 
   static constexpr char kExpectedJsonString[] = R"([{
@@ -86,7 +86,7 @@ TEST(AttributionDebugReportTest,
 
 TEST(AttributionDebugReportTest, WithinFencedFrame_NoDebugReport) {
   AttributionConfig config;
-  config.max_destinations_per_source_site_reporting_origin = 3;
+  config.max_destinations_per_source_site_reporting_site = 3;
 
   EXPECT_FALSE(AttributionDebugReport::Create(
       SourceBuilder()
@@ -97,7 +97,7 @@ TEST(AttributionDebugReportTest, WithinFencedFrame_NoDebugReport) {
       StoreSourceResult(
           StorableSource::Result::kInsufficientUniqueDestinationCapacity,
           /*min_fake_report_time=*/absl::nullopt,
-          /*max_destinations_per_source_site_reporting_origin=*/3)));
+          /*max_destinations_per_source_site_reporting_site=*/3)));
 
   EXPECT_FALSE(AttributionDebugReport::Create(
       TriggerBuilder()
@@ -113,14 +113,14 @@ TEST(AttributionDebugReportTest, WithinFencedFrame_NoDebugReport) {
 TEST(AttributionDebugReportTest, SourceDebugging) {
   const struct {
     StorableSource::Result result;
-    absl::optional<int> max_destinations_per_source_site_reporting_origin;
+    absl::optional<int> max_destinations_per_source_site_reporting_site;
     absl::optional<int> max_sources_per_origin;
     absl::optional<uint64_t> debug_key;
     const char* expected_report_body_without_cookie;
     const char* expected_report_body_with_cookie;
   } kTestCases[] = {
       {StorableSource::Result::kSuccess,
-       /*max_destinations_per_source_site_reporting_origin=*/absl::nullopt,
+       /*max_destinations_per_source_site_reporting_site=*/absl::nullopt,
        /*max_sources_per_origin=*/absl::nullopt,
        /*debug_key=*/absl::nullopt,
        /*expected_report_body_without_cookie=*/nullptr,
@@ -133,7 +133,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
          "type": "source-success"
        }])json"},
       {StorableSource::Result::kInternalError,
-       /*max_destinations_per_source_site_reporting_origin=*/absl::nullopt,
+       /*max_destinations_per_source_site_reporting_site=*/absl::nullopt,
        /*max_sources_per_origin=*/absl::nullopt,
        /*debug_key=*/456,
        /*expected_report_body_without_cookie=*/nullptr,
@@ -148,7 +148,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
          "type": "source-unknown-error"
        }])json"},
       {StorableSource::Result::kInsufficientSourceCapacity,
-       /*max_destinations_per_source_site_reporting_origin=*/absl::nullopt,
+       /*max_destinations_per_source_site_reporting_site=*/absl::nullopt,
        /*max_sources_per_origin=*/10,
        /*debug_key=*/absl::nullopt,
        /*expected_report_body_without_cookie=*/nullptr,
@@ -163,13 +163,13 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
          "type": "source-storage-limit"
        }])json"},
       {StorableSource::Result::kProhibitedByBrowserPolicy,
-       /*max_destinations_per_source_site_reporting_origin=*/absl::nullopt,
+       /*max_destinations_per_source_site_reporting_site=*/absl::nullopt,
        /*max_sources_per_origin=*/absl::nullopt,
        /*debug_key=*/absl::nullopt,
        /*expected_report_body_without_cookie=*/nullptr,
        /*expected_report_body_with_cookie=*/nullptr},
       {StorableSource::Result::kInsufficientUniqueDestinationCapacity,
-       /*max_destinations_per_source_site_reporting_origin=*/3,
+       /*max_destinations_per_source_site_reporting_site=*/3,
        /*max_sources_per_origin=*/absl::nullopt,
        /*debug_key=*/absl::nullopt,
        /*expected_report_body_without_cookie=*/
@@ -193,7 +193,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
          "type": "source-destination-limit"
        }])json"},
       {StorableSource::Result::kSuccessNoised,
-       /*max_destinations_per_source_site_reporting_origin=*/absl::nullopt,
+       /*max_destinations_per_source_site_reporting_site=*/absl::nullopt,
        /*max_sources_per_origin=*/absl::nullopt,
        /*debug_key=*/absl::nullopt,
        /*expected_report_body_without_cookie=*/nullptr,
@@ -207,7 +207,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
          "type": "source-noised"
        }])json"},
       {StorableSource::Result::kExcessiveReportingOrigins,
-       /*max_destinations_per_source_site_reporting_origin=*/absl::nullopt,
+       /*max_destinations_per_source_site_reporting_site=*/absl::nullopt,
        /*max_sources_per_origin=*/absl::nullopt,
        /*debug_key=*/789,
        /*expected_report_body_without_cookie=*/nullptr,
@@ -235,7 +235,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
               StoreSourceResult(
                   test_case.result,
                   /*min_fake_report_time=*/absl::nullopt,
-                  test_case.max_destinations_per_source_site_reporting_origin,
+                  test_case.max_destinations_per_source_site_reporting_site,
                   test_case.max_sources_per_origin));
       const char* expected_report_body =
           is_debug_cookie_set ? test_case.expected_report_body_with_cookie
@@ -265,7 +265,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
             StoreSourceResult(
                 StorableSource::Result::kSuccessNoised,
                 /*min_fake_report_time=*/absl::nullopt,
-                /*max_destinations_per_source_site_reporting_origin=*/
+                /*max_destinations_per_source_site_reporting_site=*/
                 absl::nullopt,
                 /*max_sources_per_origin=*/absl::nullopt));
 

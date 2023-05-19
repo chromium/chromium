@@ -691,7 +691,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
     return StoreSourceResult(
         StorableSource::Result::kInsufficientSourceCapacity,
         /*min_fake_report_time=*/absl::nullopt,
-        /*max_destinations_per_source_site_reporting_origin=*/absl::nullopt,
+        /*max_destinations_per_source_site_reporting_site=*/absl::nullopt,
         delegate_->GetMaxSourcesPerOrigin());
   }
 
@@ -703,7 +703,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       return StoreSourceResult(
           StorableSource::Result::kInsufficientUniqueDestinationCapacity,
           /*min_fake_report_time=*/absl::nullopt,
-          delegate_->GetMaxDestinationsPerSourceSiteReportingOrigin());
+          delegate_->GetMaxDestinationsPerSourceSiteReportingSite());
     case RateLimitResult::kError:
       return StoreSourceResult(StorableSource::Result::kInternalError);
   }

@@ -134,8 +134,6 @@ TEST_F(AttributionSqlQueryPlanTest, kGetRateLimitDataKeysSql) {
   const auto plan = GetPlan(attribution_queries::kGetRateLimitDataKeysSql,
                             SqlFullScanReason::kIntentional);
   ASSERT_TRUE(plan.has_value());
-  EXPECT_THAT(plan.value(),
-              UsesCoveringIndex("rate_limit_source_site_reporting_origin_idx"));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kCountReportsForDestinationSql) {
@@ -202,8 +200,8 @@ TEST_F(AttributionSqlQueryPlanTest, kRateLimitSourceAllowedSql) {
   const auto plan = GetPlan(attribution_queries::kRateLimitSourceAllowedSql);
   ASSERT_TRUE(plan.has_value());
   EXPECT_THAT(plan.value(),
-              UsesIndex("rate_limit_source_site_reporting_origin_idx",
-                        {"scope", "source_site", "reporting_origin"}));
+              UsesIndex("rate_limit_source_site_reporting_site_idx",
+                        {"source_site", "reporting_site"}));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kRateLimitSelectReportingOriginsSql) {

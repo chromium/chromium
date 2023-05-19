@@ -274,7 +274,7 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
   switch (data_type) {
     case DebugDataType::kSourceDestinationLimit:
       SetLimit(data_body,
-               result.max_destinations_per_source_site_reporting_origin);
+               result.max_destinations_per_source_site_reporting_site);
       break;
     case DebugDataType::kSourceStorageLimit:
       SetLimit(data_body, result.max_sources_per_origin);

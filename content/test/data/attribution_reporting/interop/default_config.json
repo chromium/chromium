@@ -1,6 +1,6 @@
 {
   "max_sources_per_origin": "1024",
-  "max_destinations_per_source_site_reporting_origin": "100",
+  "max_destinations_per_source_site_reporting_site": "100",
   "rate_limit_time_window": "30",
   "rate_limit_max_source_registration_reporting_origins": "100",
   "rate_limit_max_attribution_reporting_origins": "10",
