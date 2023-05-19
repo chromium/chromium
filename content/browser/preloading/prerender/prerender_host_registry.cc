@@ -319,6 +319,7 @@ class PrerenderHostBuilder {
   // Public only for exceptional case.
   // TODO(https://crbug.com/1435376): Make this private again.
   void Drop();
+  bool IsDropped();
 
  private:
   // Use raw pointer as PrerenderHostBuilder is alive only during
@@ -333,12 +334,16 @@ PrerenderHostBuilder::PrerenderHostBuilder(PreloadingAttempt* attempt)
       devtools_attempt_(std::make_unique<DevToolsPrerenderAttempt>()) {}
 
 PrerenderHostBuilder::~PrerenderHostBuilder() {
-  CHECK_EQ(attempt_, nullptr);
+  CHECK(IsDropped());
 }
 
 void PrerenderHostBuilder::Drop() {
   attempt_ = nullptr;
   devtools_attempt_.reset();
+}
+
+bool PrerenderHostBuilder::IsDropped() {
+  return devtools_attempt_ == nullptr;
 }
 
 void PrerenderHostBuilder::SetHoldbackAllowed() {
@@ -350,6 +355,8 @@ void PrerenderHostBuilder::SetHoldbackAllowed() {
 std::unique_ptr<PrerenderHost> PrerenderHostBuilder::Build(
     const PrerenderAttributes& attributes,
     WebContentsImpl& prerender_web_contents) {
+  CHECK(!IsDropped());
+
   auto prerender_host = std::make_unique<PrerenderHost>(
       attributes, prerender_web_contents,
       attempt_ ? attempt_->GetWeakPtr() : nullptr,
@@ -363,6 +370,8 @@ std::unique_ptr<PrerenderHost> PrerenderHostBuilder::Build(
 void PrerenderHostBuilder::RejectAsNotEligible(
     const PrerenderAttributes& attributes,
     PrerenderFinalStatus status) {
+  CHECK(!IsDropped());
+
   if (attempt_) {
     attempt_->SetEligibility(ToEligibility(status));
   }
@@ -376,6 +385,8 @@ void PrerenderHostBuilder::RejectAsNotEligible(
 }
 
 void PrerenderHostBuilder::RejectAsDuplicate() {
+  CHECK(!IsDropped());
+
   if (attempt_) {
     attempt_->SetTriggeringOutcome(PreloadingTriggeringOutcome::kDuplicate);
   }
@@ -386,6 +397,8 @@ void PrerenderHostBuilder::RejectAsDuplicate() {
 }
 
 void PrerenderHostBuilder::RejectDueToHoldback() {
+  CHECK(!IsDropped());
+
   if (attempt_) {
     attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kHoldback);
   }
@@ -399,6 +412,8 @@ void PrerenderHostBuilder::RejectDueToHoldback() {
 void PrerenderHostBuilder::RejectAsFailure(
     const PrerenderAttributes& attributes,
     PrerenderFinalStatus status) {
+  CHECK(!IsDropped());
+
   if (attempt_) {
     attempt_->SetFailureReason(ToPreloadingFailureReason(status));
   }
