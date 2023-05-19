@@ -389,8 +389,12 @@ source_set("feed_app_agent") {
 source_set("app_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "application_storage_metrics.h",
+    "application_storage_metrics.mm",
     "chrome_overlay_window.h",
     "chrome_overlay_window.mm",
+    "features.h",
+    "features.mm",
     "main_application_delegate.h",
     "main_application_delegate.mm",
     "main_application_delegate_testing.h",
@@ -437,6 +441,7 @@ source_set("app_internal") {
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/metrics",
+    "//components/optimization_guide/core:features",
     "//components/password_manager/core/common",
     "//components/prefs",
     "//components/prefs/ios",

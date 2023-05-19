@@ -16,6 +16,7 @@ include_rules = [
   "+components/history/core/browser",
   "+components/keyed_service/core",
   "+components/metrics",
+  "+components/optimization_guide/core",
   "+components/password_manager/core/browser",
   "+components/password_manager/core/common",
   "+components/payments/core",
