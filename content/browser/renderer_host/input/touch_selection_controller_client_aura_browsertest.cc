@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/chromeos_buildflags.h"
@@ -990,6 +991,49 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
   EXPECT_NE(gfx::RectF(),
             rwhva->selection_controller()->GetVisibleRectBetweenBounds());
+}
+
+// Tests that the magnifier is correctly shown for a swipe-to-move-cursor
+// gesture.
+IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
+                       SwipeToMoveCursorMagnifier) {
+  // Set the test page up.
+  ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
+  InitSelectionController();
+
+  RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
+  gfx::NativeView native_view = rwhva->GetNativeView();
+  ui::test::EventGenerator generator(native_view->GetRootWindow());
+  EXPECT_FALSE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
+
+  // Tap to focus the textfield.
+  selection_controller_client()->InitWaitForSelectionEvent(
+      ui::INSERTION_HANDLE_SHOWN);
+  gfx::Point start = gfx::ToRoundedPoint(GetPointInsideTextfield());
+  generator.delegate()->ConvertPointFromTarget(native_view, &start);
+  generator.GestureTapAt(start);
+  selection_controller_client()->Wait();
+
+  // Swipe to move the cursor. We advance the clock before swiping to avoid the
+  // start of the gesture being interpreted as a double press.
+  generator.AdvanceClock(base::Milliseconds(1000));
+  generator.GestureScrollSequenceWithCallback(
+      start, start + gfx::Vector2d(100, 0), /*duration=*/base::Milliseconds(50),
+      /*steps=*/5,
+      base::BindLambdaForTesting([&](ui::EventType event_type,
+                                     const gfx::Vector2dF& offset) {
+        if (event_type == ui::ET_GESTURE_SCROLL_BEGIN) {
+          selection_controller_client()->InitWaitForSelectionEvent(
+              ui::INSERTION_HANDLE_MOVED);
+        } else if (event_type == ui::ET_GESTURE_SCROLL_UPDATE) {
+          selection_controller_client()->Wait();
+          EXPECT_TRUE(
+              ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
+          selection_controller_client()->InitWaitForSelectionEvent(
+              ui::INSERTION_HANDLE_MOVED);
+        }
+      }));
+  EXPECT_FALSE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
 }
 
 // Tests that the select all command in the quick menu works correctly and that

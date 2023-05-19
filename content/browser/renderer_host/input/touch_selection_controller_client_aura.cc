@@ -192,6 +192,16 @@ void TouchSelectionControllerClientAura::DidStopFlinging() {
   OnScrollCompleted();
 }
 
+void TouchSelectionControllerClientAura::OnSwipeToMoveCursorBegin() {
+  GetTouchSelectionController()->OnSwipeToMoveCursorBegin();
+  OnSelectionEvent(ui::INSERTION_HANDLE_DRAG_STARTED);
+}
+
+void TouchSelectionControllerClientAura::OnSwipeToMoveCursorEnd() {
+  GetTouchSelectionController()->OnSwipeToMoveCursorEnd();
+  OnSelectionEvent(ui::INSERTION_HANDLE_DRAG_STOPPED);
+}
+
 void TouchSelectionControllerClientAura::UpdateClientSelectionBounds(
     const gfx::SelectionBound& start,
     const gfx::SelectionBound& end) {
@@ -308,7 +318,9 @@ void TouchSelectionControllerClientAura::UpdateQuickMenu() {
 void TouchSelectionControllerClientAura::UpdateMagnifier() {
   if (auto* magnifier_runner =
           ui::TouchSelectionMagnifierRunner::GetInstance()) {
-    if (handle_drag_in_progress_) {
+    if (handle_drag_in_progress_ &&
+        GetTouchSelectionController()->active_status() !=
+            ui::TouchSelectionController::INACTIVE) {
       magnifier_runner->ShowMagnifier(
           rwhva_->GetNativeView(),
           GetTouchSelectionController()->GetFocusBound());

@@ -40,6 +40,14 @@ void TouchSelectionControllerClientChildFrame::DidStopFlinging() {
   manager_->DidStopFlinging();
 }
 
+void TouchSelectionControllerClientChildFrame::OnSwipeToMoveCursorBegin() {
+  manager_->OnSwipeToMoveCursorBegin();
+}
+
+void TouchSelectionControllerClientChildFrame::OnSwipeToMoveCursorEnd() {
+  manager_->OnSwipeToMoveCursorEnd();
+}
+
 void TouchSelectionControllerClientChildFrame::
     TransformSelectionBoundsAndUpdate() {
   gfx::SelectionBound transformed_selection_start(selection_start_);

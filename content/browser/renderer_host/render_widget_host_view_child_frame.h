@@ -306,6 +306,9 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
       const blink::WebGestureEvent& event,
       blink::mojom::InputEventResultState ack_result) override;
 
+  // Performs gesture ack handling needed for swipe-to-move-cursor gestures.
+  void HandleSwipeToMoveCursorGestureAck(const blink::WebGestureEvent& event);
+
   std::vector<base::OnceClosure> frame_swapped_callbacks_;
 
   // The surface client ID of the parent RenderWidgetHostView.  0 if none.
@@ -321,6 +324,9 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 
   // True if there is currently a scroll sequence being bubbled to our parent.
   bool is_scroll_sequence_bubbling_ = false;
+
+  // Whether a swipe-to-move-cursor gesture is activated.
+  bool swipe_to_move_cursor_activated_ = false;
 
   // If a new RWHVCF is created for a cross-origin navigation, the parent
   // will typically not notice and will not transmit a full complement of
