@@ -4196,7 +4196,7 @@
           Remove
         </message>
         <message name="IDS_SETTINGS_APN_MORE_ACTIONS_TITLE" desc="Description of the tree dotted menu for APNs">
-          More actions
+          More actions for <ph name="APN_NAME">$1<ex>vzwinternet</ex></ph>
         </message>
         <message name="IDS_SETTINGS_ADD_APN_DIALOG_TITLE" desc="Title for the dialog that creates a new custom APN">
           Add a new APN
