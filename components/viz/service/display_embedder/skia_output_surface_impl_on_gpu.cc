@@ -670,9 +670,8 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
   }
 
   absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
-  if (dependency_->GetGrShaderCache()) {
+  if (gr_context() && dependency_->GetGrShaderCache()) {
     // TODO(crbug.com/1434131): Implement pipeline caching for Graphite.
-    CHECK(gr_context());
     cache_use.emplace(dependency_->GetGrShaderCache(),
                       gpu::kDisplayCompositorClientId);
   }
