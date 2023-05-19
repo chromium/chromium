@@ -550,12 +550,14 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
           requires_post_process_selection_ = true;
         }
         break;
+      case ui::AXEventGenerator::Event::ALERT:
+        requires_distillation_ = true;
+        break;
 
       // Audit these events e.g. to trigger distillation.
       case ui::AXEventGenerator::Event::NONE:
       case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:
       case ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED:
-      case ui::AXEventGenerator::Event::ALERT:
       case ui::AXEventGenerator::Event::ARIA_CURRENT_CHANGED:
       case ui::AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
       case ui::AXEventGenerator::Event::ATOMIC_CHANGED:
