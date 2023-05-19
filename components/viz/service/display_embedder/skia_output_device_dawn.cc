@@ -26,10 +26,12 @@ namespace {
 // desktop and RGBA8Unorm for Android. Use GetPreferredSurfaceFormat when ready.
 #if BUILDFLAG(IS_ANDROID)
 constexpr SkColorType kSurfaceColorType = kRGBA_8888_SkColorType;
+constexpr SharedImageFormat kSurfaceFormat = SinglePlaneFormat::kRGBA_8888;
 constexpr wgpu::TextureFormat kSwapChainFormat =
     wgpu::TextureFormat::RGBA8Unorm;
 #else
 constexpr SkColorType kSurfaceColorType = kBGRA_8888_SkColorType;
+constexpr SharedImageFormat kSurfaceFormat = SinglePlaneFormat::kBGRA_8888;
 constexpr wgpu::TextureFormat kSwapChainFormat =
     wgpu::TextureFormat::BGRA8Unorm;
 #endif
@@ -150,8 +152,7 @@ void SkiaOutputDeviceDawn::Present(const absl::optional<gfx::Rect>& update_rect,
 SkSurface* SkiaOutputDeviceDawn::BeginPaint(
     std::vector<GrBackendSemaphore>* end_semaphores) {
   auto texture_info = gpu::GetGraphiteTextureInfo(
-      gpu::GrContextType::kGraphiteDawn,
-      SharedImageFormat::SinglePlane(ResourceFormat::RGBA_8888),
+      gpu::GrContextType::kGraphiteDawn, kSurfaceFormat,
       /*plane_index=*/0, /*mipmapped=*/false, /*root_surface=*/true);
   skgpu::graphite::DawnTextureInfo dawn_texture_info;
   texture_info.getDawnTextureInfo(&dawn_texture_info);
