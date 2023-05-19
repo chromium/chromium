@@ -61,8 +61,9 @@ ui::KeyEvent CreateKeyEventFromCode(const ui::DomCode& code) {
 ui::KeyEvent CreateRepeatKeyEventFromCode(const ui::DomCode& code,
                                           bool shifted) {
   int flags = ui::EF_IS_REPEAT;
-  if (shifted)
+  if (shifted) {
     flags |= ui::EF_SHIFT_DOWN;
+  }
   return ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN, code, flags,
                       ui::DomKey::NONE, ui::EventTimeForNow());
 }
@@ -823,9 +824,9 @@ TEST_P(LongpressDiacriticsSuggesterTest, A11yAnnounceOnShowWindow) {
   suggester.TrySuggestOnLongpress(GetParam().longpress_char);
 
   ASSERT_EQ(suggestion_handler.GetAnnouncements().size(), 1u);
-  EXPECT_EQ(suggestion_handler.GetAnnouncements().back(),
-            u"Accent marks menu open. Press left or right to navigate and "
-            u"enter to insert.");
+  EXPECT_EQ(suggestion_handler.GetAnnouncements().front(),
+            u"Accent marks menu open. Press left, right, or number keys to "
+            u"navigate and enter to insert.");
 }
 
 TEST_P(LongpressDiacriticsSuggesterTest, A11yAnnounceOnDismissWithEsc) {
@@ -841,8 +842,8 @@ TEST_P(LongpressDiacriticsSuggesterTest, A11yAnnounceOnDismissWithEsc) {
 
   ASSERT_EQ(suggestion_handler.GetAnnouncements().size(), 2u);
   EXPECT_EQ(suggestion_handler.GetAnnouncements().front(),
-            u"Accent marks menu open. Press left or right to navigate and "
-            u"enter to insert.");
+            u"Accent marks menu open. Press left, right, or number keys to "
+            u"navigate and enter to insert.");
   EXPECT_EQ(suggestion_handler.GetAnnouncements().back(),
             u"Accent marks menu dismissed.");
 }
@@ -860,8 +861,8 @@ TEST_P(LongpressDiacriticsSuggesterTest, A11yAnnounceOnDismissByTyping) {
 
   ASSERT_EQ(suggestion_handler.GetAnnouncements().size(), 2u);
   EXPECT_EQ(suggestion_handler.GetAnnouncements().front(),
-            u"Accent marks menu open. Press left or right to navigate and "
-            u"enter to insert.");
+            u"Accent marks menu open. Press left, right, or number keys to "
+            u"navigate and enter to insert.");
   EXPECT_EQ(suggestion_handler.GetAnnouncements().back(),
             u"Accent marks menu dismissed.");
 }
@@ -879,8 +880,8 @@ TEST_P(LongpressDiacriticsSuggesterTest, A11yAnnounceOnAcceptViaDigit) {
 
   ASSERT_EQ(suggestion_handler.GetAnnouncements().size(), 2u);
   EXPECT_EQ(suggestion_handler.GetAnnouncements().front(),
-            u"Accent marks menu open. Press left or right to navigate and "
-            u"enter to insert.");
+            u"Accent marks menu open. Press left, right, or number keys to "
+            u"navigate and enter to insert.");
   EXPECT_EQ(suggestion_handler.GetAnnouncements().back(),
             u"Accent mark inserted.");
 }
@@ -899,8 +900,8 @@ TEST_P(LongpressDiacriticsSuggesterTest, A11yAnnounceOnAcceptViaEnter) {
 
   ASSERT_EQ(suggestion_handler.GetAnnouncements().size(), 2u);
   EXPECT_EQ(suggestion_handler.GetAnnouncements().front(),
-            u"Accent marks menu open. Press left or right to navigate and "
-            u"enter to insert.");
+            u"Accent marks menu open. Press left, right, or number keys to "
+            u"navigate and enter to insert.");
   EXPECT_EQ(suggestion_handler.GetAnnouncements().back(),
             u"Accent mark inserted.");
 }
