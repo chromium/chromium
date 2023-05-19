@@ -31,6 +31,11 @@
         pointer-events: none;
       }
 
+      :host-context([chrome-refresh-2023]):host([disabled])
+          :is(#label, #error, #input-container) {
+        opacity: 1;
+      }
+
       /* Margin between <input> and <cr-button> in the 'suffix' slot */
       :host ::slotted(cr-button[slot=suffix]) {
         margin-inline-start: var(--cr-button-edge-spacing) !important;
@@ -43,6 +48,10 @@
       #input {
         border-bottom: var(--cr-input-border-bottom, none);
         letter-spacing: var(--cr-input-letter-spacing);
+      }
+
+      :host-context([chrome-refresh-2023]) #input {
+        border-bottom: none;
       }
 
       :host-context([chrome-refresh-2023]) #input-container {
@@ -90,18 +99,29 @@
         white-space: var(--cr-input-error-white-space);
       }
 
+      :host-context([chrome-refresh-2023]) #error {
+        font-size: 11px;
+        line-height: 16px;
+        margin: 4px 10px;
+      }
+
       :host([invalid]) #error {
         visibility: visible;
       }
 
       #row-container,
-      #inner-input-container {
+      #inner-input-content {
         align-items: center;
         display: flex;
         /* This will spread the input field and the suffix apart only if the
            host element width is intentionally set to something large. */
         justify-content: space-between;
         position: relative;
+      }
+
+      :host-context([chrome-refresh-2023]) #inner-input-content {
+        /* Ensures content sits above the hover layer */
+        z-index: 1;
       }
 
       #input[type='search']::-webkit-search-cancel-button {
@@ -123,24 +143,28 @@
     <div id="row-container" part="row-container">
       <div id="input-container">
         <div id="inner-input-container">
-          <slot name="inline-prefix"></slot>
-          <!-- Only attributes that are named inconsistently between html and js
-              need to use attr$="", such as |readonly| vs .readOnly. -->
-          <input id="input" disabled="[[disabled]]" autofocus="[[autofocus]]"
-              value="{{value::input}}" tabindex$="[[inputTabindex]]"
-              type="[[type]]"
-              readonly$="[[readonly]]" maxlength$="[[maxlength]]"
-              pattern$="[[pattern]]" required="[[required]]"
-              minlength$="[[minlength]]" inputmode$="[[inputmode]]"
-              aria-description$="[[ariaDescription]]"
-              aria-label$="[[getAriaLabel_(ariaLabel, label, placeholder)]]"
-              aria-invalid$="[[getAriaInvalid_(invalid)]]"
-              max="[[max]]" min="[[min]]" on-focus="onInputFocus_"
-              on-blur="onInputBlur_" on-change="onInputChange_"
-              part="input"
-              autocomplete="off">
-          <slot name="inline-suffix"></slot>
+          <div id="hover-layer"></div>
+          <div id="inner-input-content">
+            <slot name="inline-prefix"></slot>
+            <!-- Only attributes that are named inconsistently between html and js
+                need to use attr$="", such as |readonly| vs .readOnly. -->
+            <input id="input" disabled="[[disabled]]" autofocus="[[autofocus]]"
+                value="{{value::input}}" tabindex$="[[inputTabindex]]"
+                type="[[type]]"
+                readonly$="[[readonly]]" maxlength$="[[maxlength]]"
+                pattern$="[[pattern]]" required="[[required]]"
+                minlength$="[[minlength]]" inputmode$="[[inputmode]]"
+                aria-description$="[[ariaDescription]]"
+                aria-label$="[[getAriaLabel_(ariaLabel, label, placeholder)]]"
+                aria-invalid$="[[getAriaInvalid_(invalid)]]"
+                max="[[max]]" min="[[min]]" on-focus="onInputFocus_"
+                on-blur="onInputBlur_" on-change="onInputChange_"
+                part="input"
+                autocomplete="off">
+            <slot name="inline-suffix"></slot>
+          </div>
         </div>
+        <div id="underline-base"></div>
         <div id="underline"></div>
       </div>
       <slot name="suffix"></slot>

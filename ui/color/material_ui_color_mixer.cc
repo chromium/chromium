@@ -82,14 +82,22 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorSliderTrackMinimal] = {kColorSysOnSecondary};
   mixer[kColorSuggestionChipBorder] = {kColorSysTonalOutline};
   mixer[kColorSuggestionChipIcon] = {kColorSysPrimary};
+  // TODO(colehorvitz): Rename textfield color IDs to specify which
+  // textfield variation they are used for ('filled' or 'stroked').
   mixer[kColorTextfieldBackground] = {kColorSysSurface};
   mixer[kColorTextfieldBackgroundDisabled] = {GetResultingPaintColor(
       {kColorSysStateDisabledContainer}, {kColorTextfieldBackground})};
+  mixer[kColorTextfieldFilledUnderline] = {kColorSysOutline};
+  mixer[kColorTextfieldFilledUnderlineFocused] = {kColorSysPrimary};
+  mixer[kColorTextfieldFilledBackground] = {kColorSysSurfaceVariant};
+  mixer[kColorTextfieldFilledForegroundInvalid] = {kColorSysError};
   mixer[kColorTextfieldForeground] = {kColorSysOnSurface};
   mixer[kColorTextfieldForegroundPlaceholderInvalid] = {
       BlendForMinContrast(kColorSysError, kColorTextfieldBackground)};
   mixer[kColorTextfieldForegroundDisabled] = {kColorSysStateDisabled};
+  mixer[kColorTextfieldForegroundLabel] = {kColorSysOnSurfaceSubtle};
   mixer[kColorTextfieldForegroundPlaceholder] = {kColorSysOnSurfaceSubtle};
+  mixer[kColorTextfieldForegroundIcon] = {kColorSysOnSurfaceSubtle};
   mixer[kColorTextfieldOutline] = {kColorSysNeutralOutline};
   mixer[kColorTextfieldDisabledOutline] = {SK_ColorTRANSPARENT};
   mixer[kColorTextfieldInvalidOutline] = {

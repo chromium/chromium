@@ -18,6 +18,29 @@
         outline: none;
       }
 
+      :host-context([chrome-refresh-2023]):host {
+        --cr-input-background-color: var(--color-textfield-filled-background,
+            var(--cr-fallback-color-surface-variant));
+        --cr-input-border-bottom: 1px solid
+            var(--color-textfield-filled-underline,
+                var(--cr-fallback-color-outline));
+        --cr-input-border-radius: 8px 8px 0 0;
+        --cr-input-error-color: var(--color-textfield-filled-error,
+            var(--cr-fallback-color-error));
+        --cr-input-focus-color: var(--color-textfield-filled-underline-focused,
+            var(--cr-fallback-color-primary));
+        --cr-input-hover-background-color: var(--cr-hover-background-color);
+        --cr-input-padding-bottom: 10px;
+        --cr-input-padding-top: 10px;
+        --cr-input-placeholder-color:
+            var(--color-textfield-foreground-placeholder,
+                var(--cr-fallback-on-surface-subtle));
+      }
+
+      :host-context([chrome-refresh-2023]):host([readonly]) {
+        --cr-input-border-radius: 8px 8px;
+      }
+
       @media (prefers-color-scheme: dark) {
         :host {
           --cr-input-background-color: rgba(0, 0, 0, .3);
@@ -26,8 +49,15 @@
         }
       }
 
-      :host([focused_]:not([readonly]):not([invalid])) #label {
+      :host-context(html:not([chrome-refresh-2023])):host([focused_]:not([readonly]):not([invalid]))
+          #label {
         color: var(--cr-input-focus-color);
+      }
+
+      :host-context([chrome-refresh-2023]) #label {
+        color: var(--color-textfield-foreground-label,
+            var(--cr-fallback-color-on-surface-subtle));
+        font-size: 11px;
       }
 
       /* Input styling below. */
@@ -42,6 +72,36 @@
         background-color: var(--cr-input-background-color);
         box-sizing: border-box;
         padding: 0;
+      }
+
+      :host-context([chrome-refresh-2023]) #inner-input-content ::slotted(*) {
+        --cr-icon-button-fill-color: var(--color-textfield-foreground-icon,
+            var(--cr-fallback-color-on-surface-subtle));
+        --cr-icon-color: var(--color-textfield-foreground-icon,
+            var(--cr-fallback-color-on-surface-subtle));
+      }
+
+      :host-context([chrome-refresh-2023]):host([invalid])
+          #inner-input-content ::slotted(*) {
+        --cr-icon-color: var(--cr-input-error-color);
+        --cr-icon-button-fill-color: var(--cr-input-error-color);
+      }
+
+      #hover-layer {
+        display: none;
+      }
+
+      :host-context([chrome-refresh-2023]) #hover-layer {
+        background-color: var(--cr-input-hover-background-color);
+        inset: 0;
+        pointer-events: none;
+        position: absolute;
+        z-index: 0;
+      }
+
+      :host-context([chrome-refresh-2023]):host(:not([readonly]))
+          #input-container:hover #hover-layer {
+        display: block;
       }
 
       #input {
@@ -77,6 +137,11 @@
         width: 100%;
       }
 
+      :host-context([chrome-refresh-2023]) #input {
+        font-size: 12px;
+        line-height: 16px;
+      }
+
       /* Underline styling below. */
       #underline {
         border-bottom: 2px solid var(--cr-input-focus-color);
@@ -101,3 +166,39 @@
         transition: opacity 120ms ease-in, width 180ms ease-out;
         width: 100%;
       }
+
+      #underline-base {
+        display: none;
+      }
+
+      :host-context([chrome-refresh-2023]):host([readonly]) #underline {
+        display: none;
+      }
+
+      :host-context([chrome-refresh-2023]):host(:not([readonly]))
+          #underline-base {
+        border-bottom: var(--cr-input-border-bottom);
+        bottom: 0;
+        display: block;
+        left: 0;
+        position: absolute;
+        right: 0;
+      }
+
+      :host-context([chrome-refresh-2023]):host([disabled]) {
+        color: var(--color-textfield-foreground-disabled,
+              rgba(var(--cr-fallback-color-on-surface-rgb),
+                  var(--cr-disabled-opacity)));
+        --cr-input-border-bottom: 1px solid currentColor;
+        --cr-input-placeholder-color: currentColor;
+        --cr-input-color: currentColor;
+        --cr-input-background-color: var(--color-textfield-background-disabled,
+            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+      }
+
+      :host-context([chrome-refresh-2023]):host([disabled])
+          #inner-input-content ::slotted(*) {
+        --cr-icon-color: currentColor;
+        --cr-icon-button-fill-color: currentColor;
+      }
+

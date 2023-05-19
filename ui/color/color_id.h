@@ -402,8 +402,14 @@
   E_CPONLY(kColorSuggestionChipIcon) \
   E_CPONLY(kColorTextfieldBackground) \
   E_CPONLY(kColorTextfieldBackgroundDisabled) \
+  E_CPONLY(kColorTextfieldFilledBackground) \
+  E_CPONLY(kColorTextfieldFilledForegroundInvalid) \
+  E_CPONLY(kColorTextfieldFilledUnderline) \
+  E_CPONLY(kColorTextfieldFilledUnderlineFocused) \
   E_CPONLY(kColorTextfieldForeground) \
   E_CPONLY(kColorTextfieldForegroundDisabled) \
+  E_CPONLY(kColorTextfieldForegroundIcon) \
+  E_CPONLY(kColorTextfieldForegroundLabel) \
   E_CPONLY(kColorTextfieldForegroundPlaceholderInvalid) \
   E_CPONLY(kColorTextfieldForegroundPlaceholder) \
   E_CPONLY(kColorTextfieldSelectionBackground) \
