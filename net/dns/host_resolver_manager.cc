@@ -823,20 +823,14 @@ class HostResolverManager::RequestImpl
     return base::OptionalToPtr(endpoint_results_);
   }
 
-  const absl::optional<std::vector<std::string>>& GetTextResults()
-      const override {
+  const std::vector<std::string>* GetTextResults() const override {
     DCHECK(complete_);
-    static const base::NoDestructor<absl::optional<std::vector<std::string>>>
-        nullopt_result;
-    return results_ ? results_.value().text_records() : *nullopt_result;
+    return results_ ? &results_.value().text_records() : nullptr;
   }
 
-  const absl::optional<std::vector<HostPortPair>>& GetHostnameResults()
-      const override {
+  const std::vector<HostPortPair>* GetHostnameResults() const override {
     DCHECK(complete_);
-    static const base::NoDestructor<absl::optional<std::vector<HostPortPair>>>
-        nullopt_result;
-    return results_ ? results_.value().hostnames() : *nullopt_result;
+    return results_ ? &results_.value().hostnames() : nullptr;
   }
 
   const std::set<std::string>* GetDnsAliasResults() const override {
@@ -861,7 +855,7 @@ class HostResolverManager::RequestImpl
 
   const std::vector<bool>* GetExperimentalResultsForTesting() const override {
     DCHECK(complete_);
-    return results_ ? results_.value().https_record_compatibility() : nullptr;
+    return results_ ? &results_.value().https_record_compatibility() : nullptr;
   }
 
   net::ResolveErrorInfo GetResolveErrorInfo() const override {
@@ -963,8 +957,7 @@ class HostResolverManager::RequestImpl
 
     endpoint_results_ = results_.value().GetEndpoints();
     if (endpoint_results_.has_value()) {
-      DCHECK(results_.value().aliases());
-      fixed_up_dns_alias_results_ = *results_.value().aliases();
+      fixed_up_dns_alias_results_ = results_.value().aliases();
 
       // Skip fixups for `include_canonical_name` requests. Just use the
       // canonical name exactly as it was received from the system resolver.
@@ -1534,11 +1527,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
     if (httpssvc_metrics_) {
       if (transaction_info.type == DnsQueryType::HTTPS) {
-        const std::vector<bool>* record_compatibility =
-            results.https_record_compatibility();
-        CHECK(record_compatibility);
         httpssvc_metrics_->SaveForHttps(rcode_for_httpssvc,
-                                        *record_compatibility, elapsed_time);
+                                        results.https_record_compatibility(),
+                                        elapsed_time);
       } else {
         httpssvc_metrics_->SaveForAddressQuery(elapsed_time,
                                                rcode_for_httpssvc);
@@ -1689,26 +1680,23 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
     timeout_timer_.Stop();
 
-    absl::optional<std::vector<IPEndPoint>> ip_endpoints;
-    ip_endpoints = base::OptionalFromPtr(results.ip_endpoints());
+    std::vector<IPEndPoint> ip_endpoints = results.ip_endpoints();
 
-    if (ip_endpoints.has_value()) {
-      // If there are multiple addresses, and at least one is IPv6, need to
-      // sort them.
-      bool at_least_one_ipv6_address = base::ranges::any_of(
-          ip_endpoints.value(),
-          [](auto& e) { return e.GetFamily() == ADDRESS_FAMILY_IPV6; });
+    // If there are multiple addresses, and at least one is IPv6, need to
+    // sort them.
+    bool at_least_one_ipv6_address = base::ranges::any_of(
+        ip_endpoints,
+        [](auto& e) { return e.GetFamily() == ADDRESS_FAMILY_IPV6; });
 
-      if (at_least_one_ipv6_address) {
-        // Sort addresses if needed.  Sort could complete synchronously.
-        client_->GetAddressSorter()->Sort(
-            ip_endpoints.value(),
-            base::BindOnce(&DnsTask::OnSortComplete, AsWeakPtr(),
-                           tick_clock_->NowTicks(), std::move(results),
-                           secure_));
-        return;
-      }
+    if (at_least_one_ipv6_address) {
+      // Sort addresses if needed.  Sort could complete synchronously.
+      client_->GetAddressSorter()->Sort(
+          ip_endpoints,
+          base::BindOnce(&DnsTask::OnSortComplete, AsWeakPtr(),
+                         tick_clock_->NowTicks(), std::move(results), secure_));
+      return;
     }
+
     OnSuccess(std::move(results));
   }
 
@@ -1717,7 +1705,6 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
                       bool secure,
                       bool success,
                       std::vector<IPEndPoint> sorted) {
-    DCHECK(results.ip_endpoints());
     results.set_ip_endpoints(std::move(sorted));
 
     if (!success) {
@@ -1727,9 +1714,8 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     }
 
     // AddressSorter prunes unusable destinations.
-    if ((!results.ip_endpoints() || results.ip_endpoints()->empty()) &&
-        results.text_records().value_or(std::vector<std::string>()).empty() &&
-        results.hostnames().value_or(std::vector<HostPortPair>()).empty()) {
+    if (results.ip_endpoints().empty() && results.text_records().empty() &&
+        results.hostnames().empty()) {
       LOG(WARNING) << "Address list empty after RFC3484 sort";
       OnFailure(ERR_NAME_NOT_RESOLVED, /*allow_fallback=*/true,
                 results.GetOptionalTtl());
@@ -1897,8 +1883,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   bool ShouldTriggerHttpToHttpsUpgrade(const HostCache::Entry& results) {
     // Upgrade if at least one HTTPS record was compatible, and the host uses an
     // upgradable scheme.
-    return results.https_record_compatibility() &&
-           base::ranges::any_of(*results.https_record_compatibility(),
+    return base::ranges::any_of(results.https_record_compatibility(),
                                 base::identity()) &&
            (GetScheme(host_) == url::kHttpScheme ||
             GetScheme(host_) == url::kWsScheme);
@@ -2579,7 +2564,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     // transaction, e.g. a supplemental HTTPS transaction, finds results.
     DCHECK(!key_.query_types.Has(DnsQueryType::UNSPECIFIED));
     if (HasAddressType(key_.query_types) && results.error() == OK &&
-        (!results.ip_endpoints() || results.ip_endpoints()->empty())) {
+        results.ip_endpoints().empty()) {
       results.set_error(ERR_NAME_NOT_RESOLVED);
     }
 
@@ -2603,8 +2588,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     base::TimeDelta bounded_ttl =
         std::max(results.ttl(), base::Seconds(kMinimumTTLSeconds));
 
-    if ((results.ip_endpoints() &&
-         ContainsIcannNameCollisionIp(*results.ip_endpoints()))) {
+    if (ContainsIcannNameCollisionIp(results.ip_endpoints())) {
       CompleteRequestsWithError(ERR_ICANN_NAME_COLLISION,
                                 secure ? TaskType::SECURE_DNS : TaskType::DNS);
       return;
@@ -2678,8 +2662,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
     HostCache::Entry results = mdns_task_->GetResults();
 
-    if ((results.ip_endpoints() &&
-         ContainsIcannNameCollisionIp(*results.ip_endpoints()))) {
+    if (ContainsIcannNameCollisionIp(results.ip_endpoints())) {
       CompleteRequestsWithError(ERR_ICANN_NAME_COLLISION, TaskType::MDNS);
       return;
     }
@@ -2781,8 +2764,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
           (GetScheme(key_.host) == url::kHttpsScheme ||
            GetScheme(key_.host) == url::kWssScheme) &&
           IsGoogleHostWithAlpnH3(GetHostname(key_.host))) {
-        bool has_metadata =
-            results.GetMetadatas() && !results.GetMetadatas()->empty();
+        bool has_metadata = !results.GetMetadatas().empty();
         base::UmaHistogramExactLinear(
             "Net.DNS.H3SupportedGoogleHost.TaskTypeMetadataAvailability2",
             static_cast<int>(task_type.value()) * 2 + (has_metadata ? 1 : 0),

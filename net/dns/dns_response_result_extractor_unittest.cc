@@ -48,9 +48,9 @@ TEST(DnsResponseResultExtractorTest, ExtractsSingleARecord) {
   IPEndPoint expected_endpoint(kExpected, 0 /* port */);
 
   EXPECT_THAT(results.GetEndpoints(),
-              testing::Optional(testing::ElementsAre(ExpectEndpointResult(
-                  testing::ElementsAre(expected_endpoint)))));
-  EXPECT_THAT(results.aliases(), testing::Pointee(testing::ElementsAre(kName)));
+              testing::ElementsAre(ExpectEndpointResult(
+                  testing::ElementsAre(expected_endpoint))));
+  EXPECT_THAT(results.aliases(), testing::ElementsAre(kName));
   EXPECT_TRUE(results.has_ttl());
 }
 
@@ -72,9 +72,9 @@ TEST(DnsResponseResultExtractorTest, ExtractsSingleAAAARecord) {
   EXPECT_THAT(results.error(), test::IsOk());
   IPEndPoint expected_endpoint(expected, 0 /* port */);
   EXPECT_THAT(results.GetEndpoints(),
-              testing::Optional(testing::ElementsAre(ExpectEndpointResult(
-                  testing::ElementsAre(expected_endpoint)))));
-  EXPECT_THAT(results.aliases(), testing::Pointee(testing::ElementsAre(kName)));
+              testing::ElementsAre(ExpectEndpointResult(
+                  testing::ElementsAre(expected_endpoint))));
+  EXPECT_THAT(results.aliases(), testing::ElementsAre(kName));
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsSingleARecordWithCname) {
@@ -95,10 +95,10 @@ TEST(DnsResponseResultExtractorTest, ExtractsSingleARecordWithCname) {
   EXPECT_THAT(results.error(), test::IsOk());
   IPEndPoint expected_endpoint(kExpected, 0 /* port */);
   EXPECT_THAT(results.GetEndpoints(),
-              testing::Optional(testing::ElementsAre(ExpectEndpointResult(
-                  testing::ElementsAre(expected_endpoint)))));
-  EXPECT_THAT(results.aliases(), testing::Pointee(testing::UnorderedElementsAre(
-                                     kName, kCanonicalName)));
+              testing::ElementsAre(ExpectEndpointResult(
+                  testing::ElementsAre(expected_endpoint))));
+  EXPECT_THAT(results.aliases(),
+              testing::UnorderedElementsAre(kName, kCanonicalName));
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsARecordsWithCname) {
@@ -125,15 +125,14 @@ TEST(DnsResponseResultExtractorTest, ExtractsARecordsWithCname) {
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(
       results.GetEndpoints(),
-      testing::Optional(testing::ElementsAre(
-          ExpectEndpointResult(testing::UnorderedElementsAre(
-              IPEndPoint(IPAddress(74, 125, 226, 179), 0 /* port */),
-              IPEndPoint(IPAddress(74, 125, 226, 178), 0 /* port */),
-              IPEndPoint(IPAddress(74, 125, 226, 180), 0 /* port */),
-              IPEndPoint(IPAddress(74, 125, 226, 176), 0 /* port */),
-              IPEndPoint(IPAddress(74, 125, 226, 177), 0 /* port */))))));
-  EXPECT_THAT(results.aliases(), testing::Pointee(testing::UnorderedElementsAre(
-                                     "alias.test", kName)));
+      testing::ElementsAre(ExpectEndpointResult(testing::UnorderedElementsAre(
+          IPEndPoint(IPAddress(74, 125, 226, 179), 0 /* port */),
+          IPEndPoint(IPAddress(74, 125, 226, 178), 0 /* port */),
+          IPEndPoint(IPAddress(74, 125, 226, 180), 0 /* port */),
+          IPEndPoint(IPAddress(74, 125, 226, 176), 0 /* port */),
+          IPEndPoint(IPAddress(74, 125, 226, 177), 0 /* port */)))));
+  EXPECT_THAT(results.aliases(),
+              testing::UnorderedElementsAre("alias.test", kName));
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNxdomainAResponses) {
@@ -154,8 +153,8 @@ TEST(DnsResponseResultExtractorTest, ExtractsNxdomainAResponses) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.GetEndpoints(), testing::Optional(testing::IsEmpty()));
-  EXPECT_THAT(results.aliases(), testing::Pointee(testing::ElementsAre(kName)));
+  EXPECT_THAT(results.GetEndpoints(), testing::IsEmpty());
+  EXPECT_THAT(results.aliases(), testing::ElementsAre(kName));
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -178,8 +177,8 @@ TEST(DnsResponseResultExtractorTest, ExtractsNodataAResponses) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.GetEndpoints(), testing::Optional(testing::IsEmpty()));
-  EXPECT_THAT(results.aliases(), testing::Pointee(testing::ElementsAre(kName)));
+  EXPECT_THAT(results.GetEndpoints(), testing::IsEmpty());
+  EXPECT_THAT(results.aliases(), testing::ElementsAre(kName));
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -236,9 +235,8 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeRecordsInAResponse) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.GetEndpoints(), testing::Optional(testing::IsEmpty()));
-  EXPECT_THAT(results.aliases(),
-              testing::Pointee(testing::ElementsAre("address.test")));
+  EXPECT_THAT(results.GetEndpoints(), testing::IsEmpty());
+  EXPECT_THAT(results.aliases(), testing::ElementsAre("address.test"));
   EXPECT_FALSE(results.has_ttl());
 }
 
@@ -262,9 +260,9 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeRecordsMixedWithARecords) {
   EXPECT_THAT(results.error(), test::IsOk());
   IPEndPoint expected_endpoint(kExpected, 0 /* port */);
   EXPECT_THAT(results.GetEndpoints(),
-              testing::Optional(testing::ElementsAre(ExpectEndpointResult(
-                  testing::ElementsAre(expected_endpoint)))));
-  EXPECT_THAT(results.aliases(), testing::Pointee(testing::ElementsAre(kName)));
+              testing::ElementsAre(ExpectEndpointResult(
+                  testing::ElementsAre(expected_endpoint))));
+  EXPECT_THAT(results.aliases(), testing::ElementsAre(kName));
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -315,10 +313,10 @@ TEST(DnsResponseResultExtractorTest, ExtractsTxtResponses) {
 
   // Order between separate DNS records is undefined, but each record should
   // stay in order as that order may be meaningful.
-  ASSERT_THAT(results.text_records(),
-              testing::Optional(testing::UnorderedElementsAre(
-                  "foo1", "foo2", "foo3", "bar1", "bar2")));
-  std::vector<std::string> results_vector = results.text_records().value();
+  ASSERT_THAT(
+      results.text_records(),
+      testing::UnorderedElementsAre("foo1", "foo2", "foo3", "bar1", "bar2"));
+  const std::vector<std::string>& results_vector = results.text_records();
   EXPECT_NE(results_vector.end(),
             base::ranges::search(results_vector, foo_records));
   EXPECT_NE(results_vector.end(),
@@ -343,7 +341,7 @@ TEST(DnsResponseResultExtractorTest, ExtractsNxdomainTxtResponses) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.text_records(), testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.text_records(), testing::IsEmpty());
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -366,7 +364,7 @@ TEST(DnsResponseResultExtractorTest, ExtractsNodataTxtResponses) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.text_records(), testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.text_records(), testing::IsEmpty());
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -423,7 +421,7 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeTxtResponses) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.text_records(), testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.text_records(), testing::IsEmpty());
   EXPECT_FALSE(results.has_ttl());
 }
 
@@ -465,8 +463,8 @@ TEST(DnsResponseResultExtractorTest, ExtractsPtrResponses) {
 
   // Order between separate records is undefined.
   EXPECT_THAT(results.hostnames(),
-              testing::Optional(testing::UnorderedElementsAre(
-                  HostPortPair("foo.com", 0), HostPortPair("bar.com", 0))));
+              testing::UnorderedElementsAre(HostPortPair("foo.com", 0),
+                                            HostPortPair("bar.com", 0)));
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNxdomainPtrResponses) {
@@ -487,7 +485,7 @@ TEST(DnsResponseResultExtractorTest, ExtractsNxdomainPtrResponses) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.hostnames(), testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.hostnames(), testing::IsEmpty());
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -510,7 +508,7 @@ TEST(DnsResponseResultExtractorTest, ExtractsNodataPtrResponses) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.hostnames(), testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.hostnames(), testing::IsEmpty());
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -567,7 +565,7 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypePtrResponses) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.hostnames(), testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.hostnames(), testing::IsEmpty());
   EXPECT_FALSE(results.has_ttl());
 }
 
@@ -592,19 +590,19 @@ TEST(DnsResponseResultExtractorTest, ExtractsSrvResponses) {
   EXPECT_THAT(results.error(), test::IsOk());
 
   // Expect ordered by priority, and random within a priority.
-  absl::optional<std::vector<HostPortPair>> result_hosts = results.hostnames();
+  const std::vector<HostPortPair>& result_hosts = results.hostnames();
   ASSERT_THAT(
       result_hosts,
-      testing::Optional(testing::UnorderedElementsAre(
+      testing::UnorderedElementsAre(
           HostPortPair("foo.com", 1223), HostPortPair("bar.com", 80),
-          HostPortPair("google.com", 5), HostPortPair("chromium.org", 12345))));
-  auto priority2 = std::vector<HostPortPair>(result_hosts.value().begin(),
-                                             result_hosts.value().begin() + 2);
+          HostPortPair("google.com", 5), HostPortPair("chromium.org", 12345)));
+  auto priority2 =
+      std::vector<HostPortPair>(result_hosts.begin(), result_hosts.begin() + 2);
   EXPECT_THAT(priority2, testing::UnorderedElementsAre(
                              HostPortPair("foo.com", 1223),
                              HostPortPair("chromium.org", 12345)));
-  auto priority5 = std::vector<HostPortPair>(result_hosts.value().begin() + 2,
-                                             result_hosts.value().end());
+  auto priority5 =
+      std::vector<HostPortPair>(result_hosts.begin() + 2, result_hosts.end());
   EXPECT_THAT(priority5,
               testing::UnorderedElementsAre(HostPortPair("bar.com", 80),
                                             HostPortPair("google.com", 5)));
@@ -632,8 +630,8 @@ TEST(DnsResponseResultExtractorTest, ExtractsZeroWeightSrvResponses) {
 
   // Expect ordered by priority, and random within a priority.
   EXPECT_THAT(results.hostnames(),
-              testing::Optional(testing::UnorderedElementsAre(
-                  HostPortPair("bar.com", 80), HostPortPair("google.com", 5))));
+              testing::UnorderedElementsAre(HostPortPair("bar.com", 80),
+                                            HostPortPair("google.com", 5)));
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNxdomainSrvResponses) {
@@ -654,7 +652,7 @@ TEST(DnsResponseResultExtractorTest, ExtractsNxdomainSrvResponses) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.hostnames(), testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.hostnames(), testing::IsEmpty());
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -677,7 +675,7 @@ TEST(DnsResponseResultExtractorTest, ExtractsNodataSrvResponses) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.hostnames(), testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.hostnames(), testing::IsEmpty());
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -735,7 +733,7 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeSrvResponses) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.hostnames(), testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.hostnames(), testing::IsEmpty());
   EXPECT_FALSE(results.has_ttl());
 }
 
@@ -757,13 +755,11 @@ TEST(DnsResponseResultExtractorTest, ExtractsBasicHttpsResponses) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(
-      results.GetMetadatas(),
-      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
-          testing::ElementsAre(dns_protocol::kHttpsServiceDefaultAlpn),
-          testing::IsEmpty(), kName))));
-  EXPECT_THAT(results.https_record_compatibility(),
-              testing::Pointee(testing::ElementsAre(true)));
+  EXPECT_THAT(results.GetMetadatas(),
+              testing::ElementsAre(ExpectConnectionEndpointMetadata(
+                  testing::ElementsAre(dns_protocol::kHttpsServiceDefaultAlpn),
+                  testing::IsEmpty(), kName)));
+  EXPECT_THAT(results.https_record_compatibility(), testing::ElementsAre(true));
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -801,15 +797,15 @@ TEST(DnsResponseResultExtractorTest, ExtractsComprehensiveHttpsResponses) {
 
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(results.GetMetadatas(),
-              testing::Optional(testing::ElementsAre(
+              testing::ElementsAre(
                   ExpectConnectionEndpointMetadata(testing::ElementsAre(kAlpn),
                                                    testing::IsEmpty(), kName),
                   ExpectConnectionEndpointMetadata(
                       testing::ElementsAre(
                           kAlpn, dns_protocol::kHttpsServiceDefaultAlpn),
-                      testing::ElementsAreArray(kEchConfig), kName))));
+                      testing::ElementsAreArray(kEchConfig), kName)));
   EXPECT_THAT(results.https_record_compatibility(),
-              testing::Pointee(testing::ElementsAre(true, true)));
+              testing::ElementsAre(true, true));
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -833,11 +829,11 @@ TEST(DnsResponseResultExtractorTest, IgnoresHttpsResponseWithAlias) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.GetMetadatas(), testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.GetMetadatas(), testing::IsEmpty());
 
   // Expected to still output record compatibility for otherwise-ignored records
   EXPECT_THAT(results.https_record_compatibility(),
-              testing::Pointee(testing::ElementsAre(true, true)));
+              testing::ElementsAre(true, true));
 }
 
 // Expect the entire response to be ignored if all HTTPS records have the
@@ -868,11 +864,11 @@ TEST(DnsResponseResultExtractorTest, IgnoresHttpsResponseWithNoDefaultAlpn) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.GetMetadatas(), testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.GetMetadatas(), testing::IsEmpty());
 
   // Expected to still output record compatibility for otherwise-ignored records
   EXPECT_THAT(results.https_record_compatibility(),
-              testing::Pointee(testing::ElementsAre(true, true)));
+              testing::ElementsAre(true, true));
 }
 
 // Unsupported/unknown HTTPS params are simply ignored if not marked mandatory.
@@ -895,13 +891,11 @@ TEST(DnsResponseResultExtractorTest, IgnoresUnsupportedParamsInHttpsRecord) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(
-      results.GetMetadatas(),
-      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
-          testing::ElementsAre(dns_protocol::kHttpsServiceDefaultAlpn),
-          testing::IsEmpty(), kName))));
-  EXPECT_THAT(results.https_record_compatibility(),
-              testing::Pointee(testing::ElementsAre(true)));
+  EXPECT_THAT(results.GetMetadatas(),
+              testing::ElementsAre(ExpectConnectionEndpointMetadata(
+                  testing::ElementsAre(dns_protocol::kHttpsServiceDefaultAlpn),
+                  testing::IsEmpty(), kName)));
+  EXPECT_THAT(results.https_record_compatibility(), testing::ElementsAre(true));
 }
 
 // Entire record is dropped if an unsupported/unknown HTTPS param is marked
@@ -935,11 +929,11 @@ TEST(DnsResponseResultExtractorTest,
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(
       results.GetMetadatas(),
-      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+      testing::ElementsAre(ExpectConnectionEndpointMetadata(
           testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
-          testing::IsEmpty(), kName))));
+          testing::IsEmpty(), kName)));
   EXPECT_THAT(results.https_record_compatibility(),
-              testing::Pointee(testing::ElementsAre(false, true)));
+              testing::ElementsAre(false, true));
 }
 
 TEST(DnsResponseResultExtractorTest,
@@ -963,11 +957,10 @@ TEST(DnsResponseResultExtractorTest,
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(
       results.GetMetadatas(),
-      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+      testing::ElementsAre(ExpectConnectionEndpointMetadata(
           testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
-          testing::IsEmpty(), kName))));
-  EXPECT_THAT(results.https_record_compatibility(),
-              testing::Pointee(testing::ElementsAre(true)));
+          testing::IsEmpty(), kName)));
+  EXPECT_THAT(results.https_record_compatibility(), testing::ElementsAre(true));
 }
 
 TEST(DnsResponseResultExtractorTest,
@@ -991,11 +984,10 @@ TEST(DnsResponseResultExtractorTest,
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(
       results.GetMetadatas(),
-      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+      testing::ElementsAre(ExpectConnectionEndpointMetadata(
           testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
-          testing::IsEmpty(), kName))));
-  EXPECT_THAT(results.https_record_compatibility(),
-              testing::Pointee(testing::ElementsAre(true)));
+          testing::IsEmpty(), kName)));
+  EXPECT_THAT(results.https_record_compatibility(), testing::ElementsAre(true));
 }
 
 TEST(DnsResponseResultExtractorTest,
@@ -1020,11 +1012,10 @@ TEST(DnsResponseResultExtractorTest,
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(
       results.GetMetadatas(),
-      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+      testing::ElementsAre(ExpectConnectionEndpointMetadata(
           testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
-          testing::IsEmpty(), kName))));
-  EXPECT_THAT(results.https_record_compatibility(),
-              testing::Pointee(testing::ElementsAre(true)));
+          testing::IsEmpty(), kName)));
+  EXPECT_THAT(results.https_record_compatibility(), testing::ElementsAre(true));
 }
 
 TEST(DnsResponseResultExtractorTest,
@@ -1049,11 +1040,10 @@ TEST(DnsResponseResultExtractorTest,
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(
       results.GetMetadatas(),
-      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+      testing::ElementsAre(ExpectConnectionEndpointMetadata(
           testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
-          testing::IsEmpty(), kName))));
-  EXPECT_THAT(results.https_record_compatibility(),
-              testing::Pointee(testing::ElementsAre(true)));
+          testing::IsEmpty(), kName)));
+  EXPECT_THAT(results.https_record_compatibility(), testing::ElementsAre(true));
 }
 
 TEST(DnsResponseResultExtractorTest,
@@ -1082,11 +1072,11 @@ TEST(DnsResponseResultExtractorTest,
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(
       results.GetMetadatas(),
-      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+      testing::ElementsAre(ExpectConnectionEndpointMetadata(
           testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
-          testing::IsEmpty(), kName))));
+          testing::IsEmpty(), kName)));
   EXPECT_THAT(results.https_record_compatibility(),
-              testing::Pointee(testing::ElementsAre(true, true)));
+              testing::ElementsAre(true, true));
 }
 
 TEST(DnsResponseResultExtractorTest,
@@ -1110,11 +1100,10 @@ TEST(DnsResponseResultExtractorTest,
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(
       results.GetMetadatas(),
-      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+      testing::ElementsAre(ExpectConnectionEndpointMetadata(
           testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
-          testing::IsEmpty(), kPrefixedName))));
-  EXPECT_THAT(results.https_record_compatibility(),
-              testing::Pointee(testing::ElementsAre(true)));
+          testing::IsEmpty(), kPrefixedName)));
+  EXPECT_THAT(results.https_record_compatibility(), testing::ElementsAre(true));
 }
 
 TEST(DnsResponseResultExtractorTest,
@@ -1139,11 +1128,10 @@ TEST(DnsResponseResultExtractorTest,
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(
       results.GetMetadatas(),
-      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+      testing::ElementsAre(ExpectConnectionEndpointMetadata(
           testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
-          testing::IsEmpty(), "alias.test"))));
-  EXPECT_THAT(results.https_record_compatibility(),
-              testing::Pointee(testing::ElementsAre(true)));
+          testing::IsEmpty(), "alias.test")));
+  EXPECT_THAT(results.https_record_compatibility(), testing::ElementsAre(true));
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsHttpsRecordWithMatchingPort) {
@@ -1168,11 +1156,10 @@ TEST(DnsResponseResultExtractorTest, ExtractsHttpsRecordWithMatchingPort) {
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(
       results.GetMetadatas(),
-      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+      testing::ElementsAre(ExpectConnectionEndpointMetadata(
           testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
-          testing::IsEmpty(), kName))));
-  EXPECT_THAT(results.https_record_compatibility(),
-              testing::Pointee(testing::ElementsAre(true)));
+          testing::IsEmpty(), kName)));
+  EXPECT_THAT(results.https_record_compatibility(), testing::ElementsAre(true));
 }
 
 TEST(DnsResponseResultExtractorTest, IgnoresHttpsRecordWithMismatchingPort) {
@@ -1200,11 +1187,11 @@ TEST(DnsResponseResultExtractorTest, IgnoresHttpsRecordWithMismatchingPort) {
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(
       results.GetMetadatas(),
-      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+      testing::ElementsAre(ExpectConnectionEndpointMetadata(
           testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
-          testing::IsEmpty(), kName))));
+          testing::IsEmpty(), kName)));
   EXPECT_THAT(results.https_record_compatibility(),
-              testing::Pointee(testing::ElementsAre(true, true)));
+              testing::ElementsAre(true, true));
 }
 
 // HTTPS records with "no-default-alpn" but also no "alpn" are not
@@ -1234,11 +1221,11 @@ TEST(DnsResponseResultExtractorTest, IgnoresHttpsRecordWithNoAlpn) {
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(
       results.GetMetadatas(),
-      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+      testing::ElementsAre(ExpectConnectionEndpointMetadata(
           testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
-          testing::IsEmpty(), kName))));
+          testing::IsEmpty(), kName)));
   EXPECT_THAT(results.https_record_compatibility(),
-              testing::Pointee(testing::ElementsAre(true, true)));
+              testing::ElementsAre(true, true));
 }
 
 // Expect the entire response to be ignored if all HTTPS records have the
@@ -1287,12 +1274,11 @@ TEST(DnsResponseResultExtractorTest,
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.GetMetadatas(), testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.GetMetadatas(), testing::IsEmpty());
 
   // Expected to still output record compatibility for otherwise-ignored records
-  EXPECT_THAT(
-      results.https_record_compatibility(),
-      testing::Pointee(testing::ElementsAre(true, true, true, false, true)));
+  EXPECT_THAT(results.https_record_compatibility(),
+              testing::ElementsAre(true, true, true, false, true));
 }
 
 TEST(DnsResponseResultExtractorTest, ExtractsNxdomainHttpsResponses) {
@@ -1313,9 +1299,8 @@ TEST(DnsResponseResultExtractorTest, ExtractsNxdomainHttpsResponses) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.GetMetadatas(), testing::Optional(testing::IsEmpty()));
-  EXPECT_THAT(results.https_record_compatibility(),
-              testing::Pointee(testing::IsEmpty()));
+  EXPECT_THAT(results.GetMetadatas(), testing::IsEmpty());
+  EXPECT_THAT(results.https_record_compatibility(), testing::IsEmpty());
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -1338,9 +1323,8 @@ TEST(DnsResponseResultExtractorTest, ExtractsNodataHttpsResponses) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.GetMetadatas(), testing::Optional(testing::IsEmpty()));
-  EXPECT_THAT(results.https_record_compatibility(),
-              testing::Pointee(testing::IsEmpty()));
+  EXPECT_THAT(results.GetMetadatas(), testing::IsEmpty());
+  EXPECT_THAT(results.https_record_compatibility(), testing::IsEmpty());
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -1398,9 +1382,8 @@ TEST(DnsResponseResultExtractorTest, IgnoresWrongTypeHttpsResponses) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.GetMetadatas(), testing::Optional(testing::IsEmpty()));
-  EXPECT_THAT(results.https_record_compatibility(),
-              testing::Pointee(testing::IsEmpty()));
+  EXPECT_THAT(results.GetMetadatas(), testing::IsEmpty());
+  EXPECT_THAT(results.https_record_compatibility(), testing::IsEmpty());
 }
 
 TEST(DnsResponseResultExtractorTest, IgnoresAdditionalHttpsRecords) {
@@ -1438,11 +1421,10 @@ TEST(DnsResponseResultExtractorTest, IgnoresAdditionalHttpsRecords) {
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(
       results.GetMetadatas(),
-      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+      testing::ElementsAre(ExpectConnectionEndpointMetadata(
           testing::ElementsAre("foo1", dns_protocol::kHttpsServiceDefaultAlpn),
-          testing::IsEmpty(), kName))));
-  EXPECT_THAT(results.https_record_compatibility(),
-              testing::Pointee(testing::ElementsAre(true)));
+          testing::IsEmpty(), kName)));
+  EXPECT_THAT(results.https_record_compatibility(), testing::ElementsAre(true));
 
   ASSERT_TRUE(results.has_ttl());
   EXPECT_EQ(results.ttl(), kTtl);
@@ -1474,10 +1456,9 @@ TEST(DnsResponseResultExtractorTest, IgnoresUnsolicitedHttpsRecords) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(results.text_records(),
-              testing::Optional(testing::ElementsAre("foo")));
-  EXPECT_FALSE(results.GetMetadatas());
-  EXPECT_FALSE(results.https_record_compatibility());
+  EXPECT_THAT(results.text_records(), testing::ElementsAre("foo"));
+  EXPECT_THAT(results.GetMetadatas(), testing::IsEmpty());
+  EXPECT_THAT(results.https_record_compatibility(), testing::IsEmpty());
 }
 
 TEST(DnsResponseResultExtractorTest, HandlesInOrderCnameChain) {
@@ -1500,7 +1481,7 @@ TEST(DnsResponseResultExtractorTest, HandlesInOrderCnameChain) {
 
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(results.text_records(),
-              testing::Optional(testing::UnorderedElementsAre("foo", "bar")));
+              testing::UnorderedElementsAre("foo", "bar"));
 }
 
 TEST(DnsResponseResultExtractorTest, HandlesInOrderCnameChainTypeA) {
@@ -1525,12 +1506,12 @@ TEST(DnsResponseResultExtractorTest, HandlesInOrderCnameChainTypeA) {
 
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(results.GetEndpoints(),
-              testing::Optional(testing::ElementsAre(ExpectEndpointResult(
-                  testing::ElementsAre(expected_endpoint)))));
+              testing::ElementsAre(ExpectEndpointResult(
+                  testing::ElementsAre(expected_endpoint))));
 
   EXPECT_THAT(results.aliases(),
-              testing::Pointee(testing::UnorderedElementsAre(
-                  "fourth.test", "third.test", "second.test", kName)));
+              testing::UnorderedElementsAre("fourth.test", "third.test",
+                                            "second.test", kName));
 }
 
 TEST(DnsResponseResultExtractorTest, HandlesReverseOrderCnameChain) {
@@ -1551,8 +1532,7 @@ TEST(DnsResponseResultExtractorTest, HandlesReverseOrderCnameChain) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(results.text_records(),
-              testing::Optional(testing::ElementsAre("foo")));
+  EXPECT_THAT(results.text_records(), testing::ElementsAre("foo"));
 }
 
 TEST(DnsResponseResultExtractorTest, HandlesReverseOrderCnameChainTypeA) {
@@ -1577,12 +1557,12 @@ TEST(DnsResponseResultExtractorTest, HandlesReverseOrderCnameChainTypeA) {
 
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(results.GetEndpoints(),
-              testing::Optional(testing::ElementsAre(ExpectEndpointResult(
-                  testing::ElementsAre(expected_endpoint)))));
+              testing::ElementsAre(ExpectEndpointResult(
+                  testing::ElementsAre(expected_endpoint))));
 
   EXPECT_THAT(results.aliases(),
-              testing::Pointee(testing::UnorderedElementsAre(
-                  "fourth.test", "third.test", "second.test", kName)));
+              testing::UnorderedElementsAre("fourth.test", "third.test",
+                                            "second.test", kName));
 }
 
 TEST(DnsResponseResultExtractorTest, HandlesArbitraryOrderCnameChain) {
@@ -1603,8 +1583,7 @@ TEST(DnsResponseResultExtractorTest, HandlesArbitraryOrderCnameChain) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(results.text_records(),
-              testing::Optional(testing::ElementsAre("foo")));
+  EXPECT_THAT(results.text_records(), testing::ElementsAre("foo"));
 }
 
 TEST(DnsResponseResultExtractorTest, HandlesArbitraryOrderCnameChainTypeA) {
@@ -1631,12 +1610,12 @@ TEST(DnsResponseResultExtractorTest, HandlesArbitraryOrderCnameChainTypeA) {
 
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(results.GetEndpoints(),
-              testing::Optional(testing::ElementsAre(ExpectEndpointResult(
-                  testing::ElementsAre(expected_endpoint)))));
+              testing::ElementsAre(ExpectEndpointResult(
+                  testing::ElementsAre(expected_endpoint))));
 
   EXPECT_THAT(results.aliases(),
-              testing::Pointee(testing::UnorderedElementsAre(
-                  "zfourth.test", "athird.test", "qsecond.test", kName)));
+              testing::UnorderedElementsAre("zfourth.test", "athird.test",
+                                            "qsecond.test", kName));
 }
 
 TEST(DnsResponseResultExtractorTest, IgnoresNonResultTypesMixedWithCnameChain) {
@@ -1659,10 +1638,9 @@ TEST(DnsResponseResultExtractorTest, IgnoresNonResultTypesMixedWithCnameChain) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(results.text_records(),
-              testing::Optional(testing::ElementsAre("foo")));
-  EXPECT_FALSE(results.GetEndpoints());
-  EXPECT_FALSE(results.aliases());
+  EXPECT_THAT(results.text_records(), testing::ElementsAre("foo"));
+  EXPECT_THAT(results.GetEndpoints(), testing::IsEmpty());
+  EXPECT_THAT(results.aliases(), testing::IsEmpty());
 }
 
 TEST(DnsResponseResultExtractorTest,
@@ -1688,14 +1666,14 @@ TEST(DnsResponseResultExtractorTest,
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_FALSE(results.text_records());
+  EXPECT_THAT(results.text_records(), testing::IsEmpty());
   EXPECT_THAT(results.GetEndpoints(),
-              testing::Optional(testing::ElementsAre(ExpectEndpointResult(
-                  testing::ElementsAre(expected_endpoint)))));
+              testing::ElementsAre(ExpectEndpointResult(
+                  testing::ElementsAre(expected_endpoint))));
 
   EXPECT_THAT(results.aliases(),
-              testing::Pointee(testing::UnorderedElementsAre(
-                  "fourth.test", "third.test", "second.test", kName)));
+              testing::UnorderedElementsAre("fourth.test", "third.test",
+                                            "second.test", kName));
 }
 
 TEST(DnsResponseResultExtractorTest, HandlesCnameChainWithoutResult) {
@@ -1715,7 +1693,7 @@ TEST(DnsResponseResultExtractorTest, HandlesCnameChainWithoutResult) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.text_records(), testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.text_records(), testing::IsEmpty());
 }
 
 TEST(DnsResponseResultExtractorTest, HandlesCnameChainWithoutResultTypeA) {
@@ -1735,11 +1713,11 @@ TEST(DnsResponseResultExtractorTest, HandlesCnameChainWithoutResultTypeA) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.GetEndpoints(), testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.GetEndpoints(), testing::IsEmpty());
 
   EXPECT_THAT(results.aliases(),
-              testing::Pointee(testing::UnorderedElementsAre(
-                  "fourth.test", "third.test", "second.test", kName)));
+              testing::UnorderedElementsAre("fourth.test", "third.test",
+                                            "second.test", kName));
 }
 
 TEST(DnsResponseResultExtractorTest, RejectsCnameChainWithLoop) {
@@ -1972,12 +1950,12 @@ TEST(DnsResponseResultExtractorTest, ValidatesAliasNames) {
 
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(results.GetEndpoints(),
-              testing::Optional(testing::ElementsAre(ExpectEndpointResult(
-                  testing::ElementsAre(expected_endpoint)))));
+              testing::ElementsAre(ExpectEndpointResult(
+                  testing::ElementsAre(expected_endpoint))));
 
   // Expect "localhost" to be validated out of the alias list.
-  EXPECT_THAT(results.aliases(), testing::Pointee(testing::UnorderedElementsAre(
-                                     "fourth.test", "second.test", kName)));
+  EXPECT_THAT(results.aliases(), testing::UnorderedElementsAre(
+                                     "fourth.test", "second.test", kName));
 }
 
 TEST(DnsResponseResultExtractorTest, CanonicalizesAliasNames) {
@@ -2006,10 +1984,10 @@ TEST(DnsResponseResultExtractorTest, CanonicalizesAliasNames) {
   EXPECT_THAT(results.error(), test::IsOk());
   IPEndPoint expected_endpoint(kExpected, 0 /* port */);
   EXPECT_THAT(results.GetEndpoints(),
-              testing::Optional(testing::ElementsAre(ExpectEndpointResult(
-                  testing::ElementsAre(expected_endpoint)))));
-  EXPECT_THAT(results.aliases(), testing::Pointee(testing::UnorderedElementsAre(
-                                     kName, "alias.test")));
+              testing::ElementsAre(ExpectEndpointResult(
+                  testing::ElementsAre(expected_endpoint))));
+  EXPECT_THAT(results.aliases(),
+              testing::UnorderedElementsAre(kName, "alias.test"));
 }
 
 }  // namespace

@@ -139,17 +139,27 @@ interface ResolveHostClient {
   // |result| should be used when less specific error information (i.e. OK vs
   // ERR_NAME_NOT_RESOLVED) is sufficient.
   //
+  // If results are not in address form, e.g. for a TXT request,
+  // `resolved_addresses` and `endpoint_results_with_metadata` may be either
+  // empty or null.
+  //
   // Always called last to signal completion of the ResolveHost() request.
   // Unless the ResolveHostClient is closed, this method will always be called
   // exactly once, and afterwards, no more methods in the interface will be
   // called.
+  //
+  // TODO(ericorth@chromium.org): HostResolverEndpointResult is intended to be
+  // a full replacement for AddressList, so it should be modified to include all
+  // results, not just those with metadata, and be renamed accordingly. Maybe
+  // just delete the AddressList result entirely while at it to avoid any
+  // concerns of passing redundant data.
   OnComplete(int32 result,
              ResolveErrorInfo resolve_error_info,
              AddressList? resolved_addresses,
              array<HostResolverEndpointResult>? endpoint_results_with_metadata);
 
   // One or more On...Results() methods may be called when non-address results
-  // are available. Always called before OnComplete().
+  // are available and non-empty. Always called before OnComplete().
   OnTextResults(array<string> text_results);
   OnHostnameResults(array<HostPortPair> hosts);
 };
