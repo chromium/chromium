@@ -11,30 +11,29 @@
 -->
 
 <style include="oobe-dialog-host-styles cros-color-overrides">
-  /* TODO(b/260302591) Update the color to semantic color. --> */
   :host {
     --cr-card-button-height: 150px;
-    --cr-card-button-checked: var(--google-blue-500);
   }
 
   #screensList {
-    column-gap: 16px;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
     overflow-y: auto;
     width: 100%;
   }
 
   .screen-title {
-    color: var(--cros-text-color-primary);
+    color: var(--cros-sys-on_surface);
     font: var(--cros-body-1-font);
   }
 
+  .screen-subtitle {
+    color: var(--cros-sys-on_surface_variant);
+    font: var(--cros-body-2-font);
+  }
+
   .screen-item {
-    background-color: var(--cros-highlight-color);
-    border: none;
+    background-color: var(--cros-sys-base_elevated);
     border-radius: 16px;
-    height: var(--cr-card-button-height);
+    height: 80px;
     margin-bottom: 16px;
     padding: 0;
     transition: color 250ms linear, background-color 250ms linear;
@@ -42,17 +41,16 @@
   }
 
   .screen-icon  {
-    --iron-icon-fill-color: var(--cros-icon-color-blue);
     align-items: center;
     align-self: center;
     display: flex;
     height: 32px;
     margin-inline-end: 16px;
-    margin-inline-start: 24px ;
+    margin-inline-start: 16px ;
     width: 32px;
   }
 
-  .screen-title  {
+  .text-container {
     align-items: center;
     display: flex;
     flex-direction: column;
@@ -60,31 +58,89 @@
     margin-inline-end: 16px;
   }
 
-   /* If we have an odd number of screens then the last
-      screen will cover the entire row. */
-  .screen-item:nth-child(odd):last-of-type {
-    width: calc(200% + 16px);
+  .screen-item:focus {
+    border: 2px solid var(--cros-sys-focus_ring);
   }
 
   .screen-item[checked=true] {
-    background-color: var(--cr-card-button-checked);
-  }
-
-  .screen-item[checked=true] .screen-icon {
-    --iron-icon-fill-color: var(--cros-icon-color-primary-inverted);
+    background-color: var(--cros-sys-primary_container);
   }
 
   .screen-item[checked=true] .screen-title {
-    color: var(--cros-button-label-color-primary);
+    color: var(--cros-sys-on_surface);
+  }
+
+  .screen-item[checked=true] .screen-subtitle {
+    color: var(--cros-sys-on_surface_variant);
+  }
+
+  .info-icon {
+    align-self: center;
+    margin-inline-end: 30px;
+    margin-inline-start: auto;
+  }
+
+  .screen-item[visited] {
+    --cros-sys-inverse_primary : var(--cros-color-secondary-light);
+    --cros-sys-primary : var(--cros-color-secondary-light);
+    background-color: var(--cros-button-background-color-primary-disabled);
+  }
+
+  :root.jelly-enabled .screen-item[visited] {
+    --cros-sys-inverse_primary : var(--cros-sys-secondary-light);
+    --cros-sys-primary : var(--cros-sys-secondary-light);
+    background-color: var(--cros-sys-hover_on_subtle);
+  }
+
+  .screen-item[visited] .screen-title {
+    color: var(--cros-sys-on_surface);
+  }
+
+  .screen-item[visited] .screen-subtitle {
+    color: var(--cros-sys-on_surface_variant);
+  }
+
+  .screen-item[disabled] {
+    --cros-sys-inverse_primary : var(--cros-sys-disabled);
+    --cros-sys-primary : var(--cros-sys-disabled);
+    background-color: var(--disabled-bg-action);
+  }
+
+  :root.jelly-enabled .screen-item[disabled] {
+    --cros-sys-inverse_primary : var(--cros-sys-disabled);
+    --cros-sys-primary : var(--cros-sys-disabled);
+    background-color: var(--cros-sys-disabled_container);
+  }
+
+  .screen-item[disabled] .screen-title {
+    color: var(--cros-sys-disabled);
+  }
+
+  .screen-item[disabled] .screen-subtitle {
+    color:  var(--cros-sys-disabled);
   }
 
 </style>
 <div id="screensList">
-  <template is="dom-repeat" items="{{screensList}}" as="screen">
-    <cr-button class="screen-item" on-click="onClick_">
-      <div class="flex horizontal layout center-justified center">
+  <template is="dom-repeat" items="{{screensList_}}" as="screen">
+    <cr-button visited$="[[isScreenVisited(screen.selected , screen.is_completed)]]"
+        disabled="[[isScreenDisabled(screen.is_revisitable , screen.is_completed)]]"
+        class="screen-item"
+        on-click="onClick_">
+      <div class="flex horizontal layout">
+        <div class="icon">
           <iron-icon class="screen-icon" icon="[[screen.icon]]"></iron-icon>
-          <div class="screen-title">[[i18nDynamic(locale, screen.title)]]</div>
+        </div>
+        <div class="text-container">
+          <div class="screen-title">[[screen.title]]</div>
+          <div class="screen-subtitle">[[screen.subtitle]]</div>
+        </div>
+        <div class="info-icon">
+          <iron-icon hidden="[[isSyncedIconHidden(screen.synced , screen.selected)]]"
+              id="sync" icon="oobe-20:sync"></iron-icon>
+          <iron-icon hidden="[[!screen.selected]]"
+              id="selected" icon="oobe-20:selected"></iron-icon>
+        </div>
       </div>
     </cr-button>
   </template>
