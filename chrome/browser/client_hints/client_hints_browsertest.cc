@@ -4345,7 +4345,7 @@ class SameOriginUaOriginTrialBrowserTest
     return last_ua_ch_val_;
   }
 
-  void CheckSecClientHintUaCount() {
+  void CheckSecClientHintUaCount(int additional_client_hint) {
     net::HttpRequestHeaders::Iterator header_iterator(
         url_loader_interceptor_->GetLastRequestHeaders());
     int sec_ch_ua_count = 0;
@@ -4357,19 +4357,32 @@ class SameOriginUaOriginTrialBrowserTest
     }
 
     if (GetParam() == UserAgentOriginTrialTestType::UAReductionAndDeprecation) {
-      // Two Accept-CH client hints in header: sec-ch-ua-reduced and
-      // sec-ch-ua-full.
-      EXPECT_EQ(sec_ch_ua_count, kSecChUaLowEntropyCount + 2);
+      // Three Accept-CH client hints in header: sec-ch-ua-reduced,
+      // sec-ch-ua-full and additional client hints added for the accept_ch
+      // header.
+      EXPECT_EQ(sec_ch_ua_count,
+                kSecChUaLowEntropyCount + 2 + additional_client_hint);
     } else {
-      // One Accept-CH client hint in header: sec-ch-ua-reduced or
-      // sec-ch-ua-full.
-      EXPECT_EQ(sec_ch_ua_count, kSecChUaLowEntropyCount + 1);
+      // Two Accept-CH client hint in header: sec-ch-ua-reduced or
+      // sec-ch-ua-full and additional client hints added for the accept_ch
+      // header.
+      EXPECT_EQ(sec_ch_ua_count,
+                kSecChUaLowEntropyCount + 1 + additional_client_hint);
     }
   }
 
   void VerifyNonAcceptCHNotAddedToHeader(const std::string& client_hint) {
     ASSERT_FALSE(url_loader_interceptor_->GetLastRequestHeaders().HasHeader(
         client_hint));
+  }
+
+  void VerifyAcceptCHAddedToHeader(const std::string& client_hint) {
+    ASSERT_TRUE(url_loader_interceptor_->GetLastRequestHeaders().HasHeader(
+        client_hint));
+  }
+
+  GURL basic_request_url() const {
+    return GURL(base::StrCat({kOriginUrl, "/basic.html"}));
   }
 
   GURL ua_with_valid_origin_trial_token_url() const {
@@ -4429,6 +4442,10 @@ class SameOriginUaOriginTrialBrowserTest
 
   GURL simple_request_url() const {
     return GURL(base::StrCat({kOriginUrl, "/simple.html"}));
+  }
+
+  GURL simple_with_subresource_request_url() const {
+    return GURL(base::StrCat({kOriginUrl, "/simple_with_subresource.html"}));
   }
 
   GURL style_css_request_url() const {
@@ -4603,8 +4620,7 @@ class SameOriginUaOriginTrialBrowserTest
     std::string path = "chrome/test/data/client_hints";
     path.append(static_cast<std::string>(params->url_request.url.path_piece()));
 
-    if (params->url_request.url.path() == "/style.css" ||
-        params->url_request.url.path() == "/simple.html") {
+    if (params->url_request.url.path() == "/basic.html") {
       URLLoaderInterceptor::WriteResponse(path, params->client.get());
       return true;
     }
@@ -4644,7 +4660,10 @@ class SameOriginUaOriginTrialBrowserTest
     switch (GetParam()) {
       case UserAgentOriginTrialTestType::UAReduction:
         if (test_options_.has_accept_ch_header) {
-          base::StrAppend(&headers, {"Accept-CH: ", "sec-ch-ua-reduced", "\n"});
+          base::StrAppend(
+              &headers,
+              {"Accept-CH: ", "sec-ch-ua-reduced, sec-ch-ua-platform-version",
+               "\n"});
         }
         if (test_options_.has_critical_ch_header) {
           base::StrAppend(&headers,
@@ -4660,7 +4679,9 @@ class SameOriginUaOriginTrialBrowserTest
         break;
       case UserAgentOriginTrialTestType::UADeprecation:
         if (test_options_.has_accept_ch_header) {
-          base::StrAppend(&headers, {"Accept-CH: ", "sec-ch-ua-full", "\n"});
+          base::StrAppend(&headers,
+                          {"Accept-CH: ",
+                           "sec-ch-ua-full, sec-ch-ua-platform-version", "\n"});
         }
         if (test_options_.has_critical_ch_header) {
           base::StrAppend(&headers, {"Critical-CH: ", "sec-ch-ua-full", "\n"});
@@ -4677,7 +4698,9 @@ class SameOriginUaOriginTrialBrowserTest
         if (test_options_.has_accept_ch_header) {
           base::StrAppend(
               &headers,
-              {"Accept-CH: ", "sec-ch-ua-reduced, sec-ch-ua-full", "\n"});
+              {"Accept-CH: ",
+               "sec-ch-ua-reduced, sec-ch-ua-full, sec-ch-ua-platform-version",
+               "\n"});
         }
         if (test_options_.has_critical_ch_header) {
           base::StrAppend(
@@ -4752,7 +4775,8 @@ IN_PROC_BROWSER_TEST_P(SameOriginUaOriginTrialBrowserTest,
             content::EvalJs(web_contents, "navigator.platform"));
 #endif
 
-  CheckSecClientHintUaCount();
+  // One additional client hints: sec-ch-ua-platform-version.
+  CheckSecClientHintUaCount(/*additional_client_hint=*/1);
 }
 
 IN_PROC_BROWSER_TEST_P(SameOriginUaOriginTrialBrowserTest,
@@ -4829,7 +4853,8 @@ IN_PROC_BROWSER_TEST_P(SameOriginUaOriginTrialBrowserTest,
       /*ch_ua_exist_expected=*/true,
       /*critical_ch_ua_exist_expected=*/true);
 
-  CheckSecClientHintUaCount();
+  // One additional client hints: sec-ch-ua-platform-version.
+  CheckSecClientHintUaCount(/*additional_client_hint=*/1);
 }
 
 IN_PROC_BROWSER_TEST_P(SameOriginUaOriginTrialBrowserTest,
@@ -4853,7 +4878,8 @@ IN_PROC_BROWSER_TEST_P(SameOriginUaOriginTrialBrowserTest,
   SetTestOptions(
       {/*has_ot_token=*/true, /*valid_ot_token=*/true,
        /*has_accept_ch_header=*/true, /*has_critical_ch_header=*/false},
-      {accept_ch_ua_iframe_request_url(), simple_request_url()});
+      {accept_ch_ua_iframe_request_url(), simple_request_url(),
+       simple_with_subresource_request_url()});
 
   // The last resource request processed for this navigation will be an embedded
   // iframe request. Since Accept-CH has either Sec-CH-UA-Reduced or
@@ -4866,7 +4892,14 @@ IN_PROC_BROWSER_TEST_P(SameOriginUaOriginTrialBrowserTest,
                               UserAgentOriginTrialTestType::UAReduction,
                           /*ch_ua_exist_expected=*/true);
 
-  CheckSecClientHintUaCount();
+  // One additional client hints: sec-ch-ua-platform-version.
+  CheckSecClientHintUaCount(/*additional_client_hint=*/1);
+
+  // Iframe request to simple_request_url should not clear existing client
+  // hints cache when response header has the client hints used for origin
+  // trial. The subresource request in simple_request_url should also send
+  // corresponding client hints.
+  VerifyAcceptCHAddedToHeader("sec-ch-ua-platform-version");
 
   // Make sure the last intercepted URL was the request for the embedded iframe.
   EXPECT_EQ(last_request_url().path(), "/simple.html");
@@ -4875,13 +4908,10 @@ IN_PROC_BROWSER_TEST_P(SameOriginUaOriginTrialBrowserTest,
 IN_PROC_BROWSER_TEST_P(SameOriginUaOriginTrialBrowserTest,
                        IframeRequestUaWithValidOriginTrialTokenIgnoreSandbox) {
   SetTestOptions(
-      {
-          /*has_ot_token=*/true,
-          /*valid_ot_token=*/true,
-          /*has_accept_ch_header=*/true,
-          /*has_critical_ch_header=*/false,
-      },
-      {accept_ch_ua_iframe_sandbox_request_url(), simple_request_url()});
+      {/*has_ot_token=*/true, /*valid_ot_token=*/true,
+       /*has_accept_ch_header=*/true, /*has_critical_ch_header=*/false},
+      {accept_ch_ua_iframe_sandbox_request_url(), simple_request_url(),
+       simple_with_subresource_request_url()});
 
   // Ensure that frames with sandbox flags don't interfere with the origin trial
   NavigateAndCheckHeaders(accept_ch_ua_iframe_sandbox_request_url(),
@@ -4889,7 +4919,10 @@ IN_PROC_BROWSER_TEST_P(SameOriginUaOriginTrialBrowserTest,
                               UserAgentOriginTrialTestType::UAReduction,
                           /*ch_ua_exist_expected=*/true);
 
-  CheckSecClientHintUaCount();
+  // The origin trial client hints don't honor sandbox flags, but no additional
+  // hints should send. Sandboxed frames should ignore the Accept-CH header and
+  // should not access Client Hints storage
+  CheckSecClientHintUaCount(/*additional_client_hint=*/0);
 
   // Make sure the last intercepted URL was the request for the embedded iframe.
   EXPECT_EQ(last_request_url().path(), "/simple.html");
@@ -4900,7 +4933,8 @@ IN_PROC_BROWSER_TEST_P(SameOriginUaOriginTrialBrowserTest,
   SetTestOptions(
       {/*has_ot_token=*/true, /*valid_ot_token=*/true,
        /*has_accept_ch_header=*/true, /*has_critical_ch_header=*/true},
-      {critical_ch_ua_iframe_request_url(), simple_request_url()});
+      {critical_ch_ua_iframe_request_url(), simple_request_url(),
+       simple_with_subresource_request_url()});
 
   // The last resource request processed for this navigation will be an embedded
   // iframe request. Since Accept-CH has either Sec-CH-UA-Reduced or
@@ -4913,7 +4947,14 @@ IN_PROC_BROWSER_TEST_P(SameOriginUaOriginTrialBrowserTest,
                               UserAgentOriginTrialTestType::UAReduction,
                           /*ch_ua_exist_expected=*/true);
 
-  CheckSecClientHintUaCount();
+  // One additional client hints: sec-ch-ua-platform-version.
+  CheckSecClientHintUaCount(/*additional_client_hint=*/1);
+
+  // Iframe request to simple_request_url should not clear existing client
+  // hints cache when response header has the client hints used for origin
+  // trial. The subresource request in simple_request_url should also send
+  // corresponding client hints.
+  VerifyAcceptCHAddedToHeader("sec-ch-ua-platform-version");
 
   // Make sure the last intercepted URL was the request for the embedded iframe.
   EXPECT_EQ(last_request_url().path(), "/simple.html");
@@ -5047,7 +5088,7 @@ IN_PROC_BROWSER_TEST_P(SameOriginUaOriginTrialBrowserTest,
   SetTestOptions(
       {/*has_ot_token=*/true, /*valid_ot_token=*/true,
        /*has_accept_ch_header=*/true, /*has_critical_ch_header=*/false},
-      {ua_with_valid_origin_trial_token_url(), simple_request_url()});
+      {ua_with_valid_origin_trial_token_url(), basic_request_url()});
 
   // The first navigation sets Sec-CH-UA-Reduced/Sec-CH-UA-Full in the client
   // hints storage for the origin.
@@ -5056,7 +5097,7 @@ IN_PROC_BROWSER_TEST_P(SameOriginUaOriginTrialBrowserTest,
                           /*ch_ua_exist_expected=*/false);
   // The second navigation doesn't contain an Accept-CH header in the
   // response, so Sec-CH-UA-Reduced/Sec-CH-UA-Full is removed from the storage.
-  NavigateAndCheckHeaders(simple_request_url(),
+  NavigateAndCheckHeaders(basic_request_url(),
                           /*ch_ua_reduced_expected=*/GetParam() ==
                               UserAgentOriginTrialTestType::UAReduction,
                           /*ch_ua_exist_expected=*/true);

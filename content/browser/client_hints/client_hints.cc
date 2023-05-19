@@ -1147,6 +1147,31 @@ ParseAndPersistAcceptCHForNavigation(
                                third_party_url, response_headers, type, true);
   }
 
+  // Note that if Sec-CH-UA-Reduced or Sec-CH-UA-Full is persisted for an
+  // embedded frame and the response has a valid origin trial token, we should
+  // append the hint to Accept-CH cache instead of overwrite existing Accept-CH
+  // cache.
+  //
+  // TODO(crbug.com/1258063): Delete this call when the UserAgentReduction
+  // Origin Trial is finished.
+  if (!frame_tree_node->IsMainFrame()) {
+    // If embedded frame has no valid origin trial token, then stop update the
+    // Accept-CH cache.
+    if (!enabled_hints.IsEnabled(WebClientHintsType::kUAReduced) &&
+        !enabled_hints.IsEnabled(WebClientHintsType::kFullUserAgent)) {
+      return absl::nullopt;
+    }
+
+    // Add existing client hints to the enabled hints which contains the origin
+    // trial client hints to update the Accept-CH cache.
+    blink::EnabledClientHints existing_hints;
+    DCHECK(delegate);
+    delegate->GetAllowedClientHintsFromSource(origin, &existing_hints);
+    for (const WebClientHintsType type : existing_hints.GetEnabledHints()) {
+      enabled_hints.SetIsEnabled(type, true);
+    }
+  }
+
   const std::vector<WebClientHintsType> persisted_hints =
       enabled_hints.GetEnabledHints();
   DCHECK(frame_tree_node);

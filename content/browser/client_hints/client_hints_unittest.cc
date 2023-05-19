@@ -310,7 +310,7 @@ TEST_F(ClientHintsTest, IntegrationTestsOnParseLookUp) {
        absl::nullopt,
        "sec-ch-ua-full",
        sub_frame_node,
-       absl::make_optional(ClientHintsVector{}),
+       absl::nullopt,
        {}},
       {"Response with valid origin trial for main frame",
        kValidOriginTrialToken,
@@ -359,6 +359,56 @@ TEST_F(ClientHintsTest, IntegrationTestsOnParseLookUp) {
         << HintsToString(test.expect_commit_hints) << " but got "
         << HintsToString(actual_commit_hints) << ".";
   }
+}
+
+TEST_F(ClientHintsTest, SubFrameOptInOriginTrail) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({blink::features::kUserAgentClientHint},
+                                       {});
+
+  GURL url = GURL(ClientHintsTest::kOriginUrl);
+  contents()->NavigateAndCommit(url);
+  FrameTree& frame_tree = contents()->GetPrimaryFrameTree();
+  FrameTreeNode* main_frame_node = frame_tree.root();
+  AddOneChildNode();
+  FrameTreeNode* sub_frame_node = main_frame_node->child_at(0);
+
+  blink::UserAgentMetadata ua_metadata;
+  MockClientHintsControllerDelegate delegate(ua_metadata);
+
+  // Persist existing hint to accept-ch cache.
+  ClientHintsVector existing_hints = ClientHintsVector{
+      WebClientHintsType::kUAPlatform, WebClientHintsType::kUABitness};
+  delegate.PersistClientHints(url::Origin::Create(url),
+                              main_frame_node->GetParentOrOuterDocument(),
+                              existing_hints);
+  auto response_headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
+  std::string accept_ch_str = "sec-ch-ua-full";
+
+  // Without valid origin trial token for sub_frame_node, it should not
+  // overwrite existing hints.
+  auto actual_updated_hints = ParseAndPersist(
+      url, response_headers.get(), accept_ch_str, sub_frame_node, &delegate);
+
+  EXPECT_EQ(absl::nullopt, actual_updated_hints);
+  blink::EnabledClientHints current_hints;
+  delegate.GetAllowedClientHintsFromSource(url::Origin::Create(url),
+                                           &current_hints);
+  EXPECT_EQ(existing_hints, current_hints.GetEnabledHints());
+
+  // With valid origin trial token for sub_frame_node, it should append origin
+  // trial client hints to existing client hints cache.
+  response_headers->SetHeader("Origin-Trial", kValidOriginTrialToken);
+  actual_updated_hints = ParseAndPersist(
+      url, response_headers.get(), accept_ch_str, sub_frame_node, &delegate);
+  auto expect_update_hints = ClientHintsVector{
+      WebClientHintsType::kUAPlatform, WebClientHintsType::kUABitness,
+      WebClientHintsType::kFullUserAgent};
+  EXPECT_EQ(expect_update_hints, actual_updated_hints);
+  delegate.GetAllowedClientHintsFromSource(url::Origin::Create(url),
+                                           &current_hints);
+  EXPECT_EQ(expect_update_hints, current_hints.GetEnabledHints());
 }
 
 }  // namespace content
