@@ -37,22 +37,17 @@ class JniGeneratorOptions(object):
   """The mock options object which is passed to the jni_generator.py script."""
 
   def __init__(self):
-    self.cpp = 'cpp'
-    self.enable_jni_multiplexing = False
-    self.enable_profiling = False
-    self.includes = _INCLUDES
-    self.input_files = None
-    self.jar_file = None
-    self.javap = build_utils.JAVAP_PATH
     self.namespace = None
-    self.output_dir = None
-    self.output_names = None
-    self.package_prefix = None
+    self.includes = _INCLUDES
     self.ptr_type = 'long'
-    self.split_name = None
-    self.srcjar_path = None
-    self.unchecked_exceptions = False
+    self.cpp = 'cpp'
+    self.javap = build_utils.JAVAP_PATH
+    self.enable_profiling = False
     self.use_proxy_hash = False
+    self.enable_jni_multiplexing = False
+    self.unchecked_exceptions = False
+    self.split_name = None
+    self.package_prefix = None
 
 
 class JniRegistrationGeneratorOptions(object):
@@ -68,7 +63,7 @@ class JniRegistrationGeneratorOptions(object):
     self.manual_jni_registration = False
     self.include_test_only = False
     self.header_path = None
-    self.module_name = None
+    self.module_name = ''
     self.package_prefix = None
     self.remove_uncalled_methods = False
     self.add_stubs_for_missing_native = False
@@ -76,22 +71,13 @@ class JniRegistrationGeneratorOptions(object):
 
 class BaseTest(unittest.TestCase):
 
-  def _TestEndToEndGeneration(self, input_file, options, golden):
+  def _TestEndToEndGeneration(self, input_java, options, golden):
+    input_java_path = self._JoinScriptDir(
+        os.path.join(_JAVA_SRC_DIR, input_java))
     with tempfile.TemporaryDirectory() as tdir:
-      options.output_dir = tdir
-      options.output_names = ['output.h']
-      relative_input_file = self._JoinScriptDir(
-          os.path.join(_JAVA_SRC_DIR, input_file))
-      if input_file.endswith('.class'):
-        jar_path = os.path.join(tdir, 'input.jar')
-        with zipfile.ZipFile(jar_path, 'w') as z:
-          z.write(relative_input_file, input_file)
-        options.jar_file = jar_path
-        options.input_files = [input_file]
-      else:
-        options.input_files = [relative_input_file]
-      jni_generator.DoGeneration(options)
-      with open(os.path.join(tdir, 'output.h'), 'r') as f:
+      output_path = os.path.join(tdir, 'output.h')
+      jni_generator.GenerateJNIHeader(input_java_path, output_path, options)
+      with open(output_path, 'r') as f:
         contents = f.read()
       self.AssertGoldenTextEquals(contents, golden)
 
@@ -106,22 +92,21 @@ class BaseTest(unittest.TestCase):
       if header_golden:
         options.header_path = os.path.join(tdir, 'header.h')
 
-      native_sources = {
+      input_java_paths = {
           self._JoinScriptDir(os.path.join(_JAVA_SRC_DIR, f))
           for f in input_src_files
       }
 
       if src_files_for_asserts_and_stubs:
-        java_sources = {
+        asserts_and_stubs_java_paths = {
             self._JoinScriptDir(os.path.join(_JAVA_SRC_DIR, f))
             for f in src_files_for_asserts_and_stubs
         }
       else:
-        java_sources = native_sources
+        asserts_and_stubs_java_paths = input_java_paths
 
-      jni_registration_generator._Generate(options, native_sources,
-                                           java_sources)
-
+      jni_registration_generator._Generate(options, input_java_paths,
+                                           asserts_and_stubs_java_paths)
       with zipfile.ZipFile(options.srcjar_path, 'r') as srcjar:
         for name in srcjar.namelist():
           self.assertTrue(
