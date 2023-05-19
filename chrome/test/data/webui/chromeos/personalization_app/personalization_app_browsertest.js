@@ -612,7 +612,8 @@ TEST_F(
             await waitUntil(
                 () =>
                     originalColor !== getComputedStyle(toggleDescription).color,
-                'failed to update colors');
+                'failed to update colors', /* intervalMs= */ 200,
+                /* timeoutMs= */ 3000);
           }
 
           const newColor = getComputedStyle(toggleDescription).color;
@@ -634,8 +635,7 @@ TEST_F(
         assertTrue(getColorSchemeSelector().hidden);
       });
 
-      // TODO(b/277811561) flaky test
-      test.skip('selects static color options', async () => {
+      test('selects static color options', async () => {
         const theme = getRouter()
                           .shadowRoot.querySelector('personalization-main')
                           .shadowRoot.querySelector('personalization-theme');
@@ -643,7 +643,8 @@ TEST_F(
         lightButton.click();
         await waitUntil(
             () => getBodyColorChannels().every(channel => channel > 200),
-            'failed to switch to light mode');
+            'failed to switch to light mode', /* intervalMs= */ 200,
+            /* timeoutMs= */ 3000);
         assertEquals('true', lightButton.getAttribute('aria-checked'));
         setDynamicColorToggle(false);
 
@@ -659,7 +660,8 @@ TEST_F(
             await waitUntil(
                 () => originalColor !==
                     getComputedStyle(lightButton).backgroundColor,
-                'failed to update colors');
+                'failed to update colors', /* intervalMs= */ 200,
+                /* timeoutMs= */ 3000);
           }
 
           const newColor = getComputedStyle(lightButton).backgroundColor;
