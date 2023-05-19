@@ -442,9 +442,21 @@ absl::optional<InterestGroupUpdate> ParseUpdateJson(
   if (!TryToCopySellerCapabilities(*dict, interest_group_update)) {
     return absl::nullopt;
   }
-  const std::string* maybe_bidding_url = dict->FindString("biddingLogicUrl");
-  if (maybe_bidding_url)
+  const std::string* maybe_bidding_url = dict->FindString("biddingLogicURL");
+  const std::string* maybe_bidding_url_deprecated =
+      dict->FindString("biddingLogicUrl");
+  if (maybe_bidding_url_deprecated) {
+    if (maybe_bidding_url) {
+      if (*maybe_bidding_url_deprecated != *maybe_bidding_url) {
+        return absl::nullopt;
+      }
+    } else {
+      maybe_bidding_url = maybe_bidding_url_deprecated;
+    }
+  }
+  if (maybe_bidding_url) {
     interest_group_update.bidding_url = GURL(*maybe_bidding_url);
+  }
   const std::string* maybe_bidding_wasm_helper_url =
       dict->FindString("biddingWasmHelperUrl");
   if (maybe_bidding_wasm_helper_url) {

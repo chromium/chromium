@@ -116,6 +116,17 @@ bool SetRenderUrl(v8::Isolate* isolate,
          SetDictMember(isolate, object, "renderUrl", v8_value);
 }
 
+bool SetBiddingLogicUrl(v8::Isolate* isolate,
+                        v8::Local<v8::Object> object,
+                        const std::string& val) {
+  v8::Local<v8::Value> v8_value;
+  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
+    return false;
+  }
+  return SetDictMember(isolate, object, "biddingLogicURL", v8_value) &&
+         SetDictMember(isolate, object, "biddingLogicUrl", v8_value);
+}
+
 // Converts a vector of blink::InterestGroup::Ads into a v8 object.
 bool CreateAdVector(AuctionV8Helper* v8_helper,
                     v8::Local<v8::Context> context,
@@ -1031,7 +1042,8 @@ BidderWorklet::V8State::GenerateSingleBid(
       !interest_group_dict.Set("useBiddingSignalsPrioritization",
                                bidder_worklet_non_shared_params
                                    .enable_bidding_signals_prioritization) ||
-      !interest_group_dict.Set("biddingLogicUrl", script_source_url_.spec()) ||
+      !SetBiddingLogicUrl(isolate, interest_group_object,
+                          script_source_url_.spec()) ||
       (wasm_helper_url_ &&
        !interest_group_dict.Set("biddingWasmHelperUrl",
                                 wasm_helper_url_->spec())) ||

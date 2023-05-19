@@ -4781,8 +4781,15 @@ TEST_F(AdAuctionServiceImplTest, UpdateRenamedFields) {
   updated_interest_group_ad_components.ad_components->emplace_back(
       std::move(ad_component));
 
+  blink::InterestGroup updated_interest_group_bidding_logic_url =
+      CreateInterestGroup();
+  updated_interest_group_bidding_logic_url.update_url = kUpdateUrlA;
+  updated_interest_group_bidding_logic_url.priority = 1.0;
+  updated_interest_group_bidding_logic_url.bidding_url =
+      GURL(base::StringPrintf("%s/bidding.js", kOriginStringA));
+
   struct TestCase {
-    const char* update_contents;
+    const std::string update_contents;
     const blink::InterestGroup& expected_group;
   } kTestCases[] = {
       // ***
@@ -4809,6 +4816,23 @@ TEST_F(AdAuctionServiceImplTest, UpdateRenamedFields) {
                  "renderURL": "https://example.com/render2"}])",
        initial_interest_group},
       {R"("adComponents": [{}])", initial_interest_group},
+      // ***
+      // biddingLogicURL
+      // ***
+      {base::StringPrintf(R"("biddingLogicUrl": "%s/bidding.js")",
+                          kOriginStringA),
+       updated_interest_group_bidding_logic_url},
+      {base::StringPrintf(R"("biddingLogicURL": "%s/bidding.js")",
+                          kOriginStringA),
+       updated_interest_group_bidding_logic_url},
+      {base::StringPrintf(R"("biddingLogicUrl": "%s/bidding.js",)"
+                          R"("biddingLogicURL": "%s/bidding.js")",
+                          kOriginStringA, kOriginStringA),
+       updated_interest_group_bidding_logic_url},
+      {base::StringPrintf(R"("biddingLogicUrl": "%s/bidding.js",)"
+                          R"("biddingLogicURL": "%s/bidding2.js")",
+                          kOriginStringA, kOriginStringA),
+       initial_interest_group},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -4819,7 +4843,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRenamedFields) {
     "priority": 1.0,
     %s
 })",
-                                           test_case.update_contents));
+                                           test_case.update_contents.c_str()));
     UpdateInterestGroupNoFlush();
     task_environment()->RunUntilIdle();
 

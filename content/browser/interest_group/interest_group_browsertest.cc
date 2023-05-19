@@ -2884,7 +2884,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ(
       base::StringPrintf(
           "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
-          "biddingLogicUrl 'https://invalid^&' for AuctionAdInterestGroup with "
+          "biddingLogicURL 'https://invalid^&' for AuctionAdInterestGroup with "
           "owner '%s' and name 'cars' cannot be resolved to a valid URL.",
           origin_string.c_str()),
       EvalJs(shell(), JsReplace(R"(
@@ -3648,9 +3648,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           .SetAdComponents({{{kAdUrl, /*metadata=*/absl::nullopt}}})
           .Build();
 
+  const blink::InterestGroup kExpectedGroupBiddingLogicUrl =
+      blink::TestInterestGroupBuilder(/*owner=*/origin, /*name=*/"cars")
+          .SetBiddingUrl(
+              GURL(base::StringPrintf("%s/bidding.js", origin_string.c_str())))
+          .Build();
+
   struct TestCases {
-    const char* join_dict_contents;
-    const char* result;
+    const std::string join_dict_contents;
+    const std::string result;
     const absl::optional<blink::InterestGroup> expected_group;
   } kTestCases[] = {
       // ***
@@ -3690,13 +3696,36 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
        "TypeError: Failed to execute 'joinAdInterestGroup' on "
        "'Navigator': Missing required field ad component renderURL",
        absl::nullopt},
+      // ***
+      // biddingLogicURL
+      // ***
+      {base::StringPrintf(R"(biddingLogicUrl: '%s/bidding.js')",
+                          origin_string.c_str()),
+       "done", kExpectedGroupBiddingLogicUrl},
+      {base::StringPrintf(R"(biddingLogicURL: '%s/bidding.js')",
+                          origin_string.c_str()),
+       "done", kExpectedGroupBiddingLogicUrl},
+      {base::StringPrintf(R"(biddingLogicUrl: '%s/bidding.js',)"
+                          R"(biddingLogicURL: '%s/bidding.js')",
+                          origin_string.c_str(), origin_string.c_str()),
+       "done", kExpectedGroupBiddingLogicUrl},
+      {base::StringPrintf(R"(biddingLogicUrl: '%s/bidding.js',)"
+                          R"(biddingLogicURL: '%s/bidding2.js')",
+                          origin_string.c_str(), origin_string.c_str()),
+       base::StringPrintf(
+           "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+           "interest group biddingLogicUrl doesn't have the same value as "
+           "interest group biddingLogicURL ('%s/bidding.js' vs "
+           "'%s/bidding2.js')",
+           origin_string.c_str(), origin_string.c_str()),
+       absl::nullopt},
   };
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.join_dict_contents);
-    EXPECT_EQ(
-        test_case.result,
-        EvalJs(shell(), base::StringPrintf(R"(
+    EXPECT_EQ(test_case.result,
+              EvalJs(shell(),
+                     base::StringPrintf(R"(
 (async function() {
   try {
     await navigator.joinAdInterestGroup(
@@ -3711,8 +3740,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   }
   return 'done';
 })())",
-                                           origin_string.c_str(),
-                                           test_case.join_dict_contents)));
+                                        origin_string.c_str(),
+                                        test_case.join_dict_contents.c_str())));
 
     // Check that the database has also been updated.
     absl::optional<StorageInterestGroup> maybe_interest_group =

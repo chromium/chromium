@@ -588,12 +588,13 @@ bool CopyBiddingLogicUrlFromIdlToMojo(const ExecutionContext& context,
                                       ExceptionState& exception_state,
                                       const AuctionAdInterestGroup& input,
                                       mojom::blink::InterestGroup& output) {
-  if (!input.hasBiddingLogicUrl())
+  if (!input.hasBiddingLogicURL()) {
     return true;
-  KURL bidding_url = context.CompleteURL(input.biddingLogicUrl());
+  }
+  KURL bidding_url = context.CompleteURL(input.biddingLogicURL());
   if (!bidding_url.IsValid()) {
     exception_state.ThrowTypeError(ErrorInvalidInterestGroup(
-        input, "biddingLogicUrl", input.biddingLogicUrl(),
+        input, "biddingLogicURL", input.biddingLogicURL(),
         "cannot be resolved to a valid URL."));
     return false;
   }
@@ -2112,6 +2113,21 @@ bool HandleOldDictNamesJoin(AuctionAdInterestGroup* group,
             ErrorMissingRequired("ad component renderURL"));
         return false;
       }
+    }
+  }
+
+  if (group->hasBiddingLogicUrlDeprecated()) {
+    if (group->hasBiddingLogicURL()) {
+      if (group->biddingLogicURL() != group->biddingLogicUrlDeprecated()) {
+        exception_state.ThrowTypeError(ErrorRenameMismatch(
+            /*old_field_name=*/"interest group biddingLogicUrl",
+            /*old_field_value=*/group->biddingLogicUrlDeprecated(),
+            /*new_field_name=*/"interest group biddingLogicURL",
+            /*new_field_value=*/group->biddingLogicURL()));
+        return false;
+      }
+    } else {
+      group->setBiddingLogicURL(group->biddingLogicUrlDeprecated());
     }
   }
 

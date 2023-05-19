@@ -40,7 +40,7 @@ function validateInterestGroup(interestGroup) {
   if (!interestGroup)
     throw 'No interest group';
 
-  if (Object.keys(interestGroup).length !== 12) {
+  if (Object.keys(interestGroup).length !== 13) {
     throw 'Wrong number of interestGroupFields ' +
         JSON.stringify(interestGroup);
   }
@@ -59,6 +59,12 @@ function validateInterestGroup(interestGroup) {
     interestGroup.priorityVector['FOO'] !== 2) {
     throw 'Incorrect priorityVector ' +
         JSON.stringify(interestGroup.priorityVector);
+  }
+
+  if (!interestGroup.biddingLogicURL.startsWith('https://a.test') ||
+      !interestGroup.biddingLogicURL.endsWith(
+          '/component_auction_bidding_argument_validator.js')) {
+    throw 'Incorrect biddingLogicURL ' + interestGroup.biddingLogicURL;
   }
 
   if (!interestGroup.biddingLogicUrl.startsWith('https://a.test') ||
@@ -82,7 +88,8 @@ function validateInterestGroup(interestGroup) {
   if (!interestGroup.trustedBiddingSignalsUrl.startsWith('https://a.test') ||
       !interestGroup.trustedBiddingSignalsUrl.includes(
           'trusted_bidding_signals.json')) {
-    throw 'Incorrect biddingLogicUrl ' + interestGroup.biddingLogicUrl;
+    throw 'Incorrect trustedBiddingSignalsUrl ' +
+        interestGroup.trustedBiddingSignalsUrl;
   }
 
   trustedBiddingSignalsKeysJson =
@@ -93,7 +100,7 @@ function validateInterestGroup(interestGroup) {
   }
 
   // TODO(crbug.com/1186444): Consider validating URL fields like
-  // interestGroup.biddingLogicUrl once we decide what to do about URL
+  // interestGroup.biddingLogicURL once we decide what to do about URL
   // normalization.
 
   // If userBiddingSignals is passed as a JSON string instead of an object,
