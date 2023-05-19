@@ -136,7 +136,8 @@ public class AwWebContentsObserver extends WebContentsObserver {
             // navigations and navigation from history.push/replaceState.
             // Error page is handled by AwContentsClientBridge.onReceivedError.
             if (!navigation.isSameDocument() && !navigation.isErrorPage()
-                    && AwFeatureList.pageStartedOnCommitEnabled(navigation.isRendererInitiated())) {
+                    && AwComputedFlags.pageStartedOnCommitEnabled(
+                            navigation.isRendererInitiated())) {
                 client.getCallbackHelper().postOnPageStarted(url);
             }
 
