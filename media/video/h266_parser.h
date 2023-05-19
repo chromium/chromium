@@ -23,6 +23,7 @@
 #include "media/video/h264_bit_reader.h"
 #include "media/video/h264_parser.h"
 #include "media/video/h266_nalu_parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -834,6 +835,104 @@ struct MEDIA_EXPORT H266PictureHeader {
   int slice_qp_y;
 };
 
+// 7.3.7
+struct MEDIA_EXPORT H266SliceHeader {
+  H266SliceHeader();
+  ~H266SliceHeader();
+
+  // Table 9
+  enum {
+    kSliceTypeB = 0,
+    kSliceTypeP = 1,
+    kSliceTypeI = 2,
+  };
+
+  // These are from NAL headers
+  int nal_unit_type;
+  int nuh_layer_id;
+  int temporal_id;
+  const uint8_t* nalu_data;
+  size_t nalu_size;
+  size_t header_size;  // calculated, not including emulation prevention bytes
+  size_t header_emulation_prevention_bytes;
+
+  // Syntax elements.
+  bool sh_picture_header_in_slice_header_flag;
+  H266PictureHeader picture_header;
+  int sh_subpic_id;
+  int sh_slice_address;
+  // 16-bit sh_extra_bit to be skipped
+  int sh_num_tiles_in_slice_minus1;
+  int sh_slice_type;
+  bool sh_no_output_of_prior_pics_flag;
+  bool sh_alf_enabled_flag;
+  int sh_num_alf_aps_ids_luma;
+  int sh_alf_aps_id_luma[7];
+  bool sh_alf_cb_enabled_flag;
+  bool sh_alf_cr_enabled_flag;
+  int sh_alf_aps_id_chroma;
+  bool sh_alf_cc_cb_enabled_flag;
+  int sh_alf_cc_cb_aps_id;
+  bool sh_alf_cc_cr_enabled_flag;
+  int sh_alf_cc_cr_aps_id;
+  bool sh_lmcs_used_flag;
+  bool sh_explicit_scaling_list_used_flag;
+  H266RefPicLists ref_pic_lists;
+  bool sh_num_ref_idx_active_override_flag;
+  int sh_num_ref_idx_active_minus1[2];
+  bool sh_cabac_init_flag;
+  bool sh_collocated_from_l0_flag;
+  int sh_collocated_ref_idx;
+  H266PredWeightTable sh_pred_weight_table;
+  int sh_qp_delta;
+  int sh_cb_qp_offset;
+  int sh_cr_qp_offset;
+  int sh_joint_cbcr_qp_offset;
+  bool sh_cu_chroma_qp_offset_enabled_flag;
+  bool sh_sao_luma_used_flag;
+  bool sh_sao_chroma_used_flag;
+  bool sh_deblocking_params_present_flag;
+  bool sh_deblocking_filter_disabled_flag;
+  int sh_luma_beta_offset_div2;
+  int sh_luma_tc_offset_div2;
+  int sh_cb_beta_offset_div2;
+  int sh_cb_tc_offset_div2;
+  int sh_cr_beta_offset_div2;
+  int sh_cr_tc_offset_div2;
+  bool sh_dep_quant_used_flag;
+  bool sh_sign_data_hiding_used_flag;
+  bool sh_ts_residual_coding_disabled_flag;
+  int sh_ts_residual_coding_rice_idx_minus1;
+  bool sh_reverse_last_sig_coeff_flag;
+  int sh_slice_header_extension_length;
+  // Skip possible extension bytes.
+  int sh_entry_offset_len_minus1;
+  std::vector<int> sh_entry_point_offset_minus1;
+
+  // Calculated values
+  int num_ref_idx_active[2];
+  int slice_qp_y;
+  int num_ctus_in_curr_slice;
+
+  // 8.1.1 This only applies to IRAP or GDR picture, and
+  // will be configured by parser depending on the slice
+  // type and whether it is the first picture of a layer
+  // that follows an EOS NAL unit.
+  bool no_output_before_recovery_flag;
+  // 8.1.1 Below two are not parsed from bitstream. They
+  // are knobs provided to decoder to explicitly control
+  // whether we handle CRA and GDR as CLVS start, and
+  absl::optional<bool> handle_cra_as_clvs_start_flag;
+  absl::optional<bool> handle_gdr_as_clvs_start_flag;
+  // Actual used flags by parser.
+  bool cra_as_clvs_start_flag;
+  bool gdr_as_clvs_start_flag;
+
+  bool IsISlice() const;
+  bool IsPSlice() const;
+  bool IsBSlice() const;
+};
+
 // Class to parse an Annex-B H.266 stream.
 class MEDIA_EXPORT H266Parser : public H266NaluParser {
  public:
@@ -870,11 +969,24 @@ class MEDIA_EXPORT H266Parser : public H266NaluParser {
   // of the parsed structure in |*aps_id| and APS type in |*type|. To get a
   // pointer to a given APS structure, use GetAPS(), passing the returned
   // |*aps_id| and |*type| as parameter.
-  Result ParseAPS(const H266NALU& nalu, int* pps_id, H266APS::ParamType* type);
+  Result ParseAPS(const H266NALU& nalu, int* aps_id, H266APS::ParamType* type);
 
   // Parse a picture header(PH) NALU and return the parsed structure
   // in |*ph|.
   Result ParsePHNut(const H266NALU& nalu, H266PictureHeader* ph);
+
+  // Slice headers are not used across NALUs by the parser and can be discarded
+  // after current NALU, so the parser does not store them, nor does it manage
+  // their memory. The caller has to provide and manage it instead.
+  // Parse a slice header, returning it in |*shdr|. |nalu| must be set to
+  // the NALU returned from AdvanceToNextNALU() and corresponding to |*shdr|.
+  // |first_picture| indicates if the picture current slice belongs to is the
+  // first picture of a layer in decoding order, or the first picture of a layer
+  // following EOS_NUT.
+  Result ParseSliceHeader(const H266NALU& nalu,
+                          bool first_picture,
+                          const H266PictureHeader* ph,
+                          H266SliceHeader* shdr);
 
   // Return a pointer to VPS with given |vps_id| or
   // null if not present.

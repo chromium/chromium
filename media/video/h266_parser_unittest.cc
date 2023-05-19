@@ -1358,4 +1358,378 @@ TEST_F(H266ParserTest, ParsePHNutWithoutParsingPPSShouldFail) {
   EXPECT_EQ(H266Parser::kInvalidStream, parser_.ParsePHNut(target_nalu, &ph));
 }
 
+// Verify parsing of slices that contains RPL etc directly in slice header.
+TEST_F(H266ParserTest, ParseSliceWithRplInSliceShouldSucceed) {
+  LoadParserFile("bbb_rpl_in_slice.vvc");
+  H266NALU target_nalu;
+  int sps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  const H266SPS* sps = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps);
+  int pps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  const H266PPS* pps = parser_.GetPPS(pps_id);
+  EXPECT_TRUE(!!pps);
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPrefixAPS));
+  int aps_id;
+  H266APS::ParamType aps_type;
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseAPS(target_nalu, &aps_id, &aps_type));
+  const H266APS* lmcs_aps = parser_.GetAPS(aps_type, aps_id);
+  EXPECT_TRUE(!!lmcs_aps);
+
+  // Parse the first frame, the IDR_N_LP slice.
+  H266SliceHeader shdr;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kIDRNoLeadingPicture));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, true, nullptr, &shdr));
+  // Verify the picture header in slice.
+  EXPECT_TRUE(shdr.sh_picture_header_in_slice_header_flag);
+  EXPECT_TRUE(shdr.picture_header.ph_gdr_or_irap_pic_flag);
+  EXPECT_FALSE(shdr.picture_header.ph_non_ref_pic_flag);
+  EXPECT_FALSE(shdr.picture_header.ph_gdr_pic_flag);
+  EXPECT_FALSE(shdr.picture_header.ph_inter_slice_allowed_flag);
+  EXPECT_EQ(shdr.picture_header.ph_pic_order_cnt_lsb, 0);
+  EXPECT_EQ(shdr.picture_header.ph_lmcs_aps_id, 0);
+  EXPECT_TRUE(shdr.picture_header.ph_lmcs_enabled_flag);
+  EXPECT_TRUE(shdr.picture_header.ph_chroma_residual_scale_flag);
+  EXPECT_FALSE(shdr.picture_header.ph_partition_constraints_override_flag);
+  EXPECT_EQ(shdr.picture_header.ph_cu_chroma_qp_offset_subdiv_intra_slice, 0);
+  EXPECT_FALSE(shdr.picture_header.ph_joint_cbcr_sign_flag);
+
+  EXPECT_FALSE(shdr.sh_no_output_of_prior_pics_flag);
+  EXPECT_FALSE(shdr.sh_alf_enabled_flag);
+  EXPECT_EQ(shdr.sh_qp_delta, -5);
+  EXPECT_TRUE(shdr.sh_cu_chroma_qp_offset_enabled_flag);
+  EXPECT_TRUE(shdr.sh_sao_luma_used_flag);
+  EXPECT_TRUE(shdr.sh_sao_chroma_used_flag);
+  EXPECT_TRUE(shdr.sh_dep_quant_used_flag);
+  EXPECT_TRUE(shdr.IsISlice());
+
+  // Parser the second frame, the STSA slice.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSTSA));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, false, nullptr, &shdr));
+  // Verify the picture header in slice.
+  EXPECT_TRUE(shdr.sh_picture_header_in_slice_header_flag);
+  EXPECT_FALSE(shdr.picture_header.ph_gdr_or_irap_pic_flag);
+  EXPECT_FALSE(shdr.picture_header.ph_non_ref_pic_flag);
+  EXPECT_FALSE(shdr.picture_header.ph_gdr_pic_flag);
+  EXPECT_TRUE(shdr.picture_header.ph_inter_slice_allowed_flag);
+  EXPECT_FALSE(shdr.picture_header.ph_intra_slice_allowed_flag);
+  EXPECT_EQ(shdr.picture_header.ph_pic_order_cnt_lsb, 4);
+  EXPECT_EQ(shdr.picture_header.ph_lmcs_aps_id, 0);
+  EXPECT_TRUE(shdr.picture_header.ph_lmcs_enabled_flag);
+  EXPECT_TRUE(shdr.picture_header.ph_chroma_residual_scale_flag);
+  EXPECT_FALSE(shdr.picture_header.ph_partition_constraints_override_flag);
+  EXPECT_EQ(shdr.picture_header.ph_cu_chroma_qp_offset_subdiv_intra_slice, 0);
+  EXPECT_FALSE(shdr.picture_header.ph_joint_cbcr_sign_flag);
+  EXPECT_TRUE(shdr.picture_header.ph_temporal_mvp_enabled_flag);
+  EXPECT_FALSE(shdr.picture_header.ph_mmvd_fullpel_only_flag);
+  EXPECT_TRUE(shdr.picture_header.ph_mvd_l1_zero_flag);
+  EXPECT_FALSE(shdr.picture_header.ph_mmvd_fullpel_only_flag);
+  EXPECT_FALSE(shdr.picture_header.ph_bdof_disabled_flag);
+  EXPECT_FALSE(shdr.picture_header.ph_dmvr_disabled_flag);
+  EXPECT_TRUE(shdr.IsBSlice());
+  // Verify the ref list of current frame.
+  // Current B-frame does not use ref picture list structure template
+  // in SPS, but instead explicitly signal it in slice header.
+  EXPECT_FALSE(shdr.ref_pic_lists.rpl_sps_flag[0]);
+  EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[0].num_ref_entries, 1);
+  // According to equation 150, AbsDeltaPocSt[0][0][0] should be given 4
+  // current PoC = 4 and the I-frame is with PoC = 0.
+  EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[0].abs_delta_poc_st[0], 3);
+  EXPECT_TRUE(shdr.ref_pic_lists.rpl_ref_lists[0].strp_entry_sign_flag[0]);
+
+  EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[1].num_ref_entries, 1);
+  EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[1].abs_delta_poc_st[0], 3);
+  EXPECT_TRUE(shdr.ref_pic_lists.rpl_ref_lists[1].strp_entry_sign_flag[0]);
+
+  EXPECT_FALSE(shdr.sh_alf_enabled_flag);
+  EXPECT_FALSE(shdr.sh_cabac_init_flag);
+  EXPECT_EQ(shdr.sh_pred_weight_table.delta_chroma_log2_weight_denom, 0);
+  EXPECT_FALSE(shdr.sh_pred_weight_table.chroma_weight_l1_flag[0]);
+  EXPECT_EQ(shdr.sh_qp_delta, 4);
+  EXPECT_TRUE(shdr.sh_cu_chroma_qp_offset_enabled_flag);
+  EXPECT_TRUE(shdr.sh_sao_luma_used_flag);
+  EXPECT_TRUE(shdr.sh_sao_chroma_used_flag);
+  EXPECT_TRUE(shdr.sh_dep_quant_used_flag);
+
+  // Parse the 2nd STAS frame in decoding order, with PoC = 2 and referencing
+  // frame with PoC = 0 & PoC = 4.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSTSA));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, false, nullptr, &shdr));
+  EXPECT_EQ(shdr.picture_header.ph_pic_order_cnt_lsb, 2);
+  EXPECT_FALSE(shdr.ref_pic_lists.rpl_sps_flag[0]);
+  EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[0].num_ref_entries, 2);
+  // Refers to PoC = 0.
+  EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[0].abs_delta_poc_st[0], 1);
+  EXPECT_TRUE(shdr.ref_pic_lists.rpl_ref_lists[0].strp_entry_sign_flag[0]);
+  // Refers to PoC = 4.
+  EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[0].abs_delta_poc_st[1], 4);
+  EXPECT_FALSE(shdr.ref_pic_lists.rpl_ref_lists[0].strp_entry_sign_flag[1]);
+
+  EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[1].num_ref_entries, 2);
+  EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[1].abs_delta_poc_st[0], 1);
+  EXPECT_FALSE(shdr.ref_pic_lists.rpl_ref_lists[1].strp_entry_sign_flag[0]);
+  EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[1].abs_delta_poc_st[1], 4);
+  EXPECT_TRUE(shdr.ref_pic_lists.rpl_ref_lists[1].strp_entry_sign_flag[1]);
+
+  // Parse till before next APS.
+  for (int i = 0; i < 4; i++) {
+    EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSTSA));
+    EXPECT_EQ(H266Parser::kOk,
+              parser_.ParseSliceHeader(target_nalu, false, nullptr, &shdr));
+  }
+
+  // Parse next APS which is an ALF APS, referenced by the last STSA frame.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPrefixAPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseAPS(target_nalu, &aps_id, &aps_type));
+
+  // Parse the last STSA frame.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSTSA));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, false, nullptr, &shdr));
+
+  EXPECT_EQ(shdr.picture_header.ph_pic_order_cnt_lsb, 7);
+  EXPECT_FALSE(shdr.ref_pic_lists.rpl_sps_flag[0]);
+  EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[0].num_ref_entries, 3);
+  EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[0].abs_delta_poc_st[0], 0);
+  EXPECT_TRUE(shdr.ref_pic_lists.rpl_ref_lists[0].strp_entry_sign_flag[0]);
+  EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[0].abs_delta_poc_st[1], 2);
+  EXPECT_TRUE(shdr.ref_pic_lists.rpl_ref_lists[0].strp_entry_sign_flag[1]);
+  EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[0].abs_delta_poc_st[2], 4);
+  EXPECT_TRUE(shdr.ref_pic_lists.rpl_ref_lists[0].strp_entry_sign_flag[2]);
+
+  EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[1].num_ref_entries, 2);
+  EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[1].abs_delta_poc_st[0], 0);
+  EXPECT_TRUE(shdr.ref_pic_lists.rpl_ref_lists[1].strp_entry_sign_flag[0]);
+  EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[1].abs_delta_poc_st[1], 2);
+  EXPECT_TRUE(shdr.ref_pic_lists.rpl_ref_lists[1].strp_entry_sign_flag[0]);
+
+  // Verify the ALF info and weighted prediction table.
+  EXPECT_TRUE(shdr.sh_alf_enabled_flag);
+  EXPECT_EQ(shdr.sh_num_alf_aps_ids_luma, 1);
+  EXPECT_TRUE(shdr.sh_alf_aps_id_luma[0]);
+  EXPECT_TRUE(shdr.sh_alf_cb_enabled_flag);
+  EXPECT_TRUE(shdr.sh_alf_cr_enabled_flag);
+  EXPECT_EQ(shdr.sh_alf_aps_id_chroma, 7);
+  EXPECT_FALSE(shdr.sh_alf_cc_cb_enabled_flag);
+  EXPECT_FALSE(shdr.sh_alf_cc_cr_enabled_flag);
+  EXPECT_EQ(shdr.sh_pred_weight_table.luma_log2_weight_denom, 6);
+  EXPECT_TRUE(shdr.sh_pred_weight_table.luma_weight_l0_flag[0]);
+  EXPECT_TRUE(shdr.sh_pred_weight_table.luma_weight_l0_flag[1]);
+  EXPECT_TRUE(shdr.sh_pred_weight_table.chroma_weight_l0_flag[0]);
+  EXPECT_FALSE(shdr.sh_pred_weight_table.chroma_weight_l0_flag[1]);
+  EXPECT_EQ(shdr.sh_pred_weight_table.delta_luma_weight_l0[0], 47);
+  EXPECT_EQ(shdr.sh_pred_weight_table.luma_offset_l0[0], -15);
+  EXPECT_EQ(shdr.sh_pred_weight_table.delta_chroma_weight_l0[0][0], 45);
+  EXPECT_EQ(shdr.sh_pred_weight_table.delta_chroma_weight_l0[0][1], 46);
+  EXPECT_EQ(shdr.sh_pred_weight_table.delta_luma_weight_l1[1], -8);
+  EXPECT_EQ(shdr.sh_pred_weight_table.luma_offset_l1[1], 122);
+}
+
+// Verify parsing of slice that has entry points syntax in it.
+TEST_F(H266ParserTest, ParseSliceWithDblkParamsAndEntryPointsShouldSucceed) {
+  LoadParserFile("bbb_slice_with_entrypoints.vvc");
+  H266NALU target_nalu;
+  int sps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  const H266SPS* sps = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps);
+  int pps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  const H266PPS* pps = parser_.GetPPS(pps_id);
+  EXPECT_TRUE(!!pps);
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPrefixAPS));
+  int aps_id;
+  H266APS::ParamType aps_type;
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseAPS(target_nalu, &aps_id, &aps_type));
+  const H266APS* lmcs_aps = parser_.GetAPS(aps_type, aps_id);
+  EXPECT_TRUE(!!lmcs_aps);
+
+  // Parse the first frame, the IDR_N_LP frame.
+  H266SliceHeader shdr;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kIDRNoLeadingPicture));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, true, nullptr, &shdr));
+  EXPECT_TRUE(shdr.picture_header.ph_deblocking_params_present_flag);
+  EXPECT_FALSE(shdr.picture_header.ph_deblocking_filter_disabled_flag);
+  EXPECT_EQ(shdr.picture_header.ph_luma_beta_offset_div2, -2);
+  EXPECT_EQ(shdr.picture_header.ph_luma_tc_offset_div2, 0);
+  EXPECT_EQ(shdr.picture_header.ph_cb_beta_offset_div2, -2);
+  EXPECT_EQ(shdr.picture_header.ph_cb_tc_offset_div2, 0);
+  EXPECT_EQ(shdr.picture_header.ph_cr_beta_offset_div2, -2);
+  EXPECT_EQ(shdr.picture_header.ph_cr_tc_offset_div2, 0);
+  EXPECT_EQ(shdr.sh_slice_address, 0);
+  EXPECT_EQ(shdr.sh_num_tiles_in_slice_minus1, 8);
+  EXPECT_FALSE(shdr.sh_no_output_of_prior_pics_flag);
+  EXPECT_TRUE(shdr.sh_cu_chroma_qp_offset_enabled_flag);
+  EXPECT_EQ(shdr.sh_entry_offset_len_minus1, 4);
+  EXPECT_EQ(shdr.sh_entry_point_offset_minus1.size(), 26u);
+  int expected_entry_point_offsets[26] = {17, 12, 12, 17, 12, 12, 17, 12, 12,
+                                          17, 12, 12, 17, 12, 12, 17, 12, 12,
+                                          17, 12, 26, 17, 12, 26, 17, 12};
+  int idx = 0;
+  for (const auto& val : shdr.sh_entry_point_offset_minus1) {
+    if (idx < 26) {
+      EXPECT_EQ(val, expected_entry_point_offsets[idx]);
+    }
+    idx++;
+  }
+
+  // Parse the second frame, the STSA frame.
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSTSA));
+  EXPECT_EQ(H266Parser::kOk,
+            parser_.ParseSliceHeader(target_nalu, true, nullptr, &shdr));
+  // For this frame, the ref_pic_list is in picture header, instead of slice
+  // header directly.
+  EXPECT_FALSE(shdr.picture_header.ref_pic_lists.rpl_sps_flag[0]);
+  EXPECT_EQ(shdr.picture_header.ref_pic_lists.rpl_ref_lists[0].num_ref_entries,
+            1);
+  EXPECT_EQ(
+      shdr.picture_header.ref_pic_lists.rpl_ref_lists[0].abs_delta_poc_st[0],
+      0);
+  EXPECT_EQ(shdr.picture_header.ref_pic_lists.rpl_ref_lists[1].num_ref_entries,
+            1);
+  EXPECT_EQ(
+      shdr.picture_header.ref_pic_lists.rpl_ref_lists[1].abs_delta_poc_st[1],
+      0);
+  EXPECT_EQ(shdr.sh_entry_offset_len_minus1, 1);
+  EXPECT_EQ(shdr.sh_entry_point_offset_minus1.size(), 26u);
+  int expected_entry_point_offsets2[26] = {1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                           1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                           1, 1, 2, 1, 1, 2, 1, 1};
+  idx = 0;
+  for (const auto& val : shdr.sh_entry_point_offset_minus1) {
+    if (idx < 26) {
+      EXPECT_EQ(val, expected_entry_point_offsets2[idx]);
+    }
+    idx++;
+  }
+}
+
+// Verify parsing of frames that are multi-slice encoded.
+TEST_F(H266ParserTest, ParsePUWithMultipleSlicesShouldSucceed) {
+  LoadParserFile("bbb_9tiles_18slices.vvc");
+  H266NALU target_nalu;
+  int sps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  const H266SPS* sps = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps);
+
+  int pps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  const H266PPS* pps = parser_.GetPPS(pps_id);
+  EXPECT_TRUE(!!pps);
+
+  for (int frame_id = 0; frame_id < 8; frame_id++) {
+    EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPH));
+    H266PictureHeader ph;
+    EXPECT_EQ(H266Parser::kOk, parser_.ParsePHNut(target_nalu, &ph));
+
+    H266SliceHeader shdr;
+    for (int slice_id = 0; slice_id < 18; slice_id++) {
+      if (frame_id == 0) {
+        EXPECT_TRUE(
+            ParseNalusUntilNut(&target_nalu, H266NALU::kIDRNoLeadingPicture));
+        EXPECT_EQ(H266Parser::kOk,
+                  parser_.ParseSliceHeader(target_nalu, true, &ph, &shdr));
+      } else {
+        EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSTSA));
+        EXPECT_EQ(H266Parser::kOk,
+                  parser_.ParseSliceHeader(target_nalu, false, &ph, &shdr));
+      }
+      EXPECT_EQ(shdr.sh_slice_address, slice_id);
+    }
+  }
+}
+
+// Verify parsing of frames that are multi-slice and multi-subpicture encoded.
+TEST_F(H266ParserTest, ParsePUWithMultipleSubpicturesAndSlicesShouldSucceed) {
+  LoadParserFile("bbb_2_subpictures_8_slices.vvc");
+  H266NALU target_nalu;
+  int sps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  const H266SPS* sps = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps);
+
+  int pps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  const H266PPS* pps = parser_.GetPPS(pps_id);
+  EXPECT_TRUE(!!pps);
+
+  int aps_id;
+  H266APS::ParamType aps_type;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPrefixAPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseAPS(target_nalu, &aps_id, &aps_type));
+  const H266APS* lmcs_aps = parser_.GetAPS(aps_type, aps_id);
+  EXPECT_TRUE(!!lmcs_aps);
+
+  // First check number of slices in each subpicture.
+  EXPECT_EQ(sps->sps_num_subpics_minus1, 1);
+  EXPECT_EQ(pps->num_slices_in_subpic[0], 6);
+  EXPECT_EQ(pps->num_slices_in_subpic[1], 2);
+
+  // Then check the slice sizes.
+  EXPECT_EQ(pps->pps_num_slices_in_pic_minus1, 7);
+  int expected_slice_height[8] = {2, 1, 2, 1, 6, 3, 6, 3};
+  for (int i = 0; i < pps->pps_num_slices_in_pic_minus1 + 1; i++) {
+    EXPECT_EQ(pps->slice_height_in_ctus[i], expected_slice_height[i]);
+  }
+
+  // For each frame, last two slices belong to the second subpicture
+  for (int frame_id = 0; frame_id < 2; frame_id++) {
+    EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPH));
+    H266PictureHeader ph;
+    EXPECT_EQ(H266Parser::kOk, parser_.ParsePHNut(target_nalu, &ph));
+
+    H266SliceHeader shdr;
+    for (int slice_id = 0; slice_id < 8; slice_id++) {
+      if (frame_id == 0) {
+        EXPECT_TRUE(
+            ParseNalusUntilNut(&target_nalu, H266NALU::kIDRNoLeadingPicture));
+        EXPECT_EQ(H266Parser::kOk,
+                  parser_.ParseSliceHeader(target_nalu, true, &ph, &shdr));
+      } else {
+        EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSTSA));
+        EXPECT_EQ(H266Parser::kOk,
+                  parser_.ParseSliceHeader(target_nalu, false, &ph, &shdr));
+      }
+      if (slice_id <= 5) {
+        EXPECT_EQ(shdr.sh_subpic_id, 0);
+        EXPECT_EQ(shdr.sh_slice_address, slice_id);
+      } else {
+        EXPECT_EQ(shdr.sh_subpic_id, 1);
+        EXPECT_EQ(shdr.sh_slice_address, slice_id - 6);
+      }
+    }
+    // Verify the syntax elements in the last frame's last slice.
+    if (frame_id == 1) {
+      EXPECT_FALSE(shdr.ref_pic_lists.rpl_sps_flag[0]);
+      EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[0].num_ref_entries, 1);
+      EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[0].abs_delta_poc_st[0], 0);
+      EXPECT_TRUE(shdr.ref_pic_lists.rpl_ref_lists[0].strp_entry_sign_flag[0]);
+      EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[1].num_ref_entries, 1);
+      EXPECT_EQ(shdr.ref_pic_lists.rpl_ref_lists[1].abs_delta_poc_st[0], 0);
+      EXPECT_TRUE(shdr.ref_pic_lists.rpl_ref_lists[1].strp_entry_sign_flag[0]);
+      EXPECT_FALSE(shdr.sh_cabac_init_flag);
+      EXPECT_FALSE(shdr.sh_collocated_from_l0_flag);
+      EXPECT_EQ(shdr.sh_qp_delta, 7);
+      EXPECT_TRUE(shdr.sh_cu_chroma_qp_offset_enabled_flag);
+      EXPECT_TRUE(shdr.sh_sao_chroma_used_flag);
+      EXPECT_TRUE(shdr.sh_sao_luma_used_flag);
+      EXPECT_TRUE(shdr.sh_dep_quant_used_flag);
+    }
+  }
+}
+
 }  // namespace media
