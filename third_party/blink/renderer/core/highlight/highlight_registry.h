@@ -91,8 +91,7 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
   bool force_markers_validation_ = true;
 
   HighlightRegistryMap::iterator GetMapIterator(const AtomicString& key) {
-    return highlights_.find(
-        MakeGarbageCollected<HighlightRegistryMapEntry>(key));
+    return highlights_.Find<HighlightRegistryMapEntryNameTranslator>(key);
   }
 
   bool GetMapEntry(ScriptState*,
