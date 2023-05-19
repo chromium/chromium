@@ -123,6 +123,21 @@ absl::optional<base::UnguessableToken> ToUnguessableToken(int64_t token_high,
                                              static_cast<uint64_t>(token_low));
 }
 
+template <typename ResultType>
+base::OnceCallback<void(ResultType)> WrapCallbackWithWeakPtrCheck(
+    base::WeakPtr<SQLitePersistentSharedDictionaryStore> weak_ptr,
+    base::OnceCallback<void(ResultType)> callback) {
+  return base::BindOnce(
+      [](base::WeakPtr<SQLitePersistentSharedDictionaryStore> weak_ptr,
+         base::OnceCallback<void(ResultType)> callback, ResultType result) {
+        if (!weak_ptr) {
+          return;
+        }
+        std::move(callback).Run(std::move(result));
+      },
+      std::move(weak_ptr), std::move(callback));
+}
+
 }  // namespace
 
 class SQLitePersistentSharedDictionaryStore::Backend
@@ -143,18 +158,34 @@ class SQLitePersistentSharedDictionaryStore::Backend
   Backend(const Backend&) = delete;
   Backend& operator=(const Backend&) = delete;
 
-  void GetTotalDictionarySize(
-      base::OnceCallback<void(base::expected<uint64_t, Error>)> callback);
-  void RegisterDictionary(
-      const SharedDictionaryStorageIsolationKey& isolation_key,
-      SharedDictionaryInfo dictionary_info,
-      base::OnceCallback<void(RegisterDictionaryResultOrError)> callback);
-  void GetDictionaries(
-      const SharedDictionaryStorageIsolationKey& isolation_key,
-      base::OnceCallback<void(DictionaryListOrError)> callback);
-  void GetAllDictionaries(
-      base::OnceCallback<void(DictionaryMapOrError)> callback);
-  void ClearAllDictionaries(base::OnceCallback<void(Error)> callback);
+#define DEFINE_CROSS_SEQUENCE_CALL_METHOD(Name)                              \
+  template <typename ResultType, typename... Args>                           \
+  void Name(base::OnceCallback<void(ResultType)> callback, Args&&... args) { \
+    CHECK(client_task_runner()->RunsTasksInCurrentSequence());               \
+    PostBackgroundTask(                                                      \
+        FROM_HERE,                                                           \
+        base::BindOnce(                                                      \
+            [](scoped_refptr<Backend> backend,                               \
+               base::OnceCallback<void(ResultType)> callback,                \
+               Args&&... args) {                                             \
+              backend->PostClientTask(                                       \
+                  FROM_HERE,                                                 \
+                  base::BindOnce(                                            \
+                      std::move(callback),                                   \
+                      backend->Name##Impl(std::forward<Args>(args)...)));    \
+            },                                                               \
+            scoped_refptr<Backend>(this), std::move(callback),               \
+            std::forward<Args>(args)...));                                   \
+  }
+
+  // The following methods call *Impl() method in the background task runner,
+  // and call the passed `callback` with the result in the client task runner.
+  DEFINE_CROSS_SEQUENCE_CALL_METHOD(GetTotalDictionarySize)
+  DEFINE_CROSS_SEQUENCE_CALL_METHOD(RegisterDictionary)
+  DEFINE_CROSS_SEQUENCE_CALL_METHOD(GetDictionaries)
+  DEFINE_CROSS_SEQUENCE_CALL_METHOD(GetAllDictionaries)
+  DEFINE_CROSS_SEQUENCE_CALL_METHOD(ClearAllDictionaries)
+#undef DEFINE_CROSS_SEQUENCE_CALL_METHOD
 
  private:
   ~Backend() override = default;
@@ -219,20 +250,6 @@ void SQLitePersistentSharedDictionaryStore::Backend::DoCommit() {
   // for updating `last_used_time`.
 }
 
-void SQLitePersistentSharedDictionaryStore::Backend::GetTotalDictionarySize(
-    base::OnceCallback<void(base::expected<uint64_t, Error>)> callback) {
-  if (!background_task_runner()->RunsTasksInCurrentSequence()) {
-    CHECK(client_task_runner()->RunsTasksInCurrentSequence());
-    PostBackgroundTask(FROM_HERE,
-                       base::BindOnce(&Backend::GetTotalDictionarySize, this,
-                                      std::move(callback)));
-    return;
-  }
-
-  PostClientTask(FROM_HERE, base::BindOnce(std::move(callback),
-                                           GetTotalDictionarySizeImpl()));
-}
-
 base::expected<uint64_t, SQLitePersistentSharedDictionaryStore::Error>
 SQLitePersistentSharedDictionaryStore::Backend::GetTotalDictionarySizeImpl() {
   CHECK(background_task_runner()->RunsTasksInCurrentSequence());
@@ -249,25 +266,6 @@ SQLitePersistentSharedDictionaryStore::Backend::GetTotalDictionarySizeImpl() {
   // There is no `sql::Statement::ColumnUint64()` method. So we cast to
   // uint64_t.
   return base::ok(static_cast<uint64_t>(unsigned_total_dictionary_size));
-}
-
-void SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionary(
-    const SharedDictionaryStorageIsolationKey& isolation_key,
-    SharedDictionaryInfo dictionary_info,
-    base::OnceCallback<void(RegisterDictionaryResultOrError)> callback) {
-  CHECK(!dictionary_info.primary_key_in_database().has_value());
-  if (!background_task_runner()->RunsTasksInCurrentSequence()) {
-    CHECK(client_task_runner()->RunsTasksInCurrentSequence());
-    PostBackgroundTask(
-        FROM_HERE,
-        base::BindOnce(&Backend::RegisterDictionary, this, isolation_key,
-                       std::move(dictionary_info), std::move(callback)));
-    return;
-  }
-  PostClientTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback),
-                     RegisterDictionaryImpl(isolation_key, dictionary_info)));
 }
 
 SQLitePersistentSharedDictionaryStore::RegisterDictionaryResultOrError
@@ -358,20 +356,6 @@ SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionaryImpl(
                                .total_dictionary_size = total_dictionary_size});
 }
 
-void SQLitePersistentSharedDictionaryStore::Backend::GetDictionaries(
-    const SharedDictionaryStorageIsolationKey& isolation_key,
-    base::OnceCallback<void(DictionaryListOrError)> callback) {
-  if (!background_task_runner()->RunsTasksInCurrentSequence()) {
-    CHECK(client_task_runner()->RunsTasksInCurrentSequence());
-    PostBackgroundTask(FROM_HERE,
-                       base::BindOnce(&Backend::GetDictionaries, this,
-                                      isolation_key, std::move(callback)));
-    return;
-  }
-  PostClientTask(FROM_HERE, base::BindOnce(std::move(callback),
-                                           GetDictionariesImpl(isolation_key)));
-}
-
 SQLitePersistentSharedDictionaryStore::DictionaryListOrError
 SQLitePersistentSharedDictionaryStore::Backend::GetDictionariesImpl(
     const SharedDictionaryStorageIsolationKey& isolation_key) {
@@ -434,18 +418,6 @@ SQLitePersistentSharedDictionaryStore::Backend::GetDictionariesImpl(
                         primary_key_in_database);
   }
   return base::ok(std::move(result));
-}
-
-void SQLitePersistentSharedDictionaryStore::Backend::GetAllDictionaries(
-    base::OnceCallback<void(DictionaryMapOrError)> callback) {
-  if (!background_task_runner()->RunsTasksInCurrentSequence()) {
-    CHECK(client_task_runner()->RunsTasksInCurrentSequence());
-    PostBackgroundTask(FROM_HERE, base::BindOnce(&Backend::GetAllDictionaries,
-                                                 this, std::move(callback)));
-    return;
-  }
-  PostClientTask(FROM_HERE,
-                 base::BindOnce(std::move(callback), GetAllDictionariesImpl()));
 }
 
 SQLitePersistentSharedDictionaryStore::DictionaryMapOrError
@@ -519,18 +491,6 @@ SQLitePersistentSharedDictionaryStore::Backend::GetAllDictionariesImpl() {
                       primary_key_in_database);
   }
   return base::ok(std::move(result));
-}
-
-void SQLitePersistentSharedDictionaryStore::Backend::ClearAllDictionaries(
-    base::OnceCallback<void(Error)> callback) {
-  if (!background_task_runner()->RunsTasksInCurrentSequence()) {
-    CHECK(client_task_runner()->RunsTasksInCurrentSequence());
-    PostBackgroundTask(FROM_HERE, base::BindOnce(&Backend::ClearAllDictionaries,
-                                                 this, std::move(callback)));
-    return;
-  }
-  PostClientTask(FROM_HERE, base::BindOnce(std::move(callback),
-                                           ClearAllDictionariesImpl()));
 }
 
 SQLitePersistentSharedDictionaryStore::Error
@@ -644,16 +604,8 @@ SQLitePersistentSharedDictionaryStore::
 void SQLitePersistentSharedDictionaryStore::GetTotalDictionarySize(
     base::OnceCallback<void(base::expected<uint64_t, Error>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  backend_->GetTotalDictionarySize(base::BindOnce(
-      [](base::WeakPtr<SQLitePersistentSharedDictionaryStore> weak_ptr,
-         base::OnceCallback<void(base::expected<uint64_t, Error>)> callback,
-         base::expected<uint64_t, Error> result) {
-        if (!weak_ptr) {
-          return;
-        }
-        std::move(callback).Run(std::move(result));
-      },
-      GetWeakPtr(), std::move(callback)));
+  backend_->GetTotalDictionarySize(
+      WrapCallbackWithWeakPtrCheck(GetWeakPtr(), std::move(callback)));
 }
 
 void SQLitePersistentSharedDictionaryStore::RegisterDictionary(
@@ -662,17 +614,8 @@ void SQLitePersistentSharedDictionaryStore::RegisterDictionary(
     base::OnceCallback<void(RegisterDictionaryResultOrError)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   backend_->RegisterDictionary(
-      isolation_key, std::move(dictionary_info),
-      base::BindOnce(
-          [](base::WeakPtr<SQLitePersistentSharedDictionaryStore> weak_ptr,
-             base::OnceCallback<void(RegisterDictionaryResultOrError)> callback,
-             RegisterDictionaryResultOrError result) {
-            if (!weak_ptr) {
-              return;
-            }
-            std::move(callback).Run(std::move(result));
-          },
-          GetWeakPtr(), std::move(callback)));
+      WrapCallbackWithWeakPtrCheck(GetWeakPtr(), std::move(callback)),
+      isolation_key, std::move(dictionary_info));
 }
 
 void SQLitePersistentSharedDictionaryStore::GetDictionaries(
@@ -680,46 +623,22 @@ void SQLitePersistentSharedDictionaryStore::GetDictionaries(
     base::OnceCallback<void(DictionaryListOrError)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   backend_->GetDictionaries(
-      isolation_key,
-      base::BindOnce(
-          [](base::WeakPtr<SQLitePersistentSharedDictionaryStore> weak_ptr,
-             base::OnceCallback<void(DictionaryListOrError)> callback,
-             DictionaryListOrError result) {
-            if (!weak_ptr) {
-              return;
-            }
-            std::move(callback).Run(std::move(result));
-          },
-          GetWeakPtr(), std::move(callback)));
+      WrapCallbackWithWeakPtrCheck(GetWeakPtr(), std::move(callback)),
+      isolation_key);
 }
 
 void SQLitePersistentSharedDictionaryStore::GetAllDictionaries(
     base::OnceCallback<void(DictionaryMapOrError)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  backend_->GetAllDictionaries(base::BindOnce(
-      [](base::WeakPtr<SQLitePersistentSharedDictionaryStore> weak_ptr,
-         base::OnceCallback<void(DictionaryMapOrError)> callback,
-         DictionaryMapOrError result) {
-        if (!weak_ptr) {
-          return;
-        }
-        std::move(callback).Run(std::move(result));
-      },
-      GetWeakPtr(), std::move(callback)));
+  backend_->GetAllDictionaries(
+      WrapCallbackWithWeakPtrCheck(GetWeakPtr(), std::move(callback)));
 }
 
 void SQLitePersistentSharedDictionaryStore::ClearAllDictionaries(
     base::OnceCallback<void(Error)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  backend_->ClearAllDictionaries(base::BindOnce(
-      [](base::WeakPtr<SQLitePersistentSharedDictionaryStore> weak_ptr,
-         base::OnceCallback<void(Error)> callback, Error error) {
-        if (!weak_ptr) {
-          return;
-        }
-        std::move(callback).Run(error);
-      },
-      GetWeakPtr(), std::move(callback)));
+  backend_->ClearAllDictionaries(
+      WrapCallbackWithWeakPtrCheck(GetWeakPtr(), std::move(callback)));
 }
 
 base::WeakPtr<SQLitePersistentSharedDictionaryStore>
