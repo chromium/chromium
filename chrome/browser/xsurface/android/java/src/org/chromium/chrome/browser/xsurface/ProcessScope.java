@@ -7,6 +7,8 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScopeDependencyProvider;
+import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsSurfaceScope;
+import org.chromium.chrome.browser.xsurface.pageinsights.PageInsightsSurfaceScopeDependencyProvider;
 
 /**
  * Implemented internally.
@@ -42,6 +44,17 @@ public interface ProcessScope {
     @Nullable
     default FeedSurfaceScope obtainFeedSurfaceScope(
             FeedSurfaceScopeDependencyProvider dependencyProvider) {
+        return null;
+    }
+
+    /**
+     * Returns PageInsightsSurfaceScope, for use in the Page Insights feature.
+     *
+     * @param dependencyProvider Provider for activity-scoped dependencies.
+     */
+    @Nullable
+    default PageInsightsSurfaceScope obtainPageInsightsSurfaceScope(
+            PageInsightsSurfaceScopeDependencyProvider dependencyProvider) {
         return null;
     }
 
