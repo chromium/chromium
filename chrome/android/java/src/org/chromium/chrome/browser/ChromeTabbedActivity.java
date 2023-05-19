@@ -2115,7 +2115,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         || getLayoutManager().getNextLayoutType() == LayoutType.START_SURFACE) {
                     getLayoutManager().addObserver(new LayoutStateProvider.LayoutStateObserver() {
                         @Override
-                        public void onStartedShowing(int layoutType, boolean showToolbar) {
+                        public void onStartedShowing(int layoutType) {
                             if (layoutType != LayoutType.TAB_SWITCHER
                                     && layoutType != LayoutType.START_SURFACE) {
                                 return;

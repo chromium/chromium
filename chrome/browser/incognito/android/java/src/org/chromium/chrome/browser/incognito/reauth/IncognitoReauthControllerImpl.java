@@ -114,7 +114,7 @@ public class IncognitoReauthControllerImpl
     private final LayoutStateProvider.LayoutStateObserver mLayoutStateObserver =
             new LayoutStateProvider.LayoutStateObserver() {
                 @Override
-                public void onStartedShowing(int layoutType, boolean showToolbar) {
+                public void onStartedShowing(int layoutType) {
                     if (layoutType == LayoutType.BROWSING) {
                         showDialogIfRequired();
                     }

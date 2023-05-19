@@ -34,7 +34,7 @@ public class FilterLayoutStateObserverTest {
 
         mBaseObserver = new LayoutStateObserver() {
             @Override
-            public void onStartedShowing(int layoutType, boolean showToolbar) {
+            public void onStartedShowing(int layoutType) {
                 mStartedShowingCallbackHelper.notifyCalled();
             }
 
@@ -44,8 +44,7 @@ public class FilterLayoutStateObserverTest {
             }
 
             @Override
-            public void onStartedHiding(
-                    int layoutType, boolean showToolbar, boolean delayAnimation) {
+            public void onStartedHiding(int layoutType) {
                 mStartedHidingCallbackHelper.notifyCalled();
             }
 
@@ -69,10 +68,10 @@ public class FilterLayoutStateObserverTest {
         int initialCount = mStartedShowingCallbackHelper.getCallCount();
         assertEquals("Event should not have triggered.", initialCount,
                 mStartedShowingCallbackHelper.getCallCount());
-        observer.onStartedShowing(LayoutType.TAB_SWITCHER, false);
+        observer.onStartedShowing(LayoutType.TAB_SWITCHER);
         assertEquals("Event should not have triggered with the specified layout.", initialCount,
                 mStartedShowingCallbackHelper.getCallCount());
-        observer.onStartedShowing(LayoutType.BROWSING, false);
+        observer.onStartedShowing(LayoutType.BROWSING);
         assertEquals("Event should have triggered with the specified layout.", initialCount + 1,
                 mStartedShowingCallbackHelper.getCallCount());
 

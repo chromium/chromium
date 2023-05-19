@@ -1273,7 +1273,7 @@ public class RootUiCoordinator
         mLayoutStateProvider = layoutStateProvider;
         mLayoutStateObserver = new LayoutStateProvider.LayoutStateObserver() {
             @Override
-            public void onStartedShowing(int layoutType, boolean showToolbar) {
+            public void onStartedShowing(int layoutType) {
                 if (layoutType != LayoutType.BROWSING
                         && layoutType != LayoutType.SIMPLE_ANIMATION) {
                     // Hide contextual search.
@@ -1304,8 +1304,7 @@ public class RootUiCoordinator
             }
 
             @Override
-            public void onStartedHiding(
-                    int layoutType, boolean showToolbar, boolean delayAnimation) {
+            public void onStartedHiding(int layoutType) {
                 if (layoutType == LayoutType.TAB_SWITCHER) {
                     hideAppMenu();
                 }

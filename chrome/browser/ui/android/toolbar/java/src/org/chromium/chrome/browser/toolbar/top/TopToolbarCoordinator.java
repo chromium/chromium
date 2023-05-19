@@ -582,15 +582,9 @@ public class TopToolbarCoordinator implements Toolbar {
     /**
      * Gives inheriting classes the chance to show or hide the TabSwitcher mode of this toolbar.
      * @param inTabSwitcherMode Whether or not TabSwitcher mode should be shown or hidden.
-     * @param showToolbar    Whether or not to show the normal toolbar while animating.
-     * @param delayAnimation Whether or not to delay the animation until after the transition has
-     *                       finished (which can be detected by a call to
-     *                       {@link #onTabSwitcherTransitionFinished()}).
      */
-    public void setTabSwitcherMode(
-            boolean inTabSwitcherMode, boolean showToolbar, boolean delayAnimation) {
-        mToolbarLayout.setTabSwitcherMode(
-                inTabSwitcherMode, showToolbar, delayAnimation, mMenuButtonCoordinator);
+    public void setTabSwitcherMode(boolean inTabSwitcherMode) {
+        mToolbarLayout.setTabSwitcherMode(inTabSwitcherMode);
         if (mTabSwitcherModeCoordinator != null) {
             mTabSwitcherModeCoordinator.setTabSwitcherMode(inTabSwitcherMode);
         } else if (mStartSurfaceToolbarCoordinator != null) {

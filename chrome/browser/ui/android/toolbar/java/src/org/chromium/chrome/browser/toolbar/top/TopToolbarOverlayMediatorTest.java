@@ -116,7 +116,7 @@ public class TopToolbarOverlayMediatorTest {
 
         verify(mLayoutStateProvider).addObserver(mLayoutObserverCaptor.capture());
 
-        mLayoutObserverCaptor.getValue().onStartedShowing(LayoutType.BROWSING, true);
+        mLayoutObserverCaptor.getValue().onStartedShowing(LayoutType.BROWSING);
     }
 
     /** Set the tab that will be returned by the supplier and trigger the observer event. */

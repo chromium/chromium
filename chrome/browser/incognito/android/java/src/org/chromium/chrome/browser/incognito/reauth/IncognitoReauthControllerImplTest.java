@@ -387,7 +387,7 @@ public class IncognitoReauthControllerImplTest {
                 mIncognitoReauthController.isReauthPageShowing());
 
         // Trigger layout state change to indicate we are now showing a tab.
-        mLayoutStateObserverArgumentCaptor.getValue().onStartedShowing(LayoutType.BROWSING, false);
+        mLayoutStateObserverArgumentCaptor.getValue().onStartedShowing(LayoutType.BROWSING);
         assertTrue("Re-auth screen should be shown if we are about to show a tab.",
                 mIncognitoReauthController.isReauthPageShowing());
     }

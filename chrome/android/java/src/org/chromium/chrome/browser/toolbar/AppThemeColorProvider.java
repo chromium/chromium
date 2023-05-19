@@ -51,7 +51,7 @@ public class AppThemeColorProvider extends ThemeColorProvider implements Incogni
 
         mLayoutStateObserver = new LayoutStateProvider.LayoutStateObserver() {
             @Override
-            public void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {
+            public void onStartedShowing(@LayoutType int layoutType) {
                 if (layoutType == LayoutType.TAB_SWITCHER) {
                     mIsOverviewVisible = true;
                     updateTheme();
@@ -59,8 +59,7 @@ public class AppThemeColorProvider extends ThemeColorProvider implements Incogni
             }
 
             @Override
-            public void onStartedHiding(
-                    @LayoutType int layoutType, boolean showToolbar, boolean delayAnimation) {
+            public void onStartedHiding(@LayoutType int layoutType) {
                 if (layoutType == LayoutType.TAB_SWITCHER) {
                     mIsOverviewVisible = false;
                     updateTheme();

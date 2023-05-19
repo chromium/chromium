@@ -218,7 +218,7 @@ public final class ToolbarTabletUnitTest {
         assertEquals("Initial Toolbar visibility is not as expected", View.VISIBLE,
                 mToolbarTablet.getVisibility());
         // Call
-        mToolbarTablet.setTabSwitcherMode(false, false, false, mMenuButtonCoordinator);
+        mToolbarTablet.setTabSwitcherMode(false);
         assertEquals("Toolbar visibility is not as expected", View.VISIBLE,
                 mToolbarTablet.getVisibility());
         verify(mLocationBar).setUrlBarFocusable(true);
@@ -229,7 +229,7 @@ public final class ToolbarTabletUnitTest {
         assertEquals("Initial Toolbar visibility is not as expected", View.VISIBLE,
                 mToolbarTablet.getVisibility());
         // Call
-        mToolbarTablet.setTabSwitcherMode(true, false, false, mMenuButtonCoordinator);
+        mToolbarTablet.setTabSwitcherMode(true);
         assertEquals("Toolbar visibility is not as expected", View.VISIBLE,
                 mToolbarTablet.getVisibility());
         verify(mLocationBar).setUrlBarFocusable(false);
@@ -309,8 +309,7 @@ public final class ToolbarTabletUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
     public void testIsReadyForTextureCapture_InTabSwitcher() {
-        mToolbarTablet.setTabSwitcherMode(/*inTabSwitcherMode*/ true, /*showToolbar*/ true,
-                /*delayAnimation*/ false, /*menuButtonCoordinator*/ null);
+        mToolbarTablet.setTabSwitcherMode(/*inTabSwitcherMode*/ true);
         CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
         Assert.assertFalse(result.isReady);
         Assert.assertEquals(TopToolbarBlockCaptureReason.TAB_SWITCHER_MODE, result.blockReason);

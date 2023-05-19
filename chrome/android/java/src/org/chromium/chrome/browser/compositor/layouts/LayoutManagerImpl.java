@@ -955,9 +955,7 @@ public class LayoutManagerImpl
 
         Layout layoutBeingHidden = getActiveLayout();
         for (LayoutStateObserver observer : mLayoutObservers) {
-            observer.onStartedHiding(layoutBeingHidden.getLayoutType(),
-                    shouldShowToolbarAnimationOnHide(layoutBeingHidden, nextTabId),
-                    shouldDelayHideAnimation(layoutBeingHidden));
+            observer.onStartedHiding(layoutBeingHidden.getLayoutType());
         }
     }
 
@@ -1081,8 +1079,7 @@ public class LayoutManagerImpl
             }
 
             for (LayoutStateObserver observer : mLayoutObservers) {
-                observer.onStartedShowing(
-                        layout.getLayoutType(), shouldShowToolbarAnimationOnShow(animate));
+                observer.onStartedShowing(layout.getLayoutType());
             }
         }
     }
@@ -1266,17 +1263,5 @@ public class LayoutManagerImpl
     @Override
     public void removeObserver(LayoutStateObserver listener) {
         mLayoutObservers.removeObserver(listener);
-    }
-
-    protected boolean shouldShowToolbarAnimationOnShow(boolean isAnimate) {
-        return false;
-    }
-
-    protected boolean shouldShowToolbarAnimationOnHide(Layout layoutBeingHidden, int nextTabId) {
-        return false;
-    }
-
-    protected boolean shouldDelayHideAnimation(Layout layoutBeingHidden) {
-        return false;
     }
 }

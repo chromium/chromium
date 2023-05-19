@@ -660,19 +660,6 @@ public abstract class Layout {
     }
 
     /**
-     * @param id The id of the {@link LayoutTab} to search for.
-     * @return   A {@link LayoutTab} represented by a {@link Tab} with an id of {@code id}.
-     */
-    public LayoutTab getLayoutTab(int id) {
-        if (mLayoutTabs != null) {
-            for (int i = 0; i < mLayoutTabs.length; i++) {
-                if (mLayoutTabs[i].getId() == id) return mLayoutTabs[i];
-            }
-        }
-        return null;
-    }
-
-    /**
      * @return Whether the layout is handling the model updates when a tab is closing.
      */
     public boolean handlesTabClosing() {

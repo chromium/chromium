@@ -217,7 +217,7 @@ public class IncognitoTabbedSnapshotControllerTest {
         mIsInOverviewMode = false;
 
         // Come out of overview mode.
-        mFilterLayoutStateObserver.onStartedHiding(LayoutType.TAB_SWITCHER, false, false);
+        mFilterLayoutStateObserver.onStartedHiding(LayoutType.TAB_SWITCHER);
 
         assertFalse("isShowingIncognito should return false ", mIsIncognitoShowingSupplier.get());
     }
@@ -238,7 +238,7 @@ public class IncognitoTabbedSnapshotControllerTest {
         mIsInOverviewMode = true;
 
         // Enter overview mode.
-        mFilterLayoutStateObserver.onStartedShowing(LayoutType.TAB_SWITCHER, false);
+        mFilterLayoutStateObserver.onStartedShowing(LayoutType.TAB_SWITCHER);
 
         assertFalse("isShowingIncognito should return false ", mIsIncognitoShowingSupplier.get());
     }
@@ -258,7 +258,7 @@ public class IncognitoTabbedSnapshotControllerTest {
         mIsInOverviewMode = true;
 
         // Enter overview mode.
-        mFilterLayoutStateObserver.onStartedShowing(LayoutType.TAB_SWITCHER, false);
+        mFilterLayoutStateObserver.onStartedShowing(LayoutType.TAB_SWITCHER);
 
         assertTrue("isShowingIncognito should be true", mIsIncognitoShowingSupplier.get());
     }

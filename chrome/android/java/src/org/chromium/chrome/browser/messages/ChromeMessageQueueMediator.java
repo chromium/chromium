@@ -63,7 +63,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
 
         // Suspend the queue until browsing mode is visible.
         @Override
-        public void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {
+        public void onStartedShowing(@LayoutType int layoutType) {
             if (mToken == TokenHolder.INVALID_TOKEN && layoutType != LayoutType.BROWSING) {
                 mToken = suspendQueue();
             }

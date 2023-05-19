@@ -31,9 +31,9 @@ public final class FilterLayoutStateObserver implements LayoutStateObserver {
     }
 
     @Override
-    public void onStartedShowing(int layoutType, boolean showToolbar) {
+    public void onStartedShowing(int layoutType) {
         if (layoutType != mType) return;
-        mObserver.onStartedShowing(layoutType, showToolbar);
+        mObserver.onStartedShowing(layoutType);
     }
 
     @Override
@@ -43,9 +43,9 @@ public final class FilterLayoutStateObserver implements LayoutStateObserver {
     }
 
     @Override
-    public void onStartedHiding(int layoutType, boolean showToolbar, boolean delayAnimation) {
+    public void onStartedHiding(int layoutType) {
         if (layoutType != mType) return;
-        mObserver.onStartedHiding(layoutType, showToolbar, delayAnimation);
+        mObserver.onStartedHiding(layoutType);
     }
 
     @Override

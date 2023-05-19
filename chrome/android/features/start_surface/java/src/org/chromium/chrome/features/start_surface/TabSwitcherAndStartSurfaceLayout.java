@@ -101,9 +101,6 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
     // Always use getCarouselOrSingleTabListDelegate() instead to make sure it's not null.
     @Nullable
     private TabSwitcher.TabListDelegate mCarouselOrSingleTabListDelegate;
-
-    // To force Toolbar finishes its animation when this Layout finished hiding.
-    private final LayoutTab mDummyLayoutTab;
     private boolean mIsInitialized;
 
     // Only access this value via isTabGtsAnimationEnabled. Caches the value to avoid repeated
@@ -128,8 +125,6 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
             LayoutRenderHost renderHost, StartSurface startSurface,
             ViewGroup tabSwitcherScrimAnchor, ScrimCoordinator scrimCoordinator) {
         super(context, updateHost, renderHost);
-        mDummyLayoutTab = createLayoutTab(Tab.INVALID_TAB_ID, false);
-        mDummyLayoutTab.setShowToolbar(true);
         mStartSurface = startSurface;
         mStartSurface.setOnTabSelectingListener(this::onTabSelecting);
         mScrimAnchor = tabSwitcherScrimAnchor;
@@ -208,11 +203,6 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
         if (mSceneLayer != null) {
             mSceneLayer.setTabModelSelector(modelSelector);
         }
-    }
-
-    @Override
-    public LayoutTab getLayoutTab(int id) {
-        return mDummyLayoutTab;
     }
 
     @Override

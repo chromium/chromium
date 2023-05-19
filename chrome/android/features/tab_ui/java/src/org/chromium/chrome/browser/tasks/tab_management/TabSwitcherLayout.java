@@ -93,9 +93,6 @@ public class TabSwitcherLayout extends Layout {
     private final ScrimCoordinator mScrimCoordinator;
     private final TabSwitcher.TabListDelegate mGridTabListDelegate;
 
-    // Force the toolbar to finish its animation when this Layout finished hiding by setting
-    // setShowToolbar(true) on this dummy tab.
-    private final LayoutTab mDummyLayoutTab;
     private boolean mIsInitialized;
 
     // Only access this value via isTabGtsAnimationEnabled. Caches the value to avoid repeated
@@ -127,8 +124,6 @@ public class TabSwitcherLayout extends Layout {
             @Nullable ViewGroup tabSwitcherScrimAnchor,
             @Nullable ScrimCoordinator scrimCoordinator) {
         super(context, updateHost, renderHost);
-        mDummyLayoutTab = createLayoutTab(Tab.INVALID_TAB_ID, false);
-        mDummyLayoutTab.setShowToolbar(true);
         mTabSwitcher = tabSwitcher;
         mController = mTabSwitcher.getController();
         mTabSwitcher.setOnTabSelectingListener(this::onTabSelecting);
@@ -208,11 +203,6 @@ public class TabSwitcherLayout extends Layout {
         if (mSceneLayer != null) {
             mSceneLayer.setTabModelSelector(modelSelector);
         }
-    }
-
-    @Override
-    public LayoutTab getLayoutTab(int id) {
-        return mDummyLayoutTab;
     }
 
     @Override

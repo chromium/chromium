@@ -126,7 +126,7 @@ public class TabSwitcherTabletTest {
             }
 
             @Override
-            public void onStartedShowing(int layoutType, boolean showToolbar) {
+            public void onStartedShowing(int layoutType) {
                 if (layoutType != LayoutType.TAB_SWITCHER) {
                     return;
                 }

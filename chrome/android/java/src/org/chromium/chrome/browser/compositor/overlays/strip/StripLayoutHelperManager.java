@@ -208,14 +208,13 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
      */
     class TabSwitcherLayoutObserver implements LayoutStateObserver {
         @Override
-        public void onStartedShowing(@LayoutType int layoutType, boolean showToolbar) {
+        public void onStartedShowing(@LayoutType int layoutType) {
             if (layoutType != LayoutType.TAB_SWITCHER) return;
             mBrowserScrimShowing = true;
         }
 
         @Override
-        public void onStartedHiding(
-                @LayoutType int layoutType, boolean showToolbar, boolean delayAnimation) {
+        public void onStartedHiding(@LayoutType int layoutType) {
             if (layoutType != LayoutType.TAB_SWITCHER) return;
             mBrowserScrimShowing = false;
         }
