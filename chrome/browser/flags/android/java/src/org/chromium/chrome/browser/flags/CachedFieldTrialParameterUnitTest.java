@@ -97,7 +97,7 @@ public class CachedFieldTrialParameterUnitTest {
         MockitoAnnotations.initMocks(this);
 
         CachedFeatureFlags.resetFlagsForTesting();
-        CachedFeatureFlags.resetDiskForTesting();
+        CachedFlag.resetDiskForTesting();
 
         TestValues testValues = new TestValues();
 
@@ -122,7 +122,7 @@ public class CachedFieldTrialParameterUnitTest {
     @After
     public void tearDown() {
         CachedFeatureFlags.resetFlagsForTesting();
-        CachedFeatureFlags.resetDiskForTesting();
+        CachedFlag.resetDiskForTesting();
         FeatureList.setTestValues(null);
     }
 

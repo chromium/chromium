@@ -7092,17 +7092,6 @@
 
     <issue
         id="AssertionSideEffect"
-        message="Assertion condition has a side effect: sValuesReturned.boolValues.put(preferenceName, flag)"
-        errorLine1="            assert ChromeFeatureList.sInstantStart.isEnabled();"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/pseudotab/PseudoTab.java"
-            line="300"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="AssertionSideEffect"
         message="Assertion condition has a side effect: sHaveAccessNetworkState =&#xA;                    ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),&#xA;                            Manifest.permission.ACCESS_NETWORK_STATE, Process.myPid(),&#xA;                            Process.myUid())&#xA;                    == PackageManager.PERMISSION_GRANTED"
         errorLine1="        assert isSupported();"
         errorLine2="               ~~~~~~~~~~~~~">
