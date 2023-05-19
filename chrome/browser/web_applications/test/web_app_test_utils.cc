@@ -92,17 +92,25 @@ namespace {
 
 class RandomHelper {
  public:
-  explicit RandomHelper(const uint32_t seed)
+  explicit RandomHelper(const uint32_t seed, bool non_zero)
       :  // Seed of 0 and 1 generate the same sequence, so skip 0.
         generator_(seed + 1),
-        distribution_(0u, UINT32_MAX) {}
+        distribution_(0u, UINT32_MAX),
+        non_zero_(non_zero) {}
 
-  uint32_t next_uint() { return distribution_(generator_); }
+  uint32_t next_uint() {
+    return std::max(distribution_(generator_),
+                    static_cast<uint32_t>(non_zero_));
+  }
 
   // Return an unsigned int between 0 (inclusive) and bound (exclusive).
-  uint32_t next_uint(uint32_t bound) { return next_uint() % bound; }
+  uint32_t next_uint(uint32_t bound) {
+    return bound <= 1 ? 0
+                      : std::max(next_uint() % bound,
+                                 static_cast<uint32_t>(non_zero_));
+  }
 
-  bool next_bool() { return next_uint() & 1u; }
+  bool next_bool() { return non_zero_ || next_uint() & 1u; }
 
   template <typename T>
   T next_enum() {
@@ -115,6 +123,7 @@ class RandomHelper {
  private:
   std::default_random_engine generator_;
   std::uniform_int_distribution<uint32_t> distribution_;
+  bool non_zero_;
 };
 
 apps::FileHandlers CreateRandomFileHandlers(uint32_t suffix) {
@@ -363,7 +372,9 @@ std::vector<blink::Manifest::ImageResource> CreateRandomHomeTabIcons(
     // Icon sizes can be non square
     std::vector<gfx::Size> sizes;
     for (int j = random.next_uint(3) + 1; j > 0; --j) {
-      sizes.emplace_back(j * random.next_uint(200), j * random.next_uint(200));
+      int x = j * random.next_uint(200);
+      int y = j * random.next_uint(200);
+      sizes.emplace_back(x, y);
     }
     icon.sizes = std::move(sizes);
 
@@ -550,12 +561,10 @@ std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
   return web_app;
 }
 
-std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
-                                           const uint32_t seed,
-                                           bool allow_system_source) {
-  RandomHelper random(seed);
+std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
+  RandomHelper random(params.seed, params.non_zero);
 
-  const std::string seed_str = base::NumberToString(seed);
+  const std::string seed_str = base::NumberToString(params.seed);
   absl::optional<std::string> relative_manifest_id;
   if (random.next_bool()) {
     std::string path = "manifest_id_" + seed_str;
@@ -567,7 +576,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     }
     relative_manifest_id = path;
   }
-  const GURL scope = base_url.Resolve("scope" + seed_str + "/");
+  const GURL scope = params.base_url.Resolve("scope" + seed_str + "/");
   const GURL start_url = scope.Resolve("start" + seed_str);
   const AppId app_id = GenerateAppId(relative_manifest_id, start_url);
 
@@ -582,7 +591,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   std::vector<WebAppManagement::Type> management_types;
 
   // Generate all possible permutations of field values in a random way:
-  if (allow_system_source && random.next_bool()) {
+  if (params.allow_system_source && random.next_bool()) {
     app->AddSource(WebAppManagement::kSystem);
     management_types.push_back(WebAppManagement::kSystem);
   }
@@ -695,8 +704,8 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   std::vector<apps::IconInfo> manifest_icons(num_icons);
   for (int i = 0; i < num_icons; i++) {
     apps::IconInfo icon;
-    icon.url =
-        base_url.Resolve("/icon" + base::NumberToString(random.next_uint()));
+    icon.url = params.base_url.Resolve(
+        "/icon" + base::NumberToString(random.next_uint()));
     if (random.next_bool())
       icon.square_size_px = size;
 
@@ -763,7 +772,8 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
                                                     random));
   CHECK_EQ(app->shortcuts_menu_item_infos().size(),
            app->downloaded_shortcuts_menu_icons_sizes().size());
-  app->SetManifestUrl(base_url.Resolve("/manifest" + seed_str + ".json"));
+  app->SetManifestUrl(
+      params.base_url.Resolve("/manifest" + seed_str + ".json"));
 
   const int num_allowed_launch_protocols = random.next_uint(8);
   std::vector<std::string> allowed_launch_protocols(
@@ -815,7 +825,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   if (IsChromeOsDataMandatory()) {
     // Use a separate random generator for CrOS so the result is deterministic
     // across cros and non-cros builds.
-    RandomHelper cros_random(seed);
+    RandomHelper cros_random(params.seed, params.non_zero);
     auto chromeos_data = absl::make_optional<WebAppChromeOsData>();
     chromeos_data->show_in_launcher = cros_random.next_bool();
     chromeos_data->show_in_search = cros_random.next_bool();
@@ -836,10 +846,12 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     base::flat_set<std::string> additional_policy_ids;
     WebApp::ExternalManagementConfig config;
     if (random.next_bool()) {
-      install_urls.emplace(base_url.Resolve("installer1_" + seed_str + "/"));
+      install_urls.emplace(
+          params.base_url.Resolve("installer1_" + seed_str + "/"));
     }
     if (random.next_bool()) {
-      install_urls.emplace(base_url.Resolve("installer2_" + seed_str + "/"));
+      install_urls.emplace(
+          params.base_url.Resolve("installer2_" + seed_str + "/"));
     }
     if (random.next_bool()) {
       additional_policy_ids.emplace("policy_id_1_" + seed_str);

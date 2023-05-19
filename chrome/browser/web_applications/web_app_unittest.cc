@@ -305,8 +305,9 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
   const base::FilePath path_to_test_file =
       GetPathToTestFile("sample_web_app.json");
   const base::Value web_app_debug_value = WebAppToPlatformAgnosticDebugValue(
-      test::CreateRandomWebApp(GURL("https://example.com/"),
-                               /*seed=*/1234));
+      test::CreateRandomWebApp({.base_url = GURL("https://example.com/"),
+                                .seed = 1234,
+                                .non_zero = true}));
 
   if (IsRebaseline()) {
     LOG(INFO) << "Generating expectations sample web app unit test in "

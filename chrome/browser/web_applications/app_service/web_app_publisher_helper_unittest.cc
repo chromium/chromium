@@ -110,10 +110,10 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_Minimal) {
 }
 
 TEST_F(WebAppPublisherHelperTest, CreateWebApp_Random) {
-  for (int seed = 0; seed < 100; ++seed) {
+  for (uint32_t seed = 0; seed < 100; ++seed) {
     const GURL base_url("https://example.com/base_url");
     std::unique_ptr<WebApp> random_app =
-        test::CreateRandomWebApp(base_url, seed);
+        test::CreateRandomWebApp({base_url, seed});
 
     auto info = std::make_unique<WebAppInstallInfo>();
     info->title = base::UTF8ToUTF16(random_app->untranslated_name());
