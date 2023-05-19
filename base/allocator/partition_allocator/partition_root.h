@@ -246,6 +246,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     bool brp_enabled_;
 #if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
     bool mac11_malloc_size_hack_enabled_ = false;
+    size_t mac11_malloc_size_hack_usable_size_;
 #endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool use_configurable_pool;
@@ -366,7 +367,9 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   void DestructForTesting();
 
 #if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
-  void EnableMac11MallocSizeHackForTesting();
+  void EnableMac11MallocSizeHackIfNeeded(size_t ref_count_size);
+  void EnableMac11MallocSizeHackForTesting(size_t ref_count_size);
+  void InitMac11MallocSizeHackUsableSize(size_t ref_count_size);
 #endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
 
   // Public API
@@ -1688,7 +1691,8 @@ PartitionRoot<thread_safe>::GetUsableSizeWithMac11MallocSizeHack(void* ptr) {
   // Check |mac11_malloc_size_hack_enabled_| flag first as this doesn't
   // concern OS versions other than macOS 11.
   if (PA_UNLIKELY(root->flags.mac11_malloc_size_hack_enabled_ &&
-                  usable_size == internal::kMac11MallocSizeHackUsableSize)) {
+                  usable_size ==
+                      root->flags.mac11_malloc_size_hack_usable_size_)) {
     uintptr_t slot_start =
         internal::PartitionAllocGetSlotStartInBRPPool(UntagPtr(ptr));
     auto* ref_count = internal::PartitionRefCountPointer(slot_start);

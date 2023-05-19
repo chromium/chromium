@@ -3788,7 +3788,11 @@ TEST_P(PartitionAllocTest, GetUsableSizeNull) {
 }
 
 TEST_P(PartitionAllocTest, GetUsableSize) {
-  size_t delta = SystemPageSize() + 1;
+#if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
+  allocator.root()->EnableMac11MallocSizeHackForTesting(
+      GetParam().ref_count_size);
+#endif
+  size_t delta = 31;
   for (size_t size = 1; size <= kMinDirectMappedDownsize; size += delta) {
     void* ptr = allocator.root()->Alloc(size, "");
     EXPECT_TRUE(ptr);
@@ -3796,7 +3800,7 @@ TEST_P(PartitionAllocTest, GetUsableSize) {
     size_t usable_size_with_hack =
         PartitionRoot<ThreadSafe>::GetUsableSizeWithMac11MallocSizeHack(ptr);
 #if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
-    if (size != 32)
+    if (size != internal::kMac11MallocSizeHackRequestedSize)
 #endif
       EXPECT_EQ(usable_size_with_hack, usable_size);
     EXPECT_LE(size, usable_size);
@@ -3808,18 +3812,15 @@ TEST_P(PartitionAllocTest, GetUsableSize) {
 
 #if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
 TEST_P(PartitionAllocTest, GetUsableSizeWithMac11MallocSizeHack) {
-  // TODO(bartekn): Make the hack aware of inflated ref-count size and reenable.
-  if (GetParam().ref_count_size) {
-    GTEST_SKIP();
-  }
-
-  allocator.root()->EnableMac11MallocSizeHackForTesting();
+  allocator.root()->EnableMac11MallocSizeHackForTesting(
+      GetParam().ref_count_size);
   size_t size = internal::kMac11MallocSizeHackRequestedSize;
   void* ptr = allocator.root()->Alloc(size, "");
   size_t usable_size = PartitionRoot<ThreadSafe>::GetUsableSize(ptr);
   size_t usable_size_with_hack =
       PartitionRoot<ThreadSafe>::GetUsableSizeWithMac11MallocSizeHack(ptr);
-  EXPECT_EQ(usable_size, internal::kMac11MallocSizeHackUsableSize);
+  EXPECT_EQ(usable_size,
+            allocator.root()->flags.mac11_malloc_size_hack_usable_size_);
   EXPECT_EQ(usable_size_with_hack, size);
 
   allocator.root()->Free(ptr);
