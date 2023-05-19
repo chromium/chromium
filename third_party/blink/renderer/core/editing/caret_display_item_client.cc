@@ -272,7 +272,7 @@ void CaretDisplayItemClient::PaintCaret(
                                                     display_item_type))
       return;
     recorder.emplace(context, *this, display_item_type,
-                     ToEnclosingRect(drawing_rect));
+                     ToPixelSnappedRect(drawing_rect));
   }
 
   gfx::Rect paint_rect = ToPixelSnappedRect(drawing_rect);
