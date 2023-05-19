@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.multiwindow;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -473,7 +475,11 @@ public class MultiInstanceManagerApi31UnitTest {
                         mMultiWindowModeStateDispatcher, mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier, mMenuOrKeyboardActionController);
         multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
+        assertNull("TabModelSelectorTabModelObserver should be null.",
+                multiInstanceManager.getTabModelObserverForTesting());
         multiInstanceManager.onTabStateInitialized();
+        assertNotNull("TabModelSelectorTabModelObserver should not be null.",
+                multiInstanceManager.getTabModelObserverForTesting());
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
         triggerSelectTab(tabModelObserver, mTab1);
@@ -533,7 +539,11 @@ public class MultiInstanceManagerApi31UnitTest {
                         mMultiWindowModeStateDispatcher, mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier, mMenuOrKeyboardActionController);
         multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
+        assertNull("TabModelSelectorTabModelObserver should be null.",
+                multiInstanceManager.getTabModelObserverForTesting());
         multiInstanceManager.onTabStateInitialized();
+        assertNotNull("TabModelSelectorTabModelObserver should not be null.",
+                multiInstanceManager.getTabModelObserverForTesting());
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
         when(mTab1.isIncognito()).thenReturn(false);
@@ -601,7 +611,11 @@ public class MultiInstanceManagerApi31UnitTest {
                         mMultiWindowModeStateDispatcher, mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier, mMenuOrKeyboardActionController);
         multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
+        assertNull("TabModelSelectorTabModelObserver should be null.",
+                multiInstanceManager.getTabModelObserverForTesting());
         multiInstanceManager.onTabStateInitialized();
+        assertNotNull("TabModelSelectorTabModelObserver should not be null.",
+                multiInstanceManager.getTabModelObserverForTesting());
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
         triggerAddTab(tabModelObserver, mTab1);

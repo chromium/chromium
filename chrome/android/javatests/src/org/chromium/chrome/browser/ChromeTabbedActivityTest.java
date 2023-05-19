@@ -6,6 +6,7 @@ package org.chromium.chrome.browser;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.Browser;
 
 import androidx.test.filters.MediumTest;
@@ -27,6 +28,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -118,6 +120,30 @@ public class ChromeTabbedActivityTest {
         boolean animationsEnabled = TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> mActivity.getLayoutManager().animationsEnabled());
         Assert.assertEquals(animationsEnabled, DeviceClassManager.enableAnimations());
+    }
+
+    // Tests the fix for the regression reported in crbug.com/1444638.
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.S)
+    public void testTabModelSelectorObserverOnTabStateInitialized() {
+        // Get the original value of |mCreatedTabOnStartup|.
+        boolean createdTabOnStartup = mActivity.getCreatedTabOnStartupForTesting();
+
+        // Reset the values of |mCreatedTabOnStartup| and |MultiInstanceManager.mTabModelObserver|.
+        // This tab model selector observer should be registered in MultiInstanceManager on tab
+        // state initialization irrespective of the value of |mCreatedTabOnStartup|.
+        mActivity.setCreatedTabOnStartupForTesting(false);
+        mActivity.getMultiInstanceMangerForTesting().setTabModelObserverForTesting(null);
+
+        var tabModelSelectorObserver = mActivity.getTabModelSelectorObserverForTesting();
+        TestThreadUtils.runOnUiThreadBlocking(tabModelSelectorObserver::onTabStateInitialized);
+        Assert.assertNotNull(
+                "A TabModelSelectorTabModelObserver should be registered by MultiInstanceManager on tab state initialization.",
+                mActivity.getMultiInstanceMangerForTesting().getTabModelObserverForTesting());
+
+        // Restore the original value of |mCreatedTabOnStartup|.
+        mActivity.setCreatedTabOnStartupForTesting(createdTabOnStartup);
     }
 
     @Test
