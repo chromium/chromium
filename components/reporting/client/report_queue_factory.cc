@@ -15,6 +15,7 @@
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_provider.h"
 #include "components/reporting/util/backoff_settings.h"
+#include "components/reporting/util/rate_limiter_interface.h"
 #include "net/base/backoff_entry.h"
 
 #define LOG_WITH_STATUS(LEVEL, MESSAGE, STATUS) \
@@ -23,15 +24,18 @@
 namespace reporting {
 
 // static
-void ReportQueueFactory::Create(EventType event_type,
-                                Destination destination,
-                                SuccessCallback success_cb,
-                                int64_t reserved_space) {
+void ReportQueueFactory::Create(
+    EventType event_type,
+    Destination destination,
+    SuccessCallback success_cb,
+    std::unique_ptr<RateLimiterInterface> rate_limiter,
+    int64_t reserved_space) {
   DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
 
   auto config_result = ReportQueueConfiguration::Create(
       event_type, destination,
-      base::BindRepeating([]() { return Status::StatusOK(); }), reserved_space);
+      base::BindRepeating([]() { return Status::StatusOK(); }),
+      std::move(rate_limiter), reserved_space);
   if (!config_result.ok()) {
     LOG_WITH_STATUS(1, "ReportQueueConfiguration is invalid.", config_result);
     return;
@@ -48,14 +52,17 @@ void ReportQueueFactory::Create(EventType event_type,
 
 // static
 std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>
-ReportQueueFactory::CreateSpeculativeReportQueue(EventType event_type,
-                                                 Destination destination,
-                                                 int64_t reserved_space) {
+ReportQueueFactory::CreateSpeculativeReportQueue(
+    EventType event_type,
+    Destination destination,
+    std::unique_ptr<RateLimiterInterface> rate_limiter,
+    int64_t reserved_space) {
   DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
 
   auto config_result = ReportQueueConfiguration::Create(
       event_type, destination,
-      base::BindRepeating([]() { return Status::StatusOK(); }), reserved_space);
+      base::BindRepeating([]() { return Status::StatusOK(); }),
+      std::move(rate_limiter), reserved_space);
   if (!config_result.ok()) {
     DVLOG(1)
         << "Cannot initialize report queue. Invalid ReportQueueConfiguration: "

@@ -15,6 +15,7 @@
 #include "components/reporting/client/mock_report_queue_provider.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_provider_test_helper.h"
+#include "components/reporting/util/rate_limiter_interface.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,6 +28,11 @@ using ::testing::NotNull;
 using ::testing::Return;
 
 namespace reporting {
+
+class MockRateLimiter : public RateLimiterInterface {
+ public:
+  MOCK_METHOD(bool, Acquire, (size_t event_size), (override));
+};
 
 class MockReportQueueConsumer {
  public:
@@ -98,12 +104,27 @@ TEST_F(ReportQueueFactoryTest, CreateQueueWithInvalidConfig) {
   EXPECT_FALSE(consumer_->GetReportQueue());
 }
 
+TEST_F(ReportQueueFactoryTest, CreateAndGetQueueWithRateLimiter) {
+  EXPECT_FALSE(consumer_->GetReportQueue());
+  {
+    test::TestCallbackAutoWaiter set_waiter;
+    ReportQueueFactory::Create(EventType::kDevice, destination_,
+                               consumer_->GetReportQueueSetter(&set_waiter),
+                               std::make_unique<MockRateLimiter>());
+    EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(1);
+    provider_->ExpectCreateNewQueueAndReturnNewMockQueue(1);
+  }
+  // We expect the report queue to be existing in the consumer.
+  EXPECT_TRUE(consumer_->GetReportQueue());
+}
+
 TEST_F(ReportQueueFactoryTest, CreateAndGetQueueWithValidReservedSpace) {
   EXPECT_FALSE(consumer_->GetReportQueue());
   {
     test::TestCallbackAutoWaiter set_waiter;
     ReportQueueFactory::Create(EventType::kDevice, destination_,
                                consumer_->GetReportQueueSetter(&set_waiter),
+                               /*rate_limiter=*/nullptr,
                                /*reserved_space=*/12345L);
     EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(1);
     provider_->ExpectCreateNewQueueAndReturnNewMockQueue(1);
@@ -117,6 +138,7 @@ TEST_F(ReportQueueFactoryTest, CreateQueueWithInvalidReservedSpace) {
   EXPECT_FALSE(consumer_->GetReportQueue());
   ReportQueueFactory::Create(EventType::kDevice, destination_,
                              consumer_->GetReportQueueSetter(nullptr),
+                             /*rate_limiter=*/nullptr,
                              /*reserved_space=*/-1L);
   // Expect failure before it gets to the report queue provider
   EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(0);
@@ -137,6 +159,7 @@ TEST_F(ReportQueueFactoryTest, CreateSpeculativeQueueWithValidReservedSpace) {
   provider_->ExpectCreateNewSpeculativeQueueAndReturnNewMockQueue(1);
   const auto report_queue = ReportQueueFactory::CreateSpeculativeReportQueue(
       EventType::kDevice, destination_,
+      /*rate_limiter=*/nullptr,
       /*reserved_space=*/12345L);
   EXPECT_THAT(report_queue, NotNull());
 }
@@ -144,6 +167,7 @@ TEST_F(ReportQueueFactoryTest, CreateSpeculativeQueueWithValidReservedSpace) {
 TEST_F(ReportQueueFactoryTest, CreateSpeculativeQueueWithInvalidReservedSpace) {
   const auto report_queue = ReportQueueFactory::CreateSpeculativeReportQueue(
       EventType::kDevice, destination_,
+      /*rate_limiter=*/nullptr,
       /*reserved_space=*/-1L);
   EXPECT_THAT(report_queue, IsNull());
 }

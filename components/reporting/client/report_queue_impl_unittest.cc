@@ -20,6 +20,7 @@
 #include "components/reporting/proto/test.pb.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage/test_storage_module.h"
+#include "components/reporting/util/rate_limiter_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -154,8 +155,9 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecord) {
 TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithReservedSpace) {
   static constexpr int64_t kReservedSpace = 12345L;
   StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
-      ReportQueueConfiguration::Create(dm_token_, destination_,
-                                       policy_check_callback_, kReservedSpace);
+      ReportQueueConfiguration::Create(
+          dm_token_, destination_, policy_check_callback_,
+          /*rate_limiter=*/nullptr, kReservedSpace);
 
   ASSERT_OK(config_result) << config_result.status();
 
@@ -305,8 +307,9 @@ TEST_F(ReportQueueImplTest,
        SuccessfulSpeculativeStringRecordWithReservedSpace) {
   static constexpr int64_t kReservedSpace = 12345L;
   StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
-      ReportQueueConfiguration::Create(dm_token_, destination_,
-                                       policy_check_callback_, kReservedSpace);
+      ReportQueueConfiguration::Create(
+          dm_token_, destination_, policy_check_callback_,
+          /*rate_limiter=*/nullptr, kReservedSpace);
 
   ASSERT_OK(config_result) << config_result.status();
 

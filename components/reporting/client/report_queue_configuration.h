@@ -11,8 +11,10 @@
 
 #include "base/functional/callback.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/util/rate_limiter_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
+#include "components/reporting/util/wrapped_rate_limiter.h"
 
 namespace reporting {
 
@@ -55,6 +57,7 @@ class ReportQueueConfiguration {
       base::StringPiece dm_token,
       Destination destination,
       PolicyCheckCallback policy_check_callback,
+      std::unique_ptr<RateLimiterInterface> rate_limiter = nullptr,
       int64_t reserved_space = 0L);
 
   // Factory for generating a ReportQueueConfiguration.
@@ -73,6 +76,7 @@ class ReportQueueConfiguration {
       EventType event_type,
       Destination destination,
       PolicyCheckCallback policy_check_callback,
+      std::unique_ptr<RateLimiterInterface> rate_limiter = nullptr,
       int64_t reserved_space = 0L);
 
   Destination destination() const { return destination_; }
@@ -80,6 +84,13 @@ class ReportQueueConfiguration {
   std::string dm_token() { return dm_token_; }
 
   EventType event_type() const { return event_type_; }
+
+  // Returns a repeating callback that checks whether an event of the given size
+  // is allowed by the attached rate limiter. If there is no rate limiter,
+  // allowed always.
+  WrappedRateLimiter::AsyncAcquireCb is_event_allowed_cb() const {
+    return is_event_allowed_cb_;
+  }
 
   int64_t reserved_space() const { return reserved_space_; }
 
@@ -93,6 +104,7 @@ class ReportQueueConfiguration {
   Status SetEventType(EventType event_type);
   Status SetDestination(Destination destination);
   Status SetPolicyCheckCallback(PolicyCheckCallback policy_check_callback);
+  Status SetRateLimiter(std::unique_ptr<RateLimiterInterface> rate_limiter);
   Status SetReservedSpace(int64_t reserved_space);
 
   std::string dm_token_;
@@ -100,6 +112,10 @@ class ReportQueueConfiguration {
   Destination destination_;
 
   PolicyCheckCallback policy_check_callback_;
+
+  WrappedRateLimiter::SmartPtr wrapped_rate_limiter_{
+      nullptr, base::OnTaskRunnerDeleter(nullptr)};
+  WrappedRateLimiter::AsyncAcquireCb is_event_allowed_cb_;
 
   int64_t reserved_space_ = 0L;  // By default queues are not opportunistic.
 };
