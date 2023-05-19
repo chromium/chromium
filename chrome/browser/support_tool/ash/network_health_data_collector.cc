@@ -75,7 +75,8 @@ std::string RedactNetworkNames(const std::string& network_health_data) {
       redacted += "Name: N/A\nGUID: N/A\n";
       continue;
     }
-    std::string replacement = ash::NetworkGuidId(matched_guid.ToString());
+    std::string replacement = ash::NetworkGuidId(
+        std::string(matched_guid.data(), matched_guid.size()));
     redacted += base::StringPrintf("Name: %s\nGUID: %s\n", replacement.c_str(),
                                    replacement.c_str());
   }
