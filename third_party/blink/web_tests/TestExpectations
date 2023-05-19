@@ -2898,6 +2898,10 @@ crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.html [ Failur
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-backgrounds/color-mix-currentcolor-outline-repaint-parent.html [ Failure Pass ]
+crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/color-mix-currentcolor-outline-repaint-parent.html [ Failure Pass ]
+crbug.com/626703 external/wpt/css/css-backgrounds/color-mix-currentcolor-background-repaint-parent.html [ Failure Pass ]
+crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/color-mix-currentcolor-background-repaint-parent.html [ Failure Pass ]
 crbug.com/626703 [ Mac13 ] virtual/threaded/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/svg/pservers/reftests/pattern-opacity-01.svg [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/svg/pservers/reftests/pattern-opacity-01.svg [ Failure ]
@@ -6773,8 +6777,8 @@ crbug.com/1446026 [ Mac13 ] webaudio/AudioParam/worklet-warnings.html [ Crash Fa
 crbug.com/1446026 [ Mac13 ] webaudio/AudioWorkletProcessor/invalid-audioworkletprocessor-constructor.html [ Crash Failure ]
 crbug.com/1446026 [ Mac13 ] webaudio/internals/audioworkletnode-gc.https.html [ Crash Failure ]
 crbug.com/1446026 [ Mac13 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Crash Failure ]
-crbug.com/1446037 [ Mac13 Debug ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Timeout ]
-crbug.com/1446037 [ Mac13 Debug ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Timeout ]
+crbug.com/1446037 [ Debug Mac13 ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Timeout ]
+crbug.com/1446037 [ Debug Mac13 ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Timeout ]
 crbug.com/1446037 [ Mac13 ] external/wpt/html/semantics/embedded-content/the-canvas-element/security.pattern.fillStyle.sub.html [ Failure Pass ]
 crbug.com/1446038 [ Mac13 ] external/wpt/webaudio/idlharness.https.window.html [ Crash Failure ]
 crbug.com/1446038 [ Mac13 ] external/wpt/webaudio/the-audio-api/the-audiobuffersourcenode-interface/active-processing.https.html [ Crash Failure ]
