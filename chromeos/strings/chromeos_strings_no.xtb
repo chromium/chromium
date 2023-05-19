@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Slå av mørkt tema</translation>
 <translation id="1807246157184219062">Lys</translation>
 <translation id="1827738518074806965">Kunstgalleri</translation>
+<translation id="1836553715834333258">Systemfarge</translation>
 <translation id="1838374766361614909">Fjern søket</translation>
+<translation id="1840474674287087346">Skrivebordsfarge</translation>
 <translation id="1851218745569890714">Videokonferanser</translation>
 <translation id="1852934301711881861">Installer ChromeOS Flex</translation>
 <translation id="1856388568474281774">Nedoverpil</translation>
@@ -421,6 +423,7 @@
 <translation id="4454245904991689773">Skann til</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Kunne ikke pinge gatewayen for ikke-standardnettverket</translation>
+<translation id="4500966230243561393">Grensesnittfarge</translation>
 <translation id="4503223151711056411">Venstrepil</translation>
 <translation id="4507392511610824664">lysstyrke opp</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -499,6 +502,7 @@
 <translation id="500920857929044050">Stans testen</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Vis bilder, tidspunkt, vær og medieinfo når skjermen er inaktiv.</translation>
+<translation id="5035083460461104704">Temafarge</translation>
 <translation id="5038292761217083259">tastatur med flere farger</translation>
 <translation id="5039804452771397117">Tillat</translation>
 <translation id="5049856988445523908">SIM-kortet er låst (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +818,7 @@
 <translation id="7618774594543487847">Nøytral</translation>
 <translation id="7620771111601174153">Finn ut mer i Brukerstøtte</translation>
 <translation id="763165478673169849">Forrige tidspunkt for tilbakestilling</translation>
+<translation id="7633068090678117093">Bakgrunnsbilde</translation>
 <translation id="7648838807254605802">Høy HTTPS-tidsforsinkelse</translation>
 <translation id="765159867434478292">Del</translation>
 <translation id="7656388927906093505">Enheten er en mus.</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">Motpart</translation>
 <translation id="8930622219860340959">Trådløs</translation>
 <translation id="8936793075252196307">Klient-IP-adresse</translation>
+<translation id="8944651180182756621">Appoversiktfarge</translation>
 <translation id="894617464444543719">Enheten er en telefon.</translation>
 <translation id="8957423540740801332">høyre</translation>
 <translation id="8968751544471797276">Ladefrekvens</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">Kjør minnetest</translation>
 <translation id="9161276708550942948">mellomrom</translation>
 <translation id="9173638680043580060">Mindre enn et minutt igjen</translation>
+<translation id="9174334653006917325">UI-farge</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Tastaturet kan matche bakgrunnen automatisk</translation>
 <translation id="9189000703457422362">Kan ikke koble til dette nettverket med APN-er som registreres automatisk. Kontakt mobiloperatøren din for å få mer informasjon.</translation>

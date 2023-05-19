@@ -49,6 +49,7 @@
 <translation id="3650632991272923014">Карыстальнік <ph name="USER_EMAIL1" />, папрацаваўшы ў браўзеры Chromium, пакінуў на гэтай прыладзе закладкі, паролі і іншыя налады.</translation>
 <translation id="372658070733623520">Каб выкарыстоўваць і захоўваць даныя Chromium ва Уліковым запісе Google, пацвердзіце сваю асобу.</translation>
 <translation id="3805899903892079518">Chromium не мае доступу да вашых фота і відэа. Даць доступ можна ў меню iOS "Налады &gt; Прыватнасць &gt; Фота".</translation>
+<translation id="3955621079070267756">Адкрываць Chromium з любой праграмы</translation>
 <translation id="4043291146360695975">Паролі захоўваюцца ў Менеджары пароляў толькі на гэтай прыладзе.</translation>
 <translation id="4099085513035183040">Не падтрымліваецца ў Chromium Beta</translation>
 <translation id="4432744876818348753">Увайдзіце ва ўліковы запіс, каб карыстацца ўсімі магчымасцямі Chromium.</translation>
@@ -143,5 +144,6 @@
 <translation id="9089354809943900324">Chromium састарэў</translation>
 <translation id="9110075932708282655">Выкарыстоўвайце Chromium стандартна</translation>
 <translation id="921174536258924340">Браўзеру Chromium не ўдалося праверыць усе паролі. Паўтарыце спробу заўтра або <ph name="BEGIN_LINK" />праверце паролі ва Уліковым запісе Google<ph name="END_LINK" />.</translation>
+<translation id="971488683725792095">Аўтаматычна выкарыстоўваць Chromium, калі вы націскаеце на спасылкі ў паведамленнях, дакументах або іншых праграмах.</translation>
 <translation id="985602178874221306">Аўтары Chromium</translation>
 </translationbundle>

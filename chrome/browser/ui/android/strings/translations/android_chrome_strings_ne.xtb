@@ -1122,6 +1122,7 @@
 <translation id="7029809446516969842">पासवर्डहरू</translation>
 <translation id="7030304022046916278">यो सुविधाले URL सुरक्षित छ कि छैन भनी जाँच गर्नका निम्ति URL हरू Safe Browsing मा पठाउँछ</translation>
 <translation id="7030585293819777123">तपाईंको पछिल्लो कार्य सुचारु गर्ने हो?</translation>
+<translation id="7035701931849773472">अन्य विकल्पहरू</translation>
 <translation id="7037830628447527439">आफ्नो Google खाता प्रयोग गरी Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">फोटोका विवरणहरू प्राप्त गर्न चाहनुहुन्छ?</translation>
@@ -1344,6 +1345,7 @@
 <translation id="8110024788458304985">Chrome का सुविधाको गुणस्तर र यसको पर्फर्मेन्स सुधार्न मद्दत गर्नुहोस्</translation>
 <translation id="8110087112193408731">तपाईंले Chrome मा गर्नुभएका क्रियाकलाप डिजिटल वेलबिइङमा देखाउने हो?</translation>
 <translation id="8118117428362942925">मद्दत चाहिएका खण्डमा आफ्ना अभिभावक (<ph name="PARENT_NAME" />) लाई अनुरोध गर्नुहोस्</translation>
+<translation id="8124758083429256800">Chrome र Chrome <ph name="ERROR_DESCRIPTION" /> मा तपाईंका सेभ गरिएका पासवर्डका सूचीहरू संस्करण १२१ देखि मर्ज हुने छन्। तपाईं आफ्ना सेभ गरिएका सबै पासवर्डहरू दुवै एपमा स्वतः भर्न सक्नु हुने छ।</translation>
 <translation id="8127542551745560481">गृहपृष्ठ सम्पदान गर्नुहोस्</translation>
 <translation id="8130309322784422030">तपाईंले भण्डारण गर्नुभएको युजरनेम र पासवर्ड पुरानो हुन सक्छ</translation>
 <translation id="813082847718468539">साइट जानकारी हेर्नुहोस्</translation>

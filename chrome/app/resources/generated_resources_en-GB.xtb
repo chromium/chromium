@@ -528,6 +528,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="146000042969587795">This frame was blocked because it contains some insecure content.</translation>
 <translation id="1461041542809785877">Performance</translation>
 <translation id="1461177659295855031">Move to bookmarks bar folder</translation>
+<translation id="1461288887896722288">You've just signed in to a managed account: creating a new managed profile will allow you to access some resources linked to that account.</translation>
 <translation id="146219525117638703">ONC State</translation>
 <translation id="146220085323579959">Internet disconnected. Please check your internet connection and try again.</translation>
 <translation id="1462850958694534228">Review icon update</translation>
@@ -1892,6 +1893,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2575407791320728464">Invalid URL. Make sure that it is formatted properly.</translation>
 <translation id="2575441894380764255">Not allowed to show intrusive or misleading ads</translation>
 <translation id="2575713839157415345">{YEARS,plural, =1{This device will be saved for one year and you can connect without a code next time. This is set by your administrator.}other{This device will be saved for {YEARS} years and you can connect without a code next time. This is set by your administrator.}}</translation>
+<translation id="2577446426265992344">without Omnibox</translation>
 <translation id="257779572837908839">Set up as Chromebox for meetings</translation>
 <translation id="2579309488038515659">Hotspot enable</translation>
 <translation id="2579596474754516455">Scan PDF images to convert text for screen reader when necessary</translation>
@@ -6589,6 +6591,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6787097042755590313">Other Tab</translation>
 <translation id="6787839852456839824">Keyboard shortcuts</translation>
 <translation id="6788210894632713004">Unpacked extension</translation>
+<translation id="678939393857169499">Enables the new desktop design.</translation>
 <translation id="6789592661892473991">Split horizontal</translation>
 <translation id="6789834167207639931">Enter your Google Account password again on the next screen to finish recovery</translation>
 <translation id="6790428901817661496">Play</translation>
@@ -7386,6 +7389,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7481358317100446445">Ready</translation>
 <translation id="748138892655239008">Certificate Basic Constraints</translation>
+<translation id="7483145199632798061">Chrome refresh 2023</translation>
 <translation id="7484645889979462775">Never for this site</translation>
 <translation id="7487141338393529395">Turn on enhanced spell check</translation>
 <translation id="7487969577036436319">No components are installed</translation>

@@ -1196,9 +1196,11 @@
 <translation id="3927932062596804919">Rədd edin</translation>
 <translation id="393316646445601645">İnternet və telekom</translation>
 <translation id="3939773374150895049">CVC əvəzinə WebAuthn istifadə edilsin?</translation>
+<translation id="3941630233824954464">Məcburi təkrar identifikasiyanı aktivləşdirin</translation>
 <translation id="3943857333388298514">Yapışdırın.</translation>
 <translation id="3946209740501886391">Həmişə bu saytda sual verin</translation>
 <translation id="3947595700203588284">Saytlar MIDI cihazlarına qoşulmaq üçün icazə istəyə bilər</translation>
+<translation id="3948588869002647271">Bu tətbiq çatışmır, yaxud zədələnib</translation>
 <translation id="3949571496842715403">Server bunun <ph name="DOMAIN" /> olduğunu sübut edə bilmir; onun təhlükəsizlik sertifikatı Subyektiv Alternativ Adı göstərmir. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının blok edilməsi səbəb ola bilər.</translation>
 <translation id="3949601375789751990">Axtarış tarixçəsi burada görünür</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2199,6 +2201,7 @@
 <translation id="6370022303958842211">Hesaba giriş (uğursuz giriş səbəbləri daxil olmaqla), çıxışlar, kilidlər və kilidi açmaq kimi cihaza giriş əməliyyatları</translation>
 <translation id="6374469231428023295">Yenidən cəhd edin</translation>
 <translation id="6374865374745447009">pəncərə idarəetməsi</translation>
+<translation id="6376881782310775282">Bu tətbiqin tərtibat serveri ilə əlaqə saxlamaq olmur</translation>
 <translation id="6377268785556383139">"<ph name="SEARCH_TEXT" />" üçün 1 nəticə</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Potensial ödəniş tutula bilər.</translation>
@@ -3007,6 +3010,7 @@
 <translation id="8286799286781881307">Administratorunuz tərəfindən icazə verilən tətbiqlər cihazınıza əlavə edilmiş bütün ekranları çəkə bilər. Bu məlumat lokal olaraq işlənə və ya təşkilatınızın serverlərinə yüklənə bilər.</translation>
 <translation id="8288807391153049143">Sertifikatı göstərin</translation>
 <translation id="8289355894181816810">Bunun mənasını bilmirsinizsə, şəbəkə administratorunuz ilə əlaqə saxlayın.</translation>
+<translation id="8292520987784410870">Həmişə doğrulansın?</translation>
 <translation id="8293206222192510085">Əlfəcin əlavə edin</translation>
 <translation id="829335040383910391">səs</translation>
 <translation id="8294431847097064396">Mənbə</translation>
@@ -3106,6 +3110,7 @@
 <translation id="854892890027593466">Zərf C6/C5</translation>
 <translation id="8553387990086529628">Turistik məkanlar</translation>
 <translation id="8554010658308662631">Ardını yükləyin</translation>
+<translation id="8554802735558319842">Paylaşılan cihazlarda təhlükəsizliyi artırmaq üçün avto doldurma ilə hər ödənişdə doğrulamanı aktiv edin.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{İcazəni sıfırlayın}other{İcazələri sıfırlayın}}</translation>
 <translation id="8555010941760982128">Ödəniş zamanı bu koddan istifadə edin</translation>
 <translation id="8557066899867184262">CVC kartın arxasında yerləşir.</translation>
@@ -3294,6 +3299,7 @@
 <translation id="9048662076076074925">24 x 36 düym</translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" /> domeninə giriş cəhdi etdiniz, amma server yanlış sertifikat təqdim etdi.</translation>
 <translation id="9050666287014529139">Parol ifadəsi</translation>
+<translation id="9053840549256861041">"Reklam dəyərləndirməsi" adlı yeni reklam məxfiliyi funksiyasını işə salırıq. Reklam performansını dəyərləndirmək üçün Chrome reklamın göstərildiyi vaxt kimi məhdud məlumatları saytlar arasında paylaşır.</translation>
 <translation id="9056953843249698117">Mağaza</translation>
 <translation id="9062620674789239642">Köçürülmüş, redaktə edilmiş və ya silinmiş ola bilər.</translation>
 <translation id="9063398205799684336">Zərf Kaku 2</translation>

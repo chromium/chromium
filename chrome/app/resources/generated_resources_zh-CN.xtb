@@ -5,6 +5,7 @@
 <translation id="1002085272681738789">标签页重新变为活动状态</translation>
 <translation id="1003088604756913841">在<ph name="APP" />的新窗口中打开链接</translation>
 <translation id="100323615638474026">USB 设备 (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="1003355351496161312">Google 安全浏览</translation>
 <translation id="1004218526896219317">有权访问的网站</translation>
 <translation id="1005274289863221750">使用您的麦克风和摄像头</translation>
 <translation id="1005333234656240382">启用 ADB 调试？</translation>
@@ -897,6 +898,7 @@
 <translation id="1769104665586091481">在新窗口中打开链接(&amp;W)</translation>
 <translation id="1770407692401984718">将图片拖到此处，或者</translation>
 <translation id="177053719077591686">将 Android 应用备份到 Google 云端硬盘。</translation>
+<translation id="1771075623623424448">想查看浏览器设备日志页面？请访问 <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />。</translation>
 <translation id="177336675152937177">托管应用数据</translation>
 <translation id="1776712937009046120">添加用户</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
@@ -1677,6 +1679,15 @@
 <translation id="2422125132043002186">已取消 Linux 恢复</translation>
 <translation id="2423578206845792524">图片另存为(&amp;V)...</translation>
 <translation id="2424424966051154874">{0,plural, =1{访客}other{访客 (#)}}</translation>
+<translation id="242684489663276773">此操作将会：
+          <ph name="LINE_BREAKS" />
+           • 重置 Chrome 中的某些设置和快捷键
+           <ph name="LINE_BREAK" />
+           • 停用扩展程序
+           <ph name="LINE_BREAK" />
+           • 删除 Cookie 和其他临时网站数据
+            <ph name="LINE_BREAKS" />
+           书签、历史记录和已存密码不受影响。</translation>
 <translation id="2428510569851653187">请说明此标签页崩溃时您在做什么</translation>
 <translation id="2428939361789119025">关闭 Wi-Fi</translation>
 <translation id="2428978615149723410">这些购物车</translation>
@@ -4447,6 +4458,7 @@
 <translation id="4876895919560854374">将屏幕锁定和解锁</translation>
 <translation id="4877276003880815204">检查元素</translation>
 <translation id="4877652723592270843">您想为 ChromeOS Flex 启用 ChromeVox（内置屏幕阅读器）吗？如要启用，请同时按住两个音量键 5 秒钟。</translation>
+<translation id="4878261017150799673">让网站保持活跃状态</translation>
 <translation id="4878634973244289103">无法发送反馈。请稍后重试。</translation>
 <translation id="4878653975845355462">您的管理员已关闭自定义背景</translation>
 <translation id="4878718769565915065">未能向此安全密钥添加指纹</translation>
@@ -5234,6 +5246,9 @@
 <translation id="5602765853043467355">清除此设备上的书签、历史记录、密码等信息</translation>
 <translation id="5605758115928394442">系统向您的手机发送了一条通知，以确认您的身份。</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{这个扩展程序已被屏蔽}other{这些扩展程序已被屏蔽}}</translation>
+<translation id="560743070587960985">此文件可能是病毒或恶意软件。
+
+您可将它发送给 Google 以检查它是否安全。扫描通常需要几秒钟的时间。</translation>
 <translation id="560834977503641186">Wi-Fi 同步，了解详情</translation>
 <translation id="5608580678041221894">按以下键可调整或移动剪裁区域</translation>
 <translation id="5609231933459083978">该应用似乎无效。</translation>
@@ -5968,6 +5983,7 @@
 <translation id="6254892857036829079">完美</translation>
 <translation id="6257602895346497974">开启同步功能…</translation>
 <translation id="62586649943626337">使用标签页分组整理标签页</translation>
+<translation id="6260092874648348841">让网站保持活跃状态</translation>
 <translation id="6262371516389954471">您的备份内容将上传到 Google 并使用您的 Google 帐号密码进行加密。</translation>
 <translation id="6263082573641595914">Microsoft CA 版本</translation>
 <translation id="6263284346895336537">非关键</translation>
@@ -7505,6 +7521,7 @@
 <translation id="7634280112532283638">垃圾内容和欺诈行为削减</translation>
 <translation id="7634337648687970851">目前不支持本地数据恢复。</translation>
 <translation id="7634566076839829401">出了点问题，请重试。</translation>
+<translation id="763472884969134151">已由 <ph name="LINK" />完成分析</translation>
 <translation id="7635048370253485243">已被您的管理员固定</translation>
 <translation id="7635711411613274199">您在浏览时是否会看到个性化广告取决于此设置、<ph name="BEGIN_LINK1" />广告主题<ph name="LINK_END1" />、您的 <ph name="BEGIN_LINK2" />Cookie 设置<ph name="LINK_END2" />，以及您正查看的网站是否会展示个性化广告</translation>
 <translation id="7636919061354591437">在此设备上安装</translation>
@@ -8184,6 +8201,7 @@
 <translation id="8195737548602430447">自动将字幕翻译成目标语言。</translation>
 <translation id="8197673340773315084">添加一个名称或标签，例如“工作”或“个人”</translation>
 <translation id="8198456017687137612">正在投放标签页</translation>
+<translation id="8198457270656084773">想查看系统设备日志页面？请访问 <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />。</translation>
 <translation id="8198511718495409170">若要将更新后的“<ph name="EXTENSION_NAME" />”相关设置应用到此网站，请重新加载此页面</translation>
 <translation id="8199300056570174101">网络（服务）和设备属性</translation>
 <translation id="8200772114523450471">继续</translation>

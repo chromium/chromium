@@ -64,6 +64,7 @@
 <translation id="1476467821656042872">Toto zařízení je spravováno doménou <ph name="MANAGER" />, která také může sledovat vaši aktivitu.</translation>
 <translation id="1478594628797167447">Skener</translation>
 <translation id="1483493594462132177">Odeslat</translation>
+<translation id="1488850966314959671">K této síti se nelze připojit pomocí žádných povolených vlastních APN. Další informace vám sdělí mobilní operátor.</translation>
 <translation id="1491076385728777984">Aktualizace firmwaru v zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">zvýšit hlasitost</translation>
 <translation id="1499900233129743732">Tohoto uživatele spravuje doména <ph name="MANAGER" />, která také může vzdáleně spravovat nastavení a sledovat jeho aktivitu.</translation>
@@ -563,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Naskenovat znovu</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">Tento APN nelze deaktivovat ani odstranit. Je třeba deaktivovat nebo odstranit aktivované připojené APN.</translation>
 <translation id="5600027863942488546">Klávesa <ph name="KEY_NAME" /> byla vyzkoušena</translation>
 <translation id="5620281292257375798">Pouze pro interní použití</translation>
 <translation id="5649768706273821470">Poslechnout si</translation>
@@ -1012,6 +1014,7 @@
 <translation id="9173638680043580060">Zbývá méně než minuta</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Klávesnice může automaticky odpovídat tapetě</translation>
+<translation id="9189000703457422362">K této síti se pomocí automaticky zjištěných APN nelze připojit. Další informace vám sdělí mobilní operátor.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Z aplikací pro Android nelze kontaktovat bránu</translation>
 <translation id="9211490828691860325">Všechny plochy</translation>

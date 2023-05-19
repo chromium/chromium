@@ -5,6 +5,7 @@
 <translation id="1002085272681738789">यो ट्याब फेरि सक्रिय भएको छ</translation>
 <translation id="1003088604756913841">लिंकलाई नयाँ <ph name="APP" /> विन्डोमा खोल्नुहोस्</translation>
 <translation id="100323615638474026">USB डिभाइस (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="1003355351496161312">Google सुरक्षित ब्राउजिङ</translation>
 <translation id="1004218526896219317">पहुँच राख्न सक्ने साइटहरू</translation>
 <translation id="1005274289863221750">आफ्नो माइक्रोफोन र क्यामेरा प्रयोग गर्नुहोस्</translation>
 <translation id="1005333234656240382">ADB डिबग प्रक्रिया सक्षम पार्ने हो?</translation>
@@ -899,6 +900,7 @@
 <translation id="1769104665586091481">लिङ्कलाई नयाँ &amp;विन्डोमा खोल्नुहोस्</translation>
 <translation id="1770407692401984718">कुनै फोटो ड्रयाग गरेर यहाँ ड्रप गर्नुहोस् वा</translation>
 <translation id="177053719077591686">Android एपहरू Google Drive मा ब्याकअप गर्नुहोस्।</translation>
+<translation id="1771075623623424448">ब्राउजरसम्बन्धी जानकारी भएको डिभाइसको लग पेज खोज्दै हुनुहुन्छ? <ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" /> मा जानुहोस्।</translation>
 <translation id="177336675152937177">होस्ट गरिएको एप लगत</translation>
 <translation id="1776712937009046120">प्रयोगकर्ता थप्नुहोस्</translation>
 <translation id="1776883657531386793"><ph name="OID" />: <ph name="INFO" /></translation>
@@ -1681,6 +1683,15 @@
 <translation id="2422125132043002186">Linux को पुनर्स्थापना रद्द गरियो</translation>
 <translation id="2423578206845792524">छविलाई यस रूपमा ब&amp;चत गर्नुहोस्...</translation>
 <translation id="2424424966051154874">{0,plural, =1{अतिथि}other{अतिथि (#)}}</translation>
+<translation id="242684489663276773">तपाईंले यसो गर्नुभयो भने:
+          <ph name="LINE_BREAKS" />
+           • Chrome का केही सेटिङ तथा Chrome सर्टकटहरू रिसेट हुने छन्
+           <ph name="LINE_BREAK" />
+           • एक्स्टेन्सनहरू अफ हुने छन्
+           <ph name="LINE_BREAK" />
+           • कुकी तथा साइटका अन्य अस्थायी डेटा मेटिने छन्
+            <ph name="LINE_BREAKS" />
+           बुकमार्क, हिस्ट्री तथा सेभ गरिएका पासवर्डहरू प्रभावित हुने छैनन्।</translation>
 <translation id="2428510569851653187">ट्याब क्र्यास भएको बेला तपाईं के गर्दै हुनुहुन्थ्यो भनी वर्णन दिनुहोस्</translation>
 <translation id="2428939361789119025">WiFi निष्क्रिय पार्नुहोस्</translation>
 <translation id="2428978615149723410">यी कार्टहरू</translation>
@@ -4455,6 +4466,7 @@
 <translation id="4876895919560854374">स्क्रिनलाई लक र अनलक गर्नुहोस्</translation>
 <translation id="4877276003880815204">तत्त्वहरूको निरीक्षण गर्नुहोस्</translation>
 <translation id="4877652723592270843">तपाईं ChromeOS Flex मा पहिले नै इन्स्टल गरिएको ChromeVox नामक स्क्रिन रिडर एक्टिभेट गर्न चाहनुहुन्छ? एक्टिभेट गर्न चाहनुहुन्छ भने पाँच सेकेन्डसम्म दुवै भोल्युम की थिचिराख्नुहोस्।</translation>
+<translation id="4878261017150799673">साइट सक्रिय राखिराख्नुहोस्</translation>
 <translation id="4878634973244289103">प्रतिक्रिया पठाउन सकिएन। कृपया पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4878653975845355462">इच्छ्याइएका पृष्ठभूमिहरू तपाईंका प्रशासकद्वारा निष्क्रिय पारिएका छन्</translation>
 <translation id="4878718769565915065">यो सुरक्षा साँचोमा फिंगरप्रिन्ट थप्न सकिएन</translation>
@@ -5242,6 +5254,9 @@
 <translation id="5602765853043467355">यो यन्त्रबाट पुस्तक चिन्ह, इतिहास, पासवर्ड र थप कुराहरू खाली गर्नुहोस्</translation>
 <translation id="5605758115928394442">यो व्यक्ति तपाईं नै हो भन्ने सुनिश्चित गर्न तपाईंको फोनमा एउटा सूचना पठाइयो।</translation>
 <translation id="5606849116180480101">{NUM_EXTENSIONS,plural, =1{यो एक्स्टेन्सन ब्लक गरिएको छ}other{यी एक्स्टेन्सन ब्लक गरिएका छन्}}</translation>
+<translation id="560743070587960985">यो फाइल भाइरस वा मालवेयर हुन सक्छ।
+
+तपाईं उक्त फाइल सुरक्षित छ कि छैन भन्ने कुरा जाँच्न यसलाई Google कहाँ पठाउन सक्नुहुन्छ। स्क्यान गर्ने कार्य सामान्यतया केही बेरमै पूरा हुन्छ।</translation>
 <translation id="560834977503641186">Wi-Fi सिंकका बारेमा थप जान्नुहोस्</translation>
 <translation id="5608580678041221894">क्रप गर्ने क्षेत्रलाई समायोजन गर्न वा सार्न निम्न कुञ्जीहरूमा ट्याप गर्नुहोस्</translation>
 <translation id="5609231933459083978">एप अवैध जस्तो देखिन्छ।</translation>
@@ -5978,6 +5993,7 @@
 <translation id="6254892857036829079">उत्कृष्ट</translation>
 <translation id="6257602895346497974">सिंक गर्ने सुविधा अन गर्नुहोस्...</translation>
 <translation id="62586649943626337">ट्याब समूहहरू बनाएर ती समूहमा आफ्ना ट्याबहरू मिलाएर राख्नुहोस्</translation>
+<translation id="6260092874648348841">साइट सक्रिय राखिराख्नुहोस्</translation>
 <translation id="6262371516389954471">तपाईंका ब्याकअपहरू Google मा अपलोड गरी तपाईंको Google खाताको पासवर्ड प्रयोग गरेर इन्क्रिप्ट गरिन्छन्।</translation>
 <translation id="6263082573641595914">Microsoft CA संस्करण</translation>
 <translation id="6263284346895336537">संवेदनशील छैन</translation>
@@ -7515,6 +7531,7 @@
 <translation id="7634280112532283638">स्प्याम तथा ठगी न्यूनीकरण गर्ने सुविधा</translation>
 <translation id="7634337648687970851">लोकल डेटा रिकभर गर्ने सुविधा हाल उपलब्ध छैन।</translation>
 <translation id="7634566076839829401">केहि गलत भयो। फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="763472884969134151"><ph name="LINK" /> ले विश्लेषण गरेको</translation>
 <translation id="7635048370253485243">तपाईंका एड्मिनले पिन गर्नुभएको</translation>
 <translation id="7635711411613274199">तपाईंले ब्राउज गर्दै गर्दा तपाईंलाई देखाइने कुनै विज्ञापन पर्सनलाइज गरिन्छ कि गरिँदैन भन्ने कुरा यो सेटिङ, <ph name="BEGIN_LINK1" />विज्ञापनका शीर्षक<ph name="LINK_END1" />, तपाईंले तय गर्नुभएको <ph name="BEGIN_LINK2" />कुकीसम्बन्धी सेटिङ<ph name="LINK_END2" /> र तपाईंले हेरिरहनुभएको साइटले विज्ञापन पर्सनलाइज गर्छ कि गर्दैन भन्ने कुरामा भर पर्छ</translation>
 <translation id="7636919061354591437">यो डिभाइसमा स्थापना गर्नुहोस्</translation>
@@ -8193,6 +8210,7 @@
 <translation id="8195737548602430447">क्याप्सनहरू स्वतः लक्षित भाषामा अनुवाद गरियोस्।</translation>
 <translation id="8197673340773315084">"कार्य" वा "व्यक्तिगत" जस्तो कुनै नाम वा लेबल हाल्नुहोस्</translation>
 <translation id="8198456017687137612">ट्याब कास्ट गरिँदै छ</translation>
+<translation id="8198457270656084773">सिस्टमसम्बन्धी जानकारी भएको डिभाइसको लग पेज खोज्दै हुनुहुन्छ? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> मा जानुहोस्।</translation>
 <translation id="8198511718495409170">यो साइटमा "<ph name="EXTENSION_NAME" />" सम्बन्धी परिवर्तित सेटिङ लागू गर्न यो पेज रिलोड गर्नुहोस्</translation>
 <translation id="8199300056570174101">नेटवर्क (सेवा) र डिभाइसका गुणहरू</translation>
 <translation id="8200772114523450471">रिजुमी</translation>

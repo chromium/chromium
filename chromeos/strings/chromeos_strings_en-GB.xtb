@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> manages this device and may be able to monitor your activity.</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Send</translation>
+<translation id="1488850966314959671">Can't connect to this network using any enabled custom APNs. Contact your mobile operator for more information.</translation>
 <translation id="1491076385728777984">Updating firmware on <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">volume up</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> manages this user and may remotely manage settings and monitor user activity.</translation>
@@ -563,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Rescan</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">Can't disable or remove this APN. Make sure that enabled attach APNs are disabled or removed.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> key tested</translation>
 <translation id="5620281292257375798">Internal only</translation>
 <translation id="5649768706273821470">Listen</translation>
@@ -1012,6 +1014,7 @@
 <translation id="9173638680043580060">Less than a minute remaining</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Your keyboard can automatically match your wallpaper</translation>
+<translation id="9189000703457422362">Can't connect to this network using automatically detected APNs. Contact your mobile operator for more information.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Can't contact the gateway from Android apps</translation>
 <translation id="9211490828691860325">All desks</translation>

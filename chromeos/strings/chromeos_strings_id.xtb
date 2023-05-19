@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> akan mengelola perangkat ini dan mungkin dapat memantau aktivitas Anda.</translation>
 <translation id="1478594628797167447">Pemindai</translation>
 <translation id="1483493594462132177">Kirim</translation>
+<translation id="1488850966314959671">Tidak dapat terhubung ke jaringan ini menggunakan APN kustom yang diaktifkan. Hubungi operator seluler Anda untuk mengetahui informasi selengkapnya.</translation>
 <translation id="1491076385728777984">Mengupdate firmware di <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">mengeraskan volume</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> akan mengelola pengguna ini serta mungkin dapat mengelola setelan dan memantau aktivitas pengguna dari jarak jauh.</translation>
@@ -563,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Pindai ulang</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">Tidak dapat menonaktifkan atau menghapus APN ini. Pastikan APN aktif yang terpasang dinonaktifkan atau dihapus.</translation>
 <translation id="5600027863942488546">Tombol <ph name="KEY_NAME" /> diuji</translation>
 <translation id="5620281292257375798">Khusus internal</translation>
 <translation id="5649768706273821470">Dengar</translation>
@@ -1012,6 +1014,7 @@
 <translation id="9173638680043580060">Kurang dari satu menit lagi</translation>
 <translation id="917720651393141712">Uji</translation>
 <translation id="9188992814426075118">Keyboard dapat otomatis menyesuaikan dengan wallpaper Anda</translation>
+<translation id="9189000703457422362">Tidak dapat terhubung ke jaringan ini menggunakan APN yang terdeteksi secara otomatis. Hubungi operator seluler Anda untuk mengetahui informasi selengkapnya.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Tidak dapat terhubung ke gateway dari aplikasi Android</translation>
 <translation id="9211490828691860325">Semua desktop</translation>

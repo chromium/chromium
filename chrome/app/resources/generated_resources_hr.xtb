@@ -527,6 +527,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="146000042969587795">Ovaj je okvir blokiran jer sadrži određeni nesiguran sadržaj.</translation>
 <translation id="1461041542809785877">Izvedba</translation>
 <translation id="1461177659295855031">Premjesti u mapu Traka oznaka</translation>
+<translation id="1461288887896722288">Upravo ste se prijavili na upravljani račun i izrada novog upravljanog profila omogućit će vam pristup nekim resursima povezanima s tim računom.</translation>
 <translation id="146219525117638703">Stanje ONC-a</translation>
 <translation id="146220085323579959">Internet je isključen. Provjerite internetsku vezu i pokušajte ponovo.</translation>
 <translation id="1462850958694534228">Pregled ažuriranja ikona</translation>
@@ -1880,6 +1881,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2575407791320728464">URL nije važeći. Provjerite je li pravilno formatiran.</translation>
 <translation id="2575441894380764255">Nije dopušteno prikazivanje ometajućih ili obmanjujućih oglasa</translation>
 <translation id="2575713839157415345">{YEARS,plural, =1{Uređaj će biti spremljen jednu godinu te se sljedeći put možete povezati bez koda. To postavlja vaš administrator.}one{Uređaj će biti spremljen {YEARS} godinu te se sljedeći put možete povezati bez koda. To postavlja vaš administrator.}few{Uređaj će biti spremljen {YEARS} godine te se sljedeći put možete povezati bez koda. To postavlja vaš administrator.}other{Uređaj će biti spremljen {YEARS} godina te se sljedeći put možete povezati bez koda. To postavlja vaš administrator.}}</translation>
+<translation id="2577446426265992344">bez višenamjenskog okvira</translation>
 <translation id="257779572837908839">Postavi kao Chromebox za videokonferencije</translation>
 <translation id="2579309488038515659">Omogući žarišnu točku</translation>
 <translation id="2579596474754516455">Skenirajte PDF slike da biste po potrebi konvertirali tekst za čitač zaslona</translation>
@@ -6577,6 +6579,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6787097042755590313">Druga kartica</translation>
 <translation id="6787839852456839824">Tipkovnički prečaci</translation>
 <translation id="6788210894632713004">Raspakirano proširenje</translation>
+<translation id="678939393857169499">Omogućuje novi dizajn za računala.</translation>
 <translation id="6789592661892473991">Podijeli vodoravno</translation>
 <translation id="6789834167207639931">Na sljedećem zaslonu ponovo unesite zaporku Google računa da biste dovršili oporavak</translation>
 <translation id="6790428901817661496">Reproduciraj</translation>
@@ -7374,6 +7377,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7481312909269577407">Naprijed</translation>
 <translation id="7481358317100446445">Spremno</translation>
 <translation id="748138892655239008">Osnovno ograničenje certifikata</translation>
+<translation id="7483145199632798061">Osvježavanje Chromea 2023.</translation>
 <translation id="7484645889979462775">Nikad za ovu web lokaciju</translation>
 <translation id="7487141338393529395">Uključivanje poboljšane provjere pravopisa</translation>
 <translation id="7487969577036436319">Nema instaliranih komponenti</translation>

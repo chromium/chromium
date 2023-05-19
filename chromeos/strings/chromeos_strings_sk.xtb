@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Vypnúť tmavý motív</translation>
 <translation id="1807246157184219062">Svetlý režim</translation>
 <translation id="1827738518074806965">Umelecká galéria</translation>
+<translation id="1836553715834333258">Farba systému</translation>
 <translation id="1838374766361614909">Vymazať vyhľadávanie</translation>
+<translation id="1840474674287087346">Farba pracovnej plochy</translation>
 <translation id="1851218745569890714">Videokonferencie</translation>
 <translation id="1852934301711881861">Nainštalovať Chrome OS Flex</translation>
 <translation id="1856388568474281774">Šípka nadol</translation>
@@ -421,6 +423,7 @@
 <translation id="4454245904991689773">Adresár na skenovanie</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nepredvolenú bránu siete sa nepodarilo otestovať</translation>
+<translation id="4500966230243561393">Farba rozhrania</translation>
 <translation id="4503223151711056411">Šípka doľava</translation>
 <translation id="4507392511610824664">zvýšenie jasu</translation>
 <translation id="4511264077854731334">Portál</translation>
@@ -499,6 +502,7 @@
 <translation id="500920857929044050">Zastaviť test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Nastavte, aby sa pri nečinnosti obrazovky zobrazovali fotky, čas, počasie a informácie o médiách.</translation>
+<translation id="5035083460461104704">Farba motívu</translation>
 <translation id="5038292761217083259">klávesnica s viacerými farbami</translation>
 <translation id="5039804452771397117">Povoliť</translation>
 <translation id="5049856988445523908">SIM karta je uzamknutá (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +818,7 @@
 <translation id="7618774594543487847">Neutrálny</translation>
 <translation id="7620771111601174153">Ďalšie informácie v centre pomoci</translation>
 <translation id="763165478673169849">Čas posledného resetovania</translation>
+<translation id="7633068090678117093">Obrázok na pozadí</translation>
 <translation id="7648838807254605802">Vysoká latencia protokolu HTTPS</translation>
 <translation id="765159867434478292">Rozdeliť</translation>
 <translation id="7656388927906093505">Zariadenie je myš.</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">Podobná aplikácia</translation>
 <translation id="8930622219860340959">Bezdrôtové pripojenie</translation>
 <translation id="8936793075252196307">Adresa IP klienta</translation>
+<translation id="8944651180182756621">Farba Spúšťača</translation>
 <translation id="894617464444543719">Zariadenie je telefón.</translation>
 <translation id="8957423540740801332">doprava</translation>
 <translation id="8968751544471797276">Rýchlosť nabíjania</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">Spustiť test pamäte</translation>
 <translation id="9161276708550942948">medzera</translation>
 <translation id="9173638680043580060">Zostáva menej ako minúta</translation>
+<translation id="9174334653006917325">Farba používateľského rozhrania</translation>
 <translation id="917720651393141712">Testovať</translation>
 <translation id="9188992814426075118">Klávesnica sa môže automaticky prispôsobiť tapete</translation>
 <translation id="9189000703457422362">K tejto sieti sa nedá pripojiť pomocou automaticky rozpoznávaných názvov prístupového bodu (APN). Viac sa dozviete od svojho operátora.</translation>

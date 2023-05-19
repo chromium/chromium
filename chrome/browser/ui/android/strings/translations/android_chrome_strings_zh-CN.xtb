@@ -1123,6 +1123,7 @@
 <translation id="7029809446516969842">密码</translation>
 <translation id="7030304022046916278">会将网址发送给“安全浏览”功能进行检查</translation>
 <translation id="7030585293819777123">继续您的上一项任务？</translation>
+<translation id="7035701931849773472">其他选项</translation>
 <translation id="7037830628447527439">使用您的 Google 帐号登录 Chrome</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">获取图片说明？</translation>
@@ -1345,6 +1346,7 @@
 <translation id="8110024788458304985">帮助改进 Chrome 的功能和性能</translation>
 <translation id="8110087112193408731">在“数字健康”应用中显示您的 Chrome 活动记录？</translation>
 <translation id="8118117428362942925">如需帮助，请找家长（<ph name="PARENT_NAME" />）帮忙</translation>
+<translation id="8124758083429256800">您在 Chrome 和 Chrome <ph name="ERROR_DESCRIPTION" />中的已存密码列表将在 121 版之后合并。您将能自动填充这两个应用内的所有已存密码。</translation>
 <translation id="8127542551745560481">修改主页</translation>
 <translation id="8130309322784422030">您存储的登录信息可能已过期</translation>
 <translation id="813082847718468539">查看网站信息</translation>

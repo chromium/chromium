@@ -1123,6 +1123,7 @@
 <translation id="7029809446516969842">Գաղտնաբառեր</translation>
 <translation id="7030304022046916278">Ուղարկում է URL-ները Ապահով դիտարկմանը՝ դրանք ստուգելու համար։</translation>
 <translation id="7030585293819777123">Վերսկսե՞լ ձեր վերջին առաջադրանքը</translation>
+<translation id="7035701931849773472">Այլ տարբերակներ</translation>
 <translation id="7037830628447527439">Մուտք գործեք Chrome ձեր Google հաշվով</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Ուզո՞ւմ եք ստանալ պատկերների նկարագրություններ</translation>
@@ -1345,6 +1346,7 @@
 <translation id="8110024788458304985">Օգնել բարելավել Chrome-ի գործառույթներն ու աշխատանքը</translation>
 <translation id="8110087112193408731">Ցուցադրե՞լ Chrome-ի պատմությունը Թվային բարեկեցության մեջ</translation>
 <translation id="8118117428362942925">Եթե օգնության կարիք ունենաս, դիմիր ծնողիդ (<ph name="PARENT_NAME" />)</translation>
+<translation id="8124758083429256800">Պահված գաղտնաբառերի ձեր ցանկերը Chrome-ի և Chrome <ph name="ERROR_DESCRIPTION" />-ի համար կմիավորվեն տարբերակ 121-ի թողարկումից հետո։ Դուք կկարողանաք ինքնալրացնել ձեր բոլոր գաղտնաբառերը երկու հավելվածներում։</translation>
 <translation id="8127542551745560481">Փոփոխել գլխավոր էջը</translation>
 <translation id="8130309322784422030">Հնարավոր է՝ մուտքի պահված տվյալները հնացել են</translation>
 <translation id="813082847718468539">Դիտել կայքի տեղեկությունները</translation>

@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> e menaxhon këtë pajisje dhe mund të jetë në gjendje të monitorojë aktivitetin tënd.</translation>
 <translation id="1478594628797167447">Skaner</translation>
 <translation id="1483493594462132177">Dërgo</translation>
+<translation id="1488850966314959671">Nuk mund të lidhesh me këtë rrjet duke përdorur një nga APN-të e personalizuara të aktivizuara. Kontakto me operatorin tënd celular për më shumë informacione.</translation>
 <translation id="1491076385728777984">Po përditësohet firmueri në <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">rrit volumin</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> menaxhon këtë përdorues dhe mund të menaxhojë në distancë cilësimet dhe të monitorojë aktivitetin e përdoruesit.</translation>
@@ -563,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skano përsëri</translation>
 <translation id="5583640892426849032">Hapësirë prapa</translation>
+<translation id="5584044598279886848">Kjo APN nuk mund të çaktivizohet apo të hiqet. Sigurohu që të çaktivizohen ose të hiqen APN-të e bashkëngjitura të aktivizuara.</translation>
 <translation id="5600027863942488546">Tasti <ph name="KEY_NAME" /> u testua</translation>
 <translation id="5620281292257375798">Vetëm i brendshëm</translation>
 <translation id="5649768706273821470">Dëgjo</translation>
@@ -1012,6 +1014,7 @@
 <translation id="9173638680043580060">Ka mbetur më pak se një minutë</translation>
 <translation id="917720651393141712">Provë</translation>
 <translation id="9188992814426075118">Tastiera jote mund të përputhet automatikisht me imazhin e sfondit</translation>
+<translation id="9189000703457422362">Nuk mund të lidhesh me këtë rrjet duke përdorur APN-të e zbuluara automatikisht. Kontakto me operatorin tënd celular për më shumë informacione.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Portëkalimi nuk mund të kontaktohet nga aplikacionet për Android</translation>
 <translation id="9211490828691860325">Të gjitha tavolinat e punës</translation>

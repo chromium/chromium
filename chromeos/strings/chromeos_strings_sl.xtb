@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> upravlja to napravo in morda nadzira vašo dejavnost.</translation>
 <translation id="1478594628797167447">Optični bralniki</translation>
 <translation id="1483493594462132177">Pošlji</translation>
+<translation id="1488850966314959671">S tem omrežjem se ni mogoče povezati prek omogočenih APN-jev po meri. Če želite več informacij, se obrnite na mobilnega operaterja.</translation>
 <translation id="1491076385728777984">Posodabljanje vdelane programske opreme v napravi <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">povečanje glasnosti</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> upravlja tega uporabnika in lahko na daljavo upravlja nastavitve ter nadzira dejavnost uporabnika.</translation>
@@ -563,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Znova optično preberi</translation>
 <translation id="5583640892426849032">Vračalka</translation>
+<translation id="5584044598279886848">Tega APN-ja ni mogoče onemogočiti ali odstraniti. Omogočeni povezani APN-ji morajo biti onemogočeni ali odstranjeni.</translation>
 <translation id="5600027863942488546">Tipka <ph name="KEY_NAME" /> je bila preizkušena.</translation>
 <translation id="5620281292257375798">Samo za interno rabo</translation>
 <translation id="5649768706273821470">Poslušajte</translation>
@@ -1012,6 +1014,7 @@
 <translation id="9173638680043580060">Še manj kot minuta</translation>
 <translation id="917720651393141712">Preizkus</translation>
 <translation id="9188992814426075118">Tipkovnica se lahko samodejno ujema z zaslonskim ozadjem.</translation>
+<translation id="9189000703457422362">S tem omrežjem se ni mogoče povezati prek samodejno zaznanih APN-jev. Če želite več informacij, se obrnite na mobilnega operaterja.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Iz aplikacij za Android ni mogoče vzpostaviti stika s prehodom.</translation>
 <translation id="9211490828691860325">Vsa namizja</translation>

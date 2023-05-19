@@ -64,6 +64,7 @@
 <translation id="1476467821656042872">Il est possible que <ph name="MANAGER" />, qui gère cet appareil, puisse surveiller votre activité.</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Envoyer</translation>
+<translation id="1488850966314959671">Impossible de se connecter à ce réseau avec les APN personnalisés activés. Pour en savoir plus, contactez votre opérateur mobile.</translation>
 <translation id="1491076385728777984">Mise à jour du micrologiciel sur <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">augmenter le volume</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gère cet utilisateur dont il peut modifier les paramètres et surveiller l'activité à distance.</translation>
@@ -563,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Rescanner</translation>
 <translation id="5583640892426849032">Retour</translation>
+<translation id="5584044598279886848">Impossible de désactiver ou de supprimer cet APN. Assurez-vous que les APN connectés sont désactivés ou supprimés.</translation>
 <translation id="5600027863942488546">Touche <ph name="KEY_NAME" /> testée</translation>
 <translation id="5620281292257375798">Interne uniquement</translation>
 <translation id="5649768706273821470">Écouter</translation>
@@ -1012,6 +1014,7 @@
 <translation id="9173638680043580060">Moins d'une minute restante</translation>
 <translation id="917720651393141712">Tester</translation>
 <translation id="9188992814426075118">Votre clavier peut être automatiquement assorti à votre fond d'écran</translation>
+<translation id="9189000703457422362">Impossible de se connecter à ce réseau avec des APN détectés automatiquement. Pour en savoir plus, contactez votre opérateur mobile.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Impossible de contacter la passerelle depuis les applis Android</translation>
 <translation id="9211490828691860325">Tous les bureaux</translation>

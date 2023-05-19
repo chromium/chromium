@@ -118,7 +118,9 @@
 <translation id="1801418420130173017">Dezactivează tema întunecată</translation>
 <translation id="1807246157184219062">Luminos</translation>
 <translation id="1827738518074806965">Galerie de imagini</translation>
+<translation id="1836553715834333258">Culoarea sistemului</translation>
 <translation id="1838374766361614909">Șterge căutarea</translation>
+<translation id="1840474674287087346">Culoarea desktopului</translation>
 <translation id="1851218745569890714">Conferințe video</translation>
 <translation id="1852934301711881861">Instalează sistemul de operare Chrome Flex</translation>
 <translation id="1856388568474281774">Săgeată în jos</translation>
@@ -421,6 +423,7 @@
 <translation id="4454245904991689773">Scanează către</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nu s-a putut da ping către gateway-ul de rețea care nu este prestabilit</translation>
+<translation id="4500966230243561393">Culoarea interfeței</translation>
 <translation id="4503223151711056411">Săgeată spre stânga</translation>
 <translation id="4507392511610824664">mărește luminozitatea</translation>
 <translation id="4511264077854731334">Portal</translation>
@@ -499,6 +502,7 @@
 <translation id="500920857929044050">Oprește testul</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5019310272469539976">Când ecranul este inactiv, se afișează fotografii, ora, vremea și informații despre media.</translation>
+<translation id="5035083460461104704">Culoarea temei</translation>
 <translation id="5038292761217083259">tastatură multicoloră</translation>
 <translation id="5039804452771397117">Permite</translation>
 <translation id="5049856988445523908">Card SIM blocat (<ph name="LOCK_TYPE" />)</translation>
@@ -814,6 +818,7 @@
 <translation id="7618774594543487847">Neutru</translation>
 <translation id="7620771111601174153">Află mai multe din Centrul de ajutor</translation>
 <translation id="763165478673169849">Data ultimei resetări</translation>
+<translation id="7633068090678117093">Imagine de fundal</translation>
 <translation id="7648838807254605802">Latență mare a solicitărilor HTTPS</translation>
 <translation id="765159867434478292">Pe jumătate</translation>
 <translation id="7656388927906093505">Dispozitivul este un mouse.</translation>
@@ -979,6 +984,7 @@
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Wireless</translation>
 <translation id="8936793075252196307">Adresa IP a clientului</translation>
+<translation id="8944651180182756621">Culoarea lansatorului</translation>
 <translation id="894617464444543719">Dispozitivul este un telefon.</translation>
 <translation id="8957423540740801332">dreapta</translation>
 <translation id="8968751544471797276">Rata de încărcare</translation>
@@ -1012,6 +1018,7 @@
 <translation id="9149391708638971077">Rulează testul Memorie</translation>
 <translation id="9161276708550942948">spațiu</translation>
 <translation id="9173638680043580060">A rămas mai puțin de un minut</translation>
+<translation id="9174334653006917325">Culoarea interfeței de utilizare</translation>
 <translation id="917720651393141712">Testează</translation>
 <translation id="9188992814426075118">Tastatura se poate potrivi automat cu imaginea de fundal</translation>
 <translation id="9189000703457422362">Nu se poate conecta la această rețea folosind APN-uri detectate automat. Contactează operatorul de telefonie mobilă pentru informații suplimentare.</translation>

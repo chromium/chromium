@@ -379,6 +379,7 @@
 <translation id="3464194322481586217">ติดตามราคาไม่ได้</translation>
 <translation id="3469166899695866866">หยุดดาวน์โหลดไหม</translation>
 <translation id="3470502288861289375">กำลังคัดลอก...</translation>
+<translation id="3471148582064653480">ซิงค์รหัสผ่าน ประวัติการเข้าชม และอื่นๆ</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{สำหรับเว็บไซต์หรือแอป {COUNT} รายการ}other{สําหรับเว็บไซต์และแอป {COUNT} รายการ}}</translation>
 <translation id="3474624961160222204">ดำเนินการต่อในชื่อ <ph name="NAME" /></translation>
 <translation id="3478058380795961209">เดือนที่หมดอายุ</translation>
@@ -399,6 +400,7 @@
 <translation id="3551320343578183772">ปิดแท็บ</translation>
 <translation id="3565207542107370586">ล้างข้อมูลการท่องเว็บ…</translation>
 <translation id="3575234738189584619">ค้นหาด้วย Lens</translation>
+<translation id="3577555362230509265">ใช้ Chrome ในแอปอื่นๆ</translation>
 <translation id="3581564640715911333">เสนอที่จะแปลหน้าเว็บในภาษาอื่นๆ</translation>
 <translation id="3588820906588687999">เปิดภาพในแท็บใหม่</translation>
 <translation id="3595252146048399851">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /> Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>

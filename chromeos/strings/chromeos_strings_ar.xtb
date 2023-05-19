@@ -64,6 +64,7 @@
 <translation id="1476467821656042872">يدير <ph name="MANAGER" /> هذا الجهاز، وقد يتمكَّن من مراقبة نشاطك.</translation>
 <translation id="1478594628797167447">الماسح الضوئي</translation>
 <translation id="1483493594462132177">إرسال</translation>
+<translation id="1488850966314959671">‏يتعذَّر الاتصال بهذه الشبكة باستخدام أي أسماء نقاط وصول (APN) مخصَّصة ومفعَّلة. يُرجى التواصل مع مشغِّل شبكة الجوّال للحصول على مزيد من المعلومات.</translation>
 <translation id="1491076385728777984">جارِ تحديث البرامج الثابتة على الجهاز <ph name="DEVICE_NAME" />.</translation>
 <translation id="1499041187027566160">الصوت مرتفع</translation>
 <translation id="1499900233129743732">يدير <ph name="MANAGER" /> هذا المستخدم، ويمكنه إدارة الإعدادات ومراقبة نشاط المستخدم عن بُعد.</translation>
@@ -563,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">إعادة المسح الضوئي</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">‏يتعذّر إيقاف اسم نقطة الوصول (APN) هذا أو إزالته. يُرجى التأكُّد من إيقاف أو إزالة أسماء نقاط الوصول المفعَّلة من نوع attach.</translation>
 <translation id="5600027863942488546">تم اختبار المفتاح <ph name="KEY_NAME" />.</translation>
 <translation id="5620281292257375798">داخلي فقط</translation>
 <translation id="5649768706273821470">استماع</translation>
@@ -1012,6 +1014,7 @@
 <translation id="9173638680043580060">يتبقى أقل من دقيقة.</translation>
 <translation id="917720651393141712">اختبار</translation>
 <translation id="9188992814426075118">يمكن أن تكون لوحة المفاتيح متطابقة تلقائيًا مع خلفيتك.</translation>
+<translation id="9189000703457422362">‏يتعذّر الاتصال بهذه الشبكة باستخدام أسماء نقاط الوصول (APN) التي يتم رصدها تلقائيًا. يُرجى التواصل مع مشغِّل شبكة الجوّال للحصول على مزيد من المعلومات.</translation>
 <translation id="9193744392140377127">‫APN*‎</translation>
 <translation id="9204237731135241582">‏تعذَّر الاتصال بالبوابة من خلال تطبيقات Android.</translation>
 <translation id="9211490828691860325">جميع أسطح المكتب</translation>

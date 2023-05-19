@@ -1123,6 +1123,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7029809446516969842">Adgangskoder</translation>
 <translation id="7030304022046916278">Webadresser sendes til tjek i Beskyttet browsing</translation>
 <translation id="7030585293819777123">Vil du genoptage din seneste opgave?</translation>
+<translation id="7035701931849773472">Andre valgmuligheder</translation>
 <translation id="7037830628447527439">Log ind på Chrome med din Google-konto</translation>
 <translation id="7038956721828960940">chrome_image_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="7054588988317389591">Vil du have billedbeskrivelser?</translation>
@@ -1345,6 +1346,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8110024788458304985">Vær med til at forbedre funktioner og ydeevne i Chrome</translation>
 <translation id="8110087112193408731">Vil du se din Chrome-aktivitet i Digital balance?</translation>
 <translation id="8118117428362942925">Spørg din forælder (<ph name="PARENT_NAME" />), hvis du har brug for hjælp</translation>
+<translation id="8124758083429256800">Dine lister over gemte adgangskoder til Chrome og Chrome <ph name="ERROR_DESCRIPTION" /> flettes efter version 121. Herefter kan du udfylde alle dine gemte adgangskoder automatisk i begge apps.</translation>
 <translation id="8127542551745560481">Rediger startside</translation>
 <translation id="8130309322784422030">Dine gemte loginoplysninger kan være forældede</translation>
 <translation id="813082847718468539">Se websiteoplysninger</translation>

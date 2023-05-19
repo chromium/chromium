@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> gestiona aquest dispositiu i és possible que pugui monitorar la teva activitat.</translation>
 <translation id="1478594628797167447">Escàners</translation>
 <translation id="1483493594462132177">Envia</translation>
+<translation id="1488850966314959671">No es pot connectar a aquesta xarxa mitjançant cap APN personalitzat activat. Contacta amb el teu operador de telefonia mòbil per obtenir més informació.</translation>
 <translation id="1491076385728777984">S'està actualitzant el microprogramari que hi ha a <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">apuja el volum</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> gestiona aquest usuari i és possible que gestioni les opcions de configuració i monitori l'activitat de l'usuari de manera remota.</translation>
@@ -563,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Torna a escanejar</translation>
 <translation id="5583640892426849032">Retrocés</translation>
+<translation id="5584044598279886848">No es pot desactivar ni suprimir aquest APN. Assegura't de desactivar o suprimir els APN del tipus Attach que estiguin activats.</translation>
 <translation id="5600027863942488546">S'ha provat la tecla <ph name="KEY_NAME" /></translation>
 <translation id="5620281292257375798">Només intern</translation>
 <translation id="5649768706273821470">Escolta</translation>
@@ -1012,6 +1014,7 @@
 <translation id="9173638680043580060">Queda menys d'un minut</translation>
 <translation id="917720651393141712">Prova</translation>
 <translation id="9188992814426075118">El teclat pot coincidir automàticament amb el fons de pantalla</translation>
+<translation id="9189000703457422362">No es pot connectar a aquesta xarxa mitjançant APN detectats automàticament. Contacta amb el teu operador de telefonia mòbil per obtenir més informació.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">No es pot contactar amb la passarel·la des d'aplicacions d'Android</translation>
 <translation id="9211490828691860325">Tots els escriptoris</translation>

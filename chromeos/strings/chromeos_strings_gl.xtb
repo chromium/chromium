@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> xestiona este dispositivo e pode supervisar a túa actividade.</translation>
 <translation id="1478594628797167447">Escáner</translation>
 <translation id="1483493594462132177">Enviar</translation>
+<translation id="1488850966314959671">Non se puido conectar con esta rede a través de ningún APN personalizado activado. Se necesitas máis información, ponte en contacto co teu operador móbil.</translation>
 <translation id="1491076385728777984">Actualizando firmware do dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="1499041187027566160">sube o volume</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> xestiona este usuario, e pode axustar a súa configuración e supervisar a súa actividade de forma remota.</translation>
@@ -563,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Volver buscar</translation>
 <translation id="5583640892426849032">Retroceso</translation>
+<translation id="5584044598279886848">Non se pode desactivar nin quitar este APN. Asegúrate de que os APN de conexión estean desactivados ou quitados.</translation>
 <translation id="5600027863942488546">Tecla <ph name="KEY_NAME" /> probada</translation>
 <translation id="5620281292257375798">Só para uso interno</translation>
 <translation id="5649768706273821470">Escoitar</translation>
@@ -1012,6 +1014,7 @@
 <translation id="9173638680043580060">Queda menos dun minuto</translation>
 <translation id="917720651393141712">Probar</translation>
 <translation id="9188992814426075118">O teclado pode combinar automaticamente co teu fondo de pantalla</translation>
+<translation id="9189000703457422362">Non se puido conectar con esta rede a través de ningún APN detectado automaticamente. Se necesitas máis información, ponte en contacto co teu operador móbil.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Non se puido establecer contacto coa pasarela desde aplicacións para Android</translation>
 <translation id="9211490828691860325">Todos os ordenadores</translation>

@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> iphatha le divayisi futhi ingakwazi ukwengamela umsebenzi wakho.</translation>
 <translation id="1478594628797167447">Iskena</translation>
 <translation id="1483493594462132177">Thumela</translation>
+<translation id="1488850966314959671">Ayikwazi ukuxhuma kule nethiwekhi isebenzisa noma yimaphi ama-APN angokwezifiso anikwe amandla. Xhumana nenkampani yakho yenethiwekhi yeselula ukuze uthole ulwazi olwengeziwe.</translation>
 <translation id="1491076385728777984">Ibuyekeza i-firmware ku-<ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">ivolumu iphezulu</translation>
 <translation id="1499900233129743732">I-<ph name="MANAGER" /> iphatha lo msebenzisi futhi ingaphatha amasethingi isekudeni futhi iqaphe umsebenzi womsebenzisi.</translation>
@@ -563,6 +564,7 @@
 <translation id="5578477003638479617">I-UMTS</translation>
 <translation id="5578519639599103840">Phinda uskene</translation>
 <translation id="5583640892426849032">I-Backspace</translation>
+<translation id="5584044598279886848">Ayikwazi ukukhubaza noma ukususa le APN. Qinisekisa ukuthi i-APN yokunamathisela enikwe amandla ivaliwe noma ikhishiwe.</translation>
 <translation id="5600027863942488546">Ukhiye we-<ph name="KEY_NAME" /> uhloliwe</translation>
 <translation id="5620281292257375798">Kwangaphakathi kuphela</translation>
 <translation id="5649768706273821470">Lalela</translation>
@@ -1012,6 +1014,7 @@
 <translation id="9173638680043580060">Ngaphansi kweminithi okusele</translation>
 <translation id="917720651393141712">Ukuhlolwa</translation>
 <translation id="9188992814426075118">Ikhibhodi yakho ingafanisa ngokuzenzekelayo isithombe sakho sangemuva</translation>
+<translation id="9189000703457422362">Ayikwazi ukuxhuma kule nethiwekhi isebenzisa ama-APN atholwe ngokuzenzekelayo. Xhumana nenkampani yakho yenethiwekhi yeselula ukuze uthole ulwazi olwengeziwe.</translation>
 <translation id="9193744392140377127">I-APN*</translation>
 <translation id="9204237731135241582">Ayikwazi ukuxhumana nomasango ovela kuma-app we-Android</translation>
 <translation id="9211490828691860325">Wonke amatafula</translation>

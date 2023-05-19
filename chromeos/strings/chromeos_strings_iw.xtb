@@ -64,6 +64,7 @@
 <translation id="1476467821656042872">הניהול של המכשיר הזה נעשה מהדומיין <ph name="MANAGER" /> וייתכן שאפשר יהיה לעקוב ממנו אחר הפעילות שלך.</translation>
 <translation id="1478594628797167447">סורק</translation>
 <translation id="1483493594462132177">שליחה</translation>
+<translation id="1488850966314959671">‏לא ניתן להתחבר לרשת הזו באמצעות פריטי APN בהתאמה אישית שהופעלו. למידע נוסף, צריך ליצור קשר עם ספק הסלולר.</translation>
 <translation id="1491076385728777984">מתבצע עדכון קושחה ב-<ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">הגברת עוצמת הקול</translation>
 <translation id="1499900233129743732">המשתמש הזה מנוהל על ידי <ph name="MANAGER" />. הדומיין הזה עשוי לנהל מרחוק את ההגדרות ולעקוב אחר פעילות המשתמש.</translation>
@@ -563,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">סריקה מחדש</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">‏לא ניתן להשבית או להסיר את ה-APN הזה. צריך לוודא שפריטי ה-APN המצורפים שהופעלו הושבתו או הוסרו.</translation>
 <translation id="5600027863942488546">בוצעה בדיקה של המקש <ph name="KEY_NAME" /></translation>
 <translation id="5620281292257375798">פנימי בלבד</translation>
 <translation id="5649768706273821470">האזנה</translation>
@@ -1010,6 +1012,7 @@
 <translation id="9173638680043580060">נותרה פחות מדקה</translation>
 <translation id="917720651393141712">בדיקה</translation>
 <translation id="9188992814426075118">אפשר להגדיר התאמה אוטומטית של המקלדת לטפט</translation>
+<translation id="9189000703457422362">‏לא ניתן להתחבר לרשת הזו באמצעות פריטי APN שזוהו באופן אוטומטי. למידע נוסף, צריך ליצור קשר עם ספק הסלולר.</translation>
 <translation id="9193744392140377127">*APN</translation>
 <translation id="9204237731135241582">‏לא ניתן ליצור קשר עם השער מאפליקציות ל-Android</translation>
 <translation id="9211490828691860325">כל שולחנות העבודה הווירטואליים</translation>

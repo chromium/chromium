@@ -1195,9 +1195,11 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3927932062596804919">Weigeren</translation>
 <translation id="393316646445601645">Internet en telecom</translation>
 <translation id="3939773374150895049">WebAuthn gebruiken in plaats van CVC?</translation>
+<translation id="3941630233824954464">Verplicht opnieuw verifiëren aanzetten</translation>
 <translation id="3943857333388298514">Plak</translation>
 <translation id="3946209740501886391">Altijd vragen op deze site</translation>
 <translation id="3947595700203588284">Kan vragen of deze site verbinding mag maken met MIDI-apparaten</translation>
+<translation id="3948588869002647271">Deze app ontbreekt of is beschadigd</translation>
 <translation id="3949571496842715403">Deze server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. In het bijbehorende beveiligingscertificaat worden geen 'Subject Alternative Names' gespecificeerd. Dit kan worden veroorzaakt door een verkeerde configuratie of door een aanvaller die je verbinding heeft onderschept.</translation>
 <translation id="3949601375789751990">Je browsegeschiedenis zie je hier</translation>
 <translation id="3949790930165450333"><ph name="DEVICE_NAME" /> (<ph name="DEVICE_ID" />)</translation>
@@ -2197,6 +2199,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6370022303958842211">Acties voor apparaattoegang, zoals inloggen (waaronder redenen voor mislukte logins), uitloggen, vergrendelen en ontgrendelen</translation>
 <translation id="6374469231428023295">Opnieuw proberen</translation>
 <translation id="6374865374745447009">vensterbeheer</translation>
+<translation id="6376881782310775282">De ontwikkelserver voor deze app kan niet worden bereikt</translation>
 <translation id="6377268785556383139">Eén resultaat voor '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Er worden later mogelijk kosten in rekening gebracht.</translation>
@@ -3005,6 +3008,7 @@ Aanvullende informatie:
 <translation id="8286799286781881307">Apps die zijn geautoriseerd door je beheerder kunnen alle schermen vastleggen die zijn verbonden met je apparaat. Deze informatie kan lokaal worden verwerkt of geüpload naar de servers van je organisatie.</translation>
 <translation id="8288807391153049143">Certificaat bekijken</translation>
 <translation id="8289355894181816810">Neem contact op met je netwerkbeheerder als je niet zeker weet wat dit betekent.</translation>
+<translation id="8292520987784410870">Altijd verifiëren?</translation>
 <translation id="8293206222192510085">Bookmark toevoegen</translation>
 <translation id="829335040383910391">geluid</translation>
 <translation id="8294431847097064396">Bron</translation>
@@ -3104,6 +3108,7 @@ Aanvullende informatie:
 <translation id="854892890027593466">Envelop C6/C5</translation>
 <translation id="8553387990086529628">Toeristische bestemmingen</translation>
 <translation id="8554010658308662631">Meer laden</translation>
+<translation id="8554802735558319842">Zet voor extra beveiliging op gedeelde apparaten verificatie aan elke keer dat je betaalt met automatisch invullen.</translation>
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Recht resetten}other{Rechten resetten}}</translation>
 <translation id="8555010941760982128">Gebruik deze code bij het betalen</translation>
 <translation id="8557066899867184262">De CVC-code staat op de achterkant van je pas.</translation>

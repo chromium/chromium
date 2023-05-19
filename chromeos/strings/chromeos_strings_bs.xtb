@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> upravlja ovim uređajem i moguće je da može pratiti vaše aktivnosti.</translation>
 <translation id="1478594628797167447">Skener</translation>
 <translation id="1483493594462132177">Pošalji</translation>
+<translation id="1488850966314959671">Nije se moguće povezati s mrežom putem nijednog omogućenog prilagođenog APN-a. Kontaktirajte mobilnog operatera za više informacija.</translation>
 <translation id="1491076385728777984">Ažuriranje firmvera na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">pojačavanje jačine zvuka</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> upravlja ovim korisnikom i može udaljeno upravljati postavkama i pratiti aktivnost korisnika.</translation>
@@ -563,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skeniraj ponovo</translation>
 <translation id="5583640892426849032">Tipka za brisanje</translation>
+<translation id="5584044598279886848">Nije moguće onemogućiti ili ukloniti APN. Provjerite jesu li omogućeni priloženi APN-ovi onemogućeni ili uklonjeni.</translation>
 <translation id="5600027863942488546">Testirana je tipka <ph name="KEY_NAME" /></translation>
 <translation id="5620281292257375798">Samo interno</translation>
 <translation id="5649768706273821470">Poslušajte</translation>
@@ -1012,6 +1014,7 @@
 <translation id="9173638680043580060">Preostalo je manje od minute</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Tastatura može automatski prilagoditi pozadinsku sliku</translation>
+<translation id="9189000703457422362">Nije se moguće povezati s mrežom putem automatski otkrivenih APN-ova. Kontaktirajte mobilnog operatera za više informacija.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Nije moguće kontaktirati pristupnika iz Android aplikacija</translation>
 <translation id="9211490828691860325">Sve radne površine</translation>

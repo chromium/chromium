@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> anadhibiti kifaa hiki na anaweza kufuatilia shughuli zako.</translation>
 <translation id="1478594628797167447">Kichanganuzi</translation>
 <translation id="1483493594462132177">Tuma</translation>
+<translation id="1488850966314959671">Imeshindwa kuunganisha kwenye mtandao huu kwa kutumia APN yoyote maalum iliyowashwa. Wasiliana na mtoa huduma za simu ili upate maelezo zaidi.</translation>
 <translation id="1491076385728777984">Inasasisha programu dhibiti kwenye <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">ongeza sauti</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> inamdhibiti mtumiaji huyu na huenda ikadhibiti mipangilio na kufuatilia shughuli za mtumiaji kwa mbali.</translation>
@@ -563,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Changanua upya</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">Imeshindwa kuzima au kuondoa APN hii. Hakikisha APN ulizowasha ambazo zimeambatishwa zimezimwa au kuondolewa.</translation>
 <translation id="5600027863942488546">Kitufe cha <ph name="KEY_NAME" /> kimejaribishwa</translation>
 <translation id="5620281292257375798">Ndani ya kampuni pekee</translation>
 <translation id="5649768706273821470">Sikiliza</translation>
@@ -593,7 +595,7 @@
 <translation id="5866840822086176774">Thabiti sana</translation>
 <translation id="5876385649737594562">Washa ili uteue chaguo</translation>
 <translation id="588258955323874662">Skrini nzima</translation>
-<translation id="5895138241574237353">Zzima na uwashe</translation>
+<translation id="5895138241574237353">Zima na uwashe</translation>
 <translation id="5901630391730855834">Manjano</translation>
 <translation id="5903200662178656908">Kifaa ni muunganiko wa kibodi na kipanya.</translation>
 <translation id="5904994456462260490">Weka APN mpya</translation>
@@ -1012,6 +1014,7 @@
 <translation id="9173638680043580060">Imesalia chini ya dakika moja</translation>
 <translation id="917720651393141712">Jaribu</translation>
 <translation id="9188992814426075118">Kibodi yako inaweza kuunda mandhari yanayolingana na mwanga wake kiotomatiki</translation>
+<translation id="9189000703457422362">Imeshindwa kuunganisha kwenye mtandao huu kwa kutumia APN zinazotambuliwa kiotomatiki. Wasiliana na mtoa huduma za simu ili upate maelezo zaidi.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Imeshindwa kuwasiliana na lango kutoka kwenye programu za Android</translation>
 <translation id="9211490828691860325">Maeneokazi yote</translation>

@@ -64,6 +64,7 @@
 <translation id="1476467821656042872"><ph name="MANAGER" /> این دستگاه را مدیریت می‌کند و ممکن است بتواند بر فعالیتتان نظارت داشته باشد.</translation>
 <translation id="1478594628797167447">اسکنر</translation>
 <translation id="1483493594462132177">ارسال</translation>
+<translation id="1488850966314959671">‏با هیچ‌کدام از نقطه‌های APN سفارشی فعال نمی‌توان به این شبکه متصل شد. برای کسب اطلاعات بیشتر با شرکت مخابراتی‌تان تماس بگیرید.</translation>
 <translation id="1491076385728777984">درحال به‌روزرسانی سفت‌افزار در <ph name="DEVICE_NAME" /></translation>
 <translation id="1499041187027566160">بالا بردن صدا</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> این کاربر را مدیریت می‌کند و می‌تواند ازراه‌دور تنظیمات را مدیریت کند و بر فعالیت کاربر نظارت داشته باشد.</translation>
@@ -563,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">اسکن مجدد</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">‏این APN را نمی‌توان غیرفعال یا حذف کرد. مطمئن شوید نقطه‌های APN پیوست‌شده فعال را غیرفعال یا حذف کرده‌اید.</translation>
 <translation id="5600027863942488546">کلید <ph name="KEY_NAME" /> امتحان شد</translation>
 <translation id="5620281292257375798">فقط داخلی</translation>
 <translation id="5649768706273821470">گوش دادن</translation>
@@ -1012,6 +1014,7 @@
 <translation id="9173638680043580060">کمتر از یک دقیقه باقیمانده است</translation>
 <translation id="917720651393141712">آزمایش کردن</translation>
 <translation id="9188992814426075118">صفحه‌کلیدتان می‌تواند به‌طور خودکار با کاغذدیواری منطبق شود</translation>
+<translation id="9189000703457422362">‏نمی‌توان بااستفاده از نقطه‌های APN که به‌طور خودکار شناسایی شده است به این شبکه متصل شد. برای کسب اطلاعات بیشتر با شرکت مخابراتی‌تان تماس بگیرید.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">‏نمی‌توان از برنامه‌های Android با دروازه تماس گرفت</translation>
 <translation id="9211490828691860325">همه میزکارها</translation>

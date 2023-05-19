@@ -64,6 +64,7 @@
 <translation id="1476467821656042872">Bu qurilma <ph name="MANAGER" /> domenida boshqariladi va faoliyatingiz kuzatilishi mumkin.</translation>
 <translation id="1478594628797167447">Skaner</translation>
 <translation id="1483493594462132177">Yuborish</translation>
+<translation id="1488850966314959671">Yoqilgan shaxsiy APNlar orqali bu tarmoqqa ulanmadi. Batafsil axborot olish uchun mobil aloqa operatoriga bogʻlaning.</translation>
 <translation id="1491076385728777984"><ph name="DEVICE_NAME" /> mikrodasturi yangilanmoqda</translation>
 <translation id="1499041187027566160">ovozni ko‘tarish</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> bu foydalanuvchi faoliyatini masofadan kuzatishi va boshqarishi mumkin.</translation>
@@ -563,6 +564,7 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Qayta skanerlash</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5584044598279886848">Bu APN faolsizlantirilmadi yoki olib tashlanmadi. Unga ulangan APN nuqtalari faolsizlantirilishi yoki olib tashlanishi kerak</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> tugmasi sinaldi</translation>
 <translation id="5620281292257375798">Maxfiy</translation>
 <translation id="5649768706273821470">Tinglash</translation>
@@ -1012,6 +1014,7 @@
 <translation id="9173638680043580060">Bir daqiqadan kamroq vaqt qoldi</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Klaviatura ranglari fon rasmiga avtomatik moslanishi mumkin</translation>
+<translation id="9189000703457422362">Avtomatik topilgan APN orqali bu tarmoqqa ulanish imkonsiz. Batafsil axborot olish uchun mobil aloqa operatoriga bogʻlaning.</translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9204237731135241582">Android ilovalardan shlyuzga ulanish imkonsiz</translation>
 <translation id="9211490828691860325">Barcha ish stollari</translation>
