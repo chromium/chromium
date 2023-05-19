@@ -37,7 +37,7 @@ packager_builder(
         category = "packager|3pp|linux",
         short_name = "amd64",
     ),
-    notifies = ["chromium-3pp-packager"],
+    notifies = ["chromium-infra"],
     properties = {
         "$build/chromium_3pp": {
             "platform": "linux-amd64",
@@ -68,7 +68,7 @@ packager_builder(
         category = "packager|3pp|mac",
         short_name = "amd64",
     ),
-    notifies = ["chromium-3pp-packager"],
+    notifies = ["chromium-infra"],
     properties = {
         "$build/chromium_3pp": {
             "platform": "mac-amd64",
@@ -313,7 +313,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         short_name = "flash",
     ),
-    notifies = ["clank-engprod"],
+    notifies = ["chromium-infra"],
     properties = {
         "flash_criteria": [
             # Used by ci/Android Release (Nexus 5X)

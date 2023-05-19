@@ -64,18 +64,10 @@ luci.notifier(
 )
 
 luci.notifier(
-    name = "chromium-3pp-packager",
-    on_new_status = ["FAILURE"],
-    notify_emails = [
-        "chromium-3pp-packager+failures@google.com",
-    ],
-)
-
-luci.notifier(
-    name = "clank-engprod",
+    name = "chromium-infra",
     on_new_status = ["FAILURE", "INFRA_FAILURE"],
     notify_emails = [
-        "clank-engprod+failures@google.com",
+        "chromium-infra+failures@google.com",
     ],
 )
 
