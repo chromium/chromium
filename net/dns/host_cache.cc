@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <ostream>
+#include <set>
 #include <string>
 #include <type_traits>
 #include <unordered_set>
@@ -268,9 +269,10 @@ HostCache::Entry::Entry(int error,
 }
 
 HostCache::Entry::Entry(
-    std::vector<std::unique_ptr<HostResolverInternalResult>> results,
+    std::set<std::unique_ptr<HostResolverInternalResult>> results,
     base::Time now,
-    base::TimeTicks now_ticks) {
+    base::TimeTicks now_ticks,
+    Source empty_source) {
   std::unique_ptr<HostResolverInternalResult> data_result;
   std::unique_ptr<HostResolverInternalResult> metadata_result;
   std::unique_ptr<HostResolverInternalResult> error_result;
@@ -278,7 +280,12 @@ HostCache::Entry::Entry(
 
   absl::optional<base::TimeDelta> smallest_ttl;
   absl::optional<Source> source;
-  for (auto& result : results) {
+  for (auto it = results.cbegin(); it != results.cend();) {
+    // Increment iterator now to allow extracting `result` (std::set::extract()
+    // is guaranteed to not invalidate any iterators except those pointing to
+    // the extracted value).
+    const std::unique_ptr<HostResolverInternalResult>& result = *it++;
+
     if (result->expiration().has_value()) {
       smallest_ttl = std::min(smallest_ttl.value_or(base::TimeDelta::Max()),
                               result->expiration().value() - now_ticks);
@@ -304,18 +311,18 @@ HostCache::Entry::Entry(
     switch (result->type()) {
       case HostResolverInternalResult::Type::kData:
         DCHECK(!data_result);  // Expect at most one data result.
-        data_result = std::move(result);
+        data_result = std::move(results.extract(result).value());
         break;
       case HostResolverInternalResult::Type::kMetadata:
         DCHECK(!metadata_result);  // Expect at most one metadata result.
-        metadata_result = std::move(result);
+        metadata_result = std::move(results.extract(result).value());
         break;
       case HostResolverInternalResult::Type::kError:
         DCHECK(!error_result);  // Expect at most one error result.
-        error_result = std::move(result);
+        error_result = std::move(results.extract(result).value());
         break;
       case HostResolverInternalResult::Type::kAlias:
-        alias_results.push_back(std::move(result));
+        alias_results.push_back(std::move(results.extract(result).value()));
         break;
     }
 
@@ -325,7 +332,7 @@ HostCache::Entry::Entry(
   }
 
   ttl_ = smallest_ttl.value_or(kUnknownTtl);
-  source_ = source.value_or(SOURCE_UNKNOWN);
+  source_ = source.value_or(empty_source);
 
   if (error_result) {
     DCHECK(!data_result);

@@ -2471,16 +2471,16 @@ TEST(HostCacheTest, ConvertFromInternalAddressResult) {
   constexpr base::TimeDelta kTtl2 = base::Minutes(40);
   constexpr base::TimeDelta kTtl3 = base::Minutes(55);
 
-  std::vector<std::unique_ptr<HostResolverInternalResult>> results;
-  results.push_back(std::make_unique<HostResolverInternalDataResult>(
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  results.insert(std::make_unique<HostResolverInternalDataResult>(
       "endpoint.test", DnsQueryType::AAAA, base::TimeTicks() + kTtl1,
       base::Time() + kTtl1, HostResolverInternalResult::Source::kDns,
       kEndpoints, std::vector<std::string>{}, std::vector<HostPortPair>{}));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain1.test", DnsQueryType::AAAA, base::TimeTicks() + kTtl2,
       base::Time() + kTtl2, HostResolverInternalResult::Source::kDns,
       "domain2.test"));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain2.test", DnsQueryType::AAAA, base::TimeTicks() + kTtl3,
       base::Time() + kTtl3, HostResolverInternalResult::Source::kDns,
       "endpoint.test"));
@@ -2513,16 +2513,16 @@ TEST(HostCacheTest, ConvertFromInternalMetadataResult) {
   constexpr base::TimeDelta kTtl2 = base::Minutes(40);
   constexpr base::TimeDelta kTtl3 = base::Minutes(55);
 
-  std::vector<std::unique_ptr<HostResolverInternalResult>> results;
-  results.push_back(std::make_unique<HostResolverInternalMetadataResult>(
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  results.insert(std::make_unique<HostResolverInternalMetadataResult>(
       "endpoint.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl1,
       base::Time() + kTtl1, HostResolverInternalResult::Source::kDns,
       kMetadatas));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain1.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl2,
       base::Time() + kTtl2, HostResolverInternalResult::Source::kDns,
       "domain2.test"));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain2.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl3,
       base::Time() + kTtl3, HostResolverInternalResult::Source::kDns,
       "endpoint.test"));
@@ -2549,16 +2549,16 @@ TEST(HostCacheTest, ConvertFromCompatibleOnlyInternalMetadataResult) {
   constexpr base::TimeDelta kTtl2 = base::Minutes(40);
   constexpr base::TimeDelta kTtl3 = base::Minutes(55);
 
-  std::vector<std::unique_ptr<HostResolverInternalResult>> results;
-  results.push_back(std::make_unique<HostResolverInternalMetadataResult>(
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  results.insert(std::make_unique<HostResolverInternalMetadataResult>(
       "endpoint.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl1,
       base::Time() + kTtl1, HostResolverInternalResult::Source::kDns,
       kMetadatas));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain1.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl2,
       base::Time() + kTtl2, HostResolverInternalResult::Source::kDns,
       "domain2.test"));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain2.test", DnsQueryType::HTTPS, base::TimeTicks() + kTtl3,
       base::Time() + kTtl3, HostResolverInternalResult::Source::kDns,
       "endpoint.test"));
@@ -2579,16 +2579,16 @@ TEST(HostCacheTest, ConvertFromInternalErrorResult) {
   constexpr base::TimeDelta kTtl2 = base::Minutes(40);
   constexpr base::TimeDelta kTtl3 = base::Minutes(55);
 
-  std::vector<std::unique_ptr<HostResolverInternalResult>> results;
-  results.push_back(std::make_unique<HostResolverInternalErrorResult>(
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  results.insert(std::make_unique<HostResolverInternalErrorResult>(
       "endpoint.test", DnsQueryType::A, base::TimeTicks() + kTtl1,
       base::Time() + kTtl1, HostResolverInternalResult::Source::kDns,
       ERR_NAME_NOT_RESOLVED));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain1.test", DnsQueryType::A, base::TimeTicks() + kTtl2,
       base::Time() + kTtl2, HostResolverInternalResult::Source::kDns,
       "domain2.test"));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain2.test", DnsQueryType::A, base::TimeTicks() + kTtl3,
       base::Time() + kTtl3, HostResolverInternalResult::Source::kDns,
       "endpoint.test"));
@@ -2607,16 +2607,16 @@ TEST(HostCacheTest, ConvertFromNonCachableInternalErrorResult) {
   constexpr base::TimeDelta kTtl1 = base::Minutes(45);
   constexpr base::TimeDelta kTtl2 = base::Minutes(40);
 
-  std::vector<std::unique_ptr<HostResolverInternalResult>> results;
-  results.push_back(std::make_unique<HostResolverInternalErrorResult>(
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  results.insert(std::make_unique<HostResolverInternalErrorResult>(
       "endpoint.test", DnsQueryType::AAAA, /*expiration=*/absl::nullopt,
       /*timed_expiration=*/absl::nullopt,
       HostResolverInternalResult::Source::kDns, ERR_NAME_NOT_RESOLVED));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain1.test", DnsQueryType::AAAA, base::TimeTicks() + kTtl1,
       base::Time() + kTtl1, HostResolverInternalResult::Source::kDns,
       "domain2.test"));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain2.test", DnsQueryType::AAAA, base::TimeTicks() + kTtl2,
       base::Time() + kTtl2, HostResolverInternalResult::Source::kDns,
       "endpoint.test"));
@@ -2635,12 +2635,12 @@ TEST(HostCacheTest, ConvertFromInternalAliasOnlyResult) {
   constexpr base::TimeDelta kTtl1 = base::Minutes(45);
   constexpr base::TimeDelta kTtl2 = base::Minutes(40);
 
-  std::vector<std::unique_ptr<HostResolverInternalResult>> results;
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain1.test", DnsQueryType::A, base::TimeTicks() + kTtl1,
       base::Time() + kTtl1, HostResolverInternalResult::Source::kDns,
       "domain2.test"));
-  results.push_back(std::make_unique<HostResolverInternalAliasResult>(
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
       "domain2.test", DnsQueryType::A, base::TimeTicks() + kTtl2,
       base::Time() + kTtl2, HostResolverInternalResult::Source::kDns,
       "endpoint.test"));

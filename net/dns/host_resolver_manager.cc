@@ -84,6 +84,7 @@
 #include "net/dns/dns_transaction.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_cache.h"
+#include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/host_resolver_mdns_listener_impl.h"
 #include "net/dns/host_resolver_mdns_task.h"
 #include "net/dns/host_resolver_nat64_task.h"
@@ -1492,21 +1493,36 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       }
     }
 
-    HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
-    DnsResponseResultExtractor extractor(response);
-    DnsResponseResultExtractor::ExtractionError extraction_error =
+    DCHECK(response);
+
+    DnsResponseResultExtractor extractor(*response);
+    DnsResponseResultExtractor::ResultsOrError results =
         extractor.ExtractDnsResults(transaction_info.type,
                                     /*original_domain_name=*/GetHostname(host_),
-                                    request_port, &results);
-    DCHECK_NE(extraction_error,
-              DnsResponseResultExtractor::ExtractionError::kUnexpected);
+                                    request_port);
+    DCHECK_NE(
+        results.error_or(DnsResponseResultExtractor::ExtractionError::kOk),
+        DnsResponseResultExtractor::ExtractionError::kUnexpected);
 
-    if (results.error() != OK && results.error() != ERR_NAME_NOT_RESOLVED) {
+    // TODO(crbug.com/1381506): Use new results type directly instead of
+    // converting to HostCache::Entry.
+    DnsResponseResultExtractor::ExtractionError extraction_error =
+        results.error_or(DnsResponseResultExtractor::ExtractionError::kOk);
+    HostCache::Entry legacy_results(ERR_DNS_MALFORMED_RESPONSE,
+                                    HostCache::Entry::SOURCE_DNS);
+    if (results.has_value()) {
+      legacy_results = HostCache::Entry(
+          std::move(results).value(), base::Time::Now(),
+          tick_clock_->NowTicks(), HostCache::Entry::SOURCE_DNS);
+    }
+
+    if (legacy_results.error() != OK &&
+        legacy_results.error() != ERR_NAME_NOT_RESOLVED) {
       net_log_.AddEvent(
           NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK_EXTRACTION_FAILURE,
           [&] {
             return NetLogDnsTaskExtractionFailureParams(
-                extraction_error, transaction_info.type, results);
+                extraction_error, transaction_info.type, legacy_results);
           });
       if (transaction_info.error_behavior ==
               TransactionErrorBehavior::kFatalOrEmpty ||
@@ -1516,20 +1532,22 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         // would need to be a call to some sort of
         // IsFatalTransactionExtractionError() function.
         DCHECK(!fatal_error);
-        results = DnsResponseResultExtractor::CreateEmptyResult(
-            transaction_info.type);
+        DCHECK_EQ(transaction_info.type, DnsQueryType::HTTPS);
+        legacy_results =
+            HostCache::Entry(ERR_NAME_NOT_RESOLVED, std::vector<bool>(),
+                             HostCache::Entry::SOURCE_DNS);
       } else {
-        OnFailure(results.error(), /*allow_fallback=*/true,
-                  results.GetOptionalTtl(), transaction_info.type);
+        OnFailure(legacy_results.error(), /*allow_fallback=*/true,
+                  legacy_results.GetOptionalTtl(), transaction_info.type);
         return;
       }
     }
 
     if (httpssvc_metrics_) {
       if (transaction_info.type == DnsQueryType::HTTPS) {
-        httpssvc_metrics_->SaveForHttps(rcode_for_httpssvc,
-                                        results.https_record_compatibility(),
-                                        elapsed_time);
+        httpssvc_metrics_->SaveForHttps(
+            rcode_for_httpssvc, legacy_results.https_record_compatibility(),
+            elapsed_time);
       } else {
         httpssvc_metrics_->SaveForAddressQuery(elapsed_time,
                                                rcode_for_httpssvc);
@@ -1539,15 +1557,15 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     // Trigger HTTP->HTTPS upgrade if an HTTPS record is received for an "http"
     // or "ws" request.
     if (transaction_info.type == DnsQueryType::HTTPS &&
-        ShouldTriggerHttpToHttpsUpgrade(results)) {
+        ShouldTriggerHttpToHttpsUpgrade(legacy_results)) {
       // Disallow fallback. Otherwise DNS could be reattempted without HTTPS
       // queries, and that would hide this error instead of triggering upgrade.
       OnFailure(ERR_DNS_NAME_HTTPS_ONLY, /*allow_fallback=*/false,
-                results.GetOptionalTtl(), transaction_info.type);
+                legacy_results.GetOptionalTtl(), transaction_info.type);
       return;
     }
 
-    HideMetadataResultsIfNotDesired(results);
+    HideMetadataResultsIfNotDesired(legacy_results);
 
     switch (transaction_info.type) {
       case DnsQueryType::A:
@@ -1591,19 +1609,19 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         case DnsQueryType::A:
           // Canonical names from A results have lower priority than those
           // from AAAA results, so merge to the back.
-          results = HostCache::Entry::MergeEntries(
-              std::move(saved_results_).value(), std::move(results));
+          legacy_results = HostCache::Entry::MergeEntries(
+              std::move(saved_results_).value(), std::move(legacy_results));
           break;
         case DnsQueryType::AAAA:
           // Canonical names from AAAA results take priority over those
           // from A results, so merge to the front.
-          results = HostCache::Entry::MergeEntries(
-              std::move(results), std::move(saved_results_).value());
+          legacy_results = HostCache::Entry::MergeEntries(
+              std::move(legacy_results), std::move(saved_results_).value());
           break;
         case DnsQueryType::HTTPS:
           // No particular importance to order.
-          results = HostCache::Entry::MergeEntries(
-              std::move(results), std::move(saved_results_).value());
+          legacy_results = HostCache::Entry::MergeEntries(
+              std::move(legacy_results), std::move(saved_results_).value());
           break;
         default:
           // Only expect address query types with multiple transactions.
@@ -1611,7 +1629,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       }
     }
 
-    saved_results_ = std::move(results);
+    saved_results_ = std::move(legacy_results);
     OnTransactionsFinished();
   }
 

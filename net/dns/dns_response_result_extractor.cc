@@ -27,6 +27,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "net/base/address_list.h"
 #include "net/base/connection_endpoint_metadata.h"
@@ -39,6 +40,7 @@
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_cache.h"
+#include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/https_record_rdata.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/dns_query_type.h"
@@ -50,9 +52,15 @@ namespace net {
 
 namespace {
 
-using AliasMap =
-    std::map<std::string, std::string, dns_names_util::DomainNameComparator>;
+using AliasMap = std::map<std::string,
+                          std::unique_ptr<const RecordParsed>,
+                          dns_names_util::DomainNameComparator>;
 using ExtractionError = DnsResponseResultExtractor::ExtractionError;
+using RecordsOrError =
+    base::expected<std::vector<std::unique_ptr<const RecordParsed>>,
+                   ExtractionError>;
+using ResultsOrError = DnsResponseResultExtractor::ResultsOrError;
+using Source = HostResolverInternalResult::Source;
 
 void SaveMetricsForAdditionalHttpsRecord(const RecordParsed& record,
                                          bool is_unsolicited) {
@@ -90,8 +98,9 @@ std::vector<HostPortPair> SortServiceTargets(
     const std::vector<const SrvRecordRdata*>& rdatas) {
   std::map<uint16_t, std::unordered_set<const SrvRecordRdata*>>
       ordered_by_priority;
-  for (const SrvRecordRdata* rdata : rdatas)
+  for (const SrvRecordRdata* rdata : rdatas) {
     ordered_by_priority[rdata->priority()].insert(rdata);
+  }
 
   std::vector<HostPortPair> sorted_targets;
   for (auto& priority : ordered_by_priority) {
@@ -99,8 +108,9 @@ std::vector<HostPortPair> SortServiceTargets(
     // (weight per result) <= UINT16_MAX, then it should be the case that
     // (total weight) <= UINT32_MAX, but use CheckedNumeric for extra safety.
     auto total_weight = base::MakeCheckedNum<uint32_t>(0);
-    for (const SrvRecordRdata* rdata : priority.second)
+    for (const SrvRecordRdata* rdata : priority.second) {
       total_weight += rdata->weight();
+    }
 
     // Add 1 to total weight because, to deal with 0-weight targets, we want
     // our random selection to be inclusive [0, total].
@@ -140,113 +150,155 @@ std::vector<HostPortPair> SortServiceTargets(
   return sorted_targets;
 }
 
+// Validates that all `aliases` form a single non-looping chain, starting from
+// `query_name` and that all alias records are valid. Also validates that all
+// `data_records` are at the final name at the end of the alias chain.
+// TODO(crbug.com/1381506): Consider altering chain TTLs so that each TTL is
+// less than or equal to all previous links in the chain.
 ExtractionError ValidateNamesAndAliases(
     base::StringPiece query_name,
     const AliasMap& aliases,
-    const std::vector<std::unique_ptr<const RecordParsed>>& results) {
+    const std::vector<std::unique_ptr<const RecordParsed>>& data_records,
+    std::string& out_final_chain_name) {
   // Validate that all aliases form a single non-looping chain, starting from
   // `query_name`.
   size_t aliases_in_chain = 0;
-  base::StringPiece final_chain_name = query_name;
-  auto alias = aliases.find(std::string(query_name));
-  while (alias != aliases.end() && aliases_in_chain <= aliases.size()) {
+  std::string target_name =
+      dns_names_util::UrlCanonicalizeNameIfAble(query_name);
+  for (auto alias = aliases.find(target_name);
+       alias != aliases.end() && aliases_in_chain <= aliases.size();
+       alias = aliases.find(target_name)) {
     aliases_in_chain++;
-    final_chain_name = alias->second;
-    alias = aliases.find(alias->second);
+
+    const CnameRecordRdata* cname_data =
+        alias->second->rdata<CnameRecordRdata>();
+    if (!cname_data) {
+      return ExtractionError::kMalformedCname;
+    }
+
+    target_name =
+        dns_names_util::UrlCanonicalizeNameIfAble(cname_data->cname());
+    if (!dns_names_util::IsValidDnsRecordName(target_name)) {
+      return ExtractionError::kMalformedCname;
+    }
   }
 
-  if (aliases_in_chain != aliases.size())
+  if (aliases_in_chain != aliases.size()) {
     return ExtractionError::kBadAliasChain;
+  }
 
-  // All results must match final alias name.
-  for (const auto& result : results) {
-    DCHECK_NE(result->type(), dns_protocol::kTypeCNAME);
-    if (!base::EqualsCaseInsensitiveASCII(final_chain_name, result->name())) {
+  // All records must match final alias name.
+  for (const auto& record : data_records) {
+    DCHECK_NE(record->type(), dns_protocol::kTypeCNAME);
+    if (!base::EqualsCaseInsensitiveASCII(
+            target_name,
+            dns_names_util::UrlCanonicalizeNameIfAble(record->name()))) {
       return ExtractionError::kNameMismatch;
     }
   }
 
+  out_final_chain_name = std::move(target_name);
   return ExtractionError::kOk;
 }
 
-ExtractionError ExtractResponseRecords(
+// Common results (aliases and errors) are extracted into
+// `out_non_data_results`.
+RecordsOrError ExtractResponseRecords(
     const DnsResponse& response,
-    uint16_t result_qtype,
-    std::vector<std::unique_ptr<const RecordParsed>>* out_records,
-    absl::optional<base::TimeDelta>* out_response_ttl,
-    std::set<std::string>* out_aliases) {
+    DnsQueryType query_type,
+    base::Time now,
+    base::TimeTicks now_ticks,
+    std::set<std::unique_ptr<HostResolverInternalResult>>&
+        out_non_data_results) {
   DCHECK_EQ(response.question_count(), 1u);
-  DCHECK(out_records);
-  DCHECK(out_response_ttl);
 
-  std::vector<std::unique_ptr<const RecordParsed>> records;
+  std::vector<std::unique_ptr<const RecordParsed>> data_records;
   absl::optional<base::TimeDelta> response_ttl;
 
   DnsRecordParser parser = response.Parser();
 
   // Expected to be validated by DnsTransaction.
-  DCHECK_EQ(result_qtype, response.GetSingleQType());
+  DCHECK_EQ(DnsQueryTypeToQtype(query_type), response.GetSingleQType());
 
   AliasMap aliases;
   for (unsigned i = 0; i < response.answer_count(); ++i) {
     std::unique_ptr<const RecordParsed> record =
-        RecordParsed::CreateFrom(&parser, base::Time::Now());
+        RecordParsed::CreateFrom(&parser, now);
 
-    if (!record)
-      return ExtractionError::kMalformedRecord;
+    if (!record || !dns_names_util::IsValidDnsRecordName(record->name())) {
+      return base::unexpected(ExtractionError::kMalformedRecord);
+    }
 
-    DCHECK_NE(result_qtype, dns_protocol::kTypeCNAME);
     if (record->klass() == dns_protocol::kClassIN &&
         record->type() == dns_protocol::kTypeCNAME) {
+      std::string canonicalized_name =
+          dns_names_util::UrlCanonicalizeNameIfAble(record->name());
+      DCHECK(dns_names_util::IsValidDnsRecordName(canonicalized_name));
+
+      bool added =
+          aliases.emplace(canonicalized_name, std::move(record)).second;
       // Per RFC2181, multiple CNAME records are not allowed for the same name.
-      if (aliases.find(record->name()) != aliases.end())
-        return ExtractionError::kMultipleCnames;
-
-      const CnameRecordRdata* cname_data = record->rdata<CnameRecordRdata>();
-      if (!cname_data)
-        return ExtractionError::kMalformedCname;
-
-      base::TimeDelta ttl = base::Seconds(record->ttl());
-      response_ttl =
-          std::min(response_ttl.value_or(base::TimeDelta::Max()), ttl);
-
-      bool added = aliases.emplace(record->name(), cname_data->cname()).second;
-      DCHECK(added);
+      if (!added) {
+        return base::unexpected(ExtractionError::kMultipleCnames);
+      }
     } else if (record->klass() == dns_protocol::kClassIN &&
-               record->type() == result_qtype) {
+               record->type() == DnsQueryTypeToQtype(query_type)) {
       base::TimeDelta ttl = base::Seconds(record->ttl());
       response_ttl =
           std::min(response_ttl.value_or(base::TimeDelta::Max()), ttl);
 
-      records.push_back(std::move(record));
+      data_records.push_back(std::move(record));
     }
   }
 
-  ExtractionError name_and_alias_validation_error =
-      ValidateNamesAndAliases(response.GetSingleDottedName(), aliases, records);
-  if (name_and_alias_validation_error != ExtractionError::kOk)
-    return name_and_alias_validation_error;
+  std::string final_chain_name;
+  ExtractionError name_and_alias_validation_error = ValidateNamesAndAliases(
+      response.GetSingleDottedName(), aliases, data_records, final_chain_name);
+  if (name_and_alias_validation_error != ExtractionError::kOk) {
+    return base::unexpected(name_and_alias_validation_error);
+  }
 
-  // For NXDOMAIN or NODATA (NOERROR with 0 answers), attempt to find a TTL
-  // via an SOA record.
-  if (response.rcode() == dns_protocol::kRcodeNXDOMAIN ||
-      (response.answer_count() == 0 &&
-       response.rcode() == dns_protocol::kRcodeNOERROR)) {
-    bool soa_found = false;
-    for (unsigned i = 0; i < response.authority_count(); ++i) {
-      DnsResourceRecord record;
-      if (parser.ReadRecord(&record) && record.type == dns_protocol::kTypeSOA) {
-        soa_found = true;
-        base::TimeDelta ttl = base::Seconds(record.ttl);
-        response_ttl =
-            std::min(response_ttl.value_or(base::TimeDelta::Max()), ttl);
-      }
+  std::set<std::unique_ptr<HostResolverInternalResult>> non_data_results;
+  for (const auto& alias : aliases) {
+    DCHECK(alias.second->rdata<CnameRecordRdata>());
+    non_data_results.insert(std::make_unique<HostResolverInternalAliasResult>(
+        alias.first, query_type, now_ticks + base::Seconds(alias.second->ttl()),
+        now + base::Seconds(alias.second->ttl()), Source::kDns,
+        alias.second->rdata<CnameRecordRdata>()->cname()));
+  }
+
+  absl::optional<base::TimeDelta> error_ttl;
+  for (unsigned i = 0; i < response.authority_count(); ++i) {
+    DnsResourceRecord record;
+    if (!parser.ReadRecord(&record)) {
+      // Stop trying to process records if things get malformed in the authority
+      // section.
+      break;
     }
 
-    // Per RFC2308, section 5, never cache negative results unless an SOA
-    // record is found.
-    if (!soa_found)
-      response_ttl.reset();
+    if (record.type == dns_protocol::kTypeSOA) {
+      base::TimeDelta ttl = base::Seconds(record.ttl);
+      error_ttl = std::min(error_ttl.value_or(base::TimeDelta::Max()), ttl);
+    }
+  }
+
+  // For NXDOMAIN or NODATA (NOERROR with 0 answers matching the qtype), cache
+  // an error if an error TTL was found from SOA records. Also, ignore the error
+  // if we somehow have result records (most likely if the server incorrectly
+  // sends NXDOMAIN with results). Note that, per the weird QNAME definition in
+  // RFC2308, section 1, as well as the clarifications in RFC6604, section 3,
+  // and in RFC8020, section 2, the cached error is specific to the final chain
+  // name, not the query name.
+  //
+  // TODO(ericorth@chromium.org): Differentiate nxdomain errors by making it
+  // cacheable across any query type (per RFC2308, Section 5).
+  bool is_cachable_error = data_records.empty() &&
+                           (response.rcode() == dns_protocol::kRcodeNXDOMAIN ||
+                            response.rcode() == dns_protocol::kRcodeNOERROR);
+  if (is_cachable_error && error_ttl.has_value()) {
+    non_data_results.insert(std::make_unique<HostResolverInternalErrorResult>(
+        final_chain_name, query_type, now_ticks + error_ttl.value(),
+        now + error_ttl.value(), Source::kDns, ERR_NAME_NOT_RESOLVED));
   }
 
   for (unsigned i = 0; i < response.additional_answer_count(); ++i) {
@@ -254,186 +306,164 @@ ExtractionError ExtractResponseRecords(
         RecordParsed::CreateFrom(&parser, base::Time::Now());
     if (record && record->klass() == dns_protocol::kClassIN &&
         record->type() == dns_protocol::kTypeHttps) {
-      bool is_unsolicited = result_qtype != dns_protocol::kTypeHttps;
+      bool is_unsolicited = query_type != DnsQueryType::HTTPS;
       SaveMetricsForAdditionalHttpsRecord(*record, is_unsolicited);
     }
   }
 
-  *out_records = std::move(records);
-  *out_response_ttl = response_ttl;
-
-  if (out_aliases) {
-    out_aliases->clear();
-    for (const auto& alias : aliases) {
-      std::string canonicalized_alias =
-          dns_names_util::UrlCanonicalizeNameIfAble(alias.second);
-      if (dns_names_util::IsValidDnsRecordName(canonicalized_alias)) {
-        out_aliases->insert(std::move(canonicalized_alias));
-      }
-    }
-    std::string canonicalized_query = dns_names_util::UrlCanonicalizeNameIfAble(
-        response.GetSingleDottedName());
-    if (dns_names_util::IsValidDnsRecordName(canonicalized_query)) {
-      out_aliases->insert(std::move(canonicalized_query));
-    }
-  }
-
-  return ExtractionError::kOk;
+  out_non_data_results = std::move(non_data_results);
+  return data_records;
 }
 
-ExtractionError ExtractAddressResults(const DnsResponse& response,
-                                      uint16_t address_qtype,
-                                      HostCache::Entry* out_results) {
+ResultsOrError ExtractAddressResults(const DnsResponse& response,
+                                     DnsQueryType query_type,
+                                     base::Time now,
+                                     base::TimeTicks now_ticks) {
   DCHECK_EQ(response.question_count(), 1u);
-  DCHECK(address_qtype == dns_protocol::kTypeA ||
-         address_qtype == dns_protocol::kTypeAAAA);
-  DCHECK(out_results);
+  DCHECK(query_type == DnsQueryType::A || query_type == DnsQueryType::AAAA);
 
-  std::vector<std::unique_ptr<const RecordParsed>> records;
-  absl::optional<base::TimeDelta> response_ttl;
-  std::set<std::string> aliases;
-  ExtractionError extraction_error = ExtractResponseRecords(
-      response, address_qtype, &records, &response_ttl, &aliases);
-
-  if (extraction_error != ExtractionError::kOk) {
-    *out_results = HostCache::Entry(ERR_DNS_MALFORMED_RESPONSE,
-                                    HostCache::Entry::SOURCE_DNS);
-    return extraction_error;
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  RecordsOrError records =
+      ExtractResponseRecords(response, query_type, now, now_ticks, results);
+  if (!records.has_value()) {
+    return base::unexpected(records.error());
   }
 
   std::vector<IPEndPoint> ip_endpoints;
-  std::string canonical_name;
-  for (const auto& record : records) {
-    if (ip_endpoints.empty())
-      canonical_name = record->name();
-
-    // Expect that ExtractResponseRecords validates that all results correctly
-    // have the same name.
-    DCHECK(base::EqualsCaseInsensitiveASCII(canonical_name, record->name()))
-        << "canonical_name: " << canonical_name
-        << "\nrecord->name(): " << record->name();
-
+  auto min_ttl = base::TimeDelta::Max();
+  for (const auto& record : records.value()) {
     IPAddress address;
-    if (address_qtype == dns_protocol::kTypeA) {
+    if (query_type == DnsQueryType::A) {
       const ARecordRdata* rdata = record->rdata<ARecordRdata>();
+      DCHECK(rdata);
       address = rdata->address();
       DCHECK(address.IsIPv4());
     } else {
-      DCHECK_EQ(address_qtype, dns_protocol::kTypeAAAA);
+      DCHECK_EQ(query_type, DnsQueryType::AAAA);
       const AAAARecordRdata* rdata = record->rdata<AAAARecordRdata>();
+      DCHECK(rdata);
       address = rdata->address();
       DCHECK(address.IsIPv6());
     }
     ip_endpoints.emplace_back(address, /*port=*/0);
-  }
-  int error_result = ip_endpoints.empty() ? ERR_NAME_NOT_RESOLVED : OK;
 
-  HostCache::Entry results(error_result, std::move(ip_endpoints),
-                           std::move(aliases), HostCache::Entry::SOURCE_DNS,
-                           response_ttl);
-
-  if (!canonical_name.empty()) {
-    results.set_canonical_names(std::set<std::string>({canonical_name}));
+    base::TimeDelta ttl = base::Seconds(record->ttl());
+    min_ttl = std::min(ttl, min_ttl);
   }
 
-  *out_results = std::move(results);
-  return ExtractionError::kOk;
+  if (!ip_endpoints.empty()) {
+    results.insert(std::make_unique<HostResolverInternalDataResult>(
+        records->front()->name(), query_type, now_ticks + min_ttl,
+        now + min_ttl, Source::kDns, std::move(ip_endpoints),
+        std::vector<std::string>{}, std::vector<HostPortPair>{}));
+  }
+
+  return results;
 }
 
-ExtractionError ExtractTxtResults(const DnsResponse& response,
-                                  HostCache::Entry* out_results) {
-  DCHECK(out_results);
-
-  std::vector<std::unique_ptr<const RecordParsed>> records;
-  absl::optional<base::TimeDelta> response_ttl;
-  ExtractionError extraction_error =
-      ExtractResponseRecords(response, dns_protocol::kTypeTXT, &records,
-                             &response_ttl, nullptr /* out_aliases */);
-
-  if (extraction_error != ExtractionError::kOk) {
-    *out_results = HostCache::Entry(ERR_DNS_MALFORMED_RESPONSE,
-                                    HostCache::Entry::SOURCE_DNS);
-    return extraction_error;
+ResultsOrError ExtractTxtResults(const DnsResponse& response,
+                                 base::Time now,
+                                 base::TimeTicks now_ticks) {
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  RecordsOrError txt_records = ExtractResponseRecords(
+      response, DnsQueryType::TXT, now, now_ticks, results);
+  if (!txt_records.has_value()) {
+    return base::unexpected(txt_records.error());
   }
 
-  std::vector<std::string> text_records;
-  for (const auto& record : records) {
+  std::vector<std::string> strings;
+  base::TimeDelta min_ttl = base::TimeDelta::Max();
+  for (const auto& record : txt_records.value()) {
     const TxtRecordRdata* rdata = record->rdata<net::TxtRecordRdata>();
-    text_records.insert(text_records.end(), rdata->texts().begin(),
-                        rdata->texts().end());
+    DCHECK(rdata);
+    strings.insert(strings.end(), rdata->texts().begin(), rdata->texts().end());
+
+    base::TimeDelta ttl = base::Seconds(record->ttl());
+    min_ttl = std::min(ttl, min_ttl);
   }
 
-  *out_results = HostCache::Entry(
-      text_records.empty() ? ERR_NAME_NOT_RESOLVED : OK,
-      std::move(text_records), HostCache::Entry::SOURCE_DNS, response_ttl);
-  return ExtractionError::kOk;
+  if (!strings.empty()) {
+    results.insert(std::make_unique<HostResolverInternalDataResult>(
+        txt_records->front()->name(), DnsQueryType::TXT, now_ticks + min_ttl,
+        now + min_ttl, Source::kDns, std::vector<IPEndPoint>{},
+        std::move(strings), std::vector<HostPortPair>{}));
+  }
+
+  return results;
 }
 
-ExtractionError ExtractPointerResults(const DnsResponse& response,
-                                      HostCache::Entry* out_results) {
-  DCHECK(out_results);
-
-  std::vector<std::unique_ptr<const RecordParsed>> records;
-  absl::optional<base::TimeDelta> response_ttl;
-  ExtractionError extraction_error =
-      ExtractResponseRecords(response, dns_protocol::kTypePTR, &records,
-                             &response_ttl, nullptr /* out_aliases */);
-
-  if (extraction_error != ExtractionError::kOk) {
-    *out_results = HostCache::Entry(ERR_DNS_MALFORMED_RESPONSE,
-                                    HostCache::Entry::SOURCE_DNS);
-    return extraction_error;
+ResultsOrError ExtractPointerResults(const DnsResponse& response,
+                                     base::Time now,
+                                     base::TimeTicks now_ticks) {
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  RecordsOrError ptr_records = ExtractResponseRecords(
+      response, DnsQueryType::PTR, now, now_ticks, results);
+  if (!ptr_records.has_value()) {
+    return base::unexpected(ptr_records.error());
   }
 
   std::vector<HostPortPair> pointers;
-  for (const auto& record : records) {
+  auto min_ttl = base::TimeDelta::Max();
+  for (const auto& record : ptr_records.value()) {
     const PtrRecordRdata* rdata = record->rdata<net::PtrRecordRdata>();
+    DCHECK(rdata);
     std::string pointer = rdata->ptrdomain();
 
     // Skip pointers to the root domain.
-    if (!pointer.empty())
+    if (!pointer.empty()) {
       pointers.emplace_back(std::move(pointer), 0);
+
+      base::TimeDelta ttl = base::Seconds(record->ttl());
+      min_ttl = std::min(ttl, min_ttl);
+    }
   }
 
-  *out_results = HostCache::Entry(pointers.empty() ? ERR_NAME_NOT_RESOLVED : OK,
-                                  std::move(pointers),
-                                  HostCache::Entry::SOURCE_DNS, response_ttl);
-  return ExtractionError::kOk;
+  if (!pointers.empty()) {
+    results.insert(std::make_unique<HostResolverInternalDataResult>(
+        ptr_records->front()->name(), DnsQueryType::PTR, now_ticks + min_ttl,
+        now + min_ttl, Source::kDns, std::vector<IPEndPoint>{},
+        std::vector<std::string>{}, std::move(pointers)));
+  }
+
+  return results;
 }
 
-ExtractionError ExtractServiceResults(const DnsResponse& response,
-                                      HostCache::Entry* out_results) {
-  DCHECK(out_results);
-
-  std::vector<std::unique_ptr<const RecordParsed>> records;
-  absl::optional<base::TimeDelta> response_ttl;
-  ExtractionError extraction_error =
-      ExtractResponseRecords(response, dns_protocol::kTypeSRV, &records,
-                             &response_ttl, nullptr /* out_aliases */);
-
-  if (extraction_error != ExtractionError::kOk) {
-    *out_results = HostCache::Entry(ERR_DNS_MALFORMED_RESPONSE,
-                                    HostCache::Entry::SOURCE_DNS);
-    return extraction_error;
+ResultsOrError ExtractServiceResults(const DnsResponse& response,
+                                     base::Time now,
+                                     base::TimeTicks now_ticks) {
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  RecordsOrError srv_records = ExtractResponseRecords(
+      response, DnsQueryType::SRV, now, now_ticks, results);
+  if (!srv_records.has_value()) {
+    return base::unexpected(srv_records.error());
   }
 
   std::vector<const SrvRecordRdata*> fitered_rdatas;
-  for (const auto& record : records) {
+  auto min_ttl = base::TimeDelta::Max();
+  for (const auto& record : srv_records.value()) {
     const SrvRecordRdata* rdata = record->rdata<net::SrvRecordRdata>();
+    DCHECK(rdata);
 
     // Skip pointers to the root domain.
-    if (!rdata->target().empty())
+    if (!rdata->target().empty()) {
       fitered_rdatas.push_back(rdata);
+
+      base::TimeDelta ttl = base::Seconds(record->ttl());
+      min_ttl = std::min(ttl, min_ttl);
+    }
   }
 
   std::vector<HostPortPair> ordered_service_targets =
       SortServiceTargets(fitered_rdatas);
 
-  *out_results = HostCache::Entry(
-      ordered_service_targets.empty() ? ERR_NAME_NOT_RESOLVED : OK,
-      std::move(ordered_service_targets), HostCache::Entry::SOURCE_DNS,
-      response_ttl);
-  return ExtractionError::kOk;
+  if (!ordered_service_targets.empty()) {
+    results.insert(std::make_unique<HostResolverInternalDataResult>(
+        srv_records->front()->name(), DnsQueryType::SRV, now_ticks + min_ttl,
+        now + min_ttl, Source::kDns, std::vector<IPEndPoint>{},
+        std::vector<std::string>{}, std::move(ordered_service_targets)));
+  }
+
+  return results;
 }
 
 const RecordParsed* UnwrapRecordPtr(
@@ -446,40 +476,25 @@ bool RecordIsAlias(const RecordParsed* record) {
   return record->rdata<HttpsRecordRdata>()->IsAlias();
 }
 
-ExtractionError ExtractHttpsResults(const DnsResponse& response,
-                                    base::StringPiece original_domain_name,
-                                    uint16_t request_port,
-                                    HostCache::Entry* out_results) {
+ResultsOrError ExtractHttpsResults(const DnsResponse& response,
+                                   base::StringPiece original_domain_name,
+                                   uint16_t request_port,
+                                   base::Time now,
+                                   base::TimeTicks now_ticks) {
   DCHECK(!original_domain_name.empty());
-  DCHECK(out_results);
 
-  absl::optional<base::TimeDelta> response_ttl;
-  std::vector<std::unique_ptr<const RecordParsed>> records;
-  ExtractionError extraction_error =
-      ExtractResponseRecords(response, dns_protocol::kTypeHttps, &records,
-                             &response_ttl, nullptr /* out_aliases */);
-
-  if (extraction_error != ExtractionError::kOk) {
-    *out_results = HostCache::Entry(ERR_DNS_MALFORMED_RESPONSE,
-                                    HostCache::Entry::SOURCE_DNS);
-    return extraction_error;
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  RecordsOrError https_records = ExtractResponseRecords(
+      response, DnsQueryType::HTTPS, now, now_ticks, results);
+  if (!https_records.has_value()) {
+    return base::unexpected(https_records.error());
   }
 
-  std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata> results;
-  std::vector<bool> record_compatibility;
+  std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata> metadatas;
+  auto min_ttl = base::TimeDelta::Max();
+  bool compatible_record_found = false;
   bool default_alpn_found = false;
-#if DCHECK_IS_ON()
-  std::string canonical_name;
-#endif  // DCHECK_IS_ON()
-  for (const auto& record : records) {
-#if DCHECK_IS_ON()
-    if (canonical_name.empty()) {
-      canonical_name = record->name();
-    } else {
-      DCHECK(record->name() == canonical_name);
-    }
-#endif  // DCHECK_IS_ON()
-
+  for (const auto& record : https_records.value()) {
     const HttpsRecordRdata* rdata = record->rdata<HttpsRecordRdata>();
     DCHECK(rdata);
 
@@ -487,28 +502,33 @@ ExtractionError ExtractHttpsResults(const DnsResponse& response,
     if (rdata->IsAlias()) {
       // Alias records are always considered compatible because they do not
       // support "mandatory" params.
-      record_compatibility.push_back(true);
+      compatible_record_found = true;
       continue;
     }
 
     const ServiceFormHttpsRecordRdata* service = rdata->AsServiceForm();
-    record_compatibility.push_back(service->IsCompatible());
-
-    // Ignore services incompatible with Chrome's HTTPS record parser.
-    // draft-ietf-dnsop-svcb-https-08#section-8
-    if (!service->IsCompatible())
+    if (service->IsCompatible()) {
+      compatible_record_found = true;
+    } else {
+      // Ignore services incompatible with Chrome's HTTPS record parser.
+      // draft-ietf-dnsop-svcb-https-12#section-8
       continue;
+    }
 
-    base::StringPiece target_name = service->service_name().empty()
-                                        ? record->name()
-                                        : service->service_name();
+    std::string target_name = dns_names_util::UrlCanonicalizeNameIfAble(
+        service->service_name().empty() ? record->name()
+                                        : service->service_name());
 
     // Chrome does not yet support followup queries. So only support services at
     // the original domain name or the canonical name (the record name).
     // Note: HostCache::Entry::GetEndpoints() will not return metadatas which
     // target name is different from the canonical name of A/AAAA query results.
-    if ((target_name != original_domain_name) &&
-        (target_name != record->name())) {
+    if (!base::EqualsCaseInsensitiveASCII(
+            target_name,
+            dns_names_util::UrlCanonicalizeNameIfAble(original_domain_name)) &&
+        !base::EqualsCaseInsensitiveASCII(
+            target_name,
+            dns_names_util::UrlCanonicalizeNameIfAble(record->name()))) {
       continue;
     }
 
@@ -517,8 +537,10 @@ ExtractionError ExtractHttpsResults(const DnsResponse& response,
     // port redirects, Chrome must ensure redirects to the "bad port list" are
     // disallowed. Unclear if such logic would belong here or in socket
     // connection logic.
-    if (service->port().has_value() && service->port().value() != request_port)
+    if (service->port().has_value() &&
+        service->port().value() != request_port) {
       continue;
+    }
 
     ConnectionEndpointMetadata metadata;
 
@@ -532,97 +554,92 @@ ExtractionError ExtractHttpsResults(const DnsResponse& response,
 
     // Services with no supported ALPNs (those with "no-default-alpn" and no or
     // empty "alpn") are not self-consistent and are rejected.
-    // draft-ietf-dnsop-svcb-https-08#section-7.1.1 and
-    // draft-ietf-dnsop-svcb-https-08#section-2.4.3.
-    if (metadata.supported_protocol_alpns.empty())
+    // draft-ietf-dnsop-svcb-https-12#section-7.1.1 and
+    // draft-ietf-dnsop-svcb-https-12#section-2.4.3.
+    if (metadata.supported_protocol_alpns.empty()) {
       continue;
+    }
 
     metadata.ech_config_list = ConnectionEndpointMetadata::EchConfigList(
         service->ech_config().cbegin(), service->ech_config().cend());
 
-    metadata.target_name = base::ToLowerASCII(target_name);
+    metadata.target_name = std::move(target_name);
 
-    results.emplace(service->priority(), std::move(metadata));
+    metadatas.emplace(service->priority(), std::move(metadata));
 
-    if (service->default_alpn())
+    base::TimeDelta ttl = base::Seconds(record->ttl());
+    min_ttl = std::min(ttl, min_ttl);
+
+    if (service->default_alpn()) {
       default_alpn_found = true;
+    }
   }
 
   // Ignore all records if any are an alias record. Chrome does not yet support
   // alias records, but aliases take precedence over any other records.
-  if (base::ranges::any_of(records, &RecordIsAlias, &UnwrapRecordPtr)) {
-    records.clear();
-    results.clear();
+  if (base::ranges::any_of(https_records.value(), &RecordIsAlias,
+                           &UnwrapRecordPtr)) {
+    metadatas.clear();
   }
 
   // Ignore all records if they all mark "no-default-alpn". Domains should
   // always provide at least one endpoint allowing default ALPN to ensure a
   // reasonable expectation of connection success.
-  // draft-ietf-dnsop-svcb-https-08#section-7.1.2
+  // draft-ietf-dnsop-svcb-https-12#section-7.1.2
   if (!default_alpn_found) {
-    records.clear();
-    results.clear();
+    metadatas.clear();
   }
 
-  *out_results = HostCache::Entry(results.empty() ? ERR_NAME_NOT_RESOLVED : OK,
-                                  std::move(results),
-                                  HostCache::Entry::SOURCE_DNS, response_ttl);
-  out_results->set_https_record_compatibility(std::move(record_compatibility));
-  DCHECK_EQ(extraction_error, ExtractionError::kOk);
-  return extraction_error;
+  // Empty metadata result signifies that compatible HTTPS records were
+  // received but with no contained metadata of use to Chrome.
+  if (!metadatas.empty() || compatible_record_found) {
+    results.insert(std::make_unique<HostResolverInternalMetadataResult>(
+        https_records->front()->name(), DnsQueryType::HTTPS,
+        now_ticks + min_ttl, now + min_ttl, Source::kDns,
+        std::move(metadatas)));
+  }
+
+  return results;
 }
 
 }  // namespace
 
 DnsResponseResultExtractor::DnsResponseResultExtractor(
-    const DnsResponse* response)
-    : response_(response) {
-  DCHECK(response_);
-}
+    const DnsResponse& response,
+    const base::Clock& clock,
+    const base::TickClock& tick_clock)
+    : response_(response), clock_(clock), tick_clock_(tick_clock) {}
 
 DnsResponseResultExtractor::~DnsResponseResultExtractor() = default;
 
-DnsResponseResultExtractor::ExtractionError
-DnsResponseResultExtractor::ExtractDnsResults(
+ResultsOrError DnsResponseResultExtractor::ExtractDnsResults(
     DnsQueryType query_type,
     base::StringPiece original_domain_name,
-    uint16_t request_port,
-    HostCache::Entry* out_results) const {
+    uint16_t request_port) const {
   DCHECK(!original_domain_name.empty());
-  DCHECK(out_results);
 
   switch (query_type) {
     case DnsQueryType::UNSPECIFIED:
       // Should create multiple transactions with specified types.
       NOTREACHED();
-      return ExtractionError::kUnexpected;
+      return base::unexpected(ExtractionError::kUnexpected);
     case DnsQueryType::A:
     case DnsQueryType::AAAA:
-      return ExtractAddressResults(*response_, DnsQueryTypeToQtype(query_type),
-                                   out_results);
+      return ExtractAddressResults(*response_, query_type, clock_->Now(),
+                                   tick_clock_->NowTicks());
     case DnsQueryType::TXT:
-      return ExtractTxtResults(*response_, out_results);
+      return ExtractTxtResults(*response_, clock_->Now(),
+                               tick_clock_->NowTicks());
     case DnsQueryType::PTR:
-      return ExtractPointerResults(*response_, out_results);
+      return ExtractPointerResults(*response_, clock_->Now(),
+                                   tick_clock_->NowTicks());
     case DnsQueryType::SRV:
-      return ExtractServiceResults(*response_, out_results);
+      return ExtractServiceResults(*response_, clock_->Now(),
+                                   tick_clock_->NowTicks());
     case DnsQueryType::HTTPS:
       return ExtractHttpsResults(*response_, original_domain_name, request_port,
-                                 out_results);
+                                 clock_->Now(), tick_clock_->NowTicks());
   }
-}
-
-// static
-HostCache::Entry DnsResponseResultExtractor::CreateEmptyResult(
-    DnsQueryType query_type) {
-  if (query_type != DnsQueryType::HTTPS) {
-    // Currently only used for HTTPS.
-    NOTIMPLEMENTED();
-    return HostCache::Entry(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
-  }
-
-  return HostCache::Entry(ERR_NAME_NOT_RESOLVED, std::vector<bool>(),
-                          HostCache::Entry::SOURCE_DNS);
 }
 
 }  // namespace net

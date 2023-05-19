@@ -104,8 +104,10 @@ using ::testing::AllOf;
 using ::testing::AnyOf;
 using ::testing::Between;
 using ::testing::ByMove;
+using ::testing::Contains;
 using ::testing::Eq;
 using ::testing::IsEmpty;
+using ::testing::Not;
 using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::Pointee;
@@ -8246,8 +8248,7 @@ TEST_F(HostResolverManagerDnsTest, DnsAliasesAreFixedUp) {
 
   DnsResponse expected_A_response = BuildTestDnsResponse(
       "host.test", dns_protocol::kTypeA,
-      {BuildTestAddressRecord("localhost", IPAddress::IPv4Localhost()),
-       BuildTestCnameRecord("host2.test", "localhost"),
+      {BuildTestAddressRecord("host2.test", IPAddress::IPv4Localhost()),
        BuildTestDnsRecord(
            "host.test", dns_protocol::kTypeCNAME,
            std::string(kNonCanonicalName, sizeof(kNonCanonicalName) - 1))});
@@ -8257,8 +8258,7 @@ TEST_F(HostResolverManagerDnsTest, DnsAliasesAreFixedUp) {
 
   DnsResponse expected_AAAA_response = BuildTestDnsResponse(
       "host.test", dns_protocol::kTypeAAAA,
-      {BuildTestAddressRecord("localhost", IPAddress::IPv6Localhost()),
-       BuildTestCnameRecord("host2.test", "localhost"),
+      {BuildTestAddressRecord("host2.test", IPAddress::IPv6Localhost()),
        BuildTestDnsRecord(
            "host.test", dns_protocol::kTypeCNAME,
            std::string(kNonCanonicalName, sizeof(kNonCanonicalName) - 1))});
@@ -8279,16 +8279,44 @@ TEST_F(HostResolverManagerDnsTest, DnsAliasesAreFixedUp) {
 
   ASSERT_THAT(response.result_error(), IsOk());
   ASSERT_TRUE(response.request()->GetAddressResults());
-  // AddressList results may or may not be fixed, depending on whether or not
-  // they were built from endpoint results.
-  EXPECT_THAT(
-      response.request()->GetAddressResults()->dns_aliases(),
-      testing::AnyOf(testing::UnorderedElementsAre("host2.test", "host.test"),
-                     testing::UnorderedElementsAre("localhost", "HOST2.test",
-                                                   "host.test")));
+  EXPECT_THAT(response.request()->GetAddressResults()->dns_aliases(),
+              testing::UnorderedElementsAre("host2.test", "host.test"));
   EXPECT_THAT(response.request()->GetDnsAliasResults(),
               testing::Pointee(
                   testing::UnorderedElementsAre("host2.test", "host.test")));
+}
+
+TEST_F(HostResolverManagerDnsTest, RejectsLocalhostAlias) {
+  MockDnsClientRuleList rules;
+
+  DnsResponse expected_A_response = BuildTestDnsResponse(
+      "host.test", dns_protocol::kTypeA,
+      {BuildTestAddressRecord("localhost", IPAddress::IPv4Localhost()),
+       BuildTestCnameRecord("host.test", "localhost")});
+
+  AddDnsRule(&rules, "host.test", dns_protocol::kTypeA,
+             std::move(expected_A_response), false /* delay */);
+
+  DnsResponse expected_AAAA_response = BuildTestDnsResponse(
+      "host.test", dns_protocol::kTypeAAAA,
+      {BuildTestAddressRecord("localhost", IPAddress::IPv6Localhost()),
+       BuildTestCnameRecord("host.test", "localhost")});
+
+  AddDnsRule(&rules, "host.test", dns_protocol::kTypeAAAA,
+             std::move(expected_AAAA_response), false /* delay */);
+
+  CreateResolver();
+  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
+  set_allow_fallback_to_systemtask(false);
+  HostResolver::ResolveHostParameters params;
+  params.source = HostResolverSource::DNS;
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("host.test", 80), NetworkAnonymizationKey(),
+      NetLogWithSource(), params, resolve_context_.get(),
+      resolve_context_->host_cache()));
+
+  ASSERT_THAT(response.result_error(), IsError(ERR_DNS_MALFORMED_RESPONSE));
 }
 
 TEST_F(HostResolverManagerDnsTest, NoAdditionalDnsAliases) {
@@ -12146,7 +12174,7 @@ TEST_F(
   EXPECT_THAT(response.request()->GetHostnameResults(),
               AnyOf(nullptr, Pointee(IsEmpty())));
   EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),
-              testing::Pointee(testing::ElementsAre(false)));
+              Pointee(Not(Contains(true))));
 }
 
 // Even if no addresses are received for a request, finding an HTTPS record
