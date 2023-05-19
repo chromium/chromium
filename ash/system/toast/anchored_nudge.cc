@@ -89,11 +89,6 @@ AnchoredNudge::AnchoredNudge(Delegate* delegate,
 
 AnchoredNudge::~AnchoredNudge() {
   hover_observer_.reset();
-
-  // Make sure `delegate_` knows that the nudge has been closed, for cases where
-  // the nudge wasn't closed through the manager (e.g. widget destroyed by
-  // test).
-  delegate_->OnNudgeClosed(id_);
 }
 
 const std::u16string& AnchoredNudge::GetText() {

@@ -72,6 +72,42 @@ class AnchoredNudgeManagerImpl::AnchorViewObserver
   raw_ptr<AnchoredNudgeManagerImpl> anchored_nudge_manager_;
 };
 
+// A widget observer that is used to clean up the cached objects related to a
+// nudge when its widget is destroying.
+class AnchoredNudgeManagerImpl::NudgeWidgetObserver
+    : public views::WidgetObserver {
+ public:
+  NudgeWidgetObserver(AnchoredNudge* anchored_nudge,
+                      AnchoredNudgeManagerImpl* anchored_nudge_manager)
+      : anchored_nudge_(anchored_nudge),
+        anchored_nudge_manager_(anchored_nudge_manager) {
+    anchored_nudge->GetWidget()->AddObserver(this);
+  }
+
+  NudgeWidgetObserver(const NudgeWidgetObserver&) = delete;
+
+  NudgeWidgetObserver& operator=(const NudgeWidgetObserver&) = delete;
+
+  ~NudgeWidgetObserver() override {
+    if (anchored_nudge_ && anchored_nudge_->GetWidget()) {
+      anchored_nudge_->GetWidget()->RemoveObserver(this);
+    }
+  }
+
+  // WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override {
+    widget->RemoveObserver(this);
+    anchored_nudge_manager_->HandleNudgeWidgetDestroying(anchored_nudge_->id());
+  }
+
+ private:
+  // Owned by the views hierarchy.
+  raw_ptr<AnchoredNudge> anchored_nudge_;
+
+  // Owned by `Shell`.
+  raw_ptr<AnchoredNudgeManagerImpl> anchored_nudge_manager_;
+};
+
 AnchoredNudgeManagerImpl::AnchoredNudgeManagerImpl() = default;
 
 AnchoredNudgeManagerImpl::~AnchoredNudgeManagerImpl() {
@@ -118,6 +154,9 @@ void AnchoredNudgeManagerImpl::Show(const AnchoredNudgeData& nudge_data) {
 
   anchored_nudge_widget->Show();
 
+  nudge_widget_observers_[id] =
+      std::make_unique<NudgeWidgetObserver>(anchored_nudge_ptr, this);
+
   anchor_view_observers_[id] = std::make_unique<AnchorViewObserver>(
       anchored_nudge_ptr, anchor_view, this);
 
@@ -135,12 +174,8 @@ void AnchoredNudgeManagerImpl::Cancel(const std::string& id) {
     return;
   }
 
-  auto anchored_nudge_ptr = shown_nudges_[id];
-
-  dismiss_timers_.erase(id);
-  anchor_view_observers_.erase(id);
-  shown_nudges_.erase(id);
-  anchored_nudge_ptr->GetWidget()->CloseNow();
+  // Cache cleanup occurs on `HandleNudgeWidgetDestroying()`.
+  shown_nudges_[id]->GetWidget()->CloseNow();
 }
 
 void AnchoredNudgeManagerImpl::CloseAllNudges() {
@@ -149,8 +184,12 @@ void AnchoredNudgeManagerImpl::CloseAllNudges() {
   }
 }
 
-void AnchoredNudgeManagerImpl::OnNudgeClosed(const std::string& id) {
-  Cancel(id);
+void AnchoredNudgeManagerImpl::HandleNudgeWidgetDestroying(
+    const std::string& id) {
+  dismiss_timers_.erase(id);
+  anchor_view_observers_.erase(id);
+  nudge_widget_observers_.erase(id);
+  shown_nudges_.erase(id);
 }
 
 void AnchoredNudgeManagerImpl::OnNudgeHoverStateChanged(const std::string& id,

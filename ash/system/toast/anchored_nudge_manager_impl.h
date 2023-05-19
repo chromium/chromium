@@ -34,8 +34,11 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   // Closes all `shown_nudges_`.
   void CloseAllNudges();
 
+  // Removes all cached objects (e.g. observers, timers) related to a nudge when
+  // its widget is destroying.
+  void HandleNudgeWidgetDestroying(const std::string& id);
+
   // AnchoredNudge::Delegate:
-  void OnNudgeClosed(const std::string& id) override;
   void OnNudgeHoverStateChanged(const std::string& id,
                                 bool is_hovering) override;
 
@@ -49,6 +52,7 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
  private:
   friend class AnchoredNudgeManagerImplTest;
   class AnchorViewObserver;
+  class NudgeWidgetObserver;
 
   // Manage the dismiss timer for the nudge with given `id`.
   void StartDismissTimer(const std::string& id);
@@ -64,6 +68,12 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   // deleting or hiding.
   std::map<std::string, std::unique_ptr<AnchorViewObserver>>
       anchor_view_observers_;
+
+  // Maps an `AnchoredNudge` `id` to an observation of that nudge's widget,
+  // which is used to clean up the cached objects related to that nudge when its
+  // widget is destroying.
+  std::map<std::string, std::unique_ptr<NudgeWidgetObserver>>
+      nudge_widget_observers_;
 
   // Maps an `AnchoredNudge` `id` to a timer that's used to dismiss the nudge
   // after `kAnchoredNudgeDuration` has passed.

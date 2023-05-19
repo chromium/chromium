@@ -31,9 +31,6 @@ class ASH_EXPORT AnchoredNudge : public views::BubbleDialogDelegateView {
    public:
     virtual ~Delegate() {}
 
-    // Called when the nudge is being destroyed.
-    virtual void OnNudgeClosed(const std::string& id) = 0;
-
     // Called when the mouse hover enters or exits the nudge.
     virtual void OnNudgeHoverStateChanged(const std::string& id,
                                           bool is_hovering) = 0;
