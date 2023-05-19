@@ -517,10 +517,6 @@ class NET_EXPORT HostResolver {
       base::span<const HostResolverEndpointResult> endpoints,
       const std::set<std::string>& aliases);
 
-  // Utility to get the non-protocol endpoints.
-  static std::vector<IPEndPoint> GetNonProtocolEndpoints(
-      base::span<const HostResolverEndpointResult> endpoints);
-
   // Returns whether there is at least one protocol endpoint in `endpoints`, and
   // all such endpoints have ECH parameters. This can be used to implement the
   // guidance in section 10.1 of draft-ietf-dnsop-svcb-https-11.

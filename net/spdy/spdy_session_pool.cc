@@ -296,129 +296,140 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
     return OnHostResolutionCallbackResult::kMayBeDeletedAsync;
   }
 
-  // TODO(crbug.com/1264933): Consider dealing with the other endpoints
-  // with protocol metadata.
-  const auto ip_endpoints =
-      HostResolver::GetNonProtocolEndpoints(endpoint_results);
-  for (const auto& address : ip_endpoints) {
-    auto range = aliases_.equal_range(address);
-    for (auto alias_it = range.first; alias_it != range.second; ++alias_it) {
-      // We found a potential alias.
-      const SpdySessionKey& alias_key = alias_it->second;
+  for (const auto& endpoint : endpoint_results) {
+    // If `endpoint` has no associated ALPN protocols, it is TCP-based and thus
+    // would have been eligible for connecting with HTTP/2.
+    if (!endpoint.metadata.supported_protocol_alpns.empty() &&
+        !base::Contains(endpoint.metadata.supported_protocol_alpns, "h2")) {
+      continue;
+    }
+    for (const auto& address : endpoint.ip_endpoints) {
+      auto range = aliases_.equal_range(address);
+      for (auto alias_it = range.first; alias_it != range.second; ++alias_it) {
+        // We found a potential alias.
+        const SpdySessionKey& alias_key = alias_it->second;
 
-      auto available_session_it = LookupAvailableSessionByKey(alias_key);
-      // It shouldn't be in the aliases table if it doesn't exist!
-      DCHECK(available_session_it != available_sessions_.end());
+        auto available_session_it = LookupAvailableSessionByKey(alias_key);
+        // It shouldn't be in the aliases table if it doesn't exist!
+        DCHECK(available_session_it != available_sessions_.end());
 
-      SpdySessionKey::CompareForAliasingResult compare_result =
-          alias_key.CompareForAliasing(key);
-      // Keys must be aliasable.
-      if (!compare_result.is_potentially_aliasable)
-        continue;
-
-      if (is_websocket && !available_session_it->second->support_websocket())
-        continue;
-
-      // Make copy of WeakPtr as call to UnmapKey() will delete original.
-      const base::WeakPtr<SpdySession> available_session =
-          available_session_it->second;
-
-      // Need to verify that the server is authenticated to serve traffic for
-      // |host_port_proxy_pair| too.
-      if (!available_session->VerifyDomainAuthentication(
-              key.host_port_pair().host())) {
-        UMA_HISTOGRAM_ENUMERATION("Net.SpdyIPPoolDomainMatch", 0, 2);
-        continue;
-      }
-
-      UMA_HISTOGRAM_ENUMERATION("Net.SpdyIPPoolDomainMatch", 1, 2);
-
-      bool adding_pooled_alias = true;
-
-      // If socket tags differ, see if session's socket tag can be changed.
-      if (!compare_result.is_socket_tag_match) {
-        SpdySessionKey old_key = available_session->spdy_session_key();
-        SpdySessionKey new_key(old_key.host_port_pair(), old_key.proxy_server(),
-                               old_key.privacy_mode(),
-                               old_key.is_proxy_session(), key.socket_tag(),
-                               old_key.network_anonymization_key(),
-                               old_key.secure_dns_policy());
-
-        // If there is already a session with |new_key|, skip this one.
-        // It will be found in |aliases_| in a future iteration.
-        if (available_sessions_.find(new_key) != available_sessions_.end())
+        SpdySessionKey::CompareForAliasingResult compare_result =
+            alias_key.CompareForAliasing(key);
+        // Keys must be aliasable.
+        if (!compare_result.is_potentially_aliasable) {
           continue;
+        }
 
-        if (!available_session->ChangeSocketTag(key.socket_tag()))
+        if (is_websocket &&
+            !available_session_it->second->support_websocket()) {
           continue;
+        }
 
-        DCHECK(available_session->spdy_session_key() == new_key);
+        // Make copy of WeakPtr as call to UnmapKey() will delete original.
+        const base::WeakPtr<SpdySession> available_session =
+            available_session_it->second;
 
-        // If this isn't a pooled alias, but the actual session that needs to
-        // have its socket tag change, there's no need to add an alias.
-        if (new_key == key)
-          adding_pooled_alias = false;
+        // Need to verify that the server is authenticated to serve traffic for
+        // |host_port_proxy_pair| too.
+        if (!available_session->VerifyDomainAuthentication(
+                key.host_port_pair().host())) {
+          UMA_HISTOGRAM_ENUMERATION("Net.SpdyIPPoolDomainMatch", 0, 2);
+          continue;
+        }
 
-        // Remap main session key.
-        std::set<std::string> main_session_old_dns_aliases =
-            GetDnsAliasesForSessionKey(old_key);
-        UnmapKey(old_key);
-        MapKeyToAvailableSession(new_key, available_session,
-                                 std::move(main_session_old_dns_aliases));
+        UMA_HISTOGRAM_ENUMERATION("Net.SpdyIPPoolDomainMatch", 1, 2);
 
-        // Remap alias. From this point on |alias_it| is invalid, so no more
-        // iterations of the loop should be allowed.
-        aliases_.insert(AliasMap::value_type(alias_it->first, new_key));
-        aliases_.erase(alias_it);
+        bool adding_pooled_alias = true;
 
-        // Remap pooled session keys.
-        const auto& pooled_aliases = available_session->pooled_aliases();
-        for (auto it = pooled_aliases.begin(); it != pooled_aliases.end();) {
-          // Ignore aliases this loop is inserting.
-          if (it->socket_tag() == key.socket_tag()) {
-            ++it;
+        // If socket tags differ, see if session's socket tag can be changed.
+        if (!compare_result.is_socket_tag_match) {
+          SpdySessionKey old_key = available_session->spdy_session_key();
+          SpdySessionKey new_key(old_key.host_port_pair(),
+                                 old_key.proxy_server(), old_key.privacy_mode(),
+                                 old_key.is_proxy_session(), key.socket_tag(),
+                                 old_key.network_anonymization_key(),
+                                 old_key.secure_dns_policy());
+
+          // If there is already a session with |new_key|, skip this one.
+          // It will be found in |aliases_| in a future iteration.
+          if (available_sessions_.find(new_key) != available_sessions_.end()) {
             continue;
           }
 
-          std::set<std::string> pooled_alias_old_dns_aliases =
-              GetDnsAliasesForSessionKey(*it);
-          UnmapKey(*it);
-          SpdySessionKey new_pool_alias_key = SpdySessionKey(
-              it->host_port_pair(), it->proxy_server(), it->privacy_mode(),
-              it->is_proxy_session(), key.socket_tag(),
-              it->network_anonymization_key(), it->secure_dns_policy());
-          MapKeyToAvailableSession(new_pool_alias_key, available_session,
-                                   std::move(pooled_alias_old_dns_aliases));
-          auto old_it = it;
-          ++it;
-          available_session->RemovePooledAlias(*old_it);
-          available_session->AddPooledAlias(new_pool_alias_key);
+          if (!available_session->ChangeSocketTag(key.socket_tag())) {
+            continue;
+          }
 
-          // If this is desired key, no need to add an alias for the desired key
-          // at the end of this method.
-          if (new_pool_alias_key == key)
+          DCHECK(available_session->spdy_session_key() == new_key);
+
+          // If this isn't a pooled alias, but the actual session that needs to
+          // have its socket tag change, there's no need to add an alias.
+          if (new_key == key) {
             adding_pooled_alias = false;
+          }
+
+          // Remap main session key.
+          std::set<std::string> main_session_old_dns_aliases =
+              GetDnsAliasesForSessionKey(old_key);
+          UnmapKey(old_key);
+          MapKeyToAvailableSession(new_key, available_session,
+                                   std::move(main_session_old_dns_aliases));
+
+          // Remap alias. From this point on |alias_it| is invalid, so no more
+          // iterations of the loop should be allowed.
+          aliases_.insert(AliasMap::value_type(alias_it->first, new_key));
+          aliases_.erase(alias_it);
+
+          // Remap pooled session keys.
+          const auto& pooled_aliases = available_session->pooled_aliases();
+          for (auto it = pooled_aliases.begin(); it != pooled_aliases.end();) {
+            // Ignore aliases this loop is inserting.
+            if (it->socket_tag() == key.socket_tag()) {
+              ++it;
+              continue;
+            }
+
+            std::set<std::string> pooled_alias_old_dns_aliases =
+                GetDnsAliasesForSessionKey(*it);
+            UnmapKey(*it);
+            SpdySessionKey new_pool_alias_key = SpdySessionKey(
+                it->host_port_pair(), it->proxy_server(), it->privacy_mode(),
+                it->is_proxy_session(), key.socket_tag(),
+                it->network_anonymization_key(), it->secure_dns_policy());
+            MapKeyToAvailableSession(new_pool_alias_key, available_session,
+                                     std::move(pooled_alias_old_dns_aliases));
+            auto old_it = it;
+            ++it;
+            available_session->RemovePooledAlias(*old_it);
+            available_session->AddPooledAlias(new_pool_alias_key);
+
+            // If this is desired key, no need to add an alias for the desired
+            // key at the end of this method.
+            if (new_pool_alias_key == key) {
+              adding_pooled_alias = false;
+            }
+          }
         }
+
+        if (adding_pooled_alias) {
+          // Add this session to the map so that we can find it next time.
+          MapKeyToAvailableSession(key, available_session, aliases);
+          available_session->AddPooledAlias(key);
+        }
+
+        // Post task to inform pending requests for session for |key| that a
+        // matching session is now available.
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(&SpdySessionPool::UpdatePendingRequests,
+                                      weak_ptr_factory_.GetWeakPtr(), key));
+
+        // Inform the caller that the Callback may be deleted if the consumer is
+        // switched over to the newly aliased session. It's not guaranteed to be
+        // deleted, as the session may be closed, or taken by yet another
+        // pending request with a different SocketTag before the the request can
+        // try and use the session.
+        return OnHostResolutionCallbackResult::kMayBeDeletedAsync;
       }
-
-      if (adding_pooled_alias) {
-        // Add this session to the map so that we can find it next time.
-        MapKeyToAvailableSession(key, available_session, aliases);
-        available_session->AddPooledAlias(key);
-      }
-
-      // Post task to inform pending requests for session for |key| that a
-      // matching session is now available.
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&SpdySessionPool::UpdatePendingRequests,
-                                    weak_ptr_factory_.GetWeakPtr(), key));
-
-      // Inform the caller that the Callback may be deleted if the consumer is
-      // switched over to the newly aliased session. It's not guaranteed to be
-      // deleted, as the session may be closed, or taken by yet another pending
-      // request with a different SocketTag before the the request can try and
-      // use the session.
-      return OnHostResolutionCallbackResult::kMayBeDeletedAsync;
     }
   }
   return OnHostResolutionCallbackResult::kContinue;

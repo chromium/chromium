@@ -105,12 +105,16 @@ namespace {
 
 const char kDefaultServerHostName[] = "www.example.org";
 const char kServer2HostName[] = "mail.example.org";
+const char kServer3HostName[] = "docs.example.org";
+const char kServer4HostName[] = "images.example.org";
+const char kServer5HostName[] = "accounts.example.org";
 const char kDifferentHostname[] = "different.example.com";
 const int kDefaultServerPort = 443;
 const char kDefaultUrl[] = "https://www.example.org/";
 const char kServer2Url[] = "https://mail.example.org/";
 const char kServer3Url[] = "https://docs.example.org/";
 const char kServer4Url[] = "https://images.example.org/";
+const char kServer5Url[] = "https://images.example.org/";
 const size_t kMinRetryTimeForDefaultNetworkSecs = 1;
 const size_t kWaitTimeForNewNetworkSecs = 10;
 const quic::QuicConnectionId kNewCID = quic::test::TestConnectionId(12345678);
@@ -270,13 +274,6 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
                       false),
         http_server_properties_(std::make_unique<HttpServerProperties>()),
         cert_verifier_(std::make_unique<MockCertVerifier>()),
-        scheme_host_port_(url::kHttpsScheme,
-                          kDefaultServerHostName,
-                          kDefaultServerPort),
-        url_(kDefaultUrl),
-        url2_(kServer2Url),
-        url3_(kServer3Url),
-        url4_(kServer4Url),
         failed_on_default_network_callback_(base::BindRepeating(
             &QuicStreamFactoryTestBase::OnFailedOnDefaultNetwork,
             base::Unretained(this))),
@@ -968,11 +965,13 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
   std::unique_ptr<ScopedMockNetworkChangeNotifier>
       scoped_mock_network_change_notifier_;
   std::unique_ptr<QuicStreamFactory> factory_;
-  url::SchemeHostPort scheme_host_port_;
-  GURL url_;
-  GURL url2_;
-  GURL url3_;
-  GURL url4_;
+  url::SchemeHostPort scheme_host_port_{
+      url::kHttpsScheme, kDefaultServerHostName, kDefaultServerPort};
+  GURL url_{kDefaultUrl};
+  GURL url2_{kServer2Url};
+  GURL url3_{kServer3Url};
+  GURL url4_{kServer4Url};
+  GURL url5_{kServer5Url};
 
   PrivacyMode privacy_mode_ = PRIVACY_MODE_DISABLED;
   NetLogWithSource net_log_;
@@ -1754,6 +1753,7 @@ TEST_P(QuicStreamFactoryTest, ServerNetworkStatsWithNetworkAnonymizationKey) {
 }
 
 TEST_P(QuicStreamFactoryTest, Pooling) {
+  quic_params_->supported_versions = {version_};
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
@@ -1763,13 +1763,60 @@ TEST_P(QuicStreamFactoryTest, Pooling) {
   socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data.AddSocketDataToFactory(socket_factory_.get());
 
+  client_maker_.Reset();
+  MockQuicData socket_data2(version_);
+  socket_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  const IPEndPoint kRightIP(*IPAddress::FromIPLiteral("192.168.0.1"),
+                            kDefaultServerPort);
+  const IPEndPoint kWrongIP(*IPAddress::FromIPLiteral("192.168.0.2"),
+                            kDefaultServerPort);
+  const std::string kRightALPN = quic::AlpnForVersion(version_);
+  const std::string kWrongALPN = "h2";
+
   url::SchemeHostPort server2(url::kHttpsScheme, kServer2HostName,
+                              kDefaultServerPort);
+  url::SchemeHostPort server3(url::kHttpsScheme, kServer3HostName,
+                              kDefaultServerPort);
+  url::SchemeHostPort server4(url::kHttpsScheme, kServer4HostName,
+                              kDefaultServerPort);
+  url::SchemeHostPort server5(url::kHttpsScheme, kServer5HostName,
                               kDefaultServerPort);
   host_resolver_->set_synchronous_mode(true);
   host_resolver_->rules()->AddIPLiteralRule(scheme_host_port_.host(),
                                             "192.168.0.1", "");
+
+  // `server2` resolves to the same IP address via A/AAAA records, i.e. without
+  // ALPN information.
   host_resolver_->rules()->AddIPLiteralRule(server2.host(), "192.168.0.1", "");
 
+  // `server3` resolves to the same IP address, but only via an alternative
+  // endpoint with matching ALPN.
+  std::vector<HostResolverEndpointResult> endpoints(1);
+  endpoints[0].ip_endpoints = {kRightIP};
+  endpoints[0].metadata.supported_protocol_alpns = {kRightALPN};
+  host_resolver_->rules()->AddRule(
+      server3.host(),
+      MockHostResolverBase::RuleResolver::RuleResult({std::move(endpoints)}));
+
+  // `server4` resolves to the same IP address, but only via an alternative
+  // endpoint with a mismatching ALPN.
+  endpoints = std::vector<HostResolverEndpointResult>(2);
+  endpoints[0].ip_endpoints = {kRightIP};
+  endpoints[0].metadata.supported_protocol_alpns = {kWrongALPN};
+  endpoints[1].ip_endpoints = {kWrongIP};
+  endpoints[1].metadata.supported_protocol_alpns = {kRightALPN};
+  host_resolver_->rules()->AddRule(
+      server4.host(),
+      MockHostResolverBase::RuleResolver::RuleResult({std::move(endpoints)}));
+
+  // `server5` resolves to the same IP address via A/AAAA records, i.e. without
+  // ALPN information.
+  host_resolver_->rules()->AddIPLiteralRule(server5.host(), "192.168.0.1", "");
+
+  // Establish a QUIC session to pool against.
   QuicStreamRequest request(factory_.get());
   EXPECT_EQ(ERR_IO_PENDING,
             request.Request(
@@ -1782,6 +1829,9 @@ TEST_P(QuicStreamFactoryTest, Pooling) {
   std::unique_ptr<HttpStream> stream = CreateStream(&request);
   EXPECT_TRUE(stream.get());
 
+  // `server2` can pool with the existing session. Although the endpoint does
+  // not specify ALPN, we connect here with preexisting knowledge of the version
+  // (from Alt-Svc), so an A/AAAA match is sufficient.
   TestCompletionCallback callback;
   QuicStreamRequest request2(factory_.get());
   EXPECT_EQ(OK,
@@ -1793,11 +1843,57 @@ TEST_P(QuicStreamFactoryTest, Pooling) {
                 failed_on_default_network_callback_, callback.callback()));
   std::unique_ptr<HttpStream> stream2 = CreateStream(&request2);
   EXPECT_TRUE(stream2.get());
-
   EXPECT_EQ(GetActiveSession(scheme_host_port_), GetActiveSession(server2));
+
+  // `server3` can pool with the existing session. The endpoint's ALPN protocol
+  // matches.
+  QuicStreamRequest request3(factory_.get());
+  EXPECT_EQ(OK,
+            request3.Request(
+                server3, version_, privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
+                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url3_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback.callback()));
+  std::unique_ptr<HttpStream> stream3 = CreateStream(&request3);
+  EXPECT_TRUE(stream3.get());
+  EXPECT_EQ(GetActiveSession(scheme_host_port_), GetActiveSession(server3));
+
+  // `server4` cannot pool with the existing session. No endpoint matches both
+  // IP and ALPN protocol.
+  QuicStreamRequest request4(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request4.Request(
+                server4, version_, privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
+                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url4_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream4 = CreateStream(&request4);
+  EXPECT_TRUE(stream4.get());
+  EXPECT_NE(GetActiveSession(scheme_host_port_), GetActiveSession(server4));
+
+  // `server5` cannot pool with the existing session. Although the IP address
+  // matches, if we connect without prior knowledge of QUIC support, endpoints
+  // are only eligible for cross-name pooling when associated with a QUIC ALPN.
+  //
+  // Without pooling, the DNS response is insufficient to start a QUIC
+  // connection, so the connection will fail.
+  QuicStreamRequest request5(factory_.get());
+  EXPECT_EQ(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN,
+            request5.Request(
+                server5, quic::ParsedQuicVersion::Unsupported(), privacy_mode_,
+                DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
+                SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/true,
+                /*cert_verify_flags=*/0, url5_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
 
   EXPECT_TRUE(socket_data.AllReadDataConsumed());
   EXPECT_TRUE(socket_data.AllWriteDataConsumed());
+  EXPECT_TRUE(socket_data2.AllReadDataConsumed());
+  EXPECT_TRUE(socket_data2.AllWriteDataConsumed());
 }
 
 // Regression test for https://crbug.com/639916.

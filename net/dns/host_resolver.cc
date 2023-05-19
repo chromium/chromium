@@ -516,16 +516,6 @@ AddressList HostResolver::EndpointResultToAddressList(
 }
 
 // static
-std::vector<IPEndPoint> HostResolver::GetNonProtocolEndpoints(
-    base::span<const HostResolverEndpointResult> endpoints) {
-  auto non_protocol_endpoint =
-      base::ranges::find_if(endpoints, &EndpointResultIsNonProtocol);
-  if (non_protocol_endpoint == endpoints.end())
-    return std::vector<IPEndPoint>();
-  return non_protocol_endpoint->ip_endpoints;
-}
-
-// static
 bool HostResolver::AllProtocolEndpointsHaveEch(
     base::span<const HostResolverEndpointResult> endpoints) {
   bool has_svcb = false;
