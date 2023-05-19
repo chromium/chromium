@@ -209,6 +209,37 @@ TEST_F(MultitaskMenuNudgeControllerTest,
   TabletModeControllerTestApi().EnterTabletMode();
 }
 
+// Tests that there is no crash after a window is placed such that the nudge
+// widget should be offscreen. Regression test for b/282994793.
+TEST_F(MultitaskMenuNudgeControllerTest,
+       NoCrashAfterActivatingMostlyOffscreenWindowMultidisplay) {
+  // Crash is multidisplay related since it involves switching root windows.
+  UpdateDisplay("1600x1000,1601+0-1200x1000");
+
+  // Create two windows so we can reactivate `window2` to simulate the crash
+  // because the window manager will shift `window2` onscreen if we try to
+  // create it offscreen directly.
+  auto window1 = CreateAppWindow(gfx::Rect(300, 300));
+  auto window2 = CreateAppWindow(gfx::Rect(1000, 300));
+
+  // Place `window2` mostly offscreen on primary display, such that on
+  // activation, the nudge widget should not be seen.
+  window2->SetBounds(gfx::Rect(1400, 0, 1000, 300));
+  ASSERT_EQ(Shell::GetAllRootWindows()[0], window2->GetRootWindow());
+
+  // The nudge widget was shown on `window1` since it was created first. Dismiss
+  // it and advance the clock so it will show on the next window activation.
+  ASSERT_TRUE(GetNudgeWidgetForWindow(window1.get()));
+  FireDismissNudgeTimer(window1.get());
+  wm::ActivateWindow(window1.get());
+  test_clock_.Advance(base::Hours(26));
+
+  // Activate `window2`. Verify that the nudge widget is not created since the
+  // anchor is invisible.
+  wm::ActivateWindow(window2.get());
+  EXPECT_FALSE(GetNudgeWidgetForWindow(window2.get()));
+}
+
 TEST_F(MultitaskMenuNudgeControllerTest, NudgeTimeout) {
   auto window = CreateAppWindow(gfx::Rect(300, 300));
   ASSERT_TRUE(GetNudgeWidgetForWindow(window.get()));

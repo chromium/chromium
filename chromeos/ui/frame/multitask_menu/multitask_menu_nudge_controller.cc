@@ -332,9 +332,15 @@ void MultitaskMenuNudgeController::OnGetPreferences(
     return;
   }
 
-  // If the anchor is passed and hidden, we cannot show the nudge.
-  if (anchor_view && !anchor_view->IsDrawn()) {
-    return;
+  // If the anchor is passed and hidden or offscreen, we cannot show the nudge.
+  if (anchor_view) {
+    if (!anchor_view->IsDrawn() ||
+        !display::Screen::GetScreen()
+             ->GetDisplayNearestWindow(window)
+             .bounds()
+             .Contains(anchor_view->GetBoundsInScreen())) {
+      return;
+    }
   }
 
   window_ = window;
@@ -357,7 +363,13 @@ void MultitaskMenuNudgeController::OnGetPreferences(
   }
 
   UpdateWidgetAndPulse();
-  CHECK(nudge_widget_);
+
+  // It is possible `UpdateWidgetAndPulse` could not find a good bounds to place
+  // the nudge. In that case the widget and pulse and observations would have
+  // been cleaned up.
+  if (!nudge_widget_) {
+    return;
+  }
 
   // Fade the education nudge in.
   ui::Layer* layer = nudge_widget_->GetLayer();
