@@ -31,6 +31,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -82,6 +83,7 @@
 #include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/startup/startup_switches.h"
+#include "components/account_id/account_id.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/nacl/common/nacl_switches.h"
@@ -461,6 +463,30 @@ void RecordDataVerForPrimaryUser() {
   crosapi::browser_util::RecordDataVer(g_browser_process->local_state(),
                                        user_id_hash,
                                        version_info::GetVersion());
+}
+
+// Waits for the device owner being fetched from `UserManager` and then executes
+// a callback with `params`. If Lacros is launched at the login screen, this
+// just executes the callback directly.
+void WaitForDeviceOwnerFetchedAndThen(base::OnceClosure cb,
+                                      bool launching_at_login_screen) {
+  if (!user_manager::UserManager::IsInitialized()) {
+    // The `UserManager` is only unavailable in tests.
+    CHECK_IS_TEST();
+    std::move(cb).Run();
+    return;
+  }
+
+  if (!launching_at_login_screen) {
+    std::move(cb).Run();
+    return;
+  }
+
+  // Delay start of Lacros until the owner id is fetched. The owner id is
+  // unused here and synchronously read from `UserManager` at a later point.
+  // This just ensures the owner id has been set.
+  user_manager::UserManager::Get()->GetOwnerAccountIdAsync(
+      base::IgnoreArgs<const AccountId&>(std::move(cb)));
 }
 
 // The delegate keeps track of the most recent lacros-chrome binary version
@@ -969,9 +995,16 @@ void BrowserManager::Start(bool launching_at_login_screen) {
       base::BindOnce(&DoLacrosBackgroundWorkPreLaunch, lacros_path_,
                      is_initial_lacros_launch_after_reboot_,
                      launching_at_login_screen),
-      base::BindOnce(&BrowserManager::StartWithLogFile,
-                     weak_factory_.GetWeakPtr(), launching_at_login_screen));
-
+      base::BindOnce(
+          [](base::WeakPtr<BrowserManager> manager,
+             bool launching_at_login_screen,
+             LaunchParamsFromBackground params) {
+            WaitForDeviceOwnerFetchedAndThen(
+                base::BindOnce(&BrowserManager::StartWithLogFile, manager,
+                               launching_at_login_screen, std::move(params)),
+                launching_at_login_screen);
+          },
+          weak_factory_.GetWeakPtr(), launching_at_login_screen));
   // Set false to prepare for the next Lacros launch.
   is_initial_lacros_launch_after_reboot_ = false;
 }
@@ -1534,6 +1567,13 @@ void BrowserManager::ResumeLaunch() {
   // the following action will be executed.
   pending_actions_.Push(BrowserAction::GetActionForSessionStart());
 
+  WaitForDeviceOwnerFetchedAndThen(
+      base::BindOnce(&BrowserManager::WritePostLoginData,
+                     weak_factory_.GetWeakPtr()),
+      /*launching_at_login_screen=*/false);
+}
+
+void BrowserManager::WritePostLoginData() {
   lacros_resume_time_ = base::TimeTicks::Now();
   // Write post-login parameters into the anonymous pipe.
   bool write_success = browser_util::WritePostLoginData(

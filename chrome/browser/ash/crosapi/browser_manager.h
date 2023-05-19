@@ -611,6 +611,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Resume Lacros startup process after login.
   void ResumeLaunch();
 
+  // Writes post login data to the Lacros process after login.
+  void WritePostLoginData();
+
   // Launch "Go to files" if the migration error page was clicked.
   void HandleGoToFiles();
 
