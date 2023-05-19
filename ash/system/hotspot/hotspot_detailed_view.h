@@ -55,7 +55,6 @@ class ASH_EXPORT HotspotDetailedView : public TrayDetailedView {
   void CreateExtraTitleRowButtons() override;
 
  private:
-  friend class HotspotDetailedViewControllerTest;
   friend class HotspotDetailedViewTest;
 
   // Used for testing. Starts at 1 because view IDs should not be 0.

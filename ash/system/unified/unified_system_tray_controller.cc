@@ -30,7 +30,6 @@
 #include "ash/system/cast/cast_feature_pod_controller.h"
 #include "ash/system/cast/unified_cast_detailed_view_controller.h"
 #include "ash/system/dark_mode/dark_mode_feature_pod_controller.h"
-#include "ash/system/hotspot/hotspot_detailed_view_controller.h"
 #include "ash/system/hotspot/hotspot_feature_pod_controller.h"
 #include "ash/system/ime/ime_feature_pod_controller.h"
 #include "ash/system/ime/unified_ime_detailed_view_controller.h"
@@ -474,12 +473,6 @@ void UnifiedSystemTrayController::ShowNetworkDetailedView(bool force) {
   base::RecordAction(base::UserMetricsAction("StatusArea_Network_Detailed"));
 
   ShowDetailedView(std::make_unique<NetworkDetailedViewController>(this));
-}
-
-void UnifiedSystemTrayController::ShowHotspotDetailedView() {
-  DCHECK(features::IsQsRevampEnabled());
-
-  ShowDetailedView(std::make_unique<HotspotDetailedViewController>(this));
 }
 
 void UnifiedSystemTrayController::ShowBluetoothDetailedView() {

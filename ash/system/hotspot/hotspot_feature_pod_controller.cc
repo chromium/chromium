@@ -133,7 +133,8 @@ void HotspotFeaturePodController::EnableHotspotIfAllowedAndDiveIn() {
   }
 
   TrackDiveInUMA();
-  tray_controller_->ShowHotspotDetailedView();
+  // TODO(b/274154971): Show hotspot detailed view when
+  // HotspotDetailedViewController is added.
 }
 
 void HotspotFeaturePodController::TrackToggleHotspotUMA(
