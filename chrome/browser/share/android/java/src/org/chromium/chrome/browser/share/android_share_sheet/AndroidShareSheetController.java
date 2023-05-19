@@ -140,11 +140,9 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
             Log.i(TAG, "No custom actions provided.");
         }
 
-        // Update the image being shared into ShareParams's url based on the information from
-        // chromeShareExtras.
-        if (chromeShareExtras.isImage()) {
-            String imageUrlToShare = getUrlToShare(params, chromeShareExtras);
-            params.setUrl(imageUrlToShare);
+        // If an URL is not provided along with the image, use the content URL if it is provided.
+        if (chromeShareExtras.isImage() && params.getUrl().isEmpty()) {
+            params.setUrl(chromeShareExtras.getContentUrl().getSpec());
         }
 
         if (!isLinkSharing(params, chromeShareExtras)) {
@@ -224,6 +222,9 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
                 || contents.contains(ContentType.LINK_PAGE_NOT_VISIBLE);
     }
 
+    /**
+     * Get the URL to share either from ShareParams or ChromeShareExtras. 
+     */
     private static String getUrlToShare(
             ShareParams shareParams, ChromeShareExtras chromeShareExtras) {
         if (!TextUtils.isEmpty(shareParams.getUrl())) {

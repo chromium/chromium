@@ -279,8 +279,30 @@ public class AndroidShareSheetControllerUnitTest {
 
         Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
         Intent sharingIntent = intent.getParcelableExtra(Intent.EXTRA_INTENT);
-        Assert.assertEquals("ImageUri does not match.", JUnitTestGURLs.GOOGLE_URL_DOGS,
-                sharingIntent.getStringExtra(Intent.EXTRA_TEXT));
+        Assert.assertEquals("ImageUri does not match. Page URL should be used.",
+                JUnitTestGURLs.GOOGLE_URL, sharingIntent.getStringExtra(Intent.EXTRA_TEXT));
+    }
+
+    @Test
+    public void shareImageWithLinkUrl() {
+        Uri testImageUri = Uri.parse("content://test.image.uri");
+        ShareParams params = new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL)
+                                     .setFileContentType("image/png")
+                                     .setSingleImageUri(testImageUri)
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .build();
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.IMAGE)
+                        .setContentUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL))
+                        .setImageSrcUrl(JUnitTestGURLs.getGURL(JUnitTestGURLs.GOOGLE_URL_DOGS))
+                        .build();
+        mController.showShareSheet(params, chromeShareExtras, 1L);
+
+        Intent intent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
+        Intent sharingIntent = intent.getParcelableExtra(Intent.EXTRA_INTENT);
+        Assert.assertEquals("ImageUri does not match. Link URL has higher priority over page URL.",
+                JUnitTestGURLs.EXAMPLE_URL, sharingIntent.getStringExtra(Intent.EXTRA_TEXT));
     }
 
     @Test
@@ -460,7 +482,7 @@ public class AndroidShareSheetControllerUnitTest {
                 R.string.sharing_send_tab_to_self, R.string.qr_code_share_icon_label);
         chooseCustomAction(intent, R.string.qr_code_share_icon_label);
 
-        Assert.assertEquals("Last URL does not match content being shared.",
+        Assert.assertEquals("Image source URL should be used for QR Code.",
                 JUnitTestGURLs.GOOGLE_URL_DOGS, ShadowQrCodeDialog.sLastUrl);
     }
 
