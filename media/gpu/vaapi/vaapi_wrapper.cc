@@ -235,6 +235,9 @@ class VADisplayStateSingleton {
   VADisplayStateSingleton() = default;
   ~VADisplayStateSingleton() = default;
 
+  // If this method returns false, the VADisplayStateSingleton is unchanged.
+  bool Initialize() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   void OnRefDestroyed();
 
   // This lock makes reference counting and initialization/de-initialization
@@ -1632,6 +1635,13 @@ VADisplayStateHandle VADisplayStateSingleton::GetHandle() {
       VA_MAJOR_VERSION >= 2 || (VA_MAJOR_VERSION == 1 && VA_MINOR_VERSION >= 1),
       "Requires VA-API >= 1.1.0");
 
+  const bool success = va_display_state.Initialize();
+  UMA_HISTOGRAM_BOOLEAN("Media.VaapiWrapper.VADisplayStateInitializeSuccess",
+                        success);
+  return success ? VADisplayStateHandle(&va_display_state) : VADisplayStateHandle();
+}
+
+bool VADisplayStateSingleton::Initialize() {
   // Set VA logging level, unless already set.
   constexpr char libva_log_level_env[] = "LIBVA_MESSAGING_LEVEL";
   std::unique_ptr<base::Environment> env(base::Environment::Create());
@@ -1641,18 +1651,18 @@ VADisplayStateHandle VADisplayStateSingleton::GetHandle() {
 
   absl::optional<VADisplay> display =
 #if BUILDFLAG(USE_VAAPI_X11)
-      GetVADisplayStateX11(va_display_state.drm_fd_);
+      GetVADisplayStateX11(drm_fd_);
 #else
-      GetVADisplayState(va_display_state.drm_fd_);
+      GetVADisplayState(drm_fd_);
 #endif
 
   if (!display) {
-    return {};
+    return false;
   }
   VADisplay va_display = *display;
   base::ScopedClosureRunner va_display_cleaner_cb(base::BindOnce(
       [](VADisplay va_display) {
-        if (va_display) {
+        if (vaDisplayIsValid(va_display)) {
           vaTerminate(va_display);
         }
       },
@@ -1660,7 +1670,7 @@ VADisplayStateHandle VADisplayStateSingleton::GetHandle() {
 
   if (!vaDisplayIsValid(va_display)) {
     LOG(ERROR) << "Could not get a valid VA display";
-    return {};
+    return false;
   }
 
   // The VA-API version.
@@ -1668,13 +1678,13 @@ VADisplayStateHandle VADisplayStateSingleton::GetHandle() {
   VAStatus va_res = vaInitialize(va_display, &major_version, &minor_version);
   if (va_res != VA_STATUS_SUCCESS) {
     VLOGF(1) << "vaInitialize failed: " << vaErrorStr(va_res);
-    return {};
+    return false;
   }
 
   const std::string va_vendor_string = vaQueryVendorString(va_display);
   if (va_vendor_string.empty()) {
     VLOGF(1) << "vaQueryVendorString returned an empty string";
-    return {};
+    return false;
   }
   DVLOG(1) << "VAAPI version: " << major_version << "." << minor_version << " "
            << va_vendor_string;
@@ -1693,15 +1703,15 @@ VADisplayStateHandle VADisplayStateSingleton::GetHandle() {
     VLOGF(1) << "The system version " << major_version << "." << minor_version
              << " should be greater than or equal to " << VA_MAJOR_VERSION
              << "." << VA_MINOR_VERSION;
-    return {};
+    return false;
   }
 
   std::ignore = va_display_cleaner_cb.Release();
-  va_display_state.refcount_ = 1;
-  va_display_state.va_display_ = va_display;
-  va_display_state.implementation_type_ = implementation_type;
-  va_display_state.va_vendor_string_ = va_vendor_string;
-  return VADisplayStateHandle(&va_display_state);
+  refcount_ = 1;
+  va_display_ = va_display;
+  implementation_type_ = implementation_type;
+  va_vendor_string_ = va_vendor_string;
+  return true;
 }
 
 void VADisplayStateSingleton::OnRefDestroyed() {
