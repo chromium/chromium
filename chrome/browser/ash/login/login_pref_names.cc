@@ -96,9 +96,6 @@ const char kSamlPasswordExpirationAdvanceWarningDays[] =
 const char kLockScreenReauthenticationEnabled[] =
     "lock_screen_reauthentication_enabled";
 
-// SAML password sync token fetched from the external API.
-const char kSamlPasswordSyncToken[] = "saml.password_sync_token";
-
 const char kActivityTimeAfterOnboarding[] =
     "oobe.activity_time_after_onboarding";
 

@@ -837,6 +837,11 @@ const char kOfficeSetupComplete[] = "filebrowser.office.setup_complete";
 const char kTimesUPMAuthErrorShown[] = "times_upm_auth_error_shown";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// Deprecated 05/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kSamlPasswordSyncToken[] = "saml.password_sync_token";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1163,6 +1168,11 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(kTimesUPMAuthErrorShown, 0);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Deprecated 05/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterStringPref(kSamlPasswordSyncToken, std::string());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -2224,6 +2234,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_ANDROID)
   profile_prefs->ClearPref(kTimesUPMAuthErrorShown);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Added 05/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kSamlPasswordSyncToken);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
