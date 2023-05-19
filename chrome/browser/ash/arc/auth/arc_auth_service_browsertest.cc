@@ -304,8 +304,9 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
   }
 
   void TearDownOnMainThread() override {
-    if (arc_bridge_service_)
+    if (arc_bridge_service_) {
       arc_bridge_service_->auth()->CloseInstance(&auth_instance_);
+    }
 
     // Explicitly removing the user is required; otherwise ProfileHelper keeps
     // a dangling pointer to the User.
@@ -343,14 +344,8 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
   }
 
   void SetAccountAndProfile(const user_manager::UserType user_type) {
-    AccountId account_id;
-    if (user_type == user_manager::USER_TYPE_ACTIVE_DIRECTORY) {
-      account_id = AccountId::AdFromUserEmailObjGuid(
-          kFakeUserName, "fake-active-directory-guid");
-    } else {
-      account_id = AccountId::FromUserEmailGaiaId(
-          kFakeUserName, signin::GetTestGaiaIdForEmail(kFakeUserName));
-    }
+    AccountId account_id = AccountId::FromUserEmailGaiaId(
+        kFakeUserName, signin::GetTestGaiaIdForEmail(kFakeUserName));
     const user_manager::User* user = nullptr;
     switch (user_type) {
       case user_manager::USER_TYPE_CHILD:
@@ -361,11 +356,6 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
         break;
       case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
         user = GetFakeUserManager()->AddPublicAccountUser(account_id);
-        break;
-      case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
-        user = GetFakeUserManager()->AddUserWithAffiliationAndTypeAndProfile(
-            account_id, true /*is_affiliated*/,
-            user_manager::USER_TYPE_ACTIVE_DIRECTORY, nullptr /*profile*/);
         break;
       case user_manager::USER_TYPE_ARC_KIOSK_APP:
         user = GetFakeUserManager()->AddUserWithAffiliationAndTypeAndProfile(
@@ -383,8 +373,9 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
     TestingProfile::Builder profile_builder;
     profile_builder.SetPath(temp_dir_.GetPath().AppendASCII("TestArcProfile"));
     profile_builder.SetProfileName(kFakeUserName);
-    if (user_type == user_manager::USER_TYPE_CHILD)
+    if (user_type == user_manager::USER_TYPE_CHILD) {
       profile_builder.SetIsSupervisedProfile();
+    }
 
     profile_ = IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment(profile_builder);
@@ -397,16 +388,13 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
     auto* identity_test_env =
         identity_test_environment_adaptor_->identity_test_env();
     identity_test_env->SetAutomaticIssueOfAccessTokens(true);
-    if (user_type != user_manager::USER_TYPE_ACTIVE_DIRECTORY) {
-      // IdentityManager doesn't have a primary account for Active Directory
-      // sessions. Use ConsentLevel::kSignin because ARC doesn't care about
-      // browser sync consent.
-      identity_test_env->MakePrimaryAccountAvailable(
-          kFakeUserName, signin::ConsentLevel::kSignin);
-      // Wait for all callbacks to complete, so that they are not called during
-      // the test execution.
-      base::RunLoop().RunUntilIdle();
-    }
+    // Use ConsentLevel::kSignin because ARC doesn't care about  browser sync
+    // consent.
+    identity_test_env->MakePrimaryAccountAvailable(
+        kFakeUserName, signin::ConsentLevel::kSignin);
+    // Wait for all callbacks to complete, so that they are not called during
+    // the test execution.
+    base::RunLoop().RunUntilIdle();
 
     profile()->GetPrefs()->SetBoolean(prefs::kArcSignedIn, true);
     profile()->GetPrefs()->SetBoolean(prefs::kArcTermsAccepted, true);
@@ -517,8 +505,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
 
   void WaitForGoogleAccountsInArcCallback() { run_loop_->RunUntilIdle(); }
 
-  std::pair<std::string, mojom::ChromeAccountType>
-  RequestPrimaryAccount() {
+  std::pair<std::string, mojom::ChromeAccountType> RequestPrimaryAccount() {
     base::RunLoop run_loop;
     std::string account_name;
     mojom::ChromeAccountType account_type = mojom::ChromeAccountType::UNKNOWN;
@@ -584,34 +571,24 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, GetPrimaryAccountForGaiaAccounts) {
   SetAccountAndProfile(user_manager::USER_TYPE_REGULAR);
-  const std::pair<std::string, mojom::ChromeAccountType>
-      primary_account = RequestPrimaryAccount();
+  const std::pair<std::string, mojom::ChromeAccountType> primary_account =
+      RequestPrimaryAccount();
   EXPECT_EQ(kFakeUserName, primary_account.first);
   EXPECT_EQ(mojom::ChromeAccountType::USER_ACCOUNT, primary_account.second);
 }
 
 IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, GetPrimaryAccountForChildAccounts) {
   SetAccountAndProfile(user_manager::USER_TYPE_CHILD);
-  const std::pair<std::string, mojom::ChromeAccountType>
-      primary_account = RequestPrimaryAccount();
+  const std::pair<std::string, mojom::ChromeAccountType> primary_account =
+      RequestPrimaryAccount();
   EXPECT_EQ(kFakeUserName, primary_account.first);
   EXPECT_EQ(mojom::ChromeAccountType::CHILD_ACCOUNT, primary_account.second);
 }
 
-IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest,
-                       GetPrimaryAccountForActiveDirectoryAccounts) {
-  SetAccountAndProfile(user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  const std::pair<std::string, mojom::ChromeAccountType>
-      primary_account = RequestPrimaryAccount();
-  EXPECT_EQ(std::string(), primary_account.first);
-  EXPECT_EQ(mojom::ChromeAccountType::ACTIVE_DIRECTORY_ACCOUNT,
-            primary_account.second);
-}
-
 IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, GetPrimaryAccountForPublicAccounts) {
   SetAccountAndProfile(user_manager::USER_TYPE_PUBLIC_ACCOUNT);
-  const std::pair<std::string, mojom::ChromeAccountType>
-      primary_account = RequestPrimaryAccount();
+  const std::pair<std::string, mojom::ChromeAccountType> primary_account =
+      RequestPrimaryAccount();
   EXPECT_EQ(std::string(), primary_account.first);
   EXPECT_EQ(mojom::ChromeAccountType::ROBOT_ACCOUNT, primary_account.second);
 }
@@ -986,34 +963,10 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, AccountUpdatesArePropagated) {
 }
 
 IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest,
-                       AccountUpdatesArePropagatedForActiveDirectoryUsers) {
-  SetAccountAndProfile(user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  // Add a Secondary Account.
-  AccountInfo account_info = SeedAccountInfo(kSecondaryAccountEmail);
-
-  SetInvalidRefreshTokenForAccount(account_info.account_id);
-  const int initial_num_calls = auth_instance().num_account_upserted_calls();
-  EXPECT_EQ(1, initial_num_calls);
-  if (IsArcAccountRestrictionsEnabled()) {
-    // 1 SetAccounts() call with empty list of accounts.
-    EXPECT_EQ(1, auth_instance().num_set_accounts_calls());
-    EXPECT_EQ(0u, auth_instance().last_set_accounts_list()->size());
-  }
-
-  // 1 call for the Secondary Account.
-  EXPECT_EQ(1, initial_num_calls);
-
-  SetRefreshTokenForAccount(account_info.account_id);
-  // Expect exactly one call for the account update above.
-  EXPECT_EQ(1,
-            auth_instance().num_account_upserted_calls() - initial_num_calls);
-  EXPECT_EQ(kSecondaryAccountEmail, auth_instance().last_upserted_account());
-}
-
-IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest,
                        AccountUpdatesAreNotPropagatedIfAccountIsNotAvailable) {
-  if (!IsArcAccountRestrictionsEnabled())
+  if (!IsArcAccountRestrictionsEnabled()) {
     return;
+  }
 
   AccountInfo account_info = SetupGaiaAccount(kSecondaryAccountEmail);
 
@@ -1065,8 +1018,9 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, AccountRemovalsArePropagated) {
 
 IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest,
                        AccountRemovalsAreNotPropagatedIfAccountIsNotAvailable) {
-  if (!IsArcAccountRestrictionsEnabled())
+  if (!IsArcAccountRestrictionsEnabled()) {
     return;
+  }
 
   SetAccountAndProfile(user_manager::USER_TYPE_REGULAR);
   SeedAccountInfo(kSecondaryAccountEmail);
@@ -1327,7 +1281,7 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, ChildTransition) {
   }
 
   // Test failure statuses that lead to showing data removal confirmation and
-  // ARC++ stopping. This block tests cancelation of data removal.
+  // ARC++ stopping. This block tests cancellation of data removal.
   for (mojom::ManagementChangeStatus status : failure_statuses) {
     EXPECT_EQ(ArcSessionManager::State::ACTIVE, session->state());
     // Confirmation dialog is not shown.

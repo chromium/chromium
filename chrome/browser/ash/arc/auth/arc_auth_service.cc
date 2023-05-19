@@ -93,11 +93,9 @@ mojom::ChromeAccountType GetAccountType(const Profile* profile) {
     return mojom::ChromeAccountType::OFFLINE_DEMO_ACCOUNT;
   }
 
-  if (profile->IsChild())
+  if (profile->IsChild()) {
     return mojom::ChromeAccountType::CHILD_ACCOUNT;
-
-  if (IsActiveDirectoryUserForProfile(profile))
-    return mojom::ChromeAccountType::ACTIVE_DIRECTORY_ACCOUNT;
+  }
 
   auto* demo_session = ash::DemoSession::Get();
   if (demo_session && demo_session->started()) {
@@ -122,14 +120,13 @@ mojom::AccountInfoPtr CreateAccountInfo(bool is_enforced,
                                         bool is_managed) {
   mojom::AccountInfoPtr account_info = mojom::AccountInfo::New();
   account_info->account_name = account_name;
-  if (account_type == mojom::ChromeAccountType::ACTIVE_DIRECTORY_ACCOUNT) {
-    account_info->enrollment_token = auth_info;
+
+  if (!is_enforced) {
+    account_info->auth_code = absl::nullopt;
   } else {
-    if (!is_enforced)
-      account_info->auth_code = absl::nullopt;
-    else
-      account_info->auth_code = auth_info;
+    account_info->auth_code = auth_info;
   }
+
   account_info->account_type = account_type;
   account_info->is_managed = is_managed;
   return account_info;
@@ -156,13 +153,15 @@ bool IsPrimaryOrDeviceLocalAccount(
 
   // There is no Gaia user for device local accounts, but in this case there is
   // always only a primary account.
-  if (user->IsDeviceLocalAccount())
+  if (user->IsDeviceLocalAccount()) {
     return true;
+  }
 
   const AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByEmailAddress(account_name);
-  if (account_info.IsEmpty())
+  if (account_info.IsEmpty()) {
     return false;
+  }
 
   DCHECK(!account_info.gaia.empty());
   return IsPrimaryGaiaAccount(account_info.gaia);
@@ -173,6 +172,7 @@ bool IsPrimaryOrDeviceLocalAccount(
 std::string GetAccountName(Profile* profile) {
   switch (GetAccountType(profile)) {
     case mojom::ChromeAccountType::USER_ACCOUNT:
+      [[fallthrough]];
     case mojom::ChromeAccountType::CHILD_ACCOUNT:
       // IdentityManager::GetPrimaryAccountInfo(
       //    signin::ConsentLevel::kSignin).email might be more appropriate
@@ -181,9 +181,13 @@ std::string GetAccountName(Profile* profile) {
           ->GetUserByProfile(profile)
           ->GetDisplayEmail();
     case mojom::ChromeAccountType::ROBOT_ACCOUNT:
-    case mojom::ChromeAccountType::ACTIVE_DIRECTORY_ACCOUNT:
+      [[fallthrough]];
     case mojom::ChromeAccountType::OFFLINE_DEMO_ACCOUNT:
       return std::string();
+    // TODO(b/282761972): Remove the `ACTIVE_DIRECTORY_ACCOUNT` value below,
+    // after it's removed from the corresponding mojom enum.
+    case mojom::ChromeAccountType::ACTIVE_DIRECTORY_ACCOUNT:
+      [[fallthrough]];
     case mojom::ChromeAccountType::UNKNOWN:
       NOTREACHED();
       return std::string();
@@ -290,20 +294,24 @@ void ArcAuthService::OnConnectionReady() {
   // provisioning.
   // For the second and subsequent sessions, `arc::IsArcProvisioned()` will be
   // `true`.
-  if (arc::IsArcProvisioned(profile_))
+  if (arc::IsArcProvisioned(profile_)) {
     TriggerAccountsPushToArc(false /* filter_primary_account */);
+  }
 
-  if (pending_get_arc_accounts_callback_)
+  if (pending_get_arc_accounts_callback_) {
     DispatchAccountsInArc(std::move(pending_get_arc_accounts_callback_));
+  }
 
   // Report main account resolution status for provisioned devices.
-  if (!IsArcProvisioned(profile_))
+  if (!IsArcProvisioned(profile_)) {
     return;
+  }
 
   auto* instance = ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->auth(),
                                                GetMainAccountResolutionStatus);
-  if (!instance)
+  if (!instance) {
     return;
+  }
 
   instance->GetMainAccountResolutionStatus(
       base::BindOnce(&ArcAuthService::OnMainAccountResolutionStatus,
@@ -530,8 +538,9 @@ void ArcAuthService::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   // Should be consistent with OnAccountAvailableInArc.
   // TODO(crbug/1260909): Remove IdentityManager::Observer implementation.
-  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled())
+  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
     return;
+  }
 
   UpsertAccountToArc(account_info);
 }
@@ -540,8 +549,9 @@ void ArcAuthService::OnExtendedAccountInfoRemoved(
     const AccountInfo& account_info) {
   // Should be consistent with OnAccountUnavailableInArc.
   // TODO(crbug/1260909): Remove IdentityManager::Observer implementation.
-  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled())
+  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
     return;
+  }
 
   DCHECK(!IsPrimaryGaiaAccount(account_info.gaia));
 
@@ -586,19 +596,22 @@ void ArcAuthService::OnArcInitialStart() {
 
 void ArcAuthService::Shutdown() {
   identity_manager_->RemoveObserver(this);
-  if (account_apps_availability_)
+  if (account_apps_availability_) {
     account_apps_availability_->RemoveObserver(this);
+  }
 }
 
 void ArcAuthService::UpsertAccountToArc(const CoreAccountInfo& account_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!ash::IsAccountManagerAvailable(profile_))
+  if (!ash::IsAccountManagerAvailable(profile_)) {
     return;
+  }
 
   // Ignore the update if ARC has not been provisioned yet.
-  if (!arc::IsArcProvisioned(profile_))
+  if (!arc::IsArcProvisioned(profile_)) {
     return;
+  }
 
   if (identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
           account_info.account_id)) {
@@ -609,8 +622,9 @@ void ArcAuthService::UpsertAccountToArc(const CoreAccountInfo& account_info) {
 
   auto* instance = ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->auth(),
                                                OnAccountUpdated);
-  if (!instance)
+  if (!instance) {
     return;
+  }
 
   const std::string account_name = account_info.email;
   DCHECK(!account_name.empty());
@@ -620,17 +634,20 @@ void ArcAuthService::UpsertAccountToArc(const CoreAccountInfo& account_info) {
 void ArcAuthService::RemoveAccountFromArc(const std::string& email) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!ash::IsAccountManagerAvailable(profile_))
+  if (!ash::IsAccountManagerAvailable(profile_)) {
     return;
+  }
 
   // Ignore the update if ARC has not been provisioned yet.
-  if (!arc::IsArcProvisioned(profile_))
+  if (!arc::IsArcProvisioned(profile_)) {
     return;
+  }
 
   auto* instance = ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->auth(),
                                                OnAccountUpdated);
-  if (!instance)
+  if (!instance) {
     return;
+  }
 
   DCHECK(!email.empty());
   instance->OnAccountUpdated(email, mojom::AccountUpdateType::REMOVAL);
@@ -768,10 +785,12 @@ void ArcAuthService::SetURLLoaderFactoryForTesting(
 }
 
 void ArcAuthService::OnDataRemovalAccepted(bool accepted) {
-  if (!accepted)
+  if (!accepted) {
     return;
-  if (!IsArcPlayStoreEnabledForProfile(profile_))
+  }
+  if (!IsArcPlayStoreEnabledForProfile(profile_)) {
     return;
+  }
   VLOG(1)
       << "Request for data removal on child transition failure is confirmed";
   ArcSessionManager::Get()->RequestArcDataRemoval();
@@ -793,8 +812,9 @@ ArcAuthService::CreateArcBackgroundAuthCodeFetcher(
 }
 
 void ArcAuthService::TriggerAccountsPushToArc(bool filter_primary_account) {
-  if (!ash::IsAccountManagerAvailable(profile_))
+  if (!ash::IsAccountManagerAvailable(profile_)) {
     return;
+  }
 
   VLOG(1) << "Pushing accounts to ARC "
           << (filter_primary_account ? "without primary account"
@@ -810,8 +830,9 @@ void ArcAuthService::TriggerAccountsPushToArc(bool filter_primary_account) {
   const std::vector<CoreAccountInfo> accounts =
       identity_manager_->GetAccountsWithRefreshTokens();
   for (const CoreAccountInfo& account : accounts) {
-    if (filter_primary_account && IsPrimaryGaiaAccount(account.gaia))
+    if (filter_primary_account && IsPrimaryGaiaAccount(account.gaia)) {
       continue;
+    }
 
     OnRefreshTokenUpdatedForAccount(account);
   }
@@ -826,8 +847,9 @@ void ArcAuthService::CompleteAccountsPushToArc(
       std::vector<mojom::ArcAccountInfoPtr>();
   for (const auto& account : accounts) {
     DCHECK(account.key.account_type() == account_manager::AccountType::kGaia);
-    if (filter_primary_account && IsPrimaryGaiaAccount(account.key.id()))
+    if (filter_primary_account && IsPrimaryGaiaAccount(account.key.id())) {
       continue;
+    }
 
     arc_accounts.emplace_back(mojom::ArcAccountInfo::New(
         /*email=*/account.raw_email, /*gaia_id=*/account.key.id()));
@@ -840,8 +862,9 @@ void ArcAuthService::CompleteAccountsPushToArc(
                "OnAccountAvailableInArc";
     for (const auto& account : accounts) {
       DCHECK(account.key.account_type() == account_manager::AccountType::kGaia);
-      if (filter_primary_account && IsPrimaryGaiaAccount(account.key.id()))
+      if (filter_primary_account && IsPrimaryGaiaAccount(account.key.id())) {
         continue;
+      }
 
       OnAccountAvailableInArc(account);
     }
