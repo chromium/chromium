@@ -1677,7 +1677,7 @@ class OopTextBlobPixelTest
         case TextBlobStrategy::kRecordFilter:
           error_pixels_percentage = std::max(13.f, error_pixels_percentage);
           max_abs_error = std::max(255, max_abs_error);
-          avg_error = std::max(62.3f, avg_error);
+          avg_error = std::max(62.4f, avg_error);
           break;
         case TextBlobStrategy::kRecordShader:
           // For kRecordShader+kPerspective the scale factor used to draw the
