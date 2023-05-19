@@ -6,7 +6,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
-#include "third_party/skia/include/core/SkColorFilter.h"
+#include "ui/gfx/color_utils.h"
 
 namespace blink {
 
@@ -291,11 +291,10 @@ void PaintChunker::ProcessBackgroundColorCandidate(const DisplayItem& item) {
       if (chunk.background_color.area >= min_background_area &&
           !item_background_color.color.isOpaque()) {
         chunk.background_color.area = item_background_color.area;
-        if (auto filter = SkColorFilters::Blend(
-                item_background_color.color, nullptr, SkBlendMode::kSrcOver)) {
-          chunk.background_color.color = filter->filterColor4f(
-              chunk.background_color.color, nullptr, nullptr);
-        }
+        chunk.background_color.color =
+            SkColor4f::FromColor(color_utils::GetResultingPaintColor(
+                item_background_color.color.toSkColor(),
+                chunk.background_color.color.toSkColor()));
       } else {
         chunk.background_color = item_background_color;
       }
