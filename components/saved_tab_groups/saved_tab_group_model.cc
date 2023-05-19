@@ -391,8 +391,8 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupModel::MergeTab(
 }
 
 void SavedTabGroupModel::Reorder(const base::Uuid& id, int new_index) {
-  DCHECK_GE(new_index, 0);
-  DCHECK_LT(new_index, Count());
+  CHECK_GE(new_index, 0);
+  CHECK_LT(new_index, Count());
 
   absl::optional<int> index = GetIndexOf(id);
   CHECK(index.has_value());

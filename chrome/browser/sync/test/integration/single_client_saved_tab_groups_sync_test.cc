@@ -297,5 +297,162 @@ IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, RemoveGroup) {
                   .Wait());
 }
 
-// TODO(crbug/1445146): Implement remaining integration tests.
+// Update the metadata of a saved group already in the model.
+IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest,
+                       UpdateGroupMetadata) {
+  SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
+                       /*urls=*/{},
+                       /*saved_guid=*/absl::nullopt, /*position=*/0);
+
+  // Add a group with two tabs to sync.
+  AddDataToFakeServer(*group1.ToSpecifics());
+
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::SAVED_TAB_GROUP));
+
+  SavedTabGroupKeyedService* const service =
+      SavedTabGroupServiceFactory::GetForProfile(GetProfile(0));
+
+  // Verify they are added to the model.
+  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
+                  service, group1.saved_guid())
+                  .Wait());
+
+  // Update metadata for group1in the server.
+  group1.SetTitle(u"Updated Title");
+  group1.SetColor(tab_groups::TabGroupColorId::kOrange);
+  AddDataToFakeServer(*group1.ToSpecifics());
+
+  // Verify the group's metadata is updated locally.
+  EXPECT_TRUE(
+      saved_tab_groups_helper::SavedTabGroupMatchesChecker(service, group1)
+          .Wait());
+}
+
+// Update the URL and title of a saved tab already in the model.
+IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, UpdatedTabData) {
+  SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
+                       /*urls=*/{},
+                       /*saved_guid=*/absl::nullopt, /*position=*/0);
+  SavedTabGroupTab tab1(GURL("about:blank"), u"about:blank",
+                        group1.saved_guid());
+
+  // Add a group with a tab to sync.
+  AddDataToFakeServer(*group1.ToSpecifics());
+  AddDataToFakeServer(*tab1.ToSpecifics());
+
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::SAVED_TAB_GROUP));
+
+  SavedTabGroupKeyedService* const service =
+      SavedTabGroupServiceFactory::GetForProfile(GetProfile(0));
+
+  // Verify they are added to the model.
+  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
+                  service, group1.saved_guid())
+                  .Wait());
+  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
+                  service, tab1.saved_tab_guid())
+                  .Wait());
+
+  // Update url and title for tab1 in the server.
+  tab1.SetURL(GURL("https://new.url"));
+  tab1.SetTitle(u"Updated Title");
+  AddDataToFakeServer(*tab1.ToSpecifics());
+
+  // Verify the tab is updated locally to match.
+  EXPECT_TRUE(
+      saved_tab_groups_helper::SavedTabMatchesChecker(service, tab1).Wait());
+}
+
+// Reorder groups already saved in the model.
+IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, ReorderGroups) {
+  SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey,
+                       /*urls=*/{},
+                       /*saved_guid=*/absl::nullopt, /*position=*/0);
+  SavedTabGroup group2(u"Group 2", tab_groups::TabGroupColorId::kOrange,
+                       /*urls=*/{},
+                       /*saved_guid=*/absl::nullopt, /*position=*/1);
+
+  // Add a group with a tab to sync.
+  AddDataToFakeServer(*group1.ToSpecifics());
+  AddDataToFakeServer(*group2.ToSpecifics());
+
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::SAVED_TAB_GROUP));
+
+  SavedTabGroupKeyedService* const service =
+      SavedTabGroupServiceFactory::GetForProfile(GetProfile(0));
+
+  // Verify they are added to the model.
+  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
+                  service, group1.saved_guid())
+                  .Wait());
+  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
+                  service, group2.saved_guid())
+                  .Wait());
+
+  // Update the positions of the groups in the server.
+  group1.SetPosition(1);
+  group2.SetPosition(0);
+  AddDataToFakeServer(*group1.ToSpecifics());
+  AddDataToFakeServer(*group2.ToSpecifics());
+
+  // Verify the group positions are updated in the local model as well.
+  // TODO(tbergquist/dljames): Enable this check once ordering syncing is fixed.
+  // EXPECT_TRUE(saved_tab_groups_helper::GroupOrderChecker(
+  //                 service, {group2.saved_guid(), group1.saved_guid()})
+  //                 .Wait());
+}
+
+// Reorder tabs in a group.
+IN_PROC_BROWSER_TEST_F(SingleClientSavedTabGroupsSyncTest, ReorderTabs) {
+  SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {});
+  SavedTabGroupTab tab1(GURL("about:blank"), u"about:blank",
+                        group1.saved_guid(), nullptr, absl::nullopt,
+                        absl::nullopt, /*position=*/0);
+  SavedTabGroupTab tab2(GURL("about:blank"), u"about:blank",
+                        group1.saved_guid(), nullptr, absl::nullopt,
+                        absl::nullopt, /*position=*/1);
+
+  // Add a group with two tabs to sync.
+  AddDataToFakeServer(*group1.ToSpecifics());
+  AddDataToFakeServer(*tab1.ToSpecifics());
+  AddDataToFakeServer(*tab2.ToSpecifics());
+
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::SAVED_TAB_GROUP));
+
+  SavedTabGroupKeyedService* const service =
+      SavedTabGroupServiceFactory::GetForProfile(GetProfile(0));
+
+  // Verify they are added to the model.
+  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
+                  service, group1.saved_guid())
+                  .Wait());
+  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
+                  service, tab1.saved_tab_guid())
+                  .Wait());
+  ASSERT_TRUE(saved_tab_groups_helper::SavedTabOrGroupExistsChecker(
+                  service, tab2.saved_tab_guid())
+                  .Wait());
+
+  // Reorder the tabs in group 1 on the server.
+  tab1.SetPosition(1);
+  tab2.SetPosition(0);
+  AddDataToFakeServer(*tab1.ToSpecifics());
+  AddDataToFakeServer(*tab2.ToSpecifics());
+
+  // Verify the tab order was updated in the model.
+  // TODO(tbergquist/dljames): Enable this check once ordering syncing is fixed.
+  // EXPECT_TRUE(saved_tab_groups_helper::TabOrderChecker(
+  //                 service, group1.saved_guid(),
+  //                 {tab2.saved_tab_guid(), tab1.saved_tab_guid()})
+  //                 .Wait());
+}
+
 }  // namespace

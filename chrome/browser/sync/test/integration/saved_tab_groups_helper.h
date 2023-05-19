@@ -43,7 +43,7 @@ class SavedTabOrGroupExistsChecker : public StatusChangeChecker,
   raw_ptr<SavedTabGroupKeyedService> const service_;
 };
 
-// Checks that a tab or group with a particular uuid does not exists in the
+// Checks that a tab or group with a particular uuid does not exist in the
 // model.
 class SavedTabOrGroupDoesNotExistChecker : public StatusChangeChecker,
                                            public SavedTabGroupModelObserver {
@@ -72,6 +72,116 @@ class SavedTabOrGroupDoesNotExistChecker : public StatusChangeChecker,
 
  private:
   const base::Uuid uuid_;
+  raw_ptr<SavedTabGroupKeyedService> const service_;
+};
+
+// Checks that a matching group exists in the model.
+class SavedTabGroupMatchesChecker : public StatusChangeChecker,
+                                    public SavedTabGroupModelObserver {
+ public:
+  // The caller must ensure that `service` is not null and will outlive this
+  // object.
+  SavedTabGroupMatchesChecker(SavedTabGroupKeyedService* service,
+                              SavedTabGroup group);
+  SavedTabGroupMatchesChecker(const SavedTabGroupMatchesChecker&) = delete;
+  SavedTabGroupMatchesChecker& operator=(const SavedTabGroupMatchesChecker&) =
+      delete;
+  ~SavedTabGroupMatchesChecker() override;
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+  // SavedTabGroupModelObserver
+  void SavedTabGroupAddedFromSync(const base::Uuid& uuid) override;
+  void SavedTabGroupUpdatedFromSync(
+      const base::Uuid& group_uuid,
+      const absl::optional<base::Uuid>& tab_uuid = absl::nullopt) override;
+
+ private:
+  const SavedTabGroup group_;
+  raw_ptr<SavedTabGroupKeyedService> const service_;
+};
+
+// Checks that a matching tab exists in the model.
+class SavedTabMatchesChecker : public StatusChangeChecker,
+                               public SavedTabGroupModelObserver {
+ public:
+  // The caller must ensure that `service` is not null and will outlive this
+  // object.
+  SavedTabMatchesChecker(SavedTabGroupKeyedService* service,
+                         SavedTabGroupTab tab);
+  SavedTabMatchesChecker(const SavedTabMatchesChecker&) = delete;
+  SavedTabMatchesChecker& operator=(const SavedTabMatchesChecker&) = delete;
+  ~SavedTabMatchesChecker() override;
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+  // SavedTabGroupModelObserver
+  void SavedTabGroupAddedFromSync(const base::Uuid& uuid) override;
+  void SavedTabGroupUpdatedFromSync(
+      const base::Uuid& group_uuid,
+      const absl::optional<base::Uuid>& tab_uuid = absl::nullopt) override;
+
+ private:
+  const SavedTabGroupTab tab_;
+  raw_ptr<SavedTabGroupKeyedService> const service_;
+};
+
+// Checks that the model contains saved groups in a certain order.
+class GroupOrderChecker : public StatusChangeChecker,
+                          public SavedTabGroupModelObserver {
+ public:
+  // The caller must ensure that `service` is not null and will outlive this
+  // object.
+  GroupOrderChecker(SavedTabGroupKeyedService* service,
+                    std::vector<base::GUID> group_ids);
+  GroupOrderChecker(const GroupOrderChecker&) = delete;
+  GroupOrderChecker& operator=(const GroupOrderChecker&) = delete;
+  ~GroupOrderChecker() override;
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+  // SavedTabGroupModelObserver
+  void SavedTabGroupAddedFromSync(const base::Uuid& uuid) override;
+  void SavedTabGroupRemovedFromSync(
+      const SavedTabGroup* removed_group) override;
+  void SavedTabGroupUpdatedFromSync(
+      const base::Uuid& group_uuid,
+      const absl::optional<base::Uuid>& tab_uuid = absl::nullopt) override;
+
+ private:
+  const std::vector<base::GUID> group_ids_;
+  raw_ptr<SavedTabGroupKeyedService> const service_;
+};
+
+// Checks that a saved group in the model contains tabs in a certain order.
+class TabOrderChecker : public StatusChangeChecker,
+                        public SavedTabGroupModelObserver {
+ public:
+  // The caller must ensure that `service` is not null and will outlive this
+  // object.
+  TabOrderChecker(SavedTabGroupKeyedService* service,
+                  base::GUID group_id,
+                  std::vector<base::GUID> tab_ids);
+  TabOrderChecker(const TabOrderChecker&) = delete;
+  TabOrderChecker& operator=(const TabOrderChecker&) = delete;
+  ~TabOrderChecker() override;
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+  // SavedTabGroupModelObserver
+  void SavedTabGroupAddedFromSync(const base::Uuid& uuid) override;
+  void SavedTabGroupUpdatedFromSync(
+      const base::Uuid& group_uuid,
+      const absl::optional<base::Uuid>& tab_uuid = absl::nullopt) override;
+
+ private:
+  const base::GUID group_id_;
+  const std::vector<base::GUID> tab_ids_;
+
   raw_ptr<SavedTabGroupKeyedService> const service_;
 };
 }  // namespace saved_tab_groups_helper
