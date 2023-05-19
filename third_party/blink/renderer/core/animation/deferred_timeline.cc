@@ -9,9 +9,27 @@ namespace blink {
 DeferredTimeline::DeferredTimeline(Document* document)
     : ScrollSnapshotTimeline(document) {}
 
+void DeferredTimeline::AttachTimeline(ScrollSnapshotTimeline* timeline) {
+  attached_timelines_.push_back(timeline);
+}
+
+void DeferredTimeline::DetachTimeline(ScrollSnapshotTimeline* timeline) {
+  wtf_size_t i = attached_timelines_.Find(timeline);
+  if (i != kNotFound) {
+    attached_timelines_.EraseAt(i);
+  }
+}
+
+void DeferredTimeline::Trace(Visitor* visitor) const {
+  visitor->Trace(attached_timelines_);
+  ScrollSnapshotTimeline::Trace(visitor);
+}
+
 DeferredTimeline::TimelineState DeferredTimeline::ComputeTimelineState() const {
-  // TODO(crbug.com/1425939): Grab state from the attached timeline.
-  // For now this timeline is always inactive.
+  if (const ScrollSnapshotTimeline* attached_timeline =
+          SingleAttachedTimeline()) {
+    return attached_timeline->ComputeTimelineState();
+  }
   return TimelineState();
 }
 

@@ -860,6 +860,17 @@ TimelineType* GetTimeline(const CSSTimelineMap<TimelineType>* timelines,
   return i != timelines->end() ? i->value.Get() : nullptr;
 }
 
+DeferredTimeline* GetTimelineAttachment(
+    const TimelineAttachmentMap* timeline_attachments,
+    ScrollSnapshotTimeline* timeline) {
+  if (!timeline_attachments) {
+    return nullptr;
+  }
+  auto i = timeline_attachments->find(timeline);
+  return i != timeline_attachments->end() ? i->value.Get() : nullptr;
+}
+
+// TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
 ScrollTimeline* GetAttachingTimeline(const AttachingTimelineMap* timelines,
                                      ScrollTimelineAttachment* attachment) {
   if (!timelines) {
@@ -867,6 +878,12 @@ ScrollTimeline* GetAttachingTimeline(const AttachingTimelineMap* timelines,
   }
   auto i = timelines->find(attachment);
   return i != timelines->end() ? i->value.Get() : nullptr;
+}
+
+Element* ParentElementForTimelineTraversal(Node& node) {
+  return RuntimeEnabledFeatures::CSSTreeScopedTimelinesEnabled()
+             ? node.ParentOrShadowHostElement()
+             : LayoutTreeBuilderTraversal::ParentElement(node);
 }
 
 Element* ResolveReferenceElement(Document& document,
@@ -1146,6 +1163,66 @@ void CSSAnimations::ForEachTimeline(const TimelineData* timeline_data,
 }
 
 template <typename TimelineType>
+void CSSAnimations::CalculateChangedTimelineAttachments(
+    Element& animating_element,
+    const TimelineData* timeline_data,
+    const CSSAnimationUpdate& update,
+    const TimelineAttachmentMap* existing_attachments,
+    TimelineAttachmentMap& result) {
+  ForEachTimeline<TimelineType>(
+      timeline_data, &update,
+      [&animating_element, &update, &existing_attachments, &result](
+          const ScopedCSSName& name, TimelineType* attaching_timeline) {
+        DeferredTimeline* new_deferred_timeline =
+            FindDeferredTimeline(name, &animating_element, &update);
+        DeferredTimeline* existing_deferred_timeline =
+            GetTimelineAttachment(existing_attachments, attaching_timeline);
+        if (existing_deferred_timeline == new_deferred_timeline) {
+          // No change, remove explicit nullptr previously added by
+          // CalculateTimelineAttachmentUpdate.
+          result.erase(attaching_timeline);
+        } else {
+          result.Set(attaching_timeline, new_deferred_timeline);
+        }
+      });
+}
+
+void CSSAnimations::CalculateTimelineAttachmentUpdate(
+    CSSAnimationUpdate& update,
+    Element& animating_element) {
+  const CSSAnimations::TimelineData* timeline_data =
+      GetTimelineData(animating_element);
+
+  if (update.ChangedScrollTimelines().empty() &&
+      update.ChangedViewTimelines().empty() &&
+      (!timeline_data || timeline_data->IsEmpty())) {
+    return;
+  }
+
+  // We initially assume that all existing timeline attachments will be removed.
+  // This is represented by  populating the TimelineAttachmentMap with explicit
+  // nullptr values for each existing attachment.
+  const TimelineAttachmentMap* existing_attachments =
+      timeline_data ? &timeline_data->GetTimelineAttachments() : nullptr;
+  TimelineAttachmentMap changed_attachments =
+      NullifyExistingTimelines(existing_attachments);
+
+  // Then, for each Scroll/ViewTimeline, we find the corresponding attachment
+  // (i.e. DeferredTimeline), and either erase the explicit nullptr from
+  // `changed_attachments` if it matched the existing timeline, or just add it
+  // otherwise.
+  CalculateChangedTimelineAttachments<ScrollTimeline>(
+      animating_element, timeline_data, update, existing_attachments,
+      changed_attachments);
+  CalculateChangedTimelineAttachments<ViewTimeline>(
+      animating_element, timeline_data, update, existing_attachments,
+      changed_attachments);
+
+  update.SetChangedTimelineAttachments(std::move(changed_attachments));
+}
+
+// TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
+template <typename TimelineType>
 void CSSAnimations::CollectTimelinesWithAttachmentInto(
     const TimelineData* timeline_data,
     const CSSAnimationUpdate* update,
@@ -1160,6 +1237,7 @@ void CSSAnimations::CollectTimelinesWithAttachmentInto(
       });
 }
 
+// TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
 template <typename TimelineType>
 void CSSAnimations::CalculateChangedAttachingTimelines(
     const CSSTimelineMap<TimelineType>& ancestor_attached_timelines,
@@ -1189,6 +1267,7 @@ void CSSAnimations::CalculateChangedAttachingTimelines(
   }
 }
 
+// TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
 void CSSAnimations::CalculateAttachingTimelinesUpdate(
     CSSAnimationUpdate& update,
     Element& animating_element) {
@@ -1302,10 +1381,15 @@ void UpdateMatchingTimeline(const ScopedCSSName& target_name,
   if (target_name.GetName() != candidate_name.GetName()) {
     return;
   }
-  if (candidate->GetTimelineAttachment() == TimelineAttachment::kAncestor) {
-    // TODO(crbug.com/1425939): We may want to treat ancestor-attached timelines
-    // as "local" if they aren't attached to anything.
-    return;
+  // TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
+  if (auto* scroll_timeline = DynamicTo<ScrollTimeline>(
+          static_cast<AnimationTimeline*>(candidate))) {
+    if (scroll_timeline->GetTimelineAttachment() ==
+        TimelineAttachment::kAncestor) {
+      // TODO(crbug.com/1425939): We may want to treat ancestor-attached
+      // timelines as "local" if they aren't attached to anything.
+      return;
+    }
   }
   if (RuntimeEnabledFeatures::CSSTreeScopedTimelinesEnabled()) {
     size_t distance = TreeScopeDistance(candidate_name.GetTreeScope(),
@@ -1321,7 +1405,7 @@ void UpdateMatchingTimeline(const ScopedCSSName& target_name,
 
 }  // namespace
 
-ScrollTimeline* CSSAnimations::FindTimelineForNode(
+ScrollSnapshotTimeline* CSSAnimations::FindTimelineForNode(
     const ScopedCSSName& name,
     Node* node,
     const CSSAnimationUpdate* update) {
@@ -1333,7 +1417,11 @@ ScrollTimeline* CSSAnimations::FindTimelineForNode(
           FindTimelineForElement<ViewTimeline>(name, timeline_data, update)) {
     return timeline;
   }
-  return FindTimelineForElement<ScrollTimeline>(name, timeline_data, update);
+  if (ScrollTimeline* timeline =
+          FindTimelineForElement<ScrollTimeline>(name, timeline_data, update)) {
+    return timeline;
+  }
+  return FindTimelineForElement<DeferredTimeline>(name, timeline_data, update);
 }
 
 template <typename TimelineType>
@@ -1355,28 +1443,48 @@ TimelineType* CSSAnimations::FindTimelineForElement(
   return matching_timeline;
 }
 
-// Find a ScrollTimeline in inclusive ancestors.
+// Find a ScrollSnapshotTimeline in inclusive ancestors.
 //
 // The reason `update` is provided from the outside rather than just fetching
 // it from ElementAnimations, is that for the current node we're resolving style
 // for, the update hasn't actually been stored on ElementAnimations yet.
-ScrollTimeline* CSSAnimations::FindAncestorTimeline(
+ScrollSnapshotTimeline* CSSAnimations::FindAncestorTimeline(
     const ScopedCSSName& name,
     Node* node,
     const CSSAnimationUpdate* update) {
   DCHECK(node);
 
-  if (ScrollTimeline* timeline = FindTimelineForNode(name, node, update))
+  if (ScrollSnapshotTimeline* timeline =
+          FindTimelineForNode(name, node, update)) {
     return timeline;
+  }
 
-  Element* parent_element =
-      RuntimeEnabledFeatures::CSSTreeScopedTimelinesEnabled()
-          ? node->ParentOrShadowHostElement()
-          : LayoutTreeBuilderTraversal::ParentElement(*node);
+  Element* parent_element = ParentElementForTimelineTraversal(*node);
   if (!parent_element) {
     return nullptr;
   }
   return FindAncestorTimeline(name, parent_element,
+                              GetPendingAnimationUpdate(*parent_element));
+}
+
+// Like FindAncestorTimeline, but only looks for DeferredTimelines.
+// This is used to attach Scroll/ViewTimelines to any matching DeferredTimelines
+// in the ancestor chain.
+DeferredTimeline* CSSAnimations::FindDeferredTimeline(
+    const ScopedCSSName& name,
+    Element* element,
+    const CSSAnimationUpdate* update) {
+  DCHECK(element);
+  const TimelineData* timeline_data = GetTimelineData(*element);
+  if (DeferredTimeline* timeline = FindTimelineForElement<DeferredTimeline>(
+          name, timeline_data, update)) {
+    return timeline;
+  }
+  Element* parent_element = ParentElementForTimelineTraversal(*element);
+  if (!parent_element) {
+    return nullptr;
+  }
+  return FindDeferredTimeline(name, parent_element,
                               GetPendingAnimationUpdate(*parent_element));
 }
 
@@ -1569,6 +1677,9 @@ void CSSAnimations::CalculateTimelineUpdate(
   CalculateScrollTimelineUpdate(update, animating_element, style_builder);
   CalculateViewTimelineUpdate(update, animating_element, style_builder);
   CalculateDeferredTimelineUpdate(update, animating_element, style_builder);
+  CalculateTimelineAttachmentUpdate(update, animating_element);
+
+  // TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
   CalculateAttachingTimelinesUpdate(update, animating_element);
 }
 
@@ -2047,6 +2158,18 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
   for (auto [name, value] : pending_update_.ChangedDeferredTimelines()) {
     timeline_data_.SetDeferredTimeline(*name, value.Get());
   }
+  for (auto [attaching_timeline, deferred_timeline] :
+       pending_update_.ChangedTimelineAttachments()) {
+    if (DeferredTimeline* existing_deferred_timeline =
+            timeline_data_.GetTimelineAttachment(attaching_timeline)) {
+      existing_deferred_timeline->DetachTimeline(attaching_timeline);
+    }
+    if (deferred_timeline) {
+      deferred_timeline->AttachTimeline(attaching_timeline);
+    }
+    timeline_data_.SetTimelineAttachment(attaching_timeline, deferred_timeline);
+  }
+  // TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
   for (auto [attachment, timeline] :
        pending_update_.ChangedAttachingTimelines()) {
     if (ScrollTimeline* existing_timeline =
@@ -2719,6 +2842,12 @@ void CSSAnimations::Cancel() {
     entry.value->animation->Update(kTimingUpdateOnDemand);
   }
 
+  for (auto [attaching_timeline, deferred_timeline] :
+       timeline_data_.GetTimelineAttachments()) {
+    deferred_timeline->DetachTimeline(attaching_timeline);
+  }
+
+  // TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
   for (auto [attachment, timeline] : timeline_data_.GetAttachingTimelines()) {
     timeline->RemoveAttachment(attachment);
   }
@@ -2757,6 +2886,23 @@ void CSSAnimations::TimelineData::SetDeferredTimeline(
   }
 }
 
+void CSSAnimations::TimelineData::SetTimelineAttachment(
+    ScrollSnapshotTimeline* attached_timeline,
+    DeferredTimeline* deferred_timeline) {
+  if (deferred_timeline == nullptr) {
+    timeline_attachments_.erase(attached_timeline);
+  } else {
+    timeline_attachments_.Set(attached_timeline, deferred_timeline);
+  }
+}
+
+DeferredTimeline* CSSAnimations::TimelineData::GetTimelineAttachment(
+    ScrollSnapshotTimeline* attached_timeline) {
+  auto i = timeline_attachments_.find(attached_timeline);
+  return i != timeline_attachments_.end() ? i->value.Get() : nullptr;
+}
+
+// TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
 void CSSAnimations::TimelineData::SetAttachingTimeline(
     ScrollTimelineAttachment* attachment,
     ScrollTimeline* timeline) {
@@ -2767,6 +2913,7 @@ void CSSAnimations::TimelineData::SetAttachingTimeline(
   }
 }
 
+// TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
 ScrollTimeline* CSSAnimations::TimelineData::GetAttachingTimeline(
     ScrollTimelineAttachment* attachment) {
   auto i = attaching_timelines_.find(attachment);
@@ -2777,6 +2924,8 @@ void CSSAnimations::TimelineData::Trace(blink::Visitor* visitor) const {
   visitor->Trace(scroll_timelines_);
   visitor->Trace(view_timelines_);
   visitor->Trace(deferred_timelines_);
+  visitor->Trace(timeline_attachments_);
+  // TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
   visitor->Trace(attaching_timelines_);
 }
 

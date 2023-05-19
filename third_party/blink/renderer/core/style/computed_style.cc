@@ -294,6 +294,10 @@ static bool DiffAffectsScrollAnimations(const ComputedStyle& old_style,
        new_style.ViewTimelineAttachment())) {
     return true;
   }
+  if (!base::ValuesEquivalent(old_style.TimelineScope(),
+                              new_style.TimelineScope())) {
+    return true;
+  }
   return false;
 }
 

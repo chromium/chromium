@@ -132,9 +132,11 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
   bool ValidateSnapshot() override;
   bool ShouldScheduleNextService() override;
 
- private:
+ public:
+  // Public for DeferredTimeline::ComputeTimelineState.
   virtual TimelineState ComputeTimelineState() const = 0;
 
+ private:
   // Snapshotted value produced by the last SnapshotState call.
   TimelineState timeline_state_snapshotted_;
 };
