@@ -1,5 +1,10 @@
-# This file also covers ownership of the following directories:
+# This file also covers ownership of the following:
+#   //chrome/browser/chrome_origin_trials_browsertest.cc
 #   //chrome/common/origin_trials/
+#   //components/embedder_support/origin_trials/
+#   //components/origin_trials/
+#   //content/browser/origin_trials/
+#   //content/test/data/origin_trials/
 #   //third_party/blink/public/common/origin_trials/
 #   //third_party/blink/renderer/core/origin_trials/
 #   //tools/origin_trials/
