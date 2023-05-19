@@ -587,6 +587,7 @@ export class SearchContainer extends EventTarget {
       if (!this.inputElement_.value) {
         if (event.key === 'Escape') {
           this.closeSearch();
+          this.searchButton_.focus();
         }
         if (event.key === 'Tab') {
           this.closeSearch();
