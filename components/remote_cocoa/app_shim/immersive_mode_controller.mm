@@ -253,7 +253,6 @@ ImmersiveModeController::~ImmersiveModeController() {
 void ImmersiveModeController::Enable() {
   DCHECK(!enabled_);
   enabled_ = true;
-  immersive_mode_titlebar_view_controller_.get().hidden = YES;
   [browser_window_ addTitlebarAccessoryViewController:
                        immersive_mode_titlebar_view_controller_];
 

@@ -89,9 +89,7 @@ void ImmersiveModeTabbedController::Enable() {
   ObserveChildWindows(tab_window_);
 
   // The presence of a visible NSToolbar causes the titlebar to be revealed.
-  // Keep the titlebar hidden until the fullscreen transition is complete.
   NSToolbar* toolbar = [[[NSToolbar alloc] init] autorelease];
-  toolbar.visible = NO;
 
   // Remove the baseline separator for macOS 10.15 and earlier. This has no
   // effect on macOS 11 and above. See
