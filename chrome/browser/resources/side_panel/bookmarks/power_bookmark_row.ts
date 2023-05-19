@@ -109,16 +109,25 @@ export class PowerBookmarkRowElement extends PolymerElement {
     this.addEventListener('focus', this.onFocus_);
   }
 
+  override focus() {
+    this.$.crUrlListItem.focus();
+  }
+
   private onKeydown_(e: KeyboardEvent) {
-    if (e.shiftKey && e.key === 'Tab' &&
-        this.shadowRoot!.activeElement === this.$.crUrlListItem) {
+    if (this.shadowRoot!.activeElement !== this.$.crUrlListItem) {
+      return;
+    }
+    if (e.shiftKey && e.key === 'Tab') {
       // Hitting shift tab from CrUrlListItem to traverse focus backwards will
       // attempt to move focus to this element, which is responsible for
       // delegating focus but should itself not be focusable. So when the user
       // hits shift tab, immediately hijack focus onto itself so that the
       // browser moves focus to the focusable element before it once it
       // processes the shift tab.
-      this.focus();
+      super.focus();
+    } else if (e.key === 'Enter') {
+      // Prevent iron-list from moving focus.
+      e.stopPropagation();
     }
   }
 
