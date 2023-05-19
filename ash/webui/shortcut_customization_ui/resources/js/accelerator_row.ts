@@ -91,7 +91,7 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     if (!this.isLocked) {
-      this.removeEventListener('click', () => this.showDialog());
+      this.removeEventListener('edit-icon-clicked', () => this.showDialog());
     }
   }
 
@@ -100,7 +100,7 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
         .then(({isMutable}) => {
           this.isLocked = !isMutable;
           if (!this.isLocked) {
-            this.addEventListener('click', () => this.showDialog());
+            this.addEventListener('edit-icon-clicked', () => this.showDialog());
           }
         });
   }

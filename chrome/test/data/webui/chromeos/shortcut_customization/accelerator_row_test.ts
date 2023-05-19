@@ -126,16 +126,21 @@ suite('acceleratorRowTest', function() {
 
     await flushTasks();
 
-    const rowContainer =
-        rowElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
-    rowContainer.click();
+    const acceleratorViewElement =
+        rowElement!.shadowRoot!.querySelectorAll('accelerator-view');
+    assertEquals(1, acceleratorViewElement.length);
+    const editIconContainerElement = strictQuery(
+        '#editIconContainer', acceleratorViewElement[0]!.shadowRoot,
+        HTMLDivElement);
+
+    editIconContainerElement.click();
 
     await flushTasks();
 
     assertTrue(showDialogListenerCalled);
   });
 
-  test('DontShowDialogOnClickWhenCustomizationDisabled', async () => {
+  test('EditIconHiddenWhenCustomizationDisabled', async () => {
     loadTimeData.overrideValues({isCustomizationEnabled: false});
     rowElement = initAcceleratorRowElement();
     waitAfterNextRender(rowElement);
@@ -154,50 +159,18 @@ suite('acceleratorRowTest', function() {
     rowElement.action = 0;
     rowElement.layoutStyle = LayoutStyle.kDefault;
 
-    let showDialogListenerCalled = false;
-    rowElement.addEventListener('show-edit-dialog', () => {
-      showDialogListenerCalled = true;
-    });
-
     await flushTasks();
 
-    const rowContainer =
-        rowElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
-    rowContainer.click();
+    const acceleratorViewElement =
+        rowElement!.shadowRoot!.querySelectorAll('accelerator-view');
+    assertEquals(1, acceleratorViewElement.length);
 
-    await flushTasks();
+    const editIconContainerElement = strictQuery(
+        '#editIconContainer', acceleratorViewElement[0]!.shadowRoot,
+        HTMLDivElement);
 
-    assertFalse(showDialogListenerCalled);
-  });
 
-  test('DontShowDialogForTextAccelerators', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: true});
-    rowElement = initAcceleratorRowElement();
-    waitAfterNextRender(rowElement);
-    const accelerators = [createTextAcceleratorInfo([{
-      text: stringToMojoString16('ctrl'),
-      type: TextAcceleratorPartType.kModifier,
-    }])];
-
-    rowElement.acceleratorInfos = accelerators;
-    rowElement.source = AcceleratorSource.kAmbient;
-    rowElement.action = 0;
-    rowElement.layoutStyle = LayoutStyle.kText;
-
-    let showDialogListenerCalled = false;
-    rowElement.addEventListener('show-edit-dialog', () => {
-      showDialogListenerCalled = true;
-    });
-
-    await flushTasks();
-
-    const rowContainer =
-        rowElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
-    rowContainer.click();
-
-    await flushTasks();
-
-    assertFalse(showDialogListenerCalled);
+    assertFalse(isVisible(editIconContainerElement));
   });
 
   test('ShowTextAccelerator', async () => {

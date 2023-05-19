@@ -67,6 +67,11 @@ suite('acceleratorViewTest', function() {
         '.lock-icon-container', viewElement!.shadowRoot, HTMLDivElement);
   }
 
+  function getEditIcon(): HTMLDivElement {
+    return strictQuery(
+        '#editIconContainer', viewElement!.shadowRoot, HTMLDivElement);
+  }
+
   test('LoadsBasicAccelerator', async () => {
     viewElement = initAcceleratorViewElement();
     await flushTasks();
@@ -302,4 +307,82 @@ suite('acceleratorViewTest', function() {
     }
   });
 
+  test('EditIconVisibilityBasedOnProperties', async () => {
+    // Mainly test on customizationEnabled and accelerator is not locked.
+    const scenarios = [
+      {
+        customizationEnabled: true,
+        locked: false,
+        sourceIsLocked: false,
+        isAcceleratorRow: false,
+      },
+      {
+        customizationEnabled: true,
+        locked: false,
+        sourceIsLocked: false,
+        isAcceleratorRow: true,
+      },
+      {
+        customizationEnabled: true,
+        locked: true,
+        sourceIsLocked: false,
+        isAcceleratorRow: false,
+      },
+      {
+        customizationEnabled: true,
+        locked: false,
+        sourceIsLocked: true,
+        isAcceleratorRow: true,
+      },
+      {
+        customizationEnabled: false,
+        locked: false,
+        sourceIsLocked: false,
+        isAcceleratorRow: false,
+      },
+    ];
+
+    // Prepare all test cases by looping the fakeLayoutInfo.
+    const testCases = [];
+    for (const layoutInfo of fakeLayoutInfo) {
+      // If it's text accelerator, break the loop early.
+      if (layoutInfo.style !== LayoutStyle.kDefault) {
+        continue;
+      }
+      for (const scenario of scenarios) {
+        // replicate getCategory() logic.
+        const category = manager!.getAcceleratorCategory(
+            layoutInfo.source, layoutInfo.action);
+        // replicate shouldShowLockIcon() logic.
+        const expectEditIconVisible = scenario.customizationEnabled &&
+            scenario.isAcceleratorRow && !isCategoryLocked(category) &&
+            !scenario.locked && !scenario.sourceIsLocked;
+        testCases.push({
+          ...scenario,
+          layoutInfo: layoutInfo,
+          expectEditIconVisible: expectEditIconVisible,
+        });
+      }
+    }
+    for (const testCase of testCases) {
+      loadTimeData.overrideValues(
+          {isCustomizationEnabled: testCase.customizationEnabled});
+      viewElement = initAcceleratorViewElement();
+      viewElement.source = testCase.layoutInfo.source;
+      viewElement.action = testCase.layoutInfo.action;
+      viewElement.showEditIcon = testCase.isAcceleratorRow;
+      const acceleratorInfo = createStandardAcceleratorInfo(
+          Modifier.CONTROL | Modifier.SHIFT,
+          /*key=*/ 71,
+          /*keyDisplay=*/ 'g');
+      viewElement.acceleratorInfo = acceleratorInfo;
+      viewElement.set('acceleratorInfo.locked', testCase.locked);
+      viewElement.sourceIsLocked = testCase.sourceIsLocked;
+
+      await flush();
+      assertEquals(
+          testCase.expectEditIconVisible,
+          !getEditIcon().hasAttribute('hidden'));
+    }
+  });
 });

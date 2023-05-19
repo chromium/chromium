@@ -140,8 +140,13 @@ suite('shortcutCustomizationAppTest', function() {
         subSections[subsectionIndex]!.shadowRoot!.querySelectorAll(
             'accelerator-row') as NodeListOf<AcceleratorRowElement>;
 
-    // Click on the first accelerator, expect the edit dialog to open.
-    accelerators[0]!.click();
+    // Click on the first accelerator's edit icon, expect the edit dialog to
+    // open.
+    const acceleratorView =
+        accelerators[0]!.shadowRoot!.querySelectorAll('accelerator-view');
+    const editIconContainer = acceleratorView[0]!.shadowRoot!.querySelector(
+                                  '#editIconContainer') as HTMLDivElement;
+    editIconContainer.click();
     await flushTasks();
   }
 
@@ -246,8 +251,16 @@ suite('shortcutCustomizationAppTest', function() {
         subSections[0]!.shadowRoot!.querySelectorAll('accelerator-row');
     // Only three accelerators rows for this subsection.
     assertEquals(3, accelerators.length);
-    // Click on the first accelerator, expect the edit dialog to open.
-    accelerators[0]!.click();
+
+    // Click on the first accelerator's edit button, expect the edit dialog to
+    // open.
+    const acceleratorView =
+        accelerators[0]!.shadowRoot!.querySelectorAll('accelerator-view');
+    assertEquals(1, acceleratorView.length);
+    const editIconContainer = acceleratorView[0]!.shadowRoot!.querySelector(
+                                  '#editIconContainer') as HTMLDivElement;
+    editIconContainer.click();
+
     await flushTasks();
     editDialog = getPage().shadowRoot!.querySelector('#editDialog');
     assertTrue(!!editDialog);

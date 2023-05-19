@@ -110,6 +110,15 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         type: Boolean,
         value: false,
       },
+
+      /**
+       * Conditionally show the edit-icon-container in `accelerator-view`, true
+       * for `accelerator-row`, false for `accelerator-edit-view`.
+       */
+      showEditIcon: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -120,6 +129,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   action: number;
   source: AcceleratorSource;
   sourceIsLocked: boolean;
+  showEditIcon: boolean;
   protected pendingAcceleratorInfo: StandardAcceleratorInfo;
   private modifiers: string[];
   private acceleratorOnHold: string;
@@ -449,6 +459,24 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
 
     return (this.acceleratorInfo && this.acceleratorInfo.locked) ||
         this.sourceIsLocked;
+  }
+
+  private shouldShowEditIcon(): boolean {
+    // Do not show edit icon in each row if customization is disabled, category
+    // is locked, or the row is displayed in edit-dialog.
+    if (isCustomizationDisabled() || !this.showEditIcon ||
+        isCategoryLocked(this.lookupManager.getAcceleratorCategory(
+            this.source, this.action))) {
+      return false;
+    }
+
+    return !(this.acceleratorInfo && this.acceleratorInfo.locked) &&
+        !this.sourceIsLocked;
+  }
+
+  private onEditIconClicked(): void {
+    this.dispatchEvent(
+        new CustomEvent('edit-icon-clicked', {bubbles: true, composed: true}));
   }
 
   /**
