@@ -224,6 +224,13 @@ class LandmarkNode : public AddressComponent {
   ~LandmarkNode() override;
 };
 
+// Stores the streets intersection of an address profile.
+class BetweenStreetsNode : public AddressComponent {
+ public:
+  explicit BetweenStreetsNode(AddressComponent* parent);
+  ~BetweenStreetsNode() override;
+};
+
 // Stores the overall Address that contains the StreetAddress, the PostalCode
 // the City, the State and the CountryCode.
 class AddressNode : public AddressComponent {
@@ -248,6 +255,7 @@ class AddressNode : public AddressComponent {
   CityNode city_{this};
   StateNode state_{this};
   CountryCodeNode country_code_{this};
+  BetweenStreetsNode between_streets_{this};
   LandmarkNode landmark_code_{this};
 };
 

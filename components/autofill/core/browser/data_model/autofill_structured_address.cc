@@ -381,6 +381,13 @@ LandmarkNode::LandmarkNode(AddressComponent* parent)
 
 LandmarkNode::~LandmarkNode() = default;
 
+BetweenStreetsNode::BetweenStreetsNode(AddressComponent* parent)
+    : AddressComponent(ADDRESS_HOME_BETWEEN_STREETS,
+                       parent,
+                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
+
+BetweenStreetsNode::~BetweenStreetsNode() = default;
+
 AddressNode::AddressNode() : AddressNode(nullptr) {}
 
 AddressNode::AddressNode(const AddressNode& other) : AddressNode() {

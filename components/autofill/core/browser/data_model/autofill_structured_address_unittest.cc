@@ -37,6 +37,7 @@ struct AddressLineParsingTestCase {
   std::string floor;
   std::string apartment;
   std::string landmark;
+  std::string between_streets;
 };
 
 std::ostream& operator<<(std::ostream& out,
@@ -47,7 +48,8 @@ std::ostream& operator<<(std::ostream& out,
   out << "House number: " << test_case.house_number << std::endl;
   out << "Floor: " << test_case.floor << std::endl;
   out << "Apartment: " << test_case.apartment << std::endl;
-  out << "Landmark: " << test_case.apartment << std::endl;
+  out << "Landmark: " << test_case.landmark << std::endl;
+  out << "Between streets: " << test_case.between_streets << std::endl;
   return out;
 }
 
@@ -104,6 +106,9 @@ void TestAddressLineFormatting(const AddressLineParsingTestCase& test_case) {
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_LANDMARK,
        .value = test_case.landmark,
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_BETWEEN_STREETS,
+       .value = test_case.between_streets,
        .status = VerificationStatus::kObserved}};
 
   SetTestValues(&address, test_value);
@@ -131,6 +136,9 @@ void TestAddressLineFormatting(const AddressLineParsingTestCase& test_case) {
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_LANDMARK,
        .value = test_case.landmark,
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_BETWEEN_STREETS,
+       .value = test_case.between_streets,
        .status = VerificationStatus::kObserved}};
   VerifyTestValues(&address, expectation);
 }
@@ -282,21 +290,24 @@ TEST(AutofillStructuredAddress, TestStreetAddressFormatting) {
        .house_number = "12",
        .floor = "13",
        .apartment = "14",
-       .landmark = "Red tree"},
+       .landmark = "Red tree",
+       .between_streets = "Via Blanca y Rotaria"},
       {.country_code = "MX",
        .street_address = "StreetName 12 - 14",
        .street_name = "StreetName",
        .house_number = "12",
        .floor = "",
        .apartment = "14",
-       .landmark = "Old house"},
+       .landmark = "Old house",
+       .between_streets = "Marcos y Oliva"},
       {.country_code = "MX",
        .street_address = "StreetName 12 - Piso 13",
        .street_name = "StreetName",
        .house_number = "12",
        .floor = "13",
        .apartment = "",
-       .landmark = "Pine in the corner"},
+       .landmark = "Pine in the corner",
+       .between_streets = "Rosario y Alfonso"},
       // Examples for Spain.
       {.country_code = "ES",
        .street_address = "Street Name 1, 3ª",
@@ -446,6 +457,9 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization) {
        .status = VerificationStatus::kNoStatus},
       {.type = ADDRESS_HOME_LANDMARK,
        .value = "Red tree",
+       .status = VerificationStatus::kNoStatus},
+      {.type = ADDRESS_HOME_BETWEEN_STREETS,
+       .value = "Rosario y Alfonso",
        .status = VerificationStatus::kNoStatus}};
 
   SetTestValues(&address, test_values, /*finalize=*/false);
@@ -466,6 +480,9 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization) {
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_LANDMARK,
        .value = "Red tree",
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_BETWEEN_STREETS,
+       .value = "Rosario y Alfonso",
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_ADDRESS,
        .value = "",
@@ -493,8 +510,11 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization) {
       {.type = ADDRESS_HOME_LANDMARK,
        .value = "Red tree",
        .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_BETWEEN_STREETS,
+       .value = "Rosario y Alfonso",
+       .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_ADDRESS,
-       .value = "123 Street name CA US Red tree",
+       .value = "123 Street name CA US Rosario y Alfonso Red tree",
        .status = VerificationStatus::kFormatted},
       {.type = ADDRESS_HOME_CITY,
        .value = "",
