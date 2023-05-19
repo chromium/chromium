@@ -14,11 +14,14 @@ from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests.util import websocket_server
+from typ import expectations_parser
 
 import gpu_path_util
 
 EXPECTATIONS_FILE = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'third_party',
                                  'dawn', 'webgpu-cts', 'expectations.txt')
+SLOW_TESTS_FILE = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'third_party',
+                               'dawn', 'webgpu-cts', 'slow_tests.txt')
 TEST_LIST_FILE = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'third_party',
                               'dawn', 'third_party', 'gn', 'webgpu-cts',
                               'test_list.txt')
@@ -84,10 +87,18 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
   websocket_server = None
 
+  _slow_tests = None
+
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
     self._query = None
     self._run_in_worker = False
+
+    if WebGpuCtsIntegrationTest._slow_tests is None:
+      with open(SLOW_TESTS_FILE, 'r') as f:
+        expectations = expectations_parser.TestExpectations()
+        expectations.parse_tagged_list(f.read(), f.name)
+        WebGpuCtsIntegrationTest._slow_tests = expectations
 
   # Only perform the pre/post test cleanup every X tests instead of every test
   # to reduce overhead.
@@ -520,7 +531,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # We access the expectations directly instead of using
     # self.GetExpectationsForTest since we need the raw results, but that method
     # only returns the parsed results and whether the test should be retried.
-    expectation = self.child.expectations.expectations_for(
+    expectation = WebGpuCtsIntegrationTest._slow_tests.expectations_for(
         TestNameFromInputs(self._query, self._run_in_worker))
     return 'Slow' in expectation.raw_results
 
