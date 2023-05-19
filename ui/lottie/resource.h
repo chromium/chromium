@@ -5,6 +5,8 @@
 #ifndef UI_LOTTIE_RESOURCE_H_
 #define UI_LOTTIE_RESOURCE_H_
 
+#include <stdint.h>
+
 #include <vector>
 
 #include "base/component_export.h"
