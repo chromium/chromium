@@ -312,6 +312,8 @@ void CustomizeChromePageHandler::OpenChromeWebStore() {
   navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&navigate_params);
+  UMA_HISTOGRAM_ENUMERATION("NewTabPage.ChromeWebStoreOpen",
+                            NtpChromeWebStoreOpen::kAppearance);
 }
 
 void CustomizeChromePageHandler::OpenThirdPartyThemePage(
@@ -322,6 +324,8 @@ void CustomizeChromePageHandler::OpenThirdPartyThemePage(
   navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&navigate_params);
+  UMA_HISTOGRAM_ENUMERATION("NewTabPage.ChromeWebStoreOpen",
+                            NtpChromeWebStoreOpen::kCollections);
 }
 
 void CustomizeChromePageHandler::SetMostVisitedSettings(

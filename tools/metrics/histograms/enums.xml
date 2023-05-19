@@ -75329,6 +75329,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="ELM collection view containing feed header fixed"/>
 </enum>
 
+<enum name="NTPChromeWebStoreOpen">
+  <int value="0" label="Appearance section"/>
+  <int value="1" label="Theme collections page"/>
+</enum>
+
 <enum name="NTPCollectionId">
   <summary>
     Hash values for the IDs of NTP background image collections. Each of these

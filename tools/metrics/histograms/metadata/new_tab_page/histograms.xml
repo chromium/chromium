@@ -315,6 +315,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.ChromeWebStoreOpen" enum="NTPChromeWebStoreOpen"
+    expires_after="2023-11-18">
+  <owner>danpeng@google.com</owner>
+  <owner>pauladedeji@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs where a user opened the Chrome Web Store link from in Customize Chrome.
+    Only logged on the 1P NTP. Note that even if the user has Google as their
+    default search engine, Incognito and Guest mode NTPs are not considered 1P
+    and don't log this histogram.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Click" enum="NTPElement" expires_after="2023-11-12">
   <owner>tiborg@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>

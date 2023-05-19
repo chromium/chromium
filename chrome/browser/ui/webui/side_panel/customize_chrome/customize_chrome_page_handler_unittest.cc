@@ -732,17 +732,30 @@ TEST_F(CustomizeChromePageHandlerTest, SetBackgroundImage) {
 }
 
 TEST_F(CustomizeChromePageHandlerTest, OpenChromeWebStore) {
+  histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 0);
   handler().OpenChromeWebStore();
   ASSERT_EQ(1, browser().tab_strip_model()->count());
   ASSERT_EQ("https://chrome.google.com/webstore?category=theme",
             browser().tab_strip_model()->GetWebContentsAt(0)->GetURL());
+  histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 1);
+
+  ASSERT_EQ(
+      histogram_tester().GetBucketCount("NewTabPage.ChromeWebStoreOpen",
+                                        NtpChromeWebStoreOpen::kAppearance),
+      1);
 }
 
 TEST_F(CustomizeChromePageHandlerTest, OpenThirdPartyThemePage) {
+  histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 0);
   handler().OpenThirdPartyThemePage("foo");
   ASSERT_EQ(1, browser().tab_strip_model()->count());
   ASSERT_EQ("https://chrome.google.com/webstore/detail/foo",
             browser().tab_strip_model()->GetWebContentsAt(0)->GetURL());
+  histogram_tester().ExpectTotalCount("NewTabPage.ChromeWebStoreOpen", 1);
+  ASSERT_EQ(
+      histogram_tester().GetBucketCount("NewTabPage.ChromeWebStoreOpen",
+                                        NtpChromeWebStoreOpen::kCollections),
+      1);
 }
 
 TEST_F(CustomizeChromePageHandlerTest, SetDailyRefreshCollectionId) {
