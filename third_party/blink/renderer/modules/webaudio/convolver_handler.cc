@@ -292,7 +292,7 @@ void ConvolverHandler::CheckNumberOfChannelsForInput(AudioNodeInput* input) {
   unsigned number_of_channels = 1;
   bool lock_successfully_acquired = false;
 
-  // TODO(hongchan): Check what to do when the lock cannot be acquired.
+  // TODO(crbug.com/1447093): Check what to do when the lock cannot be acquired.
   base::AutoTryLock try_locker(process_lock_);
   if (try_locker.is_acquired()) {
     lock_successfully_acquired = true;
