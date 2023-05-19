@@ -155,7 +155,9 @@ export class BrowsingContextProcessor {
       sessionId,
       this.#realmStorage,
       this.#eventManager,
-      this.#preloadScriptStorage
+      this.#preloadScriptStorage,
+      this.#browsingContextStorage,
+      this.#logger
     );
 
     if (maybeContext) {

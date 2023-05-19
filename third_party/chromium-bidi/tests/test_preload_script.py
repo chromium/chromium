@@ -398,7 +398,7 @@ async def test_addPreloadScript_loadedInMultipleContexts(
             }
         })
 
-    result = await execute_command(
+    response = await execute_command(
         websocket, {
             "method": "script.evaluate",
             "params": {
@@ -410,7 +410,7 @@ async def test_addPreloadScript_loadedInMultipleContexts(
                 "resultOwnership": "root"
             }
         })
-    assert result["result"] == {"type": "string", "value": 'bar'}
+    assert response["result"] == {"type": "string", "value": 'bar'}
 
 
 @pytest.mark.asyncio
@@ -449,6 +449,21 @@ async def test_addPreloadScriptGlobally_loadedInNewContexts(
     assert result["result"] == {"type": "string", "value": 'bar'}
 
     new_context_id = await create_context()
+
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.foo",
+                "target": {
+                    "context": new_context_id
+                },
+                "awaitPromise": True,
+                "resultOwnership": "root"
+            }
+        })
+    assert result["result"] == {"type": "string", "value": 'bar'}
+
     await execute_command(
         websocket, {
             "method": "browsingContext.navigate",
