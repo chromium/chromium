@@ -26,8 +26,7 @@ export interface BrowserService {
   removeBookmark(url: string): void;
   removeVisits(removalList: RemoveVisitsRequest): Promise<void>;
   openForeignSessionAllTabs(sessionTag: string): void;
-  openForeignSessionTab(
-      sessionTag: string, windowId: number, tabId: number, e: MouseEvent): void;
+  openForeignSessionTab(sessionTag: string, tabId: number, e: MouseEvent): void;
   deleteForeignSession(sessionTag: string): void;
   openClearBrowsingData(): void;
   recordHistogram(histogram: string, value: number, max: number): void;
@@ -59,14 +58,12 @@ export class BrowserServiceImpl implements BrowserService {
   }
 
   openForeignSessionAllTabs(sessionTag: string) {
-    chrome.send('openForeignSession', [sessionTag]);
+    chrome.send('openForeignSessionAllTabs', [sessionTag]);
   }
 
-  openForeignSessionTab(
-      sessionTag: string, windowId: number, tabId: number, e: MouseEvent) {
-    chrome.send('openForeignSession', [
+  openForeignSessionTab(sessionTag: string, tabId: number, e: MouseEvent) {
+    chrome.send('openForeignSessionTab', [
       sessionTag,
-      String(windowId),
       String(tabId),
       e.button || 0,
       e.altKey,

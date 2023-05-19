@@ -123,8 +123,7 @@ export class HistorySyncedDeviceCardElement extends PolymerElement {
     browserService.recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.LINK_CLICKED,
         SyncedTabsHistogram.LIMIT);
-    browserService.openForeignSessionTab(
-        this.sessionTag, tab.windowId, tab.sessionId, e);
+    browserService.openForeignSessionTab(this.sessionTag, tab.sessionId, e);
     e.preventDefault();
   }
 

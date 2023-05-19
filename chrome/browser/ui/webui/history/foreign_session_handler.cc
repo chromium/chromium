@@ -151,8 +151,7 @@ void ForeignSessionHandler::OpenForeignSessionTab(
 // static
 void ForeignSessionHandler::OpenForeignSessionWindows(
     content::WebUI* web_ui,
-    const std::string& session_string_value,
-    size_t window_num) {
+    const std::string& session_string_value) {
   sync_sessions::OpenTabsUIDelegate* open_tabs = GetOpenTabsUIDelegate(web_ui);
   if (!open_tabs)
     return;
@@ -165,14 +164,8 @@ void ForeignSessionHandler::OpenForeignSessionWindows(
     return;
   }
 
-  // Bounds check `window_num` before using it anywhere. crbug.com/1408120
-  CHECK_LT(window_num, windows.size());
-  auto iter_begin = windows.begin() + window_num;
-  DCHECK(iter_begin != windows.end())
-      << "Because we CHECKed that windows_num is less than the size.";
-  auto iter_end = iter_begin + 1;
   SessionRestore::RestoreForeignSessionWindows(Profile::FromWebUI(web_ui),
-                                               iter_begin, iter_end);
+                                               windows.begin(), windows.end());
 }
 
 // static
@@ -194,8 +187,13 @@ void ForeignSessionHandler::RegisterMessages() {
       base::BindRepeating(&ForeignSessionHandler::HandleGetForeignSessions,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "openForeignSession",
-      base::BindRepeating(&ForeignSessionHandler::HandleOpenForeignSession,
+      "openForeignSessionAllTabs",
+      base::BindRepeating(
+          &ForeignSessionHandler::HandleOpenForeignSessionAllTabs,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "openForeignSessionTab",
+      base::BindRepeating(&ForeignSessionHandler::HandleOpenForeignSessionTab,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "setForeignSessionCollapsed",
@@ -317,19 +315,22 @@ base::Value::List ForeignSessionHandler::GetForeignSessions() {
   return session_list;
 }
 
-void ForeignSessionHandler::HandleOpenForeignSession(
+void ForeignSessionHandler::HandleOpenForeignSessionAllTabs(
     const base::Value::List& args) {
-  size_t num_args = args.size();
-  // Expect either 1 or 8 args. For restoring an entire session, only
-  // one argument is required -- the session tag. To restore a tab,
-  // the additional args required are the window id, the tab id,
-  // and 4 properties of the event object (button, altKey, ctrlKey,
-  // metaKey, shiftKey) for determining how to open the tab.
-  if (num_args != 8U && num_args != 1U) {
-    LOG(ERROR) << "openForeignSession called with " << args.size()
-               << " arguments.";
+  CHECK_EQ(args.size(), 1U);
+
+  // Extract the session tag (always provided).
+  if (!args[0].is_string()) {
+    LOG(ERROR) << "Failed to extract session tag.";
     return;
   }
+  const std::string& session_string_value = args[0].GetString();
+  OpenForeignSessionWindows(web_ui(), session_string_value);
+}
+
+void ForeignSessionHandler::HandleOpenForeignSessionTab(
+    const base::Value::List& args) {
+  CHECK_EQ(args.size(), 7U);
 
   // Extract the session tag (always provided).
   if (!args[0].is_string()) {
@@ -338,31 +339,22 @@ void ForeignSessionHandler::HandleOpenForeignSession(
   }
   const std::string& session_string_value = args[0].GetString();
 
-  // Extract window number.
-  size_t window_num = 0;
-  if (num_args >= 2 &&
-      (!args[1].is_string() ||
-       !base::StringToSizeT(args[1].GetString(), &window_num))) {
-    LOG(ERROR) << "Failed to extract window number.";
-    return;
-  }
-
   // Extract tab id.
   SessionID::id_type tab_id_value = 0;
-  if (num_args >= 3 &&
-      (!args[2].is_string() ||
-       !base::StringToInt(args[2].GetString(), &tab_id_value))) {
+  if (!args[1].is_string() ||
+      !base::StringToInt(args[1].GetString(), &tab_id_value)) {
     LOG(ERROR) << "Failed to extract tab SessionID.";
     return;
   }
 
   SessionID tab_id = SessionID::FromSerializedValue(tab_id_value);
-  if (tab_id.is_valid()) {
-    WindowOpenDisposition disposition = webui::GetDispositionFromClick(args, 3);
-    OpenForeignSessionTab(web_ui(), session_string_value, tab_id, disposition);
-  } else {
-    OpenForeignSessionWindows(web_ui(), session_string_value, window_num);
+  if (!tab_id.is_valid()) {
+    LOG(ERROR) << "Failed to deserialize tab ID.";
+    return;
   }
+
+  WindowOpenDisposition disposition = webui::GetDispositionFromClick(args, 2);
+  OpenForeignSessionTab(web_ui(), session_string_value, tab_id, disposition);
 }
 
 void ForeignSessionHandler::HandleDeleteForeignSession(
