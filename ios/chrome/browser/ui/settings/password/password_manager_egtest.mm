@@ -2062,7 +2062,8 @@ id<GREYMatcher> EditDoneButton() {
 }
 
 // Test search and delete all passwords and blocked items.
-- (void)testSearchAndDeleteAllPasswords {
+// TODO(crbug.com/1441783): Flaky.
+- (void)DISABLED_testSearchAndDeleteAllPasswords {
   SaveExamplePasswordForms();
   SaveExampleBlockedForms();
 
