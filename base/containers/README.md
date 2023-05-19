@@ -207,7 +207,7 @@ violated in a constexpr context.
 Example:
 
 ```cpp
-constexpr auto kSet = base::MakeFixedFlatSet<int>(1, 2, 3);
+constexpr auto kSet = base::MakeFixedFlatSet<int>({1, 2, 3});
 
 constexpr auto kMap = base::MakeFixedFlatMap<base::StringPiece, int>(
     {{"foo", 1}, {"bar", 2}, {"baz", 3}});
