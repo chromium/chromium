@@ -135,7 +135,7 @@ promise_test(async t => {
   `;
   let e2 = document.createElement("details");
   e2.id = "e2";
-  e2.setAttribute("name", "a");
+  e2.name = "a";
   e2.open = true;
   let elements = [ document.getElementById("e0"),
                    document.getElementById("e1"),
