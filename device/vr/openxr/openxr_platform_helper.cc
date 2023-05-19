@@ -138,6 +138,8 @@ XrResult OpenXrPlatformHelper::CreateInstance(
 
   if (create_info.has_value()) {
     instance_create_info.next = GetPlatformCreateInfo(create_info.value());
+  } else if (BUILDFLAG(IS_ANDROID)) {
+    LOG(ERROR) << "Android was missing CreateInfo";
   }
 
   XrResult result = xrCreateInstance(&instance_create_info, instance);

@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
+#include "components/webxr/android/webxr_utils.h"
 #include "components/webxr/android/xr_session_coordinator.h"
 #include "device/vr/openxr/android/openxr_graphics_binding_open_gles.h"
 #include "device/vr/openxr/openxr_platform.h"
@@ -27,8 +28,15 @@ OpenXrPlatformHelperAndroid::GetGraphicsBinding() {
 
 const void* OpenXrPlatformHelperAndroid::GetPlatformCreateInfo(
     const device::OpenXrCreateInfo& create_info) {
-  // TODO(alcooper): Implement this.
-  return nullptr;
+  // Re-compute the create_info_ that we need every time in case the activity
+  // has changed.
+  activity_ = XrSessionCoordinator::GetActivity(GetJavaWebContents(
+      create_info.render_process_id, create_info.render_frame_id));
+
+  create_info_.next = nullptr;
+  create_info_.applicationVM = base::android::GetVM();
+  create_info_.applicationActivity = activity_.obj();
+  return &create_info_;
 }
 
 bool OpenXrPlatformHelperAndroid::Initialize() {
@@ -47,7 +55,6 @@ bool OpenXrPlatformHelperAndroid::Initialize() {
 
   app_context_ = XrSessionCoordinator::GetApplicationContext();
   XrLoaderInitInfoAndroidKHR loaderInitInfoAndroid;
-  memset(&loaderInitInfoAndroid, 0, sizeof(loaderInitInfoAndroid));
   loaderInitInfoAndroid.type = XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR;
   loaderInitInfoAndroid.next = nullptr;
   loaderInitInfoAndroid.applicationVM = base::android::GetVM();

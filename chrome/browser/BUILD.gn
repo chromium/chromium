@@ -7616,7 +7616,7 @@ static_library("browser") {
     ]
 
     if (is_android) {
-      if (enable_arcore || enable_cardboard) {
+      if (enable_arcore || enable_cardboard || enable_openxr) {
         deps += [ "//components/webxr/android" ]
       }
 

@@ -26,14 +26,14 @@ class OpenXrGraphicsBinding {
   virtual ~OpenXrGraphicsBinding() = default;
 
   // Ensures that the GraphicsBinding is ready for use.
-  virtual bool Initialize() = 0;
+  virtual bool Initialize(XrInstance instance, XrSystemId system) = 0;
 
   // Gets a pointer to a platform-specific XrGraphicsBindingFoo. The pointer is
   // guaranteed to live as long as this class does.
   virtual const void* GetSessionCreateInfo() const = 0;
 
   // Gets the format that we expect from the platform swapchain.
-  virtual int64_t GetSwapchainFormat() const = 0;
+  virtual int64_t GetSwapchainFormat(XrSession session) const = 0;
 
   // Calls xrEnumerateSwapChain and stores all relevant data in the passed in
   // array of `SwapChainInfo`s.

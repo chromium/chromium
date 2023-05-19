@@ -19,6 +19,10 @@ class XrSessionCoordinator : public device::XrJavaCoordinator {
   // activity.
   static base::android::ScopedJavaLocalRef<jobject> GetApplicationContext();
 
+  // Used to query the current Activity from the specified WebContents.
+  static base::android::ScopedJavaLocalRef<jobject> GetActivity(
+      base::android::ScopedJavaLocalRef<jobject> web_contents);
+
   explicit XrSessionCoordinator();
   ~XrSessionCoordinator() override;
 

@@ -181,4 +181,11 @@ ScopedJavaLocalRef<jobject> XrSessionCoordinator::GetApplicationContext() {
   return Java_XrSessionCoordinator_getApplicationContext(env);
 }
 
+// static
+ScopedJavaLocalRef<jobject> XrSessionCoordinator::GetActivity(
+    ScopedJavaLocalRef<jobject> web_contents) {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_XrSessionCoordinator_getActivity(env, web_contents);
+}
+
 }  // namespace webxr

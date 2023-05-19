@@ -70,6 +70,7 @@ public class XrSessionCoordinator {
     // Helper, obtains android Activity out of passed in WebContents instance.
     // Equivalent to ChromeActivity.fromWebContents(), but does not require that
     // the resulting instance is a ChromeActivity.
+    @CalledByNative
     public static Activity getActivity(final WebContents webContents) {
         if (webContents == null) return null;
         WindowAndroid window = webContents.getTopLevelNativeWindow();

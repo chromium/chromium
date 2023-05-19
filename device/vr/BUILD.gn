@@ -257,7 +257,9 @@ if (enable_vr) {
         ":openxr_data",
         "//components/version_info",
         "//device/base",
+        "//gpu/command_buffer/service:gles2",
         "//third_party/openxr",
+        "//ui/gl/init",
       ]
     }
   }

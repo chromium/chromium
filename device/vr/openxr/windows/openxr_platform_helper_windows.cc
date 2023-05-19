@@ -110,15 +110,15 @@ bool OpenXrPlatformHelperWindows::IsArBlendModeSupported() {
 // Returns the LUID of the adapter the OpenXR runtime is on. Returns false and
 // sets luid to {0, 0} if the LUID could not be determined. Also returns false
 // if the value of the retrieved LUID is {0, 0}.
-bool OpenXrPlatformHelperWindows::TryGetLuid(LUID* luid) {
+bool OpenXrPlatformHelperWindows::TryGetLuid(LUID* luid, XrSystemId system) {
   CHECK(luid);
   XrInstance instance = GetOrCreateXrInstance();
   if (instance == XR_NULL_HANDLE) {
     return false;
   }
 
-  XrSystemId system;
-  if (XR_FAILED(OpenXrApiWrapper::GetSystem(instance, &system))) {
+  if (system == XR_NULL_SYSTEM_ID &&
+      XR_FAILED(OpenXrApiWrapper::GetSystem(instance, &system))) {
     return false;
   }
 

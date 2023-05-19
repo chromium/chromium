@@ -8,6 +8,7 @@
 #include "device/vr/openxr/openxr_platform_helper.h"
 
 #include "base/android/scoped_java_ref.h"
+#include "device/vr/openxr/openxr_platform.h"
 
 namespace webxr {
 
@@ -25,6 +26,9 @@ class OpenXrPlatformHelperAndroid : public device::OpenXrPlatformHelper {
   bool Initialize() override;
 
  private:
+  XrInstanceCreateInfoAndroidKHR create_info_{
+      XR_TYPE_INSTANCE_CREATE_INFO_ANDROID_KHR};
+  base::android::ScopedJavaGlobalRef<jobject> activity_;
   base::android::ScopedJavaGlobalRef<jobject> app_context_;
 };
 
