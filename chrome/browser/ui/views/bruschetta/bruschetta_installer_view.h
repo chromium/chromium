@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_BRUSCHETTA_BRUSCHETTA_INSTALLER_VIEW_H_
 
 #include "ash/public/cpp/style/color_mode_observer.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
@@ -36,6 +37,8 @@ class BruschettaInstallerView
       base::RepeatingCallback<std::unique_ptr<bruschetta::BruschettaInstaller>(
           Profile* profile,
           base::OnceClosure close_callback)>;
+  using InstallResultCallback =
+      base::OnceCallback<void(bruschetta::BruschettaInstallResult)>;
 
   static void Show(Profile* profile, const guest_os::GuestId& guest_id);
 
@@ -71,6 +74,10 @@ class BruschettaInstallerView
 
   raw_ptr<views::ProgressBar> progress_bar_for_testing() {
     return progress_bar_;
+  }
+
+  void set_finish_callback_for_testing(InstallResultCallback callback) {
+    finish_callback_ = std::move(callback);
   }
 
  private:
@@ -131,6 +138,7 @@ class BruschettaInstallerView
   bruschetta::BruschettaInstallResult error_ =
       bruschetta::BruschettaInstallResult::kUnknown;
   bool is_destroying_ = false;
+  InstallResultCallback finish_callback_;
 
   base::WeakPtrFactory<BruschettaInstallerView> weak_factory_{this};
 };

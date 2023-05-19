@@ -256,6 +256,11 @@ void BruschettaInstallerView::OnInstallationEnded() {
   observation_.Reset();
   installer_.reset();
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+
+  if (finish_callback_) {
+    std::move(finish_callback_)
+        .Run(bruschetta::BruschettaInstallResult::kSuccess);
+  }
 }
 
 bool BruschettaInstallerView::ShouldShowCloseButton() const {
@@ -429,6 +434,10 @@ void BruschettaInstallerView::UninstallBruschettaFinished(bool success) {
     state_ = State::kFailed;
   }
   OnStateUpdated();
+
+  if (finish_callback_) {
+    std::move(finish_callback_).Run(error_);
+  }
 }
 
 BEGIN_METADATA(BruschettaInstallerView, views::DialogDelegateView)

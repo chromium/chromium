@@ -1560,6 +1560,14 @@ namespace autotestPrivate {
     // Ends frame counting in viz and return the collected data.
     [supportsPromises] static void stopFrameCounting(
         StopFrameCountingCallback  callback);
+
+    // Install a bruschetta VM.
+    [supportsPromises] static void installBruschetta(
+      DOMString vm_name, VoidCallback callback);
+
+    // Delete a bruschetta VM.
+    [supportsPromises] static void removeBruschetta(
+      DOMString vm_name, VoidCallback callback);
   };
 
   interface Events {
