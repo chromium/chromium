@@ -37,10 +37,13 @@ export class AppServiceInternalsElement extends PolymerElement {
     (async () => {
       const remote = AppServiceInternalsPageHandler.getRemote();
 
-      this.appList_ = (await remote.getApps()).appList;
-      this.preferredAppList_ =
-          (await remote.getPreferredApps()).preferredAppList;
-      this.promiseAppList_ = (await remote.getPromiseApps()).promiseAppList;
+      const {debugInfo} = (await remote.getDebugInfo());
+      if (debugInfo) {
+        this.appList_ = debugInfo.appList;
+        this.preferredAppList_ = debugInfo.preferredAppList;
+        this.promiseAppList_ = debugInfo.promiseAppList;
+      }
+
       this.onHashChanged_();
       window.addEventListener('hashchange', this.hashChangeListener_);
     })();
