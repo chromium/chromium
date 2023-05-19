@@ -115,7 +115,9 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
           *gesture_event, touch_action, active_touch_action_.has_value());
       FilterGestureEventResult res;
       if (!drop_scroll_events_) {
-        SetCursorControlIfNecessary(gesture_event, touch_action);
+        if (allow_cursor_control_) {
+          SetCursorControlIfNecessary(gesture_event, touch_action);
+        }
         res = FilterGestureEventResult::kFilterGestureEventAllowed;
       } else if (active_touch_action_.has_value()) {
         res = FilterGestureEventResult::kFilterGestureEventFiltered;
@@ -274,6 +276,10 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
       DCHECK(!drop_current_tap_ending_event_);
       break;
 
+    case WebInputEvent::Type::kGestureLongPress:
+      allow_cursor_control_ = false;
+      break;
+
     case WebInputEvent::Type::kGestureLongTap:
     case WebInputEvent::Type::kGestureTwoFingerTap:
       gesture_sequence_.append("G");
@@ -367,8 +373,10 @@ void TouchActionFilter::ReportAndResetTouchAction() {
     gesture_sequence_.append("RY");
   else
     gesture_sequence_.append("RN");
-  if (num_of_active_touches_ <= 0)
+  if (num_of_active_touches_ <= 0) {
     ResetTouchAction();
+    allow_cursor_control_ = true;
+  }
 }
 
 void TouchActionFilter::AppendToGestureSequenceForDebugging(const char* str) {

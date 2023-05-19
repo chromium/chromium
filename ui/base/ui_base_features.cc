@@ -391,7 +391,8 @@ bool IsSwipeToMoveCursorEnabled() {
       base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_R;
 #else
-      base::FeatureList::IsEnabled(kSwipeToMoveCursor);
+      base::FeatureList::IsEnabled(kSwipeToMoveCursor) ||
+      IsTouchTextEditingRedesignEnabled();
 #endif
   return enabled;
 }
