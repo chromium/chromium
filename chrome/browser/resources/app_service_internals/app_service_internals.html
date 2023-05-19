@@ -18,11 +18,6 @@
     </template>
   </ul>
   <li><a href="#promise-apps">Promise Apps</a></li>
-  <ul>
-    <template is="dom-repeat" items="[[promiseAppList_]]">
-      <li><a href="#promise-app-[[item.id]]">[[item.name]]</a></li>
-    </template>
-  </ul>
 </ul>
 
 <section>
@@ -48,8 +43,8 @@
   <h2 id="promise-apps">Promise Apps</h2>
 
   <template is="dom-repeat" items="[[promiseAppList_]]">
-    <div id="promise-app-[[item.id]]">
-      <h3>[[item.name]]</h3>
+    <div id="promise-app-[[item.packageId]]">
+      <h3>[[item.packageId]]</h3>
       <pre>[[item.debugInfo]]</pre>
     </div>
   </template>
