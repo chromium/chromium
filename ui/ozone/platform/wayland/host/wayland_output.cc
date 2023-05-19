@@ -26,6 +26,8 @@ constexpr uint32_t kMinVersion = 2;
 constexpr uint32_t kMaxVersion = 4;
 }  // namespace
 
+using Metrics = WaylandOutput::Metrics;
+
 // static
 constexpr char WaylandOutput::kInterfaceName[];
 
@@ -56,29 +58,34 @@ void WaylandOutput::Instantiate(WaylandConnection* connection,
   connection->output_manager_->AddWaylandOutput(name, output.release());
 }
 
-WaylandOutput::Metrics::Metrics() = default;
-WaylandOutput::Metrics::Metrics(Id output_id,
-                                int64_t display_id,
-                                gfx::Point origin,
-                                gfx::Size logical_size,
-                                gfx::Size physical_size,
-                                gfx::Insets insets,
-                                float scale_factor,
-                                int32_t panel_transform,
-                                int32_t logical_transform,
-                                const std::string& description)
+Metrics::Metrics() = default;
+Metrics::Metrics(Id output_id,
+                 int64_t display_id,
+                 gfx::Point origin,
+                 gfx::Size logical_size,
+                 gfx::Size physical_size,
+                 gfx::Insets insets,
+                 gfx::Insets physical_overscan_insets,
+                 float scale_factor,
+                 int32_t panel_transform,
+                 int32_t logical_transform,
+                 const std::string& description)
     : output_id(output_id),
       display_id(display_id),
       origin(origin),
       logical_size(logical_size),
       physical_size(physical_size),
       insets(insets),
+      physical_overscan_insets(physical_overscan_insets),
       scale_factor(scale_factor),
       panel_transform(panel_transform),
       logical_transform(logical_transform),
       description(description) {}
-WaylandOutput::Metrics::Metrics(const Metrics& copy) = default;
-WaylandOutput::Metrics::~Metrics() = default;
+Metrics::Metrics(const Metrics&) = default;
+Metrics& Metrics::operator=(const Metrics&) = default;
+Metrics::Metrics(Metrics&&) = default;
+Metrics& Metrics::operator=(Metrics&&) = default;
+Metrics::~Metrics() = default;
 
 WaylandOutput::WaylandOutput(Id output_id,
                              wl_output* output,
@@ -129,7 +136,7 @@ float WaylandOutput::GetUIScaleFactor() const {
              : scale_factor();
 }
 
-const WaylandOutput::Metrics& WaylandOutput::GetMetrics() const {
+const Metrics& WaylandOutput::GetMetrics() const {
   return metrics_;
 }
 

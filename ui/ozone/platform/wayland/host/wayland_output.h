@@ -58,11 +58,15 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
             gfx::Size logical_size,
             gfx::Size physical_size,
             gfx::Insets insets,
+            gfx::Insets physical_overscan_insets,
             float scale_factor,
             int32_t panel_transform,
             int32_t logical_transform,
             const std::string& description);
     Metrics(const Metrics&);
+    Metrics& operator=(const Metrics&);
+    Metrics(Metrics&&);
+    Metrics& operator=(Metrics&&);
     ~Metrics();
 
     Id output_id = 0;
@@ -70,7 +74,10 @@ class WaylandOutput : public wl::GlobalObjectRegistrar<WaylandOutput> {
     gfx::Point origin;
     gfx::Size logical_size;
     gfx::Size physical_size;
+    // Work area insets in DIP.
     gfx::Insets insets;
+    // Overscan insets in physical pixels.
+    gfx::Insets physical_overscan_insets;
     float scale_factor = 0.0;
     int32_t panel_transform = 0;
     int32_t logical_transform = 0;

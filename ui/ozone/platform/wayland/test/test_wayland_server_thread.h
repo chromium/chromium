@@ -241,7 +241,7 @@ class TestWaylandServerThread : public base::Thread,
   MockXdgShell xdg_shell_;
   TestZAuraOutputManager zaura_output_manager_;
   TestZAuraShell zaura_shell_;
-  MockZcrColorManagerV1 zcr_color_manager_v1_;
+  ::testing::NiceMock<MockZcrColorManagerV1> zcr_color_manager_v1_;
   TestZcrStylus zcr_stylus_;
   TestZcrTextInputExtensionV1 zcr_text_input_extension_v1_;
   TestZwpTextInputManagerV1 zwp_text_input_manager_v1_;
