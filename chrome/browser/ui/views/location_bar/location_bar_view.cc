@@ -610,18 +610,18 @@ void LocationBarView::Layout() {
   int text_overriding_permission_chip_indent = 0;
   if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled() &&
       OmniboxFieldTrial::IsCr23LayoutEnabled()) {
-    icon_left = 4;
+    icon_left = 5;
     text_left = 8;
-    icon_indent = 8;
+    icon_indent = 7;
     text_indent = 5;
-    icon_keyword_indent = 4;
+    icon_keyword_indent = 3;
     text_keyword_indent = -9;
   } else if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
-    icon_left = 4;
+    icon_left = 5;
     text_left = 5;
-    icon_indent = 2;
+    icon_indent = 1;
     text_indent = 12;
-    icon_keyword_indent = -2;
+    icon_keyword_indent = -3;
     text_keyword_indent = -6;
     text_overriding_permission_chip_indent = 3;
   } else if (OmniboxFieldTrial::IsCr23LayoutEnabled()) {
