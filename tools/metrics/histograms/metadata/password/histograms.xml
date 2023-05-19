@@ -3099,7 +3099,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.PrefilledUsernameFillOutcome"
-    enum="PrefilledUsernameFillOutcome" expires_after="M86">
+    enum="PrefilledUsernameFillOutcome" expires_after="M118">
   <owner>khamutov@google.com</owner>
   <owner>kazinova@google.com</owner>
   <summary>
@@ -3108,6 +3108,8 @@ chromium-metrics-reviews@google.com.
     identified as a placeholder. Recorded once per PasswordAutofillAgent
     instance, when attempting to fill a password form that contains a username
     value which was prepopulated by the website.
+
+    Warning: this histogram was expired from M86 to M115; data may be missing.
   </summary>
 </histogram>
 
