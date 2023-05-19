@@ -1579,9 +1579,12 @@ void RenderWidgetHostViewAura::ExtendSelectionAndReplace(
     size_t before,
     size_t after,
     const base::StringPiece16 replacement_text) {
-  // TODO(crbug.com/1443726): Implement this using a custom Mojo method on
-  // FrameWidgetInputHandler.
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
+  if (!input_handler) {
+    return;
+  }
+  input_handler->ExtendSelectionAndReplace(before, after,
+                                           std::u16string(replacement_text));
 }
 #endif
 

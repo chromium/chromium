@@ -62,6 +62,9 @@ class PLATFORM_EXPORT FrameWidgetInputHandlerImpl
       int32_t end,
       const Vector<ui::ImeTextSpan>& ime_text_spans) override;
   void ExtendSelectionAndDelete(int32_t before, int32_t after) override;
+  void ExtendSelectionAndReplace(uint32_t before,
+                                 uint32_t after,
+                                 const String& replacement_text) override;
   void DeleteSurroundingText(int32_t before, int32_t after) override;
   void DeleteSurroundingTextInCodePoints(int32_t before,
                                          int32_t after) override;

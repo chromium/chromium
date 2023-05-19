@@ -310,6 +310,12 @@ interface FrameWidgetInputHandler {
   // before and after the selection or caret.
   ExtendSelectionAndDelete(int32 before, int32 after);
 
+  // Deletes the current selection plus the specified number of characters
+  // before and after the selection or caret.
+  ExtendSelectionAndReplace(uint32 before,
+                            uint32 after,
+                            mojo_base.mojom.String16 replacement_text);
+
   // Deletes text before and after the current cursor position, excluding the
   // selection. The lengths are supplied in Java chars (UTF-16 Code Unit),
   // not in code points or in glyphs.

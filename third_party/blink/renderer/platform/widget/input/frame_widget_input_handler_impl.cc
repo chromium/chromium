@@ -108,6 +108,21 @@ void FrameWidgetInputHandlerImpl::ExtendSelectionAndDelete(int32_t before,
       main_thread_frame_widget_input_handler_, before, after));
 }
 
+void FrameWidgetInputHandlerImpl::ExtendSelectionAndReplace(
+    uint32_t before,
+    uint32_t after,
+    const String& replacement_text) {
+  RunOnMainThread(base::BindOnce(
+      [](base::WeakPtr<mojom::blink::FrameWidgetInputHandler> handler,
+         uint32_t before, uint32_t after, const String& replacement_text) {
+        if (handler) {
+          handler->ExtendSelectionAndReplace(before, after, replacement_text);
+        }
+      },
+      main_thread_frame_widget_input_handler_, before, after,
+      replacement_text));
+}
+
 void FrameWidgetInputHandlerImpl::DeleteSurroundingText(int32_t before,
                                                         int32_t after) {
   RunOnMainThread(base::BindOnce(
