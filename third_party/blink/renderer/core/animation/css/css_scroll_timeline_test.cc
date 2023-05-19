@@ -43,7 +43,7 @@ TEST_F(CSSScrollTimelineTest, SharedTimelines) {
     <style>
       body {
         scroll-timeline-attachment: defer;
-        scroll-timeline-name: timeline1, timeline2;
+        scroll-timeline-name: --timeline1, --timeline2;
       }
       @keyframes anim1 { to { top: 200px; } }
       @keyframes anim2 { to { left: 200px; } }
@@ -57,10 +57,10 @@ TEST_F(CSSScrollTimelineTest, SharedTimelines) {
         height: 200px;
       }
       #scroller1 {
-        scroll-timeline: timeline1;
+        scroll-timeline: --timeline1;
       }
       #scroller2 {
-        scroll-timeline: timeline2;
+        scroll-timeline: --timeline2;
       }
     </style>
     <div id=scroller1 class=scroller><div></div></div>
@@ -77,7 +77,7 @@ TEST_F(CSSScrollTimelineTest, SharedTimelines) {
       #element1, #element2 {
         animation-name: anim1, anim2, anim3;
         animation-duration: 10s;
-        animation-timeline: timeline1, timeline1, timeline2;
+        animation-timeline: --timeline1, --timeline1, --timeline2;
       }
     </style>
     <div id=element1></div>
@@ -118,7 +118,7 @@ TEST_F(CSSScrollTimelineTest, MultipleLifecyclePasses) {
       #scroller {
         height: 100px;
         overflow: scroll;
-        scroll-timeline: timeline;
+        scroll-timeline: --timeline;
       }
       #scroller > div {
         height: 200px;
@@ -126,7 +126,7 @@ TEST_F(CSSScrollTimelineTest, MultipleLifecyclePasses) {
       #element {
         color: red;
         animation: anim 10s;
-        animation-timeline: timeline;
+        animation-timeline: --timeline;
       }
     </style>
     <div id=scroller>
@@ -165,7 +165,7 @@ class AnimationTriggeringDelegate : public ResizeObserver::Delegate {
   void OnResize(
       const HeapVector<Member<ResizeObserverEntry>>& entries) override {
     scroller_element_->SetInlineStyleProperty(CSSPropertyID::kScrollTimeline,
-                                              "timeline");
+                                              "--timeline");
   }
 
   void Trace(Visitor* visitor) const override {
@@ -195,7 +195,7 @@ TEST_F(CSSScrollTimelineTest, ResizeObserverTriggeredTimelines) {
       }
       #element {
         width: 1px;
-        animation: anim 10s timeline;
+        animation: anim 10s --timeline;
       }
     </style>
     <div id=main></div>
@@ -248,10 +248,10 @@ TEST_F(CSSScrollTimelineTest, ViewTimelineHost) {
       }
       .target {
         animation: anim 10s linear;
-        animation-timeline: timeline;
+        animation-timeline: --timeline;
       }
       .scroller > div {
-        view-timeline: timeline x;
+        view-timeline: --timeline x;
       }
     </style>
     <div class=scroller>
@@ -260,7 +260,7 @@ TEST_F(CSSScrollTimelineTest, ViewTimelineHost) {
           <template shadowroot=open>
             <style>
               :host {
-                view-timeline: timeline y;
+                view-timeline: --timeline y;
               }
             </style>
           </template>
@@ -289,10 +289,10 @@ TEST_F(CSSScrollTimelineTest, ViewTimelineSlotted) {
       }
       .target {
         animation: anim 10s linear;
-        animation-timeline: timeline;
+        animation-timeline: --timeline;
       }
       .host {
-        view-timeline: timeline x;
+        view-timeline: --timeline x;
       }
     </style>
     <div class=scroller>
@@ -300,7 +300,7 @@ TEST_F(CSSScrollTimelineTest, ViewTimelineSlotted) {
         <template shadowroot=open>
           <style>
             ::slotted(.target) {
-              view-timeline: timeline y;
+              view-timeline: --timeline y;
             }
           </style>
           <slot></slot>
@@ -325,10 +325,10 @@ TEST_F(CSSScrollTimelineTest, ViewTimelinePart) {
       ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <style>
       .host {
-        view-timeline: timeline y;
+        view-timeline: --timeline y;
       }
       .host::part(foo) {
-        view-timeline: timeline x;
+        view-timeline: --timeline x;
       }
     </style>
     <div class=host>
@@ -342,7 +342,7 @@ TEST_F(CSSScrollTimelineTest, ViewTimelinePart) {
             }
           .target {
             animation: anim2 10s linear;
-            animation-timeline: timeline;
+            animation-timeline: --timeline;
           }
         </style>
         <div part=foo>
@@ -375,10 +375,10 @@ TEST_F(CSSScrollTimelineTest, ScrollTimelineHost) {
       }
       .target {
         animation: anim 10s linear;
-        animation-timeline: timeline;
+        animation-timeline: --timeline;
       }
       main > .scroller {
-        scroll-timeline: timeline x;
+        scroll-timeline: --timeline x;
       }
     </style>
     <main>
@@ -387,7 +387,7 @@ TEST_F(CSSScrollTimelineTest, ScrollTimelineHost) {
           <template shadowroot=open>
             <style>
               :host {
-                scroll-timeline: timeline y;
+                scroll-timeline: --timeline y;
               }
             </style>
             <slot></slot>
@@ -418,17 +418,17 @@ TEST_F(CSSScrollTimelineTest, ScrollTimelineSlotted) {
       }
       .target {
         animation: anim 10s linear;
-        animation-timeline: timeline;
+        animation-timeline: --timeline;
       }
       .host {
-        scroll-timeline: timeline x;
+        scroll-timeline: --timeline x;
       }
     </style>
     <div class=host>
       <template shadowroot=open>
         <style>
           ::slotted(.scroller) {
-            scroll-timeline: timeline y;
+            scroll-timeline: --timeline y;
           }
         </style>
         <slot></slot>
@@ -454,10 +454,10 @@ TEST_F(CSSScrollTimelineTest, ScrollTimelinePart) {
       ->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
     <style>
       .host {
-        scroll-timeline: timeline y;
+        scroll-timeline: --timeline y;
       }
       .host::part(foo) {
-        scroll-timeline: timeline x;
+        scroll-timeline: --timeline x;
       }
     </style>
     <div class=host>
@@ -471,7 +471,7 @@ TEST_F(CSSScrollTimelineTest, ScrollTimelinePart) {
             }
           .target {
             animation: anim2 10s linear;
-            animation-timeline: timeline;
+            animation-timeline: --timeline;
           }
         </style>
         <div part=foo>

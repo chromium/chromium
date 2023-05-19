@@ -1046,7 +1046,7 @@ TEST_P(CSSAnimationsTest, LingeringTimelineAttachments) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .defer {
-        scroll-timeline: t1 defer;
+        scroll-timeline: --t1 defer;
       }
       #scroller {
         overflow: auto;
@@ -1058,7 +1058,7 @@ TEST_P(CSSAnimationsTest, LingeringTimelineAttachments) {
         height: 200px;
       }
       .ancestor-timeline {
-        scroll-timeline: t1 ancestor;
+        scroll-timeline: --t1 ancestor;
       }
     </style>
     <div class=defer>

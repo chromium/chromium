@@ -5,15 +5,15 @@
 <script src="/css/support/computed-testcommon.js"></script>
 </head>
 <style>
-  #outer { animation-timeline: foo; }
-  #target { animation-timeline: bar; }
+  #outer { animation-timeline: --foo; }
+  #target { animation-timeline: --bar; }
 </style>
 <div id="outer">
   <div id="target"></div>
 </div>
 <script>
 test_computed_value('animation-timeline', 'initial', 'auto');
-test_computed_value('animation-timeline', 'inherit', 'foo');
+test_computed_value('animation-timeline', 'inherit', '--foo');
 test_computed_value('animation-timeline', 'unset', 'auto');
 test_computed_value('animation-timeline', 'revert', 'auto');
 test_computed_value('animation-timeline', 'auto');
@@ -22,9 +22,9 @@ test_computed_value('animation-timeline', 'auto, auto');
 test_computed_value('animation-timeline', 'none, none');
 test_computed_value('animation-timeline', 'auto, none');
 test_computed_value('animation-timeline', 'none, auto');
-test_computed_value('animation-timeline', 'test');
-test_computed_value('animation-timeline', 'test1, test2');
-test_computed_value('animation-timeline', 'test1, test2, none, test3, auto', 'test1, test2, none, test3, auto');
+test_computed_value('animation-timeline', '--test');
+test_computed_value('animation-timeline', '--test1, --test2');
+test_computed_value('animation-timeline', '--test1, --test2, none, --test3, auto');
 
 test(() => {
   let style = getComputedStyle(document.getElementById('target'));

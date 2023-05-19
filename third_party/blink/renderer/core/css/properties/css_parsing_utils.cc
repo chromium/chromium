@@ -4300,7 +4300,7 @@ CSSValue* ConsumeAnimationTimeline(CSSParserTokenRange& range,
   if (auto* value = ConsumeIdent<CSSValueID::kNone, CSSValueID::kAuto>(range)) {
     return value;
   }
-  if (auto* value = ConsumeCustomIdent(range, context)) {
+  if (auto* value = ConsumeDashedIdent(range, context)) {
     return value;
   }
   if (auto* value = ConsumeViewFunction(range, context)) {
@@ -4463,7 +4463,7 @@ CSSValue* ConsumeSingleTimelineName(CSSParserTokenRange& range,
   if (CSSValue* value = ConsumeIdent<CSSValueID::kNone>(range)) {
     return value;
   }
-  return ConsumeCustomIdent(range, context);
+  return ConsumeDashedIdent(range, context);
 }
 
 namespace {

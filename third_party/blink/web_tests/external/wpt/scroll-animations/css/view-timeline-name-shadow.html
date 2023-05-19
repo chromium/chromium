@@ -32,10 +32,10 @@
   <style>
     .target {
       animation: anim 10s linear;
-      animation-timeline: timeline;
+      animation-timeline: --timeline;
     }
     .scroller > div {
-      view-timeline: timeline x;
+      view-timeline: --timeline x;
     }
   </style>
   <div class=scroller>
@@ -44,7 +44,7 @@
         <template shadowrootmode=open>
           <style>
             :host {
-              view-timeline: timeline y;
+              view-timeline: --timeline y;
             }
           </style>
         </template>
@@ -70,10 +70,10 @@
   <style>
     .target {
       animation: anim 10s linear;
-      animation-timeline: timeline;
+      animation-timeline: --timeline;
     }
     .host {
-      view-timeline: timeline x;
+      view-timeline: --timeline x;
     }
   </style>
   <div class=scroller>
@@ -81,7 +81,7 @@
       <template shadowrootmode=open>
         <style>
           ::slotted(.target) {
-            view-timeline: timeline y;
+            view-timeline: --timeline y;
           }
         </style>
         <slot></slot>
@@ -107,10 +107,10 @@
 <template id=view_timeline_part>
   <style>
     .host {
-      view-timeline: timeline y;
+      view-timeline: --timeline y;
     }
     .host::part(foo) {
-      view-timeline: timeline x;
+      view-timeline: --timeline x;
     }
   </style>
   <div class=host>
@@ -123,7 +123,7 @@
           }
         .target {
           animation: anim2 10s linear;
-          animation-timeline: timeline;
+          animation-timeline: --timeline;
         }
       </style>
       <div part=foo>
@@ -150,10 +150,10 @@
   <style>
     .target {
       animation: anim 10s linear;
-      animation-timeline: timeline;
+      animation-timeline: --timeline;
     }
     .host {
-      view-timeline: timeline x;
+      view-timeline: --timeline x;
     }
   </style>
   <div class=scroller>
@@ -161,7 +161,7 @@
       <template shadowrootmode=open>
         <style>
           div {
-            view-timeline: timeline y;
+            view-timeline: --timeline y;
           }
         </style>
         <div>

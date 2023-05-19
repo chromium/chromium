@@ -29,7 +29,7 @@
     overflow-x: hidden;
     width: 300px;
     height: 200px;
-    view-timeline: t1 defer;
+    view-timeline: --t1 defer;
   }
   #block {
     margin-top: 800px;
@@ -38,7 +38,7 @@
     width: 100px;
     height: 50px;
     background-color: blue;
-    view-timeline: t1 ancestor;
+    view-timeline: --t1 ancestor;
   }
   #target {
     margin-bottom: 800px;
@@ -51,7 +51,7 @@
     animation: anim auto both linear;
     animation-range-start: contain 0%;
     animation-range-end: contain 100%;
-    animation-timeline: t1;
+    animation-timeline: --t1;
   }
 </style>
 <body>

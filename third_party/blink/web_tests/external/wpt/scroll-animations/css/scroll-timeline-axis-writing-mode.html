@@ -19,26 +19,26 @@
     to { width: 200px; }
   }
   #timeline_initial_axis {
-    scroll-timeline: timeline_initial_axis;
+    scroll-timeline: --timeline_initial_axis;
   }
   #timeline_y {
-    scroll-timeline: timeline_y y;
+    scroll-timeline: --timeline_y y;
   }
   #timeline_x {
-    scroll-timeline: timeline_x x;
+    scroll-timeline: --timeline_x x;
   }
   #timeline_block_in_horizontal {
-    scroll-timeline: timeline_block_in_horizontal block;
+    scroll-timeline: --timeline_block_in_horizontal block;
   }
   #timeline_inline_in_horizontal {
-    scroll-timeline: timeline_inline_in_horizontal inline;
+    scroll-timeline: --timeline_inline_in_horizontal inline;
   }
   #timeline_block_in_vertical {
-    scroll-timeline: timeline_block_in_vertical block;
+    scroll-timeline: --timeline_block_in_vertical block;
     writing-mode: vertical-lr;
   }
   #timeline_inline_in_vertical {
-    scroll-timeline: timeline_inline_in_vertical inline;
+    scroll-timeline: --timeline_inline_in_vertical inline;
     writing-mode: vertical-lr;
   }
   .target {
@@ -49,16 +49,16 @@
     position: absolute;
   }
   /* Ensure stable expectations if feature is not supported */
-  @supports not (animation-timeline:foo) {
+  @supports not (animation-timeline:--foo) {
     .target { animation-play-state: paused; }
   }
-  #element_initial_axis { animation-timeline: timeline_initial_axis; }
-  #element_y { animation-timeline: timeline_y; }
-  #element_x { animation-timeline: timeline_x; }
-  #element_block_in_horizontal { animation-timeline: timeline_block_in_horizontal; }
-  #element_inline_in_horizontal { animation-timeline: timeline_inline_in_horizontal; }
-  #element_block_in_vertical { animation-timeline: timeline_block_in_vertical; }
-  #element_inline_in_vertical { animation-timeline: timeline_inline_in_vertical; }
+  #element_initial_axis { animation-timeline: --timeline_initial_axis; }
+  #element_y { animation-timeline: --timeline_y; }
+  #element_x { animation-timeline: --timeline_x; }
+  #element_block_in_horizontal { animation-timeline: --timeline_block_in_horizontal; }
+  #element_inline_in_horizontal { animation-timeline: --timeline_inline_in_horizontal; }
+  #element_block_in_vertical { animation-timeline: --timeline_block_in_vertical; }
+  #element_inline_in_vertical { animation-timeline: --timeline_inline_in_vertical; }
 </style>
 <div class=scroller id=timeline_initial_axis>
   <div class=contents></div>
