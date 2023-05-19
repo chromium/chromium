@@ -745,7 +745,7 @@
   {
     "name": "bluetooth-coredump",
     "owners": ["mmandlik", "chromeos-bt-team@google.com"],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "bluetooth-fix-a2dp-packet-size",
@@ -755,7 +755,7 @@
   {
     "name": "bluetooth-floss-coredump",
     "owners": ["mmandlik", "chromeos-bt-team@google.com"],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "bluetooth-long-autosuspend",
