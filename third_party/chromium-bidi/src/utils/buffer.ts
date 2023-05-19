@@ -21,13 +21,13 @@
 export class Buffer<T> {
   readonly #capacity: number;
   readonly #entries: T[] = [];
-  readonly #onItemRemoved: (value: T) => void;
+  readonly #onItemRemoved?: (value: T) => void;
 
   /**
    * @param capacity
    * @param onItemRemoved optional delegate called for each removed element.
    */
-  constructor(capacity: number, onItemRemoved: (value: T) => void = () => {}) {
+  constructor(capacity: number, onItemRemoved?: (value: T) => void) {
     this.#capacity = capacity;
     this.#onItemRemoved = onItemRemoved;
   }
@@ -41,7 +41,7 @@ export class Buffer<T> {
     while (this.#entries.length > this.#capacity) {
       const item = this.#entries.shift();
       if (item !== undefined) {
-        this.#onItemRemoved(item);
+        this.#onItemRemoved?.(item);
       }
     }
   }

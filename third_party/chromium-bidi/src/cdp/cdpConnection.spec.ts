@@ -118,7 +118,7 @@ describe('CdpConnection', () => {
       params: {sessionId: SOME_SESSION_ID},
     });
 
-    const sessionClient = cdpConnection.getCdpClient(SOME_SESSION_ID)!;
+    const sessionClient = cdpConnection.getCdpClient(SOME_SESSION_ID);
     expect(sessionClient).to.not.be.null;
     sessionClient.on('Page.frameNavigated', sessionCallback);
 
@@ -141,7 +141,7 @@ describe('CdpConnection', () => {
       params: {sessionId: ANOTHER_SESSION_ID},
     });
 
-    const otherSessionClient = cdpConnection.getCdpClient(ANOTHER_SESSION_ID)!;
+    const otherSessionClient = cdpConnection.getCdpClient(ANOTHER_SESSION_ID);
     expect(otherSessionClient).to.not.be.null;
     otherSessionClient.on('Page.loadEventFired', otherSessionCallback);
 

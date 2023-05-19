@@ -238,7 +238,9 @@ class BidiServer implements ITransport {
     return this.#sendBidiMessage(message);
   }
 
-  close() {}
+  close() {
+    // Intentionally empty.
+  }
 
   initialise(sendBidiMessage: (messageStr: string) => Promise<void>) {
     this.#sendBidiMessage = sendBidiMessage;

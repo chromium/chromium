@@ -40,15 +40,15 @@ export class CdpConnection {
   /** Map from session ID to CdpClient. */
   readonly #sessionCdpClients = new Map<string, CdpClient>();
   readonly #commandCallbacks = new Map<number, CdpCallbacks>();
-  readonly #log: (...messages: unknown[]) => void;
+  readonly #logger?: (...messages: unknown[]) => void;
   #nextId = 0;
 
   constructor(
     transport: ITransport,
-    log: (...messages: unknown[]) => void = () => {}
+    logger?: (...messages: unknown[]) => void
   ) {
     this.#transport = transport;
-    this.#log = log;
+    this.#logger = logger;
     this.#transport.setOnMessage(this.#onMessage);
     this.#browserCdpClient = CdpClient.create(this, null);
   }
@@ -109,17 +109,17 @@ export class CdpConnection {
       const messageStr = JSON.stringify(messageObj);
       const messagePretty = JSON.stringify(messageObj, null, 2);
       void this.#transport.sendMessage(messageStr)?.catch((error) => {
-        this.#log('error', error);
+        this.#logger?.('error', error);
         this.#transport.close();
       });
-      this.#log('sent ▸', messagePretty);
+      this.#logger?.('sent ▸', messagePretty);
     });
   }
 
   #onMessage = (message: string) => {
     const parsed = JSON.parse(message);
     const messagePretty = JSON.stringify(parsed, null, 2);
-    this.#log('received ◂', messagePretty);
+    this.#logger?.('received ◂', messagePretty);
 
     // Update client map if a session is attached or detached.
     // Listen for these events on every session.

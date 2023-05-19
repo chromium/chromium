@@ -37,7 +37,12 @@ import mapperReader from './mapperReader.js';
 
 const log = debug('bidiServer:log');
 
-function parseArguments() {
+function parseArguments(): {
+  port: number;
+  channel: ChromeReleaseChannel;
+  headless: string;
+  verbose: boolean;
+} {
   const parser = new argparse.ArgumentParser({
     add_help: true,
     exit_on_error: true,
@@ -54,6 +59,7 @@ function parseArguments() {
       'If set, the given installed Chrome Release Channel will be used ' +
       'instead of one pointed by Puppeteer version',
     choices: Object.values(ChromeReleaseChannel),
+    default: ChromeReleaseChannel.DEV,
   });
 
   parser.add_argument('-hl', '--headless', {
@@ -106,7 +112,7 @@ function parseArguments() {
  */
 async function onNewBidiConnectionOpen(
   headless: boolean,
-  chromeChannel: ChromeReleaseChannel | undefined,
+  chromeChannel: ChromeReleaseChannel,
   bidiTransport: ITransport,
   verbose: boolean
 ) {
@@ -135,7 +141,7 @@ async function onNewBidiConnectionOpen(
     process.env['BROWSER_BIN'] ??
     computeSystemExecutablePath({
       browser: Browser.CHROME,
-      channel: chromeChannel ?? ChromeReleaseChannel.DEV,
+      channel: chromeChannel,
     });
 
   if (!executablePath) {

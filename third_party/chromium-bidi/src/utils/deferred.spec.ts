@@ -38,7 +38,7 @@ describe('Deferred', () => {
 
     it('reject', async () => {
       const deferred = new Deferred<string>();
-      const deferredThen = deferred.then(() => {});
+      const deferredThen = deferred.then((v) => v);
       const deferredCatch = deferred.catch((e) => e);
 
       expect(deferred.isFinished).to.be.false;

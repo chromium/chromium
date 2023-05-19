@@ -19,8 +19,8 @@ export class Deferred<T> implements Promise<T> {
   #isFinished = false;
   #promise: Promise<T>;
 
-  #resolve: (value: T) => void = () => {};
-  #reject: (value: unknown) => void = () => {};
+  #resolve?: (value: T) => void;
+  #reject?: (value: unknown) => void;
 
   get isFinished(): boolean {
     return this.#isFinished;
@@ -33,7 +33,9 @@ export class Deferred<T> implements Promise<T> {
     });
     // Needed to avoid `Uncaught (in promise)`. The promises returned by `then`
     // and `catch` will be rejected anyway.
-    this.#promise.catch(() => {});
+    this.#promise.catch((_error) => {
+      // Intentionally empty.
+    });
   }
 
   then<TResult1 = T, TResult2 = never>(
@@ -51,12 +53,12 @@ export class Deferred<T> implements Promise<T> {
 
   resolve(value: T) {
     this.#isFinished = true;
-    this.#resolve(value);
+    this.#resolve?.(value);
   }
 
   reject(reason: unknown) {
     this.#isFinished = true;
-    this.#reject(reason);
+    this.#reject?.(reason);
   }
 
   finally(onFinally?: () => void | null): Promise<T> {

@@ -42,7 +42,12 @@ module.exports = {
       // keep-sorted end
     ],
   },
-  plugins: ['@typescript-eslint', 'import', 'mocha'],
+  plugins: [
+    '@typescript-eslint',
+    'import',
+    'mocha',
+    "promise",
+  ],
   extends: [
     // keep-sorted start
     'eslint:recommended',
@@ -50,6 +55,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:prettier/recommended',
+    'plugin:promise/recommended',
     // keep-sorted end
   ],
   rules: {
@@ -59,13 +65,12 @@ module.exports = {
     "@typescript-eslint/explicit-member-accessibility": ['warn', {accessibility: 'no-public'}],
     '@typescript-eslint/array-type': 'warn',
     '@typescript-eslint/consistent-generic-constructors': 'warn',
-    '@typescript-eslint/no-empty-function': 'off',
+    '@typescript-eslint/no-empty-function': 'warn',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-extraneous-class': 'warn',
     '@typescript-eslint/no-misused-promises': 'off',
     '@typescript-eslint/no-namespace': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
-    '@typescript-eslint/no-this-alias': 'off',
     '@typescript-eslint/no-unsafe-argument': 'off',
     '@typescript-eslint/no-unsafe-assignment': 'off',
     '@typescript-eslint/no-unsafe-call': 'off',
