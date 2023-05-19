@@ -334,7 +334,6 @@ robolectric_library("junit_test_support") {
     "junit/src/org/chromium/components/payments/test_support/DefaultPaymentFeatureConfig.java",
     "junit/src/org/chromium/components/payments/test_support/FakeClock.java",
     "junit/src/org/chromium/components/payments/test_support/PaymentRequestServiceBuilder.java",
-    "junit/src/org/chromium/components/payments/test_support/ShadowPaymentFeatureList.java",
     "junit/src/org/chromium/components/payments/test_support/ShadowWebContentsStatics.java",
   ]
   deps = [
