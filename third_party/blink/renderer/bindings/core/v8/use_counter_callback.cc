@@ -362,6 +362,10 @@ void UseCounterCallback(v8::Isolate* isolate,
       blink_feature =
           WebFeature::kV8InvalidatedTypedArraySpeciesLookupChainProtector;
       break;
+    case v8::Isolate::kInvalidatedNumberStringNotRegexpLikeProtector:
+      blink_feature =
+          WebFeature::kV8InvalidatedNumberStringNotRegexpLikeProtector;
+      break;
     case v8::Isolate::kVarRedeclaredCatchBinding:
       blink_feature = WebFeature::kV8VarRedeclaredCatchBinding;
       break;
