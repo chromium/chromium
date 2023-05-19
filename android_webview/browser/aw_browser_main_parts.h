@@ -26,6 +26,7 @@ namespace android_webview {
 class AwBrowserProcess;
 class AwContentBrowserClient;
 
+// Lifetime: Singleton
 class AwBrowserMainParts : public content::BrowserMainParts {
  public:
   explicit AwBrowserMainParts(AwContentBrowserClient* browser_client);

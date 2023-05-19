@@ -42,6 +42,7 @@ extern const char kEnterpriseAuthAppLinkPolicy[];
 class AwContentsLifecycleNotifier;
 class VisibilityMetricsLogger;
 
+// Lifetime: Singleton
 class AwBrowserProcess {
  public:
   AwBrowserProcess(AwFeatureListCreator* aw_feature_list_creator);

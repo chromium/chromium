@@ -36,6 +36,7 @@ namespace prefs {
 extern const char kClientHintsCachedPerOriginMap[];
 }  // namespace prefs
 
+// Lifetime: Profile
 class AwClientHintsControllerDelegate
     : public content::ClientHintsControllerDelegate {
  public:
