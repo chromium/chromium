@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 32
+// Next MinVersion: 33
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -765,7 +765,7 @@ struct PasspointApprovalResponse {
   bool allowed;
 };
 
-// Next Method ID: 22
+// Next Method ID: 23
 // IDs 3 and 9 are missing as they belonged to deprecated methods.
 // Mojo interface exposed by the Chrome browser process for
 // networking/WiFi/VPN, ARC is the client.
@@ -859,6 +859,10 @@ interface NetHost {
 
   // Sends a request to Chrome to stop a local only hotspot.
   [MinVersion=25] StopLohs@19();
+
+  // Sends a notification to Chrome about the change in whether Android WiFi
+  // multicast lock is held by any app in ARC.
+  [MinVersion=32] NotifyAndroidWifiMulticastLockChange@22(bool is_held);
 };
 
 // Next Method ID: 12
