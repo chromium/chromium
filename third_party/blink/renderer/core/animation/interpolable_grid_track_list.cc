@@ -21,8 +21,10 @@ InterpolableGridTrackList::InterpolableGridTrackList(
 std::unique_ptr<InterpolableGridTrackList>
 InterpolableGridTrackList::MaybeCreate(const NGGridTrackList& track_list,
                                        float zoom) {
-  if (track_list.HasAutoRepeater())
+  // Subgrids do not have sizes stored on their track list to interpolate.
+  if (track_list.HasAutoRepeater() || track_list.IsSubgriddedAxis()) {
     return nullptr;
+  }
 
   wtf_size_t repeater_count = track_list.RepeaterCount();
   std::unique_ptr<InterpolableList> values =
