@@ -121,9 +121,7 @@ void CrashDirectoryWatcher::OnFileChangeDetected(const base::FilePath& path,
   // json file to a new directory when they are ready to be uploaded and we
   // don't want to enumerate any files which have already been moved.
   base::FileEnumerator metadata_file_enumerator(
-      path, /*recursive=*/false,
-      base::FileEnumerator::FileType::FILES |
-          base::FileEnumerator::FileType::NAMES_ONLY,
+      path, /*recursive=*/false, base::FileEnumerator::FileType::FILES,
       FILE_PATH_LITERAL("*.json"));
 
   std::vector<std::string> crash_guids;
