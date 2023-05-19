@@ -823,9 +823,7 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
       CHECK(controller);
       resolver_->Resolve(
           script_state,
-          ToV8(source_->source2_
-                   ->startWrapper(script_state,
-                                  ScriptValue::From(script_state, controller))
+          ToV8(source_->source2_->startWrapper(script_state, controller)
                    .Then(CreateFunction<PullSource2>(script_state, source_)),
                script_state->GetContext()->Global(),
                script_state->GetIsolate()));

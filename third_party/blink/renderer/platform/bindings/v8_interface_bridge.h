@@ -22,6 +22,9 @@ class V8InterfaceBridge : public V8InterfaceBridgeBase {
                : nullptr;
   }
 
+  // This method will cause a bad cast if called on an object of the wrong type.
+  // For use only inside bindings/, and only when the type of the object is
+  // absolutely certain.
   static T* ToWrappableUnsafe(v8::Local<v8::Object> value) {
     return ToScriptWrappable(value)->ToImpl<T>();
   }

@@ -11,7 +11,7 @@
     LegacyNoInterfaceObject
 ]
 interface UnderlyingSourceBase {
-    [CallWith=ScriptState, ImplementedAs=startWrapper] Promise<void> start(any stream);
+    [CallWith=ScriptState, ImplementedAs=startWrapper] Promise<void> start(ReadableStreamDefaultController stream);
     [CallWith=ScriptState] Promise<void> pull();
     [CallWith=ScriptState, ImplementedAs=cancelWrapper] Promise<void> cancel(optional any reason);
 

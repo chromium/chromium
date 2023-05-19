@@ -16,6 +16,7 @@
 
 namespace blink {
 
+class ReadableStreamDefaultController;
 class ReadableStreamDefaultControllerWithScriptScope;
 class ScriptState;
 
@@ -28,7 +29,7 @@ class CORE_EXPORT UnderlyingSourceBase
   void Trace(Visitor*) const override;
   ~UnderlyingSourceBase() override = default;
 
-  ScriptPromise startWrapper(ScriptState*, ScriptValue controller);
+  ScriptPromise startWrapper(ScriptState*, ReadableStreamDefaultController*);
   virtual ScriptPromise Start(ScriptState*);
 
   virtual ScriptPromise pull(ScriptState*);

@@ -12,15 +12,16 @@
 
 namespace blink {
 
-ScriptPromise UnderlyingSourceBase::startWrapper(ScriptState* script_state,
-                                                 ScriptValue js_controller) {
+ScriptPromise UnderlyingSourceBase::startWrapper(
+    ScriptState* script_state,
+    ReadableStreamDefaultController* controller) {
   // Cannot call start twice (e.g., cannot use the same UnderlyingSourceBase to
   // construct multiple streams).
   DCHECK(!controller_);
 
   controller_ =
       MakeGarbageCollected<ReadableStreamDefaultControllerWithScriptScope>(
-          script_state, js_controller);
+          script_state, controller);
 
   return Start(script_state);
 }

@@ -207,11 +207,11 @@ static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
                                                     std::move(form_data)),
         nullptr /* AbortSignal */, /*cached_metadata_handler=*/nullptr);
     content_type = "application/x-www-form-urlencoded;charset=UTF-8";
-  } else if (RuntimeEnabledFeatures::FetchUploadStreamingEnabled(
-                 execution_context) &&
-             V8ReadableStream::HasInstance(isolate, body)) {
-    ReadableStream* readable_stream =
-        V8ReadableStream::ToWrappableUnsafe(body.As<v8::Object>());
+  } else if (ReadableStream* readable_stream =
+                 V8ReadableStream::ToWrappable(isolate, body);
+             readable_stream &&
+             RuntimeEnabledFeatures::FetchUploadStreamingEnabled(
+                 execution_context)) {
     // This is implemented in Request::CreateRequestWithRequestOrString():
     //   "If the |keepalive| flag is set, then throw a TypeError."
 

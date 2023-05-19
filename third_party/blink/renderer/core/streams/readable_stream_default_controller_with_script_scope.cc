@@ -15,16 +15,10 @@
 namespace blink {
 
 ReadableStreamDefaultControllerWithScriptScope::
-    ReadableStreamDefaultControllerWithScriptScope(ScriptState* script_state,
-                                                   ScriptValue controller)
-    : script_state_(script_state) {
-  v8::Local<v8::Object> controller_object =
-      controller.V8Value().As<v8::Object>();
-  controller_ =
-      V8ReadableStreamDefaultController::ToWrappableUnsafe(controller_object);
-
-  DCHECK(controller_);
-}
+    ReadableStreamDefaultControllerWithScriptScope(
+        ScriptState* script_state,
+        ReadableStreamDefaultController* controller)
+    : script_state_(script_state), controller_(controller) {}
 
 void ReadableStreamDefaultControllerWithScriptScope::Deactivate() {
   controller_ = nullptr;

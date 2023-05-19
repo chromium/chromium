@@ -182,8 +182,8 @@ TEST(V8ScriptValueSerializerTest, ThrowsDataCloneError) {
       V8ScriptValueSerializer(script_state).Serialize(symbol, exception_state));
   ASSERT_TRUE(HadDOMExceptionInCoreTest("DataCloneError", script_state,
                                         exception_state));
-  DOMException* dom_exception = V8DOMException::ToWrappableUnsafe(
-      exception_state.GetException().As<v8::Object>());
+  DOMException* dom_exception = V8DOMException::ToWrappable(
+      scope.GetIsolate(), exception_state.GetException());
   EXPECT_TRUE(dom_exception->message().Contains("postMessage"));
 }
 
@@ -2047,8 +2047,7 @@ TEST(V8ScriptValueSerializerTest, DecodeFileListIndex) {
   V8ScriptValueDeserializer deserializer(scope.GetScriptState(), input,
                                          options);
   v8::Local<v8::Value> result = deserializer.Deserialize();
-  FileList* new_file_list =
-      V8FileList::ToWrappableUnsafe(result.As<v8::Object>());
+  FileList* new_file_list = V8FileList::ToWrappable(scope.GetIsolate(), result);
   EXPECT_EQ(1u, new_file_list->length());
   File* new_file = new_file_list->item(0);
   EXPECT_TRUE(new_file->GetPath().empty());
