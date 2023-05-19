@@ -6,13 +6,16 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_REGISTRY_H_
 
 #include <memory>
+#include <tuple>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/lru_cache.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
@@ -43,6 +46,11 @@ FORWARD_DECLARE_TEST(ServiceWorkerRegistryTest, StoragePolicyChange);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kServiceWorkerMergeFindRegistrationForClientUrl);
+
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kServiceWorkerRegistrationCache);
+
+CONTENT_EXPORT extern const base::FeatureParam<int>
+    kServiceWorkerRegistrationCacheSize;
 
 // Manages in-memory representation of service worker registrations
 // (i.e., ServiceWorkerRegistration) including installing and uninstalling
@@ -525,6 +533,11 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   // ServiceWorker registration scope cache to skip calling
   // FindRegistrationForClientUrl mojo function (https://crbug.com/1411197).
   std::map<blink::StorageKey, std::set<GURL>> registration_scope_cache_;
+
+  // Live registration's `registration_id` cache to skip calling
+  // FindRegistrationForClientUrl mojo function (https://crbug.com/1446216).
+  base::LRUCache<std::tuple<GURL, blink::StorageKey>, int64_t>
+      registration_id_cache_;
 
   enum class ConnectionState {
     kNormal,
