@@ -430,6 +430,18 @@ export namespace BrowsingContext {
     return parseObject(params, NavigateParametersSchema);
   }
 
+  const ReloadParametersSchema = zod.object({
+    context: CommonDataTypes.BrowsingContextSchema,
+    ignoreCache: zod.boolean().optional(),
+    wait: ReadinessStateSchema.optional(),
+  });
+
+  export function parseReloadParams(
+    params: object
+  ): BrowsingContextTypes.ReloadParameters {
+    return parseObject(params, ReloadParametersSchema);
+  }
+
   // BrowsingContextCreateType = "tab" / "window"
   // BrowsingContextCreateParameters = {
   //   type: BrowsingContextCreateType

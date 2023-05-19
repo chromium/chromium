@@ -254,10 +254,15 @@ export class BrowsingContextProcessor {
   ): Promise<BrowsingContext.NavigateResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
 
-    return context.navigate(
-      params.url,
-      params.wait === undefined ? 'none' : params.wait
-    );
+    return context.navigate(params.url, params.wait ?? 'none');
+  }
+
+  process_browsingContext_reload(
+    params: BrowsingContext.ReloadParameters
+  ): Promise<Message.EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+
+    return context.reload(params.ignoreCache ?? false, params.wait ?? 'none');
   }
 
   async process_browsingContext_captureScreenshot(

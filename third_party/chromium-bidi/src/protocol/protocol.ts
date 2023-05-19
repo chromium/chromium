@@ -782,7 +782,8 @@ export namespace BrowsingContext {
     | CreateCommand
     | GetTreeCommand
     | NavigateCommand
-    | PrintCommand;
+    | PrintCommand
+    | ReloadCommand;
   export type Result =
     | CaptureScreenshotResult
     | CreateResult
@@ -846,6 +847,17 @@ export namespace BrowsingContext {
       navigation: Navigation | null;
       url: string;
     };
+  };
+
+  export type ReloadCommand = {
+    method: 'browsingContext.reload';
+    params: ReloadParameters;
+  };
+
+  export type ReloadParameters = {
+    context: CommonDataTypes.BrowsingContext;
+    ignoreCache?: boolean;
+    wait?: ReadinessState;
   };
 
   export type CreateCommand = {

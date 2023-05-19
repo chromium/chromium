@@ -51,6 +51,7 @@ export interface BidiParser {
   parseGetSessionParams(params: object): CDP.GetSessionParams;
   parseSubscribeParams(params: object): Session.SubscriptionRequest;
   parseNavigateParams(params: object): BrowsingContext.NavigateParameters;
+  parseReloadParams(params: object): BrowsingContext.ReloadParameters;
   parseGetTreeParams(params: object): BrowsingContext.GetTreeParameters;
   parseCreateParams(params: object): BrowsingContext.CreateParameters;
   parseCloseParams(params: object): BrowsingContext.CloseParameters;
@@ -96,6 +97,9 @@ class BidiNoOpParser implements BidiParser {
   }
   parseNavigateParams(params: object): BrowsingContext.NavigateParameters {
     return params as BrowsingContext.NavigateParameters;
+  }
+  parseReloadParams(params: object): BrowsingContext.ReloadParameters {
+    return params as BrowsingContext.ReloadParameters;
   }
   parseGetTreeParams(params: object): BrowsingContext.GetTreeParameters {
     return params as BrowsingContext.GetTreeParameters;
@@ -213,6 +217,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
       case 'browsingContext.print':
         return this.#contextProcessor.process_browsingContext_print(
           this.#parser.parsePrintParams(commandData.params)
+        );
+      case 'browsingContext.reload':
+        return this.#contextProcessor.process_browsingContext_reload(
+          this.#parser.parseReloadParams(commandData.params)
         );
 
       case 'script.addPreloadScript':

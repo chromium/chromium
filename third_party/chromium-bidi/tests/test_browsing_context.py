@@ -730,3 +730,151 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
             "url": url_with_hash_2
         }]
     } == result
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_reload_waitNone(websocket, context_id, html):
+    url = html()
+
+    await subscribe(
+        websocket,
+        ["browsingContext.domContentLoaded", "browsingContext.load"])
+
+    await goto_url(websocket, context_id, url)
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.reload",
+            "params": {
+                "context": context_id,
+                "wait": "none",
+            }
+        })
+
+    # Assert command done.
+    response = await read_JSON_message(websocket)
+    assert response["result"] == {}
+
+    # Wait for `browsingContext.load` event.
+    response = await read_JSON_message(websocket)
+    assert response == {
+        "method": "browsingContext.load",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
+            "url": url,
+        }
+    }
+
+    # Wait for `browsingContext.domContentLoaded` event.
+    response = await read_JSON_message(websocket)
+    assert response == {
+        "method": "browsingContext.domContentLoaded",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
+            "url": url,
+        }
+    }
+
+
+@pytest.mark.asyncio
+@pytest.mark.skip(reason="TODO: Not implemented")
+async def test_browsingContext_reload_waitInteractive(websocket, context_id,
+                                                      html):
+    url = html()
+
+    await subscribe(
+        websocket,
+        ["browsingContext.domContentLoaded", "browsingContext.load"])
+
+    await goto_url(websocket, context_id, url)
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.reload",
+            "params": {
+                "context": context_id,
+                "wait": "interactive",
+            }
+        })
+
+    # Wait for `browsingContext.load` event.
+    response = await read_JSON_message(websocket)
+    assert response == {
+        "method": "browsingContext.load",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
+            "url": url,
+        }
+    }
+
+    # Wait for `browsingContext.domContentLoaded` event.
+    response = await read_JSON_message(websocket)
+    assert response == {
+        "method": "browsingContext.domContentLoaded",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
+            "url": url,
+        }
+    }
+
+    # Assert command done.
+    response = await read_JSON_message(websocket)
+    assert response["result"] == {}
+
+
+@pytest.mark.asyncio
+@pytest.mark.skip(reason="TODO: Not implemented")
+async def test_browsingContext_reload_waitComplete(websocket, context_id,
+                                                   html):
+    url = html()
+
+    await subscribe(
+        websocket,
+        ["browsingContext.domContentLoaded", "browsingContext.load"])
+
+    await goto_url(websocket, context_id, url)
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.reload",
+            "params": {
+                "context": context_id,
+                "wait": "complete",
+            }
+        })
+
+    # Wait for `browsingContext.load` event.
+    response = await read_JSON_message(websocket)
+    assert response == {
+        "method": "browsingContext.load",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
+            "url": url,
+        }
+    }
+
+    # Assert command done.
+    response = await read_JSON_message(websocket)
+    assert response["result"] == {}
+
+    # Wait for `browsingContext.domContentLoaded` event.
+    response = await read_JSON_message(websocket)
+    assert response == {
+        "method": "browsingContext.domContentLoaded",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
+            "url": url,
+        }
+    }

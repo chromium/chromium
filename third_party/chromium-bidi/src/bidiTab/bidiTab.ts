@@ -304,6 +304,9 @@ class BidiParserImpl implements BidiParser {
   parseNavigateParams(params: object): BrowsingContext.NavigateParameters {
     return Parser.BrowsingContext.parseNavigateParams(params);
   }
+  parseReloadParams(params: object): BrowsingContext.ReloadParameters {
+    return Parser.BrowsingContext.parseReloadParams(params);
+  }
   parseGetTreeParams(params: object): BrowsingContext.GetTreeParameters {
     return Parser.BrowsingContext.parseGetTreeParams(params);
   }
