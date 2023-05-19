@@ -80,7 +80,7 @@ BASE_FEATURE(kEncryptedClientHello,
 
 BASE_FEATURE(kEncryptedClientHelloQuic,
              "EncryptedClientHelloQuic",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNetworkQualityEstimator,
              "NetworkQualityEstimator",
