@@ -360,56 +360,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.JavaCachingRecorder.DroppedHistogramSampleCount"
-    units="samples" expires_after="2023-09-03">
-  <owner>bttk@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Number of histogram samples that were not recorded when flushing due to
-    cache size limits in the Java in-memory cache. There are separate limits on
-    the number of cached histograms, and the number of samples in a histogram.
-  </summary>
-</histogram>
-
-<histogram name="UMA.JavaCachingRecorder.DroppedUserActionCount"
-    units="samples" expires_after="2023-04-30">
-  <owner>bttk@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Number of user actions that were not recorded when flushing due to a cache
-    size limit in Java the in-memory cache.
-  </summary>
-</histogram>
-
-<histogram name="UMA.JavaCachingRecorder.FlushedHistogramCount"
-    units="histograms" expires_after="2022-03-21">
-  <owner>bttk@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Number of histograms recorded when flushing the Java in-memory cache.
-  </summary>
-</histogram>
-
-<histogram name="UMA.JavaCachingRecorder.InputHistogramSampleCount"
-    units="samples" expires_after="2022-03-21">
-  <owner>bttk@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Number of histogram samples seen by the time the Java in-memory cache was
-    flushed. This includes samples counted in DroppedHistogramSampleCount.
-  </summary>
-</histogram>
-
-<histogram name="UMA.JavaCachingRecorder.InputUserActionCount" units="samples"
-    expires_after="2022-03-21">
-  <owner>bttk@chromium.org</owner>
-  <owner>src/base/metrics/OWNERS</owner>
-  <summary>
-    Number of user actions seen by the time the in-memory cache was flushed.
-    This includes actions counted in DroppedUserActionCount.
-  </summary>
-</histogram>
-
 <histogram name="UMA.LocalHistogram" enum="Boolean" expires_after="never">
 <!-- expires-never: Used to monitor that local histograms are not reported. -->
 
