@@ -14,6 +14,10 @@
 
 namespace android_webview {
 
+// Records how much of the screen is covered by WebViews. This helps us
+// determine what WebView is being used for.
+//
+// Lifetime: Singleton
 class VisibilityMetricsLogger {
  public:
   // These values are persisted to logs and must match the WebViewUrlScheme enum

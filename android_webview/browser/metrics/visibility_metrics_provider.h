@@ -12,6 +12,11 @@ namespace android_webview {
 
 class VisibilityMetricsLogger;
 
+// Records the metrics collected by VisibilityMetricsLogger.
+//
+// This class is owned by the metrics::MetricsService.
+//
+// Lifetime: Singleton
 class VisibilityMetricsProvider : public metrics::MetricsProvider {
  public:
   explicit VisibilityMetricsProvider(VisibilityMetricsLogger* logger);
