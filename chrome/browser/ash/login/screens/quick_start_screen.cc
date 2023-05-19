@@ -101,6 +101,8 @@ void QuickStartScreen::OnStatusChanged(
     case Step::ADVERTISING:
     case Step::CONNECTED:
     case Step::PIN_VERIFICATION:
+    case Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS:
+    case Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS:
       // TODO(b/282934168): Implement these screens fully
       quick_start::QS_LOG(INFO)
           << "Hit screen which is not implemented. Continuing";

@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -38,7 +39,9 @@ class TargetDeviceBootstrapController
     CONNECTED,
     GAIA_CREDENTIALS,
     CONNECTING_TO_WIFI,
-    CONNECTED_TO_WIFI
+    CONNECTED_TO_WIFI,
+    TRANSFERRING_GOOGLE_ACCOUNT_DETAILS,
+    TRANSFERRED_GOOGLE_ACCOUNT_DETAILS,
   };
 
   enum class ErrorCode {
@@ -47,6 +50,7 @@ class TargetDeviceBootstrapController
     CONNECTION_CLOSED,
     WIFI_CREDENTIALS_NOT_RECEIVED,
     USER_VERIFICATION_FAILED,
+    GAIA_ASSERTION_NOT_RECEIVED,
   };
 
   using QRCodePixelData = std::vector<uint8_t>;
@@ -105,6 +109,7 @@ class TargetDeviceBootstrapController
       TargetDeviceConnectionBroker::ConnectionClosedReason reason) override;
 
   void AttemptWifiCredentialTransfer();
+  void AttemptGoogleAccountTransfer();
 
  private:
   friend class TargetDeviceBootstrapControllerTest;
@@ -126,6 +131,7 @@ class TargetDeviceBootstrapController
 
   void OnWifiCredentialsReceived(
       absl::optional<mojom::WifiCredentials> credentials);
+  void OnFidoAssertionReceived(absl::optional<FidoAssertionInfo> assertion);
 
   std::unique_ptr<TargetDeviceConnectionBroker> connection_broker_;
 

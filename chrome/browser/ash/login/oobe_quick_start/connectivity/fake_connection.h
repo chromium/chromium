@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 
 namespace ash::quick_start {
@@ -44,16 +45,23 @@ class FakeConnection : public Connection {
   void RequestWifiCredentials(int32_t session_id,
                               RequestWifiCredentialsCallback callback) override;
   void WaitForUserVerification(AwaitUserVerificationCallback callback) override;
+  void RequestAccountTransferAssertion(
+      const std::string& challenge_b64url,
+      RequestAccountTransferAssertionCallback callback) override;
 
   bool WasHandshakeInitiated();
   void SendWifiCredentials(absl::optional<mojom::WifiCredentials> credentials);
   void VerifyUser(absl::optional<mojom::UserVerificationResponse> response);
+  void SendAccountTransferAssertionInfo(
+      absl::optional<FidoAssertionInfo> assertion_info);
 
  private:
   bool handshake_initiated_ = false;
   HandshakeSuccessCallback handshake_success_callback_;
   RequestWifiCredentialsCallback wifi_credentials_callback_;
   AwaitUserVerificationCallback await_user_verification_callback_;
+  RequestAccountTransferAssertionCallback
+      request_account_transfer_assertion_callback_;
 
   base::WeakPtrFactory<FakeConnection> weak_ptr_factory_{this};
 };

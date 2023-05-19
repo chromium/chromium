@@ -381,4 +381,53 @@ TEST_F(TargetDeviceBootstrapControllerTest,
             ErrorCode::USER_VERIFICATION_FAILED);
 }
 
+TEST_F(TargetDeviceBootstrapControllerTest,
+       TransferGaiaAccountDetailsSucceeds) {
+  bootstrap_controller_->StartAdvertising();
+  fake_target_device_connection_broker_->on_start_advertising_callback().Run(
+      /*success=*/true);
+  fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
+  fake_target_device_connection_broker_->AuthenticateConnection(
+      kSourceDeviceId);
+
+  bootstrap_controller_->AttemptGoogleAccountTransfer();
+
+  EXPECT_EQ(fake_observer_->last_status.step,
+            Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS);
+  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+      fake_observer_->last_status.payload));
+
+  fake_target_device_connection_broker_->GetFakeConnection()
+      ->SendAccountTransferAssertionInfo(FidoAssertionInfo());
+
+  EXPECT_EQ(fake_observer_->last_status.step,
+            Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS);
+  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+      fake_observer_->last_status.payload));
+}
+
+TEST_F(TargetDeviceBootstrapControllerTest,
+       TransferGaiaAccountDetailsFailsIfEmpty) {
+  bootstrap_controller_->StartAdvertising();
+  fake_target_device_connection_broker_->on_start_advertising_callback().Run(
+      /*success=*/true);
+  fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
+  fake_target_device_connection_broker_->AuthenticateConnection(
+      kSourceDeviceId);
+
+  bootstrap_controller_->AttemptGoogleAccountTransfer();
+
+  EXPECT_EQ(fake_observer_->last_status.step,
+            Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS);
+  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+      fake_observer_->last_status.payload));
+
+  fake_target_device_connection_broker_->GetFakeConnection()
+      ->SendAccountTransferAssertionInfo(absl::nullopt);
+
+  EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
+  EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
+            ErrorCode::GAIA_ASSERTION_NOT_RECEIVED);
+}
+
 }  // namespace ash::quick_start

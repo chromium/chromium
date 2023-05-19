@@ -11,6 +11,7 @@
 #include "base/hash/hash.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 #include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
@@ -267,6 +268,34 @@ void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
   status_.payload.emplace<absl::monostate>();
   status_.ssid = credentials->ssid;
   status_.password = credentials->password;
+  NotifyObservers();
+}
+
+void TargetDeviceBootstrapController::AttemptGoogleAccountTransfer() {
+  CHECK(authenticated_connection_);
+
+  status_.step = Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS;
+  status_.payload.emplace<absl::monostate>();
+  NotifyObservers();
+
+  // TODO: Actually pass through a real challenge here.
+  authenticated_connection_->RequestAccountTransferAssertion(
+      "",
+      base::BindOnce(&TargetDeviceBootstrapController::OnFidoAssertionReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TargetDeviceBootstrapController::OnFidoAssertionReceived(
+    absl::optional<FidoAssertionInfo> assertion) {
+  if (!assertion.has_value()) {
+    status_.step = Step::ERROR;
+    status_.payload = ErrorCode::GAIA_ASSERTION_NOT_RECEIVED;
+    NotifyObservers();
+    return;
+  }
+
+  status_.step = Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS;
+  status_.payload.emplace<absl::monostate>();
   NotifyObservers();
 }
 

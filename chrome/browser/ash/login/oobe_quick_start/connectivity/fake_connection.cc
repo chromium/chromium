@@ -55,6 +55,12 @@ void FakeConnection::WaitForUserVerification(
   await_user_verification_callback_ = std::move(callback);
 }
 
+void FakeConnection::RequestAccountTransferAssertion(
+    const std::string& challenge_b64url,
+    RequestAccountTransferAssertionCallback callback) {
+  request_account_transfer_assertion_callback_ = std::move(callback);
+}
+
 void FakeConnection::SendWifiCredentials(
     absl::optional<mojom::WifiCredentials> credentials) {
   CHECK(wifi_credentials_callback_);
@@ -65,6 +71,11 @@ void FakeConnection::VerifyUser(
     absl::optional<mojom::UserVerificationResponse> response) {
   CHECK(await_user_verification_callback_);
   std::move(await_user_verification_callback_).Run(response);
+}
+
+void FakeConnection::SendAccountTransferAssertionInfo(
+    absl::optional<FidoAssertionInfo> assertion_info) {
+  std::move(request_account_transfer_assertion_callback_).Run(assertion_info);
 }
 
 bool FakeConnection::WasHandshakeInitiated() {
