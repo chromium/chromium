@@ -27,6 +27,16 @@ class IdentityManager;
 class PrimaryAccountAccessTokenFetcher;
 }  // namespace signin
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ItemSuggestRequestResult {
+  kSuccess = 0,
+  kNetworkError = 1,
+  kJsonParseError = 2,
+  kContentError = 3,
+  kMaxValue = kContentError,
+};
+
 // Handles requests for user Google Drive data.
 class DriveService : public KeyedService {
  public:
