@@ -359,6 +359,13 @@
   E_CPONLY(kColorScrollbarThumbInactive) \
   E_CPONLY(kColorScrollbarThumbPressed) \
   E_CPONLY(kColorScrollbarTrack) \
+  E_CPONLY(kColorSegmentedButtonBorder) \
+  E_CPONLY(kColorSegmentedButtonFocus) \
+  E_CPONLY(kColorSegmentedButtonForegroundChecked) \
+  E_CPONLY(kColorSegmentedButtonForegroundUnchecked) \
+  E_CPONLY(kColorSegmentedButtonHover) \
+  E_CPONLY(kColorSegmentedButtonRipple) \
+  E_CPONLY(kColorSegmentedButtonChecked) \
   E_CPONLY(kColorSeparator) \
   E_CPONLY(kColorShadowBase) \
   E_CPONLY(kColorShadowValueAmbientShadowElevationSixteen) \

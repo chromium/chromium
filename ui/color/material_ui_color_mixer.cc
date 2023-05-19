@@ -69,6 +69,12 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorRadioButtonForegroundDisabled] = {
       kColorSysStateDisabledContainer};
   mixer[kColorRadioButtonForegroundUnchecked] = {kColorSysOutline};
+  mixer[kColorSegmentedButtonBorder] = {kColorSysTonalOutline};
+  mixer[kColorSegmentedButtonForegroundChecked] = {kColorSysOnTonalContainer};
+  mixer[kColorSegmentedButtonForegroundUnchecked] = {kColorSysOnSurfaceSubtle};
+  mixer[kColorSegmentedButtonHover] = {kColorSysStateHoverOnSubtle};
+  mixer[kColorSegmentedButtonRipple] = {kColorSysStateRippleNeutralOnSubtle};
+  mixer[kColorSegmentedButtonChecked] = {kColorSysTonalContainer};
   mixer[kColorSeparator] = {kColorSysDivider};
   mixer[kColorSliderThumb] = {kColorSysPrimary};
   mixer[kColorSliderThumbMinimal] = {kColorSysSecondary};

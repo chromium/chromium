@@ -1,0 +1,105 @@
+<!--
+  This element is only intended for use in CR2023 UI since it does not have a
+  version for non-CR2023 UI.
+-->
+<style>
+  #button {
+    border-radius: var(--cr-segmented-button-height);
+    box-sizing: border-box;
+    color: var(--color-segmented-button-foreground-unchecked,
+        var(--cr-fallback-color-on-surface-subtle));
+    cursor: pointer;
+    height: 100%;
+    overflow: hidden;
+    padding: 4px 8px;
+    position: relative;
+  }
+
+  #button:focus {
+    outline: none;
+  }
+
+  :host([checked]) #button {
+    background-color: var(--color-segmented-button-checked,
+        var(--cr-fallback-color-tonal-container));
+    color: var(--color-segmented-button-foreground-checked,
+        var(--cr-fallback-color-on-tonal-container));
+  }
+
+  #button #overlay {
+    border-radius: var(--cr-segmented-button-height);
+    box-sizing: border-box;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  #button:hover #overlay {
+    background-color: var(--color-segmented-button-hover,
+        var(--cr-fallback-color-state-hover-on-subtle));
+  }
+
+  #button:focus-visible #overlay {
+    border: 2px var(--cr-focus-outline-color) solid;
+  }
+
+  paper-ripple {
+    color: var(--color-segmented-button-ripple,
+        var(--cr-fallback-color-state-ripple-neutral-on-subtle));
+  }
+
+  #container {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    justify-content: center;
+  }
+
+  #button ::slotted(.cr-icon) {
+    --cr-icon-color: var(--color-segmented-button-foreground-unchecked,
+        var(--cr-fallback-color-on-surface-subtle));
+    --cr-icon-button-margin-start: 0;
+    --cr-icon-ripple-margin: 8px;
+    --cr-icon-ripple-size: 16px;
+    --cr-icon-size: 16px;
+  }
+
+  :host([checked]) #prefixIcon,
+  #checkmark {
+    display: none;
+    flex-shrink: 0;
+  }
+
+  :host([checked]) #checkmark {
+    display: block;
+    fill: var(--color-segmented-button-foreground-checked,
+        var(--cr-fallback-color-on-tonal-container));
+    height: 16px;
+    margin-inline-end: 8px;
+    width: 16px;
+  }
+
+  #content {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+    max-height: 100%;
+  }
+</style>
+<div role="radio"
+    aria-checked$="[[getAriaChecked_(checked)]]"
+    aria-disabled$="[[getAriaDisabled_(disabled)]]"
+    id="button"
+    tabindex$="[[buttonTabIndex_]]"
+    aria-labelledby="content"
+    on-keydown="onInputKeydown_">
+  <div id="container">
+    <iron-icon icon="cr:check" id="checkmark"></iron-icon>
+    <slot id="prefixIcon" name="prefix-icon"></slot>
+    <span id="content"><slot></slot></span>
+  </div>
+  <div id="overlay"></div>
+</div>
