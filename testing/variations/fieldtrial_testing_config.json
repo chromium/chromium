@@ -3003,6 +3003,22 @@
             ]
         }
     ],
+    "ChromeStartOnTablet": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ShowScrollableMVTOnNTPAndroid",
+                        "StartSurfaceOnTablet"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeStartRefactor": [
         {
             "platforms": [
@@ -12278,21 +12294,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "DesktopScreenshots"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ShowScrollableMVTOnNTPAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ShowScrollableMVTOnNTPAndroid"
                     ]
                 }
             ]
