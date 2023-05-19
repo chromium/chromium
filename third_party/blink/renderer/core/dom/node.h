@@ -993,8 +993,8 @@ class CORE_EXPORT Node : public EventTarget {
 
  private:
   enum NodeFlags : uint32_t {
-    // Let the NodeTypeMask comes first, so the shit operation can
-    // be eliminated when get NodeType for the reason of performance.
+    // Let the NodeTypeMask come first, so the shift operation can
+    // be eliminated when we want to get NodeType, for the reason of performance.
     // Node type flags. These never change once created.
     kNodeTypeMask = 0xf,
     kIsContainerFlag = 1 << 4,
