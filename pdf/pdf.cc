@@ -98,16 +98,12 @@ bool GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
   return engine_exports->GetPDFDocInfo(pdf_buffer, page_count, max_page_width);
 }
 
-// TODO(crbug.com/1440430): Make sure its callers set
-// `g_use_skia_renderer_enabled_by_policy` before calling this function.
 absl::optional<bool> IsPDFDocTagged(base::span<const uint8_t> pdf_buffer) {
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/true);
   PDFEngineExports* engine_exports = PDFEngineExports::Get();
   return engine_exports->IsPDFDocTagged(pdf_buffer);
 }
 
-// TODO(crbug.com/1440430): Make sure its callers set
-// `g_use_skia_renderer_enabled_by_policy` before calling this function.
 base::Value GetPDFStructTreeForPage(base::span<const uint8_t> pdf_buffer,
                                     int page_index) {
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/true);
@@ -115,8 +111,6 @@ base::Value GetPDFStructTreeForPage(base::span<const uint8_t> pdf_buffer,
   return engine_exports->GetPDFStructTreeForPage(pdf_buffer, page_index);
 }
 
-// TODO(crbug.com/1440430): Make sure its callers set
-// `g_use_skia_renderer_enabled_by_policy` before calling this function.
 absl::optional<gfx::SizeF> GetPDFPageSizeByIndex(
     base::span<const uint8_t> pdf_buffer,
     int page_index) {
