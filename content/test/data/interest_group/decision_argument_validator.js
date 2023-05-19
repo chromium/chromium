@@ -29,7 +29,9 @@ function reportResult(auctionConfig, browserSignals, directFromSellerSignals) {
 function validateAdMetadata(adMetadata) {
   const adMetadataJSON = JSON.stringify(adMetadata);
   if (adMetadataJSON !==
-      '{"renderUrl":"https://example.com/render","metadata":{"ad":"metadata","here":[1,2,3]}}')
+      '{"renderURL":"https://example.com/render",' +
+      '"renderUrl":"https://example.com/render",' +
+      '"metadata":{"ad":"metadata","here":[1,2,3]}}')
     throw 'Wrong adMetadata ' + adMetadataJSON;
 }
 
@@ -134,6 +136,15 @@ function validateAuctionConfig(auctionConfig) {
 }
 
 function validateTrustedScoringSignals(signals) {
+  if (signals.renderURL["https://example.com/render"] !== "foo") {
+    throw 'Wrong trustedScoringSignals.renderURL ' +
+        signals.renderURL["https://example.com/render"];
+  }
+  if (signals.adComponentRenderURLs["https://example.com/render-component"] !==
+      1) {
+    throw 'Wrong trustedScoringSignals.adComponentRenderURLs ' +
+        signals.adComponentRenderURLs["https://example.com/render-component"];
+  }
   if (signals.renderUrl["https://example.com/render"] !== "foo") {
     throw 'Wrong trustedScoringSignals.renderUrl ' +
         signals.renderUrl["https://example.com/render"];
@@ -155,6 +166,8 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
     throw 'Wrong componentSeller ' + browserSignals.componentSeller;
   if (!browserSignals.interestGroupOwner.startsWith('https://a.test'))
     throw 'Wrong interestGroupOwner ' + browserSignals.interestGroupOwner;
+  if (browserSignals.renderURL !== "https://example.com/render")
+    throw 'Wrong renderURL ' + browserSignals.renderURL;
   if (browserSignals.renderUrl !== "https://example.com/render")
     throw 'Wrong renderUrl ' + browserSignals.renderUrl;
   if (browserSignals.dataVersion !== 1234)
@@ -162,7 +175,7 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
 
   // Fields that vary by method.
   if (isScoreAd) {
-    if (Object.keys(browserSignals).length !== 7) {
+    if (Object.keys(browserSignals).length !== 8) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
@@ -174,7 +187,7 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
     if (browserSignals.bidCurrency !== 'USD')
       throw 'Wrong bidCurrency ' + browserSignals.bidCurrency;
   } else {
-    if (Object.keys(browserSignals).length !== 9) {
+    if (Object.keys(browserSignals).length !== 10) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }

@@ -47,13 +47,14 @@ class MODULES_EXPORT NavigatorAuction final
   // See platform/Supplementable.h
   static NavigatorAuction& From(ExecutionContext*, Navigator&);
 
+  // TODO(crbug.com/1441988): Make `const AuctionAdInterestGroup*` after rename.
   ScriptPromise joinAdInterestGroup(ScriptState*,
-                                    const AuctionAdInterestGroup*,
+                                    AuctionAdInterestGroup*,
                                     double,
                                     ExceptionState&);
   static ScriptPromise joinAdInterestGroup(ScriptState*,
                                            Navigator&,
-                                           const AuctionAdInterestGroup*,
+                                           AuctionAdInterestGroup*,
                                            double,
                                            ExceptionState&);
   ScriptPromise leaveAdInterestGroup(ScriptState*,

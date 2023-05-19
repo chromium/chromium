@@ -1131,14 +1131,14 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
 "trustedBiddingSignalsUrl":
   "%s/interest_group/new_trusted_bidding_signals_url.json",
 "trustedBiddingSignalsKeys": ["new_key"],
-"ads": [{"renderUrl": "%s/new_ad_render_url",
+"ads": [{"renderURL": "%s/new_ad_render_url",
          "sizeGroup": "group_new",
          "metadata": {"new_a": "b"},
          "buyerReportingId": "new_brid",
          "buyerAndSellerReportingId": "new_shrid",
          "adRenderId": "123abc"
         }],
-"adComponents": [{"renderUrl": "https://example.com/component_url",
+"adComponents": [{"renderURL": "https://example.com/component_url",
                   "sizeGroup": "group_new",
                   "metadata": {"new_c": "d"},
                   "adRenderId": "456def"
@@ -1271,7 +1271,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
 TEST_F(AdAuctionServiceImplTest, UpdatePartialPerformsMerge) {
   network_responder_->RegisterUpdateResponse(
       kUpdateUrlPath, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
+"ads": [{"renderURL": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
         }]
 })",
@@ -1326,7 +1326,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatePartialPerformsMerge) {
 // The update shouldn't change the expiration time of the interest group.
 TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeExpiration) {
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
@@ -1419,7 +1419,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateSucceedsIfOptionalNameOwnerMatch) {
       base::StringPrintf(R"({
 "name": "%s",
 "owner": "%s",
-"ads": [{"renderUrl": "%s/new_ad_render_url"
+"ads": [{"renderURL": "%s/new_ad_render_url"
         }]
 })",
                          kInterestGroupName, kOriginStringA, kOriginStringA));
@@ -1473,11 +1473,11 @@ TEST_F(AdAuctionServiceImplTest, UpdateIgnoresUnknownFields) {
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
 "unsupportedField": "InInterestGroup",
 "ads": [{
-  "renderUrl": "https://example.com/new_render",
+  "renderURL": "https://example.com/new_render",
   "unsupportedField": "InAd"
         }],
 "adComponents": [{
-  "renderUrl": "https://example.com/new_component",
+  "renderURL": "https://example.com/new_component",
   "unsupportedField": "InAdComponent"
         }]
 })");
@@ -1519,7 +1519,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateIgnoresUnknownFields) {
 TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalNameDoesntMatch) {
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
 "name": "boats",
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
@@ -1558,7 +1558,7 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalOwnerDoesntMatch) {
   network_responder_->RegisterUpdateResponse(
       kUpdateUrlPath, base::StringPrintf(R"({
 "owner": "%s",
-"ads": [{"renderUrl": "%s/new_ad_render_url"
+"ads": [{"renderURL": "%s/new_ad_render_url"
         }]
 })",
                                          kOriginStringB, kOriginStringA));
@@ -1723,10 +1723,10 @@ TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
   constexpr char kGroupName1[] = "group1";
   constexpr char kGroupName2[] = "group2";
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render1"}]
+"ads": [{"renderURL": "https://example.com/new_render1"}]
 })");
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath2, R"({
-"ads": [{"renderUrl": "https://example.com/new_render2"}]
+"ads": [{"renderURL": "https://example.com/new_render2"}]
 })");
 
   blink::InterestGroup interest_group = CreateInterestGroup();
@@ -1795,7 +1795,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateOnlyOwnOrigin) {
   // Both interest groups can share the same update logic and path (they just
   // use different origins).
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
@@ -1862,7 +1862,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   // All interest groups can share the same update logic and path (they just
   // use different origins).
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
@@ -1972,13 +1972,13 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
             "https://example.com/render");
 }
 
-// The `ads` field is valid, but the ad `renderUrl` field is an invalid
+// The `ads` field is valid, but the ad `renderURL` field is an invalid
 // URL. The entire update should get cancelled, since updates are atomic.
 TEST_F(AdAuctionServiceImplTest, UpdateInvalidFieldCancelsAllUpdates) {
   network_responder_->RegisterUpdateResponse(
       kUpdateUrlPath, base::StringPrintf(R"({
 "biddingLogicUrl": "%s/interest_group/new_bidding_logic.js",
-"ads": [{"renderUrl": "https://invalid^&",
+"ads": [{"renderURL": "https://invalid^&",
          "metadata": {"new_a": "b"}
         }]
 })",
@@ -2140,7 +2140,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidJSONIgnored) {
 // run in a separate process) crashing, so the update doesn't happen.
 TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
@@ -2205,7 +2205,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
 TEST_F(AdAuctionServiceImplTest, UpdateBlockedByContentBrowserClient) {
   NavigateAndCommit(kUrlNoUpdate);
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
@@ -2306,7 +2306,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateTimeout) {
 TEST_F(AdAuctionServiceImplTest,
        UpdateDuringInterestGroupExpirationNoDbMaintenence) {
   constexpr char kServerResponse[] = R"({
-"ads": [{"renderUrl": "https://example.com/new_render"}]
+"ads": [{"renderURL": "https://example.com/new_render"}]
 })";
   network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath);
 
@@ -2381,7 +2381,7 @@ TEST_F(AdAuctionServiceImplTest,
 TEST_F(AdAuctionServiceImplTest,
        UpdateDuringInterestGroupExpirationWithDbMaintenence) {
   constexpr char kServerResponse[] = R"({
-"ads": [{"renderUrl": "https://example.com/new_render"}]
+"ads": [{"renderURL": "https://example.com/new_render"}]
 })";
   network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath);
 
@@ -2493,7 +2493,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNeverFinishesBeforeDestruction) {
 // Join() time.
 TEST_F(AdAuctionServiceImplTest, DoesntChangeGroupsWithNoUpdateUrl) {
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
@@ -2528,7 +2528,7 @@ TEST_F(AdAuctionServiceImplTest, DoesntChangeGroupsWithNoUpdateUrl) {
 // stats shouldn't change.
 TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeBrowserSignals) {
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
   blink::InterestGroupKey originA_group_key(kOriginA, kInterestGroupName);
@@ -2589,7 +2589,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeBrowserSignals) {
 // Advance after time limit. Update should work.
 TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
@@ -2621,7 +2621,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
 
   // Change the update response and try updating again.
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
   UpdateInterestGroupNoFlush();
@@ -2713,7 +2713,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
 
   // Change the update response and try updating again.
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
   UpdateInterestGroupNoFlush();
@@ -2804,7 +2804,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
 
   // Change the update response and try updating again.
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
   UpdateInterestGroupNoFlush();
@@ -2895,7 +2895,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNotRateLimitedIfDisconnected) {
 
   // Change the update response and try updating again.
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
   UpdateInterestGroupNoFlush();
@@ -2931,7 +2931,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNotRateLimitedIfDisconnected) {
 TEST_F(AdAuctionServiceImplTest, DisconnectedAndSuccessInFlightTogether) {
   // Create 2 interest groups belonging to the same owner.
   const std::string kServerResponse1 = R"({
-"ads": [{"renderUrl": "https://example.com/new_render"}]
+"ads": [{"renderURL": "https://example.com/new_render"}]
 })";
   network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath);
 
@@ -2988,7 +2988,7 @@ TEST_F(AdAuctionServiceImplTest, DisconnectedAndSuccessInFlightTogether) {
 
   // Now, try to update both interest groups. Both should now succeed.
   const std::string kServerResponse2 = R"({
-"ads": [{"renderUrl": "https://example.com/new_render2"}]
+"ads": [{"renderURL": "https://example.com/new_render2"}]
 })";
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, kServerResponse1);
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath2, kServerResponse2);
@@ -3020,7 +3020,7 @@ TEST_F(AdAuctionServiceImplTest, DisconnectedAndSuccessInFlightTogether) {
 // Fire off many updates rapidly in a loop. Only one update should happen.
 TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedTightLoop) {
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
@@ -3066,16 +3066,16 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   // kOriginA's update will be deferred, whereas kOriginB's and kOriginC's
   // updates will be allowed to proceed immediately.
   constexpr char kServerResponseA[] = R"({
-"ads": [{"renderUrl": "https://example.com/new_render"}]
+"ads": [{"renderURL": "https://example.com/new_render"}]
 })";
   network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath);
 
   network_responder_->RegisterUpdateResponse(kUpdateUrlPathB, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
   network_responder_->RegisterUpdateResponse(kUpdateUrlPathC, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
@@ -3216,7 +3216,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatches) {
   manager_->set_max_parallel_updates_for_testing(2);
 
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
@@ -3291,7 +3291,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatchesWithFailuresAndTimeouts) {
   manager_->set_max_parallel_updates_for_testing(2);
 
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
   network_responder_->FailUpdateRequestWithError(kUpdateUrlPath2,
@@ -3402,12 +3402,12 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates) {
   // kOriginA's update will be deferred, whereas kOriginB's
   // update will be allowed to proceed immediately.
   constexpr char kServerResponseA[] = R"({
-"ads": [{"renderUrl": "https://example.com/new_render"}]
+"ads": [{"renderURL": "https://example.com/new_render"}]
 })";
   network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath);
 
   network_responder_->RegisterUpdateResponse(kUpdateUrlPathB, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
@@ -3508,7 +3508,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates) {
 
   // Now, try updating kOriginB. The update should complete successfully.
   network_responder_->RegisterUpdateResponse(kUpdateUrlPathB, R"({
-"ads": [{"renderUrl": "https://example.com/newer_render"
+"ads": [{"renderURL": "https://example.com/newer_render"
         }]
 })");
 
@@ -3546,12 +3546,12 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   // kOriginA's update will be deferred, whereas kOriginB's
   // update will be allowed to proceed immediately.
   constexpr char kServerResponseA[] = R"({
-"ads": [{"renderUrl": "https://example.com/new_render"}]
+"ads": [{"renderURL": "https://example.com/new_render"}]
 })";
   network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath);
 
   network_responder_->RegisterUpdateResponse(kUpdateUrlPathB, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
@@ -3669,7 +3669,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
 
   network_responder_->RegisterUpdateResponse(kUpdateUrlPathC, R"({
-"ads": [{"renderUrl": "https://example.com/newer_render"
+"ads": [{"renderURL": "https://example.com/newer_render"
         }]
 })");
   UpdateInterestGroupNoFlush();
@@ -3707,11 +3707,11 @@ TEST_F(AdAuctionServiceImplTest, UpdateCancellationTimerClearedOnCompletion) {
   manager_->set_max_update_round_duration_for_testing(kMaxUpdateRoundDuration);
 
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
   network_responder_->RegisterUpdateResponse(kUpdateUrlPathB, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
@@ -3822,7 +3822,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
   // update will be allowed to proceed immediately. The last group's update will
   // fail.
   constexpr char kServerResponse[] = R"({
-"ads": [{"renderUrl": "https://example.com/render2"}]
+"ads": [{"renderURL": "https://example.com/render2"}]
 })";
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, kServerResponse);
   network_responder_->FailUpdateRequestWithError(kUpdateUrlPath2,
@@ -3972,7 +3972,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
 
   // Now, try updating kOriginB. The update should complete successfully.
   network_responder_->RegisterUpdateResponse(kUpdateUrlPathB, R"({
-"ads": [{"renderUrl": "https://example.com/render3"
+"ads": [{"renderURL": "https://example.com/render3"
         }]
 })");
 
@@ -4188,7 +4188,7 @@ function scoreAd(
 )";
 
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
@@ -4247,7 +4247,7 @@ function scoreAd(
 )";
 
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
@@ -4298,7 +4298,7 @@ function generateBid(
 )";
 
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
@@ -4357,7 +4357,7 @@ function scoreAd(
 )";
 
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
@@ -4437,12 +4437,12 @@ function scoreAd(
 )";
 
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
   network_responder_->RegisterUpdateResponse(kUpdateUrlPathC, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
@@ -4551,12 +4551,12 @@ function scoreAd(
 )";
 
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
   network_responder_->RegisterUpdateResponse(kUpdateUrlPathC, R"({
-"ads": [{"renderUrl": "https://example.com/new_render"
+"ads": [{"renderURL": "https://example.com/new_render"
         }]
 })");
 
@@ -4676,7 +4676,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInterestGroupsAfterAuctionNoAds) {
 TEST_F(AdAuctionServiceImplTest, UpdateSupportsDeprecatedNames) {
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
     "ads": [{
-        "renderUrl": "https://example.com/new_render"
+        "renderURL": "https://example.com/new_render"
     }],
     "sellerCapabilities": {
         "*": ["interestGroupCounts", "latencyStats"]
@@ -4718,7 +4718,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateSupportsDeprecatedNames) {
 TEST_F(AdAuctionServiceImplTest, UpdateIgnoresUnknownEnumFields) {
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
     "ads": [{
-        "renderUrl": "https://example.com/new_render"
+        "renderURL": "https://example.com/new_render"
     }],
     "sellerCapabilities": {
         "https://example.test": ["non-valid-capability"]
@@ -4744,12 +4744,94 @@ TEST_F(AdAuctionServiceImplTest, UpdateIgnoresUnknownEnumFields) {
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
 
-  // The unknown enum values are ignored, and renderUrl is updated.
+  // The unknown enum values are ignored, and renderURL is updated.
   const auto& group = groups[0].interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             "https://example.com/new_render");
+}
+
+TEST_F(AdAuctionServiceImplTest, UpdateRenamedFields) {
+  blink::InterestGroup initial_interest_group = CreateInterestGroup();
+  initial_interest_group.update_url = kUpdateUrlA;
+  JoinInterestGroupAndFlush(initial_interest_group);
+
+  // Update priority (which is *not* being renamed) in addition to target field
+  // to update -- this way, if the update fails, the test can observe that
+  // priority wasn't updated.
+
+  blink::InterestGroup updated_interest_group_ads = CreateInterestGroup();
+  updated_interest_group_ads.update_url = kUpdateUrlA;
+  updated_interest_group_ads.priority = 1.0;
+  updated_interest_group_ads.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  updated_interest_group_ads.ads->emplace_back(std::move(ad));
+
+  blink::InterestGroup updated_interest_group_ad_components =
+      CreateInterestGroup();
+  updated_interest_group_ad_components.update_url = kUpdateUrlA;
+  updated_interest_group_ad_components.priority = 1.0;
+  updated_interest_group_ad_components.ad_components.emplace();
+  blink::InterestGroup::Ad ad_component(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  updated_interest_group_ad_components.ad_components->emplace_back(
+      std::move(ad_component));
+
+  struct TestCase {
+    const char* update_contents;
+    const blink::InterestGroup& expected_group;
+  } kTestCases[] = {
+      // ***
+      // ads renderURL
+      // ***
+      {R"("ads": [{"renderUrl": "https://example.com/render"}])",
+       updated_interest_group_ads},
+      {R"("ads": [{"renderUrl": "https://example.com/render",
+                 "renderURL": "https://example.com/render"}])",
+       updated_interest_group_ads},
+      {R"("ads": [{"renderUrl": "https://example.com/render",
+                 "renderURL": "https://example.com/render2"}])",
+       initial_interest_group},
+      {R"("ads": [{}])", initial_interest_group},
+      // ***
+      // adComponents renderURL
+      // ***
+      {R"("adComponents": [{"renderUrl": "https://example.com/render"}])",
+       updated_interest_group_ad_components},
+      {R"("adComponents": [{"renderUrl": "https://example.com/render",
+                 "renderURL": "https://example.com/render"}])",
+       updated_interest_group_ad_components},
+      {R"("adComponents": [{"renderUrl": "https://example.com/render",
+                 "renderURL": "https://example.com/render2"}])",
+       initial_interest_group},
+      {R"("adComponents": [{}])", initial_interest_group},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.update_contents);
+
+    network_responder_->RegisterUpdateResponse(
+        kUpdateUrlPath, base::StringPrintf(R"({
+    "priority": 1.0,
+    %s
+})",
+                                           test_case.update_contents));
+    UpdateInterestGroupNoFlush();
+    task_environment()->RunUntilIdle();
+
+    std::vector<StorageInterestGroup> groups =
+        GetInterestGroupsForOwner(kOriginA);
+    ASSERT_EQ(groups.size(), 1u);
+    EXPECT_TRUE(
+        groups[0].interest_group.IsEqualForTesting(test_case.expected_group));
+
+    // Reset for the next iteration.
+    JoinInterestGroupAndFlush(initial_interest_group);
+  }
 }
 
 // When sending reports, the next report request is feteched after the previous

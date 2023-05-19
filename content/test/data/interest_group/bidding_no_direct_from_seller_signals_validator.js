@@ -18,11 +18,11 @@ function generateBid(
   let result = {
     'ad': ad,
     'bid': 2,
-    'render': ad.renderUrl,
+    'render': ad.renderURL,
     'allowComponentAuction': allowComponentAuction
   };
   if (interestGroup.adComponents && interestGroup.adComponents[0])
-    result.adComponents = [interestGroup.adComponents[0].renderUrl];
+    result.adComponents = [interestGroup.adComponents[0].renderURL];
   return result;
 
 }

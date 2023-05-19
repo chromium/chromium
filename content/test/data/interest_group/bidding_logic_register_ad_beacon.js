@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Basic generate bid script that offers a bid of 1 using the first ad's
-// `renderUrl` and, if present, the first adComponent's `renderUrl`.
+// `renderURL` and, if present, the first adComponent's `renderURL`.
 function generateBid(interestGroup, auctionSignals, perBuyerSignals,
   trustedBiddingSignals, browserSignals) {
   const ad = interestGroup.ads[0];
@@ -14,11 +14,11 @@ function generateBid(interestGroup, auctionSignals, perBuyerSignals,
     auctionSignals.includes('bidderAllowsComponentAuction');
 
   let result = {
-    'ad': ad, 'bid': 1, 'render': ad.renderUrl,
+    'ad': ad, 'bid': 1, 'render': ad.renderURL,
     'allowComponentAuction': allowComponentAuction
   };
   if (interestGroup.adComponents && interestGroup.adComponents[0])
-    result.adComponents = [interestGroup.adComponents[0].renderUrl];
+    result.adComponents = [interestGroup.adComponents[0].renderURL];
   return result;
 }
 

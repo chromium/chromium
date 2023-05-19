@@ -397,8 +397,11 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsOneRequest) {
   ASSERT_TRUE(signals);
   EXPECT_FALSE(error_msg_.has_value());
   EXPECT_EQ(
-      R"({"renderUrl":{"https://foo.test/":1},")"
-      R"(adComponentRenderUrls":{"https://foosub.test/":2,)"
+      R"({"renderURL":{"https://foo.test/":1},)"
+      R"("renderUrl":{"https://foo.test/":1},)"
+      R"("adComponentRenderURLs":{"https://foosub.test/":2,)"
+      R"("https://barsub.test/":[3],"https://bazsub.test/":"4"},)"
+      R"("adComponentRenderUrls":{"https://foosub.test/":2,)"
       R"("https://barsub.test/":[3],"https://bazsub.test/":"4"}})",
       ExtractScoringSignals(signals.get(), kRenderUrl, kAdComponentRenderUrls));
 }
@@ -480,8 +483,11 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsSequentialRequests) {
           kRenderUrl1, kAdComponentRenderUrls1);
   ASSERT_TRUE(signals1);
   EXPECT_FALSE(error_msg_.has_value());
-  EXPECT_EQ(R"({"renderUrl":{"https://foo.test/":1},")"
-            R"(adComponentRenderUrls":{"https://foosub.test/":2,)"
+  EXPECT_EQ(R"({"renderURL":{"https://foo.test/":1},)"
+            R"("renderUrl":{"https://foo.test/":1},)"
+            R"("adComponentRenderURLs":{"https://foosub.test/":2,)"
+            R"("https://bazsub.test/":3},)"
+            R"("adComponentRenderUrls":{"https://foosub.test/":2,)"
             R"("https://bazsub.test/":3}})",
             ExtractScoringSignals(signals1.get(), kRenderUrl1,
                                   kAdComponentRenderUrls1));
@@ -506,8 +512,11 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsSequentialRequests) {
           kRenderUrl2, kAdComponentRenderUrls2);
   ASSERT_TRUE(signals2);
   EXPECT_FALSE(error_msg_.has_value());
-  EXPECT_EQ(R"({"renderUrl":{"https://bar.test/":4},")"
-            R"(adComponentRenderUrls":{"https://barsub.test/":5,)"
+  EXPECT_EQ(R"({"renderURL":{"https://bar.test/":4},)"
+            R"("renderUrl":{"https://bar.test/":4},)"
+            R"("adComponentRenderURLs":{"https://barsub.test/":5,)"
+            R"("https://bazsub.test/":6},)"
+            R"("adComponentRenderUrls":{"https://barsub.test/":5,)"
             R"("https://bazsub.test/":6}})",
             ExtractScoringSignals(signals2.get(), kRenderUrl2,
                                   kAdComponentRenderUrls2));
@@ -664,8 +673,11 @@ TEST_F(TrustedSignalsRequestManagerTest,
   run_loop1.Run();
   EXPECT_FALSE(error_msg1);
   ASSERT_TRUE(signals1);
-  EXPECT_EQ(R"({"renderUrl":{"https://foo.test/":1},")"
-            R"(adComponentRenderUrls":{"https://foosub.test/":2,)"
+  EXPECT_EQ(R"({"renderURL":{"https://foo.test/":1},)"
+            R"("renderUrl":{"https://foo.test/":1},)"
+            R"("adComponentRenderURLs":{"https://foosub.test/":2,)"
+            R"("https://bazsub.test/":3},)"
+            R"("adComponentRenderUrls":{"https://foosub.test/":2,)"
             R"("https://bazsub.test/":3}})",
             ExtractScoringSignals(signals1.get(), kRenderUrl1,
                                   kAdComponentRenderUrls1));
@@ -673,8 +685,11 @@ TEST_F(TrustedSignalsRequestManagerTest,
   run_loop2.Run();
   EXPECT_FALSE(error_msg2);
   ASSERT_TRUE(signals2);
-  EXPECT_EQ(R"({"renderUrl":{"https://bar.test/":4},")"
-            R"(adComponentRenderUrls":{"https://barsub.test/":5,)"
+  EXPECT_EQ(R"({"renderURL":{"https://bar.test/":4},)"
+            R"("renderUrl":{"https://bar.test/":4},)"
+            R"("adComponentRenderURLs":{"https://barsub.test/":5,)"
+            R"("https://bazsub.test/":6},)"
+            R"("adComponentRenderUrls":{"https://barsub.test/":5,)"
             R"("https://bazsub.test/":6}})",
             ExtractScoringSignals(signals2.get(), kRenderUrl2,
                                   kAdComponentRenderUrls2));
@@ -782,8 +797,11 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsBatchedRequests) {
   run_loop1.Run();
   EXPECT_FALSE(error_msg1);
   ASSERT_TRUE(signals1);
-  EXPECT_EQ(R"({"renderUrl":{"https://foo.test/":1},")"
-            R"(adComponentRenderUrls":{"https://foosub.test/":2,)"
+  EXPECT_EQ(R"({"renderURL":{"https://foo.test/":1},)"
+            R"("renderUrl":{"https://foo.test/":1},)"
+            R"("adComponentRenderURLs":{"https://foosub.test/":2,)"
+            R"("https://bazsub.test/":"4"},)"
+            R"("adComponentRenderUrls":{"https://foosub.test/":2,)"
             R"("https://bazsub.test/":"4"}})",
             ExtractScoringSignals(signals1.get(), kRenderUrl1,
                                   kAdComponentRenderUrls1));
@@ -791,8 +809,11 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsBatchedRequests) {
   run_loop2.Run();
   EXPECT_FALSE(error_msg2);
   ASSERT_TRUE(signals2);
-  EXPECT_EQ(R"({"renderUrl":{"https://bar.test/":[2]},")"
-            R"(adComponentRenderUrls":{"https://barsub.test/":[3],)"
+  EXPECT_EQ(R"({"renderURL":{"https://bar.test/":[2]},)"
+            R"("renderUrl":{"https://bar.test/":[2]},)"
+            R"("adComponentRenderURLs":{"https://barsub.test/":[3],)"
+            R"("https://bazsub.test/":"4"},)"
+            R"("adComponentRenderUrls":{"https://barsub.test/":[3],)"
             R"("https://bazsub.test/":"4"}})",
             ExtractScoringSignals(signals2.get(), kRenderUrl2,
                                   kAdComponentRenderUrls2));
@@ -800,7 +821,8 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsBatchedRequests) {
   run_loop3.Run();
   EXPECT_FALSE(error_msg3);
   ASSERT_TRUE(signals3);
-  EXPECT_EQ(R"({"renderUrl":{"https://foo.test/":1}})",
+  EXPECT_EQ(R"({"renderURL":{"https://foo.test/":1},)"
+            R"("renderUrl":{"https://foo.test/":1}})",
             ExtractScoringSignals(signals3.get(), kRenderUrl3,
                                   kAdComponentRenderUrls3));
 }
@@ -1209,8 +1231,11 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringExperimentGroupIds) {
   run_loop.Run();
   EXPECT_FALSE(error_msg) << *error_msg;
   ASSERT_TRUE(signals);
-  EXPECT_EQ(R"({"renderUrl":{"https://foo.test/":1},")"
-            R"(adComponentRenderUrls":{"https://foosub.test/":2,)"
+  EXPECT_EQ(R"({"renderURL":{"https://foo.test/":1},)"
+            R"("renderUrl":{"https://foo.test/":1},)"
+            R"("adComponentRenderURLs":{"https://foosub.test/":2,)"
+            R"("https://bazsub.test/":"4"},)"
+            R"("adComponentRenderUrls":{"https://foosub.test/":2,)"
             R"("https://bazsub.test/":"4"}})",
             ExtractScoringSignals(signals.get(), kRenderUrl1,
                                   kAdComponentRenderUrls1));

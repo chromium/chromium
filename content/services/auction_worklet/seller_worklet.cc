@@ -426,6 +426,29 @@ bool VerifySellerCurrency(
   return true;
 }
 
+// TODO(crbug.com/1441988): Remove this code after rename. These functions allow
+// having multiple dictionary keys (e.g. renderUrl and renderURL) share the same
+// V8 value.
+bool SetDictMember(v8::Isolate* isolate,
+                   v8::Local<v8::Object> object,
+                   const std::string& key,
+                   v8::Local<v8::Value> v8_value) {
+  v8::Maybe<bool> result = object->Set(isolate->GetCurrentContext(),
+                                       gin::StringToV8(isolate, key), v8_value);
+  return !result.IsNothing() && result.FromJust();
+}
+
+bool SetRenderUrl(v8::Isolate* isolate,
+                  v8::Local<v8::Object> object,
+                  const std::string& val) {
+  v8::Local<v8::Value> v8_value;
+  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
+    return false;
+  }
+  return SetDictMember(isolate, object, "renderURL", v8_value) &&
+         SetDictMember(isolate, object, "renderUrl", v8_value);
+}
+
 }  // namespace
 
 SellerWorklet::SellerWorklet(
@@ -810,8 +833,9 @@ void SellerWorklet::V8State::ScoreAd(
       !browser_signals_dict.Set(
           "interestGroupOwner",
           browser_signal_interest_group_owner.Serialize()) ||
-      !browser_signals_dict.Set("renderUrl",
-                                browser_signal_render_url.spec()) ||
+      // TODO(crbug.com/1441988): Remove deprecated `renderUrl` alias.
+      !SetRenderUrl(isolate, browser_signals,
+                    browser_signal_render_url.spec()) ||
       !browser_signals_dict.Set("biddingDurationMsec",
                                 browser_signal_bidding_duration_msecs) ||
       !browser_signals_dict.Set("bidCurrency",
@@ -1255,8 +1279,9 @@ void SellerWorklet::V8State::ReportResult(
        !browser_signals_dict.Set(
            "buyerAndSellerReportingId",
            *browser_signal_buyer_and_seller_reporting_id)) ||
-      !browser_signals_dict.Set("renderUrl",
-                                browser_signal_render_url.spec()) ||
+      // TODO(crbug.com/1441988): Remove deprecated `renderUrl` alias.
+      !SetRenderUrl(isolate, browser_signals,
+                    browser_signal_render_url.spec()) ||
       !browser_signals_dict.Set("bid", browser_signal_bid) ||
       !browser_signals_dict.Set(
           "bidCurrency",

@@ -265,7 +265,18 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     const base::Value::Dict* ads_dict = ads_value.GetIfDict();
     if (!ads_dict)
       return absl::nullopt;
-    const std::string* maybe_render_url = ads_dict->FindString("renderUrl");
+    const std::string* maybe_render_url = ads_dict->FindString("renderURL");
+    const std::string* maybe_render_url_deprecated =
+        ads_dict->FindString("renderUrl");
+    if (maybe_render_url_deprecated) {
+      if (maybe_render_url) {
+        if (*maybe_render_url != *maybe_render_url_deprecated) {
+          return absl::nullopt;
+        }
+      } else {
+        maybe_render_url = maybe_render_url_deprecated;
+      }
+    }
     if (!maybe_render_url)
       return absl::nullopt;
     blink::InterestGroup::Ad ad;

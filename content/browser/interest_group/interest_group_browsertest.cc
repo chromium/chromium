@@ -133,7 +133,7 @@ base::Value::List MakeAdsValue(
   base::Value::List list;
   for (const auto& ad : ads) {
     base::Value::Dict entry;
-    entry.Set("renderUrl", ad.render_url.spec());
+    entry.Set("renderURL", ad.render_url.spec());
     if (ad.size_group) {
       entry.Set("sizeGroup", std::move(ad.size_group.value()));
     }
@@ -2506,11 +2506,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           owner: $1,
           unsupportedField: 'In group',
           ads: [{
-            renderUrl: $2,
+            renderURL: $2,
             unsupportedField: 'In ad',
             }],
           adComponents: [{
-            renderUrl: $2,
+            renderURL: $2,
             unsupportedField: 'In ad component',
             }]
         },
@@ -3112,7 +3112,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ(
       base::StringPrintf(
           "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
-          "ad renderUrl 'https://invalid^&' for AuctionAdInterestGroup with "
+          "ad renderURL 'https://invalid^&' for AuctionAdInterestGroup with "
           "owner '%s' and name 'cars' cannot be resolved to a valid URL.",
           origin_string.c_str()),
       EvalJs(shell(), JsReplace(R"(
@@ -3122,7 +3122,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         {
           name: 'cars',
           owner: $1,
-          ads: [{renderUrl:"https://invalid^&"}],
+          ads: [{renderURL:"https://invalid^&"}],
         },
         /*joinDurationSec=*/1);
   } catch (e) {
@@ -3158,7 +3158,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         {
           name: 'cars',
           owner: $1,
-          ads: [{renderUrl:"https://test.com", metadata:x}],
+          ads: [{renderURL:"https://test.com", metadata:x}],
         },
         /*joinDurationSec=*/1);
   } catch (e) {
@@ -3216,7 +3216,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         {
           name: 'cars',
           owner: $1,
-          ads: [{renderUrl: "https://test.com", sizeGroup: ""}],
+          ads: [{renderURL: "https://test.com", sizeGroup: ""}],
         },
         /*joinDurationSec=*/1);
   } catch (e) {
@@ -3249,7 +3249,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         {
           name: 'cars',
           owner: $1,
-          ads: [{renderUrl: "https://test.com", sizeGroup: "nonexistent"}],
+          ads: [{renderURL: "https://test.com", sizeGroup: "nonexistent"}],
         },
         /*joinDurationSec=*/1);
   } catch (e) {
@@ -3283,7 +3283,7 @@ IN_PROC_BROWSER_TEST_F(
         {
           name: 'cars',
           owner: $1,
-          ads: [{renderUrl: "https://test.com", sizeGroup: "nonexistent"}],
+          ads: [{renderURL: "https://test.com", sizeGroup: "nonexistent"}],
           adSizes: {"size_1": {"width": "50px", "height": "50px"}},
           sizeGroups: {"group_1": ["size_1"]},
         },
@@ -3317,7 +3317,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         {
           name: 'cars',
           owner: $1,
-          ads: [{renderUrl: "https://test.com", sizeGroup: "group_1"}],
+          ads: [{renderURL: "https://test.com", sizeGroup: "group_1"}],
           sizeGroups: {"group_1": ["nonexistent"]},
         },
         /*joinDurationSec=*/1);
@@ -3350,7 +3350,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         {
           name: 'cars',
           owner: $1,
-          adComponents: [{renderUrl: "https://test.com", sizeGroup: ""}],
+          adComponents: [{renderURL: "https://test.com", sizeGroup: ""}],
         },
         /*joinDurationSec=*/1);
   } catch (e) {
@@ -3384,7 +3384,7 @@ IN_PROC_BROWSER_TEST_F(
         {
           name: 'cars',
           owner: $1,
-          adComponents: [{renderUrl: "https://test.com", sizeGroup: "nonexistent"}],
+          adComponents: [{renderURL: "https://test.com", sizeGroup: "nonexistent"}],
         },
         /*joinDurationSec=*/1);
   } catch (e) {
@@ -3418,7 +3418,7 @@ IN_PROC_BROWSER_TEST_F(
         {
           name: 'cars',
           owner: $1,
-          adComponents: [{renderUrl: "https://test.com", sizeGroup: "nonexistent"}],
+          adComponents: [{renderURL: "https://test.com", sizeGroup: "nonexistent"}],
           adSizes: {"size_1": {"width": "50px", "height": "50px"}},
           sizeGroups: {"group_1": ["size_1"]},
         },
@@ -3452,7 +3452,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         {
           name: 'cars',
           owner: $1,
-          adComponents: [{renderUrl: "https://test.com", sizeGroup: "group_1"}],
+          adComponents: [{renderURL: "https://test.com", sizeGroup: "group_1"}],
           sizeGroups: {"group_1": ["nonexistent"]},
         },
         /*joinDurationSec=*/1);
@@ -3628,6 +3628,110 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 })())",
                                 origin_string.c_str())));
   WaitForAccessObserved({});
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupRenamedFields) {
+  const GURL kAdUrl("https://example.com/render");
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  url::Origin origin = url::Origin::Create(url);
+  std::string origin_string = origin.Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  const blink::InterestGroup kExpectedGroupAds =
+      blink::TestInterestGroupBuilder(/*owner=*/origin, /*name=*/"cars")
+          .SetAds({{{kAdUrl, /*metadata=*/absl::nullopt}}})
+          .Build();
+
+  const blink::InterestGroup kExpectedGroupAdComponents =
+      blink::TestInterestGroupBuilder(/*owner=*/origin, /*name=*/"cars")
+          .SetAdComponents({{{kAdUrl, /*metadata=*/absl::nullopt}}})
+          .Build();
+
+  struct TestCases {
+    const char* join_dict_contents;
+    const char* result;
+    const absl::optional<blink::InterestGroup> expected_group;
+  } kTestCases[] = {
+      // ***
+      // ads renderURL
+      // ***
+      {R"(ads: [{renderUrl: 'https://example.com/render'}])", "done",
+       kExpectedGroupAds},
+      {R"(ads: [{renderUrl: 'https://example.com/render',
+                 renderURL: 'https://example.com/render'}])",
+       "done", kExpectedGroupAds},
+      {R"(ads: [{renderUrl: 'https://example.com/render',
+                 renderURL: 'https://example.com/render2'}])",
+       "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': ad "
+       "renderUrl doesn't have the same value as ad renderURL ("
+       "'https://example.com/render' vs 'https://example.com/render2')",
+       absl::nullopt},
+      {R"(ads: [{}])",
+       "TypeError: Failed to execute 'joinAdInterestGroup' on "
+       "'Navigator': Missing required field ad renderURL",
+       absl::nullopt},
+      // ***
+      // adComponents renderURL
+      // ***
+      {R"(adComponents: [{renderUrl: 'https://example.com/render'}])", "done",
+       kExpectedGroupAdComponents},
+      {R"(adComponents: [{renderUrl: 'https://example.com/render',
+                 renderURL: 'https://example.com/render'}])",
+       "done", kExpectedGroupAdComponents},
+      {R"(adComponents: [{renderUrl: 'https://example.com/render',
+                 renderURL: 'https://example.com/render2'}])",
+       "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': ad "
+       "component renderUrl doesn't have the same value as ad component "
+       "renderURL ('https://example.com/render' vs "
+       "'https://example.com/render2')",
+       absl::nullopt},
+      {R"(adComponents: [{}])",
+       "TypeError: Failed to execute 'joinAdInterestGroup' on "
+       "'Navigator': Missing required field ad component renderURL",
+       absl::nullopt},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.join_dict_contents);
+    EXPECT_EQ(
+        test_case.result,
+        EvalJs(shell(), base::StringPrintf(R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: '%s',
+          %s
+        },
+        /*joinDurationSec=*/1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                                           origin_string.c_str(),
+                                           test_case.join_dict_contents)));
+
+    // Check that the database has also been updated.
+    absl::optional<StorageInterestGroup> maybe_interest_group =
+        GetInterestGroup(/*owner=*/origin,
+                         /*name=*/"cars");
+    if (test_case.expected_group) {
+      ASSERT_TRUE(maybe_interest_group);
+      maybe_interest_group->interest_group.expiry =
+          test_case.expected_group->expiry;
+      EXPECT_TRUE(maybe_interest_group->interest_group.IsEqualForTesting(
+          *test_case.expected_group));
+    } else {
+      EXPECT_FALSE(maybe_interest_group);
+    }
+
+    // Cleanup between runs.
+    EXPECT_EQ(kSuccess, LeaveInterestGroupAndVerify(/*owner=*/origin,
+                                                    /*name=*/"cars"));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionInvalidSeller) {
@@ -8681,9 +8785,9 @@ if (JSON.stringify(adComponents[2].metadata) !== '["3",{"4":"five"}]') {
 return {
   ad: 'ad',
   bid: 1,
-  render: interestGroup.ads[0].renderUrl,
-  adComponents: [interestGroup.adComponents[0].renderUrl,
-                 interestGroup.adComponents[2].renderUrl]
+  render: interestGroup.ads[0].renderURL,
+  adComponents: [interestGroup.adComponents[0].renderURL,
+                 interestGroup.adComponents[2].renderURL]
 };
   )";
   GURL bidding_url =
@@ -9495,7 +9599,7 @@ function generateBid(
   validatePerBuyerSignals(perBuyerSignals);
   validateTrustedBiddingSignals(trustedBiddingSignals);
   const ad = interestGroup.ads[0];
-  return {'ad': ad, 'bid': 1, 'render': ad.renderUrl};
+  return {'ad': ad, 'bid': 1, 'render': ad.renderURL};
 }
 
 function validateInterestGroup(interestGroup) {
@@ -9541,7 +9645,9 @@ function scoreAd(
 function validateAdMetadata(adMetadata) {
   const adMetadataJSON = JSON.stringify(adMetadata);
   if (adMetadataJSON !==
-      '{"renderUrl":"https://example.com/render","metadata":2}')
+      '{"renderURL":"https://example.com/render",' +
+      '"renderUrl":"https://example.com/render",' +
+      '"metadata":2}')
     throw 'Wrong adMetadata ' + adMetadataJSON;
 }
 
@@ -9582,7 +9688,7 @@ function validateAuctionConfig(auctionConfig) {
           trustedBiddingSignalsKeys: ['key1'],
           biddingLogicUrl: $3,
           userBiddingSignals: 1,
-          ads: [{renderUrl:"https://example.com/render", metadata:2}],
+          ads: [{renderURL:"https://example.com/render", metadata:2}],
         },
         /*joinDurationSec=*/1);
   } catch (e) {
@@ -9641,7 +9747,7 @@ function generateBid(
   if (perBuyerSignals !== 5)
     throw 'Wrong perBuyerSignals ' + JSON.stringify(perBuyerSignals);
   const ad = interestGroup.ads[0];
-  return {'ad': ad, 'bid': 1, 'render': ad.renderUrl};
+  return {'ad': ad, 'bid': 1, 'render': ad.renderURL};
 }
 
 function validateAuctionSignals(auctionSignals) {
@@ -9698,7 +9804,7 @@ function validateAuctionConfig(auctionConfig) {
           name: 'cars',
           owner: $1,
           biddingLogicUrl: $2,
-          ads: [{renderUrl:"https://example.com/render", metadata:2}],
+          ads: [{renderURL:"https://example.com/render", metadata:2}],
         },
         /*joinDurationSec=*/100);
   } catch (e) {
@@ -9758,7 +9864,7 @@ function generateBid(
     unusedBrowserSignals) {
   validateAuctionSignals(auctionSignals);
   const ad = interestGroup.ads[0];
-  return {'ad': ad, 'bid': 1, 'render': ad.renderUrl};
+  return {'ad': ad, 'bid': 1, 'render': ad.renderURL};
 }
 
 function validateAuctionSignals(auctionSignals) {
@@ -9803,7 +9909,7 @@ function validateAuctionConfig(auctionConfig) {
           name: 'cars',
           owner: $1,
           biddingLogicUrl: $2,
-          ads: [{renderUrl:"https://example.com/render", metadata:2}],
+          ads: [{renderURL:"https://example.com/render", metadata:2}],
         },
         /*joinDurationSec=*/100);
   } catch (e) {
@@ -9863,7 +9969,7 @@ function generateBid(
   const ad = interestGroup.ads[0];
   if (perBuyerSignals !== null)
     throw 'perBuyerSignals in generateBid not null!';
-  return {'ad': ad, 'bid': 1, 'render': ad.renderUrl};
+  return {'ad': ad, 'bid': 1, 'render': ad.renderURL};
 }
 
 function validateAuctionSignals(auctionSignals) {
@@ -9940,7 +10046,7 @@ function validateDirectFromSellerSignals(directFromSellerSignals) {
           name: 'cars',
           owner: $1,
           biddingLogicUrl: $2,
-          ads: [{renderUrl:"https://example.com/render", metadata:2}],
+          ads: [{renderURL:"https://example.com/render", metadata:2}],
         },
         /*joinDurationSec=*/100);
   } catch (e) {
@@ -10009,7 +10115,7 @@ function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     unusedBrowserSignals) {
   const ad = interestGroup.ads[0];
-  return {'ad': ad, 'bid': 1, 'render': ad.renderUrl};
+  return {'ad': ad, 'bid': 1, 'render': ad.renderURL};
 }
 
 )";
@@ -10084,7 +10190,7 @@ function validatePerBuyerCumulativeTimeouts(perBuyerCumulativeTimeouts) {
           name: 'cars',
           owner: $1,
           biddingLogicUrl: $2,
-          ads: [{renderUrl:"https://example.com/render", metadata:2}],
+          ads: [{renderURL:"https://example.com/render", metadata:2}],
         },
         /*joinDurationSec=*/100);
   } catch (e) {
@@ -10172,7 +10278,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Update) {
   "%s/interest_group/new_trusted_bidding_signals_url.json",
 "trustedBiddingSignalsKeys": ["new_key"],
 "executionMode": "group-by-origin",
-"ads": [{"renderUrl": "%s/new_ad_render_url",
+"ads": [{"renderURL": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
         }]
 })",
@@ -10260,7 +10366,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedDailyUpdateUrl) {
   "%s/interest_group/new_trusted_bidding_signals_url.json",
 "trustedBiddingSignalsKeys": ["new_key"],
 "executionMode": "groupByOrigin",
-"ads": [{"renderUrl": "%s/new_ad_render_url",
+"ads": [{"renderURL": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
         }]
 })",
@@ -10350,7 +10456,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   "%s/interest_group/new_trusted_bidding_signals_url.json",
 "trustedBiddingSignalsKeys": ["new_key"],
 "executionMode": "groupByOrigin",
-"ads": [{"renderUrl": "%s/new_ad_render_url",
+"ads": [{"renderURL": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
         }]
 })",
@@ -10429,7 +10535,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   constexpr char kUpdateUrlPath[] = "/interest_group/update_partial.json";
   network_responder_->RegisterNetworkResponse(
       kUpdateUrlPath, base::StringPrintf(R"({
-"ads": [{"renderUrl": "%s/new_ad_render_url",
+"ads": [{"renderURL": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
         }]
 })",
@@ -11343,7 +11449,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupLocalNetworkBrowserTest,
   constexpr char kUpdatePath[] = "/interest_group/update_partial_a.json";
   constexpr char kUpdateResponse[] = R"(
 {
-"ads": [{"renderUrl": "https://example.com/render2"
+"ads": [{"renderURL": "https://example.com/render2"
         }]
 })";
   // The server JSON updates the ads only. Both update URLs use the same path,

@@ -131,7 +131,7 @@ class InterestGroupPermissionsBrowserTest : public InProcessBrowserTest {
               trustedBiddingSignalsKeys: ['key1'],
               userBiddingSignals: {some: 'json', data: {here: [1, 2, 3]}},
               ads: [{
-                renderUrl: $4,
+                renderURL: $4,
                 metadata: {ad: 'metadata', here: [1, 2, 3]},
               }],
             },

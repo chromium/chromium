@@ -359,6 +359,21 @@ String ErrorInvalidAuctionConfigUint128(const AuctionAdConfig& config,
                         config.seller().Utf8().c_str(), error.Utf8().c_str());
 }
 
+String ErrorRenameMismatch(const String& old_field_name,
+                           const String& old_field_value,
+                           const String& new_field_name,
+                           const String& new_field_value) {
+  return String::Format(
+      "%s doesn't have the same value as %s ('%s' vs '%s')",
+      old_field_name.Utf8().c_str(), new_field_name.Utf8().c_str(),
+      old_field_value.Utf8().c_str(), new_field_value.Utf8().c_str());
+}
+
+String ErrorMissingRequired(const String& required_field_name) {
+  return String::Format("Missing required field %s",
+                        required_field_name.Utf8().c_str());
+}
+
 String WarningPermissionsPolicy(const String& feature, const String& api) {
   return String::Format(
       "In the future, Permissions Policy feature %s will not be enabled by "
@@ -696,10 +711,10 @@ bool CopyAdsFromIdlToMojo(const ExecutionContext& context,
   output.ads.emplace();
   for (const auto& ad : input.ads()) {
     auto mojo_ad = mojom::blink::InterestGroupAd::New();
-    KURL render_url = context.CompleteURL(ad->renderUrl());
+    KURL render_url = context.CompleteURL(ad->renderURL());
     if (!render_url.IsValid()) {
       exception_state.ThrowTypeError(
-          ErrorInvalidInterestGroup(input, "ad renderUrl", ad->renderUrl(),
+          ErrorInvalidInterestGroup(input, "ad renderURL", ad->renderURL(),
                                     "cannot be resolved to a valid URL."));
       return false;
     }
@@ -738,10 +753,10 @@ bool CopyAdComponentsFromIdlToMojo(const ExecutionContext& context,
   output.ad_components.emplace();
   for (const auto& ad : input.adComponents()) {
     auto mojo_ad = mojom::blink::InterestGroupAd::New();
-    KURL render_url = context.CompleteURL(ad->renderUrl());
+    KURL render_url = context.CompleteURL(ad->renderURL());
     if (!render_url.IsValid()) {
       exception_state.ThrowTypeError(
-          ErrorInvalidInterestGroup(input, "ad renderUrl", ad->renderUrl(),
+          ErrorInvalidInterestGroup(input, "ad renderURL", ad->renderURL(),
                                     "cannot be resolved to a valid URL."));
       return false;
     }
@@ -2040,6 +2055,68 @@ void RecordCommonFledgeUseCounters(Document* document) {
   }
 }
 
+// Several dictionary members are being renamed -- to maintain compatibility
+// with existing scripts, both the new names and the old names will need to be
+// supported for a time before support for the older names are dropped.
+//
+// If both names are supplied, they must have the same value (this allows
+// scripts to be compatible with newer and older browsers).
+//
+// Some fields that were "required" in WebIDL also get checked -- during the
+// rename, these fields aren't marked as required in WebIDL, but at least one
+// of the old or new name versions must be specified.
+bool HandleOldDictNames(AuctionAdInterestGroup* group,
+                        ExceptionState& exception_state) {
+  if (group->hasAds()) {
+    for (auto& ad : group->ads()) {
+      if (ad->hasRenderUrlDeprecated()) {
+        if (ad->hasRenderURL()) {
+          if (ad->renderURL() != ad->renderUrlDeprecated()) {
+            exception_state.ThrowTypeError(ErrorRenameMismatch(
+                /*old_field_name=*/"ad renderUrl",
+                /*old_field_value=*/ad->renderUrlDeprecated(),
+                /*new_field_name=*/"ad renderURL",
+                /*new_field_value=*/ad->renderURL()));
+            return false;
+          }
+        } else {
+          ad->setRenderURL(ad->renderUrlDeprecated());
+        }
+      }
+      if (!ad->hasRenderURL()) {
+        exception_state.ThrowTypeError(ErrorMissingRequired("ad renderURL"));
+        return false;
+      }
+    }
+  }
+
+  if (group->hasAdComponents()) {
+    for (auto& ad : group->adComponents()) {
+      if (ad->hasRenderUrlDeprecated()) {
+        if (ad->hasRenderURL()) {
+          if (ad->renderURL() != ad->renderUrlDeprecated()) {
+            exception_state.ThrowTypeError(ErrorRenameMismatch(
+                /*old_field_name=*/"ad component renderUrl",
+                /*old_field_value=*/ad->renderUrlDeprecated(),
+                /*new_field_name=*/"ad component renderURL",
+                /*new_field_value=*/ad->renderURL()));
+            return false;
+          }
+        } else {
+          ad->setRenderURL(ad->renderUrlDeprecated());
+        }
+      }
+      if (!ad->hasRenderURL()) {
+        exception_state.ThrowTypeError(
+            ErrorMissingRequired("ad component renderURL"));
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
 }  // namespace
 
 NavigatorAuction::AuctionHandle::JsonResolved::JsonResolved(
@@ -2352,10 +2429,16 @@ const char NavigatorAuction::kSupplementName[] = "NavigatorAuction";
 
 ScriptPromise NavigatorAuction::joinAdInterestGroup(
     ScriptState* script_state,
-    const AuctionAdInterestGroup* group,
+    AuctionAdInterestGroup* mutable_group,
     double duration_seconds,
     ExceptionState& exception_state) {
   const ExecutionContext* context = ExecutionContext::From(script_state);
+
+  // TODO(crbug.com/1441988): Remove this code after rename is complete.
+  if (!HandleOldDictNames(mutable_group, exception_state)) {
+    return ScriptPromise();
+  }
+  const AuctionAdInterestGroup* group = mutable_group;
 
   auto mojo_group = mojom::blink::InterestGroup::New();
   mojo_group->expiry = base::Time::Now() + base::Seconds(duration_seconds);
@@ -2459,7 +2542,7 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
 ScriptPromise NavigatorAuction::joinAdInterestGroup(
     ScriptState* script_state,
     Navigator& navigator,
-    const AuctionAdInterestGroup* group,
+    AuctionAdInterestGroup* group,
     double duration_seconds,
     ExceptionState& exception_state) {
   if (!navigator.DomWindow()) {

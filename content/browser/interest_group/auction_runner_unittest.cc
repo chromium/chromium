@@ -218,7 +218,7 @@ std::string MakeBidScript(const url::Origin& seller,
   constexpr char kBidScript[] = R"(
     const seller = "%s";
     const bid = %s;
-    const renderUrl = "%s";
+    const renderURL = "%s";
     const numAdComponents = %i;
     const interestGroupOwner = "%s";
     const interestGroupName = "%s";
@@ -236,17 +236,17 @@ std::string MakeBidScript(const url::Origin& seller,
                          trustedBiddingSignals, browserSignals) {
       let result = {ad: {"bidKey": "data for " + bid,
                          "groupName": interestGroupName,
-                         "renderUrl": "data for " + renderUrl,
+                         "renderURL": "data for " + renderURL,
                          "seller": seller},
                     bid: bid,
                     bidCurrency: 'USD',
-                    render: renderUrl,
+                    render: renderURL,
                     // Only need to allow component auction participation when
                     // `topLevelSeller` is populated.
                     allowComponentAuction: "topLevelSeller" in browserSignals};
       if (interestGroup.adComponents) {
-        result.adComponents = [interestGroup.adComponents[0].renderUrl];
-        result.ad.adComponentsUrl = interestGroup.adComponents[0].renderUrl;
+        result.adComponents = [interestGroup.adComponents[0].renderURL];
+        result.ad.adComponentsUrl = interestGroup.adComponents[0].renderURL;
       }
 
       if (interestGroup.name !== interestGroupName)
@@ -262,7 +262,7 @@ std::string MakeBidScript(const url::Origin& seller,
         throw new Error("Unexpected updateUrl");
       if (interestGroup.ads.length != 1)
         throw new Error("wrong interestGroup.ads length");
-      if (interestGroup.ads[0].renderUrl != renderUrl)
+      if (interestGroup.ads[0].renderURL != renderURL)
         throw new Error("wrong interestGroup.ads URL");
       if (numAdComponents == 0) {
         if (interestGroup.adComponents !== undefined)
@@ -271,9 +271,9 @@ std::string MakeBidScript(const url::Origin& seller,
         if (interestGroup.adComponents.length !== numAdComponents)
           throw new Error("Wrong adComponents length");
         for (let i = 0; i < numAdComponents; ++i) {
-          if (interestGroup.adComponents[i].renderUrl !=
-              renderUrl.slice(0, -1) + "-component" + (i+1) + ".com/") {
-            throw new Error("Wrong adComponents renderUrl");
+          if (interestGroup.adComponents[i].renderURL !=
+              renderURL.slice(0, -1) + "-component" + (i+1) + ".com/") {
+            throw new Error("Wrong adComponents renderURL");
           }
         }
       }
@@ -376,8 +376,8 @@ std::string MakeBidScript(const url::Origin& seller,
         throw new Error("wrong topWindowHostname");
       if (sellerSignals.interestGroupOwner !== interestGroupOwner)
         throw new Error("wrong interestGroupOwner");
-      if (sellerSignals.renderUrl !== renderUrl)
-        throw new Error("wrong renderUrl");
+      if (sellerSignals.renderURL !== renderURL)
+        throw new Error("wrong renderURL");
       if (sellerSignals.bid !== bid) {
         throw new Error("wrong bid, bidder:" + bid +
                         " seller:" + sellerSignals.bid);
@@ -419,8 +419,8 @@ std::string MakeBidScript(const url::Origin& seller,
       if (browserSignals.interestGroupOwner !== interestGroupOwner)
         throw new Error("wrong browserSignals.interestGroupOwner");
 
-      if (browserSignals.renderUrl !== renderUrl)
-        throw new Error("wrong browserSignals.renderUrl");
+      if (browserSignals.renderURL !== renderURL)
+        throw new Error("wrong browserSignals.renderURL");
       if (browserSignals.bid !== bid)
         throw new Error("wrong browserSignals.bid");
       if (browserSignals.seller != seller)
@@ -504,14 +504,14 @@ std::string MakeFilteringBidScript(int bid) {
       let result = {
         ad: {},
         bid: %d,
-        render: interestGroup.ads[0].renderUrl,
+        render: interestGroup.ads[0].renderURL,
         allowComponentAuction: true
       };
 
       if (interestGroup.adComponents) {
         result.adComponents = [
-          interestGroup.ads[0].renderUrl + "1",
-          interestGroup.ads[0].renderUrl + "2",
+          interestGroup.ads[0].renderURL + "1",
+          interestGroup.ads[0].renderURL + "2",
         ];
       }
 
@@ -592,10 +592,10 @@ std::string MakeDecisionScript(
         throw new Error("wrong data for bid:" +
                         JSON.stringify(adMetadata) + "/" + bid);
       }
-      if (adMetadata.renderUrl !== ("data for " + browserSignals.renderUrl)) {
-        throw new Error("wrong data for renderUrl:" +
+      if (adMetadata.renderURL !== ("data for " + browserSignals.renderURL)) {
+        throw new Error("wrong data for renderURL:" +
                         JSON.stringify(adMetadata) + "/" +
-                        browserSignals.renderUrl);
+                        browserSignals.renderURL);
       }
       let components = browserSignals.adComponents;
       if (adMetadata.adComponentsUrl) {
@@ -939,7 +939,7 @@ std::string MakeBidScriptSupportsTie() {
       forDebuggingOnly.reportAdAuctionWin(
           debugWinReportUrl + postAuctionSignalsPlaceholder + '&bid=' + bid);
       return {ad: [], bid: bid, bidCurrency: 'USD',
-              render: interestGroup.ads[0].renderUrl};
+              render: interestGroup.ads[0].renderURL};
     }
     function reportWin(
         auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
@@ -3815,7 +3815,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency) {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: 2 + 1000 * inBid,
       });
-      return {bid: inBid, render: interestGroup.ads[0].renderUrl,
+      return {bid: inBid, render: interestGroup.ads[0].renderURL,
               allowComponentAuction: true};
     }
 
@@ -3992,7 +3992,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionMixedCurrency2) {
         bucket: {baseValue: 'highest-scoring-other-bid'},
         value: 2 + 1000 * inBid,
       });
-      return {bid: inBid, render: interestGroup.ads[0].renderUrl,
+      return {bid: inBid, render: interestGroup.ads[0].renderURL,
               allowComponentAuction: true};
     }
 
@@ -4180,7 +4180,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionCurrencyPassThrough) {
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
       return {bid: inBid, bidCurrency: 'USD',
-              render: interestGroup.ads[0].renderUrl,
+              render: interestGroup.ads[0].renderURL,
               allowComponentAuction: true};
     }
 
@@ -4245,7 +4245,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionCurrencyPassThroughCheck) {
             "https://loss.example.com/?rejectReason=${rejectReason}&bid=" +
             inBid);
       return {bid: inBid, bidCurrency: 'USD',
-              render: interestGroup.ads[0].renderUrl,
+              render: interestGroup.ads[0].renderURL,
               allowComponentAuction: true};
     }
 
@@ -4522,7 +4522,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionAcceptsBidRejectsBid) {
   const char kBidder1Script[] = R"(
       function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                            trustedBiddingSignals, browserSignals) {
-        return {bid: 1, render: interestGroup.ads[0].renderUrl,
+        return {bid: 1, render: interestGroup.ads[0].renderURL,
                 allowComponentAuction: true};
       }
 
@@ -4533,7 +4533,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionAcceptsBidRejectsBid) {
   const char kBidder2Script[] = R"(
       function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                            trustedBiddingSignals, browserSignals) {
-        return {bid: 2, render: interestGroup.ads[0].renderUrl,
+        return {bid: 2, render: interestGroup.ads[0].renderURL,
                 allowComponentAuction: true};
       }
   )";
@@ -4669,7 +4669,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionNoTopLevelReportResultSignals) {
       function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                            trustedBiddingSignals, browserSignals) {
         privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
-        return {ad: [], bid: 2, render: interestGroup.ads[0].renderUrl,
+        return {ad: [], bid: 2, render: interestGroup.ads[0].renderURL,
                 allowComponentAuction: true};
       }
 
@@ -4789,7 +4789,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionModifiesBid) {
   const char kBidScript[] = R"(
       function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                            trustedBiddingSignals, browserSignals) {
-        return {ad: [], bid: 2, render: interestGroup.ads[0].renderUrl,
+        return {ad: [], bid: 2, render: interestGroup.ads[0].renderURL,
                 allowComponentAuction: true};
       }
 
@@ -6318,12 +6318,12 @@ TEST_F(AuctionRunnerTest, TrustedScoringSignals) {
       kBidder2SignalsJson);
 
   // scoreAd() that only accepts bids where the scoring signals of the
-  // `renderUrl` is "accept".
+  // `renderURL` is "accept".
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          std::string(R"(
 function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                  browserSignals) {
-  let signal = trustedScoringSignals.renderUrl[browserSignals.renderUrl];
+  let signal = trustedScoringSignals.renderUrl[browserSignals.renderURL];
   if (browserSignals.dataVersion !== 2) {
     throw new Error(`wrong dataVersion (${browserSignals.dataVersion})`);
   }
@@ -8547,7 +8547,7 @@ TEST_F(AuctionRunnerTest, ReusedBidderWorkletBatchesSignalsRequests) {
       return {
         ad: 0,
         bid: trustedBiddingSignals['key' + interestGroup.name],
-        render: interestGroup.ads[0].renderUrl
+        render: interestGroup.ads[0].renderURL
       };
     }
 
@@ -9603,7 +9603,7 @@ TEST_F(AuctionRunnerTest, BadBid) {
           base::TimeDelta(),
       },
 
-      // HTTPS render URL that's not in the list of allowed renderUrls.
+      // HTTPS render URL that's not in the list of allowed renderURLs.
       {
           "Bid render ad must have a valid URL and size (if specified)",
           1,
@@ -11894,7 +11894,7 @@ TEST_F(AuctionRunnerTest, PrivateAggregationRequestForEventContributionEvents) {
           'arbitrary', {bucket: 100n, value: 200});
       privateAggregation.reportContributionForEvent(
           'click', {bucket: 101n, value: 201});
-      return {bid: bid, render: interestGroup.ads[0].renderUrl};
+      return {bid: bid, render: interestGroup.ads[0].renderURL};
     }
 
     function reportWin(
@@ -12034,7 +12034,7 @@ TEST_F(AuctionRunnerTest,
         bucket: {baseValue: 'bid-reject-reason', offset: 0n},
         value: 3 + 100 * bid,
       });
-      return {bid: bid, render: interestGroup.ads[0].renderUrl};
+      return {bid: bid, render: interestGroup.ads[0].renderURL};
     }
 
     function reportWin(
@@ -12203,7 +12203,7 @@ TEST_F(AuctionRunnerTest,
         bucket: {baseValue: 'bid-reject-reason', offset: 0n},
         value: 3 + 100 * bid,
       });
-      return {bid: bid, render: interestGroup.ads[0].renderUrl};
+      return {bid: bid, render: interestGroup.ads[0].renderURL};
     }
 
     function reportWin(
@@ -12369,7 +12369,7 @@ TEST_F(AuctionRunnerTest,
         bucket: BigInt(3 + 100 * bid),
         value: {baseValue: 'bid-reject-reason', offset: 0},
       });
-      return {bid: bid, render: interestGroup.ads[0].renderUrl};
+      return {bid: bid, render: interestGroup.ads[0].renderURL};
     }
 
     function reportWin(
@@ -12509,7 +12509,7 @@ TEST_F(AuctionRunnerTest,
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
       reportContributionForEvent();
-      return {bid: bid, render: interestGroup.ads[0].renderUrl};
+      return {bid: bid, render: interestGroup.ads[0].renderURL};
     }
 
     function reportWin(
@@ -13674,7 +13674,7 @@ TEST_P(CostRoundingTest, AdCostPassed) {
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
       return {bid: bid,
-              render: interestGroup.ads[0].renderUrl,
+              render: interestGroup.ads[0].renderURL,
               adCost: bid + 1};
     }
 
@@ -13720,7 +13720,7 @@ TEST_P(CostRoundingTest, AdCostRounded) {
         browserSignals) {
       // Return an adCost that requires more bits of precision than allowed.
       return {bid: bid,
-              render: interestGroup.ads[0].renderUrl,
+              render: interestGroup.ads[0].renderURL,
               adCost: bid};
     }
 
@@ -13787,7 +13787,7 @@ TEST_P(CostRoundingTest, AdCostExponentTruncated) {
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
       // Return an adCost that requires more bits of exponent than allowed.
-      return {bid: bid, render: interestGroup.ads[0].renderUrl, adCost: 2**256};
+      return {bid: bid, render: interestGroup.ads[0].renderURL, adCost: 2**256};
     }
 
     function reportWin(
@@ -13852,7 +13852,7 @@ TEST_F(AuctionRunnerTest, ModelingSignalsPassed) {
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
       return {bid: 1,
-              render: interestGroup.ads[0].renderUrl,
+              render: interestGroup.ads[0].renderURL,
               modelingSignals: 0xF23};
     }
 
@@ -13907,7 +13907,7 @@ TEST_F(AuctionRunnerTest, ModelingSignalsNotPresent) {
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
       return {bid: 1,
-              render: interestGroup.ads[0].renderUrl};
+              render: interestGroup.ads[0].renderURL};
     }
 
     function reportWin(
@@ -13970,7 +13970,7 @@ TEST_F(AuctionRunnerTest, JoinCountPassedToReportWin) {
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
       return {bid: 1,
-              render: interestGroup.ads[0].renderUrl};
+              render: interestGroup.ads[0].renderURL};
     }
 
     function reportWin(
@@ -14053,7 +14053,7 @@ TEST_F(AuctionRunnerTest, RecencyPassed) {
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
       return {bid: 1,
-              render: interestGroup.ads[0].renderUrl};
+              render: interestGroup.ads[0].renderURL};
     }
 
     function reportWin(
@@ -14109,7 +14109,7 @@ TEST_P(BidRoundingTest, BidRounded) {
         browserSignals) {
       // Return a bid that requires more bits of precision than allowed.
       return {bid: %f,
-              render: interestGroup.ads[0].renderUrl};
+              render: interestGroup.ads[0].renderURL};
     }
 
     function reportWin(
@@ -14174,7 +14174,7 @@ TEST_P(BidRoundingTest, HighestScoringOtherBidRounded) {
         browserSignals) {
       // Return a bid that requires more bits of precision than allowed.
       return {bid: %f,
-              render: interestGroup.ads[0].renderUrl};
+              render: interestGroup.ads[0].renderURL};
     }
 
     function reportWin(
@@ -14261,7 +14261,7 @@ TEST_P(ScoreRoundingTest, ScoreRounded) {
         browserSignals) {
       // Return an score that requires more bits of precision than allowed.
       return {bid: %f,
-              render: interestGroup.ads[0].renderUrl};
+              render: interestGroup.ads[0].renderURL};
     }
 
     function reportWin(
@@ -16240,7 +16240,7 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           'https://bidder1-debug-win-reporting.com/?reason=${rejectReason}');
       return {
         bid: 1,
-        render: interestGroup.ads[0].renderUrl
+        render: interestGroup.ads[0].renderURL
       };
     }
 
@@ -16257,7 +16257,7 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           'https://bidder2-debug-win-reporting.com/?reason=${rejectReason}');
       return {
         bid: 2,
-        render: interestGroup.ads[0].renderUrl
+        render: interestGroup.ads[0].renderURL
       };
     }
 
@@ -16328,7 +16328,7 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           'https://bidder-debug-loss-reporting.com/?reason=${rejectReason}');
       return {
         bid: 1,
-        render: interestGroup.ads[0].renderUrl
+        render: interestGroup.ads[0].renderURL
       };
     }
 
@@ -17286,7 +17286,7 @@ TEST_P(AuctionRunnerKAnonTest, DifferentBids) {
                           trustedBiddingSignals, browserSignals) {
         return {ad: {},
                 bid: interestGroup.ads.length,
-                render: interestGroup.ads.pop().renderUrl,
+                render: interestGroup.ads.pop().renderURL,
                 allowComponentAuction: true};
       }
   )";
@@ -17411,7 +17411,7 @@ TEST_P(AuctionRunnerKAnonTest, FailureHandling) {
                            trustedBiddingSignals, browserSignals) {
         return {ad: {},
                 bid: interestGroup.ads.length,
-                render: interestGroup.ads.pop().renderUrl,
+                render: interestGroup.ads.pop().renderURL,
                 allowComponentAuction: true};
       }
   )";

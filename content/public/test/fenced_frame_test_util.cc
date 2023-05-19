@@ -140,7 +140,7 @@ void FencedFrameTestHelper::NavigateFencedFrameUsingFledge(
         name: 'testAd1',
         owner: page_origin,
         biddingLogicUrl: bidding_url,
-        ads: [{renderUrl: $1, bid: 1}],
+        ads: [{renderURL: $1, bid: 1}],
       };
 
       // Pick an arbitrarily high duration to guarantee that we never leave the

@@ -129,6 +129,15 @@ function validateAuctionConfig(auctionConfig) {
 }
 
 function validateTrustedScoringSignals(signals) {
+  if (signals.renderURL["https://example.com/render"] !== "foo") {
+    throw 'Wrong trustedScoringSignals.renderURL ' +
+        signals.renderURL["https://example.com/render"];
+  }
+  if (signals.adComponentRenderURLs["https://example.com/render-component"] !==
+      1) {
+    throw 'Wrong trustedScoringSignals.adComponentRenderURLs ' +
+        signals.adComponentRenderURLs["https://example.com/render-component"];
+  }
   if (signals.renderUrl["https://example.com/render"] !== "foo") {
     throw 'Wrong trustedScoringSignals.renderUrl ' +
         signals.renderUrl["https://example.com/render"];
@@ -151,12 +160,14 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
     throw 'Wrong componentSeller ' + browserSignals.componentSeller;
   if (!browserSignals.interestGroupOwner.startsWith('https://a.test'))
     throw 'Wrong interestGroupOwner ' + browserSignals.interestGroupOwner;
+  if (browserSignals.renderURL !== "https://example.com/render")
+    throw 'Wrong renderURL ' + browserSignals.renderURL;
   if (browserSignals.renderUrl !== "https://example.com/render")
     throw 'Wrong renderUrl ' + browserSignals.renderUrl;
 
   // Fields that vary by method.
   if (isScoreAd) {
-    if (Object.keys(browserSignals).length !== 8) {
+    if (Object.keys(browserSignals).length !== 9) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
@@ -170,7 +181,7 @@ function validateBrowserSignals(browserSignals, isScoreAd) {
     if (browserSignals.bidCurrency !== 'CAD')
       throw 'Wrong bidCurrency ' + browserSignals.bidCurrency;
   } else {
-    if (Object.keys(browserSignals).length !== 10) {
+    if (Object.keys(browserSignals).length !== 11) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }

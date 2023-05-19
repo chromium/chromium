@@ -6,7 +6,10 @@
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#12-interest-group-attributes
 
 dictionary AuctionAd {
-  required USVString renderUrl;
+  /* required */ USVString renderURL;
+  // TODO(crbug.com/1446741): Add DeprecatedAs when supported.
+  [ImplementedAs=renderUrlDeprecated]
+  USVString renderUrl;
   USVString sizeGroup;
   USVString buyerReportingId;
   USVString buyerAndSellerReportingId;

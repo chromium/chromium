@@ -20,8 +20,8 @@ function generateBid(
       'adCost': 3,
       'bidCurrency':
           interestGroup.owner.startsWith("https://a.test") ? 'USD' : 'CAD',
-      'render': ad.renderUrl,
-      'adComponents': [interestGroup.adComponents[0].renderUrl]
+      'render': ad.renderURL,
+      'adComponents': [interestGroup.adComponents[0].renderURL]
   };
 }
 
@@ -109,6 +109,8 @@ function validateInterestGroup(interestGroup) {
 
   if (interestGroup.ads.length !== 1)
     throw 'Wrong ads.length ' + interestGroup.ads.length;
+  if (interestGroup.ads[0].renderURL !== 'https://example.com/render')
+    throw 'Wrong ads[0].renderURL ' + interestGroup.ads[0].renderURL;
   if (interestGroup.ads[0].renderUrl !== 'https://example.com/render')
     throw 'Wrong ads[0].renderUrl ' + interestGroup.ads[0].renderUrl;
   const adMetadataJSON = JSON.stringify(interestGroup.ads[0].metadata);
@@ -117,6 +119,11 @@ function validateInterestGroup(interestGroup) {
 
   if (interestGroup.adComponents.length !== 1)
     throw 'Wrong adComponents.length ' + interestGroup.adComponents.length;
+  if (interestGroup.adComponents[0].renderURL !==
+        'https://example.com/render-component') {
+    throw 'Wrong adComponents[0].renderURL ' +
+        interestGroup.adComponents[0].renderURL;
+  }
   if (interestGroup.adComponents[0].renderUrl !==
         'https://example.com/render-component') {
     throw 'Wrong adComponents[0].renderUrl ' +
@@ -182,7 +189,7 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
     if (browserSignals.prevWins.length !== 0)
       throw 'Wrong prevWins ' + JSON.stringify(browserSignals.prevWins);
   } else {
-    if (Object.keys(browserSignals).length !== 13) {
+    if (Object.keys(browserSignals).length !== 14) {
       throw 'Wrong number of browser signals fields ' +
           JSON.stringify(browserSignals);
     }
@@ -190,6 +197,8 @@ function validateBrowserSignals(browserSignals, isGenerateBid) {
       throw 'Wrong interestGroupOwner ' + browserSignals.interestGroupOwner;
     if (browserSignals.interestGroupName !== 'cars')
       throw 'Wrong interestGroupName ' + browserSignals.interestGroupName;
+    if (browserSignals.renderURL !== "https://example.com/render")
+      throw 'Wrong renderURL ' + browserSignals.renderURL;
     if (browserSignals.renderUrl !== "https://example.com/render")
       throw 'Wrong renderUrl ' + browserSignals.renderUrl;
     if (browserSignals.bid !== 2)
