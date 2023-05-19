@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
@@ -30,6 +31,7 @@ import java.util.Set;
  * AwBrowserContext instance, so at this point the class mostly exists for conceptual clarity.
  */
 @JNINamespace("android_webview")
+@Lifetime.Profile
 public class AwBrowserContext implements BrowserContextHandle {
     private static final String CHROMIUM_PREFS_NAME = "WebViewProfilePrefsDefault";
 
