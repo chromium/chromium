@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//device/vr/buildflags/buildflags.gni")
+import("//media/media_options.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/webrtc/webrtc.gni")
@@ -631,10 +632,11 @@ source_set("browser_sources") {
   }
 
   if (is_linux || is_chromeos) {
-    sources += [
-      "stable_video_decoder_factory.h",
-      "zygote_host/zygote_host_linux.h",
-    ]
+    sources += [ "zygote_host/zygote_host_linux.h" ]
+  }
+
+  if (allow_oop_video_decoder) {
+    sources += [ "stable_video_decoder_factory.h" ]
     public_deps += [ "//media/mojo/mojom/stable:stable_video_decoder" ]
   }
 

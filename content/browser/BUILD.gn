@@ -2381,7 +2381,6 @@ source_set("browser") {
       "font_access/font_enumeration_data_source_linux.h",
       "font_service.cc",
       "font_service.h",
-      "media/stable_video_decoder_factory.cc",
       "media/video_encode_accelerator_provider_launcher.cc",
       "media/video_encode_accelerator_provider_launcher.h",
       "memory/swap_metrics_driver_impl_linux.cc",
@@ -2400,9 +2399,13 @@ source_set("browser") {
       "//components/crash/content/browser/error_reporting",
       "//components/services/font:lib",
       "//content/common:sandbox_support_linux",
-      "//media/mojo/mojom/stable:stable_video_decoder",
       "//third_party/blink/public/mojom:memory_usage_monitor_linux_mojo_bindings",
     ]
+  }
+
+  if (allow_oop_video_decoder) {
+    sources += [ "media/stable_video_decoder_factory.cc" ]
+    deps += [ "//media/mojo/mojom/stable:stable_video_decoder" ]
   }
 
   if (is_chromeos) {

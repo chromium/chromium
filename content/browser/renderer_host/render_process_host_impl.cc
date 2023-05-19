@@ -226,8 +226,11 @@
 #include "third_party/blink/public/mojom/memory_usage_monitor_linux.mojom.h"  // nogncheck
 
 #include "content/browser/media/video_encode_accelerator_provider_launcher.h"
-#include "content/public/browser/stable_video_decoder_factory.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
+#endif
+
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+#include "content/public/browser/stable_video_decoder_factory.h"
 #endif
 
 #if BUILDFLAG(IS_APPLE)
