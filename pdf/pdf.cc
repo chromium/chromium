@@ -59,8 +59,6 @@ std::vector<uint8_t> CreateFlattenedPdf(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
-// TODO(crbug.com/1440430): Make sure its callers set
-// `g_use_skia_renderer_enabled_by_policy` before calling this function.
 bool RenderPDFPageToDC(base::span<const uint8_t> pdf_buffer,
                        int page_index,
                        HDC dc,
@@ -92,8 +90,6 @@ void SetPDFUsePrintMode(int mode) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-// TODO(crbug.com/1440430): Make sure its callers set
-// `g_use_skia_renderer_enabled_by_policy` before calling this function.
 bool GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
                    int* page_count,
                    float* max_page_width) {

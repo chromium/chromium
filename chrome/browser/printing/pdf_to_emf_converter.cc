@@ -32,6 +32,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/emf_win.h"
 #include "printing/pdf_render_settings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserThread;
 
@@ -69,6 +70,7 @@ class PdfConverterImpl : public PdfConverter {
  public:
   PdfConverterImpl(scoped_refptr<base::RefCountedMemory> data,
                    const PdfRenderSettings& conversion_settings,
+                   const absl::optional<bool>& use_skia,
                    StartCallback start_callback);
 
   PdfConverterImpl(const PdfConverterImpl&) = delete;
@@ -135,6 +137,8 @@ class PdfConverterImpl : public PdfConverter {
 
   const PdfRenderSettings settings_;
 
+  absl::optional<bool> use_skia_;
+
   // Document loaded callback.
   PdfConverter::StartCallback start_callback_;
 
@@ -197,8 +201,11 @@ bool PostScriptMetaFile::SafePlayback(HDC hdc) const {
 
 PdfConverterImpl::PdfConverterImpl(scoped_refptr<base::RefCountedMemory> data,
                                    const PdfRenderSettings& settings,
+                                   const absl::optional<bool>& use_skia,
                                    StartCallback start_callback)
-    : settings_(settings), start_callback_(std::move(start_callback)) {
+    : settings_(settings),
+      use_skia_(use_skia),
+      start_callback_(std::move(start_callback)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(start_callback_);
 
@@ -248,6 +255,9 @@ void PdfConverterImpl::OnPageCount(
   pdf_to_emf_converter_.set_disconnect_handler(base::BindOnce(
       &PdfConverterImpl::OnFailed, weak_ptr_factory_.GetWeakPtr(),
       std::string("Connection to PdfToEmfConverter error.")));
+  if (use_skia_) {
+    pdf_to_emf_converter_->SetUseSkiaRendererPolicy(*use_skia_);
+  }
   std::move(start_callback_).Run(page_count);
   page_count_ = page_count;
 }
@@ -376,8 +386,9 @@ PdfConverter::~PdfConverter() = default;
 std::unique_ptr<PdfConverter> PdfConverter::StartPdfConverter(
     scoped_refptr<base::RefCountedMemory> data,
     const PdfRenderSettings& conversion_settings,
+    const absl::optional<bool>& use_skia,
     StartCallback start_callback) {
-  return std::make_unique<PdfConverterImpl>(data, conversion_settings,
+  return std::make_unique<PdfConverterImpl>(data, conversion_settings, use_skia,
                                             std::move(start_callback));
 }
 
