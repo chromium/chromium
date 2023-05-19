@@ -303,6 +303,9 @@ Style notes:
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_CAST_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for cast settings accessed through the cast feature pod.">
         Cast Settings
       </message>
+      <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_HOTSPOT_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for hotspot settings accessed through the hotspot feature pod.">
+        Hotspot Settings
+      </message>
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_IME_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for IME settings accessed through the IME feature pod.">
         Input Methods Settings
       </message>

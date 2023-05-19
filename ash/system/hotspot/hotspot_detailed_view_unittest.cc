@@ -190,7 +190,7 @@ TEST_F(HotspotDetailedViewTest, HotspotEnabledUI) {
   AssertEntryRowEnabled(/*expected_enabled=*/true);
   AssertToggleOn(/*expected_toggle_on=*/true);
   views::ImageView* extra_icon = GetExtraIcon();
-  EXPECT_FALSE(extra_icon);
+  EXPECT_FALSE(extra_icon->GetVisible());
 
   UpdateHotspotView(HotspotState::kEnabled, HotspotAllowStatus::kAllowed, 1);
   AssertSubtextLabel(u"1 device connected");
@@ -208,7 +208,7 @@ TEST_F(HotspotDetailedViewTest, HotspotEnablingUI) {
   AssertEntryRowEnabled(/*expected_enabled=*/false);
   AssertToggleOn(/*expected_toggle_on=*/true);
   views::ImageView* extra_icon = GetExtraIcon();
-  EXPECT_FALSE(extra_icon);
+  EXPECT_FALSE(extra_icon->GetVisible());
 }
 
 TEST_F(HotspotDetailedViewTest, HotspotDisablingUI) {
@@ -220,7 +220,7 @@ TEST_F(HotspotDetailedViewTest, HotspotDisablingUI) {
   AssertEntryRowEnabled(/*expected_enabled=*/false);
   AssertToggleOn(/*expected_toggle_on=*/false);
   views::ImageView* extra_icon = GetExtraIcon();
-  EXPECT_FALSE(extra_icon);
+  EXPECT_FALSE(extra_icon->GetVisible());
 }
 
 TEST_F(HotspotDetailedViewTest, HotspotDisabledAndAllowedUI) {
@@ -232,7 +232,7 @@ TEST_F(HotspotDetailedViewTest, HotspotDisabledAndAllowedUI) {
   AssertEntryRowEnabled(/*expected_enabled=*/true);
   AssertToggleOn(/*expected_toggle_on=*/false);
   views::ImageView* extra_icon = GetExtraIcon();
-  EXPECT_FALSE(extra_icon);
+  EXPECT_FALSE(extra_icon->GetVisible());
 }
 
 TEST_F(HotspotDetailedViewTest, HotspotDisabledAndNoMobileNetworkUI) {
@@ -245,7 +245,7 @@ TEST_F(HotspotDetailedViewTest, HotspotDisabledAndNoMobileNetworkUI) {
   AssertEntryRowEnabled(/*expected_enabled=*/false);
   AssertToggleOn(/*expected_toggle_on=*/false);
   views::ImageView* extra_icon = GetExtraIcon();
-  EXPECT_FALSE(extra_icon);
+  EXPECT_FALSE(extra_icon->GetVisible());
 }
 
 TEST_F(HotspotDetailedViewTest,
@@ -256,12 +256,12 @@ TEST_F(HotspotDetailedViewTest,
   ASSERT_TRUE(hotspot_detailed_view_);
   AssertTextLabel(kHotspotTitle);
   AssertSubtextLabel(std::u16string());
-  views::ImageView* extra_icon = GetExtraIcon();
-  ASSERT_TRUE(extra_icon);
-  EXPECT_EQ(u"Your mobile network doesn't support hotspot",
-            extra_icon->GetTooltipText());
   AssertEntryRowEnabled(/*expected_enabled=*/false);
   AssertToggleOn(/*expected_toggle_on=*/false);
+  views::ImageView* extra_icon = GetExtraIcon();
+  EXPECT_TRUE(extra_icon->GetVisible());
+  EXPECT_EQ(u"Your mobile network doesn't support hotspot",
+            extra_icon->GetTooltipText());
 }
 
 TEST_F(HotspotDetailedViewTest, HotspotDisabledAndBlockedByPolicyUI) {
@@ -271,12 +271,12 @@ TEST_F(HotspotDetailedViewTest, HotspotDisabledAndBlockedByPolicyUI) {
   ASSERT_TRUE(hotspot_detailed_view_);
   AssertTextLabel(kHotspotTitle);
   AssertSubtextLabel(std::u16string());
-  views::ImageView* extra_icon = GetExtraIcon();
-  ASSERT_TRUE(extra_icon);
-  EXPECT_EQ(u"This setting is managed by your administrator",
-            extra_icon->GetTooltipText());
   AssertEntryRowEnabled(/*expected_enabled=*/false);
   AssertToggleOn(/*expected_toggle_on=*/false);
+  views::ImageView* extra_icon = GetExtraIcon();
+  EXPECT_TRUE(extra_icon->GetVisible());
+  EXPECT_EQ(u"This setting is managed by your administrator",
+            extra_icon->GetTooltipText());
 }
 
 TEST_F(HotspotDetailedViewTest, PressingEntryRowNotifiesDelegate) {

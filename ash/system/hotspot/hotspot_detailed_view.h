@@ -55,6 +55,7 @@ class ASH_EXPORT HotspotDetailedView : public TrayDetailedView {
   void CreateExtraTitleRowButtons() override;
 
  private:
+  friend class HotspotDetailedViewControllerTest;
   friend class HotspotDetailedViewTest;
 
   // Used for testing. Starts at 1 because view IDs should not be 0.
@@ -85,7 +86,6 @@ class ASH_EXPORT HotspotDetailedView : public TrayDetailedView {
   void UpdateSubText(const hotspot_config::mojom::HotspotInfoPtr& hotspot_info);
   void UpdateExtraIcon(
       const hotspot_config::mojom::HotspotAllowStatus& allow_status);
-  void RemoveExtraIcon();
 
   const raw_ptr<Delegate, ExperimentalAsh> delegate_;
 

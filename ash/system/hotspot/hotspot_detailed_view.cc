@@ -133,6 +133,12 @@ void HotspotDetailedView::CreateContainer() {
   toggle_ = toggle.get();
   entry_row_->AddRightView(toggle.release());
 
+  auto extra_icon = std::make_unique<views::ImageView>();
+  extra_icon->SetVisible(false);
+  extra_icon->SetID(static_cast<int>(HotspotDetailedViewChildId::kExtraIcon));
+  extra_icon_ = extra_icon.get();
+  entry_row_->AddAdditionalRightView(extra_icon.release());
+
   // Allow the row to be taller than a typical tray menu item.
   entry_row_->SetExpandable(true);
   entry_row_->tri_view()->SetInsets(kToggleRowTriViewInsets);
@@ -156,6 +162,7 @@ void HotspotDetailedView::UpdateToggleState(
     const HotspotState& state,
     const HotspotAllowStatus& allow_status) {
   toggle_->SetIsOn(IsEnabledOrEnabling(state));
+
   bool enabled = !IsIntermediateState(state) &&
                  allow_status == HotspotAllowStatus::kAllowed;
   entry_row_->SetEnabled(enabled);
@@ -227,20 +234,11 @@ void HotspotDetailedView::UpdateExtraIcon(
     const HotspotAllowStatus& allow_status) {
   if (allow_status == HotspotAllowStatus::kAllowed ||
       allow_status == HotspotAllowStatus::kDisallowedNoMobileData) {
-    RemoveExtraIcon();
+    extra_icon_->SetVisible(false);
     return;
   }
 
-  if (!extra_icon_) {
-    std::unique_ptr<views::ImageView> extra_icon(
-        TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false));
-    extra_icon->SetBackground(
-        views::CreateSolidBackground(SK_ColorTRANSPARENT));
-    extra_icon->SetID(static_cast<int>(HotspotDetailedViewChildId::kExtraIcon));
-    extra_icon_ = extra_icon.get();
-    entry_row_->AddAdditionalRightView(extra_icon.release());
-  }
-
+  extra_icon_->SetVisible(true);
   bool use_managed_icon =
       allow_status == HotspotAllowStatus::kDisallowedByPolicy;
   extra_icon_->SetImage(ui::ImageModel::FromVectorIcon(
@@ -250,13 +248,6 @@ void HotspotDetailedView::UpdateExtraIcon(
       use_managed_icon
           ? IDS_ASH_HOTSPOT_DETAILED_VIEW_INFO_TOOLTIP_PROHIBITED_BY_POLICY
           : IDS_ASH_HOTSPOT_DETAILED_VIEW_INFO_TOOLTIP_MOBILE_DATA_NOT_SUPPORTED));
-}
-
-void HotspotDetailedView::RemoveExtraIcon() {
-  if (extra_icon_ && extra_icon_->parent()) {
-    extra_icon_->parent()->RemoveChildView(extra_icon_);
-    extra_icon_ = nullptr;
-  }
 }
 
 BEGIN_METADATA(HotspotDetailedView, TrayDetailedView)
