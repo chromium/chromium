@@ -19,7 +19,7 @@ import {getShortcutProvider} from './mojo_interface_provider.js';
 import {mojoString16ToString} from './mojo_utils.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorSource, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
-import {areAcceleratorsEqual, createEmptyAcceleratorInfo, getAccelerator, getModifiersForAcceleratorInfo, isCustomizationDisabled, isFunctionKey} from './shortcut_utils.js';
+import {areAcceleratorsEqual, createEmptyAcceleratorInfo, getAccelerator, getModifiersForAcceleratorInfo, isCategoryLocked, isCustomizationDisabled, isFunctionKey} from './shortcut_utils.js';
 
 export interface AcceleratorViewElement {
   $: {
@@ -439,7 +439,11 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   }
 
   private shouldShowLockIcon(): boolean {
-    if (isCustomizationDisabled()) {
+    // Do not show lock icon in each row if customization is disabled or its
+    // category is locked.
+    if (isCustomizationDisabled() ||
+        isCategoryLocked(this.lookupManager.getAcceleratorCategory(
+            this.source, this.action))) {
       return false;
     }
 

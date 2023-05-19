@@ -61,7 +61,8 @@
       </div>
     </template>
     <template is="dom-if" if="[[isTextLayout(layoutStyle)]]">
-      <text-accelerator parts="[[getTextAcceleratorParts(acceleratorInfos)]]">
+      <text-accelerator parts="[[getTextAcceleratorParts(acceleratorInfos)]]"
+          action="[[action]]" source="[[source]]">
       </text-accelerator>
     </template>
   </td>

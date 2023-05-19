@@ -6,7 +6,8 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CycleTabsTextSearchResult, SnapWindowLeftSearchResult, TakeScreenshotSearchResult} from 'chrome://shortcut-customization/js/fake_data.js';
+import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
+import {CycleTabsTextSearchResult, fakeAcceleratorConfig, fakeLayoutInfo, SnapWindowLeftSearchResult, TakeScreenshotSearchResult} from 'chrome://shortcut-customization/js/fake_data.js';
 import {InputKeyElement} from 'chrome://shortcut-customization/js/input_key.js';
 import {mojoString16ToString} from 'chrome://shortcut-customization/js/mojo_utils.js';
 import {getBoldedDescription} from 'chrome://shortcut-customization/js/search/search_result_bolding.js';
@@ -27,8 +28,19 @@ function initSearchResultRowElement(): SearchResultRowElement {
 
 suite('searchResultRowTest', function() {
   let searchResultRowElement: SearchResultRowElement|null = null;
+  let manager: AcceleratorLookupManager|null = null;
+
+  setup(() => {
+    // Set up manager.
+    manager = AcceleratorLookupManager.getInstance();
+    manager.setAcceleratorLookup(fakeAcceleratorConfig);
+    manager.setAcceleratorLayoutLookup(fakeLayoutInfo);
+  });
 
   teardown(() => {
+    if (manager) {
+      manager.reset();
+    }
     if (searchResultRowElement) {
       searchResultRowElement.remove();
     }

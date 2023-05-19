@@ -10,6 +10,7 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/js/accelerator_edit_view.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
@@ -150,6 +151,7 @@ suite('shortcutCustomizationAppTest', function() {
   }
 
   test('LoadFakeWindowsAndDesksPage', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: true});
     page = initShortcutCustomizationAppElement();
     await flushTasks();
 
@@ -178,6 +180,13 @@ suite('shortcutCustomizationAppTest', function() {
     assertEquals(
         page.i18n(getSubcategoryNameStringId(expectedSecondSubcat)),
         actualSubsections[1]!.title);
+    // Assert no lock icon displayed next to subsection title under
+    // WindowsAndDesks category.
+    for (const subsection of actualSubsections) {
+      const lockIcon = strictQuery(
+          '.lock-icon-container', subsection.shadowRoot, HTMLDivElement);
+      assertFalse(isVisible(lockIcon));
+    }
     // Assert 2 accelerators are loaded for the second subcategory.
     assertEquals(
         (expectedLayouts!.get(expectedSecondSubcat) as LayoutInfo[]).length,
@@ -185,6 +194,7 @@ suite('shortcutCustomizationAppTest', function() {
   });
 
   test('LoadFakeBrowserPage', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: true});
     page = initShortcutCustomizationAppElement();
     await flushTasks();
 
@@ -210,6 +220,13 @@ suite('shortcutCustomizationAppTest', function() {
     assertEquals(
         page.i18n(getSubcategoryNameStringId(keyIterator.value)),
         actualSubsections[0]!.title);
+    // Assert lock icon displayed next to every subcategories under Browser
+    // category.
+    for (const subsection of actualSubsections) {
+      const lockIcon = subsection!.shadowRoot!.querySelector(
+                           '.lock-icon-container') as IronIconElement;
+      assertTrue(isVisible(lockIcon));
+    }
     // Assert only 1 accelerator is within this subsection.
     assertEquals(
         (expectedLayouts!.get(keyIterator.value) as LayoutInfo[]).length,
@@ -516,6 +533,9 @@ suite('shortcutCustomizationAppTest', function() {
   });
 
   test('DisableDefaultAccelerator', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    manager!.setAcceleratorLookup(fakeAcceleratorConfig);
+    manager!.setAcceleratorLayoutLookup(fakeLayoutInfo);
     page = initShortcutCustomizationAppElement();
     await flushTasks();
 

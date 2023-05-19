@@ -9,7 +9,8 @@ import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_too
 import {IronDropdownElement} from 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CycleTabsTextSearchResult, fakeSearchResults, TakeScreenshotSearchResult} from 'chrome://shortcut-customization/js/fake_data.js';
+import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
+import {CycleTabsTextSearchResult, fakeAcceleratorConfig, fakeLayoutInfo, fakeSearchResults, TakeScreenshotSearchResult} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutSearchHandler} from 'chrome://shortcut-customization/js/search/fake_shortcut_search_handler.js';
 import {SearchBoxElement} from 'chrome://shortcut-customization/js/search/search_box.js';
 import {SearchResultRowElement} from 'chrome://shortcut-customization/js/search/search_result_row.js';
@@ -26,15 +27,24 @@ suite('searchBoxTest', function() {
   let resultsListElement: IronListElement|null = null;
 
   let handler: FakeShortcutSearchHandler;
+  let manager: AcceleratorLookupManager|null = null;
 
   setup(() => {
     // Set up SearchHandler.
     handler = new FakeShortcutSearchHandler();
     handler.setFakeSearchResult(fakeSearchResults);
     setShortcutSearchHandlerForTesting(handler);
+
+    // Set up manager.
+    manager = AcceleratorLookupManager.getInstance();
+    manager.setAcceleratorLookup(fakeAcceleratorConfig);
+    manager.setAcceleratorLayoutLookup(fakeLayoutInfo);
   });
 
   teardown(() => {
+    if (manager) {
+      manager.reset();
+    }
     if (searchBoxElement) {
       searchBoxElement.remove();
     }

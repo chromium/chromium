@@ -8,7 +8,9 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {AcceleratorRowElement} from 'chrome://shortcut-customization/js/accelerator_row.js';
+import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {InputKeyElement} from 'chrome://shortcut-customization/js/input_key.js';
 import {stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
 import {AcceleratorSource, AcceleratorState, LayoutStyle, Modifier, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
@@ -27,8 +29,19 @@ export function initAcceleratorRowElement(): AcceleratorRowElement {
 
 suite('acceleratorRowTest', function() {
   let rowElement: AcceleratorRowElement|null = null;
+  let manager: AcceleratorLookupManager|null = null;
+
+  setup(() => {
+    // Set up manager.
+    manager = AcceleratorLookupManager.getInstance();
+    manager.setAcceleratorLookup(fakeAcceleratorConfig);
+    manager.setAcceleratorLayoutLookup(fakeLayoutInfo);
+  });
 
   teardown(() => {
+    if (manager) {
+      manager.reset();
+    }
     if (rowElement) {
       rowElement.remove();
     }
@@ -102,7 +115,8 @@ suite('acceleratorRowTest', function() {
 
     rowElement.acceleratorInfos = accelerators;
     rowElement.description = description;
-    rowElement.source = AcceleratorSource.kBrowser;
+    rowElement.source = AcceleratorSource.kAsh;
+    rowElement.action = 0;
     rowElement.layoutStyle = LayoutStyle.kDefault;
 
     let showDialogListenerCalled = false;
@@ -136,7 +150,8 @@ suite('acceleratorRowTest', function() {
 
     rowElement.acceleratorInfos = accelerators;
     rowElement.description = description;
-    rowElement.source = AcceleratorSource.kBrowser;
+    rowElement.source = AcceleratorSource.kAsh;
+    rowElement.action = 0;
     rowElement.layoutStyle = LayoutStyle.kDefault;
 
     let showDialogListenerCalled = false;
@@ -165,7 +180,8 @@ suite('acceleratorRowTest', function() {
     }])];
 
     rowElement.acceleratorInfos = accelerators;
-    rowElement.source = AcceleratorSource.kBrowser;
+    rowElement.source = AcceleratorSource.kAmbient;
+    rowElement.action = 0;
     rowElement.layoutStyle = LayoutStyle.kText;
 
     let showDialogListenerCalled = false;
