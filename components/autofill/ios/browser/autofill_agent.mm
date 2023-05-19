@@ -636,6 +636,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     // "clear form" button.
     NSString* value = nil;
     NSString* displayDescription = nil;
+    UIImage* icon = nil;
     if (popup_suggestion.frontend_id.as_int() >= 0) {
       // Filter out any key/value suggestions if the user hasn't typed yet.
       if (popup_suggestion.frontend_id ==
@@ -652,6 +653,23 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
         DCHECK_EQ(popup_suggestion.labels[0].size(), 1U);
         displayDescription =
             SysUTF16ToNSString(popup_suggestion.labels[0][0].value);
+      }
+
+      // Only show icon for credit card suggestions.
+      if (delegate &&
+          delegate->GetPopupType() == autofill::PopupType::kCreditCards) {
+        // If available, the custom icon for the card is preferred over the
+        // generic network icon. The network icon may also be missing, in
+        // which case we do not set an icon at all.
+        if (!popup_suggestion.custom_icon.IsEmpty()) {
+          icon = popup_suggestion.custom_icon.ToUIImage();
+        } else if (!popup_suggestion.icon.empty()) {
+          const int resourceID =
+              autofill::CreditCard::IconResourceId(popup_suggestion.icon);
+          icon = ui::ResourceBundle::GetSharedInstance()
+                     .GetNativeImageNamed(resourceID)
+                     .ToUIImage();
+        }
       }
     } else if (popup_suggestion.frontend_id ==
                autofill::PopupItemId::kClearForm) {
@@ -670,24 +688,6 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
         popup_suggestion.acceptance_a11y_announcement.has_value()
             ? SysUTF16ToNSString(*popup_suggestion.acceptance_a11y_announcement)
             : nil;
-
-    // Only show icon for credit card suggestions.
-    UIImage* icon = nil;
-    if (delegate &&
-        delegate->GetPopupType() == autofill::PopupType::kCreditCards) {
-      // If available, the custom icon for the card is preferred over the
-      // generic network icon. The network icon may also be missing, in
-      // which case we do not set an icon at all.
-      if (!popup_suggestion.custom_icon.IsEmpty()) {
-        icon = popup_suggestion.custom_icon.ToUIImage();
-      } else if (!popup_suggestion.icon.empty()) {
-        const int resourceID =
-            autofill::CreditCard::IconResourceId(popup_suggestion.icon);
-        icon = ui::ResourceBundle::GetSharedInstance()
-                   .GetNativeImageNamed(resourceID)
-                   .ToUIImage();
-      }
-    }
 
     FormSuggestion* suggestion = [FormSuggestion
                suggestionWithValue:value

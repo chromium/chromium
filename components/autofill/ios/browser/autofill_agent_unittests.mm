@@ -223,7 +223,6 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
   __block BOOL completion_handler_called = NO;
 
   autofill::MockAutofillPopupDelegate mock_delegate;
-  EXPECT_CALL(mock_delegate, GetPopupType);
   EXPECT_CALL(mock_delegate, OnPopupShown);
 
   // Make the suggestions available to AutofillAgent.
@@ -277,11 +276,20 @@ TEST_F(AutofillAgentTests,
       .WillOnce(testing::Return(PopupType::kUnspecified));
   // Initialize suggestion.
   std::vector<autofill::Suggestion> autofillSuggestions = {
-      autofill::Suggestion("", "", "visaCC", PopupItemId::kShowAccountCards)};
+      autofill::Suggestion("", "", "visaCC",
+                           autofill::Suggestion::FrontendId(1)),
+      // This suggestion has a valid credit card icon, but the Suggestion type
+      // (kShowAccountCards) is wrong.
+      autofill::Suggestion("", "", "visaCC",
+                           autofill::PopupItemId::kShowAccountCards),
+  };
   // Completion handler to retrieve suggestions.
   auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
                              id<FormSuggestionProvider> delegate) {
+    ASSERT_EQ(2U, suggestions.count);
     completion_handler_icon = [suggestions[0].icon copy];
+    // The non-credit card suggestion should never have an icon.
+    EXPECT_EQ(nil, suggestions[1].icon);
   };
 
   // Make credit card suggestion.
@@ -320,8 +328,8 @@ TEST_F(AutofillAgentTests, showAutofillPopup_EmptyIconInCreditCardSuggestion) {
       .WillRepeatedly(testing::Return(PopupType::kCreditCards));
 
   const std::string emptyIcon = "";
-  std::vector<autofill::Suggestion> autofillSuggestions = {
-      autofill::Suggestion("", "", emptyIcon, PopupItemId::kShowAccountCards)};
+  std::vector<autofill::Suggestion> autofillSuggestions = {autofill::Suggestion(
+      "", "", emptyIcon, autofill::Suggestion::FrontendId(1))};
 
   // Completion handler to retrieve suggestions.
   auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
@@ -363,7 +371,7 @@ TEST_F(AutofillAgentTests,
 
   // Initialize suggestion, initially without a custom icon.
   std::vector<autofill::Suggestion> autofillSuggestions = {autofill::Suggestion(
-      "", "", suggestion_network_icon, PopupItemId::kShowAccountCards)};
+      "", "", suggestion_network_icon, autofill::Suggestion::FrontendId(1))};
   ASSERT_TRUE(autofillSuggestions[0].custom_icon.IsEmpty());
 
   // When the custom icon is not present, the default icon should be used.
