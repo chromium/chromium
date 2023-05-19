@@ -566,9 +566,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                      JsReplace("createAttributionSrcImg($1);", register_url)));
 
   register_response1->WaitForRequest();
-  ASSERT_EQ(register_response1->http_request()->headers.at(
-                "Attribution-Reporting-Eligible"),
-            "event-source, trigger");
+  ExpectValidAttributionReportingEligibleHeaderForImg(
+      register_response1->http_request()->headers.at(
+          "Attribution-Reporting-Eligible"));
   ASSERT_FALSE(base::Contains(register_response1->http_request()->headers,
                               "Attribution-Reporting-Support"));
 
@@ -580,9 +580,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   // Ensure that redirect requests also contain the header.
   register_response2->WaitForRequest();
-  ASSERT_EQ(register_response2->http_request()->headers.at(
-                "Attribution-Reporting-Eligible"),
-            "event-source, trigger");
+  ExpectValidAttributionReportingEligibleHeaderForImg(
+      register_response2->http_request()->headers.at(
+          "Attribution-Reporting-Eligible"));
   ASSERT_FALSE(base::Contains(register_response2->http_request()->headers,
                               "Attribution-Reporting-Support"));
 }
@@ -1192,9 +1192,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcCrossAppWebRuntimeDisabledBrowserTest,
                      JsReplace("createAttributionSrcImg($1);", register_url)));
 
   register_response1->WaitForRequest();
-  ASSERT_EQ(register_response1->http_request()->headers.at(
-                "Attribution-Reporting-Eligible"),
-            "event-source, trigger");
+  ExpectValidAttributionReportingEligibleHeaderForImg(
+      register_response1->http_request()->headers.at(
+          "Attribution-Reporting-Eligible"));
   ASSERT_FALSE(base::Contains(register_response1->http_request()->headers,
                               "Attribution-Reporting-Support"));
 
@@ -1207,9 +1207,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcCrossAppWebRuntimeDisabledBrowserTest,
   // Ensure that redirect requests also don't contain the
   // Attribution-Reporting-Support header.
   register_response2->WaitForRequest();
-  ASSERT_EQ(register_response2->http_request()->headers.at(
-                "Attribution-Reporting-Eligible"),
-            "event-source, trigger");
+  ExpectValidAttributionReportingEligibleHeaderForImg(
+      register_response2->http_request()->headers.at(
+          "Attribution-Reporting-Eligible"));
   ASSERT_FALSE(base::Contains(register_response2->http_request()->headers,
                               "Attribution-Reporting-Support"));
 }

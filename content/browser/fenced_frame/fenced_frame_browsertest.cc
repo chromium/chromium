@@ -20,6 +20,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
+#include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/test/mock_content_browser_client.h"
 #include "content/browser/back_forward_cache_browsertest.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
@@ -4982,9 +4983,9 @@ class FencedFrameReportEventBrowserTest
         }
         // Verify the request contains the eligibility header.
         if (step.expect_attribution_reporting_allowed) {
-          EXPECT_EQ(response.http_request()->headers.at(
-                        "Attribution-Reporting-Eligible"),
-                    "event-source");
+          ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
+              response.http_request()->headers.at(
+                  "Attribution-Reporting-Eligible"));
         } else {
           EXPECT_FALSE(base::Contains(response.http_request()->headers,
                                       "Attribution-Reporting-Eligible"));
@@ -5512,9 +5513,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   // Verify the request has the correct content.
   EXPECT_EQ(reporting_response.http_request()->content, event_data);
   // Verify the request contains the eligibility header.
-  EXPECT_EQ(reporting_response.http_request()->headers.at(
-                "Attribution-Reporting-Eligible"),
-            "event-source");
+  ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
+      reporting_response.http_request()->headers.at(
+          "Attribution-Reporting-Eligible"));
   EXPECT_FALSE(base::Contains(reporting_response.http_request()->headers,
                               "Attribution-Reporting-Support"));
 }
@@ -5600,9 +5601,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
     EXPECT_EQ(response.http_request()->content, event_data);
     EXPECT_EQ(response.http_request()->method,
               net::test_server::HttpMethod::METHOD_POST);
-    EXPECT_EQ(
-        response.http_request()->headers.at("Attribution-Reporting-Eligible"),
-        "event-source");
+    ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
+        response.http_request()->headers.at("Attribution-Reporting-Eligible"));
     EXPECT_TRUE(
         base::Contains(response.http_request()->headers, "Content-Length"));
     EXPECT_TRUE(
@@ -5637,9 +5637,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
     // Check that the content body was stripped.
     EXPECT_TRUE(redirect_response.http_request()->content.empty());
     // These extra request headers were not stripped.
-    EXPECT_EQ(redirect_response.http_request()->headers.at(
-                  "Attribution-Reporting-Eligible"),
-              "event-source");
+    ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
+        redirect_response.http_request()->headers.at(
+            "Attribution-Reporting-Eligible"));
     EXPECT_FALSE(base::Contains(response.http_request()->headers,
                                 "Attribution-Reporting-Support"));
   }
@@ -5733,9 +5733,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                                "Content-Type"));
     EXPECT_TRUE(
         base::Contains(reporting_response.http_request()->headers, "Origin"));
-    EXPECT_EQ(reporting_response.http_request()->headers.at(
-                  "Attribution-Reporting-Eligible"),
-              "event-source");
+    ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
+        reporting_response.http_request()->headers.at(
+            "Attribution-Reporting-Eligible"));
     EXPECT_FALSE(base::Contains(reporting_response.http_request()->headers,
                                 "Attribution-Reporting-Support"));
 
@@ -5764,9 +5764,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
     // Check that the content body was stripped.
     EXPECT_TRUE(redirect_response.http_request()->content.empty());
     // These extra request headers were not stripped.
-    EXPECT_EQ(redirect_response.http_request()->headers.at(
-                  "Attribution-Reporting-Eligible"),
-              "event-source");
+    ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
+        redirect_response.http_request()->headers.at(
+            "Attribution-Reporting-Eligible"));
     EXPECT_FALSE(base::Contains(reporting_response.http_request()->headers,
                                 "Attribution-Reporting-Support"));
   }
@@ -5938,9 +5938,8 @@ IN_PROC_BROWSER_TEST_F(
   // Verify the request contains the eligibility header.
   response.WaitForRequest();
   EXPECT_EQ(response.http_request()->content, event_data);
-  EXPECT_EQ(
-      response.http_request()->headers.at("Attribution-Reporting-Eligible"),
-      "event-source");
+  ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
+      response.http_request()->headers.at("Attribution-Reporting-Eligible"));
   EXPECT_EQ(
       response.http_request()->headers.at("Attribution-Reporting-Support"),
       "os, web");
@@ -6018,9 +6017,9 @@ IN_PROC_BROWSER_TEST_F(
   {
     reporting_response.WaitForRequest();
     EXPECT_EQ(reporting_response.http_request()->content, event_data);
-    EXPECT_EQ(reporting_response.http_request()->headers.at(
-                  "Attribution-Reporting-Eligible"),
-              "event-source");
+    ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
+        reporting_response.http_request()->headers.at(
+            "Attribution-Reporting-Eligible"));
     EXPECT_EQ(reporting_response.http_request()->headers.at(
                   "Attribution-Reporting-Support"),
               "web");
@@ -6436,9 +6435,8 @@ class FencedFrameAutomaticBeaconBrowserTest
       EXPECT_EQ(response.http_request()->content, config.message);
     }
     // Verify the request contains the eligibility header.
-    EXPECT_EQ(
-        response.http_request()->headers.at("Attribution-Reporting-Eligible"),
-        "navigation-source");
+    ExpectValidAttributionReportingEligibleHeaderForNavigation(
+        response.http_request()->headers.at("Attribution-Reporting-Eligible"));
     EXPECT_FALSE(base::Contains(response.http_request()->headers,
                                 "Attribution-Reporting-Support"));
     response.Done();

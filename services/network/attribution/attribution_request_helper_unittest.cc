@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
@@ -14,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
+#include "net/http/structured_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request.h"
@@ -426,38 +428,63 @@ TEST_F(AttributionRequestHelperTest, CreateIfNeeded) {
 }
 
 TEST_F(AttributionRequestHelperTest, SetAttributionReportingHeaders) {
+  {
+    std::unique_ptr<net::URLRequest> request =
+        CreateTestUrlRequest(/*to_url=*/example_valid_request_url_);
+
+    ResourceRequest resource_request;
+    resource_request.attribution_reporting_eligibility =
+        AttributionReportingEligibility::kUnset;
+    SetAttributionReportingHeaders(*request, resource_request);
+    EXPECT_FALSE(request->extra_request_headers().HasHeader(
+        kAttributionReportingEligible));
+  }
+
   const struct {
     AttributionReportingEligibility eligibility;
-    const char* expected_eligible_header;
+    std::vector<std::string> required_keys;
+    std::vector<std::string> prohibited_keys;
   } kTestCases[] = {
-      {AttributionReportingEligibility::kUnset, nullptr},
-      {AttributionReportingEligibility::kEmpty, ""},
-      {AttributionReportingEligibility::kEventSource, "event-source"},
-      {AttributionReportingEligibility::kNavigationSource, "navigation-source"},
-      {AttributionReportingEligibility::kTrigger, "trigger"},
+      {AttributionReportingEligibility::kEmpty,
+       {},
+       {"event-source", "navigation-source", "trigger"}},
+      {AttributionReportingEligibility::kEventSource,
+       {"event-source"},
+       {"navigation-source", "trigger"}},
+      {AttributionReportingEligibility::kNavigationSource,
+       {"navigation-source"},
+       {"event-source", "trigger"}},
+      {AttributionReportingEligibility::kTrigger,
+       {"trigger"},
+       {"event-source", "navigation-source"}},
       {AttributionReportingEligibility::kEventSourceOrTrigger,
-       "event-source, trigger"},
+       {"event-source", "trigger"},
+       {"navigation-source"}},
   };
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.eligibility);
 
-    std::unique_ptr<net::URLRequest> request = CreateTestUrlRequestFrom(
-        /*to_url=*/example_valid_request_url_,
-        /*from_url=*/GURL("https://origin.example/path/123#foo"));
+    std::unique_ptr<net::URLRequest> request =
+        CreateTestUrlRequest(/*to_url=*/example_valid_request_url_);
 
     ResourceRequest resource_request;
     resource_request.attribution_reporting_eligibility = test_case.eligibility;
     SetAttributionReportingHeaders(*request, resource_request);
 
-    if (test_case.expected_eligible_header) {
-      std::string actual;
-      request->extra_request_headers().GetHeader(kAttributionReportingEligible,
-                                                 &actual);
-      EXPECT_EQ(actual, test_case.expected_eligible_header);
-    } else {
-      EXPECT_FALSE(request->extra_request_headers().HasHeader(
-          kAttributionReportingEligible));
+    std::string actual;
+    request->extra_request_headers().GetHeader(kAttributionReportingEligible,
+                                               &actual);
+
+    auto dict = net::structured_headers::ParseDictionary(actual);
+    EXPECT_TRUE(dict.has_value());
+
+    for (const auto& key : test_case.required_keys) {
+      EXPECT_TRUE(dict->contains(key)) << key;
+    }
+
+    for (const auto& key : test_case.prohibited_keys) {
+      EXPECT_FALSE(dict->contains(key)) << key;
     }
   }
 }

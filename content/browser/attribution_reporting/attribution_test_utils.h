@@ -737,6 +737,13 @@ bool operator==(const OsRegistration&, const OsRegistration&);
 
 std::ostream& operator<<(std::ostream&, const OsRegistration&);
 
+void ExpectValidAttributionReportingEligibleHeaderForEventBeacon(
+    const std::string& header);
+void ExpectValidAttributionReportingEligibleHeaderForImg(
+    const std::string& header);
+void ExpectValidAttributionReportingEligibleHeaderForNavigation(
+    const std::string& header);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_TEST_UTILS_H_
