@@ -31,7 +31,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.PageTransition;
 
 /**
- * Test integration with the SafeBrowsingApiHandler.
+ * Test integration with the SafetyNetApiHandler.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -79,7 +79,7 @@ public final class SafeBrowsingTest {
 
     @Before
     public void setUp() {
-        SafeBrowsingApiBridge.setHandler(new MockSafeBrowsingApiHandler());
+        SafeBrowsingApiBridge.setHandler(new MockSafetyNetApiHandler());
     }
 
     @After
@@ -87,7 +87,7 @@ public final class SafeBrowsingTest {
         if (mTestServer != null) {
             mTestServer.stopAndDestroyServer();
         }
-        MockSafeBrowsingApiHandler.clearMockResponses();
+        MockSafetyNetApiHandler.clearMockResponses();
     }
 
     @Test
@@ -108,7 +108,7 @@ public final class SafeBrowsingTest {
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 ApplicationProvider.getApplicationContext());
         String url = mTestServer.getURL("/chrome/test/data/android/about.html");
-        MockSafeBrowsingApiHandler.addMockResponse(url, "{\"matches\":[{\"threat_type\":\"5\"}]}");
+        MockSafetyNetApiHandler.addMockResponse(url, "{\"matches\":[{\"threat_type\":\"5\"}]}");
         mActivityTestRule.startMainActivityOnBlankPage();
 
         loadUrlNonBlocking(url);

@@ -64,7 +64,7 @@ public class PopupTest {
 
     @Before
     public void setUp() throws Exception {
-        SafeBrowsingApiBridge.setHandler(new MockSafeBrowsingApiHandler());
+        SafeBrowsingApiBridge.setHandler(new MockSafetyNetApiHandler());
         mActivityTestRule.startMainActivityOnBlankPage();
 
         PostTask.runOrPostTask(
@@ -78,7 +78,7 @@ public class PopupTest {
     @After
     public void tearDown() {
         mTestServer.stopAndDestroyServer();
-        MockSafeBrowsingApiHandler.clearMockResponses();
+        MockSafetyNetApiHandler.clearMockResponses();
     }
 
     @Test
@@ -114,7 +114,7 @@ public class PopupTest {
         final TabModelSelector selector = mActivityTestRule.getActivity().getTabModelSelector();
 
         String url = mTestServer.getURL("/chrome/test/data/android/popup_on_click.html");
-        MockSafeBrowsingApiHandler.addMockResponse(url, METADATA_FOR_ABUSIVE_ENFORCEMENT);
+        MockSafetyNetApiHandler.addMockResponse(url, METADATA_FOR_ABUSIVE_ENFORCEMENT);
 
         mActivityTestRule.loadUrl(url);
         CriteriaHelper.pollUiThread(

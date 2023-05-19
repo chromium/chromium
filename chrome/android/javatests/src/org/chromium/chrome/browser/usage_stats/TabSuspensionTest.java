@@ -34,7 +34,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
-import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
+import org.chromium.chrome.browser.MockSafetyNetApiHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -330,8 +330,8 @@ public class TabSuspensionTest {
         startLoadingUrl(mTab, mStartingUrl);
         waitForSuspendedTabToShow(mTab, STARTING_FQDN);
 
-        SafeBrowsingApiBridge.setHandler(new MockSafeBrowsingApiHandler());
-        MockSafeBrowsingApiHandler.addMockResponse(
+        SafeBrowsingApiBridge.setHandler(new MockSafetyNetApiHandler());
+        MockSafetyNetApiHandler.addMockResponse(
                 mDifferentUrl, "{\"matches\":[{\"threat_type\":\"5\"}]}");
         startLoadingUrl(mTab, mDifferentUrl);
 

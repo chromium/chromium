@@ -33,7 +33,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
+import org.chromium.chrome.browser.MockSafetyNetApiHandler;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -578,7 +578,7 @@ public class DetachedResourceRequestTest {
 
     private void testSafeBrowsingMainResource(boolean afterNative, boolean splitCacheEnabled)
             throws Exception {
-        SafeBrowsingApiBridge.setHandler(new MockSafeBrowsingApiHandler());
+        SafeBrowsingApiBridge.setHandler(new MockSafetyNetApiHandler());
         CustomTabsSessionToken session = prepareSession();
 
         String cacheable = "/cachetime";
@@ -587,7 +587,7 @@ public class DetachedResourceRequestTest {
         Uri url = Uri.parse(mServer.getURL(cacheable));
 
         try {
-            MockSafeBrowsingApiHandler.addMockResponse(
+            MockSafetyNetApiHandler.addMockResponse(
                     url.toString(), "{\"matches\":[{\"threat_type\":\"5\"}]}");
 
             Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
@@ -616,19 +616,19 @@ public class DetachedResourceRequestTest {
                 Assert.assertEquals(1, readFromSocketCallback.getCallCount());
             }
         } finally {
-            MockSafeBrowsingApiHandler.clearMockResponses();
+            MockSafetyNetApiHandler.clearMockResponses();
         }
     }
 
     private void testSafeBrowsingSubresource(boolean afterNative) throws Exception {
-        SafeBrowsingApiBridge.setHandler(new MockSafeBrowsingApiHandler());
+        SafeBrowsingApiBridge.setHandler(new MockSafetyNetApiHandler());
         CustomTabsSessionToken session = prepareSession();
         String cacheable = "/cachetime";
         waitForDetachedRequest(session, cacheable, afterNative);
         Uri url = Uri.parse(mServer.getURL(cacheable));
 
         try {
-            MockSafeBrowsingApiHandler.addMockResponse(
+            MockSafetyNetApiHandler.addMockResponse(
                     url.toString(), "{\"matches\":[{\"threat_type\":\"5\"}]}");
 
             String pageUrl = mServer.getURL("/chrome/test/data/android/cacheable_subresource.html");
@@ -644,7 +644,7 @@ public class DetachedResourceRequestTest {
             // robust check.
             CriteriaHelper.pollUiThread(() -> webContents.getTitle().equals("Security error"));
         } finally {
-            MockSafeBrowsingApiHandler.clearMockResponses();
+            MockSafetyNetApiHandler.clearMockResponses();
         }
     }
 

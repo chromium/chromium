@@ -10908,8 +10908,8 @@ Safe Browsing lookups, which is critical for security. -->
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Result of URL-classification API calls from Chrome via
-    RemoteSafeBrowsingApiHandler. Logged after each URL is judged safe/not-safe,
-    or hits a deadline. The INTERNAL_ERROR cases are further classified under
+    RemoteSafetyNetApiHandler. Logged after each URL is judged safe/not-safe, or
+    hits a deadline. The INTERNAL_ERROR cases are further classified under
     SB2.RemoteCall.InternalErrorStatusCode.
   </summary>
 </histogram>

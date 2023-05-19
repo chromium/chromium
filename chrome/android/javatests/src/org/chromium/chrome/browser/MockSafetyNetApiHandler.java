@@ -10,21 +10,21 @@ import org.json.JSONObject;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.components.safe_browsing.SafeBrowsingApiHandler;
+import org.chromium.components.safe_browsing.SafetyNetApiHandler;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * SafeBrowsingApiHandler that vends fake responses.
+ * SafetyNetApiHandler that vends fake responses.
  */
-public class MockSafeBrowsingApiHandler implements SafeBrowsingApiHandler {
+public class MockSafetyNetApiHandler implements SafetyNetApiHandler {
     private Observer mObserver;
     // Mock time it takes for a lookup request to complete.
     private static final long DEFAULT_CHECK_DELTA_US = 10;
     private static final String SAFE_METADATA = "{}";
 
-    // Global url -> metadataResponse map. In practice there is only one SafeBrowsingApiHandler, but
+    // Global url -> metadataResponse map. In practice there is only one SafetyNetApiHandler, but
     // it is cumbersome for tests to reach into the singleton instance directly. So just make this
     // static and modifiable from java tests using a static method.
     private static final Map<String, String> sResponseMap = new HashMap<>();

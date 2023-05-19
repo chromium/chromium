@@ -23,7 +23,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
+import org.chromium.chrome.browser.MockSafetyNetApiHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
@@ -100,7 +100,7 @@ public final class SubresourceFilterTest {
     @Before
     public void setUp() throws Exception {
         mTestServer = mTestServerRule.getServer();
-        SafeBrowsingApiBridge.setHandler(new MockSafeBrowsingApiHandler());
+        SafeBrowsingApiBridge.setHandler(new MockSafetyNetApiHandler());
         mActivityTestRule.startMainActivityOnBlankPage();
 
         // Disallow all jpgs.
@@ -109,7 +109,7 @@ public final class SubresourceFilterTest {
 
     @After
     public void tearDown() {
-        MockSafeBrowsingApiHandler.clearMockResponses();
+        MockSafetyNetApiHandler.clearMockResponses();
     }
 
     @Test
@@ -322,7 +322,7 @@ public final class SubresourceFilterTest {
 
     private boolean loadPageWithBlockableContentAndTestIfBlocked(String url, String metadata)
             throws TimeoutException {
-        MockSafeBrowsingApiHandler.addMockResponse(url, metadata);
+        MockSafetyNetApiHandler.addMockResponse(url, metadata);
         mActivityTestRule.loadUrl(url);
         return Boolean.parseBoolean(mActivityTestRule.runJavaScriptCodeInCurrentTab("imgLoaded"));
     }
