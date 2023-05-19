@@ -10,7 +10,6 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/rand_util.h"
 #include "base/test/bind.h"
 #include "sql/database.h"
 #include "sql/recovery.h"
@@ -55,7 +54,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Select a recovery strategy pseudorandomly.
   auto strategy =
-      base::RandGenerator(size) % 2 == 0
+      size % 2 == 0
           ? sql::BuiltInRecovery::Strategy::kRecoverOrRaze
           : sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze;
 
