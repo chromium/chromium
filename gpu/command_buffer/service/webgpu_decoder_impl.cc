@@ -1193,6 +1193,8 @@ bool WebGPUDecoderImpl::IsFeatureExposed(WGPUAdapter adapter,
     case WGPUFeatureName_TimestampQueryInsidePasses:
     case WGPUFeatureName_PipelineStatisticsQuery:
     case WGPUFeatureName_ChromiumExperimentalDp4a:
+    // TODO(dawn:1664): Enable Float32Filterable by default once it is tested.
+    case WGPUFeatureName_Float32Filterable:
     // TODO(crbug.com/1258986): DawnMultiPlanarFormats is a stable feature in
     // Dawn, but currently we hide it from Render process as unsafe apis, so
     // that 0-copy code path, which explicitly checks this feature, is protected

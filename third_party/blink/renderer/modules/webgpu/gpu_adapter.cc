@@ -54,6 +54,8 @@ absl::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(WGPUFeatureName f) {
       return V8GPUFeatureName::Enum::kChromiumExperimentalDp4A;
     case WGPUFeatureName_ShaderF16:
       return V8GPUFeatureName::Enum::kShaderF16;
+    case WGPUFeatureName_Float32Filterable:
+      return V8GPUFeatureName::Enum::kFloat32Filterable;
     default:
       return absl::nullopt;
   }
