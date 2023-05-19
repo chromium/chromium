@@ -1953,13 +1953,6 @@ const FeatureEntry::FeatureVariation kTabSearchSearchThresholdVariations[] = {
     {" - fuzzy level: large", kTabSearchSearchThresholdLarge,
      std::size(kTabSearchSearchThresholdLarge), nullptr}};
 
-const FeatureEntry::FeatureParam kTabHoverCardImagesAlternateFormat[] = {
-    {features::kTabHoverCardAlternateFormat, "1"}};
-
-const FeatureEntry::FeatureVariation kTabHoverCardImagesVariations[] = {
-    {" alternate hover card format", kTabHoverCardImagesAlternateFormat,
-     std::size(kTabHoverCardImagesAlternateFormat), nullptr}};
-
 const FeatureEntry::FeatureParam kSharedHighlightingMaxContextWords5[] = {
     {shared_highlighting::kSharedHighlightingRefinedMaxContextWordsName, "5"}};
 const FeatureEntry::FeatureParam kSharedHighlightingMaxContextWords10[] = {
@@ -6488,9 +6481,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"tab-hover-card-images", flag_descriptions::kTabHoverCardImagesName,
      flag_descriptions::kTabHoverCardImagesDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabHoverCardImages,
-                                    kTabHoverCardImagesVariations,
-                                    "TabHoverCardImages")},
+     FEATURE_VALUE_TYPE(features::kTabHoverCardImages)},
 
     {"enable-storage-pressure-event",
      flag_descriptions::kStoragePressureEventName,

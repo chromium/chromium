@@ -7250,8 +7250,8 @@
   },
   {
     "name": "tab-hover-card-images",
-    "owners": [ "dfried", "corising", "//chrome/browser/ui/views/tabs/OWNERS" ],
-    "expiry_milestone": 110
+    "owners": [ "dfried", "estalin" ],
+    "expiry_milestone": 116
   },
   {
     "name": "tab-inactivity-threshold",
