@@ -62,6 +62,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
 
   bool GetSpeakOnMuteDetectionEnabledValue() const override;
 
+  bool GetShouldShowSpeakOnMuteOptInNudgeValue() const override;
+  void SetShouldShowSpeakOnMuteOptInNudgeValue(
+      bool should_show_opt_in_nudge) override;
+
   void AddAudioPrefObserver(AudioPrefObserver* observer) override;
   void RemoveAudioPrefObserver(AudioPrefObserver* observer) override;
 
