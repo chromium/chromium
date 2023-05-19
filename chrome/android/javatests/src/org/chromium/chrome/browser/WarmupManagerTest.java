@@ -436,26 +436,26 @@ public class WarmupManagerTest {
         histogramWatcher.assertExpected();
     }
 
-    /** Tests that when SpareTab is destroyed when the renderer is killed. */
+    /** Tests that when SpareTab is not destroyed when the renderer is killed. */
     @Test
     @MediumTest
     @Feature({"SpareTab"})
     @EnableFeatures(ChromeFeatureList.SPARE_TAB)
     @UiThreadTest
-    public void testDestroySpareTabWhenRendererKilled() {
+    public void testDontDestroySpareTabWhenRendererKilled() {
         // Set the param to true allowing renderer initialization.
         WarmupManager.SPARE_TAB_INITIALIZE_RENDERER.setForTesting(true);
 
         var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                HISTOGRAM_SPARE_TAB_FINAL_STATUS, SpareTabFinalStatus.TAB_CRASHED);
+                HISTOGRAM_SPARE_TAB_FINAL_STATUS, SpareTabFinalStatus.TAB_USED);
 
         mWarmupManager.createSpareTab(mActivityTestRule.getActivity().getCurrentTabCreator(),
                 TabLaunchType.FROM_START_SURFACE);
 
-        // Kill the renderer process, this should kill the associated spare tab and record
-        // TAB_CRASHED status.
+        // Kill the renderer process, this shouldn't kill the associated spare tab and record
+        // TAB_CREATED status.
         WebContentsUtils.simulateRendererKilled(mWarmupManager.mSpareTab.getWebContents());
-        Assert.assertNull(mWarmupManager.takeSpareTab(false, TabLaunchType.FROM_START_SURFACE));
+        Assert.assertNotNull(mWarmupManager.takeSpareTab(false, TabLaunchType.FROM_START_SURFACE));
 
         histogramWatcher.assertExpected();
     }

@@ -262,6 +262,18 @@ public class WarmupManager {
     }
 
     /**
+     * @param tab Tab to compare with SpareTab with.
+     *
+     * @return Returns true if tab is same as spare tab.
+     */
+    public boolean isSpareTab(Tab tab) {
+        if (mSpareTab == null) return false;
+
+        assert mSpareTab.isHidden() : "Spare tab is not hidden";
+        return mSpareTab == tab;
+    }
+
+    /**
      * Various conditions are checked to determine whether the spare tab can be used to load a URL.
      * In order to load a URL, the tab properties must match the tab that is being used.
      *
