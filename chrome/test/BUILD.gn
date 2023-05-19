@@ -2408,6 +2408,7 @@ if (!is_android) {
       "../browser/ui/views/sharing/sharing_browsertest.cc",
       "../browser/ui/views/sharing/sharing_browsertest.h",
       "../browser/ui/views/side_panel/lens/lens_core_tab_side_panel_helper_browsertest.cc",
+      "../browser/ui/views/side_panel/search_companion/companion_live_test.cc",
       "../browser/ui/views/side_panel/search_companion/companion_page_browsertest.cc",
       "../browser/ui/views/tab_search_bubble_host_browsertest.cc",
       "../browser/ui/views/tabs/tab_search_button_browsertest.cc",
