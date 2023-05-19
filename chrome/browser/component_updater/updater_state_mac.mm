@@ -6,13 +6,17 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/apple/bridging.h"
 #include "base/enterprise_util.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/version.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace component_updater {
 
@@ -22,22 +26,18 @@ const base::FilePath::CharType kKeystonePlist[] =
     FILE_PATH_LITERAL("Google/GoogleSoftwareUpdate/GoogleSoftwareUpdate.bundle/"
                       "Contents/Info.plist");
 
-// Gets a value from the updater settings. Returns a retained object.
-// T should be a toll-free Foundation framework type. See Apple's
-// documentation for toll-free bridging.
+// Gets a value from the updater settings.
 template <class T>
-base::scoped_nsobject<T> GetUpdaterSettingsValue(NSString* value_name) {
-  CFStringRef app_id = CFSTR("com.google.Keystone.Agent");
-  base::ScopedCFTypeRef<CFPropertyListRef> plist(
-      CFPreferencesCopyAppValue(base::mac::NSToCFCast(value_name), app_id));
-  return base::scoped_nsobject<T>(
-      base::mac::ObjCCastStrict<T>(static_cast<id>(plist.get())),
-      base::scoped_policy::RETAIN);
+T* GetUpdaterSettingsValue(NSString* value_name) {
+  id plist_type = CFBridgingRelease(
+      CFPreferencesCopyAppValue(base::apple::NSToCFPtrCast(value_name),
+                                CFSTR("com.google.Keystone.Agent")));
+
+  return base::mac::ObjCCastStrict<T>(plist_type);
 }
 
 base::Time GetUpdaterSettingsTime(NSString* value_name) {
-  base::scoped_nsobject<NSDate> date =
-      GetUpdaterSettingsValue<NSDate>(value_name);
+  NSDate* date = GetUpdaterSettingsValue<NSDate>(value_name);
   base::Time result =
       base::Time::FromCFAbsoluteTime([date timeIntervalSinceReferenceDate]);
 
@@ -61,8 +61,8 @@ base::Version GetVersionFromPlist(const base::FilePath& info_plist) {
       return base::Version();
     }
     CFStringRef version = base::mac::GetValueFromDictionary<CFStringRef>(
-        base::mac::NSToCFCast(all_keys), kCFBundleVersionKey);
-    if (version == NULL) {
+        base::apple::NSToCFPtrCast(all_keys), kCFBundleVersionKey);
+    if (version == nullptr) {
       return base::Version();
     }
     return base::Version(base::SysCFStringRefToUTF8(version));
@@ -114,9 +114,8 @@ int UpdaterState::StateReaderKeystone::GetUpdatePolicy() const {
 bool UpdaterState::IsAutoupdateCheckEnabled() {
   // Auto-update check period override (in seconds).
   // Applies only to older versions of Keystone.
-  base::scoped_nsobject<NSNumber> timeInterval =
-      GetUpdaterSettingsValue<NSNumber>(@"checkInterval");
-  if (!timeInterval.get()) {
+  NSNumber* timeInterval = GetUpdaterSettingsValue<NSNumber>(@"checkInterval");
+  if (!timeInterval) {
     return true;
   }
   int value = [timeInterval intValue];

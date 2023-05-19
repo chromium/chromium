@@ -11,12 +11,17 @@
 
 #include <tuple>
 
+#include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/launchd.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "build/branding_buildflags.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 extern "C" {
 
@@ -50,19 +55,14 @@ NSString* const kDockPersistentAppsKey = @"persistent-apps";
 // Foundation data types and returns an autoreleased NSDictionary.
 NSDictionary* DockFileDataDictionaryForURL(NSURL* url) {
   base::ScopedCFTypeRef<CFPropertyListRef> property_list(
-      _CFURLCopyPropertyListRepresentation(base::mac::NSToCFCast(url)));
+      _CFURLCopyPropertyListRepresentation(base::apple::NSToCFPtrCast(url)));
   CFDictionaryRef dictionary =
       base::mac::CFCast<CFDictionaryRef>(property_list);
   if (!dictionary)
     return nil;
 
-  // It would be desirable to pipe the released object from the ScopedCFTypeRef
-  // directly into autorelease, as URLFromDockFileDataDictionary does below.
-  // However, this can't be done because CFPropertyListRef isn't bridgeable.
-  // Therefore, separate the release of the ownership of the ScopedCFTypeRef
-  // and the autorelease on the next line.
-  std::ignore = property_list.release();
-  return [base::mac::CFToNSCast(dictionary) autorelease];
+  return base::apple::CFToNSOwnershipCast(
+      (CFDictionaryRef)property_list.release());
 }
 
 // A wrapper around _CFURLCreateFromPropertyListRepresentation that operates
@@ -70,11 +70,11 @@ NSDictionary* DockFileDataDictionaryForURL(NSURL* url) {
 NSURL* URLFromDockFileDataDictionary(NSDictionary* dictionary) {
   base::ScopedCFTypeRef<CFURLRef> url(
       _CFURLCreateFromPropertyListRepresentation(
-          kCFAllocatorDefault, base::mac::NSToCFCast(dictionary)));
+          kCFAllocatorDefault, base::apple::NSToCFPtrCast(dictionary)));
   if (!url)
     return nil;
 
-  return [base::mac::CFToNSCast(url.release()) autorelease];
+  return base::apple::CFToNSOwnershipCast(url.release());
 }
 
 // Returns an array parallel to |persistent_apps| containing only the
