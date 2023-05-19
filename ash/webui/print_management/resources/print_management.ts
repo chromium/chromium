@@ -13,6 +13,7 @@ import './print_job_clear_history_dialog.js';
 import './print_job_entry.js';
 import './print_management_fonts.css.js';
 import './print_management_shared.css.js';
+import './printer_setup_info.js';
 import './strings.m.js';
 
 import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';

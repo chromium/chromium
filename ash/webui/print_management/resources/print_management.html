@@ -165,7 +165,7 @@
       [[i18n('noPrintJobInProgress')]]
     </div>
 
-    <div id="setupAssistance" hidden="[[!showSetupAssistance]]"></div>
+    <printer-setup-info hidden$="[[!showSetupAssistance]]"></printer-setup-info>
 
     <template is="dom-if" if="[[printJobs.length]]" restamp>
       <div id="historyHeaderContainer" class="column-headers flex-center">

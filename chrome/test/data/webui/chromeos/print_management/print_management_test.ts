@@ -9,6 +9,7 @@ import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {setMetadataProviderForTesting} from 'chrome://print-management/mojo_interface_provider.js';
 import {PrintJobEntryElement} from 'chrome://print-management/print_job_entry.js';
 import {PrintManagementElement} from 'chrome://print-management/print_management.js';
+import {PrinterSetupInfoElement} from 'chrome://print-management/printer_setup_info.js';
 import {ActivePrintJobInfo, ActivePrintJobState, CompletedPrintJobInfo, PrinterErrorCode, PrintingMetadataProviderInterface, PrintJobCompletionStatus, PrintJobInfo, PrintJobsObserverRemote} from 'chrome://print-management/printing_manager.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
@@ -754,8 +755,9 @@ suite('PrintManagementTest', () => {
         querySelector<HTMLElement>(page!, '#ongoingEmptyState')?.hidden as
         boolean);
     assertTrue(
-        querySelector<HTMLDivElement>(page!, '#setupAssistance')?.hidden as
-        boolean);
+        querySelector<PrinterSetupInfoElement>(
+            page!, PrinterSetupInfoElement.is)
+            ?.hidden as boolean);
   });
 
   // Verify expected elements display when there are no print jobs and flag is
@@ -769,10 +771,11 @@ suite('PrintManagementTest', () => {
     await mojoApi_.whenCalled('getPrintJobs');
     flush();
 
-    // Assert that printer setup UI displays when flag enabled.
+    // Assert that printer setup UI is not hidden when flag enabled.
     assertFalse(
-        querySelector<HTMLDivElement>(page!, '#setupAssistance')?.hidden as
-        boolean);
+        querySelector<PrinterSetupInfoElement>(
+            page!, PrinterSetupInfoElement.is)
+            ?.hidden as boolean);
   });
 
   test('CancelOngoingPrintJob', async () => {
