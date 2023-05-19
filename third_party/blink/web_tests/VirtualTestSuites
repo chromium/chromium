@@ -142,28 +142,6 @@
     "expires": "Sep 1, 2023"
   },
   {
-    "prefix": "composite-background-attachment-fixed",
-    "platforms": ["Linux"],
-    "bases": ["compositing/fixed-background-after-style-recalc.html",
-              "compositing/fixed-background-composited-html.html",
-              "compositing/fixed-background-negative-z-index-fixed.html",
-              "compositing/fixed-body-background-positioned.html",
-              "compositing/backgrounds",
-              "fast/backgrounds",
-              "paint/background",
-              "paint/invalidation/background",
-              "external/wpt/acid/acid2/reftest.html",
-              "external/wpt/css/CSS2/backgrounds",
-              "external/wpt/css/css-backgrounds",
-              "external/wpt/css/css-break/background-image-000.html",
-              "external/wpt/css/css-break/background-image-001.html",
-              "external/wpt/css/css-break/background-image-002.html",
-              "external/wpt/css/css-break/background-attachment-fixed.html"],
-    "args": ["--enable-features=CompositeBackgroundAttachmentFixed",
-             "--enable-prefer-compositing-to-lcd-text"],
-    "expires": "Aug 1, 2023"
-  },
-  {
     "prefix": "attribution-reporting-debug-mode",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/attribution-reporting"],

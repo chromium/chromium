@@ -4,10 +4,20 @@
       "name": "Scrolling background of LayoutNGView #document",
       "bounds": [1008, 1016],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='target'",
+      "bounds": [585, 235],
       "invalidations": [
-        [8, 8, 1000, 1000]
+        [0, 0, 585, 235]
       ]
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='target'",
+      "position": [8, 8],
+      "bounds": [1000, 1000],
+      "drawsContent": false
     },
     {
       "name": "HorizontalScrollbar",
@@ -37,10 +47,20 @@
       "name": "Scrolling background of LayoutNGView #document",
       "bounds": [1008, 1016],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='target'",
+      "bounds": [385, 235],
       "invalidations": [
-        [8, 8, 1000, 1000]
+        [0, 0, 385, 235]
       ]
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='target'",
+      "position": [8, 8],
+      "bounds": [1000, 1000],
+      "drawsContent": false
     },
     {
       "name": "HorizontalScrollbar",
@@ -70,10 +90,20 @@
       "name": "Scrolling background of LayoutNGView #document",
       "bounds": [1008, 1016],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='target'",
+      "bounds": [385, 585],
       "invalidations": [
-        [8, 8, 1000, 1000]
+        [0, 0, 385, 585]
       ]
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='target'",
+      "position": [8, 8],
+      "bounds": [1000, 1000],
+      "drawsContent": false
     },
     {
       "name": "HorizontalScrollbar",
@@ -103,10 +133,20 @@
       "name": "Scrolling background of LayoutNGView #document",
       "bounds": [1008, 1016],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='target'",
+      "bounds": [785, 585],
       "invalidations": [
-        [8, 8, 1000, 1000]
+        [0, 0, 785, 585]
       ]
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='target'",
+      "position": [8, 8],
+      "bounds": [1000, 1000],
+      "drawsContent": false
     },
     {
       "name": "HorizontalScrollbar",
