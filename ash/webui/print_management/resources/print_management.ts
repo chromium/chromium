@@ -116,6 +116,13 @@ export class PrintManagementElement extends PrintManagementElementBase
         value: false,
       },
 
+      showSetupAssistance: {
+        type: Boolean,
+        value: (): boolean => {
+          return loadTimeData.getBoolean('isSetupAssistanceEnabled');
+        },
+      },
+
       deletePrintJobHistoryAllowedByPolicy: {
         type: Boolean,
         value: true,
@@ -163,6 +170,7 @@ export class PrintManagementElement extends PrintManagementElementBase
   private listBlurred: boolean;
   private showClearAllButton: boolean;
   private showClearAllDialog: boolean;
+  private showSetupAssistance: boolean;
   private deletePrintJobHistoryAllowedByPolicy: boolean;
   private shouldDisableClearAllButton: boolean;
   private printJobsObserverReceiver: PrintJobsObserverReceiver;

@@ -165,6 +165,8 @@
       [[i18n('noPrintJobInProgress')]]
     </div>
 
+    <div id="setupAssistance" hidden="[[!showSetupAssistance]]"></div>
+
     <template is="dom-if" if="[[printJobs.length]]" restamp>
       <div id="historyHeaderContainer" class="column-headers flex-center">
         <div aria-label$="[[printJobHistoryExpirationPeriod]]">

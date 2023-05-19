@@ -13,7 +13,7 @@ import {ActivePrintJobInfo, ActivePrintJobState, CompletedPrintJobInfo, PrinterE
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 export function initPrintJobEntryElement(): PrintJobEntryElement {
@@ -736,15 +736,43 @@ suite('PrintManagementTest', () => {
     verifyPrintJobs(expectedPrintJobArr, getHistoryPrintJobEntries(page!));
   });
 
-  test('OngoingPrintJobEmptyState', async () => {
+  // Verify expected elements display when there are no print jobs and flag is
+  // off.
+  test('EmptyState_SetupAssistanceFlagOff', async () => {
+    // Ensure printer setup assistance flag is disabled for test.
+    loadTimeData.overrideValues({
+      isSetupAssistanceEnabled: false,
+    });
     await initializePrintManagementApp(/*expectedArr=*/[]);
     await mojoApi_.whenCalled('getPrintJobs');
     flush();
+
     // Assert that ongoing list is empty and the empty state message is
     // not hidden.
     assertTrue(!querySelector(page!, '#ongoingList'));
+    assertFalse(
+        querySelector<HTMLElement>(page!, '#ongoingEmptyState')?.hidden as
+        boolean);
     assertTrue(
-        !querySelector<HTMLElement>(page!, '#ongoingEmptyState')?.hidden);
+        querySelector<HTMLDivElement>(page!, '#setupAssistance')?.hidden as
+        boolean);
+  });
+
+  // Verify expected elements display when there are no print jobs and flag is
+  // on.
+  test('EmptyState_SetupAssistanceFlagOn', async () => {
+    // Ensure printer setup assistance flag is enabled for test.
+    loadTimeData.overrideValues({
+      isSetupAssistanceEnabled: true,
+    });
+    await initializePrintManagementApp(/*expectedArr=*/[]);
+    await mojoApi_.whenCalled('getPrintJobs');
+    flush();
+
+    // Assert that printer setup UI displays when flag enabled.
+    assertFalse(
+        querySelector<HTMLDivElement>(page!, '#setupAssistance')?.hidden as
+        boolean);
   });
 
   test('CancelOngoingPrintJob', async () => {
