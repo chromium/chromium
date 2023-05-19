@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -22,6 +23,7 @@ import org.chromium.base.annotations.NativeMethods;
  * the render node hierarchy.
  */
 @JNINamespace("android_webview")
+@Lifetime.WebView
 public class AwGLFunctor implements AwFunctor {
     private final long mNativeAwGLFunctor;
     private final AwContents.NativeDrawGLFunctor mNativeDrawGLFunctor;

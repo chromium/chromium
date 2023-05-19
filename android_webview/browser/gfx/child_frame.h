@@ -27,6 +27,7 @@ namespace android_webview {
 using CopyOutputRequestQueue =
     std::vector<std::unique_ptr<viz::CopyOutputRequest>>;
 
+// Lifetime: WebView
 class ChildFrame {
  public:
   ChildFrame(

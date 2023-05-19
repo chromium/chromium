@@ -25,6 +25,7 @@ class OverlaysInfoProvider {
   virtual bool IsFrameSinkOverlayed(viz::FrameSinkId frame_sink_id) = 0;
 };
 
+// Lifetime: WebView
 class DisplaySchedulerWebView : public viz::DisplaySchedulerBase,
                                 public viz::SurfaceObserver,
                                 public viz::FrameSinkObserver {

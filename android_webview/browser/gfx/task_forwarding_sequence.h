@@ -25,6 +25,8 @@ class TaskQueueWebView;
 // satisfies WebView's threading requirements. It encapsulates a
 // SyncPointOrderData, and posts tasks to the WebView's global task queue:
 // TaskQueueWebView.
+//
+// Lifetime: WebView
 class TaskForwardingSequence : public gpu::SingleTaskSequence {
  public:
   TaskForwardingSequence(TaskQueueWebView* task_queue,

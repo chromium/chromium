@@ -16,6 +16,7 @@ namespace android_webview {
 class OverlayProcessorWebView;
 class RootFrameSink;
 
+// Lifetime: WebView
 class DisplayWebView : public viz::Display, public viz::FrameSinkObserver {
  public:
   static std::unique_ptr<DisplayWebView> Create(

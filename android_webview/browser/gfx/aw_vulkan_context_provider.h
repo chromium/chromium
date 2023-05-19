@@ -26,8 +26,10 @@ class VulkanDeviceQueue;
 
 namespace android_webview {
 
+// Lifetime: WebView
 class AwVulkanContextProvider final : public viz::VulkanContextProvider {
  public:
+  // Short-lived. Created and destroyed for each (Vulkan) draw.
   class ScopedSecondaryCBDraw {
    public:
     ScopedSecondaryCBDraw(AwVulkanContextProvider* provider,
@@ -77,6 +79,11 @@ class AwVulkanContextProvider final : public viz::VulkanContextProvider {
   void SecondaryCBDrawBegin(sk_sp<GrVkSecondaryCBDrawContext> draw_context);
   void SecondaryCMBDrawSubmitted();
 
+  // Lifetime: Singleton
+  //
+  // This counts its number of active users and will spin up and tear down
+  // according to demand. As such, it may not be the same singleton throughout
+  // the process's lifetime.
   struct Globals : base::RefCountedThreadSafe<Globals> {
     static scoped_refptr<Globals> GetOrCreateInstance(
         AwDrawFn_InitVkParams* params);

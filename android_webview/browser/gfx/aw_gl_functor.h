@@ -13,6 +13,7 @@ struct AwDrawGLInfo;
 
 namespace android_webview {
 
+// Lifetime: WebView
 class AwGLFunctor {
  public:
   explicit AwGLFunctor(const JavaObjectWeakGlobalRef& java_ref);

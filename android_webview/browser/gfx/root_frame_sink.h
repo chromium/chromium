@@ -47,6 +47,8 @@ class RootFrameSinkClient {
 // access to the GPU. It is single-threaded and refcounted on the viz thread.
 // This needs to be separate from classes for rendering which requires GPU
 // to enable sending begin frames independently from access to GPU.
+//
+// Lifetime: WebView
 class RootFrameSink : public base::RefCounted<RootFrameSink>,
                       public viz::mojom::CompositorFrameSinkClient,
                       public viz::ExternalBeginFrameSourceClient {

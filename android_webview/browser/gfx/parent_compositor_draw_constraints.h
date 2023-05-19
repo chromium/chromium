@@ -12,6 +12,7 @@ namespace android_webview {
 
 class ChildFrame;
 
+// Lifetime: Temporary
 struct ParentCompositorDrawConstraints {
   gfx::Size viewport_size;
   gfx::Transform transform;

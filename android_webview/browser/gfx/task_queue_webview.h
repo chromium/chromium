@@ -14,6 +14,8 @@ namespace android_webview {
 // In WebView, there is a single task queue that runs all tasks instead of
 // thread task runners. This is the class actually scheduling and running tasks
 // for WebView. This is used by both CommandBuffer and SkiaDDL.
+//
+// Lifetime: Singleton
 class TaskQueueWebView {
  public:
   // Static method that makes sure this is only one copy of this class.

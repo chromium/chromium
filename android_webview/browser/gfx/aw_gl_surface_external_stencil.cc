@@ -19,6 +19,7 @@ BASE_FEATURE(kWorkaroundMali450StenciLBug,
              base::FEATURE_ENABLED_BY_DEFAULT);
 }
 
+// Lifetime: WebView
 class AwGLSurfaceExternalStencil::BlitContext {
  public:
   BlitContext() {
@@ -108,6 +109,7 @@ class AwGLSurfaceExternalStencil::BlitContext {
   GLint gl_max_vertex_attribs_;
 };
 
+// Lifetime: WebView
 class AwGLSurfaceExternalStencil::FrameBuffer {
  public:
   FrameBuffer(gfx::Size size) : size_(size) {

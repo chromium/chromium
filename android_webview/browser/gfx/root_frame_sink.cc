@@ -27,6 +27,8 @@ viz::FrameSinkId AllocateParentSinkId() {
 
 }  // namespace
 
+// Lifetime: WebView
+// Instance owned by RootFrameSink
 class RootFrameSink::ChildCompositorFrameSink
     : public viz::mojom::CompositorFrameSinkClient {
  public:

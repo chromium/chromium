@@ -30,6 +30,8 @@ struct StencilState {
 };
 
 // This class is not thread safe and should only be used on the UI thread.
+//
+// Lifetime: Temporary
 class ScopedAppGLStateRestore {
  public:
   enum CallMode {

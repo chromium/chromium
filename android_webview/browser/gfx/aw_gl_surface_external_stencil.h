@@ -7,6 +7,7 @@
 
 #include "android_webview/browser/gfx/aw_gl_surface.h"
 
+// Lifetime: WebView
 namespace android_webview {
 class AwGLSurfaceExternalStencil : public AwGLSurface {
  public:

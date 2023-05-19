@@ -35,6 +35,8 @@ struct OverlaysParams;
 
 // With interop mode, we will render frames on AHBs with GL api, and then draw
 // AHBs with Vulkan API on the final target.
+//
+// Lifetime: WebView
 class VulkanGLInterop {
  public:
   VulkanGLInterop(RenderThreadManager* render_thread_manager,

@@ -52,9 +52,14 @@ scoped_refptr<gpu::SyncPointClientState> CreateSyncPointClientState(
 // Manages ASurfaceControl life-cycle and handles ASurfaceTransactions. Created
 // on Android RenderThread, but both used on both Android RenderThread and GPU
 // Main thread, so can be destroyed on one of them.
+//
+// Lifetime: WebView
+// Each OverlayProcessorWebView owns one Manager. Ref-counted for callbacks.
 class OverlayProcessorWebView::Manager
     : public base::RefCountedThreadSafe<OverlayProcessorWebView::Manager> {
  private:
+  // Instances are either directly owned by Manager or indirectly through
+  // OverlaySurface.
   class Resource {
    public:
     Resource(gpu::SharedImageManager* shared_image_manager,
@@ -411,6 +416,8 @@ class OverlayProcessorWebView::Manager
   friend class base::RefCountedThreadSafe<Manager>;
 
   // Class that holds SurfaceControl and associated resources.
+  //
+  // Instances are owned by Manager.
   class OverlaySurface {
    public:
     OverlaySurface(const gfx::SurfaceControl::Surface& parent)

@@ -17,6 +17,7 @@
 
 namespace android_webview {
 
+// Lifetime: WebView
 class AwDrawFnImpl {
  public:
   // Safe to call even on versions where draw_fn functor is not supported.

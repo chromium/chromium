@@ -12,6 +12,8 @@ class SkPicture;
 
 namespace android_webview {
 
+// This class can outlive the WebView it was created from. It is self-contained
+// and independent of the WebView once constructed.
 class AwPicture {
  public:
   AwPicture(sk_sp<SkPicture> picture);

@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview.gfx;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -15,6 +16,7 @@ import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
  * Provides DisplayRefreshRate tracking for MainBeginFrameSourceWebView
  */
 @JNINamespace("android_webview")
+@Lifetime.Singleton
 public class RootBeginFrameSourceWebView implements DisplayAndroidObserver {
     private long mNativeRootBeginFrameSourceWebView;
     private final DisplayAndroid mDisplayAndroid;
