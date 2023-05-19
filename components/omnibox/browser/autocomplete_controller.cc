@@ -1617,9 +1617,7 @@ void AutocompleteController::OnUrlScoringModelDone(
   std::priority_queue<std::pair<float, AutocompleteResult::iterator>>
       output_and_match_itr_heap;
   for (auto& [output, stripped_destination_url] : results) {
-    // The model is expected to generate an output.
     if (!output.has_value()) {
-      NOTREACHED();
       continue;
     }
 
