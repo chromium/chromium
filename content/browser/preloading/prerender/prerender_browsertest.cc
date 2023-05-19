@@ -7942,11 +7942,36 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersBrowserTest,
   EXPECT_TRUE(prerender_handle);
 }
 
+// This is the same as MultiplePrerendersWithLimitedMemoryBrowserTest but
+// doesn't ignore failures on querying about memory footprint (i.e.,
+// kPrerender2IgnoreFailureOnMemoryFootprintQuery is disabled).
+//
+// AddSpeculationRulesMultipleTimes test inheriting this test fixture assumes
+// that prerender attempts fail due to either kFailToGetMemoryUsage or
+// kMemoryLimitExceeded. However, when the flag is enabled, failures on querying
+// about memory usage are ignored and the memory limit check can be skipped.
+// This means kFailToGetMemoryUsage never happens and a prerender attempt can
+// keep running without resulting in kMemoryLimitExceeded.
+//
+// TODO(https://crbug.com/1444521): Remove this test fixture when the feature
+// flag is removed.
+class MultiplePrerendersWithoutIgnoringFailureOnMemoryFootprintQueryBrowserTest
+    : public MultiplePrerendersWithLimitedMemoryBrowserTest {
+ public:
+  MultiplePrerendersWithoutIgnoringFailureOnMemoryFootprintQueryBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        kPrerender2IgnoreFailureOnMemoryFootprintQuery);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Tests that PrerenderHostRegistry can't start any prerenderings if the
 // acceptable percent of the system memory is set to 0.
-// TODO(crbug.com/1445186): re-enable the test.
-IN_PROC_BROWSER_TEST_F(MultiplePrerendersWithLimitedMemoryBrowserTest,
-                       DISABLED_AddSpeculationRulesMultipleTimes) {
+IN_PROC_BROWSER_TEST_F(
+    MultiplePrerendersWithoutIgnoringFailureOnMemoryFootprintQueryBrowserTest,
+    AddSpeculationRulesMultipleTimes) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 

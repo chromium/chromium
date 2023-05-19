@@ -12,6 +12,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -52,6 +53,9 @@ class PrerenderNewTabHandle;
 class RenderFrameHostImpl;
 class StoredPage;
 struct PrerenderAttributes;
+
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kPrerender2IgnoreFailureOnMemoryFootprintQuery);
 
 // PrerenderHostRegistry creates and retains a prerender host, and reserves it
 // for NavigationRequest to activate the prerendered page. This is created per
