@@ -92,8 +92,8 @@ class MerchantPromoCodeManagerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   TestAutofillClient autofill_client_;
-  std::unique_ptr<MerchantPromoCodeManager> merchant_promo_code_manager_;
   std::unique_ptr<TestPersonalDataManager> personal_data_manager_;
+  std::unique_ptr<MerchantPromoCodeManager> merchant_promo_code_manager_;
   FormFieldData test_field_;
   AutofillField autofill_field_;
 };
