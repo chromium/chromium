@@ -48,8 +48,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
     kShortcuts = 0,
     kTabs = 1,
     kSettings = 2,
-    kGames = 3,
-    kImages = 4
+    kGames = 3
   };
 
   SearchBoxView(SearchBoxViewDelegate* delegate,
