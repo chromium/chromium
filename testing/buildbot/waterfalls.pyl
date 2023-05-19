@@ -4912,7 +4912,7 @@
       # For documentation, see //services/network/README.md.
       'Network Service Linux': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'gtest_tests': 'network_service_extra_gtests',
