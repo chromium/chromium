@@ -160,7 +160,8 @@ bool DualLayerUserPrefStore::GetValue(base::StringPiece key,
 
 base::Value::Dict DualLayerUserPrefStore::GetValues() const {
   base::Value::Dict values = local_pref_store_->GetValues();
-  for (auto [pref_name, account_value] : account_pref_store_->GetValues()) {
+
+  for (const std::string& pref_name : GetPrefNamesInAccountStore()) {
     const base::Value* value = nullptr;
     // GetValue() will merge the value if needed.
     GetValue(pref_name, &value);
@@ -437,7 +438,7 @@ void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
   }
 
   // Clear all synced preferences from the account store.
-  for (auto [pref_name, pref_value] : account_pref_store_->GetValues()) {
+  for (const std::string& pref_name : GetPrefNamesInAccountStore()) {
     if (!IsPrefKeySyncable(pref_name)) {
       // The write flags only affect persistence, and the account store is in
       // memory only.
@@ -559,6 +560,44 @@ std::pair<base::Value, base::Value> DualLayerUserPrefStore::UnmergeValue(
 bool DualLayerUserPrefStore::IsInitializationSuccessful() const {
   return local_pref_store_observer_.initialization_succeeded() &&
          account_pref_store_observer_.initialization_succeeded();
+}
+
+std::vector<std::string> DualLayerUserPrefStore::GetPrefNamesInAccountStore()
+    const {
+  std::vector<std::string> keys;
+
+  if (!pref_model_associator_client_) {
+    return keys;
+  }
+
+  // GetValues() returns a dict which is set using SetByDottedPaths(). That
+  // means, a key "a.b.c" is presented as: `{'a': {'b': {'c': ... }}}`. This
+  // util recurses over the nested dicts with keys being joined with a dot, till
+  // the string forms a valid pref name, for eg. it will recurse with keys, "a",
+  // "a.b", and then "a.b.c" which was the original key.
+  auto recurse_and_insert = [&](const std::string& key,
+                                const base::Value& value,
+                                auto& recurse_and_insert_ref) -> void {
+    // Checks if `key` is a pref name using syncable pref database. This is
+    // different from IsPrefKeySyncable() which checks whether or not a pref
+    // should synced right now based on enabled ModelTypes.
+    // TODO(crbug.com/1446256): Consider renaming IsPrefKeySyncable() to
+    // ShouldSyncPrefKey() to make intent more clear.
+    if (pref_model_associator_client_->GetSyncablePrefsDatabase()
+            .IsPreferenceSyncable(key)) {
+      keys.push_back(key);
+    } else if (value.is_dict()) {
+      for (auto [k, v] : value.GetDict()) {
+        recurse_and_insert_ref(key + "." + k, v, recurse_and_insert_ref);
+      }
+    }
+  };
+
+  for (auto [key, value] : account_pref_store_->GetValues()) {
+    recurse_and_insert(key, value, recurse_and_insert);
+  }
+
+  return keys;
 }
 
 }  // namespace sync_preferences
