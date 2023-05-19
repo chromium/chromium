@@ -372,7 +372,15 @@ void DIPSService::RecordBounce(const GURL& url,
     if ((dips::kTriggeringAction.Get() == DIPSTriggeringAction::kStatefulBounce
              ? stateful
              : true)) {
-      UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kExceptedAs1p);
+      // TODO(crbug.com/1447035): Investigate and fix the presence of empty
+      // site(s) in the `site_to_clear` list. Once this is fixed remove this
+      // escape.
+      if (url.is_empty()) {
+        UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kIgnored);
+      } else {
+        UmaHistogramDeletion(GetCookieMode(),
+                             DIPSDeletionAction::kExceptedAs1p);
+      }
     }
 
     const std::set<std::string> site_to_clear{GetSiteForDIPS(url)};
@@ -494,6 +502,7 @@ void DIPSService::DeleteDIPSEligibleState(
       // site(s) in the `site_to_clear` list. Once this is fixed remove this
       // loop escape.
       if (site.empty()) {
+        UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kIgnored);
         continue;
       }
       if (Has3PCExceptionAs3P(site)) {
@@ -527,6 +536,7 @@ void DIPSService::DeleteDIPSEligibleState(
       // site(s) in the `site_to_clear` list. Once this is fixed remove this
       // loop escape.
       if (it->empty()) {
+        UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kIgnored);
         continue;
       }
       UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kDisallowed);

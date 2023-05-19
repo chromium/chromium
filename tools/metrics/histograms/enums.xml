@@ -27572,6 +27572,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="1" label="ExceptedAs1p"/>
   <int value="2" label="ExceptedAs3p"/>
   <int value="3" label="Enforced"/>
+  <int value="4" label="Ignored: Due to empty site."/>
 </enum>
 
 <enum name="DIPSErrorCode">

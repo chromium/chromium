@@ -216,7 +216,8 @@ enum class DIPSDeletionAction {
   kExceptedAs1p = 1,
   kExceptedAs3p = 2,
   kEnforced = 3,
-  kMaxValue = kEnforced,
+  kIgnored = 4,
+  kMaxValue = kIgnored,
 };
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_UTILS_H_

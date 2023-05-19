@@ -777,3 +777,37 @@ TEST_F(DIPSServiceHistogramTest, Deletion_Enforced) {
                                   DIPSDeletionAction::kEnforced, 1);
   EXPECT_TRUE(GetDIPSState(url).has_value());
 }
+
+TEST_F(DIPSServiceHistogramTest, Deletion_Ignored) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      dips::kFeature,
+      {{"delete", "true"}, {"triggering_action", "stateful_bounce"}});
+
+  // Verify the histogram is initially empty.
+  EXPECT_TRUE(histograms()
+                  .GetTotalCountsForPrefix(kUmaHistogramDeletionPrefix)
+                  .empty());
+
+  // Record a bounce.
+  GURL url;
+  base::Time bounce_time = base::Time::FromDoubleT(2);
+  GetService()->RecordBounceForTesting(url, GURL("https://initial.com"),
+                                       GURL("https://final.com"), bounce_time,
+                                       true);
+  WaitOnStorage();
+
+  // Time-travel to after the grace period has ended for the bounce.
+  AdvanceTimeTo(bounce_time + grace_period + tiny_delta);
+  FireDIPSTimer();
+  task_environment_.RunUntilIdle();
+
+  // Verify a deletion metric was emitted and the DIPS entry was not removed.
+  base::HistogramTester::CountsMap expected_counts;
+  expected_counts[kUmaHistogramDeletionPrefix + kBlock3PC] = 1;
+  EXPECT_THAT(histograms().GetTotalCountsForPrefix(kUmaHistogramDeletionPrefix),
+              testing::ContainerEq(expected_counts));
+  histograms().ExpectUniqueSample(kUmaHistogramDeletionPrefix + kBlock3PC,
+                                  DIPSDeletionAction::kIgnored, 1);
+  EXPECT_TRUE(GetDIPSState(url).has_value());
+}
