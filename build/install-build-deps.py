@@ -191,6 +191,7 @@ def apt_update(options):
 # Packages needed for development
 def dev_list():
   packages = [
+      "binutils",
       "bison",
       "bzip2",
       "cdbs",
@@ -458,11 +459,10 @@ def lib32_list(options):
     # g++-X.Y-multilib gives us the 32-bit support that we need. Find out the
     # appropriate value of X and Y by seeing what version the current
     # distribution's g++-multilib package depends on.
-    lines = (subprocess.check_output(
-        ["apt-cache", "depends", "g++-multilib",
-         "--important"]).decode().splitlines())
+    lines = subprocess.check_output(
+        ["apt-cache", "depends", "g++-multilib", "--important"]).decode()
     pattern = re.compile(r"g\+\+-[0-9.]+-multilib")
-    packages.extend(line.strip() for line in lines if pattern.match(line))
+    packages += re.findall(pattern, lines)
 
   return packages
 
