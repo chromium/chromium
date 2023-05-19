@@ -4839,9 +4839,6 @@
         ],
       },
       'Cast Linux Debug': {
-        'mixins': [
-          'linux-bionic',
-        ],
         'additional_compile_targets': [
           'cast_shell',
           'cast_test_lists',
