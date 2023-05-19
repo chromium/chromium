@@ -89,6 +89,7 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
 
   // In-flight model execution requests. Will be killed if we get a model
   // update.
+  // TODO(ritikagup) : Remove outstanding request handling if not required.
   std::map<SegmentId,
            base::CancelableOnceCallback<
                ModelExecutor::ModelExecutionCallback::RunType>>

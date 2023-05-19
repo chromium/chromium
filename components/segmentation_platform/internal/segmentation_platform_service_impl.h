@@ -151,6 +151,8 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   std::map<std::string, std::unique_ptr<SegmentResultProvider>>
   CreateSegmentResultProviders();
 
+  // Creates SegmentResultProvider.
+  std::unique_ptr<SegmentResultProvider> CreateSegmentResultProvider();
   std::unique_ptr<ModelProviderFactory> model_provider_factory_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

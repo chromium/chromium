@@ -69,9 +69,10 @@ class ExecutionService {
     return training_data_collector_.get();
   }
 
+  // DEPRECATED: New multi output supporting models doesn't use it.
   // Called whenever a new or updated model is available. Must be a valid
   // SegmentInfo with valid metadata and features.
-  void OnNewModelInfoReady(const proto::SegmentInfo& segment_info);
+  void OnNewModelInfoReadyLegacy(const proto::SegmentInfo& segment_info);
 
   // Gets the model provider for execution.
   ModelProvider* GetModelProvider(SegmentId segment_id);

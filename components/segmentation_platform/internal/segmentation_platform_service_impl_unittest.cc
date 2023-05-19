@@ -177,7 +177,7 @@ class SegmentationPlatformServiceImplTest
  protected:
   void TestInitializationFlow() {
     // ServiceProxy will load new segment infos from the DB.
-    EXPECT_CALL(observer_, OnClientInfoAvailable(_)).Times(3);
+    EXPECT_CALL(observer_, OnClientInfoAvailable(_)).Times(5);
 
     // Let the DB loading complete successfully.
     EXPECT_CALL(observer_, OnServiceStatusChanged(true, 7));

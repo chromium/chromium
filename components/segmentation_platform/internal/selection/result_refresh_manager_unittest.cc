@@ -34,8 +34,10 @@ const char kTestClient1[] = "client_1";
 const char kTestClient2[] = "client_2";
 
 // Test Ids.
-const proto::SegmentId kSegmentId =
+const proto::SegmentId kSegmentId1 =
     proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER;
+const proto::SegmentId kSegmentId2 =
+    proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_TABLET_PRODUCTIVITY_USER;
 
 class MockResultProvider : public SegmentResultProvider {
  public:
@@ -52,17 +54,21 @@ class ResultRefreshManagerTest : public testing::Test {
     base::SetRecordActionTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
 
-    configs_.emplace_back(
-        test_utils::CreateTestConfig(kTestClient1, kSegmentId));
-    configs_.emplace_back(
-        test_utils::CreateTestConfig(kTestClient2, kSegmentId));
+    std::vector<std::unique_ptr<Config>> configs;
+    configs.emplace_back(
+        test_utils::CreateTestConfig(kTestClient1, kSegmentId1));
+    configs.emplace_back(
+        test_utils::CreateTestConfig(kTestClient2, kSegmentId2));
+    config_holder_ = std::make_unique<ConfigHolder>(std::move(configs));
+
     cached_result_writer_ = SetupCachedResultWriter();
 
     client1_result_provider_ = std::make_unique<MockResultProvider>();
     client2_result_provider_ = std::make_unique<MockResultProvider>();
 
     result_refresh_manager_ = std::make_unique<ResultRefreshManager>(
-        configs_, cached_result_writer_.get(), PlatformOptions(false));
+        config_holder_.get(), cached_result_writer_.get(),
+        PlatformOptions(false));
   }
 
   std::unique_ptr<CachedResultWriter> SetupCachedResultWriter() {
@@ -78,17 +84,18 @@ class ResultRefreshManagerTest : public testing::Test {
   }
 
   void ExpectSegmentResult(
+      const proto::SegmentId segment_id,
       MockResultProvider* segment_result_provider,
       const proto::PredictionResult& result,
       const SegmentResultProvider::ResultState& result_state,
       bool ignore_db_scores) {
     EXPECT_CALL(*segment_result_provider, GetSegmentResult(_))
         .WillOnce(
-            Invoke([result, result_state, ignore_db_scores](
+            Invoke([segment_id, result, result_state, ignore_db_scores](
                        std::unique_ptr<SegmentResultProvider::GetResultOptions>
                            options) {
               EXPECT_EQ(options->ignore_db_scores, ignore_db_scores);
-              EXPECT_EQ(options->segment_id, kSegmentId);
+              EXPECT_EQ(options->segment_id, segment_id);
               auto segment_result =
                   std::make_unique<SegmentResultProvider::SegmentResult>(
                       result_state, result, /*rank=*/1);
@@ -113,7 +120,7 @@ class ResultRefreshManagerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::vector<std::unique_ptr<Config>> configs_;
+  std::unique_ptr<ConfigHolder> config_holder_;
   std::unique_ptr<MockResultProvider> client1_result_provider_;
   std::unique_ptr<MockResultProvider> client2_result_provider_;
   std::unique_ptr<ResultRefreshManager> result_refresh_manager_;
@@ -131,7 +138,7 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultsSuccess) {
           test_utils::GetTestOutputConfigForBinaryClassifier(),
           /*timestamp=*/base::Time::Now());
 
-  ExpectSegmentResult(client1_result_provider_.get(),
+  ExpectSegmentResult(kSegmentId1, client1_result_provider_.get(),
                       result_from_db_for_client1,
                       SegmentResultProvider::ResultState::kSuccessFromDatabase,
                       /*ignore_db_scores=*/false);
@@ -143,7 +150,7 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultsSuccess) {
           test_utils::GetTestOutputConfigForBinaryClassifier(),
           /*timestamp=*/base::Time::Now());
 
-  ExpectSegmentResult(client2_result_provider_.get(),
+  ExpectSegmentResult(kSegmentId2, client2_result_provider_.get(),
                       result_from_model_for_client2,
                       SegmentResultProvider::ResultState::kTfliteModelScoreUsed,
                       /*ignore_db_scores=*/false);
@@ -167,14 +174,15 @@ TEST_F(ResultRefreshManagerTest, TestRefreshModelResultWithNoResult) {
           /*model_scores=*/{},
           test_utils::GetTestOutputConfigForBinaryClassifier(),
           /*timestamp=*/base::Time::Now());
-  ExpectSegmentResult(client1_result_provider_.get(), result_for_client,
+  ExpectSegmentResult(kSegmentId1, client1_result_provider_.get(),
+                      result_for_client,
                       SegmentResultProvider::ResultState::kSignalsNotCollected,
                       /*ignore_db_scores=*/false);
 
   // Client 2 tries gets model result by running the model and model execution
   // fails.
   ExpectSegmentResult(
-      client2_result_provider_.get(), result_for_client,
+      kSegmentId2, client2_result_provider_.get(), result_for_client,
       SegmentResultProvider::ResultState::kDefaultModelExecutionFailed,
       /*ignore_db_scores=*/false);
 
