@@ -548,7 +548,6 @@ void ExecutionContext::Trace(Visitor* visitor) const {
   visitor->Trace(public_url_manager_);
   visitor->Trace(pending_exceptions_);
   visitor->Trace(csp_delegate_);
-  visitor->Trace(timers_);
   visitor->Trace(origin_trial_context_);
   visitor->Trace(content_security_policy_);
   visitor->Trace(runtime_feature_state_override_context_);

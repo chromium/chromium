@@ -42,7 +42,6 @@
 
 namespace blink {
 
-class EventTarget;
 class ExceptionState;
 class StructuredSerializeOptions;
 class ScriptState;
@@ -53,43 +52,43 @@ class CORE_EXPORT WindowOrWorkerGlobalScope {
   STATIC_ONLY(WindowOrWorkerGlobalScope);
 
  public:
-  static void reportError(ScriptState*, EventTarget&, const ScriptValue&);
+  static void reportError(ScriptState*, ExecutionContext&, const ScriptValue&);
 
-  static String btoa(EventTarget&,
+  static String btoa(ExecutionContext&,
                      const String& string_to_encode,
                      ExceptionState&);
-  static String atob(EventTarget&,
+  static String atob(ExecutionContext&,
                      const String& encoded_string,
                      ExceptionState&);
 
   static int setTimeout(ScriptState*,
-                        EventTarget&,
+                        ExecutionContext&,
                         V8Function* handler,
                         int timeout,
                         const HeapVector<ScriptValue>& arguments);
   static int setTimeout(ScriptState*,
-                        EventTarget&,
+                        ExecutionContext&,
                         const String& handler,
                         int timeout,
                         const HeapVector<ScriptValue>&);
   static int setInterval(ScriptState*,
-                         EventTarget&,
+                         ExecutionContext&,
                          V8Function* handler,
                          int timeout,
                          const HeapVector<ScriptValue>&);
   static int setInterval(ScriptState*,
-                         EventTarget&,
+                         ExecutionContext&,
                          const String& handler,
                          int timeout,
                          const HeapVector<ScriptValue>&);
-  static void clearTimeout(EventTarget&, int timeout_id);
-  static void clearInterval(EventTarget&, int timeout_id);
+  static void clearTimeout(ExecutionContext&, int timeout_id);
+  static void clearInterval(ExecutionContext&, int timeout_id);
 
   static bool crossOriginIsolated(const ExecutionContext&);
   static String crossOriginEmbedderPolicy(const ExecutionContext&);
 
   static ScriptValue structuredClone(ScriptState*,
-                                     EventTarget&,
+                                     ExecutionContext&,
                                      const ScriptValue& message,
                                      const StructuredSerializeOptions*,
                                      ExceptionState&);
