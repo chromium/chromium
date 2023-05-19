@@ -8,6 +8,7 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/cart/cart_db.h"
 #include "chrome/browser/cart/cart_service.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/cart/cart_processor.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters_module_util.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "components/history_clusters/core/history_clusters_util.h"
@@ -66,19 +67,23 @@ void HistoryClustersModuleRanker::OnAllSignalsReady(
         base::BindOnce(
             &HistoryClustersModuleRanker::OnBatchModelExecutionComplete,
             weak_ptr_factory_.GetWeakPtr(), std::move(clusters),
-            std::move(callback)));
+            std::move(active_carts), std::move(callback)));
     return;
   }
 #endif
 
-  RunFallbackHeuristic(std::move(clusters), std::move(callback));
+  RunFallbackHeuristic(std::move(clusters), std::move(active_carts),
+                       std::move(callback));
 }
 
 void HistoryClustersModuleRanker::RunFallbackHeuristic(
     std::vector<history::Cluster> clusters,
+    std::vector<CartDB::KeyAndValue> active_carts,
     ClustersCallback callback) {
   SortClustersUsingHeuristic(category_boostlist_, clusters);
 
+  CartProcessor::RecordCartHistoryClusterAssociationMetrics(active_carts,
+                                                            clusters);
   std::move(callback).Run(std::move(clusters));
 }
 
@@ -91,6 +96,7 @@ void HistoryClustersModuleRanker::OverrideModelHandlerForTesting(
 
 void HistoryClustersModuleRanker::OnBatchModelExecutionComplete(
     std::vector<history::Cluster> clusters,
+    std::vector<CartDB::KeyAndValue> active_carts,
     ClustersCallback callback,
     std::vector<float> outputs) {
   CHECK_EQ(clusters.size(), outputs.size());
@@ -112,6 +118,8 @@ void HistoryClustersModuleRanker::OnBatchModelExecutionComplete(
     output_clusters.push_back(
         std::move(std::get<history::Cluster>(cluster_and_score)));
   }
+  CartProcessor::RecordCartHistoryClusterAssociationMetrics(active_carts,
+                                                            output_clusters);
   std::move(callback).Run(std::move(output_clusters));
 }
 

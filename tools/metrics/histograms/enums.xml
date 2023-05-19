@@ -74996,6 +74996,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="Insufficient related searches"/>
 </enum>
 
+<enum name="NTPHistoryClustersModuleCartAssociationStatus">
+  <int value="0" label="Associate with top cluster"/>
+  <int value="1" label="Associate with non-top cluster"/>
+  <int value="2" label="Not associate with any cluster"/>
+</enum>
+
 <enum name="NTPHistoryClustersModuleDisplayLayout">
   <int value="0" label="Not displayed"/>
   <int value="1" label="Layout 1"/>

@@ -5,6 +5,7 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/cart/cart_processor.h"
 
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -92,6 +93,38 @@ void CartProcessor::GetCartForCluster(
   cart_service_->LoadAllActiveCarts(
       base::BindOnce(&CartProcessor::OnLoadCart, weak_ptr_factory_.GetWeakPtr(),
                      std::move(cluster), std::move(callback)));
+}
+
+void CartProcessor::RecordCartHistoryClusterAssociationMetrics(
+    std::vector<CartDB::KeyAndValue>& active_carts,
+    std::vector<history::Cluster>& clusters) {
+  for (auto cart_pair : active_carts) {
+    bool match_cluster = false;
+    for (size_t i = 0; i < clusters.size(); i++) {
+      for (auto visit : clusters[i].visits) {
+        if (IsCartAssociatedWithVisitURL(cart_pair, visit.normalized_url)) {
+          match_cluster = true;
+          break;
+        }
+      }
+      if (match_cluster) {
+        commerce::CartHistoryClusterAssociationStatus status =
+            (i == 0 ? commerce::CartHistoryClusterAssociationStatus::
+                          kAssociatedWithTopCluster
+                    : commerce::CartHistoryClusterAssociationStatus::
+                          kAssociatedWithNonTopCluster);
+        base::UmaHistogramEnumeration(
+            "NewTabPage.HistoryClusters.CartAssociationStatus", status);
+        break;
+      }
+    }
+    if (!match_cluster) {
+      base::UmaHistogramEnumeration(
+          "NewTabPage.HistoryClusters.CartAssociationStatus",
+          commerce::CartHistoryClusterAssociationStatus::
+              kNotAssociatedWithCluster);
+    }
+  }
 }
 
 void CartProcessor::OnLoadCart(
