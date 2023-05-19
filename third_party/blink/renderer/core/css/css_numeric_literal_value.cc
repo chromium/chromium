@@ -255,6 +255,16 @@ String CSSNumericLiteralValue::CustomCSSText() const {
           text = FormatInfinityOrNaN(value, UnitTypeToString(GetType()));
         } else {
           text = FormatNumber(value, UnitTypeToString(GetType()));
+
+          // [RUN-1918] Workaround divergent floating point sprintf.
+          std::string textStr = text.Ascii();
+          size_t recordedLength = recordreplay::RecordReplayValue(
+              "CSSNumericLiteralValue::CustomCSSText", textStr.length());
+          textStr.resize(recordedLength, ' ');
+          recordreplay::RecordReplayBytes(
+              "CSSNumericLiteralValue::CustomCSSText", &textStr[0],
+              recordedLength);
+          text = String::FromUTF8(&textStr[0], recordedLength);
         }
       } else {
         StringBuilder builder;
