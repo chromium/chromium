@@ -154,6 +154,10 @@ void CookieJar::SetCookieManager(
                 document_->GetTaskRunner(TaskType::kInternalDefault));
 }
 
+void CookieJar::InvalidateCache() {
+  last_cookies_hash_.reset();
+}
+
 bool CookieJar::RequestRestrictedCookieManagerIfNeeded() {
   if (!backend_.is_bound() || !backend_.is_connected()) {
     backend_.reset();
