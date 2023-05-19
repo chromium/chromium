@@ -546,7 +546,8 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
   for (const auto& event : event_generator) {
     switch (event.event_params.event) {
       case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
-        if (event.event_params.event_from == ax::mojom::EventFrom::kUser) {
+        if (event.event_params.event_from == ax::mojom::EventFrom::kUser ||
+            event.event_params.event_from == ax::mojom::EventFrom::kAction) {
           requires_post_process_selection_ = true;
         }
         break;

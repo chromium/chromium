@@ -772,8 +772,11 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
     return;
   }
 
-  // Ignore the selection if it's collapsed, which is created by a simple click.
-  if ((anchor_offset == focus_offset) && (anchor_node_id == focus_node_id)) {
+  // Ignore the new selection if it's collapsed, which is created by a simple
+  // click, unless there was a previous selection, in which case the click
+  // clears the selection, so we should tell the main page to clear too.
+  if ((anchor_offset == focus_offset) && (anchor_node_id == focus_node_id) &&
+      !model_.has_selection()) {
     return;
   }
 

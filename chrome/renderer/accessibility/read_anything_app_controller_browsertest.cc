@@ -1220,24 +1220,60 @@ TEST_F(ReadAnythingAppControllerTest, OnSelectionChange) {
 }
 
 TEST_F(ReadAnythingAppControllerTest,
-       OnSelectionChange_ClickDoesNotUpdateSelection) {
+       OnSelectionChange_ClickAfterClickDoesNotUpdateSelection) {
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
-  update.nodes.resize(3);
+  update.nodes.resize(2);
   update.nodes[0].id = 2;
   update.nodes[1].id = 3;
-  update.nodes[2].id = 4;
   update.nodes[0].role = ax::mojom::Role::kStaticText;
   update.nodes[1].role = ax::mojom::Role::kStaticText;
-  update.nodes[2].role = ax::mojom::Role::kStaticText;
-  ui::AXNodeID anchor_node_id = 2;
-  int anchor_offset = 15;
-  ui::AXNodeID focus_node_id = 2;
-  int focus_offset = 15;
+  AccessibilityEventReceived({update});
+
+  ui::AXTreeUpdate selection;
+  SetUpdateTreeID(&selection);
+  selection.has_tree_data = true;
+  selection.event_from = ax::mojom::EventFrom::kUser;
+  selection.tree_data.sel_anchor_object_id = 2;
+  selection.tree_data.sel_focus_object_id = 2;
+  selection.tree_data.sel_anchor_offset = 0;
+  selection.tree_data.sel_focus_offset = 0;
+  AccessibilityEventReceived({selection});
+
+  EXPECT_CALL(page_handler_, OnSelectionChange).Times(0);
+  OnSelectionChange(3, 5, 3, 5);
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnSelectionChange_ClickAfterSelectionClearsSelection) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(2);
+  update.nodes[0].id = 2;
+  update.nodes[1].id = 3;
+  update.nodes[0].role = ax::mojom::Role::kStaticText;
+  update.nodes[1].role = ax::mojom::Role::kStaticText;
+  AccessibilityEventReceived({update});
+
+  ui::AXTreeUpdate selection;
+  SetUpdateTreeID(&selection);
+  selection.has_tree_data = true;
+  selection.event_from = ax::mojom::EventFrom::kUser;
+  selection.tree_data.sel_anchor_object_id = 2;
+  selection.tree_data.sel_focus_object_id = 3;
+  selection.tree_data.sel_anchor_offset = 0;
+  selection.tree_data.sel_focus_offset = 1;
+  AccessibilityEventReceived({selection});
+
+  ui::AXNodeID anchor_node_id = 3;
+  int anchor_offset = 5;
+  ui::AXNodeID focus_node_id = 3;
+  int focus_offset = 5;
   EXPECT_CALL(page_handler_,
               OnSelectionChange(tree_id_, anchor_node_id, anchor_offset,
                                 focus_node_id, focus_offset))
-      .Times(0);
+      .Times(1);
   OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id, focus_offset);
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);
