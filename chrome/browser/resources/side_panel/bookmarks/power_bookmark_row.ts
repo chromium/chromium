@@ -156,18 +156,27 @@ export class PowerBookmarkRowElement extends PolymerElement {
   private onRowClicked_(event: MouseEvent) {
     // Ignore clicks on the row when it has an input, to ensure the row doesn't
     // eat input clicks.
-    if (!this.hasInput) {
-      event.preventDefault();
-      event.stopPropagation();
-      this.dispatchEvent(new CustomEvent('row-clicked', {
-        bubbles: true,
-        composed: true,
-        detail: {
-          bookmark: this.bookmark,
-          event: event,
-        },
-      }));
+    if (this.hasInput) {
+      return;
     }
+    event.preventDefault();
+    event.stopPropagation();
+    if (this.hasCheckbox) {
+      // Clicking the row should trigger a checkbox click rather than a
+      // standard row click.
+      const checkbox =
+          this.shadowRoot!.querySelector<CrCheckboxElement>('#checkbox')!;
+      checkbox.checked = !checkbox.checked;
+      return;
+    }
+    this.dispatchEvent(new CustomEvent('row-clicked', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        bookmark: this.bookmark,
+        event: event,
+      },
+    }));
   }
 
   /**

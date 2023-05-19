@@ -1,8 +1,4 @@
 <style include="sp-shared-style">
-  :host([has-checkbox]) cr-url-list-item {
-    pointer-events: none;
-  }
-
   :host([drop-position='into']) cr-url-list-item {
     background: var(--cr-hover-background-color);
   }
@@ -14,10 +10,6 @@
   cr-url-list-item[size=compact] {
     padding-inline-end: 14px;
     padding-inline-start: 14px;
-  }
-
-  cr-checkbox {
-    pointer-events: auto;
   }
 
   /* Visually hide the label but allow the screen reader to pick it up. */
@@ -60,8 +52,8 @@
     on-contextmenu="onContextMenu_"
     force-hover="[[forceHover]]">
   <template is="dom-if" if="[[hasCheckbox]]" restamp>
-    <cr-checkbox slot="prefix" hidden="[[!hasCheckbox]]"
-        on-change="onCheckboxChange_"
+    <cr-checkbox id="checkbox" slot="prefix" hidden="[[!hasCheckbox]]"
+        on-checked-changed="onCheckboxChange_"
         disabled="[[checkboxDisabled]]">
       $i18n{checkboxA11yLabel}
     </cr-checkbox>
