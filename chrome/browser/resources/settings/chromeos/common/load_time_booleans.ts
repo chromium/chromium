@@ -24,6 +24,10 @@ export function isPlayStoreAvailable(): boolean {
   return loadTimeData.getBoolean('isPlayStoreAvailable');
 }
 
+export function isPluginVmAvailable(): boolean {
+  return loadTimeData.getBoolean('isPluginVmAvailable');
+}
+
 // Crostini page
 export function isCrostiniAllowed(): boolean {
   return loadTimeData.getBoolean('isCrostiniAllowed');

@@ -146,8 +146,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
 
       showNavMenu_: Boolean,
 
-      showPluginVm_: Boolean,
-
       /**
        * The threshold at which the toolbar will change from normal to narrow
        * mode, in px.
@@ -168,7 +166,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
   private showArcvmManageUsb_: boolean;
   private showToolbar_: boolean;
   private showNavMenu_: boolean;
-  private showPluginVm_: boolean;
   private narrowThreshold_: number;
   private activeRoute_: Route|null;
   private scrollEndDebouncer_: Debouncer|null;
@@ -221,7 +218,6 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     };
 
     this.showArcvmManageUsb_ = loadTimeData.getBoolean('showArcvmManageUsb');
-    this.showPluginVm_ = loadTimeData.getBoolean('showPluginVm');
     this.showNavMenu_ = !loadTimeData.getBoolean('isKioskModeActive');
     this.showToolbar_ = !loadTimeData.getBoolean('isKioskModeActive');
 

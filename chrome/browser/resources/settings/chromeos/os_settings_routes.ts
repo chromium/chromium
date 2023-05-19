@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {androidAppsVisible, isCrostiniSupported, isGuest, isKerberosEnabled, isPowerwashAllowed} from './common/load_time_booleans.js';
+import {androidAppsVisible, isCrostiniSupported, isGuest, isKerberosEnabled, isPluginVmAvailable, isPowerwashAllowed} from './common/load_time_booleans.js';
 import * as routesMojom from './mojom-webui/routes.mojom-webui.js';
 
 /** Class for navigable routes. */
@@ -386,8 +386,7 @@ function createOsSettingsRoutes(): OsSettingsRoutes {
           Subpage.kArcVmUsbPreferences);
     }
   }
-  if (loadTimeData.valueExists('showPluginVm') &&
-      loadTimeData.getBoolean('showPluginVm')) {
+  if (isPluginVmAvailable()) {
     r.APP_MANAGEMENT_PLUGIN_VM_SHARED_PATHS = createSubpage(
         r.APP_MANAGEMENT, routesMojom.PLUGIN_VM_SHARED_PATHS_SUBPAGE_PATH,
         Subpage.kPluginVmSharedPaths);

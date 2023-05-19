@@ -73,8 +73,6 @@ export class OsSettingsPageElement extends OsSettingsPageElementBase {
 
       showArcvmManageUsb: Boolean,
 
-      showPluginVm: Boolean,
-
       androidAppsInfo: Object,
 
       /**

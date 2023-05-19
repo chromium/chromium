@@ -617,7 +617,7 @@ void AppsSection::AddPluginVmLoadTimeData(
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddBoolean("showPluginVm",
+  html_source->AddBoolean("isPluginVmAvailable",
                           ShowPluginVm(profile(), *pref_service_));
   html_source->AddString(
       "pluginVmSharedPathsInstructionsLocate",
