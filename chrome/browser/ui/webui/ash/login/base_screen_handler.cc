@@ -35,8 +35,7 @@ void BaseScreenHandler::ShowInWebUI(absl::optional<base::Value::Dict> data) {
   if (!GetOobeUI()) {
     return;
   }
-  GetOobeUI()->GetCoreOobeView()->ShowScreenWithData(oobe_screen_,
-                                                     std::move(data));
+  GetOobeUI()->GetCoreOobe()->ShowScreenWithData(oobe_screen_, std::move(data));
 }
 
 void BaseScreenHandler::RegisterMessages() {
