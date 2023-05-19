@@ -20,8 +20,10 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/storage/storage_module_interface.h"
+#include "components/reporting/util/rate_limiter_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
+#include "components/reporting/util/wrapped_rate_limiter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
