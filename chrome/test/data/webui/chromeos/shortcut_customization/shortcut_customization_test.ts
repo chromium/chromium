@@ -8,6 +8,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/js/accelerator_edit_view.js';
@@ -781,6 +782,44 @@ suite('shortcutCustomizationAppTest', function() {
     textLookup = getManager().getTextAcceleratorInfos(
         AcceleratorSource.kAmbient, expectedCycleTabsAction);
     assertEquals(1, textLookup.length);
+  });
+
+  test('BottomNavContentPresentInSideNav', async () => {
+    page = initShortcutCustomizationAppElement();
+    await flushTasks();
+    const navigationPanel =
+        strictQuery('navigation-view-panel', getPage().shadowRoot, HTMLElement);
+    const sideNav =
+        strictQuery('#sideNav', navigationPanel.shadowRoot, HTMLDivElement);
+    const navContentInSideNavSlot = sideNav.querySelector<HTMLSlotElement>(
+        'slot[name=bottom-nav-content-panel]');
+    assertTrue(!!navContentInSideNavSlot);
+    const navContentInSideNavWrapper =
+        navContentInSideNavSlot.assignedElements()[0];
+    assertTrue(!!navContentInSideNavWrapper);
+    const navContentInSideNav = navContentInSideNavWrapper.querySelector(
+        'shortcuts-bottom-nav-content');
+    assertTrue(
+        !!navContentInSideNav, 'Bottom nav content in side nav should exist');
+  });
+
+  test('BottomNavContentPresentInDrawer', async () => {
+    page = initShortcutCustomizationAppElement();
+    await flushTasks();
+    const navigationPanel =
+        strictQuery('navigation-view-panel', getPage().shadowRoot, HTMLElement);
+    const drawer =
+        strictQuery('cr-drawer', navigationPanel.shadowRoot, CrDrawerElement);
+    const navContentInDrawerSlot = drawer.querySelector<HTMLSlotElement>(
+        'slot[name=bottom-nav-content-drawer]');
+    assertTrue(!!navContentInDrawerSlot);
+    const navContentInDrawerWrapper =
+        navContentInDrawerSlot?.assignedElements()[0];
+    assertTrue(!!navContentInDrawerWrapper);
+    const navContentInDrawer =
+        navContentInDrawerWrapper.querySelector('shortcuts-bottom-nav-content');
+    assertTrue(
+        !!navContentInDrawer, 'Bottom nav content in drawer should exist');
   });
 
   test('LaunchOldKeyboardSettings', async () => {
