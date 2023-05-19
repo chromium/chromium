@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ui/views/borealis/borealis_installer_view.h"
 
 #include <memory>
@@ -72,6 +73,8 @@ class BorealisInstallerViewBrowserTest : public DialogBrowserTest {
     app_launcher_ =
         std::make_unique<BorealisAppLauncherImpl>(browser()->profile());
     features_ = std::make_unique<BorealisFeatures>(browser()->profile());
+    window_manager_ =
+        std::make_unique<BorealisWindowManager>(browser()->profile());
 
     BorealisServiceFake* fake_service =
         BorealisServiceFake::UseFakeForTesting(browser()->profile());
@@ -79,6 +82,7 @@ class BorealisInstallerViewBrowserTest : public DialogBrowserTest {
     fake_service->SetInstallerForTesting(&mock_installer_);
     fake_service->SetAppLauncherForTesting(app_launcher_.get());
     fake_service->SetFeaturesForTesting(features_.get());
+    fake_service->SetWindowManagerForTesting(window_manager_.get());
   }
 
   void ShowUi(const std::string& name) override {
@@ -146,6 +150,7 @@ class BorealisInstallerViewBrowserTest : public DialogBrowserTest {
   ::testing::NiceMock<BorealisContextManagerMock> mock_context_manager_;
   std::unique_ptr<BorealisAppLauncher> app_launcher_;
   std::unique_ptr<BorealisFeatures> features_;
+  std::unique_ptr<BorealisWindowManager> window_manager_;
   raw_ptr<BorealisInstallerView, ExperimentalAsh> view_;
 };
 

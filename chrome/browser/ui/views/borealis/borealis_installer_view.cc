@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/views/borealis/borealis_installer_disallowed_dialog.h"
 #include "chrome/browser/ui/views/borealis/borealis_installer_error_dialog.h"
+#include "chrome/browser/ui/views/borealis/borealis_splash_screen_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -254,6 +255,10 @@ bool BorealisInstallerView::Accept() {
   }
 
   if (state_ == State::kCompleted) {
+    // Installation starts the borealis VM, so the splash screen would normally
+    // not show, therefore we need to show it manually here. Since this is
+    // post-install we know borealis wasn't running previously.
+    borealis::ShowBorealisSplashScreenView(profile_);
     // Launch button has been clicked.
     borealis::BorealisService::GetForProfile(profile_)->AppLauncher().Launch(
         borealis::kClientAppId,
