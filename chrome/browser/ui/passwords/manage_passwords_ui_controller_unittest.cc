@@ -1945,6 +1945,29 @@ TEST_F(ManagePasswordsUIControllerTest, BiometricActivationConfirmation) {
 }
 
 TEST_F(ManagePasswordsUIControllerTest,
+       BiometricActivationConfirmationNotShownOnTopOfAnotherDialog) {
+  // Show account chooser dialog.
+  std::vector<std::unique_ptr<PasswordForm>> local_credentials;
+  local_credentials.emplace_back(
+      std::make_unique<PasswordForm>(test_local_form()));
+  url::Origin origin = url::Origin::Create(GURL(kExampleUrl));
+  CredentialManagerDialogController* dialog_controller = nullptr;
+  EXPECT_CALL(*controller(), CreateAccountChooser(_))
+      .WillOnce(
+          DoAll(SaveArg<0>(&dialog_controller), Return(&dialog_prompt())));
+  EXPECT_CALL(dialog_prompt(), ShowAccountChooser());
+  EXPECT_CALL(*controller(), HasBrowserWindow()).WillOnce(Return(true));
+  base::MockCallback<ManagePasswordsState::CredentialsCallback> choose_callback;
+  EXPECT_TRUE(controller()->OnChooseCredentials(std::move(local_credentials),
+                                                origin, choose_callback.Get()));
+
+  controller()->ShowBiometricActivationConfirmation();
+  // Verify that account chooser is still shown.
+  EXPECT_EQ(password_manager::ui::CREDENTIAL_REQUEST_STATE,
+            controller()->GetState());
+}
+
+TEST_F(ManagePasswordsUIControllerTest,
        AuthenticateWithMessageTwiceCancelsFirstCall) {
   scoped_refptr<device_reauth::MockDeviceAuthenticator> mock_authenticator =
       base::MakeRefCounted<device_reauth::MockDeviceAuthenticator>();
