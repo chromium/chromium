@@ -158,12 +158,6 @@ void PaintPieces(GraphicsContext& context,
     if (!h_tile || !v_tile)
       continue;
 
-    // TODO(cavalcantii): see crbug.com/662507.
-    absl::optional<ScopedInterpolationQuality> interpolation_quality_override;
-    if (draw_info.tile_rule.horizontal == kRoundImageRule ||
-        draw_info.tile_rule.vertical == kRoundImageRule)
-      interpolation_quality_override.emplace(context, kInterpolationMedium);
-
     ImageTilingInfo tiling_info;
     tiling_info.image_rect = draw_info.source;
     tiling_info.scale = gfx::ScaleVector2d(
