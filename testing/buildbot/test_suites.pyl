@@ -3462,32 +3462,6 @@
       },
     },
 
-    'gpu_webgl2_conformance_gles_passthrough_representative_telemetry_tests': {
-      'webgl2_conformance_gles_passthrough_tests': {
-        'telemetry_test_name': 'webgl2_conformance',
-        'args': [
-          '--webgl-conformance-version=2.0.1',
-          # The current working directory when run via isolate is
-          # out/Debug or out/Release. Reference this file relatively to
-          # it.
-          '--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_tests_output.json',
-          # On dual-GPU devices we want the high-performance GPU to be active
-          '--extra-browser-args=--use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu',
-          '--test-filter=conformance/rendering/*::conformance2/rendering/*',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'swarming': {
-          'shards': 1,
-        },
-      },
-    },
-
     'gpu_webgl2_conformance_gles_passthrough_telemetry_tests': {
       'webgl2_conformance_gles_passthrough_tests': {
         'telemetry_test_name': 'webgl2_conformance',
@@ -3653,31 +3627,6 @@
       },
     },
 
-    'gpu_webgl_conformance_gles_passthrough_representative_telemetry_tests': {
-      'webgl_conformance_gles_passthrough': {
-        'telemetry_test_name': 'webgl1_conformance',
-        'args': [
-          # On dual-GPU devices we want the high-performance GPU to be active
-          '--extra-browser-args=--use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu',
-          # The current working directory when run via isolate is
-          # out/Debug or out/Release. Reference this file relatively to
-          # it.
-          '--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json',
-          '--test-filter=conformance/rendering/*',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'swarming': {
-          'shards': 1,
-        },
-      },
-    },
-
     'gpu_webgl_conformance_gles_passthrough_telemetry_tests': {
       'webgl_conformance_gles_passthrough': {
         'telemetry_test_name': 'webgl1_conformance',
@@ -3692,6 +3641,9 @@
         ],
         'android_args': [
           '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
+        ],
+        'chromeos_args': [
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
         'lacros_args': [
           '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
@@ -6894,12 +6846,12 @@
           'LACROS_ASH_TOT',
         ],
       },
-      'gpu_webgl_conformance_gles_passthrough_representative_telemetry_tests': {
+      'gpu_webgl_conformance_gles_passthrough_telemetry_tests': {
         'variants': [
           'LACROS_ASH_TOT',
         ],
       },
-      'gpu_webgl2_conformance_gles_passthrough_representative_telemetry_tests': {
+      'gpu_webgl2_conformance_gles_passthrough_telemetry_tests': {
         'variants': [
           'LACROS_ASH_TOT',
           ],
