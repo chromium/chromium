@@ -98501,6 +98501,23 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="10" label="VFS_IO_FETCH">Calls to xFetch().</int>
 </enum>
 
+<enum name="SqlRecoveryResult">
+  <summary>
+    Outcome of attempting to recover a database with sql::BuiltInRecovery. See
+    sql::BuiltInRecovery::Result for descriptions.
+  </summary>
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kSuccess"/>
+  <int value="2" label="kFailedRecoveryInit"/>
+  <int value="3" label="kFailedRecoveryRun"/>
+  <int value="4" label="kFailedToOpenRecoveredDatabase"/>
+  <int value="5" label="kFailedMetaTableDoesNotExist"/>
+  <int value="6" label="kFailedMetaTableInit"/>
+  <int value="7" label="kFailedMetaTableVersionWasInvalid"/>
+  <int value="8" label="kFailedBackupInit"/>
+  <int value="9" label="kFailedBackupRun"/>
+</enum>
+
 <enum name="SRIResourceIntegrityMismatchEvent">
   <int value="0" label="CHECKING_FOR_INTEGRITY_MISMATCH"/>
   <int value="1" label="REFETCH_DUE_TO_INTEGRITY_MISMATCH"/>

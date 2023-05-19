@@ -305,6 +305,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sql.Recovery.Result" enum="SqlRecoveryResult"
+    expires_after="2023-12-01">
+  <owner>asully@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Outcome of attempting to recover a database with sql::BuiltInRecovery.
+  </summary>
+</histogram>
+
 <histogram name="Sqlite.RecoveryStep" enum="SqliteErrorCode"
     expires_after="M77">
   <owner>costan@google.com</owner>

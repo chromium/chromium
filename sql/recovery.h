@@ -44,6 +44,49 @@ class COMPONENT_EXPORT(SQL) BuiltInRecovery {
     // successfully-recovered, but unsuccessfully-restored database if needed.
   };
 
+  // These values are persisted to logs. Entries should not be renumbered
+  // and numeric values should never be reused.
+  enum class Result {
+    // Outcome not yet known. This value should never be logged.
+    kUnknown = 0,
+
+    // Successfully completed the full database recovery process.
+    kSuccess = 1,
+
+    // Failed to initialize and configure the sqlite3_recover object.
+    kFailedRecoveryInit = 2,
+
+    // Failed to run recovery with the sqlite3_recover object.
+    kFailedRecoveryRun = 3,
+
+    // The database was successfully recovered to a backup, but we could not
+    // open the newly-recovered database in order to copy it to the original
+    // database.
+    kFailedToOpenRecoveredDatabase = 4,
+
+    // The database was successfully recovered to a backup, but a meta table
+    // could not be found in the recovered database.
+    // Only valid when using Strategy::kRecoverWithMetaVersionOrRaze.
+    kFailedMetaTableDoesNotExist = 5,
+
+    // The database was successfully recovered to a backup, but the meta table
+    // could not be initialized.
+    // Only valid when using Strategy::kRecoverWithMetaVersionOrRaze.
+    kFailedMetaTableInit = 6,
+
+    // The database was successfully recovered to a backup, but a valid
+    // (meaning, positive) version number could not be read from the meta table.
+    // Only valid when using Strategy::kRecoverWithMetaVersionOrRaze.
+    kFailedMetaTableVersionWasInvalid = 7,
+
+    // Failed to initialize and configure the sqlite3_backup object.
+    kFailedBackupInit = 8,
+
+    // Failed to run backup with the sqlite3_backup object.
+    kFailedBackupRun = 9,
+    kMaxValue = kFailedBackupRun,
+  };
+
   // TODO(https://crbug.com/1385500): `BuiltInRecovery` is not yet supported on
   // Fuchsia.
   static bool IsSupported() {
@@ -90,11 +133,6 @@ class COMPONENT_EXPORT(SQL) BuiltInRecovery {
   BuiltInRecovery& operator=(const BuiltInRecovery&) = delete;
 
  private:
-  enum Disposition {
-    kPoison,
-    kRazeAndPoison,
-  };
-
   BuiltInRecovery(Database* database, Strategy strategy);
   ~BuiltInRecovery();
 
@@ -111,16 +149,14 @@ class COMPONENT_EXPORT(SQL) BuiltInRecovery {
   // `recover_db_`. See https://www.sqlite.org/backup.html
   SqliteResultCode ReplaceOriginalWithRecoveredDb();
 
-  void SetDbShutdownBehavior(Disposition disposition) {
-    DCHECK(!db_shutdown_behavior_.has_value());
-    db_shutdown_behavior_ = disposition;
-  }
+  void SetRecoverySucceeded();
+  void SetRecoveryFailed(Result failure_result);
 
   const Strategy strategy_;
 
-  // What happens to the original database handle when this
-  // instance is destroyed. If unset, the database will be razed and poisoned.
-  absl::optional<Disposition> db_shutdown_behavior_;
+  // Result of the recovery. This value must be set to something other than
+  // `kUnknown` before this object is destroyed.
+  Result result_ = Result::kUnknown;
 
   raw_ptr<Database> db_;  // Original Database connection.
   Database recover_db_;   // Recovery Database connection.

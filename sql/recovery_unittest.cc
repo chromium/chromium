@@ -20,6 +20,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/sqlite_result_code_values.h"
@@ -36,6 +37,8 @@ namespace {
 
 using sql::test::ExecuteWithResult;
 using sql::test::ExecuteWithResults;
+
+constexpr char kRecoveryResultHistogramName[] = "Sql.Recovery.Result";
 
 // Dump consistent human-readable representation of the database
 // schema.  For tables or indices, this will contain the sql command
@@ -86,6 +89,7 @@ class SqlRecoveryTest : public testing::TestWithParam<bool> {
   base::ScopedTempDir temp_dir_;
   base::FilePath db_path_;
   Database db_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_P(SqlRecoveryTest, ShouldAttemptRecovery) {
@@ -365,6 +369,9 @@ TEST_P(SqlRecoveryTest, RecoverCorruptIndex) {
           EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
                         &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
                     SqliteResultCode::kOk);
+          histogram_tester_.ExpectUniqueSample(
+              kRecoveryResultHistogramName, BuiltInRecovery::Result::kSuccess,
+              /*expected_bucket_count=*/1);
           return;
         }
 
@@ -523,6 +530,9 @@ TEST_P(SqlRecoveryTest, Meta) {
         BuiltInRecovery::RecoverDatabase(
             &db_, BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze),
         SqliteResultCode::kOk);
+    histogram_tester_.ExpectUniqueSample(kRecoveryResultHistogramName,
+                                         BuiltInRecovery::Result::kSuccess,
+                                         /*expected_bucket_count=*/1);
   } else {
     std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
     EXPECT_TRUE(recovery->SetupMeta());
@@ -545,6 +555,10 @@ TEST_P(SqlRecoveryTest, Meta) {
         BuiltInRecovery::RecoverDatabase(
             &db_, BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze),
         SqliteResultCode::kError);
+    histogram_tester_.ExpectBucketCount(
+        kRecoveryResultHistogramName,
+        BuiltInRecovery::Result::kFailedMetaTableVersionWasInvalid,
+        /*expected_count=*/1);
   } else {
     std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
     EXPECT_TRUE(recovery->SetupMeta());
@@ -564,6 +578,10 @@ TEST_P(SqlRecoveryTest, Meta) {
         BuiltInRecovery::RecoverDatabase(
             &db_, BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze),
         SqliteResultCode::kError);
+    histogram_tester_.ExpectBucketCount(
+        kRecoveryResultHistogramName,
+        BuiltInRecovery::Result::kFailedMetaTableDoesNotExist,
+        /*expected_count=*/1);
   } else {
     // The table was rolled back after the recovery failure. Manually drop the
     // table.
@@ -1087,6 +1105,10 @@ TEST_P(SqlRecoveryTest, RecoverDatabaseDelete) {
       EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
                     &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
                 SqliteResultCode::kNotADatabase);
+      histogram_tester_.ExpectUniqueSample(
+          kRecoveryResultHistogramName,
+          BuiltInRecovery::Result::kFailedRecoveryRun,
+          /*expected_bucket_count=*/1);
     } else {
       Recovery::RecoverDatabase(&db_, db_path_);
     }
@@ -1178,6 +1200,10 @@ TEST_P(SqlRecoveryTest, AttachFailure) {
       EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
                     &db_, BuiltInRecovery::Strategy::kRecoverOrRaze),
                 SqliteResultCode::kNotADatabase);
+      histogram_tester_.ExpectUniqueSample(
+          kRecoveryResultHistogramName,
+          BuiltInRecovery::Result::kFailedRecoveryRun,
+          /*expected_bucket_count=*/1);
     } else {
       std::unique_ptr<Recovery> recovery = Recovery::Begin(&db_, db_path_);
       EXPECT_FALSE(recovery.get());

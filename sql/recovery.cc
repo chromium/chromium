@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -86,12 +87,20 @@ BuiltInRecovery::BuiltInRecovery(Database* database, Strategy strategy)
 }
 
 BuiltInRecovery::~BuiltInRecovery() {
-  if (db_ && db_shutdown_behavior_.has_value() &&
-      db_shutdown_behavior_.value() == kPoison) {
-    db_->Poison();
-  } else {
-    db_->RazeAndPoison();
+  // Recovery result must be set before we reach this point.
+  CHECK_NE(result_, Result::kUnknown);
+
+  base::UmaHistogramEnumeration("Sql.Recovery.Result", result_);
+
+  if (db_) {
+    if (result_ == Result::kSuccess) {
+      // Poison the original handle, but don't raze the database.
+      db_->Poison();
+    } else {
+      db_->RazeAndPoison();
+    }
   }
+
   db_ = nullptr;
 
   if (recover_db_.is_open()) {
@@ -101,6 +110,36 @@ BuiltInRecovery::~BuiltInRecovery() {
   // are ever to keep around successfully-recovered, but unsuccessfully-restored
   // databases.
   sql::Database::Delete(recovery_database_path_);
+}
+
+void BuiltInRecovery::SetRecoverySucceeded() {
+  // Recovery result must only be set once.
+  CHECK_EQ(result_, Result::kUnknown);
+
+  result_ = Result::kSuccess;
+}
+
+void BuiltInRecovery::SetRecoveryFailed(Result failure_result) {
+  // Recovery result must only be set once.
+  CHECK_EQ(result_, Result::kUnknown);
+
+  switch (failure_result) {
+    case Result::kUnknown:
+    case Result::kSuccess:
+      NOTREACHED();
+      break;
+    case Result::kFailedRecoveryInit:
+    case Result::kFailedRecoveryRun:
+    case Result::kFailedToOpenRecoveredDatabase:
+    case Result::kFailedMetaTableDoesNotExist:
+    case Result::kFailedMetaTableInit:
+    case Result::kFailedMetaTableVersionWasInvalid:
+    case Result::kFailedBackupInit:
+    case Result::kFailedBackupRun:
+      break;
+  }
+
+  result_ = failure_result;
 }
 
 SqliteResultCode BuiltInRecovery::RecoverAndReplaceDatabase() {
@@ -114,11 +153,9 @@ SqliteResultCode BuiltInRecovery::RecoverAndReplaceDatabase() {
     DVLOG(1) << "Unable to open recovery database.";
 
     // TODO(https://crbug.com/1385500): It's unfortunate to give up now, after
-    // we've successfully recovered the database. Don't raze the original
-    // database if we ever keep around successfully-recovered, but
-    // unsuccessfully-restored databases.
-    SetDbShutdownBehavior(kRazeAndPoison);
-
+    // we've successfully recovered the database to a backup. Consider falling
+    // back to base::Move().
+    SetRecoveryFailed(Result::kFailedToOpenRecoveredDatabase);
     return SqliteResultCode::kError;
   }
 
@@ -173,7 +210,7 @@ SqliteResultCode BuiltInRecovery::AttemptToRecoverDatabaseToBackup() {
     // TODO(https://crbug.com/1385500): This is likely a transient issue, so we
     // could consider keeping the database intact in case the caller wants to
     // try again later. For now, we'll always raze.
-    SetDbShutdownBehavior(kRazeAndPoison);
+    SetRecoveryFailed(Result::kFailedRecoveryInit);
 
     DVLOG(1) << "recovery config error: " << sqlite_result_code
              << sqlite3_recover_errcode(recover);
@@ -194,7 +231,7 @@ SqliteResultCode BuiltInRecovery::AttemptToRecoverDatabaseToBackup() {
 
   if (sqlite_result_code != SqliteResultCode::kOk) {
     // Could not recover the database.
-    SetDbShutdownBehavior(kRazeAndPoison);
+    SetRecoveryFailed(Result::kFailedRecoveryRun);
 
     DVLOG(1) << "recovery error: " << sqlite_result_code
              << sqlite3_recover_errmsg(recover);
@@ -217,13 +254,14 @@ SqliteResultCode BuiltInRecovery::ReplaceOriginalWithRecoveredDb() {
     DVLOG(1) << "sqlite3_backup_init() failed: "
              << sqlite3_errmsg(db_->db(InternalApiToken()));
 
-    // TODO(https://crbug.com/1385500): It's unfortunate to give up now, after
-    // we've successfully recovered the database. Don't raze the original
-    // database if we ever keep around successfully-recovered, but
-    // unsuccessfully-restored databases.
-    SetDbShutdownBehavior(kRazeAndPoison);
+    auto result_code =
+        ToSqliteResultCode(sqlite3_errcode(db_->db(InternalApiToken())));
 
-    return ToSqliteResultCode(sqlite3_errcode(db_->db(InternalApiToken())));
+    // TODO(https://crbug.com/1385500): It's unfortunate to give up now, after
+    // we've successfully recovered the database. Consider falling back to
+    // base::Move().
+    SetRecoveryFailed(Result::kFailedBackupInit);
+    return result_code;
   }
 
   // sqlite3_backup_step() copies pages from the source to the destination
@@ -231,7 +269,8 @@ SqliteResultCode BuiltInRecovery::ReplaceOriginalWithRecoveredDb() {
   // other error on failure.
   // TODO(https://crbug.com/1385500): Some of these errors are transient and the
   // operation could feasibly succeed at a later time. Consider keeping around
-  // successfully-recovered, but unsuccessfully-restored databases.
+  // successfully-recovered, but unsuccessfully-restored databases or falling
+  // back to base::Move().
   constexpr int kUnlimitedPageCount = -1;  // Back up entire database.
   auto sqlite_result_code =
       ToSqliteResultCode(sqlite3_backup_step(backup, kUnlimitedPageCount));
@@ -258,14 +297,12 @@ SqliteResultCode BuiltInRecovery::ReplaceOriginalWithRecoveredDb() {
 
     DVLOG(1) << "sqlite3_backup_step() failed: "
              << sqlite3_errmsg(db_->db(InternalApiToken()));
-    SetDbShutdownBehavior(kRazeAndPoison);
-
+    SetRecoveryFailed(Result::kFailedBackupRun);
     return sqlite_result_code;
   }
 
   // The original database was successfully recovered and replaced. Hooray!
-  // Poison the original handle, but don't raze the database.
-  SetDbShutdownBehavior(kPoison);
+  SetRecoverySucceeded();
 
   CHECK_EQ(pages_remaining, 0);
   return SqliteResultCode::kOk;
@@ -275,17 +312,26 @@ bool BuiltInRecovery::RecoveredDbHasValidMetaTable() {
   CHECK(recover_db_.is_open());
 
   if (!MetaTable::DoesTableExist(&recover_db_)) {
-    SetDbShutdownBehavior(kRazeAndPoison);
     DVLOG(1) << "Meta table does not exist in recovery database.";
+    SetRecoveryFailed(Result::kFailedMetaTableDoesNotExist);
     return false;
   }
 
   // MetaTable::Init will not create a meta table if one already exists.
-  // Confirm that we can read a valid version number from the recovered table.
   sql::MetaTable meta_table;
-  return meta_table.Init(&recover_db_, /*version=*/1,
-                         /*compatible_version=*/1) &&
-         meta_table.GetVersionNumber() > 0;
+  if (!meta_table.Init(&recover_db_, /*version=*/1,
+                       /*compatible_version=*/1)) {
+    SetRecoveryFailed(Result::kFailedMetaTableInit);
+    return false;
+  }
+
+  // Confirm that we can read a valid version number from the recovered table.
+  if (meta_table.GetVersionNumber() <= 0) {
+    SetRecoveryFailed(Result::kFailedMetaTableVersionWasInvalid);
+    return false;
+  }
+
+  return true;
 }
 
 // static
