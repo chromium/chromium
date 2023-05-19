@@ -16,7 +16,7 @@
 }
 
 .subject {
-  view-timeline-name: view;
+  view-timeline-name: --view;
   width: 20px;
   height: 20px;
   margin: 0 auto;
@@ -48,7 +48,7 @@
   overflow: clip;
   opacity: 0.4;
   animation: active-interval linear;
-  animation-timeline: view;
+  animation-timeline: --view;
 }
 
 @keyframes slide-in {
@@ -62,7 +62,7 @@
   background: blue;
   transform: translateX(-100%);
   animation: slide-in linear;
-  animation-timeline: view;
+  animation-timeline: --view;
 }
 
 .spacer {
