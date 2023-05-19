@@ -138,7 +138,12 @@ export class ShortcutsPageElement extends PolymerElement implements
    * a search result.
    */
   onRouteChanged(url: URL): void {
-    this.maybeScrollToAcceleratorRowBasedOnUrl(url);
+    const didScroll = this.maybeScrollToAcceleratorRowBasedOnUrl(url);
+    if (didScroll) {
+      // Reset the route after scrolling so the app doesn't re-scroll when
+      // the user manually changes pages.
+      Router.getInstance().resetRoute();
+    }
   }
 
   /**
