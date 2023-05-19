@@ -698,6 +698,10 @@ class AutofillAcrossIframesTest_NestedAndLargeForm
            </style>)",
         height * 100, 100 + height * 10);
   }
+
+ protected:
+  base::test::ScopedFeatureList scoped_features_{
+      features::kAutofillEnableExpirationDateImprovements};
 };
 
 // Tests that a large and deeply nested form is extracted and filled correctly.
