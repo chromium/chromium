@@ -277,7 +277,7 @@ void ShareThisTabDialogView::Activate() {
   if (ShouldAutoAccept()) {
     Accept();
   } else if (ShouldAutoReject()) {
-    Cancel();
+    CancelDialog();
   }
 }
 
