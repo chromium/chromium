@@ -140,14 +140,19 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitPastInteractionIfReady() {
 void OpenerHeuristicTabHelper::PopupObserver::DidFinishNavigation(
     NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted()) {
+      !navigation_handle->HasCommitted() ||
+      navigation_handle->IsSameDocument()) {
     return;
   }
 
+  url_index_ += navigation_handle->GetRedirectChain().size();
+
   if (initial_source_id_.has_value()) {
-    // Ignore commits after the first.
+    // Only get the source id and time for the first commit. Ignore the rest.
     return;
   }
+
+  commit_time_ = GetClock()->Now();
 
   if (navigation_handle->GetRedirectChain().size() > 1) {
     // Get a source id for the URL the popup was originally opened with,
@@ -159,4 +164,32 @@ void OpenerHeuristicTabHelper::PopupObserver::DidFinishNavigation(
   }
 
   EmitPastInteractionIfReady();
+}
+
+void OpenerHeuristicTabHelper::PopupObserver::FrameReceivedUserActivation(
+    RenderFrameHost* render_frame_host) {
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  if (interaction_reported_) {
+    // Only report the first interaction.
+    return;
+  }
+
+  if (!commit_time_.has_value()) {
+    // Not sure if this can happen. What happens if the user clicks before the
+    // popup loads its initial URL?
+    return;
+  }
+
+  auto time_since_committed = GetClock()->Now() - *commit_time_;
+  ukm::builders::OpenerHeuristic_PopupInteraction(
+      render_frame_host->GetPageUkmSourceId())
+      .SetSecondsSinceCommitted(
+          BucketizeSecondsSinceCommitted(time_since_committed))
+      .SetUrlIndex(url_index_)
+      .Record(ukm::UkmRecorder::Get());
+
+  interaction_reported_ = true;
 }

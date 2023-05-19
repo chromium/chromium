@@ -13,4 +13,8 @@
 // base::Histogram::InitializeBucketRanges().
 int32_t BucketizeHoursSinceLastInteraction(base::TimeDelta td);
 
+// Quantize `td` similar to UmaHistogramMediumTimes() -- number of seconds up to
+// 3 minutes, in 50 buckets.
+int32_t BucketizeSecondsSinceCommitted(base::TimeDelta td);
+
 #endif  // CHROME_BROWSER_3PCD_HEURISTICS_OPENER_HEURISTIC_METRICS_H_

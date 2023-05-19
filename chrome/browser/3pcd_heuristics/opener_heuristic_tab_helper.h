@@ -43,6 +43,8 @@ class OpenerHeuristicTabHelper
     // WebContentsObserver overrides:
     void DidFinishNavigation(
         content::NavigationHandle* navigation_handle) override;
+    void FrameReceivedUserActivation(
+        content::RenderFrameHost* render_frame_host) override;
 
     // The URL originally passed to window.open().
     const GURL initial_url_;
@@ -51,6 +53,9 @@ class OpenerHeuristicTabHelper
     absl::optional<base::TimeDelta> time_since_interaction_;
     // A source ID for `initial_url_`.
     absl::optional<ukm::SourceId> initial_source_id_;
+    absl::optional<base::Time> commit_time_;
+    size_t url_index_ = 0;
+    bool interaction_reported_ = false;
   };
 
   ~OpenerHeuristicTabHelper() override;

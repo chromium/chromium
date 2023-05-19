@@ -15347,6 +15347,28 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="OpenerHeuristic.PopupInteraction">
+  <owner>rtarpine@chromium.org</owner>
+  <owner>dc-komics@chromium.org</owner>
+  <summary>
+    Recorded when the user first interacts in a pop-up with opener access.
+  </summary>
+  <metric name="SecondsSinceCommitted">
+    <summary>
+      The number of seconds since the initial pop-up navigation committed, until
+      the user interacted with the pop-up. Clamped to three minutes at most, and
+      rounded down to the nearest exponential bucket (out of 50 buckets).
+    </summary>
+  </metric>
+  <metric name="UrlIndex">
+    <summary>
+      The number of URLs visited (including redirects) in the pop-up before the
+      user interacted with it. For example, the initial URL has index 1. If the
+      page redirected once before the user interacted, the index would be 2.
+    </summary>
+  </metric>
+</event>
+
 <event name="OpenerHeuristic.PopupPastInteraction">
   <owner>rtarpine@chromium.org</owner>
   <owner>dc-komics@chromium.org</owner>

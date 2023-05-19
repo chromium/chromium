@@ -4,12 +4,16 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
+#include "base/time/time.h"
+#include "chrome/browser/3pcd_heuristics/opener_heuristic_metrics.h"
 #include "chrome/browser/3pcd_heuristics/opener_heuristic_tab_helper.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_storage.h"
+#include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -142,6 +146,14 @@ class OpenerHeuristicBrowserTest : public PlatformBrowserTest {
     GetDipsService()->storage()->FlushPostedTasksForTesting();
 
     return observer.popup();
+  }
+
+  void SimulateMouseClick(WebContents* web_contents) {
+    UserActivationObserver observer(web_contents,
+                                    web_contents->GetPrimaryMainFrame());
+    content::SimulateMouseClick(web_contents, 0,
+                                blink::WebMouseEvent::Button::kLeft);
+    observer.Wait();
   }
 
   base::SimpleTestClock clock_;
@@ -307,4 +319,95 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
       ukm_recorder.GetEntriesByName("OpenerHeuristic.PopupPastInteraction")
           .size(),
       1u);
+}
+
+IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest, PopupInteraction) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  GURL popup_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL redirect_url =
+      embedded_test_server()->GetURL("b.test", "/server-redirect?title1.html");
+  GURL final_url = embedded_test_server()->GetURL("b.test", "/title1.html");
+
+  auto maybe_popup = OpenPopup(popup_url);
+  ASSERT_TRUE(maybe_popup.has_value()) << maybe_popup.error();
+
+  clock_.Advance(base::Minutes(1));
+  ASSERT_TRUE(content::NavigateToURL(*maybe_popup, redirect_url, final_url));
+
+  ASSERT_EQ(
+      ukm_recorder.GetEntriesByName("OpenerHeuristic.PopupInteraction").size(),
+      0u);
+
+  clock_.Advance(base::Minutes(1));
+  SimulateMouseClick(*maybe_popup);
+
+  auto entries = ukm_recorder.GetEntries("OpenerHeuristic.PopupInteraction",
+                                         {"SecondsSinceCommitted", "UrlIndex"});
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(ukm::GetSourceIdType(entries[0].source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  EXPECT_EQ(ukm_recorder.GetSourceForSourceId(entries[0].source_id)->url(),
+            final_url);
+  // The time between *popup_url* committing and the click.
+  EXPECT_EQ(entries[0].metrics["SecondsSinceCommitted"],
+            BucketizeSecondsSinceCommitted(base::Minutes(2)));
+  // The user clicked on *final_url*, which was the third URL.
+  EXPECT_EQ(entries[0].metrics["UrlIndex"], 3);
+}
+
+IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
+                       PopupInteractionIsOnlyReportedOnce) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  GURL popup_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL interaction_url =
+      embedded_test_server()->GetURL("b.test", "/title1.html");
+  GURL final_url = embedded_test_server()->GetURL("c.test", "/title1.html");
+
+  auto maybe_popup = OpenPopup(popup_url);
+  ASSERT_TRUE(maybe_popup.has_value()) << maybe_popup.error();
+
+  ASSERT_TRUE(content::NavigateToURL(*maybe_popup, interaction_url));
+  SimulateMouseClick(*maybe_popup);
+
+  ASSERT_EQ(
+      ukm_recorder.GetEntriesByName("OpenerHeuristic.PopupInteraction").size(),
+      1u);
+
+  ASSERT_TRUE(content::NavigateToURL(*maybe_popup, final_url));
+  SimulateMouseClick(*maybe_popup);
+
+  // The second click was not reported (still only 1 total).
+  ASSERT_EQ(
+      ukm_recorder.GetEntriesByName("OpenerHeuristic.PopupInteraction").size(),
+      1u);
+}
+
+IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
+                       PopupInteraction_IgnoreUncommitted) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  GURL popup_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL uncommitted_url = embedded_test_server()->GetURL("c.test", "/nocontent");
+
+  auto maybe_popup = OpenPopup(popup_url);
+  ASSERT_TRUE(maybe_popup.has_value()) << maybe_popup.error();
+
+  clock_.Advance(base::Minutes(1));
+  // Attempt a navigation which won't commit (because the HTTP response is No
+  // Content).
+  ASSERT_TRUE(content::NavigateToURL(*maybe_popup, uncommitted_url, popup_url));
+
+  clock_.Advance(base::Minutes(1));
+  SimulateMouseClick(*maybe_popup);
+
+  auto entries = ukm_recorder.GetEntries("OpenerHeuristic.PopupInteraction",
+                                         {"SecondsSinceCommitted", "UrlIndex"});
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(ukm::GetSourceIdType(entries[0].source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  EXPECT_EQ(ukm_recorder.GetSourceForSourceId(entries[0].source_id)->url(),
+            popup_url);
+  // The uncommitted navigation was ignored. UrlIndex is still 1.
+  EXPECT_EQ(entries[0].metrics["SecondsSinceCommitted"],
+            BucketizeSecondsSinceCommitted(base::Minutes(2)));
+  EXPECT_EQ(entries[0].metrics["UrlIndex"], 1);
 }
