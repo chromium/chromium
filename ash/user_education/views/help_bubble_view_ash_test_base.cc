@@ -50,9 +50,6 @@ HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView(
   HelpBubbleParams params;
   params.arrow = arrow;
 
-  // NOTE: `HelpBubbleViewAsh` will never be created without body text.
-  params.body_text = Repeat(u"Body", /*times=*/50);
-
   if (with_title_text) {
     params.title_text = Repeat(u"Title", /*times=*/25u);
   }
@@ -76,13 +73,22 @@ HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView(
     params.progress = std::make_pair(2, 3);
   }
 
-  // Anchor the help bubble view to the test `widget_`.
-  internal::HelpBubbleAnchorParams anchor_params;
-  anchor_params.view = widget_->GetContentsView();
+  // NOTE: The returned help bubble view is owned by its widget.
+  return CreateHelpBubbleView(std::move(params));
+}
+
+HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView(
+    const absl::optional<HelpBubbleStyle>& style) {
+  HelpBubbleParams params;
+  params.arrow = HelpBubbleArrow::kNone;
+
+  if (style.has_value()) {
+    params.extended_properties =
+        user_education_util::CreateExtendedProperties(style.value());
+  }
 
   // NOTE: The returned help bubble view is owned by its widget.
-  return new HelpBubbleViewAsh(HelpBubbleId::kTest, anchor_params,
-                               std::move(params));
+  return CreateHelpBubbleView(std::move(params));
 }
 
 void HelpBubbleViewAshTestBase::SetUp() {
@@ -90,7 +96,7 @@ void HelpBubbleViewAshTestBase::SetUp() {
 
   // Use a slightly larger display than is default to ensure that help bubble
   // views are fully on screen in all test scenarios.
-  UpdateDisplay("1024x768");
+  UpdateDisplay("1366x1080");
 
   // Initialize a test `widget_` to be used as an anchor for help bubble
   // views. Note that shadow is removed since pixel tests of help bubble views
@@ -108,6 +114,20 @@ void HelpBubbleViewAshTestBase::SetUp() {
   // are working as intended.
   widget_->CenterWindow(gfx::Size(50, 50));
   widget_->ShowInactive();
+}
+
+HelpBubbleViewAsh* HelpBubbleViewAshTestBase::CreateHelpBubbleView(
+    HelpBubbleParams params) {
+  // NOTE: `HelpBubbleViewAsh` will never be created without body text.
+  params.body_text = Repeat(u"Body", /*times=*/50);
+
+  // Anchor the help bubble view to the test `widget_`.
+  internal::HelpBubbleAnchorParams anchor_params;
+  anchor_params.view = widget_->GetContentsView();
+
+  // NOTE: The returned help bubble view is owned by its widget.
+  return new HelpBubbleViewAsh(HelpBubbleId::kTest, anchor_params,
+                               std::move(params));
 }
 
 }  // namespace ash

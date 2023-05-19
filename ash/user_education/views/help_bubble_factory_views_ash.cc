@@ -189,7 +189,6 @@ void HelpBubbleViewsAsh::OnElementHidden(ui::TrackedElement* element) {
 
 void HelpBubbleViewsAsh::OnElementBoundsChanged(ui::TrackedElement* element) {
   if (help_bubble_view_ && element == anchor_element_) {
-    help_bubble_view_->SetForceAnchorRect(element->GetScreenBounds());
     OnAnchorBoundsChanged();
   }
 }

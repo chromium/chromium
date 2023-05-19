@@ -36,6 +36,7 @@ class MdTextButton;
 namespace ash {
 
 enum class HelpBubbleId;
+enum class HelpBubbleStyle;
 
 namespace internal {
 
@@ -45,10 +46,6 @@ namespace internal {
 struct HelpBubbleAnchorParams {
   // This is the View to be anchored to (mandatory).
   raw_ptr<views::View> view = nullptr;
-
-  // This is an optional override of the anchor rect in screen coordinates.
-  // If unspecified, the bubble is anchored as normal to `view`.
-  absl::optional<gfx::Rect> rect;
 };
 
 }  // namespace internal
@@ -79,12 +76,13 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
   views::LabelButton* GetDefaultButtonForTesting() const;
   views::LabelButton* GetNonDefaultButtonForTesting(int index) const;
 
-  void SetForceAnchorRect(gfx::Rect force_anchor_rect);
-
   HelpBubbleId id() const { return id_; }
+  HelpBubbleStyle style() const { return style_; }
 
  protected:
   // views::BubbleDialogDelegateView:
+  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+      views::Widget* widget) override;
   void OnAnchorBoundsChanged() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   std::u16string GetAccessibleWindowTitle() const override;
@@ -109,9 +107,7 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
   void UpdateRoundedCorners();
 
   const HelpBubbleId id_;
-
-  // If set, overrides the anchor bounds within the anchor view.
-  absl::optional<gfx::Rect> local_anchor_bounds_;
+  const HelpBubbleStyle style_;
 
   raw_ptr<views::ImageView> icon_view_ = nullptr;
   std::vector<views::Label*> labels_;

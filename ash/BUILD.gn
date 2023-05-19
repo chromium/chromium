@@ -3468,6 +3468,7 @@ test("ash_unittests") {
     "user_education/user_education_help_bubble_controller_unittest.cc",
     "user_education/user_education_ping_controller_unittest.cc",
     "user_education/user_education_util_unittest.cc",
+    "user_education/views/help_bubble_view_ash_unittest.cc",
     "user_education/welcome_tour/welcome_tour_controller_unittest.cc",
     "utility/cropping_util_unittest.cc",
     "utility/haptics_util_unittest.cc",
