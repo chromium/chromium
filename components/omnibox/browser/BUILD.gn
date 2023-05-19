@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/vector_icons/vector_icons.gni")
@@ -373,7 +374,7 @@ static_library("browser") {
     deps += [ "//components/keep_alive_registry" ]
   }
 
-  if (!is_ios) {
+  if (use_blink) {
     sources += [
       "actions/history_clusters_action.cc",
       "actions/history_clusters_action.h",
@@ -382,13 +383,8 @@ static_library("browser") {
     ]
     deps += [
       "//components/history_clusters/core",
-      "//components/optimization_guide/core:entities",
-    ]
-  }
-
-  if (use_blink) {
-    deps += [
       "//components/keyed_service/content",
+      "//components/optimization_guide/core:entities",
       "//content/public/browser",
     ]
   }
@@ -856,6 +852,9 @@ source_set("unit_tests") {
       "actions/history_clusters_action_unittest.cc",
       "history_cluster_provider_unittest.cc",
     ]
+  }
+
+  if (use_blink) {
     deps += [ "//components/history_clusters/core:test_support" ]
   }
 }
