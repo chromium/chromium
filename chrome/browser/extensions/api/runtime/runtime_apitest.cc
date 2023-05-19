@@ -493,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeAPIUpdateTest,
 // uninstalled, its uninstall url does not open.
 // TODO(crbug.com/1446468): Flaky on multiple builds.
 IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
-                       DISABLE_DoNotOpenUninstallUrlForBlocklistedExtensions) {
+                       DISABLED_DoNotOpenUninstallUrlForBlocklistedExtensions) {
   ExtensionTestMessageListener ready_listener("ready");
   // Load an extension that has set an uninstall url.
   scoped_refptr<const extensions::Extension> extension =
