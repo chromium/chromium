@@ -36,13 +36,13 @@ public class AuxiliarySearchBridge {
     }
 
     /**
-     * @return AuxiliarySearchGroup, which is necessary for the auxiliary search.
+     * @return AuxiliarySearchGroup for bookmarks, which is necessary for the auxiliary search.
      */
-    public @Nullable AuxiliarySearchGroup getSearchableData() {
+    public @Nullable AuxiliarySearchGroup getBookmarksSearchableData() {
         if (mNativeBridge != 0) {
             try {
                 return AuxiliarySearchGroup.parseFrom(
-                        AuxiliarySearchBridgeJni.get().getSearchableData(mNativeBridge));
+                        AuxiliarySearchBridgeJni.get().getBookmarksSearchableData(mNativeBridge));
 
             } catch (InvalidProtocolBufferException e) {
             }
@@ -55,6 +55,6 @@ public class AuxiliarySearchBridge {
     @VisibleForTesting
     public interface Natives {
         long getForProfile(Profile profile);
-        byte[] getSearchableData(long nativeAuxiliarySearchProvider);
+        byte[] getBookmarksSearchableData(long nativeAuxiliarySearchProvider);
     }
 }

@@ -63,11 +63,11 @@ TEST_F(AuxiliarySearchProviderTest, QueryBookmarks) {
   }
   provider->GetBookmarks(model_.get(), &group);
 
-  EXPECT_EQ(100, group.bookmarks_size());
+  EXPECT_EQ(100, group.entry_size());
 
   std::unordered_set<int> bookmark_titles_int;
   for (int i = 0; i < 100; i++) {
-    auxiliary_search::AuxiliarySearchGroup_Entry entry = group.bookmarks(i);
+    auxiliary_search::AuxiliarySearchGroup_Entry entry = group.entry(i);
     int title_int;
     EXPECT_TRUE(base::StringToInt(entry.title(), &title_int));
 

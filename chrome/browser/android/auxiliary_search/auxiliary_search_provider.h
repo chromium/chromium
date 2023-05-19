@@ -26,7 +26,7 @@ class AuxiliarySearchProvider : public KeyedService {
   explicit AuxiliarySearchProvider(Profile* profile);
   ~AuxiliarySearchProvider() override;
 
-  base::android::ScopedJavaLocalRef<jbyteArray> GetSearchableData(
+  base::android::ScopedJavaLocalRef<jbyteArray> GetBookmarksSearchableData(
       JNIEnv* env) const;
 
  private:

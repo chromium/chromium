@@ -64,14 +64,12 @@ AuxiliarySearchProvider::AuxiliarySearchProvider(Profile* profile)
 AuxiliarySearchProvider::~AuxiliarySearchProvider() = default;
 
 base::android::ScopedJavaLocalRef<jbyteArray>
-AuxiliarySearchProvider::GetSearchableData(JNIEnv* env) const {
+AuxiliarySearchProvider::GetBookmarksSearchableData(JNIEnv* env) const {
   auxiliary_search::AuxiliarySearchGroup group;
   std::string serialized_group;
 
   GetBookmarks(BookmarkModelFactory::GetForBrowserContext(profile_.get()),
                &group);
-
-  // TODO(crbug.com/1445112): read the tabs and fill in the |group|.
 
   if (!group.SerializeToString(&serialized_group)) {
     serialized_group.clear();
@@ -86,11 +84,11 @@ void AuxiliarySearchProvider::GetBookmarks(
   std::vector<const BookmarkNode*> nodes;
   bookmarks::GetMostRecentlyUsedEntries(model, kMaxBookmarksCount, &nodes);
   for (const BookmarkNode* node : nodes) {
-    auxiliary_search::AuxiliarySearchGroup_Entry* entry =
-        group->add_bookmarks();
+    auxiliary_search::AuxiliarySearchGroup_Entry* entry = group->add_entry();
     entry->set_title(base::UTF16ToUTF8(node->GetTitle()));
     entry->set_url(node->url().spec());
   }
+  group->set_group_type(auxiliary_search::GroupType::BOOKMARK_GROUP);
 }
 
 // static
