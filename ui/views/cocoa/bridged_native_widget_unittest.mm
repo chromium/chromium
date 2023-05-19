@@ -1363,11 +1363,17 @@ TEST_F(BridgedNativeWidgetTest, TextInput_DeleteToEndOfParagraph) {
 
 // Test move commands against expectations set by |dummy_text_view_|.
 TEST_F(BridgedNativeWidgetTest, TextInput_MoveEditingCommands) {
+  if (base::mac::IsAtLeastOS13()) {
+    GTEST_SKIP() << "Broken on macOS 13: https://crbug.com/1446817";
+  }
   TestEditingCommands(kMoveActions);
 }
 
 // Test move and select commands against expectations set by |dummy_text_view_|.
 TEST_F(BridgedNativeWidgetTest, TextInput_MoveAndSelectEditingCommands) {
+  if (base::mac::IsAtLeastOS13()) {
+    GTEST_SKIP() << "Broken on macOS 13: https://crbug.com/1446817";
+  }
   TestEditingCommands(kSelectActions);
 }
 
