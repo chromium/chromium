@@ -17,6 +17,7 @@ namespace net {
 struct NET_EXPORT CertPrincipal {
   CertPrincipal();
   explicit CertPrincipal(const std::string& name);
+  CertPrincipal(CertPrincipal&&);
   ~CertPrincipal();
 
   // Configures handling of PrintableString values in the DistinguishedName. Do
