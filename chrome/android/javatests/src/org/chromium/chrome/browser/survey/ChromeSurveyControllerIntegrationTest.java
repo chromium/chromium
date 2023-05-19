@@ -20,6 +20,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -119,6 +120,7 @@ public class ChromeSurveyControllerIntegrationTest {
                 mTestSurveyController.showSurveyCallbackHelper.getCallCount());
     }
 
+    @DisabledTest(message = "https:://crbug.com/1447085")
     @Test
     @MediumTest
     public void testMessageDismissed() throws TimeoutException, ExecutionException {
@@ -128,6 +130,7 @@ public class ChromeSurveyControllerIntegrationTest {
                 () -> mMessageDispatcher.dismissMessage(message, DismissReason.GESTURE));
     }
 
+    @DisabledTest(message = "https:://crbug.com/1447085")
     @Test
     @MediumTest
     public void testNoMessageInNewTab() throws InterruptedException, ExecutionException {
