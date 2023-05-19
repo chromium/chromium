@@ -44,8 +44,10 @@ export class AppServiceInternalsElement extends PolymerElement {
         this.promiseAppList_ = debugInfo.promiseAppList;
       }
 
-      this.onHashChanged_();
       window.addEventListener('hashchange', this.hashChangeListener_);
+      // setTimeout ensures that we only apply the hash change after all the
+      // page content has rendered.
+      setTimeout(() => this.onHashChanged_(), 0);
     })();
   }
 
