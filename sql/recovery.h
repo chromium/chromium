@@ -11,6 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "sql/database.h"
 #include "sql/internal_api_token.h"
 #include "sql/sqlite_result_code_values.h"
@@ -24,8 +25,6 @@ namespace sql {
 // WARNING: This API is still experimental. If you're looking to add corruption
 // recovery to your feature that uses SQLite, use the `Recovery` class below...
 // for now! See https://crbug.com/1385500.
-//
-// TODO(https://crbug.com/1385500): This currently does not work on Fuchsia.
 //
 // Uses SQLite's built-in corruption recovery module to recover the database.
 // See https://www.sqlite.org/recovery.html
@@ -44,6 +43,16 @@ class COMPONENT_EXPORT(SQL) BuiltInRecovery {
     // TODO(https://crbug.com/1385500): Consider exposing a way to keep around a
     // successfully-recovered, but unsuccessfully-restored database if needed.
   };
+
+  // TODO(https://crbug.com/1385500): `BuiltInRecovery` is not yet supported on
+  // Fuchsia.
+  static bool IsSupported() {
+#if BUILDFLAG(IS_FUCHSIA)
+    return false;
+#else
+    return true;
+#endif  // BUILDFLAG(IS_FUCHSIA)
+  }
 
   // Returns true if `RecoverDatabase()` can plausibly fix `database` given this
   // `extended_error`. This does not guarantee that `RecoverDatabase()` will

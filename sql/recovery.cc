@@ -23,7 +23,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/pass_key.h"
-#include "build/build_config.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/internal_api_token.h"
@@ -65,10 +64,7 @@ BuiltInRecovery::BuiltInRecovery(Database* database, Strategy strategy)
           .page_size = database ? database->page_size() : 0,
           .cache_size = 0,
       }) {
-  // TODO(https://crbug.com/1385500): Make built-in recovery work on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-  NOTIMPLEMENTED();
-#endif  // BUILDFLAG(IS_FUCHSIA)
+  CHECK(IsSupported());
   CHECK(db_);
   CHECK(db_->is_open());
   // Recovery is likely to be used in error handling. To prevent re-entry due to

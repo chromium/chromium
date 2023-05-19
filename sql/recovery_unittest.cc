@@ -20,8 +20,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
-#include "base/types/pass_key.h"
-#include "build/build_config.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/sqlite_result_code_values.h"
@@ -82,14 +80,7 @@ class SqlRecoveryTest : public testing::TestWithParam<bool> {
     return file.Write(0, kText, kTextBytes) == kTextBytes;
   }
 
-  bool UseBuiltIn() {
-#if BUILDFLAG(IS_FUCHSIA)
-    // TODO(https://crbug.com/1385500): Make built-in recovery work on Fuchsia.
-    return false;
-#else
-    return GetParam();
-#endif  // BUILDFLAG(IS_FUCHSIA)
-  }
+  bool UseBuiltIn() { return GetParam() && BuiltInRecovery::IsSupported(); }
 
  protected:
   base::ScopedTempDir temp_dir_;
