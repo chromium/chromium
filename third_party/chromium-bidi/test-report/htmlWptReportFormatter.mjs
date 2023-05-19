@@ -171,10 +171,8 @@ function generateSubtestReport(subtest) {
           subtest.status === 'PASS' ? 'pass' : 'fail'
         }">
           ${escapeHtml(subtest.name ?? subtest.path)} ${
-            subtest.message
-              ? `<br /><small>${escapeHtml(subtest.message)}</small>`
-              : ''
-          }
+    subtest.message ? `<br /><small>${escapeHtml(subtest.message)}</small>` : ''
+  }
           <span class="stat"><b>${escapeHtml(subtest.status)}</b></span>
         </p>
       </div>`;
