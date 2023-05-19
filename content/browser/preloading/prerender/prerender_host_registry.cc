@@ -316,10 +316,11 @@ class PrerenderHostBuilder {
   void RejectAsDuplicate();
   void RejectAsFailure(const PrerenderAttributes& attributes,
                        PrerenderFinalStatus status);
-
- private:
+  // Public only for exceptional case.
+  // TODO(https://crbug.com/1435376): Make this private again.
   void Drop();
 
+ private:
   // Use raw pointer as PrerenderHostBuilder is alive only during
   // PrerenderHostRegistry::CreateAndStartHost(), and PreloadingAttempt should
   // outlive the function.
@@ -488,6 +489,16 @@ int PrerenderHostRegistry::CreateAndStartHost(
                        base::Unretained(this), attributes.prerendering_url));
 
     auto builder = PrerenderHostBuilder(attempt);
+
+    // We don't know the root cause, but there is a case this is null.
+    //
+    // TODO(https://crbug.com/1435376): Continue investigation and fix the root
+    // cause.
+    if (initiator_web_contents.GetDelegate() == nullptr) {
+      // Note that return without consuming `builder` is exceptional.
+      builder.Drop();
+      return RenderFrameHost::kNoFrameTreeNodeId;
+    }
 
     // Check whether preloading is enabled. If it is not enabled, report the
     // reason.
