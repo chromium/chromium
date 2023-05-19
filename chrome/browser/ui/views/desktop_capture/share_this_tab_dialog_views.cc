@@ -156,8 +156,8 @@ ShareThisTabDialogView::ShareThisTabDialogView(
     CreateDialogWidget(this, params.context, nullptr)->Show();
   }
 
-  source_view_->SetBorder(
-      views::CreateThemedSolidBorder(1, kColorShareThisTabSourceViewBorder));
+  source_view_->SetBorder(views::CreateThemedRoundedRectBorder(
+      1, 2, kColorShareThisTabSourceViewBorder));
 
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_SHARE_THIS_TAB_DIALOG_ALLOW));
@@ -232,8 +232,9 @@ void ShareThisTabDialogView::SetupSourceView() {
 
 void ShareThisTabDialogView::SetupAudioToggle() {
   View* audio_toggle_container = AddChildView(std::make_unique<views::View>());
-  audio_toggle_container->SetBackground(views::CreateThemedSolidBackground(
-      kColorShareThisTabAudioToggleBackground));
+  audio_toggle_container->SetBackground(
+      views::CreateThemedRoundedRectBackground(
+          kColorShareThisTabAudioToggleBackground, 4));
 
   views::ImageView* audio_icon_view = audio_toggle_container->AddChildView(
       std::make_unique<views::ImageView>());
