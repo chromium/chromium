@@ -204,9 +204,10 @@ TEST_F(SyncDeviceInfoObserverTest,
       .tensor_length = 10,
       .fill_policy = proto::CustomInput::FILL_SYNC_DEVICE_INFO,
       .name = "SyncDeviceInfo"});
-  (*sync_input->mutable_additional_args())["wait_for_device_info_in_seconds"] =
-      "2";
-  state.set_input_context_for_testing(CreateInputContext());
+  auto input_context = CreateInputContext();
+  input_context->metadata_args.emplace("wait_for_device_info_in_seconds",
+                                       ProcessedValue(2));
+  state.set_input_context_for_testing(input_context);
 
   std::vector<float> expected_result = {0, 0, 0, 0, 0, 1, 0, 0, 0, 0};
   base::RunLoop loop;

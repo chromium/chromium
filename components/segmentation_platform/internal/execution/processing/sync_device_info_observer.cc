@@ -145,9 +145,25 @@ void SyncDeviceInfoObserver::Process(
     const FeatureProcessorState& feature_processor_state,
     ProcessedCallback callback) {
   int wait_for_device_info_in_seconds = 0;
-  auto it = input.additional_args().find("wait_for_device_info_in_seconds");
-  if (it != input.additional_args().end()) {
-    if (!base::StringToInt(it->second, &wait_for_device_info_in_seconds)) {
+
+  auto model_input_it =
+      input.additional_args().find("wait_for_device_info_in_seconds");
+  absl::optional<int> wait_from_input;
+  if (feature_processor_state.input_context()) {
+    auto api_input_it =
+        feature_processor_state.input_context()->metadata_args.find(
+            "wait_for_device_info_in_seconds");
+    if (api_input_it !=
+        feature_processor_state.input_context()->metadata_args.end()) {
+      CHECK_EQ(api_input_it->second.type, ProcessedValue::Type::INT);
+      wait_from_input = api_input_it->second.int_val;
+    }
+  }
+  if (wait_from_input) {
+    wait_for_device_info_in_seconds = *wait_from_input;
+  } else if (model_input_it != input.additional_args().end()) {
+    if (!base::StringToInt(model_input_it->second,
+                           &wait_for_device_info_in_seconds)) {
       wait_for_device_info_in_seconds = 0;
     }
   }
