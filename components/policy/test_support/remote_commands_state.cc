@@ -58,7 +58,7 @@ RemoteCommandsState::ExtractPendingRemoteCommands() {
 }
 
 bool RemoteCommandsState::GetRemoteCommandResult(
-    int id,
+    int64_t id,
     em::RemoteCommandResult* result) {
   base::AutoLock lock(lock_);
   if (command_results_.count(id) == 0) {

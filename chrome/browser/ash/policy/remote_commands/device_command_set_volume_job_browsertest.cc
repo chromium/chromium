@@ -34,11 +34,23 @@ class DeviceCommandSetVolumeBrowserTest : public DevicePolicyCrosBrowserTest {
 IN_PROC_BROWSER_TEST_F(DeviceCommandSetVolumeBrowserTest, DeviceSetVolume) {
   em::RemoteCommandResult result =
       SendRemoteCommand(RemoteCommandBuilder()
-                            .SetType(em::RemoteCommand_Type_DEVICE_SET_VOLUME)
+                            .SetType(em::RemoteCommand::DEVICE_SET_VOLUME)
                             .SetPayload(R"({"volume": 50})")
                             .Build());
 
-  EXPECT_EQ(result.result(), em::RemoteCommandResult_ResultType_RESULT_SUCCESS);
+  EXPECT_EQ(result.result(), em::RemoteCommandResult::RESULT_SUCCESS);
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceCommandSetVolumeBrowserTest,
+                       ShouldWorkWith64BitCommandIds) {
+  em::RemoteCommandResult result =
+      SendRemoteCommand(RemoteCommandBuilder()
+                            .SetType(em::RemoteCommand::DEVICE_SET_VOLUME)
+                            .SetPayload(R"({"volume": 50})")
+                            .SetCommandId(112233445566778899)
+                            .Build());
+
+  EXPECT_EQ(result.result(), em::RemoteCommandResult::RESULT_SUCCESS);
 }
 
 }  // namespace policy

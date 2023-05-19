@@ -28,7 +28,7 @@ class RemoteCommandBuilder {
 
   enterprise_management::RemoteCommand Build();
 
-  RemoteCommandBuilder& SetCommandId(int id);
+  RemoteCommandBuilder& SetCommandId(int64_t value);
   RemoteCommandBuilder& ClearCommandId();
   RemoteCommandBuilder& SetType(enterprise_management::RemoteCommand::Type);
   RemoteCommandBuilder& ClearType();
