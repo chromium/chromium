@@ -4,7 +4,10 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -26,9 +29,11 @@ import org.chromium.base.BuildInfo;
  */
 public class ChromeDialog extends ComponentDialog {
     private boolean mIsFullScreen;
+    private Context mContext;
 
     public ChromeDialog(@NonNull Context context, @StyleRes int themeResId) {
         super(context, themeResId);
+        mContext = context;
         if (themeResId == R.style.ThemeOverlay_BrowserUI_Fullscreen) {
             mIsFullScreen = true;
         } else {
@@ -71,6 +76,21 @@ public class ChromeDialog extends ComponentDialog {
             linearLayout.addView(view);
         } else {
             super.setContentView(view, params);
+        }
+    }
+
+    @Override
+    public void addContentView(View view, ViewGroup.LayoutParams params) {
+        if (BuildInfo.getInstance().isAutomotive && mIsFullScreen && params.width == MATCH_PARENT
+                && params.height == MATCH_PARENT) {
+            ViewGroup automotiveLayout = (ViewGroup) LayoutInflater.from(mContext).inflate(
+                    R.layout.automotive_layout_with_back_button_toolbar, null);
+            super.addContentView(
+                    automotiveLayout, new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
+            setAutomotiveToolbarBackButtonAction();
+            automotiveLayout.addView(view, params);
+        } else {
+            super.addContentView(view, params);
         }
     }
 

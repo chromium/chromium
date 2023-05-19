@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 import static org.chromium.chrome.browser.base.SplitCompatApplication.CHROME_SPLIT_NAME;
 
 import android.app.ActivityManager.TaskDescription;
@@ -397,6 +399,21 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             linearLayout.addView(view);
         } else {
             super.setContentView(view, params);
+        }
+    }
+
+    @Override
+    public void addContentView(View view, ViewGroup.LayoutParams params) {
+        if (BuildInfo.getInstance().isAutomotive && params.width == MATCH_PARENT
+                && params.height == MATCH_PARENT) {
+            ViewGroup automotiveLayout = (ViewGroup) getLayoutInflater().inflate(
+                    R.layout.automotive_layout_with_back_button_toolbar, null);
+            super.addContentView(
+                    automotiveLayout, new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
+            setAutomotiveToolbarBackButtonAction();
+            automotiveLayout.addView(view, params);
+        } else {
+            super.addContentView(view, params);
         }
     }
 

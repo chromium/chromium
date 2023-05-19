@@ -58,9 +58,9 @@ public class FullscreenAlertDialog extends AlertDialog {
         if (BuildInfo.getInstance().isAutomotive) {
             MarginLayoutParams params = (MarginLayoutParams) view.getLayoutParams();
             params.setMargins(viewSpacingLeft, viewSpacingTop, viewSpacingRight, viewSpacingBottom);
-            View automotiveLayout = LayoutInflater.from(mContext).inflate(
+            ViewGroup automotiveLayout = (ViewGroup) LayoutInflater.from(mContext).inflate(
                     R.layout.automotive_layout_with_back_button_toolbar, null);
-            ((ViewGroup) automotiveLayout).addView(view, params);
+            automotiveLayout.addView(view, params);
             mAutomotiveToolbar = automotiveLayout.findViewById(R.id.back_button_toolbar);
             super.setView(automotiveLayout);
         } else {
@@ -105,10 +105,10 @@ public class FullscreenAlertDialog extends AlertDialog {
         @Override
         public Builder setView(View view) {
             if (BuildInfo.getInstance().isAutomotive) {
-                View automotiveLayout = LayoutInflater.from(mContext).inflate(
+                ViewGroup automotiveLayout = (ViewGroup) LayoutInflater.from(mContext).inflate(
                         R.layout.automotive_layout_with_back_button_toolbar, null);
                 mAutomotiveToolbar = automotiveLayout.findViewById(R.id.back_button_toolbar);
-                ((ViewGroup) automotiveLayout).addView(view);
+                automotiveLayout.addView(view);
                 super.setView(automotiveLayout);
             } else {
                 super.setView(view);
