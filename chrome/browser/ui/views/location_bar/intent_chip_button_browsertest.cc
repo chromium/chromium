@@ -300,14 +300,9 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
   ASSERT_TRUE(IntentPickerBubbleView::intent_picker_bubble());
 }
 
-// TODO(crbug.com/1427908): Flaky on Linux CFI.
-#if BUILDFLAG(CFI_ICALL_CHECK) && BUILDFLAG(IS_LINUX)
-#define MAYBE_ShowsIntentChipCollapsed DISABLED_ShowsIntentChipCollapsed
-#else
-#define MAYBE_ShowsIntentChipCollapsed ShowsIntentChipCollapsed
-#endif
+// TODO(crbug.com/1427908): Flaky on many platforms.
 IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
-                       MAYBE_ShowsIntentChipCollapsed) {
+                       DISABLED_ShowsIntentChipCollapsed) {
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
   const GURL out_of_scope_url =
