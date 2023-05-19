@@ -4123,7 +4123,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4538417792467843292">Ezabatu hitza</translation>
 <translation id="4538792345715658285">Enpresaren gidalerroen arabera instalatuta.</translation>
 <translation id="4541123282641193691">Ezin izan da egiaztatu kontua. Saiatu berriro edo berrabiarazi Chromebook-a.</translation>
-<translation id="4541662893742891060">Ezin da konektatu profil honetara. Laguntza teknikoa eskuratzeko, jarri harremanetan operadorearekin.</translation>
+<translation id="4541662893742891060">Ezin da konektatu profil honetara. Laguntza teknikoa eskuratzeko, jarri operadorearekin harremanetan.</translation>
 <translation id="4541706525461326392">Profila kentzen. Agian minutu batzuk beharko dira.</translation>
 <translation id="4542332958571335077">{NUM_PASSWORDS,plural, =1{Gailuko pasahitz bat Google-ren Pasahitz-kudeatzailea zerbitzura inportatu da}other{Gailuko {NUM_PASSWORDS} pasahitz Google-ren Pasahitz-kudeatzailea zerbitzura inportatu dira}}</translation>
 <translation id="4542520061254486227">Irakurri <ph name="WEBSITE_1" /> eta <ph name="WEBSITE_2" /> webguneetan dituzun datuak</translation>
@@ -6084,7 +6084,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6309443618838462258">Administratzaileak ez du onartzen idazketa-metodo hau</translation>
 <translation id="630948338437014525">oroitzapenak</translation>
 <translation id="6309510305002439352">Mikrofonoa erabiltzeko baimena desaktibatuta dago</translation>
-<translation id="6310141306111263820">Ezin izan da instalatu eSIMaren profila. Laguntza eskuratzeko, jarri harremanetan operadorearekin.</translation>
+<translation id="6310141306111263820">Ezin izan da instalatu eSIMaren profila. Laguntza eskuratzeko, jarri operadorearekin harremanetan.</translation>
 <translation id="6311220991371174222">Ezin da Chrome abiarazi arazoren bat izan delako profila irekitzean. Berrabiarazi Chrome.</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{Atzo egin zen segurtasun-egiaztapena}other{Duela {NUM_DAYS} egun egin zen segurtasun-egiaztapena}}</translation>
 <translation id="6312638141433622592">Eskaini artikuluak irakurgailu moduan erakusteko aukera, halakorik onartzen bada</translation>

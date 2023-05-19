@@ -206,7 +206,7 @@
 <translation id="1879018240766558464">درحال‌حاضر از پنجره‌های «ناشناس» پشتیبانی نمی‌شود. برنامه‌های دیگر ذخیره خواهد شد.</translation>
 <translation id="1882814835921407042">عدم وجود شبکه تلفن همراه</translation>
 <translation id="1882897271359938046">بازتاب به <ph name="DISPLAY_NAME" /></translation>
-<translation id="1885785240814121742">باز کردن قفل با اثر انگشت</translation>
+<translation id="1885785240814121742">قفل‌گشایی با اثر انگشت</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> از <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> هرتز) پشتیبانی نمی‌کند. وضوح به <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />) تغییر کرده است. برای حفظ تغییرات، روی تأیید کلیک کنید. تنظیمات قبلی <ph name="TIMEOUT_SECONDS" /> دیگر بازیابی خواهد شد.</translation>
 <translation id="1908992311423394684">نصب جدید</translation>
 <translation id="1915307458270490472">قطع تماس</translation>
@@ -1471,7 +1471,7 @@
 <translation id="7860671499921112077">برای ورود به «نمای کلی»، با سه انگشت تند به بالا بکشید</translation>
 <translation id="7862292329216937261">برای استفاده از دستگاه به‌عنوان مهمان، باید از سیستم خارج شوید و سپس گزینه «مرور به‌عنوان مهمان» را در پایین صفحه‌نمایش انتخاب کنید.</translation>
 <translation id="7866482334467279021">روشن</translation>
-<translation id="7868900307798234037">درحال باز کردن قفل با اثر انگشت</translation>
+<translation id="7868900307798234037">درحال قفل‌گشایی با اثر انگشت</translation>
 <translation id="7872195908557044066">سرپرستتان درحال بازنشاندن سیم‌کارت داخلی شما است. چند دقیقه صبر کنید.</translation>
 <translation id="7872786842639831132">خاموش</translation>
 <translation id="7875575368831396199">ظاهراً بلوتوث در <ph name="DEVICE_TYPE" /> شما خاموش است. لطفاً برای استفاده از «مرکز کنترل تلفن»، بلوتوث را روشن کنید.</translation>
@@ -1503,7 +1503,7 @@
 <translation id="797512352675305461">روشن یا خاموش کردن ذره‌بین تمام‌صفحه</translation>
 <translation id="7977927628060636163">درحال جستجوی شبکه‌های تلفن همراه…</translation>
 <translation id="7982789257301363584">شبکه</translation>
-<translation id="7984197416080286869">تلاش‌های بیش از حد برای باز کردن قفل با اثر انگشت</translation>
+<translation id="7984197416080286869">تلاش‌های بیش از حد برای قفل‌گشایی با اثر انگشت</translation>
 <translation id="798779949890829624">این تنظیم را سرپرست شما مدیریت می‌کند</translation>
 <translation id="799296642788192631">‏می‌توانید فایل‌های مهم را سنجاق کنید. برای سنجاق کردن، نشانگر را روی مورد مدنظر نگه دارید یا Files را باز کنید و روی مورد مدنظر کلیک راست کنید.</translation>
 <translation id="7994370417837006925">ورود چندگانه به سیستم</translation>
