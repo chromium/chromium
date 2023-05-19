@@ -307,6 +307,37 @@ TEST_F(AutofillAgentTests,
   EXPECT_EQ(nil, completion_handler_icon);
 }
 
+// Tests that an empty network icon in a credit card suggestion will not cause
+// any problems. Regression test for crbug.com/1446933
+TEST_F(AutofillAgentTests, showAutofillPopup_EmptyIconInCreditCardSuggestion) {
+  // Deliberately initialize this as non-nil, as we are expecting it to be set
+  // to nil by the test.
+  __block UIImage* completion_handler_icon = gfx::test::CreatePlatformImage();
+  ASSERT_NE(nil, completion_handler_icon);
+
+  testing::NiceMock<autofill::MockAutofillPopupDelegate> mock_delegate;
+  EXPECT_CALL(mock_delegate, GetPopupType)
+      .WillRepeatedly(testing::Return(PopupType::kCreditCards));
+
+  const std::string emptyIcon = "";
+  std::vector<autofill::Suggestion> autofillSuggestions = {
+      autofill::Suggestion("", "", emptyIcon, PopupItemId::kShowAccountCards)};
+
+  // Completion handler to retrieve suggestions.
+  auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
+                             id<FormSuggestionProvider> delegate) {
+    completion_handler_icon = [suggestions[0].icon copy];
+  };
+
+  // Make credit card suggestion.
+  [autofill_agent_ showAutofillPopup:autofillSuggestions
+                       popupDelegate:mock_delegate.GetWeakPtr()];
+  [autofill_agent_ retrieveSuggestionsForForm:nil
+                                     webState:&fake_web_state_
+                            completionHandler:completionHandler];
+  EXPECT_EQ(nil, completion_handler_icon);
+}
+
 // Tests that for credit cards, a custom icon is preferred over the default
 // icon.
 TEST_F(AutofillAgentTests,

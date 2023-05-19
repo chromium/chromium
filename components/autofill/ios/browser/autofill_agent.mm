@@ -675,14 +675,17 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
     UIImage* icon = nil;
     if (delegate &&
         delegate->GetPopupType() == autofill::PopupType::kCreditCards) {
-      if (popup_suggestion.custom_icon.IsEmpty()) {
+      // If available, the custom icon for the card is preferred over the
+      // generic network icon. The network icon may also be missing, in
+      // which case we do not set an icon at all.
+      if (!popup_suggestion.custom_icon.IsEmpty()) {
+        icon = popup_suggestion.custom_icon.ToUIImage();
+      } else if (!popup_suggestion.icon.empty()) {
         const int resourceID =
             autofill::CreditCard::IconResourceId(popup_suggestion.icon);
         icon = ui::ResourceBundle::GetSharedInstance()
                    .GetNativeImageNamed(resourceID)
                    .ToUIImage();
-      } else {
-        icon = popup_suggestion.custom_icon.ToUIImage();
       }
     }
 
