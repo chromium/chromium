@@ -200,11 +200,13 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
   letter_spacing_button_->SetBackground(
       views::CreateThemedSolidBackground(background_color_id));
 
-  decrease_text_size_button_->UpdateIcon(
-      kTextDecreaseIcon, kIconSize, foreground_color_id, focus_ring_color_id);
+  decrease_text_size_button_->UpdateIcon(kTextDecreaseIcon, kFontSizeIconSize,
+                                         foreground_color_id,
+                                         focus_ring_color_id);
 
-  increase_text_size_button_->UpdateIcon(
-      kTextIncreaseIcon, kIconSize, foreground_color_id, focus_ring_color_id);
+  increase_text_size_button_->UpdateIcon(kTextIncreaseIcon, kFontSizeIconSize,
+                                         foreground_color_id,
+                                         focus_ring_color_id);
 
   colors_button_->SetIcon(kPaletteIcon, kIconSize, foreground_color_id,
                           focus_ring_color_id);

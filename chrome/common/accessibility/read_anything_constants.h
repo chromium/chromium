@@ -42,6 +42,7 @@ const int kMinimumComboboxWidth = 110;
 
 const int kButtonPadding = 2;
 const int kIconSize = 16;
+const int kFontSizeIconSize = kIconSize + kInternalInsets;
 const int kColorsIconSize = 24;
 const int kSpacingIconSize = 20;
 
