@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './print_management_fonts.css.js';
+import './print_management_shared.css.js';
+
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './printer_setup_info.html.js';

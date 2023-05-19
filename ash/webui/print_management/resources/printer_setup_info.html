@@ -1,1 +1,16 @@
-<div></div>
+<style include="print-management-shared print-management-fonts
+    cros-color-overrides">
+  .container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-align: center;
+    width: 100%;
+  }
+</style>
+<div class="container">
+  <iron-icon icon="print-management:file-generic"></iron-icon>
+  <h2 class="message-heading">No printer jobs</h2>
+  <p class="message-detail">Go to Printer settings to manage your printers</p>
+  <cr-button class="action-button">Manage</cr-button>
+</div>
