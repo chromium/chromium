@@ -172,7 +172,6 @@ void ClientTagBasedModelTypeProcessor::ConnectIfReady() {
 
     if (CommitOnlyTypes().Has(type_)) {
       // For commit-only types, no updates are expected.
-      model_type_state.set_initial_sync_done_deprecated(true);
       model_type_state.set_initial_sync_state(
           sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_UNNECESSARY);
       OnFullUpdateReceived(model_type_state, UpdateResponseDataList(),

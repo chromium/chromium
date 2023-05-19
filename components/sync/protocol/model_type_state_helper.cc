@@ -33,6 +33,9 @@ bool IsInitialSyncAtLeastPartiallyDone(
 
 bool MigrateLegacyInitialSyncDone(sync_pb::ModelTypeState& model_type_state,
                                   ModelType type) {
+  // TODO(crbug.com/1423338): This migration logic was added in M113. Remove it
+  // after a grace period of a year or so (M124ish).
+
   if (model_type_state.has_initial_sync_state()) {
     // Already migrated; nothing to do here.
     return false;
