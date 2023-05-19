@@ -4808,7 +4808,7 @@
     'machines': {
       'Cast Audio Linux': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'additional_compile_targets': [
           'cast_shell',
