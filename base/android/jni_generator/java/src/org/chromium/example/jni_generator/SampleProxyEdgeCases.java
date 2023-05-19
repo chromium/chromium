@@ -6,6 +6,7 @@ package org.chromium.example.jni_generator;
 
 import org.chromium.example.jni_generator.Boolean;
 
+@SomeAnnotation("that contains class Foo ")
 class SampleProxyEdgeCases {
     enum Integer {}
 
