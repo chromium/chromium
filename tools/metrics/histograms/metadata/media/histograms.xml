@@ -5514,6 +5514,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.Win.Device.IsSharedTexture" enum="Boolean"
+    expires_after="2023-10-01">
+  <owner>ilnik@google.com</owner>
+  <owner>video-cmi-mpp@google.com</owner>
+  <summary>
+    Determine what proportion of frames might actually benefit from zero-copy on
+    Windows. This is recorded when the camera is opened and we get the texture
+    from IMFCaptureEngine.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.Win.Device.RequestedPixelFormat"
     enum="VideoPixelFormatUnion" expires_after="2024-03-19">
   <owner>ilnik@google.com</owner>

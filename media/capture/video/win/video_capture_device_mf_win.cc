@@ -573,6 +573,22 @@ void GetTextureSizeAndFormat(ID3D11Texture2D* texture,
       format = PIXEL_FORMAT_UNKNOWN;
       break;
   }
+
+  // Log this in an UMA histogram to determine what proportion of frames might
+  // actually benefit from zero-copy.
+
+  // According to
+  // https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_resource_misc_flag,
+  // D3D11_RESOURCE_MISC_RESTRICT_SHARED_RESOURCE and
+  // D3D11_RESOURCE_MISC_RESTRICT_SHARED_RESOURCE_DRIVER only support shared
+  // texture on same process.
+  bool is_cross_process_shared_texture =
+      (desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED) &&
+      (desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_NTHANDLE) &&
+      !(desc.MiscFlags & D3D11_RESOURCE_MISC_RESTRICT_SHARED_RESOURCE) &&
+      !(desc.MiscFlags & D3D11_RESOURCE_MISC_RESTRICT_SHARED_RESOURCE_DRIVER);
+  base::UmaHistogramBoolean("Media.VideoCapture.Win.Device.IsSharedTexture",
+                            is_cross_process_shared_texture);
 }
 
 HRESULT CopyTextureToGpuMemoryBuffer(ID3D11Texture2D* texture,
