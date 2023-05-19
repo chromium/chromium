@@ -700,3 +700,9 @@ void DIPSBounceDetector::OnClientBounceDetectionTimeout() {
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DIPSWebContentsObserver);
+
+ukm::SourceId GetInitialRedirectSourceId(
+    content::NavigationHandle* navigation_handle) {
+  DIPSNavigationHandleImpl handle(navigation_handle);
+  return handle.GetRedirectSourceId(0);
+}

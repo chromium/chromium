@@ -15347,6 +15347,22 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="OpenerHeuristic.PopupPastInteraction">
+  <owner>rtarpine@chromium.org</owner>
+  <owner>dc-komics@chromium.org</owner>
+  <summary>
+    Recorded when a pop-up with opener access is initially opened, and the user
+    has previously interacted on the site of the URL passed to window.open().
+  </summary>
+  <metric name="HoursSinceLastInteraction">
+    <summary>
+      The number of hours since the user last interacted with the site, until
+      the pop-up was opened. Clamped to 720 hours at most, and rounded down to
+      the nearest exponential bucket (out of 50 buckets).
+    </summary>
+  </metric>
+</event>
+
 <event name="OptimizationGuide" singular="True">
   <owner>sophiechang@chromium.org</owner>
   <summary>
