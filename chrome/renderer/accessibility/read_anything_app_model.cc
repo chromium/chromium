@@ -551,6 +551,7 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
           requires_post_process_selection_ = true;
         }
         break;
+      case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
       case ui::AXEventGenerator::Event::ALERT:
         requires_distillation_ = true;
         break;
@@ -575,7 +576,6 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::DETAILS_CHANGED:
       case ui::AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
       case ui::AXEventGenerator::Event::DESCRIPTION_CHANGED:
-      case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
       case ui::AXEventGenerator::Event::DROPEFFECT_CHANGED:
       case ui::AXEventGenerator::Event::EDITABLE_TEXT_CHANGED:
       case ui::AXEventGenerator::Event::ENABLED_CHANGED:
