@@ -7,7 +7,8 @@ package org.chromium.net;
 import static android.system.OsConstants.AF_INET6;
 import static android.system.OsConstants.SOCK_STREAM;
 
-import static org.junit.Assert.assertEquals;
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -103,8 +104,8 @@ public class NetworkChangeNotifierTest {
         callback.blockForDone();
         assertNotNull(callback.mError);
         assertTrue(callback.mOnErrorCalled);
-        assertEquals(NetError.ERR_NETWORK_CHANGED,
-                ((NetworkException) callback.mError).getCronetInternalErrorCode());
+        assertThat(((NetworkException) callback.mError).getCronetInternalErrorCode())
+                .isEqualTo(NetError.ERR_NETWORK_CHANGED);
         assertContains("Exception in CronetUrlRequest: net::ERR_NETWORK_CHANGED",
                 callback.mError.getMessage());
     }

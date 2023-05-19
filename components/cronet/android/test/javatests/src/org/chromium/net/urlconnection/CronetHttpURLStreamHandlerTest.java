@@ -4,7 +4,8 @@
 
 package org.chromium.net.urlconnection;
 
-import static org.junit.Assert.assertEquals;
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -59,11 +60,10 @@ public class CronetHttpURLStreamHandlerTest {
         URL url = new URL(NativeTestServer.getEchoMethodURL());
         CronetHttpURLStreamHandler streamHandler =
                 new CronetHttpURLStreamHandler(mTestFramework.mCronetEngine);
-        HttpURLConnection connection =
-                (HttpURLConnection) streamHandler.openConnection(url);
-        assertEquals(200, connection.getResponseCode());
-        assertEquals("OK", connection.getResponseMessage());
-        assertEquals("GET", TestUtil.getResponseAsString(connection));
+        HttpURLConnection connection = (HttpURLConnection) streamHandler.openConnection(url);
+        assertThat(connection.getResponseCode()).isEqualTo(200);
+        assertThat(connection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(connection)).isEqualTo("GET");
         connection.disconnect();
     }
 
@@ -88,7 +88,7 @@ public class CronetHttpURLStreamHandlerTest {
             streamHandler.openConnection(url);
             fail();
         } catch (UnsupportedOperationException e) {
-            assertEquals("Unexpected protocol:ftp", e.getMessage());
+            assertThat(e).hasMessageThat().isEqualTo("Unexpected protocol:ftp");
         }
     }
 

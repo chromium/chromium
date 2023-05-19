@@ -6,7 +6,6 @@ package org.chromium.net.apihelpers;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -83,8 +82,8 @@ public class UploadDataProvidersTest {
         builder.addHeader("Content-Type", "useless/string");
         builder.build().start();
         callback.blockForDone();
-        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
-        assertEquals(LOREM, callback.mResponseAsString);
+        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseAsString).isEqualTo(LOREM);
     }
 
     @Test
@@ -101,8 +100,8 @@ public class UploadDataProvidersTest {
         builder.addHeader("Content-Type", "useless/string");
         builder.build().start();
         callback.blockForDone();
-        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
-        assertEquals(LOREM, callback.mResponseAsString);
+        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseAsString).isEqualTo(LOREM);
     }
 
     @Test
@@ -137,8 +136,8 @@ public class UploadDataProvidersTest {
         builder.build().start();
         callback.blockForDone();
 
-        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
-        assertEquals(LOREM, callback.mResponseAsString);
+        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseAsString).isEqualTo(LOREM);
     }
 
     @Test
@@ -164,8 +163,8 @@ public class UploadDataProvidersTest {
                 int oldPos = byteBuffer.position();
                 int oldLimit = byteBuffer.limit();
                 byteBuffer.put(CONTENT.getBytes());
-                assertEquals(oldPos + CONTENT.length(), byteBuffer.position());
-                assertEquals(oldLimit, byteBuffer.limit());
+                assertThat(byteBuffer.position()).isEqualTo(oldPos + CONTENT.length());
+                assertThat(byteBuffer.limit()).isEqualTo(oldLimit);
                 // Now change the limit to something else. This should give an error.
                 byteBuffer.limit(oldLimit - 1);
                 uploadDataSink.onReadSucceeded(false);
@@ -264,12 +263,12 @@ public class UploadDataProvidersTest {
         System.arraycopy(uploadData, 0, uploadDataWithPadding, offset, uploadData.length);
         UploadDataProvider dataProvider =
                 UploadDataProviders.create(uploadDataWithPadding, offset, uploadData.length);
-        assertEquals(uploadData.length, dataProvider.getLength());
+        assertThat(dataProvider.getLength()).isEqualTo(uploadData.length);
         builder.setUploadDataProvider(dataProvider, callback.getExecutor());
         UrlRequest urlRequest = builder.build();
         urlRequest.start();
         callback.blockForDone();
-        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
-        assertEquals(LOREM, callback.mResponseAsString);
+        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseAsString).isEqualTo(LOREM);
     }
 }

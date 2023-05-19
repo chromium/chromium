@@ -4,13 +4,13 @@
 
 package org.chromium.net;
 
-import static org.junit.Assert.assertEquals;
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import static org.chromium.base.CollectionUtil.newHashSet;
 import static org.chromium.net.CronetTestRule.getContext;
 
 import android.os.ConditionVariable;
@@ -33,7 +33,6 @@ import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
@@ -136,10 +135,9 @@ public class RequestFinishedInfoTest {
 
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
         MetricsTestUtil.checkRequestFinishedInfo(requestInfo, mUrl, startTime, endTime);
-        assertEquals(RequestFinishedInfo.SUCCEEDED, requestInfo.getFinishedReason());
+        assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.SUCCEEDED);
         MetricsTestUtil.checkHasConnectTiming(requestInfo.getMetrics(), startTime, endTime, false);
-        assertEquals(newHashSet("request annotation", this), // Use sets for unordered comparison.
-                new HashSet<Object>(requestInfo.getAnnotations()));
+        assertThat(requestInfo.getAnnotations()).containsExactly("request annotation", this);
     }
 
     @Test
@@ -168,10 +166,9 @@ public class RequestFinishedInfoTest {
 
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
         MetricsTestUtil.checkRequestFinishedInfo(requestInfo, mUrl, startTime, endTime);
-        assertEquals(RequestFinishedInfo.SUCCEEDED, requestInfo.getFinishedReason());
+        assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.SUCCEEDED);
         MetricsTestUtil.checkHasConnectTiming(requestInfo.getMetrics(), startTime, endTime, false);
-        assertEquals(newHashSet("request annotation", this), // Use sets for unordered comparison.
-                new HashSet<Object>(requestInfo.getAnnotations()));
+        assertThat(requestInfo.getAnnotations()).containsExactly("request annotation", this);
     }
 
     @Test
@@ -201,19 +198,17 @@ public class RequestFinishedInfoTest {
         RequestFinishedInfo secondRequestInfo = secondListener.getRequestInfo();
 
         MetricsTestUtil.checkRequestFinishedInfo(firstRequestInfo, mUrl, startTime, endTime);
-        assertEquals(RequestFinishedInfo.SUCCEEDED, firstRequestInfo.getFinishedReason());
+        assertThat(firstRequestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.SUCCEEDED);
         MetricsTestUtil.checkHasConnectTiming(
                 firstRequestInfo.getMetrics(), startTime, endTime, false);
 
         MetricsTestUtil.checkRequestFinishedInfo(secondRequestInfo, mUrl, startTime, endTime);
-        assertEquals(RequestFinishedInfo.SUCCEEDED, secondRequestInfo.getFinishedReason());
+        assertThat(secondRequestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.SUCCEEDED);
         MetricsTestUtil.checkHasConnectTiming(
                 secondRequestInfo.getMetrics(), startTime, endTime, false);
 
-        assertEquals(newHashSet("request annotation", this), // Use sets for unordered comparison.
-                new HashSet<Object>(firstRequestInfo.getAnnotations()));
-        assertEquals(newHashSet("request annotation", this),
-                new HashSet<Object>(secondRequestInfo.getAnnotations()));
+        assertThat(firstRequestInfo.getAnnotations()).containsExactly("request annotation", this);
+        assertThat(secondRequestInfo.getAnnotations()).containsExactly("request annotation", this);
     }
 
     @Test
@@ -236,12 +231,12 @@ public class RequestFinishedInfoTest {
 
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
         assertNotNull("RequestFinishedInfo.Listener must be called", requestInfo);
-        assertEquals(connectionRefusedUrl, requestInfo.getUrl());
+        assertThat(requestInfo.getUrl()).isEqualTo(connectionRefusedUrl);
         assertTrue(requestInfo.getAnnotations().isEmpty());
-        assertEquals(RequestFinishedInfo.FAILED, requestInfo.getFinishedReason());
+        assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.FAILED);
         assertNotNull(requestInfo.getException());
-        assertEquals(NetworkException.ERROR_CONNECTION_REFUSED,
-                ((NetworkException) requestInfo.getException()).getErrorCode());
+        assertThat(((NetworkException) requestInfo.getException()).getErrorCode())
+                .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
         RequestFinishedInfo.Metrics metrics = requestInfo.getMetrics();
         assertNotNull("RequestFinishedInfo.getMetrics() must not be null", metrics);
         // The failure is occasionally fast enough that time reported is 0, so just check for null
@@ -359,11 +354,10 @@ public class RequestFinishedInfoTest {
 
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
         MetricsTestUtil.checkRequestFinishedInfo(requestInfo, mUrl, startTime, endTime);
-        assertEquals(RequestFinishedInfo.CANCELED, requestInfo.getFinishedReason());
+        assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.CANCELED);
         MetricsTestUtil.checkHasConnectTiming(requestInfo.getMetrics(), startTime, endTime, false);
 
-        assertEquals(newHashSet("request annotation", this), // Use sets for unordered comparison.
-                new HashSet<Object>(requestInfo.getAnnotations()));
+        assertThat(requestInfo.getAnnotations()).containsExactly("request annotation", this);
     }
 
     private static class RejectAllTasksExecutor implements Executor {
@@ -394,7 +388,7 @@ public class RequestFinishedInfoTest {
             request.start();
             fail("UrlRequest.start() should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
-            assertEquals("Invalid header =", e.getMessage());
+            assertThat(e).hasMessageThat().isEqualTo("Invalid header =");
         }
     }
 
@@ -421,21 +415,21 @@ public class RequestFinishedInfoTest {
         RequestFinishedInfo.Metrics metrics = new CronetMetrics(requestStart, dnsStart, dnsEnd,
                 connectStart, connectEnd, sslStart, sslEnd, sendingStart, sendingEnd, pushStart,
                 pushEnd, responseStart, requestEnd, socketReused, sentByteCount, receivedByteCount);
-        assertEquals(new Date(requestStart), metrics.getRequestStart());
+        assertThat(metrics.getRequestStart()).isEqualTo(new Date(requestStart));
         // -1 timestamp should translate to null
         assertNull(metrics.getDnsEnd());
-        assertEquals(new Date(dnsStart), metrics.getDnsStart());
-        assertEquals(new Date(connectStart), metrics.getConnectStart());
-        assertEquals(new Date(connectEnd), metrics.getConnectEnd());
-        assertEquals(new Date(sslStart), metrics.getSslStart());
-        assertEquals(new Date(sslEnd), metrics.getSslEnd());
-        assertEquals(new Date(pushStart), metrics.getPushStart());
-        assertEquals(new Date(pushEnd), metrics.getPushEnd());
-        assertEquals(new Date(responseStart), metrics.getResponseStart());
-        assertEquals(new Date(requestEnd), metrics.getRequestEnd());
-        assertEquals(socketReused, metrics.getSocketReused());
-        assertEquals(sentByteCount, (long) metrics.getSentByteCount());
-        assertEquals(receivedByteCount, (long) metrics.getReceivedByteCount());
+        assertThat(metrics.getDnsStart()).isEqualTo(new Date(dnsStart));
+        assertThat(metrics.getConnectStart()).isEqualTo(new Date(connectStart));
+        assertThat(metrics.getConnectEnd()).isEqualTo(new Date(connectEnd));
+        assertThat(metrics.getSslStart()).isEqualTo(new Date(sslStart));
+        assertThat(metrics.getSslEnd()).isEqualTo(new Date(sslEnd));
+        assertThat(metrics.getPushStart()).isEqualTo(new Date(pushStart));
+        assertThat(metrics.getPushEnd()).isEqualTo(new Date(pushEnd));
+        assertThat(metrics.getResponseStart()).isEqualTo(new Date(responseStart));
+        assertThat(metrics.getRequestEnd()).isEqualTo(new Date(requestEnd));
+        assertThat(metrics.getSocketReused()).isEqualTo(socketReused);
+        assertThat((long) metrics.getSentByteCount()).isEqualTo(sentByteCount);
+        assertThat((long) metrics.getReceivedByteCount()).isEqualTo(receivedByteCount);
     }
 
     @Test
@@ -461,10 +455,9 @@ public class RequestFinishedInfoTest {
 
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
         MetricsTestUtil.checkRequestFinishedInfo(requestInfo, mUrl, startTime, endTime);
-        assertEquals(RequestFinishedInfo.SUCCEEDED, requestInfo.getFinishedReason());
+        assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.SUCCEEDED);
         MetricsTestUtil.checkHasConnectTiming(requestInfo.getMetrics(), startTime, endTime, false);
-        assertEquals(newHashSet("request annotation", this), // Use sets for unordered comparison.
-                new HashSet<Object>(requestInfo.getAnnotations()));
+        assertThat(requestInfo.getAnnotations()).containsExactly("request annotation", this);
     }
 
     @Test
@@ -497,10 +490,10 @@ public class RequestFinishedInfoTest {
         Date endTime = new Date();
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
         MetricsTestUtil.checkRequestFinishedInfo(requestInfo, mUrl, startTime, endTime);
-        assertEquals(RequestFinishedInfo.SUCCEEDED, requestInfo.getFinishedReason());
+        assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.SUCCEEDED);
         MetricsTestUtil.checkHasConnectTiming(requestInfo.getMetrics(), startTime, endTime, false);
         // Check that annotation got updated in onSucceeded() callback.
-        assertEquals(requestAnnotation, requestInfo.getAnnotations().iterator().next());
+        assertThat(requestInfo.getAnnotations()).containsExactly(requestAnnotation);
         assertTrue(requestAnnotation.get());
     }
 
@@ -526,12 +519,12 @@ public class RequestFinishedInfoTest {
         requestFinishedListener.blockUntilDone();
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
         assertNotNull("RequestFinishedInfo.Listener must be called", requestInfo);
-        assertEquals(mUrl, requestInfo.getUrl());
+        assertThat(requestInfo.getUrl()).isEqualTo(mUrl);
         assertTrue(requestInfo.getAnnotations().isEmpty());
-        assertEquals(RequestFinishedInfo.FAILED, requestInfo.getFinishedReason());
-        assertNotNull(requestInfo.getException());
-        assertEquals("Exception received from UrlRequest.Callback",
-                requestInfo.getException().getMessage());
+        assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.FAILED);
+        assertThat(requestInfo.getException())
+                .hasMessageThat()
+                .isEqualTo("Exception received from UrlRequest.Callback");
         RequestFinishedInfo.Metrics metrics = requestInfo.getMetrics();
         assertNotNull("RequestFinishedInfo.getMetrics() must not be null", metrics);
     }
@@ -554,12 +547,12 @@ public class RequestFinishedInfoTest {
         requestFinishedListener.blockUntilDone();
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
         assertNotNull("RequestFinishedInfo.Listener must be called", requestInfo);
-        assertEquals(connectionRefusedUrl, requestInfo.getUrl());
+        assertThat(requestInfo.getUrl()).isEqualTo(connectionRefusedUrl);
         assertTrue(requestInfo.getAnnotations().isEmpty());
-        assertEquals(RequestFinishedInfo.FAILED, requestInfo.getFinishedReason());
+        assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.FAILED);
         assertNotNull(requestInfo.getException());
-        assertEquals(NetworkException.ERROR_CONNECTION_REFUSED,
-                ((NetworkException) requestInfo.getException()).getErrorCode());
+        assertThat(((NetworkException) requestInfo.getException()).getErrorCode())
+                .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
         RequestFinishedInfo.Metrics metrics = requestInfo.getMetrics();
         assertNotNull("RequestFinishedInfo.getMetrics() must not be null", metrics);
     }
@@ -593,10 +586,9 @@ public class RequestFinishedInfoTest {
 
         RequestFinishedInfo requestInfo = requestFinishedListener.getRequestInfo();
         MetricsTestUtil.checkRequestFinishedInfo(requestInfo, mUrl, startTime, endTime);
-        assertEquals(RequestFinishedInfo.CANCELED, requestInfo.getFinishedReason());
+        assertThat(requestInfo.getFinishedReason()).isEqualTo(RequestFinishedInfo.CANCELED);
         MetricsTestUtil.checkHasConnectTiming(requestInfo.getMetrics(), startTime, endTime, false);
 
-        assertEquals(newHashSet("request annotation", this), // Use sets for unordered comparison.
-                new HashSet<Object>(requestInfo.getAnnotations()));
+        assertThat(requestInfo.getAnnotations()).containsExactly("request annotation", this);
     }
 }

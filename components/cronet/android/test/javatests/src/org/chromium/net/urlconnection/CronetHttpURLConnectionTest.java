@@ -6,7 +6,6 @@ package org.chromium.net.urlconnection;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -106,9 +105,9 @@ public class CronetHttpURLConnectionTest {
     public void testBasicGet() throws Exception {
         URL url = new URL(NativeTestServer.getEchoMethodURL());
         mUrlConnection = (HttpURLConnection) url.openConnection();
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
-        assertEquals("GET", TestUtil.getResponseAsString(mUrlConnection));
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mUrlConnection)).isEqualTo("GET");
     }
 
     @Test
@@ -122,9 +121,9 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection.setRequestMethod("PUT");
         OutputStream out = mUrlConnection.getOutputStream();
         out.write("dummy data".getBytes());
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
-        assertEquals("PUT", TestUtil.getResponseAsString(mUrlConnection));
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mUrlConnection)).isEqualTo("PUT");
     }
 
     @Test
@@ -135,9 +134,9 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection = (HttpURLConnection) url.openConnection();
         // This should not throw an exception.
         mUrlConnection.setConnectTimeout(1000);
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
-        assertEquals("GET", TestUtil.getResponseAsString(mUrlConnection));
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mUrlConnection)).isEqualTo("GET");
     }
 
     @Test
@@ -150,7 +149,7 @@ public class CronetHttpURLConnectionTest {
         URL url = new URL(MockUrlRequestJobFactory.getMockUrlForHangingRead());
         mUrlConnection = (HttpURLConnection) url.openConnection();
         mUrlConnection.setReadTimeout(1000);
-        assertEquals(200, mUrlConnection.getResponseCode());
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
         InputStream in = mUrlConnection.getInputStream();
         try {
             in.read();
@@ -172,9 +171,9 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection.setDoOutput(true);
         OutputStream out = mUrlConnection.getOutputStream();
         out.write("dummy data".getBytes());
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
-        assertEquals("POST", TestUtil.getResponseAsString(mUrlConnection));
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mUrlConnection)).isEqualTo("POST");
     }
 
     /**
@@ -196,9 +195,9 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection.connect();
         OutputStream out = mUrlConnection.getOutputStream();
         out.write(data);
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
-        assertEquals(dataString, TestUtil.getResponseAsString(mUrlConnection));
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mUrlConnection)).isEqualTo(dataString);
     }
 
     /**
@@ -220,9 +219,9 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection.connect();
         OutputStream out = mUrlConnection.getOutputStream();
         out.write(data);
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
-        assertEquals(dataString, TestUtil.getResponseAsString(mUrlConnection));
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mUrlConnection)).isEqualTo(dataString);
     }
 
     @Test
@@ -238,9 +237,9 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection.setFixedLengthStreamingMode((long) data.length);
         OutputStream out = mUrlConnection.getOutputStream();
         out.write(data);
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
-        assertEquals(dataString, TestUtil.getResponseAsString(mUrlConnection));
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mUrlConnection)).isEqualTo(dataString);
     }
 
     @Test
@@ -256,9 +255,9 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection.setFixedLengthStreamingMode((int) data.length);
         OutputStream out = mUrlConnection.getOutputStream();
         out.write(data);
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
-        assertEquals(dataString, TestUtil.getResponseAsString(mUrlConnection));
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mUrlConnection)).isEqualTo(dataString);
     }
 
     @Test
@@ -267,8 +266,8 @@ public class CronetHttpURLConnectionTest {
     public void testNotFoundURLRequest() throws Exception {
         URL url = new URL(NativeTestServer.getFileURL("/notfound.html"));
         mUrlConnection = (HttpURLConnection) url.openConnection();
-        assertEquals(404, mUrlConnection.getResponseCode());
-        assertEquals("Not Found", mUrlConnection.getResponseMessage());
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(404);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("Not Found");
         try {
             mUrlConnection.getInputStream();
             fail();
@@ -281,10 +280,10 @@ public class CronetHttpURLConnectionTest {
         while ((byteRead = errorStream.read()) != -1) {
             out.write(byteRead);
         }
-        assertEquals("<!DOCTYPE html>\n<html>\n<head>\n"
+        assertThat(out.toString())
+                .isEqualTo("<!DOCTYPE html>\n<html>\n<head>\n"
                         + "<title>Not found</title>\n<p>Test page loaded.</p>\n"
-                        + "</head>\n</html>\n",
-                out.toString());
+                        + "</head>\n</html>\n");
     }
 
     @Test
@@ -293,7 +292,7 @@ public class CronetHttpURLConnectionTest {
     public void testServerNotAvailable() throws Exception {
         URL url = new URL(NativeTestServer.getFileURL("/success.txt"));
         mUrlConnection = (HttpURLConnection) url.openConnection();
-        assertEquals("this is a text file\n", TestUtil.getResponseAsString(mUrlConnection));
+        assertThat(TestUtil.getResponseAsString(mUrlConnection)).isEqualTo("this is a text file\n");
         // After shutting down the server, the server should not be handling
         // new requests.
         NativeTestServer.shutdownNativeTestServer();
@@ -383,9 +382,9 @@ public class CronetHttpURLConnectionTest {
         // Close mUrlConnection before mUrlConnection is made has no effect.
         // Default implementation passes this test.
         mUrlConnection.disconnect();
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
-        assertEquals("GET", TestUtil.getResponseAsString(mUrlConnection));
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mUrlConnection)).isEqualTo("GET");
     }
 
     @Test
@@ -419,9 +418,9 @@ public class CronetHttpURLConnectionTest {
     public void testMultipleDisconnect() throws Exception {
         URL url = new URL(NativeTestServer.getEchoMethodURL());
         mUrlConnection = (HttpURLConnection) url.openConnection();
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
-        assertEquals("GET", TestUtil.getResponseAsString(mUrlConnection));
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mUrlConnection)).isEqualTo("GET");
         // Disconnect multiple times should be fine.
         for (int i = 0; i < 10; i++) {
             mUrlConnection.disconnect();
@@ -437,29 +436,23 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection.addRequestProperty("foo-header", "foo");
         mUrlConnection.addRequestProperty("bar-header", "bar");
 
-        // Before mUrlConnection is made, check request headers are set.
+        // Before connection is made, check request headers are set.
         Map<String, List<String>> requestHeadersMap = mUrlConnection.getRequestProperties();
         List<String> fooValues = requestHeadersMap.get("foo-header");
-        assertEquals(1, fooValues.size());
-        assertEquals("foo", fooValues.get(0));
-        assertEquals("foo", mUrlConnection.getRequestProperty("foo-header"));
+        assertThat(fooValues).containsExactly("foo");
+        assertThat(mUrlConnection.getRequestProperty("foo-header")).isEqualTo("foo");
         List<String> barValues = requestHeadersMap.get("bar-header");
-        assertEquals(1, barValues.size());
-        assertEquals("bar", barValues.get(0));
-        assertEquals("bar", mUrlConnection.getRequestProperty("bar-header"));
+        assertThat(barValues).containsExactly("bar");
+        assertThat(mUrlConnection.getRequestProperty("bar-header")).isEqualTo("bar");
 
         // Check the request headers echoed back by the server.
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
         String headers = TestUtil.getResponseAsString(mUrlConnection);
-        List<String> fooHeaderValues =
-                getRequestHeaderValues(headers, "foo-header");
-        List<String> barHeaderValues =
-                getRequestHeaderValues(headers, "bar-header");
-        assertEquals(1, fooHeaderValues.size());
-        assertEquals("foo", fooHeaderValues.get(0));
-        assertEquals(1, fooHeaderValues.size());
-        assertEquals("bar", barHeaderValues.get(0));
+        List<String> fooHeaderValues = getRequestHeaderValues(headers, "foo-header");
+        List<String> barHeaderValues = getRequestHeaderValues(headers, "bar-header");
+        assertThat(fooHeaderValues).containsExactly("foo");
+        assertThat(barHeaderValues).containsExactly("bar");
     }
 
     @Test
@@ -473,7 +466,7 @@ public class CronetHttpURLConnectionTest {
             mUrlConnection.addRequestProperty("header-Name", "value2");
             fail();
         } catch (UnsupportedOperationException e) {
-            assertEquals(e.getMessage(),
+            assertThat(e).hasMessageThat().isEqualTo(
                     "Cannot add multiple headers of the same key, header-Name. "
                     + "crbug.com/432719.");
         }
@@ -491,44 +484,36 @@ public class CronetHttpURLConnectionTest {
         conn.setRequestProperty("same-capitalization", "yo");
         conn.setRequestProperty("diFFerent-cApitalization", "foo");
         Map<String, List<String>> headersMap = conn.getRequestProperties();
-        List<String>  values1 = headersMap.get("same-capitalization");
-        assertEquals(1, values1.size());
-        assertEquals("yo", values1.get(0));
-        assertEquals("yo", conn.getRequestProperty("same-capitalization"));
+        List<String> values1 = headersMap.get("same-capitalization");
+        assertThat(values1).containsExactly("yo");
+        assertThat(conn.getRequestProperty("same-capitalization")).isEqualTo("yo");
 
         List<String> values2 = headersMap.get("different-capitalization");
-        assertEquals(1, values2.size());
-        assertEquals("foo", values2.get(0));
-        assertEquals("foo",
-                conn.getRequestProperty("Different-capitalization"));
+        assertThat(values2).containsExactly("foo");
+        assertThat(conn.getRequestProperty("Different-capitalization")).isEqualTo("foo");
 
         // Check request header is updated.
         conn.setRequestProperty("same-capitalization", "hi");
         conn.setRequestProperty("different-Capitalization", "bar");
         Map<String, List<String>> newHeadersMap = conn.getRequestProperties();
         List<String> newValues1 = newHeadersMap.get("same-capitalization");
-        assertEquals(1, newValues1.size());
-        assertEquals("hi", newValues1.get(0));
-        assertEquals("hi", conn.getRequestProperty("same-capitalization"));
+        assertThat(newValues1).containsExactly("hi");
+        assertThat(conn.getRequestProperty("same-capitalization")).isEqualTo("hi");
 
         List<String> newValues2 = newHeadersMap.get("differENT-capitalization");
-        assertEquals(1, newValues2.size());
-        assertEquals("bar", newValues2.get(0));
-        assertEquals("bar",
-                conn.getRequestProperty("different-capitalization"));
+        assertThat(newValues2).containsExactly("bar");
+        assertThat(conn.getRequestProperty("different-capitalization")).isEqualTo("bar");
 
         // Check the request headers echoed back by the server.
-        assertEquals(200, conn.getResponseCode());
-        assertEquals("OK", conn.getResponseMessage());
+        assertThat(conn.getResponseCode()).isEqualTo(200);
+        assertThat(conn.getResponseMessage()).isEqualTo("OK");
         String headers = TestUtil.getResponseAsString(conn);
-        List<String> actualValues1 =
-                getRequestHeaderValues(headers, "same-capitalization");
-        assertEquals(1, actualValues1.size());
-        assertEquals("hi", actualValues1.get(0));
-        List<String> actualValues2 =
-                getRequestHeaderValues(headers, "different-Capitalization");
-        assertEquals(1, actualValues2.size());
-        assertEquals("bar", actualValues2.get(0));
+
+        List<String> actualValues1 = getRequestHeaderValues(headers, "same-capitalization");
+        assertThat(actualValues1).containsExactly("hi");
+        List<String> actualValues2 = getRequestHeaderValues(headers, "different-Capitalization");
+        assertThat(actualValues2).containsExactly("bar");
+        conn.disconnect();
     }
 
     @Test
@@ -540,20 +525,17 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection.addRequestProperty("header-name", "value1");
         mUrlConnection.setRequestProperty("Header-nAme", "value2");
 
-        // Before mUrlConnection is made, check request headers are set.
-        assertEquals("value2", mUrlConnection.getRequestProperty("header-namE"));
+        // Before connection is made, check request headers are set.
+        assertThat(mUrlConnection.getRequestProperty("header-namE")).isEqualTo("value2");
         Map<String, List<String>> requestHeadersMap = mUrlConnection.getRequestProperties();
-        assertEquals(1, requestHeadersMap.get("HeAder-name").size());
-        assertEquals("value2", requestHeadersMap.get("HeAder-name").get(0));
+        assertThat(requestHeadersMap).containsEntry("HeAder-name", Arrays.asList("value2"));
 
         // Check the request headers echoed back by the server.
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
         String headers = TestUtil.getResponseAsString(mUrlConnection);
-        List<String> actualValues =
-                getRequestHeaderValues(headers, "Header-nAme");
-        assertEquals(1, actualValues.size());
-        assertEquals("value2", actualValues.get(0));
+        List<String> actualValues = getRequestHeaderValues(headers, "Header-nAme");
+        assertThat(actualValues).containsExactly("value2");
     }
 
     @Test
@@ -563,8 +545,8 @@ public class CronetHttpURLConnectionTest {
         URL url = new URL(NativeTestServer.getEchoAllHeadersURL());
         mUrlConnection = (HttpURLConnection) url.openConnection();
         mUrlConnection.addRequestProperty("header-name", "value");
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
         try {
             mUrlConnection.setRequestProperty("foo", "bar");
             fail();
@@ -586,8 +568,8 @@ public class CronetHttpURLConnectionTest {
         URL url = new URL(NativeTestServer.getEchoAllHeadersURL());
         mUrlConnection = (HttpURLConnection) url.openConnection();
         mUrlConnection.addRequestProperty("header-name", "value");
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
 
         try {
             mUrlConnection.getRequestProperties();
@@ -598,7 +580,7 @@ public class CronetHttpURLConnectionTest {
 
         // Default implementation allows querying a particular request property.
         try {
-            assertEquals("value", mUrlConnection.getRequestProperty("header-name"));
+            assertThat(mUrlConnection.getRequestProperty("header-name")).isEqualTo("value");
         } catch (IllegalStateException e) {
             fail();
         }
@@ -636,8 +618,8 @@ public class CronetHttpURLConnectionTest {
         URL url = new URL(NativeTestServer.getEchoHeaderURL("foo"));
         mUrlConnection = (HttpURLConnection) url.openConnection();
         mUrlConnection.addRequestProperty("foo", testInputString);
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
         InputStream in = mUrlConnection.getInputStream();
         try {
             // Negative byteOffset.
@@ -683,9 +665,9 @@ public class CronetHttpURLConnectionTest {
         }
 
         // All data has been read. Try reading beyond what is available should give -1.
-        assertEquals(-1, in.read());
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
+        assertThat(in.read()).isEqualTo(-1);
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
         String responseData = new String(out.toByteArray());
         TestUtil.checkLargeData(responseData);
     }
@@ -699,17 +681,17 @@ public class CronetHttpURLConnectionTest {
         URL url = new URL(NativeTestServer.getEchoHeaderURL("foo"));
         mUrlConnection = (HttpURLConnection) url.openConnection();
         mUrlConnection.addRequestProperty("foo", testInputString);
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
         InputStream in = mUrlConnection.getInputStream();
         byte[] actualOutput = new byte[testInputBytes.length + 256];
         int bytesRead = in.read(actualOutput, 0, actualOutput.length);
-        assertEquals(testInputBytes.length, bytesRead);
+        assertThat(bytesRead).isEqualTo(testInputBytes.length);
         byte[] readSomeMore = new byte[10];
-        int bytesReadBeyondAvailable  = in.read(readSomeMore, 0, 10);
-        assertEquals(-1, bytesReadBeyondAvailable);
+        int bytesReadBeyondAvailable = in.read(readSomeMore, 0, 10);
+        assertThat(bytesReadBeyondAvailable).isEqualTo(-1);
         for (int i = 0; i < bytesRead; i++) {
-            assertEquals(testInputBytes[i], actualOutput[i]);
+            assertThat(actualOutput[i]).isEqualTo(testInputBytes[i]);
         }
     }
 
@@ -745,16 +727,16 @@ public class CronetHttpURLConnectionTest {
         }
 
         // All data has been read. Try reading beyond what is available should give -1.
-        assertEquals(0, in.read(actualOutput, 0, 0));
-        assertEquals(-1, in.read(actualOutput, 0, 1));
+        assertThat(in.read(actualOutput, 0, 0)).isEqualTo(0);
+        assertThat(in.read(actualOutput, 0, 1)).isEqualTo(-1);
 
         String responseData = new String(actualOutput);
         for (int i = 0; i < repeatCount; ++i) {
-            assertEquals(data, responseData.substring(dataLength * i,
-                    dataLength * (i + 1)));
+            assertThat(responseData.substring(dataLength * i, dataLength * (i + 1)))
+                    .isEqualTo(data);
         }
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
         mockUrlRequestJobFactory.shutdown();
     }
 
@@ -767,13 +749,13 @@ public class CronetHttpURLConnectionTest {
         URL url = new URL(NativeTestServer.getEchoHeaderURL("foo"));
         mUrlConnection = (HttpURLConnection) url.openConnection();
         mUrlConnection.addRequestProperty("foo", testInputString);
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
         InputStream in = mUrlConnection.getInputStream();
         byte[] actualOutput = new byte[testInputBytes.length];
         int bytesRead = in.read(actualOutput, 0, actualOutput.length);
         mUrlConnection.disconnect();
-        assertEquals(testInputBytes.length, bytesRead);
+        assertThat(bytesRead).isEqualTo(testInputBytes.length);
         assertTrue(Arrays.equals(testInputBytes, actualOutput));
     }
 
@@ -786,20 +768,20 @@ public class CronetHttpURLConnectionTest {
         URL url = new URL(NativeTestServer.getEchoHeaderURL("foo"));
         mUrlConnection = (HttpURLConnection) url.openConnection();
         mUrlConnection.addRequestProperty("foo", testInputString);
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
         InputStream in = mUrlConnection.getInputStream();
         byte[] firstPart = new byte[testInputBytes.length - 10];
         int firstBytesRead = in.read(firstPart, 0, testInputBytes.length - 10);
         byte[] secondPart = new byte[10];
         int secondBytesRead = in.read(secondPart, 0, 10);
-        assertEquals(testInputBytes.length - 10, firstBytesRead);
-        assertEquals(10, secondBytesRead);
+        assertThat(firstBytesRead).isEqualTo(testInputBytes.length - 10);
+        assertThat(secondBytesRead).isEqualTo(10);
         for (int i = 0; i < firstPart.length; i++) {
-            assertEquals(testInputBytes[i], firstPart[i]);
+            assertThat(firstPart[i]).isEqualTo(testInputBytes[i]);
         }
         for (int i = 0; i < secondPart.length; i++) {
-            assertEquals(testInputBytes[firstPart.length + i], secondPart[i]);
+            assertThat(secondPart[i]).isEqualTo(testInputBytes[firstPart.length + i]);
         }
     }
 
@@ -838,7 +820,7 @@ public class CronetHttpURLConnectionTest {
         } catch (IOException e) {
             // Expected.
             if (!mTestRule.testingSystemHttpURLConnection()) {
-                assertEquals("disconnect() called", e.getMessage());
+                assertThat(e).hasMessageThat().isEqualTo("disconnect() called");
             }
         }
         // Read once more, and make sure exception is thrown.
@@ -848,7 +830,7 @@ public class CronetHttpURLConnectionTest {
         } catch (IOException e) {
             // Expected.
             if (!mTestRule.testingSystemHttpURLConnection()) {
-                assertEquals("disconnect() called", e.getMessage());
+                assertThat(e).hasMessageThat().isEqualTo("disconnect() called");
             }
         }
     }
@@ -911,11 +893,11 @@ public class CronetHttpURLConnectionTest {
         URL url = new URL(NativeTestServer.getFileURL("/redirect.html"));
         mUrlConnection = (HttpURLConnection) url.openConnection();
         mUrlConnection.setInstanceFollowRedirects(true);
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
-        assertEquals(
-                NativeTestServer.getFileURL("/success.txt"), mUrlConnection.getURL().toString());
-        assertEquals("this is a text file\n", TestUtil.getResponseAsString(mUrlConnection));
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(mUrlConnection.getURL().toString())
+                .isEqualTo(NativeTestServer.getFileURL("/success.txt"));
+        assertThat(TestUtil.getResponseAsString(mUrlConnection)).isEqualTo("this is a text file\n");
     }
 
     @Test
@@ -929,11 +911,11 @@ public class CronetHttpURLConnectionTest {
         // https://code.google.com/p/android/issues/detail?id=194495
         if (!mTestRule.testingSystemHttpURLConnection()
                 || Build.VERSION.SDK_INT != Build.VERSION_CODES.M) {
-            assertEquals(302, mUrlConnection.getResponseCode());
-            assertEquals("Found", mUrlConnection.getResponseMessage());
-            assertEquals("/success.txt", mUrlConnection.getHeaderField("Location"));
-            assertEquals(NativeTestServer.getFileURL("/redirect.html"),
-                    mUrlConnection.getURL().toString());
+            assertThat(mUrlConnection.getResponseCode()).isEqualTo(302);
+            assertThat(mUrlConnection.getResponseMessage()).isEqualTo("Found");
+            assertThat(mUrlConnection.getHeaderField("Location")).isEqualTo("/success.txt");
+            assertThat(mUrlConnection.getURL().toString())
+                    .isEqualTo(NativeTestServer.getFileURL("/redirect.html"));
         }
     }
 
@@ -948,11 +930,11 @@ public class CronetHttpURLConnectionTest {
         // https://code.google.com/p/android/issues/detail?id=194495
         if (!mTestRule.testingSystemHttpURLConnection()
                 || Build.VERSION.SDK_INT != Build.VERSION_CODES.M) {
-            assertEquals(302, mUrlConnection.getResponseCode());
-            assertEquals("Found", mUrlConnection.getResponseMessage());
-            assertEquals("/success.txt", mUrlConnection.getHeaderField("Location"));
-            assertEquals(NativeTestServer.getFileURL("/redirect.html"),
-                    mUrlConnection.getURL().toString());
+            assertThat(mUrlConnection.getResponseCode()).isEqualTo(302);
+            assertThat(mUrlConnection.getResponseMessage()).isEqualTo("Found");
+            assertThat(mUrlConnection.getHeaderField("Location")).isEqualTo("/success.txt");
+            assertThat(mUrlConnection.getURL().toString())
+                    .isEqualTo(NativeTestServer.getFileURL("/redirect.html"));
         }
     }
 
@@ -966,11 +948,11 @@ public class CronetHttpURLConnectionTest {
         // Disabling redirects globally after creating the HttpURLConnection
         // object should have no effect on the request.
         HttpURLConnection.setFollowRedirects(false);
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
-        assertEquals(
-                NativeTestServer.getFileURL("/success.txt"), mUrlConnection.getURL().toString());
-        assertEquals("this is a text file\n", TestUtil.getResponseAsString(mUrlConnection));
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(mUrlConnection.getURL().toString())
+                .isEqualTo(NativeTestServer.getFileURL("/success.txt"));
+        assertThat(TestUtil.getResponseAsString(mUrlConnection)).isEqualTo("this is a text file\n");
     }
 
     @Test
@@ -998,18 +980,19 @@ public class CronetHttpURLConnectionTest {
         URL url = new URL(NativeTestServer.getFileURL("/redirect_invalid_scheme.html"));
         mUrlConnection = (HttpURLConnection) url.openConnection();
         mUrlConnection.setInstanceFollowRedirects(true);
-        assertEquals(302, mUrlConnection.getResponseCode());
-        assertEquals("Found", mUrlConnection.getResponseMessage());
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(302);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("Found");
         // Behavior changed in Android Marshmallow to not update the URL.
         if (mTestRule.testingSystemHttpURLConnection()
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             // Redirected port is randomized, verify everything but port.
-            assertEquals(url.getProtocol(), mUrlConnection.getURL().getProtocol());
-            assertEquals(url.getHost(), mUrlConnection.getURL().getHost());
-            assertEquals(url.getFile(), mUrlConnection.getURL().getFile());
+            assertThat(mUrlConnection.getURL().getProtocol()).isEqualTo(url.getProtocol());
+            assertThat(mUrlConnection.getURL().getHost()).isEqualTo(url.getHost());
+            assertThat(mUrlConnection.getURL().getFile()).isEqualTo(url.getFile());
         } else {
             // Redirect is not followed, but the url is updated to the Location header.
-            assertEquals("https://127.0.0.1:8000/success.txt", mUrlConnection.getURL().toString());
+            assertThat(mUrlConnection.getURL().toString())
+                    .isEqualTo("https://127.0.0.1:8000/success.txt");
         }
     }
 
@@ -1036,23 +1019,16 @@ public class CronetHttpURLConnectionTest {
             // Expected.
         }
         // Make sure map look up is key insensitive.
-        List<String> contentTypeWithOddCase =
-                responseHeaders.get("ContENt-tYpe");
-        assertEquals(contentType, contentTypeWithOddCase);
+        List<String> contentTypeWithOddCase = responseHeaders.get("ContENt-tYpe");
+        assertThat(contentTypeWithOddCase).isEqualTo(contentType);
 
-        assertEquals(1, contentType.size());
-        assertEquals("text/plain", contentType.get(0));
-        List<String> accessControl =
-                responseHeaders.get("Access-Control-Allow-Origin");
-        assertEquals(1, accessControl.size());
-        assertEquals("*", accessControl.get(0));
+        assertThat(contentType).containsExactly("text/plain");
+        List<String> accessControl = responseHeaders.get("Access-Control-Allow-Origin");
+        assertThat(accessControl).containsExactly("*");
         List<String> singleHeader = responseHeaders.get("header-name");
-        assertEquals(1, singleHeader.size());
-        assertEquals("header-value", singleHeader.get(0));
+        assertThat(singleHeader).containsExactly("header-value");
         List<String> multiHeader = responseHeaders.get("multi-header-name");
-        assertEquals(2, multiHeader.size());
-        assertEquals("header-value1", multiHeader.get(0));
-        assertEquals("header-value2", multiHeader.get(1));
+        assertThat(multiHeader).containsExactly("header-value1", "header-value2");
     }
 
     @Test
@@ -1061,14 +1037,14 @@ public class CronetHttpURLConnectionTest {
     public void testGetResponseHeaderField() throws Exception {
         URL url = new URL(NativeTestServer.getFileURL("/success.txt"));
         mUrlConnection = (HttpURLConnection) url.openConnection();
-        assertEquals("text/plain", mUrlConnection.getHeaderField("Content-Type"));
-        assertEquals("*", mUrlConnection.getHeaderField("Access-Control-Allow-Origin"));
-        assertEquals("header-value", mUrlConnection.getHeaderField("header-name"));
+        assertThat(mUrlConnection.getHeaderField("Content-Type")).isEqualTo("text/plain");
+        assertThat(mUrlConnection.getHeaderField("Access-Control-Allow-Origin")).isEqualTo("*");
+        assertThat(mUrlConnection.getHeaderField("header-name")).isEqualTo("header-value");
         // If there are multiple headers with the same name, the last should be
         // returned.
-        assertEquals("header-value2", mUrlConnection.getHeaderField("multi-header-name"));
+        assertThat(mUrlConnection.getHeaderField("multi-header-name")).isEqualTo("header-value2");
         // Lastly, make sure lookup is case-insensitive.
-        assertEquals("header-value2", mUrlConnection.getHeaderField("MUlTi-heAder-name"));
+        assertThat(mUrlConnection.getHeaderField("MUlTi-heAder-name")).isEqualTo("header-value2");
     }
 
     @Test
@@ -1077,16 +1053,17 @@ public class CronetHttpURLConnectionTest {
     public void testGetResponseHeaderFieldWithPos() throws Exception {
         URL url = new URL(NativeTestServer.getFileURL("/success.txt"));
         mUrlConnection = (HttpURLConnection) url.openConnection();
-        assertEquals("Content-Type", mUrlConnection.getHeaderFieldKey(0));
-        assertEquals("text/plain", mUrlConnection.getHeaderField(0));
-        assertEquals("Access-Control-Allow-Origin", mUrlConnection.getHeaderFieldKey(1));
-        assertEquals("*", mUrlConnection.getHeaderField(1));
-        assertEquals("header-name", mUrlConnection.getHeaderFieldKey(2));
-        assertEquals("header-value", mUrlConnection.getHeaderField(2));
-        assertEquals("multi-header-name", mUrlConnection.getHeaderFieldKey(3));
-        assertEquals("header-value1", mUrlConnection.getHeaderField(3));
-        assertEquals("multi-header-name", mUrlConnection.getHeaderFieldKey(4));
-        assertEquals("header-value2", mUrlConnection.getHeaderField(4));
+
+        assertThat(mUrlConnection.getHeaderFieldKey(0)).isEqualTo("Content-Type");
+        assertThat(mUrlConnection.getHeaderField(0)).isEqualTo("text/plain");
+        assertThat(mUrlConnection.getHeaderFieldKey(1)).isEqualTo("Access-Control-Allow-Origin");
+        assertThat(mUrlConnection.getHeaderField(1)).isEqualTo("*");
+        assertThat(mUrlConnection.getHeaderFieldKey(2)).isEqualTo("header-name");
+        assertThat(mUrlConnection.getHeaderField(2)).isEqualTo("header-value");
+        assertThat(mUrlConnection.getHeaderFieldKey(3)).isEqualTo("multi-header-name");
+        assertThat(mUrlConnection.getHeaderField(3)).isEqualTo("header-value1");
+        assertThat(mUrlConnection.getHeaderFieldKey(4)).isEqualTo("multi-header-name");
+        assertThat(mUrlConnection.getHeaderField(4)).isEqualTo("header-value2");
         // Note that the default implementation also adds additional response
         // headers, which are not tested here.
     }
@@ -1100,10 +1077,10 @@ public class CronetHttpURLConnectionTest {
         URL url = new URL(NativeTestServer.getFileURL("/success.txt"));
         mUrlConnection = (HttpURLConnection) url.openConnection();
         // Expect null if we exceed the number of header entries.
-        assertEquals(null, mUrlConnection.getHeaderFieldKey(5));
-        assertEquals(null, mUrlConnection.getHeaderField(5));
-        assertEquals(null, mUrlConnection.getHeaderFieldKey(6));
-        assertEquals(null, mUrlConnection.getHeaderField(6));
+        assertThat(mUrlConnection.getHeaderFieldKey(5)).isNull();
+        assertThat(mUrlConnection.getHeaderField(5)).isNull();
+        assertThat(mUrlConnection.getHeaderFieldKey(6)).isNull();
+        assertThat(mUrlConnection.getHeaderField(6)).isNull();
     }
 
     @Test
@@ -1113,15 +1090,15 @@ public class CronetHttpURLConnectionTest {
     public void testStripContentEncoding() throws Exception {
         URL url = new URL(NativeTestServer.getFileURL("/gzipped.html"));
         mUrlConnection = (HttpURLConnection) url.openConnection();
-        assertEquals("foo", mUrlConnection.getHeaderFieldKey(0));
-        assertEquals("bar", mUrlConnection.getHeaderField(0));
-        assertEquals(null, mUrlConnection.getHeaderField("content-encoding"));
+        assertThat(mUrlConnection.getHeaderFieldKey(0)).isEqualTo("foo");
+        assertThat(mUrlConnection.getHeaderField(0)).isEqualTo("bar");
+        assertThat(mUrlConnection.getHeaderField("content-encoding")).isNull();
         Map<String, List<String>> responseHeaders = mUrlConnection.getHeaderFields();
-        assertEquals(1, responseHeaders.size());
-        assertEquals(200, mUrlConnection.getResponseCode());
-        assertEquals("OK", mUrlConnection.getResponseMessage());
+        assertThat(responseHeaders).hasSize(1);
+        assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mUrlConnection.getResponseMessage()).isEqualTo("OK");
         // Make sure Cronet decodes the gzipped content.
-        assertEquals("Hello, World!", TestUtil.getResponseAsString(mUrlConnection));
+        assertThat(TestUtil.getResponseAsString(mUrlConnection)).isEqualTo("Hello, World!");
     }
 
     private static enum CacheSetting { USE_CACHE, DONT_USE_CACHE };
@@ -1142,9 +1119,9 @@ public class CronetHttpURLConnectionTest {
         mUrlConnection = (HttpURLConnection) url.openConnection();
         mUrlConnection.setUseCaches(cacheSetting == CacheSetting.USE_CACHE);
         if (outcome == ExpectedOutcome.SUCCESS) {
-            assertEquals(200, mUrlConnection.getResponseCode());
-            assertEquals(
-                    "this is a cacheable file\n", TestUtil.getResponseAsString(mUrlConnection));
+            assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
+            assertThat(TestUtil.getResponseAsString(mUrlConnection))
+                    .isEqualTo("this is a cacheable file\n");
         } else {
             try {
                 mUrlConnection.getResponseCode();
@@ -1212,7 +1189,7 @@ public class CronetHttpURLConnectionTest {
         Socket s = hangingServer.accept();
         mUrlConnection.disconnect();
         IOException e = task.get();
-        assertEquals("disconnect() called", e.getMessage());
+        assertThat(e).hasMessageThat().isEqualTo("disconnect() called");
         s.close();
         hangingServer.close();
     }
@@ -1289,7 +1266,7 @@ public class CronetHttpURLConnectionTest {
         CronetHttpURLConnection cronetUrlConnection =
                 (CronetHttpURLConnection) url.openConnection();
         try {
-            assertEquals(200, cronetUrlConnection.getResponseCode());
+            assertThat(cronetUrlConnection.getResponseCode()).isEqualTo(200);
             cronetUrlConnection.disconnect();
             assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
 
@@ -1298,7 +1275,7 @@ public class CronetHttpURLConnectionTest {
             priorBytes = CronetTestUtil.nativeGetTaggedBytes(tag);
             cronetUrlConnection = (CronetHttpURLConnection) url.openConnection();
             cronetUrlConnection.setTrafficStatsTag(tag);
-            assertEquals(200, cronetUrlConnection.getResponseCode());
+            assertThat(cronetUrlConnection.getResponseCode()).isEqualTo(200);
             cronetUrlConnection.disconnect();
             assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
 
@@ -1307,7 +1284,7 @@ public class CronetHttpURLConnectionTest {
             priorBytes = CronetTestUtil.nativeGetTaggedBytes(tag);
             cronetUrlConnection = (CronetHttpURLConnection) url.openConnection();
             cronetUrlConnection.setTrafficStatsTag(tag);
-            assertEquals(200, cronetUrlConnection.getResponseCode());
+            assertThat(cronetUrlConnection.getResponseCode()).isEqualTo(200);
             cronetUrlConnection.disconnect();
             assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
 
@@ -1316,7 +1293,7 @@ public class CronetHttpURLConnectionTest {
             priorBytes = CronetTestUtil.nativeGetTaggedBytes(tag);
             cronetUrlConnection = (CronetHttpURLConnection) url.openConnection();
             TrafficStats.setThreadStatsTag(tag);
-            assertEquals(200, cronetUrlConnection.getResponseCode());
+            assertThat(cronetUrlConnection.getResponseCode()).isEqualTo(200);
             cronetUrlConnection.disconnect();
             assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
 
@@ -1333,7 +1310,7 @@ public class CronetHttpURLConnectionTest {
             priorBytes = CronetTestUtil.nativeGetTaggedBytes(tag);
             cronetUrlConnection = (CronetHttpURLConnection) url.openConnection();
             cronetUrlConnection.setTrafficStatsUid(Process.myUid());
-            assertEquals(200, cronetUrlConnection.getResponseCode());
+            assertThat(cronetUrlConnection.getResponseCode()).isEqualTo(200);
             cronetUrlConnection.disconnect();
             assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
 
@@ -1345,7 +1322,7 @@ public class CronetHttpURLConnectionTest {
                 priorBytes = CronetTestUtil.nativeGetTaggedBytes(tag);
                 cronetUrlConnection = (CronetHttpURLConnection) url.openConnection();
                 TrafficStats.setThreadStatsUid(Process.myUid());
-                assertEquals(200, cronetUrlConnection.getResponseCode());
+                assertThat(cronetUrlConnection.getResponseCode()).isEqualTo(200);
                 cronetUrlConnection.disconnect();
                 assertThat(CronetTestUtil.nativeGetTaggedBytes(tag)).isGreaterThan(priorBytes);
             }
@@ -1425,7 +1402,7 @@ public class CronetHttpURLConnectionTest {
             @Override
             public void run() {
                 try {
-                    assertEquals(200, mUrlConnection.getResponseCode());
+                    assertThat(mUrlConnection.getResponseCode()).isEqualTo(200);
                 } catch (IOException e) {
                 }
                 connected.set(true);

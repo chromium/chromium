@@ -4,7 +4,8 @@
 
 package org.chromium.net.urlconnection;
 
-import static org.junit.Assert.assertEquals;
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.fail;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -48,7 +49,7 @@ public class CronetURLStreamHandlerFactoryTest {
             new CronetURLStreamHandlerFactory(null);
             fail();
         } catch (NullPointerException e) {
-            assertEquals("CronetEngine is null.", e.getMessage());
+            assertThat(e).hasMessageThat().isEqualTo("CronetEngine is null.");
         }
     }
 }

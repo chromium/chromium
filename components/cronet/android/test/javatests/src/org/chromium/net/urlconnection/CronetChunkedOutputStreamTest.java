@@ -4,7 +4,8 @@
 
 package org.chromium.net.urlconnection;
 
-import static org.junit.Assert.assertEquals;
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -80,7 +81,7 @@ public class CronetChunkedOutputStreamTest {
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
         mConnection.setChunkedStreamingMode(0);
-        assertEquals(200, mConnection.getResponseCode());
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
         try {
             mConnection.getOutputStream();
             fail();
@@ -99,7 +100,7 @@ public class CronetChunkedOutputStreamTest {
         mConnection.setRequestMethod("POST");
         mConnection.setChunkedStreamingMode(0);
         OutputStream out = mConnection.getOutputStream();
-        assertEquals(200, mConnection.getResponseCode());
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
         try {
             out.write(UPLOAD_DATA);
             fail();
@@ -127,8 +128,8 @@ public class CronetChunkedOutputStreamTest {
         } catch (IOException e) {
             if (!mTestRule.testingSystemHttpURLConnection()) {
                 NetworkException requestException = (NetworkException) e;
-                assertEquals(
-                        NetworkException.ERROR_CONNECTION_REFUSED, requestException.getErrorCode());
+                assertThat(requestException.getErrorCode())
+                        .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
             }
         }
     }
@@ -158,8 +159,8 @@ public class CronetChunkedOutputStreamTest {
         } catch (IOException e) {
             if (!mTestRule.testingSystemHttpURLConnection()) {
                 NetworkException requestException = (NetworkException) e;
-                assertEquals(
-                        NetworkException.ERROR_CONNECTION_REFUSED, requestException.getErrorCode());
+                assertThat(requestException.getErrorCode())
+                        .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
             }
         }
         // Make sure IOException is reported again when trying to read response
@@ -171,8 +172,8 @@ public class CronetChunkedOutputStreamTest {
             // Expected.
             if (!mTestRule.testingSystemHttpURLConnection()) {
                 NetworkException requestException = (NetworkException) e;
-                assertEquals(
-                        NetworkException.ERROR_CONNECTION_REFUSED, requestException.getErrorCode());
+                assertThat(requestException.getErrorCode())
+                        .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
             }
         }
         // Restarting server to run the test for a second time.
@@ -190,9 +191,9 @@ public class CronetChunkedOutputStreamTest {
         mConnection.setChunkedStreamingMode(0);
         OutputStream out = mConnection.getOutputStream();
         out.write(UPLOAD_DATA);
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
-        assertEquals(UPLOAD_DATA_STRING, TestUtil.getResponseAsString(mConnection));
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mConnection)).isEqualTo(UPLOAD_DATA_STRING);
     }
 
     @Test
@@ -206,9 +207,9 @@ public class CronetChunkedOutputStreamTest {
         mConnection.setChunkedStreamingMode(0);
         OutputStream out = mConnection.getOutputStream();
         out.write(UPLOAD_DATA);
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
-        assertEquals("chunked", TestUtil.getResponseAsString(mConnection));
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mConnection)).isEqualTo("chunked");
     }
 
     @Test
@@ -223,8 +224,8 @@ public class CronetChunkedOutputStreamTest {
         OutputStream out = mConnection.getOutputStream();
         byte[] largeData = TestUtil.getLargeData();
         out.write(largeData);
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
         TestUtil.checkLargeData(TestUtil.getResponseAsString(mConnection));
     }
 
@@ -241,9 +242,9 @@ public class CronetChunkedOutputStreamTest {
         for (int i = 0; i < UPLOAD_DATA.length; i++) {
             out.write(UPLOAD_DATA[i]);
         }
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
-        assertEquals(UPLOAD_DATA_STRING, TestUtil.getResponseAsString(mConnection));
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mConnection)).isEqualTo(UPLOAD_DATA_STRING);
     }
 
     @Test
@@ -260,8 +261,8 @@ public class CronetChunkedOutputStreamTest {
         for (int i = 0; i < largeData.length; i++) {
             out.write(largeData[i]);
         }
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
         TestUtil.checkLargeData(TestUtil.getResponseAsString(mConnection));
     }
 
@@ -277,13 +278,13 @@ public class CronetChunkedOutputStreamTest {
         int chunkSize = 18000;
         // Ensure total data size is a multiple of chunk size, so no partial
         // chunks will be used.
-        assertEquals(0, totalSize % chunkSize);
+        assertThat(totalSize % chunkSize).isEqualTo(0);
         mConnection.setChunkedStreamingMode(chunkSize);
         OutputStream out = mConnection.getOutputStream();
         byte[] largeData = TestUtil.getLargeData();
         out.write(largeData);
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
         TestUtil.checkLargeData(TestUtil.getResponseAsString(mConnection));
     }
 
@@ -302,7 +303,7 @@ public class CronetChunkedOutputStreamTest {
         mConnection.setChunkedStreamingMode(largeData.length);
         OutputStream out = mConnection.getOutputStream();
         out.write(largeData);
-        assertEquals(200, mConnection.getResponseCode());
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
         TestUtil.checkLargeData(TestUtil.getResponseAsString(mConnection));
     }
 }

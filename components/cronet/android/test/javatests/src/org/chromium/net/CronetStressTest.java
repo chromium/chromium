@@ -4,19 +4,14 @@
 
 package org.chromium.net;
 
-import static org.junit.Assert.assertEquals;
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.net.CronetTestRule.getContext;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.junit.After;
 import org.junit.Before;
@@ -26,6 +21,12 @@ import org.junit.runner.RunWith;
 
 import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Tests that making a large number of requests do not lead to crashes.
@@ -83,7 +84,7 @@ public class CronetStressTest {
 
             for (TestUrlRequestCallback callback : callbacks) {
                 callback.blockForDone();
-                assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
+                assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
             }
         } finally {
             callbackExecutor.shutdown();

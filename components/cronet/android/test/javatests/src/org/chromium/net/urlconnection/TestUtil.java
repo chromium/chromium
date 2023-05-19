@@ -4,7 +4,7 @@
 
 package org.chromium.net.urlconnection;
 
-import org.junit.Assert;
+import static com.google.common.truth.Truth.assertThat;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -49,8 +49,9 @@ public class TestUtil {
      */
     static void checkLargeData(String data) {
         for (int i = 0; i < REPEAT_COUNT; i++) {
-            Assert.assertEquals(UPLOAD_DATA_STRING, data.substring(UPLOAD_DATA_STRING.length() * i,
-                                                            UPLOAD_DATA_STRING.length() * (i + 1)));
+            assertThat(data.substring(UPLOAD_DATA_STRING.length() * i,
+                               UPLOAD_DATA_STRING.length() * (i + 1)))
+                    .isEqualTo(UPLOAD_DATA_STRING);
         }
     }
 }

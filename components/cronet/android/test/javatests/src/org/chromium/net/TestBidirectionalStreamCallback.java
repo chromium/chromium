@@ -4,12 +4,13 @@
 
 package org.chromium.net;
 
-import android.os.ConditionVariable;
+import static com.google.common.truth.Truth.assertThat;
 
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
+
+import android.os.ConditionVariable;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -200,7 +201,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
     public void onStreamReady(BidirectionalStream stream) {
         checkOnValidThread();
         assertFalse(stream.isDone());
-        assertEquals(ResponseStep.NOTHING, mResponseStep);
+        assertThat(mResponseStep).isEqualTo(ResponseStep.NOTHING);
         assertNull(mError);
         mResponseStep = ResponseStep.ON_STREAM_READY;
         if (maybeThrowCancelOrPause(stream, mWriteStepBlock)) {
@@ -269,7 +270,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
         mResponseStep = ResponseStep.ON_WRITE_COMPLETED;
         mResponseInfo = info;
         if (!mWriteBuffersToBeAcked.isEmpty()) {
-            assertEquals(buffer, mWriteBuffersToBeAcked.get(0).mBuffer);
+            assertThat(mWriteBuffersToBeAcked.get(0).mBuffer).isEqualTo(buffer);
             mWriteBuffersToBeAcked.remove(0);
         }
         if (maybeThrowCancelOrPause(stream, mWriteStepBlock)) {
@@ -303,8 +304,8 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
         assertFalse(mOnErrorCalled);
         assertFalse(mOnCanceledCalled);
         assertNull(mError);
-        assertEquals(0, mWriteBuffers.size());
-        assertEquals(0, mWriteBuffersToBeAcked.size());
+        assertThat(mWriteBuffers).isEmpty();
+        assertThat(mWriteBuffersToBeAcked).isEmpty();
 
         mResponseStep = ResponseStep.ON_SUCCEEDED;
         mResponseInfo = info;
@@ -429,7 +430,7 @@ public class TestBidirectionalStreamCallback extends BidirectionalStream.Callbac
      */
     private void checkOnValidThread() {
         if (!mUseDirectExecutor) {
-            assertEquals(mExecutorThread, Thread.currentThread());
+            assertThat(Thread.currentThread()).isEqualTo(mExecutorThread);
         }
     }
 }

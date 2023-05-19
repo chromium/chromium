@@ -4,7 +4,7 @@
 
 package org.chromium.net;
 
-import static junit.framework.Assert.assertEquals;
+import static com.google.common.truth.Truth.assertThat;
 
 import android.os.ConditionVariable;
 import android.util.SparseIntArray;
@@ -49,7 +49,7 @@ class TestNetworkQualityRttListener extends NetworkQualityRttListener {
                 mExecutorThread = Thread.currentThread();
             }
             // Verify that the listener is always notified on the same thread.
-            assertEquals(mExecutorThread, Thread.currentThread());
+            assertThat(Thread.currentThread()).isEqualTo(mExecutorThread);
         }
     }
 

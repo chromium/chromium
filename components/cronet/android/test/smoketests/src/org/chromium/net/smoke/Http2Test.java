@@ -4,6 +4,8 @@
 
 package org.chromium.net.smoke;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
@@ -52,6 +54,6 @@ public class Http2Test {
         callback.blockForDone();
 
         CronetSmokeTestRule.assertSuccessfulNonEmptyResponse(callback, mServer.getSuccessURL());
-        Assert.assertEquals("h2", callback.getResponseInfo().getNegotiatedProtocol());
+        assertThat(callback.getResponseInfo().getNegotiatedProtocol()).isEqualTo("h2");
     }
 }

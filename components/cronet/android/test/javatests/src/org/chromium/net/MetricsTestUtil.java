@@ -6,7 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -116,7 +115,7 @@ public class MetricsTestUtil {
     public static void checkRequestFinishedInfo(
             RequestFinishedInfo info, String url, Date startTime, Date endTime) {
         assertNotNull("RequestFinishedInfo.Listener must be called", info);
-        assertEquals(url, info.getUrl());
+        assertThat(info.getUrl()).isEqualTo(url);
         assertNotNull(info.getResponseInfo());
         assertNull(info.getException());
         RequestFinishedInfo.Metrics metrics = info.getMetrics();

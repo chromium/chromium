@@ -4,7 +4,8 @@
 
 package org.chromium.net.urlconnection;
 
-import static org.junit.Assert.assertEquals;
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -68,7 +69,7 @@ public class CronetBufferedOutputStreamTest {
         mConnection = (HttpURLConnection) url.openConnection();
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
-        assertEquals(200, mConnection.getResponseCode());
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
         try {
             mConnection.getOutputStream();
             fail();
@@ -98,9 +99,8 @@ public class CronetBufferedOutputStreamTest {
             out.write(TestUtil.UPLOAD_DATA);
             fail();
         } catch (IllegalStateException e) {
-            assertEquals("Use setFixedLengthStreamingMode() or "
-                            + "setChunkedStreamingMode() for writing after connect",
-                    e.getMessage());
+            assertThat(e).hasMessageThat().isEqualTo("Use setFixedLengthStreamingMode() or "
+                    + "setChunkedStreamingMode() for writing after connect");
         }
     }
 
@@ -113,7 +113,7 @@ public class CronetBufferedOutputStreamTest {
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
         OutputStream out = mConnection.getOutputStream();
-        assertEquals(200, mConnection.getResponseCode());
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
         try {
             out.write(TestUtil.UPLOAD_DATA);
             fail();
@@ -148,8 +148,8 @@ public class CronetBufferedOutputStreamTest {
             totalBytesWritten += bytesToWrite;
             bytesToWrite *= 2;
         }
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
         TestUtil.checkLargeData(TestUtil.getResponseAsString(mConnection));
     }
 
@@ -165,8 +165,8 @@ public class CronetBufferedOutputStreamTest {
         mConnection.setRequestProperty("Content-Length", Integer.toString(largeData.length));
         OutputStream out = mConnection.getOutputStream();
         out.write(largeData);
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
         TestUtil.checkLargeData(TestUtil.getResponseAsString(mConnection));
     }
 
@@ -184,8 +184,8 @@ public class CronetBufferedOutputStreamTest {
         for (int i = 0; i < largeData.length; i++) {
             out.write(largeData[i]);
         }
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
         TestUtil.checkLargeData(TestUtil.getResponseAsString(mConnection));
     }
 
@@ -198,9 +198,9 @@ public class CronetBufferedOutputStreamTest {
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
         mConnection.setRequestProperty("Content-Length", "0");
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
-        assertEquals("", TestUtil.getResponseAsString(mConnection));
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mConnection)).isEmpty();
     }
 
     @Test
@@ -212,9 +212,9 @@ public class CronetBufferedOutputStreamTest {
         mConnection = (HttpURLConnection) url.openConnection();
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
-        assertEquals("0", TestUtil.getResponseAsString(mConnection));
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mConnection)).isEqualTo("0");
         mConnection.disconnect();
 
         // Make sure the server echoes back empty body for both implementation.
@@ -222,9 +222,9 @@ public class CronetBufferedOutputStreamTest {
         mConnection = (HttpURLConnection) echoBody.openConnection();
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
-        assertEquals("", TestUtil.getResponseAsString(mConnection));
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mConnection)).isEmpty();
     }
 
     @Test
@@ -237,9 +237,10 @@ public class CronetBufferedOutputStreamTest {
         mConnection.setRequestMethod("POST");
         OutputStream out = mConnection.getOutputStream();
         out.write(TestUtil.UPLOAD_DATA);
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
-        assertEquals(TestUtil.UPLOAD_DATA_STRING, TestUtil.getResponseAsString(mConnection));
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mConnection))
+                .isEqualTo(TestUtil.UPLOAD_DATA_STRING);
     }
 
     @Test
@@ -265,8 +266,8 @@ public class CronetBufferedOutputStreamTest {
             totalBytesWritten += bytesToWrite;
             bytesToWrite *= 2;
         }
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
         TestUtil.checkLargeData(TestUtil.getResponseAsString(mConnection));
     }
 
@@ -281,8 +282,8 @@ public class CronetBufferedOutputStreamTest {
         OutputStream out = mConnection.getOutputStream();
         byte[] largeData = TestUtil.getLargeData();
         out.write(largeData);
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
         TestUtil.checkLargeData(TestUtil.getResponseAsString(mConnection));
     }
 
@@ -299,8 +300,8 @@ public class CronetBufferedOutputStreamTest {
         for (int i = 0; i < largeData.length; i++) {
             out.write(largeData[i]);
         }
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
         TestUtil.checkLargeData(TestUtil.getResponseAsString(mConnection));
     }
 
@@ -350,9 +351,8 @@ public class CronetBufferedOutputStreamTest {
             mConnection.getInputStream();
             fail();
         } catch (IOException e) {
-            assertEquals("exceeded content-length limit of " + (TestUtil.UPLOAD_DATA.length - 1)
-                            + " bytes",
-                    e.getMessage());
+            assertThat(e).hasMessageThat().isEqualTo("exceeded content-length limit of "
+                    + (TestUtil.UPLOAD_DATA.length - 1) + " bytes");
         }
     }
 
@@ -380,9 +380,8 @@ public class CronetBufferedOutputStreamTest {
             mConnection.getInputStream();
             fail();
         } catch (IOException e) {
-            assertEquals("exceeded content-length limit of " + (TestUtil.UPLOAD_DATA.length - 1)
-                            + " bytes",
-                    e.getMessage());
+            assertThat(e).hasMessageThat().isEqualTo("exceeded content-length limit of "
+                    + (TestUtil.UPLOAD_DATA.length - 1) + " bytes");
         }
     }
 
@@ -404,7 +403,8 @@ public class CronetBufferedOutputStreamTest {
                 "Content-Length", Integer.toString(TestUtil.UPLOAD_DATA.length));
         OutputStream out = mConnection.getOutputStream();
         out.write(TestUtil.UPLOAD_DATA);
-        assertEquals(TestUtil.UPLOAD_DATA_STRING, TestUtil.getResponseAsString(mConnection));
+        assertThat(TestUtil.getResponseAsString(mConnection))
+                .isEqualTo(TestUtil.UPLOAD_DATA_STRING);
     }
 
     /**
@@ -420,6 +420,7 @@ public class CronetBufferedOutputStreamTest {
         mConnection.setRequestMethod("POST");
         OutputStream out = mConnection.getOutputStream();
         out.write(TestUtil.UPLOAD_DATA);
-        assertEquals(TestUtil.UPLOAD_DATA_STRING, TestUtil.getResponseAsString(mConnection));
+        assertThat(TestUtil.getResponseAsString(mConnection))
+                .isEqualTo(TestUtil.UPLOAD_DATA_STRING);
     }
 }

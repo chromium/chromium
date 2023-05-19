@@ -4,7 +4,7 @@
 
 package org.chromium.net;
 
-import static org.junit.Assert.assertEquals;
+import static com.google.common.truth.Truth.assertThat;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
@@ -30,6 +30,6 @@ public class CronetOnboardingTest {
     @SmallTest
     public void testNumberOfCronetContributors() throws Exception {
         // TODO(noogler): STEP 3 - fix the test, rerun it and see it pass
-        assertEquals(5, CRONET_CONTRIBUTORS.size());
+        assertThat(CRONET_CONTRIBUTORS).hasSize(5);
     }
 }

@@ -4,7 +4,7 @@
 
 package org.chromium.net.urlconnection;
 
-import static org.junit.Assert.assertEquals;
+import static com.google.common.truth.Truth.assertThat;
 
 import static org.chromium.net.CronetTestRule.getContext;
 
@@ -90,7 +90,7 @@ public class QuicUploadTest {
         // Write everything at one go, so the data is larger than the buffer
         // used in CronetFixedModeOutputStream.
         out.write(largeData);
-        assertEquals(200, connection.getResponseCode());
+        assertThat(connection.getResponseCode()).isEqualTo(200);
         connection.disconnect();
     }
 }

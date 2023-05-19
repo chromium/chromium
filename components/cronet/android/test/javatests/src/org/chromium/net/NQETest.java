@@ -6,7 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -119,8 +118,8 @@ public class NQETest {
 
         urlRequest.start();
         callback.blockForDone();
-        assertEquals(0, rttListener.rttObservationCount());
-        assertEquals(0, throughputListener.throughputObservationCount());
+        assertThat(rttListener.rttObservationCount()).isEqualTo(0);
+        assertThat(throughputListener.throughputObservationCount()).isEqualTo(0);
         cronetEngine.shutdown();
     }
 
@@ -146,7 +145,7 @@ public class NQETest {
         urlRequest.start();
         callback.blockForDone();
         networkQualityExecutor.runAllTasks();
-        assertEquals(0, rttListener.rttObservationCount());
+        assertThat(rttListener.rttObservationCount()).isEqualTo(0);
         cronetEngine.shutdown();
     }
 
@@ -233,11 +232,11 @@ public class NQETest {
         assertThat(rttListener.rttObservationCount(1)).isGreaterThan(0);
 
         // NETWORK_QUALITY_OBSERVATION_SOURCE_QUIC
-        assertEquals(0, rttListener.rttObservationCount(2));
+        assertThat(rttListener.rttObservationCount(2)).isEqualTo(0);
 
         // Verify that the listeners were notified on the expected thread.
-        assertEquals(mNetworkQualityThread, rttListener.getThread());
-        assertEquals(mNetworkQualityThread, throughputListener.getThread());
+        assertThat(rttListener.getThread()).isEqualTo(mNetworkQualityThread);
+        assertThat(throughputListener.getThread()).isEqualTo(mNetworkQualityThread);
 
         // Verify that effective connection type callback is received and
         // effective connection type is correctly set.
@@ -428,17 +427,17 @@ public class NQETest {
         assertThat(rttListener.rttObservationCount(1)).isGreaterThan(0);
 
         // NETWORK_QUALITY_OBSERVATION_SOURCE_QUIC
-        assertEquals(0, rttListener.rttObservationCount(2));
+        assertThat(rttListener.rttObservationCount(2)).isEqualTo(0);
 
         // Verify that the listeners were notified on the expected thread.
-        assertEquals(mNetworkQualityThread, rttListener.getThread());
-        assertEquals(mNetworkQualityThread, throughputListener.getThread());
+        assertThat(rttListener.getThread()).isEqualTo(mNetworkQualityThread);
+        assertThat(throughputListener.getThread()).isEqualTo(mNetworkQualityThread);
 
         // Verify that effective connection type callback is received and effective connection type
         // is correctly set to the forced value. This also verifies that the configuration params
         // from Cronet embedders were correctly read by NetworkQualityEstimator.
-        assertEquals(
-                EffectiveConnectionType.TYPE_SLOW_2G, cronetEngine.getEffectiveConnectionType());
+        assertThat(cronetEngine.getEffectiveConnectionType())
+                .isEqualTo(EffectiveConnectionType.TYPE_SLOW_2G);
 
         cronetEngine.shutdown();
     }

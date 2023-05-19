@@ -4,8 +4,9 @@
 
 package org.chromium.net.urlconnection;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -90,9 +91,10 @@ public class CronetFixedModeOutputStreamTest {
         OutputStream out = mConnection.getOutputStream();
         mConnection.connect();
         out.write(TestUtil.UPLOAD_DATA);
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
-        assertEquals(TestUtil.UPLOAD_DATA_STRING, TestUtil.getResponseAsString(mConnection));
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mConnection))
+                .isEqualTo(TestUtil.UPLOAD_DATA_STRING);
     }
 
     @Test
@@ -107,8 +109,8 @@ public class CronetFixedModeOutputStreamTest {
         mConnection.setFixedLengthStreamingMode(0);
         OutputStream out = mConnection.getOutputStream();
         out.write(new byte[] {});
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
     }
 
     @Test
@@ -132,8 +134,8 @@ public class CronetFixedModeOutputStreamTest {
             // Expected.
             if (!mTestRule.testingSystemHttpURLConnection()) {
                 NetworkException requestException = (NetworkException) e;
-                assertEquals(
-                        NetworkException.ERROR_CONNECTION_REFUSED, requestException.getErrorCode());
+                assertThat(requestException.getErrorCode())
+                        .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
             }
         }
     }
@@ -162,8 +164,8 @@ public class CronetFixedModeOutputStreamTest {
         } catch (IOException e) {
             if (!mTestRule.testingSystemHttpURLConnection()) {
                 NetworkException requestException = (NetworkException) e;
-                assertEquals(
-                        NetworkException.ERROR_CONNECTION_REFUSED, requestException.getErrorCode());
+                assertThat(requestException.getErrorCode())
+                        .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
             }
         }
         // Make sure IOException is reported again when trying to read response
@@ -175,8 +177,8 @@ public class CronetFixedModeOutputStreamTest {
             // Expected.
             if (!mTestRule.testingSystemHttpURLConnection()) {
                 NetworkException requestException = (NetworkException) e;
-                assertEquals(
-                        NetworkException.ERROR_CONNECTION_REFUSED, requestException.getErrorCode());
+                assertThat(requestException.getErrorCode())
+                        .isEqualTo(NetworkException.ERROR_CONNECTION_REFUSED);
             }
         }
         // Restarting server to run the test for a second time.
@@ -193,9 +195,9 @@ public class CronetFixedModeOutputStreamTest {
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
         mConnection.setFixedLengthStreamingMode(0);
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
-        assertEquals("0", TestUtil.getResponseAsString(mConnection));
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mConnection)).isEqualTo("0");
         mConnection.disconnect();
 
         // Check body is empty.
@@ -204,9 +206,9 @@ public class CronetFixedModeOutputStreamTest {
         mConnection.setDoOutput(true);
         mConnection.setRequestMethod("POST");
         mConnection.setFixedLengthStreamingMode(0);
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
-        assertEquals("", TestUtil.getResponseAsString(mConnection));
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mConnection)).isEmpty();
     }
 
     @Test
@@ -247,9 +249,8 @@ public class CronetFixedModeOutputStreamTest {
             fail();
         } catch (IOException e) {
             // Expected.
-            assertEquals("expected " + (TestUtil.UPLOAD_DATA.length - 1) + " bytes but received "
-                            + TestUtil.UPLOAD_DATA.length,
-                    e.getMessage());
+            assertThat(e).hasMessageThat().isEqualTo("expected " + (TestUtil.UPLOAD_DATA.length - 1)
+                    + " bytes but received " + TestUtil.UPLOAD_DATA.length);
         }
     }
 
@@ -294,9 +295,10 @@ public class CronetFixedModeOutputStreamTest {
         mConnection.setFixedLengthStreamingMode(TestUtil.UPLOAD_DATA.length);
         OutputStream out = mConnection.getOutputStream();
         out.write(TestUtil.UPLOAD_DATA);
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
-        assertEquals(TestUtil.UPLOAD_DATA_STRING, TestUtil.getResponseAsString(mConnection));
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mConnection))
+                .isEqualTo(TestUtil.UPLOAD_DATA_STRING);
     }
 
     @Test
@@ -313,9 +315,10 @@ public class CronetFixedModeOutputStreamTest {
             // Write one byte at a time.
             out.write(TestUtil.UPLOAD_DATA[i]);
         }
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
-        assertEquals(TestUtil.UPLOAD_DATA_STRING, TestUtil.getResponseAsString(mConnection));
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
+        assertThat(TestUtil.getResponseAsString(mConnection))
+                .isEqualTo(TestUtil.UPLOAD_DATA_STRING);
     }
 
     @Test
@@ -344,8 +347,8 @@ public class CronetFixedModeOutputStreamTest {
             // About 5th iteration of this loop, bytesToWrite will be bigger than 16384.
             bytesToWrite *= 2;
         }
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
         TestUtil.checkLargeData(TestUtil.getResponseAsString(mConnection));
     }
 
@@ -364,8 +367,8 @@ public class CronetFixedModeOutputStreamTest {
             // Write one byte at a time.
             out.write(largeData[i]);
         }
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
         TestUtil.checkLargeData(TestUtil.getResponseAsString(mConnection));
     }
 
@@ -404,8 +407,8 @@ public class CronetFixedModeOutputStreamTest {
         // Write everything at one go, so the data is larger than the buffer
         // used in CronetFixedModeOutputStream.
         out.write(largeData);
-        assertEquals(200, mConnection.getResponseCode());
-        assertEquals("OK", mConnection.getResponseMessage());
+        assertThat(mConnection.getResponseCode()).isEqualTo(200);
+        assertThat(mConnection.getResponseMessage()).isEqualTo("OK");
         TestUtil.checkLargeData(TestUtil.getResponseAsString(mConnection));
     }
 

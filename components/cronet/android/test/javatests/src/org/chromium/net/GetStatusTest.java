@@ -6,7 +6,6 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -95,7 +94,7 @@ public class GetStatusTest {
         urlRequest.getStatus(statusListener0);
         statusListener0.waitUntilOnStatusCalled();
         assertTrue(statusListener0.mOnStatusCalled);
-        assertEquals(Status.INVALID, statusListener0.mStatus);
+        assertThat(statusListener0.mStatus).isEqualTo(Status.INVALID);
 
         urlRequest.start();
 
@@ -107,7 +106,7 @@ public class GetStatusTest {
         assertThat(statusListener1.mStatus)
                 .isIn(Range.closed(Status.IDLE, Status.READING_RESPONSE));
         callback.waitForNextStep();
-        assertEquals(ResponseStep.ON_RESPONSE_STARTED, callback.mResponseStep);
+        assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_RESPONSE_STARTED);
         callback.startNextRead(urlRequest);
 
         // Should receive a valid status.
@@ -119,7 +118,7 @@ public class GetStatusTest {
                 .isIn(Range.closed(Status.IDLE, Status.READING_RESPONSE));
 
         callback.waitForNextStep();
-        assertEquals(ResponseStep.ON_READ_COMPLETED, callback.mResponseStep);
+        assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_READ_COMPLETED);
 
         callback.startNextRead(urlRequest);
         callback.blockForDone();
@@ -130,10 +129,10 @@ public class GetStatusTest {
         urlRequest.getStatus(statusListener3);
         statusListener3.waitUntilOnStatusCalled();
         assertTrue(statusListener3.mOnStatusCalled);
-        assertEquals(Status.INVALID, statusListener3.mStatus);
+        assertThat(statusListener3.mStatus).isEqualTo(Status.INVALID);
 
-        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
-        assertEquals("GET", callback.mResponseAsString);
+        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseAsString).isEqualTo("GET");
     }
 
     @Test
@@ -189,7 +188,7 @@ public class GetStatusTest {
         assertTrue(statusListener.mOnStatusCalled);
         // The request should be in IDLE state because GetStatusOnNetworkThread
         // is called before |url_request_| is initialized and started.
-        assertEquals(Status.IDLE, statusListener.mStatus);
+        assertThat(statusListener.mStatus).isEqualTo(Status.IDLE);
         // Resume the UploadDataProvider.
         block.open();
 
@@ -197,11 +196,11 @@ public class GetStatusTest {
         callback.blockForDone();
         dataProvider.assertClosed();
 
-        assertEquals(4, dataProvider.getUploadedLength());
-        assertEquals(1, dataProvider.getNumReadCalls());
-        assertEquals(0, dataProvider.getNumRewindCalls());
+        assertThat(dataProvider.getUploadedLength()).isEqualTo(4);
+        assertThat(dataProvider.getNumReadCalls()).isEqualTo(1);
+        assertThat(dataProvider.getNumRewindCalls()).isEqualTo(0);
 
-        assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
-        assertEquals("test", callback.mResponseAsString);
+        assertThat(callback.mResponseInfo.getHttpStatusCode()).isEqualTo(200);
+        assertThat(callback.mResponseAsString).isEqualTo("test");
     }
 }
