@@ -95,6 +95,10 @@ AutofillProfile ConstructCompleteProfile() {
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_LANDMARK, u"Red tree",
                                            VerificationStatus::kObserved);
 
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_BETWEEN_STREETS,
+                                           u"Marcos y Oliva",
+                                           VerificationStatus::kObserved);
+
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_SORTING_CODE, u"CEDEX",
                                            VerificationStatus::kObserved);
 
@@ -256,6 +260,10 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   specifics.set_address_home_landmark_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
 
+  specifics.set_address_home_between_streets("Marcos y Oliva");
+  specifics.set_address_home_between_streets_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
   specifics.set_address_home_sorting_code("CEDEX");
   specifics.set_address_home_sorting_code_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
@@ -279,7 +287,10 @@ class AutofillProfileSyncUtilTest : public testing::Test {
   AutofillProfileSyncUtilTest() {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
     test_clock_.SetNow(kJune2017);
-    features_.InitAndEnableFeature(features::kAutofillEnableSupportForLandmark);
+    features_.InitWithFeatures(
+        {features::kAutofillEnableSupportForLandmark,
+         features::kAutofillEnableSupportForBetweenStreets},
+        {});
   }
 
  private:

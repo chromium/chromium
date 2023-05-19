@@ -199,6 +199,11 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
           features::kAutofillEnableSupportForLandmark)) {
     s.Set(specifics.mutable_address_landmark(), ADDRESS_HOME_LANDMARK);
   }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForBetweenStreets)) {
+    s.Set(specifics.mutable_address_between_streets(),
+          ADDRESS_HOME_BETWEEN_STREETS);
+  }
 
   // Set email, phone and company values and statuses.
   s.Set(specifics.mutable_email_address(), EMAIL_ADDRESS);
@@ -300,6 +305,10 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForLandmark)) {
     s.Set(specifics.address_landmark(), ADDRESS_HOME_LANDMARK);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForBetweenStreets)) {
+    s.Set(specifics.address_between_streets(), ADDRESS_HOME_BETWEEN_STREETS);
   }
 
   // Set email, phone and company values and statuses.
@@ -440,6 +449,10 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
 
   if (d.Delete(trimmed_specifics.mutable_address_landmark())) {
     trimmed_specifics.clear_address_landmark();
+  }
+
+  if (d.Delete(trimmed_specifics.mutable_address_between_streets())) {
+    trimmed_specifics.clear_address_between_streets();
   }
 
   // Delete email, phone and company values and statuses.

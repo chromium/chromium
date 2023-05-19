@@ -184,6 +184,12 @@ BASE_FEATURE(kAutofillEnableSelectMenu,
              "AutofillEnableSelectMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls if Chrome support filling and importing between streets.
+// TODO(crbug.com/1441904) Remove once launched.
+BASE_FEATURE(kAutofillEnableSupportForBetweenStreets,
+             "AutofillEnableSupportForBetweenStreets",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls if Chrome support filling and importing landmarks.
 // TODO(crbug.com/1441904) Remove once launched.
 BASE_FEATURE(kAutofillEnableSupportForLandmark,

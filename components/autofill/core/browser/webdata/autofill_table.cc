@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -1075,6 +1076,7 @@ std::vector<ServerFieldType> GetStoredContactInfoTypes() {
           ADDRESS_HOME_APT_NUM,
           ADDRESS_HOME_FLOOR,
           ADDRESS_HOME_LANDMARK,
+          ADDRESS_HOME_BETWEEN_STREETS,
           EMAIL_ADDRESS,
           PHONE_HOME_WHOLE_NUMBER,
           BIRTHDATE_DAY,
@@ -1116,6 +1118,11 @@ bool AddAutofillProfileToContactInfoTable(sql::Database* db,
     if (!base::FeatureList::IsEnabled(
             features::kAutofillEnableSupportForLandmark) &&
         type == ADDRESS_HOME_LANDMARK) {
+      continue;
+    }
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillEnableSupportForBetweenStreets) &&
+        type == ADDRESS_HOME_BETWEEN_STREETS) {
       continue;
     }
     InsertBuilder(db, s, kContactInfoTypeTokensTable,
