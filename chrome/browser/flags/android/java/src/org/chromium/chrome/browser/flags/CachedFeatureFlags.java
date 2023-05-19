@@ -8,8 +8,6 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import com.google.common.collect.ImmutableMap;
-
 import org.chromium.base.FieldTrialList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -42,27 +40,6 @@ import java.util.Map;
  * value in shared preferences.
  */
 public class CachedFeatureFlags {
-    /**
-     * Non-dynamic preference keys used historically for specific features.
-     *
-     * Do not add new values to this list. To add a new cached feature flag, just follow the
-     * instructions in the class javadoc.
-     */
-    private static final Map<String, String> sNonDynamicPrefKeys =
-            ImmutableMap.<String, String>builder()
-                    .put(ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED,
-                            ChromePreferenceKeys.FLAGS_CACHED_COMMAND_LINE_ON_NON_ROOTED_ENABLED)
-                    .put(ChromeFeatureList.SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT,
-                            ChromePreferenceKeys
-                                    .FLAGS_CACHED_SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT)
-                    .put(ChromeFeatureList.START_SURFACE_ANDROID,
-                            ChromePreferenceKeys.FLAGS_CACHED_START_SURFACE_ENABLED)
-                    .put(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-                            ChromePreferenceKeys.FLAGS_CACHED_GRID_TAB_SWITCHER_ENABLED)
-                    .put(ChromeFeatureList.TAB_GROUPS_ANDROID,
-                            ChromePreferenceKeys.FLAGS_CACHED_TAB_GROUPS_ANDROID_ENABLED)
-                    .build();
-
     private static ValuesReturned sValuesReturned = new ValuesReturned();
     private static ValuesOverridden sValuesOverridden = new ValuesOverridden();
     private static CachedFlagsSafeMode sSafeMode = new CachedFlagsSafeMode();
@@ -79,6 +56,8 @@ public class CachedFeatureFlags {
      * 4. If in a previous run, the value from {@link ChromeFeatureList} was cached to SharedPrefs,
      *    it is returned.
      * 5. The default value passed as a parameter is returned.
+     *
+     * TODO(crbug.com/1442347): Move this code to CachedFlag.
      */
     @AnyThread
     static boolean isEnabled(CachedFlag cachedFlag) {
@@ -86,7 +65,7 @@ public class CachedFeatureFlags {
 
         String featureName = cachedFlag.getFeatureName();
         boolean defaultValue = cachedFlag.getDefaultValue();
-        String preferenceName = getPrefForFeatureFlag(featureName);
+        String preferenceName = cachedFlag.getSharedPreferenceKey();
 
         Boolean flag;
         synchronized (sValuesReturned.boolValues) {
@@ -122,12 +101,12 @@ public class CachedFeatureFlags {
     /**
      * Caches the value of a feature from {@link ChromeFeatureList} to SharedPrefs.
      *
-     * @param featureName the feature name from ChromeFeatureList.
+     * TODO(crbug.com/1442347): Move this code to CachedFlag.
      */
-    static void cacheFeature(String featureName) {
-        String preferenceName = getPrefForFeatureFlag(featureName);
-        boolean isEnabledInNative = ChromeFeatureList.isEnabled(featureName);
-        SharedPreferencesManager.getInstance().writeBoolean(preferenceName, isEnabledInNative);
+    static void cacheFeature(CachedFlag cachedFlag) {
+        boolean isEnabledInNative = ChromeFeatureList.isEnabled(cachedFlag.getFeatureName());
+        SharedPreferencesManager.getInstance().writeBoolean(
+                cachedFlag.getSharedPreferenceKey(), isEnabledInNative);
     }
 
     /**
@@ -136,12 +115,14 @@ public class CachedFeatureFlags {
      * Do not call this from tests; use @EnableFeatures/@DisableFeatures annotations or
      *      {@link CachedFlag#setForTesting(Boolean)} instead.
      *
-     * @param featureName the feature name from ChromeFeatureList.
+     * @param cachedFlag the {@link CachedFlag} to set a value for
      * @param value the value that {@link CachedFlag#isEnabled()} will be forced to return. If null,
      *     remove any values previously forced.
+     *
+     * TODO(crbug.com/1442347): Move this code to CachedFlag.
      */
-    static void setForTesting(String featureName, @Nullable Boolean value) {
-        String preferenceName = getPrefForFeatureFlag(featureName);
+    static void setForTesting(CachedFlag cachedFlag, @Nullable Boolean value) {
+        String preferenceName = cachedFlag.getSharedPreferenceKey();
         synchronized (sValuesReturned.boolValues) {
             sValuesReturned.boolValues.put(preferenceName, value);
         }
@@ -150,8 +131,7 @@ public class CachedFeatureFlags {
     /**
      * Sets the feature flags to use in JUnit and instrumentation tests.
      *
-     * Do not call this from tests; use @EnableFeatures/@DisableFeatures annotations or
-     *      {@link CachedFlag#setForTesting(Boolean)} instead.
+     * Do not call this from tests; use @EnableFeatures/@DisableFeatures annotations instead.
      */
     @VisibleForTesting
     public static void setFeaturesForTesting(Map<String, Boolean> features) {
@@ -160,7 +140,10 @@ public class CachedFeatureFlags {
         sValuesOverridden.enableOverrides();
 
         for (Map.Entry<String, Boolean> entry : features.entrySet()) {
-            setForTesting(entry.getKey(), entry.getValue());
+            CachedFlag possibleCachedFlag = ChromeFeatureList.sAllCachedFlags.get(entry.getKey());
+            if (possibleCachedFlag != null) {
+                setForTesting(possibleCachedFlag, entry.getValue());
+            }
         }
     }
 
@@ -393,16 +376,6 @@ public class CachedFeatureFlags {
         return value;
     }
 
-    @AnyThread
-    private static String getPrefForFeatureFlag(String featureName) {
-        String legacyPrefKey = sNonDynamicPrefKeys.get(featureName);
-        if (legacyPrefKey == null) {
-            return ChromePreferenceKeys.FLAGS_CACHED.createKey(featureName);
-        } else {
-            return legacyPrefKey;
-        }
-    }
-
     @VisibleForTesting
     public static void resetFlagsForTesting() {
         sValuesReturned.clearForTesting();
@@ -414,9 +387,11 @@ public class CachedFeatureFlags {
     public static void resetDiskForTesting() {
         SharedPreferencesManager.getInstance().removeKeysWithPrefix(
                 ChromePreferenceKeys.FLAGS_CACHED);
-        for (Map.Entry<String, String> e : sNonDynamicPrefKeys.entrySet()) {
-            String prefKey = e.getValue();
-            SharedPreferencesManager.getInstance().removeKey(prefKey);
+        for (Map.Entry<String, CachedFlag> e : ChromeFeatureList.sAllCachedFlags.entrySet()) {
+            String legacyPreferenceKey = e.getValue().getLegacySharedPreferenceKey();
+            if (legacyPreferenceKey != null) {
+                SharedPreferencesManager.getInstance().removeKey(legacyPreferenceKey);
+            }
         }
     }
 

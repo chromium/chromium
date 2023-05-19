@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.flags;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 
 import java.util.List;
 import java.util.Map;
@@ -520,7 +521,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCloseTabSaveTabList =
             new CachedFlag(CLOSE_TAB_SAVE_TAB_LIST, true);
     public static final CachedFlag sCommandLineOnNonRooted =
-            new CachedFlag(COMMAND_LINE_ON_NON_ROOTED, false);
+            new CachedFlag(COMMAND_LINE_ON_NON_ROOTED,
+                    ChromePreferenceKeys.FLAGS_CACHED_COMMAND_LINE_ON_NON_ROOTED_ENABLED, false);
     public static final CachedFlag sCriticalPersistedTabData =
             new CachedFlag(CRITICAL_PERSISTED_TAB_DATA, false);
     public static final CachedFlag sDelayTempStripRemoval =
@@ -552,8 +554,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sShouldIgnoreIntentSkipInternalCheck =
             new CachedFlag(SHOULD_IGNORE_INTENT_SKIP_INTERNAL_CHECK, true);
     public static final CachedFlag sSpareTab = new CachedFlag(SPARE_TAB, false);
-    public static final CachedFlag sStartSurfaceAndroid =
-            new CachedFlag(START_SURFACE_ANDROID, true);
+    public static final CachedFlag sStartSurfaceAndroid = new CachedFlag(
+            START_SURFACE_ANDROID, ChromePreferenceKeys.FLAGS_CACHED_START_SURFACE_ENABLED, true);
     public static final CachedFlag sStartSurfaceDisabledFeedImprovement =
             new CachedFlag(START_SURFACE_DISABLED_FEED_IMPROVEMENT, false);
     public static final CachedFlag sStartSurfaceOnTablet =
@@ -565,11 +567,14 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sStartSurfaceWithAccessibility =
             new CachedFlag(START_SURFACE_WITH_ACCESSIBILITY, false);
     public static final CachedFlag sStoreHoursAndroid = new CachedFlag(STORE_HOURS, false);
-    public static final CachedFlag sSwapPixelFormatToFixConvertFromTranslucent =
-            new CachedFlag(SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT, true);
-    public static final CachedFlag sTabGridLayoutAndroid =
-            new CachedFlag(TAB_GRID_LAYOUT_ANDROID, true);
-    public static final CachedFlag sTabGroupsAndroid = new CachedFlag(TAB_GROUPS_ANDROID, true);
+    public static final CachedFlag sSwapPixelFormatToFixConvertFromTranslucent = new CachedFlag(
+            SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT,
+            ChromePreferenceKeys.FLAGS_CACHED_SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT,
+            true);
+    public static final CachedFlag sTabGridLayoutAndroid = new CachedFlag(TAB_GRID_LAYOUT_ANDROID,
+            ChromePreferenceKeys.FLAGS_CACHED_GRID_TAB_SWITCHER_ENABLED, true);
+    public static final CachedFlag sTabGroupsAndroid = new CachedFlag(
+            TAB_GROUPS_ANDROID, ChromePreferenceKeys.FLAGS_CACHED_TAB_GROUPS_ANDROID_ENABLED, true);
     public static final CachedFlag sTabGroupsContinuationAndroid =
             new CachedFlag(TAB_GROUPS_CONTINUATION_ANDROID, false);
     public static final CachedFlag sTabGroupsForTablets =

@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Flag;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,13 +17,27 @@ import java.util.Map;
 /**
  * Flags of this type may be used before native is loaded and return the value read
  * from native and cached to SharedPreferences in a previous run.
- * @see {@link CachedFeatureFlags#isEnabled(String, boolean)}
+ * @see {@link CachedFeatureFlags#isEnabled(CachedFlag)}
  */
 public class CachedFlag extends Flag {
     private final boolean mDefaultValue;
+    @Nullable
+    private final String mLegacySharedPreferenceKey;
 
     public CachedFlag(String featureName, boolean defaultValue) {
         super(featureName);
+        mLegacySharedPreferenceKey = null;
+        mDefaultValue = defaultValue;
+    }
+
+    /**
+     * @deprecated This is the constructor for legacy CachedFlags that predate unifying them
+     * under a SharedPreferences prefix.
+     */
+    @Deprecated
+    public CachedFlag(String featureName, String sharedPreferenceKey, boolean defaultValue) {
+        super(featureName);
+        mLegacySharedPreferenceKey = sharedPreferenceKey;
         mDefaultValue = defaultValue;
     }
 
@@ -43,11 +58,24 @@ public class CachedFlag extends Flag {
 
     @VisibleForTesting
     public void setForTesting(@Nullable Boolean value) {
-        CachedFeatureFlags.setForTesting(mFeatureName, value);
+        CachedFeatureFlags.setForTesting(this, value);
     }
 
-    public void cacheFeature() {
-        CachedFeatureFlags.cacheFeature(mFeatureName);
+    void cacheFeature() {
+        CachedFeatureFlags.cacheFeature(this);
+    }
+
+    @Nullable
+    String getLegacySharedPreferenceKey() {
+        return mLegacySharedPreferenceKey;
+    }
+
+    String getSharedPreferenceKey() {
+        if (mLegacySharedPreferenceKey != null) {
+            return mLegacySharedPreferenceKey;
+        } else {
+            return ChromePreferenceKeys.FLAGS_CACHED.createKey(mFeatureName);
+        }
     }
 
     /**
