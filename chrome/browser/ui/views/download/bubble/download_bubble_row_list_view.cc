@@ -46,11 +46,12 @@ std::unique_ptr<views::View> DownloadBubbleRowListView::CreateWithScroll(
   auto row_list_view =
       std::make_unique<DownloadBubbleRowListView>(is_partial_view, browser);
   for (DownloadUIModel::DownloadUIModelPtr& model : rows) {
-    // raw pointer is safe as the toolbar owns the bubble, which owns an
-    // individual row view.
+    // raw pointer for `row_list_view` is safe as the toolbar owns the bubble,
+    // which owns an individual row view. Note we need to copy rather than move
+    // the WeakPtrs so that each row view gets a valid pointer.
     row_list_view->AddChildView(std::make_unique<DownloadBubbleRowView>(
-        std::move(model), row_list_view.get(), std::move(bubble_controller),
-        std::move(navigation_handler), browser, fixed_width));
+        std::move(model), row_list_view.get(), bubble_controller,
+        navigation_handler, browser, fixed_width));
   }
 
   auto scroll_view = std::make_unique<views::ScrollView>();
