@@ -2477,7 +2477,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3160928651883997588">VPN Tercihleri</translation>
 <translation id="3161522574479303604">Tüm diller</translation>
 <translation id="3162853326462195145">Okul hesabı</translation>
-<translation id="3162899666601560689">Siteler size daha iyi bir göz atma deneyimi sunmak, örneğin, oturumunuzu açık tutmak veya alışveriş sepetinizdeki ürünleri hatırlamak için çerez kullanabilir</translation>
+<translation id="3162899666601560689">Siteler size daha iyi bir göz atma deneyimi sunmak, örneğin, oturumunuzu açık tutmak veya alışveriş sepetinizdeki ürünleri hatırlamak için çerez kullanabilir.</translation>
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> adlı satıcı firma tarafından sağlanan <ph name="PRODUCT_ID" /> ürün kimliğine sahip bilinmeyen ürün</translation>
 <translation id="3163511056918491211">Verilerinizi istediğiniz zaman kolayca geri yükleyebilir veya cihazlar arasında geçiş yapabilirsiniz. Yedek verileriniz Google'a yüklenir ve Google Hesabınızın şifresi kullanılarak şifrelenir.</translation>
 <translation id="3164329792803560526">Bu sekme <ph name="APP_NAME" /> ile paylaşılıyor</translation>
@@ -3432,7 +3432,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">Yapı ayrıntılarını kopyala</translation>
 <translation id="4021941025609472374">Soldaki sekmeleri kapat</translation>
-<translation id="402211067068791756">Bu işlem, siteler tarafından görüntülenen <ph name="TOTAL_USAGE" /> veriyi temizleyecek</translation>
+<translation id="402211067068791756">Bu işlem, görüntülenen siteler tarafından depolanan <ph name="TOTAL_USAGE" /> veriyi temizleyecek</translation>
 <translation id="4022426551683927403">Sözlüğe &amp;Ekle</translation>
 <translation id="4025039777635956441">Seçili Sitenin Sesini Kapat</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> talimatı alındı</translation>
@@ -5776,7 +5776,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6201608810045805374">Bu hesap kaldırılsın mı?</translation>
 <translation id="6202304368170870640">Cihazınızda oturum açmak veya cihazınızın kilidini açmak için PIN'inizi kullanabilirsiniz.</translation>
 <translation id="6205314730813004066">Reklam gizliliği</translation>
-<translation id="6206199626856438589">Açık sekmeler de dahil olmak üzere görüntülenen sitelerde oturumunuz kapatılır</translation>
+<translation id="6206199626856438589">Açık sekmeler de dahil olmak üzere görüntülenen sitelerde oturumunuz kapatılacak</translation>
 <translation id="6206311232642889873">Resmi Kop&amp;yala</translation>
 <translation id="6206521455877863927">google.com ve mail.google.com gibi aynı alandaki siteler dahildir. Görüntülediğiniz siteler cihazınıza veri kaydedebilir.</translation>
 <translation id="6207200176136643843">Varsayılan yakınlaştırma seviyesine sıfırla</translation>
