@@ -68,9 +68,9 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_tile_saver.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/start_suggest_service_factory.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_metrics.h"
-#import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/ntp/feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
@@ -221,7 +221,7 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
         std::make_unique<ReadingListModelBridge>(self, readingListModel);
 
     if (IsIOSSetUpListEnabled() &&
-        !set_up_list_prefs::IsSetUpListDisabled(_localState)) {
+        set_up_list_utils::IsSetUpListActive(_localState)) {
       _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
       _prefChangeRegistrar.Init(_localState);
       _prefObserverBridge->ObserveChangesForPreference(
@@ -757,18 +757,7 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
   if (!IsIOSSetUpListEnabled()) {
     return NO;
   }
-  if (set_up_list_prefs::IsSetUpListDisabled(_localState)) {
-    return NO;
-  }
-  // check if we are within 14 days of FRE
-  absl::optional<base::Time> firstRunTime = GetFirstRunTime();
-  if (!firstRunTime) {
-    // If this is the first time the app has been opened, First Run will not
-    // have been completed yet. In this case, we will wait until the next run.
-    return NO;
-  }
-  base::Time expiryTime = firstRunTime.value() + base::Days(14);
-  if (base::Time::Now() > expiryTime) {
+  if (!set_up_list_utils::IsSetUpListActive(_localState)) {
     return NO;
   }
 
