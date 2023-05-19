@@ -11,6 +11,7 @@
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
@@ -52,10 +53,11 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
       const ClipboardHistoryMenuModelAdapter&) = delete;
   ~ClipboardHistoryMenuModelAdapter() override;
 
-  // Shows the menu anchored at `anchor_rect`, `source_type` indicates how the
-  // menu is triggered.
+  // Shows the menu anchored at `anchor_rect`. `source_type` and `show_source`
+  // indicate how the menu was triggered.
   void Run(const gfx::Rect& anchor_rect,
-           ui::MenuSourceType source_type);
+           ui::MenuSourceType source_type,
+           crosapi::mojom::ClipboardHistoryControllerShowSource show_source);
 
   // Returns if the menu is currently running.
   bool IsRunning() const;
@@ -94,6 +96,8 @@ class ASH_EXPORT ClipboardHistoryMenuModelAdapter
 
   const views::MenuItemView* GetMenuItemViewAtForTest(size_t index) const;
   views::MenuItemView* GetMenuItemViewAtForTest(size_t index);
+
+  const ui::SimpleMenuModel* GetModelForTest() const;
 
  private:
   class MenuModelWithWillCloseCallback;

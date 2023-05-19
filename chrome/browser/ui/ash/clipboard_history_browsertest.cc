@@ -1503,6 +1503,55 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
   EXPECT_TRUE(textfield_->GetText().empty());
 }
 
+// Verifies that clicking the clipboard history's menu does nothing and that tab
+// and arrow key traversal pass over the footer.
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
+                       FooterNotInteractive) {
+  // Write some things to the clipboard.
+  SetClipboardText("A");
+  SetClipboardText("B");
+
+  // Show the clipboard history menu via the Ctrl+V long-press shortcut so that
+  // the menu's educational footer shows.
+  EXPECT_TRUE(GetClipboardHistoryController()->ShowMenu(
+      gfx::Rect(), ui::MenuSourceType::MENU_SOURCE_NONE,
+      crosapi::mojom::ClipboardHistoryControllerShowSource::
+          kControlVLongpress));
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Verify that the menu has two clipboard history items and a third item (the
+  // footer).
+  const auto* menu = GetClipboardHistoryController()->context_menu_for_test();
+  EXPECT_EQ(menu->GetMenuItemsCount(), 2u);
+  ASSERT_EQ(menu->GetModelForTest()->GetItemCount(), 3u);
+
+  // Verify that clicking on the footer does nothing.
+  EXPECT_TRUE(textfield_->GetText().empty());
+  const auto* footer = menu->GetMenuItemViewAtForTest(/*index=*/2);
+  GetEventGenerator()->MoveMouseTo(footer->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_TRUE(textfield_->GetText().empty());
+
+  // Verify that traversing over the menu with arrow keys skips the footer.
+  const auto* item1 = menu->GetMenuItemViewAtForTest(/*index=*/0);
+  const auto* item2 = menu->GetMenuItemViewAtForTest(/*index=*/1);
+  PressAndRelease(ui::VKEY_DOWN);
+  EXPECT_TRUE(item1->IsSelected());
+  PressAndRelease(ui::VKEY_DOWN);
+  EXPECT_TRUE(item2->IsSelected());
+  PressAndRelease(ui::VKEY_DOWN);
+  EXPECT_TRUE(item1->IsSelected());
+
+  // Verify that traversing over the menu with the Tab key (two presses at a
+  // time for each item's main button and delete button) skips the footer.
+  PressAndRelease(ui::VKEY_TAB);
+  PressAndRelease(ui::VKEY_TAB);
+  EXPECT_TRUE(item2->IsSelected());
+  PressAndRelease(ui::VKEY_TAB);
+  PressAndRelease(ui::VKEY_TAB);
+  EXPECT_TRUE(item1->IsSelected());
+}
+
 class FakeDataTransferPolicyController
     : public ui::DataTransferPolicyController {
  public:

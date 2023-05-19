@@ -24,6 +24,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/controls/menu/menu_config.h"
 
 namespace ash::clipboard_history_util {
 
@@ -248,6 +249,10 @@ GetItemDescriptorsFrom(const std::list<ClipboardHistoryItem>& items) {
                                   item.display_text(), item.file_count());
   }
   return item_descriptors;
+}
+
+int GetPreferredItemViewWidth() {
+  return views::MenuConfig::instance().touchable_menu_min_width;
 }
 
 }  // namespace ash::clipboard_history_util

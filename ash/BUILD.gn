@@ -3004,6 +3004,7 @@ test("ash_unittests") {
     "child_accounts/parent_access_controller_impl_unittest.cc",
     "clipboard/clipboard_history_controller_unittest.cc",
     "clipboard/clipboard_history_item_unittest.cc",
+    "clipboard/clipboard_history_menu_model_adapter_unittest.cc",
     "clipboard/clipboard_history_resource_manager_unittest.cc",
     "clipboard/clipboard_history_unittest.cc",
     "clipboard/clipboard_history_util_unittest.cc",

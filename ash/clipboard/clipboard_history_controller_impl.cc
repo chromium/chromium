@@ -430,7 +430,7 @@ bool ClipboardHistoryControllerImpl::ShowMenu(
         base::BindRepeating(&ClipboardHistoryControllerImpl::OnMenuClosed,
                             base::Unretained(this)),
         clipboard_history_.get());
-    context_menu_->Run(anchor_rect, source_type);
+    context_menu_->Run(anchor_rect, source_type, show_source);
 
     DCHECK(IsMenuShowing());
     accelerator_target_->OnMenuShown();
