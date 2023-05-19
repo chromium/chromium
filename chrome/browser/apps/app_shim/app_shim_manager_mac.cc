@@ -522,6 +522,19 @@ void AppShimManager::OnShimLaunchRequested(
       profile = ProfileForPath(host->GetProfilePath());
     }
   }
+
+  // If `recreate_shims` is true, it is possible that the app got uninstalled
+  // while an initial launch attempt took place (and failed). So check first
+  // if the app is still installed.
+  // TODO(mek): Rather than this workaround, we should make sure to destroy
+  // AppShimHost and terminate app shims when an app is uninstalled.
+  if (recreate_shims && !delegate_->AppIsInstalled(profile, host->GetAppId())) {
+    LOG(ERROR)
+        << "Attempting to launch shim for an app that is no longer installed.";
+    std::move(terminated_callback).Run();
+    return;
+  }
+
   delegate_->LaunchShim(profile, host->GetAppId(), recreate_shims,
                         std::move(launched_callback),
                         std::move(terminated_callback));
