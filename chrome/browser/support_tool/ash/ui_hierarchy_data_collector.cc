@@ -84,12 +84,12 @@ std::string UiHierarchyDataCollector::RemoveWindowTitles(
 
   while (re2::RE2::Consume(&input, regex_pattern, &skipped_part,
                            &matched_window_title)) {
-    skipped_part.AppendToString(&redacted);
+    redacted.append(skipped_part.data(), skipped_part.size());
     redacted += "title=<REDACTED>\n";
   }
   // Append the rest of the input to `redacted`. Only the unmatched last part
   // will be present in the `input` as we're using Consume() function.
-  input.AppendToString(&redacted);
+  redacted.append(input.data(), input.size());
   return redacted;
 }
 

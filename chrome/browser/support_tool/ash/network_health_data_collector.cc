@@ -69,7 +69,7 @@ std::string RedactNetworkNames(const std::string& network_health_data) {
 
   while (re2::RE2::Consume(&input, regex_pattern, &skipped_part,
                            &matched_network_name, &matched_guid)) {
-    skipped_part.AppendToString(&redacted);
+    redacted.append(skipped_part.data(), skipped_part.size());
     if (matched_network_name == "N/A" || matched_network_name.empty() ||
         matched_guid == "N/A" || matched_guid.empty()) {
       redacted += "Name: N/A\nGUID: N/A\n";
@@ -81,7 +81,7 @@ std::string RedactNetworkNames(const std::string& network_health_data) {
   }
   // Append the rest of the input to `redacted`. Only the unmatched last part
   // will be present in the `input` as we're using Consume() function.
-  input.AppendToString(&redacted);
+  redacted.append(input.data(), input.size());
   return redacted;
 }
 

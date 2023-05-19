@@ -703,12 +703,12 @@ std::string RedactionTool::RedactMACAddresses(
     if (detected != nullptr) {
       (*detected)[PIIType::kMACAddress].insert(mac);
     }
-    skipped.AppendToString(&result);
+    result.append(skipped.data(), skipped.size());
     result += replacement_mac;
     RecordPIIRedactedHistogram(PIIType::kMACAddress);
   }
 
-  text.AppendToString(&result);
+  result.append(text.data(), text.size());
 
   return result;
 }
@@ -733,8 +733,8 @@ std::string RedactionTool::RedactHashes(
   re2::StringPiece skipped, pre_whitespace, hash_prefix, hash_suffix;
   while (FindAndConsumeAndGetSkipped(&text, *hash_re, &skipped, &pre_whitespace,
                                      &hash_prefix, &hash_suffix)) {
-    skipped.AppendToString(&result);
-    pre_whitespace.AppendToString(&result);
+    result.append(skipped.data(), skipped.size());
+    result.append(pre_whitespace.data(), pre_whitespace.size());
 
     // Check if it's a valid length for our hashes or if we need to skip due to
     // the whitespace check.
@@ -742,8 +742,8 @@ std::string RedactionTool::RedactHashes(
     if ((hash_length != 32 && hash_length != 40 && hash_length != 64) ||
         (hash_length == 32 && pre_whitespace.length() >= 3)) {
       // This is not a hash string, skip it.
-      hash_prefix.AppendToString(&result);
-      hash_suffix.AppendToString(&result);
+      result.append(hash_prefix.data(), hash_prefix.size());
+      result.append(hash_suffix.data(), hash_suffix.size());
       continue;
     }
 
@@ -768,7 +768,7 @@ std::string RedactionTool::RedactHashes(
     RecordPIIRedactedHistogram(PIIType::kStableIdentifier);
   }
 
-  text.AppendToString(&result);
+  result.append(text.data(), text.size());
 
   return result;
 }
@@ -806,8 +806,8 @@ std::string RedactionTool::RedactAndroidAppStoragePaths(
   while (FindAndConsumeAndGetSkipped(&text, *path_re, &skipped, &path_prefix,
                                      &pre_data, &post_data, &app_specific)) {
     // We can record these parts as-is.
-    skipped.AppendToString(&result);
-    path_prefix.AppendToString(&result);
+    result.append(skipped.data(), skipped.size());
+    result.append(path_prefix.data(), path_prefix.size());
 
     // |app_specific| has to be redacted. First, convert it into components,
     // and then redact each component as follows:
@@ -837,7 +837,7 @@ std::string RedactionTool::RedactAndroidAppStoragePaths(
     RecordPIIRedactedHistogram(PIIType::kAndroidAppStoragePath);
   }
 
-  text.AppendToString(&result);
+  result.append(text.data(), text.size());
 
   return result;
 #else
@@ -870,7 +870,7 @@ std::string RedactionTool::RedactCreditCardNumbers(
 
   while (FindAndConsumeAndGetSkipped(&text, *cc_re, &skipped, &sequence,
                                      &post_sequence)) {
-    skipped.AppendToString(&result);
+    result.append(skipped.data(), skipped.size());
     RecordCreditCardRedactionHistogram(CreditCardDetection::kRegexMatch);
 
     // Timestamps in ms have a surprisingly high number of false positives.
@@ -878,15 +878,15 @@ std::string RedactionTool::RedactCreditCardNumbers(
     // tying unrelated numbers together.
     if (post_sequence.contains("ms")) {
       RecordCreditCardRedactionHistogram(CreditCardDetection::kTimestamp);
-      sequence.AppendToString(&result);
-      post_sequence.AppendToString(&result);
+      result.append(sequence.data(), sequence.size());
+      result.append(post_sequence.data(), post_sequence.size());
       continue;
     }
 
     if (HasRepeatedChar(sequence, ' ') || HasRepeatedChar(sequence, '-')) {
       RecordCreditCardRedactionHistogram(CreditCardDetection::kRepeatedChars);
-      sequence.AppendToString(&result);
-      post_sequence.AppendToString(&result);
+      result.append(sequence.data(), sequence.size());
+      result.append(post_sequence.data(), post_sequence.size());
       continue;
     }
 
@@ -896,7 +896,7 @@ std::string RedactionTool::RedactCreditCardNumbers(
     const auto cc_it = credit_cards_.find(number);
     if (cc_it != credit_cards_.cend()) {
       result += cc_it->second;
-      post_sequence.AppendToString(&result);
+      result.append(post_sequence.data(), post_sequence.size());
       RecordCreditCardRedactionHistogram(CreditCardDetection::kValidated);
       continue;
     }
@@ -911,19 +911,19 @@ std::string RedactionTool::RedactCreditCardNumbers(
         RecordPIIRedactedHistogram(PIIType::kCreditCard);
         result += it->second;
       } else {
-        sequence.AppendToString(&result);
+        result.append(sequence.data(), sequence.size());
       }
       if (detected) {
         (*detected)[PIIType::kCreditCard].insert(it->first);
       }
     } else {
       RecordCreditCardRedactionHistogram(CreditCardDetection::kDoesntValidate);
-      sequence.AppendToString(&result);
+      result.append(sequence.data(), sequence.size());
     }
-    post_sequence.AppendToString(&result);
+    result.append(post_sequence.data(), post_sequence.size());
   }
 
-  text.AppendToString(&result);
+  result.append(text.data(), text.size());
 
   return result;
 }
@@ -944,7 +944,7 @@ std::string RedactionTool::RedactIbans(
   re2::StringPiece skipped;
   re2::StringPiece iban;
   while (FindAndConsumeAndGetSkipped(&text, *iban_re, &skipped, &iban)) {
-    skipped.AppendToString(&result);
+    result.append(skipped.data(), skipped.size());
     // Validation sequence as per [1].
     //
     // [1]
@@ -1008,7 +1008,7 @@ std::string RedactionTool::RedactIbans(
     }
 
     if (remainder != 1) {
-      iban.AppendToString(&result);
+      result.append(iban.data(), iban.size());
       continue;
     }
 
@@ -1024,7 +1024,7 @@ std::string RedactionTool::RedactIbans(
     RecordPIIRedactedHistogram(PIIType::kIBAN);
   }
 
-  text.AppendToString(&result);
+  result.append(text.data(), text.size());
 
   return result;
 }
@@ -1089,13 +1089,13 @@ std::string RedactionTool::RedactCustomPatternWithContext(
     if (detected != nullptr) {
       (*detected)[pattern.pii_type].insert(matched_id_as_string);
     }
-    skipped.AppendToString(&result);
-    pre_matched_id.AppendToString(&result);
+    result.append(skipped.data(), skipped.size());
+    result.append(pre_matched_id.data(), pre_matched_id.size());
     result += replacement_id;
-    post_matched_id.AppendToString(&result);
+    result.append(post_matched_id.data(), post_matched_id.size());
     RecordPIIRedactedHistogram(pattern.pii_type);
   }
-  text.AppendToString(&result);
+  result.append(text.data(), text.size());
 
   return result;
 }
@@ -1176,8 +1176,8 @@ std::string RedactionTool::RedactCustomPatternWithoutContext(
   re2::StringPiece matched_id;
   while (FindAndConsumeAndGetSkipped(&text, *re, &skipped, &matched_id)) {
     if (IsUrlExempt(matched_id, first_party_extension_ids_)) {
-      skipped.AppendToString(&result);
-      matched_id.AppendToString(&result);
+      result.append(skipped.data(), skipped.size());
+      result.append(matched_id.data(), matched_id.size());
       continue;
     }
     std::string matched_id_as_string(matched_id);
@@ -1188,8 +1188,8 @@ std::string RedactionTool::RedactCustomPatternWithoutContext(
         // Double-check overly opportunistic IPv4 address matching.
         if ((strcmp("IPv4", pattern.alias) == 0) &&
             ShouldSkipIPAddress(skipped)) {
-          skipped.AppendToString(&result);
-          matched_id.AppendToString(&result);
+          result.append(skipped.data(), skipped.size());
+          result.append(matched_id.data(), matched_id.size());
           continue;
         }
 
@@ -1211,12 +1211,12 @@ std::string RedactionTool::RedactCustomPatternWithoutContext(
       }
     }
 
-    skipped.AppendToString(&result);
+    result.append(skipped.data(), skipped.size());
     result += replacement_id;
 
     RecordPIIRedactedHistogram(pattern.pii_type);
   }
-  text.AppendToString(&result);
+  result.append(text.data(), text.size());
 
   return result;
 }
