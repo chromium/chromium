@@ -54,7 +54,7 @@ int64_t CalculateTotalSize(base::FilePath root) {
 void LogDocumentsDirectorySize(scoped_refptr<base::SequencedTaskRunner>) {
   base::FilePath documents_path = base::mac::GetUserDocumentPath();
   int total_size_bytes = CalculateTotalSize(documents_path);
-  UMA_HISTOGRAM_MEMORY_MEDIUM_MB("IOS.SandboxMetrics.DocumentsSize",
+  UMA_HISTOGRAM_MEMORY_MEDIUM_MB("IOS.SandboxMetrics.DocumentsSize2",
                                  total_size_bytes / 1024 / 1024);
 }
 
@@ -63,7 +63,7 @@ void LogDocumentsDirectorySize(scoped_refptr<base::SequencedTaskRunner>) {
 void LogLibraryDirectorySize(scoped_refptr<base::SequencedTaskRunner>) {
   base::FilePath library_path = base::mac::GetUserLibraryPath();
   int total_size_bytes = CalculateTotalSize(library_path);
-  UMA_HISTOGRAM_MEMORY_MEDIUM_MB("IOS.SandboxMetrics.DocumentsSize",
+  UMA_HISTOGRAM_MEMORY_MEDIUM_MB("IOS.SandboxMetrics.LibrarySize",
                                  total_size_bytes / 1024 / 1024);
 }
 
