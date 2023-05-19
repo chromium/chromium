@@ -28,6 +28,8 @@ source_set("cells") {
     "content_suggestions_tile_view.mm",
     "magic_stack_module_container.h",
     "magic_stack_module_container.mm",
+    "multi_row_module.h",
+    "multi_row_module.mm",
     "query_suggestion_view.h",
     "query_suggestion_view.mm",
     "suggested_content.h",

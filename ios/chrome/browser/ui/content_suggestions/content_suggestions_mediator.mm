@@ -779,9 +779,14 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
 - (NSArray<NSNumber*>*)magicStackOrder {
   NSMutableArray* magicStackModules = [NSMutableArray array];
   if ([self shouldShowSetUpList]) {
-    for (SetUpListItem* model in self.setUpList.items) {
+    if (set_up_list_utils::ShouldShowCompactedSetUpListModule()) {
       [magicStackModules
-          addObject:@(int(SetUpListModuleTypeForSetUpListType(model.type)))];
+          addObject:@(int(ContentSuggestionsModuleType::kCompactedSetUpList))];
+    } else {
+      for (SetUpListItem* model in self.setUpList.items) {
+        [magicStackModules
+            addObject:@(int(SetUpListModuleTypeForSetUpListType(model.type)))];
+      }
     }
   }
   if (ShouldPutMostVisitedSitesInMagicStack()) {
@@ -820,6 +825,13 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
         [[SetUpListItemViewData alloc] initWithType:model.type
                                            complete:model.complete];
     [items addObject:item];
+  }
+  // For the compacted Set Up List Module in the Magic Stack, there will only be
+  // two items shown.
+  if (IsMagicStackEnabled() &&
+      set_up_list_utils::ShouldShowCompactedSetUpListModule() &&
+      [items count] > 2) {
+    return [items subarrayWithRange:NSMakeRange(0, 2)];
   }
   return items;
 }

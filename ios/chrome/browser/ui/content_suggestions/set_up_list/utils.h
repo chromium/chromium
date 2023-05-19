@@ -14,6 +14,10 @@ namespace set_up_list_utils {
 // a local state pref.
 bool IsSetUpListActive(PrefService* local_state);
 
+// true if the Set Up List should be shown in a compacted layout in the Magic
+// Stack.
+bool ShouldShowCompactedSetUpListModule();
+
 }  // namespace set_up_list_utils
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SET_UP_LIST_UTILS_H_

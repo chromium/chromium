@@ -30,6 +30,7 @@ constexpr CGFloat kPadding = 15;
 
 // The spacing between the title and description labels.
 constexpr CGFloat kTextSpacing = 5;
+constexpr CGFloat kCompactTextSpacing = 0;
 
 // The duration of the icon / label crossfade animation.
 constexpr base::TimeDelta kAnimationDuration = base::Seconds(0.5);
@@ -63,6 +64,7 @@ NSAttributedString* Strikethrough(NSString* text) {
   CrossfadeLabel* _description;
   UIStackView* _contentStack;
   UITapGestureRecognizer* _tapGestureRecognizer;
+  BOOL _compactLayout;
 }
 
 - (instancetype)initWithData:(SetUpListItemViewData*)data {
@@ -70,6 +72,7 @@ NSAttributedString* Strikethrough(NSString* text) {
   if (self) {
     _type = data.type;
     _complete = data.complete;
+    _compactLayout = data.compactLayout;
   }
   return self;
 }
@@ -146,7 +149,9 @@ NSAttributedString* Strikethrough(NSString* text) {
     self.accessibilityTraits += UIAccessibilityTraitNotEnabled;
   }
 
-  _icon = [[SetUpListItemIcon alloc] initWithType:_type complete:_complete];
+  _icon = [[SetUpListItemIcon alloc] initWithType:_type
+                                         complete:_complete
+                                    compactLayout:_compactLayout];
   _title = [self createTitle];
   _description = [self createDescription];
 
@@ -155,7 +160,7 @@ NSAttributedString* Strikethrough(NSString* text) {
       [[UIStackView alloc] initWithArrangedSubviews:@[ _title, _description ]];
   textStack.axis = UILayoutConstraintAxisVertical;
   textStack.translatesAutoresizingMaskIntoConstraints = NO;
-  textStack.spacing = kTextSpacing;
+  textStack.spacing = _compactLayout ? kCompactTextSpacing : kTextSpacing;
 
   // Add a horizontal stack to contain the icon(s) and the text stack.
   _contentStack =
@@ -178,7 +183,10 @@ NSAttributedString* Strikethrough(NSString* text) {
   CrossfadeLabel* label = [[CrossfadeLabel alloc] init];
   label.text = [self titleText];
   label.translatesAutoresizingMaskIntoConstraints = NO;
-  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+  label.font =
+      _compactLayout
+          ? [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
+          : [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
   if (_complete) {
     label.textColor = [UIColor colorNamed:kTextQuaternaryColor];
     label.attributedText = Strikethrough(label.text);
@@ -196,7 +204,9 @@ NSAttributedString* Strikethrough(NSString* text) {
   label.numberOfLines = 0;
   label.lineBreakMode = NSLineBreakByWordWrapping;
   label.translatesAutoresizingMaskIntoConstraints = NO;
-  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  label.font = _compactLayout
+                   ? [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2]
+                   : [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   if (_complete) {
     label.textColor = [UIColor colorNamed:kTextQuaternaryColor];
     label.attributedText = Strikethrough(label.text);
@@ -226,13 +236,23 @@ NSAttributedString* Strikethrough(NSString* text) {
 - (NSString*)descriptionText {
   switch (_type) {
     case SetUpListItemType::kSignInSync:
-      return l10n_util::GetNSString(
-          IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_DESCRIPTION);
+      return _compactLayout
+                 ? l10n_util::GetNSString(
+                       IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_SHORT_DESCRIPTION)
+                 : l10n_util::GetNSString(
+                       IDS_IOS_SET_UP_LIST_SIGN_IN_SYNC_DESCRIPTION);
     case SetUpListItemType::kDefaultBrowser:
-      return l10n_util::GetNSString(
-          IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_DESCRIPTION);
+      return _compactLayout
+                 ? l10n_util::GetNSString(
+                       IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_SHORT_DESCRIPTION)
+                 : l10n_util::GetNSString(
+                       IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_DESCRIPTION);
     case SetUpListItemType::kAutofill:
-      return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_AUTOFILL_DESCRIPTION);
+      return _compactLayout
+                 ? l10n_util::GetNSString(
+                       IDS_IOS_SET_UP_LIST_AUTOFILL_SHORT_DESCRIPTION)
+                 : l10n_util::GetNSString(
+                       IDS_IOS_SET_UP_LIST_AUTOFILL_DESCRIPTION);
     case SetUpListItemType::kFollow:
       // TODO(crbug.com/1428070): Add a Follow item to the Set Up List.
       NOTREACHED();

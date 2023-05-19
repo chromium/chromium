@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/magic_stack_module_container.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/multi_row_module.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
@@ -36,6 +37,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
@@ -128,6 +130,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   SetUpListItemView* _setUpListSyncItemView;
   SetUpListItemView* _setUpListDefaultBrowserItemView;
   SetUpListItemView* _setUpListAutofillItemView;
+  NSMutableArray<SetUpListItemView*>* _compactedSetUpListViews;
 }
 
 - (instancetype)init {
@@ -424,32 +427,53 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     index++;
   }
   if (IsMagicStackEnabled()) {
+    BOOL shouldShowCompactedSetUpListModule =
+        set_up_list_utils::ShouldShowCompactedSetUpListModule();
+    if (shouldShowCompactedSetUpListModule) {
+      _compactedSetUpListViews = [NSMutableArray array];
+    }
     for (SetUpListItemViewData* data in items) {
+      data.compactLayout = shouldShowCompactedSetUpListModule;
       SetUpListItemView* view = [[SetUpListItemView alloc] initWithData:data];
       view.tapDelegate = self;
       ContentSuggestionsModuleType type =
           SetUpListModuleTypeForSetUpListType(data.type);
-      switch (type) {
-        case ContentSuggestionsModuleType::kSetUpListSync:
-          _setUpListSyncItemView = view;
-          break;
-        case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
-          _setUpListDefaultBrowserItemView = view;
-          break;
-        case ContentSuggestionsModuleType::kSetUpListAutofill:
-          _setUpListAutofillItemView = view;
-          break;
-        default:
-          break;
+      if (shouldShowCompactedSetUpListModule) {
+        [_compactedSetUpListViews addObject:view];
+      } else {
+        switch (type) {
+          case ContentSuggestionsModuleType::kSetUpListSync:
+            _setUpListSyncItemView = view;
+            break;
+          case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
+            _setUpListDefaultBrowserItemView = view;
+            break;
+          case ContentSuggestionsModuleType::kSetUpListAutofill:
+            _setUpListAutofillItemView = view;
+            break;
+          default:
+            break;
+        }
       }
       // Only add it to the Magic Stack here if it is after the inital
       // construction of the Magic Stack.
       if (_magicStack) {
-        ActionListModule* setUpListModule =
-            [[ActionListModule alloc] initWithContentView:view type:type];
-        [_magicStack
-            insertArrangedSubview:setUpListModule
-                          atIndex:[self indexForMagicStackModule:type]];
+        if (shouldShowCompactedSetUpListModule) {
+          MultiRowModule* setUpListCompactedModule = [[MultiRowModule alloc]
+              initWithViews:_compactedSetUpListViews
+                       type:ContentSuggestionsModuleType::kCompactedSetUpList];
+          [_magicStack
+              insertArrangedSubview:setUpListCompactedModule
+                            atIndex:[self indexForMagicStackModule:
+                                              ContentSuggestionsModuleType::
+                                                  kCompactedSetUpList]];
+        } else {
+          ActionListModule* setUpListModule =
+              [[ActionListModule alloc] initWithContentView:view type:type];
+          [_magicStack
+              insertArrangedSubview:setUpListModule
+                            atIndex:[self indexForMagicStackModule:type]];
+        }
       }
     }
 
@@ -829,6 +853,13 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
             initWithContentView:_setUpListAutofillItemView
                            type:type];
         [_magicStack addArrangedSubview:setUpListAutofillModule];
+        break;
+      }
+      case ContentSuggestionsModuleType::kCompactedSetUpList: {
+        MultiRowModule* setUpListCompactedModule = [[MultiRowModule alloc]
+            initWithViews:_compactedSetUpListViews
+                     type:ContentSuggestionsModuleType::kCompactedSetUpList];
+        [_magicStack addArrangedSubview:setUpListCompactedModule];
         break;
       }
       default:

@@ -33,4 +33,13 @@ bool IsSetUpListActive(PrefService* local_state) {
   return true;
 }
 
+bool ShouldShowCompactedSetUpListModule() {
+  absl::optional<base::Time> firstRunTime = GetFirstRunTime();
+  base::Time expiry_time = firstRunTime.value() + base::Days(3);
+  if (base::Time::Now() > expiry_time) {
+    return true;
+  }
+  return false;
+}
+
 }  // namespace set_up_list_utils
