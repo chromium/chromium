@@ -90,6 +90,17 @@ bool SetDecisionLogicUrl(v8::Isolate* isolate,
          SetDictMember(isolate, object, "decisionLogicUrl", v8_value);
 }
 
+bool SetTrustedScoringSignalsUrl(v8::Isolate* isolate,
+                                 v8::Local<v8::Object> object,
+                                 const std::string& val) {
+  v8::Local<v8::Value> v8_value;
+  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
+    return false;
+  }
+  return SetDictMember(isolate, object, "trustedScoringSignalsURL", v8_value) &&
+         SetDictMember(isolate, object, "trustedScoringSignalsUrl", v8_value);
+}
+
 bool InsertPrioritySignals(
     AuctionV8Helper* v8_helper,
     base::StringPiece key,
@@ -232,8 +243,8 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
       !SetDecisionLogicUrl(isolate, auction_config_value,
                            decision_logic_url.spec()) ||
       (trusted_coding_signals_url &&
-       !auction_config_dict.Set("trustedScoringSignalsUrl",
-                                trusted_coding_signals_url->spec()))) {
+       !SetTrustedScoringSignalsUrl(isolate, auction_config_value,
+                                    trusted_coding_signals_url->spec()))) {
     return false;
   }
 

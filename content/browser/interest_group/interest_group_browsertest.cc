@@ -3822,13 +3822,37 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ(
       base::StringPrintf(
           "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
-          "trustedScoringSignalsUrl 'https://invalid^&' for AuctionAdConfig "
+          "trustedScoringSignalsURL 'https://invalid^&' for AuctionAdConfig "
           "with seller '%s' cannot be resolved to a valid URL.",
           origin.Serialize().c_str()),
       RunAuctionAndWait(JsReplace(R"({
       seller: $1,
       decisionLogicUrl: $2,
       trustedScoringSignalsUrl: 'https://invalid^&'
+  })",
+                                  origin, url)));
+  WaitForAccessObserved({});
+}
+
+// TODO(crbug.com/1441988): Remove test when old names are no longer supported.
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    RunAdAuctionTrustedScoringSignalsUrlOldAndNewNamesDontMatch) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  url::Origin origin = url::Origin::Create(url);
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  AttachInterestGroupObserver();
+
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': ad auction "
+      "config trustedScoringSignalsUrl doesn't have the same value as ad "
+      "auction config trustedScoringSignalsURL ('https://test.com/scoring2' vs "
+      "'https://test.com/scoring1')",
+      RunAuctionAndWait(JsReplace(R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      trustedScoringSignalsURL: 'https://test.com/scoring1',
+      trustedScoringSignalsUrl: 'https://test.com/scoring2'
   })",
                                   origin, url)));
   WaitForAccessObserved({});
@@ -3863,7 +3887,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
-      "trustedScoringSignalsUrl 'https://b.test/foo' for AuctionAdConfig with "
+      "trustedScoringSignalsURL 'https://b.test/foo' for AuctionAdConfig with "
       "seller 'https://a.test/' must match seller origin.",
       RunAuctionAndWait(R"({
     seller: "https://a.test/",
@@ -9505,7 +9529,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   return await navigator.runAdAuction({
     seller: $1,
     decisionLogicURL: $2,
-    trustedScoringSignalsUrl: $3,
+    trustedScoringSignalsURL: $3,
     auctionSignals: maybePromise(["top-level auction signals"]),
     sellerSignals: maybePromise(["top-level seller signals"]),
     directFromSellerSignals: maybePromise($4),
@@ -9518,7 +9542,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     componentAuctions: [{
       seller: $5,
       decisionLogicURL: $6,
-      trustedScoringSignalsUrl: $7,
+      trustedScoringSignalsURL: $7,
       interestGroupBuyers: [$8],
       auctionSignals: maybePromise(["component auction signals"]),
       sellerSignals: maybePromise(["component seller signals"]),
@@ -9917,6 +9941,7 @@ IN_PROC_BROWSER_TEST_F(
     seller: $1,
     decisionLogicURL: $2,
     decisionLogicUrl: $2,
+    trustedScoringSignalsURL: $3,
     trustedScoringSignalsUrl: $3,
     auctionSignals: maybePromise(["top-level auction signals"]),
     sellerSignals: maybePromise(["top-level seller signals"]),
@@ -9931,6 +9956,7 @@ IN_PROC_BROWSER_TEST_F(
       seller: $5,
       decisionLogicURL: $6,
       decisionLogicUrl: $6,
+      trustedScoringSignalsURL: $7,
       trustedScoringSignalsUrl: $7,
       interestGroupBuyers: [$8],
       auctionSignals: maybePromise(["component auction signals"]),

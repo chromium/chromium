@@ -1029,13 +1029,14 @@ bool CopyTrustedScoringSignalsFromIdlToMojo(
     ExceptionState& exception_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
-  if (!input.hasTrustedScoringSignalsUrl())
+  if (!input.hasTrustedScoringSignalsURL()) {
     return true;
+  }
   KURL trusted_scoring_signals_url =
-      context.CompleteURL(input.trustedScoringSignalsUrl());
+      context.CompleteURL(input.trustedScoringSignalsURL());
   if (!trusted_scoring_signals_url.IsValid()) {
     exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
-        input, "trustedScoringSignalsUrl", input.trustedScoringSignalsUrl(),
+        input, "trustedScoringSignalsURL", input.trustedScoringSignalsURL(),
         "cannot be resolved to a valid URL."));
     return false;
   }
@@ -1047,7 +1048,7 @@ bool CopyTrustedScoringSignalsFromIdlToMojo(
       !output.seller->IsSameOriginWith(
           SecurityOrigin::Create(trusted_scoring_signals_url).get())) {
     exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
-        input, "trustedScoringSignalsUrl", input.trustedScoringSignalsUrl(),
+        input, "trustedScoringSignalsURL", input.trustedScoringSignalsURL(),
         "must match seller origin."));
     return false;
   }
@@ -2144,6 +2145,24 @@ bool HandleOldDictNamesRun(AuctionAdConfig* config,
         ErrorMissingRequired("ad auction config decisionLogicURL"));
     return false;
   }
+
+  if (config->hasTrustedScoringSignalsUrlDeprecated()) {
+    if (config->hasTrustedScoringSignalsURL()) {
+      if (config->trustedScoringSignalsURL() !=
+          config->trustedScoringSignalsUrlDeprecated()) {
+        exception_state.ThrowTypeError(ErrorRenameMismatch(
+            /*old_field_name=*/"ad auction config trustedScoringSignalsUrl",
+            /*old_field_value=*/config->trustedScoringSignalsUrlDeprecated(),
+            /*new_field_name=*/"ad auction config trustedScoringSignalsURL",
+            /*new_field_value=*/config->trustedScoringSignalsURL()));
+        return false;
+      }
+    } else {
+      config->setTrustedScoringSignalsURL(
+          config->trustedScoringSignalsUrlDeprecated());
+    }
+  }
+
   return true;
 }
 

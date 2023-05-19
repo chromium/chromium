@@ -2822,6 +2822,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
       R"({"seller":"https://example.com",
           "decisionLogicURL":"https://example.com/auction.js",
           "decisionLogicUrl":"https://example.com/auction.js",
+          "trustedScoringSignalsURL":"https://example.com/scoring_signals.json",
           "trustedScoringSignalsUrl":"https://example.com/scoring_signals.json",
           "interestGroupBuyers":["https://buyer1.com",
                                  "https://another-buyer.com"],
@@ -2870,6 +2871,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
       R"({"seller":"https://example.com",
           "decisionLogicURL":"https://example.com/auction.js",
           "decisionLogicUrl":"https://example.com/auction.js",
+          "trustedScoringSignalsURL":"https://example.com/scoring_signals.json",
           "trustedScoringSignalsUrl":"https://example.com/scoring_signals.json",
           "componentAuctions":[
               {"seller":"https://component1.com",
@@ -2879,6 +2881,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
               {"seller":"https://component2.com",
                "decisionLogicURL":"https://component2.com/script.js",
                "decisionLogicUrl":"https://component2.com/script.js",
+               "trustedScoringSignalsURL":"https://component2.com/signals.json",
                "trustedScoringSignalsUrl":"https://component2.com/signals.json"}
           ]})";
   RunReportResultCreatedScriptExpectingResult(
