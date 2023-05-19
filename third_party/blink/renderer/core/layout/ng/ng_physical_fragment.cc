@@ -873,6 +873,8 @@ void NGPhysicalFragment::AddOutlineRectsForCursor(
         }
         break;
       }
+      case NGFragmentItem::kInvalid:
+        NOTREACHED_NORETURN();
     }
     cursor->MoveToNext();
   }

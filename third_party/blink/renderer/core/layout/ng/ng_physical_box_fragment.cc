@@ -202,10 +202,8 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
       builder->table_cell_column_index_ ||
       !builder->table_section_row_offsets_.empty() || builder->page_name_;
 
-  wtf_size_t num_fragment_items =
-      builder->ItemsBuilder() ? builder->ItemsBuilder()->Size() : 0;
   size_t byte_size =
-      AdditionalByteSize(num_fragment_items, has_layout_overflow, has_borders,
+      AdditionalByteSize(has_fragment_items, has_layout_overflow, has_borders,
                          has_padding, inflow_bounds.has_value(), has_rare_data);
 
   // We store the children list inline in the fragment as a flexible
@@ -224,9 +222,8 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
 const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Clone(
     const NGPhysicalBoxFragment& other) {
   // The size of the new fragment shouldn't differ from the old one.
-  wtf_size_t num_fragment_items = other.Items() ? other.Items()->Size() : 0;
   size_t byte_size = AdditionalByteSize(
-      num_fragment_items, other.HasLayoutOverflow(), other.HasBorders(),
+      other.HasItems(), other.HasLayoutOverflow(), other.HasBorders(),
       other.HasPadding(), other.HasInflowBounds(), other.ConstHasRareData());
 
   return MakeGarbageCollected<NGPhysicalBoxFragment>(
@@ -248,9 +245,8 @@ NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
   }
 
   // The size of the new fragment shouldn't differ from the old one.
-  wtf_size_t num_fragment_items = other.Items() ? other.Items()->Size() : 0;
   size_t byte_size = AdditionalByteSize(
-      num_fragment_items, has_layout_overflow, other.HasBorders(),
+      other.HasItems(), has_layout_overflow, other.HasBorders(),
       other.HasPadding(), other.HasInflowBounds(), other.ConstHasRareData());
 
   const auto* cloned_fragment = MakeGarbageCollected<NGPhysicalBoxFragment>(
@@ -307,17 +303,17 @@ constexpr void AccountSizeAndPadding(size_t& current_size) {
 }  // namespace
 
 // static
-size_t NGPhysicalBoxFragment::AdditionalByteSize(wtf_size_t num_fragment_items,
+size_t NGPhysicalBoxFragment::AdditionalByteSize(bool has_fragment_items,
                                                  bool has_layout_overflow,
                                                  bool has_borders,
                                                  bool has_padding,
                                                  bool has_inflow_bounds,
                                                  bool has_rare_data) {
   size_t additional_size = 0;
-  additional_size =
-      base::bits::AlignUp(additional_size, alignof(NGFragmentItems)) +
-      NGFragmentItems::ByteSizeFor(num_fragment_items);
 
+  if (has_fragment_items) {
+    AccountSizeAndPadding<NGFragmentItems>(additional_size);
+  }
   if (has_layout_overflow)
     AccountSizeAndPadding<PhysicalRect>(additional_size);
   if (has_borders)

@@ -208,6 +208,8 @@ NGFragmentItem::NGFragmentItem(const NGFragmentItem& source)
       is_dirty_(source.is_dirty_),
       is_last_for_node_(source.is_last_for_node_) {
   switch (Type()) {
+    case kInvalid:
+      NOTREACHED_NORETURN() << "Cannot construct invalid value";
     case kText:
       new (&text_) TextItem(source.text_);
       break;
@@ -251,6 +253,8 @@ NGFragmentItem::NGFragmentItem(NGFragmentItem&& source)
       is_dirty_(source.is_dirty_),
       is_last_for_node_(source.is_last_for_node_) {
   switch (Type()) {
+    case kInvalid:
+      NOTREACHED_NORETURN() << "Cannot construct invalid value";
     case kText:
       new (&text_) TextItem(std::move(source.text_));
       break;
@@ -272,6 +276,9 @@ NGFragmentItem::NGFragmentItem(NGFragmentItem&& source)
 
 NGFragmentItem::~NGFragmentItem() {
   switch (Type()) {
+    case kInvalid:
+      // Slot can be zeroed, do nothing.
+      return;
     case kText:
       text_.~TextItem();
       break;
@@ -1141,6 +1148,8 @@ void NGFragmentItem::Trace(Visitor* visitor) const {
 std::ostream& operator<<(std::ostream& ostream, const NGFragmentItem& item) {
   ostream << "{";
   switch (item.Type()) {
+    case NGFragmentItem::kInvalid:
+      NOTREACHED_NORETURN() << "Invalid NGFragmentItem";
     case NGFragmentItem::kText:
       ostream << "Text " << item.StartOffset() << "-" << item.EndOffset() << " "
               << (IsLtr(item.ResolvedDirection()) ? "LTR" : "RTL");

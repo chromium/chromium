@@ -546,7 +546,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   bool HasPadding() const { return bit_field_.get<HasPaddingFlag>(); }
   bool HasInflowBounds() const { return bit_field_.get<HasInflowBoundsFlag>(); }
 
-  static size_t AdditionalByteSize(wtf_size_t num_fragment_items,
+  static size_t AdditionalByteSize(bool has_fragment_items,
                                    bool has_layout_overflow,
                                    bool has_borders,
                                    bool has_padding,
@@ -593,12 +593,11 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     DCHECK(HasLayoutOverflow() || HasBorders() || HasPadding() ||
            HasInflowBounds() || ConstHasRareData());
     const NGFragmentItems* items = ComputeItemsAddress();
-    const uint8_t* uint8_t_items = reinterpret_cast<const uint8_t*>(items);
-    if (HasItems())
-      uint8_t_items += items->ByteSize();
-
+    const uint8_t* unaligned_layout_overflow =
+        HasItems() ? reinterpret_cast<const uint8_t*>(items + 1)
+                   : reinterpret_cast<const uint8_t*>(items);
     return reinterpret_cast<const PhysicalRect*>(
-        base::bits::AlignUp(uint8_t_items, alignof(PhysicalRect)));
+        base::bits::AlignUp(unaligned_layout_overflow, alignof(PhysicalRect)));
   }
 
   const NGPhysicalBoxStrut* ComputeBordersAddress() const {
