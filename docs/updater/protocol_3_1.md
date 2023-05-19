@@ -897,7 +897,7 @@ For `type == 3` events:
 
 For `type == 14` events:
  *   `download_time_ms`: The time elapsed between the start of the download and
-     the end of the download, in milliseconds. -1 if unavailable or irrelevant.
+     the end of the download, in milliseconds. -1 if unavailable.
      Default: -1.
  *   `downloaded_bytes`: The number of bytes successfully received from the
      download server. Default: 0.
