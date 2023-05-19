@@ -601,7 +601,7 @@ void AccessCodeCastSinkService::ValidateStoredDevices(
   }
 
   std::vector<MediaSinkInternal> validated_sinks;
-  std::vector<const MediaSink::Id> invalid_sinks;
+  std::vector<MediaSink::Id> invalid_sinks;
   for (const auto sink_value : stored_sinks) {
     const std::string& sink_id_string = sink_value.first;
     const auto* dict_value = sink_value.second.GetIfDict();
