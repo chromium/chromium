@@ -4710,6 +4710,20 @@ Unknown properties are collapsed to zero. -->
   <int value="12" label="shortSupportMessage"/>
   <int value="13" label="statusReportingSettings"/>
   <int value="14" label="workAccountAppWhitelist"/>
+  <int value="15" label="apkCacheEnabled"/>
+  <int value="16" label="debuggingFeaturesDisabled"/>
+  <int value="17" label="cameraDisabled"/>
+  <int value="18" label="printingDisabled"/>
+  <int value="19" label="screenCaptureDisabled"/>
+  <int value="20" label="shareLocationDisabled"/>
+  <int value="21" label="unmuteMicrophoneDisabled"/>
+  <int value="22" label="setWallpaperDisabled"/>
+  <int value="23" label="vpnConfigDisabled"/>
+  <int value="24" label="privateKeySelectionEnabled"/>
+  <int value="25" label="choosePrivateKeyRules"/>
+  <int value="26" label="credentialsConfigDisabled"/>
+  <int value="27" label="caCerts"/>
+  <int value="28" label="requiredKeyPairs"/>
 </enum>
 
 <enum name="ArcProvisioningCheckInError">
