@@ -5,13 +5,13 @@
 import 'chrome://password-manager/password_manager.js';
 
 import {CheckupSubpage, Page, PasswordCheckInteraction, PasswordManagerImpl, PluralStringProxy, PluralStringProxyImpl, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
-import {makeInsecureCredential, makePasswordCheckStatus} from './test_util.js';
+import {createCredentialGroup, makeInsecureCredential, makePasswordCheckStatus} from './test_util.js';
 
 const PasswordCheckState = chrome.passwordsPrivate.PasswordCheckState;
 
@@ -225,19 +225,22 @@ suite('CheckupSectionTest', function() {
     assertFalse(section.$.weakRow.hasAttribute('non-clickable'));
   });
 
-  test('Number of checked passwords', async function() {
+  test('Number of checked sites shown', async function() {
+    passwordManager.data.groups = Array(10).fill(createCredentialGroup());
     passwordManager.data.checkStatus = makePasswordCheckStatus(
-        {state: PasswordCheckState.IDLE, totalNumber: 10});
+        {state: PasswordCheckState.IDLE, totalNumber: 20});
 
     const section = document.createElement('checkup-section');
     document.body.appendChild(section);
+    passwordManager.whenCalled('getPasswordCheckStatus');
+
     await flushTasks();
 
-    assertEquals(10, await pluralString.whenCalled('checkedPasswords'));
-    const statusLabel =
-        section.shadowRoot!.querySelector<HTMLElement>('#checkupStatusLabel');
-    assertTrue(!!statusLabel);
-    assertEquals('checkedPasswords', statusLabel.textContent!.trim());
+    await pluralString.whenCalled('checkedPasswords');
+    // getPluralString() for 'checkedPasswords' is called 2 times with 0 and 10.
+    assertArrayEquals([0, 10], pluralString.getArgs('checkedPasswords'));
+    assertEquals(
+        'checkedPasswords', section.$.checkupStatusLabel.textContent!.trim());
   });
 
   [CheckupSubpage.COMPROMISED, CheckupSubpage.REUSED, CheckupSubpage.WEAK]
@@ -314,5 +317,30 @@ suite('CheckupSectionTest', function() {
         await passwordManager.whenCalled('recordPasswordCheckInteraction');
     assertEquals(
         PasswordCheckInteraction.START_CHECK_AUTOMATICALLY, interaction);
+  });
+
+  test('changing number of groups changes title', async function() {
+    passwordManager.data.groups = Array(10).fill(createCredentialGroup());
+    passwordManager.data.checkStatus = makePasswordCheckStatus(
+        {state: PasswordCheckState.IDLE, totalNumber: 20});
+
+    const section = document.createElement('checkup-section');
+    document.body.appendChild(section);
+    passwordManager.whenCalled('getPasswordCheckStatus');
+
+    await flushTasks();
+
+    await pluralString.whenCalled('checkedPasswords');
+    // getPluralString() for 'checkedPasswords' is called 2 times with 0 and 10.
+    assertArrayEquals([0, 10], pluralString.getArgs('checkedPasswords'));
+
+    passwordManager.data.groups = Array(9).fill(createCredentialGroup());
+    assertTrue(!!passwordManager.listeners.savedPasswordListChangedListener);
+    passwordManager.listeners.savedPasswordListChangedListener([]);
+
+    await pluralString.whenCalled('checkedPasswords');
+    // getPluralString() for 'checkedPasswords' is called 3 times with 0, 10
+    // and 9.
+    assertArrayEquals([0, 10, 9], pluralString.getArgs('checkedPasswords'));
   });
 });
