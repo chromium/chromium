@@ -212,8 +212,17 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
   base::UserActionTester user_action_tester;
 };
 
-IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
-                       ImageSearchWithValidImageOpensUnifiedSidePanelForLens) {
+// https://crbug.com/1444953
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanelForLens \
+  DISABLED_ImageSearchWithValidImageOpensUnifiedSidePanelForLens
+#else
+#define MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanelForLens \
+  ImageSearchWithValidImageOpensUnifiedSidePanelForLens
+#endif
+IN_PROC_BROWSER_TEST_F(
+    SearchImageWithUnifiedSidePanel,
+    MAYBE_ImageSearchWithValidImageOpensUnifiedSidePanelForLens) {
   SetupUnifiedSidePanel();
   EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
 
