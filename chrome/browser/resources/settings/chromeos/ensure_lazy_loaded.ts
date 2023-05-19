@@ -30,7 +30,7 @@ export function ensureLazyLoaded(): Promise<CustomElementConstructor[]> {
   if (!lazyLoadPromise) {
     const script = document.createElement('script');
     script.type = 'module';
-    script.src = getTrustedScriptURL`./chromeos/lazy_load.js`;
+    script.src = getTrustedScriptURL`./lazy_load.js`;
     document.body.appendChild(script);
 
     lazyLoadPromise = Promise.all(

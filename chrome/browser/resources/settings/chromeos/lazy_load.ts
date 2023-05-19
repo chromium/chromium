@@ -10,7 +10,7 @@
  *  - All subpages
  */
 
-import '../strings.m.js';
+import './strings.m.js';
 /** Top-level Advanced section pages */
 import './crostini_page/crostini_page.js';
 import './date_time_page/date_time_page.js';

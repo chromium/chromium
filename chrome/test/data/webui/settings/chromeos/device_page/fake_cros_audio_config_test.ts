@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {crosAudioConfigMojom, fakeCrosAudioConfig} from 'chrome://os-settings/chromeos/os_settings.js';
+import {crosAudioConfigMojom, fakeCrosAudioConfig} from 'chrome://os-settings/os_settings.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockController, MockMethod} from 'chrome://webui-test/mock_controller.js';
 

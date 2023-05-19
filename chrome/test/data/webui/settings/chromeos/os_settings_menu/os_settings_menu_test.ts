@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/os_settings.js';
 
-import {createPageAvailabilityForTesting, OsSettingsMenuElement, OsSettingsRoutes, Route, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {createPageAvailabilityForTesting, OsSettingsMenuElement, OsSettingsRoutes, Route, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';

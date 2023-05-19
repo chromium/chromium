@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrostiniBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
-import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {CrostiniBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
 

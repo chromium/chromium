@@ -4,7 +4,7 @@
 
 'use strict';
 
-import {AppManagementStore, updateSelectedAppId, Router} from 'chrome://os-settings/chromeos/os_settings.js';
+import {AppManagementStore, updateSelectedAppId, Router} from 'chrome://os-settings/os_settings.js';
 import {createBoolPermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {convertOptionalBoolToBool, getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
 import {setupFakeHandler, replaceStore, replaceBody, getPermissionCrToggleByType, getPermissionToggleByType} from './test_util.js';

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {OpenWindowProxyImpl, OsSettingsSearchBoxBrowserProxyImpl, personalizationSearchMojom, Router, routes, routesMojom, searchMojom, searchResultIconMojom, setPersonalizationSearchHandlerForTesting, setSettingsSearchHandlerForTesting, settingMojom, setUserActionRecorderForTesting, userActionRecorderMojom} from 'chrome://os-settings/chromeos/os_settings.js';
+import {OpenWindowProxyImpl, OsSettingsSearchBoxBrowserProxyImpl, personalizationSearchMojom, Router, routes, routesMojom, searchMojom, searchResultIconMojom, setPersonalizationSearchHandlerForTesting, setSettingsSearchHandlerForTesting, settingMojom, setUserActionRecorderForTesting, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

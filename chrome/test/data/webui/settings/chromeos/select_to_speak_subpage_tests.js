@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://os-settings/chromeos/lazy_load.js';
+import 'chrome://os-settings/lazy_load.js';
 
-import {CrSettingsPrefs, Router, routes, SelectToSpeakSubpageBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+import {CrSettingsPrefs, Router, routes, SelectToSpeakSubpageBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
 import {addWebUiListener, webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

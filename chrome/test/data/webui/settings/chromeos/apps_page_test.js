@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/os_settings.js';
 
-import {AndroidAppsBrowserProxyImpl, appNotificationHandlerMojom, Router, routes, routesMojom, setAppNotificationProviderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+import {AndroidAppsBrowserProxyImpl, appNotificationHandlerMojom, Router, routes, routesMojom, setAppNotificationProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {createBoolPermission} from 'chrome://resources/cr_components/app_management/permission_util.js';

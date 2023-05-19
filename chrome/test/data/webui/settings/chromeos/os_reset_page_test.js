@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {OsResetBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
-import {LifetimeBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {OsResetBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import {LifetimeBrowserProxyImpl, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {ESimManagerRemote, ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeESimManagerRemote} from 'chrome://webui-test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestLifetimeBrowserProxy} from './test_os_lifetime_browser_proxy.js';
 import {TestOsResetBrowserProxy} from './test_os_reset_browser_proxy.js';

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://os-settings/chromeos/lazy_load.js';
+import 'chrome://os-settings/lazy_load.js';
 
-import {OsSettingsSmartInputsPageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
-import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {OsSettingsSmartInputsPageElement} from 'chrome://os-settings/lazy_load.js';
+import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';

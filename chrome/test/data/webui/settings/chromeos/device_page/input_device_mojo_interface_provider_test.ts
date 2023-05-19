@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getInputDeviceSettingsProvider} from 'chrome://os-settings/chromeos/os_settings.js';
+import {getInputDeviceSettingsProvider} from 'chrome://os-settings/os_settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('InputDeviceMojoInterfaceProvider', () => {

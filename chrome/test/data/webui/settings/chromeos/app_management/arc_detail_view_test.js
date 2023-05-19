@@ -4,7 +4,7 @@
 
 'use strict';
 
-import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/chromeos/os_settings.js';
+import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
 import {createBoolPermission, createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';

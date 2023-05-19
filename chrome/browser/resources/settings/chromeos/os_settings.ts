@@ -8,7 +8,7 @@
  */
 
 /** Necessary imports to load the app */
-import '../strings.m.js';
+import './strings.m.js';
 import './os_settings_ui/os_settings_ui.js';
 // TODO(b/263414034) Determine if these imports are needed here at all,
 // or should be moved to lazy_load.ts

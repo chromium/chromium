@@ -6,10 +6,10 @@
  * @fileoverview Test suite for the ChromeVox subpage in ChromeOS Settings.
  */
 
-import 'chrome://os-settings/chromeos/lazy_load.js';
+import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsChromeVoxSubpageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
-import {ChromeVoxSubpageBrowserProxyImpl, CrSettingsPrefs, SettingsDropdownMenuElement, SettingsPrefsElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {SettingsChromeVoxSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {ChromeVoxSubpageBrowserProxyImpl, CrSettingsPrefs, SettingsDropdownMenuElement, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

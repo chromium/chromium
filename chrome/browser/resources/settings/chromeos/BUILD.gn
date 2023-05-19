@@ -18,10 +18,8 @@ assert(is_chromeos_ash, "ChromeOS Settings is ChromeOS only")
 # root_gen_dir is "gen"
 # target_gen_dir is "gen/chrome/browser/resources/settings/chromeos"
 
-tsc_input_folder = "tsc_input"
-tsc_input_dir = "$target_gen_dir/$tsc_input_folder"
-tsc_output_folder = "tsc"
-tsc_output_dir = "$target_gen_dir/$tsc_output_folder"
+tsc_input_dir = "$target_gen_dir/tsc_input"
+tsc_output_dir = "$target_gen_dir/tsc"
 
 nearby_share_tsc_dir =
     "$root_gen_dir/chrome/browser/resources/nearby_share/shared/tsc"
@@ -33,8 +31,8 @@ if (optimize_webui) {
     host = "os-settings"
     input = rebase_path(tsc_output_dir, root_build_dir)
     js_module_in_files = [
-      "chromeos/lazy_load.js",
-      "chromeos/os_settings.js",
+      "lazy_load.js",
+      "os_settings.js",
     ]
     out_manifest = "$target_gen_dir/$build_manifest"
 
@@ -115,7 +113,7 @@ ts_library("build_ts") {
 
 preprocess_if_expr("preprocess") {
   defines = chrome_grit_defines
-  in_folder = "../"
+  in_folder = "."
   in_files = src_ts_files + html_files + css_files
   out_folder = tsc_input_dir
 }
@@ -169,7 +167,7 @@ copy("copy_mojom_ts") {
     "$root_gen_dir/chromeos/ash/components/drivefs/mojom/pin_manager_types.mojom-webui.ts",
     "$root_gen_dir/ui/events/ash/mojom/modifier_key.mojom-webui.ts",
   ]
-  outputs = [ "$tsc_input_dir/chromeos/mojom-webui/{{source_file_part}}" ]
+  outputs = [ "$tsc_input_dir/mojom-webui/{{source_file_part}}" ]
 }
 
 copy("generate_personalization_search_mojom") {
@@ -178,7 +176,9 @@ copy("generate_personalization_search_mojom") {
   sources = [
     "$root_gen_dir/ash/webui/personalization_app/search/search.mojom-webui.ts",
   ]
-  outputs = [ "$tsc_input_dir/chromeos/mojom-webui/search/personalization_search.mojom-webui.ts" ]
+  outputs = [
+    "$tsc_input_dir/mojom-webui/search/personalization_search.mojom-webui.ts",
+  ]
 }
 
 copy("generate_search_mojom") {
@@ -190,8 +190,7 @@ copy("generate_search_mojom") {
     "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/search_result_icon.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/user_action_recorder.mojom-webui.ts",
   ]
-  outputs =
-      [ "$tsc_input_dir/chromeos/mojom-webui/search/{{source_file_part}}" ]
+  outputs = [ "$tsc_input_dir/mojom-webui/search/{{source_file_part}}" ]
 }
 
 grit("resources") {
@@ -268,15 +267,14 @@ generate_grd("build_grd") {
     "$root_gen_dir/third_party/liblouis/liblouis_resources.grdp",
   ]
   manifest_files = []
-  resource_path_rewrites = [ "os_settings.html|chromeos/os_settings.html" ]
 
   if (optimize_webui) {
     deps += [ ":optimize_bundle" ]
     manifest_files += [ "$target_gen_dir/$build_manifest" ]
-    resource_path_rewrites += [
-      "chromeos/lazy_load.rollup.js|chromeos/lazy_load.js",
-      "chromeos/os_settings.rollup.js|chromeos/os_settings.js",
-      "chromeos/shared.rollup.js|chromeos/shared.rollup.js",
+    resource_path_rewrites = [
+      "lazy_load.rollup.js|lazy_load.js",
+      "os_settings.rollup.js|os_settings.js",
+      "shared.rollup.js|shared.rollup.js",
     ]
   } else {
     deps += [

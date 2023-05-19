@@ -4,7 +4,7 @@
 
 'use strict';
 
-import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/os_settings.js';
 
 suite('<app-management-dom-switch>', function() {
   let domSwitch;

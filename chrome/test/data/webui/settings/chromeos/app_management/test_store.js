@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AppManagementStore, reduceAction} from 'chrome://os-settings/chromeos/os_settings.js';
+import {AppManagementStore, reduceAction} from 'chrome://os-settings/os_settings.js';
 import {createEmptyState} from 'chrome://resources/cr_components/app_management/util.js';
 import {TestStore} from 'chrome://webui-test/chromeos/test_store.js';
 

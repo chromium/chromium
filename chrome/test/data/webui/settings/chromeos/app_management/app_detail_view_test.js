@@ -4,7 +4,7 @@
 
 'use strict';
 
-import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/chromeos/os_settings.js';
+import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
 import {setupFakeHandler, replaceStore, replaceBody} from './test_util.js';
 import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 
