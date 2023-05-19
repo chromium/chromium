@@ -82,6 +82,7 @@ class UnifiedSliderView : public views::View {
 
   // views::View:
   void OnThemeChanged() override;
+  void OnEvent(ui::Event* event) override;
 
  protected:
   void CreateToastLabel();

@@ -60,6 +60,8 @@ class UnifiedVolumeViewTest : public AshTestBase {
 
   views::Slider* slider() { return unified_volume_view()->slider(); }
 
+  IconButton* slider_button() { return unified_volume_view()->slider_button(); }
+
   const gfx::VectorIcon& GetIcon(float level) {
     return unified_volume_view()->GetVolumeIconForLevel(level);
   }
@@ -198,6 +200,35 @@ TEST_F(UnifiedVolumeViewTest, VolumeMuteThenVolumeDown) {
   // The slider level and icon should remain muted.
   EXPECT_EQ(slider()->GetValue(), 0);
   CheckSliderIcon(/*level=*/0);
+}
+
+// Tests when the slider is focused, press enter will toggle the mute state.
+TEST_F(UnifiedVolumeViewTest, SliderFocusToggleMute) {
+  // Only the slider is focusable.
+  EXPECT_FALSE(slider_button()->IsAccessibilityFocusable());
+  EXPECT_TRUE(slider()->IsAccessibilityFocusable());
+
+  // Sets the level to make sure the slider's volume is not 0. Otherwise the
+  // slider is still muted even if it's toggled on.
+  const float level = 0.8;
+  volume_slider_controller()->SliderValueChanged(
+      slider(), level, slider()->GetValue(),
+      views::SliderChangeReason::kByUser);
+
+  auto* generator = GetEventGenerator();
+  // Presses the tab key to activate the focus on the bubble.
+  generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
+  slider()->RequestFocus();
+  EXPECT_STREQ(unified_volume_view()
+                   ->GetFocusManager()
+                   ->GetFocusedView()
+                   ->GetClassName(),
+               "QuickSettingsSlider");
+
+  const bool is_muted = CrasAudioHandler::Get()->IsOutputMuted();
+  // Presses the enter key when focused on the slider will toggle mute state.
+  generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  EXPECT_EQ(CrasAudioHandler::Get()->IsOutputMuted(), !is_muted);
 }
 
 }  // namespace ash
