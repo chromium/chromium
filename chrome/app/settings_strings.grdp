@@ -2803,9 +2803,6 @@
   <message name="IDS_SETTINGS_SEARCH_ENGINES_DELETE_CONFIRMATION_DESCRIPTION" desc="Description text for a dialog that confirms that a user wants to delete an existing search engine.">
     Are you sure you want to delete this search engine?
   </message>
-  <message name="IDS_SETTINGS_SEARCH_ENGINES_DEFAULT_ENGINES" desc="Label for 'default' Search Engines section">
-    Default search engines
-  </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_SEARCH_ENGINES" desc="Label for 'Search Engines' section">
     Search engines
   </message>
@@ -2827,9 +2824,6 @@
   <message name="IDS_SETTINGS_SEARCH_ENGINES_INACTIVE_SHORTCUTS" desc="Label for 'Inactive shortcuts' section">
     Inactive shortcuts
   </message>
-  <message name="IDS_SETTINGS_SEARCH_ENGINES_NO_INACTIVE_SHORTCUTS" desc="Text shown when the 'Inactive Shortcuts' section is empty">
-    No inactive shortcuts
-  </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_NO_OTHER_ENGINES" desc="Label shown when the 'other' Search engines section is empty">
     Other saved search engines will appear here
   </message>
@@ -2844,9 +2838,6 @@
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_SITE_OR_PAGE" desc="Label for a table column that holds the name of a site or page in the 'Site search' section">
     Site or page
-  </message>
-  <message name="IDS_SETTINGS_SEARCH_ENGINES_INACTIVE_SITE" desc="Label for a table column that holds the name of a site or page in the 'Inactive shortcuts' section">
-    Inactive sites
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_SHORTCUT" desc="Label for Shortcut column header for a search engine or site search entry">
     Shortcut
@@ -2865,9 +2856,6 @@
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_DEACTIVATE" desc="Text of the button that deactivates a search engine">
     Deactivate
-  </message>
-  <message name="IDS_SETTINGS_SEARCH_ENGINES_REMOVE_FROM_LIST" desc="Label for a button that removes a search engine from the list of search engines">
-    Remove from list
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_MANAGE_EXTENSION" desc="Text displayed for a button that allows the user to manage a Chrome extension">
     Manage
@@ -2892,9 +2880,6 @@
   </message>
   <message name="IDS_SETTINGS_SEARCH_ENGINES_ADDITIONAL_INACTIVE_SITES" desc="Label for button that expands the Inactive Sites list of search engines to show all entries">
     Additional inactive sites
-  </message>
-  <message name="IDS_SETTINGS_SEARCH_ENGINES_ADDITIONAL_EXTENSIONS" desc="Label for button that expands the list of extensions to show all entries">
-    Additional extensions
   </message>
 
   <!-- Site Settings Page -->
