@@ -183,7 +183,8 @@
     </template>
   </div>
 
-  <div class="sp-card">
+  <div class="sp-card"
+      hidden$="[[shouldHideCard_(labels_.*, searchQuery_, shownBookmarks_)]]">
     <sp-heading
         hidden$="[[shouldHideHeader_(
             labels_.*, searchQuery_, shownBookmarks_)]]"
