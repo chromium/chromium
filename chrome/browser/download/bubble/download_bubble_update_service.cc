@@ -667,7 +667,19 @@ void DownloadBubbleUpdateService::OnDownloadUpdated(
   if (delayed_crx_guids_.contains(item->GetGuid())) {
     return;
   }
-  GetCacheForItem(item).OnDownloadItemUpdated(item);
+  CacheManager& cache = GetCacheForItem(item);
+  // When persisted web app download items are restored from the history
+  // database, we first get a OnDownloadCreated() notification about the item
+  // without its DownloadItemWebAppData, causing the item to go into the main
+  // cache, followed by an OnDownloadUpdated() notification after the
+  // DownloadItemWebAppData is added. In order to keep the item in the
+  // appropriate cache for the web app, and NOT in the main cache, we must
+  // remove it from the main cache explicitly here. Note this assumes that an
+  // item's associated web app id never changes once it is tagged.
+  if (!IsMainCache(cache)) {
+    main_cache_.OnDownloadItemRemoved(item);
+  }
+  cache.OnDownloadItemUpdated(item);
 
   auto* web_app_data = DownloadItemWebAppData::Get(item);
   for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {

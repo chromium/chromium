@@ -828,6 +828,42 @@ TEST_F(DownloadBubbleUpdateServiceTest, GetAllUIModelsInfoForWebApp) {
   EXPECT_EQ(app_b_info.all_models_size, 1u);
 }
 
+TEST_F(DownloadBubbleUpdateServiceTest,
+       DownloadUpdatedWithWebAppDataAfterCreation) {
+  base::Time now = base::Time::Now();
+  web_app::AppId app_id = "app";
+  // This simulates the restoration of a web app download from the history
+  // database, during which the item is created first without the
+  // DownloadItemWebAppData, and then subsequently tagged with the data.
+  InitDownloadItem(DownloadState::IN_PROGRESS, "app_download",
+                   /*is_paused=*/false, now);
+  DownloadItemWebAppData::CreateAndAttachToItem(&GetDownloadItem(0), app_id);
+  GetDownloadItem(0).NotifyObserversDownloadUpdated();
+
+  DownloadUIModelPtrVector models;
+  EXPECT_TRUE(
+      update_service_->GetAllModelsToDisplay(models, /*web_app_id=*/nullptr));
+  EXPECT_TRUE(models.empty());
+
+  EXPECT_TRUE(update_service_->GetAllModelsToDisplay(models, &app_id));
+  ASSERT_EQ(models.size(), 1u);
+  EXPECT_EQ(models[0]->GetContentId().id, "app_download");
+
+  DownloadDisplayController::ProgressInfo non_app_progress_info =
+      update_service_->GetProgressInfo(/*web_app_id=*/nullptr);
+  EXPECT_EQ(non_app_progress_info.download_count, 0);
+
+  DownloadDisplayController::ProgressInfo app_progress_info =
+      update_service_->GetProgressInfo(&app_id);
+  EXPECT_EQ(app_progress_info.download_count, 1);
+
+  AllDownloadUIModelsInfo non_app_info =
+      update_service_->GetAllModelsInfo(/*web_app_id=*/nullptr);
+  EXPECT_EQ(non_app_info.all_models_size, 0u);
+  AllDownloadUIModelsInfo app_info = update_service_->GetAllModelsInfo(&app_id);
+  EXPECT_EQ(app_info.all_models_size, 1u);
+}
+
 class DownloadBubbleUpdateServiceIncognitoTest
     : public DownloadBubbleUpdateServiceTest {
  public:
