@@ -137,13 +137,8 @@ bool IsArcPlayStoreEnabledPreferenceManagedForProfile(const Profile* profile);
 bool SetArcPlayStoreEnabledForProfile(Profile* profile, bool enabled);
 
 // Returns whether all ARC related OptIn preferences (i.e.
-// ArcBackupRestoreEnabled and ArcLocationServiceEnabled) are managed or
-// unused (e.g. for Active Directory users).
+// ArcBackupRestoreEnabled and ArcLocationServiceEnabled) are managed.
 bool AreArcAllOptInPreferencesIgnorableForProfile(const Profile* profile);
-
-// Returns true iff there is a user associated with |profile|, and it is an
-// Active Directory user.
-bool IsActiveDirectoryUserForProfile(const Profile* profile);
 
 // Returns true if ChromeOS OOBE opt-in window is currently showing.
 bool IsArcOobeOptInActive();
@@ -184,7 +179,7 @@ bool IsPlayStoreAvailable();
 // user.
 bool IsSecondaryAccountForChildEnabled();
 
-// Skip to show OOBE/in sesion UI asking users to set up ARC OptIn
+// Skip to show OOBE/in session UI asking users to set up ARC OptIn
 // preferences, iff all of them are managed by the admin policy. Skips in
 // session play terms of service for managed user and starts ARC directly.
 // Leaves B&R/GLS off if not set by admin since users don't see the Tos page.

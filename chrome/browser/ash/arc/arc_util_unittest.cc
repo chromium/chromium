@@ -86,8 +86,7 @@ class ScopedLogIn {
       command_line.AppendSwitch(switches::kTestType);
 
     switch (user_type) {
-      case user_manager::USER_TYPE_REGULAR:  // fallthrough
-      case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
+      case user_manager::USER_TYPE_REGULAR:
         LogIn();
         break;
       case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
@@ -253,31 +252,6 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_PublicAccount) {
                     AccountId::FromUserEmail("public_user@gmail.com"),
                     user_manager::USER_TYPE_PUBLIC_ACCOUNT);
   EXPECT_TRUE(IsArcAllowedForProfile(profile()));
-}
-
-TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_ActiveDirectoryEnabled) {
-  base::CommandLine::ForCurrentProcess()->InitFromArgv(
-      {"", "--arc-availability=officially-supported"});
-  ScopedLogIn login(
-      GetFakeUserManager(),
-      AccountId::AdFromUserEmailObjGuid("testing_profile@test",
-                                        "f04557de-5da2-40ce-ae9d-b8874d8da96e"),
-      user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  EXPECT_FALSE(
-      ash::ProfileHelper::Get()->GetUserByProfile(profile())->HasGaiaAccount());
-  EXPECT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
-}
-
-TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_ActiveDirectoryDisabled) {
-  base::CommandLine::ForCurrentProcess()->InitFromArgv({""});
-  ScopedLogIn login(
-      GetFakeUserManager(),
-      AccountId::AdFromUserEmailObjGuid("testing_profile@test",
-                                        "f04557de-5da2-40ce-ae9d-b8874d8da96e"),
-      user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  EXPECT_FALSE(
-      ash::ProfileHelper::Get()->GetUserByProfile(profile())->HasGaiaAccount());
-  EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(profile()));
 }
 
 TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_KioskArcNotAvailable) {
@@ -475,14 +449,6 @@ TEST_F(ChromeArcUtilTest, AreArcAllOptInPreferencesIgnorableForProfile) {
   // OptIn prefs are unset, the function returns false.
   EXPECT_FALSE(AreArcAllOptInPreferencesIgnorableForProfile(profile()));
 
-  // Prefs are unused for Active Directory users.
-  {
-    ScopedLogIn login(GetFakeUserManager(),
-                      AccountId::AdFromUserEmailObjGuid(
-                          profile()->GetProfileUserName(), kTestGaiaId));
-    EXPECT_TRUE(AreArcAllOptInPreferencesIgnorableForProfile(profile()));
-  }
-
   // OptIn prefs are set to unmanaged/OFF values, and the function returns
   // false.
   profile()->GetPrefs()->SetBoolean(prefs::kArcBackupRestoreEnabled, false);
@@ -542,22 +508,6 @@ TEST_F(ChromeArcUtilTest, AreArcAllOptInPreferencesIgnorableForProfile) {
   EXPECT_TRUE(AreArcAllOptInPreferencesIgnorableForProfile(profile()));
 }
 
-// Test the IsActiveDirectoryUserForProfile() function for non-AD accounts.
-TEST_F(ChromeArcUtilTest, IsActiveDirectoryUserForProfile_Gaia) {
-  ScopedLogIn login(GetFakeUserManager(),
-                    AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
-  EXPECT_FALSE(IsActiveDirectoryUserForProfile(profile()));
-}
-
-// Test the IsActiveDirectoryUserForProfile() function for AD accounts.
-TEST_F(ChromeArcUtilTest, IsActiveDirectoryUserForProfile_AD) {
-  ScopedLogIn login(GetFakeUserManager(),
-                    AccountId::AdFromUserEmailObjGuid(
-                        profile()->GetProfileUserName(), kTestGaiaId));
-  EXPECT_TRUE(IsActiveDirectoryUserForProfile(profile()));
-}
-
 TEST_F(ChromeArcUtilTest, TermsOfServiceNegotiationNeededForAlreadyAccepted) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--arc-availability=officially-supported"});
@@ -613,16 +563,6 @@ TEST_F(ChromeArcUtilTest, TermsOfServiceOobeNegotiationNeededNoPlayStore) {
   DisableDBusForProfileManager();
   ScopedLogIn login(GetFakeUserManager(),
                     AccountId::FromUserEmailGaiaId(
-                        profile()->GetProfileUserName(), kTestGaiaId));
-  EXPECT_FALSE(IsArcTermsOfServiceOobeNegotiationNeeded());
-}
-
-TEST_F(ChromeArcUtilTest, TermsOfServiceOobeNegotiationNeededAdUser) {
-  base::CommandLine::ForCurrentProcess()->InitFromArgv(
-      {"", "--arc-availability=officially-supported"});
-  DisableDBusForProfileManager();
-  ScopedLogIn login(GetFakeUserManager(),
-                    AccountId::AdFromUserEmailObjGuid(
                         profile()->GetProfileUserName(), kTestGaiaId));
   EXPECT_FALSE(IsArcTermsOfServiceOobeNegotiationNeeded());
 }
@@ -855,7 +795,7 @@ TEST_F(ArcOobeOptInActiveInTest, OobeOptInActive) {
   const AccountId account_id = AccountId::FromUserEmailGaiaId(
       profile()->GetProfileUserName(), kTestGaiaId);
 
-  // OOBE OptIn can only start if Onobarding is not completed yet.
+  // OOBE OptIn can only start if Onboarding is not completed yet.
   EXPECT_TRUE(IsArcOobeOptInActive());
 
   // Set a version for the Onboarding to indicate that the user completed the
