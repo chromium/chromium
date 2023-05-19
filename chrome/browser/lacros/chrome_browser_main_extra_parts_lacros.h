@@ -41,6 +41,7 @@ class ArcIconCacheDelegateProvider;
 }  // namespace arc
 
 namespace crosapi {
+class ClipboardHistoryLacros;
 class SearchControllerLacros;
 class TaskManagerLacros;
 class WebAppProviderBridgeLacros;
@@ -198,6 +199,10 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   // Handles getting and setting multitask menu nudge related prefs from ash.
   std::unique_ptr<MultitaskMenuNudgeDelegateLacros>
       multitask_menu_nudge_delegate_;
+
+  // Caches the clipboard history item descriptors in Lacros. Used only when
+  // the clipboard history refresh feature is enabled.
+  std::unique_ptr<crosapi::ClipboardHistoryLacros> clipboard_history_lacros_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_

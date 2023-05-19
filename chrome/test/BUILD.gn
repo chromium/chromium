@@ -613,6 +613,7 @@ static_library("test_support") {
       "//chrome/browser/chromeos",
       "//chromeos/dbus/constants",
     ]
+    public_deps += [ "//chromeos/constants" ]
   }
 
   if (is_chromeos_ash) {
@@ -8032,6 +8033,7 @@ test("unit_tests") {
       "../browser/lacros/account_manager/profile_account_manager_unittest.cc",
       "../browser/lacros/account_manager/signin_helper_lacros_unittest.cc",
       "../browser/lacros/cert/client_cert_store_lacros_unittest.cc",
+      "../browser/lacros/clipboard_history_lacros_unittest.cc",
       "../browser/lacros/device_settings_lacros_unittest.cc",
       "../browser/lacros/force_installed_tracker_lacros_unittest.cc",
       "../browser/lacros/fullscreen_controller_client_lacros_unittest.cc",
