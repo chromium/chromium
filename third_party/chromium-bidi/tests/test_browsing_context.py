@@ -781,7 +781,6 @@ async def test_browsingContext_reload_waitNone(websocket, context_id, html):
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Not implemented")
 async def test_browsingContext_reload_waitInteractive(websocket, context_id,
                                                       html):
     url = html()
@@ -831,7 +830,6 @@ async def test_browsingContext_reload_waitInteractive(websocket, context_id,
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Not implemented")
 async def test_browsingContext_reload_waitComplete(websocket, context_id,
                                                    html):
     url = html()
@@ -878,3 +876,9 @@ async def test_browsingContext_reload_waitComplete(websocket, context_id,
             "url": url,
         }
     }
+
+
+@pytest.mark.asyncio
+@pytest.mark.skip(reason="TODO: Not Implemented")
+async def test_browsingContext_ignoreCache():
+    pass
