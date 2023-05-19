@@ -87,7 +87,7 @@ void EcheRecentAppClickHandler::OnRecentAppClicked(
       base::UmaHistogramEnumeration("Eche.AppStream.LaunchAttempt", entrypoint);
 
       to_stream_apps_.emplace_back(app_metadata);
-      apps_launch_info_provider_->SetEntryPoint(entrypoint);
+      apps_launch_info_provider_->SetAppLaunchInfo(entrypoint);
       launch_app_helper_->LaunchEcheApp(
           /*notification_id=*/absl::nullopt, app_metadata.package_name,
           app_metadata.visible_app_name, app_metadata.user_id,

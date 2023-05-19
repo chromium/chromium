@@ -37,10 +37,18 @@ void EcheStreamStatusChangeHandler::OnStreamStatusChanged(
                << status;
   NotifyStreamStatusChanged(status);
 
+  // Note that the stream status and connection status from
+  // |apps_launch_info_provider_| can be out of sync. This is because the
+  // pre-warm connection may not havbe been established (e.g. launched from a
+  // notification when Phone Hub just get connected) and the value is stored in
+  // |apps_launch_info_provider_| when app streaming gets initialized. This is
+  // very likely to fail to start actual streaming and we are recording these
+  // events to separate bucket to prevent it from polluting our real success
+  // metrics.
   if (status == mojom::StreamStatus::kStreamStatusStarted) {
     if (features::IsEcheNetworkConnectionStateEnabled() &&
-        apps_launch_info_provider_->GetConnectionStatusForUi() ==
-            mojom::ConnectionStatus::kConnectionStatusFailed &&
+        apps_launch_info_provider_->GetConnectionStatusFromLastAttempt() !=
+            mojom::ConnectionStatus::kConnectionStatusConnected &&
         apps_launch_info_provider_->entry_point() ==
             mojom::AppStreamLaunchEntryPoint::NOTIFICATION) {
       base::UmaHistogramEnumeration(

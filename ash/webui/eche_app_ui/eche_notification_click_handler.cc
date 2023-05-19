@@ -52,7 +52,7 @@ void EcheNotificationClickHandler::HandleNotificationClick(
       base::UmaHistogramEnumeration(
           "Eche.AppStream.LaunchAttempt",
           mojom::AppStreamLaunchEntryPoint::NOTIFICATION);
-      apps_launch_info_provider_->SetEntryPoint(
+      apps_launch_info_provider_->SetAppLaunchInfo(
           mojom::AppStreamLaunchEntryPoint::NOTIFICATION);
       launch_app_helper_->LaunchEcheApp(
           notification_id, app_metadata.package_name,

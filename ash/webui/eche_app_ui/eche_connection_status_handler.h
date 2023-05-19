@@ -66,6 +66,10 @@ class EcheConnectionStatusHandler : public mojom::ConnectionStatusObserver {
 
   void Bind(mojo::PendingReceiver<mojom::ConnectionStatusObserver> receiver);
 
+  mojom::ConnectionStatus connection_status_for_ui() const {
+    return connection_status_for_ui_;
+  }
+
  private:
   friend class EcheConnectionStatusHandlerTest;
 
@@ -78,9 +82,6 @@ class EcheConnectionStatusHandler : public mojom::ConnectionStatusObserver {
 
   void set_feature_status_for_test(FeatureStatus feature_status) {
     feature_status_ = feature_status;
-  }
-  mojom::ConnectionStatus get_connection_status_for_ui_for_test() const {
-    return connection_status_for_ui_;
   }
 
   mojom::ConnectionStatus connection_status_for_ui_ =

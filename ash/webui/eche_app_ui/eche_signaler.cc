@@ -198,7 +198,7 @@ void EcheSignaler::RecordSignalingTimeout() {
   if (eche_tray && eche_tray->IsBackgroundConnectionAttemptInProgress()) {
     base::UmaHistogramEnumeration("Eche.NetworkCheck.FailureReason",
                                   probably_connection_failed_reason_);
-  } else if (apps_launch_info_provider_->GetConnectionStatusForUi() ==
+  } else if (apps_launch_info_provider_->GetConnectionStatusFromLastAttempt() ==
                  mojom::ConnectionStatus::kConnectionStatusFailed &&
              apps_launch_info_provider_->entry_point() ==
                  mojom::AppStreamLaunchEntryPoint::NOTIFICATION) {
