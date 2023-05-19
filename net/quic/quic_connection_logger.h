@@ -121,6 +121,8 @@ class NET_EXPORT_PRIVATE QuicConnectionLogger
       const quic::TransportParameters& transport_parameters) override;
   void OnTransportParametersResumed(
       const quic::TransportParameters& transport_parameters) override;
+  void OnZeroRttRejected(int reason) override;
+  void OnEncryptedClientHelloSent(std::string_view client_hello) override;
 
   void OnCryptoHandshakeMessageReceived(
       const quic::CryptoHandshakeMessage& message);
@@ -133,8 +135,6 @@ class NET_EXPORT_PRIVATE QuicConnectionLogger
 
   // Returns connection's overall packet loss rate in fraction.
   float ReceivedPacketLossRate() const;
-
-  void OnZeroRttRejected(int reason) override;
 
  private:
   raw_ptr<quic::QuicSession> session_;  // Unowned.

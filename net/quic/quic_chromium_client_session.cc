@@ -39,6 +39,7 @@
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source_type.h"
+#include "net/log/net_log_values.h"
 #include "net/quic/address_utils.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/quic_chromium_connection_helper.h"
@@ -296,7 +297,8 @@ base::Value::Dict NetLogQuicClientSessionParams(
     const quic::QuicConnectionId& client_connection_id,
     const quic::ParsedQuicVersionVector& supported_versions,
     int cert_verify_flags,
-    bool require_confirmation) {
+    bool require_confirmation,
+    base::span<const uint8_t> ech_config_list) {
   base::Value::Dict dict;
   dict.Set("host", session_key->server_id().host());
   dict.Set("port", session_key->server_id().port());
@@ -311,6 +313,9 @@ base::Value::Dict NetLogQuicClientSessionParams(
     dict.Set("client_connection_id", client_connection_id.ToString());
   }
   dict.Set("versions", ParsedQuicVersionVectorToString(supported_versions));
+  if (!ech_config_list.empty()) {
+    dict.Set("ech_config_list", NetLogBinaryValue(ech_config_list));
+  }
   return dict;
 }
 
@@ -1060,7 +1065,8 @@ QuicChromiumClientSession::QuicChromiumClientSession(
   net_log_.BeginEvent(NetLogEventType::QUIC_SESSION, [&] {
     return NetLogQuicClientSessionParams(
         &session_key, connection_id(), connection->client_connection_id(),
-        supported_versions(), cert_verify_flags, require_confirmation_);
+        supported_versions(), cert_verify_flags, require_confirmation_,
+        ech_config_list_);
   });
   IPEndPoint address;
   if (socket_raw && socket_raw->GetLocalAddress(&address) == OK &&

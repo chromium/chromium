@@ -4,6 +4,7 @@
 
 #include "net/quic/quic_event_logger.h"
 
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log_values.h"
@@ -838,6 +839,16 @@ void QuicEventLogger::OnTransportParametersResumed(
 void QuicEventLogger::OnZeroRttRejected(int reason) {
   net_log_.AddEvent(NetLogEventType::QUIC_SESSION_ZERO_RTT_REJECTED,
                     [reason] { return NetLogQuicZeroRttRejectReason(reason); });
+}
+
+void QuicEventLogger::OnEncryptedClientHelloSent(
+    std::string_view client_hello) {
+  net_log_.AddEvent(NetLogEventType::SSL_ENCRYPTED_CLIENT_HELLO, [&] {
+    base::Value::Dict dict;
+    dict.Set("bytes",
+             NetLogBinaryValue(base::as_bytes(base::make_span(client_hello))));
+    return dict;
+  });
 }
 
 }  // namespace net

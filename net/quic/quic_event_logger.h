@@ -104,6 +104,7 @@ class NET_EXPORT_PRIVATE QuicEventLogger
   void OnTransportParametersResumed(
       const quic::TransportParameters& transport_parameters) override;
   void OnZeroRttRejected(int reason) override;
+  void OnEncryptedClientHelloSent(std::string_view client_hello) override;
 
   // Events that are not received via the visitor and have to be called manually
   // from the session.

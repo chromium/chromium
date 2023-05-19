@@ -580,4 +580,9 @@ void QuicConnectionLogger::OnZeroRttRejected(int reason) {
   event_logger_.OnZeroRttRejected(reason);
 }
 
+void QuicConnectionLogger::OnEncryptedClientHelloSent(
+    std::string_view client_hello) {
+  event_logger_.OnEncryptedClientHelloSent(client_hello);
+}
+
 }  // namespace net
