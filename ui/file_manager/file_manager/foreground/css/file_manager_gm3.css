@@ -239,7 +239,7 @@ html.drag-drop-active #directory-tree .tree-item.denies > .tree-row > .file-row 
 }
 
 html.drag-drop-active #directory-tree .tree-item.accepts > .tree-row > .file-row {
-  background-color: var(--cros-sys-hover_on_prominent);
+  background-color: var(--cros-sys-hover_on_subtle);
 }
 
 html.drag-drop-active #directory-tree
@@ -1534,8 +1534,8 @@ body.check-select #list-container list > li[lead] {
   border: 2px solid var(--cros-sys-on_surface_variant);
 }
 
-#list-container grid > .accepts {
-  background-color: var(--cros-highlight-color-hover)
+#list-container grid > .accepts .thumbnail-bottom {
+  background-color: var(--cros-sys-surface_variant);
 }
 
 #directory-tree .tree-item.accepts > .tree-row,
@@ -1547,7 +1547,7 @@ body.check-select #list-container list > li[lead] {
 @keyframes acceptsBlink {
   0% {
     background-color: transparent;
-    color: var(--cros-ripple-color);
+    color: var(--cros-sys-hover_on_prominent);
   }
 }
 
@@ -1814,8 +1814,8 @@ body.files-ng #drag-container {
 }
 
 body.files-ng #drag-container .drag-box {
-  background-color: var(--cros-bg-color-elevation-2);
-  border-radius: 2px;
+  background-color: var(--cros-sys-base_elevated);
+  border-radius: 8px;
   box-shadow: var(--cros-elevation-2-shadow);
   box-sizing: border-box;
   height: 40px;
@@ -1827,10 +1827,9 @@ body.files-ng #drag-container .drag-contents {
   align-items: center;
   display: flex;
   left: 8px;
-  padding-inline-end: 2px;
   padding-inline-start: 8px;
   right: 8px;
-  top: 12px;
+  top: 8px;
 }
 
 body.files-ng #drag-container .drag-multiple {
@@ -1845,11 +1844,12 @@ body.files-ng #drag-container .detail-icon {
 }
 
 body.files-ng #drag-container .detail-icon[file-type-icon] {
-  color: var(--cros-icon-color-primary);
+  color: var(--cros-sys-on_surface);
 }
 
 body.files-ng #drag-container .label {
-  color: var(--cros-text-color-primary);
+  color: var(--cros-sys-on_surface);
+  font: var(--cros-body-2-font);
   overflow: hidden;
   padding: 0 10px;
   text-overflow: ellipsis;
@@ -1857,11 +1857,10 @@ body.files-ng #drag-container .label {
 }
 
 body.files-ng #drag-container .drag-bubble {
-  background-color: var(--cros-icon-color-prominent);
+  background-color: var(--cros-sys-tertiary_container);
   border-radius: 12px;
-  color: var(--cros-bg-color);
-  font-size: 14px;
-  font-weight: 700;
+  color: var(--cros-sys-on_tertiary_container);
+  font: var(--cros-button-1-font);
   height: 24px;
   line-height: 24px;
   max-width: fit-content;
