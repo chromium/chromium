@@ -441,6 +441,12 @@ TEST_P(AddUpdateBrandCodeWorkItemTest, GGRV) {
   installer::AddUpdateBrandCodeWorkItem(*installer_state(), &work_item_list);
 }
 
+TEST_P(AddUpdateBrandCodeWorkItemTest, GTPM) {
+  StrictMock<MockWorkItemList> work_item_list;
+  SetupExpectations(L"GTPM", false, &work_item_list);
+  installer::AddUpdateBrandCodeWorkItem(*installer_state(), &work_item_list);
+}
+
 TEST_P(AddUpdateBrandCodeWorkItemTest, GGLS) {
   StrictMock<MockWorkItemList> work_item_list;
   SetupExpectations(L"GGLS", false, &work_item_list);
@@ -456,6 +462,12 @@ TEST_P(AddUpdateBrandCodeWorkItemTest, GGRV_CBCM) {
 TEST_P(AddUpdateBrandCodeWorkItemTest, GGLS_CBCM) {
   StrictMock<MockWorkItemList> work_item_list;
   SetupExpectations(L"GGLS", true, &work_item_list);
+  installer::AddUpdateBrandCodeWorkItem(*installer_state(), &work_item_list);
+}
+
+TEST_P(AddUpdateBrandCodeWorkItemTest, GTPM_CBCM) {
+  StrictMock<MockWorkItemList> work_item_list;
+  SetupExpectations(L"GTPM", true, &work_item_list);
   installer::AddUpdateBrandCodeWorkItem(*installer_state(), &work_item_list);
 }
 

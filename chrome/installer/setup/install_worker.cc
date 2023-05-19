@@ -642,6 +642,7 @@ std::wstring GetUpdatedBrandCode(const std::wstring& brand_code) {
   } kEnterpriseBrandRemapping[] = {
       {L"GGLS", L"GCEU"},
       {L"GGRV", L"GCEV"},
+      {L"GTPM", L"GCER"},
   };
 
   for (auto mapping : kEnterpriseBrandRemapping) {
