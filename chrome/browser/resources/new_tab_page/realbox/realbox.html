@@ -20,8 +20,14 @@
    * Maintain a larger width if the secondary side can be shown and was at any
    * point available to be shown.
    */
-  :host([can-show-secondary-side][had-secondary-side]) {
+  :host([can-show-secondary-side][had-secondary-side]),
+  :host([can-show-secondary-side][width-behavior_='wide']) {
     --cr-realbox-width: 746px;
+  }
+
+  :host([can-show-secondary-side][width-behavior_='revert']:not(
+      [dropdown-is-visible])) {
+    --cr-realbox-width: var(--cr-realbox-min-width);
   }
 
   /**

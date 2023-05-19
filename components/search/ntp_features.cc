@@ -53,6 +53,12 @@ BASE_FEATURE(kRealboxMatchSearchboxTheme,
              "NtpRealboxMatchSearchboxTheme",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Determines the behavior of the width of the realbox in relation to the width
+// for secondary column.
+BASE_FEATURE(kRealboxWidthBehavior,
+             "NtpRealboxWidthBehavior",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the NTP "realbox" will have the same rounded corners as
 // searchbox.
 BASE_FEATURE(kRealboxRoundedCorners,
@@ -367,6 +373,7 @@ const char kNtpHistoryClustersModuleCategoriesBoostlistParam[] =
     "NtpHistoryClustersModuleCategoriesBoostlistParam";
 const char kNtpHistoryClustersModuleMaxClustersParam[] =
     "NtpHistoryClustersModuleMaxClustersParam";
+const char kNtpRealboxWidthBehaviorParam[] = "NtpRealboxWidthBehaviorParam";
 
 base::TimeDelta GetModulesLoadTimeout() {
   std::string param_value = base::GetFieldTrialParamValueByFeature(

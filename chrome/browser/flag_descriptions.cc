@@ -4649,6 +4649,10 @@ const char kNtpRealboxPedalsName[] = "NTP Realbox Pedals";
 const char kNtpRealboxPedalsDescription[] =
     "Shows pedals in the NTP Realbox when enabled.";
 
+const char kNtpRealboxWidthBehaviorName[] = "NTP Realbox Width Behavior";
+const char kNtpRealboxWidthBehaviorDescription[] =
+    "Determines the width of the NTP realbox.";
+
 const char kNtpRealboxRoundedCornersName[] = "NTP Realbox Rounded Corners";
 const char kNtpRealboxRoundedCornersDescription[] =
     "Make NTP realbox dropdown corners match that of the Searchbox.";

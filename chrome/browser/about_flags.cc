@@ -2231,6 +2231,17 @@ const FeatureEntry::FeatureVariation kNtpPhotosModuleOptInArtWorkVariations[] =
      {" - Artwork with Stockpile", kNtpPhotosModuleStockpileArtWork,
       std::size(kNtpPhotosModuleStockpileArtWork), nullptr}};
 
+const FeatureEntry::FeatureParam kNtpRealboxRevertWidthOnBlur[] = {
+    {ntp_features::kNtpRealboxWidthBehaviorParam, "revert"}};
+const FeatureEntry::FeatureParam kNtpRealboxAlwaysWide[] = {
+    {ntp_features::kNtpRealboxWidthBehaviorParam, "wide"}};
+const FeatureEntry::FeatureVariation kNtpRealboxWidthBehaviorVariations[] = {
+    {" - Reverts back on blur if there is secondary column",
+     kNtpRealboxRevertWidthOnBlur, std::size(kNtpRealboxRevertWidthOnBlur),
+     nullptr},
+    {" - Always wide", kNtpRealboxAlwaysWide, std::size(kNtpRealboxAlwaysWide),
+     nullptr}};
+
 const FeatureEntry::FeatureParam kNtpRecipeTasksModuleFakeData[] = {
     {ntp_features::kNtpRecipeTasksModuleDataParam, "fake"}};
 const FeatureEntry::FeatureParam kNtpRecipeTasksModuleHistorical7Days[] = {
@@ -6500,6 +6511,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpRealboxUseGoogleGIconName,
      flag_descriptions::kNtpRealboxUseGoogleGIconDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kRealboxUseGoogleGIcon)},
+
+    {"ntp-realbox-width-behavior",
+     flag_descriptions::kNtpRealboxWidthBehaviorName,
+     flag_descriptions::kNtpRealboxWidthBehaviorDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kRealboxWidthBehavior,
+                                    kNtpRealboxWidthBehaviorVariations,
+                                    "NtpRealboxWidthBehavior")},
 
     {"ntp-safe-browsing-module", flag_descriptions::kNtpSafeBrowsingModuleName,
      flag_descriptions::kNtpSafeBrowsingModuleDescription, kOsDesktop,

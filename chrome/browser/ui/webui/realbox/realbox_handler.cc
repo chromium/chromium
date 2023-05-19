@@ -510,6 +510,11 @@ void RealboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       "realboxMatchSearchboxTheme",
       base::FeatureList::IsEnabled(ntp_features::kRealboxMatchSearchboxTheme));
 
+  source->AddString("realboxWidthBehavior",
+                    base::GetFieldTrialParamValueByFeature(
+                        ntp_features::kRealboxWidthBehavior,
+                        ntp_features::kNtpRealboxWidthBehaviorParam));
+
   source->AddString(
       "realboxDefaultIcon",
       base::FeatureList::IsEnabled(ntp_features::kRealboxUseGoogleGIcon)

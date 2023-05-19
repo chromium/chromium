@@ -64910,6 +64910,7 @@ from previous Chrome versions.
   <int value="1215512170" label="DrawEdgeToEdge:disabled"/>
   <int value="1215531732" label="OmniboxUIExperiments:disabled"/>
   <int value="1215768255" label="AutofillCreditCardLocalCardMigration:enabled"/>
+  <int value="1216074694" label="NtpRealboxWidthBehavior:enabled"/>
   <int value="1216286283" label="tint-composited-content"/>
   <int value="1216363133" label="LauncherHideContinueSection:disabled"/>
   <int value="1216452475" label="SyncUSSAutofillProfile:disabled"/>
@@ -66333,6 +66334,7 @@ from previous Chrome versions.
   <int value="1952339754"
       label="SignedExchangePrefetchCacheForNavigations:enabled"/>
   <int value="1952811009" label="EnableSuggestedDriveFiles:disabled"/>
+  <int value="1953967314" label="NtpRealboxWidthBehavior:disabled"/>
   <int value="1954778883" label="COLRV1Fonts:disabled"/>
   <int value="1955238689" label="OmniboxMaxURLMatches:disabled"/>
   <int value="1955669770" label="MessagesForAndroidPopupBlocked:enabled"/>
