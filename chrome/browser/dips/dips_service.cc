@@ -469,6 +469,12 @@ void DIPSService::DeleteDIPSEligibleState(
   UmaHistogramClearedSitesCount(GetCookieMode(), sites_to_clear.size());
 
   for (const auto& site : sites_to_clear) {
+    // TODO(crbug.com/1447035): Investigate and fix the presence of empty
+    // site(s) in the `site_to_clear` list. Once this is fixed remove this loop
+    // escape.
+    if (site.empty()) {
+      continue;
+    }
     const ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForDipsSite(
         base::PassKey<DIPSService>(), site);
     ukm::builders::DIPS_Deletion(source_id)
@@ -484,6 +490,12 @@ void DIPSService::DeleteDIPSEligibleState(
     std::vector<std::string> non_excepted_sites;
 
     for (const auto& site : sites_to_clear) {
+      // TODO(crbug.com/1447035): Investigate and fix the presence of empty
+      // site(s) in the `site_to_clear` list. Once this is fixed remove this
+      // loop escape.
+      if (site.empty()) {
+        continue;
+      }
       if (Has3PCExceptionAs3P(site)) {
         UmaHistogramDeletion(GetCookieMode(),
                              DIPSDeletionAction::kExceptedAs3p);
@@ -511,6 +523,12 @@ void DIPSService::DeleteDIPSEligibleState(
     }
   } else {
     for (auto it = sites_to_clear.begin(); it != sites_to_clear.end(); it++) {
+      // TODO(crbug.com/1447035): Investigate and fix the presence of empty
+      // site(s) in the `site_to_clear` list. Once this is fixed remove this
+      // loop escape.
+      if (it->empty()) {
+        continue;
+      }
       UmaHistogramDeletion(GetCookieMode(), DIPSDeletionAction::kDisallowed);
     }
 
