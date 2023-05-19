@@ -58,7 +58,14 @@ class DownloadBubbleTest : public InProcessBrowserTest {
 
 // Download bubble does not exist in Ash.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_F(DownloadBubbleTest, IPHWithNoInteraction) {
+
+// TODO(crbug.com/1447009): fix flakiness and re-enable.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_IPHWithNoInteraction DISABLED_IPHWithNoInteraction
+#else
+#define MAYBE_IPHWithNoInteraction IPHWithNoInteraction
+#endif
+IN_PROC_BROWSER_TEST_F(DownloadBubbleTest, MAYBE_IPHWithNoInteraction) {
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_TRUE(user_education::test::WaitForFeatureEngagementReady(
