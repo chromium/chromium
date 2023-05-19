@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -110,9 +111,9 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
     OnEndUpload(FileSystemURL(), error_message);
     return;
   }
-  base::FilePath destination_folder_path = file_systems[0].mount_path();
+  destination_folder_path_ = file_systems[0].mount_path();
   FileSystemURL destination_folder_url = FilePathToFileSystemURL(
-      profile_, file_system_context_, destination_folder_path);
+      profile_, file_system_context_, destination_folder_path_);
   // TODO (b/243095484) Define error behavior.
   if (!destination_folder_url.is_valid()) {
     OnEndUpload(FileSystemURL(), "Unable to generate destination folder URL");
@@ -129,6 +130,34 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
           /*show_notification=*/false);
 
   observed_task_id_ = io_task_controller_->Add(std::move(task));
+}
+
+void OneDriveUploadHandler::ShowReauthenticationOrMoveUploadError(
+    std::string generic_move_error_message) {
+  ash::file_system_provider::util::LocalPathParser parser(
+      profile_, destination_folder_path_);
+  if (!parser.Parse()) {
+    LOG(ERROR) << "Path not in FSP";
+    OnEndUpload(FileSystemURL(), generic_move_error_message);
+    return;
+  }
+  // GetActions will fail with ACCESS_DENIED if the user is unauthenticated.
+  parser.file_system()->GetActions(
+      {parser.file_path()},
+      base::BindOnce(&OneDriveUploadHandler::OnGetActionsResult,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     generic_move_error_message));
+}
+
+void OneDriveUploadHandler::OnGetActionsResult(
+    std::string generic_move_error_message,
+    const file_system_provider::Actions& actions,
+    base::File::Error result) {
+  if (result == base::File::Error::FILE_ERROR_ACCESS_DENIED) {
+    OnEndUpload(FileSystemURL(), kReauthenticationRequiredMessage);
+    return;
+  }
+  OnEndUpload(FileSystemURL(), generic_move_error_message);
 }
 
 void OneDriveUploadHandler::OnEndUpload(const FileSystemURL& uploaded_file_url,
@@ -175,7 +204,7 @@ void OneDriveUploadHandler::OnIOTaskStatus(
       OnEndUpload(FileSystemURL(), "Move error: kCancelled");
       return;
     case file_manager::io_task::State::kError:
-      OnEndUpload(FileSystemURL(), "Move error: kError");
+      ShowReauthenticationOrMoveUploadError("Move error: kError");
       return;
     case file_manager::io_task::State::kNeedPassword:
       OnEndUpload(FileSystemURL(), "Move error: kNeedPassword");

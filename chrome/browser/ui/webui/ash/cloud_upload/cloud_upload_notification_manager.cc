@@ -125,7 +125,7 @@ CloudUploadNotificationManager::CreateUploadCompleteNotification() {
       /*delegate=*/
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
-              &CloudUploadNotificationManager::HandleNotificationClick,
+              &CloudUploadNotificationManager::HandleCompleteNotificationClick,
               weak_ptr_factory_.GetWeakPtr())),
       /*small_image=*/ash::kFolderIcon,
       /*warning_level=*/
@@ -145,11 +145,20 @@ CloudUploadNotificationManager::CreateUploadCompleteNotification() {
 std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadErrorNotification(
     std::string message) {
+  // TODO(b/254586358): i18n these strings.
   std::string operation =
       operation_type_ == file_manager::io_task::OperationType::kCopy ? "copy"
                                                                      : "move";
   std::string title = "Can't " + operation + " file";
-  return ash::CreateSystemNotificationPtr(
+  std::vector<message_center::ButtonInfo> notification_buttons;
+  //  Add "Sign in" button if this is a reauthentication error.
+  if (message == kReauthenticationRequiredMessage) {
+    title = "Can't " + operation + " file to Microsoft OneDrive";
+    std::string button_title = "Sign in";
+    notification_buttons.emplace_back(base::UTF8ToUTF16(button_title));
+  }
+
+  auto notification = ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
       /*id=*/notification_id_, base::UTF8ToUTF16(title),
       base::UTF8ToUTF16(message),
@@ -159,11 +168,14 @@ CloudUploadNotificationManager::CreateUploadErrorNotification(
       /*delegate=*/
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
-              &CloudUploadNotificationManager::CloseNotification,
+              &CloudUploadNotificationManager::HandleErrorNotificationClick,
               weak_ptr_factory_.GetWeakPtr())),
       /*small_image=*/ash::kFolderIcon,
       /*warning_level=*/
       message_center::SystemNotificationWarningLevel::WARNING);
+
+  notification->set_buttons(notification_buttons);
+  return notification;
 }
 
 void CloudUploadNotificationManager::ShowUploadProgress(int progress) {
@@ -245,7 +257,20 @@ void CloudUploadNotificationManager::CloseNotification() {
   }
 }
 
-void CloudUploadNotificationManager::HandleNotificationClick(
+void CloudUploadNotificationManager::HandleErrorNotificationClick(
+    absl::optional<int> button_index) {
+  // If the "Sign in" button was pressed, rather than a click to somewhere
+  // else in the notification.
+  if (button_index) {
+    // TODO(b/282619291) decide what callback should be.
+    // Request an ODFS mount which will trigger reauthentication.
+    CloudUploadDialog::RequestODFSMount(profile_, base::DoNothing());
+  }
+
+  CloseNotification();
+}
+
+void CloudUploadNotificationManager::HandleCompleteNotificationClick(
     absl::optional<int> button_index) {
   if (callback_for_testing_) {
     std::move(callback_for_testing_).Run(destination_path_);
