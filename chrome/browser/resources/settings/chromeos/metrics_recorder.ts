@@ -9,8 +9,8 @@
  * user action recording.
  */
 
-import {SettingChangeValue, UserActionRecorder, UserActionRecorderInterface} from './mojom-webui/search/user_action_recorder.mojom-webui.js';
 import {Setting} from './mojom-webui/setting.mojom-webui.js';
+import {SettingChangeValue, UserActionRecorder, UserActionRecorderInterface} from './mojom-webui/user_action_recorder.mojom-webui.js';
 
 let userActionRecorder: UserActionRecorderInterface|null = null;
 

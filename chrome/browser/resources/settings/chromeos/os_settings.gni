@@ -413,10 +413,10 @@ mojom_webui_files = [
   "mojom-webui/routes.mojom-webui.ts",
   "mojom-webui/setting.mojom-webui.ts",
 
-  "mojom-webui/search/personalization_search.mojom-webui.ts",
-  "mojom-webui/search/search.mojom-webui.ts",
-  "mojom-webui/search/search_result_icon.mojom-webui.ts",
-  "mojom-webui/search/user_action_recorder.mojom-webui.ts",
+  "mojom-webui/personalization_search.mojom-webui.ts",
+  "mojom-webui/search.mojom-webui.ts",
+  "mojom-webui/search_result_icon.mojom-webui.ts",
+  "mojom-webui/user_action_recorder.mojom-webui.ts",
 ]
 
 # Files sourced from their checked-in version under src
