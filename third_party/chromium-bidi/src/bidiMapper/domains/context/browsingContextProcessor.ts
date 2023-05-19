@@ -218,7 +218,8 @@ export class BrowsingContextProcessor {
     params: BrowsingContext.CreateParameters
   ): Promise<BrowsingContext.CreateResult> {
     const browserCdpClient = this.#cdpConnection.browserClient();
-    let referenceContext = undefined;
+
+    let referenceContext: BrowsingContextImpl | undefined;
     if (params.referenceContext !== undefined) {
       referenceContext = this.#browsingContextStorage.getContext(
         params.referenceContext
@@ -230,10 +231,22 @@ export class BrowsingContextProcessor {
       }
     }
 
-    const result = await browserCdpClient.sendCommand('Target.createTarget', {
-      url: 'about:blank',
-      newWindow: params.type === 'window',
-    });
+    let result: Protocol.Target.CreateTargetResponse;
+
+    switch (params.type) {
+      case 'tab':
+        result = await browserCdpClient.sendCommand('Target.createTarget', {
+          url: 'about:blank',
+          newWindow: false,
+        });
+        break;
+      case 'window':
+        result = await browserCdpClient.sendCommand('Target.createTarget', {
+          url: 'about:blank',
+          newWindow: true,
+        });
+        break;
+    }
 
     // Wait for the new tab to be loaded to avoid race conditions in the
     // `browsingContext` events, when the `browsingContext.domContentLoaded` and
@@ -245,7 +258,9 @@ export class BrowsingContextProcessor {
     await context.awaitLoaded();
 
     return {
-      result: context.serializeToBidiValue(1),
+      result: {
+        context: context.id,
+      },
     };
   }
 

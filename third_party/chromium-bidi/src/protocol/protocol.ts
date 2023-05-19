@@ -876,7 +876,9 @@ export namespace BrowsingContext {
   };
 
   export type CreateResult = {
-    result: Info;
+    result: {
+      context: CommonDataTypes.BrowsingContext;
+    };
   };
 
   export type CloseCommand = {

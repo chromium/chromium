@@ -322,21 +322,16 @@ export class BrowsingContextImpl {
         // https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-MonotonicTime
         const timestamp = new Date().getTime();
 
-        if (params.name === 'init') {
-          this.#documentChanged(params.loaderId);
-          this.#deferreds.documentInitialized.resolve();
-        }
-
-        if (params.name === 'commit') {
-          this.#loaderId = params.loaderId;
-          return;
-        }
-
-        if (params.loaderId !== this.#loaderId) {
-          return;
-        }
-
         switch (params.name) {
+          case 'init':
+            this.#documentChanged(params.loaderId);
+            this.#deferreds.documentInitialized.resolve();
+            break;
+
+          case 'commit':
+            this.#loaderId = params.loaderId;
+            break;
+
           case 'DOMContentLoaded':
             this.#deferreds.Page.lifecycleEvent.DOMContentLoaded.resolve(
               params
@@ -346,7 +341,7 @@ export class BrowsingContextImpl {
                 method: BrowsingContext.EventNames.DomContentLoadedEvent,
                 params: {
                   context: this.id,
-                  navigation: this.#loaderId,
+                  navigation: this.#loaderId ?? null,
                   timestamp,
                   url: this.#url,
                 },
@@ -362,7 +357,7 @@ export class BrowsingContextImpl {
                 method: BrowsingContext.EventNames.LoadEvent,
                 params: {
                   context: this.id,
-                  navigation: this.#loaderId,
+                  navigation: this.#loaderId ?? null,
                   timestamp,
                   url: this.#url,
                 },
@@ -370,6 +365,10 @@ export class BrowsingContextImpl {
               this.id
             );
             break;
+        }
+
+        if (params.loaderId !== this.#loaderId) {
+          return;
         }
       }
     );

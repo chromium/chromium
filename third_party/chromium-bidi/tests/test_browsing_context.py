@@ -317,15 +317,7 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
     new_context_id = command_result['result']['context']
 
     # Assert command done.
-    assert command_result == {
-        "id": 9,
-        "result": {
-            'context': new_context_id,
-            'parent': None,
-            'children': [],
-            'url': 'about:blank'
-        }
-    }
+    assert command_result == {"id": 9, "result": {'context': new_context_id}}
 
     # Assert "browsingContext.contextCreated" event emitted.
     assert {
