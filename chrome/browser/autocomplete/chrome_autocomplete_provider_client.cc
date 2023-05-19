@@ -182,6 +182,12 @@ ChromeAutocompleteProviderClient::GetLocalOrSyncableBookmarkModel() {
   return BookmarkModelFactory::GetForBrowserContext(profile_);
 }
 
+bookmarks::BookmarkModel*
+ChromeAutocompleteProviderClient::GetAccountBookmarkModel() {
+  // TODO(crbug.com/1446620): Plumb factory when available.
+  return nullptr;
+}
+
 history::URLDatabase* ChromeAutocompleteProviderClient::GetInMemoryDatabase() {
   history::HistoryService* history_service = GetHistoryService();
 

@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #import "ios/chrome/browser/autocomplete/tab_matcher_impl.h"
 #import "ios/chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
+#import "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/history/top_sites_factory.h"
@@ -102,6 +103,11 @@ bookmarks::BookmarkModel*
 AutocompleteProviderClientImpl::GetLocalOrSyncableBookmarkModel() {
   return ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
       browser_state_);
+}
+
+bookmarks::BookmarkModel*
+AutocompleteProviderClientImpl::GetAccountBookmarkModel() {
+  return ios::AccountBookmarkModelFactory::GetForBrowserState(browser_state_);
 }
 
 history::URLDatabase* AutocompleteProviderClientImpl::GetInMemoryDatabase() {
