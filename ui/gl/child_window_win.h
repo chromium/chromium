@@ -32,7 +32,7 @@ class GL_EXPORT ChildWindowWin {
   void Initialize();
   HWND window() const { return window_; }
 
-  void Resize(const gfx::Size& size);
+  bool Resize(const gfx::Size& size);
 
   scoped_refptr<base::TaskRunner> GetTaskRunnerForTesting();
 

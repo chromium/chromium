@@ -103,7 +103,9 @@ bool SkiaOutputDeviceDawn::Reshape(const SkImageInfo& image_info,
   sk_color_space_ = image_info.refColorSpace();
   sample_count_ = sample_count;
 
-  child_window_.Resize(size_);
+  if (!child_window_.Resize(size_)) {
+    return false;
+  }
 
   wgpu::SwapChainDescriptor swap_chain_desc;
   swap_chain_desc.format = kSwapChainFormat;

@@ -120,10 +120,7 @@ bool DirectCompositionSurfaceWin::Resize(const gfx::Size& size,
                                          float scale_factor,
                                          const gfx::ColorSpace& color_space,
                                          bool has_alpha) {
-  // Force a resize and redraw (but not a move, activate, etc.).
-  if (!SetWindowPos(window(), nullptr, 0, 0, size.width(), size.height(),
-                    SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS |
-                        SWP_NOOWNERZORDER | SWP_NOZORDER)) {
+  if (!child_window_.Resize(size)) {
     return false;
   }
   return root_surface_->Resize(size, scale_factor, color_space, has_alpha);
