@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.WorkerThread;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TimeUtils;
@@ -24,6 +25,7 @@ import java.util.Set;
 /**
  * Stores visited origins and logs the count of distinct origins for a day.
  */
+@Lifetime.Singleton
 public final class AwOriginVisitLogger {
     private static final String PREFS_FILE = "AwOriginVisitLoggerPrefs";
     private static final String KEY_ORIGINS_VISITED_DATE = "origins_visited_date";

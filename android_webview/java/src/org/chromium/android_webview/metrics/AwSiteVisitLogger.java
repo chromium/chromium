@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.WorkerThread;
 
+import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TimeUtils;
@@ -21,6 +22,7 @@ import java.util.Set;
 /**
  * Stores visited sites and logs the count of distinct visits over a week.
  */
+@Lifetime.Singleton
 public final class AwSiteVisitLogger {
     // This uses the same file name as {@link AwOriginVisitLogger} so that
     // only one shared preference XML file needs to be opened on navigation.
