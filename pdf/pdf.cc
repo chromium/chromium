@@ -51,8 +51,6 @@ void SetUseSkiaRendererPolicy(bool use_skia) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/1440430): Make sure its callers set
-// `g_use_skia_renderer_enabled_by_policy` before calling this function.
 std::vector<uint8_t> CreateFlattenedPdf(
     base::span<const uint8_t> input_buffer) {
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/false);

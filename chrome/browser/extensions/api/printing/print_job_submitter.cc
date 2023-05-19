@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/api/printing/print_job_controller.h"
 #include "chrome/browser/extensions/api/printing/printing_api_utils.h"
+#include "chrome/browser/pdf/pdf_pref_names.h"
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
@@ -215,6 +216,14 @@ void PrintJobSubmitter::OnDocumentDataRead(std::unique_ptr<std::string> data,
     pdf_flattener_->set_disconnect_handler(
         base::BindOnce(&PrintJobSubmitter::OnPdfFlattenerDisconnected,
                        weak_ptr_factory_.GetWeakPtr()));
+    const PrefService* prefs =
+        Profile::FromBrowserContext(browser_context_)->GetPrefs();
+    if (prefs &&
+        prefs->IsManagedPreference(prefs::kPdfUseSkiaRendererEnabled)) {
+      (*pdf_flattener_)
+          ->SetUseSkiaRendererPolicy(
+              prefs->GetBoolean(prefs::kPdfUseSkiaRendererEnabled));
+    }
   }
   (*pdf_flattener_)
       ->FlattenPdf(std::move(memory.region),
