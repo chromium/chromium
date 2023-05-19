@@ -37,7 +37,7 @@ void LogFatal(WGPUDeviceLostReason reason,
 
 wgpu::BackendType GetDefaultBackendType() {
 #if BUILDFLAG(IS_WIN)
-  return wgpu::BackendType::D3D12;
+  return wgpu::BackendType::D3D11;
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return wgpu::BackendType::Vulkan;
 #elif BUILDFLAG(IS_MAC)
@@ -69,6 +69,10 @@ DawnContextProvider::DawnContextProvider() {
 DawnContextProvider::~DawnContextProvider() = default;
 
 wgpu::Device DawnContextProvider::CreateDevice(wgpu::BackendType type) {
+#if DCHECK_IS_ON()
+  instance_.EnableBackendValidation(true);
+#endif
+
   instance_.DiscoverDefaultAdapters();
   DawnProcTable backend_procs = dawn::native::GetProcs();
   dawnProcSetProcs(&backend_procs);
