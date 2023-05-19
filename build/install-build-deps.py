@@ -296,9 +296,6 @@ def dev_list():
   if package_exists("libinput-dev"):
     packages.append("libinput-dev")
 
-  if package_exists("snapcraft"):
-    packages.append("snapcraft")
-
   # Cross-toolchain strip is needed for building the sysroots.
   if package_exists("binutils-arm-linux-gnueabihf"):
     packages.append("binutils-arm-linux-gnueabihf")
@@ -535,6 +532,7 @@ def backwards_compatible_list(options):
       "msttcorefonts",
       "python-dev",
       "python-setuptools",
+      "snapcraft",
       "ttf-dejavu-core",
       "ttf-indic-fonts",
       "ttf-kochi-gothic",
