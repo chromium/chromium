@@ -20,6 +20,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/painter.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -30,10 +31,13 @@ constexpr int kExtraRightPadding = 4;
 
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxChipButton, kChipElementId);
+
 OmniboxChipButton::OmniboxChipButton(PressedCallback callback)
     : MdTextButton(std::move(callback),
                    std::u16string(),
                    views::style::CONTEXT_BUTTON_MD) {
+  SetProperty(views::kElementIdentifierKey, kChipElementId);
   views::InstallPillHighlightPathGenerator(this);
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
   SetElideBehavior(gfx::ElideBehavior::FADE_TAIL);

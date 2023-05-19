@@ -22,6 +22,7 @@
 // and text, with rounded corners.
 class OmniboxChipButton : public views::MdTextButton {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kChipElementId);
   METADATA_HEADER(OmniboxChipButton);
   explicit OmniboxChipButton(PressedCallback callback);
   OmniboxChipButton(const OmniboxChipButton& button) = delete;
