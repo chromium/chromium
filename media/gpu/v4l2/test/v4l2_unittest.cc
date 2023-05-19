@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,8 +41,9 @@ using ScopedDrmVersionPtr = std::unique_ptr<drmVersion, DrmVersionDeleter>;
 
 // Converts v4l2 format to gbm format
 uint32_t ToGBMFormat(uint32_t v4l2_format) {
-  if (v4l2_format == V4L2_PIX_FMT_NV12 || v4l2_format == V4L2_PIX_FMT_NV12M)
+  if (v4l2_format == V4L2_PIX_FMT_NV12 || v4l2_format == V4L2_PIX_FMT_NV12M) {
     return DRM_FORMAT_NV12;
+  }
   return DRM_FORMAT_INVALID;
 }
 
