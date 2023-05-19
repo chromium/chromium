@@ -175,6 +175,7 @@
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/events/before_unload_event.h"
 #include "third_party/blink/renderer/core/events/event_factory.h"
+#include "third_party/blink/renderer/core/events/event_util.h"
 #include "third_party/blink/renderer/core/events/hash_change_event.h"
 #include "third_party/blink/renderer/core/events/overscroll_event.h"
 #include "third_party/blink/renderer/core/events/page_transition_event.h"
@@ -5733,24 +5734,12 @@ void Document::AddMutationEventListenerTypeIfEnabled(
 
 void Document::AddListenerTypeIfNeeded(const AtomicString& event_type,
                                        EventTarget& event_target) {
-  if (event_type == event_type_names::kDOMSubtreeModified) {
-    UseCounter::Count(*this, WebFeature::kDOMSubtreeModifiedEvent);
-    AddMutationEventListenerTypeIfEnabled(kDOMSubtreeModifiedListener);
-  } else if (event_type == event_type_names::kDOMNodeInserted) {
-    UseCounter::Count(*this, WebFeature::kDOMNodeInsertedEvent);
-    AddMutationEventListenerTypeIfEnabled(kDOMNodeInsertedListener);
-  } else if (event_type == event_type_names::kDOMNodeRemoved) {
-    UseCounter::Count(*this, WebFeature::kDOMNodeRemovedEvent);
-    AddMutationEventListenerTypeIfEnabled(kDOMNodeRemovedListener);
-  } else if (event_type == event_type_names::kDOMNodeRemovedFromDocument) {
-    UseCounter::Count(*this, WebFeature::kDOMNodeRemovedFromDocumentEvent);
-    AddMutationEventListenerTypeIfEnabled(kDOMNodeRemovedFromDocumentListener);
-  } else if (event_type == event_type_names::kDOMNodeInsertedIntoDocument) {
-    UseCounter::Count(*this, WebFeature::kDOMNodeInsertedIntoDocumentEvent);
-    AddMutationEventListenerTypeIfEnabled(kDOMNodeInsertedIntoDocumentListener);
-  } else if (event_type == event_type_names::kDOMCharacterDataModified) {
-    UseCounter::Count(*this, WebFeature::kDOMCharacterDataModifiedEvent);
-    AddMutationEventListenerTypeIfEnabled(kDOMCharacterDataModifiedListener);
+  WebFeature mutation_event_feature;
+  ListenerType listener_type;
+  if (event_util::IsDOMMutationEventType(event_type, mutation_event_feature,
+                                         listener_type)) {
+    UseCounter::Count(*this, mutation_event_feature);
+    AddMutationEventListenerTypeIfEnabled(listener_type);
   } else if (event_type == event_type_names::kWebkitAnimationStart ||
              event_type == event_type_names::kAnimationstart) {
     AddListenerType(kAnimationStartListener);

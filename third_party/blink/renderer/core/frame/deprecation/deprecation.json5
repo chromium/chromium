@@ -162,6 +162,21 @@
       milestone: 109,
     },
     {
+      name: "DOMMutationEvents",
+      message: "DOM Mutation Events, including `DOMSubtreeModified`, `DOMNodeInserted`, `DOMNodeRemoved`, `DOMNodeRemovedFromDocument`, `DOMNodeInsertedIntoDocument`, and `DOMCharacterDataModified` are deprecated (https://w3c.github.io/uievents/#legacy-event-types) and will be removed. Please use `MutationObserver` instead.",
+      translation_note: "Warning displayed to developers when non-standard Mutation Events are used. These are deprecated and will be removed.",
+      web_features: [
+        "kDOMCharacterDataModifiedEvent",
+        "kDOMNodeInsertedEvent",
+        "kDOMNodeInsertedIntoDocumentEvent",
+        "kDOMNodeRemovedEvent",
+        "kDOMNodeRemovedFromDocumentEvent",
+        "kDOMSubtreeModifiedEvent",
+      ],
+      chrome_status_feature: 5083947249172480,
+      milestone: 127,
+    },
+    {
       name: "EventPath",
       message: "`Event.path` is deprecated and will be removed. Please use `Event.composedPath()` instead.",
       translation_note: "Warning displayed to developers when the non-standard `Event.path` API is used to notify them that this API is deprecated.",

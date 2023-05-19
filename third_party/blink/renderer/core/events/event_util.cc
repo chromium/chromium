@@ -6,7 +6,9 @@
 
 #include "base/containers/contains.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -37,13 +39,35 @@ bool IsPointerEventType(const AtomicString& event_type) {
          event_type == event_type_names::kPointerup;
 }
 
-bool IsDOMMutationEventType(const AtomicString& event_type) {
-  return event_type == event_type_names::kDOMCharacterDataModified ||
-         event_type == event_type_names::kDOMNodeInserted ||
-         event_type == event_type_names::kDOMNodeInsertedIntoDocument ||
-         event_type == event_type_names::kDOMNodeRemoved ||
-         event_type == event_type_names::kDOMNodeRemovedFromDocument ||
-         event_type == event_type_names::kDOMSubtreeModified;
+bool IsDOMMutationEventType(const AtomicString& event_type,
+                            WebFeature& web_feature,
+                            Document::ListenerType& listener_type) {
+  if (event_type == event_type_names::kDOMSubtreeModified) {
+    web_feature = WebFeature::kDOMSubtreeModifiedEvent;
+    listener_type = Document::kDOMSubtreeModifiedListener;
+    return true;
+  } else if (event_type == event_type_names::kDOMNodeInserted) {
+    web_feature = WebFeature::kDOMNodeInsertedEvent;
+    listener_type = Document::kDOMNodeInsertedListener;
+    return true;
+  } else if (event_type == event_type_names::kDOMNodeRemoved) {
+    web_feature = WebFeature::kDOMNodeRemovedEvent;
+    listener_type = Document::kDOMNodeRemovedListener;
+    return true;
+  } else if (event_type == event_type_names::kDOMNodeRemovedFromDocument) {
+    web_feature = WebFeature::kDOMNodeRemovedFromDocumentEvent;
+    listener_type = Document::kDOMNodeRemovedFromDocumentListener;
+    return true;
+  } else if (event_type == event_type_names::kDOMNodeInsertedIntoDocument) {
+    web_feature = WebFeature::kDOMNodeInsertedIntoDocumentEvent;
+    listener_type = Document::kDOMNodeInsertedIntoDocumentListener;
+    return true;
+  } else if (event_type == event_type_names::kDOMCharacterDataModified) {
+    web_feature = WebFeature::kDOMCharacterDataModifiedEvent;
+    listener_type = Document::kDOMCharacterDataModifiedListener;
+    return true;
+  }
+  return false;
 }
 
 }  // namespace event_util
