@@ -129,7 +129,7 @@ using ReauthenticationEvent::kSuccess;
     // Create and register the observers.
     _observer = std::make_unique<web::WebStateObserverBridge>(self);
     _forwarder = std::make_unique<ActiveWebStateObservationForwarder>(
-        webStateList, _observer.get());
+        _webStateList, _observer.get());
 
     if (activeWebState) {
       FormSuggestionTabHelper* tabHelper =
@@ -291,7 +291,7 @@ using ReauthenticationEvent::kSuccess;
   }
 }
 
-#pragma mark - WebStateListObserver
+#pragma mark - WebStateListObserving
 
 - (void)webStateList:(WebStateList*)webStateList
     didReplaceWebState:(web::WebState*)oldWebState
@@ -310,6 +310,15 @@ using ReauthenticationEvent::kSuccess;
                     atIndex:(int)atIndex
                      reason:(ActiveWebStateChangeReason)reason {
   DCHECK_EQ(_webStateList, webStateList);
+  [self disableRefocus];
+  [self.consumer dismiss];
+}
+
+- (void)webStateListDestroyed:(WebStateList*)webStateList {
+  DCHECK_EQ(webStateList, _webStateList);
+  _forwarder = nullptr;
+  _observer = nullptr;
+  _webStateList = nullptr;
   [self disableRefocus];
   [self.consumer dismiss];
 }
