@@ -25,7 +25,8 @@ base::android::ScopedJavaGlobalRef<jobject> BuildHistoryClustersAction(
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
     JNIEnv* env,
     const std::u16string& hint,
-    const std::string& serialized_action);
+    int action_type,
+    const std::string& action_uri);
 
 base::android::ScopedJavaLocalRef<jobjectArray> ToJavaOmniboxActionsList(
     JNIEnv* env,

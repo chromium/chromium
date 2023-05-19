@@ -112,9 +112,7 @@ public class ActionChipsProcessor {
                     break;
 
                 case OmniboxActionType.ACTION_IN_SUGGEST:
-                    var actionType = OmniboxActionInSuggest.from(chip)
-                                             .actionInfo.getActionType()
-                                             .getNumber();
+                    var actionType = OmniboxActionInSuggest.from(chip).actionType;
                     mActionInSuggestShownOrUsed.put(actionType, false);
                     break;
             }
@@ -143,7 +141,7 @@ public class ActionChipsProcessor {
                 return true;
 
             case OmniboxActionType.ACTION_IN_SUGGEST:
-                return OmniboxActionInSuggest.from(action).actionInfo.getActionType().getNumber()
+                return OmniboxActionInSuggest.from(action).actionType
                         != EntityInfoProto.ActionInfo.ActionType.CALL_VALUE
                         || mDialerAvailable;
         }
@@ -162,8 +160,7 @@ public class ActionChipsProcessor {
                 break;
 
             case OmniboxActionType.ACTION_IN_SUGGEST:
-                var actionType =
-                        OmniboxActionInSuggest.from(action).actionInfo.getActionType().getNumber();
+                var actionType = OmniboxActionInSuggest.from(action).actionType;
                 mActionInSuggestShownOrUsed.put(actionType, true);
                 break;
         }

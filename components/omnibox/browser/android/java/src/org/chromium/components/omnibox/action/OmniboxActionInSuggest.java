@@ -22,13 +22,14 @@ public class OmniboxActionInSuggest extends OmniboxAction {
     /** Map of {@link EntityInfoProto.ActionInfo.ActionType} to {@link ChipIcon}. */
     private static final SparseArray<ChipIcon> ICON_MAP = createIconMap();
     /** The details about the underlying action. */
-    public final @NonNull EntityInfoProto.ActionInfo actionInfo;
+    public final /* EntityInfoProto.ActionInfo.ActionType */ int actionType;
+    private final @NonNull String mActionUri;
 
-    public OmniboxActionInSuggest(
-            @NonNull String hint, @NonNull EntityInfoProto.ActionInfo actionInfo) {
-        super(OmniboxActionType.ACTION_IN_SUGGEST, hint,
-                ICON_MAP.get(actionInfo.getActionType().getNumber(), null));
-        this.actionInfo = actionInfo;
+    public OmniboxActionInSuggest(@NonNull String hint,
+            /* EntityInfoProto.ActionInfo.ActionType */ int actionType, @NonNull String actionUri) {
+        super(OmniboxActionType.ACTION_IN_SUGGEST, hint, ICON_MAP.get(actionType, null));
+        this.actionType = actionType;
+        mActionUri = actionUri;
     }
 
     /**
@@ -65,24 +66,23 @@ public class OmniboxActionInSuggest extends OmniboxAction {
      */
     @Override
     public void execute(OmniboxActionDelegate delegate) {
-        var actionType = actionInfo.getActionType();
         boolean actionStarted = false;
         boolean isIncognito = delegate.isIncognito();
         Intent intent = null;
 
         try {
-            intent = Intent.parseUri(actionInfo.getActionUri(), Intent.URI_INTENT_SCHEME);
+            intent = Intent.parseUri(mActionUri, Intent.URI_INTENT_SCHEME);
         } catch (URISyntaxException e) {
             // Never happens. http://b/279756377.
         }
 
         switch (actionType) {
-            case REVIEWS:
+            case EntityInfoProto.ActionInfo.ActionType.REVIEWS_VALUE:
                 delegate.loadPageInCurrentTab(intent.getDataString());
                 actionStarted = true;
                 break;
 
-            case CALL:
+            case EntityInfoProto.ActionInfo.ActionType.CALL_VALUE:
                 // Don't call directly. Use `DIAL` instead to let the user decide.
                 // Note also that ACTION_CALL requires a dedicated permission.
                 intent.setAction(Intent.ACTION_DIAL);
@@ -92,7 +92,7 @@ public class OmniboxActionInSuggest extends OmniboxAction {
                 actionStarted = delegate.startActivity(intent);
                 break;
 
-            case DIRECTIONS:
+            case EntityInfoProto.ActionInfo.ActionType.DIRECTIONS_VALUE:
                 // Open directions in maps only if maps are installed and the incognito mode is
                 // not engaged. In all other cases, redirect the action to Browser.
                 if (!isIncognito) {
@@ -116,15 +116,8 @@ public class OmniboxActionInSuggest extends OmniboxAction {
                         OmniboxMetrics.ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND);
             }
 
-            switch (actionType) {
-                case DIRECTIONS:
-                    delegate.loadPageInCurrentTab(intent.getDataString());
-                    break;
-
-                case CALL:
-                case REVIEWS:
-                    // Give up. Don't add the `default` clause though, capture missed variants.
-                    break;
+            if (actionType == EntityInfoProto.ActionInfo.ActionType.DIRECTIONS_VALUE) {
+                delegate.loadPageInCurrentTab(intent.getDataString());
             }
         }
     }

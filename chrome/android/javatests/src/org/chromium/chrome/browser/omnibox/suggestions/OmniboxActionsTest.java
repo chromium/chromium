@@ -160,8 +160,8 @@ public class OmniboxActionsTest {
     private AutocompleteMatch createDummyActionInSuggest(ActionInfo.ActionType... types) {
         var actions = new ArrayList<OmniboxAction>();
         for (var type : types) {
-            actions.add(new OmniboxActionInSuggest(
-                    "hint", ActionInfo.newBuilder().setActionType(type).build()));
+            actions.add(
+                    new OmniboxActionInSuggest("hint", type.getNumber(), "https://www.google.com"));
         }
 
         return createDummySuggestion(actions);

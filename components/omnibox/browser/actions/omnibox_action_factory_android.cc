@@ -51,11 +51,12 @@ base::android::ScopedJavaGlobalRef<jobject> BuildHistoryClustersAction(
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxActionInSuggest(
     JNIEnv* env,
     const std::u16string& hint,
-    const std::string& serialized_action) {
+    int action_type,
+    const std::string& action_uri) {
   return base::android::ScopedJavaGlobalRef(
       Java_OmniboxActionFactory_buildActionInSuggest(
-          env, base::android::ConvertUTF16ToJavaString(env, hint),
-          base::android::ToJavaByteArray(env, serialized_action)));
+          env, base::android::ConvertUTF16ToJavaString(env, hint), action_type,
+          base::android::ConvertUTF8ToJavaString(env, action_uri)));
 }
 
 // Convert a vector of OmniboxActions to Java counterpart.

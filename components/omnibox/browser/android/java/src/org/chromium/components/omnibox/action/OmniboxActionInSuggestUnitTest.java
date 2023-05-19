@@ -7,7 +7,6 @@ package org.chromium.components.omnibox.action;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
@@ -57,12 +56,7 @@ public class OmniboxActionInSuggestUnitTest {
     @Test
     public void creation_usesCustomIconForKnownActionTypes() {
         for (var kesemActionType : sKnownActionTypes) {
-            var proto = EntityInfoProto.ActionInfo.newBuilder()
-                                .setActionType(EntityInfoProto.ActionInfo.ActionType.forNumber(
-                                        kesemActionType))
-                                .build();
-
-            var action = new OmniboxActionInSuggest("hint", proto);
+            var action = new OmniboxActionInSuggest("hint", kesemActionType, "");
             assertNotEquals(OmniboxAction.DEFAULT_ICON, action.icon);
         }
     }
@@ -71,37 +65,25 @@ public class OmniboxActionInSuggestUnitTest {
     public void creation_usesFallbackIconForUnknownActionTypes() {
         for (var kesemActionType : EntityInfoProto.ActionInfo.ActionType.values()) {
             if (sKnownActionTypes.contains(kesemActionType.getNumber())) continue;
-
-            var proto =
-                    EntityInfoProto.ActionInfo.newBuilder().setActionType(kesemActionType).build();
-
-            var action = new OmniboxActionInSuggest("hint", proto);
+            var action = new OmniboxActionInSuggest("hint", kesemActionType.getNumber(), "");
             assertEquals(OmniboxAction.DEFAULT_ICON, action.icon);
         }
     }
 
     @Test
-    public void creation_creationFailsWithInvalidSerializedProto() {
-        assertNull(OmniboxActionFactory.buildActionInSuggest("hint", new byte[] {1, 2, 3}));
-    }
-
-    @Test
-    public void creation_creationSucceedsWithValidSerializedProto() {
-        var proto = EntityInfoProto.ActionInfo.newBuilder().setDisplayedText("text").build();
-        var action = new OmniboxActionInSuggest("hint", proto);
-
-        assertNotNull(action);
-        assertEquals(action.actionInfo.getDisplayedText(), "text");
-    }
-
-    @Test
     public void creation_failsWithNullHint() {
-        assertThrows(AssertionError.class, () -> new OmniboxActionInSuggest(null, EMPTY_INFO));
+        assertThrows(AssertionError.class,
+                ()
+                        -> new OmniboxActionInSuggest(
+                                null, EntityInfoProto.ActionInfo.ActionType.CALL_VALUE, ""));
     }
 
     @Test
     public void creation_failsWithEmptyHint() {
-        assertThrows(AssertionError.class, () -> new OmniboxActionInSuggest("", EMPTY_INFO));
+        assertThrows(AssertionError.class,
+                ()
+                        -> new OmniboxActionInSuggest(
+                                "", EntityInfoProto.ActionInfo.ActionType.CALL_VALUE, ""));
     }
 
     @Test
@@ -121,9 +103,9 @@ public class OmniboxActionInSuggestUnitTest {
     }
 
     @Test
-    public void safeCasting_successWithHistoryClusters() {
-        OmniboxActionInSuggest.from(
-                OmniboxActionFactory.buildActionInSuggest("hint", EMPTY_INFO.toByteArray()));
+    public void safeCasting_successWithFactoryBuiltAction() {
+        OmniboxActionInSuggest.from(OmniboxActionFactory.buildActionInSuggest(
+                "hint", EntityInfoProto.ActionInfo.ActionType.CALL_VALUE, ""));
     }
 
     /**
@@ -132,12 +114,7 @@ public class OmniboxActionInSuggestUnitTest {
     private OmniboxAction buildActionInSuggest(
             EntityInfoProto.ActionInfo.ActionType type, Intent intent) {
         var uri = intent.toUri(Intent.URI_INTENT_SCHEME);
-        var action = EntityInfoProto.ActionInfo.newBuilder()
-                             .setActionType(type)
-                             .setActionUri(uri)
-                             .build();
-
-        return new OmniboxActionInSuggest("wink", action);
+        return new OmniboxActionInSuggest("wink", type.getNumber(), uri);
     }
 
     @Test

@@ -5,36 +5,27 @@
 package org.chromium.components.omnibox.action;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.components.omnibox.EntityInfoProto;
 
 /**
  * An interface for handling interactions for Omnibox Action Chips.
  */
 public class OmniboxActionFactory {
     @CalledByNative
-    public static @Nullable OmniboxAction buildOmniboxPedal(
+    public static @NonNull OmniboxAction buildOmniboxPedal(
             @NonNull String hint, @OmniboxPedalType int pedalId) {
         return new OmniboxPedal(hint, pedalId);
     }
 
     @CalledByNative
-    public static @Nullable OmniboxActionInSuggest buildActionInSuggest(
-            @NonNull String hint, @NonNull byte[] serializedActionInfo) {
-        try {
-            return new OmniboxActionInSuggest(
-                    hint, EntityInfoProto.ActionInfo.parseFrom(serializedActionInfo));
-        } catch (InvalidProtocolBufferException e) {
-        }
-        return null;
+    public static @NonNull OmniboxActionInSuggest buildActionInSuggest(@NonNull String hint,
+            /* EntityInfoProto.ActionInfo.ActionType */ int actionType, @NonNull String actionUri) {
+        return new OmniboxActionInSuggest(hint, actionType, actionUri);
     }
 
     @CalledByNative
-    public static @Nullable OmniboxAction buildHistoryClustersAction(
+    public static @NonNull OmniboxAction buildHistoryClustersAction(
             @NonNull String hint, @NonNull String query) {
         return new HistoryClustersAction(hint, query);
     }
