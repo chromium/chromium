@@ -560,6 +560,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
      ]
    }
  ],
+ [
+   'OsPrintingPagePrinterStatus',
+   'os_printing_page/printer_status_test.js',
+ ],
  ['OsPrivacyPage', 'os_privacy_page/os_privacy_page_test.js'],
  [
    'OsPrivacyPagePrivacyHubSubpage',
@@ -611,10 +615,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  [
    'PersonalizationPageWithPersonalizationHub',
    'personalization_page_with_personalization_hub_test.js',
- ],
- [
-   'PrinterStatus',
-   'printer_status_tests.js',
  ],
  ['ResetPage', 'os_reset_page_test.js'],
  [

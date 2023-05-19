@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {computePrinterState, getStatusReasonFromPrinterStatus, PrinterState, PrinterStatusReason, PrinterStatusSeverity} from 'chrome://os-settings/lazy_load.js';
-import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
+import 'chrome://os-settings/lazy_load.js';
 
-suite('PrinterStatus', function() {
+import {computePrinterState, getStatusReasonFromPrinterStatus, PrinterState, PrinterStatusReason, PrinterStatusSeverity} from 'chrome://os-settings/lazy_load.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+
+suite('PrinterStatus', () => {
   // Verify that a printer status missing a printer id returns UNKNOWN_REASON.
   test('getStatusReasonMissingPrinterId', () => {
     const printerStatus = {

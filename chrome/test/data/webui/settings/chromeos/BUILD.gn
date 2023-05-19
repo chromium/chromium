@@ -77,7 +77,6 @@ build_webui_tests("build") {
     "os_sync_controls_subpage_test.js",
     "people_page_account_manager_subpage_test.js",
     "personalization_page_with_personalization_hub_test.js",
-    "printer_status_tests.js",
     "search_engine_test.js",
     "select_to_speak_subpage_tests.js",
     "settings_traffic_counters_test.js",
@@ -231,6 +230,7 @@ build_webui_tests("build") {
 
     "os_printing_page/cups_printers_entry_test.ts",
     "os_printing_page/os_printing_page_test.ts",
+    "os_printing_page/printer_status_test.ts",
 
     "os_privacy_page/os_privacy_page_test.js",
     "os_privacy_page/privacy_hub_subpage_test.ts",
