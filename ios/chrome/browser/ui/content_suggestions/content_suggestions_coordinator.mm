@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
@@ -168,6 +169,10 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
       AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
 
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+
   self.contentSuggestionsMediator = [[ContentSuggestionsMediator alloc]
            initWithLargeIconService:largeIconService
                      largeIconCache:cache
@@ -176,6 +181,7 @@ BASE_FEATURE(kNoRecentTabIfNullWebState,
                         prefService:prefs
       isGoogleDefaultSearchProvider:isGoogleDefaultSearchProvider
               authenticationService:authenticationService
+                    identityManager:identityManager
                             browser:self.browser];
   self.contentSuggestionsMediator.feedDelegate = self.feedDelegate;
   self.contentSuggestionsMediator.promosManager = promosManager;

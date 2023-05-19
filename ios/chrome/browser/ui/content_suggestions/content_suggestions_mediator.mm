@@ -26,6 +26,8 @@
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
 #import "components/search_engines/search_terms_data.h"
 #import "components/search_engines/template_url.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/default_browser/utils.h"
@@ -108,7 +110,8 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
 
 }  // namespace
 
-@interface ContentSuggestionsMediator () <MostVisitedSitesObserving,
+@interface ContentSuggestionsMediator () <IdentityManagerObserverBridgeDelegate,
+                                          MostVisitedSitesObserving,
                                           ReadingListModelBridgeObserver,
                                           PrefObserverDelegate,
                                           SetUpListDelegate> {
@@ -181,6 +184,11 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
   PrefChangeRegistrar _prefChangeRegistrar;
   // Local State prefs.
   PrefService* _localState;
+  // Used by SetUpList to get signed-in status.
+  AuthenticationService* _authenticationService;
+  // Used by SetUpList to observe changes to signed-in status.
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityObserverBridge;
 }
 
 #pragma mark - Public
@@ -194,6 +202,7 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
                       prefService:(PrefService*)prefService
     isGoogleDefaultSearchProvider:(BOOL)isGoogleDefaultSearchProvider
             authenticationService:(AuthenticationService*)authenticationService
+                  identityManager:(signin::IdentityManager*)identityManager
                           browser:(Browser*)browser {
   self = [super init];
   if (self) {
@@ -222,6 +231,10 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
 
     if (IsIOSSetUpListEnabled() &&
         set_up_list_utils::IsSetUpListActive(_localState)) {
+      _authenticationService = authenticationService;
+      _identityObserverBridge =
+          std::make_unique<signin::IdentityManagerObserverBridge>(
+              identityManager, self);
       _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
       _prefChangeRegistrar.Init(_localState);
       _prefObserverBridge->ObserveChangesForPreference(
@@ -250,6 +263,8 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
   _mostVisitedSites.reset();
   _readingListModelBridge.reset();
   if (IsIOSSetUpListEnabled()) {
+    _authenticationService = nullptr;
+    _identityObserverBridge.reset();
     if (_prefObserverBridge) {
       _prefChangeRegistrar.RemoveAll();
       _prefObserverBridge.reset();
@@ -359,6 +374,33 @@ bool CredentialProviderPromoCompleted(PrefService* local_state) {
   [self.consumer hideSetUpListWithAnimations:^{
     [self.feedDelegate contentSuggestionsWasUpdated];
   }];
+}
+
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+// Called when a user changes the syncing state.
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      if (IsIOSSetUpListEnabled() && _authenticationService->GetPrimaryIdentity(
+                                         signin::ConsentLevel::kSignin)) {
+        // User has signed in, mark SetUpList item complete. Delayed to allow
+        // Signin UI flow to be fully dismissed before starting SetUpList
+        // completion animation.
+        PrefService* localState = _localState;
+        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE, base::BindOnce(^{
+              set_up_list_prefs::MarkItemComplete(
+                  localState, SetUpListItemType::kSignInSync);
+            }),
+            base::Seconds(0.5));
+      }
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
 }
 
 #pragma mark - SetUpListDelegate

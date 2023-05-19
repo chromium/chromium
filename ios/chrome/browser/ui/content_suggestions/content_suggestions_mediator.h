@@ -23,6 +23,10 @@ namespace ntp_tiles {
 class MostVisitedSites;
 }
 
+namespace signin {
+class IdentityManager;
+}
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
@@ -57,6 +61,7 @@ class WebStateList;
                       prefService:(PrefService*)prefService
     isGoogleDefaultSearchProvider:(BOOL)isGoogleDefaultSearchProvider
             authenticationService:(AuthenticationService*)authService
+                  identityManager:(signin::IdentityManager*)identityManager
                           browser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
