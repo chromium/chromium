@@ -1149,6 +1149,7 @@ void ShowLoginWizard(OobeScreenId first_screen) {
       first_screen == ash::OOBE_SCREEN_UNKNOWN) {
     // Manages its own lifetime. See ShutdownDisplayHost().
     auto* display_host = new LoginDisplayHostWebUI();
+    WallpaperControllerClientImpl::Get()->SetInitialWallpaper();
     // Shows networks screen instead of enrollment screen to resume the
     // interrupted auto start enrollment flow because enrollment screen does
     // not handle flaky network. See http://crbug.com/332572

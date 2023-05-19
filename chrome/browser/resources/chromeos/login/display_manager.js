@@ -228,6 +228,7 @@ export function invokePolymerMethod(element, name, ...args) {
       const oldStep = $(currentStepId);
       const newStep = $(nextStepId);
       const innerContainer = $('inner-container');
+      const oobeContainer = $('oobe');
       const isOobeSimonEnabled = loadTimeData.getBoolean('isOobeSimonEnabled');
 
       invokePolymerMethod(oldStep, 'onBeforeHide');
@@ -273,7 +274,8 @@ export function invokePolymerMethod(element, name, ...args) {
       } else {
         // First screen on OOBE launch.
         if (this.isOobeUI() && innerContainer.classList.contains('down')) {
-          if (isOobeSimonEnabled) {
+          if (isOobeSimonEnabled &&
+              oobeContainer.classList.contains('connect')) {
             setTimeout(this.triggerDown.bind(this), TRIGGERDOWN_FALLBACK_DELAY);
           } else {
             this.triggerDown();
