@@ -1581,7 +1581,10 @@ component("platform") {
   }
 
   if (current_cpu == "loong64") {
-      cflags = [ "-mlsx", "-flax-vector-conversions" ]
+    cflags = [
+      "-mlsx",
+      "-flax-vector-conversions",
+    ]
   }
 
   if (is_apple) {
