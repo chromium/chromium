@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -107,8 +108,13 @@ void AppServiceInternalsPageHandlerImpl::GetPromiseApps(
   std::vector<mojom::app_service_internals::PromiseAppInfoPtr> result;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!ash::features::ArePromiseIconsEnabled()) {
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  if (!proxy) {
+  if (!proxy || !proxy->PromiseAppRegistryCache()) {
     std::move(callback).Run(std::move(result));
     return;
   }
