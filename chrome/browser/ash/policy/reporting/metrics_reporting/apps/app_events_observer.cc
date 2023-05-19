@@ -68,7 +68,10 @@ void AppEventsObserver::OnAppInstalled(const std::string& app_id,
                                        ::apps::InstallReason app_install_reason,
                                        ::apps::InstallTime app_install_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsAppTypeAllowed(app_type)) {
+  DCHECK(reporting_settings_);
+  if (!::ash::reporting::IsAppTypeAllowed(
+          app_type, reporting_settings_.get(),
+          ::ash::reporting::kReportAppInventory)) {
     return;
   }
 
@@ -98,7 +101,10 @@ void AppEventsObserver::OnAppLaunched(const std::string& app_id,
                                       ::apps::AppType app_type,
                                       ::apps::LaunchSource app_launch_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsAppTypeAllowed(app_type)) {
+  DCHECK(reporting_settings_);
+  if (!::ash::reporting::IsAppTypeAllowed(
+          app_type, reporting_settings_.get(),
+          ::ash::reporting::kReportAppInventory)) {
     return;
   }
 
@@ -123,7 +129,10 @@ void AppEventsObserver::OnAppUninstalled(
     ::apps::AppType app_type,
     ::apps::UninstallSource app_uninstall_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsAppTypeAllowed(app_type)) {
+  DCHECK(reporting_settings_);
+  if (!::ash::reporting::IsAppTypeAllowed(
+          app_type, reporting_settings_.get(),
+          ::ash::reporting::kReportAppInventory)) {
     return;
   }
 
@@ -146,22 +155,6 @@ void AppEventsObserver::OnAppUninstalled(
 void AppEventsObserver::OnAppPlatformMetricsDestroyed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observer_.Reset();
-}
-
-bool AppEventsObserver::IsAppTypeAllowed(::apps::AppType app_type) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(reporting_settings_);
-  const base::Value::List* allowed_app_types = nullptr;
-  if (!reporting_settings_->GetList(::ash::reporting::kReportAppInventory,
-                                    &allowed_app_types)) {
-    // Policy likely not set. Disallow app inventory reporting regardless of app
-    // type.
-    return false;
-  }
-  const absl::optional<std::string> app_category =
-      ::ash::reporting::GetAppReportingCategoryForType(app_type);
-  return app_category.has_value() &&
-         base::Contains(*allowed_app_types, app_category.value());
 }
 
 }  // namespace reporting

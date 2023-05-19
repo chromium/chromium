@@ -5,14 +5,17 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_observer.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "base/values.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service_test_base.h"
-#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 #include "components/reporting/metrics/fakes/fake_reporting_settings.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -108,6 +111,15 @@ class AppUsageObserverTest : public ::apps::AppPlatformMetricsServiceTestBase {
                 Eq(expected_usage_time));
   }
 
+  void SetAllowedAppReportingTypes(const std::vector<std::string>& app_types) {
+    base::Value::List allowed_app_types;
+    for (const auto& app_type : app_types) {
+      allowed_app_types.Append(app_type);
+    }
+    reporting_settings_.SetList(::ash::reporting::kReportAppUsage,
+                                std::move(allowed_app_types));
+  }
+
   // Fake reporting settings component used by the test.
   test::FakeReportingSettings reporting_settings_;
 
@@ -116,14 +128,14 @@ class AppUsageObserverTest : public ::apps::AppPlatformMetricsServiceTestBase {
 };
 
 TEST_F(AppUsageObserverTest, PersistAppUsageDataInPrefStore) {
-  reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, true);
+  SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryAndroidApps});
 
   // Create a new window for the app and simulate app usage.
   static constexpr base::TimeDelta kAppUsageDuration = base::Minutes(2);
-  const auto window = std::make_unique<::aura::Window>(nullptr);
-  window->Init(::ui::LAYER_NOT_DRAWN);
+  ::aura::Window window(nullptr);
+  window.Init(::ui::LAYER_NOT_DRAWN);
   const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
-  SimulateAppUsageForInstance(window.get(), kInstanceId, kAppUsageDuration);
+  SimulateAppUsageForInstance(&window, kInstanceId, kAppUsageDuration);
 
   // Verify data is persisted in the pref store.
   ASSERT_THAT(GetPrefService()->GetDict(::apps::kAppUsageTime).size(), Eq(1UL));
@@ -131,28 +143,44 @@ TEST_F(AppUsageObserverTest, PersistAppUsageDataInPrefStore) {
 }
 
 TEST_F(AppUsageObserverTest, ShouldNotPersistMicrosecondUsageData) {
-  reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, true);
+  SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryAndroidApps});
 
   // Create a new window for the app and simulate insignificant app usage.
   static constexpr base::TimeDelta kAppUsageDuration = base::Microseconds(200);
-  const auto window = std::make_unique<::aura::Window>(nullptr);
-  window->Init(::ui::LAYER_NOT_DRAWN);
+  ::aura::Window window(nullptr);
+  window.Init(::ui::LAYER_NOT_DRAWN);
   const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
-  SimulateAppUsageForInstance(window.get(), kInstanceId, kAppUsageDuration);
+  SimulateAppUsageForInstance(&window, kInstanceId, kAppUsageDuration);
 
   // Verify data is not persisted in the pref store.
   ASSERT_TRUE(GetPrefService()->GetDict(::apps::kAppUsageTime).empty());
 }
 
-TEST_F(AppUsageObserverTest, ShouldNotPersistAppUsageDataIfSettingDisabled) {
-  reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, false);
+TEST_F(AppUsageObserverTest, ShouldNotPersistAppUsageDataIfSettingUnset) {
+  // Create a new window for the app and simulate app usage.
+  static constexpr base::TimeDelta kAppUsageDuration = base::Minutes(2);
+  ::aura::Window window(nullptr);
+  window.Init(::ui::LAYER_NOT_DRAWN);
+  const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
+  SimulateAppUsageForInstance(&window, kInstanceId, kAppUsageDuration);
+
+  // Verify there is no data persisted to the pref store.
+  const auto& usage_dict_pref =
+      GetPrefService()->GetDict(::apps::kAppUsageTime);
+  ASSERT_TRUE(usage_dict_pref.empty());
+}
+
+TEST_F(AppUsageObserverTest, ShouldNotPersistAppUsageDataIfAppTypeDisallowed) {
+  // Set policy to enable reporting for a different app type than the one being
+  // used.
+  SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryPWA});
 
   // Create a new window for the app and simulate app usage.
   static constexpr base::TimeDelta kAppUsageDuration = base::Minutes(2);
-  const auto window = std::make_unique<::aura::Window>(nullptr);
-  window->Init(::ui::LAYER_NOT_DRAWN);
+  ::aura::Window window(nullptr);
+  window.Init(::ui::LAYER_NOT_DRAWN);
   const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
-  SimulateAppUsageForInstance(window.get(), kInstanceId, kAppUsageDuration);
+  SimulateAppUsageForInstance(&window, kInstanceId, kAppUsageDuration);
 
   // Verify there is no data persisted to the pref store.
   const auto& usage_dict_pref =
@@ -161,21 +189,21 @@ TEST_F(AppUsageObserverTest, ShouldNotPersistAppUsageDataIfSettingDisabled) {
 }
 
 TEST_F(AppUsageObserverTest, ShouldAggregateAppUsageDataOnSubsequentUsage) {
-  reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, true);
+  SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryAndroidApps});
 
   // Create a new window for the app and simulate app usage.
   static constexpr base::TimeDelta kAppUsageDuration = base::Minutes(2);
-  const auto window = std::make_unique<::aura::Window>(nullptr);
-  window->Init(::ui::LAYER_NOT_DRAWN);
+  ::aura::Window window(nullptr);
+  window.Init(::ui::LAYER_NOT_DRAWN);
   const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
-  SimulateAppUsageForInstance(window.get(), kInstanceId, kAppUsageDuration);
+  SimulateAppUsageForInstance(&window, kInstanceId, kAppUsageDuration);
 
   // Verify data is persisted to the pref store.
   ASSERT_THAT(GetPrefService()->GetDict(::apps::kAppUsageTime).size(), Eq(1UL));
   VerifyAppUsageDataInPrefStoreForInstance(kInstanceId, kAppUsageDuration);
 
   // Simulate additional app usage.
-  SimulateAppUsageForInstance(window.get(), kInstanceId, kAppUsageDuration);
+  SimulateAppUsageForInstance(&window, kInstanceId, kAppUsageDuration);
 
   // Verify aggregated usage data is persisted in the pref store.
   const auto& expected_usage_duration = kAppUsageDuration + kAppUsageDuration;
@@ -186,23 +214,23 @@ TEST_F(AppUsageObserverTest, ShouldAggregateAppUsageDataOnSubsequentUsage) {
 
 TEST_F(AppUsageObserverTest,
        ShouldStopPersistingAppUsageDataWhenSettingDisabled) {
-  // Enable reporting setting initially.
-  reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, true);
+  // Allow reporting for specified app type initially.
+  SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryAndroidApps});
 
   // Create a new window for the app and simulate app usage.
   static constexpr base::TimeDelta kAppUsageDuration = base::Minutes(2);
-  const auto window = std::make_unique<::aura::Window>(nullptr);
-  window->Init(::ui::LAYER_NOT_DRAWN);
+  ::aura::Window window(nullptr);
+  window.Init(::ui::LAYER_NOT_DRAWN);
   const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
-  SimulateAppUsageForInstance(window.get(), kInstanceId, kAppUsageDuration);
+  SimulateAppUsageForInstance(&window, kInstanceId, kAppUsageDuration);
 
   // Verify data is persisted to the pref store.
   ASSERT_THAT(GetPrefService()->GetDict(::apps::kAppUsageTime).size(), Eq(1UL));
   VerifyAppUsageDataInPrefStoreForInstance(kInstanceId, kAppUsageDuration);
 
-  // Disable setting and simulate additional app usage.
-  reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, false);
-  SimulateAppUsageForInstance(window.get(), kInstanceId, kAppUsageDuration);
+  // Disallow reporting and simulate additional app usage.
+  SetAllowedAppReportingTypes({});
+  SimulateAppUsageForInstance(&window, kInstanceId, kAppUsageDuration);
 
   // Verify usage data remains unchanged in the pref store.
   ASSERT_THAT(GetPrefService()->GetDict(::apps::kAppUsageTime).size(), Eq(1UL));
@@ -210,24 +238,24 @@ TEST_F(AppUsageObserverTest,
 }
 
 TEST_F(AppUsageObserverTest, ShouldPersistAppUsageDataForNewInstance) {
-  reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, true);
+  SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryAndroidApps});
 
   // Create a new window for the app and simulate app usage.
   static constexpr base::TimeDelta kAppUsageDuration = base::Minutes(2);
-  const auto window = std::make_unique<::aura::Window>(nullptr);
-  window->Init(::ui::LAYER_NOT_DRAWN);
+  ::aura::Window window(nullptr);
+  window.Init(::ui::LAYER_NOT_DRAWN);
   const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
-  SimulateAppUsageForInstance(window.get(), kInstanceId, kAppUsageDuration);
+  SimulateAppUsageForInstance(&window, kInstanceId, kAppUsageDuration);
 
   // Verify data is persisted to the pref store.
   ASSERT_THAT(GetPrefService()->GetDict(::apps::kAppUsageTime).size(), Eq(1UL));
   VerifyAppUsageDataInPrefStoreForInstance(kInstanceId, kAppUsageDuration);
 
   // Simulate app usage for a new instance of the same app.
-  const auto window1 = std::make_unique<::aura::Window>(nullptr);
-  window1->Init(::ui::LAYER_NOT_DRAWN);
+  ::aura::Window window1(nullptr);
+  window1.Init(::ui::LAYER_NOT_DRAWN);
   const base::UnguessableToken& kInstanceId1 = base::UnguessableToken::Create();
-  SimulateAppUsageForInstance(window1.get(), kInstanceId1, kAppUsageDuration);
+  SimulateAppUsageForInstance(&window1, kInstanceId1, kAppUsageDuration);
 
   // Verify the component persists usage data for the new instance.
   ASSERT_THAT(GetPrefService()->GetDict(::apps::kAppUsageTime).size(), Eq(2UL));
@@ -235,7 +263,7 @@ TEST_F(AppUsageObserverTest, ShouldPersistAppUsageDataForNewInstance) {
 }
 
 TEST_F(AppUsageObserverTest, OnAppPlatformMetricsDestroyed) {
-  reporting_settings_.SetBoolean(::ash::kReportDeviceAppInfo, true);
+  SetAllowedAppReportingTypes({::ash::reporting::kAppCategoryAndroidApps});
 
   // Reset `AppPlatformMetricsService` to destroy the `AppPlatformMetrics`
   // component.
@@ -244,10 +272,10 @@ TEST_F(AppUsageObserverTest, OnAppPlatformMetricsDestroyed) {
   // Create a new window for the app and simulate app usage to verify the
   // component is no longer tracking app usage metric.
   static constexpr base::TimeDelta kAppUsageDuration = base::Minutes(2);
-  const auto window = std::make_unique<::aura::Window>(nullptr);
-  window->Init(::ui::LAYER_NOT_DRAWN);
+  ::aura::Window window(nullptr);
+  window.Init(::ui::LAYER_NOT_DRAWN);
   const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
-  SimulateAppUsageForInstance(window.get(), kInstanceId, kAppUsageDuration);
+  SimulateAppUsageForInstance(&window, kInstanceId, kAppUsageDuration);
 
   // Verify there is no data persisted to the pref store.
   const auto& usage_dict_pref =

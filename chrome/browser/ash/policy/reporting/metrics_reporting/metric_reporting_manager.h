@@ -37,9 +37,6 @@ class MetricReportQueue;
 class CollectorBase;
 class Sampler;
 
-// Feature flag that can be set to facilitate app metrics reporting.
-BASE_DECLARE_FEATURE(kEnableAppMetricsReporting);
-
 // Class to initialize and start info, event, and telemetry collection and
 // reporting.
 class MetricReportingManager : public policy::ManagedSessionService::Observer,

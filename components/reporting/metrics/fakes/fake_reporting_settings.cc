@@ -85,8 +85,7 @@ void FakeReportingSettings::SetInteger(const std::string& path, int int_value) {
 
 void FakeReportingSettings::SetList(const std::string& path,
                                     const base::Value::List& list_value) {
-  const auto& [_, placed] = list_map_.emplace(path, list_value.Clone());
-  DCHECK(placed);
+  list_map_.insert_or_assign(path, list_value.Clone());
   if (base::Contains(settings_callbacks_map_, path)) {
     settings_callbacks_map_.at(path)->Notify();
   }

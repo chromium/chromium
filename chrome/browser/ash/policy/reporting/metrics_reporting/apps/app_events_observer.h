@@ -65,10 +65,6 @@ class AppEventsObserver : public MetricEventObserver,
   // ::apps::AppPlatformMetrics::Observer:
   void OnAppPlatformMetricsDestroyed() override;
 
-  // Helper that determines if the specified app type is allowlisted for app
-  // inventory event reporting.
-  bool IsAppTypeAllowed(::apps::AppType app_type) const;
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Retriever that retrieves the `AppPlatformMetrics` component so the

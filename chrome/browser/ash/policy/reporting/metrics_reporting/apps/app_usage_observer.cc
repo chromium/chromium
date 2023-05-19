@@ -10,9 +10,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_platform_metrics_retriever.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -76,9 +76,9 @@ void AppUsageObserver::OnAppUsage(const std::string& app_id,
                                   const base::UnguessableToken& instance_id,
                                   base::TimeDelta running_time) {
   DCHECK(reporting_settings_);
-  auto is_enabled = metrics::kReportDeviceAppInfoDefaultValue;
-  reporting_settings_->GetBoolean(::ash::kReportDeviceAppInfo, &is_enabled);
-  if (!profile_ || !is_enabled) {
+  if (!profile_ ||
+      !::ash::reporting::IsAppTypeAllowed(app_type, reporting_settings_.get(),
+                                          ::ash::reporting::kReportAppUsage)) {
     return;
   }
 
