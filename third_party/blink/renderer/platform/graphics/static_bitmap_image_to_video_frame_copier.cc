@@ -272,7 +272,7 @@ void StaticBitmapImageToVideoFrameCopier::OnYUVPixelsReadAsync(
     DLOG(ERROR) << "Couldn't read SkImage using async callback";
     return;
   }
-  yuv_frame->set_color_space(gfx::ColorSpace::CreateREC709());
+  yuv_frame->set_color_space(gfx::ColorSpace::CreateREC601());
   std::move(callback).Run(yuv_frame);
 }
 
