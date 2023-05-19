@@ -6450,6 +6450,54 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
   EXPECT_EQ(embedded_test_server()->GetOrigin("d.com"), results[2].origin);
 }
 
+// Verify that a speculative RFH in the pending commit state is still cleaned up
+// if the renderer crashes.
+IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
+                       CrashedInPendingCommit) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  base::WeakPtr<RenderFrameHostImpl> speculative_render_frame_host =
+      web_contents->GetPrimaryFrameTree()
+          .root()
+          ->render_manager()
+          ->speculative_frame_host()
+          ->GetWeakPtr();
+  ASSERT_TRUE(speculative_render_frame_host);
+
+  // Wait for the next `DidCommitProvisionalLoad()` and ignore it.
+  CommitNavigationPauser commit_pauser(speculative_render_frame_host.get());
+  commit_pauser.WaitForCommitAndPause();
+
+  ASSERT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit,
+            speculative_render_frame_host->lifecycle_state());
+
+  // Terminate the renderer process while `speculative_render_frame_host` is in
+  // `kPendingCommit`.
+  RenderProcessHostWatcher watcher(
+      speculative_render_frame_host->GetProcess(),
+      RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  speculative_render_frame_host->GetProcess()->ShutdownForBadMessage(
+      RenderProcessHost::CrashReportMode::NO_CRASH_DUMP);
+  watcher.Wait();
+
+  // The speculative RFH should be gone:
+  ASSERT_FALSE(speculative_render_frame_host);
+  EXPECT_FALSE(web_contents->GetPrimaryFrameTree()
+                   .root()
+                   ->render_manager()
+                   ->speculative_frame_host());
+
+  // And a new navigation should not hit any DCHECKs in
+  // `GetFrameHostForNavigation()`.
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          CommitNavigationRaceBrowserTest,
                          ::testing::Bool(),

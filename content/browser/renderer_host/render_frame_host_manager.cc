@@ -1786,10 +1786,16 @@ RenderFrameHostManager::UnsetSpeculativeRenderFrameHost(
               ->GetRenderFrameProxyHost(
                   speculative_render_frame_host_->GetSiteInstance()->group());
       DCHECK(proxy);
+      // Note: this advances the RenderFrameHost's lifecycle state to
+      // kReadyToBeDeleted.
       speculative_render_frame_host_->UndoCommitNavigation(
           *proxy, frame_tree_node_->IsLoading());
+    } else {
+      speculative_render_frame_host_->SetLifecycleState(
+          LifecycleStateImpl::kReadyToBeDeleted);
     }
   }
+
   return std::move(speculative_render_frame_host_);
 }
 
