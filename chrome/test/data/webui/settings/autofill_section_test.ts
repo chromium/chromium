@@ -330,10 +330,10 @@ suite('AutofillSectionAddressTests', function() {
         'Sync is disabled, the local indicator should be visible.');
 
     changeListener(autofillManager.data.addresses, [], [], undefined);
-    assertTrue(
+    assertFalse(
         isVisible(section.$.addressList.children[0]!.querySelector(
             '[icon*=cloud-off]')),
-        'The user is logged-out, the local indicator should be visible.');
+        'The local indicator should not be shown to logged-out users');
 
     document.body.removeChild(section);
   });

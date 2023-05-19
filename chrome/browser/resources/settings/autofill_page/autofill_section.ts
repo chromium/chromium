@@ -220,13 +220,14 @@ export class SettingsAutofillSectionElement extends
     this.autofillManager_.saveAddress(event.detail);
   }
 
-  private isInAccountOrSyncable_(
+  private isCloudOffVisible_(
       address: chrome.autofillPrivate.AddressEntry,
       accountInfo?: chrome.autofillPrivate.AccountInfo): boolean {
-    return address.metadata?.source ===
-        chrome.autofillPrivate.AddressSource.ACCOUNT ||
-        !!accountInfo?.isSyncEnabledForAutofillProfiles;
+    return address.metadata?.source !==
+        chrome.autofillPrivate.AddressSource.ACCOUNT &&
+        !!accountInfo && !accountInfo?.isSyncEnabledForAutofillProfiles;
   }
+
   /**
    * @returns the title for the More Actions button corresponding to the address
    *     which is described by `label` and `sublabel`.
