@@ -18,6 +18,7 @@
 #include "base/time/default_clock.h"
 #include "base/timer/mock_timer.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "net/base/address_family.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/ip_address.h"
@@ -1234,8 +1235,13 @@ TEST_F(MDnsTest, NsecConflictRemoval) {
   EXPECT_EQ(record1, record2);
 }
 
-
-TEST_F(MDnsTest, RefreshQuery) {
+// TODO(https://crbug.com/1274091): Flaky on fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_RefreshQuery DISABLED_RefreshQuery
+#else
+#define MAYBE_RefreshQuery RefreshQuery
+#endif
+TEST_F(MDnsTest, MAYBE_RefreshQuery) {
   StrictMock<MockListenerDelegate> delegate_privet;
   std::unique_ptr<MDnsListener> listener_privet = test_client_->CreateListener(
       dns_protocol::kTypeA, "_privet._tcp.local", &delegate_privet);
