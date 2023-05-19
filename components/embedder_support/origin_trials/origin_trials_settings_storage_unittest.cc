@@ -14,7 +14,7 @@
 namespace embedder_support {
 
 // Matches kOriginMaxDisabledTrialTokens in origin_trials_settings_storage.cc
-const unsigned long kOriginMaxDisabledTrialTokens = 11;
+const unsigned long kOriginMaxDisabledTrialTokens = 1024;
 class OriginTrialsSettingsStorageTest : public testing::Test {
  protected:
   OriginTrialsSettingsStorageTest()

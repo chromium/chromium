@@ -5,9 +5,7 @@
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 
 namespace {
-// TODO(https://crbug.com/1216609): Keep the limit the same as the existing CLI
-// solution. When this bug is resolved, this limit will be increased.
-const int kOriginMaxDisabledTrialTokens = 11;
+const int kMaxDisabledTokens = 1024;
 }  // namespace
 
 namespace embedder_support {
@@ -22,9 +20,10 @@ void OriginTrialsSettingsStorage::PopulateSettings(
 }
 void OriginTrialsSettingsStorage::SetDisabledTokens(
     const base::Value::List& disabled_tokens_list) {
-  // TODO: Do not silently ignore the config if it exceeds the limit. For more
-  // information: https://crrev.com/c/4374245/comment/6d15e085_b16be69c
-  if (disabled_tokens_list.size() > kOriginMaxDisabledTrialTokens) {
+  if (disabled_tokens_list.size() > kMaxDisabledTokens) {
+    LOG(WARNING) << "Input has " << disabled_tokens_list.size()
+                 << " disabled tokens, which exceeds max of "
+                 << kMaxDisabledTokens << " and will not be stored";
     return;
   }
 
