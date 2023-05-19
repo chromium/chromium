@@ -7,7 +7,6 @@ import './strings.m.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
 
 import {getTemplate} from './status_box.html.js';
 
@@ -63,8 +62,8 @@ export class StatusBoxElement extends CustomElement {
    */
   private setLabelInnerHtmlAndShow(
       labelName: string, labelValue: string, needsToBeShown: boolean = true) {
-    const labelElement = getRequiredElement(labelName);
-    labelElement.innerHTML = sanitizeInnerHtml(` ${labelValue}`);
+    const labelElement = this.shadowRoot!.querySelector(labelName);
+    labelElement!.innerHTML = sanitizeInnerHtml(` ${labelValue}`);
     if (needsToBeShown) {
       labelElement!.parentElement!.hidden = false;
     }
