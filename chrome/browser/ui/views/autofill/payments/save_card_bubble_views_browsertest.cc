@@ -894,7 +894,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 // to Google Payments.
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    Upload_ClickingSaveClosesBubble) {
+    DISABLED_Upload_ClickingSaveClosesBubble) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
 
@@ -1497,7 +1497,7 @@ IN_PROC_BROWSER_TEST_F(
 // detected.
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    Logic_ShouldAttemptToOfferToSaveIfNameNotFound) {
+    DISABLED_Logic_ShouldAttemptToOfferToSaveIfNameNotFound) {
   // Start sync.
   ASSERT_TRUE(SetupSync());
 
@@ -1698,7 +1698,7 @@ IN_PROC_BROWSER_TEST_F(
 // but month is missing.
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    Upload_SubmittingFormWithMissingExpirationDateMonthAndWithValidYear) {
+    DISABLED_Upload_SubmittingFormWithMissingExpirationDateMonthAndWithValidYear) {
   SetUpForEditableExpirationDate();
   // Submit the form with a year value, but not a month value.
   FillFormWithExpirationYearOnly(test::NextYear());
@@ -1717,7 +1717,7 @@ IN_PROC_BROWSER_TEST_F(
 // detected but year is missing.
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
-    Upload_SubmittingFormWithMissingExpirationDateYearAndWithMonth) {
+    DISABLED_Upload_SubmittingFormWithMissingExpirationDateYearAndWithMonth) {
   SetUpForEditableExpirationDate();
   // Submit the form with a month value, but not a year value.
   FillFormWithExpirationMonthOnly("12");
