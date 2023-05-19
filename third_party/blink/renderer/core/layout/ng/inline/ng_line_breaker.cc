@@ -697,6 +697,9 @@ void NGLineBreaker::PrepareNextLine(NGLineInfo* line_info) {
     RecalcClonedBoxDecorations();
 
   ResetRewindLoopDetector();
+#if DCHECK_IS_ON()
+  has_considered_creating_break_token_ = false;
+#endif
 }
 
 void NGLineBreaker::NextLine(NGLineInfo* line_info) {
