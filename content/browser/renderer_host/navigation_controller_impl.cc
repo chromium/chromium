@@ -1015,8 +1015,10 @@ NavigationEntryImpl* NavigationControllerImpl::GetLastCommittedEntry() {
 }
 
 bool NavigationControllerImpl::CanViewSource() {
-  const std::string& mime_type =
-      frame_tree_->root()->current_frame_host()->GetPage().contents_mime_type();
+  const std::string& mime_type = frame_tree_->root()
+                                     ->current_frame_host()
+                                     ->GetPage()
+                                     .GetContentsMimeType();
   bool is_viewable_mime_type = blink::IsSupportedNonImageMimeType(mime_type) &&
                                !media::IsSupportedMediaMimeType(mime_type);
   NavigationEntry* visible_entry = GetVisibleEntry();

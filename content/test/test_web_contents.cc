@@ -204,7 +204,7 @@ void TestWebContents::SetMainFrameMimeType(const std::string& mime_type) {
 }
 
 const std::string& TestWebContents::GetContentsMimeType() {
-  return GetPrimaryPage().contents_mime_type();
+  return GetPrimaryPage().GetContentsMimeType();
 }
 
 void TestWebContents::SetIsCurrentlyAudible(bool audible) {

@@ -536,7 +536,12 @@ void PageLoadTracker::Commit(content::NavigationHandle* navigation_handle) {
              PageLoadMetricsObserverInterface* observer) {
             return observer->ShouldObserveMimeType(mime_type);
           },
-          navigation_handle->GetWebContents()->GetContentsMimeType()),
+          // Query with the outermost page's MIME type so that we can ask each
+          // observer with information for the page they are interested in.
+          navigation_handle->GetRenderFrameHost()
+              ->GetOutermostMainFrameOrEmbedder()
+              ->GetPage()
+              .GetContentsMimeType()),
       /*permit_forwarding=*/false);
   InvokeAndPruneObservers("PageLoadMetricsObserver::OnCommit",
                           base::BindRepeating(

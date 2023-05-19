@@ -5689,6 +5689,10 @@ class WebContentsPrerenderBrowserTest : public WebContentsImplBrowserTest {
     return static_cast<WebContentsImpl*>(web_contents());
   }
 
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
  private:
   content::test::PrerenderTestHelper prerender_helper_;
 };
@@ -5727,6 +5731,30 @@ IN_PROC_BROWSER_TEST_F(WebContentsPrerenderBrowserTest,
   WebContentsDestroyedWatcher close_observer(web_contents_impl());
   web_contents_impl()->DispatchBeforeUnload(false /* auto_cancel */);
   close_observer.Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsPrerenderBrowserTest,
+                       GetContentsMimeTypeForEachPage) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Prerender a page that has a MIME type, text/plain.
+  const GURL prerendering_url = embedded_test_server()->GetURL("/plain.txt");
+  int host_id = prerender_helper().AddPrerender(prerendering_url);
+
+  // Check MIME type for each page.
+  EXPECT_EQ("text/html",
+            web_contents()->GetPrimaryPage().GetContentsMimeType());
+  EXPECT_EQ("text/plain", prerender_helper()
+                              .GetPrerenderedMainFrameHost(host_id)
+                              ->GetPage()
+                              .GetContentsMimeType());
+
+  // WebContents API should return the MIME type of the primary page.
+  EXPECT_EQ("text/html", shell()->web_contents()->GetContentsMimeType());
 }
 
 class WebContentsFencedFrameBrowserTest : public WebContentsImplBrowserTest {
