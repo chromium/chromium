@@ -269,7 +269,7 @@
         ],
         'mixins': [
           'chrome-swarming-pool',
-          'linux-bionic',
+          'linux-jammy',
         ],
         'swarming': {
           'dimension_sets': [
