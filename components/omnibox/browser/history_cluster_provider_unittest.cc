@@ -87,6 +87,10 @@ class HistoryClustersProviderTest : public testing::Test,
         history_url_provider_.get(), history_quick_provider_.get());
   }
 
+  void TearDown() override {
+    autocomplete_provider_client_->set_history_clusters_service(nullptr);
+  }
+
   ~HistoryClustersProviderTest() override {
     // The provider will kick off an async task to refresh the keyword cache.
     // Wait for it to avoid it possibly being processed after the next test case
@@ -113,12 +117,12 @@ class HistoryClustersProviderTest : public testing::Test,
 
   base::test::TaskEnvironment task_environment_;
 
+  std::unique_ptr<FakeAutocompleteProviderClient> autocomplete_provider_client_;
+
   base::ScopedTempDir history_dir_;
   std::unique_ptr<history::HistoryService> history_service_;
   std::unique_ptr<history_clusters::HistoryClustersService>
       history_clusters_service_;
-
-  std::unique_ptr<FakeAutocompleteProviderClient> autocomplete_provider_client_;
 
   scoped_refptr<FakeAutocompleteProvider> search_provider_;
   scoped_refptr<FakeAutocompleteProvider> history_url_provider_;
