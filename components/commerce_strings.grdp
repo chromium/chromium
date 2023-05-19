@@ -128,7 +128,7 @@
     </message>
 
 
-    <if expr="is_macosx">
+    <if expr="use_titlecase">
       <message name="IDS_SIDE_PANEL_UNTRACK_BUTTON" desc="Text shown when user right-clicks a tracked product from the side panel. User can click this button to untrack this product.">
         Untrack Price
       </message>
@@ -150,8 +150,8 @@
       <message name="IDS_PRICE_TRACKING_SIDE_PANEL_ERROR_BUTTON" desc="Text shown in side panel toast button when an attempt to track or untrack a product failed. Clicking the button would retry the failed attempt to track or untrack a product.">
         Try Again
       </message>
-    </if> <!-- is_macosx -->
-    <if expr="not is_macosx">
+    </if> <!-- use_titlecase -->
+    <if expr="not use_titlecase">
       <message name="IDS_SIDE_PANEL_UNTRACK_BUTTON" desc="Text shown when user right-clicks a tracked product from the side panel. User can click this button to untrack this product.">
         Untrack price
       </message>
@@ -173,7 +173,7 @@
       <message name="IDS_PRICE_TRACKING_SIDE_PANEL_ERROR_BUTTON" desc="Text shown in side panel toast button when an attempt to track or untrack a product failed. Clicking the button would retry the failed attempt to track or untrack a product.">
         Try again
       </message>
-    </if> <!-- not is_macosx -->
+    </if> <!-- not use_titlecase -->
 
     <message name="IDS_PRICE_TRACKING_SETTINGS_TITLE" desc="Text shown in chrome settings. User can turn on or off the toggle next to this setting item to manage whether they want to receive price drop notifications.">
       Get price tracking notifications
@@ -187,6 +187,18 @@
     <message name="IDS_PRICE_TRACKING_SIDE_PANEL_ERROR_MESSAGE" desc="Text shown in side panel toast when an attempt to track or untrack a product failed.">
       Something went wrong.
     </message>
+
+    <!-- For Desktop Price Insights -->
+    <if expr="use_titlecase">
+      <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE" desc="The title name of the Shopping Insights feature in the side panel combo box.">
+        Shopping Insights
+      </message>
+    </if> <!-- use_titlecase -->
+    <if expr="not use_titlecase">
+      <message name="IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE" desc="The title name of the Shopping Insights feature in the side panel combo box.">
+        Shopping insights
+      </message>
+    </if> <!-- not use_titlecase -->
   </if>
 
   <!-- Android only -->
