@@ -15,15 +15,16 @@ async_test(function(t) {
     var sourceList = document.querySelectorAll("source");
     for (var source of sourceList) {
         source.onerror = t.step_func(function(event) {
-            errorCount++;
-            if (errorCount < 3) {
-                // Because the error event is fired asynchronously the network state
-                // can be either NETWORK_LOADING or NETWORK_NO_SOURCE, depending on
-                // whether or not any pending "source" element is available.
-                assert_greater_than(video.networkState, HTMLMediaElement.NETWORK_IDLE);
-            } else {
-                assert_equals(video.networkState, HTMLMediaElement.NETWORK_NO_SOURCE);
-                t.done();
+            // Because the error event is fired asynchronously the network state
+            // can be either NETWORK_LOADING or NETWORK_NO_SOURCE, depending on
+            // whether or not any pending "source" element is available.
+            assert_greater_than(video.networkState, HTMLMediaElement.NETWORK_IDLE);
+            if (++errorCount == 3) {
+                // Allow time for asynchronous event processing.
+                setTimeout(_ => {
+                    assert_equals(video.networkState, HTMLMediaElement.NETWORK_NO_SOURCE);
+                    t.done();
+                }, 0);
             }
         });
     }
