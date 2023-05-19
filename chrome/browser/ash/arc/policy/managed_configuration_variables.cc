@@ -193,7 +193,7 @@ std::string SearchAndReplace(
     DCHECK(search_input.length() >= prefix_size + capture.length());
     size_t remaining_size =
         search_input.length() - (prefix_size + capture.length());
-    search_input.set(capture.end(), remaining_size);
+    search_input = re2::StringPiece(capture.end(), remaining_size);
   }
   // Output the remaining |search_input|.
   output.emplace_back(search_input.data(), search_input.length());
