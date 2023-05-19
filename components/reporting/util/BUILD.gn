@@ -87,6 +87,12 @@ source_set("refcounted_closure_list") {
   deps = [ "//base" ]
 }
 
+source_set("rate_limiter_interface") {
+  sources = [ "rate_limiter_interface.h" ]
+
+  deps = [ "//base" ]
+}
+
 # All unit tests are built as part of the //components:components_unittests
 # target.
 source_set("unit_tests") {
