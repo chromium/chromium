@@ -180,15 +180,17 @@ ChromeCameraAppUIDelegate::ChromeCameraAppUIDelegate(content::WebUI* web_ui)
       session_start_time_(base::Time::Now()),
       file_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {
-  file_task_runner_->PostTask(
+  file_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&ChromeCameraAppUIDelegate::InitFileMonitorOnFileThread,
-                     base::Unretained(this)));
+      base::BindOnce([]() { return std::make_unique<FileMonitor>(); }),
+      base::BindOnce(&ChromeCameraAppUIDelegate::OnFileMonitorInitialized,
+                     weak_factory_.GetWeakPtr()));
 }
 
 ChromeCameraAppUIDelegate::~ChromeCameraAppUIDelegate() {
   // Destroy |file_monitor_| on |file_task_runner_|.
   // TODO(wtlee): Ensure there is no lifetime issue before actually deleting it.
+  weak_factory_.InvalidateWeakPtrs();
   file_task_runner_->DeleteSoon(FROM_HERE, std::move(file_monitor_));
 
   // Try triggering the HaTS survey when leaving the app.
@@ -304,6 +306,10 @@ void ChromeCameraAppUIDelegate::MonitorFileDeletion(
     std::move(callback).Run(FileMonitorResult::ERROR);
     return;
   }
+  if (!file_monitor_) {
+    std::move(callback).Run(FileMonitorResult::ERROR);
+    return;
+  }
 
   // We should return the response on current thread (mojo thread).
   auto callback_on_current_thread = base::BindPostTask(
@@ -312,7 +318,7 @@ void ChromeCameraAppUIDelegate::MonitorFileDeletion(
       FROM_HERE,
       base::BindOnce(
           &ChromeCameraAppUIDelegate::MonitorFileDeletionOnFileThread,
-          base::Unretained(this), file_monitor_.get(), std::move(file_path),
+          weak_factory_.GetWeakPtr(), file_monitor_.get(), std::move(file_path),
           std::move(callback_on_current_thread)));
 }
 
@@ -339,10 +345,9 @@ base::FilePath ChromeCameraAppUIDelegate::GetFilePathByName(
       .Append(name_component);
 }
 
-void ChromeCameraAppUIDelegate::InitFileMonitorOnFileThread() {
-  DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
-
-  file_monitor_ = std::make_unique<FileMonitor>();
+void ChromeCameraAppUIDelegate::OnFileMonitorInitialized(
+    std::unique_ptr<FileMonitor> file_monitor) {
+  file_monitor_ = std::move(file_monitor);
 }
 
 void ChromeCameraAppUIDelegate::MonitorFileDeletionOnFileThread(

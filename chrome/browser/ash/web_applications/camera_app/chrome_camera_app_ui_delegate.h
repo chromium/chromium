@@ -10,6 +10,7 @@
 #include "ash/webui/camera_app_ui/camera_app_ui_delegate.h"
 #include "base/callback.h"
 #include "base/files/file_path_watcher.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "content/public/browser/media_stream_request.h"
@@ -110,7 +111,7 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
 
  private:
   base::FilePath GetFilePathByName(const std::string& name);
-  void InitFileMonitorOnFileThread();
+  void OnFileMonitorInitialized(std::unique_ptr<FileMonitor> file_monitor);
   void MonitorFileDeletionOnFileThread(
       FileMonitor* file_monitor,
       const base::FilePath& file_path,
@@ -123,6 +124,10 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
   // It should only be created, used and destroyed on |file_task_runner_|.
   std::unique_ptr<FileMonitor> file_monitor_;
+
+  // Weak pointer for this class |ChromeCameraAppUIDelegate|, used to run on
+  // main thread (mojo thread).
+  base::WeakPtrFactory<ChromeCameraAppUIDelegate> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_CAMERA_APP_CHROME_CAMERA_APP_UI_DELEGATE_H_
