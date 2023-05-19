@@ -466,7 +466,7 @@ crbug.com/1414878 [ mac nvidia-0xfe9 ] conformance2/textures/video/* [ RetryOnFa
 
 crbug.com/1338004 [ mac nvidia-0xfe9 passthrough ] deqp/functional/gles3/multisample/fbo_4_samples.html [ RetryOnFailure ]
 
-crbug.com/1446664 [ mac nvidia-0xfe9 angle-opengl passthrough ] deqp/functional/gles3/texturespecification/teximage3d_depth.html [ Failure ]
+crbug.com/1446664 [ mac nvidia-0xfe9 angle-opengl passthrough ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
 
 ## Mac AMD ##
 
