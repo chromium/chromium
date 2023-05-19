@@ -17,7 +17,6 @@ import com.android.webview.chromium.SharedTracingControllerAdapter;
 import com.android.webview.chromium.WebViewChromiumAwInit;
 import com.android.webview.chromium.WebkitToSharedGlueConverter;
 
-import org.chromium.android_webview.AwDebug;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.support_lib_boundary.StaticsBoundaryInterface;
 import org.chromium.support_lib_boundary.WebViewProviderFactoryBoundaryInterface;
@@ -81,7 +80,6 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
                     Features.FORCE_DARK,
                     Features.FORCE_DARK_BEHAVIOR,
                     Features.WEB_MESSAGE_LISTENER,
-                    Features.SET_SUPPORT_LIBRARY_VERSION + Features.DEV_SUFFIX,
                     Features.DOCUMENT_START_SCRIPT,
                     Features.PROXY_OVERRIDE_REVERSE_BYPASS,
                     Features.GET_VARIATIONS_HEADER,
@@ -393,11 +391,6 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
             }
         }
         return mProxyController;
-    }
-
-    @Override
-    public void setSupportLibraryVersion(String version) {
-        AwDebug.setSupportLibraryWebkitVersionCrashKey(version);
     }
 
     @Override
