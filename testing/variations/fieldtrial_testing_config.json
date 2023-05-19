@@ -5058,6 +5058,22 @@
             ]
         }
     ],
+    "EnableGetDebugdLogsInParallel": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230519",
+                    "enable_features": [
+                        "EnableGetDebugdLogsInParallel"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableMSAAOnNewIntelGPUs": [
         {
             "platforms": [
