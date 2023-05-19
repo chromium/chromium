@@ -314,6 +314,8 @@ WindowOpenDisposition ToWindowOpenDisposition(
       return WindowOpenDisposition::NEW_FOREGROUND_TAB;
     case ash::NewWindowDelegate::Disposition::kNewWindow:
       return WindowOpenDisposition::NEW_WINDOW;
+    case ash::NewWindowDelegate::Disposition::kOffTheRecord:
+      return WindowOpenDisposition::OFF_THE_RECORD;
     case ash::NewWindowDelegate::Disposition::kSwitchToTab:
       return WindowOpenDisposition::SWITCH_TO_TAB;
   }

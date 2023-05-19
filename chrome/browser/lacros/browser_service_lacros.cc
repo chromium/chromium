@@ -503,6 +503,9 @@ void BrowserServiceLacros::OpenUrlImpl(Profile* profile,
     case OpenUrlParams::WindowOpenDisposition::kNewWindow:
       navigate_params.disposition = WindowOpenDisposition::NEW_WINDOW;
       break;
+    case OpenUrlParams::WindowOpenDisposition::kOffTheRecord:
+      navigate_params.disposition = WindowOpenDisposition::OFF_THE_RECORD;
+      break;
     case OpenUrlParams::WindowOpenDisposition::kSwitchToTab:
       navigate_params.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
       navigate_params.path_behavior =

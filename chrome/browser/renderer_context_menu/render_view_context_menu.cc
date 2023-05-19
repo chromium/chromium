@@ -727,6 +727,25 @@ Browser* FindNormalBrowser(const Profile* profile) {
   return nullptr;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+ash::NewWindowDelegate::Disposition GetDispositionForLacros(
+    WindowOpenDisposition disposition) {
+  switch (disposition) {
+    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+      return ash::NewWindowDelegate::Disposition::kNewForegroundTab;
+    case WindowOpenDisposition::NEW_WINDOW:
+      return ash::NewWindowDelegate::Disposition::kNewWindow;
+    case WindowOpenDisposition::OFF_THE_RECORD:
+      return ash::NewWindowDelegate::Disposition::kOffTheRecord;
+    case WindowOpenDisposition::SWITCH_TO_TAB:
+      return ash::NewWindowDelegate::Disposition::kSwitchToTab;
+    default:
+      // Others are currently not supported.
+      return ash::NewWindowDelegate::Disposition::kNewForegroundTab;
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace
 
 // static
@@ -2667,6 +2686,26 @@ bool RenderViewContextMenu::IsCommandIdVisible(int id) const {
   return RenderViewContextMenuBase::IsCommandIdVisible(id);
 }
 
+void RenderViewContextMenu::OpenURLWithExtraHeaders(
+    const GURL& url,
+    const GURL& referring_url,
+    WindowOpenDisposition disposition,
+    ui::PageTransition transition,
+    const std::string& extra_headers,
+    bool started_from_context_menu) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
+    ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+        url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+        GetDispositionForLacros(disposition));
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  RenderViewContextMenuBase::OpenURLWithExtraHeaders(
+      url, referring_url, disposition, transition, extra_headers,
+      started_from_context_menu);
+}
+
 void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
   RenderViewContextMenuBase::ExecuteCommand(id, event_flags);
   if (command_executed_)
@@ -2709,6 +2748,15 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     case IDC_CONTENT_CONTEXT_OPENLINKNEWTAB: {
       WindowOpenDisposition new_tab_disposition =
           WindowOpenDisposition::NEW_BACKGROUND_TAB;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
+        ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+            params_.link_url,
+            ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+            GetDispositionForLacros(new_tab_disposition));
+        break;
+      }
+#endif
       Browser* browser = nullptr;
       if (IsInProgressiveWebApp()) {
         browser = FindNormalBrowser(GetProfile());
@@ -3003,22 +3051,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     case IDC_CONTENT_CONTEXT_GOTOURL: {
       auto disposition = ui::DispositionFromEventFlags(
           event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      if (!crosapi::browser_util::IsAshWebBrowserEnabled()) {
-        // TODO(neis): Support the other possible dispositions in crosapi and
-        // then preserve them here.
-        auto nwd_disposition =
-            ash::NewWindowDelegate::Disposition::kNewForegroundTab;
-        if (disposition == WindowOpenDisposition::NEW_WINDOW) {
-          nwd_disposition = ash::NewWindowDelegate::Disposition::kNewWindow;
-        }
-        ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-            selection_navigation_url_,
-            ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-            nwd_disposition);
-        break;
-      }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       OpenURL(selection_navigation_url_, GURL(), disposition,
               ui::PAGE_TRANSITION_LINK);
       break;
