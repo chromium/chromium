@@ -113,8 +113,3 @@ void HidSystemTrayIcon::CleanUpProfile(base::WeakPtr<Profile> profile) {
   // immediate set to true so the entry will be removed from |profiles_|
   // immediately.
 }
-
-bool HidSystemTrayIcon::ContainProfile(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return profiles_.contains(profile);
-}
