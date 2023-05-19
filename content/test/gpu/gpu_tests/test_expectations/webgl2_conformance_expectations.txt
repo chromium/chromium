@@ -462,7 +462,6 @@ crbug.com/654187 [ mac nvidia-0xfe9 ] deqp/functional/gles3/framebufferblit/conv
 crbug.com/1424484 [ mac nvidia-0xfe9 ] deqp/functional/gles3/multisample/fbo_max_samples.html [ RetryOnFailure ]
 crbug.com/772651 [ mac nvidia ] conformance/glsl/bugs/vector-scalar-arithmetic-inside-loop-complex.html [ Failure ]
 crbug.com/795052 [ mac nvidia-0xfe9 ] conformance2/uniforms/draw-with-uniform-blocks.html [ Failure ]
-crbug.com/1037650 [ mac nvidia-0xfe9 ] conformance2/textures/canvas_sub_rectangle/* [ RetryOnFailure ]
 crbug.com/1414878 [ mac nvidia-0xfe9 ] conformance2/textures/video/* [ RetryOnFailure ]
 
 crbug.com/1338004 [ mac nvidia-0xfe9 passthrough ] deqp/functional/gles3/multisample/fbo_4_samples.html [ RetryOnFailure ]
@@ -505,7 +504,6 @@ crbug.com/1278935 [ ventura amd renderer-skia-gl angle-opengl ] deqp/functional/
 
 crbug.com/1276186 [ mac amd-0x679e angle-opengl passthrough ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
 crbug.com/1276186 [ mac amd-0x67ef angle-opengl passthrough ] conformance/rendering/clear-default-framebuffer-with-scissor-test.html [ Failure ]
-crbug.com/1240443 [ mac amd-0x679e angle-opengl passthrough ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 crbug.com/1240443 [ mac amd-0x67ef angle-opengl passthrough ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 
 crbug.com/angleproject/5224 [ mac passthrough angle-opengl amd ] conformance2/rendering/instanced-arrays.html [ Failure ]
@@ -671,25 +669,6 @@ crbug.com/angleproject/3685 [ android-pie android-pixel-2 angle-opengles ] confo
 crbug.com/angleproject/3686 [ android angle-opengles ] deqp/functional/gles3/multisample/fbo_4_samples.html [ Failure ]
 crbug.com/angleproject/3686 [ android angle-opengles ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
 
-# finder:group-start crbug.com/1382796 failures happen in many tests, so can be classified as stale for one specific test
-# finder:disable-narrowing
-crbug.com/1382796 [ android android-pixel-4 ] conformance/canvas/rapid-resizing.html [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 ] conformance/canvas/to-data-url-test.html [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 ] conformance/context/context-release-with-workers.html [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 ] conformance/ogles/GL/biConstants/biConstants_001_to_008.html [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 ] conformance2/sync/sync-webgl-specific.html [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 ] deqp/data/gles3/shaders/declarations.html [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 ] deqp/functional/gles3/primitiverestart/00.html [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 ] deqp/functional/gles3/shadermatrix/mul_uniform_lowp.html [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 ] deqp/functional/gles3/shadermatrix/transpose.html [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 ] deqp/functional/gles3/textureshadow/* [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 ] conformance/textures/video/* [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 ] conformance2/textures/image_bitmap_from_video/* [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 ] conformance2/textures/video/* [ RetryOnFailure ]
-# finder:enable-narrowing
-# finder:group-end
 
 
 #####################
@@ -783,7 +762,6 @@ crbug.com/1238075 [ chromeos chromeos-board-amd64-generic ] conformance/renderin
 crbug.com/1241179 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/ext-texture-norm16.html [ Failure ]
 crbug.com/1241183 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Failure ]
 crbug.com/1399117 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
-crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] conformance/textures/misc/tex-image-and-sub-image-2d-with-array-buffer-view.html [ Failure ]
 
 # Must investigate ChromeOS failures with passthrough command decoder.
 crbug.com/angleproject/5038 [ chromeos passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
