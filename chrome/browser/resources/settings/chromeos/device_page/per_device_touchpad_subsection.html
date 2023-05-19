@@ -82,18 +82,20 @@
         <div class="start settings-box-text">
           <div>$i18n{touchpadHapticFeedbackTitle}</div>
           <div class="secondary">
-            <div on-click="onLearnMoreLinkClicked_"
+            <localized-link
+                aria-describedby="touchpadName"
+                on-click="onLearnMoreLinkClicked_"
                 id="touchpadHapticFeedbackSecondary"
-                inner-h-t-m-l="[[getAriaLabelledContent(
-                    'touchpadHapticFeedbackSecondaryText',
-                    'hapticFeedbackLearnMoreLink')]]">
-            </div>
+                localized-string="$i18n{touchpadHapticFeedbackSecondaryText}"
+                link-url="$i18n{hapticFeedbackLearnMoreLink}">
+            </localized-link>
           </div>
         </div>
         <cr-toggle id="touchpadHapticFeedbackToggle"
             checked="{{hapticFeedbackValue}}"
             aria-describedby="touchpadName"
-            aria-label="$i18n{learnMoreLabel}"
+            aria-label=
+                "[[getLabelWithoutLearnMore('touchpadHapticFeedbackTitle')]]"
             deep-link-focus-id$="[[Setting.kTouchpadHapticFeedback]]">
         </cr-toggle>
       </div>
@@ -101,17 +103,19 @@
     <div class="settings-box bottom-divider" id="reverseScrollRow"
           on-click="onTouchpadReverseScrollRowClicked_">
       <div class="start settings-box-text">
-        <div on-click="onLearnMoreLinkClicked_"
+        <localized-link
+            aria-describedby="touchpadName"
+            on-click="onLearnMoreLinkClicked_"
             id="enableReverseScrollingLabel"
-            inner-h-t-m-l="[[getAriaLabelledContent(
-                'touchPadScrollLabel',
-                'naturalScrollLearnMoreLink')]]">
-        </div>
+            localized-string="$i18n{touchPadScrollLabel}"
+            link-url="$i18n{naturalScrollLearnMoreLink}">
+        </localized-link>
       </div>
       <cr-toggle id="enableReverseScrollingToggle"
           checked="{{reverseScrollValue}}"
           aria-describedby="touchpadName"
-          aria-label="$i18n{learnMoreLabel}"
+          aria-label=
+              "[[getLabelWithoutLearnMore('touchPadScrollLabel')]]"
           deep-link-focus-id$="[[Setting.kTouchpadReverseScrolling]]">
       </cr-toggle>
     </div>

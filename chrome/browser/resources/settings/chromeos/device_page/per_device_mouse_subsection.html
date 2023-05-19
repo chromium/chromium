@@ -64,17 +64,19 @@
     <div class="settings-box bottom-divider" id="mouseReverseScrollRow"
           on-click="onMouseReverseScrollRowClicked_">
       <div class="start settings-box-text">
-        <div on-click="onLearnMoreLinkClicked_"
+        <localized-link
+            aria-describedby="mouseName"
+            on-click="onLearnMoreLinkClicked_"
             id="enableMouseReverseScrollingLabel"
-            inner-h-t-m-l="[[getAriaLabelledContent(
-                'mouseReverseScroll',
-                'naturalScrollLearnMoreLink')]]">
-        </div>
+            localized-string="$i18n{mouseReverseScroll}"
+            link-url="$i18n{naturalScrollLearnMoreLink}">
+        </localized-link>
       </div>
       <cr-toggle id="mouseReverseScroll"
           checked="{{reverseScrollValue}}"
           aria-describedby="mouseName"
-          aria-label="$i18n{learnMoreLabel}"
+          aria-label=
+              "[[getLabelWithoutLearnMore('mouseReverseScroll')]]"
           deep-link-focus-id$="[[Setting.kMouseReverseScrolling]]">
       </cr-toggle>
     </div>
