@@ -3190,7 +3190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.RequirementsSpecFetcher.HttpResponseCode"
-    enum="HttpResponseCode" expires_after="2023-06-04">
+    enum="HttpResponseCode" expires_after="2023-09-04">
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
