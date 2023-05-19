@@ -32,6 +32,10 @@ __filegroups = {
         "includes": ["*"],
         # can't use "*.h", because c++ headers have no extension.
     },
+    "buildtools/third_party/libc++abi/trunk/include:headers": {
+        "type": "glob",
+        "includes": ["*.h"],
+    },
     "third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include:include": {
         "type": "glob",
         "includes": ["*"],
