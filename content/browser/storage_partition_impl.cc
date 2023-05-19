@@ -3093,6 +3093,11 @@ void StoragePartitionImpl::InitNetworkContext() {
 
   cors_exempt_header_list_ = context_params->cors_exempt_header_list;
 
+  if (base::FeatureList::IsEnabled(
+          blink::features::kCompressionDictionaryTransportBackend)) {
+    context_params->shared_dictionary_enabled = true;
+  }
+
   network_context_.reset();
   CreateNetworkContextInNetworkService(
       network_context_.BindNewPipeAndPassReceiver(), std::move(context_params));
