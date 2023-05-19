@@ -219,7 +219,8 @@ if (is_android || (is_chromeos_ash && is_chromeos_device)) {
       # another variable.
       chrome_orderfile_path = default_chrome_orderfile
     } else if (is_chromeos_ash && is_chromeos_device) {
-      if (chromeos_afdo_platform == "arm" || chromeos_afdo_platform == "arm-exp") {
+      if (chromeos_afdo_platform == "arm" ||
+          chromeos_afdo_platform == "arm-exp") {
         chrome_orderfile_path = "//chromeos/profiles/chromeos.arm.orderfile.txt"
       } else {
         chrome_orderfile_path = "//chromeos/profiles/chromeos.orderfile.txt"
@@ -769,6 +770,11 @@ config("compiler") {
     # arm32.
     if (!is_android || current_cpu == "arm64") {
       cflags += [ "-fwhole-program-vtables" ]
+
+      # whole-program-vtables implies -fsplit-lto-unit, and Rust needs to match
+      # behaviour.
+      rustflags += [ "-Zsplit-lto-unit" ]
+
       if (!is_win) {
         ldflags += [ "-fwhole-program-vtables" ]
       }

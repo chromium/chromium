@@ -303,6 +303,7 @@ config("link_shared_library") {
 
 config("cfi_flags") {
   cflags = []
+  rustflags = []
   if (is_cfi && current_toolchain == default_toolchain) {
     if (!defined(cfi_ignorelist_path)) {
       cfi_ignorelist_path =
@@ -313,6 +314,11 @@ config("cfi_flags") {
       "-fsanitize-ignorelist=$cfi_ignorelist_path",
     ]
 
+    # sanitize=cfi implies -fsplit-lto-unit, and Rust needs to match
+    # behaviour.
+    # TODO(crbug.com/1442331): Add -Zsanitize=cfi instead.
+    rustflags += [ "-Zsplit-lto-unit" ]
+
     if (use_cfi_cast) {
       cflags += [
         "-fsanitize=cfi-derived-cast",
@@ -322,6 +328,10 @@ config("cfi_flags") {
 
     if (use_cfi_icall) {
       cflags += [ "-fsanitize=cfi-icall" ]
+      # TODO(crbug.com/1442331): Add cflags += [
+      # "-fsanitize-cfi-icall-experimental-normalize-integers" ]
+      # TODO(crbug.com/1442331): Add rustflags += [
+      # "-Zsanitizer-cfi-normalize-integers" ].
     }
 
     if (use_cfi_diag) {
