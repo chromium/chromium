@@ -815,7 +815,8 @@ std::string RedactionTool::RedactAndroidAppStoragePaths(
     // - Otherwise, remove all the characters in the component but the first
     //   one.
     // - If the original component has 2 or more bytes, add '_'.
-    const base::FilePath path(app_specific.as_string());
+    const base::FilePath path(
+        std::string(app_specific.data(), app_specific.size()));
     std::vector<std::string> components = path.GetComponents();
     DCHECK(!components.empty());
 
@@ -831,7 +832,7 @@ std::string RedactionTool::RedactAndroidAppStoragePaths(
     }
     if (detected != nullptr) {
       (*detected)[PIIType::kAndroidAppStoragePath].insert(
-          app_specific.as_string());
+          std::string(app_specific.data(), app_specific.size()));
     }
     RecordPIIRedactedHistogram(PIIType::kAndroidAppStoragePath);
   }
@@ -951,7 +952,7 @@ std::string RedactionTool::RedactIbans(
 
     // Remove the separating characters.
     std::string stripped;
-    base::RemoveChars(iban.as_string(), " -", &stripped);
+    base::RemoveChars(std::string(iban.data(), iban.size()), " -", &stripped);
 
     if (const auto previous_iban = ibans_.find(stripped);
         previous_iban != ibans_.end()) {
