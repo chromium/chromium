@@ -12,6 +12,8 @@ AccessibilityExtensionAutomationPredicateTest =
     await super.setUpDeferred();
     await importModule(
         'AutomationPredicate', '/common/automation_predicate.js');
+    await importModule(
+        'createMockNode', '/common/testing/test_node_generator.js');
   }
 };
 
@@ -77,4 +79,13 @@ AX_TEST_F(
       // Arc++ doesn't set default action verb on buttons.
       assertEquals(undefined, button.defaultActionVerb);
       assertFalse(AutomationPredicate.container(container));
+    });
+
+AX_TEST_F(
+    'AccessibilityExtensionAutomationPredicateTest', 'PdfRootRoleAsContainer',
+    async function() {
+      const pdfRoot =
+          createMockNode({role: chrome.automation.RoleType.PDF_ROOT});
+      assertTrue(!!pdfRoot);
+      assertTrue(AutomationPredicate.container(pdfRoot));
     });

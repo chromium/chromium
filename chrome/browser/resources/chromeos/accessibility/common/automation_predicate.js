@@ -466,6 +466,7 @@ export class AutomationPredicate {
         Role.GENERIC_CONTAINER,
         Role.DOCUMENT,
         Role.GROUP,
+        Role.PDF_ROOT,
         Role.LIST,
         Role.LIST_ITEM,
         Role.TAB,
