@@ -174,8 +174,10 @@ class CONTENT_EXPORT FedCmMetrics {
   };
 
   // Records several auto reauthn metrics using the given parameters.
+  // |has_single_returning_account| is nullopt when we are recording the metrics
+  // during a failure that happened before the accounts fetch.
   void RecordAutoReauthnMetrics(
-      bool has_single_returning_account,
+      absl::optional<bool> has_single_returning_account,
       const IdentityRequestAccount* auto_signin_account,
       bool auto_reauthn_success,
       bool is_auto_reauthn_setting_blocked,

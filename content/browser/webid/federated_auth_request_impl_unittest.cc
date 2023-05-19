@@ -1081,16 +1081,22 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   }
 
   void ExpectAutoReauthnMetrics(
-      FedCmMetrics::NumReturningAccounts expected_returning_accounts,
+      absl::optional<FedCmMetrics::NumReturningAccounts>
+          expected_returning_accounts,
       bool expected_succeeded,
       bool expected_auto_reauthn_setting_blocked,
       bool expected_auto_reauthn_embargoed) {
     // UMA checks
     histogram_tester_.ExpectUniqueSample("Blink.FedCm.AutoReauthn.Succeeded",
                                          expected_succeeded, 1);
-    histogram_tester_.ExpectUniqueSample(
-        "Blink.FedCm.AutoReauthn.ReturningAccounts",
-        static_cast<int>(expected_returning_accounts), 1);
+    if (expected_returning_accounts.has_value()) {
+      histogram_tester_.ExpectUniqueSample(
+          "Blink.FedCm.AutoReauthn.ReturningAccounts",
+          static_cast<int>(*expected_returning_accounts), 1);
+    } else {
+      histogram_tester_.ExpectTotalCount(
+          "Blink.FedCm.AutoReauthn.ReturningAccounts", 0);
+    }
     histogram_tester_.ExpectUniqueSample(
         "Blink.FedCm.AutoReauthn.BlockedByContentSettings",
         expected_auto_reauthn_setting_blocked, 1);
@@ -1126,8 +1132,13 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
       metric = ukm_recorder()->GetEntryMetric(entry,
                                               "AutoReauthn.ReturningAccounts");
-      ASSERT_TRUE(metric) << "AutoReauthn.ReturningAccounts was not found";
-      EXPECT_EQ(static_cast<int>(expected_returning_accounts), *metric);
+      if (expected_returning_accounts) {
+        ASSERT_TRUE(metric) << "AutoReauthn.ReturningAccounts was not found";
+        EXPECT_EQ(static_cast<int>(*expected_returning_accounts), *metric);
+      } else {
+        EXPECT_FALSE(metric)
+            << "AutoReauthn.ReturningAccounts should not have been recorded";
+      }
 
       metric = ukm_recorder()->GetEntryMetric(
           entry, "AutoReauthn.BlockedByContentSettings");
@@ -2026,6 +2037,11 @@ TEST_F(FederatedAuthRequestImplTest,
 
   ExpectStatusMetrics(TokenStatus::kSilentMediationFailure,
                       MediationRequirement::kSilent);
+
+  ExpectAutoReauthnMetrics(/*expected_returning_accounts=*/absl::nullopt,
+                           /*expected_succeeded=*/false,
+                           /*expected_auto_reauthn_setting_blocked=*/false,
+                           /*expected_auto_reauthn_embargoed=*/false);
 }
 
 // Test that no network request is sent if `mediation: silent` is used and auto
@@ -2068,6 +2084,11 @@ TEST_F(FederatedAuthRequestImplTest,
 
   ExpectStatusMetrics(TokenStatus::kSilentMediationFailure,
                       MediationRequirement::kSilent);
+
+  ExpectAutoReauthnMetrics(/*expected_returning_accounts=*/absl::nullopt,
+                           /*expected_succeeded=*/false,
+                           /*expected_auto_reauthn_setting_blocked=*/false,
+                           /*expected_auto_reauthn_embargoed=*/true);
 }
 
 // Test that no network request is sent if `mediation: silent` is used and user
@@ -2108,6 +2129,11 @@ TEST_F(FederatedAuthRequestImplTest,
 
   ExpectStatusMetrics(TokenStatus::kSilentMediationFailure,
                       MediationRequirement::kSilent);
+
+  ExpectAutoReauthnMetrics(/*expected_returning_accounts=*/absl::nullopt,
+                           /*expected_succeeded=*/false,
+                           /*expected_auto_reauthn_setting_blocked=*/false,
+                           /*expected_auto_reauthn_embargoed=*/false);
 }
 
 // Test that no network request is sent if `mediation: silent` is used and user
@@ -2147,6 +2173,11 @@ TEST_F(FederatedAuthRequestImplTest,
 
   ExpectStatusMetrics(TokenStatus::kSilentMediationFailure,
                       MediationRequirement::kSilent);
+
+  ExpectAutoReauthnMetrics(/*expected_returning_accounts=*/absl::nullopt,
+                           /*expected_succeeded=*/false,
+                           /*expected_auto_reauthn_setting_blocked=*/true,
+                           /*expected_auto_reauthn_embargoed=*/false);
 }
 
 // Test `mediation: silent` could fail silently after fetching accounts
@@ -2218,6 +2249,11 @@ TEST_F(FederatedAuthRequestImplTest,
 
   ExpectStatusMetrics(TokenStatus::kSilentMediationFailure,
                       MediationRequirement::kSilent);
+
+  ExpectAutoReauthnMetrics(FedCmMetrics::NumReturningAccounts::kMultiple,
+                           /*expected_succeeded=*/false,
+                           /*expected_auto_reauthn_setting_blocked=*/false,
+                           /*expected_auto_reauthn_embargoed=*/false);
 }
 
 // Test that `mediation: required` sets the sign-in mode to explicit even though

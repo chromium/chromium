@@ -1165,6 +1165,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     // are signing in.
     has_single_returning_account =
         GetSingleReturningAccount(&auto_reauthn_idp, &auto_reauthn_account);
+    auto_reauthn &= has_single_returning_account;
     if (!has_single_returning_account &&
         mediation_requirement_ == MediationRequirement::kSilent) {
       fedcm_metrics_->RecordAutoReauthnMetrics(
@@ -1190,7 +1191,6 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
           /*should_delay_callback=*/false);
       return;
     }
-    auto_reauthn &= has_single_returning_account;
   }
 
   if (auto_reauthn) {
@@ -2084,7 +2084,12 @@ bool FederatedAuthRequestImpl::ShouldFailBeforeFetchingAccounts(
   bool is_auto_reauthn_embargoed =
       auto_reauthn_permission_delegate_->IsAutoReauthnEmbargoed(
           GetEmbeddingOrigin());
+  absl::optional<base::TimeDelta> time_from_embargo;
   if (is_auto_reauthn_embargoed) {
+    time_from_embargo =
+        base::Time::Now() -
+        auto_reauthn_permission_delegate_->GetAutoReauthnEmbargoStartTime(
+            GetEmbeddingOrigin());
     render_frame_host().AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kError,
         "Silent mediation failed reason: auto re-authn is in quiet period "
@@ -2112,8 +2117,17 @@ bool FederatedAuthRequestImpl::ShouldFailBeforeFetchingAccounts(
         "invoked on the site.");
   }
 
-  return requires_user_mediation || !is_auto_reauthn_setting_enabled ||
-         is_auto_reauthn_embargoed || !has_sharing_permission_for_any_account;
+  if (requires_user_mediation || !is_auto_reauthn_setting_enabled ||
+      is_auto_reauthn_embargoed || !has_sharing_permission_for_any_account) {
+    // Record the relevant auto reauthn metrics before aborting the FedCM flow.
+    fedcm_metrics_->RecordAutoReauthnMetrics(
+        /*has_single_returning_account=*/absl::nullopt,
+        /*auto_signin_account=*/nullptr,
+        /*auto_reauthn_success=*/false, !is_auto_reauthn_setting_enabled,
+        is_auto_reauthn_embargoed, time_from_embargo);
+    return true;
+  }
+  return false;
 }
 
 bool FederatedAuthRequestImpl::RequiresUserMediation() {

@@ -219,21 +219,23 @@ void FedCmMetrics::RecordWebContentsVisibilityUponReadyToShowDialog(
 }
 
 void FedCmMetrics::RecordAutoReauthnMetrics(
-    bool has_single_returning_account,
+    absl::optional<bool> has_single_returning_account,
     const IdentityRequestAccount* auto_signin_account,
     bool auto_reauthn_success,
     bool is_auto_reauthn_setting_blocked,
     bool is_auto_reauthn_embargoed,
     absl::optional<base::TimeDelta> time_from_embargo) {
   NumReturningAccounts num_returning_accounts = NumReturningAccounts::kZero;
-  if (has_single_returning_account) {
-    num_returning_accounts = NumReturningAccounts::kOne;
-  } else if (auto_signin_account) {
-    num_returning_accounts = NumReturningAccounts::kMultiple;
-  }
+  if (has_single_returning_account.has_value()) {
+    if (*has_single_returning_account) {
+      num_returning_accounts = NumReturningAccounts::kOne;
+    } else if (auto_signin_account) {
+      num_returning_accounts = NumReturningAccounts::kMultiple;
+    }
 
-  base::UmaHistogramEnumeration("Blink.FedCm.AutoReauthn.ReturningAccounts",
-                                num_returning_accounts);
+    base::UmaHistogramEnumeration("Blink.FedCm.AutoReauthn.ReturningAccounts",
+                                  num_returning_accounts);
+  }
   base::UmaHistogramBoolean("Blink.FedCm.AutoReauthn.Succeeded",
                             auto_reauthn_success);
   base::UmaHistogramBoolean("Blink.FedCm.AutoReauthn.BlockedByContentSettings",
@@ -254,8 +256,10 @@ void FedCmMetrics::RecordAutoReauthnMetrics(
             time_from_embargo->InMilliseconds()));
   }
 
-  ukm_builder.SetAutoReauthn_ReturningAccounts(
-      static_cast<int>(num_returning_accounts));
+  if (has_single_returning_account.has_value()) {
+    ukm_builder.SetAutoReauthn_ReturningAccounts(
+        static_cast<int>(num_returning_accounts));
+  }
   ukm_builder.SetAutoReauthn_Succeeded(auto_reauthn_success);
   ukm_builder.SetAutoReauthn_BlockedByContentSettings(
       is_auto_reauthn_setting_blocked);
