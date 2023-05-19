@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 30
+// Next MinVersion: 31
 
 module arc.mojom;
 
@@ -194,6 +194,9 @@ struct ArcNotificationData {
   [MinVersion=29]
   // Identifier of the group to which the notification is assigned
   string? group_key;
+  // The index of reply button among all actions, if exist. Otherwise set to -1.
+  [MinVersion=30]
+  int32 reply_button_index;
 };
 
 struct ArcDoNotDisturbStatus {
