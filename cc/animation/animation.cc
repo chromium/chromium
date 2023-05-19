@@ -155,8 +155,7 @@ void Animation::Tick(base::TimeTicks tick_time) {
     // time and then ticks it which side-steps the start time altogether. See
     // crbug.com/1076012 for alternative design choices considered for future
     // improvement.
-    keyframe_effect()->Pause(tick_time - base::TimeTicks(),
-                             PauseCondition::kAfterStart);
+    keyframe_effect()->Pause(tick_time, PauseCondition::kAfterStart);
     keyframe_effect()->Tick(base::TimeTicks());
   } else {
     DCHECK(!tick_time.is_null());

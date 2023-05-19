@@ -2168,7 +2168,8 @@ void Animation::StartAnimationOnCompositor(
   // the playback rate preserve current time even if the start time is set.
   // Asynchronous updates have an associated pending play or pending pause
   // task associated with them.
-  if (start_time_ && !PendingInternal()) {
+  if (start_time_ &&
+      (timeline()->IsScrollSnapshotTimeline() || !PendingInternal())) {
     start_time = timeline_->ZeroTime() + start_time_.value();
     if (reversed) {
       start_time =
@@ -2297,6 +2298,7 @@ void Animation::UpdateStartTimeForViewTimeline() {
                : default_offset;
   AnimationTimeDelta duration = timeline_->GetDuration().value();
   start_time_ = duration * relative_offset;
+  SetCompositorPending(true);
 }
 
 void Animation::OnRangeUpdate() {
