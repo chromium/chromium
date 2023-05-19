@@ -4,6 +4,8 @@
 
 #include "ash/system/unified/date_tray.h"
 
+#include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/glanceables/tasks/fake_glanceables_tasks_client.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
@@ -11,6 +13,7 @@
 #include "ash/system/time/time_tray_item_view.h"
 #include "ash/system/time/time_view.h"
 #include "ash/system/unified/glanceable_tray_bubble.h"
+#include "ash/system/unified/tasks_bubble_view.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
@@ -19,8 +22,13 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/controls/combobox/combobox.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
+
+namespace {
+constexpr char kUserEmail[] = "test_user@gmail.com";
+}
 
 namespace ash {
 
@@ -51,6 +59,9 @@ class DateTrayTest
         /*thread_ticks_override=*/nullptr);
 
     AshTestBase::SetUp();
+
+    SimulateUserLogin(GetAccountId(kUserEmail));
+
     widget_ = CreateFramelessTestWidget();
     widget_->SetContentsView(std::make_unique<views::View>());
     widget_->SetFullscreen(true);
@@ -61,9 +72,22 @@ class DateTrayTest
     widget_->GetContentsView()->AddChildView(unified_system_tray_.get());
     date_tray_->SetVisiblePreferred(true);
     date_tray_->unified_system_tray_->SetVisiblePreferred(true);
+
+    if (AreGlanceablesV2Enabled()) {
+      fake_glanceables_tasks_client_ =
+          std::make_unique<FakeGlanceablesTasksClient>();
+      Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
+          GetAccountId(kUserEmail),
+          GlanceablesV2Controller::ClientsRegistration{
+              .tasks_client = fake_glanceables_tasks_client_.get()});
+    }
   }
 
   void TearDown() override {
+    if (AreGlanceablesV2Enabled()) {
+      fake_glanceables_tasks_client_.reset();
+    }
+
     widget_.reset();
     date_tray_ = nullptr;
     if (observering_activation_changes_) {
@@ -125,8 +149,13 @@ class DateTrayTest
     GetUnifiedSystemTray()->CloseBubble();
   }
 
+  AccountId GetAccountId(base::StringPiece email) {
+    return AccountId::FromUserEmail(std::string(email));
+  }
+
  private:
   std::unique_ptr<views::Widget> widget_;
+  std::unique_ptr<FakeGlanceablesTasksClient> fake_glanceables_tasks_client_;
   bool observering_activation_changes_ = false;
 
   // Owned by `widget_`.
@@ -157,6 +186,29 @@ TEST_P(DateTrayTest, InitialState) {
   // Initial state: not showing the calendar bubble.
   EXPECT_FALSE(IsBubbleShown());
   EXPECT_FALSE(AreContentsViewShown());
+}
+
+TEST_P(DateTrayTest, ShowTasksComboModel) {
+  LeftClickOn(GetDateTray());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(IsBubbleShown());
+  EXPECT_TRUE(AreContentsViewShown());
+
+  if (!AreGlanceablesV2Enabled()) {
+    EXPECT_EQ(GetGlanceableTrayBubble(), nullptr);
+  } else {
+    EXPECT_TRUE(GetGlanceableTrayBubble()->GetTasksView()->GetVisible());
+    EXPECT_FALSE(GetGlanceableTrayBubble()->GetTasksView()->IsMenuRunning());
+    EXPECT_TRUE(GetGlanceableTrayBubble()
+                    ->GetTasksView()
+                    ->task_list_combo_box_view()
+                    ->GetVisible());
+    GestureTapOn(
+        GetGlanceableTrayBubble()->GetTasksView()->task_list_combo_box_view());
+    PressAndReleaseKey(ui::VKEY_DOWN);
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(GetGlanceableTrayBubble()->GetTasksView()->IsMenuRunning());
+  }
 }
 
 // Tests clicking/tapping the DateTray shows/closes the calendar bubble.

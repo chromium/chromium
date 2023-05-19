@@ -11,6 +11,9 @@
 
 namespace ash {
 
+class GlanceableTrayBubbleView;
+class TasksBubbleView;
+
 // Manages the bubble that contains GlanceableTrayView.
 // Shows the bubble on the constructor, and closes the bubble on the destructor.
 class ASH_EXPORT GlanceableTrayBubble : public TrayBubbleBase {
@@ -30,7 +33,8 @@ class ASH_EXPORT GlanceableTrayBubble : public TrayBubbleBase {
   TrayBubbleView* GetBubbleView() const override;
   views::Widget* GetBubbleWidget() const override;
   bool IsBubbleActive() const;
-  TrayBubbleView* GetBubbleView() { return bubble_view_; }
+
+  TasksBubbleView* GetTasksView() const;
 
  private:
   void UpdateBubble();
@@ -46,12 +50,9 @@ class ASH_EXPORT GlanceableTrayBubble : public TrayBubbleBase {
   raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
 
   // Main bubble view anchored to `tray_`.
-  raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
-
-  // Stand-in title label for glanceables_view_.
-  // TODO(b:277268122): Remove and replace with actual glanceable content.
-  raw_ptr<views::Label, ExperimentalAsh> title_label_ = nullptr;
+  raw_ptr<GlanceableTrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
 };
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_UNIFIED_GLANCEABLE_TRAY_BUBBLE_H_
