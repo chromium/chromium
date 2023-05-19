@@ -27,9 +27,11 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
                        public display::DisplayObserver {
  public:
   enum class UIPage {
-    NO_PAGE,                // Hide everything.
-    TERMS,                  // Terms content page.
-    ARC_LOADING,            // ARC loading progress page.
+    NO_PAGE,      // Hide everything.
+    TERMS,        // Terms content page.
+    ARC_LOADING,  // ARC loading progress page.
+    // TODO(b/282761972): Remove the AD page type below, after all places where
+    // it's used have already been cleaned up.
     ACTIVE_DIRECTORY_AUTH,  // Active Directory user SAML authentication.
     ERROR,                  // ARC start error page.
   };
@@ -70,13 +72,11 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
     // The error message to show.
     Error error;
 
-    // Some messages show an error code with the error string
-    // e.g. Something went wrong. Error code: 7
-    // The value of error code for such errors can be passsed
-    // using this arg.
-    // For SIGN_IN_UNKNOWN_ERROR the arg should be specific provisioning result
-    // code. For SIGN_IN_CLOUD_PROVISION_FLOW_* errors the arg should be error
-    // code received from ARC.
+    // Some messages show an error code with the error string (e.g. Something
+    // went wrong. Error code: 7). The value of error code for such errors can
+    // be passed using this arg. For SIGN_IN_UNKNOWN_ERROR the arg should be
+    // specific provisioning result code. For SIGN_IN_CLOUD_PROVISION_FLOW_*
+    // errors the arg should be error code received from ARC.
     absl::optional<int> arg;
   };
 
@@ -127,8 +127,9 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
     virtual void OnWindowClosed() = 0;
 
     // Called when "RETRY" button on the error page is clicked, except when
-    // terms of service negotiation or manual authentication is onging. In those
-    // cases, the more specific retry function in the other delegates is called.
+    // terms of service negotiation or manual authentication is ongoing. In
+    // those cases, the more specific retry function in the other delegates is
+    // called.
     virtual void OnRetryClicked() = 0;
 
     // Called when send feedback button on error page is clicked.
