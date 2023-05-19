@@ -52,19 +52,17 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     AUTH_NONE = 0,                     // No extra auth methods.
     AUTH_PASSWORD = 1 << 0,            // Display password.
     AUTH_PIN = 1 << 1,                 // Display PIN keyboard.
-    AUTH_TAP = 1 << 2,                 // [DEPRECATED] Tap to unlock.
-                                       // TODO(b/217970801): Remove this field.
-    AUTH_ONLINE_SIGN_IN = 1 << 3,      // Force online sign-in.
-    AUTH_FINGERPRINT = 1 << 4,         // Use fingerprint to unlock.
-    AUTH_SMART_LOCK = 1 << 5,          // Use Smart Lock to unlock.
-    AUTH_CHALLENGE_RESPONSE = 1 << 6,  // Authenticate via challenge-response
+    AUTH_ONLINE_SIGN_IN = 1 << 2,      // Force online sign-in.
+    AUTH_FINGERPRINT = 1 << 3,         // Use fingerprint to unlock.
+    AUTH_SMART_LOCK = 1 << 4,          // Use Smart Lock to unlock.
+    AUTH_CHALLENGE_RESPONSE = 1 << 5,  // Authenticate via challenge-response
                                        // protocol using security token.
-    AUTH_DISABLED = 1 << 7,  // Disable all the auth methods and show a
+    AUTH_DISABLED = 1 << 6,  // Disable all the auth methods and show a
                              // message to user.
-    AUTH_DISABLED_TPM_LOCKED = 1 << 8,  // Disable all the auth methods due
+    AUTH_DISABLED_TPM_LOCKED = 1 << 7,  // Disable all the auth methods due
                                         // to the TPM being locked
     AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD =
-        1 << 9,  // Hide the password/pin fields and slide the auth factors
+        1 << 8,  // Hide the password/pin fields and slide the auth factors
                  // up. This happens, for example,  when an auth factor requires
                  // the user to click a button as a final step. Note that if
                  // this bit is set, the password/pin will be hidden even if
@@ -137,9 +135,9 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     ~Callbacks();
 
     // Executed whenever an authentication result is available, such as when the
-    // user submits a password or taps the user icon when AUTH_TAP is enabled.
+    // user submits a password or clicks to complete Smart Lock.
     OnAuthCallback on_auth;
-    // Called when the user taps the user view and AUTH_TAP is not enabled.
+    // Called when the user taps the user view.
     LoginUserView::OnTap on_tap;
     // Called when the remove user warning message has been shown.
     LoginUserView::OnRemoveWarningShown on_remove_warning_shown;
@@ -220,7 +218,6 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
 
  private:
   struct UiState;
-  class FingerprintView;
   class ChallengeResponseView;
   class DisabledAuthMessageView;
   class LockedTpmMessageView;
@@ -256,7 +253,7 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   void OnPinTextChanged(bool is_empty);
 
   // Helper method to check if an auth method is enable. Use it like this:
-  // bool has_tap = HasAuthMethod(AUTH_TAP).
+  // bool has_tap = HasAuthMethod(AUTH_PASSWORD).
   bool HasAuthMethod(AuthMethods auth_method) const;
 
   // Whether the authentication attempt should use the user's PIN.
@@ -307,10 +304,6 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // Controls which input field is currently being shown.
   InputFieldMode input_field_mode_ = InputFieldMode::NONE;
 
-  // TODO(https://crbug.com/1233614): Remove this field once the Smart Lock UI
-  // revamp is complete.
-  bool smart_lock_ui_revamp_enabled_ = false;
-
   raw_ptr<LoginUserView, ExperimentalAsh> user_view_ = nullptr;
   raw_ptr<LoginPasswordView, ExperimentalAsh> password_view_ = nullptr;
   raw_ptr<LoginPinInputView, ExperimentalAsh> pin_input_view_ = nullptr;
@@ -319,7 +312,6 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   raw_ptr<views::LabelButton, ExperimentalAsh> online_sign_in_button_ = nullptr;
   raw_ptr<DisabledAuthMessageView, ExperimentalAsh> disabled_auth_message_ =
       nullptr;
-  raw_ptr<FingerprintView, ExperimentalAsh> fingerprint_view_ = nullptr;
   raw_ptr<LoginAuthFactorsView, ExperimentalAsh> auth_factors_view_ = nullptr;
   raw_ptr<FingerprintAuthFactorModel, ExperimentalAsh>
       fingerprint_auth_factor_model_ = nullptr;
