@@ -51,8 +51,6 @@ static_library("browser") {
     "affiliation/hash_affiliation_fetcher.h",
     "affiliation/lookup_affiliation_response_parser.cc",
     "affiliation/lookup_affiliation_response_parser.h",
-    "android_backend_error.cc",
-    "android_backend_error.h",
     "browser_save_password_progress_logger.cc",
     "browser_save_password_progress_logger.h",
     "bulk_leak_check_service.cc",
@@ -351,6 +349,8 @@ static_library("browser") {
 
   if (is_android) {
     sources += [
+      "android_backend_error.cc",
+      "android_backend_error.h",
       "built_in_backend_to_android_backend_migrator.cc",
       "built_in_backend_to_android_backend_migrator.h",
       "password_manager_eviction_util.cc",
