@@ -9788,7 +9788,8 @@
                     "name": "Enabled",
                     "params": {
                         "brp-mode": "enabled",
-                        "enabled-processes": "non-renderer"
+                        "enabled-processes": "non-renderer",
+                        "ref-count-size": "16B"
                     },
                     "enable_features": [
                         "PartitionAllocBackupRefPtr"
