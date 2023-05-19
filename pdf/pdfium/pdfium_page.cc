@@ -487,9 +487,6 @@ absl::optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfo(
           ? GetFloatCharRectInPixels(page, text_page, start_char_index)
           : gfx::RectF();
 
-  // Pdfium trims more than 1 consecutive spaces to 1 space.
-  DCHECK_LE(actual_start_char_index - start_char_index, 1);
-
   int char_index = actual_start_char_index;
 
   // Set text run's style info from the first character of the text run.
